@@ -9,7 +9,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import {
   Search, RotateCw, Clock, LayoutGrid, Zap,
-  ChevronDown, ChevronUp,
+  ChevronDown, ChevronUp, ChevronLeft, ChevronRight,
 } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import ExportWorkItems from '@/components/resources/ExportWorkItems';
@@ -240,7 +240,7 @@ export default function ResourceListingPage() {
   };
 
   return (
-    <div style={{ padding: '24px 28px', fontFamily: "'Inter', sans-serif", height: '100%', overflow: 'auto', background: t.pageBg }}>
+    <div style={{ padding: '24px 28px', fontFamily: "'Inter', sans-serif", height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden', background: t.pageBg }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
         <h1 style={{ fontSize: '20px', fontWeight: 800, color: t.text1, margin: 0, fontFamily: "'Sora', sans-serif" }}>Resources</h1>
@@ -351,9 +351,10 @@ export default function ResourceListingPage() {
       {/* Table */}
       <div style={{
         border: `1px solid ${t.border}`, borderRadius: '8px', overflow: 'hidden',
-        background: t.surfaceBg,
+        background: t.surfaceBg, marginTop: '16px', flex: 1, minHeight: 0,
+        display: 'flex', flexDirection: 'column',
       }}>
-        <div style={{ overflowX: 'auto' }}>
+        <div style={{ overflowX: 'auto', flex: 1, minHeight: 0 }}>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr>
@@ -537,7 +538,7 @@ export default function ResourceListingPage() {
                   fontSize: 13,
                 }}
               >
-                <ChevronUp size={14} style={{ transform: 'rotate(-90deg)' }} />
+                <ChevronLeft size={14} />
               </button>
               {Array.from({ length: totalPages }, (_, i) => i + 1).map(n => (
                 <button
@@ -567,7 +568,7 @@ export default function ResourceListingPage() {
                   fontSize: 13,
                 }}
               >
-                <ChevronUp size={14} style={{ transform: 'rotate(90deg)' }} />
+                <ChevronRight size={14} />
               </button>
             </div>
           </div>
