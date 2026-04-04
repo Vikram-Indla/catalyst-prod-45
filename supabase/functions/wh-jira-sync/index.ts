@@ -327,6 +327,102 @@ serve(async (req) => {
       upsertedCount += chunk.length
     }
 
+    // 7a. Sync Jira Bugs → tm_defects
+    const bugIssues = allIssues.filter((issue: any) => {
+      const typeName = (issue.fields.issuetype?.name || '').toLowerCase()
+      return typeName === 'bug' || typeName === 'defect'
+    })
+
+    let defectsSynced = 0
+    if (bugIssues.length > 0) {
+      // Build lookup: Jira project key → tm_projects.id
+      const bugProjectKeys = [...new Set(bugIssues.map((i: any) => i.key.split('-')[0]))]
+      const { data: tmProjects } = await supabase
+        .from('tm_projects')
+        .select('id, key')
+        .in('key', bugProjectKeys)
+      const tmProjectMap = new Map((tmProjects || []).map((p: any) => [p.key, p.id]))
+
+      // Build lookup: Jira accountId → profiles.id via ph_user_mapping
+      const { data: userMappings } = await supabase
+        .from('ph_user_mapping')
+        .select('jira_account_id, catalyst_profile_id')
+        .eq('is_mapped', true)
+        .not('catalyst_profile_id', 'is', null)
+      const userMap = new Map((userMappings || []).map((m: any) => [m.jira_account_id, m.catalyst_profile_id]))
+
+      // Map Jira priority → tm_defect_severity
+      function mapSeverity(jiraPriority: string): string {
+        const p = (jiraPriority || '').toLowerCase()
+        if (p === 'highest' || p === 'blocker' || p === 'critical') return 'critical'
+        if (p === 'high' || p === 'major') return 'major'
+        if (p === 'low' || p === 'minor' || p === 'trivial') return 'trivial'
+        return 'minor' // Medium or unknown
+      }
+
+      // Map Jira status → tm_defect_status
+      function mapDefectStatus(jiraStatus: string, statusCat: string): string {
+        const s = (jiraStatus || '').toLowerCase()
+        const cat = (statusCat || '').toLowerCase()
+        if (s === 'closed' || s === 'done' || s === 'verified') return 'closed'
+        if (s === 'resolved' || s === 'fixed') return 'resolved'
+        if (s === 'reopened' || s === 're-opened') return 'reopened'
+        if (cat === 'in progress' || s === 'in progress' || s === 'in review') return 'in_progress'
+        return 'open'
+      }
+
+      const defectRows = bugIssues
+        .filter((issue: any) => {
+          const projKey = issue.key.split('-')[0]
+          return tmProjectMap.has(projKey)
+        })
+        .map((issue: any) => {
+          const projKey = issue.key.split('-')[0]
+          const statusCat = issue.fields.status?.statusCategory?.name || ''
+          const descText = issue.fields.description ? adfToPlainText(issue.fields.description) : null
+          const components = (issue.fields.components || []).map((c: any) => c.name).join(', ')
+          const fixVers = (issue.fields.fixVersions || []).map((v: any) => v.name).join(', ')
+          const affectsVer = (issue.fields.versions || []).map((v: any) => v.name).join(', ')
+
+          return {
+            defect_key: issue.key,
+            project_id: tmProjectMap.get(projKey),
+            title: issue.fields.summary || '',
+            description: descText,
+            severity: mapSeverity(issue.fields.priority?.name || 'Medium'),
+            priority: issue.fields.priority?.name || 'Medium',
+            status: mapDefectStatus(issue.fields.status?.name || '', statusCat),
+            assignee_id: userMap.get(issue.fields.assignee?.accountId) || null,
+            reporter_id: userMap.get(issue.fields.reporter?.accountId) || null,
+            external_id: issue.id,
+            external_url: `${base}/browse/${issue.key}`,
+            component: components || null,
+            fix_version: fixVers || null,
+            affects_version: affectsVer || null,
+            labels: issue.fields.labels || [],
+            due_date: issue.fields.duedate || null,
+            created_at: issue.fields.created,
+            updated_at: issue.fields.updated,
+            resolved_at: issue.fields.resolutiondate || null,
+          }
+        })
+
+      if (defectRows.length > 0) {
+        for (let i = 0; i < defectRows.length; i += 500) {
+          const chunk = defectRows.slice(i, i + 500)
+          const { error: defErr } = await supabase
+            .from('tm_defects')
+            .upsert(chunk, { onConflict: 'defect_key,project_id' })
+          if (defErr) {
+            console.error(`[sync] tm_defects upsert error: ${defErr.message}`)
+          } else {
+            defectsSynced += chunk.length
+          }
+        }
+        console.log(`[sync] Synced ${defectsSynced} bug issues → tm_defects`)
+      }
+    }
+
     // 7b. Extract and upsert attachments
     const attachmentRows: any[] = []
     for (const issue of allIssues) {
@@ -572,6 +668,7 @@ serve(async (req) => {
       sync_type: syncType,
       issues_fetched: allIssues.length,
       issues_upserted: upsertedCount,
+      defects_synced: defectsSynced,
       versions_fetched: totalVersions,
       pruned,
       warnings,
