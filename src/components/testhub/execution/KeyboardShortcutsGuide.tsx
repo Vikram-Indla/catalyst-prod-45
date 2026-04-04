@@ -32,8 +32,7 @@ const sections = [
   {
     title: 'Test Actions',
     shortcuts: [
-      { key: 'Ctrl+Enter', desc: 'Complete test' },
-      { key: 'Ctrl+P', desc: 'Pass all remaining' },
+      { key: 'Ctrl+Enter', desc: 'Complete execution (derive status)' },
       { key: 'Ctrl+S', desc: 'Save progress' },
     ],
   },
