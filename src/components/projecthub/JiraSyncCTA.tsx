@@ -48,6 +48,7 @@ export function JiraSyncCTA() {
     : '#94A3B8';
 
   const statusLabel = connLoading ? 'Loading...'
+    : isAnySyncActive ? 'Syncing…'
     : isConnected ? 'Connected'
     : connError ? 'Error'
     : 'Not connected';
