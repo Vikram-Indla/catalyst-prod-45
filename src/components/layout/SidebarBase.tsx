@@ -388,7 +388,7 @@ function renderMenuItem(
 ) {
   const active = isActive(item.path, item.exact, item.activeMatchPaths);
   const CustomIcon = iconResolver?.(item.id) || item.icon;
-  const starred = isFavorite(item.path);
+  const starred = item.alwaysStarred || isFavorite(item.path);
 
   const menuButton = (
     <button
