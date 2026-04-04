@@ -450,6 +450,9 @@ export function IncidentListTable({
                         >
                           {incident.incident_key}
                         </Link>
+                        {incident.jira_key && (
+                          <JiraSyncChip jiraKey={incident.jira_key} size="sm" />
+                        )}
                         {(incident.is_major_incident || isCritical || isBreached) && (
                           <Tooltip>
                             <TooltipTrigger asChild>
