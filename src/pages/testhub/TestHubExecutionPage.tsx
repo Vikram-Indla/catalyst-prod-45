@@ -295,7 +295,12 @@ export default function TestHubExecutionPage() {
   const handleNext = () => { if (canGoNext) setSelectedTestCaseId(filteredTestCases[currentIndex + 1].id); };
 
   const updateExecutionStatus = useCallback(async (status: string, failureReason?: string, failureNotes?: string, defectId?: string | null) => {
-    if (!selectedTestCaseId || !currentUserId) return;
+    if (!selectedTestCaseId) return;
+    if (!currentUserId) {
+      console.error('[ExecutionPage] Cannot complete: currentUserId is null. Auth state may not have loaded.');
+      catalystToast.error('Authentication not ready. Please try again.');
+      return;
+    }
     setIsSubmitting(true);
     try {
       // 1. Update tm_cycle_scope.current_status

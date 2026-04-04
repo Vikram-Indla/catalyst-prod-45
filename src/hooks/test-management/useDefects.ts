@@ -281,12 +281,15 @@ export function useCreateDefect() {
 
       // If there's a run_id or step_id, create a link
       if (input.run_id || input.step_id) {
-        await supabase.from('tm_defect_links').insert({
+        const { error: linkError } = await supabase.from('tm_defect_links').insert({
           defect_id: data.id,
           test_run_id: input.run_id || null,
           step_result_id: input.step_id || null,
           created_by: user.id,
         });
+        if (linkError) {
+          console.error('[useCreateDefect] tm_defect_links insert failed:', linkError);
+        }
       }
 
       return mapDbRowToTMDefect(data);
