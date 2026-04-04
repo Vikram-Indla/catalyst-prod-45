@@ -322,17 +322,17 @@ export default function TestCycleDetailPage() {
       </div>
 
       {/* Stats Cards - 3-panel layout per spec */}
+      {(() => {
+        const totalCount = testCases.length;
+        const notRunCount = testCases.filter(tc => tc.current_status === 'not_run').length;
+        const passedCount = testCases.filter(tc => tc.current_status === 'passed').length;
+        const failedCount = testCases.filter(tc => tc.current_status === 'failed').length;
+        const blockedCount = testCases.filter(tc => tc.current_status === 'blocked').length;
+        const executedCount = totalCount - notRunCount;
+        const pp = totalCount > 0 ? Math.round((executedCount / totalCount) * 100) : 0;
+        return (
       <div style={{ padding: '24px 32px', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
         {/* Progress Panel */}
-        {(() => {
-          const totalCount = testCases.length;
-          const notRunCount = testCases.filter(tc => tc.current_status === 'not_run').length;
-          const passedCount = testCases.filter(tc => tc.current_status === 'passed').length;
-          const failedCount = testCases.filter(tc => tc.current_status === 'failed').length;
-          const blockedCount = testCases.filter(tc => tc.current_status === 'blocked').length;
-          const executedCount = totalCount - notRunCount;
-          const pp = totalCount > 0 ? Math.round((executedCount / totalCount) * 100) : 0;
-          return (
         <div style={{ backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 12, padding: 24, textAlign: 'center' }}>
           <p style={{ fontSize: 13, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em', margin: '0 0 16px' }}>Progress</p>
           <div style={{ width: 100, height: 100, margin: '0 auto 16px', position: 'relative' }}>
@@ -346,8 +346,6 @@ export default function TestCycleDetailPage() {
           </div>
           <p style={{ fontSize: 14, color: '#334155', margin: 0, fontWeight: 500 }}>{executedCount}/{totalCount} executed</p>
         </div>
-          );
-        })()}
 
         {/* By Status Panel */}
         <div style={{ backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 12, padding: 24 }}>
