@@ -273,7 +273,7 @@ export default function TestCycleDetailPage() {
             )}
             {cycle.status === 'planned' && (
               <button onClick={async () => {
-                const { error } = await (supabase as any).from('tm_test_cycles').update({ status: 'in_progress', updated_at: new Date().toISOString() }).eq('id', cycleId);
+                const { error } = await (supabase as any).from('tm_test_cycles').update({ status: 'active', updated_at: new Date().toISOString() }).eq('id', cycleId);
                 if (error) { catalystToast.error(error.message); return; }
                 catalystToast.success('Cycle execution started'); fetchCycle();
               }} style={{ height: 40, padding: '0 16px', background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)', border: 'none', borderRadius: 8, color: '#FFFFFF', fontSize: 14, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
