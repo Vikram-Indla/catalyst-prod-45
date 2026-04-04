@@ -876,7 +876,6 @@ export default function TestHubExecutionPage() {
                     cycleTestCaseId={currentTestCase.id}
                     attachments={attachments}
                     onAttachmentsChange={fetchAttachments}
-                    defectIds={currentTestCase.defect_ids || []}
                     onCreateDefect={handleFail}
                   />
                 ) : (
