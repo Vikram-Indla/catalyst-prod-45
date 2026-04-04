@@ -46,6 +46,7 @@ export default function TestSetsPage() {
   const [refreshingSet, setRefreshingSet] = useState<TestSet | null>(null);
   const [addToCycleSet, setAddToCycleSet] = useState<TestSet | null>(null);
   const [deletingSet, setDeletingSet] = useState<TestSet | null>(null);
+  const [isCreateCycleOpen, setIsCreateCycleOpen] = useState(false);
 
   const { data: testSets, isLoading } = useTestSets(projectId, filters);
   const deleteMutation = useDeleteTestSet();
