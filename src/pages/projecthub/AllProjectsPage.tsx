@@ -34,8 +34,8 @@ import {
 export default function AllProjectsPage() {
   const [view, setView] = useState<ViewMode>('list');
   const [filters, setFilters] = useState<ProjectFilters>(DEFAULT_FILTERS);
-  const [sortCol, setSortCol] = useState<SortColumn>('name');
-  const [sortDir, setSortDir] = useState<SortDirection>('asc');
+  const [sortCol, setSortCol] = useState<SortColumn>('total_issues');
+  const [sortDir, setSortDir] = useState<SortDirection>('desc');
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(12);
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());

@@ -428,7 +428,7 @@ export function AllProjectsTable({
   });
 
   const headerLabels = ['#', 'PROJECT', 'STATUS', 'LEAD', 'ISSUES', 'MEMBERS', 'UPDATED', ''];
-  const sortableMap: Record<number, SortColumn> = { 1: 'name', 2: 'status' };
+  const sortableMap: Record<number, SortColumn> = { 1: 'name', 2: 'status', 4: 'total_issues' };
 
   return (
     <div className="overflow-hidden">
