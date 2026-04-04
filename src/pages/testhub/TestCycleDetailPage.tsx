@@ -280,7 +280,7 @@ export default function TestCycleDetailPage() {
                 Start Execution
               </button>
             )}
-            {cycle.status === 'in_progress' && (
+            {cycle.status === 'active' && (
               <button onClick={async () => {
                 const { error } = await (supabase as any).from('tm_test_cycles').update({ status: 'completed', updated_at: new Date().toISOString() }).eq('id', cycleId);
                 if (error) { catalystToast.error(error.message); return; }
