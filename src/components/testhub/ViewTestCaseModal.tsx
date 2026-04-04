@@ -206,7 +206,7 @@ export function ViewTestCaseModal({
       const [stepsRes, linksRes, historyRes, runsRes, attachmentsRes] = await Promise.all([
         supabase.from('tm_test_steps').select('*').eq('test_case_id', testCase.id).order('step_number'),
         (supabase as any).from('th_test_case_links').select('*').eq('test_case_id', testCase.id),
-        (supabase as any).from('th_test_case_versions').select('*').eq('test_case_id', testCase.id).order('version', { ascending: false }),
+        (supabase as any).from('tm_test_case_versions').select('*').eq('test_case_id', testCase.id).order('version', { ascending: false }),
         (supabase as any).from('th_test_executions').select('*').eq('test_case_id', testCase.id).order('executed_at', { ascending: false }),
         (supabase as any).from('th_test_case_attachments').select('*').eq('test_case_id', testCase.id),
       ]);
