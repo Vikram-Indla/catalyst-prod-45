@@ -3,7 +3,7 @@
  * Route: /testhub/test-sets/:setId
  */
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Edit, Plus, RefreshCw, Zap, Layers, Users, Calendar, ExternalLink, X, GripVertical, Clock } from 'lucide-react';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core';
@@ -86,9 +86,11 @@ export default function TestSetDetailPage() {
   }, [testCases, setId, reorderMutation]);
 
   // Sync items with testCases on load
-  if (testCases && items.length === 0) {
-    setItems(testCases);
-  }
+  useEffect(() => {
+    if (testCases && testCases.length > 0) {
+      setItems(testCases);
+    }
+  }, [testCases]);
 
   if (isLoadingSet) {
     return <div className="p-6"><Skeleton className="h-8 w-48 mb-4" /><Skeleton className="h-32 w-full" /></div>;
