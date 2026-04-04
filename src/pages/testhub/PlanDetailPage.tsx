@@ -115,8 +115,11 @@ export default function PlanDetailPage() {
           )}
 
           {/* Status Transitions */}
-          {plan.status === 'approved' && (
-            <Button onClick={() => handleStatusChange('in_progress')}>Start Execution</Button>
+          {plan.status === 'pending_approval' && (
+            <Button onClick={() => handleStatusChange('active')}>Approve & Activate</Button>
+          )}
+          {plan.status === 'active' && (
+            <Button onClick={() => handleStatusChange('executing')}>Start Execution</Button>
           )}
           {plan.status === 'in_progress' && (
             <Button onClick={() => handleStatusChange('completed')}>Mark Complete</Button>
