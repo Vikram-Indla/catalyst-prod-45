@@ -51595,7 +51595,23 @@ export type Database = {
           is_blocker: boolean | null
           is_regression: boolean | null
           is_security_issue: boolean | null
+          jira_assignee_name: string | null
+          jira_components: string[] | null
+          jira_created_at: string | null
+          jira_fix_versions: Json | null
+          jira_key: string | null
+          jira_parent_key: string | null
+          jira_project_key: string | null
+          jira_reporter_name: string | null
+          jira_resolution: string | null
+          jira_source: boolean
+          jira_sprint_name: string | null
+          jira_status: string | null
+          jira_status_category: string | null
+          jira_story_points: number | null
+          jira_updated_at: string | null
           labels: string[] | null
+          last_synced_at: string | null
           module: string | null
           operating_system: string | null
           priority: string | null
@@ -51641,7 +51657,23 @@ export type Database = {
           is_blocker?: boolean | null
           is_regression?: boolean | null
           is_security_issue?: boolean | null
+          jira_assignee_name?: string | null
+          jira_components?: string[] | null
+          jira_created_at?: string | null
+          jira_fix_versions?: Json | null
+          jira_key?: string | null
+          jira_parent_key?: string | null
+          jira_project_key?: string | null
+          jira_reporter_name?: string | null
+          jira_resolution?: string | null
+          jira_source?: boolean
+          jira_sprint_name?: string | null
+          jira_status?: string | null
+          jira_status_category?: string | null
+          jira_story_points?: number | null
+          jira_updated_at?: string | null
           labels?: string[] | null
+          last_synced_at?: string | null
           module?: string | null
           operating_system?: string | null
           priority?: string | null
@@ -51687,7 +51719,23 @@ export type Database = {
           is_blocker?: boolean | null
           is_regression?: boolean | null
           is_security_issue?: boolean | null
+          jira_assignee_name?: string | null
+          jira_components?: string[] | null
+          jira_created_at?: string | null
+          jira_fix_versions?: Json | null
+          jira_key?: string | null
+          jira_parent_key?: string | null
+          jira_project_key?: string | null
+          jira_reporter_name?: string | null
+          jira_resolution?: string | null
+          jira_source?: boolean
+          jira_sprint_name?: string | null
+          jira_status?: string | null
+          jira_status_category?: string | null
+          jira_story_points?: number | null
+          jira_updated_at?: string | null
           labels?: string[] | null
+          last_synced_at?: string | null
           module?: string | null
           operating_system?: string | null
           priority?: string | null
@@ -72261,6 +72309,7 @@ export type Database = {
         Args: { _user_id: string; _workstream_id: string }
         Returns: boolean
       }
+      jsonb_to_text_array: { Args: { val: Json }; Returns: string[] }
       kb_cache_hit: { Args: { p_query_hash: string }; Returns: Json }
       kb_has_product_role: {
         Args: { required_codes: string[] }
@@ -72448,6 +72497,7 @@ export type Database = {
         Args: { p_item_ids: string[]; p_run_id: string }
         Returns: Json
       }
+      next_defect_key: { Args: never; Returns: string }
       next_issue_key: { Args: { p_project_id: string }; Returns: string }
       pause_step_timer: {
         Args: { p_execution_id: string; p_step_id: string }
