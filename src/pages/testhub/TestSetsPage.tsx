@@ -246,6 +246,12 @@ export default function TestSetsPage() {
           </div>
         </AlertDialogContent>
       </AlertDialog>
+      {/* Create Cycle Modal */}
+      <CreateTestCycleModal
+        isOpen={isCreateCycleOpen}
+        onClose={() => setIsCreateCycleOpen(false)}
+        onSuccess={() => setIsCreateCycleOpen(false)}
+      />
     </div>
   );
 }
