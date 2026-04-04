@@ -3,6 +3,12 @@ import WidgetWrapper from '../WidgetWrapper';
 import { useDashboardDefects } from '@/hooks/useDashboardWidgets';
 import { ExternalLink } from 'lucide-react';
 
+const getAvatarColor = (initials: string): string => {
+  if (!initials) return '#94A3B8';
+  const colors = ['#2563EB', '#0D9488', '#D97706', '#DC2626', '#059669', '#6366F1'];
+  return colors[initials.charCodeAt(0) % colors.length];
+};
+
 const sevClassName = (sev: string): string => {
   const s = (sev || '').toLowerCase();
   if (s === 'critical' || s === 'blocker') return 'bg-[#FFEBE6] dark:bg-[#3a1a1a] text-[#BF2600] dark:text-[#ff8f73]';
