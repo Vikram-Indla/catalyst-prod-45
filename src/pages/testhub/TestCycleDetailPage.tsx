@@ -361,7 +361,7 @@ export default function TestCycleDetailPage() {
             <button onClick={() => setStatusFilter('failed')} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', border: 'none', borderRadius: 8, backgroundColor: statusFilter === 'failed' ? '#FEF2F2' : 'transparent', cursor: 'pointer', width: '100%', textAlign: 'left' }}>
               <XCircle size={18} style={{ color: '#DC2626' }} />
               <span style={{ flex: 1, fontSize: 14, color: '#334155' }}>Failed</span>
-              <span style={{ fontSize: 16, fontWeight: 700, color: '#DC2626' }}>{cycle.failed_count}</span>
+              <span style={{ fontSize: 16, fontWeight: 700, color: '#DC2626' }}>{failedCount}</span>
             </button>
             <button onClick={() => setStatusFilter('blocked')} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', border: 'none', borderRadius: 8, backgroundColor: statusFilter === 'blocked' ? '#FFFBEB' : 'transparent', cursor: 'pointer', width: '100%', textAlign: 'left' }}>
               <AlertTriangle size={18} style={{ color: '#D97706' }} />
