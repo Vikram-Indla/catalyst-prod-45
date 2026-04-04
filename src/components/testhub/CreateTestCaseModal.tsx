@@ -31,6 +31,10 @@ interface TestCaseForEdit {
   version: number;
   owner_id?: string | null;
   created_by?: string | null;
+  automation_status?: string | null;
+  test_format?: string | null;
+  gherkin_feature?: string | null;
+  gherkin_scenario?: string | null;
 }
 
 interface CreateTestCaseModalProps {
