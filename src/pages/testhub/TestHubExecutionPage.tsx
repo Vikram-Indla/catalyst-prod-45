@@ -347,17 +347,41 @@ export default function TestHubExecutionPage() {
     }
   }, [currentStepIndex, selectedTestCaseId, steps, currentUserId]);
 
-  // Pass All Remaining
-  const handlePassAllRemaining = () => {
-    if (steps.length === 0) {
-      updateExecutionStatus('passed');
-      return;
-    }
-    const key = selectedTestCaseId || '';
+  // Derive overall status from step statuses
+  const derivedStatus = useMemo(() => {
+    if (!selectedTestCaseId || steps.length === 0) return 'not_run' as const;
+    const key = selectedTestCaseId;
     const current = stepStatuses.get(key) || steps.map((_, i) => ({ stepIndex: i, status: 'not_run' as const }));
-    const updated = current.map(s => s.status === 'not_run' ? { ...s, status: 'passed' as const } : s);
-    setStepStatuses(new Map(stepStatuses).set(key, updated));
-    updateExecutionStatus('passed');
+    const statuses = current.map(s => s.status);
+    const markedStatuses = statuses.filter(s => s !== 'not_run');
+    if (markedStatuses.length === 0) return 'not_run' as const;
+    return deriveOverallStatus(markedStatuses);
+  }, [selectedTestCaseId, stepStatuses, steps]);
+
+  const allStepsMarked = useMemo(() => {
+    if (!selectedTestCaseId || steps.length === 0) return false;
+    const key = selectedTestCaseId;
+    const current = stepStatuses.get(key) || steps.map((_, i) => ({ stepIndex: i, status: 'not_run' as const }));
+    return current.every(s => s.status !== 'not_run');
+  }, [selectedTestCaseId, stepStatuses, steps]);
+
+  const anyStepMarked = useMemo(() => {
+    if (!selectedTestCaseId || steps.length === 0) return false;
+    const key = selectedTestCaseId;
+    const current = stepStatuses.get(key) || steps.map((_, i) => ({ stepIndex: i, status: 'not_run' as const }));
+    return current.some(s => s.status !== 'not_run');
+  }, [selectedTestCaseId, stepStatuses, steps]);
+
+  // Complete Execution — derives overall status from steps
+  const handleCompleteExecution = async () => {
+    if (!selectedTestCaseId || derivedStatus === 'not_run') return;
+    
+    await updateExecutionStatus(derivedStatus);
+    
+    // If failed, trigger defect creation prompt
+    if (derivedStatus === 'failed') {
+      setIsFailureModalOpen(true);
+    }
   };
 
   // Notes auto-save — disabled until notes column is added to tm_cycle_scope
