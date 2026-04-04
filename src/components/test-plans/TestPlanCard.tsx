@@ -15,6 +15,7 @@ interface Props { plan: TestPlan; onDelete: () => void; }
 export function TestPlanCard({ plan, onDelete }: Props) {
   const navigate = useNavigate();
   const { data: progress } = usePlanProgress(plan.id);
+  const duplicatePlan = useDuplicateTestPlan();
 
   const dateRange = () => {
     if (!plan.planned_start_date && !plan.planned_end_date) return 'Not scheduled';
