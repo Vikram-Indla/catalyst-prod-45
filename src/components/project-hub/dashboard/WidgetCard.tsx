@@ -114,8 +114,7 @@ function WidgetCardInner({ title, subtitle, count, countColor, leftBorder, heade
           {onRetry && (
             <button
               onClick={onRetry}
-              className="ph-focus-ring"
-              className={dark ? 'bg-[rgba(37,99,235,0.15)]' : 'bg-[var(--cp-blue-wash)]'}
+              className={`ph-focus-ring ${dark ? 'bg-[rgba(37,99,235,0.15)]' : 'bg-[var(--cp-blue-wash)]'}`}
               style={{ fontSize: 11, fontWeight: 600, color: dark ? 'var(--cp-blue-light)' : 'var(--cp-blue)', border: dark ? '1px solid rgba(37,99,235,0.3)' : '1px solid var(--cp-primary-20)', borderRadius: 6, padding: '4px 12px', cursor: 'pointer' }}
             >
               Retry

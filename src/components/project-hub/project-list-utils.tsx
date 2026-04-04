@@ -104,7 +104,6 @@ export function AvatarStack({ count }: { count: number }) {
       ))}
       {overflow > 0 && (
         <div
-          className="flex items-center justify-center rounded-full flex-shrink-0"
           className="flex items-center justify-center rounded-full flex-shrink-0 bg-[var(--cp-bd-zone)]"
           style={{
             width: 24,

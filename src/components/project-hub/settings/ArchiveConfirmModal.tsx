@@ -21,7 +21,6 @@ export function ArchiveConfirmModal({ open, projectName, onClose, onConfirm, loa
 
   return (
     <div
-      className="fixed inset-0 z-[9999] flex items-center justify-center"
       className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50"
       onClick={e => { if (e.target === e.currentTarget) onClose(); }}
     >
@@ -68,7 +67,6 @@ export function ArchiveConfirmModal({ open, projectName, onClose, onConfirm, loa
           <button
             onClick={onConfirm}
             disabled={loading}
-            className="hover:opacity-90 transition-opacity disabled:opacity-50"
             className="hover:opacity-90 transition-opacity disabled:opacity-50 bg-[var(--sem-danger)]"
             style={{
               height: 36, padding: '0 16px', fontSize: 13, fontWeight: 600,

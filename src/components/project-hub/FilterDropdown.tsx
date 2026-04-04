@@ -44,7 +44,6 @@ export function FilterDropdown({ filters, onChange }: FilterDropdownProps) {
     <div ref={ref} className="relative">
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-1.5 rounded-md transition-colors"
         className={`flex items-center gap-1.5 rounded-md transition-colors ${
           hasFilters
             ? 'bg-[var(--cp-blue-wash)] dark:bg-[rgba(37,99,235,0.15)] border-[var(--cp-blue)] text-[var(--cp-blue)] dark:text-[var(--cp-blue-light)]'
@@ -65,7 +64,6 @@ export function FilterDropdown({ filters, onChange }: FilterDropdownProps) {
         Filter
         {hasFilters && (
           <span
-            className="flex items-center justify-center rounded-full"
             className="flex items-center justify-center rounded-full bg-[var(--cp-blue)]"
             style={{ width: 18, height: 18, color: '#FFF', fontSize: 10, fontWeight: 600 }}
           >
@@ -76,8 +74,7 @@ export function FilterDropdown({ filters, onChange }: FilterDropdownProps) {
 
       {open && (
         <div
-          className="absolute top-full left-0 mt-1 z-50"
-          className="bg-[var(--bg-app)] dark:bg-[#1F2128] border border-[var(--divider)] dark:border-[rgba(255,255,255,0.12)]"
+          className="absolute top-full left-0 mt-1 z-50 bg-[var(--bg-app)] dark:bg-[#1F2128] border border-[var(--divider)] dark:border-[rgba(255,255,255,0.12)]"
           style={{
             width: 280,
             borderRadius: 8,
@@ -113,7 +110,6 @@ export function FilterDropdown({ filters, onChange }: FilterDropdownProps) {
             </button>
             <button
               onClick={() => setOpen(false)}
-              className="rounded-md"
               className="rounded-md bg-[var(--cp-blue)]"
               style={{
                 height: 28,
@@ -224,7 +220,6 @@ export function FilterChips({
       {chips.map((c, i) => (
         <span
           key={i}
-          className="inline-flex items-center gap-1 rounded-full"
           className="inline-flex items-center gap-1 rounded-full bg-[var(--cp-blue-wash)] dark:bg-[rgba(37,99,235,0.15)] text-[var(--cp-blue)] dark:text-[var(--cp-blue-light)]"
           style={{
             fontSize: 11,

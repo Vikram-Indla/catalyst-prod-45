@@ -96,8 +96,7 @@ export default function WidgetGalleryModal({
                   return (
                     <label
                       key={widget.id}
-                      className="flex items-center gap-2.5 px-3 py-2 cursor-pointer"
-                      className={isVisible ? 'bg-[var(--cp-interact-selected)]' : 'bg-transparent'}
+                      className={`flex items-center gap-2.5 px-3 py-2 cursor-pointer ${isVisible ? 'bg-[var(--cp-interact-selected)]' : 'bg-transparent'}`}
                       style={{
                         borderRadius: 'var(--cp-radius-default)',
                         border: `0.75px solid ${isVisible ? 'var(--cp-primary-60)' : 'var(--cp-border-default)'}`,
@@ -145,8 +144,7 @@ export default function WidgetGalleryModal({
           </button>
           <button
             onClick={onClose}
-            className="px-4 py-1.5"
-            className="bg-[var(--cp-primary-60)]"
+            className="px-4 py-1.5 bg-[var(--cp-primary-60)]"
             style={{
               fontSize: 12, fontWeight: 600, color: 'var(--cp-text-inverse)',
               border: 'none', cursor: 'pointer',

@@ -66,8 +66,7 @@ export function ProjectHeaderCard({
           </button>
           <button
             onClick={onSettings}
-            className="flex items-center justify-center rounded-md transition-all"
-            className="bg-[var(--bg-app)] dark:bg-[#1A1714]"
+            className="flex items-center justify-center rounded-md transition-all bg-[var(--bg-app)] dark:bg-[#1A1714]"
             style={{
               height: 32, padding: '0 10px', gap: 6,
               border: '1px solid var(--divider)', borderRadius: 6,
@@ -82,8 +81,7 @@ export function ProjectHeaderCard({
             <Settings size={14} color="var(--fg-3)" strokeWidth={1.75} /> Settings
           </button>
           <button
-            className="flex items-center justify-center rounded-md transition-all"
-            className="bg-[var(--bg-app)] dark:bg-[#1A1714]"
+            className="flex items-center justify-center rounded-md transition-all bg-[var(--bg-app)] dark:bg-[#1A1714]"
             style={{ width: 32, height: 32, border: '1px solid var(--divider)', borderRadius: 6, cursor: 'pointer' }}
             onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-1)'; }}
             onMouseLeave={e => { e.currentTarget.style.background = 'var(--bg-app)'; }}
