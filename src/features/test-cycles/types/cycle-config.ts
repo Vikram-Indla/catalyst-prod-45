@@ -293,11 +293,6 @@ export const CYCLE_STATUS_CONFIG: Record<CycleStatus, { label: string; color: st
     color: 'hsl(38 92% 50%)', 
     bgColor: 'hsl(38 92% 50% / 0.1)' 
   },
-  in_progress: { 
-    label: 'in progress', 
-    color: 'hsl(217 91% 60%)', 
-    bgColor: 'hsl(217 91% 60% / 0.1)' 
-  },
   completed: { 
     label: 'completed', 
     color: 'hsl(142 71% 45%)', 
