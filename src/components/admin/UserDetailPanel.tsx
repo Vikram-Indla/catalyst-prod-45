@@ -59,6 +59,27 @@ const fieldRow: React.CSSProperties = {
 const fieldKey: React.CSSProperties = { fontSize: '11px', color: '#64748B' };
 const fieldVal: React.CSSProperties = { fontSize: '12px', fontWeight: 500, color: '#0F172A', textAlign: 'right' as const };
 const monoSmall: React.CSSProperties = { fontFamily: "'JetBrains Mono', monospace", fontSize: '10px' };
+const Code: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <code style={{
+    fontFamily: "'JetBrains Mono', monospace", fontSize: '10px',
+    background: '#F1F5F9', padding: '1px 4px', borderRadius: '2px', color: '#2563EB',
+  }}>{children}</code>
+);
+
+const InfoCard: React.FC<{ label: string; children: React.ReactNode }> = ({ label, children }) => (
+  <div style={{
+    background: '#F8FAFC', border: '1px solid rgba(15,23,42,0.10)',
+    borderRadius: '5px', padding: '10px 12px',
+  }}>
+    <div style={{
+      fontSize: '9.5px', fontWeight: 700, color: '#64748B',
+      textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '5px',
+    }}>
+      {label}
+    </div>
+    <div style={{ fontSize: '11px', color: '#334155', lineHeight: 1.55 }}>{children}</div>
+  </div>
+);
 
 const UserDetailPanel: React.FC<Props> = ({ userId, onClose }) => {
   const { data, isLoading } = useJiraUserDetail(userId);
@@ -435,37 +456,57 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose }) => {
 
         {activeTab === 'info' && (
           <div style={{ padding: '12px 16px' }}>
-            <div style={sectionLabel}>SYSTEM INFO</div>
-            <div style={fieldRow}>
-              <span style={fieldKey}>Internal ID</span>
-              <span style={{ ...fieldVal, ...monoSmall }}>{user.id.slice(0, 12)}…</span>
+            <div style={sectionLabel}>FUNCTIONAL · TECHNICAL · WIRING · BISYNC</div>
+
+            {/* 2×2 Grid */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '8px' }}>
+              {/* Functional */}
+              <InfoCard label="Functional">
+                {isJiraProxy
+                  ? 'User authenticates with their Jira password via live proxy. The exact same credentials used in Jira log them into Catalyst. No separate password is needed.'
+                  : 'User exists only in Catalyst. Authentication uses a Catalyst-managed password (bcrypt). This account is permanently excluded from all Jira sync operations.'}
+              </InfoCard>
+
+              {/* Technical */}
+              <InfoCard label="Technical">
+                {isJiraProxy ? (
+                  <>Login calls Edge Function <Code>jira-auth-proxy</Code> which validates against Jira REST API <Code>/rest/auth/1/session</Code>. On success, a Supabase session is issued. Credentials are never logged or stored.</>
+                ) : (
+                  <>Created via <Code>supabase.auth.admin.createUser()</Code>. Record stored in <Code>jira_identity_map</Code> with <Code>catalyst_only=true</Code>. Auth handled entirely by Supabase Auth (bcrypt).</>
+                )}
+              </InfoCard>
+
+              {/* Wiring */}
+              <InfoCard label="Wiring">
+                {isJiraProxy ? (
+                  <>Tables: <Code>jira_identity_map</Code> → <Code>auth.users</Code>. Sessions cached in <Code>jira_auth_sessions</Code> (TTL 8h). Projects in <Code>jira_user_project_perms</Code>. Events in <Code>jira_sync_user_events</Code>.</>
+                ) : (
+                  <>Tables: <Code>jira_identity_map</Code> (catalyst_only=true) → <Code>auth.users</Code>. Projects in <Code>jira_user_project_perms</Code>. No sync tables involved.</>
+                )}
+              </InfoCard>
+
+              {/* BiSync */}
+              <InfoCard label="BiSync">
+                {isJiraProxy ? (
+                  <>Full bidirectional. Jira → Catalyst: scheduled every 6h via pg_cron + real-time webhooks. Catalyst → Jira: role changes call <Code>jira-write-back</Code> Edge Function to update Jira group membership.</>
+                ) : (
+                  <><strong style={{ color: '#7C3AED' }}>Excluded from sync.</strong> The <Code>catalyst_only=true</Code> flag permanently blocks this user from all bidirectional sync operations. Jira will never receive any data about this user.</>
+                )}
+              </InfoCard>
             </div>
-            <div style={fieldRow}>
-              <span style={fieldKey}>Catalyst User ID</span>
-              <span style={{ ...fieldVal, ...monoSmall }}>
-                {user.catalyst_user_id ? user.catalyst_user_id.slice(0, 12) + '…' : '—'}
-              </span>
-            </div>
-            <div style={fieldRow}>
-              <span style={fieldKey}>Auth Mode</span>
-              <span style={fieldVal}>{user.auth_mode}</span>
-            </div>
-            <div style={fieldRow}>
-              <span style={fieldKey}>Catalyst Only</span>
-              <span style={fieldVal}>{user.catalyst_only ? 'Yes' : 'No'}</span>
-            </div>
-            <div style={fieldRow}>
-              <span style={fieldKey}>Sync Version</span>
-              <span style={fieldVal}>{user.sync_version ?? '—'}</span>
-            </div>
-            <div style={fieldRow}>
-              <span style={fieldKey}>Created</span>
-              <span style={{ ...fieldVal, ...monoSmall }}>{formatDate(user.created_at)}</span>
-            </div>
-            <div style={{ ...fieldRow, borderBottom: 'none' }}>
-              <span style={fieldKey}>Updated</span>
-              <span style={{ ...fieldVal, ...monoSmall }}>{formatDate(user.updated_at)}</span>
-            </div>
+
+            {/* Single-row detail cards */}
+            <InfoCard label="Schema Tables">
+              <Code>jira_identity_map</Code> · <Code>jira_user_project_perms</Code> · <Code>jira_sync_runs</Code> · <Code>jira_sync_user_events</Code> · <Code>jira_auth_sessions</Code> · <Code>jira_webhook_events</Code>
+            </InfoCard>
+            <div style={{ height: '8px' }} />
+            <InfoCard label="Edge Functions">
+              <Code>jira-auth-proxy</Code> · <Code>jira-user-sync</Code> · <Code>jira-webhook-receiver</Code> · <Code>jira-write-back</Code> · <Code>jira-session-revoke</Code>
+            </InfoCard>
+            <div style={{ height: '8px' }} />
+            <InfoCard label="Scheduled Jobs">
+              <Code>jira-user-sync-6h</Code> — runs every 6 hours (bidirectional sync) · <Code>jira-auth-session-cleanup</Code> — daily 02:00 AST (TTL session purge)
+            </InfoCard>
           </div>
         )}
       </div>
