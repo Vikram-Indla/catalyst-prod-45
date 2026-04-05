@@ -359,6 +359,9 @@ const JiraUserSync: React.FC = () => {
         </div>
       )}
 
+      {/* ══ Table + Detail Panel ══ */}
+      <div className="flex flex-1 overflow-hidden">
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
       {/* ══ Table ══ */}
       <div style={{ flex: 1, overflowY: 'auto', overflowX: 'auto' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '1000px' }}>
