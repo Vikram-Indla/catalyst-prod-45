@@ -635,7 +635,7 @@ const JiraUserSync: React.FC = () => {
                   {usersLoading ? (
                     Array.from({ length: 10 }).map((_, i) => (
                       <tr key={`skel-${i}`} style={{
-                        height: 36, maxHeight: 36, borderBottom: `0.75px solid ${T.border}`,
+                        height: 55, minHeight: 55, borderBottom: `0.75px solid ${T.border}`,
                       }}>
                         <td style={{ padding: '0 12px' }}><div className="animate-pulse" style={{ width: 14, height: 14, borderRadius: 2, background: isDark ? 'rgba(200,210,225,0.08)' : '#E2E8F0' }} /></td>
                         <td style={{ padding: '0 12px' }}>
@@ -711,7 +711,7 @@ const JiraUserSync: React.FC = () => {
                         onMouseEnter={() => setHoveredRow(user.id)}
                         onMouseLeave={() => setHoveredRow(null)}
                         style={{
-                          height: 36, maxHeight: 36, overflow: 'hidden',
+                          height: 55, minHeight: 55,
                           borderBottom: `0.75px solid ${T.border}`,
                           borderLeft: isCatalystOnly ? '2px solid #7C3AED' : 'none',
                           cursor: 'pointer', opacity: isInactive ? 0.5 : 1,
