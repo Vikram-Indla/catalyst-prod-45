@@ -67,7 +67,7 @@ const Code: React.FC<{ children: React.ReactNode }> = ({ children }) => (
 );
 
 const InfoCard: React.FC<{ label: string; children: React.ReactNode }> = ({ label, children }) => (
-  <div style={{
+  <div className="jus-info-card" style={{
     background: '#F8FAFC', border: '1px solid rgba(15,23,42,0.10)',
     borderRadius: '5px', padding: '10px 12px',
   }}>
