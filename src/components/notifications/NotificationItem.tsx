@@ -6,7 +6,7 @@ import { WorkItemIcon } from "./WorkItemIcons";
 import StatusLozenge from "./StatusLozenge";
 import CommentPreview from "./CommentPreview";
 import ReactionBar from "./ReactionBar";
-import { Clock } from "lucide-react";
+import { Clock, UserCheck } from "lucide-react";
 
 interface NotificationItemProps {
   notification: Notification;
@@ -14,9 +14,11 @@ interface NotificationItemProps {
   onClick?: (notification: Notification) => void;
 }
 
-function getActionVerb(type: string): string {
+function getActionVerb(type: string, isSystemAssign: boolean): string {
+  if (isSystemAssign) return 'You were assigned to';
   const map: Record<string, string> = {
     assigned_work_item: 'assigned you to',
+    assigned: 'assigned you to',
     assigned_story: 'assigned you a story in',
     mentioned_in_comment: 'mentioned you in a comment on',
     commented_on_work_item: 'commented on',
