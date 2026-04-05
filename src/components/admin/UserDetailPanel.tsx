@@ -278,9 +278,8 @@ const ActivityTab: React.FC<{ events: any[] }> = ({ events }) => {
       )}
     </div>
   );
-};
 
-
+const UserDetailPanel: React.FC<Props> = ({ userId, onClose }) => {
   const { data, isLoading } = useJiraUserDetail(userId);
   const { mutate: toggleStatus, isPending: toggling } = useToggleUserStatus();
   const [activeTab, setActiveTab] = useState<TabKey>('profile');
