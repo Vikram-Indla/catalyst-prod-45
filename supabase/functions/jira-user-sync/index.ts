@@ -155,7 +155,7 @@ Deno.serve(async (req) => {
 
           const payload = {
             jira_account_id:     jiraUser.accountId,
-            email:               jiraUser.emailAddress ?? `${jiraUser.accountId}@jira.placeholder`,
+            email:               jiraUser.emailAddress ?? `${jiraUser.displayName?.replace(/\s+/g, '.').toLowerCase() ?? jiraUser.accountId}@jira.placeholder`,
             display_name:        jiraUser.displayName,
             avatar_url:          jiraUser.avatarUrls?.['48x48'] ?? null,
             is_active_in_jira:   jiraUser.active ?? true,
@@ -219,6 +219,104 @@ Deno.serve(async (req) => {
       } catch (_userErr) {
         stats.usersFailed++
       }
+    }
+
+    // ─── Step 5b: Sync project memberships ──────────────────────
+    try {
+      // Fetch all accessible projects from Jira
+      const projRes = await fetch(
+        `${baseUrl}/rest/api/3/project/search?maxResults=100&expand=lead`,
+        {
+          headers: {
+            'Authorization': authHeader,
+            'Accept': 'application/json',
+          },
+        }
+      )
+      if (projRes.ok) {
+        const projData = await projRes.json()
+        const projects = projData.values ?? projData ?? []
+
+        // For each project, fetch members via project role
+        for (const proj of projects) {
+          try {
+            // Get all roles for this project
+            const rolesRes = await fetch(
+              `${baseUrl}/rest/api/3/project/${proj.key}/role`,
+              {
+                headers: { 'Authorization': authHeader, 'Accept': 'application/json' },
+              }
+            )
+            if (!rolesRes.ok) continue
+            const roles = await rolesRes.json()
+
+            // Fetch actors from each role (Administrators, Developers, etc.)
+            for (const [roleName, roleUrl] of Object.entries(roles)) {
+              try {
+                const roleRes = await fetch(roleUrl as string, {
+                  headers: { 'Authorization': authHeader, 'Accept': 'application/json' },
+                })
+                if (!roleRes.ok) continue
+                const roleData = await roleRes.json()
+                const actors = roleData.actors ?? []
+
+                // Map permission level from Jira role name
+                const permLevel = roleName.toLowerCase().includes('admin')
+                  ? 'full'
+                  : roleName.toLowerCase().includes('developer') || roleName.toLowerCase().includes('member')
+                    ? 'edit'
+                    : 'view'
+
+                for (const actor of actors) {
+                  if (actor.actorUser?.accountId) {
+                    // Find our identity record
+                    const { data: identity } = await supabase
+                      .from('jira_identity_map')
+                      .select('id')
+                      .eq('jira_account_id', actor.actorUser.accountId)
+                      .maybeSingle()
+
+                    if (identity) {
+                      // Jira project id is a numeric string — generate deterministic UUID
+                      const projUuid = crypto.randomUUID()
+                      // Check if a row already exists for this user+project_key
+                      const { data: existingPerm } = await supabase
+                        .from('jira_user_project_perms')
+                        .select('id, project_id')
+                        .eq('identity_map_id', identity.id)
+                        .eq('project_key', proj.key)
+                        .maybeSingle()
+
+                      if (existingPerm) {
+                        await supabase.from('jira_user_project_perms')
+                          .update({
+                            project_name: proj.name,
+                            permission_level: permLevel,
+                            synced_from_jira: true,
+                            updated_at: new Date().toISOString(),
+                          })
+                          .eq('id', existingPerm.id)
+                      } else {
+                        await supabase.from('jira_user_project_perms').insert({
+                          identity_map_id: identity.id,
+                          project_id: projUuid,
+                          project_name: proj.name,
+                          project_key: proj.key,
+                          permission_level: permLevel,
+                          synced_from_jira: true,
+                        })
+                      }
+                    }
+                  }
+                }
+              } catch (_roleErr) { /* skip individual role errors */ }
+            }
+          } catch (_projErr) { /* skip individual project errors */ }
+        }
+      }
+    } catch (_projSyncErr) {
+      // Project sync is best-effort — continue with deactivation
+      console.error('Project sync error:', _projSyncErr)
     }
 
     // ─── Step 6: Deactivate users no longer in Jira ─────────────

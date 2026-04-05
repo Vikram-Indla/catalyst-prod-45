@@ -113,9 +113,9 @@ Deno.serve(async (req) => {
     // Log the write-back attempt in activity
     await supabase.from('jira_sync_user_events').insert({
       identity_map_id,
-      event_type: `write_back_${action}`,
+      event_type: action === 'deactivate' ? 'deactivated' : 'reactivated',
       direction: 'catalyst_to_jira',
-      changed_fields: { action, jira_status: responseStatus, success: responseOk },
+      changed_fields: [action, `jira_status:${responseStatus}`, `success:${responseOk}`],
     });
 
     return new Response(
