@@ -58,17 +58,20 @@ Deno.serve(async (req) => {
   }
 
   try {
-    // ─── Step 3: Pull ALL active users from Jira ────────────────
+    // ─── Step 3: Pull ALL users from Jira ──────────────────────
     const jiraUsers: any[] = []
+    const seenIds = new Set<string>()
     let startAt = 0
     const maxResults = 50
     const baseUrl = conn.site_url.replace(/\/+$/, '')
     const authHeader = 'Basic ' + btoa(`${conn.auth_email}:${conn.auth_token_encrypted}`)
 
+    // Strategy: use /rest/api/3/users/search with includeActive + includeInactive
+    // to get the full org roster, then also try group-based fetch as fallback
     while (true) {
       const res = await fetch(
         `${baseUrl}/rest/api/3/users/search` +
-        `?maxResults=${maxResults}&startAt=${startAt}&includeActive=true`,
+        `?maxResults=${maxResults}&startAt=${startAt}&includeActive=true&includeInactive=true`,
         {
           headers: {
             'Authorization': authHeader,
@@ -85,15 +88,49 @@ Deno.serve(async (req) => {
       const page: any[] = await res.json()
       if (!page.length) break
 
-      // Filter to real user accounts only (exclude bots/service accounts)
-      jiraUsers.push(
-        ...page.filter(
-          (u: any) => u.accountType === 'atlassian' && u.emailAddress
-        )
-      )
+      for (const u of page) {
+        // Keep atlassian accounts (real users), skip app/bot accounts
+        if (u.accountType === 'atlassian' && !seenIds.has(u.accountId)) {
+          seenIds.add(u.accountId)
+          jiraUsers.push(u)
+        }
+      }
 
       if (page.length < maxResults) break
       startAt += maxResults
+    }
+
+    // Also try group-based fetch for 'jira-software-users' to catch missed users
+    try {
+      let groupStart = 0
+      while (true) {
+        const gRes = await fetch(
+          `${baseUrl}/rest/api/3/group/member?groupname=jira-software-users` +
+          `&maxResults=${maxResults}&startAt=${groupStart}&includeInactiveUsers=true`,
+          {
+            headers: {
+              'Authorization': authHeader,
+              'Accept': 'application/json',
+            },
+          }
+        )
+        if (!gRes.ok) break
+        const gData = await gRes.json()
+        const members = gData.values ?? []
+        if (!members.length) break
+
+        for (const u of members) {
+          if (u.accountType === 'atlassian' && !seenIds.has(u.accountId)) {
+            seenIds.add(u.accountId)
+            jiraUsers.push(u)
+          }
+        }
+
+        if (gData.isLast || members.length < maxResults) break
+        groupStart += maxResults
+      }
+    } catch (_groupErr) {
+      // Group fetch is best-effort — continue with users already found
     }
 
     stats.usersDiscovered = jiraUsers.length
@@ -118,18 +155,18 @@ Deno.serve(async (req) => {
           existingByAccountId.get(jiraUser.accountId) ??
           existingByEmail.get(jiraUser.emailAddress)
 
-        const payload = {
-          jira_account_id:     jiraUser.accountId,
-          email:               jiraUser.emailAddress,
-          display_name:        jiraUser.displayName,
-          avatar_url:          jiraUser.avatarUrls?.['48x48'] ?? null,
-          is_active_in_jira:   jiraUser.active,
-          is_active_in_catalyst: jiraUser.active,
-          auth_mode:           'jira_proxy',
-          catalyst_only:       false,
-          last_synced_at:      new Date().toISOString(),
-          sync_version:        (existing?.sync_version ?? 0) + 1,
-        }
+          const payload = {
+            jira_account_id:     jiraUser.accountId,
+            email:               jiraUser.emailAddress ?? `${jiraUser.accountId}@jira.placeholder`,
+            display_name:        jiraUser.displayName,
+            avatar_url:          jiraUser.avatarUrls?.['48x48'] ?? null,
+            is_active_in_jira:   jiraUser.active ?? true,
+            is_active_in_catalyst: jiraUser.active ?? true,
+            auth_mode:           'jira_proxy',
+            catalyst_only:       false,
+            last_synced_at:      new Date().toISOString(),
+            sync_version:        (existing?.sync_version ?? 0) + 1,
+          }
 
         if (!existing) {
           const { error } = await supabase
