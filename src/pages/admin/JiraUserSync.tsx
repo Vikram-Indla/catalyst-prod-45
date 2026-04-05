@@ -231,11 +231,9 @@ const JiraUserSync: React.FC = () => {
 
   return (
     <div
-      data-jira-theme={isDark ? 'dark' : 'light'}
       className="flex flex-col h-full"
-      style={{ background: isDark ? '#0F1114' : '#F8FAFC' }}
+      style={{ background: isDark ? '#0F1114' : '#F8FAFC', minHeight: '100vh' }}
     >
-      <style>{DARK_STYLES}</style>
 
       {/* Layer 2 — Main content surface */}
       <div className="jira-surface flex flex-col flex-1 overflow-hidden mx-5 my-4 rounded-lg"
