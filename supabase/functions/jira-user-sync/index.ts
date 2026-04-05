@@ -66,12 +66,11 @@ Deno.serve(async (req) => {
     const baseUrl = conn.site_url.replace(/\/+$/, '')
     const authHeader = 'Basic ' + btoa(`${conn.auth_email}:${conn.auth_token_encrypted}`)
 
-    // Strategy: use /rest/api/3/users/search with includeActive + includeInactive
-    // to get the full org roster, then also try group-based fetch as fallback
+    // Only pull ACTIVE users from Jira
     while (true) {
       const res = await fetch(
         `${baseUrl}/rest/api/3/users/search` +
-        `?maxResults=${maxResults}&startAt=${startAt}&includeActive=true&includeInactive=true`,
+        `?maxResults=${maxResults}&startAt=${startAt}&includeActive=true&includeInactive=false`,
         {
           headers: {
             'Authorization': authHeader,
@@ -89,8 +88,7 @@ Deno.serve(async (req) => {
       if (!page.length) break
 
       for (const u of page) {
-        // Keep atlassian accounts (real users), skip app/bot accounts
-        if (u.accountType === 'atlassian' && !seenIds.has(u.accountId)) {
+        if (u.accountType === 'atlassian' && u.active && !seenIds.has(u.accountId)) {
           seenIds.add(u.accountId)
           jiraUsers.push(u)
         }
