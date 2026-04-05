@@ -155,6 +155,8 @@ export default function ResourceListingPage() {
   const [sortKey, setSortKey] = useState<SortKey>('full_name');
   const [sortDir, setSortDir] = useState<SortDir>('asc');
   const [resourceTypeFilter, setResourceTypeFilter] = useState<'all' | 'core' | 'project' | 'temporary'>('all');
+  const [currentPage, setCurrentPage] = useState(1);
+  const perPage = 10;
 
   const { data: resources = [], isLoading } = useQuery({
     queryKey: ['resources-listing', 'all-types-v1'],
@@ -256,6 +258,10 @@ export default function ResourceListingPage() {
     });
   }, [filtered, sortKey, sortDir]);
 
+  const totalPages = Math.max(1, Math.ceil(sorted.length / perPage));
+  const safeCurrentPage = Math.min(currentPage, totalPages);
+  const paginatedRows = sorted.slice((safeCurrentPage - 1) * perPage, safeCurrentPage * perPage);
+
   const handleSort = (key: SortKey) => {
     if (sortKey === key) {
       setSortDir(d => d === 'asc' ? 'desc' : 'asc');
@@ -263,6 +269,7 @@ export default function ResourceListingPage() {
       setSortKey(key);
       setSortDir('asc');
     }
+    setCurrentPage(1);
   };
 
   const navTo = (id: string, view: string) => {
@@ -437,7 +444,7 @@ export default function ResourceListingPage() {
                     <div style={{ fontSize: '12px', color: tk.t3 }}>Try adjusting your search or filters</div>
                   </td>
                 </tr>
-              ) : sorted.map(r => (
+              ) : paginatedRows.map(r => (
                 <tr
                   key={r.rid}
                   className="group"
@@ -541,6 +548,49 @@ export default function ResourceListingPage() {
           </table>
         </div>
       </div>
+
+      {/* Pagination */}
+      {sorted.length > 0 && (
+        <div style={{
+          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+          padding: '12px 16px', fontSize: '13px', color: tk.t2,
+        }}>
+          <span>Showing {((safeCurrentPage - 1) * perPage) + 1}–{Math.min(safeCurrentPage * perPage, sorted.length)} of {sorted.length} resources</span>
+          <div style={{ display: 'flex', gap: '4px' }}>
+            <button
+              disabled={safeCurrentPage <= 1}
+              onClick={() => setCurrentPage(p => p - 1)}
+              style={{
+                width: 32, height: 32, borderRadius: 6, border: `1px solid ${tk.border}`,
+                background: 'transparent', color: safeCurrentPage <= 1 ? tk.t4 : tk.t2,
+                cursor: safeCurrentPage <= 1 ? 'not-allowed' : 'pointer', fontSize: '14px',
+              }}
+            >‹</button>
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
+              <button
+                key={p}
+                onClick={() => setCurrentPage(p)}
+                style={{
+                  width: 32, height: 32, borderRadius: 6, fontSize: '13px', fontWeight: 600,
+                  border: `1px solid ${p === safeCurrentPage ? '#3B82F6' : tk.border}`,
+                  background: p === safeCurrentPage ? '#3B82F6' : 'transparent',
+                  color: p === safeCurrentPage ? '#FFFFFF' : tk.t2,
+                  cursor: 'pointer',
+                }}
+              >{p}</button>
+            ))}
+            <button
+              disabled={safeCurrentPage >= totalPages}
+              onClick={() => setCurrentPage(p => p + 1)}
+              style={{
+                width: 32, height: 32, borderRadius: 6, border: `1px solid ${tk.border}`,
+                background: 'transparent', color: safeCurrentPage >= totalPages ? tk.t4 : tk.t2,
+                cursor: safeCurrentPage >= totalPages ? 'not-allowed' : 'pointer', fontSize: '14px',
+              }}
+            >›</button>
+          </div>
+        </div>
+      )}
 
       <style>{`
         @keyframes r360shimmer {
