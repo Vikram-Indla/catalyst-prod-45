@@ -132,7 +132,14 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
     return true;
   });
 
-  // Error state handling (1.5)
+  // Batch-fetch actor profiles for all visible notifications
+  const actorIds = useMemo(
+    () => notifications.map(n => n.actor_user_id).filter((id): id is string => !!id),
+    [notifications]
+  );
+  const { data: actorProfiles } = useActorProfiles(actorIds);
+
+
   useEffect(() => {
     setHasError(isError);
   }, [isError]);
