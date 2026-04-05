@@ -3,7 +3,7 @@
  * Single source of truth for context-aware navigation
  */
 
-export type WorkspaceType = 'home' | 'enterprise' | 'product' | 'program' | 'project' | 'tests' | 'releases' | 'operations' | 'taskhub' | 'testhub' | 'workhub' | 'releasehub' | 'planhub' | 'wiki' | 'incidenthub';
+export type WorkspaceType = 'home' | 'admin' | 'enterprise' | 'product' | 'program' | 'project' | 'tests' | 'releases' | 'operations' | 'taskhub' | 'testhub' | 'workhub' | 'releasehub' | 'planhub' | 'wiki' | 'incidenthub';
 
 export interface WorkspaceContext {
   type: WorkspaceType;
@@ -98,7 +98,7 @@ export function deriveWorkspaceType(pathname: string): WorkspaceType {
   
   // Admin/Settings routes - no nav item should be highlighted
   if (pathname.startsWith('/admin')) {
-    return 'home'; // Neutral - won't highlight any specific nav item
+    return 'admin';
   }
   
   // Default to enterprise for other routes
@@ -152,6 +152,8 @@ export function getActiveNavItem(workspaceType: WorkspaceType): string {
       return 'PlanHub';
     case 'wiki':
       return 'Wiki';
+    case 'admin':
+      return '';
     default:
       return '';
   }
