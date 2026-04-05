@@ -215,17 +215,17 @@ const JiraUserSync: React.FC = () => {
   const showEnd = Math.min(page * PER_PAGE, totalCount);
 
   return (
-    <div className="jus-page flex flex-col h-full bg-white dark:bg-[#0F1114]">
+    <div className="jus-page flex flex-col h-full bg-white dark:bg-[#1A1714]">
       {/* ══ Page Header ══ */}
-      <div className="jus-surface sticky top-0 z-10 bg-white dark:bg-[#181A1E]"
+      <div className="jus-surface sticky top-0 z-10 bg-white dark:bg-[#1A1714]"
         style={{ borderBottom: '1px solid rgba(15,23,42,0.10)', padding: '14px 20px 0' }}>
         <div className="flex items-start justify-between pb-3">
           <div>
-            <h1 className="jus-text-primary text-[#0F172A] dark:text-[rgba(225,230,240,0.92)]"
+            <h1 className="jus-text-primary text-[#0F172A] dark:text-[#F5F3F0]"
               style={{ fontFamily: "'Sora', sans-serif", fontSize: '17px', fontWeight: 700, letterSpacing: '-0.3px', margin: 0, lineHeight: 1.3 }}>
               Jira User Sync
             </h1>
-            <p className="jus-text-muted text-[#64748B] dark:text-[rgba(200,210,225,0.35)]"
+            <p className="jus-text-muted text-[#64748B] dark:text-[#6B6560]"
               style={{ fontSize: '11px', margin: '2px 0 0' }}>
               Bidirectional identity bridge · Jira Cloud ↔ Catalyst · Live proxy auth · Webhooks active
             </p>
@@ -233,7 +233,7 @@ const JiraUserSync: React.FC = () => {
           <div className="flex gap-2 shrink-0">
             <button
               onClick={() => setCreateModalOpen(true)}
-              className="inline-flex items-center gap-1 bg-white dark:bg-[#1E2027] text-[#334155] dark:text-[rgba(200,210,225,0.55)] border border-[rgba(15,23,42,0.10)] dark:border-[rgba(200,210,225,0.10)]"
+              className="inline-flex items-center gap-1 bg-white dark:bg-[#232019] text-[#334155] dark:text-[#A09890] border border-[rgba(15,23,42,0.10)] dark:border-[rgba(255,255,255,0.08)]"
               style={{ padding: '5px 11px', borderRadius: '5px', fontSize: '12px', fontWeight: 500, cursor: 'pointer', lineHeight: 1 }}>
               <Plus size={11} /> Create User
             </button>
@@ -254,11 +254,11 @@ const JiraUserSync: React.FC = () => {
       </div>
 
       {/* ══ Stats Row ══ */}
-      <div className="jus-surface flex bg-white dark:bg-[#181A1E]" style={{ borderBottom: '1px solid rgba(15,23,42,0.10)' }}>
+      <div className="jus-surface flex bg-white dark:bg-[#1A1714]" style={{ borderBottom: '1px solid rgba(15,23,42,0.10)' }}>
         {STATS_CONFIG.map((card, i) => (
           <div
             key={card.key}
-            className="jus-stat-card flex-1 bg-white dark:bg-[#1E2027]"
+            className="jus-stat-card flex-1 bg-white dark:bg-[#232019]"
             style={{
               padding: '10px 16px',
               borderLeft: i > 0 ? '1px solid rgba(15,23,42,0.10)' : 'none',
@@ -267,26 +267,26 @@ const JiraUserSync: React.FC = () => {
           >
             <div className="flex items-center gap-[5px] mb-[3px]">
               <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: card.dot, flexShrink: 0 }} />
-              <span className="jus-stat-label text-[#64748B] dark:text-[rgba(200,210,225,0.50)]"
+              <span className="jus-stat-label text-[#64748B] dark:text-[#A09890]"
                 style={{ fontSize: '10px', fontWeight: 500 }}>{card.label}</span>
             </div>
-            <div className="jus-stat-value text-[#0F172A] dark:text-[rgba(225,230,240,0.95)]"
+            <div className="jus-stat-value text-[#0F172A] dark:text-[#F5F3F0]"
               style={{ fontSize: '20px', fontWeight: 700, lineHeight: 1 }}>
               {getStatValue(card.key)}
             </div>
-            <div className="jus-text-muted text-[#94A3B8] dark:text-[rgba(200,210,225,0.35)]"
+            <div className="jus-text-muted text-[#94A3B8] dark:text-[#6B6560]"
               style={{ fontSize: '10px', marginTop: '1px' }}>{card.sub}</div>
           </div>
         ))}
       </div>
 
       {/* ══ Toolbar ══ */}
-      <div className="jus-toolbar flex items-center gap-[7px] flex-wrap sticky top-0 z-5 bg-white dark:bg-[#181A1E]"
+      <div className="jus-toolbar flex items-center gap-[7px] flex-wrap sticky top-0 z-5 bg-white dark:bg-[#1A1714]"
         style={{ padding: '9px 18px', borderBottom: '1px solid rgba(15,23,42,0.06)' }}>
         <div className="relative w-[220px]">
           <Search size={12} className="absolute left-2 top-1/2 -translate-y-1/2 text-[#64748B]" />
           <input
-            className="jus-search-input w-full bg-white dark:bg-[#12141A] text-[#0F172A] dark:text-[rgba(225,230,240,0.92)] border border-[rgba(15,23,42,0.10)] dark:border-[rgba(200,210,225,0.12)]"
+            className="jus-search-input w-full bg-white dark:bg-[#1A1714] text-[#0F172A] dark:text-[#F5F3F0] border border-[rgba(15,23,42,0.10)] dark:border-[rgba(255,255,255,0.08)]"
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Name, email, Jira ID, project…"
@@ -299,8 +299,8 @@ const JiraUserSync: React.FC = () => {
               key={f.value}
               className={`jus-filter-tab ${filter === f.value ? 'active' : ''} ${
                 filter === f.value
-                  ? 'bg-[#EFF6FF] dark:bg-[rgba(37,99,235,0.15)] text-[#2563EB] dark:text-[rgba(225,230,240,0.95)] border-[#BFDBFE] dark:border-[rgba(37,99,235,0.3)]'
-                  : 'bg-white dark:bg-[#1E2027] text-[#334155] dark:text-[rgba(200,210,225,0.55)] border-[rgba(15,23,42,0.10)] dark:border-[rgba(200,210,225,0.10)]'
+                  ? 'bg-[#EFF6FF] dark:bg-[rgba(37,99,235,0.12)] text-[#2563EB] dark:text-[#F5F3F0] border-[#BFDBFE] dark:border-[rgba(37,99,235,0.3)]'
+                  : 'bg-white dark:bg-[#232019] text-[#334155] dark:text-[#A09890] border-[rgba(15,23,42,0.10)] dark:border-[rgba(255,255,255,0.08)]'
               }`}
               onClick={() => setFilter(f.value)}
               style={{ padding: '4px 9px', borderRadius: '4px', fontSize: '11px', fontWeight: 500, borderWidth: '1px', borderStyle: 'solid', cursor: 'pointer', transition: 'all 120ms ease' }}>
@@ -311,13 +311,13 @@ const JiraUserSync: React.FC = () => {
         <div className="ml-auto flex gap-[6px]">
           {selected.size > 0 && (
             <button onClick={handleCopyPermissions}
-              className="inline-flex items-center gap-1 bg-white dark:bg-[#1E2027] text-[#334155] dark:text-[rgba(200,210,225,0.55)] border border-[rgba(15,23,42,0.10)] dark:border-[rgba(200,210,225,0.10)]"
+              className="inline-flex items-center gap-1 bg-white dark:bg-[#232019] text-[#334155] dark:text-[#A09890] border border-[rgba(15,23,42,0.10)] dark:border-[rgba(255,255,255,0.08)]"
               style={{ padding: '4px 9px', borderRadius: '4px', fontSize: '11px', fontWeight: 500, cursor: 'pointer' }}>
               <Copy size={11} /> Copy Permissions
             </button>
           )}
           <button
-            className="inline-flex items-center gap-1 bg-white dark:bg-[#1E2027] text-[#334155] dark:text-[rgba(200,210,225,0.55)] border border-[rgba(15,23,42,0.10)] dark:border-[rgba(200,210,225,0.10)]"
+            className="inline-flex items-center gap-1 bg-white dark:bg-[#232019] text-[#334155] dark:text-[#A09890] border border-[rgba(15,23,42,0.10)] dark:border-[rgba(255,255,255,0.08)]"
             style={{ padding: '4px 9px', borderRadius: '4px', fontSize: '11px', fontWeight: 500, cursor: 'pointer' }}>
             <Download size={11} /> Export
           </button>
@@ -333,17 +333,17 @@ const JiraUserSync: React.FC = () => {
             {selected.size} users selected
           </span>
           <button onClick={handleCopyPermissions}
-            className="inline-flex items-center gap-1 bg-white dark:bg-[#1E2027] text-[#334155] dark:text-[rgba(200,210,225,0.55)] border border-[rgba(15,23,42,0.10)] dark:border-[rgba(200,210,225,0.10)]"
+            className="inline-flex items-center gap-1 bg-white dark:bg-[#232019] text-[#334155] dark:text-[#A09890] border border-[rgba(15,23,42,0.10)] dark:border-[rgba(255,255,255,0.08)]"
             style={{ padding: '3px 10px', borderRadius: '4px', fontSize: '11px', fontWeight: 500, cursor: 'pointer' }}>
             <Copy size={11} /> Copy permissions to selected
           </button>
           <button onClick={handleBulkDeactivate}
-            className="inline-flex items-center gap-1 bg-white dark:bg-[#1E2027] text-[#DC2626] dark:text-[#FCA5A5] border border-[rgba(15,23,42,0.10)] dark:border-[rgba(200,210,225,0.10)]"
+            className="inline-flex items-center gap-1 bg-white dark:bg-[#232019] text-[#DC2626] dark:text-[#FCA5A5] border border-[rgba(15,23,42,0.10)] dark:border-[rgba(255,255,255,0.08)]"
             style={{ padding: '3px 10px', borderRadius: '4px', fontSize: '11px', fontWeight: 500, cursor: 'pointer' }}>
             <UserX size={11} /> Make Inactive
           </button>
           <button onClick={clearAll}
-            className="ml-auto text-[#64748B] dark:text-[rgba(200,210,225,0.35)]"
+            className="ml-auto text-[#64748B] dark:text-[#6B6560]"
             style={{ padding: '2px 6px', borderRadius: '4px', fontSize: '11px', fontWeight: 500, background: 'transparent', border: 'none', cursor: 'pointer' }}>
             Clear
           </button>
@@ -357,7 +357,7 @@ const JiraUserSync: React.FC = () => {
       <div className="jus-scroll flex-1 overflow-y-auto overflow-x-auto">
         <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '1000px' }}>
           <thead>
-            <tr className="jus-table-header bg-[#F1F5F9] dark:bg-[#12141A]" style={{ borderBottom: '1px solid rgba(15,23,42,0.06)' }}>
+            <tr className="jus-table-header bg-[#F1F5F9] dark:bg-[#1A1714]" style={{ borderBottom: '1px solid rgba(15,23,42,0.06)' }}>
               <th style={{ width: '36px', padding: '8px 12px', textAlign: 'center' }}>
                 <input
                   ref={headerCheckRef}
@@ -382,24 +382,24 @@ const JiraUserSync: React.FC = () => {
           <tbody>
             {usersLoading ? (
               Array.from({ length: 10 }).map((_, i) => (
-                <tr key={`skel-${i}`} className="dark:border-[rgba(200,210,225,0.06)]"
+                <tr key={`skel-${i}`} className="dark:border-[rgba(255,255,255,0.05)]"
                   style={{ height: '40px', maxHeight: '40px', borderBottom: '0.75px solid rgba(15,23,42,0.06)' }}>
-                  <td style={{ padding: '0 12px' }}><div className="animate-pulse bg-[#E2E8F0] dark:bg-[rgba(200,210,225,0.08)]" style={{ width: 14, height: 14, borderRadius: 2 }} /></td>
+                  <td style={{ padding: '0 12px' }}><div className="animate-pulse bg-[#E2E8F0] dark:bg-[rgba(255,255,255,0.05)]" style={{ width: 14, height: 14, borderRadius: 2 }} /></td>
                   <td style={{ padding: '0 12px' }}>
                     <div className="flex items-center gap-2">
-                      <div className="animate-pulse bg-[#E2E8F0] dark:bg-[rgba(200,210,225,0.08)]" style={{ width: 28, height: 28, borderRadius: '50%' }} />
+                      <div className="animate-pulse bg-[#E2E8F0] dark:bg-[rgba(255,255,255,0.05)]" style={{ width: 28, height: 28, borderRadius: '50%' }} />
                       <div>
-                        <div className="animate-pulse bg-[#E2E8F0] dark:bg-[rgba(200,210,225,0.08)]" style={{ width: 120, height: 10, borderRadius: 2, marginBottom: 4 }} />
-                        <div className="animate-pulse bg-[#F1F5F9] dark:bg-[rgba(200,210,225,0.05)]" style={{ width: 160, height: 8, borderRadius: 2 }} />
+                        <div className="animate-pulse bg-[#E2E8F0] dark:bg-[rgba(255,255,255,0.05)]" style={{ width: 120, height: 10, borderRadius: 2, marginBottom: 4 }} />
+                        <div className="animate-pulse bg-[#F1F5F9] dark:bg-[rgba(255,255,255,0.05)]" style={{ width: 160, height: 8, borderRadius: 2 }} />
                       </div>
                     </div>
                   </td>
-                  <td style={{ padding: '0 12px' }}><div className="animate-pulse bg-[#E2E8F0] dark:bg-[rgba(200,210,225,0.08)]" style={{ width: 70, height: 16, borderRadius: 3 }} /></td>
-                   <td style={{ padding: '0 12px' }}><div className="animate-pulse bg-[#E2E8F0] dark:bg-[rgba(200,210,225,0.08)]" style={{ width: 100, height: 16, borderRadius: 3 }} /></td>
-                   <td style={{ padding: '0 12px' }}><div className="animate-pulse bg-[#E2E8F0] dark:bg-[rgba(200,210,225,0.08)]" style={{ width: 80, height: 10, borderRadius: 2 }} /></td>
-                   <td style={{ padding: '0 12px' }}><div className="animate-pulse bg-[#E2E8F0] dark:bg-[rgba(200,210,225,0.08)]" style={{ width: 60, height: 10, borderRadius: 2 }} /></td>
-                   <td style={{ padding: '0 12px' }}><div className="animate-pulse bg-[#E2E8F0] dark:bg-[rgba(200,210,225,0.08)]" style={{ width: 60, height: 10, borderRadius: 2 }} /></td>
-                   <td style={{ padding: '0 12px' }}><div className="animate-pulse bg-[#E2E8F0] dark:bg-[rgba(200,210,225,0.08)]" style={{ width: 50, height: 18, borderRadius: 3 }} /></td>
+                  <td style={{ padding: '0 12px' }}><div className="animate-pulse bg-[#E2E8F0] dark:bg-[rgba(255,255,255,0.05)]" style={{ width: 70, height: 16, borderRadius: 3 }} /></td>
+                   <td style={{ padding: '0 12px' }}><div className="animate-pulse bg-[#E2E8F0] dark:bg-[rgba(255,255,255,0.05)]" style={{ width: 100, height: 16, borderRadius: 3 }} /></td>
+                   <td style={{ padding: '0 12px' }}><div className="animate-pulse bg-[#E2E8F0] dark:bg-[rgba(255,255,255,0.05)]" style={{ width: 80, height: 10, borderRadius: 2 }} /></td>
+                   <td style={{ padding: '0 12px' }}><div className="animate-pulse bg-[#E2E8F0] dark:bg-[rgba(255,255,255,0.05)]" style={{ width: 60, height: 10, borderRadius: 2 }} /></td>
+                   <td style={{ padding: '0 12px' }}><div className="animate-pulse bg-[#E2E8F0] dark:bg-[rgba(255,255,255,0.05)]" style={{ width: 60, height: 10, borderRadius: 2 }} /></td>
+                   <td style={{ padding: '0 12px' }}><div className="animate-pulse bg-[#E2E8F0] dark:bg-[rgba(255,255,255,0.05)]" style={{ width: 50, height: 18, borderRadius: 3 }} /></td>
                    <td />
                  </tr>
               ))
@@ -408,8 +408,8 @@ const JiraUserSync: React.FC = () => {
                 <td colSpan={9} style={{ textAlign: 'center', padding: '60px 20px' }}>
                   {debouncedSearch ? (
                     <>
-                      <Search size={24} className="text-[#94A3B8] dark:text-[rgba(200,210,225,0.35)] mx-auto mb-[10px] block" />
-                      <div className="text-[#334155] dark:text-[rgba(225,230,240,0.92)]" style={{ fontSize: '14px', fontWeight: 500 }}>No users match '{debouncedSearch}'</div>
+                      <Search size={24} className="text-[#94A3B8] dark:text-[#6B6560] mx-auto mb-[10px] block" />
+                      <div className="text-[#334155] dark:text-[#F5F3F0]" style={{ fontSize: '14px', fontWeight: 500 }}>No users match '{debouncedSearch}'</div>
                       <button
                         onClick={() => setSearch('')}
                         className="text-[#2563EB] dark:text-[#93C5FD]"
@@ -418,8 +418,8 @@ const JiraUserSync: React.FC = () => {
                     </>
                   ) : filter !== 'all' ? (
                     <>
-                      <FolderSearch size={24} className="text-[#94A3B8] dark:text-[rgba(200,210,225,0.35)] mx-auto mb-[10px] block" />
-                      <div className="text-[#334155] dark:text-[rgba(225,230,240,0.92)]" style={{ fontSize: '14px', fontWeight: 500 }}>
+                      <FolderSearch size={24} className="text-[#94A3B8] dark:text-[#6B6560] mx-auto mb-[10px] block" />
+                      <div className="text-[#334155] dark:text-[#F5F3F0]" style={{ fontSize: '14px', fontWeight: 500 }}>
                         {filter === 'conflict' ? 'No conflicts found' : filter === 'inactive' ? 'No inactive users' : `No ${filter} users found`}
                       </div>
                       <button
@@ -430,8 +430,8 @@ const JiraUserSync: React.FC = () => {
                     </>
                   ) : (
                     <>
-                      <Users2 size={32} className="text-[#94A3B8] dark:text-[rgba(200,210,225,0.35)] mx-auto mb-[10px] block" />
-                      <div className="text-[#334155] dark:text-[rgba(225,230,240,0.92)]" style={{ fontSize: '14px', fontWeight: 500 }}>No synced users yet</div>
+                      <Users2 size={32} className="text-[#94A3B8] dark:text-[#6B6560] mx-auto mb-[10px] block" />
+                      <div className="text-[#334155] dark:text-[#F5F3F0]" style={{ fontSize: '14px', fontWeight: 500 }}>No synced users yet</div>
                       <button
                         onClick={handleSync}
                         disabled={isSyncing}
@@ -503,7 +503,7 @@ const JiraUserSync: React.FC = () => {
                         </div>
                         <div style={{ minWidth: 0, maxWidth: '220px' }}>
                           <div className="flex items-center gap-[5px]">
-                            <span className="jus-text-primary text-[#0F172A] dark:text-[rgba(225,230,240,0.92)]" style={{
+                            <span className="jus-text-primary text-[#0F172A] dark:text-[#F5F3F0]" style={{
                               fontSize: '12px', fontWeight: 500,
                               textDecoration: isInactive ? 'line-through' : 'none',
                               whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
@@ -516,12 +516,16 @@ const JiraUserSync: React.FC = () => {
                               </span>
                             )}
                           </div>
-                          <div className="jus-text-secondary text-[#64748B] dark:text-[rgba(200,210,225,0.55)]" style={{
+                          <div className="jus-text-secondary text-[#64748B] dark:text-[#A09890]" style={{
                             fontSize: '10px',
                             fontFamily: "'JetBrains Mono', monospace",
                             whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
                           }}>
-                            {user.email}
+                            {user.email && !user.email.includes('@jira.place')
+                              ? user.email
+                              : user.jira_account_id
+                                ? `@${user.display_name?.replace(/\s+/g, '.').toLowerCase()}`
+                                : '—'}
                           </div>
                         </div>
                       </div>
@@ -554,11 +558,12 @@ const JiraUserSync: React.FC = () => {
                         {perms.slice(0, 2).map((p: any) => {
                           const ps = PERM_STYLES[p.permission_level] ?? PERM_STYLES.none;
                           return (
-                            <span key={p.id} style={{
+                            <span key={p.id}
+                              className="bg-[#F1F5F9] dark:bg-[#2C2823] text-[#374151] dark:text-[#F5F3F0]"
+                              style={{
                               display: 'inline-flex', alignItems: 'center', gap: '3px',
                               padding: '2px 6px', borderRadius: '3px', fontSize: '11px', fontWeight: 600,
                               whiteSpace: 'nowrap',
-                              background: '#F1F5F9', color: '#374151',
                             }}>
                               {ps.dot !== 'transparent' && (
                                 <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: ps.dot, flexShrink: 0 }} />
@@ -568,14 +573,14 @@ const JiraUserSync: React.FC = () => {
                           );
                         })}
                         {perms.length > 2 && (
-                          <span className="text-[#64748B] dark:text-[rgba(200,210,225,0.55)]" style={{
+                          <span className="text-[#64748B] dark:text-[#A09890]" style={{
                             fontSize: '10px', fontWeight: 500, whiteSpace: 'nowrap',
                           }}>
                             +{perms.length - 2} more
                           </span>
                         )}
                         {perms.length === 0 && (
-                          <span className="text-[#94A3B8] dark:text-[rgba(200,210,225,0.35)]" style={{ fontSize: '10px' }}>—</span>
+                          <span className="text-[#94A3B8] dark:text-[#6B6560]" style={{ fontSize: '10px' }}>—</span>
                         )}
                       </div>
                     </td>
@@ -583,11 +588,11 @@ const JiraUserSync: React.FC = () => {
                     {/* Synced At */}
                     <td style={{ padding: '0 12px' }}>
                       {isCatalystOnly ? (
-                        <span className="jus-text-muted text-[#94A3B8] dark:text-[rgba(200,210,225,0.35)]" style={{ fontSize: '11px', fontStyle: 'italic' }}>Not synced</span>
+                        <span className="jus-text-muted text-[#94A3B8] dark:text-[#6B6560]" style={{ fontSize: '11px', fontStyle: 'italic' }}>Not synced</span>
                       ) : (
                         <div className="flex items-center gap-1">
                           <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#16A34A', flexShrink: 0 }} />
-                          <span className="jus-text-secondary text-[#64748B] dark:text-[rgba(200,210,225,0.55)]" style={{ fontSize: '11px', fontFamily: "'JetBrains Mono', monospace", whiteSpace: 'nowrap' }}>
+                          <span className="jus-text-secondary text-[#64748B] dark:text-[#A09890]" style={{ fontSize: '11px', fontFamily: "'JetBrains Mono', monospace", whiteSpace: 'nowrap' }}>
                             {formatSyncDate(user.last_synced_at)}
                           </span>
                         </div>
@@ -595,12 +600,12 @@ const JiraUserSync: React.FC = () => {
                     </td>
 
                     {/* Last Jira Login */}
-                    <td className="jus-text-secondary text-[#64748B] dark:text-[rgba(200,210,225,0.55)]" style={{ padding: '0 12px', fontSize: '11px', fontFamily: "'JetBrains Mono', monospace" }}>
+                    <td className="jus-text-secondary text-[#64748B] dark:text-[#A09890]" style={{ padding: '0 12px', fontSize: '11px', fontFamily: "'JetBrains Mono', monospace" }}>
                       {relativeTime(user.last_jira_login_at)}
                     </td>
 
                     {/* Last in Catalyst */}
-                    <td className="jus-text-secondary text-[#64748B] dark:text-[rgba(200,210,225,0.55)]" style={{ padding: '0 12px', fontSize: '11px', fontFamily: "'JetBrains Mono', monospace" }}>
+                    <td className="jus-text-secondary text-[#64748B] dark:text-[#A09890]" style={{ padding: '0 12px', fontSize: '11px', fontFamily: "'JetBrains Mono', monospace" }}>
                       {relativeTime(user.last_catalyst_login_at)}
                     </td>
 
@@ -636,7 +641,7 @@ const JiraUserSync: React.FC = () => {
                     {/* Action — hover reveal */}
                     <td style={{ padding: '0 12px', textAlign: 'right' }} onClick={e => e.stopPropagation()}>
                       <button
-                        className="opacity-0 group-hover:opacity-100 transition-opacity bg-white dark:bg-[#1E2027]"
+                        className="opacity-0 group-hover:opacity-100 transition-opacity bg-white dark:bg-[#232019]"
                         onClick={(e) => handleToggleStatus(e, user)}
                         disabled={togglingId === user.id}
                         style={{
@@ -665,14 +670,14 @@ const JiraUserSync: React.FC = () => {
       </div>
 
       {/* ══ Pagination ══ */}
-      <div className="jus-pagination flex items-center justify-between shrink-0 bg-[#F8FAFC] dark:bg-[#12141A]"
+      <div className="jus-pagination flex items-center justify-between shrink-0 bg-[#F8FAFC] dark:bg-[#1A1714]"
         style={{ padding: '9px 16px', borderTop: '1px solid rgba(15,23,42,0.06)' }}>
-        <span className="jus-text-secondary text-[#64748B] dark:text-[rgba(200,210,225,0.55)]" style={{ fontSize: '11px' }}>
+        <span className="jus-text-secondary text-[#64748B] dark:text-[#A09890]" style={{ fontSize: '11px' }}>
           {totalCount > 0 ? `Showing ${showStart}–${showEnd} of ${totalCount} users` : 'No results'}
         </span>
         <div className="flex gap-1 items-center">
           <button
-            className="jus-pagination-btn bg-white dark:bg-[#1E2027] border border-[rgba(15,23,42,0.10)] dark:border-[rgba(200,210,225,0.10)]"
+            className="jus-pagination-btn bg-white dark:bg-[#232019] border border-[rgba(15,23,42,0.10)] dark:border-[rgba(255,255,255,0.08)]"
             onClick={() => setPage(p => Math.max(1, p - 1))}
             disabled={page <= 1}
             style={{
@@ -681,17 +686,17 @@ const JiraUserSync: React.FC = () => {
               opacity: page <= 1 ? 0.4 : 1,
             }}
           >
-            <ChevronLeft size={13} className="text-[#334155] dark:text-[rgba(200,210,225,0.55)]" />
+            <ChevronLeft size={13} className="text-[#334155] dark:text-[#A09890]" />
           </button>
           {getPageNumbers(page, totalPages).map((p, i) =>
             p === '...' ? (
-              <span key={`ell-${i}`} className="text-[#94A3B8] dark:text-[rgba(200,210,225,0.35)]" style={{ width: '28px', textAlign: 'center', fontSize: '11px' }}>…</span>
+              <span key={`ell-${i}`} className="text-[#94A3B8] dark:text-[#6B6560]" style={{ width: '28px', textAlign: 'center', fontSize: '11px' }}>…</span>
             ) : (
               <button
                 className={`jus-pagination-btn ${page === p ? 'active' : ''} ${
                   page === p
                     ? 'bg-[#2563EB] text-white'
-                    : 'bg-white dark:bg-[#1E2027] text-[#64748B] dark:text-[rgba(200,210,225,0.55)] border border-[rgba(15,23,42,0.10)] dark:border-[rgba(200,210,225,0.10)]'
+                    : 'bg-white dark:bg-[#232019] text-[#64748B] dark:text-[#A09890] border border-[rgba(15,23,42,0.10)] dark:border-[rgba(255,255,255,0.08)]'
                 }`}
                 key={p}
                 onClick={() => setPage(p as number)}
@@ -706,7 +711,7 @@ const JiraUserSync: React.FC = () => {
             )
           )}
           <button
-            className="jus-pagination-btn bg-white dark:bg-[#1E2027] border border-[rgba(15,23,42,0.10)] dark:border-[rgba(200,210,225,0.10)]"
+            className="jus-pagination-btn bg-white dark:bg-[#232019] border border-[rgba(15,23,42,0.10)] dark:border-[rgba(255,255,255,0.08)]"
             onClick={() => setPage(p => Math.min(totalPages, p + 1))}
             disabled={page >= totalPages}
             style={{
@@ -715,7 +720,7 @@ const JiraUserSync: React.FC = () => {
               opacity: page >= totalPages ? 0.4 : 1,
             }}
           >
-            <ChevronRight size={13} className="text-[#334155] dark:text-[rgba(200,210,225,0.55)]" />
+            <ChevronRight size={13} className="text-[#334155] dark:text-[#A09890]" />
           </button>
         </div>
       </div>
