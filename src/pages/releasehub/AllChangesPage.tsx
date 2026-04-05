@@ -116,20 +116,23 @@ export default function AllChangesPage() {
       <div className="flex items-center justify-between mb-4 gap-3 flex-wrap">
         <div className="flex items-center gap-2">
           <div className="relative">
-            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#94A3B8]" />
+            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: isDark ? '#6B6560' : '#94A3B8' }} />
             <input type="text" placeholder="Search changes..." value={search} onChange={e => setSearch(e.target.value)}
-              className="h-9 w-[280px] pl-9 pr-3 rounded border border-[rgba(15,23,42,0.12)] bg-white text-[13px] placeholder:text-[#64748B] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" />
+              className="h-9 w-[280px] pl-9 pr-3 rounded text-[13px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]"
+              style={{ border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.12)'}`, background: isDark ? '#232019' : '#FFFFFF', color: isDark ? '#F5F3F0' : '#0F172A' }} />
           </div>
-          <CustomDropdown label="Status" value={statusFilter} options={statusOptions} onChange={v => setParam('status', v)} />
-          <CustomDropdown label="Release" value={releaseFilter} options={releaseOptions} onChange={v => setParam('release', v)} />
+          <CustomDropdown label="Status" value={statusFilter} options={statusOptions} onChange={v => setParam('status', v)} isDark={isDark} />
+          <CustomDropdown label="Release" value={releaseFilter} options={releaseOptions} onChange={v => setParam('release', v)} isDark={isDark} />
         </div>
-        <div className="flex items-center gap-1 border border-[rgba(15,23,42,0.12)] rounded-md p-0.5 bg-white">
+        <div className="flex items-center gap-1 rounded-md p-0.5" style={{ border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.12)'}`, background: isDark ? '#232019' : '#FFFFFF' }}>
           <button onClick={() => setParam('view', 'list')}
-            className={`h-7 px-2.5 rounded flex items-center gap-1 text-[11px] font-medium ${view === 'list' ? 'bg-[#EFF6FF] text-[#2563EB]' : 'text-[#94A3B8] hover:text-[#475569]'}`}>
+            className="h-7 px-2.5 rounded flex items-center gap-1 text-[11px] font-medium"
+            style={view === 'list' ? { background: isDark ? 'rgba(37,99,235,0.12)' : '#EFF6FF', color: '#2563EB' } : { color: isDark ? '#6B6560' : '#94A3B8' }}>
             <List size={12} /> List
           </button>
           <button onClick={() => setParam('view', 'kanban')}
-            className={`h-7 px-2.5 rounded flex items-center gap-1 text-[11px] font-medium ${view === 'kanban' ? 'bg-[#EFF6FF] text-[#2563EB]' : 'text-[#94A3B8] hover:text-[#475569]'}`}>
+            className="h-7 px-2.5 rounded flex items-center gap-1 text-[11px] font-medium"
+            style={view === 'kanban' ? { background: isDark ? 'rgba(37,99,235,0.12)' : '#EFF6FF', color: '#2563EB' } : { color: isDark ? '#6B6560' : '#94A3B8' }}>
             <Columns size={12} /> Kanban
           </button>
         </div>
@@ -150,15 +153,15 @@ export default function AllChangesPage() {
         <KanbanView changes={filtered} onSelect={setSelectedChg} />
       ) : (
         /* V12 Table */
-        <div className="bg-white rounded border border-[rgba(15,23,42,0.12)] overflow-hidden">
+        <div className="rounded overflow-hidden" style={{ background: isDark ? '#232019' : '#FFFFFF', border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.12)'}` }}>
           <table className="w-full text-[13px]" style={{ fontFamily: RH.fontBody }} role="table">
             <thead>
-              <tr style={{ background: '#F1F5F9' }}>
+              <tr style={{ background: isDark ? '#2C2823' : '#F1F5F9' }}>
                 <th className="w-[40px] px-3 py-0 h-[36px] text-center">
                   <input type="checkbox" checked={selectedIds.size === filtered.length && filtered.length > 0} onChange={toggleAll} className="rounded" />
                 </th>
                 {['KEY', 'TITLE', 'STATUS', 'RISK', 'RELEASE', 'SOURCE', 'SIGN-OFFS'].map(h => (
-                  <th key={h} className="px-3 py-0 h-[36px] text-left text-[11px] font-semibold uppercase tracking-[0.06em] text-[#64748B]">{h}</th>
+                  <th key={h} className="px-3 py-0 h-[36px] text-left text-[11px] font-semibold uppercase tracking-[0.06em]" style={{ color: isDark ? '#6B6560' : '#64748B' }}>{h}</th>
                 ))}
               </tr>
             </thead>
@@ -167,10 +170,10 @@ export default function AllChangesPage() {
                 const relName = c.release_name || releases.find((r: any) => r.id === c.release_id)?.name;
                 return (
                   <tr key={c.id} onClick={() => setSelectedChg(c)}
-                    className="border-b border-[rgba(15,23,42,0.06)] cursor-pointer"
-                    style={{ height: 36, background: '#FFFFFF', transition: 'background 120ms' }}
-                    onMouseEnter={e => (e.currentTarget.style.background = 'rgba(15,23,42,0.04)')}
-                    onMouseLeave={e => (e.currentTarget.style.background = '#FFFFFF')}>
+                    className="cursor-pointer"
+                    style={{ height: 36, background: isDark ? '#232019' : '#FFFFFF', transition: 'background 120ms', borderBottom: `0.75px solid ${isDark ? 'rgba(255,255,255,0.05)' : 'rgba(15,23,42,0.06)'}` }}
+                    onMouseEnter={e => (e.currentTarget.style.background = isDark ? '#2C2823' : 'rgba(15,23,42,0.04)')}
+                    onMouseLeave={e => (e.currentTarget.style.background = isDark ? '#232019' : '#FFFFFF')}>
                     <td className="px-3 py-0 text-center" onClick={e => e.stopPropagation()}>
                       <input type="checkbox" checked={selectedIds.has(c.id)} onChange={() => toggleSelect(c.id)} className="rounded" />
                     </td>
@@ -178,7 +181,7 @@ export default function AllChangesPage() {
                       <span className="text-[13px] font-medium text-[#2563EB] hover:underline" style={{ fontFamily: RH.fontMono }}>{c.chg_number}</span>
                     </td>
                     <td className="px-3 py-0 max-w-[300px]">
-                      <span className="text-[13px] font-medium text-[#0F172A] truncate block">{c.title}</span>
+                      <span className="text-[13px] font-medium truncate block" style={{ color: isDark ? '#F5F3F0' : '#0F172A' }}>{c.title}</span>
                     </td>
                     <td className="px-3 py-0"><StatusLozenge status={c.status} /></td>
                     <td className="px-3 py-0"><RiskBadge risk={mapRisk(c.risk_level)} /></td>
