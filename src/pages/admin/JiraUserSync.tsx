@@ -42,7 +42,7 @@ const AVATAR_COLORS = [
   { bg: '#F5F3FF', text: '#7C3AED' }, { bg: '#CCFBF1', text: '#0F766E' },
 ];
 
-const HEADERS = ['User / Jira Identity', 'Auth Mode', 'Projects & Permissions', 'Synced At', 'Last Login', 'Status', ''];
+const HEADERS = ['User / Jira Identity', 'Auth Mode', 'Projects & Permissions', 'Synced At', 'Last Jira Login', 'Last in Catalyst', 'Status', ''];
 
 /* ── Debounce hook ── */
 function useDebouncedValue(value: string, delay: number) {
@@ -67,6 +67,19 @@ function formatSyncDate(iso: string | null): string {
   return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }) + ` ${time}`;
 }
 
+function relativeTime(ts: string | null): string {
+  if (!ts) return '—';
+  const diff = Date.now() - new Date(ts).getTime();
+  const mins = Math.floor(diff / 60000);
+  const hours = Math.floor(diff / 3600000);
+  const days = Math.floor(diff / 86400000);
+  if (mins < 2) return 'Just now';
+  if (mins < 60) return `${mins}m ago`;
+  if (hours < 24) return `${hours}h ago`;
+  if (days === 1) return 'Yesterday';
+  return `${days}d ago`;
+}
+
 function getInitials(name: string): string {
   return name.split(/\s+/).slice(0, 2).map(w => w[0]?.toUpperCase() ?? '').join('');
 }
@@ -86,11 +99,11 @@ function getPageNumbers(current: number, total: number): (number | '...')[] {
 }
 
 /* ── Permission level badge ── */
-const PERM_STYLES: Record<string, { bg: string; color: string }> = {
-  full: { bg: '#DCFCE7', color: '#006644' },
-  edit: { bg: '#FEF3C7', color: '#92400E' },
-  view: { bg: '#DEEBFF', color: '#0747A6' },
-  none: { bg: '#F1F5F9', color: '#64748B' },
+const PERM_STYLES: Record<string, { bg: string; color: string; dot: string }> = {
+  full: { bg: '#DCFCE7', color: '#006644', dot: '#16A34A' },
+  edit: { bg: '#FEF3C7', color: '#92400E', dot: '#2563EB' },
+  view: { bg: '#DEEBFF', color: '#0747A6', dot: '#6B7280' },
+  none: { bg: '#F1F5F9', color: '#64748B', dot: 'transparent' },
 };
 
 /* ── Main Component ── */
@@ -382,16 +395,17 @@ const JiraUserSync: React.FC = () => {
                     </div>
                   </td>
                   <td style={{ padding: '0 12px' }}><div className="animate-pulse bg-[#E2E8F0] dark:bg-[rgba(200,210,225,0.08)]" style={{ width: 70, height: 16, borderRadius: 3 }} /></td>
-                  <td style={{ padding: '0 12px' }}><div className="animate-pulse bg-[#E2E8F0] dark:bg-[rgba(200,210,225,0.08)]" style={{ width: 100, height: 16, borderRadius: 3 }} /></td>
-                  <td style={{ padding: '0 12px' }}><div className="animate-pulse bg-[#E2E8F0] dark:bg-[rgba(200,210,225,0.08)]" style={{ width: 80, height: 10, borderRadius: 2 }} /></td>
-                  <td style={{ padding: '0 12px' }}><div className="animate-pulse bg-[#E2E8F0] dark:bg-[rgba(200,210,225,0.08)]" style={{ width: 60, height: 10, borderRadius: 2 }} /></td>
-                  <td style={{ padding: '0 12px' }}><div className="animate-pulse bg-[#E2E8F0] dark:bg-[rgba(200,210,225,0.08)]" style={{ width: 50, height: 18, borderRadius: 3 }} /></td>
-                  <td />
-                </tr>
+                   <td style={{ padding: '0 12px' }}><div className="animate-pulse bg-[#E2E8F0] dark:bg-[rgba(200,210,225,0.08)]" style={{ width: 100, height: 16, borderRadius: 3 }} /></td>
+                   <td style={{ padding: '0 12px' }}><div className="animate-pulse bg-[#E2E8F0] dark:bg-[rgba(200,210,225,0.08)]" style={{ width: 80, height: 10, borderRadius: 2 }} /></td>
+                   <td style={{ padding: '0 12px' }}><div className="animate-pulse bg-[#E2E8F0] dark:bg-[rgba(200,210,225,0.08)]" style={{ width: 60, height: 10, borderRadius: 2 }} /></td>
+                   <td style={{ padding: '0 12px' }}><div className="animate-pulse bg-[#E2E8F0] dark:bg-[rgba(200,210,225,0.08)]" style={{ width: 60, height: 10, borderRadius: 2 }} /></td>
+                   <td style={{ padding: '0 12px' }}><div className="animate-pulse bg-[#E2E8F0] dark:bg-[rgba(200,210,225,0.08)]" style={{ width: 50, height: 18, borderRadius: 3 }} /></td>
+                   <td />
+                 </tr>
               ))
             ) : users.length === 0 && !usersFetching ? (
               <tr>
-                <td colSpan={8} style={{ textAlign: 'center', padding: '60px 20px' }}>
+                <td colSpan={9} style={{ textAlign: 'center', padding: '60px 20px' }}>
                   {debouncedSearch ? (
                     <>
                       <Search size={24} className="text-[#94A3B8] dark:text-[rgba(200,210,225,0.35)] mx-auto mb-[10px] block" />
@@ -536,35 +550,32 @@ const JiraUserSync: React.FC = () => {
 
                     {/* Projects & Permissions */}
                     <td style={{ padding: '0 12px', maxWidth: '200px' }}>
-                      <div className="flex gap-1 flex-nowrap overflow-hidden">
+                      <div className="flex gap-1 flex-nowrap overflow-hidden items-center">
                         {perms.slice(0, 2).map((p: any) => {
                           const ps = PERM_STYLES[p.permission_level] ?? PERM_STYLES.none;
                           return (
-                            <span key={p.id} className="bg-[#EFF6FF] dark:bg-[rgba(37,99,235,0.15)] text-[#2563EB] dark:text-[#93C5FD] border border-[#BFDBFE] dark:border-[rgba(37,99,235,0.3)]" style={{
-                              display: 'inline-flex', alignItems: 'center', gap: '2px',
-                              padding: '1px 5px', borderRadius: '3px', fontSize: '10px', fontWeight: 500,
+                            <span key={p.id} style={{
+                              display: 'inline-flex', alignItems: 'center', gap: '3px',
+                              padding: '2px 6px', borderRadius: '3px', fontSize: '11px', fontWeight: 600,
                               whiteSpace: 'nowrap',
+                              background: '#F1F5F9', color: '#374151',
                             }}>
+                              {ps.dot !== 'transparent' && (
+                                <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: ps.dot, flexShrink: 0 }} />
+                              )}
                               {p.project_key}
-                              <span style={{
-                                fontSize: '8.5px', fontWeight: 700, textTransform: 'uppercase',
-                                background: ps.bg, color: ps.color, borderRadius: '2px',
-                                padding: '0 3px', height: '16px', lineHeight: '16px', marginLeft: '2px',
-                              }}>
-                                {p.permission_level}
-                              </span>
                             </span>
                           );
                         })}
                         {perms.length > 2 && (
-                          <span className="bg-[#F8FAFC] dark:bg-[rgba(200,210,225,0.08)] text-[#64748B] dark:text-[rgba(200,210,225,0.55)]" style={{
-                            padding: '1px 5px', borderRadius: '3px', fontSize: '10px', fontWeight: 500, whiteSpace: 'nowrap',
+                          <span className="text-[#64748B] dark:text-[rgba(200,210,225,0.55)]" style={{
+                            fontSize: '10px', fontWeight: 500, whiteSpace: 'nowrap',
                           }}>
-                            +{perms.length - 2}
+                            +{perms.length - 2} more
                           </span>
                         )}
                         {perms.length === 0 && (
-                          <span className="text-[#94A3B8] dark:text-[rgba(200,210,225,0.35)]" style={{ fontSize: '10px', fontStyle: 'italic' }}>—</span>
+                          <span className="text-[#94A3B8] dark:text-[rgba(200,210,225,0.35)]" style={{ fontSize: '10px' }}>—</span>
                         )}
                       </div>
                     </td>
@@ -583,11 +594,14 @@ const JiraUserSync: React.FC = () => {
                       )}
                     </td>
 
-                    {/* Last Login */}
-                    <td className="jus-text-secondary text-[#64748B] dark:text-[rgba(200,210,225,0.55)]" style={{ padding: '0 12px', fontSize: '11px' }}>
-                      {user.last_catalyst_login_at
-                        ? formatSyncDate(user.last_catalyst_login_at)
-                        : '—'}
+                    {/* Last Jira Login */}
+                    <td className="jus-text-secondary text-[#64748B] dark:text-[rgba(200,210,225,0.55)]" style={{ padding: '0 12px', fontSize: '11px', fontFamily: "'JetBrains Mono', monospace" }}>
+                      {relativeTime(user.last_jira_login_at)}
+                    </td>
+
+                    {/* Last in Catalyst */}
+                    <td className="jus-text-secondary text-[#64748B] dark:text-[rgba(200,210,225,0.55)]" style={{ padding: '0 12px', fontSize: '11px', fontFamily: "'JetBrains Mono', monospace" }}>
+                      {relativeTime(user.last_catalyst_login_at)}
                     </td>
 
                     {/* Status */}
