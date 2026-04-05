@@ -442,7 +442,7 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose }) => {
         }
       `}</style>
       {/* ── Header ── */}
-      <div style={{ position: 'sticky', top: 0, zIndex: 5, background: '#FFFFFF', borderBottom: '1px solid rgba(15,23,42,0.06)' }}>
+      <div className="jus-header-sticky" style={{ position: 'sticky', top: 0, zIndex: 5, background: '#FFFFFF', borderBottom: '1px solid rgba(15,23,42,0.06)' }}>
         <div style={{ padding: '16px 16px 12px', display: 'flex', gap: '12px', position: 'relative' }}>
           {/* Avatar */}
           <div style={{
