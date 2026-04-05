@@ -4294,6 +4294,28 @@ input[type="range"]::-moz-range-thumb {
   background-color: var(--bg-0) !important;
 }
 
+/* ═══ ECLIPSE — Global admin drawer/panel dark mode catch-all ═══ */
+.dark [class*="drawer"],
+.dark [class*="Drawer"],
+.dark [class*="side-panel"],
+.dark [class*="SidePanel"],
+.dark [class*="detail-panel"],
+.dark [class*="DetailPanel"] {
+  background-color: #232019 !important;
+  border-color: rgba(255,255,255,0.08) !important;
+  color: #F5F3F0 !important;
+}
+.dark [class*="drawer"] input,
+.dark [class*="Drawer"] input,
+.dark [class*="drawer"] select,
+.dark [class*="Drawer"] select,
+.dark [class*="drawer"] textarea,
+.dark [class*="Drawer"] textarea {
+  background-color: #1A1714 !important;
+  color: #F5F3F0 !important;
+  border-color: rgba(255,255,255,0.08) !important;
+}
+
 .dark .text-muted,
 .dark [class*="EmptyState"],
 .dark [class*="empty-state"],

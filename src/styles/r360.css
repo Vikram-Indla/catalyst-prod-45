@@ -486,11 +486,187 @@
   box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
 }
 .dark #r360-root .r3-res-name {
-  color: rgba(235,238,245,0.92);
+  color: #F5F3F0;
 }
 .dark #r360-root .r3-res-rid {
-  color: rgba(235,238,245,0.55);
+  color: #6B6560;
 }
 .dark #r360-root .r3-dept {
-  background: rgba(235,238,245,0.04) !important;
+  background: rgba(255,255,255,0.04) !important;
+}
+
+/* ═══════════════════════════════════════════════════════
+   ECLIPSE — NOCTURNE DARK MODE (R360 Member Detail Page)
+   ═══════════════════════════════════════════════════════ */
+
+/* Profile card */
+.dark #r360-root .r3-profile {
+  background: #232019 !important;
+  border-color: rgba(255,255,255,0.08) !important;
+}
+
+/* KPI cards */
+.dark #r360-root .r3-kpi--stale,
+.dark #r360-root .r3-kpi {
+  background: #232019 !important;
+  border-color: rgba(255,255,255,0.08) !important;
+}
+
+/* Tab bar */
+.dark #r360-root .r3-tab-bar {
+  background: #1A1714 !important;
+  border-color: rgba(255,255,255,0.06) !important;
+}
+.dark #r360-root .r3-tab {
+  color: #A09890 !important;
+}
+.dark #r360-root .r3-tab:hover {
+  background: rgba(255,255,255,0.04) !important;
+}
+.dark #r360-root .r3-tab.active {
+  color: #2563EB !important;
+  border-color: #2563EB !important;
+}
+
+/* Period toggle (Weekly/Monthly) */
+.dark #r360-root .r3-toggle button {
+  background: #232019 !important;
+  color: #A09890 !important;
+  border-color: rgba(255,255,255,0.08) !important;
+}
+.dark #r360-root .r3-toggle button.active {
+  background: #2563EB !important;
+  color: #FFFFFF !important;
+  border-color: #2563EB !important;
+}
+
+/* Week header / date strip */
+.dark #r360-root .r3-week-strip {
+  background: #1A1714 !important;
+  border-color: rgba(255,255,255,0.06) !important;
+}
+.dark #r360-root .r3-week-label {
+  color: #F5F3F0 !important;
+}
+
+/* Calendar day cells */
+.dark #r360-root .r3-date-cell {
+  background: #232019 !important;
+  border-color: rgba(255,255,255,0.06) !important;
+}
+.dark #r360-root .r3-date-cell.current {
+  background: rgba(37,99,235,0.1) !important;
+  border-color: rgba(37,99,235,0.3) !important;
+}
+.dark #r360-root .r3-date-dot--other {
+  background: #232019 !important;
+  border-color: #6B6560 !important;
+}
+
+/* Status filter chips */
+.dark #r360-root .r3-status-chip {
+  background: #232019 !important;
+  color: #A09890 !important;
+  border-color: rgba(255,255,255,0.08) !important;
+}
+.dark #r360-root .r3-status-chip.active {
+  background: rgba(37,99,235,0.12) !important;
+  color: #60A5FA !important;
+  border-color: rgba(37,99,235,0.3) !important;
+}
+
+/* Summary bar ("0 open · 0 stale · 0 done") */
+.dark #r360-root .r3-summary-strip {
+  color: #A09890 !important;
+}
+
+/* Progress bar */
+.dark #r360-root .r3-progress-bg {
+  background: #2C2823 !important;
+}
+
+/* Ring view cards */
+.dark #r360-root .r3-ring-card {
+  background: #232019 !important;
+  border-color: rgba(255,255,255,0.08) !important;
+}
+.dark #r360-root .r3-ring-card:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3) !important;
+}
+
+/* Board columns */
+.dark #r360-root .r3-board-col {
+  background: #1A1714 !important;
+}
+.dark #r360-root .r3-board-item {
+  background: #232019 !important;
+  border-color: rgba(255,255,255,0.08) !important;
+}
+.dark #r360-root .r3-board-item:hover {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3) !important;
+}
+
+/* Chronology rows */
+.dark #r360-root .r3-day-group {
+  border-color: rgba(255,255,255,0.06) !important;
+}
+.dark #r360-root .r3-day-label {
+  color: #A09890 !important;
+}
+.dark #r360-root .r3-chrono-item {
+  background: #232019 !important;
+  border-color: rgba(255,255,255,0.08) !important;
+}
+
+/* Detail panel / drawer */
+.dark #r360-root .r3-detail-panel {
+  background: #232019 !important;
+  border-color: rgba(255,255,255,0.08) !important;
+}
+
+/* Search input */
+.dark #r360-root .r3-search {
+  background: #232019 !important;
+  border-color: rgba(255,255,255,0.08) !important;
+  color: #F5F3F0 !important;
+}
+
+/* Quarter select + nav buttons */
+.dark #r360-root .r3-quarter-picker,
+.dark #r360-root .r3-nav-btn {
+  background: #232019 !important;
+  border-color: rgba(255,255,255,0.08) !important;
+  color: #A09890 !important;
+}
+
+/* Empty state */
+.dark #r360-root .r3-empty-state {
+  color: #6B6560 !important;
+}
+
+/* Generic fallbacks */
+.dark #r360-root [style*="background: #FFFFFF"],
+.dark #r360-root [style*="background:#FFFFFF"],
+.dark #r360-root [style*="background: #fff"],
+.dark #r360-root [style*="background: rgb(255"],
+.dark #r360-root [style*="background: #F8FAFC"],
+.dark #r360-root [style*="background:#F8FAFC"] {
+  background: #1A1714 !important;
+}
+.dark #r360-root [style*="border-color: #E2E8F0"],
+.dark #r360-root [style*="border: 1px solid #E2E8F0"] {
+  border-color: rgba(255,255,255,0.08) !important;
+}
+.dark #r360-root [style*="color: #0F172A"],
+.dark #r360-root [style*="color: #020617"],
+.dark #r360-root [style*="color:#0F172A"] {
+  color: #F5F3F0 !important;
+}
+.dark #r360-root [style*="color: #334155"],
+.dark #r360-root [style*="color:#334155"] {
+  color: #A09890 !important;
+}
+.dark #r360-root [style*="color: #64748B"],
+.dark #r360-root [style*="color:#64748B"] {
+  color: #6B6560 !important;
 }

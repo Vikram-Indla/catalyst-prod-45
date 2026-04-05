@@ -1,7 +1,7 @@
 /**
  * ResourceListingPage — Master resource listing, entry point for Resource Hub
  * Route: /project-hub/resources
- * NOCTURNE Warm Charcoal dark mode compliant
+ * ECLIPSE NOCTURNE: Full dark mode support with warm charcoal palette
  */
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -9,11 +9,11 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import {
   Search, RotateCw, Clock, LayoutGrid, Zap,
-  ChevronDown, ChevronUp,
+  ChevronDown, ChevronUp, ChevronLeft, ChevronRight,
 } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import ExportWorkItems from '@/components/resources/ExportWorkItems';
-import { useTheme } from '@/hooks/useTheme';
+import { useIsDark } from '@/components/strategy/themes/useIsDark';
 
 /* ── Types ── */
 interface Resource {
@@ -27,84 +27,6 @@ interface Resource {
   vendor_name: string | null;
   avatar_url: string | null;
   resource_type: string | null;
-}
-
-/* ── Token hook ── */
-function useTokens() {
-  const { isDark } = useTheme();
-  return useMemo(() => isDark ? {
-    pageBg: '#1A1714',
-    cardBg: '#1A1714',
-    headerBg: '#232019',
-    border: 'rgba(255,255,255,0.08)',
-    borderStrong: 'rgba(255,255,255,0.12)',
-    divider: 'rgba(255,255,255,0.05)',
-    t1: '#F5F3F0',
-    t2: '#A09890',
-    t3: '#6B6560',
-    t4: 'rgba(245,243,240,0.30)',
-    hover: 'rgba(255,255,255,0.04)',
-    searchBg: '#232019',
-    searchBorder: 'rgba(255,255,255,0.12)',
-    searchFocusBorder: '#3B82F6',
-    pillBg: '#232019',
-    pillBgActive: 'transparent',
-    pillBorder: 'rgba(255,255,255,0.10)',
-    pillBorderActive: '#F5F3F0',
-    pillText: '#A09890',
-    pillTextActive: '#F5F3F0',
-    pillHoverBg: '#2C2823',
-    typePillBg: '#2C2823',
-    typePillBgActive: 'transparent',
-    typePillBorder: 'rgba(255,255,255,0.08)',
-    typePillText: '#A09890',
-    badgeBg: '#3A3530',
-    badgeText: '#A09890',
-    shimmerA: '#232019',
-    shimmerB: '#2C2823',
-    countBg: '#2C2823',
-    countText: '#A09890',
-    emptyIcon: '#6B6560',
-    tooltipBg: '#2C2823',
-    tooltipText: '#F5F3F0',
-    isDark: true,
-  } : {
-    pageBg: '#F8FAFC',
-    cardBg: '#FFFFFF',
-    headerBg: '#FAFAFA',
-    border: '#E2E8F0',
-    borderStrong: '#CBD5E1',
-    divider: '#f3f4f6',
-    t1: '#0F172A',
-    t2: '#475569',
-    t3: '#94A3B8',
-    t4: '#CBD5E1',
-    hover: 'rgba(15,23,42,0.04)',
-    searchBg: '#FFFFFF',
-    searchBorder: '#B0B8C4',
-    searchFocusBorder: '#2563EB',
-    pillBg: '#FFFFFF',
-    pillBgActive: '#FFFFFF',
-    pillBorder: '#e5e7eb',
-    pillBorderActive: '#111',
-    pillText: '#6b7280',
-    pillTextActive: '#111',
-    pillHoverBg: '#F1F5F9',
-    typePillBg: '#F1F5F9',
-    typePillBgActive: '#FFFFFF',
-    typePillBorder: '#E2E8F0',
-    typePillText: '#475569',
-    badgeBg: '#E2E8F0',
-    badgeText: '#64748B',
-    shimmerA: '#F1F5F9',
-    shimmerB: '#E2E8F0',
-    countBg: '#F1F5F9',
-    countText: '#475569',
-    emptyIcon: '#D1D5DB',
-    tooltipBg: '#1e293b',
-    tooltipText: '#f1f5f9',
-    isDark: false,
-  }, [isDark]);
 }
 
 /* ── Constants ── */
@@ -145,17 +67,57 @@ const hashColor = (name: string) => {
   return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
 };
 
+/* ── Dark mode token map ── */
+function useTokens(dk: boolean) {
+  return useMemo(() => ({
+    pageBg:       dk ? '#1A1714' : '#F8FAFC',
+    surfaceBg:    dk ? '#1A1714' : '#FFFFFF',
+    elevatedBg:   dk ? '#232019' : '#FFFFFF',
+    headerBg:     dk ? '#232019' : '#FAFAFA',
+    hoverBg:      dk ? 'rgba(255,255,255,0.04)' : '#F8FAFC',
+    border:       dk ? 'rgba(255,255,255,0.08)' : '#E2E8F0',
+    borderSubtle: dk ? 'rgba(255,255,255,0.05)' : '#f3f4f6',
+    borderInput:  dk ? 'rgba(255,255,255,0.12)' : '#B0B8C4',
+    borderFocus:  '#2563EB',
+    text1:        dk ? '#F5F3F0' : '#0F172A',
+    text2:        dk ? '#A09890' : '#475569',
+    text3:        dk ? '#6B6560' : '#94A3B8',
+    textMuted:    dk ? '#6B6560' : '#9ca3af',
+    textDim:      dk ? '#6B6560' : '#d1d5db',
+    inputBg:      dk ? '#232019' : '#FFFFFF',
+    badgeBg:      dk ? '#2C2823' : '#F1F5F9',
+    badgeText:    dk ? '#A09890' : '#475569',
+    pillBg:       dk ? '#232019' : '#FFFFFF',
+    pillBorder:   dk ? 'rgba(255,255,255,0.12)' : '#e5e7eb',
+    pillActiveBorder: dk ? '#F5F3F0' : '#111',
+    pillActiveText:   dk ? '#F5F3F0' : '#111',
+    pillInactiveText: dk ? '#A09890' : '#6b7280',
+    pillHoverBg:  dk ? '#2C2823' : '#E2E8F0',
+    pillHoverText: dk ? '#F5F3F0' : '#1E293B',
+    typePillBg:       dk ? '#2C2823' : '#F1F5F9',
+    typePillActiveBg: dk ? '#232019' : '#FFFFFF',
+    shimmerFrom:  dk ? '#232019' : '#F1F5F9',
+    shimmerMid:   dk ? '#2C2823' : '#E2E8F0',
+    tooltipBg:    dk ? '#2C2823' : '#1e293b',
+    tooltipText:  dk ? '#F5F3F0' : '#f1f5f9',
+    divider:      dk ? 'rgba(255,255,255,0.06)' : '#E2E8F0',
+    focusShadow:  dk ? '0 0 0 3px rgba(37,99,235,.2)' : '0 0 0 3px rgba(37,99,235,.1)',
+    onsite:       dk ? '#4ade80' : '#16a34a',
+    offShore:     dk ? '#fbbf24' : '#d97706',
+  }), [dk]);
+}
 
 /* ── Component ── */
 export default function ResourceListingPage() {
   const navigate = useNavigate();
-  const tk = useTokens();
+  const isDark = useIsDark();
+  const t = useTokens(isDark);
   const [search, setSearch] = useState('');
   const [deptFilter, setDeptFilter] = useState<string>('Delivery');
   const [sortKey, setSortKey] = useState<SortKey>('full_name');
   const [sortDir, setSortDir] = useState<SortDir>('asc');
   const [resourceTypeFilter, setResourceTypeFilter] = useState<'all' | 'core' | 'project' | 'temporary'>('all');
-  const [currentPage, setCurrentPage] = useState(1);
+  const [page, setPage] = useState(1);
   const perPage = 10;
 
   const { data: resources = [], isLoading } = useQuery({
@@ -179,6 +141,9 @@ export default function ResourceListingPage() {
         (supabase as any).from('vw_wh_resource_360').select('resource_id'),
         (supabase as any).from('ph_issues').select('reporter_account_id'),
       ]);
+
+      const ridsWithAssigned = new Set((assignedRids || []).map((r: any) => r.resource_id));
+      const jiraIdsWithContrib = new Set((contributedAccounts || []).map((r: any) => r.reporter_account_id).filter(Boolean));
 
       const deptMap = new Map((depts || []).map((d: any) => [d.id, d.name]));
       const assignMap = new Map((assignments || []).map((a: any) => [a.id, a.name]));
@@ -258,18 +223,16 @@ export default function ResourceListingPage() {
     });
   }, [filtered, sortKey, sortDir]);
 
+  // Pagination
   const totalPages = Math.max(1, Math.ceil(sorted.length / perPage));
-  const safeCurrentPage = Math.min(currentPage, totalPages);
-  const paginatedRows = sorted.slice((safeCurrentPage - 1) * perPage, safeCurrentPage * perPage);
+  const safePage = Math.min(page, totalPages);
+  const pageData = sorted.slice((safePage - 1) * perPage, safePage * perPage);
+  const startIdx = (safePage - 1) * perPage;
+  const endIdx = Math.min(startIdx + perPage, sorted.length);
 
   const handleSort = (key: SortKey) => {
-    if (sortKey === key) {
-      setSortDir(d => d === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortKey(key);
-      setSortDir('asc');
-    }
-    setCurrentPage(1);
+    if (sortKey === key) setSortDir(d => d === 'asc' ? 'desc' : 'asc');
+    else { setSortKey(key); setSortDir('asc'); }
   };
 
   const navTo = (id: string, view: string) => {
@@ -277,48 +240,49 @@ export default function ResourceListingPage() {
   };
 
   return (
-    <div style={{ padding: '24px 28px', fontFamily: "'Inter', sans-serif", background: tk.pageBg }}>
+    <div style={{ padding: '24px 28px', fontFamily: "'Inter', sans-serif", height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden', background: t.pageBg }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
-        <h1 style={{ fontSize: '20px', fontWeight: 800, color: tk.t1, margin: 0 }}>Resources</h1>
+        <h1 style={{ fontSize: '20px', fontWeight: 800, color: t.text1, margin: 0, fontFamily: "'Sora', sans-serif" }}>Resources</h1>
         <span style={{
-          fontSize: '12px', fontWeight: 700, color: tk.t2,
-          background: tk.countBg, borderRadius: '10px', padding: '3px 10px',
+          fontSize: '12px', fontWeight: 700, color: t.badgeText,
+          background: t.badgeBg, borderRadius: '10px', padding: '3px 10px',
         }}>
           {filtered.length} resource{filtered.length !== 1 ? 's' : ''}
         </span>
       </div>
 
-      {/* Toolbar */}
+      {/* Toolbar: Search + Dept Pills + Export */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '20px', flexWrap: 'wrap' }}>
         {/* Search */}
         <div style={{ position: 'relative', width: '100%', maxWidth: '420px' }}>
-          <Search size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: tk.t3 }} />
+          <Search size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: t.text3 }} />
           <input
             value={search}
-            onChange={e => { setSearch(e.target.value); setCurrentPage(1); }}
-            placeholder="Search by name, role, or department…"
+            onChange={e => { setSearch(e.target.value); setPage(1); }}
+            placeholder="Search by name, role, or department..."
             style={{
               width: '100%', padding: '10px 14px 10px 40px',
               fontSize: '13.5px', fontWeight: 500,
-              background: tk.searchBg, border: `1.5px solid ${tk.searchBorder}`,
-              borderRadius: '8px', outline: 'none', color: tk.t1,
+              background: t.inputBg, border: `1.5px solid ${t.borderInput}`,
+              borderRadius: '8px', outline: 'none', color: t.text1,
             }}
-            onFocus={e => { e.currentTarget.style.borderColor = tk.searchFocusBorder; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,.1)'; }}
-            onBlur={e => { e.currentTarget.style.borderColor = tk.searchBorder; e.currentTarget.style.boxShadow = 'none'; }}
+            onFocus={e => { e.currentTarget.style.borderColor = t.borderFocus; e.currentTarget.style.boxShadow = t.focusShadow; }}
+            onBlur={e => { e.currentTarget.style.borderColor = t.borderInput; e.currentTarget.style.boxShadow = 'none'; }}
           />
         </div>
 
         {/* Department pills */}
         <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', alignItems: 'center' }}>
-          <PillButton active={deptFilter === 'All'} onClick={() => { setDeptFilter('All'); setResourceTypeFilter('all'); setCurrentPage(1); }}
-            label="All" tk={tk} />
+          <PillButton active={deptFilter === 'All'} onClick={() => { setDeptFilter('All'); setResourceTypeFilter('all'); setPage(1); }}
+            label="All" tokens={t} />
           {deptNames.map(d => (
-            <PillButton key={d} active={deptFilter === d} onClick={() => { setDeptFilter(d); setResourceTypeFilter('all'); setCurrentPage(1); }}
-              label={`${d} (${deptCounts[d]})`} tk={tk} />
+            <PillButton key={d} active={deptFilter === d} onClick={() => { setDeptFilter(d); setResourceTypeFilter('all'); setPage(1); }}
+              label={`${d} (${deptCounts[d]})`} tokens={t} />
           ))}
 
-          <div style={{ width: 1, height: 24, background: tk.border, margin: '0 4px' }} />
+          <div style={{ width: 1, height: 24, background: t.divider, margin: '0 4px' }} />
+
           <ExportWorkItems deptFilter={deptFilter} />
         </div>
       </div>
@@ -326,17 +290,17 @@ export default function ResourceListingPage() {
       {/* Resource Type Filter Pills */}
       <div style={{ display: 'flex', gap: 8, padding: '12px 0 4px 0', alignItems: 'center' }}>
         <span style={{
-          fontSize: 11, fontWeight: 600, color: tk.t3,
+          fontSize: 11, fontWeight: 600, color: t.text2,
           textTransform: 'uppercase', letterSpacing: '0.05em',
           marginRight: 4, alignSelf: 'center',
         }}>
           Resource Type
         </span>
         {([
-          { key: 'all' as const, label: 'All', accentColor: tk.isDark ? '#F5F3F0' : '#1E293B' },
-          { key: 'core' as const, label: 'Core', accentColor: '#0D9488' },
-          { key: 'project' as const, label: 'Project', accentColor: '#3B82F6' },
-          { key: 'temporary' as const, label: 'Temporary', accentColor: tk.isDark ? '#A09890' : '#64748B' },
+          { key: 'all' as const, label: 'All', accentColor: isDark ? '#F5F3F0' : '#1E293B', tooltip: 'Show all resource types' },
+          { key: 'core' as const, label: 'Core', accentColor: '#0D9488', tooltip: 'Variable + Permanent (org headcount)' },
+          { key: 'project' as const, label: 'Project', accentColor: '#2563EB', tooltip: 'Fixed-term project resources' },
+          { key: 'temporary' as const, label: 'Temporary', accentColor: isDark ? '#A09890' : '#64748B', tooltip: 'Freelance / time-bounded engagements' },
         ] as const).map(pill => {
           const isActive = resourceTypeFilter === pill.key;
           const count = resourceTypeCounts[pill.key];
@@ -344,34 +308,35 @@ export default function ResourceListingPage() {
           return (
             <button
               key={pill.key}
-              onClick={() => { setResourceTypeFilter(pill.key); setCurrentPage(1); }}
+              title={pill.tooltip}
+              onClick={() => { setResourceTypeFilter(pill.key); setPage(1); }}
               style={{
                 height: 28, padding: '0 12px', borderRadius: 14,
                 fontSize: 13, fontWeight: isActive ? 600 : 500, cursor: 'pointer',
                 transition: 'all 150ms ease',
                 display: 'inline-flex', alignItems: 'center', gap: 6,
-                border: isActive ? `1.5px solid ${pill.accentColor}` : `1px solid ${tk.typePillBorder}`,
-                background: isActive ? tk.typePillBgActive : tk.typePillBg,
-                color: isActive ? pill.accentColor : tk.typePillText,
+                border: isActive ? `1.5px solid ${pill.accentColor}` : `1px solid ${t.pillBorder}`,
+                background: isActive ? t.typePillActiveBg : t.typePillBg,
+                color: isActive ? pill.accentColor : t.text2,
               }}
               onMouseEnter={e => {
                 if (!isActive) {
-                  e.currentTarget.style.background = tk.pillHoverBg;
-                  e.currentTarget.style.color = tk.t1;
+                  e.currentTarget.style.background = t.pillHoverBg;
+                  e.currentTarget.style.color = t.pillHoverText;
                 }
               }}
               onMouseLeave={e => {
                 if (!isActive) {
-                  e.currentTarget.style.background = tk.typePillBg;
-                  e.currentTarget.style.color = tk.typePillText;
+                  e.currentTarget.style.background = t.typePillBg;
+                  e.currentTarget.style.color = t.text2;
                 }
               }}
             >
               {pill.label}
               {showBadge && (
                 <span style={{
-                  background: isActive ? 'rgba(255,255,255,0.08)' : tk.badgeBg,
-                  color: isActive ? 'inherit' : tk.badgeText,
+                  background: isActive ? (isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)') : t.badgeBg,
+                  color: isActive ? 'inherit' : t.text3,
                   borderRadius: 10, padding: '1px 6px',
                   fontSize: 11, fontWeight: 600, marginLeft: 4,
                 }}>
@@ -385,10 +350,11 @@ export default function ResourceListingPage() {
 
       {/* Table */}
       <div style={{
-        border: `1px solid ${tk.border}`, borderRadius: '12px', overflow: 'hidden',
-        background: tk.cardBg,
+        border: `1px solid ${t.border}`, borderRadius: '8px', overflow: 'hidden',
+        background: t.surfaceBg, marginTop: '16px', flex: 1, minHeight: 0,
+        display: 'flex', flexDirection: 'column',
       }}>
-        <div style={{ overflowX: 'auto' }}>
+        <div style={{ overflowX: 'auto', flex: 1, minHeight: 0 }}>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr>
@@ -397,10 +363,10 @@ export default function ResourceListingPage() {
                     key={col.key}
                     onClick={() => col.key !== 'actions' && handleSort(col.key as SortKey)}
                     style={{
-                      background: tk.headerBg, padding: '0 16px', height: '36px',
-                      fontSize: '10.5px', fontWeight: 600, textTransform: 'uppercase' as const,
-                      letterSpacing: '0.07em', color: tk.t3,
-                      borderBottom: `0.75px solid ${tk.border}`,
+                      background: t.headerBg, padding: '0 16px', height: '40px',
+                      fontSize: '11px', fontWeight: 700, textTransform: 'uppercase' as const,
+                      letterSpacing: '0.07em', color: t.text2,
+                      borderBottom: `0.75px solid ${t.border}`,
                       cursor: col.key !== 'actions' ? 'pointer' : 'default',
                       textAlign: col.center ? 'center' : 'left',
                       minWidth: col.minWidth, width: col.width,
@@ -424,10 +390,10 @@ export default function ResourceListingPage() {
                 Array.from({ length: 6 }).map((_, i) => (
                   <tr key={i}>
                     {COLUMNS.map(col => (
-                      <td key={col.key} style={{ padding: '8px 16px', height: '36px' }}>
+                      <td key={col.key} style={{ padding: '8px 12px', height: '36px', maxHeight: '36px' }}>
                         <div style={{
                           height: '14px', borderRadius: '4px',
-                          background: `linear-gradient(90deg, ${tk.shimmerA} 25%, ${tk.shimmerB} 50%, ${tk.shimmerA} 75%)`,
+                          background: `linear-gradient(90deg, ${t.shimmerFrom} 25%, ${t.shimmerMid} 50%, ${t.shimmerFrom} 75%)`,
                           backgroundSize: '200% 100%',
                           animation: 'r360shimmer 1.5s infinite',
                           width: col.key === 'actions' ? '100px' : '60%',
@@ -439,40 +405,40 @@ export default function ResourceListingPage() {
               ) : sorted.length === 0 ? (
                 <tr>
                   <td colSpan={6} style={{ textAlign: 'center', padding: '60px 20px' }}>
-                    <Search size={32} style={{ color: tk.emptyIcon, margin: '0 auto 12px' }} />
-                    <div style={{ fontSize: '15px', fontWeight: 700, color: tk.t1, marginBottom: '4px' }}>No resources match your search.</div>
-                    <div style={{ fontSize: '12px', color: tk.t3 }}>Try adjusting your search or filters</div>
+                    <Search size={32} style={{ color: t.textDim, margin: '0 auto 12px' }} />
+                    <div style={{ fontSize: '15px', fontWeight: 700, color: t.text1, marginBottom: '4px' }}>No resources match your search.</div>
+                    <div style={{ fontSize: '12px', color: t.text3 }}>Try adjusting your search or filters</div>
                   </td>
                 </tr>
-              ) : paginatedRows.map(r => (
+              ) : pageData.map(r => (
                 <tr
                   key={r.rid}
-                  className="group"
-                  style={{ borderBottom: `0.75px solid ${tk.divider}`, cursor: 'pointer', height: '60px' }}
+                  className="r360-row"
+                  style={{ borderBottom: `0.75px solid ${t.borderSubtle}`, cursor: 'pointer', height: '48px' }}
                   onClick={() => navTo(r.id, 'ring')}
-                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = tk.hover; }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = t.hoverBg; }}
                   onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
                 >
                   {/* RESOURCE */}
-                  <td style={{ padding: '4px 16px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <ResourceAvatar name={r.full_name} avatarUrl={r.avatar_url} size={32} />
+                  <td style={{ padding: '8px 16px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                      <ResourceAvatar name={r.full_name} avatarUrl={r.avatar_url} />
                       <div style={{ minWidth: 0 }}>
                         <div style={{
-                          fontSize: '13px', fontWeight: 600, color: tk.t1,
+                          fontSize: '13px', fontWeight: 600, color: t.text1,
                           lineHeight: 1.3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                          maxWidth: '200px',
+                          maxWidth: '220px',
                         }}>{r.full_name}</div>
-                        <div style={{ fontSize: '11px', color: tk.t3, marginTop: 1 }}>RID: {r.rid}</div>
+                        <div style={{ fontSize: '11px', color: t.textMuted, marginTop: 2 }}>RID: {r.rid}</div>
                       </div>
                     </div>
                   </td>
                   {/* DEPARTMENT */}
-                  <td style={{ padding: '4px 16px' }}>
+                  <td style={{ padding: '8px 16px' }}>
                     {r.dept_name ? (
                       <span style={{
                         display: 'inline-flex', alignItems: 'center', gap: '6px',
-                        fontSize: '13px', fontWeight: 500, color: tk.t2,
+                        fontSize: '13px', fontWeight: 500, color: t.text2,
                       }}>
                         <span style={{
                           width: '6px', height: '6px', borderRadius: '50%',
@@ -480,36 +446,36 @@ export default function ResourceListingPage() {
                         }} />
                         {r.dept_name}
                       </span>
-                    ) : <span style={{ fontSize: '13px', color: tk.t4 }}>—</span>}
+                    ) : <span style={{ fontSize: '13px', color: t.textDim }}>—</span>}
                   </td>
                   {/* JOB ROLE */}
-                  <td style={{ padding: '4px 16px', fontSize: '13px', fontWeight: 600, color: tk.t1 }}>
+                  <td style={{ padding: '8px 16px', fontSize: '13px', fontWeight: 500, color: t.text1 }}>
                     {r.job_role || '—'}
                   </td>
                   {/* ASSIGNMENT */}
                   <td style={{
-                    padding: '4px 16px', fontSize: '13px', color: tk.t2,
-                    maxWidth: '180px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                    padding: '8px 16px', fontSize: '13px', color: t.text2,
+                    maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                   }}>
                     {r.assignment_name || '—'}
                   </td>
                   {/* LOCATION */}
-                  <td style={{ padding: '4px 16px' }}>
+                  <td style={{ padding: '8px 16px' }}>
                     {r.location_type ? (
                       <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '13px', fontWeight: 500 }}>
                         <span style={{
                           width: '6px', height: '6px', borderRadius: '50%',
-                          background: r.location_type === 'Onsite' ? '#93C5FD' : '#86EFAC',
+                          background: r.location_type === 'Onsite' ? t.onsite : t.offShore,
                         }} />
-                        <span style={{ color: tk.t2 }}>
+                        <span style={{ color: r.location_type === 'Onsite' ? t.onsite : t.offShore }}>
                           {r.location_type}
                         </span>
                       </span>
-                    ) : <span style={{ fontSize: '13px', color: tk.t4 }}>—</span>}
+                    ) : <span style={{ fontSize: '13px', color: t.textDim }}>—</span>}
                   </td>
-                  {/* ACTIONS — hover reveal (FP-005) */}
-                  <td style={{ padding: '4px 16px', textAlign: 'center' }}>
-                    <div style={{ display: 'inline-flex', gap: '6px' }}>
+                  {/* ACTIONS — opacity:0 hover reveal */}
+                  <td style={{ padding: '8px 16px', textAlign: 'center' }}>
+                    <div className="r360-actions" style={{ display: 'inline-flex', gap: '6px', opacity: 0, transition: 'opacity 150ms ease' }}>
                       <ActionBtn
                         tooltip="Open Intelligence"
                         bg="#7C3AED" bgHover="#6D28D9"
@@ -522,7 +488,7 @@ export default function ResourceListingPage() {
                       />
                       <ActionBtn
                         tooltip="Resource 360°"
-                        bg={tk.isDark ? '#A09890' : '#1e293b'} bgHover={tk.isDark ? '#F5F3F0' : '#0f172a'}
+                        bg={isDark ? '#A09890' : '#1e293b'} bgHover={isDark ? '#F5F3F0' : '#0f172a'}
                         icon={<RotateCw size={14} strokeWidth={1.9} />}
                         onClick={(e) => { e.stopPropagation(); navTo(r.id, 'ring'); }}
                       />
@@ -547,73 +513,104 @@ export default function ResourceListingPage() {
             </tbody>
           </table>
         </div>
-      </div>
 
-      {/* Pagination */}
-      {sorted.length > 0 && (
-        <div style={{
-          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-          padding: '12px 16px', fontSize: '13px', color: tk.t2,
-        }}>
-          <span>Showing {((safeCurrentPage - 1) * perPage) + 1}–{Math.min(safeCurrentPage * perPage, sorted.length)} of {sorted.length} resources</span>
-          <div style={{ display: 'flex', gap: '4px' }}>
-            <button
-              disabled={safeCurrentPage <= 1}
-              onClick={() => setCurrentPage(p => p - 1)}
-              style={{
-                width: 32, height: 32, borderRadius: 6, border: `1px solid ${tk.border}`,
-                background: 'transparent', color: safeCurrentPage <= 1 ? tk.t4 : tk.t2,
-                cursor: safeCurrentPage <= 1 ? 'not-allowed' : 'pointer', fontSize: '14px',
-              }}
-            >‹</button>
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
+        {/* Pagination Footer */}
+        {totalPages > 1 && (
+          <div style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            padding: '10px 16px',
+            borderTop: `0.75px solid ${t.border}`,
+            fontSize: 13, color: t.text2,
+          }}>
+            <span>
+              Showing {startIdx + 1}–{endIdx} of {sorted.length} resources
+            </span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
               <button
-                key={p}
-                onClick={() => setCurrentPage(p)}
+                onClick={() => setPage(p => Math.max(1, p - 1))}
+                disabled={safePage === 1}
                 style={{
-                  width: 32, height: 32, borderRadius: 6, fontSize: '13px', fontWeight: 600,
-                  border: `1px solid ${p === safeCurrentPage ? '#3B82F6' : tk.border}`,
-                  background: p === safeCurrentPage ? '#3B82F6' : 'transparent',
-                  color: p === safeCurrentPage ? '#FFFFFF' : tk.t2,
-                  cursor: 'pointer',
+                  width: 32, height: 32, borderRadius: 6,
+                  border: `1px solid ${t.border}`, background: 'transparent',
+                  color: safePage === 1 ? t.textDim : t.text2,
+                  cursor: safePage === 1 ? 'not-allowed' : 'pointer',
+                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: 13,
                 }}
-              >{p}</button>
-            ))}
-            <button
-              disabled={safeCurrentPage >= totalPages}
-              onClick={() => setCurrentPage(p => p + 1)}
-              style={{
-                width: 32, height: 32, borderRadius: 6, border: `1px solid ${tk.border}`,
-                background: 'transparent', color: safeCurrentPage >= totalPages ? tk.t4 : tk.t2,
-                cursor: safeCurrentPage >= totalPages ? 'not-allowed' : 'pointer', fontSize: '14px',
-              }}
-            >›</button>
+              >
+                <ChevronLeft size={14} />
+              </button>
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(n => (
+                <button
+                  key={n}
+                  onClick={() => setPage(n)}
+                  style={{
+                    width: 32, height: 32, borderRadius: 6,
+                    border: `1px solid ${safePage === n ? '#2563EB' : t.border}`,
+                    background: safePage === n ? '#2563EB' : 'transparent',
+                    color: safePage === n ? '#FFFFFF' : t.text2,
+                    fontWeight: safePage === n ? 600 : 400,
+                    cursor: 'pointer', fontSize: 13,
+                  }}
+                >
+                  {n}
+                </button>
+              ))}
+              <button
+                onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                disabled={safePage === totalPages}
+                style={{
+                  width: 32, height: 32, borderRadius: 6,
+                  border: `1px solid ${t.border}`, background: 'transparent',
+                  color: safePage === totalPages ? t.textDim : t.text2,
+                  cursor: safePage === totalPages ? 'not-allowed' : 'pointer',
+                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: 13,
+                }}
+              >
+                <ChevronRight size={14} />
+              </button>
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
       <style>{`
         @keyframes r360shimmer {
           0% { background-position: 200% 0; }
           100% { background-position: -200% 0; }
         }
+        .r360-row:hover .r360-actions {
+          opacity: 1 !important;
+        }
       `}</style>
+
     </div>
   );
 }
 
 /* ── Sub-components ── */
 
-function PillButton({ active, onClick, label, tk }: { active: boolean; onClick: () => void; label: string; tk: ReturnType<typeof useTokens> }) {
+interface TokenMap {
+  pillBg: string;
+  pillBorder: string;
+  pillActiveBorder: string;
+  pillActiveText: string;
+  pillInactiveText: string;
+  pillHoverBg: string;
+  pillHoverText: string;
+}
+
+function PillButton({ active, onClick, label, tokens }: { active: boolean; onClick: () => void; label: string; tokens: TokenMap }) {
   return (
     <button
       onClick={onClick}
       style={{
-        background: tk.pillBg,
-        border: `1.5px solid ${active ? tk.pillBorderActive : tk.pillBorder}`,
-        color: active ? tk.pillTextActive : tk.pillText,
+        background: tokens.pillBg,
+        border: `1.5px solid ${active ? tokens.pillActiveBorder : tokens.pillBorder}`,
+        color: active ? tokens.pillActiveText : tokens.pillInactiveText,
         borderRadius: '20px',
-        padding: '6px 16px',
+        padding: '8px 18px',
         fontSize: '13px',
         fontWeight: 500,
         cursor: 'pointer',
@@ -621,10 +618,16 @@ function PillButton({ active, onClick, label, tk }: { active: boolean; onClick: 
         transition: 'border-color 150ms, color 150ms, background 150ms',
       }}
       onMouseEnter={e => {
-        if (!active) e.currentTarget.style.background = tk.pillHoverBg;
+        if (!active) {
+          e.currentTarget.style.background = tokens.pillHoverBg;
+          e.currentTarget.style.color = tokens.pillHoverText;
+        }
       }}
       onMouseLeave={e => {
-        if (!active) e.currentTarget.style.background = tk.pillBg;
+        if (!active) {
+          e.currentTarget.style.background = tokens.pillBg;
+          e.currentTarget.style.color = tokens.pillInactiveText;
+        }
       }}
     >
       {label}
@@ -632,7 +635,7 @@ function PillButton({ active, onClick, label, tk }: { active: boolean; onClick: 
   );
 }
 
-function ResourceAvatar({ name, avatarUrl, size = 32 }: { name: string; avatarUrl: string | null; size?: number }) {
+function ResourceAvatar({ name, avatarUrl }: { name: string; avatarUrl: string | null }) {
   const [imgError, setImgError] = useState(false);
 
   if (avatarUrl && !imgError) {
@@ -640,7 +643,7 @@ function ResourceAvatar({ name, avatarUrl, size = 32 }: { name: string; avatarUr
       <img
         src={avatarUrl}
         alt={name}
-        style={{ width: size, height: size, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }}
+        style={{ width: 32, height: 32, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }}
         onError={() => setImgError(true)}
       />
     );
@@ -648,10 +651,10 @@ function ResourceAvatar({ name, avatarUrl, size = 32 }: { name: string; avatarUr
 
   return (
     <div style={{
-      width: size, height: size, borderRadius: '50%',
+      width: 32, height: 32, borderRadius: '50%',
       background: hashColor(name), color: '#ffffff',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
-      fontSize: size < 36 ? '11px' : '13px', fontWeight: 600, flexShrink: 0,
+      fontSize: '12px', fontWeight: 600, flexShrink: 0,
     }}>
       {getInitials(name)}
     </div>
@@ -699,7 +702,7 @@ function ActionBtn({
             {icon}
           </button>
         </TooltipTrigger>
-        <TooltipContent side="top" className="bg-[#2C2823] text-[#F5F3F0] text-[11px] rounded-md px-2 py-1">
+        <TooltipContent side="top">
           {tooltip}
         </TooltipContent>
       </Tooltip>
