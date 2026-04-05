@@ -312,7 +312,7 @@ const JiraUserSync: React.FC = () => {
       .jsu-text-2 { color: ${T.text2} !important; }
       .jsu-text-3 { color: ${T.text3} !important; }
       .jsu-border { border-color: ${T.border} !important; }
-      .jsu-row { background: ${T.surface} !important; border-bottom: 0.75px solid ${T.border} !important; height: 40px !important; max-height: 40px !important; }
+      .jsu-row { background: ${T.surface} !important; border-bottom: 0.75px solid ${T.border} !important; height: 55px !important; min-height: 55px !important; }
       .jsu-row:hover { background: ${isDark ? 'rgba(200,210,225,0.05)' : 'rgba(15,23,42,0.03)'} !important; }
       .jsu-th { background: ${T.sunken} !important; color: ${T.text2} !important; font-family: Inter,sans-serif !important; font-size: 11px !important; font-weight: 600 !important; text-transform: uppercase !important; letter-spacing: 0.05em !important; padding: 10px 12px !important; border-bottom: 0.75px solid ${T.border} !important; }
       .jsu-td { color: ${T.text1} !important; font-family: Inter,sans-serif !important; font-size: 13px !important; padding: 0 12px !important; }
