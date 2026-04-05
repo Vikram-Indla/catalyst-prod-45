@@ -47,18 +47,18 @@ interface Props {
   isDark?: boolean;
 }
 
-const sectionLabel: React.CSSProperties = {
-  fontSize: '10px', fontWeight: 700, color: '#64748B',
+const mkSectionLabel = (isDark: boolean): React.CSSProperties => ({
+  fontSize: '10px', fontWeight: 700, color: isDark ? 'rgba(200,210,225,0.50)' : '#64748B',
   textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '6px',
-};
+});
 
-const fieldRow: React.CSSProperties = {
+const mkFieldRow = (isDark: boolean): React.CSSProperties => ({
   display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-  padding: '5px 0', borderBottom: '0.5px solid rgba(15,23,42,0.06)',
-};
+  padding: '5px 0', borderBottom: `0.5px solid ${isDark ? 'rgba(200,210,225,0.06)' : 'rgba(15,23,42,0.06)'}`,
+});
 
-const fieldKey: React.CSSProperties = { fontSize: '11px', color: '#64748B' };
-const fieldVal: React.CSSProperties = { fontSize: '12px', fontWeight: 500, color: '#0F172A', textAlign: 'right' as const };
+const mkFieldKey = (isDark: boolean): React.CSSProperties => ({ fontSize: '11px', color: isDark ? 'rgba(200,210,225,0.55)' : '#64748B' });
+const mkFieldVal = (isDark: boolean): React.CSSProperties => ({ fontSize: '12px', fontWeight: 500, color: isDark ? 'rgba(225,230,240,0.92)' : '#0F172A', textAlign: 'right' as const });
 const monoSmall: React.CSSProperties = { fontFamily: "'JetBrains Mono', monospace", fontSize: '10px' };
 const Code: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <code style={{
