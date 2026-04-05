@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Plus, RefreshCw, Search, ChevronLeft, ChevronRight, UserX, Copy, X, Loader2, Share2, Download, Users2, FolderSearch } from 'lucide-react';
+import { Plus, RefreshCw, Search, ChevronLeft, ChevronRight, UserX, Copy, X, Loader2, Share2, Download, Users2, FolderSearch, Layers, ChevronDown } from 'lucide-react';
 import UserDetailPanel from '@/components/admin/UserDetailPanel';
 import { toast } from 'sonner';
 import {
