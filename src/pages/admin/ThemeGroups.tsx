@@ -48,13 +48,13 @@ export default function ThemeGroups() {
   const getStatusDisplay = (status: string) => {
     switch (status) {
       case 'active':
-        return { label: 'Active', color: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300' };
+        return { label: 'Active', color: 'bg-green-100 text-green-800 dark:bg-[rgba(34,197,94,0.12)] dark:text-green-300' };
       case 'proposed':
-        return { label: 'Proposed', color: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300' };
+        return { label: 'Proposed', color: 'bg-blue-100 text-blue-800 dark:bg-[rgba(59,130,246,0.12)] dark:text-blue-300' };
       case 'done':
-        return { label: 'Done', color: 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300' };
+        return { label: 'Done', color: 'bg-gray-100 text-gray-800 dark:bg-[#2C2823] dark:text-gray-300' };
       case 'cancelled':
-        return { label: 'Inactive', color: 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400' };
+        return { label: 'Inactive', color: 'bg-gray-100 text-gray-600 dark:bg-[#2C2823] dark:text-gray-400' };
       default:
         return { label: status, color: 'bg-gray-100 text-gray-800' };
     }

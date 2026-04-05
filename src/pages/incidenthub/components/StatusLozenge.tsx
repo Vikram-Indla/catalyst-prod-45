@@ -3,20 +3,23 @@
  * Grey (#DFE1E6/#42526E): open, triage, on_hold, closed, converted
  * Blue (#0C66E4/#FFFFFF): in_progress, in_review, to_committee
  * Green (#1B7F37/#FFFFFF): resolved
+ *
+ * NOCTURNE dark mode: slightly adjusted opacity for grey lozenges
  */
 
 import { cn } from '@/lib/utils';
+import { useTheme } from '@/hooks/useTheme';
 
-const LOZENGE_MAP: Record<string, { bg: string; text: string }> = {
-  open:         { bg: '#DFE1E6', text: '#42526E' },
-  triage:       { bg: '#DFE1E6', text: '#42526E' },
-  on_hold:      { bg: '#DFE1E6', text: '#42526E' },
-  closed:       { bg: '#DFE1E6', text: '#42526E' },
-  converted:    { bg: '#DFE1E6', text: '#42526E' },
-  in_progress:  { bg: '#0C66E4', text: '#FFFFFF' },
-  in_review:    { bg: '#0C66E4', text: '#FFFFFF' },
-  to_committee: { bg: '#0C66E4', text: '#FFFFFF' },
-  resolved:     { bg: '#1B7F37', text: '#FFFFFF' },
+const LOZENGE_MAP: Record<string, { bg: string; text: string; darkBg: string; darkText: string }> = {
+  open:         { bg: '#DFE1E6', text: '#42526E', darkBg: 'rgba(223,225,230,0.16)', darkText: '#A09890' },
+  triage:       { bg: '#DFE1E6', text: '#42526E', darkBg: 'rgba(223,225,230,0.16)', darkText: '#A09890' },
+  on_hold:      { bg: '#DFE1E6', text: '#42526E', darkBg: 'rgba(223,225,230,0.16)', darkText: '#A09890' },
+  closed:       { bg: '#DFE1E6', text: '#42526E', darkBg: 'rgba(223,225,230,0.16)', darkText: '#A09890' },
+  converted:    { bg: '#DFE1E6', text: '#42526E', darkBg: 'rgba(223,225,230,0.16)', darkText: '#A09890' },
+  in_progress:  { bg: '#0C66E4', text: '#FFFFFF', darkBg: 'rgba(12,102,228,0.24)', darkText: '#93C5FD' },
+  in_review:    { bg: '#0C66E4', text: '#FFFFFF', darkBg: 'rgba(12,102,228,0.24)', darkText: '#93C5FD' },
+  to_committee: { bg: '#0C66E4', text: '#FFFFFF', darkBg: 'rgba(12,102,228,0.24)', darkText: '#93C5FD' },
+  resolved:     { bg: '#1B7F37', text: '#FFFFFF', darkBg: 'rgba(27,127,55,0.24)', darkText: '#86EFAC' },
 };
 
 const LABELS: Record<string, string> = {
@@ -38,6 +41,7 @@ interface StatusLozengeProps {
 }
 
 export function StatusLozenge({ status, onClick, className }: StatusLozengeProps) {
+  const { isDark } = useTheme();
   const key = status?.toLowerCase().replace(/\s+/g, '_') || 'open';
   const colors = LOZENGE_MAP[key] || LOZENGE_MAP.open;
   const label = LABELS[key] || status?.toUpperCase() || 'UNKNOWN';
@@ -60,8 +64,8 @@ export function StatusLozenge({ status, onClick, className }: StatusLozengeProps
         textTransform: 'uppercase',
         letterSpacing: '0.03em',
         borderRadius: 3,
-        backgroundColor: colors.bg,
-        color: colors.text,
+        backgroundColor: isDark ? colors.darkBg : colors.bg,
+        color: isDark ? colors.darkText : colors.text,
         lineHeight: '20px',
       }}
     >

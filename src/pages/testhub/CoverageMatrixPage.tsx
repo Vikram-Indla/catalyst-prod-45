@@ -6,6 +6,7 @@
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTheme } from '@/hooks/useTheme';
 import {
   LayoutGrid, ChevronDown, ChevronRight, CheckCircle2, XCircle,
   AlertTriangle, Clock, RefreshCw, FileText, Target, Download,
@@ -67,18 +68,18 @@ const EXEC_ICONS: Record<string, { icon: any; color: string; label: string }> = 
 };
 
 function getCoverageLevel(pct: number) {
-  if (pct === 100) return { label: 'Full', className: 'bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-400 dark:border-emerald-800' };
-  if (pct >= 50) return { label: 'Partial', className: 'bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-950 dark:text-amber-400 dark:border-amber-800' };
-  if (pct > 0) return { label: 'Low', className: 'bg-orange-100 text-orange-700 border-orange-200 dark:bg-orange-950 dark:text-orange-400 dark:border-orange-800' };
-  return { label: 'None', className: 'bg-red-100 text-destructive border-red-200 dark:bg-red-950 dark:text-red-400 dark:border-red-800' };
+  if (pct === 100) return { label: 'Full', className: 'bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-[rgba(34,197,94,0.12)] dark:text-emerald-400 dark:border-[rgba(34,197,94,0.2)]' };
+  if (pct >= 50) return { label: 'Partial', className: 'bg-amber-100 text-amber-700 border-amber-200 dark:bg-[rgba(251,191,36,0.12)] dark:text-amber-400 dark:border-[rgba(251,191,36,0.2)]' };
+  if (pct > 0) return { label: 'Low', className: 'bg-orange-100 text-orange-700 border-orange-200 dark:bg-[rgba(251,146,60,0.12)] dark:text-orange-400 dark:border-[rgba(251,146,60,0.2)]' };
+  return { label: 'None', className: 'bg-red-100 text-destructive border-red-200 dark:bg-[rgba(248,113,113,0.12)] dark:text-red-400 dark:border-[rgba(248,113,113,0.2)]' };
 }
 
 function getHeatmapColor(pct: number): string {
-  if (pct === 100) return 'bg-emerald-500 dark:bg-emerald-600';
-  if (pct >= 75) return 'bg-emerald-300 dark:bg-emerald-700';
-  if (pct >= 50) return 'bg-amber-400 dark:bg-amber-600';
-  if (pct > 0) return 'bg-orange-400 dark:bg-orange-600';
-  return 'bg-red-200 dark:bg-red-800';
+  if (pct === 100) return 'bg-emerald-500 dark:bg-emerald-500';
+  if (pct >= 75) return 'bg-emerald-300 dark:bg-emerald-600';
+  if (pct >= 50) return 'bg-amber-400 dark:bg-amber-500';
+  if (pct > 0) return 'bg-orange-400 dark:bg-orange-500';
+  return 'bg-red-200 dark:bg-red-500/30';
 }
 
 function priorityOrder(p: string) {
@@ -106,6 +107,7 @@ function exportCSV(requirements: Requirement[]) {
 
 export default function CoverageMatrixPage() {
   const navigate = useNavigate();
+  const { isDark } = useTheme();
   const [requirements, setRequirements] = useState<Requirement[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<ViewTab>('matrix');
@@ -231,7 +233,7 @@ export default function CoverageMatrixPage() {
   }
 
   return (
-    <div className="flex-1 flex flex-col overflow-auto">
+    <div className={`flex-1 flex flex-col overflow-auto ${isDark ? 'bg-[#1A1714]' : ''}`}>
       <TestHubPageHeader title="Traceability Matrix" subtitle={`${summary.pct}% coverage (${summary.full}/${summary.total} requirements) · ${summary.none} gap${summary.none !== 1 ? 's' : ''}${summary.critGaps > 0 ? ` (${summary.critGaps} critical)` : ''}`}>
         <Button variant="outline" size="sm" onClick={() => exportCSV(filtered)}>
           <Download className="w-4 h-4 mr-2" />
@@ -495,11 +497,11 @@ function HeatmapView({ requirements, onClickReq }: { requirements: Requirement[]
       <div className="flex items-center gap-4 text-xs text-muted-foreground">
         <span className="font-medium">Legend:</span>
         {[
-          { label: 'No Tests', cls: 'bg-red-200 dark:bg-red-800' },
-          { label: 'Failing', cls: 'bg-orange-400 dark:bg-orange-600' },
-          { label: 'Partial', cls: 'bg-amber-400 dark:bg-amber-600' },
-          { label: '75%+', cls: 'bg-emerald-300 dark:bg-emerald-700' },
-          { label: '100%', cls: 'bg-emerald-500 dark:bg-emerald-600' },
+          { label: 'No Tests', cls: 'bg-red-200 dark:bg-red-500/30' },
+          { label: 'Failing', cls: 'bg-orange-400 dark:bg-orange-500' },
+          { label: 'Partial', cls: 'bg-amber-400 dark:bg-amber-500' },
+          { label: '75%+', cls: 'bg-emerald-300 dark:bg-emerald-600' },
+          { label: '100%', cls: 'bg-emerald-500 dark:bg-emerald-500' },
         ].map(l => (
           <div key={l.label} className="flex items-center gap-1.5">
             <div className={cn('w-4 h-4 rounded', l.cls)} />
@@ -591,9 +593,9 @@ function GapAnalysisView({
   };
 
   const priorityBg: Record<string, string> = {
-    critical: 'bg-red-50 border-red-200 dark:bg-red-950/30 dark:border-red-800',
-    high: 'bg-orange-50 border-orange-200 dark:bg-orange-950/30 dark:border-orange-800',
-    medium: 'bg-amber-50 border-amber-200 dark:bg-amber-950/30 dark:border-amber-800',
+    critical: 'bg-red-50 border-red-200 dark:bg-[rgba(248,113,113,0.08)] dark:border-[rgba(248,113,113,0.2)]',
+    high: 'bg-orange-50 border-orange-200 dark:bg-[rgba(251,146,60,0.08)] dark:border-[rgba(251,146,60,0.2)]',
+    medium: 'bg-amber-50 border-amber-200 dark:bg-[rgba(251,191,36,0.08)] dark:border-[rgba(251,191,36,0.2)]',
     low: 'bg-muted/30 border-border',
   };
 

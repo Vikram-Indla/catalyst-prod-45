@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useTheme } from '@/hooks/useTheme';
 
 type IncidentHubView = 'list' | 'kanban' | 'analytics' | 'insights' | 'reports' | 'committee-queue';
 
@@ -13,17 +14,28 @@ const VIEW_TITLES: Record<IncidentHubView, { title: string; subtitle: string }> 
 };
 
 function SkeletonTable() {
+  const { isDark } = useTheme();
   return (
-    <div className="bg-white rounded-lg border border-[#E2E8F0] overflow-hidden">
+    <div style={{
+      backgroundColor: isDark ? '#232019' : '#FFFFFF',
+      borderRadius: 8,
+      border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`,
+      overflow: 'hidden',
+    }}>
       {/* Header row */}
-      <div className="flex items-center gap-3 px-4 h-10 bg-[#F4F7FA] border-b border-[#E2E8F0]">
+      <div className="flex items-center gap-3 px-4 h-10" style={{
+        backgroundColor: isDark ? '#2C2823' : '#F4F7FA',
+        borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`,
+      }}>
         {[120, 200, 80, 80, 100, 120].map((w, i) => (
           <Skeleton key={i} className="h-3 rounded" style={{ width: w }} />
         ))}
       </div>
       {/* Data rows */}
       {Array.from({ length: 8 }).map((_, row) => (
-        <div key={row} className="flex items-center gap-3 px-4 h-11 border-b border-[#F1F5F9]">
+        <div key={row} className="flex items-center gap-3 px-4 h-11" style={{
+          borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.05)' : '#F1F5F9'}`,
+        }}>
           {[120, 200, 80, 80, 100, 120].map((w, i) => (
             <Skeleton key={i} className="h-3 rounded" style={{ width: w, opacity: 0.6 - row * 0.05 }} />
           ))}
@@ -34,6 +46,7 @@ function SkeletonTable() {
 }
 
 function SkeletonKanban() {
+  const { isDark } = useTheme();
   return (
     <div className="flex gap-3">
       {['TRIAGE', 'IN PROGRESS', 'IN REVIEW', 'ON HOLD', 'RESOLVED'].map(col => (
@@ -44,7 +57,10 @@ function SkeletonKanban() {
           </div>
           <div className="space-y-2">
             {Array.from({ length: Math.floor(Math.random() * 3) + 1 }).map((_, i) => (
-              <div key={i} className="bg-white rounded-lg border border-[#E2E8F0] p-3 space-y-2">
+              <div key={i} className="rounded-lg p-3 space-y-2" style={{
+                backgroundColor: isDark ? '#232019' : '#FFFFFF',
+                border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`,
+              }}>
                 <Skeleton className="h-3 w-3/4 rounded" />
                 <Skeleton className="h-3 w-1/2 rounded" />
                 <div className="flex gap-2 mt-2">
@@ -61,10 +77,14 @@ function SkeletonKanban() {
 }
 
 function SkeletonCards({ count = 4 }: { count?: number }) {
+  const { isDark } = useTheme();
   return (
     <div className="grid grid-cols-4 gap-3">
       {Array.from({ length: count }).map((_, i) => (
-        <div key={i} className="bg-white rounded-lg border border-[#E2E8F0] p-4 space-y-3">
+        <div key={i} className="rounded-lg p-4 space-y-3" style={{
+          backgroundColor: isDark ? '#232019' : '#FFFFFF',
+          border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`,
+        }}>
           <Skeleton className="h-3 w-24 rounded" />
           <Skeleton className="h-8 w-16 rounded" />
           <Skeleton className="h-3 w-32 rounded" />
@@ -75,13 +95,14 @@ function SkeletonCards({ count = 4 }: { count?: number }) {
 }
 
 function ViewShell({ view }: { view: IncidentHubView }) {
+  const { isDark } = useTheme();
   const { title, subtitle } = VIEW_TITLES[view];
 
   return (
-    <div style={{ minHeight: 'calc(100vh - 48px)', backgroundColor: '#F1F5F9', padding: 24 }}>
+    <div style={{ minHeight: 'calc(100vh - 48px)', backgroundColor: isDark ? '#1A1714' : '#F1F5F9', padding: 24 }}>
       <div className="mb-6">
-        <h1 className="text-[22px] font-extrabold" style={{ fontFamily: '"Sora", sans-serif', color: '#080E1D' }}>{title}</h1>
-        <p className="text-[13px] text-[#64748B]" style={{ fontFamily: '"Inter", sans-serif' }}>{subtitle}</p>
+        <h1 className="text-[22px] font-extrabold" style={{ fontFamily: '"Sora", sans-serif', color: isDark ? '#F5F3F0' : '#080E1D' }}>{title}</h1>
+        <p className="text-[13px]" style={{ fontFamily: '"Inter", sans-serif', color: isDark ? '#6B6560' : '#64748B' }}>{subtitle}</p>
       </div>
 
       {/* View-specific skeleton states */}
@@ -98,10 +119,16 @@ function ViewShell({ view }: { view: IncidentHubView }) {
         <div className="space-y-4">
           <SkeletonCards count={4} />
           <div className="grid grid-cols-2 gap-3">
-            <div className="bg-white rounded-lg border border-[#E2E8F0] p-4 h-[300px] flex items-center justify-center">
+            <div className="rounded-lg p-4 h-[300px] flex items-center justify-center" style={{
+              backgroundColor: isDark ? '#232019' : '#FFFFFF',
+              border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`,
+            }}>
               <Skeleton className="h-48 w-48 rounded-full" />
             </div>
-            <div className="bg-white rounded-lg border border-[#E2E8F0] p-4 h-[300px]">
+            <div className="rounded-lg p-4 h-[300px]" style={{
+              backgroundColor: isDark ? '#232019' : '#FFFFFF',
+              border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`,
+            }}>
               <Skeleton className="h-4 w-32 rounded mb-4" />
               {Array.from({ length: 6 }).map((_, i) => (
                 <div key={i} className="flex items-center gap-2 mb-3">
@@ -115,14 +142,19 @@ function ViewShell({ view }: { view: IncidentHubView }) {
 
       {view === 'insights' && (
         <div className="space-y-4">
-          <div className="bg-white rounded-lg border border-[#E2E8F0] p-6">
+          <div className="rounded-lg p-6" style={{
+            backgroundColor: isDark ? '#232019' : '#FFFFFF',
+            border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`,
+          }}>
             <div className="flex items-center gap-2 mb-4">
               <Skeleton className="h-5 w-5 rounded" />
               <Skeleton className="h-4 w-48 rounded" />
             </div>
             <div className="space-y-3">
               {Array.from({ length: 3 }).map((_, i) => (
-                <div key={i} className="bg-[#F4F7FA] rounded-lg p-4 space-y-2">
+                <div key={i} className="rounded-lg p-4 space-y-2" style={{
+                  backgroundColor: isDark ? '#2C2823' : '#F4F7FA',
+                }}>
                   <Skeleton className="h-3 w-3/4 rounded" />
                   <Skeleton className="h-3 w-1/2 rounded" />
                 </div>
@@ -136,7 +168,10 @@ function ViewShell({ view }: { view: IncidentHubView }) {
 
       {view === 'committee-queue' && (
         <div className="space-y-4">
-          <div className="bg-[#FFFBEB] border border-[#FCD34D] rounded-lg px-4 py-3 flex items-center gap-2">
+          <div className="rounded-lg px-4 py-3 flex items-center gap-2" style={{
+            backgroundColor: isDark ? 'rgba(251,191,36,0.12)' : '#FFFBEB',
+            border: `1px solid ${isDark ? 'rgba(251,191,36,0.25)' : '#FCD34D'}`,
+          }}>
             <Skeleton className="h-4 w-4 rounded" />
             <Skeleton className="h-3 w-64 rounded" />
           </div>

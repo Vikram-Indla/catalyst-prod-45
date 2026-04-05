@@ -107,31 +107,39 @@ function computeThemeStatus(goals: Goal[]): string {
   return 'active';
 }
 
-const AVATAR_COLORS: Record<string, { bg: string; text: string }> = {
-  'Nada Alfassam':      { bg: '#DBEAFE', text: '#1E40AF' },
-  'Sitah Alqahtani':    { bg: '#E0E7FF', text: '#3730A3' },
-  'Sulaiman Alessa':    { bg: '#D1FAE5', text: '#065F46' },
-  'ibrahim alqusiyer':  { bg: '#FEF3C7', text: '#92400E' },
-  'Khaled Alghithy':    { bg: '#CFFAFE', text: '#155E75' },
-  'Izza Ali':           { bg: '#EDE9FE', text: '#5B21B6' },
+const AVATAR_COLORS: Record<string, { bg: string; text: string; bgDark: string; textDark: string }> = {
+  'Nada Alfassam':      { bg: '#DBEAFE', text: '#1E40AF', bgDark: 'rgba(59,130,246,0.15)',  textDark: '#93C5FD' },
+  'Sitah Alqahtani':    { bg: '#E0E7FF', text: '#3730A3', bgDark: 'rgba(99,102,241,0.15)',  textDark: '#A5B4FC' },
+  'Sulaiman Alessa':    { bg: '#D1FAE5', text: '#065F46', bgDark: 'rgba(52,211,153,0.15)',  textDark: '#6EE7B7' },
+  'ibrahim alqusiyer':  { bg: '#FEF3C7', text: '#92400E', bgDark: 'rgba(251,191,36,0.15)',  textDark: '#FCD34D' },
+  'Khaled Alghithy':    { bg: '#CFFAFE', text: '#155E75', bgDark: 'rgba(34,211,238,0.15)',  textDark: '#67E8F9' },
+  'Izza Ali':           { bg: '#EDE9FE', text: '#5B21B6', bgDark: 'rgba(139,92,246,0.15)',  textDark: '#C4B5FD' },
 };
 
-function getAvatarColors(name: string) {
-  if (AVATAR_COLORS[name]) return AVATAR_COLORS[name];
-  let hash = 0;
-  for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+function getAvatarColors(name: string, isDark = false) {
   const palettes = [
-    { bg: '#DBEAFE', text: '#1E40AF' }, { bg: '#D1FAE5', text: '#065F46' },
-    { bg: '#E0E7FF', text: '#3730A3' }, { bg: '#FEF3C7', text: '#92400E' },
-    { bg: '#CFFAFE', text: '#155E75' }, { bg: '#EDE9FE', text: '#5B21B6' },
+    { bg: '#DBEAFE', text: '#1E40AF', bgDark: 'rgba(59,130,246,0.15)',  textDark: '#93C5FD' },
+    { bg: '#D1FAE5', text: '#065F46', bgDark: 'rgba(52,211,153,0.15)',  textDark: '#6EE7B7' },
+    { bg: '#E0E7FF', text: '#3730A3', bgDark: 'rgba(99,102,241,0.15)',  textDark: '#A5B4FC' },
+    { bg: '#FEF3C7', text: '#92400E', bgDark: 'rgba(251,191,36,0.15)',  textDark: '#FCD34D' },
+    { bg: '#CFFAFE', text: '#155E75', bgDark: 'rgba(34,211,238,0.15)',  textDark: '#67E8F9' },
+    { bg: '#EDE9FE', text: '#5B21B6', bgDark: 'rgba(139,92,246,0.15)',  textDark: '#C4B5FD' },
   ];
-  return palettes[Math.abs(hash) % palettes.length];
+  let entry;
+  if (AVATAR_COLORS[name]) {
+    entry = AVATAR_COLORS[name];
+  } else {
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    entry = palettes[Math.abs(hash) % palettes.length];
+  }
+  return isDark ? { bg: entry.bgDark, text: entry.textDark } : { bg: entry.bg, text: entry.text };
 }
 
-function OwnerAvatar({ name, size = 28 }: { name?: string; size?: number }) {
-  if (!name) return <span style={{ fontSize: 11, color: '#CBD5E1' }}>—</span>;
+function OwnerAvatar({ name, size = 28, isDark = false }: { name?: string; size?: number; isDark?: boolean }) {
+  if (!name) return <span style={{ fontSize: 11, color: isDark ? DK.t4 : '#CBD5E1' }}>—</span>;
   const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-  const colors = getAvatarColors(name);
+  const colors = getAvatarColors(name, isDark);
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 6 }} title={name}>
       <div style={{
@@ -371,7 +379,7 @@ export function GoalsTreeView({
                     </div>
                     <div><ConfidenceDots level={confLevel} isDark={isDark} /></div>
                     <div style={{ fontSize: 12, fontWeight: 600, color: isDark ? DK.t2 : 'var(--fg-2)' }}>{goalKRs.length}</div>
-                    <div><OwnerAvatar name={goal.owner_name} size={28} /></div>
+                    <div><OwnerAvatar name={goal.owner_name} size={28} isDark={isDark} /></div>
                     <div>
                       {goal.ai_health_score != null ? (
                         <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3, fontSize: 10.5, fontWeight: 600, color: isDark ? '#93C5FD' : 'var(--cp-blue)', background: isDark ? 'rgba(59,130,246,0.12)' : 'var(--cp-blue-wash)', padding: '2px 6px', borderRadius: 4 }}>

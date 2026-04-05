@@ -166,8 +166,8 @@ export const DK = {
   t2: 'var(--cp-t2)',
   t3: 'var(--cp-t3)',
   t4: 'var(--cp-t4)',
-  border: 'rgba(235,238,245,0.10)',
-  borderSubtle: 'rgba(235,238,245,0.08)',
-  hover: 'rgba(235,238,245,0.03)',
-  iconBgSubtle: 'rgba(235,238,245,0.06)',
+  border: 'rgba(255,255,255,0.08)',
+  borderSubtle: 'rgba(255,255,255,0.05)',
+  hover: 'rgba(255,255,255,0.03)',
+  iconBgSubtle: 'rgba(255,255,255,0.06)',
 };

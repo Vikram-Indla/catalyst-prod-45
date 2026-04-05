@@ -42,7 +42,7 @@ export const RadarChart: React.FC<RadarChartProps> = ({ values, size = 200 }) =>
         else ctx.lineTo(x, y);
       }
       ctx.closePath();
-      ctx.strokeStyle = 'hsl(240 5% 84%)'; // zinc-300
+      ctx.strokeStyle = '#d4d4d8'; // zinc-300
       ctx.lineWidth = 0.5;
       ctx.stroke();
     }
@@ -53,14 +53,14 @@ export const RadarChart: React.FC<RadarChartProps> = ({ values, size = 200 }) =>
       ctx.beginPath();
       ctx.moveTo(center, center);
       ctx.lineTo(center + radius * Math.cos(angle), center - radius * Math.sin(angle));
-      ctx.strokeStyle = 'hsl(240 4% 76%)'; // zinc-300
+      ctx.strokeStyle = '#a1a1aa'; // zinc-400
       ctx.lineWidth = 0.5;
       ctx.stroke();
     }
 
     // Draw axis labels
     ctx.font = '10px Inter, system-ui, sans-serif';
-    ctx.fillStyle = 'hsl(240 4% 46%)'; // zinc-500
+    ctx.fillStyle = '#71717a'; // zinc-500
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     for (let i = 0; i < LABELS.length; i++) {

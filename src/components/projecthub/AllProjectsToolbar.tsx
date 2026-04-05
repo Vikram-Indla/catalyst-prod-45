@@ -67,8 +67,8 @@ export function AllProjectsToolbar({ view, onViewChange, filters, onFilterChange
               className={cn(
                 "px-3.5 py-1.5 rounded-full text-[13px] font-medium border transition-colors flex items-center gap-1.5",
                 isActive
-                  ? "bg-blue-50 text-blue-700 border-blue-600 dark:bg-blue-950 dark:text-blue-300 dark:border-blue-500"
-                  : "bg-transparent text-slate-600 border-slate-200 hover:bg-slate-50 dark:text-slate-400 dark:border-slate-700 dark:hover:bg-slate-800"
+                  ? "bg-blue-50 text-blue-700 border-blue-600 dark:bg-[rgba(37,99,235,0.12)] dark:text-[#93C5FD] dark:border-[rgba(37,99,235,0.25)]"
+                  : "bg-transparent text-slate-600 border-slate-200 hover:bg-slate-50 dark:text-[#A09890] dark:border-[rgba(255,255,255,0.08)] dark:hover:bg-[rgba(255,255,255,0.08)]"
               )}
             >
               {tab === 'Starred' && '★ '}{tab}
@@ -77,8 +77,8 @@ export function AllProjectsToolbar({ view, onViewChange, filters, onFilterChange
                 <span className={cn(
                   "text-[11px] font-semibold px-1.5 py-px rounded-full font-['JetBrains_Mono',monospace]",
                   isActive
-                    ? "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300"
-                    : "bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400"
+                    ? "bg-blue-100 text-blue-700 dark:bg-[rgba(37,99,235,0.15)] dark:text-[#93C5FD]"
+                    : "bg-slate-100 text-slate-500 dark:bg-[rgba(255,255,255,0.08)] dark:text-[#A09890]"
                 )}>
                   {getCount(tab)}
                 </span>
@@ -91,7 +91,7 @@ export function AllProjectsToolbar({ view, onViewChange, filters, onFilterChange
       {/* Status dropdown */}
       <Popover open={statusOpen} onOpenChange={setStatusOpen}>
         <PopoverTrigger asChild>
-          <button className="h-8 px-3 border border-slate-200 dark:border-slate-700 rounded-md text-xs font-medium text-slate-600 dark:text-slate-400 hover:border-blue-600 hover:text-blue-600 dark:hover:border-blue-500 dark:hover:text-blue-400 flex items-center gap-1.5 bg-transparent transition-colors">
+          <button className="h-8 px-3 border border-slate-200 dark:border-[rgba(255,255,255,0.08)] rounded-md text-xs font-medium text-slate-600 dark:text-[#A09890] hover:border-blue-600 hover:text-blue-600 dark:hover:border-blue-500 dark:hover:text-blue-400 flex items-center gap-1.5 bg-transparent transition-colors">
             Status: {statusFilter} <ChevronDown className="w-3.5 h-3.5" />
           </button>
         </PopoverTrigger>
@@ -100,7 +100,7 @@ export function AllProjectsToolbar({ view, onViewChange, filters, onFilterChange
             <button
               key={s}
               onClick={() => handleStatusChange(s)}
-              className="w-full text-left px-3 py-2 text-sm rounded hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300"
+              className="w-full text-left px-3 py-2 text-sm rounded hover:bg-slate-50 dark:hover:bg-[rgba(255,255,255,0.08)] text-slate-700 dark:text-[#A09890]"
               style={{ border: 'none', background: 'transparent', cursor: 'pointer' }}
             >
               {s}
@@ -112,12 +112,12 @@ export function AllProjectsToolbar({ view, onViewChange, filters, onFilterChange
       {/* Right side: search + view toggle */}
       <div className="ml-auto flex items-center gap-2">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 dark:text-slate-500" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 dark:text-[#6B6560]" />
           <input
             value={localSearch}
             onChange={e => setLocalSearch(e.target.value)}
             placeholder="Search projects..."
-            className="h-9 w-[220px] pl-9 pr-8 border border-slate-200 dark:border-slate-700 rounded text-[13px] bg-transparent text-slate-900 dark:text-slate-200 placeholder:text-slate-400 dark:placeholder:text-slate-500 outline-none focus:border-blue-500"
+            className="h-9 w-[220px] pl-9 pr-8 border border-slate-200 dark:border-[rgba(255,255,255,0.08)] rounded text-[13px] bg-transparent text-slate-900 dark:text-[#F5F3F0] placeholder:text-slate-400 dark:placeholder:text-[#6B6560] outline-none focus:border-blue-500"
           />
           {localSearch && (
             <button
@@ -125,20 +125,20 @@ export function AllProjectsToolbar({ view, onViewChange, filters, onFilterChange
               className="absolute right-2.5 top-1/2 -translate-y-1/2"
               style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
             >
-              <X size={12} className="text-slate-400 dark:text-slate-500" />
+              <X size={12} className="text-slate-400 dark:text-[#6B6560]" />
             </button>
           )}
         </div>
 
         {/* View toggle */}
-        <div className="flex border border-slate-200 dark:border-slate-700 rounded-md overflow-hidden">
+        <div className="flex border border-slate-200 dark:border-[rgba(255,255,255,0.08)] rounded-md overflow-hidden">
           <button
             onClick={() => onViewChange('list')}
             className={cn(
-              "w-8 h-8 flex items-center justify-center border-r border-slate-200 dark:border-slate-700 transition-colors",
+              "w-8 h-8 flex items-center justify-center border-r border-slate-200 dark:border-[rgba(255,255,255,0.08)] transition-colors",
               view === 'list'
-                ? "bg-blue-50 text-blue-600 dark:bg-blue-950 dark:text-blue-400"
-                : "bg-transparent text-slate-400 dark:text-slate-500 hover:text-slate-600"
+                ? "bg-blue-50 text-blue-600 dark:bg-[rgba(37,99,235,0.12)] dark:text-blue-400"
+                : "bg-transparent text-slate-400 dark:text-[#6B6560] hover:text-slate-600"
             )}
           >
             <List size={14} />
@@ -148,8 +148,8 @@ export function AllProjectsToolbar({ view, onViewChange, filters, onFilterChange
             className={cn(
               "w-8 h-8 flex items-center justify-center transition-colors",
               view === 'cards' || view === 'card'
-                ? "bg-blue-50 text-blue-600 dark:bg-blue-950 dark:text-blue-400"
-                : "bg-transparent text-slate-400 dark:text-slate-500 hover:text-slate-600"
+                ? "bg-blue-50 text-blue-600 dark:bg-[rgba(37,99,235,0.12)] dark:text-blue-400"
+                : "bg-transparent text-slate-400 dark:text-[#6B6560] hover:text-slate-600"
             )}
           >
             <LayoutGrid size={14} />

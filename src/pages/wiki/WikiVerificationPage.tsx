@@ -5,12 +5,16 @@ import { ChevronRight, ShieldCheck, RotateCcw, AlertTriangle } from 'lucide-reac
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
+import { useTheme } from '@/hooks/useTheme';
 
 export default function WikiVerificationPage() {
   const navigate = useNavigate();
   const { data: queue, isLoading } = useWikiVerificationQueue();
   const qc = useQueryClient();
   const [refreshing, setRefreshing] = useState(false);
+  const { isDark } = useTheme();
+
+  const border = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)';
 
   const handleVerify = async (id: string) => {
     const { data: session } = await supabase.auth.getSession();
@@ -46,23 +50,23 @@ export default function WikiVerificationPage() {
   }, [qc]);
 
   return (
-    <div style={{ fontFamily: 'Inter, sans-serif', color: '#0F172A', background: '#F8FAFC', minHeight: '100%', padding: '24px 40px 48px' }}>
+    <div style={{ fontFamily: 'Inter, sans-serif', color: isDark ? '#F5F3F0' : '#0F172A', background: isDark ? '#1A1714' : '#F8FAFC', minHeight: '100%', padding: '24px 40px 48px' }}>
       <nav style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 24 }}>
         <span onClick={() => navigate('/wiki')} style={{ fontSize: 13, color: '#2563EB', cursor: 'pointer' }}>Wiki</span>
-        <ChevronRight size={12} style={{ color: '#94A3B8' }} />
-        <span style={{ fontSize: 13, color: '#64748B', fontWeight: 600 }}>Verification Queue</span>
+        <ChevronRight size={12} style={{ color: isDark ? '#6B6560' : '#94A3B8' }} />
+        <span style={{ fontSize: 13, color: isDark ? '#A09890' : '#64748B', fontWeight: 600 }}>Verification Queue</span>
       </nav>
 
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
         <div>
           <h1 style={{ fontFamily: 'Sora, sans-serif', fontSize: 18, fontWeight: 700, margin: 0 }}>Verification Queue</h1>
-          <p style={{ fontSize: 12, color: '#64748B', marginTop: 4 }}>
+          <p style={{ fontSize: 12, color: isDark ? '#A09890' : '#64748B', marginTop: 4 }}>
             Articles requiring review and verification. Articles not updated in &gt;90 days are auto-flagged.
           </p>
         </div>
         <button onClick={handleRefreshFreshness} disabled={refreshing} style={{
           fontSize: 11, fontWeight: 650, padding: '6px 14px', borderRadius: 6,
-          border: '0.75px solid rgba(0,0,0,0.12)', background: '#FFFFFF', color: '#334155',
+          border: `0.75px solid ${isDark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.12)'}`, background: isDark ? '#232019' : '#FFFFFF', color: isDark ? '#A09890' : '#334155',
           cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
           opacity: refreshing ? 0.6 : 1,
         }}>
@@ -71,22 +75,22 @@ export default function WikiVerificationPage() {
         </button>
       </div>
 
-      <div style={{ borderRadius: 8, border: '0.75px solid rgba(0,0,0,0.06)', background: '#FFFFFF', overflow: 'hidden' }}>
+      <div style={{ borderRadius: 8, border: `0.75px solid ${border}`, background: isDark ? '#232019' : '#FFFFFF', overflow: 'hidden' }}>
         <div style={{
           display: 'grid', gridTemplateColumns: '1fr 100px 120px 80px 100px 180px',
-          background: '#F1F5F9', padding: '0 16px', height: 36, alignItems: 'center',
+          background: isDark ? '#2C2823' : '#F1F5F9', padding: '0 16px', height: 36, alignItems: 'center',
           fontFamily: 'Sora, sans-serif', fontSize: 10, fontWeight: 600, textTransform: 'uppercase' as const,
-          color: '#64748B', letterSpacing: '0.05em', borderBottom: '0.75px solid rgba(0,0,0,0.06)',
+          color: isDark ? '#6B6560' : '#64748B', letterSpacing: '0.05em', borderBottom: `0.75px solid ${border}`,
         }}>
           <span>Article</span><span>Domain</span><span>Author</span><span>Fresh.</span><span>Updated</span><span>Actions</span>
         </div>
 
-        {isLoading ? <div style={{ padding: 32, textAlign: 'center', color: '#64748B', fontSize: 12 }}>Loading...</div> :
+        {isLoading ? <div style={{ padding: 32, textAlign: 'center', color: isDark ? '#6B6560' : '#64748B', fontSize: 12 }}>Loading...</div> :
           (queue ?? []).length === 0 ? (
             <div style={{ padding: 48, textAlign: 'center' }}>
               <ShieldCheck size={32} style={{ color: '#16A34A', margin: '0 auto 12px' }} />
-              <div style={{ fontSize: 14, fontWeight: 600, color: '#0F172A' }}>All clear! 🎉</div>
-              <div style={{ fontSize: 12, color: '#64748B', marginTop: 4 }}>No articles pending review.</div>
+              <div style={{ fontSize: 14, fontWeight: 600, color: isDark ? '#F5F3F0' : '#0F172A' }}>All clear!</div>
+              <div style={{ fontSize: 12, color: isDark ? '#6B6560' : '#64748B', marginTop: 4 }}>No articles pending review.</div>
             </div>
           ) : (queue ?? []).map((a: any) => {
             const fresh = Math.round(a.freshness_score ?? 100);
@@ -95,9 +99,9 @@ export default function WikiVerificationPage() {
               <div key={a.id} style={{
                 display: 'grid', gridTemplateColumns: '1fr 100px 120px 80px 100px 180px',
                 padding: '0 16px', height: 42, alignItems: 'center',
-                borderBottom: '0.75px solid rgba(0,0,0,0.06)', fontSize: 12,
+                borderBottom: `0.75px solid ${border}`, fontSize: 12,
                 transition: 'background 80ms',
-              }} onMouseEnter={e => e.currentTarget.style.background = 'rgba(15,23,42,0.04)'}
+              }} onMouseEnter={e => e.currentTarget.style.background = 'rgba(37,99,235,0.04)'}
                  onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, overflow: 'hidden' }}>
                   {stale && <AlertTriangle size={12} style={{ color: '#D97706', flexShrink: 0 }} />}
@@ -106,13 +110,13 @@ export default function WikiVerificationPage() {
                     overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                   }}>{a.title}</span>
                 </div>
-                <span style={{ fontSize: 10, color: '#64748B' }}>{a.domain_code}</span>
-                <span style={{ fontSize: 11, color: '#64748B' }}>{a.author_name || '—'}</span>
+                <span style={{ fontSize: 10, color: isDark ? '#A09890' : '#64748B' }}>{a.domain_code}</span>
+                <span style={{ fontSize: 11, color: isDark ? '#A09890' : '#64748B' }}>{a.author_name || '—'}</span>
                 <span style={{
                   fontFamily: 'JetBrains Mono, monospace', fontSize: 11, fontWeight: 500,
                   color: stale ? '#D97706' : fresh >= 80 ? '#16A34A' : '#64748B',
                 }}>{fresh}%</span>
-                <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, color: '#64748B' }}>
+                <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, color: isDark ? '#A09890' : '#64748B' }}>
                   {new Date(a.updated_at).toLocaleDateString()}
                 </span>
                 <div style={{ display: 'flex', gap: 6 }}>
@@ -123,7 +127,7 @@ export default function WikiVerificationPage() {
                   }}><ShieldCheck size={11} /> Verify</button>
                   <button onClick={() => handleRequestChanges(a.id)} style={{
                     fontSize: 10, fontWeight: 650, padding: '4px 10px', borderRadius: 4,
-                    border: '0.75px solid rgba(0,0,0,0.12)', background: '#FFFFFF', color: '#D97706',
+                    border: `0.75px solid ${isDark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.12)'}`, background: isDark ? '#232019' : '#FFFFFF', color: '#D97706',
                     cursor: 'pointer',
                   }}>Request Changes</button>
                 </div>
