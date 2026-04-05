@@ -63,22 +63,22 @@ const monoSmall: React.CSSProperties = { fontFamily: "'JetBrains Mono', monospac
 const Code: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <code style={{
     fontFamily: "'JetBrains Mono', monospace", fontSize: '10px',
-    background: T.sunken, padding: '1px 4px', borderRadius: '2px', color: '#2563EB',
+    background: '#F1F5F9', padding: '1px 4px', borderRadius: '2px', color: '#2563EB',
   }}>{children}</code>
 );
 
 const InfoCard: React.FC<{ label: string; children: React.ReactNode }> = ({ label, children }) => (
-  <div className="jus-info-card" style={{
-    background: T.elevated, border: `1px solid ${T.border}`,
+  <div style={{
+    background: '#F8FAFC', border: '1px solid rgba(15,23,42,0.10)',
     borderRadius: '5px', padding: '10px 12px',
   }}>
     <div style={{
-      fontSize: '9.5px', fontWeight: 700, color: T.text2,
+      fontSize: '9.5px', fontWeight: 700, color: '#64748B',
       textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '5px',
     }}>
       {label}
     </div>
-    <div style={{ fontSize: '11px', color: T.text1, lineHeight: 1.55 }}>{children}</div>
+    <div style={{ fontSize: '11px', color: '#334155', lineHeight: 1.55 }}>{children}</div>
   </div>
 );
 const PERM_LEVELS = ['view', 'edit', 'full', 'none'] as const;
@@ -86,7 +86,7 @@ const PERM_COLORS: Record<string, { bg: string; color: string }> = {
   view: { bg: '#EFF6FF', color: '#0747A6' },
   edit: { bg: '#FEF3C7', color: '#92400E' },
   full: { bg: '#DCFCE7', color: '#006644' },
-  none: { bg: '#F1F5F9', color: T.text2 },
+  none: { bg: '#F1F5F9', color: '#64748B' },
 };
 
 function getEventDotColor(ev: any): string {
