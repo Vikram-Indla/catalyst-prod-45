@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Plus, RefreshCw, Search, ChevronLeft, ChevronRight, UserX, Copy, Loader2, Share2, Download, Users2, FolderSearch } from 'lucide-react';
+import { Plus, RefreshCw, Search, ChevronLeft, ChevronRight, UserX, Copy, Loader2, Share2, Download, Users2, FolderSearch, FolderPlus, Check } from 'lucide-react';
 import UserDetailPanel from '@/components/admin/UserDetailPanel';
 import { toast } from 'sonner';
 import {
@@ -8,9 +8,16 @@ import {
   useJiraSyncUsers,
   useToggleUserStatus,
   useCopyPermissions,
+  useJiraProjects,
+  useAssignUsersToProject,
 } from '@/hooks/useJiraUserSync';
 import type { SyncFilter } from '@/types/jiraSync';
 import CreateCatalystUserModal from '@/components/admin/CreateCatalystUserModal';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 
 /* ── Stats Config ── */
 const STATS_CONFIG = [
