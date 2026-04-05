@@ -1,6 +1,6 @@
 import { useState, useMemo, lazy, Suspense } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Plus, FolderKanban, FolderOpen } from 'lucide-react';
+import { Plus, FolderKanban, FolderOpen, Star } from 'lucide-react';
 import type { ViewMode, ProjectFilters, SortColumn, SortDirection } from '@/types/projecthub';
 import { DEFAULT_FILTERS } from '@/types/projecthub';
 import {
@@ -113,8 +113,9 @@ export default function AllProjectsPage() {
     return { ...base, statusMyProjects: myCount };
   }, [projects, favorites, currentUserId]);
 
-  const totalPages = Math.max(1, Math.ceil(filtered.length / perPage));
-  const pageData = filtered.slice((page - 1) * perPage, page * perPage);
+  const effectivePageSize = (view === 'cards' || view === 'card') ? 8 : perPage;
+  const totalPages = Math.max(1, Math.ceil(filtered.length / effectivePageSize));
+  const pageData = filtered.slice((page - 1) * effectivePageSize, page * effectivePageSize);
 
   const selectedProjectData = useMemo(() => projects.find(p => p.id === selectedProject) ?? null, [projects, selectedProject]);
 
@@ -140,8 +141,8 @@ export default function AllProjectsPage() {
 
   if (error) toast.error('Failed to load projects');
 
-  const startIdx = (page - 1) * perPage;
-  const endIdx = Math.min(startIdx + perPage, filtered.length);
+  const startIdx = (page - 1) * effectivePageSize;
+  const endIdx = Math.min(startIdx + effectivePageSize, filtered.length);
 
   // Determine empty state context
   const isEmptyProjects = !isLoading && projects.length === 0;
@@ -159,11 +160,11 @@ export default function AllProjectsPage() {
             {/* Jira Sync CTA */}
             <Popover open={syncPanelOpen} onOpenChange={setSyncPanelOpen}>
               <PopoverTrigger asChild>
-                <button className="h-10 px-4 bg-white dark:!bg-[#1E2027] border border-slate-200 dark:border-slate-700 rounded-md text-[13px] font-semibold flex items-center gap-2.5 hover:border-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950 hover:text-blue-600 transition-all text-slate-700 dark:text-slate-300 focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 outline-none">
+                <button className="h-10 px-4 bg-white dark:!bg-[#232019] border border-slate-200 dark:border-slate-700 rounded-md text-[13px] font-semibold flex items-center gap-2.5 hover:border-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950 hover:text-blue-600 transition-all text-slate-700 dark:text-slate-300 focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 outline-none">
                   <SyncCTALabel />
                 </button>
               </PopoverTrigger>
-              <PopoverContent className="w-[360px] p-5 bg-white dark:!bg-[#1E2027] dark:border-slate-700" align="end">
+              <PopoverContent className="w-[360px] p-5 bg-white dark:!bg-[#232019] dark:border-slate-700" align="end">
                 <JiraSyncPanel />
               </PopoverContent>
             </Popover>
@@ -179,7 +180,7 @@ export default function AllProjectsPage() {
         }
       />
 
-      <div className="flex-1 overflow-auto px-6 py-3 bg-slate-50 dark:!bg-[#181A1E] text-foreground">
+      <div className="flex-1 overflow-auto px-6 py-3 bg-slate-50 dark:!bg-[#1A1714] text-foreground">
         {/* Toolbar */}
         <div className="mb-2.5">
           <AllProjectsToolbar
@@ -193,7 +194,7 @@ export default function AllProjectsPage() {
 
         {/* Content */}
         {isLoading ? (
-          <div className="rounded-lg border border-slate-200 dark:border-slate-700 p-10 bg-white dark:!bg-[#181A1E]">
+          <div className="rounded-lg border border-slate-200 dark:border-slate-700 p-10 bg-white dark:!bg-[#1A1714]">
             <div className="flex flex-col gap-3">
               {Array.from({ length: 6 }).map((_, i) => (
                 <div key={i} className="animate-pulse flex items-center gap-4">
@@ -236,12 +237,15 @@ export default function AllProjectsPage() {
           <p className="text-sm text-slate-500 dark:text-slate-400 py-12 text-center">Sign in to see your assigned projects.</p>
         ) : isStarredEmpty ? (
           /* QA1: Starred tab — 0 starred */
-          <p className="text-sm text-slate-500 dark:text-slate-400 py-12 text-center">No starred projects. Click ☆ on any project to add it here.</p>
+          <div className="flex flex-col items-center justify-center py-16 gap-3">
+            <Star className="w-8 h-8 text-slate-300" />
+            <p className="text-sm text-slate-500 dark:text-slate-400">Star projects to find them quickly here</p>
+          </div>
         ) : isSearchNoResults ? (
           /* QA1: Search — no results */
           <p className="text-sm text-slate-500 dark:text-slate-400 py-12 text-center">No projects match &ldquo;{filters.search}&rdquo;</p>
         ) : filtered.length === 0 ? (
-          <div className="flex flex-1 flex-col items-center justify-center rounded-lg border border-slate-200 dark:border-slate-700 px-10 py-20 text-center bg-white dark:!bg-[#181A1E]">
+          <div className="flex flex-1 flex-col items-center justify-center rounded-lg border border-slate-200 dark:border-slate-700 px-10 py-20 text-center bg-white dark:!bg-[#1A1714]">
             <FolderKanban size={48} className="text-slate-300 dark:text-slate-600" strokeWidth={1.25} />
             <h3 className="mt-4 text-lg font-semibold text-foreground" style={{ fontFamily: "'Sora', sans-serif" }}>
               No projects match your filters
@@ -251,7 +255,7 @@ export default function AllProjectsPage() {
             </p>
           </div>
         ) : view === 'list' ? (
-          <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-lg border border-slate-100 dark:border-slate-700 bg-white dark:!bg-[#181A1E]">
+          <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-lg border border-slate-100 dark:border-slate-700 bg-white dark:!bg-[#1A1714]">
             <div className="flex-1 min-h-0 overflow-auto">
               <AllProjectsTable
                 projects={pageData}
@@ -270,7 +274,7 @@ export default function AllProjectsPage() {
             {/* Pagination Footer — only when totalPages > 1 */}
             {totalPages > 1 && (
               <div
-                className="flex shrink-0 items-center justify-between px-4 py-2 border-t border-slate-100 dark:border-slate-700 bg-white dark:!bg-[#181A1E]"
+                className="flex shrink-0 items-center justify-between px-4 py-2 border-t border-slate-100 dark:border-slate-700 bg-white dark:!bg-[#1A1714]"
                 style={{ fontSize: 13 }}
               >
                 <span className="text-muted-foreground">
@@ -305,13 +309,38 @@ export default function AllProjectsPage() {
             )}
           </div>
         ) : (
-          <div className="flex-1 min-h-0 overflow-y-auto">
+          <div className="pb-6">
             <AllProjectsCardGrid
-              projects={filtered}
+              projects={pageData}
               favoriteIds={favorites}
               onToggleFav={(id, fav) => toggleFav.mutate({ projectId: id, isFavorited: fav })}
               onSelectProject={id => setSelectedProject(id)}
             />
+            {totalPages > 1 && (
+              <div
+                className="mt-6 flex items-center justify-between px-4 py-2 border-t border-slate-100 dark:border-slate-700 bg-white dark:!bg-[#1A1714] rounded-lg"
+                style={{ fontSize: 13 }}
+              >
+                <span className="text-muted-foreground">
+                  Showing {startIdx + 1}–{endIdx} of {filtered.length} projects
+                </span>
+                <div className="flex items-center gap-2">
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(n => (
+                    <button
+                      key={n}
+                      onClick={() => setPage(n)}
+                      className={`w-8 h-8 rounded text-sm border focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 outline-none cursor-pointer ${
+                        page === n
+                          ? 'bg-blue-600 text-white border-blue-600 font-semibold'
+                          : 'bg-transparent border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'
+                      }`}
+                    >
+                      {n}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
 

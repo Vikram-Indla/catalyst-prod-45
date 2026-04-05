@@ -14,6 +14,7 @@ export function useDefectFilters() {
     assigneeIds: searchParams.getAll('assignee'),
     reporterIds: searchParams.getAll('reporter'),
     components: searchParams.getAll('component'),
+    sources: searchParams.getAll('source'),
     search: searchParams.get('q') || '',
     isBlocker: searchParams.get('blocker') === 'true' ? true : searchParams.get('blocker') === 'false' ? false : null,
     isRegression: searchParams.get('regression') === 'true' ? true : searchParams.get('regression') === 'false' ? false : null,

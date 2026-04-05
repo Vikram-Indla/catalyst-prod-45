@@ -98,7 +98,7 @@ export default function TestHubDashboardPage() {
           .select('test_case_id, tm_test_cases!inner(id, case_key, title, priority)')
           .eq('current_status', 'failed'),
         // Defect stats (DO NOT TOUCH)
-        supabase.rpc('get_defect_stats'),
+        supabase.rpc('get_defect_stats', { p_project_id: null }),
         (supabase as any).from('tm_defects').select('status'),
       ]);
 
@@ -184,7 +184,7 @@ export default function TestHubDashboardPage() {
       }
 
       // Defect stats: prefer RPC, fallback to direct query (DO NOT TOUCH)
-      if (!defectStatsRes.error && defectStatsRes.data?.length) {
+      if (!defectStatsRes.error && defectStatsRes.data && Array.isArray(defectStatsRes.data) && defectStatsRes.data.length) {
         setDefectStats(defectStatsRes.data[0] as unknown as DefectStats);
       } else if (!defectDirectRes.error && defectDirectRes.data) {
         const counts = { open_defects: 0, in_progress_defects: 0, fixed_defects: 0, closed_defects: 0, total_defects: 0 };

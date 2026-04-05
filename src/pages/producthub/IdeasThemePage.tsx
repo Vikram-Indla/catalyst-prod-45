@@ -91,7 +91,7 @@ export default function IdeasThemePage() {
               return (
                 <div key={theme.theme} onClick={() => navigate(`/product/ideas/backlog?theme=${encodeURIComponent(theme.theme)}`)}
                   style={{
-                    background: isDark ? '#181A1E' : '#FFFFFF', border: `1px solid ${isDark ? 'rgba(255,255,255,0.14)' : dk.border}`, borderRadius: '8px',
+                    background: isDark ? '#1A1714' : '#FFFFFF', border: `1px solid ${isDark ? 'rgba(255,255,255,0.14)' : dk.border}`, borderRadius: '8px',
                     padding: '16px', cursor: 'pointer', transition: 'all 0.15s', minHeight: '180px',
                     display: 'flex', flexDirection: 'column',
                   }}

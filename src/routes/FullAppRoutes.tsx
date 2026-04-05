@@ -189,7 +189,7 @@ const CommandCenterPage = lazy(() => import("../pages/testhub/CommandCenterPage"
 const CatyAIPage = ENABLE_AI ? lazy(() => import("../pages/testhub/CatyAIPage")) : () => <FeatureComingSoon title="Caty AI" />;
 const TestHubDocsPage = lazy(() => import("../pages/testhub/TestHubDocsPage"));
 const QualityGatesPage = lazy(() => import("../pages/releases/QualityGatesPage"));
-const MyTestScopePage = lazy(() => import("../pages/releases/MyTestScopePage"));
+const MyTestScopePage = lazy(() => import("../pages/testhub/MyTestScopePage"));
 
 const T10LandingPage = lazy(() => import("../modules/task10/pages/T10LandingPage").then(m => ({ default: m.T10LandingPage })));
 const T10WeekPage = lazy(() => import("../modules/task10/pages/T10WeekPage").then(m => ({ default: m.T10WeekPage })));
@@ -273,6 +273,7 @@ const ResourceAssignmentsPage = lazy(() => import("../pages/admin/ResourceAssign
 const ResourceLocationsPage = lazy(() => import("../pages/admin/ResourceLocations"));
 const ResourceCountriesPage = lazy(() => import("../pages/admin/ResourceCountries"));
 const ResourceVendorsPage = lazy(() => import("../pages/admin/ResourceVendors"));
+const JiraUserSyncPage = lazy(() => import("../pages/admin/JiraUserSync"));
 const BusinessOwnersAdmin = lazy(() => import("../pages/admin/BusinessOwners"));
 const BusinessProcesses = lazy(() => import("../pages/admin/BusinessProcesses"));
 const Portfolios = lazy(() => import("../pages/admin/Portfolios"));
@@ -807,6 +808,7 @@ export default function FullAppRoutes() {
           <Route path="resource-locations" element={<S><ResourceLocationsPage /></S>} />
           <Route path="resource-countries" element={<S><ResourceCountriesPage /></S>} />
           <Route path="resource-vendors" element={<S><ResourceVendorsPage /></S>} />
+          <Route path="jira-user-sync" element={<S><JiraUserSyncPage /></S>} />
           <Route path="business-owners" element={<S><BusinessOwnersAdmin /></S>} />
           <Route path="business-processes" element={<S><BusinessProcesses /></S>} />
           <Route path="business/ProcessStep" element={<S><ProcessSteps /></S>} />

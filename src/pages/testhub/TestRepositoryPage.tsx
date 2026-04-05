@@ -57,6 +57,7 @@ interface TestStep {
   id: string;
   action: string;
   expectedResult: string;
+  sharedStepId?: string;
 }
 
 interface RawTestCase {
@@ -373,6 +374,7 @@ export function TestRepositoryPage() {
       id: s.id,
       action: s.action,
       expectedResult: s.expected_result || '',
+      sharedStepId: s.shared_step_id || undefined,
     }));
 
     setSelectedTestCase(tc);

@@ -205,15 +205,29 @@ export function ViewTestCaseModal({
     try {
       const [stepsRes, linksRes, historyRes, runsRes, attachmentsRes] = await Promise.all([
         supabase.from('tm_test_steps').select('*').eq('test_case_id', testCase.id).order('step_number'),
-        (supabase as any).from('th_test_case_links').select('*').eq('test_case_id', testCase.id),
-        (supabase as any).from('th_test_case_versions').select('*').eq('test_case_id', testCase.id).order('version', { ascending: false }),
+        (supabase as any).from('tm_test_case_links').select('*').eq('test_case_id', testCase.id),
+        (supabase as any).from('tm_test_case_versions').select('*').eq('test_case_id', testCase.id).order('version_number', { ascending: false }),
         (supabase as any).from('th_test_executions').select('*').eq('test_case_id', testCase.id).order('executed_at', { ascending: false }),
         (supabase as any).from('th_test_case_attachments').select('*').eq('test_case_id', testCase.id),
       ]);
 
       setSteps(stepsRes.data || []);
-      setLinks(linksRes.data || []);
-      setHistory(historyRes.data || []);
+      // Map tm_test_case_links to expected shape
+      const linksData = (linksRes.data || []).map((l: any) => ({
+        id: l.id,
+        link_type: l.linked_item_type || '',
+        linked_item_key: l.linked_item_id || '',
+        linked_item_title: l.linked_item_type || '',
+      }));
+      setLinks(linksData);
+      // Map tm_test_case_versions to expected shape
+      const historyData = (historyRes.data || []).map((v: any) => ({
+        id: v.id,
+        version: v.version_number,
+        changes: v.change_summary || v.snapshot,
+        changed_at: v.created_at,
+      }));
+      setHistory(historyData);
       setRuns(runsRes.data || []);
       setAttachments(attachmentsRes.data || []);
     } catch (err) {
@@ -225,19 +239,25 @@ export function ViewTestCaseModal({
 
   const handleAddLink = async (key: string, title: string) => {
     if (!testCase) return;
-    const { data, error } = await (supabase as any).from('th_test_case_links').insert({
+    const { data: { user } } = await supabase.auth.getUser();
+    const { data, error } = await (supabase as any).from('tm_test_case_links').insert({
       test_case_id: testCase.id,
-      link_type: addLinkType,
-      linked_item_key: key,
-      linked_item_title: title,
+      linked_item_type: addLinkType,
+      linked_item_id: key,
+      linked_by: user?.id || null,
     }).select().single();
     if (!error && data) {
-      setLinks([...links, data]);
+      setLinks([...links, {
+        id: data.id,
+        link_type: data.linked_item_type,
+        linked_item_key: data.linked_item_id || key,
+        linked_item_title: title,
+      }]);
     }
   };
 
   const handleDeleteLink = async (linkId: string) => {
-    await (supabase as any).from('th_test_case_links').delete().eq('id', linkId);
+    await (supabase as any).from('tm_test_case_links').delete().eq('id', linkId);
     setLinks(links.filter(l => l.id !== linkId));
   };
 

@@ -21,7 +21,7 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogHeader, AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Search } from 'lucide-react';
-import { useTestSets, useDeleteTestSet, useRefreshDynamicSet, useCloneTestSet, useArchiveTestSet, useCreateTestCycleFromSet } from '@/hooks/useTestSets';
+import { useTestSets, useDeleteTestSet, useRefreshDynamicSet, useCloneTestSet, useArchiveTestSet } from '@/hooks/useTestSets';
 import { useProjectContext } from '@/hooks/useProjectContext';
 
 const DEFAULT_PROJECT_ID = '00000000-0000-0000-0000-000000000001';
@@ -29,6 +29,7 @@ import { SetTypeBadge } from '@/components/test-sets/SetTypeBadge';
 import { CreateTestSetModal } from '@/components/test-sets/CreateTestSetModal';
 import { RefreshConfirmDialog } from '@/components/test-sets/RefreshConfirmDialog';
 import { AddToCycleModal } from '@/components/test-sets/AddToCycleModal';
+import { CreateTestCycleModal } from '@/components/testhub/CreateTestCycleModal';
 import { TestSet, TestSetFilters, TEST_SET_TYPE_CONFIG } from '@/types/test-sets';
 import { formatDistanceToNow } from 'date-fns';
 import { cn } from '@/lib/utils';
@@ -45,13 +46,14 @@ export default function TestSetsPage() {
   const [refreshingSet, setRefreshingSet] = useState<TestSet | null>(null);
   const [addToCycleSet, setAddToCycleSet] = useState<TestSet | null>(null);
   const [deletingSet, setDeletingSet] = useState<TestSet | null>(null);
+  const [isCreateCycleOpen, setIsCreateCycleOpen] = useState(false);
 
   const { data: testSets, isLoading } = useTestSets(projectId, filters);
   const deleteMutation = useDeleteTestSet();
   const refreshMutation = useRefreshDynamicSet();
   const cloneMutation = useCloneTestSet();
   const archiveMutation = useArchiveTestSet();
-  const createCycleMutation = useCreateTestCycleFromSet();
+  
 
   const handleEdit = (set: TestSet) => { setEditingSet(set); setIsCreateOpen(true); };
   const handleClose = () => { setIsCreateOpen(false); setEditingSet(null); };
@@ -172,7 +174,7 @@ export default function TestSetsPage() {
                     <DropdownMenuContent align="end">
                       <DropdownMenuItem onClick={() => handleEdit(set)}>Edit</DropdownMenuItem>
                       <DropdownMenuItem onClick={() => cloneMutation.mutate({ setId: set.id })}>Clone</DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => createCycleMutation.mutate({ setId: set.id, projectId })}>Create New Cycle</DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => setIsCreateCycleOpen(true)}>Create New Cycle</DropdownMenuItem>
                       <DropdownMenuItem onClick={() => archiveMutation.mutate({ setId: set.id, archive: set.is_active })}>
                         {set.is_active ? 'Archive' : 'Restore'}
                       </DropdownMenuItem>
@@ -244,6 +246,12 @@ export default function TestSetsPage() {
           </div>
         </AlertDialogContent>
       </AlertDialog>
+      {/* Create Cycle Modal */}
+      <CreateTestCycleModal
+        isOpen={isCreateCycleOpen}
+        onClose={() => setIsCreateCycleOpen(false)}
+        onSuccess={() => setIsCreateCycleOpen(false)}
+      />
     </div>
   );
 }

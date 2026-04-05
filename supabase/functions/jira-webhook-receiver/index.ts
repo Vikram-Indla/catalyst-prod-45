@@ -127,6 +127,131 @@ async function handleFixVersionsChange(payload: any) {
   return true; // signal: handled
 }
 
+// ── User events that trigger jira-user-sync ──
+const USER_EVENTS = new Set([
+  'jira:user_created',
+  'jira:user_updated',
+  'jira:user_deactivated',
+  'jira:user_reactivated',
+  'jira:group_member_added',
+  'jira:group_member_removed',
+  'user_logged_in',
+  'jira:user_logged_in',
+  'project_member_added',
+  'jira:project_created',
+  'project_member_removed',
+]);
+
+async function handleUserEvent(payload: any, webhookEvent: string) {
+  const jiraAccountId = payload.user?.accountId ?? payload.accountId ?? null;
+
+  // Store in jira_webhook_events for audit
+  await supabase.from('jira_webhook_events').insert({
+    event_type: webhookEvent,
+    jira_account_id: jiraAccountId,
+    raw_payload: payload,
+    hmac_valid: false,
+    processed: false,
+    received_at: new Date().toISOString(),
+  });
+
+  // ── Direct updates based on event type ──
+  if (jiraAccountId) {
+    // Login events → update last_jira_login_at
+    if (webhookEvent === 'user_logged_in' || webhookEvent === 'jira:user_logged_in') {
+      await supabase.from('jira_identity_map')
+        .update({ last_jira_login_at: new Date().toISOString() })
+        .eq('jira_account_id', jiraAccountId);
+    }
+
+    // User deactivated in Jira → deactivate in Catalyst immediately
+    if (webhookEvent === 'jira:user_deactivated') {
+      await supabase.from('jira_identity_map')
+        .update({
+          is_active_in_jira: false,
+          is_active_in_catalyst: false,
+          last_synced_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        })
+        .eq('jira_account_id', jiraAccountId);
+    }
+
+    // User reactivated in Jira → reactivate in Catalyst immediately
+    if (webhookEvent === 'jira:user_reactivated') {
+      await supabase.from('jira_identity_map')
+        .update({
+          is_active_in_jira: true,
+          is_active_in_catalyst: true,
+          last_synced_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        })
+        .eq('jira_account_id', jiraAccountId);
+    }
+
+    // User updated → sync display_name, email, groups
+    if (webhookEvent === 'jira:user_updated' || webhookEvent === 'user_updated') {
+      const updates: Record<string, any> = { last_synced_at: new Date().toISOString() };
+      if (payload.displayName || payload.user?.displayName) updates.display_name = payload.displayName ?? payload.user?.displayName;
+      if (payload.emailAddress || payload.user?.emailAddress) updates.email = payload.emailAddress ?? payload.user?.emailAddress;
+      if (payload.groups || payload.user?.groups) updates.jira_groups = payload.groups ?? payload.user?.groups;
+      await supabase.from('jira_identity_map').update(updates).eq('jira_account_id', jiraAccountId);
+    }
+
+    // Project member added → upsert permission
+    if (webhookEvent === 'project_member_added' || webhookEvent === 'jira:project_created') {
+      const projectKey = payload.projectKey ?? payload.project?.key;
+      if (projectKey) {
+        const { data: identity } = await supabase.from('jira_identity_map')
+          .select('id').eq('jira_account_id', jiraAccountId).maybeSingle();
+        if (identity) {
+          await supabase.from('jira_user_project_perms').upsert({
+            identity_map_id: identity.id,
+            project_key: projectKey,
+            permission_level: 'view',
+            synced_from_jira: true,
+          }, { onConflict: 'identity_map_id,project_key' });
+        }
+      }
+    }
+
+    // Project member removed → set permission to none
+    if (webhookEvent === 'project_member_removed') {
+      const projectKey = payload.projectKey ?? payload.project?.key;
+      if (projectKey) {
+        const { data: identity } = await supabase.from('jira_identity_map')
+          .select('id').eq('jira_account_id', jiraAccountId).maybeSingle();
+        if (identity) {
+          await supabase.from('jira_user_project_perms')
+            .update({ permission_level: 'none', updated_at: new Date().toISOString() })
+            .eq('identity_map_id', identity.id)
+            .eq('project_key', projectKey);
+        }
+      }
+    }
+  }
+
+  // Fire-and-forget user sync for create/update/deactivate events
+  const syncEvents = new Set(['jira:user_created', 'jira:user_updated', 'jira:user_deactivated', 'jira:user_reactivated', 'jira:group_member_added', 'jira:group_member_removed']);
+  if (jiraAccountId && syncEvents.has(webhookEvent)) {
+    fetch(
+      `${Deno.env.get('SUPABASE_URL')}/functions/v1/jira-user-sync`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')}`,
+        },
+        body: JSON.stringify({
+          trigger: 'webhook',
+          direction: 'jira_to_catalyst',
+          jiraAccountId,
+          webhookEventType: webhookEvent,
+        }),
+      }
+    ).catch(() => {});
+  }
+}
+
 Deno.serve(async (req) => {
   if (req.method !== 'POST') {
     return new Response('Method not allowed', { status: 405 });
@@ -138,6 +263,18 @@ Deno.serve(async (req) => {
 
     if (!webhookEvent) {
       return new Response('Missing webhookEvent', { status: 400 });
+    }
+    // ── User events (Jira User Sync) ──
+    if (USER_EVENTS.has(webhookEvent)) {
+      try {
+        await handleUserEvent(payload, webhookEvent);
+      } catch (err) {
+        console.error('user event handler error:', err);
+      }
+      return new Response(JSON.stringify({ received: true, event: webhookEvent }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      });
     }
 
     // ── Version events (ReleaseHub) ──

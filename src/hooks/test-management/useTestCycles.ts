@@ -17,25 +17,28 @@ import { toast } from 'sonner';
 import { auditCycleCreate, auditCycleUpdate, auditCycleDelete } from '@/lib/tmAuditLogger';
 
 // Status mapping (DB uses lowercase)
-const cycleStatusToDb = (status: string): 'planned' | 'in_progress' | 'completed' | 'archived' => {
-  const map: Record<string, 'planned' | 'in_progress' | 'completed' | 'archived'> = {
-    'PLANNED': 'planned',
-    'IN_PROGRESS': 'in_progress',
+type DbCycleStatus = "active" | "archived" | "completed" | "draft" | "in_progress" | "paused" | "planned";
+const cycleStatusToDb = (status: string): DbCycleStatus => {
+  const map: Record<string, DbCycleStatus> = {
+    'PLANNED': 'draft',
+    'IN_PROGRESS': 'active',
     'COMPLETED': 'completed',
     'CANCELLED': 'archived',
     'ARCHIVED': 'archived',
   };
-  return map[status] || 'planned';
+  return map[status] || (status.toLowerCase() as DbCycleStatus);
 };
 
 const cycleStatusFromDb = (status: string | null): 'PLANNED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED' => {
   const map: Record<string, 'PLANNED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED'> = {
+    'draft': 'PLANNED',
     'planned': 'PLANNED',
+    'active': 'IN_PROGRESS',
     'in_progress': 'IN_PROGRESS',
     'completed': 'COMPLETED',
     'archived': 'CANCELLED',
   };
-  return map[status || 'planned'] || 'PLANNED';
+  return map[status || 'draft'] || 'PLANNED';
 };
 
 // Execution status mapping

@@ -71,6 +71,13 @@ function mapDbRowToTMDefect(row: any): TMDefect {
     external_url: row.external_url || undefined,
     created_at: row.created_at || '',
     updated_at: row.updated_at || '',
+    jira_key: row.jira_key || null,
+    jira_source: row.jira_source || false,
+    jira_project_key: row.jira_project_key || null,
+    jira_status: row.jira_status || null,
+    jira_status_category: row.jira_status_category || null,
+    jira_assignee_name: row.jira_assignee_name || null,
+    jira_reporter_name: row.jira_reporter_name || null,
     assignee: row.assignee,
     reporter: row.reporter,
   };

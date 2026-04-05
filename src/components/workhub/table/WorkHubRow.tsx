@@ -82,16 +82,22 @@ export default memo(function WorkHubRow({ item, columns, selected, onSelect, onO
 
       case 'key':
         return (
-          <button
-            onClick={e => { e.stopPropagation(); onOpenPanel(item.id); }}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 500, color: 'var(--cp-blue)', textDecoration: 'none', outline: 'none' }}
-            onMouseEnter={e => (e.currentTarget.style.textDecoration = 'underline')}
-            onMouseLeave={e => (e.currentTarget.style.textDecoration = 'none')}
-            onFocus={e => (e.currentTarget.style.outline = '2px solid #2563EB')}
-            onBlur={e => (e.currentTarget.style.outline = 'none')}
-          >
-            {highlightMatch(item.issue_key, searchQuery)}
-          </button>
+          <div className="flex items-center gap-1.5">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" className="flex-shrink-0 opacity-50">
+              <path d="M11.53 2C6.63 2 2.84 5.68 2.84 10.5c0 4.83 3.79 8.5 8.69 8.5h.64l5.82 3V18.5c2.77-1.56 4.17-4.4 4.17-8 0-4.82-3.79-8.5-8.63-8.5z" fill="#2684FF"/>
+              <path d="M12.06 7l-4.5 4.5 4.5 4.5 4.5-4.5L12.06 7z" fill="white"/>
+            </svg>
+            <button
+              onClick={e => { e.stopPropagation(); onOpenPanel(item.id); }}
+              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 500, color: 'var(--cp-blue)', textDecoration: 'none', outline: 'none' }}
+              onMouseEnter={e => (e.currentTarget.style.textDecoration = 'underline')}
+              onMouseLeave={e => (e.currentTarget.style.textDecoration = 'none')}
+              onFocus={e => (e.currentTarget.style.outline = '2px solid #2563EB')}
+              onBlur={e => (e.currentTarget.style.outline = 'none')}
+            >
+              {highlightMatch(item.issue_key, searchQuery)}
+            </button>
+          </div>
         );
 
       case 'summary':

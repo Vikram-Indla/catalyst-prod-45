@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Bug, Loader2 } from 'lucide-react';
+import { Bug, Loader2, AlertTriangle } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -17,6 +17,7 @@ import { supabase } from '@/integrations/supabase/client';
 interface Props { open: boolean; onClose: () => void; defect: Defect; }
 
 export function EditDefectModalG25({ open, onClose, defect }: Props) {
+  const isJira = defect.jira_source === true;
   const update = useUpdateDefectG25();
   const { data: users } = useQuery({
     queryKey: ['profiles-list'],
@@ -53,15 +54,23 @@ export function EditDefectModalG25({ open, onClose, defect }: Props) {
         <DialogHeader><DialogTitle className="flex items-center gap-2"><Bug className="h-5 w-5 text-destructive" />Edit {defect.defect_key}</DialogTitle></DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            {isJira && (
+              <div className="flex items-center gap-2 p-3 rounded-md bg-blue-50 border border-blue-200 text-sm text-blue-800">
+                <AlertTriangle className="h-4 w-4 flex-shrink-0" />
+                <span>
+                  This defect syncs from Jira (<span className="font-mono font-semibold">{defect.jira_key}</span>). Title, description, and severity are read-only.
+                </span>
+              </div>
+            )}
             <FormField control={form.control} name="title" render={({ field }) => (
-              <FormItem><FormLabel>Title *</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+              <FormItem><FormLabel>Title *</FormLabel><FormControl><Input {...field} disabled={isJira} /></FormControl><FormMessage /></FormItem>
             )} />
             <FormField control={form.control} name="description" render={({ field }) => (
-              <FormItem><FormLabel>Description</FormLabel><FormControl><Textarea rows={3} {...field} value={field.value || ''} /></FormControl><FormMessage /></FormItem>
+              <FormItem><FormLabel>Description</FormLabel><FormControl><Textarea rows={3} {...field} value={field.value || ''} disabled={isJira} /></FormControl><FormMessage /></FormItem>
             )} />
             <div className="grid grid-cols-2 gap-4">
               <FormField control={form.control} name="severity" render={({ field }) => (
-                <FormItem><FormLabel>Severity</FormLabel><Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
+                <FormItem><FormLabel>Severity</FormLabel><Select onValueChange={field.onChange} value={field.value} disabled={isJira}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
                   <SelectContent><SelectItem value="critical">🔴 Critical</SelectItem><SelectItem value="high">🟠 High</SelectItem><SelectItem value="medium">🟡 Medium</SelectItem><SelectItem value="low">🟢 Low</SelectItem></SelectContent>
                 </Select><FormMessage /></FormItem>
               )} />

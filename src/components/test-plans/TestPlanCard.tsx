@@ -6,14 +6,16 @@ import { Progress } from '@/components/ui/progress';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { PlanStatusBadge } from './PlanStatusBadge';
 import { TestPlan } from '@/types/testPlans';
-import { usePlanProgress } from '@/hooks/useTestPlansG26';
+import { usePlanProgress, useDuplicateTestPlan } from '@/hooks/useTestPlansG26';
 import { format } from 'date-fns';
 
 interface Props { plan: TestPlan; onDelete: () => void; }
 
+
 export function TestPlanCard({ plan, onDelete }: Props) {
   const navigate = useNavigate();
   const { data: progress } = usePlanProgress(plan.id);
+  const duplicatePlan = useDuplicateTestPlan();
 
   const dateRange = () => {
     if (!plan.planned_start_date && !plan.planned_end_date) return 'Not scheduled';
@@ -41,7 +43,7 @@ export function TestPlanCard({ plan, onDelete }: Props) {
                 <Button variant="ghost" size="sm" className="h-8 w-8 p-0"><MoreVertical className="h-4 w-4" /></Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={e => e.stopPropagation()}><Copy className="h-4 w-4 mr-2" />Duplicate</DropdownMenuItem>
+                <DropdownMenuItem onClick={e => { e.stopPropagation(); duplicatePlan.mutate(plan.id); }}><Copy className="h-4 w-4 mr-2" />Duplicate</DropdownMenuItem>
                 <DropdownMenuItem className="text-destructive" onClick={e => { e.stopPropagation(); onDelete(); }}><Trash2 className="h-4 w-4 mr-2" />Delete</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

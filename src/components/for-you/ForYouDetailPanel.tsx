@@ -13,6 +13,7 @@ import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 import { supabase } from '@/integrations/supabase/client';
 import { useIsDark } from '@/components/strategy/themes/useIsDark';
 import type { WorkItem } from '@/hooks/useForYouData';
+import { JiraSyncChip } from '@/components/shared/JiraSyncChip';
 
 // Design tokens — light mode
 const TL = {
@@ -31,7 +32,7 @@ const TL = {
 const TD = {
   ink: '#F5F3F0', inkSecondary: 'rgba(235,238,245,0.82)', inkTertiary: 'rgba(235,238,245,0.60)',
   inkMuted: 'rgba(235,238,245,0.45)', inkMutedStrong: 'rgba(235,238,245,0.50)',
-  surface: '#1F2128', surfaceSecondary: '#181A1E', surfaceTertiary: 'rgba(255,255,255,0.04)',
+  surface: '#232019', surfaceSecondary: '#1A1714', surfaceTertiary: 'rgba(255,255,255,0.04)',
   border: 'rgba(255,255,255,0.10)', borderStrong: 'rgba(255,255,255,0.18)',
   primary: '#60A5FA', primaryHover: '#93C5FD', primaryBg: 'rgba(59,130,246,0.12)',
   teal: '#5EEAD4', tealText: '#5EEAD4', tealBg: 'rgba(13,148,136,0.15)',
@@ -308,6 +309,7 @@ function SubTaskCard({ item, onClick }: { item: SubTaskItem; onClick: () => void
       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
         <JiraIssueTypeIcon issueType={item.issueType} size={16} />
         <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 650, color: T.primary, flexShrink: 0 }}>{item.key}</span>
+        <JiraSyncChip jiraKey={item.key} size="sm" />
         <span style={{ fontSize: 13, fontWeight: 500, color: T.ink, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1, fontFamily: "'Inter', system-ui" }}>{item.summary}</span>
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 14, paddingLeft: 26 }}>

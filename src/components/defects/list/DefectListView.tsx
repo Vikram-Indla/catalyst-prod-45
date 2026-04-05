@@ -38,21 +38,29 @@ export function DefectListView({ projectId }: DefectListViewProps) {
     queryKey: ['defects', projectId, filters],
     queryFn: async () => {
       let query = supabase
-        .from('defects')
+        .from('tm_defects')
         .select('*', { count: 'exact' })
         .eq('project_id', projectId);
 
       if (filters.search) {
-        query = query.or(`title.ilike.%${filters.search}%,defect_id.ilike.%${filters.search}%`);
+        query = query.or(`title.ilike.%${filters.search}%,defect_key.ilike.%${filters.search}%,jira_key.ilike.%${filters.search}%`);
       }
       if (filters.statuses.length > 0) {
-        query = query.in('status', filters.statuses);
+        query = query.in('status', filters.statuses as any);
       }
       if (filters.severities.length > 0) {
-        query = query.in('severity', filters.severities);
+        query = query.in('severity', filters.severities as any);
+      }
+      if (filters.sources.length > 0) {
+        if (filters.sources.includes('jira') && !filters.sources.includes('native')) {
+          query = query.eq('jira_source', true);
+        } else if (filters.sources.includes('native') && !filters.sources.includes('jira')) {
+          query = query.eq('jira_source', false);
+        }
       }
 
-      query = query.range((filters.page - 1) * filters.pageSize, filters.page * filters.pageSize - 1);
+      query = query.order('created_at', { ascending: false })
+        .range((filters.page - 1) * filters.pageSize, filters.page * filters.pageSize - 1);
 
       const { data, count, error } = await query;
       if (error) throw error;
@@ -65,23 +73,28 @@ export function DefectListView({ projectId }: DefectListViewProps) {
     if (!data?.data) return [];
     return data.data.map((d: any) => ({
       id: d.id,
-      defect_id: d.defect_id || `DEF-${d.id.slice(0, 4).toUpperCase()}`,
+      defect_id: d.defect_key || `DEF-${d.id.slice(0, 4).toUpperCase()}`,
       title: d.title,
-      severity: d.severity || 'medium',
-      priority: d.priority || 'medium',
-      status: d.status || 'new',
+      severity: d.severity || 'minor',
+      priority: d.priority || 'Medium',
+      status: d.status || 'open',
       component: d.component,
       is_blocker: d.is_blocker || false,
       is_regression: d.is_regression || false,
-      tags: d.tags || [],
+      tags: d.labels || [],
       created_at: d.created_at,
       updated_at: d.updated_at,
       due_date: d.due_date || null,
-      reporter: d.reporter || null,
-      assignee: d.assignee || null,
-      release: d.release || null,
-      comments_count: d.comments_count || 0,
-      attachments_count: d.attachments_count || 0,
+      reporter: d.jira_reporter_name ? { id: '', full_name: d.jira_reporter_name, avatar_url: null } : null,
+      assignee: d.jira_assignee_name ? { id: '', full_name: d.jira_assignee_name, avatar_url: null } : null,
+      release: null,
+      comments_count: 0,
+      attachments_count: 0,
+      jira_source: d.jira_source || false,
+      jira_key: d.jira_key || null,
+      jira_status: d.jira_status || null,
+      jira_project_key: d.jira_project_key || null,
+      external_url: d.external_url || null,
     }));
   }, [data]);
 
@@ -99,8 +112,8 @@ export function DefectListView({ projectId }: DefectListViewProps) {
   const statusMutation = useMutation({
     mutationFn: async ({ id, status }: { id: string; status: DefectStatus }) => {
       const { error } = await supabase
-        .from('defects')
-        .update({ status })
+        .from('tm_defects')
+        .update({ status: status as any })
         .eq('id', id);
       if (error) throw error;
     },
@@ -142,7 +155,7 @@ export function DefectListView({ projectId }: DefectListViewProps) {
 
   const defectCounts = useMemo(() => ({
     all: totalCount,
-    open: defects.filter(d => ['new', 'triaged', 'in_progress', 'reopened'].includes(d.status)).length,
+    open: defects.filter(d => ['new', 'open', 'triaged', 'in_progress', 'reopened'].includes(d.status)).length,
     critical: defects.filter(d => d.severity === 'critical').length,
   }), [defects, totalCount]);
 

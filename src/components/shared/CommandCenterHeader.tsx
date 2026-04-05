@@ -62,7 +62,7 @@ export function CommandCenterHeader({
   return (
     <header
       className={cn(
-        'w-full flex items-start justify-between gap-4 border-b bg-card mb-5 flex-shrink-0',
+        'w-full flex items-start justify-between gap-4 flex-wrap border-b bg-card mb-5 flex-shrink-0 min-w-0',
         className,
       )}
       style={{
@@ -71,7 +71,7 @@ export function CommandCenterHeader({
       }}
     >
       {/* Left: title + subtitle */}
-      <div className="min-w-0">
+      <div className="min-w-0 flex-1">
         <div className="flex items-baseline gap-2.5">
           <h1
             className="m-0"

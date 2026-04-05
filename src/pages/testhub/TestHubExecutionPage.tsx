@@ -7,6 +7,7 @@
  * resizable panels, FastTrack mode, execution history, view/re-run modes.
  */
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { deriveOverallStatus } from '@/utils/testExecution';
 import type { StepStatus as StepStatusType } from '@/utils/testExecution';
 
@@ -139,6 +140,7 @@ export default function TestHubExecutionPage() {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [showMyTestsOnly, setShowMyTestsOnly] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const queryClient = useQueryClient();
 
   // Session timer (overall)
   const [sessionElapsed, setSessionElapsed] = useState(0);
@@ -218,14 +220,27 @@ export default function TestHubExecutionPage() {
     setAttachments(data || []);
   }, [selectedTestCaseId]);
 
-  const fetchExecutionHistory = useCallback(async (cycleScopeId: string) => {
-    const { data } = await (supabase as any)
+  const fetchExecutionHistory = useCallback(async (cycleScopeId: string): Promise<ExecutionHistoryRecord | null> => {
+    if (!cycleScopeId) return null;
+    const { data, error } = await supabase
       .from('th_test_executions')
-      .select('id, execution_number, result, executed_by, executed_at, step_results, executor:profiles!executed_by(full_name)')
+      .select('*')
       .eq('cycle_scope_id', cycleScopeId)
-      .order('execution_number', { ascending: false })
-      .limit(1);
-    return (data && data[0]) ? data[0] as ExecutionHistoryRecord : null;
+      .order('execution_number', { ascending: false });
+    if (error) {
+      console.error('[ExecHistory] FETCH FAILED:', error.code, error.message, error.details);
+      return null;
+    }
+    if (!data || data.length === 0) return null;
+    const latest = data[0];
+    return {
+      id: latest.id,
+      execution_number: latest.execution_number,
+      result: latest.result,
+      executed_by: latest.executed_by,
+      executed_at: latest.executed_at,
+      step_results: Array.isArray(latest.step_results) ? latest.step_results as any : [],
+    } as ExecutionHistoryRecord;
   }, []);
 
   useEffect(() => { fetchCycle(); fetchTestCases(); }, [cycleId]);
@@ -322,16 +337,19 @@ export default function TestHubExecutionPage() {
         }
 
         // Get next execution number
-        const { data: lastExec } = await supabase
+        const { data: lastExec, error: lastExecError } = await supabase
           .from('th_test_executions')
           .select('execution_number')
           .eq('cycle_scope_id', selectedTestCaseId)
           .order('execution_number', { ascending: false })
           .limit(1)
           .maybeSingle();
-        const nextExecutionNumber = (lastExec?.execution_number ?? 0) + 1;
 
-        // Build step snapshot
+        if (lastExecError) {
+          console.error('[ExecHistory] Failed to fetch last execution number:', lastExecError.code, lastExecError.message, lastExecError.details, lastExecError.hint);
+        }
+
+        const nextExecutionNumber = (lastExec?.execution_number ?? 0) + 1;
         const key = selectedTestCaseId;
         const currentStatuses = stepStatuses.get(key) || steps.map((_, i) => ({ stepIndex: i, status: 'not_run' as const }));
         const stepResultsSnapshot = steps.map((s, i) => ({
@@ -340,31 +358,54 @@ export default function TestHubExecutionPage() {
           status: currentStatuses[i]?.status || 'not_run',
           notes: failureReason && currentStatuses[i]?.status === 'failed' ? failureReason : '',
         }));
-
+        const completedAt = new Date().toISOString();
         const sessionStartTime = new Date(sessionStartRef.current).toISOString();
+
+        console.log('[ExecHistory] INSERT payload:', {
+          cycle_scope_id: selectedTestCaseId,
+          execution_number: nextExecutionNumber,
+          result: status,
+          step_results: stepResultsSnapshot,
+          executed_by: currentUserId,
+          executed_at: completedAt,
+        });
+
+        const insertPayload = {
+          test_case_id: currentTestCase.test_case_id,
+          test_cycle_id: cycle?.id ?? null,
+          cycle_name: cycle?.name ?? null,
+          cycle_scope_id: selectedTestCaseId,
+          execution_number: nextExecutionNumber ?? 1,
+          result: status,
+          step_results: stepResultsSnapshot ?? [],
+          executed_by: currentUserId,
+          executed_at: completedAt,
+          notes: failureNotes ?? null,
+        };
+
+        console.log('[ExecHistory] Attempting INSERT:', insertPayload);
 
         const { data: execData, error: execError } = await supabase
           .from('th_test_executions')
-          .insert({
-            cycle_scope_id: selectedTestCaseId,
-            execution_number: nextExecutionNumber ?? 1,
-            overall_status: status,
-            step_results: stepResultsSnapshot ?? {},
-            executed_by: currentUserId,
-            started_at: sessionStartTime ?? new Date().toISOString(),
-            completed_at: new Date().toISOString(),
-          })
+          .insert(insertPayload)
           .select('id, execution_number')
           .single();
 
         if (execError) {
-          console.error('[ExecHistory] INSERT FAILED:',
-            execError.code, execError.message, execError.details);
+          console.error('[ExecHistory] INSERT FAILED:', execError.code, execError.message, execError.details, execError.hint);
+          catalystToast.error('Warning: Run history could not be saved', {
+            description: execError.message,
+            title: 'Execution History Warning',
+          });
         } else {
           console.log('[ExecHistory] INSERT SUCCESS:', execData);
-          queryClient.invalidateQueries({
+          await queryClient.invalidateQueries({
             queryKey: ['execution-history', selectedTestCaseId],
           });
+          const refreshedHistory = await fetchExecutionHistory(selectedTestCaseId);
+          if (refreshedHistory) {
+            setExecutionHistory(refreshedHistory);
+          }
         }
       }
 
@@ -388,7 +429,7 @@ export default function TestHubExecutionPage() {
       }
     } catch (err: any) { catalystToast.error(err.message || 'Failed to update test result'); }
     finally { setIsSubmitting(false); }
-  }, [selectedTestCaseId, currentUserId, currentTestCase, canGoNext, fastTrackMode, fetchTestCases, fetchCycle, stepStatuses, steps, cycle]);
+  }, [selectedTestCaseId, currentUserId, currentTestCase, canGoNext, fastTrackMode, fetchTestCases, fetchCycle, stepStatuses, steps, cycle, fetchExecutionHistory, queryClient]);
 
   const handlePass = () => {
     if (fastTrackMode || steps.length === 0) {

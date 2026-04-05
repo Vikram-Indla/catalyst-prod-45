@@ -23,6 +23,7 @@ const TYPE_LABELS: Record<FilterType, string> = {
   assignee: 'Assignee',
   reporter: 'Reporter',
   component: 'Component',
+  source: 'Source',
   blocker: 'Blocker',
   regression: 'Regression',
 };

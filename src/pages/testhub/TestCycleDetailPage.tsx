@@ -48,11 +48,12 @@ interface CycleTestCase {
 const statusConfig: Record<string, { label: string; color: string; bg: string }> = {
   draft:       { label: 'DRAFT',       color: '#253858', bg: '#DFE1E6' },
   planned:     { label: 'PLANNED',     color: '#253858', bg: '#DFE1E6' },
-  active:      { label: 'ACTIVE',      color: '#0747A6', bg: '#DEEBFF' },
+  active:      { label: 'IN PROGRESS', color: '#0747A6', bg: '#DEEBFF' },
   in_progress: { label: 'IN PROGRESS', color: '#0747A6', bg: '#DEEBFF' },
   completed:   { label: 'COMPLETED',   color: '#006644', bg: '#E3FCEF' },
   done:        { label: 'DONE',        color: '#006644', bg: '#E3FCEF' },
   archived:    { label: 'ARCHIVED',    color: '#253858', bg: '#DFE1E6' },
+  paused:      { label: 'PAUSED',      color: '#253858', bg: '#DFE1E6' },
 };
 
 const executionStatusConfig: Record<string, { label: string; color: string; bg: string; Icon: any }> = {
@@ -264,20 +265,11 @@ export default function TestCycleDetailPage() {
             {/* FSM Status Transition Button */}
             {cycle.status === 'draft' && (
               <button onClick={async () => {
-                const { error } = await (supabase as any).from('tm_test_cycles').update({ status: 'planned', updated_at: new Date().toISOString() }).eq('id', cycleId);
-                if (error) { catalystToast.error(error.message); return; }
-                catalystToast.success('Cycle marked as planned'); fetchCycle();
-              }} style={{ height: 40, padding: '0 16px', background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)', border: 'none', borderRadius: 8, color: '#FFFFFF', fontSize: 14, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
-                Mark as Planned
-              </button>
-            )}
-            {cycle.status === 'planned' && (
-              <button onClick={async () => {
                 const { error } = await (supabase as any).from('tm_test_cycles').update({ status: 'active', updated_at: new Date().toISOString() }).eq('id', cycleId);
                 if (error) { catalystToast.error(error.message); return; }
-                catalystToast.success('Cycle execution started'); fetchCycle();
+                catalystToast.success('Cycle activated successfully'); fetchCycle();
               }} style={{ height: 40, padding: '0 16px', background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)', border: 'none', borderRadius: 8, color: '#FFFFFF', fontSize: 14, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
-                Start Execution
+                <Play size={16} /> Activate Cycle
               </button>
             )}
             {cycle.status === 'active' && (

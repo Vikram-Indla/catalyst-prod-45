@@ -383,7 +383,7 @@ function Step1({
                   width: 32, height: 32, borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center',
                   background: getAvatarColor(p.project_key), color: 'var(--bg-app)', fontSize: 13, fontWeight: 700, fontFamily: "'Inter', sans-serif",
                 }}>
-                  {p.project_key.slice(0, 2)}
+                  {p.project_key}
                 </div>
                 <span style={{ fontSize: 14, fontWeight: 600, color: '#111827', fontFamily: "'Inter', sans-serif", flex: 1 }}>
                   {p.project_name} <span style={{ fontSize: 12, color: 'var(--fg-3)', fontWeight: 400 }}>({p.project_key})</span>

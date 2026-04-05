@@ -4,11 +4,13 @@ import { StepsEditor, Step, StepAttachment } from './StepsEditor';
 import { SharedStepsModal } from './SharedStepsModal';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useTestHubProject } from '@/hooks/useTestHubProject';
 
 interface TestStep {
   id: string;
   action: string;
   expectedResult: string;
+  sharedStepId?: string;
   attachments?: StepAttachment[];
 }
 
@@ -30,6 +32,10 @@ interface TestCaseForEdit {
   version: number;
   owner_id?: string | null;
   created_by?: string | null;
+  automation_status?: string | null;
+  test_format?: string | null;
+  gherkin_feature?: string | null;
+  gherkin_scenario?: string | null;
 }
 
 interface CreateTestCaseModalProps {
@@ -54,6 +60,7 @@ export function CreateTestCaseModal({
   existingSteps,
 }: CreateTestCaseModalProps) {
   const { toast } = useToast();
+  const projectId = useTestHubProject();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [preconditions, setPreconditions] = useState('');
@@ -62,6 +69,9 @@ export function CreateTestCaseModal({
   const [caseTypeId, setCaseTypeId] = useState('');
   const [status, setStatus] = useState('draft');
   const [automation, setAutomation] = useState('manual');
+  const [testFormat, setTestFormat] = useState<'steps' | 'gherkin' | 'free_text'>('steps');
+  const [gherkinFeature, setGherkinFeature] = useState('');
+  const [gherkinScenario, setGherkinScenario] = useState('');
   const [assignedTo, setAssignedTo] = useState('');
   const [steps, setSteps] = useState<TestStep[]>([
     { id: '1', action: '', expectedResult: '', attachments: [] }
@@ -102,8 +112,11 @@ export function CreateTestCaseModal({
         setPriorityId(testCase.priority_id || '');
         setCaseTypeId(testCase.case_type_id || '');
         setStatus(testCase.status);
-        setAutomation('manual');
+        setAutomation(testCase.automation_status || 'manual');
         setAssignedTo(testCase.owner_id || '');
+        setTestFormat((testCase as any).test_format || 'steps');
+        setGherkinFeature((testCase as any).gherkin_feature || '');
+        setGherkinScenario((testCase as any).gherkin_scenario || '');
         if (existingSteps && existingSteps.length > 0) {
           setSteps(existingSteps.map(s => ({ ...s, attachments: [] })));
         } else {
@@ -119,6 +132,9 @@ export function CreateTestCaseModal({
         setCaseTypeId('');
         setStatus('draft');
         setAutomation('manual');
+        setTestFormat('steps');
+        setGherkinFeature('');
+        setGherkinScenario('');
         setSteps([{ id: '1', action: '', expectedResult: '', attachments: [] }]);
         setAssignedTo('');
       }
@@ -142,14 +158,16 @@ export function CreateTestCaseModal({
       return false;
     }
     
-    const hasValidStep = steps.some(s => s.action.trim());
-    if (!hasValidStep) {
-      toast({
-        title: 'Validation Error',
-        description: 'At least one step with action text is required',
-        variant: 'destructive',
-      });
-      return false;
+    if (testFormat === 'steps') {
+      const hasValidStep = steps.some(s => s.action.trim());
+      if (!hasValidStep) {
+        toast({
+          title: 'Validation Error',
+          description: 'At least one step with action text is required',
+          variant: 'destructive',
+        });
+        return false;
+      }
     }
     return true;
   };
@@ -207,22 +225,27 @@ export function CreateTestCaseModal({
         case_type_id: caseTypeId || null,
         status,
         automation_status: automation,
+        test_format: testFormat,
+        gherkin_feature: testFormat === 'gherkin' ? gherkinFeature.trim() || null : null,
+        gherkin_scenario: testFormat === 'gherkin' ? gherkinScenario.trim() || null : null,
         owner_id: assignedTo || null,
         version: 1,
-        project_id: '00000000-0000-0000-0000-000000000001',
+        project_id: projectId,
       })
       .select()
       .single();
 
     if (error) throw error;
 
-    // 3. Insert steps
-    const validSteps = steps.filter(s => s.action.trim());
+    // 3. Insert steps (including shared steps)
+    const validSteps = steps.filter(s => s.action.trim() || s.sharedStepId);
     const stepsToInsert = validSteps.map((s, i) => ({
       test_case_id: newCase.id,
       step_number: i + 1,
       action: s.action.trim(),
-      expected_result: s.expectedResult.trim() || null,
+      expected_result: s.expectedResult?.trim() || null,
+      is_shared: !!s.sharedStepId,
+      shared_step_id: s.sharedStepId || null,
     }));
 
     if (stepsToInsert.length > 0) {
@@ -291,6 +314,9 @@ export function CreateTestCaseModal({
         case_type_id: caseTypeId || null,
         status,
         automation_status: automation,
+        test_format: testFormat,
+        gherkin_feature: testFormat === 'gherkin' ? gherkinFeature.trim() || null : null,
+        gherkin_scenario: testFormat === 'gherkin' ? gherkinScenario.trim() || null : null,
         owner_id: assignedTo || null,
         version: newVersion,
       })
@@ -304,14 +330,16 @@ export function CreateTestCaseModal({
       .delete()
       .eq('test_case_id', testCase.id);
 
-    // 3. Insert new steps
+    // 3. Insert new steps (including shared steps)
     const stepsToInsert = steps
-      .filter(s => s.action.trim())
+      .filter(s => s.action.trim() || s.sharedStepId)
       .map((s, i) => ({
         test_case_id: testCase.id,
         step_number: i + 1,
         action: s.action.trim(),
-        expected_result: s.expectedResult.trim() || null,
+        expected_result: s.expectedResult?.trim() || null,
+        is_shared: !!s.sharedStepId,
+        shared_step_id: s.sharedStepId || null,
       }));
 
     if (stepsToInsert.length > 0) {
@@ -658,6 +686,20 @@ export function CreateTestCaseModal({
                   <option value="deprecated">Deprecated</option>
                 </select>
               </div>
+
+              {/* Automation Status */}
+              <div>
+                <label style={{ ...labelStyle, fontSize: 13 }}>Automation Status</label>
+                <select
+                  value={automation}
+                  onChange={(e) => setAutomation(e.target.value)}
+                  style={{ ...selectStyle, backgroundColor: 'var(--cp-float)' }}
+                >
+                  <option value="manual">Manual</option>
+                  <option value="automated">Automated</option>
+                  <option value="hybrid">Hybrid</option>
+                </select>
+              </div>
               
               {/* Assigned To - Full width with profiles data */}
               <div>
@@ -678,38 +720,108 @@ export function CreateTestCaseModal({
             </div>
           </div>
 
-          {/* BOTTOM SECTION: Steps editor - FULL WIDTH */}
-          <div>
-            <div style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              marginBottom: 12,
-            }}>
-              <label style={{ ...labelStyle, marginBottom: 0 }}>
-                Test Steps <span style={{ color: 'var(--sem-danger)' }}>*</span>
-              </label>
-              <button
-                type="button"
-                onClick={() => setIsSharedStepsModalOpen(true)}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  color: 'var(--cp-blue)',
-                  fontSize: 13,
-                  fontWeight: 500,
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 6,
-                }}
-              >
-                <Library size={14} />
-                Insert from Library
-              </button>
+          {/* TEST FORMAT TOGGLE */}
+          <div style={{ marginBottom: 8 }}>
+            <label style={labelStyle}>Test Format</label>
+            <div style={{ display: 'flex', gap: 4 }}>
+              {([
+                { key: 'steps' as const, label: 'Steps' },
+                { key: 'gherkin' as const, label: 'Gherkin / BDD' },
+                { key: 'free_text' as const, label: 'Free Text' },
+              ]).map(opt => (
+                <button
+                  key={opt.key}
+                  type="button"
+                  onClick={() => setTestFormat(opt.key)}
+                  style={{
+                    height: 32, padding: '0 14px', border: 'none', borderRadius: 6,
+                    fontSize: 13, fontWeight: 500, cursor: 'pointer',
+                    backgroundColor: testFormat === opt.key ? '#2563EB' : '#F1F5F9',
+                    color: testFormat === opt.key ? '#FFF' : '#475569',
+                    transition: 'all 0.15s',
+                  }}
+                >
+                  {opt.label}
+                </button>
+              ))}
             </div>
-            <StepsEditor steps={steps} onChange={setSteps} />
           </div>
+
+          {/* BOTTOM SECTION: Steps / Gherkin / Free Text - FULL WIDTH */}
+          {testFormat === 'steps' && (
+            <div>
+              <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: 12,
+              }}>
+                <label style={{ ...labelStyle, marginBottom: 0 }}>
+                  Test Steps <span style={{ color: 'var(--sem-danger)' }}>*</span>
+                </label>
+                <button
+                  type="button"
+                  onClick={() => setIsSharedStepsModalOpen(true)}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: 'var(--cp-blue)',
+                    fontSize: 13,
+                    fontWeight: 500,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 6,
+                  }}
+                >
+                  <Library size={14} />
+                  Insert from Library
+                </button>
+              </div>
+              <StepsEditor steps={steps} onChange={setSteps} />
+            </div>
+          )}
+
+          {testFormat === 'gherkin' && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <div>
+                <label style={labelStyle}>Feature</label>
+                <textarea
+                  placeholder="Feature: Invoice Validation"
+                  value={gherkinFeature}
+                  onChange={(e) => setGherkinFeature(e.target.value)}
+                  style={{ ...textareaStyle, minHeight: 60, fontFamily: 'JetBrains Mono, monospace', fontSize: 13 }}
+                  onFocus={(e) => { e.target.style.borderColor = 'var(--cp-blue)'; e.target.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.12)'; }}
+                  onBlur={(e) => { e.target.style.borderColor = 'var(--divider)'; e.target.style.boxShadow = 'none'; }}
+                />
+              </div>
+              <div>
+                <label style={labelStyle}>Scenario</label>
+                <textarea
+                  placeholder={"Scenario: Valid invoice is processed\n  Given an invoice with amount 100 SAR\n  When the invoice is submitted\n  Then the status should be 'Approved'"}
+                  value={gherkinScenario}
+                  onChange={(e) => setGherkinScenario(e.target.value)}
+                  style={{ ...textareaStyle, minHeight: 160, fontFamily: 'JetBrains Mono, monospace', fontSize: 13 }}
+                  onFocus={(e) => { e.target.style.borderColor = 'var(--cp-blue)'; e.target.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.12)'; }}
+                  onBlur={(e) => { e.target.style.borderColor = 'var(--divider)'; e.target.style.boxShadow = 'none'; }}
+                />
+              </div>
+            </div>
+          )}
+
+          {testFormat === 'free_text' && (
+            <div>
+              <label style={labelStyle}>Test Description</label>
+              <textarea
+                placeholder="Describe the test procedure in free-form text..."
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                style={{ ...textareaStyle, minHeight: 200 }}
+                onFocus={(e) => { e.target.style.borderColor = 'var(--cp-blue)'; e.target.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.12)'; }}
+                onBlur={(e) => { e.target.style.borderColor = 'var(--divider)'; e.target.style.boxShadow = 'none'; }}
+              />
+            </div>
+          )}
         </div>
 
         {/* Shared Steps Modal */}
@@ -721,6 +833,8 @@ export function CreateTestCaseModal({
               id: Date.now().toString(),
               action: sharedStep.action,
               expectedResult: sharedStep.expectedResult,
+              sharedStepId: sharedStep.sharedStepId,
+              attachments: [],
             }]);
             setIsSharedStepsModalOpen(false);
             toast({

@@ -48,7 +48,7 @@ export function ProjectSwitcher({ projects, currentKey, isOpen, onClose, onSelec
   return (
     <div
       ref={ref}
-      className="absolute top-full left-0 mt-1 z-50 bg-white dark:bg-[#1F2128] border border-[#E2E8F0] dark:border-[rgba(235,238,245,0.10)]"
+      className="absolute top-full left-0 mt-1 z-50 bg-white dark:bg-[#232019] border border-[#E2E8F0] dark:border-[rgba(235,238,245,0.10)]"
       style={{
         width: 280,
         borderRadius: 8,
@@ -126,7 +126,7 @@ function ProjectRow({
         className="flex items-center justify-center rounded flex-shrink-0"
         style={{ width: 24, height: 24, backgroundColor: project.color, color: '#FFFFFF', fontSize: 10, fontWeight: 700, borderRadius: 4 }}
       >
-        {project.key.slice(0, 2)}
+        {project.key}
       </div>
       <div className="flex flex-col items-start min-w-0">
         <span className="truncate w-full text-[var(--fg-1)] dark:text-[rgba(235,238,245,0.92)]" style={{ fontSize: 12, fontWeight: 500 }}>

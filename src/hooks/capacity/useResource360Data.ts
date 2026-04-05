@@ -150,18 +150,18 @@ export function useResource360Data(resourceId: string | null) {
 
       // Fetch defects assigned to user
       const { data: defects } = await supabase
-        .from('defects')
+        .from('tm_defects')
         .select(`
-          id, defect_id, title, workflow_status, assignee_id,
+          id, defect_key, title, status, assignee_id,
           project:project_id(id, name)
         `)
         .eq('assignee_id', profileId);
 
       defects?.forEach((defect: any) => {
-        const isCompleted = defect.workflow_status === 'Closed' || defect.workflow_status === 'Resolved';
+        const isCompleted = defect.status === 'closed' || defect.status === 'resolved';
         items.push({
           id: defect.id,
-          item_id: defect.defect_id || `D-${defect.id.slice(0, 4)}`,
+          item_id: defect.defect_key || `D-${defect.id.slice(0, 4)}`,
           title: defect.title,
           type: 'defect',
           status: isCompleted ? 'completed' : 'current',
