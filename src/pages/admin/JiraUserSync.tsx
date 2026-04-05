@@ -283,14 +283,14 @@ const JiraUserSync: React.FC = () => {
               <div className="flex items-center gap-[5px] mb-[4px]">
                 <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: card.dot, flexShrink: 0 }} />
                 <span className="text-[#6B7280] dark:text-[rgba(200,210,225,0.50)]"
-                  style={{ fontSize: '11px', fontWeight: 500 }}>{card.label}</span>
+                  style={{ fontSize: '11px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.03em' }}>{card.label}</span>
               </div>
               <div className="text-[#111827] dark:text-[rgba(225,230,240,0.95)]"
-                style={{ fontSize: '24px', fontWeight: 650, lineHeight: 1.1 }}>
+                style={{ fontSize: '28px', fontWeight: 650, lineHeight: 1.1 }}>
                 {getStatValue(card.key)}
               </div>
               <div className="text-[#9CA3AF] dark:text-[rgba(200,210,225,0.35)]"
-                style={{ fontSize: '11px', marginTop: '2px' }}>{card.sub}</div>
+                style={{ fontSize: '11px', marginTop: '4px' }}>{card.sub}</div>
             </div>
           ))}
         </div>
