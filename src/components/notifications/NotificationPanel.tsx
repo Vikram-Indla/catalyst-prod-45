@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { ExternalLink, MoreVertical, CheckCheck, MessageSquare, Settings, RefreshCw, X } from "lucide-react";
 import type { Notification, NotificationTab } from "@/types/notifications";
@@ -8,6 +8,7 @@ import { useUnreadCount } from "@/hooks/useUnreadCount";
 import { useRealtimeNotifications } from "@/hooks/useRealtimeNotifications";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useActorProfiles } from "@/hooks/useActorProfiles";
 import NotificationItem from "./NotificationItem";
 import SectionHeader from "./SectionHeader";
 import EmptyState from "./EmptyState";
@@ -131,7 +132,14 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
     return true;
   });
 
-  // Error state handling (1.5)
+  // Batch-fetch actor profiles for all visible notifications
+  const actorIds = useMemo(
+    () => notifications.map(n => n.actor_user_id).filter((id): id is string => !!id),
+    [notifications]
+  );
+  const { data: actorProfiles } = useActorProfiles(actorIds);
+
+
   useEffect(() => {
     setHasError(isError);
   }, [isError]);
@@ -490,6 +498,7 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
                   <NotificationItem
                     key={n.id}
                     notification={n}
+                    actorProfile={n.actor_user_id ? actorProfiles?.get(n.actor_user_id) : undefined}
                     onMarkRead={handleMarkRead}
                     onClick={handleItemClick}
                   />
