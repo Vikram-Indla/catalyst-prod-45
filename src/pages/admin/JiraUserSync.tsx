@@ -521,7 +521,7 @@ const JiraUserSync: React.FC = () => {
                             : getInitials(user.display_name || '?')
                           }
                         </div>
-                        <div style={{ minWidth: 0 }}>
+                        <div style={{ minWidth: 0, maxWidth: '220px' }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
                             <span style={{
                               fontSize: '12px', fontWeight: 500, color: '#0F172A',

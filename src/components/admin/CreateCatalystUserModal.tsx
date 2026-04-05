@@ -60,7 +60,14 @@ const CreateCatalystUserModal: React.FC<Props> = ({ open, onClose, onSuccess }) 
           onClose();
           onSuccess();
         },
-        onError: (err: any) => toast.error(err.message || 'Failed to create user'),
+        onError: (err: any) => {
+          const msg = err?.message || '';
+          if (msg.includes('23505') || msg.toLowerCase().includes('unique') || msg.toLowerCase().includes('already')) {
+            setErrors(p => ({ ...p, email: 'This email is already registered in Catalyst.' }));
+          } else {
+            toast.error(msg || 'Failed to create user');
+          }
+        },
       }
     );
   };
