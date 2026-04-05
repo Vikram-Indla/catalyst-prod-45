@@ -127,6 +127,50 @@ async function handleFixVersionsChange(payload: any) {
   return true; // signal: handled
 }
 
+// ── User events that trigger jira-user-sync ──
+const USER_EVENTS = new Set([
+  'jira:user_created',
+  'jira:user_updated',
+  'jira:user_deactivated',
+  'jira:user_reactivated',
+  'jira:group_member_added',
+  'jira:group_member_removed',
+]);
+
+async function handleUserEvent(payload: any, webhookEvent: string) {
+  const jiraAccountId = payload.user?.accountId ?? null;
+
+  // Store in jira_webhook_events for audit
+  await supabase.from('jira_webhook_events').insert({
+    event_type: webhookEvent,
+    jira_account_id: jiraAccountId,
+    raw_payload: payload,
+    hmac_valid: false,
+    processed: false,
+    received_at: new Date().toISOString(),
+  });
+
+  // Fire-and-forget user sync
+  if (jiraAccountId) {
+    fetch(
+      `${Deno.env.get('SUPABASE_URL')}/functions/v1/jira-user-sync`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')}`,
+        },
+        body: JSON.stringify({
+          trigger: 'webhook',
+          direction: 'jira_to_catalyst',
+          jiraAccountId,
+          webhookEventType: webhookEvent,
+        }),
+      }
+    ).catch(() => {});
+  }
+}
+
 Deno.serve(async (req) => {
   if (req.method !== 'POST') {
     return new Response('Method not allowed', { status: 405 });
@@ -138,6 +182,18 @@ Deno.serve(async (req) => {
 
     if (!webhookEvent) {
       return new Response('Missing webhookEvent', { status: 400 });
+    }
+    // ── User events (Jira User Sync) ──
+    if (USER_EVENTS.has(webhookEvent)) {
+      try {
+        await handleUserEvent(payload, webhookEvent);
+      } catch (err) {
+        console.error('user event handler error:', err);
+      }
+      return new Response(JSON.stringify({ received: true, event: webhookEvent }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      });
     }
 
     // ── Version events (ReleaseHub) ──
