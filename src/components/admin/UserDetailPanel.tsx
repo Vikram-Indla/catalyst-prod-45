@@ -127,6 +127,7 @@ const ProjectsTab: React.FC<{ perms: any[] }> = ({ perms }) => {
     padding: '3px 7px', borderRadius: '3px', cursor: 'pointer',
     border: '1px solid rgba(15,23,42,0.10)', background: '#FFFFFF', color: '#64748B',
   };
+  const xsBtnClass = 'jus-action-btn';
 
   return (
     <div style={{ padding: '12px 16px' }}>
@@ -136,8 +137,8 @@ const ProjectsTab: React.FC<{ perms: any[] }> = ({ perms }) => {
           PROJECT ASSIGNMENTS ({perms.length})
         </div>
         <div style={{ display: 'flex', gap: '5px' }}>
-          <button style={xsBtn} onClick={selectAll}>Select All</button>
-          <button style={xsBtn} onClick={deselectAll}>Deselect All</button>
+          <button className={xsBtnClass} style={xsBtn} onClick={selectAll}>Select All</button>
+          <button className={xsBtnClass} style={xsBtn} onClick={deselectAll}>Deselect All</button>
           <button
             style={{ ...xsBtn, background: '#2563EB', color: '#FFFFFF', border: 'none' }}
             onClick={() => toast.info('Project picker — Phase 2')}
@@ -157,7 +158,7 @@ const ProjectsTab: React.FC<{ perms: any[] }> = ({ perms }) => {
         <>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '11px', marginTop: '6px' }}>
             <thead>
-              <tr style={{ background: '#F1F5F9' }}>
+              <tr style={{ background: '#F1F5F9' }} className="jus-table-head">
                 <th style={{ padding: '6px 9px', fontSize: '9px', fontWeight: 700, color: '#64748B', textTransform: 'uppercase', textAlign: 'left', width: '28px' }}>
                   <input
                     type="checkbox"
@@ -187,17 +188,17 @@ const ProjectsTab: React.FC<{ perms: any[] }> = ({ perms }) => {
                         style={{ width: '12px', height: '12px', accentColor: '#2563EB' }}
                       />
                     </td>
-                    <td style={{ padding: '6px 9px', fontWeight: 500, color: '#0F172A', whiteSpace: 'nowrap' }}>
+                    <td style={{ padding: '6px 9px', fontWeight: 500, color: '#0F172A', whiteSpace: 'nowrap' }} className="jus-field-val">
                       {p.project_name || p.project_key}
                     </td>
                     <td style={{ padding: '6px 9px' }}>
-                      <span style={{
+                      <span className="jus-project-key-chip" style={{
                         fontFamily: "'JetBrains Mono', monospace", fontSize: '9px', color: '#64748B',
                         background: '#F1F5F9', padding: '1px 4px', borderRadius: '2px',
                       }}>{p.project_key}</span>
                     </td>
                     <td style={{ padding: '6px 9px', textAlign: 'right' }}>
-                      <div style={{
+                      <div className="jus-perm-seg" style={{
                         display: 'inline-flex', border: '1px solid rgba(15,23,42,0.10)',
                         borderRadius: '4px', overflow: 'hidden',
                       }}>
@@ -270,8 +271,8 @@ const ActivityTab: React.FC<{ events: any[] }> = ({ events }) => {
               marginTop: '3px', background: getEventDotColor(ev),
             }} />
             <div style={{ flex: 1 }}>
-              <div style={{ fontSize: '11px', color: '#334155' }}>{getEventText(ev)}</div>
-              <div style={{ fontSize: '10px', color: '#94A3B8', marginTop: '1px' }}>{formatDate(ev.created_at)}</div>
+              <div className="jus-event-text" style={{ fontSize: '11px', color: '#334155' }}>{getEventText(ev)}</div>
+              <div className="jus-event-time" style={{ fontSize: '10px', color: '#94A3B8', marginTop: '1px' }}>{formatDate(ev.created_at)}</div>
             </div>
           </div>
         ))
