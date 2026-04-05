@@ -202,9 +202,9 @@ const JiraUserSync: React.FC = () => {
   const showEnd = Math.min(page * PER_PAGE, totalCount);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: '#FFFFFF' }}>
+    <div className="jus-page" style={{ display: 'flex', flexDirection: 'column', height: '100%', background: '#FFFFFF' }}>
       {/* ══ Page Header ══ */}
-      <div style={{
+      <div className="jus-surface" style={{
         position: 'sticky', top: 0, zIndex: 10, background: '#FFFFFF',
         borderBottom: '1px solid rgba(15,23,42,0.10)', padding: '14px 20px 0',
       }}>
@@ -212,13 +212,13 @@ const JiraUserSync: React.FC = () => {
           display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', paddingBottom: '12px',
         }}>
           <div>
-            <h1 style={{
+            <h1 className="jus-text-primary" style={{
               fontFamily: "'Sora', sans-serif", fontSize: '17px', fontWeight: 700,
               color: '#0F172A', letterSpacing: '-0.3px', margin: 0, lineHeight: 1.3,
             }}>
               Jira User Sync
             </h1>
-            <p style={{ fontSize: '11px', color: '#64748B', margin: '2px 0 0' }}>
+            <p className="jus-text-muted" style={{ fontSize: '11px', color: '#64748B', margin: '2px 0 0' }}>
               Bidirectional identity bridge · Jira Cloud ↔ Catalyst · Live proxy auth · Webhooks active
             </p>
           </div>
@@ -252,10 +252,11 @@ const JiraUserSync: React.FC = () => {
       </div>
 
       {/* ══ Stats Row ══ */}
-      <div style={{ display: 'flex', borderBottom: '1px solid rgba(15,23,42,0.10)' }}>
+      <div className="jus-surface" style={{ display: 'flex', borderBottom: '1px solid rgba(15,23,42,0.10)' }}>
         {STATS_CONFIG.map((card, i) => (
           <div
             key={card.key}
+            className="jus-stat-card"
             style={{
               flex: 1, padding: '10px 16px', background: '#FFFFFF',
               borderLeft: i > 0 ? '1px solid rgba(15,23,42,0.10)' : 'none',
@@ -266,12 +267,12 @@ const JiraUserSync: React.FC = () => {
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '3px' }}>
               <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: card.dot, flexShrink: 0 }} />
-              <span style={{ fontSize: '10px', fontWeight: 500, color: '#64748B' }}>{card.label}</span>
+              <span className="jus-stat-label" style={{ fontSize: '10px', fontWeight: 500, color: '#64748B' }}>{card.label}</span>
             </div>
-            <div style={{ fontSize: '20px', fontWeight: 700, color: '#0F172A', lineHeight: 1 }}>
+            <div className="jus-stat-value" style={{ fontSize: '20px', fontWeight: 700, color: '#0F172A', lineHeight: 1 }}>
               {getStatValue(card.key)}
             </div>
-            <div style={{ fontSize: '10px', color: '#94A3B8', marginTop: '1px' }}>{card.sub}</div>
+            <div className="jus-text-muted" style={{ fontSize: '10px', color: '#94A3B8', marginTop: '1px' }}>{card.sub}</div>
           </div>
         ))}
       </div>
