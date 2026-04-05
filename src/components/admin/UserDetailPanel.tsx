@@ -254,7 +254,7 @@ const ActivityTab: React.FC<{ events: any[] }> = ({ events }) => {
 
   return (
     <div style={{ padding: '12px 16px' }}>
-      <div style={sectionLabel}>SYNC ACTIVITY</div>
+      <div style={mkSectionLabel(isDark)}>SYNC ACTIVITY</div>
       {sorted.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '32px 16px' }}>
           <Activity size={24} color="#94A3B8" style={{ margin: '0 auto 8px' }} />
@@ -439,27 +439,27 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
           <>
             {/* Identity */}
             <div className="jus-section-border" style={{ padding: '12px 16px', borderBottom: '1px solid rgba(15,23,42,0.06)' }}>
-              <div className="jus-section-label" style={sectionLabel}>IDENTITY</div>
-              <div className="jus-field-row" style={fieldRow}>
-                <span className="jus-field-key" style={fieldKey}>Email / Login</span>
-                <span className="jus-field-val" style={{ ...fieldVal, ...monoSmall }}>{user.email}</span>
+              <div className="jus-section-label" style={mkSectionLabel(isDark)}>IDENTITY</div>
+              <div className="jus-field-row" style={mkFieldRow(isDark)}>
+                <span className="jus-field-key" style={mkFieldKey(isDark)}>Email / Login</span>
+                <span className="jus-field-val" style={{ ...mkFieldVal(isDark), ...monoSmall }}>{user.email}</span>
               </div>
-              <div className="jus-field-row" style={fieldRow}>
-                <span className="jus-field-key" style={fieldKey}>Jira Account ID</span>
-                <span className="jus-field-val" style={{ ...fieldVal, ...monoSmall }}>
+              <div className="jus-field-row" style={mkFieldRow(isDark)}>
+                <span className="jus-field-key" style={mkFieldKey(isDark)}>Jira Account ID</span>
+                <span className="jus-field-val" style={{ ...mkFieldVal(isDark), ...monoSmall }}>
                   {user.jira_account_id
                     ? (user.jira_account_id.length > 24 ? user.jira_account_id.slice(0, 24) + '…' : user.jira_account_id)
                     : <i style={{ color: '#94A3B8', fontWeight: 400 }}>N/A — local user</i>
                   }
                 </span>
               </div>
-              <div className="jus-field-row" style={fieldRow}>
-                <span className="jus-field-key" style={fieldKey}>Resource Role</span>
-                <span className="jus-field-val" style={fieldVal}>{user.resource_role_id || '—'}</span>
+              <div className="jus-field-row" style={mkFieldRow(isDark)}>
+                <span className="jus-field-key" style={mkFieldKey(isDark)}>Resource Role</span>
+                <span className="jus-field-val" style={mkFieldVal(isDark)}>{user.resource_role_id || '—'}</span>
               </div>
-              <div className="jus-field-row" style={fieldRow}>
-                <span className="jus-field-key" style={fieldKey}>Last Synced</span>
-                <span className="jus-field-val" style={fieldVal}>
+              <div className="jus-field-row" style={mkFieldRow(isDark)}>
+                <span className="jus-field-key" style={mkFieldKey(isDark)}>Last Synced</span>
+                <span className="jus-field-val" style={mkFieldVal(isDark)}>
                   {user.last_synced_at ? (
                     <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
                       <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#16A34A', display: 'inline-block' }} />
@@ -470,12 +470,12 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
                   )}
                 </span>
               </div>
-              <div className="jus-field-row" style={fieldRow}>
-                <span className="jus-field-key" style={fieldKey}>Last Login</span>
-                <span className="jus-field-val" style={fieldVal}>{formatDate(user.last_catalyst_login_at)}</span>
+              <div className="jus-field-row" style={mkFieldRow(isDark)}>
+                <span className="jus-field-key" style={mkFieldKey(isDark)}>Last Login</span>
+                <span className="jus-field-val" style={mkFieldVal(isDark)}>{formatDate(user.last_catalyst_login_at)}</span>
               </div>
-              <div className="jus-field-row" style={{ ...fieldRow, borderBottom: 'none' }}>
-                <span className="jus-field-key" style={fieldKey}>Status</span>
+              <div className="jus-field-row" style={{ ...mkFieldRow(isDark), borderBottom: 'none' }}>
+                <span className="jus-field-key" style={mkFieldKey(isDark)}>Status</span>
                 <span style={{
                   display: 'inline-block', padding: '0 7px', borderRadius: '3px',
                   fontSize: '10px', fontWeight: 700, textTransform: 'uppercase',
@@ -490,7 +490,7 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
 
             {/* Password & Auth */}
             <div className="jus-section-border" style={{ padding: '12px 16px', borderBottom: '1px solid rgba(15,23,42,0.06)' }}>
-              <div className="jus-section-label" style={sectionLabel}>PASSWORD & AUTH</div>
+              <div className="jus-section-label" style={mkSectionLabel(isDark)}>PASSWORD & AUTH</div>
               <div className="jus-pwd-box" style={{
                 background: '#F1F5F9', borderRadius: '4px', padding: '7px 10px',
                 display: 'flex', gap: '8px', alignItems: 'center', marginTop: '5px',
@@ -554,7 +554,7 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
 
             {/* Account Actions */}
             <div style={{ padding: '12px 16px' }}>
-              <div className="jus-section-label" style={sectionLabel}>ACCOUNT ACTIONS</div>
+              <div className="jus-section-label" style={mkSectionLabel(isDark)}>ACCOUNT ACTIONS</div>
               <div style={{ display: 'flex', gap: '7px', marginTop: '4px', flexWrap: 'wrap' }}>
                 <button
                   onClick={handleToggle}
@@ -611,7 +611,7 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
 
         {activeTab === 'info' && (
           <div style={{ padding: '12px 16px' }}>
-            <div style={sectionLabel}>FUNCTIONAL · TECHNICAL · WIRING · BISYNC</div>
+            <div style={mkSectionLabel(isDark)}>FUNCTIONAL · TECHNICAL · WIRING · BISYNC</div>
 
             {/* 2×2 Grid */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '8px' }}>
