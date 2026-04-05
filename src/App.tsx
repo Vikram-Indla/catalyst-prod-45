@@ -49,6 +49,11 @@ const S = ({ children }: { children: React.ReactNode }) => (
   <Suspense fallback={<div className="p-8">Loading...</div>}>{children}</Suspense>
 );
 
+function NotificationSeeder() {
+  useEffect(() => { seedNotificationsForCurrentUser(); }, []);
+  return null;
+}
+
 const App = () => (
   <ErrorBoundary>
   <QueryClientProvider client={queryClient}>
