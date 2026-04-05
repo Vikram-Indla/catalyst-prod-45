@@ -7,6 +7,7 @@ import { useState, useEffect } from 'react';
 import { X, FileCheck, Tag, User, FileText, AlertCircle, ExternalLink } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
+import { useTheme } from '@/hooks/useTheme';
 
 interface CreateRequirementModalProps {
   isOpen: boolean;
@@ -31,6 +32,7 @@ const PRIORITY_OPTIONS = [
 ];
 
 export function CreateRequirementModal({ isOpen, onClose, onCreated }: CreateRequirementModalProps) {
+  const { isDark } = useTheme();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [type, setType] = useState('functional');
@@ -108,20 +110,22 @@ export function CreateRequirementModal({ isOpen, onClose, onCreated }: CreateReq
 
   const inputStyle = (hasError?: boolean): React.CSSProperties => ({
     width: '100%', height: 44, padding: '0 14px',
-    border: `1.5px solid ${hasError ? '#DC2626' : '#E2E8F0'}`,
+    border: `1.5px solid ${hasError ? '#DC2626' : isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`,
     borderRadius: 10, fontSize: 14,
+    backgroundColor: isDark ? '#2C2823' : undefined,
+    color: isDark ? '#F5F3F0' : undefined,
   });
 
   return (
     <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: 24 }}>
-      <div style={{ width: '100%', maxWidth: 600, maxHeight: '90vh', backgroundColor: '#FFFFFF', borderRadius: 16, boxShadow: '0 25px 50px rgba(0,0,0,0.25)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      <div style={{ width: '100%', maxWidth: 600, maxHeight: '90vh', backgroundColor: isDark ? '#232019' : '#FFFFFF', borderRadius: 16, boxShadow: '0 25px 50px rgba(0,0,0,0.25)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
         {/* Header */}
-        <div style={{ padding: '20px 24px', borderBottom: '1px solid #E2E8F0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ padding: '20px 24px', borderBottom: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <div style={{ width: 44, height: 44, borderRadius: 10, backgroundColor: '#2563EB', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <FileCheck size={22} style={{ color: '#FFFFFF' }} />
             </div>
-            <h2 style={{ fontSize: 18, fontWeight: 700, color: '#0F172A', margin: 0 }}>Add Requirement</h2>
+            <h2 style={{ fontSize: 18, fontWeight: 700, color: isDark ? '#F5F3F0' : '#0F172A', margin: 0 }}>Add Requirement</h2>
           </div>
           <button onClick={onClose} style={{ width: 36, height: 36, border: 'none', borderRadius: 8, backgroundColor: 'transparent', color: '#64748B', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <X size={20} />
@@ -131,7 +135,7 @@ export function CreateRequirementModal({ isOpen, onClose, onCreated }: CreateReq
         {/* Body */}
         <div style={{ flex: 1, overflowY: 'auto', padding: 24 }}>
           <div style={{ marginBottom: 20 }}>
-            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#0F172A', marginBottom: 6 }}>
+            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: isDark ? '#F5F3F0' : '#0F172A', marginBottom: 6 }}>
               Title <span style={{ color: '#DC2626' }}>*</span>
             </label>
             <input type="text" value={title} onChange={(e) => setTitle(e.target.value)}
@@ -145,14 +149,14 @@ export function CreateRequirementModal({ isOpen, onClose, onCreated }: CreateReq
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 20 }}>
             <div>
-              <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#0F172A', marginBottom: 6 }}>Type</label>
-              <select value={type} onChange={(e) => setType(e.target.value)} style={{ ...inputStyle(), backgroundColor: '#FFFFFF' }}>
+              <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: isDark ? '#F5F3F0' : '#0F172A', marginBottom: 6 }}>Type</label>
+              <select value={type} onChange={(e) => setType(e.target.value)} style={{ ...inputStyle(), backgroundColor: isDark ? '#2C2823' : '#FFFFFF' }}>
                 {TYPE_OPTIONS.map((opt) => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
               </select>
             </div>
             <div>
-              <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#0F172A', marginBottom: 6 }}>Priority</label>
-              <select value={priority} onChange={(e) => setPriority(e.target.value)} style={{ ...inputStyle(), backgroundColor: '#FFFFFF' }}>
+              <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: isDark ? '#F5F3F0' : '#0F172A', marginBottom: 6 }}>Priority</label>
+              <select value={priority} onChange={(e) => setPriority(e.target.value)} style={{ ...inputStyle(), backgroundColor: isDark ? '#2C2823' : '#FFFFFF' }}>
                 {PRIORITY_OPTIONS.map((opt) => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
               </select>
             </div>
@@ -160,29 +164,29 @@ export function CreateRequirementModal({ isOpen, onClose, onCreated }: CreateReq
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 20 }}>
             <div>
-              <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#0F172A', marginBottom: 6 }}>
+              <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: isDark ? '#F5F3F0' : '#0F172A', marginBottom: 6 }}>
                 <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><ExternalLink size={14} /> External ID</span>
               </label>
               <input type="text" value={externalId} onChange={(e) => setExternalId(e.target.value)} placeholder="e.g., JIRA-123" style={inputStyle()} />
             </div>
             <div>
-              <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#0F172A', marginBottom: 6 }}>Source</label>
+              <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: isDark ? '#F5F3F0' : '#0F172A', marginBottom: 6 }}>Source</label>
               <input type="text" value={source} onChange={(e) => setSource(e.target.value)} placeholder="e.g., Jira, Azure DevOps" style={inputStyle()} />
             </div>
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 20 }}>
             <div>
-              <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#0F172A', marginBottom: 6 }}>
+              <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: isDark ? '#F5F3F0' : '#0F172A', marginBottom: 6 }}>
                 <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><Tag size={14} /> Release Version</span>
               </label>
               <input type="text" value={releaseVersion} onChange={(e) => setReleaseVersion(e.target.value)} placeholder="e.g., 2.0.0" style={inputStyle()} />
             </div>
             <div>
-              <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#0F172A', marginBottom: 6 }}>
+              <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: isDark ? '#F5F3F0' : '#0F172A', marginBottom: 6 }}>
                 <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><User size={14} /> Owner</span>
               </label>
-              <select value={ownerId} onChange={(e) => setOwnerId(e.target.value)} style={{ ...inputStyle(), backgroundColor: '#FFFFFF' }}>
+              <select value={ownerId} onChange={(e) => setOwnerId(e.target.value)} style={{ ...inputStyle(), backgroundColor: isDark ? '#2C2823' : '#FFFFFF' }}>
                 <option value="">Select owner</option>
                 {users.map((u) => <option key={u.id} value={u.id}>{u.full_name}</option>)}
               </select>
@@ -190,19 +194,19 @@ export function CreateRequirementModal({ isOpen, onClose, onCreated }: CreateReq
           </div>
 
           <div>
-            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#0F172A', marginBottom: 6 }}>
+            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: isDark ? '#F5F3F0' : '#0F172A', marginBottom: 6 }}>
               <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><FileText size={14} /> Description</span>
             </label>
             <textarea value={description} onChange={(e) => setDescription(e.target.value)}
               placeholder="Detailed description of the requirement..." rows={4}
-              style={{ width: '100%', padding: 14, border: '1.5px solid #E2E8F0', borderRadius: 10, fontSize: 14, resize: 'vertical' }} />
+              style={{ width: '100%', padding: 14, border: isDark ? '1.5px solid rgba(255,255,255,0.08)' : '1.5px solid #E2E8F0', borderRadius: 10, fontSize: 14, resize: 'vertical', backgroundColor: isDark ? '#2C2823' : undefined, color: isDark ? '#F5F3F0' : undefined }} />
           </div>
         </div>
 
         {/* Footer */}
-        <div style={{ padding: '16px 24px', borderTop: '1px solid #E2E8F0', display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
+        <div style={{ padding: '16px 24px', borderTop: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0', display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
           <button onClick={onClose} disabled={isSubmitting}
-            style={{ height: 44, padding: '0 20px', backgroundColor: '#FFFFFF', border: '1.5px solid #E2E8F0', borderRadius: 10, fontSize: 14, fontWeight: 500, color: '#64748B', cursor: 'pointer' }}>
+            style={{ height: 44, padding: '0 20px', backgroundColor: isDark ? '#2C2823' : '#FFFFFF', border: isDark ? '1.5px solid rgba(255,255,255,0.08)' : '1.5px solid #E2E8F0', borderRadius: 10, fontSize: 14, fontWeight: 500, color: isDark ? '#A09890' : '#64748B', cursor: 'pointer' }}>
             Cancel
           </button>
           <button onClick={handleSubmit} disabled={isSubmitting}

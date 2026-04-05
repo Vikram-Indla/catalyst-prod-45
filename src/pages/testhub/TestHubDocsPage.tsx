@@ -5,6 +5,7 @@
  */
 import { useState } from 'react';
 import { Download, BookOpen, ChevronDown, ChevronRight, Database, ArrowRight, CheckCircle2, AlertTriangle, Layers, GitBranch } from 'lucide-react';
+import { useTheme } from '@/hooks/useTheme';
 
 // ── Markdown content ──
 const DOCS_MARKDOWN = `# 🧪 TestHub — Complete Functional Flow Guide
@@ -401,6 +402,7 @@ const SECTIONS = [
 ];
 
 export default function TestHubDocsPage() {
+  const { isDark } = useTheme();
   const [expandedSection, setExpandedSection] = useState<string | null>('dependency');
 
   const handleDownload = () => {
@@ -414,21 +416,21 @@ export default function TestHubDocsPage() {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: '#F8FAFC' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: isDark ? '#1A1714' : '#F8FAFC' }}>
       {/* Header */}
       <div style={{
         padding: '24px 32px',
-        backgroundColor: '#FFFFFF',
-        borderBottom: '1px solid #E2E8F0',
+        backgroundColor: isDark ? '#232019' : '#FFFFFF',
+        borderBottom: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
       }}>
         <div>
-          <h1 style={{ fontSize: 22, fontWeight: 700, color: '#0F172A', margin: 0, fontFamily: 'Inter, sans-serif' }}>
+          <h1 style={{ fontSize: 22, fontWeight: 700, color: isDark ? '#F5F3F0' : '#0F172A', margin: 0, fontFamily: 'Inter, sans-serif' }}>
             📘 TestHub Functional Flow Guide
           </h1>
-          <p style={{ fontSize: 14, color: '#64748B', margin: '4px 0 0', fontFamily: 'Inter, sans-serif' }}>
+          <p style={{ fontSize: 14, color: isDark ? '#6B6560' : '#64748B', margin: '4px 0 0', fontFamily: 'Inter, sans-serif' }}>
             Complete dependency map, step-by-step testing flow, database schema, and business rules
           </p>
         </div>
@@ -458,13 +460,13 @@ export default function TestHubDocsPage() {
       <div style={{ flex: 1, overflow: 'auto', padding: '24px 32px' }}>
         {/* Dependency Flow Visual */}
         <div style={{
-          backgroundColor: '#FFFFFF',
+          backgroundColor: isDark ? '#232019' : '#FFFFFF',
           borderRadius: 12,
-          border: '1px solid #E2E8F0',
+          border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0',
           padding: 24,
           marginBottom: 24,
         }}>
-          <h2 style={{ fontSize: 16, fontWeight: 700, color: '#0F172A', margin: '0 0 16px', fontFamily: 'Inter, sans-serif' }}>
+          <h2 style={{ fontSize: 16, fontWeight: 700, color: isDark ? '#F5F3F0' : '#0F172A', margin: '0 0 16px', fontFamily: 'Inter, sans-serif' }}>
             Dependency Flow (Follow This Order)
           </h2>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
@@ -506,9 +508,9 @@ export default function TestHubDocsPage() {
               <div
                 key={section.id}
                 style={{
-                  backgroundColor: '#FFFFFF',
+                  backgroundColor: isDark ? '#232019' : '#FFFFFF',
                   borderRadius: 12,
-                  border: `1px solid ${isOpen ? section.color + '40' : '#E2E8F0'}`,
+                  border: `1px solid ${isOpen ? section.color + '40' : isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`,
                   overflow: 'hidden',
                   transition: 'border-color 0.2s',
                 }}
@@ -540,10 +542,10 @@ export default function TestHubDocsPage() {
                     <Icon size={18} style={{ color: section.color }} />
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 15, fontWeight: 600, color: '#0F172A', fontFamily: 'Inter, sans-serif' }}>
+                    <div style={{ fontSize: 15, fontWeight: 600, color: isDark ? '#F5F3F0' : '#0F172A', fontFamily: 'Inter, sans-serif' }}>
                       {section.title}
                     </div>
-                    <div style={{ fontSize: 13, color: '#64748B', fontFamily: 'Inter, sans-serif', marginTop: 2 }}>
+                    <div style={{ fontSize: 13, color: isDark ? '#6B6560' : '#64748B', fontFamily: 'Inter, sans-serif', marginTop: 2 }}>
                       {section.summary}
                     </div>
                   </div>
@@ -553,12 +555,12 @@ export default function TestHubDocsPage() {
                   <div style={{
                     padding: '0 20px 20px',
                     fontSize: 14,
-                    color: '#334155',
+                    color: isDark ? '#A09890' : '#334155',
                     fontFamily: 'Inter, sans-serif',
                     lineHeight: 1.7,
                   }}>
                     <div style={{
-                      backgroundColor: '#F8FAFC',
+                      backgroundColor: isDark ? '#2C2823' : '#F8FAFC',
                       borderRadius: 8,
                       padding: 16,
                       whiteSpace: 'pre-wrap',
@@ -566,7 +568,8 @@ export default function TestHubDocsPage() {
                       fontSize: 12,
                       lineHeight: 1.6,
                       overflowX: 'auto',
-                      border: '1px solid #E2E8F0',
+                      border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0',
+                      color: isDark ? '#A09890' : undefined,
                     }}>
                       {getMarkdownSection(section.id)}
                     </div>

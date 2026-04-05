@@ -553,7 +553,7 @@ export default function SharedStepsPage() {
             ) : sharedSteps.length === 0 ? (
               <div style={{
                 display: 'flex', flexDirection: 'column', alignItems: 'center',
-                justifyContent: 'center', height: '100%', color: '#94A3B8',
+                justifyContent: 'center', height: '100%', color: isDark ? '#6B6560' : '#94A3B8',
               }}>
                 <Library size={48} style={{ marginBottom: 16, opacity: 0.5 }} />
                 <p style={{ fontSize: 16, fontWeight: 500, margin: '0 0 8px', fontFamily: 'Inter' }}>

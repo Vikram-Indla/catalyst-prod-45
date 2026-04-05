@@ -361,9 +361,9 @@ export default function TestCycleDetailPage() {
               <span style={{ fontSize: 16, fontWeight: 700, color: '#D97706' }}>{blockedCount}</span>
             </button>
             <button onClick={() => setStatusFilter('not_run')} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', border: 'none', borderRadius: 8, backgroundColor: statusFilter === 'not_run' ? (isDark ? 'rgba(255,255,255,0.05)' : '#F8FAFC') : 'transparent', cursor: 'pointer', width: '100%', textAlign: 'left' }}>
-              <Clock size={18} style={{ color: '#64748B' }} />
+              <Clock size={18} style={{ color: isDark ? '#6B6560' : '#64748B' }} />
               <span style={{ flex: 1, fontSize: 14, color: isDark ? '#A09890' : '#334155' }}>Not Run</span>
-              <span style={{ fontSize: 16, fontWeight: 700, color: '#64748B' }}>{notRunCount}</span>
+              <span style={{ fontSize: 16, fontWeight: 700, color: isDark ? '#6B6560' : '#64748B' }}>{notRunCount}</span>
             </button>
             {statusFilter !== 'all' && (
               <button onClick={() => setStatusFilter('all')} style={{ padding: '6px 12px', border: 'none', backgroundColor: 'transparent', color: '#2563EB', fontSize: 12, fontWeight: 500, cursor: 'pointer', textAlign: 'center' }}>

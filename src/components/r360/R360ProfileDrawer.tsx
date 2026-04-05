@@ -3,6 +3,7 @@
  * V12 Hybrid Precision · No portal, no fixed, no overlay
  */
 import React, { useState, useMemo, useCallback, useEffect, memo } from 'react';
+import { useTheme } from '@/hooks/useTheme';
 import { ChevronLeft, X, AlertTriangle, Info, BookOpen, ChevronRight, ChevronLeft as ChevronLeftIcon, RefreshCw, CalendarX, Inbox } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
