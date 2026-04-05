@@ -128,7 +128,16 @@ const JiraUserSync: React.FC = () => {
   const [assignPopoverOpen, setAssignPopoverOpen] = useState(false);
   const [assignPermLevel, setAssignPermLevel] = useState<'view' | 'edit' | 'full'>('view');
   const [assignSearch, setAssignSearch] = useState('');
-  const [isDark, setIsDark] = useState(false);
+  const [isDark, setIsDark] = useState(() => document.documentElement.classList.contains('dark'));
+
+  // Stay in sync with global theme changes
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      setIsDark(document.documentElement.classList.contains('dark'));
+    });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    return () => observer.disconnect();
+  }, []);
 
   const debouncedSearch = useDebouncedValue(search, 300);
 
