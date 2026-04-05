@@ -140,7 +140,6 @@ export default function TestHubExecutionPage() {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [showMyTestsOnly, setShowMyTestsOnly] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-  const queryClient = useQueryClient();
 
   // Session timer (overall)
   const [sessionElapsed, setSessionElapsed] = useState(0);
