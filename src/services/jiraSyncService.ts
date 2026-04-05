@@ -77,10 +77,19 @@ export const fetchSyncRuns = async () =>
   supabase.from('jira_sync_runs')
     .select('*').order('started_at', { ascending: false }).limit(10);
 
-export const toggleUserStatus = async (id: string, isActive: boolean) =>
-  supabase.from('jira_identity_map')
+export const toggleUserStatus = async (id: string, isActive: boolean) => {
+  const { error } = await supabase.from('jira_identity_map')
     .update({ is_active_in_catalyst: isActive, updated_at: new Date().toISOString() })
     .eq('id', id);
+  if (error) throw error;
+
+  // Fire write-back to Jira (fire-and-forget)
+  supabase.functions.invoke('jira-write-back', {
+    body: { identity_map_id: id, action: isActive ? 'reactivate' : 'deactivate' },
+  }).catch(() => {});
+
+  return { id, isActive };
+};
 
 export const updateProjectPerm = async (permId: string, level: PermissionLevel) =>
   supabase.from('jira_user_project_perms')
