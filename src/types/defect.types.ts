@@ -78,12 +78,12 @@ export interface DefectFilters {
   pageSize: number;
 }
 
-export type FilterType = 
-  | 'status' 
-  | 'severity' 
-  | 'priority' 
-  | 'assignee' 
-  | 'reporter' 
+export type FilterType =
+  | 'status'
+  | 'severity'
+  | 'priority'
+  | 'assignee'
+  | 'reporter'
   | 'component'
   | 'source'
   | 'blocker'
