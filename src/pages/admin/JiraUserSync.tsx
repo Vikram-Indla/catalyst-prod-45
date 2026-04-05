@@ -484,7 +484,7 @@ const JiraUserSync: React.FC = () => {
                 return (
                   <tr
                     key={user.id}
-                    className="group"
+                    className={`group jus-table-row ${isSelected || isActive ? 'selected' : ''}`}
                     onClick={() => setActiveUserId(user.id === activeUserId ? null : user.id)}
                     style={{
                       height: '40px', maxHeight: '40px',
