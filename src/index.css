@@ -4717,3 +4717,98 @@ input[type="range"]::-moz-range-thumb {
   color: currentColor !important;
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   ECLIPSE NOCTURNE — Cool Steel: Jira User Sync Module
+   ONE consolidated block — do NOT duplicate
+   ═══════════════════════════════════════════════════════════════ */
+.dark .jus-page {
+  background-color: #0F1114;
+}
+.dark .jus-surface {
+  background-color: #181A1E;
+  border: 0.75px solid rgba(200, 210, 225, 0.08);
+}
+.dark .jus-surface-sunken {
+  background-color: #12141A;
+  border: 0.75px solid rgba(200, 210, 225, 0.06);
+}
+.dark .jus-surface-elevated {
+  background-color: #1E2027;
+  border: 0.75px solid rgba(200, 210, 225, 0.10);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+}
+.dark .jus-table-row {
+  border-bottom: 0.75px solid rgba(200, 210, 225, 0.06);
+}
+.dark .jus-table-row:hover {
+  background-color: rgba(200, 210, 225, 0.035);
+}
+.dark .jus-table-row.selected {
+  background-color: rgba(37, 99, 235, 0.12);
+}
+.dark .jus-table-header {
+  background-color: #12141A;
+  border-bottom: 0.75px solid rgba(200, 210, 225, 0.08);
+  color: rgba(200, 210, 225, 0.5);
+  text-transform: uppercase;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+.dark .jus-text-primary   { color: rgba(225, 230, 240, 0.92); }
+.dark .jus-text-secondary { color: rgba(200, 210, 225, 0.55); }
+.dark .jus-text-muted     { color: rgba(200, 210, 225, 0.35); }
+.dark .jus-stat-card {
+  background-color: #1E2027;
+  border: 0.75px solid rgba(200, 210, 225, 0.08);
+  border-radius: 6px;
+}
+.dark .jus-stat-value { color: rgba(225, 230, 240, 0.95); font-weight: 650; }
+.dark .jus-stat-label { color: rgba(200, 210, 225, 0.50); font-size: 11px; }
+.dark .jus-toolbar {
+  background-color: #181A1E;
+  border-bottom: 0.75px solid rgba(200, 210, 225, 0.07);
+}
+.dark .jus-search-input {
+  background-color: #12141A;
+  border: 0.75px solid rgba(200, 210, 225, 0.12);
+  color: rgba(225, 230, 240, 0.92);
+}
+.dark .jus-search-input::placeholder {
+  color: rgba(200, 210, 225, 0.35);
+}
+.dark .jus-filter-tab {
+  color: rgba(200, 210, 225, 0.55);
+  border-bottom: 2px solid transparent;
+}
+.dark .jus-filter-tab.active {
+  color: rgba(225, 230, 240, 0.95);
+  border-bottom: 2px solid #2563EB;
+}
+.dark .lozenge-active   { background: #064E3B; color: #6EE7B7; }
+.dark .lozenge-inactive { background: #450A0A; color: #FCA5A5; }
+.dark .lozenge-conflict { background: #451A03; color: #FCD34D; }
+.dark .badge-jira-proxy  { background: rgba(37,99,235,0.18); color: #93C5FD; border: 0.75px solid rgba(37,99,235,0.3); }
+.dark .badge-local-auth  { background: rgba(124,58,237,0.18); color: #C4B5FD; border: 0.75px solid rgba(124,58,237,0.3); }
+.dark .jus-scroll::-webkit-scrollbar       { width: 6px; }
+.dark .jus-scroll::-webkit-scrollbar-track { background: #12141A; }
+.dark .jus-scroll::-webkit-scrollbar-thumb { background: rgba(200,210,225,0.15); border-radius: 3px; }
+.dark .jus-pagination {
+  background-color: #12141A;
+  border-top: 0.75px solid rgba(200, 210, 225, 0.06);
+}
+.dark .jus-pagination-btn {
+  background-color: #1E2027;
+  border-color: rgba(200, 210, 225, 0.10);
+  color: rgba(200, 210, 225, 0.55);
+}
+.dark .jus-pagination-btn.active {
+  background-color: #2563EB;
+  color: #FFFFFF;
+}
+.dark .jus-selection-bar {
+  background-color: rgba(37, 99, 235, 0.12);
+  border-bottom-color: rgba(37, 99, 235, 0.25);
+}
+
+
