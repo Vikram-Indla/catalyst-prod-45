@@ -80,8 +80,207 @@ const InfoCard: React.FC<{ label: string; children: React.ReactNode }> = ({ labe
     <div style={{ fontSize: '11px', color: '#334155', lineHeight: 1.55 }}>{children}</div>
   </div>
 );
+const PERM_LEVELS = ['view', 'edit', 'full', 'none'] as const;
+const PERM_COLORS: Record<string, { bg: string; color: string }> = {
+  view: { bg: '#EFF6FF', color: '#0747A6' },
+  edit: { bg: '#FEF3C7', color: '#92400E' },
+  full: { bg: '#DCFCE7', color: '#006644' },
+  none: { bg: '#F1F5F9', color: '#64748B' },
+};
 
-const UserDetailPanel: React.FC<Props> = ({ userId, onClose }) => {
+function getEventDotColor(ev: any): string {
+  if (ev.event_type === 'created') return '#7C3AED';
+  if (ev.event_type === 'deactivated' || ev.event_type === 'reactivated') return '#D97706';
+  if (ev.direction === 'jira_to_catalyst') return '#2563EB';
+  if (ev.direction === 'catalyst_to_jira') return '#0D9488';
+  return '#2563EB';
+}
+
+function getEventText(ev: any): string {
+  switch (ev.event_type) {
+    case 'created': return 'Account created — Catalyst local auth';
+    case 'updated': return 'Profile updated — fields: ' + (ev.changed_fields?.join(', ') || 'unknown');
+    case 'deactivated': return 'Access revoked by admin';
+    case 'reactivated': return 'Access restored';
+    case 'webhook_received': return 'Jira webhook received — user data synced';
+    case 'role_mapped': return 'Role mapped from Jira group';
+    default: return ev.event_type?.replace(/_/g, ' ') || 'Unknown event';
+  }
+}
+
+const ProjectsTab: React.FC<{ perms: any[] }> = ({ perms }) => {
+  const [checkedPerms, setCheckedPerms] = useState<Set<string>>(new Set());
+  const { mutate: updatePerm, isPending, variables } = useUpdatePerm();
+
+  const selectAll = () => setCheckedPerms(new Set(perms.map((p: any) => p.id)));
+  const deselectAll = () => setCheckedPerms(new Set());
+  const toggleCheck = (id: string) => {
+    setCheckedPerms(prev => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  };
+
+  const xsBtn: React.CSSProperties = {
+    fontSize: '9px', fontWeight: 700, textTransform: 'uppercase',
+    padding: '3px 7px', borderRadius: '3px', cursor: 'pointer',
+    border: '1px solid rgba(15,23,42,0.10)', background: '#FFFFFF', color: '#64748B',
+  };
+
+  return (
+    <div style={{ padding: '12px 16px' }}>
+      {/* Header */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+        <div style={{ ...sectionLabel, marginBottom: 0 }}>
+          PROJECT ASSIGNMENTS ({perms.length})
+        </div>
+        <div style={{ display: 'flex', gap: '5px' }}>
+          <button style={xsBtn} onClick={selectAll}>Select All</button>
+          <button style={xsBtn} onClick={deselectAll}>Deselect All</button>
+          <button
+            style={{ ...xsBtn, background: '#2563EB', color: '#FFFFFF', border: 'none' }}
+            onClick={() => toast.info('Project picker — Phase 2')}
+          >+ Add Project</button>
+        </div>
+      </div>
+
+      {perms.length === 0 ? (
+        <div style={{ textAlign: 'center', padding: '32px 16px' }}>
+          <div style={{ fontSize: '12px', color: '#94A3B8', marginBottom: '10px' }}>No projects assigned yet</div>
+          <button
+            style={{ fontSize: '11px', fontWeight: 600, background: '#2563EB', color: '#FFFFFF', border: 'none', borderRadius: '4px', padding: '5px 12px', cursor: 'pointer' }}
+            onClick={() => toast.info('Project picker — Phase 2')}
+          >+ Add Project</button>
+        </div>
+      ) : (
+        <>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '11px', marginTop: '6px' }}>
+            <thead>
+              <tr style={{ background: '#F1F5F9' }}>
+                <th style={{ padding: '6px 9px', fontSize: '9px', fontWeight: 700, color: '#64748B', textTransform: 'uppercase', textAlign: 'left', width: '28px' }}>
+                  <input
+                    type="checkbox"
+                    checked={checkedPerms.size === perms.length && perms.length > 0}
+                    onChange={() => checkedPerms.size === perms.length ? deselectAll() : selectAll()}
+                    style={{ width: '12px', height: '12px', accentColor: '#2563EB' }}
+                  />
+                </th>
+                <th style={{ padding: '6px 9px', fontSize: '9px', fontWeight: 700, color: '#64748B', textTransform: 'uppercase', textAlign: 'left' }}>Project</th>
+                <th style={{ padding: '6px 9px', fontSize: '9px', fontWeight: 700, color: '#64748B', textTransform: 'uppercase', textAlign: 'left' }}>Key</th>
+                <th style={{ padding: '6px 9px', fontSize: '9px', fontWeight: 700, color: '#64748B', textTransform: 'uppercase', textAlign: 'right' }}>Permission</th>
+              </tr>
+            </thead>
+            <tbody>
+              {perms.map((p: any) => {
+                const isMutating = isPending && variables?.permId === p.id;
+                return (
+                  <tr key={p.id} style={{ borderBottom: '0.75px solid rgba(15,23,42,0.06)' }}
+                    onMouseEnter={e => (e.currentTarget.style.background = 'rgba(15,23,42,0.035)')}
+                    onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                  >
+                    <td style={{ padding: '6px 9px' }}>
+                      <input
+                        type="checkbox"
+                        checked={checkedPerms.has(p.id)}
+                        onChange={() => toggleCheck(p.id)}
+                        style={{ width: '12px', height: '12px', accentColor: '#2563EB' }}
+                      />
+                    </td>
+                    <td style={{ padding: '6px 9px', fontWeight: 500, color: '#0F172A', whiteSpace: 'nowrap' }}>
+                      {p.project_name || p.project_key}
+                    </td>
+                    <td style={{ padding: '6px 9px' }}>
+                      <span style={{
+                        fontFamily: "'JetBrains Mono', monospace", fontSize: '9px', color: '#64748B',
+                        background: '#F1F5F9', padding: '1px 4px', borderRadius: '2px',
+                      }}>{p.project_key}</span>
+                    </td>
+                    <td style={{ padding: '6px 9px', textAlign: 'right' }}>
+                      <div style={{
+                        display: 'inline-flex', border: '1px solid rgba(15,23,42,0.10)',
+                        borderRadius: '4px', overflow: 'hidden',
+                      }}>
+                        {PERM_LEVELS.map((level, i) => {
+                          const active = p.permission_level === level;
+                          const colors = PERM_COLORS[level];
+                          const showSpinner = isMutating && variables?.level === level;
+                          return (
+                            <button
+                              key={level}
+                              onClick={() => !active && updatePerm({ permId: p.id, level })}
+                              disabled={isMutating}
+                              style={{
+                                padding: '3px 7px', fontSize: '9px', fontWeight: 700,
+                                textTransform: 'uppercase', cursor: active ? 'default' : 'pointer',
+                                background: active ? colors.bg : 'transparent',
+                                color: active ? colors.color : '#94A3B8',
+                                border: 'none',
+                                borderRight: i < 3 ? '1px solid rgba(15,23,42,0.10)' : 'none',
+                              }}
+                            >
+                              {showSpinner ? <Loader2 size={10} className="animate-spin" /> : level}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+
+          <button
+            style={{
+              width: '100%', marginTop: '10px', padding: '7px 0',
+              background: '#2563EB', color: '#FFFFFF', border: 'none',
+              borderRadius: '4px', fontSize: '11px', fontWeight: 600, cursor: 'pointer',
+            }}
+            onClick={() => toast.success('Assignments saved. Changes push to Jira on next sync.')}
+          >Save Project Assignments</button>
+        </>
+      )}
+    </div>
+  );
+};
+
+const ActivityTab: React.FC<{ events: any[] }> = ({ events }) => {
+  const sorted = [...events].sort((a, b) =>
+    new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+  );
+
+  return (
+    <div style={{ padding: '12px 16px' }}>
+      <div style={sectionLabel}>SYNC ACTIVITY</div>
+      {sorted.length === 0 ? (
+        <div style={{ textAlign: 'center', padding: '32px 16px' }}>
+          <Activity size={24} color="#94A3B8" style={{ margin: '0 auto 8px' }} />
+          <div style={{ fontSize: '12px', color: '#94A3B8', fontWeight: 500 }}>No activity recorded yet</div>
+          <div style={{ fontSize: '11px', color: '#CBD5E1', marginTop: '4px' }}>Events will appear here after the first sync</div>
+        </div>
+      ) : (
+        sorted.slice(0, 30).map((ev: any) => (
+          <div key={ev.id} style={{
+            display: 'flex', gap: '9px', padding: '5px 0',
+            borderBottom: '0.5px solid rgba(15,23,42,0.06)',
+          }}>
+            <div style={{
+              width: '7px', height: '7px', borderRadius: '50%', flexShrink: 0,
+              marginTop: '3px', background: getEventDotColor(ev),
+            }} />
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: '11px', color: '#334155' }}>{getEventText(ev)}</div>
+              <div style={{ fontSize: '10px', color: '#94A3B8', marginTop: '1px' }}>{formatDate(ev.created_at)}</div>
+            </div>
+          </div>
+        ))
+      )}
+    </div>
+  );
+};
+
+
   const { data, isLoading } = useJiraUserDetail(userId);
   const { mutate: toggleStatus, isPending: toggling } = useToggleUserStatus();
   const [activeTab, setActiveTab] = useState<TabKey>('profile');
