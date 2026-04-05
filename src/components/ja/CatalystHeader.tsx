@@ -504,15 +504,6 @@ export function CatalystHeader() {
           <CreateDropdown />
           
           <TooltipProvider>
-            {/* Notifications */}
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <NotificationsPanel />
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Notifications</p>
-              </TooltipContent>
-            </Tooltip>
 
             {/* Settings */}
             {canAccessSettings && (
