@@ -448,7 +448,7 @@ export default function ResourceListingPage() {
                 <tr
                   key={r.rid}
                   className="group"
-                  style={{ borderBottom: `0.75px solid ${tk.divider}`, cursor: 'pointer', height: '36px', maxHeight: '36px' }}
+                  style={{ borderBottom: `0.75px solid ${tk.divider}`, cursor: 'pointer', height: '48px' }}
                   onClick={() => navTo(r.id, 'ring')}
                   onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = tk.hover; }}
                   onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
@@ -509,7 +509,7 @@ export default function ResourceListingPage() {
                   </td>
                   {/* ACTIONS — hover reveal (FP-005) */}
                   <td style={{ padding: '4px 16px', textAlign: 'center' }}>
-                    <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-150" style={{ display: 'inline-flex', gap: '6px' }}>
+                    <div style={{ display: 'inline-flex', gap: '6px' }}>
                       <ActionBtn
                         tooltip="Open Intelligence"
                         bg="#7C3AED" bgHover="#6D28D9"
