@@ -611,6 +611,7 @@ function BtnAI({ children, ...props }: React.ButtonHTMLAttributes<HTMLButtonElem
 }
 
 function BtnOutline({ children, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement>) {
+  const { isDark } = useTheme();
   return (
     <button {...props} style={{
       display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', fontSize: 14, fontWeight: 500,
@@ -623,6 +624,7 @@ function BtnOutline({ children, ...props }: React.ButtonHTMLAttributes<HTMLButto
 }
 
 function BtnGhost({ children, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement>) {
+  const { isDark } = useTheme();
   return (
     <button {...props} style={{
       display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', fontSize: 14, fontWeight: 500,
