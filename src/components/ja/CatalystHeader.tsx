@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState, lazy, Suspense } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Search, ChevronDown, LogOut, Settings, Bell, User } from "lucide-react";
+import { useUnreadCount } from "@/hooks/useUnreadCount";
+import { useDebouncedValue } from "@/hooks/useDebouncedValue";
+import { BADGE_DEBOUNCE_MS } from "@/constants/notificationConstants";
 import { useTheme } from "next-themes";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
