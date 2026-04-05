@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState, lazy, Suspense } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Search, ChevronDown, LogOut, Settings, Bell, User } from "lucide-react";
+import { useUnreadCount } from "@/hooks/useUnreadCount";
+import { useDebouncedValue } from "@/hooks/useDebouncedValue";
+import { BADGE_DEBOUNCE_MS } from "@/constants/notificationConstants";
 import { useTheme } from "next-themes";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -62,6 +65,8 @@ export function CatalystHeader() {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [notifPanelOpen, setNotifPanelOpen] = useState(false);
+  const { data: rawUnreadCount = 0 } = useUnreadCount();
+  const debouncedUnreadCount = useDebouncedValue(rawUnreadCount, BADGE_DEBOUNCE_MS);
   
   const userMenuRef = useRef<HTMLDivElement | null>(null);
   const headerRef = useRef<HTMLElement | null>(null);
@@ -581,6 +586,38 @@ export function CatalystHeader() {
               <Search style={{ width: '18px', height: '18px' }} />
             </button>
 
+
+            {/* Notification Bell */}
+            <button
+              onClick={() => setNotifPanelOpen(v => !v)}
+              aria-label={`Notifications${debouncedUnreadCount > 0 ? `, ${debouncedUnreadCount} unread` : ''}`}
+              style={{
+                position: 'relative',
+                width: '36px', height: '36px',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                background: 'transparent', border: 'none', borderRadius: '8px',
+                cursor: 'pointer',
+                color: isDark ? 'rgba(248,244,240,0.55)' : '#64748B',
+                transition: 'color 150ms ease',
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.color = isDark ? 'rgba(248,244,240,0.72)' : '#0F172A'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.color = isDark ? 'rgba(248,244,240,0.55)' : '#64748B'; }}
+            >
+              <Bell style={{ width: '18px', height: '18px' }} />
+              {debouncedUnreadCount > 0 && (
+                <span style={{
+                  position: 'absolute', top: '4px', right: '4px',
+                  minWidth: '16px', height: '16px',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  background: '#EF4444', color: '#FFFFFF',
+                  borderRadius: '8px', padding: '0 4px',
+                  fontFamily: 'Inter, sans-serif', fontSize: '10px', fontWeight: 700,
+                  lineHeight: 1,
+                }}>
+                  {debouncedUnreadCount > 9 ? '9+' : String(debouncedUnreadCount)}
+                </span>
+              )}
+            </button>
 
             {/* User Avatar */}
             <div ref={userMenuRef} className="relative">
