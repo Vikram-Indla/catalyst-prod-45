@@ -134,7 +134,7 @@ const ProjectsTab: React.FC<{ perms: any[] }> = ({ perms }) => {
     <div style={{ padding: '12px 16px' }}>
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-        <div style={{ ...sectionLabel, marginBottom: 0 }}>
+        <div style={{ ...mkSectionLabel(false), marginBottom: 0 }}>
           PROJECT ASSIGNMENTS ({perms.length})
         </div>
         <div style={{ display: 'flex', gap: '5px' }}>
