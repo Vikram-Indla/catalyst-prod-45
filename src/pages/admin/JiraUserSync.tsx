@@ -712,6 +712,16 @@ const JiraUserSync: React.FC = () => {
           </button>
         </div>
       </div>
+      </div>{/* end table column */}
+
+      {activeUserId && (
+        <UserDetailPanel
+          userId={activeUserId}
+          onClose={() => setActiveUserId(null)}
+        />
+      )}
+      </div>{/* end flex row */}
+
       <CreateCatalystUserModal
         open={createModalOpen}
         onClose={() => setCreateModalOpen(false)}
