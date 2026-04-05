@@ -351,20 +351,120 @@ const JiraUserSync: React.FC = () => {
             <span className="text-[#2563EB] dark:text-[#93C5FD]" style={{ fontSize: '12px', fontWeight: 500 }}>
               {selected.size} users selected
             </span>
-            <button onClick={handleCopyPermissions}
-              className="inline-flex items-center gap-1 bg-white dark:bg-[#232019] text-[#334155] dark:text-[#A09890]"
-              style={{ padding: '3px 10px', borderRadius: '4px', fontSize: '11px', fontWeight: 500, cursor: 'pointer', border: '1px solid rgba(15,23,42,0.10)' }}>
-              <Copy size={11} /> Copy permissions to selected
-            </button>
+            <span className="text-[#94A3B8] dark:text-[#6B6560]" style={{ fontSize: '11px' }}>|</span>
+
+            {/* Assign to Project popover */}
+            <Popover open={assignPopoverOpen} onOpenChange={setAssignPopoverOpen}>
+              <PopoverTrigger asChild>
+                <button
+                  className="inline-flex items-center gap-1 bg-[#2563EB] text-white"
+                  style={{ padding: '3px 10px', borderRadius: '4px', fontSize: '11px', fontWeight: 600, cursor: 'pointer', border: 'none' }}>
+                  <FolderPlus size={11} /> Assign to Project ▾
+                </button>
+              </PopoverTrigger>
+              <PopoverContent
+                className="!bg-white dark:!bg-[#232019] !border-[rgba(15,23,42,0.12)] dark:!border-[rgba(255,255,255,0.08)]"
+                style={{ width: '360px', padding: 0 }}
+                align="start"
+              >
+                <div style={{ padding: '12px 14px 8px' }}>
+                  <div className="text-[#0F172A] dark:text-[#F5F3F0]" style={{ fontSize: '13px', fontWeight: 600, marginBottom: '2px' }}>
+                    Assign to Jira Space
+                  </div>
+                  <div className="text-[#64748B] dark:text-[#6B6560]" style={{ fontSize: '11px', marginBottom: '8px' }}>
+                    Select a project. Permission level applies to all {selected.size} selected users.
+                  </div>
+                  <input
+                    value={assignSearch}
+                    onChange={e => setAssignSearch(e.target.value)}
+                    placeholder="Search projects..."
+                    className="w-full bg-[#F8FAFC] dark:bg-[#1A1714] text-[#0F172A] dark:text-[#F5F3F0]"
+                    style={{ padding: '5px 8px', borderRadius: '4px', fontSize: '11px', border: '1px solid rgba(15,23,42,0.10)', outline: 'none', marginBottom: '6px' }}
+                  />
+                  {/* Permission level selector */}
+                  <div className="flex items-center gap-1 mb-2">
+                    <span className="text-[#64748B] dark:text-[#6B6560]" style={{ fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', marginRight: '4px' }}>Level:</span>
+                    {(['view', 'edit', 'full'] as const).map(lvl => (
+                      <button
+                        key={lvl}
+                        onClick={() => setAssignPermLevel(lvl)}
+                        style={{
+                          padding: '2px 8px', borderRadius: '3px', fontSize: '10px', fontWeight: 700,
+                          textTransform: 'uppercase', cursor: 'pointer', border: '1px solid rgba(15,23,42,0.10)',
+                          background: assignPermLevel === lvl
+                            ? lvl === 'full' ? '#DCFCE7' : lvl === 'edit' ? '#EFF6FF' : '#F1F5F9'
+                            : 'transparent',
+                          color: assignPermLevel === lvl
+                            ? lvl === 'full' ? '#006644' : lvl === 'edit' ? '#1D4ED8' : '#64748B'
+                            : '#94A3B8',
+                        }}
+                      >
+                        {lvl}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div style={{ maxHeight: '200px', overflowY: 'auto', borderTop: '0.75px solid rgba(15,23,42,0.06)' }}>
+                  {(jiraProjects || [])
+                    .filter(p => !assignSearch || p.project_key.toLowerCase().includes(assignSearch.toLowerCase()) || (p.project_name || '').toLowerCase().includes(assignSearch.toLowerCase()))
+                    .map(proj => (
+                      <button
+                        key={proj.project_key}
+                        className="w-full flex items-center gap-2 hover:bg-[rgba(0,0,0,0.04)] dark:hover:bg-[rgba(255,255,255,0.04)] text-left"
+                        style={{ padding: '7px 14px', border: 'none', background: 'transparent', cursor: 'pointer' }}
+                        disabled={isAssigning}
+                        onClick={() => {
+                          const ids = Array.from(selected);
+                          assignToProject({
+                            userIds: ids,
+                            projectId: proj.project_id,
+                            projectKey: proj.project_key,
+                            projectName: proj.project_name || proj.project_key,
+                            permissionLevel: assignPermLevel,
+                          }, {
+                            onSuccess: () => {
+                              toast.success(`${ids.length} users assigned to ${proj.project_key} with ${assignPermLevel} access`);
+                              setAssignPopoverOpen(false);
+                              setAssignSearch('');
+                            },
+                            onError: () => toast.error('Failed to assign users'),
+                          });
+                        }}
+                      >
+                        <span
+                          className="bg-[#F1F5F9] dark:bg-[rgba(200,210,225,0.08)] text-[#374151] dark:text-[rgba(200,210,225,0.75)]"
+                          style={{ fontSize: '10px', fontWeight: 700, fontFamily: "'JetBrains Mono', monospace", padding: '1px 5px', borderRadius: '2px' }}>
+                          {proj.project_key}
+                        </span>
+                        <span className="text-[#334155] dark:text-[#A09890]" style={{ fontSize: '11px', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          {proj.project_name || proj.project_key}
+                        </span>
+                        <Check size={10} className="text-[#94A3B8] opacity-0" />
+                      </button>
+                    ))}
+                  {(jiraProjects || []).filter(p => !assignSearch || p.project_key.toLowerCase().includes(assignSearch.toLowerCase())).length === 0 && (
+                    <div className="text-[#94A3B8] dark:text-[#6B6560]" style={{ padding: '16px', textAlign: 'center', fontSize: '11px' }}>
+                      No projects found
+                    </div>
+                  )}
+                </div>
+              </PopoverContent>
+            </Popover>
+
             <button onClick={handleBulkDeactivate}
               className="inline-flex items-center gap-1 bg-white dark:bg-[#232019] text-[#DC2626] dark:text-[#FCA5A5]"
               style={{ padding: '3px 10px', borderRadius: '4px', fontSize: '11px', fontWeight: 500, cursor: 'pointer', border: '1px solid rgba(15,23,42,0.10)' }}>
-              <UserX size={11} /> Make Inactive
+              <UserX size={11} /> Deactivate
+            </button>
+            <button onClick={handleCopyPermissions}
+              className="inline-flex items-center gap-1 bg-white dark:bg-[#232019] text-[#334155] dark:text-[#A09890]"
+              style={{ padding: '3px 10px', borderRadius: '4px', fontSize: '11px', fontWeight: 500, cursor: 'pointer', border: '1px solid rgba(15,23,42,0.10)' }}>
+              <Copy size={11} /> Copy Permissions
             </button>
             <button onClick={clearAll}
               className="ml-auto text-[#64748B] dark:text-[#6B6560]"
               style={{ padding: '2px 6px', borderRadius: '4px', fontSize: '11px', fontWeight: 500, background: 'transparent', border: 'none', cursor: 'pointer' }}>
-              Clear
+              Clear selection
             </button>
           </div>
         )}
