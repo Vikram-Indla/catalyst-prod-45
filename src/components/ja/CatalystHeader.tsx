@@ -16,6 +16,8 @@ import { ThemeToggle } from "@/components/ui/ThemeToggle";
 const CreateDropdown = lazy(() => import("./CreateDropdown").then(m => ({ default: m.CreateDropdown })));
 import { useGlobalSearchStore } from "@/store/globalSearchStore";
 const NotificationsPanel = lazy(() => import("./NotificationsPanel").then(m => ({ default: m.NotificationsPanel })));
+const NotificationPanelNew = lazy(() => import("@/components/notifications/NotificationPanel"));
+const ToastContainerNew = lazy(() => import("@/components/notifications/ToastContainer"));
 const ProgramSelectorDropdown = lazy(() => import("./ProgramSelectorDropdown").then(m => ({ default: m.ProgramSelectorDropdown })));
 const ProjectSelectorDropdown = lazy(() => import("./ProjectSelectorDropdown").then(m => ({ default: m.ProjectSelectorDropdown })));
 const ProductSelectorDropdown = lazy(() => import("./ProductSelectorDropdown").then(m => ({ default: m.ProductSelectorDropdown })));
@@ -59,6 +61,7 @@ export function CatalystHeader() {
   }, []);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [notifPanelOpen, setNotifPanelOpen] = useState(false);
   
   const userMenuRef = useRef<HTMLDivElement | null>(null);
   const headerRef = useRef<HTMLElement | null>(null);
@@ -665,6 +668,12 @@ export function CatalystHeader() {
       </header>
 
       {/* Global Search is rendered by CatalystShell via zustand store */}
+
+      {/* NotifyHub Stage A — shell panels (render null until Stage C) */}
+      <Suspense fallback={null}>
+        <NotificationPanelNew isOpen={notifPanelOpen} onClose={() => setNotifPanelOpen(false)} />
+        <ToastContainerNew drawerOpen={false} />
+      </Suspense>
 
       {/* Create Entity Dialog */}
       {createDialogType && (
