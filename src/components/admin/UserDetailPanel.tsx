@@ -54,7 +54,7 @@ const mkSectionLabel = (isDark: boolean): React.CSSProperties => ({
 
 const mkFieldRow = (isDark: boolean): React.CSSProperties => ({
   display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-  padding: '5px 0', borderBottom: `0.5px solid ${isDark ? 'rgba(255,255,255,0.05)' : 'rgba(15,23,42,0.06)'}`,
+  padding: '5px 0', borderBottom: `0.5px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.06)'}`,
 });
 
 const mkFieldKey = (isDark: boolean): React.CSSProperties => ({ fontSize: '11px', color: isDark ? '#A09890' : '#64748B' });
@@ -63,15 +63,15 @@ const monoSmall: React.CSSProperties = { fontFamily: "'JetBrains Mono', monospac
 const Code: React.FC<{ children: React.ReactNode; isDark?: boolean }> = ({ children, isDark = false }) => (
   <code style={{
     fontFamily: "'JetBrains Mono', monospace", fontSize: '10px',
-    background: isDark ? '#2C2823' : '#F1F5F9', padding: '1px 4px', borderRadius: '2px',
+    background: isDark ? '#232019' : '#F1F5F9', padding: '1px 4px', borderRadius: '2px',
     color: isDark ? '#93C5FD' : '#2563EB',
   }}>{children}</code>
 );
 
 const InfoCard: React.FC<{ label: string; children: React.ReactNode; isDark?: boolean }> = ({ label, children, isDark = false }) => (
   <div style={{
-    background: isDark ? '#2C2823' : '#F8FAFC',
-    border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.10)'}`,
+    background: isDark ? '#232019' : '#F8FAFC',
+    border: `1px solid ${isDark ? 'rgba(255,255,255,0.10)' : 'rgba(15,23,42,0.10)'}`,
     borderRadius: '5px', padding: '10px 12px',
   }}>
     <div style={{
@@ -128,8 +128,8 @@ const ProjectsTab: React.FC<{ perms: any[]; isDark?: boolean }> = ({ perms, isDa
   const xsBtn: React.CSSProperties = {
     fontSize: '9px', fontWeight: 700, textTransform: 'uppercase',
     padding: '3px 7px', borderRadius: '3px', cursor: 'pointer',
-    border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.10)'}`,
-    background: isDark ? '#2C2823' : '#FFFFFF', color: isDark ? '#A09890' : '#64748B',
+    border: `1px solid ${isDark ? 'rgba(255,255,255,0.10)' : 'rgba(15,23,42,0.10)'}`,
+    background: isDark ? '#232019' : '#FFFFFF', color: isDark ? '#A09890' : '#64748B',
   };
   const xsBtnClass = 'jus-action-btn';
 
@@ -180,7 +180,7 @@ const ProjectsTab: React.FC<{ perms: any[]; isDark?: boolean }> = ({ perms, isDa
               {perms.map((p: any) => {
                 const isMutating = isPending && variables?.permId === p.id;
                 return (
-                  <tr key={p.id} style={{ borderBottom: `0.75px solid ${isDark ? 'rgba(255,255,255,0.05)' : 'rgba(15,23,42,0.06)'}` }}
+                  <tr key={p.id} style={{ borderBottom: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.06)'}` }}
                     onMouseEnter={e => (e.currentTarget.style.background = isDark ? 'rgba(255,255,255,0.03)' : 'rgba(15,23,42,0.035)')}
                     onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                   >
@@ -199,12 +199,12 @@ const ProjectsTab: React.FC<{ perms: any[]; isDark?: boolean }> = ({ perms, isDa
                       <span className="jus-project-key-chip" style={{
                         fontFamily: "'JetBrains Mono', monospace", fontSize: '9px',
                         color: isDark ? '#A09890' : '#64748B',
-                        background: isDark ? '#2C2823' : '#F1F5F9', padding: '1px 4px', borderRadius: '2px',
+                        background: isDark ? '#232019' : '#F1F5F9', padding: '1px 4px', borderRadius: '2px',
                       }}>{p.project_key}</span>
                     </td>
                     <td style={{ padding: '6px 9px', textAlign: 'right' }}>
                       <div className="jus-perm-seg" style={{
-                        display: 'inline-flex', border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.10)'}`,
+                        display: 'inline-flex', border: `1px solid ${isDark ? 'rgba(255,255,255,0.10)' : 'rgba(15,23,42,0.10)'}`,
                         borderRadius: '4px', overflow: 'hidden',
                       }}>
                         {PERM_LEVELS.map((level, i) => {
@@ -222,7 +222,7 @@ const ProjectsTab: React.FC<{ perms: any[]; isDark?: boolean }> = ({ perms, isDa
                                 background: active ? colors.bg : 'transparent',
                                 color: active ? colors.color : (isDark ? '#6B6560' : '#94A3B8'),
                                 border: 'none',
-                                borderRight: i < 3 ? `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.10)'}` : 'none',
+                                borderRight: i < 3 ? `1px solid ${isDark ? 'rgba(255,255,255,0.10)' : 'rgba(15,23,42,0.10)'}` : 'none',
                               }}
                             >
                               {showSpinner ? <Loader2 size={10} className="animate-spin" /> : level}
@@ -269,7 +269,7 @@ const ActivityTab: React.FC<{ events: any[]; isDark?: boolean }> = ({ events, is
         sorted.slice(0, 30).map((ev: any) => (
           <div key={ev.id} style={{
             display: 'flex', gap: '9px', padding: '5px 0',
-            borderBottom: `0.5px solid ${isDark ? 'rgba(255,255,255,0.05)' : 'rgba(15,23,42,0.06)'}`,
+            borderBottom: `0.5px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.06)'}`,
           }}>
             <div style={{
               width: '7px', height: '7px', borderRadius: '50%', flexShrink: 0,
@@ -295,9 +295,9 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
   const user = data?.data;
 
   const T = isDark ? {
-    surface: '#232019', border: 'rgba(255,255,255,0.08)', text1: '#F5F3F0',
+    surface: '#1A1714', border: 'rgba(255,255,255,0.10)', text1: '#F5F3F0',
     text2: '#A09890', text3: '#6B6560', sunken: '#1A1714',
-    elevated: '#2C2823', inputBg: '#1A1714',
+    elevated: '#232019', inputBg: '#232019',
   } : {
     surface: '#FFFFFF', border: 'rgba(15,23,42,0.10)', text1: '#0F172A',
     text2: '#64748B', text3: '#94A3B8', sunken: '#F1F5F9',
@@ -314,7 +314,7 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
           {Array.from({ length: 8 }).map((_, i) => (
             <div key={i} className="animate-pulse" style={{
               height: i === 0 ? 48 : 14, width: i === 0 ? 48 : `${70 + (i * 10)}%`,
-              borderRadius: i === 0 ? '50%' : 3, background: isDark ? 'rgba(255,255,255,0.05)' : '#E2E8F0',
+              borderRadius: i === 0 ? '50%' : 3, background: isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0',
               marginBottom: i === 0 ? 12 : 10,
             }} />
           ))}
@@ -683,7 +683,7 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
       {/* ── Footer ── */}
       <div className="jus-footer-sticky" style={{
         position: 'sticky', bottom: 0, background: T.surface,
-        borderTop: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.06)'}`, padding: '10px 16px',
+        borderTop: `1px solid ${isDark ? 'rgba(255,255,255,0.10)' : 'rgba(15,23,42,0.06)'}`, padding: '10px 16px',
         display: 'flex', gap: '7px',
       }}>
         <button style={{
