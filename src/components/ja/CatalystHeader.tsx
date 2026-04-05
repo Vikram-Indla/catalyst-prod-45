@@ -199,9 +199,9 @@ export function CatalystHeader() {
           onClick={() => navigate('/home')}
         >
           {!sidebarExpanded ? (
-            <img src={catalystLogoMark2} alt="Catalyst" style={{ height: '28px', width: '28px' }} />
+            <img src={isDark ? catalystLogoMark2Dark : catalystLogoMark2} alt="Catalyst" style={{ height: '28px', width: '28px' }} />
           ) : (
-            <img src={catalystWordmark3} alt="Catalyst" style={{ height: '32px', width: 'auto' }} />
+            <img src={isDark ? catalystWordmark3Dark : catalystWordmark3} alt="Catalyst" style={{ height: '32px', width: 'auto' }} />
           )}
         </a>
         
