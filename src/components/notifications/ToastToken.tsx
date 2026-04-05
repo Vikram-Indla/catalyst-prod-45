@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { X } from "lucide-react";
+import { X, UserCheck } from "lucide-react";
 import type { ToastNotification } from "@/types/notifications";
 import { DUE_DATE_TYPES, TOAST_WIDTH } from "@/constants/notificationConstants";
 import { getAvatarColor, getUserInitials } from "@/utils/avatarColor";
@@ -28,7 +28,8 @@ export default function ToastToken({ toast: t, onDismiss, onPause, onResume }: T
   const n = t.notification;
   const isDueDate = DUE_DATE_TYPES.some(dt => dt === n.notification_type);
   const accentColor = isDueDate ? '#D97706' : '#2563EB';
-  const actorName = n.actor?.full_name || 'System';
+  const isSystemAssign = !n.actor_user_id && (n.notification_type === 'assigned' || n.notification_type === 'status_changed');
+  const actorName = isSystemAssign ? 'You were assigned to' : (n.actor?.full_name || (n.metadata as any)?.actor_display_name || 'Unknown');
   const actorId = n.actor?.id || n.actor_user_id || 'system';
   const progress = t.remainingMs / t.dismissAfterMs;
 
@@ -68,11 +69,11 @@ export default function ToastToken({ toast: t, onDismiss, onPause, onResume }: T
         {/* Avatar */}
         <div style={{
           width: 36, height: 36, borderRadius: '50%', flexShrink: 0,
-          background: getAvatarColor(actorId),
+          background: isSystemAssign ? '#6B7280' : getAvatarColor(actorId),
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           color: '#FFFFFF', fontFamily: 'Inter, sans-serif', fontSize: 12, fontWeight: 700,
         }}>
-          {getUserInitials(actorName)}
+          {isSystemAssign ? <UserCheck size={18} color="#FFFFFF" /> : getUserInitials(actorName)}
         </div>
 
         {/* Body */}
