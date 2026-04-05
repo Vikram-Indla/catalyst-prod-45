@@ -3,6 +3,7 @@ import { X, Send, MessageCircle, Loader2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import ReactMarkdown from 'react-markdown';
 import { useNavigate } from 'react-router-dom';
+import { useTheme } from '@/hooks/useTheme';
 
 interface ChatMessage {
   id: string;
@@ -14,11 +15,14 @@ interface ChatMessage {
 
 export function WikiChatPanel({ open, onClose }: { open: boolean; onClose: () => void }) {
   const navigate = useNavigate();
+  const { isDark } = useTheme();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [sending, setSending] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const border = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)';
 
   useEffect(() => {
     if (open) inputRef.current?.focus();
@@ -62,14 +66,14 @@ export function WikiChatPanel({ open, onClose }: { open: boolean; onClose: () =>
   return (
     <div style={{
       position: 'fixed', bottom: 80, right: 24, width: 380, height: 520,
-      background: 'var(--cp-float)', borderRadius: 12, zIndex: 51,
-      border: '0.75px solid rgba(0,0,0,0.06)',
-      boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
+      background: isDark ? '#232019' : 'var(--cp-float)', borderRadius: 12, zIndex: 51,
+      border: `0.75px solid ${border}`,
+      boxShadow: isDark ? '0 8px 32px rgba(0,0,0,0.4)' : '0 8px 32px rgba(0,0,0,0.12)',
       display: 'flex', flexDirection: 'column', overflow: 'hidden',
     }}>
       {/* Header */}
       <div style={{
-        padding: '14px 16px', borderBottom: '0.75px solid rgba(0,0,0,0.06)',
+        padding: '14px 16px', borderBottom: `0.75px solid ${border}`,
         display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0,
       }}>
         <div style={{ width: 28, height: 28, borderRadius: 6, background: 'var(--cp-blue)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -139,7 +143,7 @@ export function WikiChatPanel({ open, onClose }: { open: boolean; onClose: () =>
 
       {/* Input */}
       <div style={{
-        padding: '10px 12px', borderTop: '0.75px solid rgba(0,0,0,0.06)',
+        padding: '10px 12px', borderTop: `0.75px solid ${border}`,
         display: 'flex', gap: 8, flexShrink: 0,
       }}>
         <input ref={inputRef} value={input} onChange={e => setInput(e.target.value)}
@@ -147,11 +151,11 @@ export function WikiChatPanel({ open, onClose }: { open: boolean; onClose: () =>
           placeholder="Ask a question..."
           style={{
             flex: 1, height: 36, padding: '0 12px', borderRadius: 8, fontSize: 12.5,
-            border: '0.75px solid rgba(0,0,0,0.06)', outline: 'none', fontFamily: 'Inter, sans-serif',
-            background: 'var(--bg-1)',
+            border: `0.75px solid ${border}`, outline: 'none', fontFamily: 'Inter, sans-serif',
+            background: isDark ? '#1A1714' : 'var(--bg-1)', color: isDark ? '#F5F3F0' : undefined,
           }}
           onFocus={e => { e.currentTarget.style.borderColor = 'var(--cp-blue)'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.08)'; }}
-          onBlur={e => { e.currentTarget.style.borderColor = 'rgba(0,0,0,0.06)'; e.currentTarget.style.boxShadow = 'none'; }}
+          onBlur={e => { e.currentTarget.style.borderColor = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'; e.currentTarget.style.boxShadow = 'none'; }}
         />
         <button onClick={handleSend} disabled={sending || !input.trim()} style={{
           width: 36, height: 36, borderRadius: 8, border: 'none', cursor: 'pointer',
