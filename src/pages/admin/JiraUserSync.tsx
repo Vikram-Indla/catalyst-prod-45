@@ -549,35 +549,32 @@ const JiraUserSync: React.FC = () => {
 
                     {/* Projects & Permissions */}
                     <td style={{ padding: '0 12px', maxWidth: '200px' }}>
-                      <div className="flex gap-1 flex-nowrap overflow-hidden">
+                      <div className="flex gap-1 flex-nowrap overflow-hidden items-center">
                         {perms.slice(0, 2).map((p: any) => {
                           const ps = PERM_STYLES[p.permission_level] ?? PERM_STYLES.none;
                           return (
-                            <span key={p.id} className="bg-[#EFF6FF] dark:bg-[rgba(37,99,235,0.15)] text-[#2563EB] dark:text-[#93C5FD] border border-[#BFDBFE] dark:border-[rgba(37,99,235,0.3)]" style={{
-                              display: 'inline-flex', alignItems: 'center', gap: '2px',
-                              padding: '1px 5px', borderRadius: '3px', fontSize: '10px', fontWeight: 500,
+                            <span key={p.id} style={{
+                              display: 'inline-flex', alignItems: 'center', gap: '3px',
+                              padding: '2px 6px', borderRadius: '3px', fontSize: '11px', fontWeight: 600,
                               whiteSpace: 'nowrap',
+                              background: '#F1F5F9', color: '#374151',
                             }}>
+                              {ps.dot !== 'transparent' && (
+                                <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: ps.dot, flexShrink: 0 }} />
+                              )}
                               {p.project_key}
-                              <span style={{
-                                fontSize: '8.5px', fontWeight: 700, textTransform: 'uppercase',
-                                background: ps.bg, color: ps.color, borderRadius: '2px',
-                                padding: '0 3px', height: '16px', lineHeight: '16px', marginLeft: '2px',
-                              }}>
-                                {p.permission_level}
-                              </span>
                             </span>
                           );
                         })}
                         {perms.length > 2 && (
-                          <span className="bg-[#F8FAFC] dark:bg-[rgba(200,210,225,0.08)] text-[#64748B] dark:text-[rgba(200,210,225,0.55)]" style={{
-                            padding: '1px 5px', borderRadius: '3px', fontSize: '10px', fontWeight: 500, whiteSpace: 'nowrap',
+                          <span className="text-[#64748B] dark:text-[rgba(200,210,225,0.55)]" style={{
+                            fontSize: '10px', fontWeight: 500, whiteSpace: 'nowrap',
                           }}>
-                            +{perms.length - 2}
+                            +{perms.length - 2} more
                           </span>
                         )}
                         {perms.length === 0 && (
-                          <span className="text-[#94A3B8] dark:text-[rgba(200,210,225,0.35)]" style={{ fontSize: '10px', fontStyle: 'italic' }}>—</span>
+                          <span className="text-[#94A3B8] dark:text-[rgba(200,210,225,0.35)]" style={{ fontSize: '10px' }}>—</span>
                         )}
                       </div>
                     </td>
