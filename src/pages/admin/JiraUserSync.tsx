@@ -344,7 +344,7 @@ const JiraUserSync: React.FC = () => {
             {/* D16 — Dark toggle */}
             <button
               className="jsu-toggle-btn"
-              onClick={() => setIsDark(prev => !prev)}
+              onClick={() => setTheme(isDark ? 'light' : 'dark')}
               title={isDark ? 'Switch to light' : 'Switch to dark'}
               style={{
                 borderRadius: 6, padding: '7px 12px', cursor: 'pointer',
