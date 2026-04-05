@@ -133,6 +133,51 @@ Deno.serve(async (req) => {
 
     stats.usersDiscovered = jiraUsers.length
 
+    // ─── Step 3b: Resolve real emails ────────────────────────────
+    // Jira's /users/search doesn't return emailAddress (GDPR).
+    // Fetch individually for users missing email, and cross-ref profiles table.
+
+    // Build profiles email lookup by display_name
+    const { data: profileRows } = await supabase
+      .from('profiles')
+      .select('full_name, email, jira_account_id')
+    const profileByName = new Map<string, string>()
+    const profileByAccountId = new Map<string, string>()
+    for (const p of profileRows ?? []) {
+      if (p.email && p.full_name) profileByName.set(p.full_name.toLowerCase(), p.email)
+      if (p.email && p.jira_account_id) profileByAccountId.set(p.jira_account_id, p.email)
+    }
+
+    // Try individual Jira user fetch for real emails (batch of 5 concurrent)
+    const resolveEmail = async (u: any): Promise<string | null> => {
+      // Check profiles table first (fastest)
+      const fromProfile = profileByAccountId.get(u.accountId) ??
+        profileByName.get((u.displayName ?? '').toLowerCase())
+      if (fromProfile) return fromProfile
+
+      // Try Jira individual user endpoint (may return emailAddress)
+      try {
+        const r = await fetch(
+          `${baseUrl}/rest/api/3/user?accountId=${u.accountId}`,
+          { headers: { 'Authorization': authHeader, 'Accept': 'application/json' } }
+        )
+        if (r.ok) {
+          const detail = await r.json()
+          if (detail.emailAddress) return detail.emailAddress
+        }
+      } catch (_) { /* skip */ }
+      return null
+    }
+
+    // Resolve emails in batches of 5
+    for (let i = 0; i < jiraUsers.length; i += 5) {
+      const batch = jiraUsers.slice(i, i + 5)
+      const emails = await Promise.all(batch.map(resolveEmail))
+      for (let j = 0; j < batch.length; j++) {
+        if (emails[j]) batch[j]._resolvedEmail = emails[j]
+      }
+    }
+
     // ─── Step 4: Fetch existing Catalyst identity records ────────
     const { data: existingRecords } = await supabase
       .from('jira_identity_map')
