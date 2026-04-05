@@ -15,8 +15,9 @@ interface NotificationItemProps {
 }
 
 function getActionVerb(type: string, isSystemAssign: boolean): string {
-  if (isSystemAssign && type === 'unassigned') return 'You were removed from';
-  if (isSystemAssign) return 'You were assigned to';
+  if (isSystemAssign && type === 'unassigned') return 'You have been unassigned from';
+  if (isSystemAssign && type === 'assigned') return 'You have been assigned to';
+  if (isSystemAssign) return 'You have been assigned to';
   const map: Record<string, string> = {
     assigned_work_item: 'assigned you to',
     assigned: 'assigned you to',
@@ -24,9 +25,9 @@ function getActionVerb(type: string, isSystemAssign: boolean): string {
     mentioned_in_comment: 'mentioned you in a comment on',
     commented_on_work_item: 'commented on',
     updated_work_item: 'updated',
-    status_changed: 'changed status of',
+    status_changed: 'changed the status of',
     reassigned_work_item: 'reassigned',
-    unassigned: 'removed you from',
+    unassigned: 'unassigned you from',
     created_work_item: 'created',
     release_approval_requested: 'requested approval for',
     incident_escalated: 'escalated',
@@ -36,6 +37,26 @@ function getActionVerb(type: string, isSystemAssign: boolean): string {
   };
   return map[type] || 'updated';
 }
+
+const normaliseStatus = (raw: string | null | undefined): {
+  label: string;
+  type: 'gray' | 'blue' | 'green';
+} => {
+  if (!raw) return { label: 'UNKNOWN', type: 'gray' };
+  const s = raw.toLowerCase().replace(/_/g, ' ').trim();
+  if (s === 'not run')     return { label: 'NOT RUN',     type: 'gray'  };
+  if (s === 'passed')      return { label: 'PASSED',      type: 'green' };
+  if (s === 'failed')      return { label: 'FAILED',      type: 'gray'  };
+  if (s === 'done')        return { label: 'DONE',        type: 'green' };
+  if (s === 'completed')   return { label: 'COMPLETED',   type: 'green' };
+  if (s === 'approved')    return { label: 'APPROVED',    type: 'green' };
+  if (s === 'active')      return { label: 'ACTIVE',      type: 'blue'  };
+  if (s === 'in progress') return { label: 'IN PROGRESS', type: 'blue'  };
+  if (s === 'in review')   return { label: 'IN REVIEW',   type: 'blue'  };
+  if (s === 'backlog')     return { label: 'BACKLOG',     type: 'gray'  };
+  if (s === 'on hold')     return { label: 'ON HOLD',     type: 'gray'  };
+  return { label: raw.replace(/_/g, ' ').toUpperCase(), type: 'gray' };
+};
 
 function formatTimestamp(iso: string): string {
   const d = new Date(iso);
@@ -162,7 +183,7 @@ function NotificationItemInner({ notification, onMarkRead, onClick }: Notificati
               {notification.entity_key}
             </span>
             <span style={{ color: '#94A3B8', fontSize: 10 }}>•</span>
-            <StatusLozenge label={notification.status} type={notification.status_type} />
+            <StatusLozenge label={normaliseStatus(notification.status).label} type={normaliseStatus(notification.status).type} />
           </div>
 
           {/* Due date alert */}
