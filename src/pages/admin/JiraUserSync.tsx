@@ -333,23 +333,23 @@ const JiraUserSync: React.FC = () => {
       <div className="shrink-0" style={{ padding: '14px 24px 0', borderBottom: `0.75px solid ${T.border}`, background: T.page }}>
         <div className="flex items-start justify-between pb-3">
           <div>
-            <h1 style={{ fontFamily: "'Sora', sans-serif", fontSize: 17, fontWeight: 700, letterSpacing: '-0.3px', margin: 0, lineHeight: 1.3, color: T.text1 }}>
+            <h1 className="jsu-text-1" style={{ fontFamily: "'Sora', sans-serif", fontSize: 20, fontWeight: 700, letterSpacing: '-0.3px', margin: 0, lineHeight: 1.3 }}>
               Jira User Sync
             </h1>
-            <p style={{ fontSize: 11, margin: '2px 0 0', color: T.text2 }}>
+            <p className="jsu-text-2" style={{ fontSize: 12, margin: '4px 0 0' }}>
               Bidirectional identity bridge · Jira Cloud ↔ Catalyst · Live proxy auth · Webhooks active
             </p>
           </div>
           <div className="flex gap-2 shrink-0 items-center">
             {/* D16 — Dark toggle */}
             <button
+              className="jsu-toggle-btn"
               onClick={() => setIsDark(prev => !prev)}
               title={isDark ? 'Switch to light' : 'Switch to dark'}
               style={{
-                background: T.surface, border: `0.75px solid ${T.border}`,
-                borderRadius: 6, padding: '6px 10px', cursor: 'pointer', color: T.text2,
+                borderRadius: 6, padding: '7px 12px', cursor: 'pointer',
                 display: 'flex', alignItems: 'center', gap: 6,
-                fontFamily: 'Inter,sans-serif', fontSize: 12,
+                fontFamily: 'Inter,sans-serif', fontSize: 12, fontWeight: 500,
               }}
             >
               {isDark ? <Sun size={13} /> : <Moon size={13} />}
