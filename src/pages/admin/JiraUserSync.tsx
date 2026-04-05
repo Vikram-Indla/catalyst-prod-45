@@ -67,6 +67,19 @@ function formatSyncDate(iso: string | null): string {
   return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }) + ` ${time}`;
 }
 
+function relativeTime(ts: string | null): string {
+  if (!ts) return '—';
+  const diff = Date.now() - new Date(ts).getTime();
+  const mins = Math.floor(diff / 60000);
+  const hours = Math.floor(diff / 3600000);
+  const days = Math.floor(diff / 86400000);
+  if (mins < 2) return 'Just now';
+  if (mins < 60) return `${mins}m ago`;
+  if (hours < 24) return `${hours}h ago`;
+  if (days === 1) return 'Yesterday';
+  return `${days}d ago`;
+}
+
 function getInitials(name: string): string {
   return name.split(/\s+/).slice(0, 2).map(w => w[0]?.toUpperCase() ?? '').join('');
 }
@@ -86,11 +99,11 @@ function getPageNumbers(current: number, total: number): (number | '...')[] {
 }
 
 /* ── Permission level badge ── */
-const PERM_STYLES: Record<string, { bg: string; color: string }> = {
-  full: { bg: '#DCFCE7', color: '#006644' },
-  edit: { bg: '#FEF3C7', color: '#92400E' },
-  view: { bg: '#DEEBFF', color: '#0747A6' },
-  none: { bg: '#F1F5F9', color: '#64748B' },
+const PERM_STYLES: Record<string, { bg: string; color: string; dot: string }> = {
+  full: { bg: '#DCFCE7', color: '#006644', dot: '#16A34A' },
+  edit: { bg: '#FEF3C7', color: '#92400E', dot: '#2563EB' },
+  view: { bg: '#DEEBFF', color: '#0747A6', dot: '#6B7280' },
+  none: { bg: '#F1F5F9', color: '#64748B', dot: 'transparent' },
 };
 
 /* ── Main Component ── */
