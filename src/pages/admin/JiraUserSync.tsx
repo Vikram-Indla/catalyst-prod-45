@@ -164,23 +164,21 @@ const JiraUserSync: React.FC = () => {
     const upper = status?.toUpperCase();
     const isActive = upper === 'ACTIVE';
     const isConflict = upper === 'CONFLICT';
+    const cls = isConflict ? '' : isActive ? 'jsu-lozenge-active' : 'jsu-lozenge-inactive';
     return (
-      <span style={{
-        display: 'inline-flex', alignItems: 'center',
-        height: 20, padding: '0 8px', borderRadius: 3,
-        fontFamily: 'Inter,sans-serif', fontSize: 10, fontWeight: 700,
-        textTransform: 'uppercase' as const, letterSpacing: '0.04em', whiteSpace: 'nowrap' as const,
-        background: isConflict
-          ? (isDark ? '#451A03' : '#FEF3C7')
-          : isActive
-            ? (isDark ? '#064E3B' : '#E3FCEF')
-            : (isDark ? '#450A0A' : '#FEE2E2'),
-        color: isConflict
-          ? (isDark ? '#FCD34D' : '#92400E')
-          : isActive
-            ? (isDark ? '#6EE7B7' : '#006644')
-            : (isDark ? '#FCA5A5' : '#991B1B'),
-      }}>
+      <span
+        className={cls}
+        style={{
+          display: 'inline-flex', alignItems: 'center',
+          height: 20, padding: '0 8px', borderRadius: 3,
+          fontFamily: 'Inter,sans-serif', fontSize: 10, fontWeight: 700,
+          textTransform: 'uppercase' as const, letterSpacing: '0.04em', whiteSpace: 'nowrap' as const,
+          ...(isConflict ? {
+            background: isDark ? '#451A03' : '#FEF3C7',
+            color: isDark ? '#FCD34D' : '#92400E',
+          } : {}),
+        }}
+      >
         {status}
       </span>
     );
@@ -302,29 +300,54 @@ const JiraUserSync: React.FC = () => {
   const [hoveredRow, setHoveredRow] = useState<string | null>(null);
 
   return (
-    <div className="flex flex-col h-full" style={{ background: T.page, minHeight: '100vh' }}>
+    <>
+    <style>{`
+      .jsu-page { background: ${T.page} !important; min-height: 100vh; }
+      .jsu-surface { background: ${T.surface} !important; border-color: ${T.border} !important; }
+      .jsu-sunken { background: ${T.sunken} !important; }
+      .jsu-elevated { background: ${T.elevated} !important; border-color: ${T.border} !important; }
+      .jsu-text-1 { color: ${T.text1} !important; }
+      .jsu-text-2 { color: ${T.text2} !important; }
+      .jsu-text-3 { color: ${T.text3} !important; }
+      .jsu-border { border-color: ${T.border} !important; }
+      .jsu-row { background: ${T.surface} !important; border-bottom: 0.75px solid ${T.border} !important; height: 40px !important; max-height: 40px !important; }
+      .jsu-row:hover { background: ${isDark ? 'rgba(200,210,225,0.05)' : 'rgba(15,23,42,0.03)'} !important; }
+      .jsu-th { background: ${T.sunken} !important; color: ${T.text2} !important; font-family: Inter,sans-serif !important; font-size: 11px !important; font-weight: 600 !important; text-transform: uppercase !important; letter-spacing: 0.05em !important; padding: 10px 12px !important; border-bottom: 0.75px solid ${T.border} !important; }
+      .jsu-td { color: ${T.text1} !important; font-family: Inter,sans-serif !important; font-size: 13px !important; padding: 0 12px !important; }
+      .jsu-chip-active { background: ${isDark ? 'rgba(37,99,235,0.20)' : '#DBEAFE'} !important; border: 0.75px solid #2563EB !important; color: #2563EB !important; }
+      .jsu-chip-rest { background: transparent !important; border: 0.75px solid ${isDark ? 'rgba(200,210,225,0.12)' : 'rgba(15,23,42,0.10)'} !important; color: ${T.text2} !important; }
+      .jsu-search { background: ${T.inputBg} !important; border: 0.75px solid ${isDark ? 'rgba(200,210,225,0.12)' : 'rgba(15,23,42,0.12)'} !important; color: ${T.text1} !important; }
+      .jsu-search::placeholder { color: ${T.text3} !important; }
+      .jsu-stat-card { background: ${T.surface} !important; border: 0.75px solid ${T.border} !important; border-radius: 10px !important; }
+      .jsu-lozenge-active { background: ${isDark ? '#064E3B' : '#E3FCEF'} !important; color: ${isDark ? '#6EE7B7' : '#006644'} !important; }
+      .jsu-lozenge-inactive { background: ${isDark ? '#450A0A' : '#FEE2E2'} !important; color: ${isDark ? '#FCA5A5' : '#991B1B'} !important; }
+      .jsu-badge-project { background: ${isDark ? 'rgba(200,210,225,0.08)' : '#F1F5F9'} !important; color: ${isDark ? 'rgba(200,210,225,0.65)' : '#475569'} !important; }
+      .jsu-badge-jira { background: ${isDark ? 'rgba(37,99,235,0.15)' : '#EFF6FF'} !important; color: ${isDark ? '#93C5FD' : '#1D4ED8'} !important; border: 0.75px solid ${isDark ? 'rgba(37,99,235,0.25)' : '#BFDBFE'} !important; }
+      .jsu-toggle-btn { background: ${T.surface} !important; border: 0.75px solid ${isDark ? 'rgba(200,210,225,0.12)' : 'rgba(15,23,42,0.12)'} !important; color: ${T.text2} !important; }
+    `}</style>
+    <div className="jsu-page flex flex-col h-full" style={{ background: T.page, minHeight: '100vh' }}>
 
       {/* ══ Page Header ══ */}
       <div className="shrink-0" style={{ padding: '14px 24px 0', borderBottom: `0.75px solid ${T.border}`, background: T.page }}>
         <div className="flex items-start justify-between pb-3">
           <div>
-            <h1 style={{ fontFamily: "'Sora', sans-serif", fontSize: 17, fontWeight: 700, letterSpacing: '-0.3px', margin: 0, lineHeight: 1.3, color: T.text1 }}>
+            <h1 className="jsu-text-1" style={{ fontFamily: "'Sora', sans-serif", fontSize: 20, fontWeight: 700, letterSpacing: '-0.3px', margin: 0, lineHeight: 1.3 }}>
               Jira User Sync
             </h1>
-            <p style={{ fontSize: 11, margin: '2px 0 0', color: T.text2 }}>
+            <p className="jsu-text-2" style={{ fontSize: 12, margin: '4px 0 0' }}>
               Bidirectional identity bridge · Jira Cloud ↔ Catalyst · Live proxy auth · Webhooks active
             </p>
           </div>
           <div className="flex gap-2 shrink-0 items-center">
             {/* D16 — Dark toggle */}
             <button
+              className="jsu-toggle-btn"
               onClick={() => setIsDark(prev => !prev)}
               title={isDark ? 'Switch to light' : 'Switch to dark'}
               style={{
-                background: T.surface, border: `0.75px solid ${T.border}`,
-                borderRadius: 6, padding: '6px 10px', cursor: 'pointer', color: T.text2,
+                borderRadius: 6, padding: '7px 12px', cursor: 'pointer',
                 display: 'flex', alignItems: 'center', gap: 6,
-                fontFamily: 'Inter,sans-serif', fontSize: 12,
+                fontFamily: 'Inter,sans-serif', fontSize: 12, fontWeight: 500,
               }}
             >
               {isDark ? <Sun size={13} /> : <Moon size={13} />}
@@ -359,22 +382,22 @@ const JiraUserSync: React.FC = () => {
       </div>
 
       {/* ══ D04 — Stat Cards (50px gap not specified, using grid gap 12px from existing) ══ */}
-      <div className="shrink-0 flex flex-nowrap" style={{ gap: 12, padding: '20px 24px 18px', background: T.page }}>
+      <div className="shrink-0 flex flex-nowrap" style={{ gap: 24, padding: '20px 24px 18px', background: T.page }}>
         {STAT_CARDS.map(card => (
-          <div key={card.key} style={{
-            flex: 1, minWidth: 140, padding: '16px 20px', borderRadius: 8,
-            background: T.surface, border: `0.75px solid ${T.border}`,
+          <div key={card.key} className="jsu-stat-card" style={{
+            flex: 1, minWidth: 0, minHeight: 120, padding: '20px 24px',
+            display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 0,
           }}>
-            <div className="flex items-center" style={{ gap: 5, marginBottom: 4 }}>
-              <span style={{ width: 6, height: 6, borderRadius: '50%', background: card.dotColor, flexShrink: 0 }} />
-              <span style={{ fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.03em', fontFamily: 'Inter,sans-serif', color: T.text3 }}>
+            <div className="flex items-center" style={{ gap: 7 }}>
+              <span style={{ width: 8, height: 8, borderRadius: '50%', background: card.dotColor, flexShrink: 0 }} />
+              <span className="jsu-text-2" style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.07em', fontFamily: 'Inter,sans-serif' }}>
                 {card.label}
               </span>
             </div>
-            <div style={{ fontSize: 28, fontWeight: 650, lineHeight: 1.1, fontFamily: "'Sora',sans-serif", color: T.text1 }}>
+            <div className="jsu-text-1" style={{ fontFamily: "'Sora',sans-serif", fontSize: 36, fontWeight: 700, lineHeight: 1, marginTop: 12, letterSpacing: '-0.02em' }}>
               {getStatValue(card.key)}
             </div>
-            <div style={{ fontSize: 11, marginTop: 4, color: T.text3 }}>
+            <div className="jsu-text-3" style={{ fontFamily: 'Inter,sans-serif', fontSize: 11, fontWeight: 400, marginTop: 6 }}>
               {card.subLabel}
             </div>
           </div>
@@ -585,7 +608,7 @@ const JiraUserSync: React.FC = () => {
             <div style={{ background: T.surface, border: `0.75px solid ${T.border}`, borderRadius: 8, overflow: 'hidden' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 1000 }}>
                 <thead>
-                  <tr style={{ background: T.sunken, borderBottom: `0.75px solid ${T.border}` }}>
+                  <tr style={{ background: T.sunken, borderBottom: `0.75px solid ${T.border}` }} className="jsu-sunken">
                     <th style={{ width: 36, padding: '10px 12px', textAlign: 'center' }}>
                       <input
                         ref={headerCheckRef}
@@ -596,10 +619,8 @@ const JiraUserSync: React.FC = () => {
                       />
                     </th>
                     {HEADERS.map(h => (
-                      <th key={h || 'action'} style={{
-                        padding: '10px 12px', textAlign: 'left', fontSize: 11, fontWeight: 600,
-                        textTransform: 'uppercase', letterSpacing: '0.05em',
-                        fontFamily: 'Inter,sans-serif', color: T.text2,
+                      <th key={h || 'action'} className="jsu-th" style={{
+                        padding: '10px 12px', textAlign: 'left',
                       }}>
                         {h}
                       </th>
@@ -885,6 +906,7 @@ const JiraUserSync: React.FC = () => {
         onSuccess={() => {}}
       />
     </div>
+    </>
   );
 };
 
