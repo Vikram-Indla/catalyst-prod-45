@@ -442,7 +442,7 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
               <div className="jus-section-label" style={mkSectionLabel(isDark)}>IDENTITY</div>
               <div className="jus-field-row" style={mkFieldRow(isDark)}>
                 <span className="jus-field-key" style={mkFieldKey(isDark)}>Email / Login</span>
-                <span className="jus-field-val" style={{ ...mkFieldVal(isDark), ...monoSmall }}>{user.email}</span>
+                <span className="jus-field-val" style={{ ...mkFieldVal(isDark), ...monoSmall }}>{(!user.email || user.email.includes('@jira.placeholder')) ? '—' : user.email}</span>
               </div>
               <div className="jus-field-row" style={mkFieldRow(isDark)}>
                 <span className="jus-field-key" style={mkFieldKey(isDark)}>Jira Account ID</span>
