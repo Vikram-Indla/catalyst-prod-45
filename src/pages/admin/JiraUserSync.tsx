@@ -127,7 +127,8 @@ const JiraUserSync: React.FC = () => {
   const [assignPopoverOpen, setAssignPopoverOpen] = useState(false);
   const [assignPermLevel, setAssignPermLevel] = useState<'view' | 'edit' | 'full'>('view');
   const [assignSearch, setAssignSearch] = useState('');
-  const [isDark, setIsDark] = useState(false);
+  const { resolvedTheme, setTheme } = useThemeMode();
+  const isDark = resolvedTheme === 'dark';
 
   /* ── T object: single source of truth for all themed colors ── */
   const T = isDark ? {
