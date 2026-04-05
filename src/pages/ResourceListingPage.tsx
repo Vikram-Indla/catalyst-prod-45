@@ -448,7 +448,7 @@ export default function ResourceListingPage() {
                 <tr
                   key={r.rid}
                   className="group"
-                  style={{ borderBottom: `0.75px solid ${tk.divider}`, cursor: 'pointer', height: '56px' }}
+                  style={{ borderBottom: `0.75px solid ${tk.divider}`, cursor: 'pointer', height: '60px' }}
                   onClick={() => navTo(r.id, 'ring')}
                   onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = tk.hover; }}
                   onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
