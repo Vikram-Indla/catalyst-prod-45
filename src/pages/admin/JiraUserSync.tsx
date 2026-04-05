@@ -708,6 +708,11 @@ const JiraUserSync: React.FC = () => {
           </button>
         </div>
       </div>
+      <CreateCatalystUserModal
+        open={createModalOpen}
+        onClose={() => setCreateModalOpen(false)}
+        onSuccess={() => {}}
+      />
     </div>
   );
 };
