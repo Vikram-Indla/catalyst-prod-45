@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Plus, RefreshCw, Search, ChevronLeft, ChevronRight, UserX, Copy, Loader2, Share2, Download, Users2, FolderSearch, FolderPlus, Check, Moon, Sun } from 'lucide-react';
+import { Plus, RefreshCw, Search, ChevronLeft, ChevronRight, UserX, Copy, Loader2, Share2, Download, Users2, FolderSearch, FolderPlus, Check } from 'lucide-react';
+import { useTheme } from '@/hooks/useTheme';
 import UserDetailPanel from '@/components/admin/UserDetailPanel';
 import { toast } from 'sonner';
 import {
@@ -128,16 +129,7 @@ const JiraUserSync: React.FC = () => {
   const [assignPopoverOpen, setAssignPopoverOpen] = useState(false);
   const [assignPermLevel, setAssignPermLevel] = useState<'view' | 'edit' | 'full'>('view');
   const [assignSearch, setAssignSearch] = useState('');
-  const [isDark, setIsDark] = useState(() => document.documentElement.classList.contains('dark'));
-
-  // Stay in sync with global theme changes
-  useEffect(() => {
-    const observer = new MutationObserver(() => {
-      setIsDark(document.documentElement.classList.contains('dark'));
-    });
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
-    return () => observer.disconnect();
-  }, []);
+  const { isDark } = useTheme();
 
   const debouncedSearch = useDebouncedValue(search, 300);
 
@@ -265,18 +257,6 @@ const JiraUserSync: React.FC = () => {
               </p>
             </div>
             <div className="flex gap-2 shrink-0 items-center">
-              {/* Dark mode toggle */}
-              <button
-                onClick={() => setIsDark(prev => !prev)}
-                style={{
-                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                  width: '30px', height: '30px', borderRadius: '5px', cursor: 'pointer',
-                  background: isDark ? '#232019' : '#FFFFFF',
-                  border: `1px solid ${isDark ? 'rgba(255,255,255,0.10)' : 'rgba(15,23,42,0.10)'}`,
-                  color: isDark ? '#A09890' : '#64748B',
-                }}>
-                {isDark ? <Sun size={13} /> : <Moon size={13} />}
-              </button>
               <button
                 onClick={() => setCreateModalOpen(true)}
                 className="jira-btn-secondary"
