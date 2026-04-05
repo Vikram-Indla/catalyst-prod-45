@@ -19,155 +19,7 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 
-/* ── Module-scoped dark mode styles ── */
-const DARK_STYLES = `
-[data-jira-theme="dark"] {
-  background-color: #0F1114 !important;
-  color: rgba(225,230,240,0.92) !important;
-}
-[data-jira-theme="dark"] .jira-surface {
-  background-color: #181A1E !important;
-  border-color: rgba(200,210,225,0.08) !important;
-}
-[data-jira-theme="dark"] .jira-surface-elevated {
-  background-color: #1E2027 !important;
-  border-color: rgba(200,210,225,0.10) !important;
-}
-[data-jira-theme="dark"] .jira-card {
-  background-color: #1E2027 !important;
-  border-color: rgba(200,210,225,0.10) !important;
-}
-[data-jira-theme="dark"] .jira-table-header {
-  background-color: #12141A !important;
-  border-bottom-color: rgba(200,210,225,0.08) !important;
-}
-[data-jira-theme="dark"] .jira-row {
-  border-bottom-color: rgba(200,210,225,0.06) !important;
-}
-[data-jira-theme="dark"] .jira-row:hover {
-  background-color: rgba(200,210,225,0.04) !important;
-}
-[data-jira-theme="dark"] .jira-row-selected {
-  background-color: rgba(37,99,235,0.12) !important;
-}
-[data-jira-theme="dark"] .jira-row-conflict {
-  background-color: rgba(251,191,36,0.06) !important;
-}
-[data-jira-theme="dark"] .jira-text-primary {
-  color: #F5F3F0 !important;
-}
-[data-jira-theme="dark"] .jira-text-secondary {
-  color: rgba(200,210,225,0.55) !important;
-}
-[data-jira-theme="dark"] .jira-text-muted {
-  color: rgba(200,210,225,0.35) !important;
-}
-[data-jira-theme="dark"] .jira-text-label {
-  color: rgba(200,210,225,0.50) !important;
-}
-[data-jira-theme="dark"] .jira-text-th {
-  color: rgba(200,210,225,0.45) !important;
-}
-[data-jira-theme="dark"] .jira-border {
-  border-color: rgba(200,210,225,0.08) !important;
-}
-[data-jira-theme="dark"] .jira-border-bottom {
-  border-bottom-color: rgba(200,210,225,0.08) !important;
-}
-[data-jira-theme="dark"] .jira-input {
-  background-color: #12141A !important;
-  border-color: rgba(200,210,225,0.12) !important;
-  color: rgba(225,230,240,0.92) !important;
-}
-[data-jira-theme="dark"] .jira-btn-secondary {
-  background-color: #232019 !important;
-  color: #A09890 !important;
-  border-color: rgba(200,210,225,0.10) !important;
-}
-[data-jira-theme="dark"] .jira-pagination-bg {
-  background-color: #0F1114 !important;
-}
-[data-jira-theme="dark"] .jira-pagination-btn {
-  background-color: #1E2027 !important;
-  color: #A09890 !important;
-}
-[data-jira-theme="dark"] .jira-toolbar {
-  background-color: #181A1E !important;
-  border-bottom-color: rgba(200,210,225,0.07) !important;
-}
-[data-jira-theme="dark"] .jira-filter-active {
-  background-color: rgba(37,99,235,0.12) !important;
-  color: #93C5FD !important;
-}
-[data-jira-theme="dark"] .jira-filter-inactive {
-  background-color: #1E2027 !important;
-  color: #A09890 !important;
-}
-[data-jira-theme="dark"] .jira-selection-bar {
-  background-color: rgba(37,99,235,0.12) !important;
-  border-bottom-color: rgba(37,99,235,0.25) !important;
-}
-[data-jira-theme="dark"] .jira-selection-count {
-  color: #93C5FD !important;
-}
-[data-jira-theme="dark"] .jira-badge-jira {
-  background: rgba(37,99,235,0.18) !important;
-  color: #93C5FD !important;
-  border-color: rgba(37,99,235,0.30) !important;
-}
-[data-jira-theme="dark"] .jira-badge-catalyst {
-  background: rgba(91,33,182,0.18) !important;
-  color: #C4B5FD !important;
-}
-[data-jira-theme="dark"] .jira-lozenge-active {
-  background: #064E3B !important;
-  color: #6EE7B7 !important;
-}
-[data-jira-theme="dark"] .jira-lozenge-inactive {
-  background: #450A0A !important;
-  color: #FCA5A5 !important;
-}
-[data-jira-theme="dark"] .jira-lozenge-conflict {
-  background: #451A03 !important;
-  color: #FCD34D !important;
-}
-[data-jira-theme="dark"] .jira-chip {
-  background: rgba(200,210,225,0.08) !important;
-  color: rgba(200,210,225,0.75) !important;
-}
-[data-jira-theme="dark"] .jira-skeleton {
-  background: rgba(255,255,255,0.05) !important;
-}
-[data-jira-theme="dark"] .jira-action-btn {
-  background-color: #1E2027 !important;
-}
-[data-jira-theme="dark"] .jira-stat-value {
-  color: rgba(225,230,240,0.95) !important;
-}
-[data-jira-theme="dark"] .jira-stat-label {
-  color: rgba(200,210,225,0.50) !important;
-}
-[data-jira-theme="dark"] .jira-stat-sub {
-  color: rgba(200,210,225,0.35) !important;
-}
-[data-jira-theme="dark"] .jira-stat-band {
-  background-color: #181A1E !important;
-  border-bottom-color: rgba(200,210,225,0.08) !important;
-}
-[data-jira-theme="dark"] .jira-header-area {
-  border-bottom-color: rgba(200,210,225,0.08) !important;
-}
-[data-jira-theme="dark"] .jira-popover-surface {
-  background-color: #1E2027 !important;
-  border-color: rgba(255,255,255,0.08) !important;
-}
-[data-jira-theme="dark"] .jira-popover-item:hover {
-  background-color: rgba(255,255,255,0.04) !important;
-}
-[data-jira-theme="dark"] .jira-local-marker {
-  color: #C4B5FD !important;
-}
-`;
+/* ── Theme tokens (inline style object) ── */
 
 /* ── Stats Config ── */
 const STATS_CONFIG = [
@@ -379,11 +231,9 @@ const JiraUserSync: React.FC = () => {
 
   return (
     <div
-      data-jira-theme={isDark ? 'dark' : 'light'}
       className="flex flex-col h-full"
-      style={{ background: isDark ? '#0F1114' : '#F8FAFC' }}
+      style={{ background: isDark ? '#0F1114' : '#F8FAFC', minHeight: '100vh' }}
     >
-      <style>{DARK_STYLES}</style>
 
       {/* Layer 2 — Main content surface */}
       <div className="jira-surface flex flex-col flex-1 overflow-hidden mx-5 my-4 rounded-lg"
@@ -1004,6 +854,7 @@ const JiraUserSync: React.FC = () => {
           <UserDetailPanel
             userId={activeUserId}
             onClose={() => setActiveUserId(null)}
+            isDark={isDark}
           />
         )}
         </div>{/* end flex row */}
