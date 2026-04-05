@@ -5,7 +5,7 @@ export const fetchJiraSyncUsers = async (
   page: number,
   filter: string,
   search: string,
-  perPage: number = 15
+  perPage: number = 10
 ) => {
   let query = supabase
     .from('jira_identity_map')
