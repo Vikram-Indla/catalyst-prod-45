@@ -60,6 +60,7 @@ const TABS: { key: NotificationTab; label: string; hasDot?: boolean }[] = [
 export default function NotificationPanel({ isOpen, onClose }: NotificationPanelProps) {
   const { data: userId } = useUserId();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const [activeTab, setActiveTab] = useState<NotificationTab>('direct');
   const [menuOpen, setMenuOpen] = useState(false);
