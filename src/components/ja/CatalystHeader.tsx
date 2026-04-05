@@ -523,8 +523,8 @@ export function CatalystHeader() {
                     style={{
                       width: '36px',
                       height: '36px',
-                      color: 'var(--cp-t3)',
-                      background: 'transparent',
+                      color: location.pathname.startsWith('/admin') ? 'var(--cp-blue-text)' : 'var(--cp-t3)',
+                      background: location.pathname.startsWith('/admin') ? 'var(--cp-hover)' : 'transparent',
                       border: 'none',
                       cursor: 'pointer',
                       borderRadius: '8px',
@@ -534,8 +534,9 @@ export function CatalystHeader() {
                       e.currentTarget.style.background = 'var(--cp-hover)';
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.color = 'var(--cp-t3)';
-                      e.currentTarget.style.background = 'transparent';
+                      const isOnAdmin = location.pathname.startsWith('/admin');
+                      e.currentTarget.style.color = isOnAdmin ? 'var(--cp-blue-text)' : 'var(--cp-t3)';
+                      e.currentTarget.style.background = isOnAdmin ? 'var(--cp-hover)' : 'transparent';
                     }}
                     onClick={() => navigate('/admin/users')}
                     title="Settings"
