@@ -19689,39 +19689,105 @@ export type Database = {
           },
         ]
       }
-      notifications: {
+      notification_preferences: {
         Row: {
           created_at: string
-          entity_id: string | null
-          entity_type: string | null
+          enabled: boolean
           id: string
-          message: string | null
-          read: boolean
-          title: string
-          type: string
+          notification_type: string
+          show_unread_only: boolean
+          toast_enabled: boolean
+          updated_at: string
           user_id: string
         }
         Insert: {
           created_at?: string
-          entity_id?: string | null
-          entity_type?: string | null
+          enabled?: boolean
           id?: string
-          message?: string | null
-          read?: boolean
-          title: string
-          type?: string
+          notification_type: string
+          show_unread_only?: boolean
+          toast_enabled?: boolean
+          updated_at?: string
           user_id: string
         }
         Update: {
           created_at?: string
-          entity_id?: string | null
-          entity_type?: string | null
+          enabled?: boolean
           id?: string
-          message?: string | null
-          read?: boolean
-          title?: string
-          type?: string
+          notification_type?: string
+          show_unread_only?: boolean
+          toast_enabled?: boolean
+          updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          actor_user_id: string | null
+          created_at: string
+          delivered_at: string | null
+          entity_deleted: boolean
+          entity_icon_type: string
+          entity_id: string
+          entity_key: string
+          entity_title: string
+          entity_type: string
+          hub_source: string
+          id: string
+          metadata: Json
+          notification_type: string
+          read_at: string | null
+          recipient_user_id: string
+          snoozed_until: string | null
+          status: string
+          status_type: string
+          tab: string
+          updated_at: string
+        }
+        Insert: {
+          actor_user_id?: string | null
+          created_at?: string
+          delivered_at?: string | null
+          entity_deleted?: boolean
+          entity_icon_type?: string
+          entity_id: string
+          entity_key?: string
+          entity_title?: string
+          entity_type: string
+          hub_source?: string
+          id?: string
+          metadata?: Json
+          notification_type: string
+          read_at?: string | null
+          recipient_user_id: string
+          snoozed_until?: string | null
+          status?: string
+          status_type?: string
+          tab?: string
+          updated_at?: string
+        }
+        Update: {
+          actor_user_id?: string | null
+          created_at?: string
+          delivered_at?: string | null
+          entity_deleted?: boolean
+          entity_icon_type?: string
+          entity_id?: string
+          entity_key?: string
+          entity_title?: string
+          entity_type?: string
+          hub_source?: string
+          id?: string
+          metadata?: Json
+          notification_type?: string
+          read_at?: string | null
+          recipient_user_id?: string
+          snoozed_until?: string | null
+          status?: string
+          status_type?: string
+          tab?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -65790,6 +65856,15 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      notification_unread_counts: {
+        Row: {
+          direct_unread: number | null
+          recipient_user_id: string | null
+          total_unread: number | null
+          watching_unread: number | null
+        }
+        Relationships: []
       }
       pc_events_list_view: {
         Row: {
