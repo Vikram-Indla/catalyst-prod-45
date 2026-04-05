@@ -390,8 +390,8 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
                 display: 'inline-block', padding: '0 7px', borderRadius: '3px',
                 fontSize: '10px', fontWeight: 700, textTransform: 'uppercase',
                 height: '20px', lineHeight: '20px',
-                background: isInactive ? '#FEE2E2' : '#E3FCEF',
-                color: isInactive ? '#991B1B' : '#006644',
+                background: isInactive ? (isDark ? '#450A0A' : '#FEE2E2') : (isDark ? '#064E3B' : '#E3FCEF'),
+                color: isInactive ? (isDark ? '#FCA5A5' : '#991B1B') : (isDark ? '#6EE7B7' : '#006644'),
               }}>
                 {isInactive ? 'INACTIVE' : 'ACTIVE'}
               </span>
@@ -399,14 +399,13 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
           </div>
           {/* Close */}
           <button
-            className="jus-close-btn"
             onClick={onClose}
             style={{
               position: 'absolute', top: '14px', right: '14px',
               width: '26px', height: '26px', borderRadius: '50%',
-              border: '1px solid rgba(15,23,42,0.10)', background: '#FFFFFF',
+              border: `1px solid ${T.border}`, background: T.surface,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              cursor: 'pointer', color: '#64748B',
+              cursor: 'pointer', color: T.text2,
             }}
           >
             <X size={12} />
@@ -418,11 +417,10 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
           {TABS.map(t => (
             <button
               key={t.key}
-              className={`jus-tab-btn ${activeTab === t.key ? 'active' : ''}`}
               onClick={() => setActiveTab(t.key)}
               style={{
                 padding: '8px 12px', fontSize: '12px', fontWeight: 500, cursor: 'pointer',
-                color: activeTab === t.key ? '#2563EB' : '#64748B',
+                color: activeTab === t.key ? '#2563EB' : T.text2,
                 background: 'none', border: 'none',
                 borderBottomWidth: '2px', borderBottomStyle: 'solid',
                 borderBottomColor: activeTab === t.key ? '#2563EB' : 'transparent',
