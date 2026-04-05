@@ -150,7 +150,7 @@ export default function AllChangesPage() {
         <EmptyState icon={Search} title="No changes match your filters" subtitle="Try adjusting your search or filter criteria."
           actions={[{ label: 'Clear filters', onClick: () => { setSearch(''); setParams({}); }, variant: 'ghost' }]} />
       ) : view === 'kanban' ? (
-        <KanbanView changes={filtered} onSelect={setSelectedChg} />
+        <KanbanView changes={filtered} onSelect={setSelectedChg} isDark={isDark} />
       ) : (
         /* V12 Table */
         <div className="rounded overflow-hidden" style={{ background: isDark ? '#232019' : '#FFFFFF', border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.12)'}` }}>
@@ -186,11 +186,11 @@ export default function AllChangesPage() {
                     <td className="px-3 py-0"><StatusLozenge status={c.status} /></td>
                     <td className="px-3 py-0"><RiskBadge risk={mapRisk(c.risk_level)} /></td>
                     <td className="px-3 py-0">
-                      {relName ? <span className="text-[12px] font-medium text-[#2563EB]">{relName}</span> : <span className="text-[#94A3B8]">—</span>}
+                      {relName ? <span className="text-[12px] font-medium text-[#2563EB]">{relName}</span> : <span style={{ color: isDark ? '#6B6560' : '#94A3B8' }}>—</span>}
                     </td>
                     <td className="px-3 py-0"><SourceBadge source={c.source} /></td>
                     <td className="px-3 py-0">
-                      <span className="text-[12px] text-[#64748B]" style={{ fontFamily: RH.fontMono }}>
+                      <span className="text-[12px]" style={{ fontFamily: RH.fontMono, color: isDark ? '#6B6560' : '#64748B' }}>
                         {c.pending_signoffs > 0 ? `${c.pending_signoffs} pending` : '—'}
                       </span>
                     </td>
