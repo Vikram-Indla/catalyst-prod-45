@@ -6,7 +6,7 @@ import { WorkItemIcon } from "./WorkItemIcons";
 import StatusLozenge from "./StatusLozenge";
 import CommentPreview from "./CommentPreview";
 import ReactionBar from "./ReactionBar";
-import { Clock } from "lucide-react";
+import { Clock, UserCheck } from "lucide-react";
 
 interface NotificationItemProps {
   notification: Notification;
@@ -14,9 +14,11 @@ interface NotificationItemProps {
   onClick?: (notification: Notification) => void;
 }
 
-function getActionVerb(type: string): string {
+function getActionVerb(type: string, isSystemAssign: boolean): string {
+  if (isSystemAssign) return 'You were assigned to';
   const map: Record<string, string> = {
     assigned_work_item: 'assigned you to',
+    assigned: 'assigned you to',
     assigned_story: 'assigned you a story in',
     mentioned_in_comment: 'mentioned you in a comment on',
     commented_on_work_item: 'commented on',
@@ -54,10 +56,17 @@ function NotificationItemInner({ notification, onMarkRead, onClick }: Notificati
   const isDueDate = DUE_DATE_TYPES.some(t => t === notification.notification_type);
   const isComment = COMMENT_PREVIEW_TYPES.some(t => t === notification.notification_type);
   const isDeleted = notification.entity_deleted;
-  const actorName = notification.actor?.full_name || (notification.metadata as any)?.actor_display_name || 'System';
+
+  // Determine if this is a system-generated assignment (no actor)
+  const isSystemAssign = !notification.actor_user_id
+    && (notification.notification_type === 'assigned' || notification.notification_type === 'status_changed');
+
+  const actorName = isSystemAssign
+    ? ''
+    : (notification.actor?.full_name || (notification.metadata as any)?.actor_display_name || 'Unknown');
   const actorId = notification.actor?.id || notification.actor_user_id || 'system';
-  const avatarColor = getAvatarColor(actorId);
-  const initials = getUserInitials(actorName);
+  const avatarColor = isSystemAssign ? '#6B7280' : getAvatarColor(actorId);
+  const initials = isSystemAssign ? '' : getUserInitials(actorName);
 
   // m-15: read item opacity on text only, not avatar
   const textOpacity = isUnread ? 1 : 0.8;
@@ -102,7 +111,7 @@ function NotificationItemInner({ notification, onMarkRead, onClick }: Notificati
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           color: '#FFFFFF', fontFamily: 'Inter, sans-serif', fontSize: 14, fontWeight: 700,
         }}>
-          {initials}
+          {isSystemAssign ? <UserCheck size={20} color="#FFFFFF" /> : initials}
         </div>
 
         {/* Body — text opacity for read items */}
@@ -113,8 +122,14 @@ function NotificationItemInner({ notification, onMarkRead, onClick }: Notificati
               fontFamily: 'Inter, sans-serif', fontSize: 13, color: '#0F172A', lineHeight: '18px',
               overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 360,
             }}>
-              <span style={{ fontWeight: 650 }}>{actorName}</span>{' '}
-              <span style={{ fontWeight: 500 }}>{getActionVerb(notification.notification_type)}</span>
+              {isSystemAssign ? (
+                <span style={{ fontWeight: 600 }}>{getActionVerb(notification.notification_type, true)}</span>
+              ) : (
+                <>
+                  <span style={{ fontWeight: 650 }}>{actorName}</span>{' '}
+                  <span style={{ fontWeight: 500 }}>{getActionVerb(notification.notification_type, false)}</span>
+                </>
+              )}
             </span>
             <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: '#64748B', whiteSpace: 'nowrap', flexShrink: 0 }}>
               {formatTimestamp(notification.created_at)}
