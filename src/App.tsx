@@ -1,5 +1,6 @@
-import React, { lazy, Suspense } from "react";
+import React, { lazy, Suspense, useEffect } from "react";
 import { ENABLE_FULL_APP } from './lib/featureFlags';
+import { seedNotificationsForCurrentUser } from '@/utils/seedNotificationsForCurrentUser';
 
 // ─── Core infrastructure (always loaded) ────────────────────────────
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -48,6 +49,11 @@ const S = ({ children }: { children: React.ReactNode }) => (
   <Suspense fallback={<div className="p-8">Loading...</div>}>{children}</Suspense>
 );
 
+function NotificationSeeder() {
+  useEffect(() => { seedNotificationsForCurrentUser(); }, []);
+  return null;
+}
+
 const App = () => (
   <ErrorBoundary>
   <QueryClientProvider client={queryClient}>
@@ -55,6 +61,7 @@ const App = () => (
       <Toaster />
       <Suspense fallback={null}><HotToaster position="bottom-right" /></Suspense>
       <AuthProvider>
+        <NotificationSeeder />
         <FeatureFlagProvider>
         <NavigationProvider>
           <ProcessStepsProvider>
