@@ -616,11 +616,11 @@ const JiraUserSync: React.FC = () => {
                     {/* Synced At */}
                     <td style={{ padding: '0 12px' }}>
                       {isCatalystOnly ? (
-                        <span style={{ fontSize: '11px', color: '#94A3B8', fontStyle: 'italic' }}>Not synced</span>
+                        <span className="jus-text-muted" style={{ fontSize: '11px', color: '#94A3B8', fontStyle: 'italic' }}>Not synced</span>
                       ) : (
                         <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                           <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#16A34A', flexShrink: 0 }} />
-                          <span style={{ fontSize: '11px', color: '#64748B', fontFamily: "'JetBrains Mono', monospace", whiteSpace: 'nowrap' }}>
+                          <span className="jus-text-secondary" style={{ fontSize: '11px', color: '#64748B', fontFamily: "'JetBrains Mono', monospace", whiteSpace: 'nowrap' }}>
                             {formatSyncDate(user.last_synced_at)}
                           </span>
                         </div>
@@ -628,7 +628,7 @@ const JiraUserSync: React.FC = () => {
                     </td>
 
                     {/* Last Login */}
-                    <td style={{ padding: '0 12px', fontSize: '11px', color: '#64748B' }}>
+                    <td className="jus-text-secondary" style={{ padding: '0 12px', fontSize: '11px', color: '#64748B' }}>
                       {user.last_catalyst_login_at
                         ? formatSyncDate(user.last_catalyst_login_at)
                         : '—'}
