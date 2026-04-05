@@ -122,6 +122,15 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
   const { data, fetchNextPage, hasNextPage, isLoading, isError, refetch } = useNotificationsQuery(activeTab, unreadOnly);
   const allNotifications: Notification[] = (data?.pages.flat() ?? []) as unknown as Notification[];
 
+  // Deduplicate: keep only the most recent notification per entity_key+type
+  const seen = new Set<string>();
+  const notifications = allNotifications.filter(n => {
+    const key = `${n.entity_key}::${n.notification_type}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+
   // Error state handling (1.5)
   useEffect(() => {
     setHasError(isError);
@@ -230,7 +239,7 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
 
   if (!isOpen && !isAnimating) return null;
 
-  const groups = groupByDate(allNotifications);
+  const groups = groupByDate(notifications);
 
   // Determine empty state variant
   const getEmptyVariant = () => {
@@ -467,10 +476,10 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
             </button>
           </div>
         ) : activeTab === 'ai' ? (
-          <AIDigestTab aiNotifications={allNotifications} />
-        ) : isLoading && allNotifications.length === 0 ? (
+          <AIDigestTab />
+        ) : isLoading && notifications.length === 0 ? (
           <LoadingSkeleton />
-        ) : allNotifications.length === 0 ? (
+        ) : notifications.length === 0 ? (
           <EmptyState variant={getEmptyVariant()} />
         ) : (
           <>

@@ -1,5 +1,4 @@
 import PriorityChip from "./PriorityChip";
-import type { Notification } from "@/types/notifications";
 
 interface AIDigestItem {
   id: string;
@@ -10,7 +9,6 @@ interface AIDigestItem {
 
 interface AIDigestTabProps {
   items?: AIDigestItem[];
-  aiNotifications?: Notification[];
   lastGenerated?: string;
   onRefresh?: () => void;
   hasNewDigest?: boolean;
@@ -22,7 +20,7 @@ const MOCK_ITEMS: AIDigestItem[] = [
   { id: '3', title: 'UAT sign-off pending for Release 4.2', priority: 'low', summary: 'All test cases passed — awaiting business owner approval.' },
 ];
 
-export default function AIDigestTab({ items = MOCK_ITEMS, aiNotifications, lastGenerated = '2 hours ago', onRefresh }: AIDigestTabProps) {
+export default function AIDigestTab({ items = MOCK_ITEMS, lastGenerated = '2 hours ago', onRefresh }: AIDigestTabProps) {
   return (
     <div style={{ padding: '12px 20px' }}>
       {/* Purple badge */}
@@ -64,51 +62,28 @@ export default function AIDigestTab({ items = MOCK_ITEMS, aiNotifications, lastG
         </p>
       </div>
 
-      {/* Real AI notifications from Supabase */}
-      {aiNotifications && aiNotifications.length > 0 && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 16 }}>
-          {aiNotifications.map(n => (
-            <div key={n.id} style={{
-              padding: '12px 16px',
-              background: 'rgba(124,58,237,.06)',
-              border: '0.5px solid rgba(124,58,237,.15)',
-              borderRadius: 6,
-              cursor: 'pointer',
-            }}>
+      {/* Digest items */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        {items.map(item => (
+          <div key={item.id} style={{
+            padding: '12px 16px',
+            background: '#F8FAFC',
+            border: '0.5px solid rgba(15,23,42,.08)',
+            borderRadius: 6,
+            cursor: 'pointer',
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+              <PriorityChip level={item.priority} />
               <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 600, color: '#0F172A' }}>
-                {n.entity_title}
+                {item.title}
               </span>
-              <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: '#64748B', margin: '4px 0 0', lineHeight: '18px' }}>
-                {(n.metadata as any)?.summary || n.entity_title}
-              </p>
             </div>
-          ))}
-        </div>
-      )}
-
-      {(!aiNotifications || aiNotifications.length === 0) && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          {items.map(item => (
-            <div key={item.id} style={{
-              padding: '12px 16px',
-              background: '#F8FAFC',
-              border: '0.5px solid rgba(15,23,42,.08)',
-              borderRadius: 6,
-              cursor: 'pointer',
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                <PriorityChip level={item.priority} />
-                <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 600, color: '#0F172A' }}>
-                  {item.title}
-                </span>
-              </div>
-              <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: '#64748B', margin: 0, lineHeight: '18px' }}>
-                {item.summary}
-              </p>
-            </div>
-          ))}
-        </div>
-      )}
+            <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: '#64748B', margin: 0, lineHeight: '18px' }}>
+              {item.summary}
+            </p>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
