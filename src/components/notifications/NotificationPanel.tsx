@@ -498,6 +498,7 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
                   <NotificationItem
                     key={n.id}
                     notification={n}
+                    actorProfile={n.actor_user_id ? actorProfiles?.get(n.actor_user_id) : undefined}
                     onMarkRead={handleMarkRead}
                     onClick={handleItemClick}
                   />
