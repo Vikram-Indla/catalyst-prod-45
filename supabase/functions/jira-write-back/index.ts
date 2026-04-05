@@ -39,20 +39,20 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Try ph_jira_connection first (active connection), then jira_connections (legacy)
+    // Check ph_jira_connection (WorkHub active connection)
+    // Actual columns: site_url, auth_email, auth_token_encrypted
     let jiraUrl: string | null = null;
     let authHeader: string | null = null;
 
-    // Check ph_jira_connection (WorkHub active connection)
     const { data: phConn } = await supabase
       .from('ph_jira_connection')
-      .select('jira_url, jira_email, api_token')
+      .select('site_url, auth_email, auth_token_encrypted')
       .limit(1)
       .single();
 
-    if (phConn?.jira_url && phConn?.jira_email && phConn?.api_token) {
-      jiraUrl = phConn.jira_url.replace(/\/$/, '');
-      authHeader = 'Basic ' + btoa(`${phConn.jira_email}:${phConn.api_token}`);
+    if (phConn?.site_url && phConn?.auth_email && phConn?.auth_token_encrypted) {
+      jiraUrl = phConn.site_url.replace(/\/$/, '');
+      authHeader = 'Basic ' + btoa(`${phConn.auth_email}:${phConn.auth_token_encrypted}`);
     }
 
     if (!jiraUrl || !authHeader) {
@@ -63,9 +63,9 @@ Deno.serve(async (req) => {
 
       const { data: conn } = await connQuery;
       if (conn) {
-        const url = conn.jira_url || conn.base_url;
-        const email = conn.admin_email || conn.jira_email;
-        const token = conn.api_token || conn.api_token_encrypted;
+        const url = conn.site_url || conn.jira_url || conn.base_url;
+        const email = conn.auth_email || conn.admin_email || conn.jira_email;
+        const token = conn.auth_token_encrypted || conn.api_token || conn.api_token_encrypted;
         if (url && email && token) {
           jiraUrl = url.replace(/\/$/, '');
           authHeader = 'Basic ' + btoa(`${email}:${token}`);
@@ -83,13 +83,8 @@ Deno.serve(async (req) => {
     let jiraResponse: Response | null = null;
 
     if (action === 'deactivate' || action === 'reactivate') {
-      // Note: Jira Cloud doesn't support user deactivation via REST API directly.
-      // This requires Atlassian Admin API or SCIM provisioning.
-      // We'll attempt the standard approach and log the result.
       const activeState = action === 'reactivate';
 
-      // Attempt via Atlassian Admin API (org-level)
-      // This will likely return 403 unless SCIM is configured
       jiraResponse = await fetch(
         `${jiraUrl}/rest/api/3/user?accountId=${identity.jira_account_id}`,
         {
@@ -103,14 +98,13 @@ Deno.serve(async (req) => {
         }
       );
 
-      // Log the attempt regardless of outcome
       console.log(`Write-back ${action} for ${identity.jira_account_id}: ${jiraResponse.status}`);
     }
 
     const responseOk = jiraResponse?.ok ?? false;
     const responseStatus = jiraResponse?.status ?? 0;
 
-    // Log the write-back attempt in activity
+    // Log the write-back attempt
     await supabase.from('jira_sync_user_events').insert({
       identity_map_id,
       event_type: action === 'deactivate' ? 'deactivated' : 'reactivated',
