@@ -240,6 +240,30 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_digest_cache: {
+        Row: {
+          digest_json: Json
+          expires_at: string
+          generated_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          digest_json: Json
+          expires_at?: string
+          generated_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          digest_json?: Json
+          expires_at?: string
+          generated_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       ai_integration_settings: {
         Row: {
           api_key_encrypted: string | null
