@@ -9,6 +9,7 @@ import {
   useCopyPermissions,
 } from '@/hooks/useJiraUserSync';
 import type { SyncFilter } from '@/types/jiraSync';
+import CreateCatalystUserModal from '@/components/admin/CreateCatalystUserModal';
 
 /* ── Stats Config ── */
 const STATS_CONFIG = [
@@ -707,6 +708,11 @@ const JiraUserSync: React.FC = () => {
           </button>
         </div>
       </div>
+      <CreateCatalystUserModal
+        open={createModalOpen}
+        onClose={() => setCreateModalOpen(false)}
+        onSuccess={() => {}}
+      />
     </div>
   );
 };
