@@ -19735,6 +19735,7 @@ export type Database = {
           entity_type: string
           hub_source: string
           id: string
+          is_dismissed: boolean
           metadata: Json
           notification_type: string
           read_at: string | null
@@ -19757,6 +19758,7 @@ export type Database = {
           entity_type: string
           hub_source?: string
           id?: string
+          is_dismissed?: boolean
           metadata?: Json
           notification_type: string
           read_at?: string | null
@@ -19779,6 +19781,7 @@ export type Database = {
           entity_type?: string
           hub_source?: string
           id?: string
+          is_dismissed?: boolean
           metadata?: Json
           notification_type?: string
           read_at?: string | null
