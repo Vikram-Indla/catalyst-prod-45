@@ -1715,6 +1715,7 @@ function DetailPanel({ item, onClose, onSelectItem }: {
   item: R360WorkItem; onClose: () => void; onSelectItem: (i: R360WorkItem) => void;
 }) {
   // Siblings are only valid when the parent is a Story.
+  const { isDark } = useTheme();
   // In Jira hierarchy this maps to current item being a Sub-task.
   const normalizedItemType = (item.item_type || '').toLowerCase().replace(/[-_\s]/g, '');
   const canHaveStoryParent = normalizedItemType === 'subtask';
@@ -1867,6 +1868,7 @@ function TicketListDrawer({ mode, items, onClose, onSelectItem }: {
 }) {
   const isStale = mode === 'stale';
   const title = isStale ? 'Stale Items' : 'Open Items';
+  const { isDark } = useTheme();
   const accentColor = isStale ? '#DC2626' : '#2563EB';
   const accentBg = isStale ? '#FEF2F2' : '#EFF6FF';
 

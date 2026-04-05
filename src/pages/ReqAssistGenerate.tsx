@@ -587,6 +587,7 @@ export default function ReqAssistGenerate() {
 function BtnPrimary({ children, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
     <button {...props} style={{
+  const { isDark } = useTheme();
       display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', fontSize: 14, fontWeight: 600,
       border: 'none', borderRadius: 4, cursor: props.disabled ? 'not-allowed' : 'pointer',
       background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)', color: '#FFFFFF',
@@ -600,6 +601,7 @@ function BtnPrimary({ children, ...props }: React.ButtonHTMLAttributes<HTMLButto
 function BtnAI({ children, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
     <button {...props} style={{
+  const { isDark } = useTheme();
       display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', fontSize: 14, fontWeight: 600,
       border: 'none', borderRadius: 4, cursor: props.disabled ? 'not-allowed' : 'pointer',
       background: '#7C3AED', color: '#FFFFFF',
@@ -612,6 +614,7 @@ function BtnAI({ children, ...props }: React.ButtonHTMLAttributes<HTMLButtonElem
 
 function BtnOutline({ children, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
+  const { isDark } = useTheme();
     <button {...props} style={{
       display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', fontSize: 14, fontWeight: 500,
       border: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#CBD5E1'}`, borderRadius: 6, cursor: props.disabled ? 'not-allowed' : 'pointer',
