@@ -385,9 +385,9 @@ const JiraUserSync: React.FC = () => {
                 style={{
                   display: 'inline-flex', alignItems: 'center', gap: '4px',
                   padding: '4px 9px', borderRadius: '4px', fontSize: '11px', fontWeight: 500, cursor: 'pointer',
-                  background: isDark ? '#232019' : '#FFFFFF',
-                  color: isDark ? '#A09890' : '#334155',
-                  border: `1px solid ${isDark ? 'rgba(255,255,255,0.10)' : 'rgba(15,23,42,0.10)'}`,
+                  background: isDark ? '#2A261F' : '#FFFFFF',
+                  color: isDark ? '#D4CFC8' : '#334155',
+                  border: `1px solid ${isDark ? 'rgba(255,255,255,0.18)' : 'rgba(15,23,42,0.10)'}`,
                 }}>
                 <Copy size={11} /> Copy Permissions
               </button>
@@ -536,9 +536,9 @@ const JiraUserSync: React.FC = () => {
               style={{
                 display: 'inline-flex', alignItems: 'center', gap: '4px',
                 padding: '3px 10px', borderRadius: '4px', fontSize: '11px', fontWeight: 500, cursor: 'pointer',
-                background: isDark ? '#232019' : '#FFFFFF',
+                background: isDark ? '#2A261F' : '#FFFFFF',
                 color: '#DC2626',
-                border: `1px solid ${isDark ? 'rgba(255,255,255,0.10)' : 'rgba(15,23,42,0.10)'}`,
+                border: `1px solid ${isDark ? 'rgba(255,255,255,0.14)' : 'rgba(15,23,42,0.10)'}`,
               }}>
               <UserX size={11} /> Deactivate
             </button>
@@ -546,9 +546,9 @@ const JiraUserSync: React.FC = () => {
               style={{
                 display: 'inline-flex', alignItems: 'center', gap: '4px',
                 padding: '3px 10px', borderRadius: '4px', fontSize: '11px', fontWeight: 500, cursor: 'pointer',
-                background: isDark ? '#232019' : '#FFFFFF',
-                color: isDark ? '#A09890' : '#334155',
-                border: `1px solid ${isDark ? 'rgba(255,255,255,0.10)' : 'rgba(15,23,42,0.10)'}`,
+                background: isDark ? '#2A261F' : '#FFFFFF',
+                color: isDark ? '#D4CFC8' : '#334155',
+                border: `1px solid ${isDark ? 'rgba(255,255,255,0.18)' : 'rgba(15,23,42,0.10)'}`,
               }}>
               <Copy size={11} /> Copy Permissions
             </button>
@@ -813,9 +813,9 @@ const JiraUserSync: React.FC = () => {
                 width: '28px', height: '28px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                 borderRadius: '4px', cursor: page <= 1 ? 'not-allowed' : 'pointer',
                 opacity: page <= 1 ? 0.4 : 1,
-                background: isDark ? '#232019' : '#FFFFFF',
-                border: `1px solid ${isDark ? 'rgba(255,255,255,0.10)' : 'rgba(15,23,42,0.10)'}`,
-                color: isDark ? '#A09890' : '#334155',
+                background: isDark ? '#2A261F' : '#FFFFFF',
+                border: `1px solid ${isDark ? 'rgba(255,255,255,0.14)' : 'rgba(15,23,42,0.10)'}`,
+                color: isDark ? '#D4CFC8' : '#334155',
               }}
             >
               <ChevronLeft size={13} />
@@ -830,9 +830,9 @@ const JiraUserSync: React.FC = () => {
                   style={{
                     width: '28px', height: '28px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                     borderRadius: '4px', fontSize: '11px', fontWeight: 500, cursor: 'pointer',
-                    background: page === p ? '#2563EB' : (isDark ? '#232019' : '#FFFFFF'),
-                    color: page === p ? '#FFFFFF' : (isDark ? '#A09890' : '#64748B'),
-                    border: page === p ? 'none' : `1px solid ${isDark ? 'rgba(255,255,255,0.10)' : 'rgba(15,23,42,0.10)'}`,
+                    background: page === p ? '#2563EB' : (isDark ? '#2A261F' : '#FFFFFF'),
+                    color: page === p ? '#FFFFFF' : (isDark ? '#D4CFC8' : '#64748B'),
+                    border: page === p ? 'none' : `1px solid ${isDark ? 'rgba(255,255,255,0.14)' : 'rgba(15,23,42,0.10)'}`,
                   }}
                 >
                   {p}
@@ -847,9 +847,9 @@ const JiraUserSync: React.FC = () => {
                 width: '28px', height: '28px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                 borderRadius: '4px', cursor: page >= totalPages ? 'not-allowed' : 'pointer',
                 opacity: page >= totalPages ? 0.4 : 1,
-                background: isDark ? '#232019' : '#FFFFFF',
-                border: `1px solid ${isDark ? 'rgba(255,255,255,0.10)' : 'rgba(15,23,42,0.10)'}`,
-                color: isDark ? '#A09890' : '#334155',
+                background: isDark ? '#2A261F' : '#FFFFFF',
+                border: `1px solid ${isDark ? 'rgba(255,255,255,0.14)' : 'rgba(15,23,42,0.10)'}`,
+                color: isDark ? '#D4CFC8' : '#334155',
               }}
             >
               <ChevronRight size={13} />
