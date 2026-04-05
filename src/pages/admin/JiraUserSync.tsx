@@ -118,6 +118,17 @@ const JiraUserSync: React.FC = () => {
   useEffect(() => { setPage(1); }, [filter, debouncedSearch]);
   useEffect(() => { setSelected(new Set()); }, [page, filter, debouncedSearch]);
 
+  // ESC key to close panel
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && activeUserId && !createModalOpen) {
+        setActiveUserId(null);
+      }
+    };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  }, [activeUserId, createModalOpen]);
+
   const getStatValue = (key: StatsKey): string | number => {
     if (statsLoading || !statsData) return '—';
     return (statsData as any)[key] ?? 0;
