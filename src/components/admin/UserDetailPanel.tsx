@@ -59,8 +59,29 @@ const fieldRow: React.CSSProperties = {
 const fieldKey: React.CSSProperties = { fontSize: '11px', color: '#64748B' };
 const fieldVal: React.CSSProperties = { fontSize: '12px', fontWeight: 500, color: '#0F172A', textAlign: 'right' as const };
 const monoSmall: React.CSSProperties = { fontFamily: "'JetBrains Mono', monospace", fontSize: '10px' };
+const Code: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <code style={{
+    fontFamily: "'JetBrains Mono', monospace", fontSize: '10px',
+    background: '#F1F5F9', padding: '1px 4px', borderRadius: '2px', color: '#2563EB',
+  }}>{children}</code>
+);
 
-const UserDetailPanel: React.FC<Props> = ({ userId, onClose }) => {
+const InfoCard: React.FC<{ label: string; children: React.ReactNode }> = ({ label, children }) => (
+  <div style={{
+    background: '#F8FAFC', border: '1px solid rgba(15,23,42,0.10)',
+    borderRadius: '5px', padding: '10px 12px',
+  }}>
+    <div style={{
+      fontSize: '9.5px', fontWeight: 700, color: '#64748B',
+      textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '5px',
+    }}>
+      {label}
+    </div>
+    <div style={{ fontSize: '11px', color: '#334155', lineHeight: 1.55 }}>{children}</div>
+  </div>
+);
+
+
   const { data, isLoading } = useJiraUserDetail(userId);
   const { mutate: toggleStatus, isPending: toggling } = useToggleUserStatus();
   const [activeTab, setActiveTab] = useState<TabKey>('profile');
