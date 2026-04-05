@@ -269,7 +269,7 @@ function ProjectCard({
             className="w-6 h-6 rounded flex items-center justify-center text-white text-[9px] font-bold shrink-0"
             style={{ backgroundColor: project.color }}
           >
-            {project.key.slice(0, 2)}
+            {project.key}
           </div>
           <div className="min-w-0 pr-8 flex-1">
             <div className="text-sm font-medium leading-tight truncate text-[var(--text-1)]">

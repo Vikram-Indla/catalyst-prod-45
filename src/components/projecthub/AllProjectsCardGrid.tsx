@@ -79,7 +79,7 @@ export function AllProjectsCardGrid({ projects, favoriteIds, onToggleFav, onSele
                 className="w-10 h-10 rounded-lg flex items-center justify-center text-[12px] font-bold text-white flex-shrink-0"
                 style={{ background: badgeColor }}
               >
-                {p.project_key?.slice(0, 2)}
+                {p.project_key}
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-1.5">

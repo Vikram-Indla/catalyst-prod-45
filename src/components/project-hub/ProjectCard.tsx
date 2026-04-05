@@ -35,7 +35,7 @@ export function ProjectCard({ project, isStarred, onToggleStar }: ProjectCardPro
             borderRadius: 6,
           }}
         >
-          {project.key.slice(0, 2)}
+          {project.key}
         </div>
         <div className="min-w-0 flex-1">
           <div className="truncate text-sm font-semibold font-['Sora',sans-serif] text-gray-900 dark:text-white">
