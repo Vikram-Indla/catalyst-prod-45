@@ -82,6 +82,7 @@ const InfoCard: React.FC<{ label: string; children: React.ReactNode }> = ({ labe
 );
 
 const UserDetailPanel: React.FC<Props> = ({ userId, onClose }) => {
+  const { data, isLoading } = useJiraUserDetail(userId);
   const { mutate: toggleStatus, isPending: toggling } = useToggleUserStatus();
   const [activeTab, setActiveTab] = useState<TabKey>('profile');
   const [showPwd, setShowPwd] = useState(false);
