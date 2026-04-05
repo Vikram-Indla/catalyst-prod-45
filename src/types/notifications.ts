@@ -61,6 +61,7 @@ export interface Notification {
   delivered_at: string | null;
   snoozed_until: string | null;
   entity_deleted: boolean;
+  is_dismissed: boolean;
   created_at: string;
 }
 
