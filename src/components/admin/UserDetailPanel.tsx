@@ -63,22 +63,22 @@ const monoSmall: React.CSSProperties = { fontFamily: "'JetBrains Mono', monospac
 const Code: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <code style={{
     fontFamily: "'JetBrains Mono', monospace", fontSize: '10px',
-    background: '#F1F5F9', padding: '1px 4px', borderRadius: '2px', color: '#2563EB',
+    background: T.sunken, padding: '1px 4px', borderRadius: '2px', color: '#2563EB',
   }}>{children}</code>
 );
 
 const InfoCard: React.FC<{ label: string; children: React.ReactNode }> = ({ label, children }) => (
   <div className="jus-info-card" style={{
-    background: '#F8FAFC', border: '1px solid rgba(15,23,42,0.10)',
+    background: T.elevated, border: `1px solid ${T.border}`,
     borderRadius: '5px', padding: '10px 12px',
   }}>
     <div style={{
-      fontSize: '9.5px', fontWeight: 700, color: '#64748B',
+      fontSize: '9.5px', fontWeight: 700, color: T.text2,
       textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '5px',
     }}>
       {label}
     </div>
-    <div style={{ fontSize: '11px', color: '#334155', lineHeight: 1.55 }}>{children}</div>
+    <div style={{ fontSize: '11px', color: T.text1, lineHeight: 1.55 }}>{children}</div>
   </div>
 );
 const PERM_LEVELS = ['view', 'edit', 'full', 'none'] as const;
@@ -86,7 +86,7 @@ const PERM_COLORS: Record<string, { bg: string; color: string }> = {
   view: { bg: '#EFF6FF', color: '#0747A6' },
   edit: { bg: '#FEF3C7', color: '#92400E' },
   full: { bg: '#DCFCE7', color: '#006644' },
-  none: { bg: '#F1F5F9', color: '#64748B' },
+  none: { bg: '#F1F5F9', color: T.text2 },
 };
 
 function getEventDotColor(ev: any): string {
@@ -126,7 +126,7 @@ const ProjectsTab: React.FC<{ perms: any[] }> = ({ perms }) => {
   const xsBtn: React.CSSProperties = {
     fontSize: '9px', fontWeight: 700, textTransform: 'uppercase',
     padding: '3px 7px', borderRadius: '3px', cursor: 'pointer',
-    border: '1px solid rgba(15,23,42,0.10)', background: '#FFFFFF', color: '#64748B',
+    border: `1px solid ${T.border}`, background: T.surface, color: T.text2,
   };
   const xsBtnClass = 'jus-action-btn';
 
@@ -149,7 +149,7 @@ const ProjectsTab: React.FC<{ perms: any[] }> = ({ perms }) => {
 
       {perms.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '32px 16px' }}>
-          <div style={{ fontSize: '12px', color: '#94A3B8', marginBottom: '10px' }}>No projects assigned yet</div>
+          <div style={{ fontSize: '12px', color: T.text3, marginBottom: '10px' }}>No projects assigned yet</div>
           <button
             style={{ fontSize: '11px', fontWeight: 600, background: '#2563EB', color: '#FFFFFF', border: 'none', borderRadius: '4px', padding: '5px 12px', cursor: 'pointer' }}
             onClick={() => toast.info('Project picker — Phase 2')}
@@ -159,8 +159,8 @@ const ProjectsTab: React.FC<{ perms: any[] }> = ({ perms }) => {
         <>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '11px', marginTop: '6px' }}>
             <thead>
-              <tr style={{ background: '#F1F5F9' }} className="jus-table-head">
-                <th style={{ padding: '6px 9px', fontSize: '9px', fontWeight: 700, color: '#64748B', textTransform: 'uppercase', textAlign: 'left', width: '28px' }}>
+              <tr style={{ background: T.sunken }} className="jus-table-head">
+                <th style={{ padding: '6px 9px', fontSize: '9px', fontWeight: 700, color: T.text2, textTransform: 'uppercase', textAlign: 'left', width: '28px' }}>
                   <input
                     type="checkbox"
                     checked={checkedPerms.size === perms.length && perms.length > 0}
@@ -168,9 +168,9 @@ const ProjectsTab: React.FC<{ perms: any[] }> = ({ perms }) => {
                     style={{ width: '12px', height: '12px', accentColor: '#2563EB' }}
                   />
                 </th>
-                <th style={{ padding: '6px 9px', fontSize: '9px', fontWeight: 700, color: '#64748B', textTransform: 'uppercase', textAlign: 'left' }}>Project</th>
-                <th style={{ padding: '6px 9px', fontSize: '9px', fontWeight: 700, color: '#64748B', textTransform: 'uppercase', textAlign: 'left' }}>Key</th>
-                <th style={{ padding: '6px 9px', fontSize: '9px', fontWeight: 700, color: '#64748B', textTransform: 'uppercase', textAlign: 'right' }}>Permission</th>
+                <th style={{ padding: '6px 9px', fontSize: '9px', fontWeight: 700, color: T.text2, textTransform: 'uppercase', textAlign: 'left' }}>Project</th>
+                <th style={{ padding: '6px 9px', fontSize: '9px', fontWeight: 700, color: T.text2, textTransform: 'uppercase', textAlign: 'left' }}>Key</th>
+                <th style={{ padding: '6px 9px', fontSize: '9px', fontWeight: 700, color: T.text2, textTransform: 'uppercase', textAlign: 'right' }}>Permission</th>
               </tr>
             </thead>
             <tbody>
@@ -189,18 +189,18 @@ const ProjectsTab: React.FC<{ perms: any[] }> = ({ perms }) => {
                         style={{ width: '12px', height: '12px', accentColor: '#2563EB' }}
                       />
                     </td>
-                    <td style={{ padding: '6px 9px', fontWeight: 500, color: '#0F172A', whiteSpace: 'nowrap' }} className="jus-field-val">
+                    <td style={{ padding: '6px 9px', fontWeight: 500, color: T.text1, whiteSpace: 'nowrap' }} className="jus-field-val">
                       {p.project_name || p.project_key}
                     </td>
                     <td style={{ padding: '6px 9px' }}>
                       <span className="jus-project-key-chip" style={{
-                        fontFamily: "'JetBrains Mono', monospace", fontSize: '9px', color: '#64748B',
-                        background: '#F1F5F9', padding: '1px 4px', borderRadius: '2px',
+                        fontFamily: "'JetBrains Mono', monospace", fontSize: '9px', color: T.text2,
+                        background: T.sunken, padding: '1px 4px', borderRadius: '2px',
                       }}>{p.project_key}</span>
                     </td>
                     <td style={{ padding: '6px 9px', textAlign: 'right' }}>
                       <div className="jus-perm-seg" style={{
-                        display: 'inline-flex', border: '1px solid rgba(15,23,42,0.10)',
+                        display: 'inline-flex', border: `1px solid ${T.border}`,
                         borderRadius: '4px', overflow: 'hidden',
                       }}>
                         {PERM_LEVELS.map((level, i) => {
@@ -258,7 +258,7 @@ const ActivityTab: React.FC<{ events: any[] }> = ({ events }) => {
       {sorted.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '32px 16px' }}>
           <Activity size={24} color="#94A3B8" style={{ margin: '0 auto 8px' }} />
-          <div style={{ fontSize: '12px', color: '#94A3B8', fontWeight: 500 }}>No activity recorded yet</div>
+          <div style={{ fontSize: '12px', color: T.text3, fontWeight: 500 }}>No activity recorded yet</div>
           <div style={{ fontSize: '11px', color: '#CBD5E1', marginTop: '4px' }}>Events will appear here after the first sync</div>
         </div>
       ) : (
@@ -272,8 +272,8 @@ const ActivityTab: React.FC<{ events: any[] }> = ({ events }) => {
               marginTop: '3px', background: getEventDotColor(ev),
             }} />
             <div style={{ flex: 1 }}>
-              <div className="jus-event-text" style={{ fontSize: '11px', color: '#334155' }}>{getEventText(ev)}</div>
-              <div className="jus-event-time" style={{ fontSize: '10px', color: '#94A3B8', marginTop: '1px' }}>{formatDate(ev.created_at)}</div>
+              <div className="jus-event-text" style={{ fontSize: '11px', color: T.text1 }}>{getEventText(ev)}</div>
+              <div className="jus-event-time" style={{ fontSize: '10px', color: T.text3, marginTop: '1px' }}>{formatDate(ev.created_at)}</div>
             </div>
           </div>
         ))
@@ -438,7 +438,7 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
         {activeTab === 'profile' && (
           <>
             {/* Identity */}
-            <div className="jus-section-border" style={{ padding: '12px 16px', borderBottom: '1px solid rgba(15,23,42,0.06)' }}>
+            <div className="jus-section-border" style={{ padding: '12px 16px', borderBottom: `1px solid ${T.border}` }}>
               <div className="jus-section-label" style={mkSectionLabel(isDark)}>IDENTITY</div>
               <div className="jus-field-row" style={mkFieldRow(isDark)}>
                 <span className="jus-field-key" style={mkFieldKey(isDark)}>Email / Login</span>
@@ -449,7 +449,7 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
                 <span className="jus-field-val" style={{ ...mkFieldVal(isDark), ...monoSmall }}>
                   {user.jira_account_id
                     ? (user.jira_account_id.length > 24 ? user.jira_account_id.slice(0, 24) + '…' : user.jira_account_id)
-                    : <i style={{ color: '#94A3B8', fontWeight: 400 }}>N/A — local user</i>
+                    : <i style={{ color: T.text3, fontWeight: 400 }}>N/A — local user</i>
                   }
                 </span>
               </div>
@@ -466,7 +466,7 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
                       {formatDate(user.last_synced_at)}
                     </span>
                   ) : (
-                    <i style={{ color: '#94A3B8', fontWeight: 400 }}>Not synced</i>
+                    <i style={{ color: T.text3, fontWeight: 400 }}>Not synced</i>
                   )}
                 </span>
               </div>
@@ -489,16 +489,16 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
             </div>
 
             {/* Password & Auth */}
-            <div className="jus-section-border" style={{ padding: '12px 16px', borderBottom: '1px solid rgba(15,23,42,0.06)' }}>
+            <div className="jus-section-border" style={{ padding: '12px 16px', borderBottom: `1px solid ${T.border}` }}>
               <div className="jus-section-label" style={mkSectionLabel(isDark)}>PASSWORD & AUTH</div>
               <div className="jus-pwd-box" style={{
-                background: '#F1F5F9', borderRadius: '4px', padding: '7px 10px',
+                background: T.sunken, borderRadius: '4px', padding: '7px 10px',
                 display: 'flex', gap: '8px', alignItems: 'center', marginTop: '5px',
               }}>
                 <span style={{
                   flex: 1, fontFamily: showPwd ? "'JetBrains Mono', monospace" : 'inherit',
                   fontSize: showPwd ? '11px' : '14px', letterSpacing: showPwd ? '0' : '3px',
-                  color: '#334155',
+                  color: T.text1,
                 }}>
                   {showPwd ? 'bcrypt-hashed · not retrievable' : '● ● ● ● ● ● ● ●'}
                 </span>
@@ -564,7 +564,7 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
                     padding: '4px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 500,
                     border: `1px solid ${isInactive ? '#16A34A' : '#DC2626'}`,
                     color: isInactive ? '#16A34A' : '#DC2626',
-                    background: '#FFFFFF', cursor: toggling ? 'not-allowed' : 'pointer',
+                    background: T.surface, cursor: toggling ? 'not-allowed' : 'pointer',
                   }}
                 >
                   {toggling ? <Loader2 size={10} className="animate-spin" /> : <UserX size={10} />}
@@ -576,8 +576,8 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
                   style={{
                     display: 'inline-flex', alignItems: 'center', gap: '4px',
                     padding: '4px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 500,
-                    border: '1px solid rgba(15,23,42,0.10)', color: '#334155',
-                    background: '#FFFFFF', cursor: 'pointer',
+                    border: `1px solid ${T.border}`, color: T.text1,
+                    background: T.surface, cursor: 'pointer',
                   }}
                 >
                   <Copy size={10} /> Copy Permissions
@@ -589,8 +589,8 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
                     style={{
                       display: 'inline-flex', alignItems: 'center', gap: '4px',
                       padding: '4px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 500,
-                      border: '1px solid rgba(15,23,42,0.10)', color: '#334155',
-                      background: '#FFFFFF', cursor: 'pointer',
+                      border: `1px solid ${T.border}`, color: T.text1,
+                      background: T.surface, cursor: 'pointer',
                     }}
                   >
                     <RefreshCw size={10} /> Force Re-sync
@@ -668,7 +668,7 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
 
       {/* ── Footer ── */}
       <div className="jus-footer-sticky" style={{
-        position: 'sticky', bottom: 0, background: '#FFFFFF',
+        position: 'sticky', bottom: 0, background: T.surface,
         borderTop: '1px solid rgba(15,23,42,0.06)', padding: '10px 16px',
         display: 'flex', gap: '7px',
       }}>
@@ -687,7 +687,7 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
           style={{
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
             padding: '7px 12px', borderRadius: '5px', fontSize: '12px', fontWeight: 500,
-            border: '1px solid #DC2626', color: '#DC2626', background: '#FFFFFF',
+            border: '1px solid #DC2626', color: '#DC2626', background: T.surface,
             cursor: toggling ? 'not-allowed' : 'pointer',
           }}
         >
