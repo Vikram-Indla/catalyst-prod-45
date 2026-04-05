@@ -39,11 +39,21 @@ interface TestCycleCardProps {
 const statusConfig: Record<string, { label: string; color: string; bg: string; border: string }> = {
   draft:       { label: 'DRAFT',       color: '#253858', bg: '#DFE1E6', border: '#DFE1E6' },
   planned:     { label: 'PLANNED',     color: '#253858', bg: '#DFE1E6', border: '#DFE1E6' },
-  active:      { label: 'ACTIVE',      color: '#0747A6', bg: '#DEEBFF', border: '#B3D4FF' },
+  active:      { label: 'IN PROGRESS', color: '#0747A6', bg: '#DEEBFF', border: '#B3D4FF' },
   in_progress: { label: 'IN PROGRESS', color: '#0747A6', bg: '#DEEBFF', border: '#B3D4FF' },
   completed:   { label: 'COMPLETED',   color: '#006644', bg: '#E3FCEF', border: '#ABF5D1' },
   done:        { label: 'DONE',        color: '#006644', bg: '#E3FCEF', border: '#ABF5D1' },
   archived:    { label: 'ARCHIVED',    color: '#253858', bg: '#DFE1E6', border: '#DFE1E6' },
+  paused:      { label: 'PAUSED',      color: '#253858', bg: '#DFE1E6', border: '#DFE1E6' },
+};
+
+const STATUS_DISPLAY_LABELS: Record<string, string> = {
+  draft:     'Draft',
+  planned:   'Planned',
+  active:    'In Progress',
+  paused:    'Paused',
+  completed: 'Completed',
+  archived:  'Archived',
 };
 
 const menuItemStyle: React.CSSProperties = {
@@ -87,7 +97,7 @@ export function TestCycleCard({
   };
 
   const executedCount = cycle.passed_count + cycle.failed_count + cycle.blocked_count + cycle.skipped_count;
-  const progressPercent = cycle.total_cases > 0 ? Math.round((executedCount / cycle.total_cases) * 100) : 0;
+  const progressPercent = cycle.total_cases > 0 ? Math.min(100, Math.round((executedCount / cycle.total_cases) * 100)) : 0;
 
   return (
     <div
@@ -121,7 +131,7 @@ export function TestCycleCard({
             padding: '2px 6px', borderRadius: 3, height: 20,
             display: 'inline-flex', alignItems: 'center',
           }}>
-            {status.label}
+            {STATUS_DISPLAY_LABELS[cycle.status] ?? cycle.status}
           </span>
         </div>
 
@@ -154,7 +164,7 @@ export function TestCycleCard({
               <div style={{ height: 1, backgroundColor: 'var(--divider)', margin: '6px 0' }} />
               {cycle.status === 'draft' && (
                 <button onClick={() => { onStart(); setMenuOpen(false); }} style={menuItemStyle}>
-                  <Play size={14} style={{ color: 'var(--sem-success)' }} /> Start Cycle
+                  <Play size={14} style={{ color: 'var(--sem-success)' }} /> Activate Cycle
                 </button>
               )}
               {cycle.status === 'active' && (
@@ -163,14 +173,9 @@ export function TestCycleCard({
                 </button>
               )}
               {cycle.status === 'completed' && (
-                <>
-                  <button onClick={() => { onReopen(); setMenuOpen(false); }} style={menuItemStyle}>
-                    <RotateCcw size={14} style={{ color: 'var(--sem-warning)' }} /> Reopen Cycle
-                  </button>
-                  <button onClick={() => { onArchive(); setMenuOpen(false); }} style={menuItemStyle}>
-                    <Archive size={14} style={{ color: 'var(--fg-3)' }} /> Archive
-                  </button>
-                </>
+                <button onClick={() => { onArchive(); setMenuOpen(false); }} style={menuItemStyle}>
+                  <Archive size={14} style={{ color: 'var(--fg-3)' }} /> Archive
+                </button>
               )}
               <div style={{ height: 1, backgroundColor: 'var(--divider)', margin: '6px 0' }} />
               <button onClick={() => { onDelete(); setMenuOpen(false); }} style={{ ...menuItemStyle, color: 'var(--sem-danger)' }}>
@@ -257,12 +262,12 @@ export function TestCycleCard({
           </button>
         )}
         {cycle.status === 'draft' && (
-          <button onClick={onStart} style={{
+          <button onClick={() => navigate(`/testhub/cycles/${cycle.id}`)} style={{
             height: 34, padding: '0 14px', background: 'linear-gradient(135deg, var(--cp-blue) 0%, var(--cp-primary-70) 100%)',
             border: 'none', borderRadius: 6, color: '#FFFFFF', fontSize: 13, fontWeight: 600, cursor: 'pointer',
             display: 'inline-flex', alignItems: 'center', gap: 6,
           }}>
-            <Play size={14} /> Start
+            <Play size={14} /> Plan
           </button>
         )}
       </div>

@@ -3,9 +3,9 @@ import { Sparkles, Target, AlertTriangle, TrendingUp, Lightbulb } from 'lucide-r
 export function AIInsightsCard() {
   return (
     <div
+      className="bg-[var(--cp-float)] dark:bg-[#232019]"
       style={{
         gridColumn: '1 / -1',
-        background: 'var(--cp-float)',
         border: '1px solid var(--divider)',
         borderRadius: 8,
         padding: 20,
@@ -18,7 +18,7 @@ export function AIInsightsCard() {
           <Sparkles size={16} color="var(--cp-blue)" />
           <span style={{ fontFamily: "'Sora', sans-serif", fontSize: 15, fontWeight: 600, color: 'var(--fg-1)' }}>AI Insights</span>
         </div>
-        <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--cp-purple)', background: 'var(--cp-purple-wash)', borderRadius: 9999, padding: '2px 10px' }}>
+        <span className="bg-[var(--cp-purple-wash)]" style={{ fontSize: 11, fontWeight: 500, color: 'var(--cp-purple)', borderRadius: 9999, padding: '2px 10px' }}>
           Powered by AI
         </span>
       </div>
@@ -26,18 +26,18 @@ export function AIInsightsCard() {
       {/* 3 Sub-cards */}
       <div style={{ display: 'flex', gap: 16 }}>
         {/* Completion Forecast */}
-        <div style={{ flex: 1, background: 'var(--bg-1)', borderRadius: 8, padding: 16 }}>
+        <div className="bg-[var(--bg-1)] dark:bg-[#2C2823]" style={{ flex: 1, borderRadius: 8, padding: 16 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
             <Target size={15} color="var(--cp-blue)" />
             <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1)' }}>Completion Forecast</span>
           </div>
           <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--fg-1)', marginBottom: 4 }}>Projected: Mar 22, 2026</div>
           <div style={{ fontSize: 13, color: 'var(--fg-3)', marginBottom: 8 }}>7 days after target (Mar 15)</div>
-          <span style={{ fontSize: 12, color: 'var(--fg-3)', background: 'var(--cp-bd-zone)', borderRadius: 9999, padding: '2px 8px' }}>Confidence: 78%</span>
+          <span className="bg-[var(--cp-bd-zone)]" style={{ fontSize: 12, color: 'var(--fg-3)', borderRadius: 9999, padding: '2px 8px' }}>Confidence: 78%</span>
         </div>
 
         {/* Risk Alert */}
-        <div style={{ flex: 1, background: 'var(--bg-1)', borderRadius: 8, padding: 16 }}>
+        <div className="bg-[var(--bg-1)] dark:bg-[#2C2823]" style={{ flex: 1, borderRadius: 8, padding: 16 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
             <AlertTriangle size={15} color="var(--sem-warning)" />
             <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1)' }}>Risk Alert</span>
@@ -45,11 +45,11 @@ export function AIInsightsCard() {
           <div style={{ fontSize: 13, color: 'var(--fg-2)', lineHeight: 1.5 }}>
             3 blocked items may delay completion by ~5 days if not resolved this week
           </div>
-          <span style={{ fontSize: 12, color: 'var(--sem-warning)', background: 'var(--sem-warning-bg)', borderRadius: 9999, padding: '2px 8px', marginTop: 8, display: 'inline-block' }}>Impact: Medium</span>
+          <span className="bg-[var(--sem-warning-bg)]" style={{ fontSize: 12, color: 'var(--sem-warning)', borderRadius: 9999, padding: '2px 8px', marginTop: 8, display: 'inline-block' }}>Impact: Medium</span>
         </div>
 
         {/* Velocity */}
-        <div style={{ flex: 1, background: 'var(--bg-1)', borderRadius: 8, padding: 16 }}>
+        <div className="bg-[var(--bg-1)] dark:bg-[#2C2823]" style={{ flex: 1, borderRadius: 8, padding: 16 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
             <TrendingUp size={15} color="var(--sem-success)" />
             <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1)' }}>Velocity</span>
@@ -61,7 +61,7 @@ export function AIInsightsCard() {
       </div>
 
       {/* Suggestion Banner */}
-      <div style={{ marginTop: 16, background: 'var(--cp-purple-wash)', borderLeft: '3px solid var(--cp-purple)', borderRadius: 6, padding: '10px 14px', display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+      <div className="bg-[var(--cp-purple-wash)]" style={{ marginTop: 16, borderLeft: '3px solid var(--cp-purple)', borderRadius: 6, padding: '10px 14px', display: 'flex', alignItems: 'flex-start', gap: 8 }}>
         <Lightbulb size={15} color="var(--cp-blue)" style={{ flexShrink: 0, marginTop: 1 }} />
         <span style={{ fontSize: 13, color: 'var(--fg-2)' }}>
           <strong>Suggestion:</strong> Reassign{' '}

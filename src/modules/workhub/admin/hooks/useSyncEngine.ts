@@ -26,6 +26,26 @@ export interface SyncHealth {
   projectCount: number
 }
 
+/**
+ * Returns true when there's a sync_log entry with status='running' (background sync active).
+ * Polls every 5s so the CTA button can show a pulsing state.
+ */
+export function useIsSyncRunning() {
+  return useQuery({
+    queryKey: ['wh', 'sync-running'],
+    queryFn: async () => {
+      const { data } = await (supabase as any)
+        .from('ph_sync_log')
+        .select('id')
+        .eq('status', 'running')
+        .limit(1)
+      return (data && data.length > 0) as boolean
+    },
+    staleTime: 3_000,
+    refetchInterval: 5_000,
+  })
+}
+
 export function useSyncHealth() {
   return useQuery({
     queryKey: ['wh', 'sync-health'],

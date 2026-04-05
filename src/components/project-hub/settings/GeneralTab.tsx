@@ -100,7 +100,7 @@ export function GeneralTab({ project, onSaved }: GeneralTabProps) {
 
   const inputStyle: React.CSSProperties = {
     width: '100%', height: 40, padding: '0 12px', fontSize: 13,
-    color: 'var(--fg-1)', background: 'var(--bg-app)', border: '1px solid var(--divider)',
+    color: 'var(--fg-1)', border: '1px solid var(--divider)',
     borderRadius: 6, outline: 'none', fontFamily: "'Inter', sans-serif",
     transition: 'border-color 150ms ease, box-shadow 150ms ease',
   };
@@ -131,7 +131,7 @@ export function GeneralTab({ project, onSaved }: GeneralTabProps) {
           <div className="space-y-4">
             <div>
               <label style={labelStyle}>Project Name <span style={{ color: 'var(--sem-danger)' }}>*</span></label>
-              <input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} style={inputStyle} onFocus={inputFocusHandler} onBlur={inputBlurHandler} />
+              <input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} className="bg-[var(--bg-app)] dark:bg-[#1A1714]" style={inputStyle} onFocus={inputFocusHandler} onBlur={inputBlurHandler} />
             </div>
 
             <div>
@@ -139,7 +139,8 @@ export function GeneralTab({ project, onSaved }: GeneralTabProps) {
               <div className="relative">
                 <input
                   value={project.key} readOnly
-                  style={{ ...inputStyle, background: 'var(--cp-bd-zone)', color: 'var(--fg-3)', cursor: 'not-allowed', fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.05em', paddingRight: 36 }}
+                  className="bg-[var(--cp-bd-zone)] dark:bg-[#2C2823]"
+                  style={{ ...inputStyle, color: 'var(--fg-3)', cursor: 'not-allowed', fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.05em', paddingRight: 36 }}
                 />
                 <Lock size={14} color="var(--fg-4)" className="absolute right-3 top-1/2 -translate-y-1/2" />
               </div>
@@ -147,7 +148,7 @@ export function GeneralTab({ project, onSaved }: GeneralTabProps) {
 
             <div>
               <label style={labelStyle}>Department <span style={{ color: 'var(--sem-danger)' }}>*</span></label>
-              <select value={form.department} onChange={e => setForm(f => ({ ...f, department: e.target.value }))} style={{ ...inputStyle, cursor: 'pointer' }} onFocus={inputFocusHandler as any} onBlur={inputBlurHandler as any}>
+              <select value={form.department} onChange={e => setForm(f => ({ ...f, department: e.target.value }))} className="bg-[var(--bg-app)] dark:bg-[#1A1714]" style={{ ...inputStyle, cursor: 'pointer' }} onFocus={inputFocusHandler as any} onBlur={inputBlurHandler as any}>
                 {DEPARTMENTS.map(d => <option key={d} value={d}>{d}</option>)}
               </select>
             </div>
@@ -156,7 +157,7 @@ export function GeneralTab({ project, onSaved }: GeneralTabProps) {
               <label style={labelStyle}>Description</label>
               <textarea
                 value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
-                rows={3} style={{ ...inputStyle, height: 'auto', padding: '8px 12px', resize: 'vertical' }}
+                rows={3} className="bg-[var(--bg-app)] dark:bg-[#1A1714]" style={{ ...inputStyle, height: 'auto', padding: '8px 12px', resize: 'vertical' }}
                 onFocus={inputFocusHandler as any} onBlur={inputBlurHandler as any}
               />
             </div>
@@ -166,7 +167,7 @@ export function GeneralTab({ project, onSaved }: GeneralTabProps) {
           <div className="space-y-4">
             <div>
               <label style={labelStyle}>Status</label>
-              <select value={form.status} onChange={e => setForm(f => ({ ...f, status: e.target.value }))} style={{ ...inputStyle, cursor: 'pointer' }} onFocus={inputFocusHandler as any} onBlur={inputBlurHandler as any}>
+              <select value={form.status} onChange={e => setForm(f => ({ ...f, status: e.target.value }))} className="bg-[var(--bg-app)] dark:bg-[#1A1714]" style={{ ...inputStyle, cursor: 'pointer' }} onFocus={inputFocusHandler as any} onBlur={inputBlurHandler as any}>
                 {STATUSES.map(s => (
                   <option key={s} value={s}>{s === 'on_hold' ? 'On Hold' : s.charAt(0).toUpperCase() + s.slice(1)}</option>
                 ))}
@@ -176,11 +177,11 @@ export function GeneralTab({ project, onSaved }: GeneralTabProps) {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label style={labelStyle}>Start Date</label>
-                <input type="date" value={form.start_date} onChange={e => setForm(f => ({ ...f, start_date: e.target.value }))} style={{ ...inputStyle, cursor: 'pointer' }} onFocus={inputFocusHandler} onBlur={inputBlurHandler} />
+                <input type="date" value={form.start_date} onChange={e => setForm(f => ({ ...f, start_date: e.target.value }))} className="bg-[var(--bg-app)] dark:bg-[#1A1714]" style={{ ...inputStyle, cursor: 'pointer' }} onFocus={inputFocusHandler} onBlur={inputBlurHandler} />
               </div>
               <div>
                 <label style={labelStyle}>End Date</label>
-                <input type="date" value={form.end_date} onChange={e => setForm(f => ({ ...f, end_date: e.target.value }))} style={{ ...inputStyle, cursor: 'pointer' }} onFocus={inputFocusHandler} onBlur={inputBlurHandler} />
+                <input type="date" value={form.end_date} onChange={e => setForm(f => ({ ...f, end_date: e.target.value }))} className="bg-[var(--bg-app)] dark:bg-[#1A1714]" style={{ ...inputStyle, cursor: 'pointer' }} onFocus={inputFocusHandler} onBlur={inputBlurHandler} />
               </div>
             </div>
 
@@ -192,10 +193,10 @@ export function GeneralTab({ project, onSaved }: GeneralTabProps) {
               </div>
               <button
                 onClick={() => setForm(f => ({ ...f, feature_layer: !f.feature_layer }))}
-                className="flex-shrink-0 rounded-full transition-colors"
-                style={{ width: 40, height: 22, borderRadius: 11, border: 'none', cursor: 'pointer', background: form.feature_layer ? 'var(--cp-blue)' : 'var(--divider)', position: 'relative' }}
+                className={`flex-shrink-0 rounded-full transition-colors ${form.feature_layer ? 'bg-[var(--cp-blue)]' : 'bg-[var(--divider)] dark:bg-[#3A3530]'}`}
+                style={{ width: 40, height: 22, borderRadius: 11, border: 'none', cursor: 'pointer', position: 'relative' }}
               >
-                <span className="rounded-full" style={{ width: 16, height: 16, background: 'var(--bg-app)', borderRadius: '50%', position: 'absolute', top: 3, left: form.feature_layer ? 21 : 3, transition: 'left 150ms ease', boxShadow: '0 1px 2px rgba(0,0,0,0.15)' }} />
+                <span className="rounded-full bg-[var(--bg-app)] dark:bg-[#1A1714]" style={{ width: 16, height: 16, borderRadius: '50%', position: 'absolute', top: 3, left: form.feature_layer ? 21 : 3, transition: 'left 150ms ease', boxShadow: '0 1px 2px rgba(0,0,0,0.15)' }} />
               </button>
             </div>
 
@@ -207,10 +208,10 @@ export function GeneralTab({ project, onSaved }: GeneralTabProps) {
               </div>
               <button
                 onClick={() => setForm(f => ({ ...f, ai_assist: !f.ai_assist }))}
-                className="flex-shrink-0 rounded-full transition-colors"
-                style={{ width: 40, height: 22, borderRadius: 11, border: 'none', cursor: 'pointer', background: form.ai_assist ? 'var(--cp-blue)' : 'var(--divider)', position: 'relative' }}
+                className={`flex-shrink-0 rounded-full transition-colors ${form.ai_assist ? 'bg-[var(--cp-blue)]' : 'bg-[var(--divider)] dark:bg-[#3A3530]'}`}
+                style={{ width: 40, height: 22, borderRadius: 11, border: 'none', cursor: 'pointer', position: 'relative' }}
               >
-                <span className="rounded-full" style={{ width: 16, height: 16, background: 'var(--bg-app)', borderRadius: '50%', position: 'absolute', top: 3, left: form.ai_assist ? 21 : 3, transition: 'left 150ms ease', boxShadow: '0 1px 2px rgba(0,0,0,0.15)' }} />
+                <span className="rounded-full bg-[var(--bg-app)] dark:bg-[#1A1714]" style={{ width: 16, height: 16, borderRadius: '50%', position: 'absolute', top: 3, left: form.ai_assist ? 21 : 3, transition: 'left 150ms ease', boxShadow: '0 1px 2px rgba(0,0,0,0.15)' }} />
               </button>
             </div>
           </div>
@@ -221,10 +222,10 @@ export function GeneralTab({ project, onSaved }: GeneralTabProps) {
           <button
             onClick={handleSave}
             disabled={!isDirty || saving}
-            className="transition-all disabled:opacity-40"
+            className={`transition-all disabled:opacity-40 ${isDirty && !saving ? 'bg-[var(--cp-blue)]' : 'bg-[var(--cp-blue-muted)]'}`}
             style={{
               height: 36, padding: '0 20px', fontSize: 13, fontWeight: 600,
-              color: '#FFFFFF', background: isDirty && !saving ? 'var(--cp-blue)' : 'var(--cp-blue-muted)', border: 'none', borderRadius: 6,
+              color: '#FFFFFF', border: 'none', borderRadius: 6,
               cursor: isDirty && !saving ? 'pointer' : 'default',
             }}
             onMouseEnter={e => { if (isDirty && !saving) e.currentTarget.style.background = 'var(--cp-primary-70)'; }}

@@ -8,7 +8,7 @@ export default function ScopeChangeWidget({ projectId, projectKey, collapsed, on
   return (
     <WidgetWrapper title="Scope Change" subtitle="Items added after release start" collapsed={collapsed} onToggleCollapse={onToggleCollapse} span={1}>
       {isLoading ? (
-        <div className="animate-pulse"><div className="h-12 rounded" style={{ background: 'var(--cp-bg-sunken)' }} /></div>
+        <div className="animate-pulse"><div className="h-12 rounded bg-[#F1F5F9] dark:bg-[#2C2823]" /></div>
       ) : !scopes?.length ? (
         <div className="flex flex-col items-center py-6 text-center">
           <div style={{ fontSize: 28, color: 'var(--cp-text-muted)', marginBottom: 8 }}>📐</div>
@@ -33,9 +33,9 @@ export default function ScopeChangeWidget({ projectId, projectKey, collapsed, on
                 </div>
                 {/* Scope bar */}
                 <div className="flex" style={{ height: 18, borderRadius: 'var(--cp-radius-sm)', overflow: 'hidden' }}>
-                  <div style={{ width: `${origPct}%`, background: 'rgba(37, 99, 235, 0.20)' }} />
+                  <div className="bg-[#2563EB]/20 dark:bg-[#2563EB]/20" style={{ width: `${origPct}%` }} />
                   {addedPct > 0 && (
-                    <div style={{ width: `${addedPct}%`, background: 'rgba(220, 38, 38, 0.15)', borderLeft: '2px solid var(--cp-danger-60)' }} />
+                    <div className="bg-[#DC2626]/15 dark:bg-[#DC2626]/15" style={{ width: `${addedPct}%`, borderLeft: '2px solid var(--cp-danger-60)' }} />
                   )}
                 </div>
               </div>
@@ -44,11 +44,11 @@ export default function ScopeChangeWidget({ projectId, projectKey, collapsed, on
           {/* Legend */}
           <div className="flex items-center gap-4" style={{ fontSize: 11, color: 'var(--cp-text-tertiary)' }}>
             <span className="flex items-center gap-1.5">
-              <span style={{ width: 8, height: 8, borderRadius: 2, background: 'rgba(37, 99, 235, 0.20)', display: 'inline-block' }} />
+              <span className="inline-block bg-[#2563EB]/20" style={{ width: 8, height: 8, borderRadius: 2 }} />
               Original scope
             </span>
             <span className="flex items-center gap-1.5">
-              <span style={{ width: 8, height: 8, borderRadius: 2, background: 'rgba(220, 38, 38, 0.15)', border: '1px solid var(--cp-danger-60)', display: 'inline-block' }} />
+              <span className="inline-block bg-[#DC2626]/15" style={{ width: 8, height: 8, borderRadius: 2, border: '1px solid var(--cp-danger-60)' }} />
               Added after start
             </span>
           </div>

@@ -39,9 +39,9 @@ export default function ProductionIncidents({ projectId, releaseMap }: Props) {
       onRetry={() => refetch()}
       headerRight={
         <div style={{ display: 'flex', gap: 4 }}>
-          <span style={{ fontSize: 10, fontWeight: 800, color: '#FFFFFF', background: 'var(--sem-danger)', padding: '2px 8px', borderRadius: 9999, minWidth: 28, textAlign: 'center' }}>P1: {p1}</span>
-          <span style={{ fontSize: 10, fontWeight: 800, color: '#FFFFFF', background: 'var(--sem-warning)', padding: '2px 8px', borderRadius: 9999, minWidth: 28, textAlign: 'center' }}>P2: {p2}</span>
-          <span style={{ fontSize: 10, fontWeight: 800, color: '#FFFFFF', background: 'var(--fg-3)', padding: '2px 8px', borderRadius: 9999, minWidth: 28, textAlign: 'center' }}>P3: {p3}</span>
+          <span className="bg-[var(--sem-danger)]" style={{ fontSize: 10, fontWeight: 800, color: '#FFFFFF', padding: '2px 8px', borderRadius: 9999, minWidth: 28, textAlign: 'center' }}>P1: {p1}</span>
+          <span className="bg-[var(--sem-warning)]" style={{ fontSize: 10, fontWeight: 800, color: '#FFFFFF', padding: '2px 8px', borderRadius: 9999, minWidth: 28, textAlign: 'center' }}>P2: {p2}</span>
+          <span className="bg-[var(--fg-3)]" style={{ fontSize: 10, fontWeight: 800, color: '#FFFFFF', padding: '2px 8px', borderRadius: 9999, minWidth: 28, textAlign: 'center' }}>P3: {p3}</span>
         </div>
       }
     >
@@ -64,9 +64,9 @@ export default function ProductionIncidents({ projectId, releaseMap }: Props) {
                 const ps = PRIORITY_BADGE[item.priority] || PRIORITY_BADGE.P3;
                 const resolved = item.status === 'resolved' || item.status === 'closed';
                 return (
-                  <tr key={item.id} style={{ height: 44, borderBottom: '1px solid var(--cp-bd-zone)', opacity: resolved ? 0.6 : 1, background: idx % 2 === 1 ? 'var(--bg-1)' : undefined }} className="ph-table-row">
+                  <tr key={item.id} className={`ph-table-row ${idx % 2 === 1 ? 'bg-[var(--bg-1)]' : ''}`} style={{ height: 44, borderBottom: '1px solid var(--cp-bd-zone)', opacity: resolved ? 0.6 : 1 }}>
                     <td style={{ padding: '0 6px' }}>
-                      <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10.5, fontWeight: 600, color: 'var(--sem-success-fg)', background: 'var(--sem-success-bg)', padding: '2px 7px', borderRadius: 4, border: '1px solid var(--sem-success-accent)' }}>
+                      <span className="bg-[var(--sem-success-bg)]" style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10.5, fontWeight: 600, color: 'var(--sem-success-fg)', padding: '2px 7px', borderRadius: 4, border: '1px solid var(--sem-success-accent)' }}>
                         {releaseMap[item.release_id] || '—'}
                       </span>
                     </td>
@@ -105,7 +105,7 @@ export default function ProductionIncidents({ projectId, releaseMap }: Props) {
               })}
             </tbody>
           </table>
-          <div style={{ padding: '8px 16px', borderTop: '1px solid var(--sem-danger-bg)', background: 'var(--sem-danger-bg)' }}>
+          <div className="bg-[var(--sem-danger-bg)]" style={{ padding: '8px 16px', borderTop: '1px solid var(--sem-danger-bg)' }}>
             <button className="ph-focus-ring" style={{ fontSize: 11, fontWeight: 700, color: 'var(--sem-danger)', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}>
               View All in IncidentHub <ExternalLink size={10} />
             </button>

@@ -9,7 +9,7 @@ const corsHeaders = {
 interface ProjectConfig {
   lookback_months: number
   status_categories?: string[]
-  statuses?: string[]  // legacy support
+  statuses?: string[]
   issue_types?: string[]
   fix_versions?: string[]
 }
@@ -29,6 +29,14 @@ serve(async (req) => {
   const overrideFixVersions: string[] | undefined = body.fix_versions
   const overrideProjects: string[] | undefined = body.projects || body.projectKeys
   const overrideProjectConfigs: Record<string, ProjectConfig> | undefined = body.project_configs
+
+  // ── Clean up stuck "running" entries older than 10 minutes ──
+  const tenMinAgo = new Date(Date.now() - 10 * 60 * 1000).toISOString()
+  await supabase.from('ph_sync_log').update({
+    status: 'timeout',
+    completed_at: new Date().toISOString(),
+    error_message: 'Sync timed out (CPU limit)',
+  }).eq('status', 'running').lt('started_at', tenMinAgo)
 
   // Create log entry
   const { data: logEntry } = await supabase
@@ -56,7 +64,6 @@ serve(async (req) => {
       }
     })
 
-    // Per-project configs: from request body or saved config
     const projectConfigs: Record<string, ProjectConfig> = overrideProjectConfigs || cfg.sync_project_config || {}
     let includedProjects: string[] = cfg.included_projects || []
     const hierarchyLevels: Array<{ level: number; name: string; jiraTypes: string[] }> = cfg.hierarchy_levels || []
@@ -69,7 +76,7 @@ serve(async (req) => {
     const authHeader = 'Basic ' + btoa(`${conn.auth_email}:${conn.auth_token_encrypted}`)
     const headers = { 'Authorization': authHeader, 'Accept': 'application/json' }
 
-    // 3. Discover actual project keys from Jira and build name lookup
+    // 3. Discover project keys
     let allProjectKeys: string[] = []
     const projectNameLookup: Record<string, string> = {}
     try {
@@ -84,117 +91,21 @@ serve(async (req) => {
       console.warn('Could not fetch Jira projects:', e)
     }
 
-    // 4. Build per-project JQL queries and fetch issues
-    let allIssues: any[] = []
-    let hadSearchErrors = false
-    const maxResults = 100
-    const fields = ['summary','status','assignee','reporter','issuetype','parent','fixVersions','duedate','labels','components','priority','created','updated','resolution','customfield_10016','description','comment','attachment','issuelinks']
-    const searchUrl = `${base}/rest/api/3/search/jql`
-    const postHeaders = { ...headers, 'Content-Type': 'application/json' }
-
-    // Determine projects to sync
-    const projectsToSync = syncProjects.length > 0 ? syncProjects : allProjectKeys
-
-    for (const projectKey of projectsToSync) {
-      const pConfig = projectConfigs[projectKey] || { lookback_months: 3, status_categories: [], issue_types: [], fix_versions: [] }
-      const lookbackMonths = pConfig.lookback_months ?? 3
-
-      // Build JQL for this project
-      const jqlParts: string[] = []
-      jqlParts.push(`project = "${projectKey}"`)
-      // Lifetime sync (0) skips the date filter entirely
-      if (lookbackMonths > 0) {
-        const lookbackDays = lookbackMonths * 30
-        jqlParts.push(`updated >= -${lookbackDays}d`)
-      }
-
-      // Status category filter
-      const statusCategories = pConfig.status_categories || []
-      if (statusCategories.length > 0) {
-        jqlParts.push(`statusCategory in (${statusCategories.map(c => `"${c}"`).join(',')})`)
-      } else if (pConfig.statuses && pConfig.statuses.length > 0) {
-        jqlParts.push(`status in (${pConfig.statuses.map(s => `"${s}"`).join(',')})`)
-      }
-
-      // Per-project issue type filter
-      const projIssueTypes = pConfig.issue_types || []
-      if (projIssueTypes.length > 0) {
-        jqlParts.push(`issuetype in (${projIssueTypes.map(t => `"${t}"`).join(',')})`)
-      } else if (syncIssueTypes.length > 0) {
-        jqlParts.push(`issuetype in (${syncIssueTypes.map(t => `"${t}"`).join(',')})`)
-      }
-
-      // Per-project fix version filter
-      const projFixVersions = (pConfig.fix_versions || []).filter(v => v !== '__NO_VERSION__')
-      const includeNoVersion = (pConfig.fix_versions || []).includes('__NO_VERSION__')
-      
-      if (projFixVersions.length > 0 && includeNoVersion) {
-        // Include both specific versions AND unversioned tickets
-        jqlParts.push(`(fixVersion in (${projFixVersions.map(v => `"${v}"`).join(',')}) OR fixVersion is EMPTY)`)
-      } else if (projFixVersions.length > 0) {
-        jqlParts.push(`fixVersion in (${projFixVersions.map(v => `"${v}"`).join(',')})`)
-      } else if (includeNoVersion) {
-        jqlParts.push(`fixVersion is EMPTY`)
-      } else if (syncFixVersions.length > 0) {
-        jqlParts.push(`fixVersion in (${syncFixVersions.map(v => `"${v}"`).join(',')})`)
-      }
-
-      const jql = `${jqlParts.join(' AND ')} ORDER BY updated DESC`
-      console.log(`[sync] Project ${projectKey}: JQL = ${jql}`)
-
-      // Paginate with cursor token (supported by /search/jql)
-      let nextPageToken: string | undefined = undefined
-      let projectIssueCount = 0
-
-      do {
-        const reqBody: Record<string, any> = { jql, fields, maxResults, expand: 'changelog' }
-        if (nextPageToken) reqBody.nextPageToken = nextPageToken
-
-        const res = await fetch(searchUrl, { method: 'POST', headers: postHeaders, body: JSON.stringify(reqBody) })
-
-        if (!res.ok) {
-          const errText = await res.text().catch(() => '')
-          hadSearchErrors = true
-          console.error(`[search] ${projectKey} Error ${res.status}: ${errText.slice(0, 300)}`)
-          break
-        }
-
-        const data = await res.json()
-        const issues = Array.isArray(data.issues) ? data.issues : []
-        allIssues = allIssues.concat(issues)
-        projectIssueCount += issues.length
-        nextPageToken = data.nextPageToken || undefined
-      } while (nextPageToken && projectIssueCount < 5000)
-
-      console.log(`[sync] Project ${projectKey}: fetched ${projectIssueCount} issues`)
-    }
-
-    // Fail fast if search failed and returned no issues at all (protect existing data)
-    if (hadSearchErrors && allIssues.length === 0) {
-      throw new Error('Jira search failed: invalid search payload or permissions. No issues were synced.')
-    }
-
-    // 5. Map Jira status to Catalyst category
+    // Helper functions
     function mapStatusCategory(jiraStatus: string): string {
       for (const [category, statuses] of Object.entries(statusMapping)) {
-        if (statuses.some(s => s.toLowerCase() === jiraStatus.toLowerCase())) {
-          return category
-        }
+        if (statuses.some(s => s.toLowerCase() === jiraStatus.toLowerCase())) return category
       }
       return 'To Do'
     }
 
-    // 6. Determine hierarchy level
     function getHierarchyLevel(issueType: string): number {
       for (const hl of hierarchyLevels) {
-        if (hl.jiraTypes.some(t => t.toLowerCase() === issueType.toLowerCase())) {
-          return hl.level
-        }
+        if (hl.jiraTypes.some(t => t.toLowerCase() === issueType.toLowerCase())) return hl.level
       }
       return 2
     }
 
-    // Helper: convert Jira ADF to plain text
     function adfToPlainText(node: any): string {
       if (!node) return ''
       if (typeof node === 'string') return node
@@ -205,29 +116,21 @@ serve(async (req) => {
       return ''
     }
 
-    // Helper: resolve parent key from issuelinks (for BRD Tasks and similar types without standard parent)
     function resolveParentFromLinks(issue: any): string | null {
       const links = issue.fields?.issuelinks || []
       for (const link of links) {
-        // "is caused by", "is child of", "is part of", etc.
         if (link.inwardIssue && (
           link.type?.inward?.toLowerCase().includes('is caused by') ||
           link.type?.inward?.toLowerCase().includes('is child of') ||
           link.type?.inward?.toLowerCase().includes('is part of') ||
           link.type?.inward?.toLowerCase().includes('is subtask of') ||
           link.type?.name?.toLowerCase().includes('parent')
-        )) {
-          return link.inwardIssue.key
-        }
-        // Also check outward: "causes", "is parent of"
+        )) return link.inwardIssue.key
         if (link.outwardIssue && (
           link.type?.outward?.toLowerCase().includes('is parent of') ||
           link.type?.outward?.toLowerCase().includes('causes')
-        )) {
-          return link.outwardIssue.key
-        }
+        )) return link.outwardIssue.key
       }
-      // Fallback: any inward link from the same project for BRD Tasks
       const issueType = (issue.fields?.issuetype?.name || '').toLowerCase()
       if (issueType.includes('brd') || issueType.includes('sub')) {
         for (const link of links) {
@@ -246,15 +149,11 @@ serve(async (req) => {
           link.type?.inward?.toLowerCase().includes('is part of') ||
           link.type?.inward?.toLowerCase().includes('is subtask of') ||
           link.type?.name?.toLowerCase().includes('parent')
-        )) {
-          return link.inwardIssue.fields?.summary || null
-        }
+        )) return link.inwardIssue.fields?.summary || null
         if (link.outwardIssue && (
           link.type?.outward?.toLowerCase().includes('is parent of') ||
           link.type?.outward?.toLowerCase().includes('causes')
-        )) {
-          return link.outwardIssue.fields?.summary || null
-        }
+        )) return link.outwardIssue.fields?.summary || null
       }
       const issueType = (issue.fields?.issuetype?.name || '').toLowerCase()
       if (issueType.includes('brd') || issueType.includes('sub')) {
@@ -265,216 +164,333 @@ serve(async (req) => {
       return null
     }
 
-    // 7. Transform and upsert issues
-    const rows = allIssues.map((issue: any) => {
-      const descAdf = issue.fields.description || null
-      const descText = descAdf ? adfToPlainText(descAdf) : null
-      const rawComments = issue.fields.comment?.comments || []
-      const comments = rawComments.slice(-20).map((c: any) => ({
-        id: c.id,
-        author: c.author?.displayName || 'Unknown',
-        authorAvatar: c.author?.avatarUrls?.['24x24'] || null,
-        body: c.body ? adfToPlainText(c.body) : '',
-        created: c.created,
-        updated: c.updated,
-      }))
-
-      return {
-        issue_key: issue.key,
-        project_key: issue.key.split('-')[0],
-        project_name: projectNameLookup[issue.key.split('-')[0]] || null,
-        issue_type: issue.fields.issuetype?.name || 'Task',
-        summary: issue.fields.summary || '',
-        status: issue.fields.status?.name || 'To Do',
-        status_category: issue.fields.status?.statusCategory?.name || mapStatusCategory(issue.fields.status?.name || 'To Do'),
-        assignee_account_id: issue.fields.assignee?.accountId || null,
-        assignee_display_name: issue.fields.assignee?.displayName || null,
-        reporter_account_id: issue.fields.reporter?.accountId || null,
-        reporter_display_name: issue.fields.reporter?.displayName || null,
-        parent_key: issue.fields.parent?.key || resolveParentFromLinks(issue) || null,
-        parent_summary: issue.fields.parent?.fields?.summary || resolveParentSummaryFromLinks(issue) || null,
-        hierarchy_level: getHierarchyLevel(issue.fields.issuetype?.name || 'Task'),
-        fix_versions: (issue.fields.fixVersions || []).map((v: any) => ({
-          id: v.id, name: v.name, releaseDate: v.releaseDate
-        })),
-        due_date: issue.fields.duedate || null,
-        labels: issue.fields.labels || [],
-        components: (issue.fields.components || []).map((c: any) => c.name),
-        priority: issue.fields.priority?.name || 'Medium',
-        story_points: issue.fields.customfield_10016 || null,
-        sprint_name: null,
-        resolution: issue.fields.resolution?.name || null,
-        jira_created_at: issue.fields.created,
-        jira_updated_at: issue.fields.updated,
-        synced_at: new Date().toISOString(),
-        type_icon_url: issue.fields.issuetype?.iconUrl || null,
-        description_adf: descAdf,
-        description_text: descText,
-        comments,
-        changelog: [],
-        raw_json: issue,
-      }
-    })
-
-    // Batch upsert (chunks of 500)
-    let upsertedCount = 0
-    for (let i = 0; i < rows.length; i += 500) {
-      const chunk = rows.slice(i, i + 500)
-      const { error } = await supabase
-        .from('ph_issues')
-        .upsert(chunk, { onConflict: 'issue_key' })
-      if (error) throw error
-      upsertedCount += chunk.length
+    function mapSeverity(jiraPriority: string): string {
+      const p = (jiraPriority || '').toLowerCase()
+      if (p === 'highest' || p === 'blocker' || p === 'critical') return 'critical'
+      if (p === 'high' || p === 'major') return 'major'
+      if (p === 'low' || p === 'minor' || p === 'trivial') return 'trivial'
+      return 'minor'
     }
 
-    // 7b. Extract and upsert attachments
-    const attachmentRows: any[] = []
-    for (const issue of allIssues) {
-      const attachments = issue.fields.attachment || []
-      for (const att of attachments) {
-        attachmentRows.push({
-          issue_key: issue.key,
-          jira_attachment_id: att.id,
-          filename: att.filename || 'unknown',
-          mime_type: att.mimeType || null,
-          file_size: att.size || null,
-          thumbnail_url: att.thumbnail || null,
-          content_url: att.content || '',
-          author_display_name: att.author?.displayName || null,
-          author_account_id: att.author?.accountId || null,
-          jira_created_at: att.created || null,
-          synced_at: new Date().toISOString(),
-        })
-      }
-    }
-    if (attachmentRows.length > 0) {
-      for (let i = 0; i < attachmentRows.length; i += 500) {
-        const chunk = attachmentRows.slice(i, i + 500)
-        await supabase
-          .from('ph_issue_attachments')
-          .upsert(chunk, { onConflict: 'issue_key,jira_attachment_id' })
-      }
-      console.log(`[sync] Upserted ${attachmentRows.length} attachments`)
+    function mapDefectStatus(jiraStatus: string, statusCat: string): string {
+      const s = (jiraStatus || '').toLowerCase()
+      const cat = (statusCat || '').toLowerCase()
+      if (s === 'closed' || s === 'done' || s === 'verified') return 'closed'
+      if (s === 'resolved' || s === 'fixed') return 'resolved'
+      if (s === 'reopened' || s === 're-opened') return 'reopened'
+      if (cat === 'in progress' || s === 'in progress' || s === 'in review') return 'in_progress'
+      return 'open'
     }
 
-    // 7c. Extract and upsert changelog entries → jira_sync_changelog
-    const changelogRows: any[] = []
-    for (const issue of allIssues) {
-      const histories = issue.changelog?.histories || []
-      for (const history of histories) {
-        for (const item of (history.items || [])) {
-          changelogRows.push({
-            issue_key: issue.key,
-            jira_history_id: history.id,
-            author_display_name: history.author?.displayName || null,
-            author_account_id: history.author?.accountId || null,
-            author_avatar_url: history.author?.avatarUrls?.['24x24'] || history.author?.avatarUrls?.['48x48'] || null,
-            field_name: item.field || null,
-            field_type: item.fieldtype || null,
-            from_value: item.from || null,
-            to_value: item.to || null,
-            from_string: item.fromString || null,
-            to_string: item.toString || null,
-            jira_created_at: history.created,
-          })
+    // Build tm_project lookup once
+    const { data: tmProjects } = await supabase.from('tm_projects').select('id, key')
+    const tmProjectMap = new Map((tmProjects || []).map((p: any) => [p.key, p.id]))
+
+    // Build user mapping lookup once
+    const { data: userMappings } = await supabase
+      .from('ph_user_mapping')
+      .select('jira_account_id, catalyst_profile_id')
+      .eq('is_mapped', true)
+      .not('catalyst_profile_id', 'is', null)
+    const userMap = new Map((userMappings || []).map((m: any) => [m.jira_account_id, m.catalyst_profile_id]))
+
+    // 4. STREAMING per-project sync — NO changelog expansion to save CPU
+    const maxResults = 100
+    const fields = ['summary','status','assignee','reporter','issuetype','parent','fixVersions','duedate','labels','components','priority','created','updated','resolution','customfield_10016','description','comment','attachment','issuelinks']
+    const searchUrl = `${base}/rest/api/3/search/jql`
+    const postHeaders = { ...headers, 'Content-Type': 'application/json' }
+    const projectsToSync = syncProjects.length > 0 ? syncProjects : allProjectKeys
+
+    let totalFetched = 0
+    let totalUpserted = 0
+    let totalDefectsSynced = 0
+    let totalAttachments = 0
+    let totalPruned = 0
+    let hadSearchErrors = false
+    const allFetchedKeys = new Set<string>()
+    const uniqueUsers = new Map<string, any>()
+    const completedProjects: string[] = []
+
+    for (const projectKey of projectsToSync) {
+      const pConfig = projectConfigs[projectKey] || { lookback_months: 3, status_categories: [], issue_types: [], fix_versions: [] }
+      const lookbackMonths = pConfig.lookback_months ?? 3
+
+      // Build JQL
+      const jqlParts: string[] = [`project = "${projectKey}"`]
+      if (lookbackMonths > 0) {
+        jqlParts.push(`updated >= -${lookbackMonths * 30}d`)
+      }
+      const statusCategories = pConfig.status_categories || []
+      if (statusCategories.length > 0) {
+        jqlParts.push(`statusCategory in (${statusCategories.map(c => `"${c}"`).join(',')})`)
+      } else if (pConfig.statuses && pConfig.statuses.length > 0) {
+        jqlParts.push(`status in (${pConfig.statuses.map(s => `"${s}"`).join(',')})`)
+      }
+      const projIssueTypes = pConfig.issue_types || []
+      if (projIssueTypes.length > 0) {
+        jqlParts.push(`issuetype in (${projIssueTypes.map(t => `"${t}"`).join(',')})`)
+      } else if (syncIssueTypes.length > 0) {
+        jqlParts.push(`issuetype in (${syncIssueTypes.map(t => `"${t}"`).join(',')})`)
+      }
+      const projFixVersions = (pConfig.fix_versions || []).filter(v => v !== '__NO_VERSION__')
+      const includeNoVersion = (pConfig.fix_versions || []).includes('__NO_VERSION__')
+      if (projFixVersions.length > 0 && includeNoVersion) {
+        jqlParts.push(`(fixVersion in (${projFixVersions.map(v => `"${v}"`).join(',')}) OR fixVersion is EMPTY)`)
+      } else if (projFixVersions.length > 0) {
+        jqlParts.push(`fixVersion in (${projFixVersions.map(v => `"${v}"`).join(',')})`)
+      } else if (includeNoVersion) {
+        jqlParts.push(`fixVersion is EMPTY`)
+      } else if (syncFixVersions.length > 0) {
+        jqlParts.push(`fixVersion in (${syncFixVersions.map(v => `"${v}"`).join(',')})`)
+      }
+
+      const jql = `${jqlParts.join(' AND ')} ORDER BY updated DESC`
+      console.log(`[sync] Project ${projectKey}: JQL = ${jql}`)
+
+      // Paginate and process in PAGE-SIZED batches
+      let nextPageToken: string | undefined = undefined
+      let projectIssueCount = 0
+      let projectError = false
+
+      do {
+        // NOTE: No 'expand: changelog' — this was causing CPU Time exceeded for large projects
+        const reqBody: Record<string, any> = { jql, fields, maxResults }
+        if (nextPageToken) reqBody.nextPageToken = nextPageToken
+
+        const res = await fetch(searchUrl, { method: 'POST', headers: postHeaders, body: JSON.stringify(reqBody) })
+
+        if (!res.ok) {
+          const errText = await res.text().catch(() => '')
+          hadSearchErrors = true
+          projectError = true
+          console.error(`[search] ${projectKey} Error ${res.status}: ${errText.slice(0, 300)}`)
+          break
         }
-      }
-    }
-    if (changelogRows.length > 0) {
-      // Delete existing changelogs for synced issues then insert fresh
-      const syncedKeys = [...new Set(changelogRows.map(r => r.issue_key))]
-      for (let i = 0; i < syncedKeys.length; i += 500) {
-        const batch = syncedKeys.slice(i, i + 500)
-        await supabase.from('jira_sync_changelog').delete().in('issue_key', batch)
-      }
-      for (let i = 0; i < changelogRows.length; i += 500) {
-        const chunk = changelogRows.slice(i, i + 500)
-        await supabase.from('jira_sync_changelog').insert(chunk)
-      }
-      console.log(`[sync] Upserted ${changelogRows.length} changelog entries`)
-    }
 
-    // 7d. Extract and upsert comments → jira_sync_comments
-    const commentRows: any[] = []
-    for (const issue of allIssues) {
-      const rawComments = issue.fields.comment?.comments || []
-      for (const c of rawComments) {
-        commentRows.push({
-          issue_key: issue.key,
-          jira_comment_id: c.id,
-          author_display_name: c.author?.displayName || null,
-          author_account_id: c.author?.accountId || null,
-          author_avatar_url: c.author?.avatarUrls?.['24x24'] || c.author?.avatarUrls?.['48x48'] || null,
-          body: c.body ? adfToPlainText(c.body) : '',
-          jira_created_at: c.created,
-          jira_updated_at: c.updated,
+        const data = await res.json()
+        const issues: any[] = Array.isArray(data.issues) ? data.issues : []
+        projectIssueCount += issues.length
+
+        // ── Transform this page's issues into ph_issues rows ──
+        const rows = issues.map((issue: any) => {
+          const descAdf = issue.fields.description || null
+          const descText = descAdf ? adfToPlainText(descAdf) : null
+          const rawComments = issue.fields.comment?.comments || []
+          const comments = rawComments.slice(-20).map((c: any) => ({
+            id: c.id,
+            author: c.author?.displayName || 'Unknown',
+            authorAvatar: c.author?.avatarUrls?.['24x24'] || null,
+            body: c.body ? adfToPlainText(c.body) : '',
+            created: c.created,
+            updated: c.updated,
+          }))
+
+          return {
+            issue_key: issue.key,
+            project_key: issue.key.split('-')[0],
+            project_name: projectNameLookup[issue.key.split('-')[0]] || null,
+            issue_type: issue.fields.issuetype?.name || 'Task',
+            summary: issue.fields.summary || '',
+            status: issue.fields.status?.name || 'To Do',
+            status_category: issue.fields.status?.statusCategory?.name || mapStatusCategory(issue.fields.status?.name || 'To Do'),
+            assignee_account_id: issue.fields.assignee?.accountId || null,
+            assignee_display_name: issue.fields.assignee?.displayName || null,
+            reporter_account_id: issue.fields.reporter?.accountId || null,
+            reporter_display_name: issue.fields.reporter?.displayName || null,
+            parent_key: issue.fields.parent?.key || resolveParentFromLinks(issue) || null,
+            parent_summary: issue.fields.parent?.fields?.summary || resolveParentSummaryFromLinks(issue) || null,
+            hierarchy_level: getHierarchyLevel(issue.fields.issuetype?.name || 'Task'),
+            fix_versions: (issue.fields.fixVersions || []).map((v: any) => ({ id: v.id, name: v.name, releaseDate: v.releaseDate })),
+            due_date: issue.fields.duedate || null,
+            labels: issue.fields.labels || [],
+            components: (issue.fields.components || []).map((c: any) => c.name),
+            priority: issue.fields.priority?.name || 'Medium',
+            story_points: issue.fields.customfield_10016 || null,
+            sprint_name: null,
+            resolution: issue.fields.resolution?.name || null,
+            jira_created_at: issue.fields.created,
+            jira_updated_at: issue.fields.updated,
+            synced_at: new Date().toISOString(),
+            last_synced_at: new Date().toISOString(),
+            type_icon_url: issue.fields.issuetype?.iconUrl || null,
+            description_adf: descAdf,
+            description_text: descText,
+            comments,
+            changelog: [],
+            raw_json: null,
+          }
         })
-      }
-    }
-    if (commentRows.length > 0) {
-      // Delete existing comments for synced issues then insert fresh
-      const syncedKeys = [...new Set(commentRows.map(r => r.issue_key))]
-      for (let i = 0; i < syncedKeys.length; i += 500) {
-        const batch = syncedKeys.slice(i, i + 500)
-        await supabase.from('jira_sync_comments').delete().in('issue_key', batch)
-      }
-      for (let i = 0; i < commentRows.length; i += 500) {
-        const chunk = commentRows.slice(i, i + 500)
-        await supabase.from('jira_sync_comments').insert(chunk)
-      }
-      console.log(`[sync] Upserted ${commentRows.length} comments`)
-    }
 
-    // 8. HARD DELETE — Remove issues not in the fetched set for synced projects
-    const fetchedKeys = new Set(rows.map(r => r.issue_key))
-    let pruned = 0
+        // Upsert this page immediately
+        if (rows.length > 0) {
+          const { error } = await supabase.from('ph_issues').upsert(rows, { onConflict: 'issue_key' })
+          if (error) console.error(`[sync] upsert error for ${projectKey}: ${error.message}`)
+          else totalUpserted += rows.length
+        }
 
-    if (syncType === 'full' && projectsToSync.length > 0 && !hadSearchErrors) {
-      for (const projectKey of projectsToSync) {
+        // Track fetched keys for pruning
+        for (const r of rows) allFetchedKeys.add(r.issue_key)
+
+        // ── Defects (bugs) ──
+        const bugIssues = issues.filter((issue: any) => {
+          const t = (issue.fields.issuetype?.name || '').toLowerCase()
+          return t === 'bug' || t === 'defect' || t === 'qa bug'
+        })
+        if (bugIssues.length > 0 && tmProjectMap.size > 0) {
+          const defectRows = bugIssues
+            .filter((issue: any) => tmProjectMap.has(issue.key.split('-')[0]))
+            .map((issue: any) => {
+              const projKey = issue.key.split('-')[0]
+              const statusCat = issue.fields.status?.statusCategory?.name || ''
+              const descText = issue.fields.description ? adfToPlainText(issue.fields.description) : null
+              const components = (issue.fields.components || []).map((c: any) => c.name).join(', ')
+              const fixVers = (issue.fields.fixVersions || []).map((v: any) => v.name).join(', ')
+              return {
+                defect_key: issue.key,
+                project_id: tmProjectMap.get(projKey),
+                title: issue.fields.summary || '',
+                description: descText,
+                severity: mapSeverity(issue.fields.priority?.name || 'Medium'),
+                priority: issue.fields.priority?.name || 'Medium',
+                status: mapDefectStatus(issue.fields.status?.name || '', statusCat),
+                assignee_id: userMap.get(issue.fields.assignee?.accountId) || null,
+                reporter_id: userMap.get(issue.fields.reporter?.accountId) || null,
+                external_id: issue.id,
+                external_url: `${base}/browse/${issue.key}`,
+                component: components || null,
+                fix_version: fixVers || null,
+                labels: issue.fields.labels || [],
+                due_date: issue.fields.duedate || null,
+                created_at: issue.fields.created,
+                updated_at: issue.fields.updated,
+                resolved_at: issue.fields.resolutiondate || null,
+              }
+            })
+          if (defectRows.length > 0) {
+            const { error: defErr } = await supabase.from('tm_defects').upsert(defectRows, { onConflict: 'defect_key,project_id' })
+            if (defErr) console.error(`[sync] tm_defects upsert error: ${defErr.message}`)
+            else totalDefectsSynced += defectRows.length
+          }
+        }
+
+        // ── Attachments ──
+        const attachmentRows: any[] = []
+        for (const issue of issues) {
+          for (const att of (issue.fields.attachment || [])) {
+            attachmentRows.push({
+              issue_key: issue.key,
+              jira_attachment_id: att.id,
+              filename: att.filename || 'unknown',
+              mime_type: att.mimeType || null,
+              file_size: att.size || null,
+              thumbnail_url: att.thumbnail || null,
+              content_url: att.content || '',
+              author_display_name: att.author?.displayName || null,
+              author_account_id: att.author?.accountId || null,
+              jira_created_at: att.created || null,
+              synced_at: new Date().toISOString(),
+            })
+          }
+        }
+        if (attachmentRows.length > 0) {
+          await supabase.from('ph_issue_attachments').upsert(attachmentRows, { onConflict: 'issue_key,jira_attachment_id' })
+          totalAttachments += attachmentRows.length
+        }
+
+        // ── Comments (dedicated table) ──
+        const commentRows: any[] = []
+        for (const issue of issues) {
+          for (const c of (issue.fields.comment?.comments || [])) {
+            commentRows.push({
+              issue_key: issue.key,
+              jira_comment_id: c.id,
+              author_display_name: c.author?.displayName || null,
+              author_account_id: c.author?.accountId || null,
+              author_avatar_url: c.author?.avatarUrls?.['24x24'] || null,
+              body: c.body ? adfToPlainText(c.body) : '',
+              jira_created_at: c.created,
+              jira_updated_at: c.updated,
+            })
+          }
+        }
+        if (commentRows.length > 0) {
+          const pageKeys = [...new Set(commentRows.map(r => r.issue_key))]
+          await supabase.from('jira_sync_comments').delete().in('issue_key', pageKeys)
+          await supabase.from('jira_sync_comments').insert(commentRows)
+        }
+
+        // ── Users ──
+        for (const issue of issues) {
+          const assignee = issue.fields.assignee
+          if (assignee?.accountId && !uniqueUsers.has(assignee.accountId)) {
+            uniqueUsers.set(assignee.accountId, {
+              jira_account_id: assignee.accountId,
+              jira_display_name: assignee.displayName || '',
+              jira_email: assignee.emailAddress || '',
+              jira_avatar_url: assignee.avatarUrls?.['48x48'] || '',
+            })
+          }
+          const reporter = issue.fields.reporter
+          if (reporter?.accountId && !uniqueUsers.has(reporter.accountId)) {
+            uniqueUsers.set(reporter.accountId, {
+              jira_account_id: reporter.accountId,
+              jira_display_name: reporter.displayName || '',
+              jira_email: reporter.emailAddress || '',
+              jira_avatar_url: reporter.avatarUrls?.['48x48'] || '',
+            })
+          }
+        }
+
+        totalFetched += issues.length
+        nextPageToken = data.nextPageToken || undefined
+      } while (nextPageToken && projectIssueCount < 5000)
+
+      console.log(`[sync] Project ${projectKey}: fetched ${projectIssueCount}, upserted OK`)
+      completedProjects.push(projectKey)
+
+      // ── Per-project prune ──
+      if (syncType === 'full' && !projectError) {
         const { data: existingIssues } = await supabase
           .from('ph_issues')
           .select('issue_key')
           .eq('project_key', projectKey)
 
         if (existingIssues && existingIssues.length > 0) {
+          const projectFetchedKeys = new Set(
+            [...allFetchedKeys].filter(k => k.startsWith(projectKey + '-'))
+          )
           const toDelete = existingIssues
             .map((i: any) => i.issue_key)
-            .filter((k: string) => !fetchedKeys.has(k))
+            .filter((k: string) => !projectFetchedKeys.has(k))
 
           if (toDelete.length > 0) {
             for (let i = 0; i < toDelete.length; i += 500) {
-              const batch = toDelete.slice(i, i + 500)
-              await supabase
-                .from('ph_issues')
-                .delete()
-                .in('issue_key', batch)
+              await supabase.from('ph_issues').delete().in('issue_key', toDelete.slice(i, i + 500))
             }
-            pruned += toDelete.length
+            totalPruned += toDelete.length
             console.log(`[sync] Pruned ${toDelete.length} issues from ${projectKey}`)
           }
         }
       }
+
+      // ── Progressive log update after EACH project (prevents stale "15 hours ago") ──
+      if (logId) {
+        await supabase.from('ph_sync_log').update({
+          issues_fetched: totalFetched,
+          issues_upserted: totalUpserted,
+          projects_synced: completedProjects,
+          completed_at: new Date().toISOString(),
+          status: 'running',
+        }).eq('id', logId)
+      }
     }
 
     // 9. Upsert user mappings
-    const uniqueUsers = new Map<string, any>()
-    allIssues.forEach((issue: any) => {
-      const assignee = issue.fields.assignee
-      if (assignee?.accountId && !uniqueUsers.has(assignee.accountId)) {
-        uniqueUsers.set(assignee.accountId, {
-          jira_account_id: assignee.accountId,
-          jira_display_name: assignee.displayName || '',
-          jira_email: assignee.emailAddress || '',
-          jira_avatar_url: assignee.avatarUrls?.['48x48'] || '',
-        })
-      }
-    })
     if (uniqueUsers.size > 0) {
       await supabase
         .from('ph_user_mapping')
         .upsert(Array.from(uniqueUsers.values()), { onConflict: 'jira_account_id', ignoreDuplicates: false })
 
-      // Propagate Jira avatars to profiles for already-mapped users
       const { data: mappedUsers } = await supabase
         .from('ph_user_mapping')
         .select('catalyst_profile_id, jira_avatar_url')
@@ -484,17 +500,14 @@ serve(async (req) => {
 
       if (mappedUsers && mappedUsers.length > 0) {
         for (const mu of mappedUsers) {
-          await supabase.from('profiles')
-            .update({ avatar_url: mu.jira_avatar_url })
-            .eq('id', mu.catalyst_profile_id)
+          await supabase.from('profiles').update({ avatar_url: mu.jira_avatar_url }).eq('id', mu.catalyst_profile_id)
         }
       }
     }
 
-    // 10. Fetch and upsert versions
-    includedProjects = allProjectKeys.length > 0 ? allProjectKeys : includedProjects
+    // 10. Fetch and upsert versions — only for synced projects (not all 55)
     let totalVersions = 0
-    for (const projectKey of includedProjects) {
+    for (const projectKey of completedProjects) {
       try {
         const vRes = await fetch(`${base}/rest/api/3/project/${projectKey}/versions`, { headers })
         if (vRes.ok) {
@@ -520,62 +533,54 @@ serve(async (req) => {
       }
     }
 
-    // 11. Parse version names for dates
-    await supabase.rpc('ph_parse_and_update_versions')
-
-    // 12. Recompute effective due dates
-    await supabase.rpc('ph_recompute_all')
+    // 11-12. Post-processing RPCs
+    await supabase.rpc('ph_parse_and_update_versions').catch(() => {})
+    await supabase.rpc('ph_recompute_all').catch(() => {})
 
     // 13. Update connection totals
     await supabase.from('ph_jira_connection').update({
-      total_issue_count: upsertedCount,
+      total_issue_count: totalUpserted,
       total_version_count: totalVersions,
     }).neq('id', '00000000-0000-0000-0000-000000000000')
 
-    // 14. Collect warnings
+    // 14. Warnings
     const warnings: string[] = []
     const { data: unmapped } = await supabase
       .from('ph_user_mapping')
       .select('jira_display_name')
       .eq('is_mapped', false)
-    if (unmapped && unmapped.length > 0) {
-      warnings.push(`${unmapped.length} unmapped Jira users`)
-    }
-    if (hadSearchErrors) {
-      warnings.push('Search errors occurred; prune step was skipped to protect existing data')
-    }
-    if (pruned > 0) {
-      warnings.push(`${pruned} issues pruned (no longer match sync criteria)`)
-    }
+    if (unmapped && unmapped.length > 0) warnings.push(`${unmapped.length} unmapped Jira users`)
+    if (hadSearchErrors) warnings.push('Search errors occurred; prune step was skipped for affected projects')
+    if (totalPruned > 0) warnings.push(`${totalPruned} issues pruned`)
 
-    // 15. Build max lookback for log
+    // 15. Final log update
     const maxLookback = Object.values(projectConfigs).reduce((max, pc) => Math.max(max, pc.lookback_months || 3), 3)
-
-    // 16. Update log entry (include actual projectsToSync so UI knows which projects were synced)
     const duration = Date.now() - startTime
     await supabase.from('ph_sync_log').update({
       status: warnings.length > 0 ? 'warning' : 'success',
       lookback_months: maxLookback,
       jql_query: `Per-project JQL (${projectsToSync.length} projects)`,
-      issues_fetched: allIssues.length,
-      issues_upserted: upsertedCount,
-      issues_pruned: pruned,
+      issues_fetched: totalFetched,
+      issues_upserted: totalUpserted,
+      issues_pruned: totalPruned,
       versions_fetched: totalVersions,
       warnings,
       duration_ms: duration,
       completed_at: new Date().toISOString(),
-      projects_synced: projectsToSync,
+      projects_synced: completedProjects,
     }).eq('id', logId)
 
     return new Response(JSON.stringify({
       success: true,
       sync_type: syncType,
-      issues_fetched: allIssues.length,
-      issues_upserted: upsertedCount,
+      issues_fetched: totalFetched,
+      issues_upserted: totalUpserted,
+      defects_synced: totalDefectsSynced,
       versions_fetched: totalVersions,
-      pruned,
+      pruned: totalPruned,
       warnings,
       duration_ms: duration,
+      projects_synced: completedProjects,
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     })

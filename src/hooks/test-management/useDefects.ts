@@ -71,6 +71,13 @@ function mapDbRowToTMDefect(row: any): TMDefect {
     external_url: row.external_url || undefined,
     created_at: row.created_at || '',
     updated_at: row.updated_at || '',
+    jira_key: row.jira_key || null,
+    jira_source: row.jira_source || false,
+    jira_project_key: row.jira_project_key || null,
+    jira_status: row.jira_status || null,
+    jira_status_category: row.jira_status_category || null,
+    jira_assignee_name: row.jira_assignee_name || null,
+    jira_reporter_name: row.jira_reporter_name || null,
     assignee: row.assignee,
     reporter: row.reporter,
   };
@@ -281,12 +288,15 @@ export function useCreateDefect() {
 
       // If there's a run_id or step_id, create a link
       if (input.run_id || input.step_id) {
-        await supabase.from('tm_defect_links').insert({
+        const { error: linkError } = await supabase.from('tm_defect_links').insert({
           defect_id: data.id,
           test_run_id: input.run_id || null,
           step_result_id: input.step_id || null,
           created_by: user.id,
         });
+        if (linkError) {
+          console.error('[useCreateDefect] tm_defect_links insert failed:', linkError);
+        }
       }
 
       return mapDbRowToTMDefect(data);
@@ -294,6 +304,7 @@ export function useCreateDefect() {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['tm-defects', data.project_id] });
       queryClient.invalidateQueries({ queryKey: ['tm-defect-stats', data.project_id] });
+      queryClient.invalidateQueries({ queryKey: ['testcase-defects'] });
       toast.success(`Defect ${data.key} created`);
     },
     onError: (error: Error) => {

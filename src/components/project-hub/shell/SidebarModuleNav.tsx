@@ -13,7 +13,7 @@ export function SidebarModuleNav({ collapsed, onToggle }: SidebarModuleNavProps)
 
   return (
     <div
-      className="flex flex-col h-full flex-shrink-0 bg-white dark:bg-[#181A1E] border-r border-[#E2E8F0] dark:border-[rgba(235,238,245,0.10)]"
+      className="flex flex-col h-full flex-shrink-0 bg-white dark:bg-[#1A1714] border-r border-[#E2E8F0] dark:border-[rgba(235,238,245,0.10)]"
       style={{
         width: collapsed ? 56 : 192,
         transition: 'width 200ms ease',
@@ -27,8 +27,8 @@ export function SidebarModuleNav({ collapsed, onToggle }: SidebarModuleNavProps)
         style={{ padding: collapsed ? '12px 10px' : '12px 10px' }}
       >
         <div
-          className="flex items-center justify-center rounded-full flex-shrink-0"
-          style={{ width: 28, height: 28, background: 'var(--cp-blue)', color: '#FFFFFF', fontSize: 11, fontWeight: 700, fontFamily: "'Sora', sans-serif" }}
+          className="flex items-center justify-center rounded-full flex-shrink-0 bg-[var(--cp-blue)]"
+          style={{ width: 28, height: 28, color: '#FFFFFF', fontSize: 11, fontWeight: 700, fontFamily: "'Sora', sans-serif" }}
         >
           PH
         </div>

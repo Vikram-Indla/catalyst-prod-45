@@ -38,9 +38,9 @@ export default function QADefects({ projectId, releaseMap }: Props) {
       onRetry={() => refetch()}
       headerRight={
         <div style={{ display: 'flex', gap: 4 }}>
-          <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--sem-danger-fg)', background: 'var(--sem-danger-bg)', border: '1px solid var(--sem-danger-accent)', padding: '2px 6px', borderRadius: 9999 }}>Crit: {crit}</span>
-          <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--sem-warning-fg)', background: 'var(--sem-warning-bg)', border: '1px solid var(--sem-warning-accent)', padding: '2px 6px', borderRadius: 9999 }}>High: {high}</span>
-          <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--sem-info-fg)', background: 'var(--sem-info-bg)', border: '1px solid var(--sem-info-accent)', padding: '2px 6px', borderRadius: 9999 }}>Med: {med}</span>
+          <span className="bg-[var(--sem-danger-bg)]" style={{ fontSize: 10, fontWeight: 700, color: 'var(--sem-danger-fg)', border: '1px solid var(--sem-danger-accent)', padding: '2px 6px', borderRadius: 9999 }}>Crit: {crit}</span>
+          <span className="bg-[var(--sem-warning-bg)]" style={{ fontSize: 10, fontWeight: 700, color: 'var(--sem-warning-fg)', border: '1px solid var(--sem-warning-accent)', padding: '2px 6px', borderRadius: 9999 }}>High: {high}</span>
+          <span className="bg-[var(--sem-info-bg)]" style={{ fontSize: 10, fontWeight: 700, color: 'var(--sem-info-fg)', border: '1px solid var(--sem-info-accent)', padding: '2px 6px', borderRadius: 9999 }}>Med: {med}</span>
         </div>
       }
     >
@@ -61,9 +61,9 @@ export default function QADefects({ projectId, releaseMap }: Props) {
             {items.map((item: any, idx: number) => {
               const ss = SEV_STYLE[item.severity] || SEV_STYLE.medium;
               return (
-                <tr key={item.id} style={{ height: 44, borderBottom: '1px solid var(--cp-bd-zone)', background: idx % 2 === 1 ? 'var(--bg-1)' : undefined }} className="ph-table-row">
+                <tr key={item.id} className={`ph-table-row ${idx % 2 === 1 ? 'bg-[var(--bg-1)]' : ''}`} style={{ height: 44, borderBottom: '1px solid var(--cp-bd-zone)' }}>
                   <td style={{ padding: '0 6px' }}>
-                    <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10.5, fontWeight: 600, color: 'var(--sem-success-fg)', background: 'var(--sem-success-bg)', padding: '2px 7px', borderRadius: 4, border: '1px solid var(--sem-success-accent)' }}>
+                    <span className="bg-[var(--sem-success-bg)]" style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10.5, fontWeight: 600, color: 'var(--sem-success-fg)', padding: '2px 7px', borderRadius: 4, border: '1px solid var(--sem-success-accent)' }}>
                       {releaseMap[item.release_id] || '—'}
                     </span>
                   </td>

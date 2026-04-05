@@ -237,12 +237,12 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
       onClick={handleClose}
     >
       {/* Backdrop */}
-      <div className="absolute inset-0" style={{ background: 'rgba(15, 23, 42, 0.5)' }} />
+      <div className="absolute inset-0 bg-[rgba(15,23,42,0.5)]" />
 
       {/* Modal */}
       <div
-        className="relative rounded-lg shadow-2xl flex flex-col"
-        style={{ width: 480, maxHeight: '85vh', background: 'var(--cp-float)', border: '1px solid var(--divider)', borderRadius: 8 }}
+        className="relative rounded-lg shadow-2xl flex flex-col bg-[var(--cp-float)]"
+        style={{ width: 480, maxHeight: '85vh', border: '1px solid var(--divider)', borderRadius: 8 }}
         onClick={e => { e.stopPropagation(); closeDropdowns(); }}
       >
         {/* Header */}
@@ -251,7 +251,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
             <span className="text-[14px] font-semibold" style={{ color: 'var(--fg-1)', fontFamily: 'Sora, sans-serif' }}>
               Create Work Item
             </span>
-            <span className="text-[10px] font-medium px-1.5 py-0.5 rounded" style={{ background: 'var(--cp-bd-zone)', color: 'var(--fg-3)' }}>
+            <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-[var(--cp-bd-zone)]" style={{ color: 'var(--fg-3)' }}>
               {projectKey}
             </span>
           </div>
@@ -282,7 +282,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
                     className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-[11px] font-medium transition-all"
                     style={{
                       border: isSelected ? `2px solid ${hi.color}` : '1px solid var(--divider)',
-                      background: isSelected ? `${hi.color}10` : 'var(--bg-app)',
+                      backgroundColor: isSelected ? `${hi.color}10` : 'var(--bg-app)',
                       color: isSelected ? hi.color : 'var(--fg-2)',
                       outline: isSelected ? `1px solid ${hi.color}` : 'none',
                     }}
@@ -410,8 +410,8 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
                 return (
                   <span
                     key={lid}
-                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium"
-                    style={{ background: 'var(--cp-primary-20)', color: 'var(--cp-blue)' }}
+                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-[var(--cp-primary-20)]"
+                    style={{ color: 'var(--cp-blue)' }}
                   >
                     {lb.name}
                     <span
@@ -439,10 +439,10 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
                           );
                         }}
                       >
-                        <div className="w-3.5 h-3.5 rounded border flex items-center justify-center" style={{ borderColor: checked ? 'var(--cp-blue)' : 'var(--divider)', background: checked ? 'var(--cp-blue)' : 'var(--bg-app)' }}>
+                        <div className={`w-3.5 h-3.5 rounded border flex items-center justify-center ${checked ? 'bg-[var(--cp-blue)]' : 'bg-[var(--bg-app)]'}`} style={{ borderColor: checked ? 'var(--cp-blue)' : 'var(--divider)' }}>
                           {checked && <span className="text-white text-[9px]">✓</span>}
                         </div>
-                        <span className="w-2 h-2 rounded-full" style={{ background: lb.color }} />
+                        <span className="w-2 h-2 rounded-full" style={{ backgroundColor: lb.color }} />
                         {lb.name}
                       </button>
                     );
@@ -497,7 +497,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
                       style={{ color: 'var(--fg-2)' }}
                       onClick={() => { setReleaseId(r.id); setReleaseOpen(false); }}
                     >
-                      <span className="px-1.5 py-0.5 rounded text-[9px] font-bold" style={{ background: 'var(--sem-success-bg)', color: 'var(--sem-success)' }}>
+                      <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-[var(--sem-success-bg)]" style={{ color: 'var(--sem-success)' }}>
                         {r.status === 'released' ? '✓' : r.status === 'in_progress' ? '►' : '○'}
                       </span>
                       {r.name}
@@ -585,8 +585,8 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
             <button
               onClick={handleSubmit}
               disabled={!title.trim() || submitting}
-              className="flex items-center justify-center rounded-md text-[13px] font-semibold transition-all hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
-              style={{ height: 40, padding: '0 20px', background: 'var(--cp-blue)', color: '#FFFFFF', borderRadius: 6 }}
+              className="flex items-center justify-center rounded-md text-[13px] font-semibold transition-all hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed bg-[var(--cp-blue)]"
+              style={{ height: 40, padding: '0 20px', color: '#FFFFFF', borderRadius: 6 }}
             >
               {submitting ? 'Creating…' : 'Create'}
             </button>
@@ -611,11 +611,10 @@ function FixedDropdown({
 }) {
   return (
     <div
-      className="absolute left-0 mt-1 rounded-md overflow-hidden flex flex-col"
+      className="absolute left-0 mt-1 rounded-md overflow-hidden flex flex-col bg-[var(--cp-float)]"
       style={{
         width: width || '100%',
         maxHeight: maxHeight || 'auto',
-        background: 'var(--cp-float)',
         border: '1px solid var(--divider)',
         boxShadow: '0 8px 20px rgba(0,0,0,0.18)',
         zIndex: 9999,

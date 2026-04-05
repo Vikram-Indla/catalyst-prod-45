@@ -72,8 +72,10 @@ export function useAddTestsToCycle() {
     onSuccess: (data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['cycle', variables.cycleId] });
       queryClient.invalidateQueries({ queryKey: ['cycle-test-cases', variables.cycleId] });
+      queryClient.invalidateQueries({ queryKey: ['cycle-details', variables.cycleId] });
       queryClient.invalidateQueries({ queryKey: ['test-repository'] });
       queryClient.invalidateQueries({ queryKey: ['tm_test_cycles'] });
+      queryClient.invalidateQueries({ queryKey: ['tm-cycles'] });
       toast.success(`Added ${data.added} tests to cycle`);
     },
     onError: (error: Error) => {

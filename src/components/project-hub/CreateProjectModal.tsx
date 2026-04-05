@@ -109,12 +109,11 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
 
   return (
     <div
-      className="fixed inset-0 z-[9999] flex items-center justify-center"
-      style={{ background: 'rgba(0,0,0,0.5)' }}
+      className="fixed inset-0 z-[9999] flex items-center justify-center bg-[rgba(0,0,0,0.5)]"
       onClick={e => { if (e.target === e.currentTarget) onClose(); }}
     >
       <div
-        className="relative flex flex-col animate-scale-in bg-white dark:bg-[#1F2128]"
+        className="relative flex flex-col animate-scale-in bg-white dark:bg-[#232019]"
         style={{
           width: 640,
           maxHeight: '90vh',
@@ -160,10 +159,10 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
           <button
             onClick={step < 2 ? () => setStep(s => s + 1) : handleSubmit}
             disabled={!canNext || submitting}
-            className="rounded-md transition-opacity hover:opacity-90 disabled:opacity-40"
+            className="rounded-md transition-opacity hover:opacity-90 disabled:opacity-40 bg-[var(--cp-blue)]"
             style={{
               height: 36, padding: '0 20px', fontSize: 13, fontWeight: 600,
-              color: '#FFFFFF', background: 'var(--cp-blue)', border: 'none',
+              color: '#FFFFFF', border: 'none',
               borderRadius: 6, cursor: canNext && !submitting ? 'pointer' : 'default',
             }}
           >

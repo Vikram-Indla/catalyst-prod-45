@@ -102,7 +102,7 @@ export function CloneTestCycleModal({
             cycle_id: newCycle.id,
             test_case_id: tc.test_case_id,
             assigned_to: tc.assigned_to,
-            execution_status: 'not_run',
+            current_status: 'not_run',
           }));
 
           const { error: testCasesError } = await (supabase as any)

@@ -94,7 +94,7 @@ export function CreateFolderModal({
     try {
       // Get max sort_order for placement
       const { data: existingFolders } = await supabase
-        .from('th_folders')
+        .from('tm_folders')
         .select('sort_order')
         .order('sort_order', { ascending: false })
         .limit(1);
@@ -102,12 +102,13 @@ export function CreateFolderModal({
       const nextSortOrder = (existingFolders?.[0]?.sort_order ?? 0) + 1;
 
       const { error } = await supabase
-        .from('th_folders')
+        .from('tm_folders')
         .insert({
           name: name.trim(),
           parent_id: parentId || null,
           icon: icon,
           sort_order: nextSortOrder,
+          project_id: '00000000-0000-0000-0000-000000000001',
         });
 
       if (error) throw error;

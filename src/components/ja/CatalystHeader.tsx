@@ -41,7 +41,9 @@ import { useAppHeaderOffset } from "@/hooks/useAppHeaderOffset";
 import catalystLogoLight from "@/assets/catalyst-logo-light.svg";
 import catalystFullLogoLight from "@/assets/catalyst-full-logo-light.svg";
 import catalystWordmark3 from "@/assets/catalyst-wordmark-3.svg";
+import catalystWordmark3Dark from "@/assets/catalyst-wordmark-3-dark.svg";
 import catalystLogoMark2 from "@/assets/catalyst-logo-mark-2.svg";
+import catalystLogoMark2Dark from "@/assets/catalyst-logo-mark-2-dark.svg";
 
 export function CatalystHeader() {
   const navigate = useNavigate();
@@ -197,9 +199,9 @@ export function CatalystHeader() {
           onClick={() => navigate('/home')}
         >
           {!sidebarExpanded ? (
-            <img src={catalystLogoMark2} alt="Catalyst" style={{ height: '28px', width: '28px' }} />
+            <img src={isDark ? catalystLogoMark2Dark : catalystLogoMark2} alt="Catalyst" style={{ height: '28px', width: '28px' }} />
           ) : (
-            <img src={catalystWordmark3} alt="Catalyst" style={{ height: '32px', width: 'auto' }} />
+            <img src={isDark ? catalystWordmark3Dark : catalystWordmark3} alt="Catalyst" style={{ height: '32px', width: 'auto' }} />
           )}
         </a>
         
@@ -564,8 +566,8 @@ export function CatalystHeader() {
               <span style={{ flex: 1, fontSize: '12px', fontFamily: "'Inter', sans-serif", color: isDark ? 'rgba(248,244,240,0.55)' : '#94A3B8', textAlign: 'left' }}>
                 Search...
               </span>
-              <kbd style={{ fontSize: '10px', background: isDark ? '#181A1E' : '#F1F5F9', border: `1px solid ${isDark ? 'rgba(248,244,240,0.10)' : '#E2E8F0'}`, borderRadius: '3px', padding: '1px 4px', fontFamily: 'monospace', color: isDark ? 'rgba(248,244,240,0.55)' : '#64748B' }}>⌘</kbd>
-              <kbd style={{ fontSize: '10px', background: isDark ? '#181A1E' : '#F1F5F9', border: `1px solid ${isDark ? 'rgba(248,244,240,0.10)' : '#E2E8F0'}`, borderRadius: '3px', padding: '1px 4px', fontFamily: 'monospace', color: isDark ? 'rgba(248,244,240,0.55)' : '#64748B' }}>K</kbd>
+              <kbd style={{ fontSize: '10px', background: isDark ? '#1A1714' : '#F1F5F9', border: `1px solid ${isDark ? 'rgba(248,244,240,0.10)' : '#E2E8F0'}`, borderRadius: '3px', padding: '1px 4px', fontFamily: 'monospace', color: isDark ? 'rgba(248,244,240,0.55)' : '#64748B' }}>⌘</kbd>
+              <kbd style={{ fontSize: '10px', background: isDark ? '#1A1714' : '#F1F5F9', border: `1px solid ${isDark ? 'rgba(248,244,240,0.10)' : '#E2E8F0'}`, borderRadius: '3px', padding: '1px 4px', fontFamily: 'monospace', color: isDark ? 'rgba(248,244,240,0.55)' : '#64748B' }}>K</kbd>
             </button>
             {/* Mobile search icon */}
             <button

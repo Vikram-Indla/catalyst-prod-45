@@ -45,7 +45,7 @@ export function ScheduleTab({ plan, onUpdate }: Props) {
               <Input type="date" value={plan.planned_end_date || ''} onChange={e => onUpdate({ planned_end_date: e.target.value || null } as any)} />
             </div>
           </div>
-          {(plan.status === 'in_progress' || plan.status === 'completed') && (
+          {(plan.status === 'executing' || plan.status === 'completed') && (
             <div className="grid grid-cols-2 gap-4 pt-4 border-t">
               <div className="space-y-2">
                 <Label>Actual Start Date</Label>

@@ -27,8 +27,8 @@ export function CollapsibleSection({ title, count, defaultOpen = true, children 
         </span>
         {count != null && count > 0 && (
           <span
-            className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full ml-1"
-            style={{ background: 'var(--cp-bd-zone)', color: 'var(--fg-3)' }}
+            className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full ml-1 bg-[var(--cp-bd-zone)]"
+            style={{ color: 'var(--fg-3)' }}
           >
             {count}
           </span>

@@ -31,6 +31,14 @@ export interface Defect {
   closed_at: string | null;
   created_at: string;
   updated_at: string;
+  // Jira sync fields
+  jira_key: string | null;
+  jira_source: boolean;
+  jira_project_key: string | null;
+  jira_status: string | null;
+  jira_status_category: string | null;
+  jira_assignee_name: string | null;
+  jira_reporter_name: string | null;
   // Joined
   assignee?: { id: string; full_name: string; avatar_url: string | null } | null;
   reporter?: { id: string; full_name: string; avatar_url: string | null } | null;

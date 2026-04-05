@@ -130,7 +130,7 @@ export function JiraSyncPanel() {
     queryFn: async () => {
       const results = { projectCount: 0, issueCount: 0, queueDepth: 0, lastChecked: null as string | null, failedCount: 0, webhookActive: false };
       try {
-        // Read from authoritative tables: ph_jira_connection, ph_issues, ph_sync_log
+        // Read from authoritative tables — direct queries, no RPCs
         const [phConnRes, issuesRes, syncLogRes, writeBackRes] = await Promise.all([
           supabase.from('ph_jira_connection').select('project_count, total_issue_count, last_tested_at').single(),
           (supabase as any).from('ph_issues').select('id', { count: 'exact', head: true }),
@@ -138,8 +138,7 @@ export function JiraSyncPanel() {
           supabase.from('jira_write_back_queue').select('id', { count: 'exact', head: true }).in('status', ['queued', 'approved']),
         ]);
         results.projectCount = phConnRes.data?.project_count || 0;
-        // Use total_issue_count from connection (more reliable than counting via API which may hit limits)
-        results.issueCount = phConnRes.data?.total_issue_count || issuesRes.count || 0;
+        results.issueCount = issuesRes.count || phConnRes.data?.total_issue_count || 0;
         results.queueDepth = writeBackRes.count || 0;
         results.lastChecked = syncLogRes.data?.completed_at || phConnRes.data?.last_tested_at || null;
         results.webhookActive = !!phConnRes.data?.last_tested_at;

@@ -15645,6 +15645,39 @@ export type Database = {
           },
         ]
       }
+      jira_auth_sessions: {
+        Row: {
+          catalyst_user_id: string
+          expires_at: string | null
+          id: string
+          jira_account_id: string
+          jira_session_valid: boolean | null
+          revoked_at: string | null
+          session_token_hash: string
+          validated_at: string | null
+        }
+        Insert: {
+          catalyst_user_id: string
+          expires_at?: string | null
+          id?: string
+          jira_account_id: string
+          jira_session_valid?: boolean | null
+          revoked_at?: string | null
+          session_token_hash: string
+          validated_at?: string | null
+        }
+        Update: {
+          catalyst_user_id?: string
+          expires_at?: string | null
+          id?: string
+          jira_account_id?: string
+          jira_session_valid?: boolean | null
+          revoked_at?: string | null
+          session_token_hash?: string
+          validated_at?: string | null
+        }
+        Relationships: []
+      }
       jira_board_mappings: {
         Row: {
           catalyst_team_id: string | null
@@ -15865,6 +15898,78 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      jira_identity_map: {
+        Row: {
+          auth_mode: string | null
+          avatar_url: string | null
+          catalyst_only: boolean | null
+          catalyst_user_id: string | null
+          conflict_fields: string[] | null
+          created_at: string | null
+          display_name: string
+          email: string
+          id: string
+          is_active_in_catalyst: boolean | null
+          is_active_in_jira: boolean | null
+          jira_account_id: string | null
+          jira_connection_id: string | null
+          jira_groups: string[] | null
+          jira_project_keys: string[] | null
+          last_catalyst_login_at: string | null
+          last_jira_login_at: string | null
+          last_synced_at: string | null
+          resource_role_id: string | null
+          sync_version: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          auth_mode?: string | null
+          avatar_url?: string | null
+          catalyst_only?: boolean | null
+          catalyst_user_id?: string | null
+          conflict_fields?: string[] | null
+          created_at?: string | null
+          display_name: string
+          email: string
+          id?: string
+          is_active_in_catalyst?: boolean | null
+          is_active_in_jira?: boolean | null
+          jira_account_id?: string | null
+          jira_connection_id?: string | null
+          jira_groups?: string[] | null
+          jira_project_keys?: string[] | null
+          last_catalyst_login_at?: string | null
+          last_jira_login_at?: string | null
+          last_synced_at?: string | null
+          resource_role_id?: string | null
+          sync_version?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          auth_mode?: string | null
+          avatar_url?: string | null
+          catalyst_only?: boolean | null
+          catalyst_user_id?: string | null
+          conflict_fields?: string[] | null
+          created_at?: string | null
+          display_name?: string
+          email?: string
+          id?: string
+          is_active_in_catalyst?: boolean | null
+          is_active_in_jira?: boolean | null
+          jira_account_id?: string | null
+          jira_connection_id?: string | null
+          jira_groups?: string[] | null
+          jira_project_keys?: string[] | null
+          last_catalyst_login_at?: string | null
+          last_jira_login_at?: string | null
+          last_synced_at?: string | null
+          resource_role_id?: string | null
+          sync_version?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
       }
       jira_project_mappings: {
         Row: {
@@ -16384,6 +16489,105 @@ export type Database = {
           },
         ]
       }
+      jira_sync_runs: {
+        Row: {
+          completed_at: string | null
+          conflicts_detected: number | null
+          direction: string
+          duration_ms: number | null
+          id: string
+          run_type: string
+          started_at: string | null
+          status: string | null
+          triggered_by: string | null
+          users_created: number | null
+          users_deactivated: number | null
+          users_failed: number | null
+          users_updated: number | null
+        }
+        Insert: {
+          completed_at?: string | null
+          conflicts_detected?: number | null
+          direction: string
+          duration_ms?: number | null
+          id?: string
+          run_type: string
+          started_at?: string | null
+          status?: string | null
+          triggered_by?: string | null
+          users_created?: number | null
+          users_deactivated?: number | null
+          users_failed?: number | null
+          users_updated?: number | null
+        }
+        Update: {
+          completed_at?: string | null
+          conflicts_detected?: number | null
+          direction?: string
+          duration_ms?: number | null
+          id?: string
+          run_type?: string
+          started_at?: string | null
+          status?: string | null
+          triggered_by?: string | null
+          users_created?: number | null
+          users_deactivated?: number | null
+          users_failed?: number | null
+          users_updated?: number | null
+        }
+        Relationships: []
+      }
+      jira_sync_user_events: {
+        Row: {
+          changed_fields: string[] | null
+          created_at: string | null
+          direction: string | null
+          email: string | null
+          error_message: string | null
+          event_type: string
+          id: string
+          identity_map_id: string | null
+          sync_run_id: string | null
+        }
+        Insert: {
+          changed_fields?: string[] | null
+          created_at?: string | null
+          direction?: string | null
+          email?: string | null
+          error_message?: string | null
+          event_type: string
+          id?: string
+          identity_map_id?: string | null
+          sync_run_id?: string | null
+        }
+        Update: {
+          changed_fields?: string[] | null
+          created_at?: string | null
+          direction?: string | null
+          email?: string | null
+          error_message?: string | null
+          event_type?: string
+          id?: string
+          identity_map_id?: string | null
+          sync_run_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "jira_sync_user_events_identity_map_id_fkey"
+            columns: ["identity_map_id"]
+            isOneToOne: false
+            referencedRelation: "jira_identity_map"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "jira_sync_user_events_sync_run_id_fkey"
+            columns: ["sync_run_id"]
+            isOneToOne: false
+            referencedRelation: "jira_sync_runs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       jira_transitions_cache: {
         Row: {
           cached_at: string | null
@@ -16540,6 +16744,80 @@ export type Database = {
             referencedColumns: ["theme_owner_id"]
           },
         ]
+      }
+      jira_user_project_perms: {
+        Row: {
+          created_at: string | null
+          id: string
+          identity_map_id: string
+          permission_level: string | null
+          project_id: string
+          project_key: string
+          project_name: string
+          synced_from_jira: boolean | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          identity_map_id: string
+          permission_level?: string | null
+          project_id: string
+          project_key: string
+          project_name: string
+          synced_from_jira?: boolean | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          identity_map_id?: string
+          permission_level?: string | null
+          project_id?: string
+          project_key?: string
+          project_name?: string
+          synced_from_jira?: boolean | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "jira_user_project_perms_identity_map_id_fkey"
+            columns: ["identity_map_id"]
+            isOneToOne: false
+            referencedRelation: "jira_identity_map"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      jira_webhook_events: {
+        Row: {
+          event_type: string
+          hmac_valid: boolean | null
+          id: string
+          jira_account_id: string | null
+          processed: boolean | null
+          raw_payload: Json
+          received_at: string | null
+        }
+        Insert: {
+          event_type: string
+          hmac_valid?: boolean | null
+          id?: string
+          jira_account_id?: string | null
+          processed?: boolean | null
+          raw_payload: Json
+          received_at?: string | null
+        }
+        Update: {
+          event_type?: string
+          hmac_valid?: boolean | null
+          id?: string
+          jira_account_id?: string | null
+          processed?: boolean | null
+          raw_payload?: Json
+          received_at?: string | null
+        }
+        Relationships: []
       }
       jira_work_item_links: {
         Row: {
@@ -27220,6 +27498,73 @@ export type Database = {
             columns: ["test_case_id"]
             isOneToOne: false
             referencedRelation: "v_tm_test_cases_full"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      plan_test_cycles: {
+        Row: {
+          cycle_id: string
+          id: string
+          linked_at: string | null
+          linked_by: string | null
+          plan_id: string
+        }
+        Insert: {
+          cycle_id: string
+          id?: string
+          linked_at?: string | null
+          linked_by?: string | null
+          plan_id: string
+        }
+        Update: {
+          cycle_id?: string
+          id?: string
+          linked_at?: string | null
+          linked_by?: string | null
+          plan_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "plan_test_cycles_cycle_id_fkey"
+            columns: ["cycle_id"]
+            isOneToOne: false
+            referencedRelation: "tm_test_cycles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "plan_test_cycles_cycle_id_fkey"
+            columns: ["cycle_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_cycle_progress"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "plan_test_cycles_cycle_id_fkey"
+            columns: ["cycle_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_execution_by_assignee"
+            referencedColumns: ["cycle_id"]
+          },
+          {
+            foreignKeyName: "plan_test_cycles_cycle_id_fkey"
+            columns: ["cycle_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_my_work"
+            referencedColumns: ["context_id"]
+          },
+          {
+            foreignKeyName: "plan_test_cycles_cycle_id_fkey"
+            columns: ["cycle_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_test_cycle_list_metrics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "plan_test_cycles_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "tm_test_plans"
             referencedColumns: ["id"]
           },
         ]
@@ -46715,8 +47060,15 @@ export type Database = {
             foreignKeyName: "th_execution_attachments_cycle_test_case_id_fkey"
             columns: ["cycle_test_case_id"]
             isOneToOne: false
-            referencedRelation: "th_cycle_test_cases"
+            referencedRelation: "tm_cycle_scope"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_execution_attachments_cycle_test_case_id_fkey"
+            columns: ["cycle_test_case_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_my_work"
+            referencedColumns: ["item_id"]
           },
           {
             foreignKeyName: "th_execution_attachments_uploaded_by_fkey"
@@ -49333,40 +49685,70 @@ export type Database = {
       th_test_executions: {
         Row: {
           cycle_name: string | null
+          cycle_scope_id: string | null
           executed_at: string | null
           executed_by: string | null
+          execution_number: number
           id: string
           notes: string | null
           result: string | null
+          step_results: Json
           test_case_id: string
           test_cycle_id: string | null
         }
         Insert: {
           cycle_name?: string | null
+          cycle_scope_id?: string | null
           executed_at?: string | null
           executed_by?: string | null
+          execution_number?: number
           id?: string
           notes?: string | null
           result?: string | null
+          step_results?: Json
           test_case_id: string
           test_cycle_id?: string | null
         }
         Update: {
           cycle_name?: string | null
+          cycle_scope_id?: string | null
           executed_at?: string | null
           executed_by?: string | null
+          execution_number?: number
           id?: string
           notes?: string | null
           result?: string | null
+          step_results?: Json
           test_case_id?: string
           test_cycle_id?: string | null
         }
         Relationships: [
           {
+            foreignKeyName: "th_test_executions_cycle_scope_id_fkey"
+            columns: ["cycle_scope_id"]
+            isOneToOne: false
+            referencedRelation: "tm_cycle_scope"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_test_executions_cycle_scope_id_fkey"
+            columns: ["cycle_scope_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_my_work"
+            referencedColumns: ["item_id"]
+          },
+          {
             foreignKeyName: "th_test_executions_test_case_id_fkey"
             columns: ["test_case_id"]
             isOneToOne: false
-            referencedRelation: "th_test_cases"
+            referencedRelation: "tm_test_cases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_test_executions_test_case_id_fkey"
+            columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_test_cases_full"
             referencedColumns: ["id"]
           },
         ]
@@ -51060,7 +51442,14 @@ export type Database = {
             foreignKeyName: "tm_cycle_execution_audit_test_case_id_fkey"
             columns: ["test_case_id"]
             isOneToOne: false
-            referencedRelation: "test_cases"
+            referencedRelation: "tm_test_cases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_execution_audit_test_case_id_fkey"
+            columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_test_cases_full"
             referencedColumns: ["id"]
           },
           {
@@ -51509,8 +51898,15 @@ export type Database = {
             foreignKeyName: "tm_defect_links_test_run_id_fkey"
             columns: ["test_run_id"]
             isOneToOne: false
-            referencedRelation: "tm_test_runs"
+            referencedRelation: "tm_cycle_scope"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_defect_links_test_run_id_fkey"
+            columns: ["test_run_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_my_work"
+            referencedColumns: ["item_id"]
           },
         ]
       }
@@ -51544,7 +51940,23 @@ export type Database = {
           is_blocker: boolean | null
           is_regression: boolean | null
           is_security_issue: boolean | null
+          jira_assignee_name: string | null
+          jira_components: string[] | null
+          jira_created_at: string | null
+          jira_fix_versions: Json | null
+          jira_key: string | null
+          jira_parent_key: string | null
+          jira_project_key: string | null
+          jira_reporter_name: string | null
+          jira_resolution: string | null
+          jira_source: boolean
+          jira_sprint_name: string | null
+          jira_status: string | null
+          jira_status_category: string | null
+          jira_story_points: number | null
+          jira_updated_at: string | null
           labels: string[] | null
+          last_synced_at: string | null
           module: string | null
           operating_system: string | null
           priority: string | null
@@ -51590,7 +52002,23 @@ export type Database = {
           is_blocker?: boolean | null
           is_regression?: boolean | null
           is_security_issue?: boolean | null
+          jira_assignee_name?: string | null
+          jira_components?: string[] | null
+          jira_created_at?: string | null
+          jira_fix_versions?: Json | null
+          jira_key?: string | null
+          jira_parent_key?: string | null
+          jira_project_key?: string | null
+          jira_reporter_name?: string | null
+          jira_resolution?: string | null
+          jira_source?: boolean
+          jira_sprint_name?: string | null
+          jira_status?: string | null
+          jira_status_category?: string | null
+          jira_story_points?: number | null
+          jira_updated_at?: string | null
           labels?: string[] | null
+          last_synced_at?: string | null
           module?: string | null
           operating_system?: string | null
           priority?: string | null
@@ -51636,7 +52064,23 @@ export type Database = {
           is_blocker?: boolean | null
           is_regression?: boolean | null
           is_security_issue?: boolean | null
+          jira_assignee_name?: string | null
+          jira_components?: string[] | null
+          jira_created_at?: string | null
+          jira_fix_versions?: Json | null
+          jira_key?: string | null
+          jira_parent_key?: string | null
+          jira_project_key?: string | null
+          jira_reporter_name?: string | null
+          jira_resolution?: string | null
+          jira_source?: boolean
+          jira_sprint_name?: string | null
+          jira_status?: string | null
+          jira_status_category?: string | null
+          jira_story_points?: number | null
+          jira_updated_at?: string | null
           labels?: string[] | null
+          last_synced_at?: string | null
           module?: string | null
           operating_system?: string | null
           priority?: string | null
@@ -55125,6 +55569,7 @@ export type Database = {
           id: string
           is_active: boolean | null
           name: string
+          project_id: string | null
           steps: Json
           tags: string[] | null
           updated_at: string | null
@@ -55142,6 +55587,7 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           name: string
+          project_id?: string | null
           steps?: Json
           tags?: string[] | null
           updated_at?: string | null
@@ -55159,6 +55605,7 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           name?: string
+          project_id?: string | null
           steps?: Json
           tags?: string[] | null
           updated_at?: string | null
@@ -55242,6 +55689,20 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
             referencedColumns: ["theme_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_shared_steps_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_shared_steps_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "wh_sidebar_projects"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -68822,6 +69283,14 @@ export type Database = {
         }
         Relationships: []
       }
+      v_issue_counts: {
+        Row: {
+          cnt: number | null
+          issue_type: string | null
+          project_key: string | null
+        }
+        Relationships: []
+      }
       v_project_list: {
         Row: {
           completion_percentage: number | null
@@ -71466,6 +71935,7 @@ export type Database = {
             Args: never
             Returns: {
               active_cycles: number
+              automation_coverage: number
               completed_cycles: number
               overall_pass_rate: number
               total_blocked: number
@@ -72185,6 +72655,7 @@ export type Database = {
         Args: { _user_id: string; _workstream_id: string }
         Returns: boolean
       }
+      jsonb_to_text_array: { Args: { val: Json }; Returns: string[] }
       kb_cache_hit: { Args: { p_query_hash: string }; Returns: Json }
       kb_has_product_role: {
         Args: { required_codes: string[] }
@@ -72372,6 +72843,7 @@ export type Database = {
         Args: { p_item_ids: string[]; p_run_id: string }
         Returns: Json
       }
+      next_defect_key: { Args: never; Returns: string }
       next_issue_key: { Args: { p_project_id: string }; Returns: string }
       pause_step_timer: {
         Args: { p_execution_id: string; p_step_id: string }
@@ -74004,6 +74476,7 @@ export type Database = {
         | "due_date"
       tm_test_plan_status:
         | "draft"
+        | "pending_approval"
         | "active"
         | "executing"
         | "completed"
@@ -74777,6 +75250,7 @@ export const Constants = {
       ],
       tm_test_plan_status: [
         "draft",
+        "pending_approval",
         "active",
         "executing",
         "completed",

@@ -19,7 +19,7 @@ interface VCheck {
   note?: string;
 }
 
-const VALID_CYCLE_STATUSES = ['draft', 'planned', 'in_progress', 'active', 'completed', 'closed', 'on_hold'];
+const VALID_CYCLE_STATUSES = ['draft', 'planned', 'active', 'completed', 'closed', 'on_hold', 'paused', 'archived'];
 const VALID_DEFECT_STATUSES = ['open', 'in_progress', 'fixed', 'closed', 'new', 'resolved'];
 
 function makeCheck(id: string, group: string, label: string, expected: string): VCheck {
@@ -117,7 +117,7 @@ async function runCheck(id: string): Promise<Partial<VCheck>> {
         const { count, error } = await supabase
           .from('tm_test_cycles')
           .select('*', { count: 'exact', head: true })
-          .in('status', ['active', 'in_progress']);
+          .in('status', ['active']);
         if (error) return { actual: error.message, status: 'fail' };
         return { actual: String(count ?? 0), status: (count ?? 0) >= 1 ? 'pass' : 'fail' };
       }

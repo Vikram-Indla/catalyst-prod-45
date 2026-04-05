@@ -37,17 +37,16 @@ export function DeleteStatusModal({ open, statusName, itemCount, otherStatuses, 
 
   const inputStyle: React.CSSProperties = {
     width: '100%', height: 40, padding: '0 12px', fontSize: 13,
-    color: 'var(--fg-1)', background: 'var(--cp-float)', border: '1px solid var(--divider)',
+    color: 'var(--fg-1)', border: '1px solid var(--divider)',
     borderRadius: 6, outline: 'none', fontFamily: "'Inter', sans-serif",
   };
 
   return (
     <div
-      className="fixed inset-0 z-[9999] flex items-center justify-center"
-      style={{ background: 'rgba(0,0,0,0.5)' }}
+      className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50"
       onClick={e => { if (e.target === e.currentTarget) onClose(); }}
     >
-      <div style={{ width: 440, background: 'var(--cp-float)', borderRadius: 12, padding: 24, boxShadow: '0 20px 25px -5px rgba(0,0,0,.1)', fontFamily: "'Inter', sans-serif" }}>
+      <div className="bg-[var(--cp-float)] dark:bg-[#232019]" style={{ width: 440, borderRadius: 12, padding: 24, boxShadow: '0 20px 25px -5px rgba(0,0,0,.1)', fontFamily: "'Inter', sans-serif" }}>
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <AlertTriangle size={18} color="var(--sem-danger)" strokeWidth={2} />
@@ -61,8 +60,8 @@ export function DeleteStatusModal({ open, statusName, itemCount, otherStatuses, 
         {hasMigration ? (
           <>
             <div
-              className="rounded-lg mb-4"
-              style={{ borderLeft: '4px solid var(--sem-warning)', background: 'var(--sem-warning-bg)', padding: '12px 16px' }}
+              className="rounded-lg mb-4 bg-[var(--sem-warning-bg)]"
+              style={{ borderLeft: '4px solid var(--sem-warning)', padding: '12px 16px' }}
             >
               <p style={{ fontSize: 13, color: 'var(--sem-warning-fg)' }}>
                 <strong>{itemCount} items</strong> are in this status. Move them to another status before deleting.
@@ -71,7 +70,7 @@ export function DeleteStatusModal({ open, statusName, itemCount, otherStatuses, 
 
             <div className="mb-4">
               <label style={{ fontSize: 12, fontWeight: 500, color: 'var(--fg-2)', display: 'block', marginBottom: 4 }}>Move items to:</label>
-              <select value={targetId} onChange={e => setTargetId(e.target.value)} style={{ ...inputStyle, cursor: 'pointer' }}>
+              <select value={targetId} onChange={e => setTargetId(e.target.value)} className="bg-[var(--cp-float)] dark:bg-[#232019]" style={{ ...inputStyle, cursor: 'pointer' }}>
                 {otherStatuses.map(s => (
                   <option key={s.id} value={s.id}>{s.name}</option>
                 ))}
@@ -85,12 +84,12 @@ export function DeleteStatusModal({ open, statusName, itemCount, otherStatuses, 
         )}
 
         <div className="flex justify-end gap-2">
-          <button onClick={onClose} style={{ height: 36, padding: '0 16px', fontSize: 13, fontWeight: 500, color: 'var(--fg-2)', border: '1px solid var(--divider)', borderRadius: 6, background: 'var(--cp-float)', cursor: 'pointer' }}>Cancel</button>
+          <button onClick={onClose} className="bg-[var(--cp-float)] dark:bg-[#232019]" style={{ height: 36, padding: '0 16px', fontSize: 13, fontWeight: 500, color: 'var(--fg-2)', border: '1px solid var(--divider)', borderRadius: 6, cursor: 'pointer' }}>Cancel</button>
           <button
             onClick={() => onConfirm(hasMigration ? targetId : undefined)}
             disabled={loading || (hasMigration && !targetId)}
-            className="hover:opacity-90 transition-opacity disabled:opacity-50"
-            style={{ height: 36, padding: '0 16px', fontSize: 13, fontWeight: 600, color: '#FFFFFF', background: 'var(--sem-danger)', border: 'none', borderRadius: 6, cursor: loading ? 'default' : 'pointer' }}
+            className="hover:opacity-90 transition-opacity disabled:opacity-50 bg-[var(--sem-danger)]"
+            style={{ height: 36, padding: '0 16px', fontSize: 13, fontWeight: 600, color: '#FFFFFF', border: 'none', borderRadius: 6, cursor: loading ? 'default' : 'pointer' }}
           >
             {loading ? 'Deleting...' : hasMigration ? 'Move & Delete' : 'Delete'}
           </button>

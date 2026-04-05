@@ -68,7 +68,7 @@ export function SidebarProjectNav({
 
   return (
     <div
-      className="flex flex-col h-full flex-shrink-0 bg-white dark:bg-[#181A1E] border-r border-[#E2E8F0] dark:border-[rgba(235,238,245,0.10)]"
+      className="flex flex-col h-full flex-shrink-0 bg-white dark:bg-[#1A1714] border-r border-[#E2E8F0] dark:border-[rgba(235,238,245,0.10)]"
       style={{
         width: collapsed ? 56 : 200,
         transition: 'width 200ms ease',
@@ -88,7 +88,7 @@ export function SidebarProjectNav({
             style={{
               width: 28,
               height: 28,
-              background: projectColor,
+              backgroundColor: projectColor,
               color: '#FFFFFF',
               fontSize: 10,
               fontWeight: 700,

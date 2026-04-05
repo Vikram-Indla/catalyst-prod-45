@@ -79,6 +79,13 @@ export default function DefectsPage() {
     closed_at: null,
     created_at: d.created_at,
     updated_at: d.updated_at,
+    jira_key: d.jira_key || null,
+    jira_source: !!d.jira_source,
+    jira_project_key: d.jira_project_key || null,
+    jira_status: d.jira_status || null,
+    jira_status_category: null,
+    jira_assignee_name: d.assignee?.full_name || null,
+    jira_reporter_name: d.reporter?.full_name || null,
     assignee: d.assignee ? { id: d.assignee.id, full_name: d.assignee.full_name, avatar_url: d.assignee.avatar_url || null } : null,
     reporter: d.reporter ? { id: d.reporter.id, full_name: d.reporter.full_name, avatar_url: d.reporter.avatar_url || null } : null,
   }));

@@ -10,7 +10,7 @@ export default function TeamWorkloadWidget({ projectId, projectKey, collapsed, o
     <WidgetWrapper title="Team Workload" subtitle="Open items in active releases" collapsed={collapsed} onToggleCollapse={onToggleCollapse} span={2}>
       {isLoading ? (
         <div className="animate-pulse space-y-2">
-          {[1, 2, 3].map(i => <div key={i} className="h-5 rounded" style={{ background: 'var(--cp-bg-sunken)', width: `${80 - i * 15}%` }} />)}
+          {[1, 2, 3].map(i => <div key={i} className="h-5 rounded bg-[#F1F5F9] dark:bg-[#2C2823]" style={{ width: `${80 - i * 15}%` }} />)}
         </div>
       ) : !workload?.length ? (
         <div className="flex flex-col items-center py-6 text-center">
@@ -24,9 +24,8 @@ export default function TeamWorkloadWidget({ projectId, projectKey, collapsed, o
             <div key={w.assignee} className="flex items-center gap-3" style={{ height: 'var(--cp-size-table-row)' }}>
               {/* Avatar + Name */}
               <div className="flex items-center gap-2" style={{ minWidth: 140, maxWidth: 140 }}>
-                <div className="flex items-center justify-center shrink-0" style={{
+                <div className="flex items-center justify-center shrink-0 bg-[#EFF6FF] dark:bg-[#1a2744] text-[#2563EB]" style={{
                   width: 24, height: 24, borderRadius: '50%',
-                  background: 'var(--cp-primary-5)', color: 'var(--cp-primary-60)',
                   fontSize: 10, fontWeight: 700,
                 }}>
                   {w.assignee.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()}
@@ -35,10 +34,9 @@ export default function TeamWorkloadWidget({ projectId, projectKey, collapsed, o
               </div>
 
               {/* Bar track */}
-              <div className="flex-1" style={{ height: 18, background: 'var(--cp-neutral-10)', borderRadius: 'var(--cp-radius-sm)', overflow: 'hidden' }}>
-                <div style={{
+              <div className="flex-1 bg-[#F1F5F9] dark:bg-[#2C2823]" style={{ height: 18, borderRadius: 'var(--cp-radius-sm)', overflow: 'hidden' }}>
+                <div className="bg-[#2563EB]/20 dark:bg-[#2563EB]/20" style={{
                   height: '100%', width: `${Math.max(4, (w.total / maxCount) * 100)}%`,
-                  background: 'rgba(37, 99, 235, 0.20)',
                   borderLeft: '3px solid var(--cp-primary-60)',
                   transition: 'width 300ms ease',
                 }} />

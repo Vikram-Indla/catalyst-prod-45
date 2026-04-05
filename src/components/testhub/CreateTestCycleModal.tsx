@@ -1,6 +1,15 @@
-import { useState, useEffect } from 'react';
-import { X, Calendar, User, AlertCircle, Server } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { X, Calendar, User, AlertCircle, Server, ChevronDown } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+
+const CYCLE_STATUS_OPTIONS = [
+  { value: 'draft', label: 'DRAFT', bg: '#DFE1E6', text: '#253858' },
+  { value: 'planned', label: 'PLANNED', bg: '#DEEBFF', text: '#0747A6' },
+  { value: 'active', label: 'IN PROGRESS', bg: '#DEEBFF', text: '#0747A6' },
+  { value: 'completed', label: 'COMPLETED', bg: '#E3FCEF', text: '#006644' },
+  { value: 'paused', label: 'PAUSED', bg: '#DFE1E6', text: '#253858' },
+  { value: 'archived', label: 'ARCHIVED', bg: '#DFE1E6', text: '#253858' },
+] as const;
 import { catalystToast } from '@/components/ui/CatalystToast';
 
 interface EnvironmentOption {
@@ -46,22 +55,65 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [environments, setEnvironments] = useState<EnvironmentOption[]>([]);
 
-  useEffect(() => {
-    if (isOpen) {
-      supabase.from('profiles').select('id, full_name').order('full_name').then(({ data }) => {
-        if (data) setProfiles(data);
-      });
-      (supabase as any).from('tm_environments').select('id, name, type, health_status').eq('status', 'active').order('name').then(({ data }: any) => {
-        if (data) setEnvironments(data);
-      });
+  const [cycleStatus, setCycleStatus] = useState('draft');
+  const [statusDropdownOpen, setStatusDropdownOpen] = useState(false);
+  const statusRef = useRef<HTMLDivElement>(null);
 
-      if (mode === 'edit' && cycle) {
-        setName(cycle.name || '');
-        setDescription(cycle.description || '');
-        setStartDate(cycle.planned_start || '');
-        setEndDate(cycle.planned_end || '');
+  // Close status dropdown on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (statusRef.current && !statusRef.current.contains(e.target as Node)) {
+        setStatusDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    let isCancelled = false;
+
+    const loadModalData = async () => {
+      const [profilesResult, environmentsResult] = await Promise.all([
+        supabase.from('profiles').select('id, full_name').order('full_name'),
+        (supabase as any)
+          .from('tm_environments')
+          .select('id, name, type, health_status')
+          .eq('status', 'active')
+          .order('name'),
+      ]);
+
+      if (isCancelled) return;
+
+      if (profilesResult.data) setProfiles(profilesResult.data);
+      if (environmentsResult.data) setEnvironments(environmentsResult.data);
+
+      if (mode === 'edit' && cycle?.id) {
+        let sourceCycle = cycle;
+
+        const { data: latestCycle, error: cycleError } = await (supabase as any)
+          .from('tm_test_cycles')
+          .select('id, cycle_key, name, description, planned_start, planned_end, environment_id, status')
+          .eq('id', cycle.id)
+          .maybeSingle();
+
+        if (!cycleError && latestCycle) {
+          sourceCycle = latestCycle;
+        } else if (cycleError) {
+          console.error('Failed to load latest test cycle for edit modal:', cycleError);
+        }
+
+        if (isCancelled) return;
+
+        setName(sourceCycle.name || '');
+        setDescription(sourceCycle.description || '');
+        setStartDate(sourceCycle.planned_start || '');
+        setEndDate(sourceCycle.planned_end || '');
         setOwnerId('');
-        setEnvironmentId(cycle.environment_id || '');
+        setEnvironmentId(sourceCycle.environment_id || '');
+        setCycleStatus(sourceCycle.status || 'draft');
       } else {
         setName('');
         setDescription('');
@@ -69,10 +121,19 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
         setEndDate('');
         setOwnerId('');
         setEnvironmentId('');
+        setCycleStatus('draft');
       }
+
+      setStatusDropdownOpen(false);
       setErrors({});
-    }
-  }, [isOpen, mode, cycle]);
+    };
+
+    void loadModalData();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [isOpen, mode, cycle?.id]);
 
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
@@ -110,6 +171,7 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
           planned_start: startDate || null,
           planned_end: endDate || null,
           environment_id: environmentId || null,
+          status: cycleStatus,
           updated_at: new Date().toISOString(),
         };
 
@@ -192,7 +254,78 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
             {errors.name && <p style={{ fontSize: 12, color: 'var(--sem-danger)', margin: '6px 0 0', display: 'flex', alignItems: 'center', gap: 4 }}><AlertCircle size={12} />{errors.name}</p>}
           </div>
 
-          {/* Description */}
+          {/* Status — edit mode only */}
+          {isEdit && (
+            <div style={{ marginBottom: 20 }} ref={statusRef}>
+              <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--fg-1)', marginBottom: 6 }}>
+                Status <span style={{ color: 'var(--sem-danger)' }}>*</span>
+              </label>
+              <div style={{ position: 'relative' }}>
+                <button
+                  type="button"
+                  onClick={() => setStatusDropdownOpen(!statusDropdownOpen)}
+                  style={{
+                    width: '100%', height: 40, padding: '0 12px',
+                    border: '1px solid #E2E8F0', borderRadius: 6,
+                    fontSize: 14, color: '#334155', backgroundColor: '#FFFFFF',
+                    fontFamily: 'Inter, sans-serif',
+                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                    cursor: 'pointer', outline: 'none',
+                  }}
+                >
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    {(() => {
+                      const opt = CYCLE_STATUS_OPTIONS.find(o => o.value === cycleStatus);
+                      if (!opt) return cycleStatus;
+                      return (
+                        <span style={{
+                          display: 'inline-block', padding: '0 6px', height: 20,
+                          lineHeight: '20px', fontSize: 11, fontWeight: 700,
+                          textTransform: 'uppercase', letterSpacing: '0.03em',
+                          borderRadius: 3, backgroundColor: opt.bg, color: opt.text,
+                        }}>{opt.label}</span>
+                      );
+                    })()}
+                  </span>
+                  <ChevronDown size={16} style={{ color: '#94A3B8' }} />
+                </button>
+                {statusDropdownOpen && (
+                  <div style={{
+                    position: 'absolute', top: '100%', left: 0, right: 0,
+                    marginTop: 4, backgroundColor: '#FFFFFF',
+                    border: '1px solid #E2E8F0', borderRadius: 6,
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                    zIndex: 50, overflow: 'hidden',
+                  }}>
+                    {CYCLE_STATUS_OPTIONS.map(opt => (
+                      <button
+                        key={opt.value}
+                        type="button"
+                        onClick={() => { setCycleStatus(opt.value); setStatusDropdownOpen(false); }}
+                        style={{
+                          width: '100%', padding: '8px 12px', border: 'none',
+                          backgroundColor: cycleStatus === opt.value ? '#F1F5F9' : 'transparent',
+                          display: 'flex', alignItems: 'center', gap: 8,
+                          cursor: 'pointer', fontSize: 14, color: '#334155',
+                          fontFamily: 'Inter, sans-serif',
+                        }}
+                        onMouseEnter={(e) => { (e.target as HTMLElement).style.backgroundColor = '#F8FAFC'; }}
+                        onMouseLeave={(e) => { (e.target as HTMLElement).style.backgroundColor = cycleStatus === opt.value ? '#F1F5F9' : 'transparent'; }}
+                      >
+                        <span style={{
+                          display: 'inline-block', padding: '0 6px', height: 20,
+                          lineHeight: '20px', fontSize: 11, fontWeight: 700,
+                          textTransform: 'uppercase', letterSpacing: '0.03em',
+                          borderRadius: 3, backgroundColor: opt.bg, color: opt.text,
+                        }}>{opt.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
           <div style={{ marginBottom: 20 }}>
             <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--fg-1)', marginBottom: 6 }}>Description</label>
             <textarea value={description} onChange={(e) => setDescription(e.target.value)}

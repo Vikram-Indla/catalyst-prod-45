@@ -25,7 +25,7 @@ export function TopNav({ onCreateClick }: TopNavProps) {
 
   return (
     <header
-      className="flex items-center flex-shrink-0 bg-white dark:bg-[#181A1E] border-b border-[#E2E8F0] dark:border-[rgba(235,238,245,0.10)]"
+      className="flex items-center flex-shrink-0 bg-white dark:bg-[#1A1714] border-b border-[#E2E8F0] dark:border-[rgba(235,238,245,0.10)]"
       style={{
         height: 48,
         paddingLeft: 16,
@@ -40,8 +40,8 @@ export function TopNav({ onCreateClick }: TopNavProps) {
         style={{ border: 'none', background: 'transparent', cursor: 'pointer' }}
       >
         <div
-          className="flex items-center justify-center rounded-full flex-shrink-0"
-          style={{ width: 28, height: 28, background: 'var(--cp-blue)' }}
+          className="flex items-center justify-center rounded-full flex-shrink-0 bg-[var(--cp-blue)]"
+          style={{ width: 28, height: 28 }}
         >
           <span style={{ color: 'var(--bg-app)', fontSize: 13, fontWeight: 800, fontFamily: "'Sora', sans-serif" }}>C</span>
         </div>
@@ -89,11 +89,10 @@ export function TopNav({ onCreateClick }: TopNavProps) {
         {/* + Create */}
         <button
           onClick={onCreateClick}
-          className="flex items-center gap-1.5 rounded-md transition-colors hover:opacity-90"
+          className="flex items-center gap-1.5 rounded-md transition-colors hover:opacity-90 bg-[var(--cp-blue)]"
           style={{
             height: 32,
             padding: '0 12px',
-            background: 'var(--cp-blue)',
             color: '#FFFFFF',
             border: 'none',
             borderRadius: 6,

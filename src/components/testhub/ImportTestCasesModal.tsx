@@ -12,7 +12,7 @@ interface ImportTestCasesModalProps {
 
 interface ParsedTestCase {
   title: string;
-  objective?: string;
+  description?: string;
   preconditions?: string;
   priority: string;
   type: string;
@@ -75,7 +75,7 @@ export function ImportTestCasesModal({ isOpen, onClose, onSuccess, folders }: Im
         if (row.title) {
           parsed.push({
             title: row.title,
-            objective: row.objective || row.description,
+            description: row.description || row.objective,
             preconditions: row.preconditions,
             priority: row.priority || 'medium',
             type: row.type || 'functional',
@@ -120,7 +120,7 @@ export function ImportTestCasesModal({ isOpen, onClose, onSuccess, folders }: Im
           .insert([{
             case_key: `TC-${String(nextNum).padStart(3, '0')}`,
             title: tc.title,
-            description: tc.objective,
+            description: tc.description,
             preconditions: tc.preconditions,
             folder_id: selectedFolderId || null,
             status: 'draft',
@@ -155,7 +155,7 @@ export function ImportTestCasesModal({ isOpen, onClose, onSuccess, folders }: Im
   };
 
   const downloadTemplate = () => {
-    const csv = `title,objective,preconditions,priority,type,automation,step_1_action,step_1_expected
+    const csv = `title,description,preconditions,priority,type,automation,step_1_action,step_1_expected
 "Login with valid credentials","Verify user can login","User account exists",critical,functional,manual,"Navigate to login page","Login page displays"
 "Login with invalid password","Verify error on wrong password","User account exists",high,functional,manual,"Enter wrong password","Error message shown"`;
     

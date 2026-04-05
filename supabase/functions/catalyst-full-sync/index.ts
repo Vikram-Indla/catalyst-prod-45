@@ -57,40 +57,45 @@ serve(async (req) => {
     // 3. Fetch ALL issues per project with JQL created >= yearFilter-01-01
     let totalFetched = 0
     let totalUpserted = 0
-    const searchUrl = `${base}/rest/api/3/search`
-    const fields = 'summary,status,assignee,reporter,issuetype,parent,fixVersions,duedate,labels,components,priority,created,updated,resolution,description'
+    const searchUrl = `${base}/rest/api/3/search/jql`
+    const fieldsList = ['summary','status','assignee','reporter','issuetype','parent','fixVersions','duedate','labels','components','priority','created','updated','resolution','description']
+    const postHeaders = { ...headers, 'Content-Type': 'application/json' }
 
     const projectNameLookup: Record<string, string> = {}
+    const diagnostics: Record<string, any> = {}
 
     for (const pk of projectKeys) {
       const jql = `project = "${pk}" AND created >= "${yearFilter}-01-01" ORDER BY created ASC`
       console.log(`[full-sync] ${pk}: JQL = ${jql}`)
 
-      let startAt = 0
       const maxResults = 100
       let projectIssues: any[] = []
+      let nextPageToken: string | undefined = undefined
 
-      // Paginate through all issues
-      while (true) {
-        const url = `${searchUrl}?jql=${encodeURIComponent(jql)}&startAt=${startAt}&maxResults=${maxResults}&fields=${fields}`
-        const res = await fetch(url, { headers })
+      // Paginate using POST /search/jql with cursor tokens
+      do {
+        const reqBody: Record<string, any> = { jql, fields: fieldsList, maxResults }
+        if (nextPageToken) reqBody.nextPageToken = nextPageToken
+
+        const res = await fetch(searchUrl, { method: 'POST', headers: postHeaders, body: JSON.stringify(reqBody) })
 
         if (!res.ok) {
           const errText = await res.text().catch(() => '')
-          console.error(`[full-sync] ${pk} Error ${res.status}: ${errText.slice(0, 200)}`)
+          console.error(`[full-sync] ${pk} Error ${res.status}: ${errText.slice(0, 300)}`)
+          diagnostics[pk] = { error: res.status, detail: errText.slice(0, 300) }
           break
         }
 
         const data = await res.json()
-        const issues = data.issues || []
+        const issues = Array.isArray(data.issues) ? data.issues : []
         projectIssues = projectIssues.concat(issues)
         totalFetched += issues.length
+        nextPageToken = data.nextPageToken || undefined
 
-        console.log(`[full-sync] ${pk}: fetched ${projectIssues.length}/${data.total} issues`)
+        console.log(`[full-sync] ${pk}: fetched ${projectIssues.length} issues so far`)
+      } while (nextPageToken && projectIssues.length < 10000)
 
-        if (startAt + issues.length >= data.total || issues.length === 0) break
-        startAt += maxResults
-      }
+      diagnostics[pk] = { fetched: projectIssues.length }
 
       // 4. Transform and upsert
       if (projectIssues.length > 0) {
@@ -209,6 +214,7 @@ serve(async (req) => {
       fetched: totalFetched,
       upserted: totalUpserted,
       duration_ms: Date.now() - startTime,
+      diagnostics,
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     })

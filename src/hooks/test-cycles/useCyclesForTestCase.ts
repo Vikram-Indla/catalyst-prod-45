@@ -42,7 +42,7 @@ export function useCyclesForTestCase(testCaseId: string | undefined) {
       }
 
       // Filter to only active/executable cycles and map to clean structure
-      const activeStatuses = ['active', 'in_progress', 'planned'];
+      const activeStatuses = ['active', 'planned'];
       
       return ((data || []) as any[])
         .filter(row => row.cycle && activeStatuses.includes(row.cycle.status))

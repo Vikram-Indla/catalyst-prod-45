@@ -4,9 +4,27 @@
  * 
  * Three-pane layout: Test List | Step Runner | Sidebar (Attachments/Defects)
  * Features: Step-level execution, keyboard shortcuts (P/F/B/S/1-9/?),
- * resizable panels, FastTrack mode, Pass All Remaining, session timer.
+ * resizable panels, FastTrack mode, execution history, view/re-run modes.
  */
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
+import { deriveOverallStatus } from '@/utils/testExecution';
+import type { StepStatus as StepStatusType } from '@/utils/testExecution';
+
+interface ExecutionHistoryRecord {
+  id: string;
+  execution_number: number;
+  result: string;
+  executed_by: string | null;
+  executed_at: string;
+  step_results: Array<{
+    step_number: number;
+    title: string;
+    status: string;
+    notes: string;
+  }>;
+  executor?: { full_name: string } | null;
+}
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import {
   ArrowLeft, Play, Clock, CheckCircle2, XCircle,
@@ -15,6 +33,7 @@ import {
 } from 'lucide-react';
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable';
 import { supabase } from '@/integrations/supabase/client';
+import { useQueryClient } from '@tanstack/react-query';
 import { catalystToast } from '@/components/ui/CatalystToast';
 import { FailureReasonModal } from '@/components/testhub/FailureReasonModal';
 import { KeyboardShortcutsGuide } from '@/components/testhub/execution/KeyboardShortcutsGuide';
@@ -49,7 +68,7 @@ interface CycleTestCase {
   id: string;
   cycle_id: string;
   test_case_id: string;
-  execution_status: string;
+  current_status: string;
   executed_at: string | null;
   executed_by: string | null;
   assigned_to: string | null;
@@ -57,15 +76,17 @@ interface CycleTestCase {
   execution_time_seconds: number;
   failure_reason: string | null;
   started_at: string | null;
-  defect_ids: string[] | null;
+  
   test_case: {
     id: string;
     case_key: string;
     title: string;
-    objective: string | null;
+    description: string | null;
     preconditions: string | null;
-    priority: string;
-    type: string;
+    priority_id: string | null;
+    case_type_id: string | null;
+    priority?: { id: string; name: string; color: string } | null;
+    case_type?: { id: string; name: string } | null;
     steps?: TestStep[];
   } | null;
   assignee?: { id: string; full_name: string } | null;
@@ -109,6 +130,7 @@ export default function TestHubExecutionPage() {
   const { cycleId } = useParams<{ cycleId: string }>();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const queryClient = useQueryClient();
 
   // Core state
   const [cycle, setCycle] = useState<TestCycle | null>(null);
@@ -118,6 +140,7 @@ export default function TestHubExecutionPage() {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [showMyTestsOnly, setShowMyTestsOnly] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const queryClient = useQueryClient();
 
   // Session timer (overall)
   const [sessionElapsed, setSessionElapsed] = useState(0);
@@ -126,6 +149,11 @@ export default function TestHubExecutionPage() {
   // Step-level execution state
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [stepStatuses, setStepStatuses] = useState<Map<string, StepStatus[]>>(new Map());
+
+  // View mode / re-run state
+  const [viewMode, setViewMode] = useState(false);
+  const [executionHistory, setExecutionHistory] = useState<ExecutionHistoryRecord | null>(null);
+  const [previousRunData, setPreviousRunData] = useState<ExecutionHistoryRecord | null>(null);
 
   // UI state
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -157,13 +185,13 @@ export default function TestHubExecutionPage() {
     if (!cycleId) return;
     const { data, error } = await (supabase as any)
       .from('tm_cycle_scope')
-      .select(`*, test_case:tm_test_cases ( id, case_key, title, objective, preconditions, priority, type ), assignee:profiles!tm_cycle_scope_assigned_to_fkey ( id, full_name )`)
+      .select(`*, test_case:tm_test_cases ( id, case_key, title, description, preconditions, priority_id, case_type_id, priority:tm_case_priorities ( id, name, color ), case_type:tm_case_types ( id, name ) ), assignee:profiles!assigned_to ( id, full_name )`)
       .eq('cycle_id', cycleId)
-      .order('created_at');
+      .order('added_at');
 
     if (data && data.length > 0) {
       const testCaseIds = data.map(tc => tc.test_case?.id).filter(Boolean);
-      const { data: stepsData } = await supabase.from('th_test_steps').select('*').in('test_case_id', testCaseIds).order('step_number');
+      const { data: stepsData } = await supabase.from('tm_test_steps').select('*').in('test_case_id', testCaseIds).order('step_number');
       if (stepsData) {
         const stepsMap = new Map<string, any[]>();
         stepsData.forEach(s => {
@@ -192,6 +220,29 @@ export default function TestHubExecutionPage() {
     setAttachments(data || []);
   }, [selectedTestCaseId]);
 
+  const fetchExecutionHistory = useCallback(async (cycleScopeId: string): Promise<ExecutionHistoryRecord | null> => {
+    if (!cycleScopeId) return null;
+    const { data, error } = await supabase
+      .from('th_test_executions')
+      .select('*')
+      .eq('cycle_scope_id', cycleScopeId)
+      .order('execution_number', { ascending: false });
+    if (error) {
+      console.error('[ExecHistory] FETCH FAILED:', error.code, error.message, error.details);
+      return null;
+    }
+    if (!data || data.length === 0) return null;
+    const latest = data[0];
+    return {
+      id: latest.id,
+      execution_number: latest.execution_number,
+      result: latest.result,
+      executed_by: latest.executed_by,
+      executed_at: latest.executed_at,
+      step_results: Array.isArray(latest.step_results) ? latest.step_results as any : [],
+    } as ExecutionHistoryRecord;
+  }, []);
+
   useEffect(() => { fetchCycle(); fetchTestCases(); }, [cycleId]);
   useEffect(() => { if (selectedTestCaseId) fetchAttachments(); }, [selectedTestCaseId]);
 
@@ -201,16 +252,43 @@ export default function TestHubExecutionPage() {
     return () => clearInterval(interval);
   }, []);
 
-  // Reset step index on test case change
+  // Handle test case selection — determine view vs execute mode
+  const selectTest = useCallback(async (id: string) => {
+    setSelectedTestCaseId(id);
+    setCurrentStepIndex(0);
+    const tc = testCases.find(t => t.id === id);
+    setNotes(tc?.notes || '');
+    
+    if (tc && tc.current_status !== 'not_run') {
+      // Completed test → enter view mode, fetch history
+      const history = await fetchExecutionHistory(id);
+      setExecutionHistory(history);
+      setViewMode(true);
+      setPreviousRunData(null);
+    } else {
+      setViewMode(false);
+      setExecutionHistory(null);
+      setPreviousRunData(null);
+    }
+  }, [testCases, fetchExecutionHistory]);
+
+  // Reset step index on test case change (for URL-based initial selection)
   useEffect(() => {
     setCurrentStepIndex(0);
     const currentTC = testCases.find(tc => tc.id === selectedTestCaseId);
     setNotes(currentTC?.notes || '');
-  }, [selectedTestCaseId]);
+    // Check view mode for initial load
+    if (currentTC && currentTC.current_status !== 'not_run') {
+      fetchExecutionHistory(currentTC.id).then(h => {
+        setExecutionHistory(h);
+        setViewMode(true);
+      });
+    }
+  }, [selectedTestCaseId, testCases.length]);
 
   // ── Derived state ──────────────────────────────────────────────────────
   const filteredTestCases = testCases.filter(tc => {
-    if (statusFilter !== 'all' && tc.execution_status !== statusFilter) return false;
+    if (statusFilter !== 'all' && tc.current_status !== statusFilter) return false;
     if (showMyTestsOnly && tc.assigned_to !== currentUserId) return false;
     return true;
   });
@@ -229,37 +307,107 @@ export default function TestHubExecutionPage() {
   const canGoNextStep = currentStepIndex < steps.length - 1;
 
   // ── Actions ────────────────────────────────────────────────────────────
-  const selectTest = (id: string) => setSelectedTestCaseId(id);
   const handleExit = () => navigate(`/testhub/cycles/${cycleId}`);
   const handlePrevious = () => { if (canGoPrev) setSelectedTestCaseId(filteredTestCases[currentIndex - 1].id); };
   const handleNext = () => { if (canGoNext) setSelectedTestCaseId(filteredTestCases[currentIndex + 1].id); };
 
   const updateExecutionStatus = useCallback(async (status: string, failureReason?: string, failureNotes?: string, defectId?: string | null) => {
-    if (!selectedTestCaseId || !currentUserId) return;
+    if (!selectedTestCaseId) return;
+    if (!currentUserId) {
+      console.error('[ExecutionPage] Cannot complete: currentUserId is null. Auth state may not have loaded.');
+      catalystToast.error('Authentication not ready. Please try again.');
+      return;
+    }
     setIsSubmitting(true);
     try {
+      // 1. Update tm_cycle_scope.current_status
       const updateData: any = {
-        execution_status: status,
-        executed_at: new Date().toISOString(),
-        executed_by: currentUserId,
-        execution_time_seconds: Math.floor((Date.now() - sessionStartRef.current) / 1000),
+        current_status: status,
         updated_at: new Date().toISOString(),
       };
-      if (failureReason) updateData.failure_reason = failureReason;
-      if (failureNotes) {
-        const existing = currentTestCase?.notes || '';
-        updateData.notes = existing ? `${existing}\n\n[Failure Notes] ${failureNotes}` : `[Failure Notes] ${failureNotes}`;
-      }
-      if (defectId) {
-        const existing = currentTestCase?.defect_ids || [];
-        updateData.defect_ids = [...existing, defectId];
-      }
-      if (status === 'not_run') {
-        updateData.executed_at = null; updateData.executed_by = null;
-        updateData.failure_reason = null; updateData.execution_time_seconds = 0;
-      }
       const { error } = await (supabase as any).from('tm_cycle_scope').update(updateData).eq('id', selectedTestCaseId);
       if (error) { catalystToast.error('Failed to update test result'); return; }
+
+      // 2. INSERT execution history record (skip for reset)
+      if (status !== 'not_run' && currentTestCase) {
+        if (!selectedTestCaseId) return;
+        if (!currentUserId) {
+          console.error('[ExecHistory] INSERT aborted: currentUserId is null');
+          return;
+        }
+
+        // Get next execution number
+        const { data: lastExec, error: lastExecError } = await supabase
+          .from('th_test_executions')
+          .select('execution_number')
+          .eq('cycle_scope_id', selectedTestCaseId)
+          .order('execution_number', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+
+        if (lastExecError) {
+          console.error('[ExecHistory] Failed to fetch last execution number:', lastExecError.code, lastExecError.message, lastExecError.details, lastExecError.hint);
+        }
+
+        const nextExecutionNumber = (lastExec?.execution_number ?? 0) + 1;
+        const key = selectedTestCaseId;
+        const currentStatuses = stepStatuses.get(key) || steps.map((_, i) => ({ stepIndex: i, status: 'not_run' as const }));
+        const stepResultsSnapshot = steps.map((s, i) => ({
+          step_number: s.step_number || i + 1,
+          title: s.action || '',
+          status: currentStatuses[i]?.status || 'not_run',
+          notes: failureReason && currentStatuses[i]?.status === 'failed' ? failureReason : '',
+        }));
+        const completedAt = new Date().toISOString();
+        const sessionStartTime = new Date(sessionStartRef.current).toISOString();
+
+        console.log('[ExecHistory] INSERT payload:', {
+          cycle_scope_id: selectedTestCaseId,
+          execution_number: nextExecutionNumber,
+          result: status,
+          step_results: stepResultsSnapshot,
+          executed_by: currentUserId,
+          executed_at: completedAt,
+        });
+
+        const insertPayload = {
+          test_case_id: currentTestCase.test_case_id,
+          test_cycle_id: cycle?.id ?? null,
+          cycle_name: cycle?.name ?? null,
+          cycle_scope_id: selectedTestCaseId,
+          execution_number: nextExecutionNumber ?? 1,
+          result: status,
+          step_results: stepResultsSnapshot ?? [],
+          executed_by: currentUserId,
+          executed_at: completedAt,
+          notes: failureNotes ?? null,
+        };
+
+        console.log('[ExecHistory] Attempting INSERT:', insertPayload);
+
+        const { data: execData, error: execError } = await supabase
+          .from('th_test_executions')
+          .insert(insertPayload)
+          .select('id, execution_number')
+          .single();
+
+        if (execError) {
+          console.error('[ExecHistory] INSERT FAILED:', execError.code, execError.message, execError.details, execError.hint);
+          catalystToast.error('Warning: Run history could not be saved', {
+            description: execError.message,
+            title: 'Execution History Warning',
+          });
+        } else {
+          console.log('[ExecHistory] INSERT SUCCESS:', execData);
+          await queryClient.invalidateQueries({
+            queryKey: ['execution-history', selectedTestCaseId],
+          });
+          const refreshedHistory = await fetchExecutionHistory(selectedTestCaseId);
+          if (refreshedHistory) {
+            setExecutionHistory(refreshedHistory);
+          }
+        }
+      }
 
       const toastMap: Record<string, () => void> = {
         passed: () => catalystToast.success('Test case marked as passed', { title: 'Test Passed' }),
@@ -281,7 +429,7 @@ export default function TestHubExecutionPage() {
       }
     } catch (err: any) { catalystToast.error(err.message || 'Failed to update test result'); }
     finally { setIsSubmitting(false); }
-  }, [selectedTestCaseId, currentUserId, currentTestCase, canGoNext, fastTrackMode, fetchTestCases, fetchCycle]);
+  }, [selectedTestCaseId, currentUserId, currentTestCase, canGoNext, fastTrackMode, fetchTestCases, fetchCycle, stepStatuses, steps, cycle, fetchExecutionHistory, queryClient]);
 
   const handlePass = () => {
     if (fastTrackMode || steps.length === 0) {
@@ -296,7 +444,7 @@ export default function TestHubExecutionPage() {
     if (fastTrackMode || steps.length === 0) {
       setIsFailureModalOpen(true); // Use failure modal for reason
     } else {
-      setIsFailureModalOpen(true); // Use failure modal for block reason
+      updateStepStatus('blocked');
     }
   };
   const handleSkip = () => {
@@ -357,30 +505,76 @@ export default function TestHubExecutionPage() {
     }
   }, [currentStepIndex, selectedTestCaseId, steps, currentUserId]);
 
-  // Pass All Remaining
-  const handlePassAllRemaining = () => {
-    if (steps.length === 0) {
-      updateExecutionStatus('passed');
-      return;
-    }
-    const key = selectedTestCaseId || '';
+  // Derive overall status from step statuses
+  const derivedStatus = useMemo(() => {
+    if (!selectedTestCaseId || steps.length === 0) return 'not_run' as const;
+    const key = selectedTestCaseId;
     const current = stepStatuses.get(key) || steps.map((_, i) => ({ stepIndex: i, status: 'not_run' as const }));
-    const updated = current.map(s => s.status === 'not_run' ? { ...s, status: 'passed' as const } : s);
-    setStepStatuses(new Map(stepStatuses).set(key, updated));
-    updateExecutionStatus('passed');
+    const statuses = current.map(s => s.status);
+    const markedStatuses = statuses.filter(s => s !== 'not_run');
+    if (markedStatuses.length === 0) return 'not_run' as const;
+    return deriveOverallStatus(markedStatuses);
+  }, [selectedTestCaseId, stepStatuses, steps]);
+
+  const allStepsMarked = useMemo(() => {
+    if (!selectedTestCaseId || steps.length === 0) return false;
+    const key = selectedTestCaseId;
+    const current = stepStatuses.get(key) || steps.map((_, i) => ({ stepIndex: i, status: 'not_run' as const }));
+    return current.every(s => s.status !== 'not_run');
+  }, [selectedTestCaseId, stepStatuses, steps]);
+
+  const anyStepMarked = useMemo(() => {
+    if (!selectedTestCaseId || steps.length === 0) return false;
+    const key = selectedTestCaseId;
+    const current = stepStatuses.get(key) || steps.map((_, i) => ({ stepIndex: i, status: 'not_run' as const }));
+    return current.some(s => s.status !== 'not_run');
+  }, [selectedTestCaseId, stepStatuses, steps]);
+
+  // Complete Execution — derives overall status from steps
+  const handleCompleteExecution = async () => {
+    if (!selectedTestCaseId || derivedStatus === 'not_run') return;
+    
+    await updateExecutionStatus(derivedStatus);
+    
+    // Only show failure modal if derived failed but NO individual step was failed
+    // (meaning user forced a fail at test level without step-level failures —
+    //  if steps were already failed, failure info was captured at step level)
+    if (derivedStatus === 'failed') {
+      const key = selectedTestCaseId;
+      const current = stepStatuses.get(key) || [];
+      const hasStepFailure = current.some(s => s.status === 'failed');
+      if (!hasStepFailure) {
+        setIsFailureModalOpen(true);
+      }
+    }
   };
 
-  // Notes auto-save
-  useEffect(() => {
+  // Re-run handler — enter execution mode with fresh step states
+  const handleRerun = useCallback(async () => {
     if (!selectedTestCaseId) return;
-    const timer = setTimeout(async () => {
-      const currentTC = testCases.find(tc => tc.id === selectedTestCaseId);
-      if (notes !== (currentTC?.notes || '')) {
-        await (supabase as any).from('tm_cycle_scope').update({ notes, updated_at: new Date().toISOString() }).eq('id', selectedTestCaseId);
-      }
-    }, 800);
-    return () => clearTimeout(timer);
-  }, [notes, selectedTestCaseId]);
+    // Save current history as previous run reference
+    const history = await fetchExecutionHistory(selectedTestCaseId);
+    setPreviousRunData(history);
+    
+    // Reset all step statuses to not_run in UI
+    const key = selectedTestCaseId;
+    const freshStatuses = steps.map((_, i) => ({ stepIndex: i, status: 'not_run' as const }));
+    setStepStatuses(new Map(stepStatuses).set(key, freshStatuses));
+    setCurrentStepIndex(0);
+    
+    // Reset cycle scope status to not_run so execution flow works
+    await (supabase as any).from('tm_cycle_scope').update({
+      current_status: 'not_run',
+      updated_at: new Date().toISOString(),
+    }).eq('id', selectedTestCaseId);
+    
+    await fetchTestCases();
+    setViewMode(false);
+    setExecutionHistory(null);
+  }, [selectedTestCaseId, steps, stepStatuses, fetchExecutionHistory, fetchTestCases]);
+
+  // Notes auto-save — disabled until notes column is added to tm_cycle_scope
+  // useEffect(() => { ... }, [notes, selectedTestCaseId]);
 
   // ── Keyboard Shortcuts ─────────────────────────────────────────────────
   useEffect(() => {
@@ -394,8 +588,8 @@ export default function TestHubExecutionPage() {
 
       // Ctrl combos
       if (e.ctrlKey || e.metaKey) {
-        if (key === 'enter') { e.preventDefault(); handlePassAllRemaining(); return; }
-        if (key === 'p') { e.preventDefault(); handlePassAllRemaining(); return; }
+        if (key === 'enter') { e.preventDefault(); handleCompleteExecution(); return; }
+        if (key === 's') { e.preventDefault(); catalystToast.success('Progress saved'); return; }
         if (key === 's') { e.preventDefault(); catalystToast.success('Progress saved'); return; }
         return;
       }
@@ -575,7 +769,7 @@ export default function TestHubExecutionPage() {
                   <div style={{ padding: 20, textAlign: 'center', color: 'hsl(var(--muted-foreground))', fontSize: 12 }}>No tests match filter</div>
                 ) : (
                   filteredTestCases.map(tc => {
-                    const st = statusConfig[tc.execution_status] || statusConfig.not_run;
+                    const st = statusConfig[tc.current_status] || statusConfig.not_run;
                     const StatusIcon = st.icon;
                     const isSelected = tc.id === selectedTestCaseId;
                     return (
@@ -603,6 +797,12 @@ export default function TestHubExecutionPage() {
                             }}>
                               {tc.test_case?.title}
                             </p>
+                            {tc.current_status !== 'not_run' && tc.executed_at && (
+                              <p style={{ fontSize: 10, color: '#94A3B8', margin: '2px 0 0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                {new Date(tc.executed_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                                {tc.assignee?.full_name ? ` · ${tc.assignee.full_name.split(' ')[0]}` : ''}
+                              </p>
+                            )}
                           </div>
                         </div>
                       </button>
@@ -631,6 +831,143 @@ export default function TestHubExecutionPage() {
           {/* ── Panel 2: Step Runner ────────────────────────────────────── */}
           <ResizablePanel defaultSize={showSidebar ? 56 : 78} minSize={40}>
             {currentTestCase && testCase ? (
+              viewMode && executionHistory ? (
+                /* ═══ VIEW MODE — Read-only execution history ═══ */
+                <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+                  {/* Header */}
+                  <div style={{ padding: '16px 24px', borderBottom: '1px solid hsl(var(--border))', backgroundColor: 'hsl(var(--card))' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                        <span style={{ fontSize: 12, fontWeight: 600, color: 'hsl(var(--primary))', backgroundColor: 'hsl(var(--primary) / 0.1)', padding: '3px 10px', borderRadius: 5 }}>
+                          {testCase.case_key}
+                        </span>
+                        <span style={{
+                          fontSize: 11, fontWeight: 600, padding: '3px 8px', borderRadius: 5,
+                          color: statusConfig[currentTestCase.current_status]?.color,
+                          backgroundColor: statusConfig[currentTestCase.current_status]?.bg,
+                        }}>
+                          {statusConfig[currentTestCase.current_status]?.label}
+                        </span>
+                        <span style={{ fontSize: 11, color: 'hsl(var(--muted-foreground))', padding: '3px 8px', backgroundColor: 'hsl(var(--muted) / 0.3)', borderRadius: 5, textTransform: 'capitalize' }}>
+                          {testCase.priority?.name || 'Medium'}
+                        </span>
+                      </div>
+                      <div style={{ display: 'flex', gap: 8 }}>
+                        <button onClick={() => { setViewMode(false); setExecutionHistory(null); }} style={{
+                          height: 34, padding: '0 12px', border: '1px solid hsl(var(--border))', borderRadius: 6,
+                          backgroundColor: 'hsl(var(--card))', color: 'hsl(var(--foreground))',
+                          fontSize: 12, fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4,
+                        }}>
+                          <ArrowLeft size={14} /> Back
+                        </button>
+                        <button onClick={handleRerun} style={{
+                          height: 34, padding: '0 14px', border: 'none', borderRadius: 6,
+                          background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
+                          color: '#FFFFFF', fontSize: 12, fontWeight: 600, cursor: 'pointer',
+                          display: 'flex', alignItems: 'center', gap: 5,
+                        }}>
+                          <Play size={13} /> Re-run
+                        </button>
+                      </div>
+                    </div>
+                    <h2 style={{ fontSize: 18, fontWeight: 700, color: 'hsl(var(--foreground))', margin: 0, lineHeight: 1.3 }}>{testCase.title}</h2>
+                    {testCase.description && <p style={{ fontSize: 13, color: 'hsl(var(--muted-foreground))', margin: '6px 0 0', lineHeight: 1.4 }}>{testCase.description}</p>}
+                    <p style={{ fontSize: 11, color: '#94A3B8', margin: '8px 0 0' }}>
+                      Run #{executionHistory.execution_number} · Executed {new Date(executionHistory.executed_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                      {executionHistory.executor?.full_name ? ` · ${executionHistory.executor.full_name}` : ''}
+                    </p>
+                  </div>
+
+                  {/* Read-only step list */}
+                  <div style={{ flex: 1, overflowY: 'auto', padding: 24 }}>
+                    <div style={{ maxWidth: 720, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 8 }}>
+                      {/* Preconditions */}
+                      {testCase.preconditions && (
+                        <div style={{ marginBottom: 12, padding: 14, backgroundColor: '#FFFBEB', border: '1px solid #FDE68A', borderRadius: 8 }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+                            <AlertTriangle size={14} style={{ color: '#D97706' }} />
+                            <span style={{ fontSize: 12, fontWeight: 600, color: '#92400E' }}>Preconditions</span>
+                          </div>
+                          <p style={{ fontSize: 13, color: '#92400E', margin: 0, lineHeight: 1.4 }}>{testCase.preconditions}</p>
+                        </div>
+                      )}
+
+                      {executionHistory.step_results.length === 0 ? (
+                        <div style={{ padding: 32, textAlign: 'center', color: 'hsl(var(--muted-foreground))' }}>
+                          No step data recorded for this run.
+                        </div>
+                      ) : (
+                        executionHistory.step_results.map((step, i) => {
+                          const stepColors: Record<string, { text: string; bg: string; border: string }> = {
+                            passed:  { text: '#16A34A', bg: '#F0FDF4', border: '#BBF7D0' },
+                            failed:  { text: '#DC2626', bg: '#FEF2F2', border: '#FECACA' },
+                            blocked: { text: '#D97706', bg: '#FFFBEB', border: '#FED7AA' },
+                            skipped: { text: '#475569', bg: '#F8FAFC', border: '#E2E8F0' },
+                            not_run: { text: '#64748B', bg: '#F1F5F9', border: '#E2E8F0' },
+                          };
+                          const colors = stepColors[step.status] || stepColors.not_run;
+                          return (
+                            <div key={i} style={{
+                              padding: '12px 16px', backgroundColor: '#FFFFFF',
+                              border: `0.75px solid #E2E8F0`, borderRadius: 6,
+                              borderLeft: `3px solid ${colors.border}`,
+                            }}>
+                              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+                                <span style={{ fontSize: 13, fontWeight: 600, color: 'hsl(var(--foreground))' }}>
+                                  Step {step.step_number}
+                                </span>
+                                <span style={{
+                                  fontSize: 11, fontWeight: 600, padding: '2px 8px', borderRadius: 4,
+                                  color: colors.text, backgroundColor: colors.bg, border: `1px solid ${colors.border}`,
+                                  textTransform: 'uppercase',
+                                }}>
+                                  {step.status.replace('_', ' ')}
+                                </span>
+                              </div>
+                              <div style={{ marginBottom: 4 }}>
+                                <span style={{ fontSize: 10, fontWeight: 700, color: 'hsl(var(--muted-foreground))', textTransform: 'uppercase', letterSpacing: '0.06em' }}>ACTION</span>
+                                <p style={{ fontSize: 13, color: 'hsl(var(--foreground))', margin: '4px 0 0', lineHeight: 1.5 }}>{step.title}</p>
+                              </div>
+                              {step.notes ? (
+                                <div style={{ marginTop: 8, padding: '6px 10px', backgroundColor: '#F8FAFC', borderRadius: 4 }}>
+                                  <span style={{ fontSize: 10, fontWeight: 700, color: 'hsl(var(--muted-foreground))', textTransform: 'uppercase', letterSpacing: '0.06em' }}>NOTES</span>
+                                  <p style={{ fontSize: 12, color: 'hsl(var(--foreground))', margin: '2px 0 0' }}>{step.notes}</p>
+                                </div>
+                              ) : (
+                                <p style={{ fontSize: 11, color: '#94A3B8', margin: '8px 0 0', fontStyle: 'italic' }}>No notes</p>
+                              )}
+                            </div>
+                          );
+                        })
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Bottom bar — view mode */}
+                  <div style={{
+                    padding: '12px 20px', backgroundColor: 'hsl(var(--card))',
+                    borderTop: '1px solid hsl(var(--border))', display: 'flex',
+                    alignItems: 'center', justifyContent: 'space-between',
+                  }}>
+                    <button onClick={() => { setViewMode(false); setExecutionHistory(null); }} style={{
+                      height: 36, padding: '0 14px', border: '1px solid hsl(var(--border))', borderRadius: 6,
+                      backgroundColor: 'hsl(var(--card))', color: 'hsl(var(--foreground))',
+                      fontSize: 12, fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4,
+                    }}>
+                      <ArrowLeft size={14} /> Back to Queue
+                    </button>
+                    <button onClick={handleRerun} style={{
+                      height: 36, padding: '0 16px', border: 'none', borderRadius: 6,
+                      background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
+                      color: '#FFFFFF', fontSize: 13, fontWeight: 600, cursor: 'pointer',
+                      display: 'flex', alignItems: 'center', gap: 6,
+                    }}>
+                      <Play size={14} /> Re-run
+                    </button>
+                  </div>
+                </div>
+              ) : (
+              /* ═══ EXECUTION MODE — Normal step-by-step ═══ */
               <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
                 {/* Test case header */}
                 <div style={{ padding: '16px 24px', borderBottom: '1px solid hsl(var(--border))', backgroundColor: 'hsl(var(--card))' }}>
@@ -640,22 +977,27 @@ export default function TestHubExecutionPage() {
                     </span>
                     <span style={{
                       fontSize: 11, fontWeight: 500, padding: '3px 8px', borderRadius: 5,
-                      color: statusConfig[currentTestCase.execution_status]?.color,
-                      backgroundColor: statusConfig[currentTestCase.execution_status]?.bg,
+                      color: statusConfig[currentTestCase.current_status]?.color,
+                      backgroundColor: statusConfig[currentTestCase.current_status]?.bg,
                     }}>
-                      {statusConfig[currentTestCase.execution_status]?.label}
+                      {statusConfig[currentTestCase.current_status]?.label}
                     </span>
                     <span style={{ fontSize: 11, color: 'hsl(var(--muted-foreground))', padding: '3px 8px', backgroundColor: 'hsl(var(--muted) / 0.3)', borderRadius: 5, textTransform: 'capitalize' }}>
-                      {testCase.priority}
+                      {testCase.priority?.name || 'Medium'}
                     </span>
                     {fastTrackMode && (
                       <span style={{ fontSize: 10, fontWeight: 700, color: '#D97706', backgroundColor: '#FEF3C7', padding: '3px 8px', borderRadius: 5, display: 'flex', alignItems: 'center', gap: 3 }}>
                         <Zap size={10} /> FAST TRACK
                       </span>
                     )}
+                    {previousRunData && (
+                      <span style={{ fontSize: 10, fontWeight: 600, color: '#2563EB', backgroundColor: '#EFF6FF', padding: '3px 8px', borderRadius: 5 }}>
+                        RE-RUN (prev: Run #{previousRunData.execution_number})
+                      </span>
+                    )}
                   </div>
                   <h2 style={{ fontSize: 18, fontWeight: 700, color: 'hsl(var(--foreground))', margin: 0, lineHeight: 1.3 }}>{testCase.title}</h2>
-                  {testCase.objective && <p style={{ fontSize: 13, color: 'hsl(var(--muted-foreground))', margin: '6px 0 0', lineHeight: 1.4 }}>{testCase.objective}</p>}
+                  {testCase.description && <p style={{ fontSize: 13, color: 'hsl(var(--muted-foreground))', margin: '6px 0 0', lineHeight: 1.4 }}>{testCase.description}</p>}
                 </div>
 
                 {/* Step progress indicator */}
@@ -800,7 +1142,7 @@ export default function TestHubExecutionPage() {
                     { key: 'skipped', label: 'Skip', shortcut: 'S', icon: SkipForward, onClick: handleSkip, color: '#64748B', bg: 'hsl(var(--muted) / 0.3)', activeBg: 'linear-gradient(135deg, #64748B, #475569)' },
                   ].map(btn => {
                     const Icon = btn.icon;
-                    const isActive = currentTestCase.execution_status === btn.key;
+                    const isActive = currentTestCase.current_status === btn.key;
                     return (
                       <button key={btn.key} onClick={btn.onClick} disabled={isSubmitting} title={`${btn.label} (${btn.shortcut})`} style={{
                         height: 38, padding: '0 16px', border: isActive ? 'none' : `1px solid ${btn.color}30`,
@@ -818,7 +1160,7 @@ export default function TestHubExecutionPage() {
                   })}
 
                   {/* Reset */}
-                  {currentTestCase.execution_status !== 'not_run' && (
+                  {currentTestCase.current_status !== 'not_run' && (
                     <button onClick={handleReset} disabled={isSubmitting} title="Reset (Ctrl+R)" style={{
                       height: 38, padding: '0 10px', border: '1px solid hsl(var(--border))', borderRadius: 6,
                       backgroundColor: 'hsl(var(--card))', color: 'hsl(var(--muted-foreground))',
@@ -837,15 +1179,38 @@ export default function TestHubExecutionPage() {
                   </button>
 
                   <div style={{ position: 'absolute', right: 20, display: 'flex', gap: 8 }}>
-                    {steps.length > 0 && !fastTrackMode && (
-                      <button onClick={handlePassAllRemaining} disabled={isSubmitting} title="Pass All Remaining (Ctrl+P)" style={{
-                        height: 32, padding: '0 10px', border: '1px solid #A7F3D0', borderRadius: 5,
-                        backgroundColor: '#ECFDF5', color: '#059669', fontSize: 11, fontWeight: 600,
-                        cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4,
-                      }}>
-                        <CheckCircle2 size={12} /> Pass All
-                      </button>
-                    )}
+                    {steps.length > 0 && !fastTrackMode && (() => {
+                      const isDisabled = !anyStepMarked || isSubmitting;
+                      const statusColors: Record<string, { bg: string; text: string }> = {
+                        passed:  { bg: '#16A34A', text: '#FFFFFF' },
+                        failed:  { bg: '#DC2626', text: '#FFFFFF' },
+                        blocked: { bg: '#D97706', text: '#FFFFFF' },
+                        skipped: { bg: '#475569', text: '#FFFFFF' },
+                        not_run: { bg: '#E2E8F0', text: '#64748B' },
+                      };
+                      const colors = statusColors[derivedStatus] || statusColors.not_run;
+                      const label = derivedStatus !== 'not_run'
+                        ? `Complete → ${derivedStatus.toUpperCase()}`
+                        : 'Complete Execution';
+                      return (
+                        <button
+                          onClick={handleCompleteExecution}
+                          disabled={isDisabled}
+                          title={!anyStepMarked ? 'Mark all steps before completing' : `Complete with status: ${derivedStatus}`}
+                          style={{
+                            height: 34, padding: '0 14px', border: isDisabled ? '1px solid #E2E8F0' : 'none',
+                            borderRadius: 6, backgroundColor: isDisabled ? '#F8FAFC' : colors.bg,
+                            color: isDisabled ? '#94A3B8' : colors.text, fontSize: 12, fontWeight: 700,
+                            cursor: isDisabled ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: 5,
+                            opacity: isDisabled ? 0.7 : 1, transition: 'all 150ms ease',
+                            boxShadow: isDisabled ? 'none' : `0 2px 8px ${colors.bg}40`,
+                            letterSpacing: '0.01em',
+                          }}
+                        >
+                          <CheckCircle2 size={13} /> {label}
+                        </button>
+                      );
+                    })()}
                   </div>
                 </div>
 
@@ -876,6 +1241,7 @@ export default function TestHubExecutionPage() {
                   </div>
                 )}
               </div>
+              )
             ) : (
               <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'hsl(var(--muted-foreground))' }}>
                 <div style={{ textAlign: 'center' }}>
@@ -896,8 +1262,9 @@ export default function TestHubExecutionPage() {
                     cycleTestCaseId={currentTestCase.id}
                     attachments={attachments}
                     onAttachmentsChange={fetchAttachments}
-                    defectIds={currentTestCase.defect_ids || []}
                     onCreateDefect={handleFail}
+                    previousRunData={previousRunData}
+                    isViewMode={viewMode}
                   />
                 ) : (
                   <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'hsl(var(--muted-foreground))', fontSize: 13 }}>

@@ -3,16 +3,18 @@
 // Power-user focused defect tracking types
 // =====================================================
 
-export type DefectSeverity = 'critical' | 'high' | 'medium' | 'low';
-export type DefectPriority = 'critical' | 'high' | 'medium' | 'low';
-export type DefectStatus = 
-  | 'new' 
-  | 'triaged' 
-  | 'in_progress' 
-  | 'fixed' 
-  | 'verified' 
-  | 'closed' 
-  | 'rejected' 
+export type DefectSeverity = 'critical' | 'major' | 'minor' | 'trivial' | 'high' | 'medium' | 'low';
+export type DefectPriority = 'critical' | 'high' | 'medium' | 'low' | 'Highest' | 'High' | 'Medium' | 'Low' | 'Lowest';
+export type DefectStatus =
+  | 'new'
+  | 'open'
+  | 'triaged'
+  | 'in_progress'
+  | 'fixed'
+  | 'resolved'
+  | 'verified'
+  | 'closed'
+  | 'rejected'
   | 'reopened';
 
 // =====================================================
@@ -49,6 +51,12 @@ export interface DefectSummary {
   } | null;
   comments_count: number;
   attachments_count: number;
+  // Jira sync fields
+  jira_source?: boolean;
+  jira_key?: string | null;
+  jira_status?: string | null;
+  jira_project_key?: string | null;
+  external_url?: string | null;
 }
 
 // =====================================================
@@ -61,6 +69,7 @@ export interface DefectFilters {
   assigneeIds: string[];
   reporterIds: string[];
   components: string[];
+  sources: string[];
   search: string;
   isBlocker: boolean | null;
   isRegression: boolean | null;
@@ -76,6 +85,7 @@ export type FilterType =
   | 'assignee' 
   | 'reporter' 
   | 'component'
+  | 'source'
   | 'blocker'
   | 'regression';
 
@@ -104,8 +114,8 @@ export type QuickFilterType = 'all' | 'open' | 'my_defects' | 'critical' | 'bloc
 export const QUICK_FILTER_CONFIG: Record<QuickFilterType, { label: string; filters: Partial<DefectFilters> }> = {
   all: { label: 'All', filters: {} },
   open: { 
-    label: 'Open', 
-    filters: { statuses: ['new', 'triaged', 'in_progress', 'reopened'] } 
+    label: 'Open',
+    filters: { statuses: ['new', 'open', 'triaged', 'in_progress', 'reopened'] } 
   },
   my_defects: { 
     label: 'My Issues', 
@@ -134,13 +144,14 @@ export interface DefectColumnConfig {
 }
 
 export const DEFAULT_DEFECT_COLUMNS: DefectColumnConfig[] = [
-  { id: 'defect_id', label: 'ID', width: 90, visible: true, sortable: true, fixed: true },
+  { id: 'defect_id', label: 'ID', width: 112, visible: true, sortable: true, fixed: true },
   { id: 'title', label: 'Title', width: 300, visible: true, sortable: true },
   { id: 'severity', label: 'Severity', width: 100, visible: true, sortable: true },
   { id: 'status', label: 'Status', width: 100, visible: true, sortable: true },
   { id: 'assignee', label: 'Assignee', width: 120, visible: true, sortable: true },
   { id: 'component', label: 'Component', width: 100, visible: true, sortable: true },
   { id: 'age', label: 'Age', width: 80, visible: true, sortable: true },
+  { id: 'source', label: 'Source', width: 80, visible: false, sortable: true },
 ];
 
 // =====================================================
@@ -148,19 +159,24 @@ export const DEFAULT_DEFECT_COLUMNS: DefectColumnConfig[] = [
 // =====================================================
 export const STATUS_CONFIG: Record<DefectStatus, { label: string; emoji?: string }> = {
   new: { label: 'New' },
+  open: { label: 'Open' },
   triaged: { label: 'Triaged' },
   in_progress: { label: 'In Progress' },
   fixed: { label: 'Fixed' },
+  resolved: { label: 'Resolved' },
   verified: { label: 'Verified' },
   closed: { label: 'Closed' },
   rejected: { label: 'Rejected' },
-  reopened: { label: 'Reopened', emoji: '🔄' },
+  reopened: { label: 'Reopened' },
 };
 
 export const SEVERITY_CONFIG: Record<DefectSeverity, { label: string; emoji: string }> = {
   critical: { label: 'Critical', emoji: '🔴' },
+  major: { label: 'Major', emoji: '🟠' },
   high: { label: 'High', emoji: '🟠' },
+  minor: { label: 'Minor', emoji: '🔵' },
   medium: { label: 'Medium', emoji: '🔵' },
+  trivial: { label: 'Trivial', emoji: '⚪' },
   low: { label: 'Low', emoji: '⚪' },
 };
 
@@ -169,6 +185,11 @@ export const PRIORITY_CONFIG: Record<DefectPriority, { label: string; emoji: str
   high: { label: 'High', emoji: '🔥' },
   medium: { label: 'Medium', emoji: '●' },
   low: { label: 'Low', emoji: '○' },
+  Highest: { label: 'Highest', emoji: '⚠️' },
+  High: { label: 'High', emoji: '🔥' },
+  Medium: { label: 'Medium', emoji: '●' },
+  Low: { label: 'Low', emoji: '○' },
+  Lowest: { label: 'Lowest', emoji: '○' },
 };
 
 // =====================================================
@@ -176,9 +197,11 @@ export const PRIORITY_CONFIG: Record<DefectPriority, { label: string; emoji: str
 // =====================================================
 export const VALID_STATUS_TRANSITIONS: Record<DefectStatus, DefectStatus[]> = {
   new: ['triaged', 'rejected', 'closed'],
+  open: ['triaged', 'in_progress', 'rejected', 'closed'],
   triaged: ['in_progress', 'rejected', 'closed'],
-  in_progress: ['fixed', 'closed', 'triaged'],
+  in_progress: ['fixed', 'resolved', 'closed', 'triaged'],
   fixed: ['verified', 'reopened', 'closed'],
+  resolved: ['verified', 'reopened', 'closed'],
   verified: ['closed', 'reopened'],
   closed: ['reopened'],
   rejected: ['reopened'],

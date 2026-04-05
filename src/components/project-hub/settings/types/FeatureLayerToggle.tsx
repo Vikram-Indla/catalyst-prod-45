@@ -44,7 +44,7 @@ export function FeatureLayerToggle({ projectId, enabled, onToggled }: FeatureLay
         className="rounded-full"
         style={{
           fontSize: 11, fontWeight: 600, padding: '2px 10px',
-          background: enabled ? 'var(--sem-success-bg)' : 'var(--cp-bd-zone)',
+          backgroundColor: enabled ? 'var(--sem-success-bg)' : 'var(--cp-bd-zone)',
           color: enabled ? 'var(--sem-success)' : 'var(--fg-4)',
         }}
       >

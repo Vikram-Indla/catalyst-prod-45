@@ -60,15 +60,16 @@ export function usePlanProgress(planId: string) {
 }
 
 // ─── Create ──────────────────────────────────────────────────────
-export function useCreateTestPlan() {
+export function useCreateTestPlan(projectId?: string) {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (plan: Record<string, any>) => {
+      const pid = plan.project_id || projectId || '00000000-0000-0000-0000-000000000001';
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
       const { data, error } = await supabase
         .from('tm_test_plans' as any)
-        .insert({ ...plan, created_by: user.id, plan_key: '' } as any)
+        .insert({ ...plan, project_id: pid, created_by: user.id, plan_key: '' } as any)
         .select()
         .single();
       if (error) throw new Error(error.message);
@@ -77,6 +78,35 @@ export function useCreateTestPlan() {
     onSuccess: (data) => {
       qc.invalidateQueries({ queryKey: ['g26-test-plans'] });
       toast.success(`Plan ${data.plan_key} created`);
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+}
+
+export function useDuplicateTestPlan() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (planId: string) => {
+      const { data: source, error: fetchErr } = await supabase
+        .from('tm_test_plans' as any)
+        .select('*')
+        .eq('id', planId)
+        .single();
+      if (fetchErr || !source) throw new Error(fetchErr?.message || 'Plan not found');
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+      const { id, plan_key, created_at, updated_at, ...rest } = source as any;
+      const { data, error } = await supabase
+        .from('tm_test_plans' as any)
+        .insert({ ...rest, name: `${rest.name} (Copy)`, status: 'draft', created_by: user.id, plan_key: '' } as any)
+        .select()
+        .single();
+      if (error) throw new Error(error.message);
+      return data as any;
+    },
+    onSuccess: (data) => {
+      qc.invalidateQueries({ queryKey: ['g26-test-plans'] });
+      toast.success(`Plan duplicated as ${data.plan_key}`);
     },
     onError: (e: Error) => toast.error(e.message),
   });
@@ -206,7 +236,7 @@ export function useScopeSummary(planId: string) {
       const folderIds = (folders as any)?.map((f: any) => f.entity_id) || [];
       let testsFromFolders = 0;
       if (folderIds.length > 0) {
-        const { count } = await supabase.from('tm_test_cases' as any).select('*', { count: 'exact', head: true }).in('folder_id', folderIds).eq('is_active', true);
+        const { count } = await supabase.from('tm_test_cases' as any).select('*', { count: 'exact', head: true }).in('folder_id', folderIds);
         testsFromFolders = count || 0;
       }
 
@@ -372,5 +402,89 @@ export function useReject() {
       qc.invalidateQueries({ queryKey: ['g26-plan-approvals', v.planId] });
       toast.success('Plan rejected');
     },
+  });
+}
+
+// ─── Linked Cycles ───────────────────────────────────────────────
+export interface LinkedCycle {
+  id: string;
+  plan_id: string;
+  cycle_id: string;
+  linked_at: string;
+  linked_by: string | null;
+  cycle?: {
+    id: string;
+    cycle_key: string;
+    name: string;
+    status: string;
+    total_cases: number;
+    passed_count: number;
+    failed_count: number;
+    blocked_count: number;
+    not_run_count: number;
+  } | null;
+}
+
+export function usePlanLinkedCycles(planId: string) {
+  return useQuery({
+    queryKey: ['g26-plan-cycles', planId],
+    queryFn: async (): Promise<LinkedCycle[]> => {
+      const { data, error } = await supabase
+        .from('plan_test_cycles' as any)
+        .select('*')
+        .eq('plan_id', planId)
+        .order('linked_at', { ascending: false });
+      if (error) throw new Error(error.message);
+
+      const items = (data || []) as unknown as LinkedCycle[];
+      // Fetch cycle details
+      for (const item of items) {
+        const { data: cycle } = await supabase
+          .from('tm_test_cycles' as any)
+          .select('id, cycle_key, name, status, total_cases, passed_count, failed_count, blocked_count, not_run_count')
+          .eq('id', item.cycle_id)
+          .single();
+        if (cycle) item.cycle = cycle as any;
+      }
+      return items;
+    },
+    enabled: !!planId,
+  });
+}
+
+export function useLinkCycleToPlan() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ planId, cycleId }: { planId: string; cycleId: string }) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      const { data, error } = await supabase
+        .from('plan_test_cycles' as any)
+        .insert({ plan_id: planId, cycle_id: cycleId, linked_by: user?.id } as any)
+        .select()
+        .single();
+      if (error) throw new Error(error.message);
+      return data;
+    },
+    onSuccess: (_, v) => {
+      qc.invalidateQueries({ queryKey: ['g26-plan-cycles', v.planId] });
+      toast.success('Cycle linked to plan');
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+}
+
+export function useUnlinkCycleFromPlan() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ linkId, planId }: { linkId: string; planId: string }) => {
+      const { error } = await supabase.from('plan_test_cycles' as any).delete().eq('id', linkId);
+      if (error) throw new Error(error.message);
+      return planId;
+    },
+    onSuccess: (planId) => {
+      qc.invalidateQueries({ queryKey: ['g26-plan-cycles', planId] });
+      toast.success('Cycle unlinked');
+    },
+    onError: (e: Error) => toast.error(e.message),
   });
 }

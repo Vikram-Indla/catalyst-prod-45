@@ -41,11 +41,10 @@ interface TestCycle {
 const statusConfig: Record<string, { label: string; color: string; bg: string }> = {
   draft: { label: 'DRAFT', color: '#253858', bg: '#DFE1E6' },
   planned: { label: 'PLANNED', color: '#253858', bg: '#DFE1E6' },
-  active: { label: 'ACTIVE', color: '#0747A6', bg: '#DEEBFF' },
-  in_progress: { label: 'IN PROGRESS', color: '#0747A6', bg: '#DEEBFF' },
+  active: { label: 'IN PROGRESS', color: '#0747A6', bg: '#DEEBFF' },
   completed: { label: 'COMPLETED', color: '#006644', bg: '#E3FCEF' },
-  done: { label: 'DONE', color: '#006644', bg: '#E3FCEF' },
   archived: { label: 'ARCHIVED', color: '#253858', bg: '#DFE1E6' },
+  paused: { label: 'PAUSED', color: '#253858', bg: '#DFE1E6' },
 };
 
 export default function TestCyclesPage() {
@@ -81,7 +80,38 @@ export default function TestCyclesPage() {
       if (dateTo) query = query.lte('planned_end', dateTo);
       const { data, error } = await query;
       if (error) { catalystToast.error('Failed to load test cycles'); console.error('Cycles query error:', error); return; }
-      setCycles(data || []);
+
+      // Live stats: fetch scope rows for all cycles in one query
+      const cycleIds = (data || []).map((c: any) => c.id);
+      let scopeStats: Record<string, { passed: number; failed: number; blocked: number; not_run: number; total: number }> = {};
+      if (cycleIds.length > 0) {
+        const { data: scopeRows } = await supabase
+          .from('tm_cycle_scope')
+          .select('cycle_id, current_status')
+          .in('cycle_id', cycleIds);
+        if (scopeRows) {
+          for (const row of scopeRows) {
+            if (!scopeStats[row.cycle_id]) scopeStats[row.cycle_id] = { passed: 0, failed: 0, blocked: 0, not_run: 0, total: 0 };
+            const s = scopeStats[row.cycle_id];
+            s.total++;
+            if (row.current_status === 'passed') s.passed++;
+            else if (row.current_status === 'failed') s.failed++;
+            else if (row.current_status === 'blocked') s.blocked++;
+            else s.not_run++;
+          }
+        }
+      }
+
+      // Override denormalized counters with live data
+      const enriched = (data || []).map((c: any) => {
+        const live = scopeStats[c.id];
+        if (live) {
+          return { ...c, total_cases: live.total, passed_count: live.passed, failed_count: live.failed, blocked_count: live.blocked, not_run_count: live.not_run, skipped_count: 0 };
+        }
+        return c;
+      });
+
+      setCycles(enriched);
     } catch { catalystToast.error('Failed to load test cycles'); }
     finally { setIsLoading(false); }
   };
@@ -241,7 +271,9 @@ export default function TestCyclesPage() {
                 onEdit={() => setEditCycle(cycle)}
                 onClone={() => setCloneCycle(cycle)}
                 onDelete={() => setDeleteCycle(cycle)}
-                onStart={() => handleStatusChange(cycle.id, 'active', 'Started')}
+                onStart={() => {
+                  if (cycle.status === 'draft') handleStatusChange(cycle.id, 'active', 'Activated');
+                }}
                 onComplete={() => handleStatusChange(cycle.id, 'completed', 'Completed')}
                 onReopen={() => handleStatusChange(cycle.id, 'active', 'Reopened')}
                 onArchive={() => handleStatusChange(cycle.id, 'archived', 'Archived')}

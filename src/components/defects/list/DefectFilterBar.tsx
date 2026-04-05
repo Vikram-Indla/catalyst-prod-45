@@ -9,11 +9,12 @@ import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { DefectFilterToken } from './DefectFilterToken';
-import { 
-  DefectFilterDropdown, 
-  getStatusOptions, 
-  getSeverityOptions, 
-  getPriorityOptions 
+import {
+  DefectFilterDropdown,
+  getStatusOptions,
+  getSeverityOptions,
+  getPriorityOptions,
+  getSourceOptions,
 } from './DefectFilterDropdown';
 import type { DefectFilters, FilterType, FilterToken } from '@/types/defect.types';
 
@@ -63,10 +64,17 @@ export function DefectFilterBar({
     });
   }
   if (filters.assigneeIds.length > 0) {
-    activeTokens.push({ 
-      type: 'assignee', 
-      values: filters.assigneeIds, 
-      label: 'Assignee' 
+    activeTokens.push({
+      type: 'assignee',
+      values: filters.assigneeIds,
+      label: 'Assignee'
+    });
+  }
+  if (filters.sources.length > 0) {
+    activeTokens.push({
+      type: 'source',
+      values: filters.sources,
+      label: 'Source'
     });
   }
 
@@ -77,6 +85,7 @@ export function DefectFilterBar({
       case 'status': return getStatusOptions();
       case 'severity': return getSeverityOptions();
       case 'priority': return getPriorityOptions();
+      case 'source': return getSourceOptions();
       default: return [];
     }
   };
@@ -87,6 +96,7 @@ export function DefectFilterBar({
       case 'severity': return filters.severities;
       case 'priority': return filters.priorities;
       case 'assignee': return filters.assigneeIds;
+      case 'source': return filters.sources;
       default: return [];
     }
   };
@@ -130,7 +140,7 @@ export function DefectFilterBar({
 
       {/* Filter Triggers */}
       <div className="flex items-center gap-1">
-        {(['status', 'severity', 'priority'] as FilterType[]).map((type) => {
+        {(['status', 'severity', 'priority', 'source'] as FilterType[]).map((type) => {
           const isActive = getSelectedValues(type).length > 0;
           if (isActive) return null; // Already shown as token
 

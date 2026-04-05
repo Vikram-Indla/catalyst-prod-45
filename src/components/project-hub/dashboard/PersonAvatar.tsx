@@ -32,7 +32,7 @@ export default function PersonAvatar({ name, size = 18 }: { name: string; size?:
         height: size,
         minWidth: size,
         borderRadius: '50%',
-        background: `linear-gradient(135deg, ${c1}, ${c2})`,
+        background: `linear-gradient(135deg, ${c1}, ${c2})`,  /* gradient requires background shorthand */
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',

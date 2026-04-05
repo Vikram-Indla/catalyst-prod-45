@@ -8,6 +8,56 @@ import { supabase } from '@/integrations/supabase/client';
 // "Active" releases = not archived/released/shipped
 const INACTIVE_STATUSES = ['archived', 'released', 'shipped'] as const;
 
+// ─── Avatar resolver: maps display names → avatar URLs via resource_inventory + profiles ───
+let _avatarCache: Map<string, string | null> | null = null;
+let _avatarCachePromise: Promise<Map<string, string | null>> | null = null;
+
+async function getAvatarMap(): Promise<Map<string, string | null>> {
+  if (_avatarCache) return _avatarCache;
+  if (_avatarCachePromise) return _avatarCachePromise;
+
+  _avatarCachePromise = (async () => {
+    const { data: resources } = await supabase
+      .from('resource_inventory')
+      .select('name, profile_id')
+      .eq('is_active', true);
+
+    const profileIds = (resources || []).map(r => r.profile_id).filter((id): id is string => !!id);
+    const avatarMap = new Map<string, string | null>();
+
+    if (profileIds.length > 0) {
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('id, avatar_url')
+        .in('id', profileIds);
+
+      const profileAvatars = new Map<string, string | null>();
+      for (const p of profiles || []) {
+        profileAvatars.set(p.id, p.avatar_url || null);
+      }
+
+      for (const r of resources || []) {
+        if (r.name && r.profile_id) {
+          const url = profileAvatars.get(r.profile_id) || null;
+          avatarMap.set(r.name.toLowerCase(), url);
+        }
+      }
+    }
+
+    _avatarCache = avatarMap;
+    // Invalidate cache after 5 minutes
+    setTimeout(() => { _avatarCache = null; _avatarCachePromise = null; }, 5 * 60 * 1000);
+    return avatarMap;
+  })();
+
+  return _avatarCachePromise;
+}
+
+export function resolveAvatarUrl(avatarMap: Map<string, string | null>, displayName: string | null): string | null {
+  if (!displayName) return null;
+  return avatarMap.get(displayName.toLowerCase()) || null;
+}
+
 async function getProjectKey(projectId: string): Promise<string | null> {
   const { data, error } = await supabase.from('projects').select('key').eq('id', projectId).single();
   if (error && error.code !== 'PGRST116') throw error;
@@ -215,50 +265,95 @@ export function useDashboardScopeChange(projectId: string | null | undefined) {
   });
 }
 
-// ─── Production Incidents (cross-hub) ───
-export function useDashboardIncidents(projectId: string | null | undefined) {
+// ─── Production Incidents (cross-hub from ph_issues) ───
+export function useDashboardIncidents(projectId: string | null | undefined, projectKey?: string | null) {
   return useQuery({
-    queryKey: ['ph-dashboard-incidents', projectId],
+    queryKey: ['ph-dashboard-incidents', projectId, projectKey],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('incidents')
-        .select('id, incident_key, title, priority, status, reporter_name, assignee_id, created_at')
-        .eq('project_id', projectId!)
-        .order('created_at', { ascending: false })
-        .limit(20);
+      if (!projectKey) return [];
+
+      const [{ data, error }, avatarMap] = await Promise.all([
+        supabase
+          .from('ph_issues')
+          .select('id, issue_key, summary, priority, status, status_category, assignee_display_name, reporter_display_name, jira_created_at, resolution')
+          .eq('project_key', projectKey)
+          .eq('issue_type', 'Production Incident')
+          .is('deleted_at', null)
+          .order('jira_created_at', { ascending: false })
+          .limit(10),
+        getAvatarMap(),
+      ]);
       if (error) throw error;
 
       return (data ?? []).map(inc => ({
-        ...inc,
-        days_open: Math.max(0, Math.floor((Date.now() - new Date(inc.created_at).getTime()) / 86400000)),
+        id: inc.id,
+        issue_key: inc.issue_key,
+        title: inc.summary,
+        priority: inc.priority || 'Medium',
+        status: inc.status,
+        status_category: inc.status_category,
+        assignee: inc.assignee_display_name,
+        assignee_avatar_url: resolveAvatarUrl(avatarMap, inc.assignee_display_name),
+        reporter: inc.reporter_display_name,
+        resolution: inc.resolution,
+        days_open: inc.jira_created_at
+          ? Math.max(0, Math.floor((Date.now() - new Date(inc.jira_created_at).getTime()) / 86400000))
+          : 0,
       }));
     },
-    enabled: !!projectId,
+    enabled: !!projectKey,
     staleTime: 60_000,
   });
 }
 
 // ─── QA Defects (cross-hub from tm_defects) ───
-export function useDashboardDefects(projectId: string | null | undefined) {
+export function useDashboardDefects(projectId: string | null | undefined, projectKey?: string | null) {
   return useQuery({
-    queryKey: ['ph-dashboard-defects', projectId],
+    queryKey: ['ph-dashboard-defects', projectId, projectKey],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('tm_defects')
-        .select('id, defect_key, title, severity, status, created_at')
-        .eq('project_id', projectId!)
-        .order('created_at', { ascending: false })
-        .limit(20);
-      if (error) throw error;
+      let allDefects: any[] = [];
+      const avatarMap = await getAvatarMap();
 
-      return (data ?? []).map(d => ({
+      // Fetch Jira-synced defects by project key
+      if (projectKey) {
+        const { data: jiraDefects } = await supabase
+          .from('tm_defects')
+          .select('id, defect_key, title, severity, status, created_at, jira_key, jira_source, jira_assignee_name')
+          .eq('jira_project_key', projectKey)
+          .order('created_at', { ascending: false })
+          .limit(10);
+        if (jiraDefects?.length) allDefects.push(...jiraDefects);
+      }
+
+      // Also fetch native defects by project_id
+      const { data: nativeDefects } = await supabase
+        .from('tm_defects')
+        .select('id, defect_key, title, severity, status, created_at, jira_key, jira_source, jira_assignee_name')
+        .eq('project_id', projectId!)
+        .eq('jira_source', false)
+        .order('created_at', { ascending: false })
+        .limit(10);
+      if (nativeDefects?.length) allDefects.push(...nativeDefects);
+
+      // Dedupe, sort, cap at 10
+      const seen = new Set<string>();
+      allDefects = allDefects.filter(d => {
+        if (seen.has(d.id)) return false;
+        seen.add(d.id);
+        return true;
+      });
+      allDefects.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+      allDefects = allDefects.slice(0, 10);
+
+      return allDefects.map(d => ({
         ...d,
+        assignee_avatar_url: resolveAvatarUrl(avatarMap, d.jira_assignee_name),
         days_open: d.created_at
           ? Math.max(0, Math.floor((Date.now() - new Date(d.created_at).getTime()) / 86400000))
           : 0,
       }));
     },
-    enabled: !!projectId,
+    enabled: !!projectId || !!projectKey,
     staleTime: 60_000,
   });
 }

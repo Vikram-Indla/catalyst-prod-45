@@ -21,13 +21,13 @@ export function ArchiveConfirmModal({ open, projectName, onClose, onConfirm, loa
 
   return (
     <div
-      className="fixed inset-0 z-[9999] flex items-center justify-center"
-      style={{ background: 'rgba(0,0,0,0.5)' }}
+      className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50"
       onClick={e => { if (e.target === e.currentTarget) onClose(); }}
     >
       <div
+        className="bg-[var(--cp-float)] dark:bg-[#232019]"
         style={{
-          width: 440, background: 'var(--cp-float)', borderRadius: 12, padding: '24px',
+          width: 440, borderRadius: 12, padding: '24px',
           boxShadow: '0 20px 25px -5px rgba(0,0,0,.1)',
           fontFamily: "'Inter', sans-serif",
         }}
@@ -55,10 +55,11 @@ export function ArchiveConfirmModal({ open, projectName, onClose, onConfirm, loa
         <div className="flex items-center justify-end gap-2 mt-6">
           <button
             onClick={onClose}
+            className="bg-[var(--cp-float)] dark:bg-[#232019]"
             style={{
               height: 36, padding: '0 16px', fontSize: 13, fontWeight: 500,
               color: 'var(--fg-2)', border: '1px solid var(--divider)', borderRadius: 6,
-              background: 'var(--cp-float)', cursor: 'pointer',
+              cursor: 'pointer',
             }}
           >
             Cancel
@@ -66,10 +67,10 @@ export function ArchiveConfirmModal({ open, projectName, onClose, onConfirm, loa
           <button
             onClick={onConfirm}
             disabled={loading}
-            className="hover:opacity-90 transition-opacity disabled:opacity-50"
+            className="hover:opacity-90 transition-opacity disabled:opacity-50 bg-[var(--sem-danger)]"
             style={{
               height: 36, padding: '0 16px', fontSize: 13, fontWeight: 600,
-              color: '#FFFFFF', background: 'var(--sem-danger)', border: 'none', borderRadius: 6,
+              color: '#FFFFFF', border: 'none', borderRadius: 6,
               cursor: loading ? 'default' : 'pointer',
             }}
           >

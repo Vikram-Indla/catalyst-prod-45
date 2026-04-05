@@ -28,14 +28,14 @@ export function PHBoardView({ issues, boards, loading, onSelectIssue, onUpdateIs
     <div className="flex flex-col gap-3">
       {/* Board Switcher */}
       {boards.length > 1 && (
-        <div className="flex items-center gap-0.5 p-1 rounded-lg w-fit" style={{ background: 'var(--cp-bd-zone)' }}>
+        <div className="flex items-center gap-0.5 p-1 rounded-lg w-fit bg-[var(--cp-bd-zone)]">
           {boards.map((b, i) => {
             const isActive = activeBoardIdx === i;
             return (
               <button
                 key={b.id}
                 onClick={() => setActiveBoardIdx(i)}
-                className="transition-all"
+                className={`transition-all ${isActive ? 'bg-[var(--cp-blue-wash)]' : 'bg-transparent'}`}
                 style={{
                   padding: '5px 14px',
                   fontSize: 12,
@@ -43,7 +43,6 @@ export function PHBoardView({ issues, boards, loading, onSelectIssue, onUpdateIs
                   fontFamily: "'Inter', sans-serif",
                   borderRadius: 6,
                   border: isActive ? '1px solid var(--cp-primary-20)' : '1px solid transparent',
-                  background: isActive ? 'var(--cp-blue-wash)' : 'transparent',
                   color: isActive ? 'var(--cp-blue)' : 'var(--fg-3)',
                   cursor: 'pointer',
                 }}
@@ -68,12 +67,11 @@ export function PHBoardView({ issues, boards, loading, onSelectIssue, onUpdateIs
           return (
             <div
               key={col.name}
-              className="flex flex-col flex-shrink-0"
+              className="flex flex-col flex-shrink-0 bg-[var(--cp-bd-zone)]"
               style={{
                 minWidth: 280,
                 maxWidth: 320,
                 flex: '1 1 280px',
-                background: 'var(--cp-bd-zone)',
                 borderRadius: 12,
                 padding: '10px 10px 12px',
                 border: isOnHold ? '1.5px dashed var(--sem-warning)' : '1px solid var(--divider)',
@@ -101,13 +99,12 @@ export function PHBoardView({ issues, boards, loading, onSelectIssue, onUpdateIs
                   {col.name}
                 </span>
                 <span
-                  className="ml-auto flex items-center justify-center rounded-full"
+                  className="ml-auto flex items-center justify-center rounded-full bg-[var(--bg-app)]"
                   style={{
                     width: 20, height: 20,
                     fontSize: 10,
                     fontWeight: 700,
                     fontFamily: "'JetBrains Mono', monospace",
-                    background: 'var(--bg-app)',
                     color: wipExceeded ? 'var(--sem-danger)' : 'var(--fg-3)',
                     boxShadow: '0 1px 2px rgba(0,0,0,.06)',
                   }}
@@ -204,9 +201,8 @@ function BoardCard({
 
   return (
     <div
-      className="relative cursor-pointer"
+      className="relative cursor-pointer bg-[var(--bg-app)]"
       style={{
-        background: 'var(--bg-app)',
         borderRadius: 12,
         border: isOnHold ? '1px dashed #D9770640' : '1px solid var(--divider)',
         boxShadow: hovered
@@ -228,9 +224,8 @@ function BoardCard({
 
       {/* Hover quick-actions */}
       <div
-        className="absolute top-1 right-1 flex items-center gap-0.5 rounded-md z-10"
+        className="absolute top-1 right-1 flex items-center gap-0.5 rounded-md z-10 bg-[var(--bg-app)]"
         style={{
-          background: 'var(--bg-app)',
           boxShadow: '0 2px 8px rgba(15,23,42,.12)',
           padding: '2px 4px',
           opacity: hovered ? 1 : 0,
@@ -320,10 +315,9 @@ function BoardCard({
             ) : null}
             {/* Assignee avatar — dashed circle when null */}
             <span
-              className="rounded-full flex items-center justify-center flex-shrink-0"
+              className={`rounded-full flex items-center justify-center flex-shrink-0 ${issue.assignee_id ? 'bg-[var(--bg-3)]' : 'bg-transparent'}`}
               style={{
                 width: 20, height: 20,
-                background: issue.assignee_id ? 'var(--bg-3)' : 'transparent',
                 border: issue.assignee_id ? 'none' : '1.5px dashed var(--divider)',
                 fontSize: 8,
                 fontWeight: 700,

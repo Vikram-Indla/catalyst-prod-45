@@ -87,10 +87,10 @@
 /* ── DARK MODE — V12 NOCTURNE WARM CHARCOAL ── */
 [data-theme="dark"] {
   /* Surfaces — ONE SURFACE MODEL. No luminance zones. */
-  --cp-bg:              #181A1E;
-  --cp-bg-sidebar-hdr:  #181A1E;
-  --cp-bg-sunken:       #181A1E;
-  --cp-float:           #1F2128;
+  --cp-bg:              #1A1714;
+  --cp-bg-sidebar-hdr:  #1A1714;
+  --cp-bg-sunken:       #1A1714;
+  --cp-float:           #232019;
 
   /* Text — warm off-white opacity scale */
   --cp-t1:              rgba(235,238,245, 0.92);
@@ -130,7 +130,7 @@
   --cp-ai-t:            #60A5FA;
 
   /* StatusLozenge — NOCTURNE dark values */
-  --cp-lz-gy-bg:        #262830;
+  --cp-lz-gy-bg:        #2C2823;
   --cp-lz-gy-t:         #B8BCC8;
   --cp-lz-bl-bg:        #1A2030;
   --cp-lz-bl-t:         #93C5FD;

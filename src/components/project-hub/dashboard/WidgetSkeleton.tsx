@@ -9,11 +9,11 @@ export function WidgetSkeleton({ rows = 3, type = 'table' }: { rows?: number; ty
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           {Array.from({ length: rows }).map((_, i) => (
             <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <div style={{ width: 80, height: 12, borderRadius: 4, background: 'var(--divider)' }} />
-              <div style={{ flex: 1, height: 20, borderRadius: 3, background: 'var(--cp-bd-zone)' }}>
-                <div style={{ height: '100%', width: `${60 - i * 12}%`, borderRadius: 3, background: 'var(--divider)' }} />
+              <div className="bg-[var(--divider)]" style={{ width: 80, height: 12, borderRadius: 4 }} />
+              <div className="bg-[var(--cp-bd-zone)]" style={{ flex: 1, height: 20, borderRadius: 3 }}>
+                <div className="bg-[var(--divider)]" style={{ height: '100%', width: `${60 - i * 12}%`, borderRadius: 3 }} />
               </div>
-              <div style={{ width: 24, height: 12, borderRadius: 4, background: 'var(--divider)' }} />
+              <div className="bg-[var(--divider)]" style={{ width: 24, height: 12, borderRadius: 4 }} />
             </div>
           ))}
         </div>
@@ -21,12 +21,12 @@ export function WidgetSkeleton({ rows = 3, type = 'table' }: { rows?: number; ty
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           {Array.from({ length: rows }).map((_, i) => (
             <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <div style={{ width: 20, height: 20, borderRadius: '50%', background: 'var(--divider)' }} />
+              <div className="bg-[var(--divider)]" style={{ width: 20, height: 20, borderRadius: '50%' }} />
               <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 4 }}>
-                <div style={{ height: 10, borderRadius: 3, background: 'var(--divider)', width: `${85 - i * 10}%` }} />
-                <div style={{ height: 8, borderRadius: 3, background: 'var(--cp-bd-zone)', width: '40%' }} />
+                <div className="bg-[var(--divider)]" style={{ height: 10, borderRadius: 3, width: `${85 - i * 10}%` }} />
+                <div className="bg-[var(--cp-bd-zone)]" style={{ height: 8, borderRadius: 3, width: '40%' }} />
               </div>
-              <div style={{ width: 40, height: 10, borderRadius: 4, background: 'var(--cp-bd-zone)' }} />
+              <div className="bg-[var(--cp-bd-zone)]" style={{ width: 40, height: 10, borderRadius: 4 }} />
             </div>
           ))}
         </div>
@@ -35,14 +35,14 @@ export function WidgetSkeleton({ rows = 3, type = 'table' }: { rows?: number; ty
           {/* Table header skeleton */}
           <div style={{ display: 'flex', gap: 8, paddingBottom: 8, borderBottom: '1px solid var(--cp-bd-zone)', marginBottom: 4 }}>
             {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} style={{ height: 8, borderRadius: 3, background: 'var(--cp-bd-zone)', flex: i === 2 ? 2 : 1 }} />
+              <div key={i} className="bg-[var(--cp-bd-zone)]" style={{ height: 8, borderRadius: 3, flex: i === 2 ? 2 : 1 }} />
             ))}
           </div>
           {/* Table rows */}
           {Array.from({ length: rows }).map((_, i) => (
             <div key={i} style={{ display: 'flex', gap: 8, height: 44, alignItems: 'center' }}>
               {Array.from({ length: 5 }).map((_, j) => (
-                <div key={j} style={{ height: 12, borderRadius: 4, background: i % 2 === 0 ? 'var(--divider)' : 'var(--cp-bd-zone)', flex: j === 2 ? 2 : 1 }} />
+                <div key={j} className={i % 2 === 0 ? 'bg-[var(--divider)]' : 'bg-[var(--cp-bd-zone)]'} style={{ height: 12, borderRadius: 4, flex: j === 2 ? 2 : 1 }} />
               ))}
             </div>
           ))}
@@ -66,11 +66,11 @@ export function DrawerSkeleton() {
       {Array.from({ length: 4 }).map((_, i) => (
         <div key={i} style={{ border: '1px solid var(--cp-bd-zone)', borderRadius: 8, padding: '12px 14px', marginBottom: 10 }}>
           <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
-            <div style={{ width: 60, height: 12, borderRadius: 4, background: 'var(--divider)' }} />
-            <div style={{ width: 40, height: 12, borderRadius: 4, background: 'var(--cp-bd-zone)' }} />
-            <div style={{ width: 50, height: 12, borderRadius: 10, background: 'var(--cp-bd-zone)' }} />
+            <div className="bg-[var(--divider)]" style={{ width: 60, height: 12, borderRadius: 4 }} />
+            <div className="bg-[var(--cp-bd-zone)]" style={{ width: 40, height: 12, borderRadius: 4 }} />
+            <div className="bg-[var(--cp-bd-zone)]" style={{ width: 50, height: 12, borderRadius: 10 }} />
           </div>
-          <div style={{ height: 12, borderRadius: 4, background: 'var(--divider)', width: '80%' }} />
+          <div className="bg-[var(--divider)]" style={{ height: 12, borderRadius: 4, width: '80%' }} />
         </div>
       ))}
     </div>

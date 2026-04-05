@@ -44,13 +44,16 @@ export function FilterDropdown({ filters, onChange }: FilterDropdownProps) {
     <div ref={ref} className="relative">
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-1.5 rounded-md transition-colors"
+        className={`flex items-center gap-1.5 rounded-md transition-colors ${
+          hasFilters
+            ? 'bg-[var(--cp-blue-wash)] dark:bg-[rgba(37,99,235,0.15)] border-[var(--cp-blue)] text-[var(--cp-blue)] dark:text-[var(--cp-blue-light)]'
+            : 'bg-[var(--bg-app)] dark:bg-transparent border-[var(--divider)] dark:border-[rgba(255,255,255,0.12)] text-[var(--fg-2)] dark:text-[rgba(235,238,245,0.72)]'
+        }`}
         style={{
           height: 34,
           padding: '0 12px',
-          border: hasFilters ? '1px solid var(--cp-blue)' : `1px solid ${dark ? 'rgba(255,255,255,0.12)' : 'var(--divider)'}`,
-          background: hasFilters ? (dark ? 'rgba(37,99,235,0.15)' : 'var(--cp-blue-wash)') : (dark ? 'transparent' : 'var(--bg-app)'),
-          color: hasFilters ? (dark ? 'var(--cp-blue-light)' : 'var(--cp-blue)') : (dark ? 'rgba(235,238,245,0.72)' : 'var(--fg-2)'),
+          borderWidth: 1,
+          borderStyle: 'solid',
           fontSize: 13,
           fontWeight: 500,
           cursor: 'pointer',
@@ -61,8 +64,8 @@ export function FilterDropdown({ filters, onChange }: FilterDropdownProps) {
         Filter
         {hasFilters && (
           <span
-            className="flex items-center justify-center rounded-full"
-            style={{ width: 18, height: 18, background: 'var(--cp-blue)', color: '#FFF', fontSize: 10, fontWeight: 600 }}
+            className="flex items-center justify-center rounded-full bg-[var(--cp-blue)]"
+            style={{ width: 18, height: 18, color: '#FFF', fontSize: 10, fontWeight: 600 }}
           >
             {filters.statuses.length + filters.healths.length}
           </span>
@@ -71,11 +74,9 @@ export function FilterDropdown({ filters, onChange }: FilterDropdownProps) {
 
       {open && (
         <div
-          className="absolute top-full left-0 mt-1 z-50"
+          className="absolute top-full left-0 mt-1 z-50 bg-[var(--bg-app)] dark:bg-[#232019] border border-[var(--divider)] dark:border-[rgba(255,255,255,0.12)]"
           style={{
             width: 280,
-            background: dark ? '#1F2128' : 'var(--bg-app)',
-            border: `1px solid ${dark ? 'rgba(255,255,255,0.12)' : 'var(--divider)'}`,
             borderRadius: 8,
             boxShadow: dark ? 'none' : '0 4px 6px -1px rgba(0,0,0,.07), 0 2px 4px -2px rgba(0,0,0,.05)',
             fontFamily: "'Inter', sans-serif",
@@ -109,11 +110,10 @@ export function FilterDropdown({ filters, onChange }: FilterDropdownProps) {
             </button>
             <button
               onClick={() => setOpen(false)}
-              className="rounded-md"
+              className="rounded-md bg-[var(--cp-blue)]"
               style={{
                 height: 28,
                 padding: '0 12px',
-                background: 'var(--cp-blue)',
                 color: '#FFF',
                 border: 'none',
                 borderRadius: 6,
@@ -220,13 +220,11 @@ export function FilterChips({
       {chips.map((c, i) => (
         <span
           key={i}
-          className="inline-flex items-center gap-1 rounded-full"
+          className="inline-flex items-center gap-1 rounded-full bg-[var(--cp-blue-wash)] dark:bg-[rgba(37,99,235,0.15)] text-[var(--cp-blue)] dark:text-[var(--cp-blue-light)]"
           style={{
             fontSize: 11,
             fontWeight: 500,
             padding: '2px 8px 2px 10px',
-            background: dark ? 'rgba(37,99,235,0.15)' : 'var(--cp-blue-wash)',
-            color: dark ? 'var(--cp-blue-light)' : 'var(--cp-blue)',
           }}
         >
           {c.label}

@@ -1,4 +1,4 @@
-export type PlanStatus = 'draft' | 'pending_approval' | 'approved' | 'in_progress' | 'completed' | 'cancelled';
+export type PlanStatus = 'draft' | 'pending_approval' | 'active' | 'executing' | 'completed' | 'archived';
 export type ApprovalStatus = 'pending' | 'approved' | 'rejected';
 export type ScopeType = 'folder' | 'test_case';
 export type ScopeAction = 'include' | 'exclude';

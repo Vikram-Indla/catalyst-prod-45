@@ -37,22 +37,23 @@ interface CycleTestCase {
   id: string;
   cycle_id: string;
   test_case_id: string;
-  execution_status: string;
+  current_status: string;
   executed_at: string | null;
   notes: string | null;
   assigned_to: string | null;
-  test_case: { id: string; case_key: string; title: string; priority: string; type: string } | null;
+  test_case: { id: string; case_key: string; title: string; priority_id: string; case_type_id: string; priority: { id: string; name: string; color: string } | null; case_type: { id: string; name: string } | null } | null;
   assignee?: { id: string; full_name: string } | null;
 }
 
 const statusConfig: Record<string, { label: string; color: string; bg: string }> = {
   draft:       { label: 'DRAFT',       color: '#253858', bg: '#DFE1E6' },
   planned:     { label: 'PLANNED',     color: '#253858', bg: '#DFE1E6' },
-  active:      { label: 'ACTIVE',      color: '#0747A6', bg: '#DEEBFF' },
+  active:      { label: 'IN PROGRESS', color: '#0747A6', bg: '#DEEBFF' },
   in_progress: { label: 'IN PROGRESS', color: '#0747A6', bg: '#DEEBFF' },
   completed:   { label: 'COMPLETED',   color: '#006644', bg: '#E3FCEF' },
   done:        { label: 'DONE',        color: '#006644', bg: '#E3FCEF' },
   archived:    { label: 'ARCHIVED',    color: '#253858', bg: '#DFE1E6' },
+  paused:      { label: 'PAUSED',      color: '#253858', bg: '#DFE1E6' },
 };
 
 const executionStatusConfig: Record<string, { label: string; color: string; bg: string; Icon: any }> = {
@@ -103,11 +104,11 @@ export default function TestCycleDetailPage() {
     if (!cycleId) return;
     try {
       const { data, error } = await (supabase as any).from('tm_cycle_scope')
-        .select(`id, cycle_id, test_case_id, assigned_to, current_status, sort_order, priority, due_date, added_at, updated_at, test_case:tm_test_cases ( id, case_key, title, priority, type )`)
+        .select(`id, cycle_id, test_case_id, assigned_to, current_status, sort_order, priority, due_date, added_at, updated_at, assignee:profiles!assigned_to ( id, full_name, avatar_url ), test_case:tm_test_cases ( id, case_key, title, priority_id, case_type_id, priority:tm_case_priorities ( id, name, color ), case_type:tm_case_types ( id, name ) )`)
         .eq('cycle_id', cycleId).order('sort_order');
       if (error) throw error;
       setTestCases(data || []);
-    } catch { /* ignore */ }
+    } catch (err) { console.error('fetchTestCases error:', err); }
     finally { setIsLoading(false); }
   };
 
@@ -115,7 +116,7 @@ export default function TestCycleDetailPage() {
 
   const formatDate = (d: string | null) => d ? new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—';
 
-  const filteredTestCases = statusFilter === 'all' ? testCases : testCases.filter(tc => tc.execution_status === statusFilter);
+  const filteredTestCases = statusFilter === 'all' ? testCases : testCases.filter(tc => tc.current_status === statusFilter);
 
   // By Tester stats
   const testerStats = (() => {
@@ -126,13 +127,13 @@ export default function TestCycleDetailPage() {
       if (!map.has(key)) map.set(key, { name, total: 0, executed: 0 });
       const entry = map.get(key)!;
       entry.total++;
-      if (tc.execution_status !== 'not_run') entry.executed++;
+      if (tc.current_status !== 'not_run') entry.executed++;
     });
     return Array.from(map.values()).sort((a, b) => b.total - a.total);
   })();
 
   // Blocked test cases
-  const blockedTestCases = testCases.filter(tc => tc.execution_status === 'blocked');
+  const blockedTestCases = testCases.filter(tc => tc.current_status === 'blocked');
 
   // Export CSV
   const handleExportCSV = () => {
@@ -141,9 +142,9 @@ export default function TestCycleDetailPage() {
     const rows = testCases.map(tc => [
       tc.test_case?.case_key || '',
       tc.test_case?.title || '',
-      tc.test_case?.priority || '',
+      tc.test_case?.priority?.name || '',
       tc.assignee?.full_name || '',
-      tc.execution_status,
+      tc.current_status,
       tc.executed_at ? new Date(tc.executed_at).toLocaleString() : '',
       (tc.notes || '').replace(/"/g, '""'),
     ]);
@@ -261,6 +262,34 @@ export default function TestCycleDetailPage() {
               style={{ width: 40, height: 40, padding: 0, border: '1.5px solid #E2E8F0', borderRadius: 8, backgroundColor: '#FFFFFF', color: '#64748B', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <RefreshCw size={18} />
             </button>
+            {/* FSM Status Transition Button */}
+            {cycle.status === 'draft' && (
+              <button onClick={async () => {
+                const { error } = await (supabase as any).from('tm_test_cycles').update({ status: 'active', updated_at: new Date().toISOString() }).eq('id', cycleId);
+                if (error) { catalystToast.error(error.message); return; }
+                catalystToast.success('Cycle activated successfully'); fetchCycle();
+              }} style={{ height: 40, padding: '0 16px', background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)', border: 'none', borderRadius: 8, color: '#FFFFFF', fontSize: 14, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
+                <Play size={16} /> Activate Cycle
+              </button>
+            )}
+            {cycle.status === 'active' && (
+              <button onClick={async () => {
+                const { error } = await (supabase as any).from('tm_test_cycles').update({ status: 'completed', updated_at: new Date().toISOString() }).eq('id', cycleId);
+                if (error) { catalystToast.error(error.message); return; }
+                catalystToast.success('Cycle completed'); fetchCycle();
+              }} style={{ height: 40, padding: '0 16px', background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)', border: 'none', borderRadius: 8, color: '#FFFFFF', fontSize: 14, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
+                Complete
+              </button>
+            )}
+            {cycle.status === 'completed' && (
+              <button onClick={async () => {
+                const { error } = await (supabase as any).from('tm_test_cycles').update({ status: 'archived', updated_at: new Date().toISOString() }).eq('id', cycleId);
+                if (error) { catalystToast.error(error.message); return; }
+                catalystToast.success('Cycle archived'); fetchCycle();
+              }} style={{ height: 40, padding: '0 16px', border: '1.5px solid #E2E8F0', borderRadius: 8, backgroundColor: '#FFFFFF', color: '#334155', fontSize: 14, fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
+                Archive
+              </button>
+            )}
             {canEdit && (
               <button onClick={() => setIsEditModalOpen(true)}
                 style={{ height: 40, padding: '0 16px', border: '1.5px solid #E2E8F0', borderRadius: 8, backgroundColor: '#FFFFFF', color: '#334155', fontSize: 14, fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -269,7 +298,7 @@ export default function TestCycleDetailPage() {
             )}
             {cycle.status === 'active' && (
               <button onClick={() => {
-                const notRun = testCases.find(tc => tc.execution_status === 'not_run');
+                const notRun = testCases.find(tc => tc.current_status === 'not_run');
                 if (notRun) {
                   navigate(`/testhub/cycles/${cycleId}/execute?testId=${notRun.id}`);
                 } else {
@@ -285,12 +314,17 @@ export default function TestCycleDetailPage() {
       </div>
 
       {/* Stats Cards - 3-panel layout per spec */}
+      {(() => {
+        const totalCount = testCases.length;
+        const notRunCount = testCases.filter(tc => tc.current_status === 'not_run').length;
+        const passedCount = testCases.filter(tc => tc.current_status === 'passed').length;
+        const failedCount = testCases.filter(tc => tc.current_status === 'failed').length;
+        const blockedCount = testCases.filter(tc => tc.current_status === 'blocked').length;
+        const executedCount = totalCount - notRunCount;
+        const pp = totalCount > 0 ? Math.round((executedCount / totalCount) * 100) : 0;
+        return (
       <div style={{ padding: '24px 32px', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
         {/* Progress Panel */}
-        {(() => {
-          const executedCount = cycle.total_cases - cycle.not_run_count;
-          const pp = cycle.total_cases > 0 ? Math.round((executedCount / cycle.total_cases) * 100) : 0;
-          return (
         <div style={{ backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 12, padding: 24, textAlign: 'center' }}>
           <p style={{ fontSize: 13, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em', margin: '0 0 16px' }}>Progress</p>
           <div style={{ width: 100, height: 100, margin: '0 auto 16px', position: 'relative' }}>
@@ -302,10 +336,8 @@ export default function TestCycleDetailPage() {
               {pp}%
             </div>
           </div>
-          <p style={{ fontSize: 14, color: '#334155', margin: 0, fontWeight: 500 }}>{executedCount}/{cycle.total_cases} executed</p>
+          <p style={{ fontSize: 14, color: '#334155', margin: 0, fontWeight: 500 }}>{executedCount}/{totalCount} executed</p>
         </div>
-          );
-        })()}
 
         {/* By Status Panel */}
         <div style={{ backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 12, padding: 24 }}>
@@ -314,22 +346,22 @@ export default function TestCycleDetailPage() {
             <button onClick={() => setStatusFilter('passed')} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', border: 'none', borderRadius: 8, backgroundColor: statusFilter === 'passed' ? '#ECFDF5' : 'transparent', cursor: 'pointer', width: '100%', textAlign: 'left' }}>
               <CheckCircle2 size={18} style={{ color: '#059669' }} />
               <span style={{ flex: 1, fontSize: 14, color: '#334155' }}>Passed</span>
-              <span style={{ fontSize: 16, fontWeight: 700, color: '#059669' }}>{cycle.passed_count}</span>
+              <span style={{ fontSize: 16, fontWeight: 700, color: '#059669' }}>{passedCount}</span>
             </button>
             <button onClick={() => setStatusFilter('failed')} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', border: 'none', borderRadius: 8, backgroundColor: statusFilter === 'failed' ? '#FEF2F2' : 'transparent', cursor: 'pointer', width: '100%', textAlign: 'left' }}>
               <XCircle size={18} style={{ color: '#DC2626' }} />
               <span style={{ flex: 1, fontSize: 14, color: '#334155' }}>Failed</span>
-              <span style={{ fontSize: 16, fontWeight: 700, color: '#DC2626' }}>{cycle.failed_count}</span>
+              <span style={{ fontSize: 16, fontWeight: 700, color: '#DC2626' }}>{failedCount}</span>
             </button>
             <button onClick={() => setStatusFilter('blocked')} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', border: 'none', borderRadius: 8, backgroundColor: statusFilter === 'blocked' ? '#FFFBEB' : 'transparent', cursor: 'pointer', width: '100%', textAlign: 'left' }}>
               <AlertTriangle size={18} style={{ color: '#D97706' }} />
               <span style={{ flex: 1, fontSize: 14, color: '#334155' }}>Blocked</span>
-              <span style={{ fontSize: 16, fontWeight: 700, color: '#D97706' }}>{cycle.blocked_count}</span>
+              <span style={{ fontSize: 16, fontWeight: 700, color: '#D97706' }}>{blockedCount}</span>
             </button>
             <button onClick={() => setStatusFilter('not_run')} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', border: 'none', borderRadius: 8, backgroundColor: statusFilter === 'not_run' ? '#F8FAFC' : 'transparent', cursor: 'pointer', width: '100%', textAlign: 'left' }}>
               <Clock size={18} style={{ color: '#64748B' }} />
               <span style={{ flex: 1, fontSize: 14, color: '#334155' }}>Not Run</span>
-              <span style={{ fontSize: 16, fontWeight: 700, color: '#64748B' }}>{cycle.not_run_count}</span>
+              <span style={{ fontSize: 16, fontWeight: 700, color: '#64748B' }}>{notRunCount}</span>
             </button>
             {statusFilter !== 'all' && (
               <button onClick={() => setStatusFilter('all')} style={{ padding: '6px 12px', border: 'none', backgroundColor: 'transparent', color: '#2563EB', fontSize: 12, fontWeight: 500, cursor: 'pointer', textAlign: 'center' }}>
@@ -366,6 +398,8 @@ export default function TestCycleDetailPage() {
           )}
         </div>
       </div>
+        );
+      })()}
 
       {/* Blocked Items Banner */}
       {blockedTestCases.length > 0 && (
@@ -494,9 +528,9 @@ export default function TestCycleDetailPage() {
                 </thead>
                 <tbody>
                   {filteredTestCases.map((ctc, index) => {
-                    const execStatus = executionStatusConfig[ctc.execution_status] || executionStatusConfig.not_run;
+                    const execStatus = executionStatusConfig[ctc.current_status] || executionStatusConfig.not_run;
                     const StatusIcon = execStatus.Icon;
-                    const priority = priorityConfig[ctc.test_case?.priority?.toLowerCase() || ''] || priorityConfig.medium;
+                    const priority = priorityConfig[ctc.test_case?.priority?.name?.toLowerCase() || ''] ?? priorityConfig.medium;
                     const isSelected = selectedTestCaseIds.has(ctc.id);
                     return (
                       <tr key={ctc.id} style={{ borderBottom: index < filteredTestCases.length - 1 ? '1px solid #F1F5F9' : 'none', backgroundColor: isSelected ? '#EFF6FF' : 'transparent' }}>
@@ -518,7 +552,7 @@ export default function TestCycleDetailPage() {
                           </div>
                         </td>
                         <td style={{ padding: '14px 16px' }}>
-                          <span style={{ fontSize: 12, fontWeight: 500, color: priority.color, backgroundColor: priority.bg, padding: '4px 8px', borderRadius: 4, textTransform: 'capitalize' as const }}>{ctc.test_case?.priority || 'Medium'}</span>
+                          <span style={{ fontSize: 12, fontWeight: 500, color: priority.color, backgroundColor: priority.bg, padding: '4px 8px', borderRadius: 4, textTransform: 'capitalize' as const }}>{ctc.test_case?.priority?.name || 'Medium'}</span>
                         </td>
                         <td style={{ padding: '14px 16px' }}>
                           <button
