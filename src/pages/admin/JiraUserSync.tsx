@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Plus, RefreshCw, Search, ChevronLeft, ChevronRight, UserX, Copy, X, Loader2, Share2, Download } from 'lucide-react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { Plus, RefreshCw, Search, ChevronLeft, ChevronRight, UserX, Copy, X, Loader2, Share2, Download, Users2, FolderSearch } from 'lucide-react';
 import UserDetailPanel from '@/components/admin/UserDetailPanel';
 import { toast } from 'sonner';
 import {
@@ -106,7 +106,7 @@ const JiraUserSync: React.FC = () => {
   const debouncedSearch = useDebouncedValue(search, 300);
 
   const { data: statsData, isLoading: statsLoading } = useJiraSyncStats();
-  const { data: usersResult, isLoading: usersLoading } = useJiraSyncUsers(page, filter, debouncedSearch);
+  const { data: usersResult, isLoading: usersLoading, isFetching: usersFetching } = useJiraSyncUsers(page, filter, debouncedSearch);
   const { mutate: triggerSync, isPending: isSyncing } = useTriggerUserSync();
   const { mutate: toggleStatus } = useToggleUserStatus();
   const { mutate: copyPerms } = useCopyPermissions();
