@@ -4732,7 +4732,8 @@ input[type="range"]::-moz-range-thumb {
 
 /* Dark overrides */
 .dark .jus-page { background-color: #0F1114 !important; }
-.dark .jus-surface { background-color: #181A1E !important; border-color: rgba(200, 210, 225, 0.08); }
+.dark .jus-surface,
+.dark .admin-content-area { background-color: #181A1E !important; border-color: rgba(200, 210, 225, 0.08); }
 .dark .jus-surface-sunken { background-color: #12141A !important; border-color: rgba(200, 210, 225, 0.06); }
 .dark .jus-surface-elevated { background-color: #1E2027 !important; border-color: rgba(200, 210, 225, 0.10); box-shadow: 0 1px 3px rgba(0,0,0,0.4); }
 .dark .jus-table-row { border-bottom: 0.75px solid rgba(200, 210, 225, 0.06); }
