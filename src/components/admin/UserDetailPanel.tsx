@@ -290,17 +290,27 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
 
   const user = data?.data;
 
+  const T = isDark ? {
+    surface: '#1E2027', border: 'rgba(200,210,225,0.08)', text1: 'rgba(225,230,240,0.92)',
+    text2: 'rgba(200,210,225,0.55)', text3: 'rgba(200,210,225,0.35)', sunken: '#12141A',
+    elevated: '#232019', inputBg: '#1A1714',
+  } : {
+    surface: '#FFFFFF', border: 'rgba(15,23,42,0.10)', text1: '#0F172A',
+    text2: '#64748B', text3: '#94A3B8', sunken: '#F1F5F9',
+    elevated: '#F8FAFC', inputBg: '#FFFFFF',
+  };
+
   if (isLoading || !user) {
     return (
       <div style={{
-        width: '420px', flexShrink: 0, borderLeft: '1px solid rgba(15,23,42,0.10)',
-        background: '#FFFFFF', display: 'flex', flexDirection: 'column',
+        width: '420px', flexShrink: 0, borderLeft: `1px solid ${T.border}`,
+        background: T.surface, display: 'flex', flexDirection: 'column',
       }}>
         <div style={{ padding: '20px' }}>
           {Array.from({ length: 8 }).map((_, i) => (
             <div key={i} className="animate-pulse" style={{
               height: i === 0 ? 48 : 14, width: i === 0 ? 48 : `${70 + (i * 10)}%`,
-              borderRadius: i === 0 ? '50%' : 3, background: '#E2E8F0',
+              borderRadius: i === 0 ? '50%' : 3, background: isDark ? 'rgba(255,255,255,0.05)' : '#E2E8F0',
               marginBottom: i === 0 ? 12 : 10,
             }} />
           ))}
