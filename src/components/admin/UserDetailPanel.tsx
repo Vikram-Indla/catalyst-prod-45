@@ -278,6 +278,7 @@ const ActivityTab: React.FC<{ events: any[] }> = ({ events }) => {
       )}
     </div>
   );
+};
 
 const UserDetailPanel: React.FC<Props> = ({ userId, onClose }) => {
   const { data, isLoading } = useJiraUserDetail(userId);
