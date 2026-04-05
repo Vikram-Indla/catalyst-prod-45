@@ -54,7 +54,7 @@ function NotificationItemInner({ notification, onMarkRead, onClick }: Notificati
   const isDueDate = DUE_DATE_TYPES.some(t => t === notification.notification_type);
   const isComment = COMMENT_PREVIEW_TYPES.some(t => t === notification.notification_type);
   const isDeleted = notification.entity_deleted;
-  const actorName = notification.actor?.full_name || 'System';
+  const actorName = notification.actor?.full_name || (notification.metadata as any)?.actor_display_name || 'System';
   const actorId = notification.actor?.id || notification.actor_user_id || 'system';
   const avatarColor = getAvatarColor(actorId);
   const initials = getUserInitials(actorName);
