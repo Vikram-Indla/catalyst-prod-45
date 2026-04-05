@@ -16,7 +16,7 @@ interface AIDigestTabProps {
 
 const MOCK_ITEMS: AIDigestItem[] = [
   { id: '1', title: 'Payment Gateway integration blocked by vendor API changes', priority: 'high', summary: 'Vendor updated authentication flow — 3 stories blocked.' },
-  { id: '2', title: 'Sprint velocity trending 18% below target', priority: 'medium', summary: 'Team capacity reduced due to Eid holidays.' },
+  { id: '2', title: 'Release cycle velocity trending 18% below target', priority: 'medium', summary: 'Team capacity reduced due to public holiday schedule.' },
   { id: '3', title: 'UAT sign-off pending for Release 4.2', priority: 'low', summary: 'All test cases passed — awaiting business owner approval.' },
 ];
 
