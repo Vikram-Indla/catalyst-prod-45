@@ -384,22 +384,24 @@ const JiraUserSync: React.FC = () => {
       </div>
 
       {/* ══ D04 — Stat Cards (50px gap not specified, using grid gap 12px from existing) ══ */}
-      <div className="shrink-0 flex flex-nowrap" style={{ gap: 24, padding: '20px 24px 18px', background: T.page }}>
+      <div className="shrink-0 flex flex-nowrap" style={{ gap: 12, padding: '14px 24px 12px', background: T.page }}>
         {STAT_CARDS.map(card => (
           <div key={card.key} className="jsu-stat-card" style={{
-            flex: 1, minWidth: 0, minHeight: 120, padding: '20px 24px',
-            display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 0,
+            flex: 1, minWidth: 0, height: 55, padding: '8px 14px',
+            display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 0,
           }}>
-            <div className="flex items-center" style={{ gap: 7 }}>
-              <span style={{ width: 8, height: 8, borderRadius: '50%', background: card.dotColor, flexShrink: 0 }} />
-              <span className="jsu-text-2" style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.07em', fontFamily: 'Inter,sans-serif' }}>
-                {card.label}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center" style={{ gap: 5 }}>
+                <span style={{ width: 6, height: 6, borderRadius: '50%', background: card.dotColor, flexShrink: 0 }} />
+                <span className="jsu-text-2" style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.07em', fontFamily: 'Inter,sans-serif' }}>
+                  {card.label}
+                </span>
+              </div>
+              <span className="jsu-text-1" style={{ fontFamily: "'Sora',sans-serif", fontSize: 22, fontWeight: 700, lineHeight: 1, letterSpacing: '-0.02em' }}>
+                {getStatValue(card.key)}
               </span>
             </div>
-            <div className="jsu-text-1" style={{ fontFamily: "'Sora',sans-serif", fontSize: 36, fontWeight: 700, lineHeight: 1, marginTop: 12, letterSpacing: '-0.02em' }}>
-              {getStatValue(card.key)}
-            </div>
-            <div className="jsu-text-3" style={{ fontFamily: 'Inter,sans-serif', fontSize: 11, fontWeight: 400, marginTop: 6 }}>
+            <div className="jsu-text-3" style={{ fontFamily: 'Inter,sans-serif', fontSize: 10, fontWeight: 400, marginTop: 2 }}>
               {card.subLabel}
             </div>
           </div>
