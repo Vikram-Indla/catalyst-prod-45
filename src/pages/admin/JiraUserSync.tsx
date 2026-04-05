@@ -462,7 +462,10 @@ const JiraUserSync: React.FC = () => {
                     </>
                   )}
                 </td>
-              </tr>
+            ) : (
+              users.map((user: any, idx: number) => {
+                const isInactive = !user.is_active_in_catalyst;
+                const isCatalystOnly = user.catalyst_only;
                 const hasConflicts = user.conflict_fields && user.conflict_fields.length > 0;
                 const isActive = activeUserId === user.id;
                 const isSelected = selected.has(user.id);
