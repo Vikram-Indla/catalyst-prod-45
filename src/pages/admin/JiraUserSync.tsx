@@ -435,8 +435,8 @@ const JiraUserSync: React.FC = () => {
                 className="jira-popover-surface"
                 style={{
                   width: '360px', padding: 0,
-                  background: isDark ? '#232019' : '#FFFFFF',
-                  border: `1px solid ${isDark ? 'rgba(255,255,255,0.10)' : 'rgba(15,23,42,0.12)'}`,
+                  background: isDark ? '#2A261F' : '#FFFFFF',
+                  border: `1px solid ${isDark ? 'rgba(255,255,255,0.14)' : 'rgba(15,23,42,0.12)'}`,
                 }}
                 align="start"
               >
@@ -454,9 +454,9 @@ const JiraUserSync: React.FC = () => {
                     className="jira-input w-full"
                     style={{
                       padding: '5px 8px', borderRadius: '4px', fontSize: '11px', outline: 'none', marginBottom: '6px',
-                      background: isDark ? '#232019' : '#F8FAFC',
+                      background: isDark ? '#2A261F' : '#F8FAFC',
                       color: isDark ? '#F5F3F0' : '#0F172A',
-                      border: `1px solid ${isDark ? 'rgba(255,255,255,0.12)' : 'rgba(15,23,42,0.10)'}`,
+                      border: `1px solid ${isDark ? 'rgba(255,255,255,0.14)' : 'rgba(15,23,42,0.10)'}`,
                     }}
                   />
                   <div className="flex items-center gap-1 mb-2">
