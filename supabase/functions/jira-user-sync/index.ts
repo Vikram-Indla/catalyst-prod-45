@@ -155,18 +155,18 @@ Deno.serve(async (req) => {
           existingByAccountId.get(jiraUser.accountId) ??
           existingByEmail.get(jiraUser.emailAddress)
 
-        const payload = {
-          jira_account_id:     jiraUser.accountId,
-          email:               jiraUser.emailAddress,
-          display_name:        jiraUser.displayName,
-          avatar_url:          jiraUser.avatarUrls?.['48x48'] ?? null,
-          is_active_in_jira:   jiraUser.active,
-          is_active_in_catalyst: jiraUser.active,
-          auth_mode:           'jira_proxy',
-          catalyst_only:       false,
-          last_synced_at:      new Date().toISOString(),
-          sync_version:        (existing?.sync_version ?? 0) + 1,
-        }
+          const payload = {
+            jira_account_id:     jiraUser.accountId,
+            email:               jiraUser.emailAddress ?? `${jiraUser.accountId}@jira.placeholder`,
+            display_name:        jiraUser.displayName,
+            avatar_url:          jiraUser.avatarUrls?.['48x48'] ?? null,
+            is_active_in_jira:   jiraUser.active ?? true,
+            is_active_in_catalyst: jiraUser.active ?? true,
+            auth_mode:           'jira_proxy',
+            catalyst_only:       false,
+            last_synced_at:      new Date().toISOString(),
+            sync_version:        (existing?.sync_version ?? 0) + 1,
+          }
 
         if (!existing) {
           const { error } = await supabase
