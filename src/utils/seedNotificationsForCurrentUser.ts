@@ -1,21 +1,30 @@
 import { supabase } from '@/integrations/supabase/client';
 
+let hasSeeded = false; // module-level lock — survives re-renders
+
 export async function seedNotificationsForCurrentUser(): Promise<void> {
+  if (hasSeeded) return;
+  hasSeeded = true;
+
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return;
+  if (!user) { hasSeeded = false; return; }
   const uid = user.id;
 
-  // Check if already seeded — avoid duplicates
-  const { count } = await supabase
+  // Delete any existing notifications for this user (cleanup duplicates)
+  await supabase
     .from('notifications')
-    .select('*', { count: 'exact', head: true })
+    .delete()
     .eq('recipient_user_id', uid);
-  if ((count ?? 0) > 0) return; // already seeded
+
+  // Use distinct actor UUIDs so names display correctly
+  const actorA = '00000000-0000-0000-0000-000000000001';
+  const actorB = '00000000-0000-0000-0000-000000000002';
+  const actorC = '00000000-0000-0000-0000-000000000003';
 
   const rows = [
     {
       recipient_user_id: uid,
-      actor_user_id: uid,
+      actor_user_id: actorA,
       notification_type: 'assigned_work_item',
       entity_type: 'work_item',
       entity_id: crypto.randomUUID(),
@@ -26,13 +35,16 @@ export async function seedNotificationsForCurrentUser(): Promise<void> {
       status: 'In Progress',
       status_type: 'blue',
       tab: 'direct',
-      metadata: { comment_preview: 'Can you review the API timeout? It is blocking the release.' },
+      metadata: {
+        actor_display_name: 'Dr. Ahmed Al-Rashid',
+        comment_preview: 'Can you review the API timeout? It is blocking the release.',
+      },
       delivered_at: new Date().toISOString(),
       created_at: new Date(Date.now() - 8 * 60000).toISOString(),
     },
     {
       recipient_user_id: uid,
-      actor_user_id: uid,
+      actor_user_id: actorB,
       notification_type: 'mentioned_in_comment',
       entity_type: 'work_item',
       entity_id: crypto.randomUUID(),
@@ -44,6 +56,7 @@ export async function seedNotificationsForCurrentUser(): Promise<void> {
       status_type: 'blue',
       tab: 'direct',
       metadata: {
+        actor_display_name: 'Eng. Fatima Al-Harbi',
         comment_preview: 'Can you review the edge case handling for 429 responses? We need exponential backoff.',
         reactions: { '👍': 2, '🔥': 1 },
       },
@@ -52,7 +65,7 @@ export async function seedNotificationsForCurrentUser(): Promise<void> {
     },
     {
       recipient_user_id: uid,
-      actor_user_id: uid,
+      actor_user_id: actorC,
       notification_type: 'due_date_approaching',
       entity_type: 'work_item',
       entity_id: crypto.randomUUID(),
@@ -63,13 +76,16 @@ export async function seedNotificationsForCurrentUser(): Promise<void> {
       status: 'To Do',
       status_type: 'gray',
       tab: 'direct',
-      metadata: { due_date: new Date(Date.now() + 2 * 86400000).toISOString().split('T')[0] },
+      metadata: {
+        actor_display_name: 'Ms. Nora Al-Zahrani',
+        due_date: new Date(Date.now() + 2 * 86400000).toISOString().split('T')[0],
+      },
       delivered_at: new Date().toISOString(),
       created_at: new Date(Date.now() - 3 * 3600000).toISOString(),
     },
     {
       recipient_user_id: uid,
-      actor_user_id: uid,
+      actor_user_id: actorA,
       notification_type: 'status_changed',
       entity_type: 'work_item',
       entity_id: crypto.randomUUID(),
@@ -80,13 +96,17 @@ export async function seedNotificationsForCurrentUser(): Promise<void> {
       status: 'Done',
       status_type: 'green',
       tab: 'watching',
-      metadata: { status_from: 'In Progress', status_to: 'Done' },
+      metadata: {
+        actor_display_name: 'Mr. Khalid Al-Qahtani',
+        status_from: 'In Progress',
+        status_to: 'Done',
+      },
       delivered_at: new Date().toISOString(),
       created_at: new Date(Date.now() - 26 * 3600000).toISOString(),
     },
     {
       recipient_user_id: uid,
-      actor_user_id: uid,
+      actor_user_id: actorB,
       notification_type: 'commented_on_work_item',
       entity_type: 'work_item',
       entity_id: crypto.randomUUID(),
@@ -97,13 +117,16 @@ export async function seedNotificationsForCurrentUser(): Promise<void> {
       status: 'In Progress',
       status_type: 'blue',
       tab: 'watching',
-      metadata: { comment_preview: 'The scope creep on Phase 2 needs to be addressed before the next ministry gate.' },
+      metadata: {
+        actor_display_name: 'Eng. Fatima Al-Harbi',
+        comment_preview: 'The scope creep on Phase 2 needs to be addressed before the next ministry gate.',
+      },
       delivered_at: new Date().toISOString(),
       created_at: new Date(Date.now() - 2 * 86400000).toISOString(),
     },
     {
       recipient_user_id: uid,
-      actor_user_id: uid,
+      actor_user_id: actorC,
       notification_type: 'ai_insight_generated',
       entity_type: 'work_item',
       entity_id: crypto.randomUUID(),
@@ -114,7 +137,10 @@ export async function seedNotificationsForCurrentUser(): Promise<void> {
       status: 'Active',
       status_type: 'blue',
       tab: 'ai',
-      metadata: { summary: '3 items at risk this week. Release 3.2 has 4 unresolved blockers. Confidence: 78%.' },
+      metadata: {
+        actor_display_name: 'Catalyst AI',
+        summary: '3 items at risk this week. Release 3.2 has 4 unresolved blockers. Confidence: 78%.',
+      },
       delivered_at: new Date().toISOString(),
       created_at: new Date(Date.now() - 6 * 3600000).toISOString(),
     },
