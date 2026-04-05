@@ -49,7 +49,7 @@ export function ProjectDetailPanel({ project, open, onClose, isFav, onToggleFav 
               <ArrowLeft size={18} color="var(--fg-3)" />
             </button>
             <div className="flex items-center justify-center rounded-md" style={{ width: 36, height: 36, background: bg, color: '#FFF', fontSize: 13, fontWeight: 700, fontFamily: "'JetBrains Mono', monospace", borderRadius: 8 }}>
-              {project.project_key.substring(0, 2)}
+              {project.project_key}
             </div>
             <div className="flex-1 min-w-0">
               <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--fg-1)', fontFamily: "'Sora', sans-serif" }}>{project.name}</div>
