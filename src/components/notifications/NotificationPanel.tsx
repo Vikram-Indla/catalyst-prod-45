@@ -217,19 +217,19 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
     onClose();
 
     const HUB_ROUTES: Record<string, string> = {
-      'TestHub':      '/test-hub',
-      'ProjectHub':   '/project-hub',
-      'ProductHub':   '/product-hub',
-      'ReleaseHub':   '/release-hub',
-      'IncidentHub':  '/incident-hub',
-      'TaskHub':      '/task-hub',
-      'PlanHub':      '/plan-hub',
-      'StrategyHub':  '/strategy-hub',
+      'TestHub':      '/testhub/cases',
+      'ProjectHub':   '/projecthub/items',
+      'ProductHub':   '/producthub/items',
+      'ReleaseHub':   '/releasehub/releases',
+      'IncidentHub':  '/incidenthub/incidents',
+      'TaskHub':      '/taskhub/tasks',
+      'PlanHub':      '/planhub/tasks',
+      'StrategyHub':  '/strategyhub',
     };
 
     const base = HUB_ROUTES[n.hub_source];
     if (base) {
-      navigate(`${base}?openItem=${n.entity_key}`);
+      navigate(`${base}?openItem=${n.entity_id}`);
     }
   }, [markAsRead, onClose, navigate]);
 

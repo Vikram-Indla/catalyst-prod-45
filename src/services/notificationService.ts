@@ -7,6 +7,7 @@ export const notificationService = {
       .select('*')
       .eq('recipient_user_id', userId)
       .eq('entity_deleted', false)
+      .eq('is_dismissed', false)
       .order('created_at', { ascending: false })
       .limit(20);
 

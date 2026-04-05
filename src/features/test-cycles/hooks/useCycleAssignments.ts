@@ -73,9 +73,37 @@ export function useCycleAssignments(cycleId: string | undefined) {
 
       return response.assignment_id;
     },
-    onSuccess: () => {
+    onSuccess: async (_data, variables) => {
       invalidate();
       toast.success('Tester assigned');
+
+      // Notify the assigned tester (non-blocking)
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        const actorId = session?.user?.id;
+        // Don't notify yourself
+        if (actorId && variables.userId !== actorId) {
+          await supabase.functions.invoke('notify-dispatch', {
+            body: {
+              recipient_user_id: variables.userId,
+              actor_user_id: actorId,
+              notification_type: 'tester_assigned',
+              entity_type: 'test_case',
+              entity_id: cycleId,
+              entity_title: `Test Cycle Assignment`,
+              entity_key: cycleId?.substring(0, 8) || 'CYCLE',
+              entity_icon_type: 'bug',
+              hub_source: 'TestHub',
+              tab: 'direct',
+              status: null,
+              status_type: null,
+              metadata: {},
+            },
+          });
+        }
+      } catch (_e) {
+        // Non-blocking: notification failure should not affect assignment
+      }
     },
     onError: (error: Error) => {
       toast.error(`Failed to assign tester: ${error.message}`);
