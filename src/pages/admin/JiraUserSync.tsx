@@ -130,6 +130,12 @@ const JiraUserSync: React.FC = () => {
   const { resolvedTheme, setTheme } = useThemeMode();
   const isDark = resolvedTheme === 'dark';
 
+  /* ── Set data-jsu on documentElement for global dark (nav/sidebar) ── */
+  useEffect(() => {
+    document.documentElement.setAttribute('data-jsu', isDark ? 'dark' : 'light');
+    return () => { document.documentElement.removeAttribute('data-jsu'); };
+  }, [isDark]);
+
   /* ── T object: single source of truth for all themed colors ── */
   const T = isDark ? {
     page:       '#0F1114',
@@ -161,27 +167,33 @@ const JiraUserSync: React.FC = () => {
     chipBorder: 'rgba(15,23,42,0.10)',
   };
 
-  /* ── Lozenge (D03) ── */
+  /* ── Lozenge — 3-color guardrail only ── */
   const Lozenge = ({ status }: { status: string }) => {
-    const upper = status?.toUpperCase();
-    const isActive = upper === 'ACTIVE';
-    const isConflict = upper === 'CONFLICT';
-    const cls = isConflict ? '' : isActive ? 'jsu-lozenge-active' : 'jsu-lozenge-inactive';
+    const upper = (status || '').toUpperCase();
+    // GREEN = Active/Done/Approved | BLUE = In Progress/Syncing | GREY = everything else
+    const isGreen = ['ACTIVE', 'DONE', 'APPROVED', 'COMPLETED'].includes(upper);
+    const isBlue = ['IN PROGRESS', 'SYNCING', 'IN REVIEW'].includes(upper);
+    // Grey for: Inactive, Conflict, On Hold, Backlog, etc.
+    const bg = isGreen
+      ? (isDark ? '#1A2A1E' : '#E3FCEF')
+      : isBlue
+        ? (isDark ? '#1E2636' : '#DEEBFF')
+        : (isDark ? '#2C2926' : '#DFE1E6');
+    const color = isGreen
+      ? (isDark ? '#86EFAC' : '#006644')
+      : isBlue
+        ? (isDark ? '#93C5FD' : '#0747A6')
+        : (isDark ? '#B8BCC8' : '#253858');
     return (
-      <span
-        className={cls}
-        style={{
-          display: 'inline-flex', alignItems: 'center',
-          height: 20, padding: '0 8px', borderRadius: 3,
-          fontFamily: 'Inter,sans-serif', fontSize: 10, fontWeight: 700,
-          textTransform: 'uppercase' as const, letterSpacing: '0.04em', whiteSpace: 'nowrap' as const,
-          ...(isConflict ? {
-            background: isDark ? '#451A03' : '#FEF3C7',
-            color: isDark ? '#FCD34D' : '#92400E',
-          } : {}),
-        }}
-      >
-        {status}
+      <span style={{
+        display: 'inline-flex', alignItems: 'center',
+        height: 20, padding: '0 6px', borderRadius: 3,
+        fontFamily: 'Inter,sans-serif', fontSize: 11, fontWeight: 700,
+        textTransform: 'uppercase' as const, letterSpacing: '0.03em',
+        whiteSpace: 'nowrap' as const, lineHeight: '20px',
+        background: bg, color,
+      }}>
+        {upper}
       </span>
     );
   };
@@ -304,6 +316,26 @@ const JiraUserSync: React.FC = () => {
   return (
     <>
     <style>{`
+      /* ── Global dark via data-jsu ── */
+      [data-jsu="dark"] .catalyst-topnav,
+      [data-jsu="dark"] [class*="AdminSidebar"],
+      [data-jsu="dark"] nav,
+      [data-jsu="dark"] aside {
+        background: #0F1114 !important;
+        border-color: rgba(200,210,225,0.08) !important;
+        color: rgba(225,230,240,0.92) !important;
+      }
+      [data-jsu="dark"] .catalyst-topnav *,
+      [data-jsu="dark"] nav *,
+      [data-jsu="dark"] aside * {
+        color: inherit !important;
+        border-color: inherit !important;
+      }
+      [data-jsu="dark"] .catalyst-topnav a:hover,
+      [data-jsu="dark"] nav a:hover,
+      [data-jsu="dark"] aside button:hover {
+        background: rgba(200,210,225,0.06) !important;
+      }
       .jsu-page { background: ${T.page} !important; min-height: 100vh; }
       .jsu-surface { background: ${T.surface} !important; border-color: ${T.border} !important; }
       .jsu-sunken { background: ${T.sunken} !important; }
@@ -321,8 +353,6 @@ const JiraUserSync: React.FC = () => {
       .jsu-search { background: ${T.inputBg} !important; border: 0.75px solid ${isDark ? 'rgba(200,210,225,0.12)' : 'rgba(15,23,42,0.12)'} !important; color: ${T.text1} !important; }
       .jsu-search::placeholder { color: ${T.text3} !important; }
       .jsu-stat-card { background: ${T.surface} !important; border: 0.75px solid ${T.border} !important; border-radius: 10px !important; }
-      .jsu-lozenge-active { background: ${isDark ? '#064E3B' : '#E3FCEF'} !important; color: ${isDark ? '#6EE7B7' : '#006644'} !important; }
-      .jsu-lozenge-inactive { background: ${isDark ? '#450A0A' : '#FEE2E2'} !important; color: ${isDark ? '#FCA5A5' : '#991B1B'} !important; }
       .jsu-badge-project { background: ${isDark ? 'rgba(200,210,225,0.08)' : '#F1F5F9'} !important; color: ${isDark ? 'rgba(200,210,225,0.65)' : '#475569'} !important; }
       .jsu-badge-jira { background: ${isDark ? 'rgba(37,99,235,0.15)' : '#EFF6FF'} !important; color: ${isDark ? '#93C5FD' : '#1D4ED8'} !important; border: 0.75px solid ${isDark ? 'rgba(37,99,235,0.25)' : '#BFDBFE'} !important; }
       .jsu-toggle-btn { background: ${T.surface} !important; border: 0.75px solid ${isDark ? 'rgba(200,210,225,0.12)' : 'rgba(15,23,42,0.12)'} !important; color: ${T.text2} !important; }
@@ -383,27 +413,25 @@ const JiraUserSync: React.FC = () => {
         </div>
       </div>
 
-      {/* ══ D04 — Stat Cards (50px gap not specified, using grid gap 12px from existing) ══ */}
-      <div className="shrink-0 flex flex-nowrap" style={{ gap: 12, padding: '14px 24px 12px', background: T.page }}>
+      {/* ══ Stat Cards — Enterprise Grid ══ */}
+      <div className="shrink-0" style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 12, padding: '16px 24px 14px', background: T.page }}>
         {STAT_CARDS.map(card => (
           <div key={card.key} className="jsu-stat-card" style={{
-            flex: 1, minWidth: 0, height: 55, padding: '8px 14px',
-            display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 0,
+            padding: '14px 16px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
+            minHeight: 88,
           }}>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center" style={{ gap: 5 }}>
-                <span style={{ width: 6, height: 6, borderRadius: '50%', background: card.dotColor, flexShrink: 0 }} />
-                <span className="jsu-text-2" style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.07em', fontFamily: 'Inter,sans-serif' }}>
-                  {card.label}
-                </span>
-              </div>
-              <span className="jsu-text-1" style={{ fontFamily: "'Sora',sans-serif", fontSize: 22, fontWeight: 700, lineHeight: 1, letterSpacing: '-0.02em' }}>
-                {getStatValue(card.key)}
+            <div className="flex items-center" style={{ gap: 6 }}>
+              <span style={{ width: 7, height: 7, borderRadius: '50%', background: card.dotColor, flexShrink: 0 }} />
+              <span className="jsu-text-2" style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.07em', fontFamily: 'Inter,sans-serif' }}>
+                {card.label}
               </span>
             </div>
-            <div className="jsu-text-3" style={{ fontFamily: 'Inter,sans-serif', fontSize: 10, fontWeight: 400, marginTop: 2 }}>
+            <span className="jsu-text-1" style={{ fontFamily: "'Sora',sans-serif", fontSize: 28, fontWeight: 700, lineHeight: 1, letterSpacing: '-0.02em', marginTop: 8 }}>
+              {getStatValue(card.key)}
+            </span>
+            <span className="jsu-text-3" style={{ fontFamily: 'Inter,sans-serif', fontSize: 11, fontWeight: 400, marginTop: 4 }}>
               {card.subLabel}
-            </div>
+            </span>
           </div>
         ))}
       </div>
