@@ -26,6 +26,7 @@ function getActionVerb(type: string, isSystemAssign: boolean): string {
     updated_work_item: 'updated',
     status_changed: 'changed status of',
     reassigned_work_item: 'reassigned',
+    unassigned: 'removed you from',
     created_work_item: 'created',
     release_approval_requested: 'requested approval for',
     incident_escalated: 'escalated',
