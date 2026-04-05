@@ -498,6 +498,7 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose }) => {
           </div>
           {/* Close */}
           <button
+            className="jus-close-btn"
             onClick={onClose}
             style={{
               position: 'absolute', top: '14px', right: '14px',
