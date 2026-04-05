@@ -583,7 +583,7 @@ const JiraUserSync: React.FC = () => {
                 </>
               );
             })()
-            )}
+            }
           </tbody>
         </table>
       </div>
