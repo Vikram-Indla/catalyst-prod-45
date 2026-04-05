@@ -121,6 +121,9 @@ const JiraUserSync: React.FC = () => {
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [activeUserId, setActiveUserId] = useState<string | null>(null);
   const [togglingId, setTogglingId] = useState<string | null>(null);
+  const [assignPopoverOpen, setAssignPopoverOpen] = useState(false);
+  const [assignPermLevel, setAssignPermLevel] = useState<'view' | 'edit' | 'full'>('view');
+  const [assignSearch, setAssignSearch] = useState('');
 
   const debouncedSearch = useDebouncedValue(search, 300);
 
@@ -129,6 +132,8 @@ const JiraUserSync: React.FC = () => {
   const { mutate: triggerSync, isPending: isSyncing } = useTriggerUserSync();
   const { mutate: toggleStatus } = useToggleUserStatus();
   const { mutate: copyPerms } = useCopyPermissions();
+  const { data: jiraProjects } = useJiraProjects();
+  const { mutate: assignToProject, isPending: isAssigning } = useAssignUsersToProject();
 
   const users = usersResult?.data ?? [];
   const totalCount = usersResult?.count ?? 0;
