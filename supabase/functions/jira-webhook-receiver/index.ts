@@ -183,6 +183,18 @@ Deno.serve(async (req) => {
     if (!webhookEvent) {
       return new Response('Missing webhookEvent', { status: 400 });
     }
+    // ── User events (Jira User Sync) ──
+    if (USER_EVENTS.has(webhookEvent)) {
+      try {
+        await handleUserEvent(payload, webhookEvent);
+      } catch (err) {
+        console.error('user event handler error:', err);
+      }
+      return new Response(JSON.stringify({ received: true, event: webhookEvent }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
 
     // ── Version events (ReleaseHub) ──
     if (webhookEvent === 'version_created' || webhookEvent === 'jira:version_created') {
