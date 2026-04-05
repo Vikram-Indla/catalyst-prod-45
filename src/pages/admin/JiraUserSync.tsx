@@ -312,7 +312,7 @@ const JiraUserSync: React.FC = () => {
       .jsu-text-2 { color: ${T.text2} !important; }
       .jsu-text-3 { color: ${T.text3} !important; }
       .jsu-border { border-color: ${T.border} !important; }
-      .jsu-row { background: ${T.surface} !important; border-bottom: 0.75px solid ${T.border} !important; height: 40px !important; max-height: 40px !important; }
+      .jsu-row { background: ${T.surface} !important; border-bottom: 0.75px solid ${T.border} !important; height: 55px !important; min-height: 55px !important; }
       .jsu-row:hover { background: ${isDark ? 'rgba(200,210,225,0.05)' : 'rgba(15,23,42,0.03)'} !important; }
       .jsu-th { background: ${T.sunken} !important; color: ${T.text2} !important; font-family: Inter,sans-serif !important; font-size: 11px !important; font-weight: 600 !important; text-transform: uppercase !important; letter-spacing: 0.05em !important; padding: 10px 12px !important; border-bottom: 0.75px solid ${T.border} !important; }
       .jsu-td { color: ${T.text1} !important; font-family: Inter,sans-serif !important; font-size: 13px !important; padding: 0 12px !important; }
@@ -604,11 +604,11 @@ const JiraUserSync: React.FC = () => {
       )}
 
       {/* ══ Table + Detail Panel ══ */}
-      <div className="flex flex-1 overflow-hidden">
-        <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex flex-1 min-h-0">
+        <div className="flex-1 flex flex-col min-h-0">
 
           {/* ══ D10 — Table ══ */}
-          <div className="flex-1 overflow-y-auto overflow-x-auto" style={{ margin: '0 24px 24px' }}>
+          <div className="flex-1 overflow-y-auto overflow-x-auto" style={{ padding: '0 24px' }}>
             <div style={{ background: T.surface, border: `0.75px solid ${T.border}`, borderRadius: 8, overflow: 'hidden' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 1000 }}>
                 <thead>
@@ -635,7 +635,7 @@ const JiraUserSync: React.FC = () => {
                   {usersLoading ? (
                     Array.from({ length: 10 }).map((_, i) => (
                       <tr key={`skel-${i}`} style={{
-                        height: 36, maxHeight: 36, borderBottom: `0.75px solid ${T.border}`,
+                        height: 55, minHeight: 55, borderBottom: `0.75px solid ${T.border}`,
                       }}>
                         <td style={{ padding: '0 12px' }}><div className="animate-pulse" style={{ width: 14, height: 14, borderRadius: 2, background: isDark ? 'rgba(200,210,225,0.08)' : '#E2E8F0' }} /></td>
                         <td style={{ padding: '0 12px' }}>
@@ -711,7 +711,7 @@ const JiraUserSync: React.FC = () => {
                         onMouseEnter={() => setHoveredRow(user.id)}
                         onMouseLeave={() => setHoveredRow(null)}
                         style={{
-                          height: 36, maxHeight: 36, overflow: 'hidden',
+                          height: 55, minHeight: 55,
                           borderBottom: `0.75px solid ${T.border}`,
                           borderLeft: isCatalystOnly ? '2px solid #7C3AED' : 'none',
                           cursor: 'pointer', opacity: isInactive ? 0.5 : 1,
