@@ -33,7 +33,7 @@ export const fetchJiraSyncUsers = async (
 };
 
 export const fetchSyncStats = async () => {
-  const [jira, local, proxy, inactive, webhooks] = await Promise.all([
+  const [jira, local, proxy, inactive, conflicts, webhooks] = await Promise.all([
     supabase.from('jira_identity_map')
       .select('*', { count: 'exact', head: true })
       .eq('catalyst_only', false).eq('is_active_in_catalyst', true),
@@ -46,6 +46,9 @@ export const fetchSyncStats = async () => {
     supabase.from('jira_identity_map')
       .select('*', { count: 'exact', head: true })
       .eq('is_active_in_catalyst', false),
+    supabase.from('jira_identity_map')
+      .select('*', { count: 'exact', head: true })
+      .not('conflict_fields', 'eq', '{}'),
     supabase.from('jira_webhook_events')
       .select('*', { count: 'exact', head: true })
       .gte('received_at', new Date(Date.now() - 86400000).toISOString()),
@@ -54,6 +57,7 @@ export const fetchSyncStats = async () => {
     jiraSynced: jira.count ?? 0,
     catalystOnly: local.count ?? 0,
     proxyAuth: proxy.count ?? 0,
+    conflicts: conflicts.count ?? 0,
     inactive: inactive.count ?? 0,
     webhooks24h: webhooks.count ?? 0,
   };
