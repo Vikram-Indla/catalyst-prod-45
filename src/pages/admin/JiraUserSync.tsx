@@ -395,12 +395,13 @@ const JiraUserSync: React.FC = () => {
                     </div>
                   </td>
                   <td style={{ padding: '0 12px' }}><div className="animate-pulse bg-[#E2E8F0] dark:bg-[rgba(200,210,225,0.08)]" style={{ width: 70, height: 16, borderRadius: 3 }} /></td>
-                  <td style={{ padding: '0 12px' }}><div className="animate-pulse bg-[#E2E8F0] dark:bg-[rgba(200,210,225,0.08)]" style={{ width: 100, height: 16, borderRadius: 3 }} /></td>
-                  <td style={{ padding: '0 12px' }}><div className="animate-pulse bg-[#E2E8F0] dark:bg-[rgba(200,210,225,0.08)]" style={{ width: 80, height: 10, borderRadius: 2 }} /></td>
-                  <td style={{ padding: '0 12px' }}><div className="animate-pulse bg-[#E2E8F0] dark:bg-[rgba(200,210,225,0.08)]" style={{ width: 60, height: 10, borderRadius: 2 }} /></td>
-                  <td style={{ padding: '0 12px' }}><div className="animate-pulse bg-[#E2E8F0] dark:bg-[rgba(200,210,225,0.08)]" style={{ width: 50, height: 18, borderRadius: 3 }} /></td>
-                  <td />
-                </tr>
+                   <td style={{ padding: '0 12px' }}><div className="animate-pulse bg-[#E2E8F0] dark:bg-[rgba(200,210,225,0.08)]" style={{ width: 100, height: 16, borderRadius: 3 }} /></td>
+                   <td style={{ padding: '0 12px' }}><div className="animate-pulse bg-[#E2E8F0] dark:bg-[rgba(200,210,225,0.08)]" style={{ width: 80, height: 10, borderRadius: 2 }} /></td>
+                   <td style={{ padding: '0 12px' }}><div className="animate-pulse bg-[#E2E8F0] dark:bg-[rgba(200,210,225,0.08)]" style={{ width: 60, height: 10, borderRadius: 2 }} /></td>
+                   <td style={{ padding: '0 12px' }}><div className="animate-pulse bg-[#E2E8F0] dark:bg-[rgba(200,210,225,0.08)]" style={{ width: 60, height: 10, borderRadius: 2 }} /></td>
+                   <td style={{ padding: '0 12px' }}><div className="animate-pulse bg-[#E2E8F0] dark:bg-[rgba(200,210,225,0.08)]" style={{ width: 50, height: 18, borderRadius: 3 }} /></td>
+                   <td />
+                 </tr>
               ))
             ) : users.length === 0 && !usersFetching ? (
               <tr>
