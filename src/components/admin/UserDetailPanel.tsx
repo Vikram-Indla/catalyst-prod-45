@@ -517,11 +517,11 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose }) => {
           {TABS.map(t => (
             <button
               key={t.key}
+              className={`jus-tab-btn ${activeTab === t.key ? 'active' : ''}`}
               onClick={() => setActiveTab(t.key)}
               style={{
                 padding: '8px 12px', fontSize: '12px', fontWeight: 500, cursor: 'pointer',
                 color: activeTab === t.key ? '#2563EB' : '#64748B',
-                borderBottom: activeTab === t.key ? '2px solid #2563EB' : '2px solid transparent',
                 background: 'none', border: 'none',
                 borderBottomWidth: '2px', borderBottomStyle: 'solid',
                 borderBottomColor: activeTab === t.key ? '#2563EB' : 'transparent',
@@ -539,28 +539,28 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose }) => {
         {activeTab === 'profile' && (
           <>
             {/* Identity */}
-            <div style={{ padding: '12px 16px', borderBottom: '1px solid rgba(15,23,42,0.06)' }}>
-              <div style={sectionLabel}>IDENTITY</div>
-              <div style={fieldRow}>
-                <span style={fieldKey}>Email / Login</span>
-                <span style={{ ...fieldVal, ...monoSmall }}>{user.email}</span>
+            <div className="jus-section-border" style={{ padding: '12px 16px', borderBottom: '1px solid rgba(15,23,42,0.06)' }}>
+              <div className="jus-section-label" style={sectionLabel}>IDENTITY</div>
+              <div className="jus-field-row" style={fieldRow}>
+                <span className="jus-field-key" style={fieldKey}>Email / Login</span>
+                <span className="jus-field-val" style={{ ...fieldVal, ...monoSmall }}>{user.email}</span>
               </div>
-              <div style={fieldRow}>
-                <span style={fieldKey}>Jira Account ID</span>
-                <span style={{ ...fieldVal, ...monoSmall }}>
+              <div className="jus-field-row" style={fieldRow}>
+                <span className="jus-field-key" style={fieldKey}>Jira Account ID</span>
+                <span className="jus-field-val" style={{ ...fieldVal, ...monoSmall }}>
                   {user.jira_account_id
                     ? (user.jira_account_id.length > 24 ? user.jira_account_id.slice(0, 24) + '…' : user.jira_account_id)
                     : <i style={{ color: '#94A3B8', fontWeight: 400 }}>N/A — local user</i>
                   }
                 </span>
               </div>
-              <div style={fieldRow}>
-                <span style={fieldKey}>Resource Role</span>
-                <span style={fieldVal}>{user.resource_role_id || '—'}</span>
+              <div className="jus-field-row" style={fieldRow}>
+                <span className="jus-field-key" style={fieldKey}>Resource Role</span>
+                <span className="jus-field-val" style={fieldVal}>{user.resource_role_id || '—'}</span>
               </div>
-              <div style={fieldRow}>
-                <span style={fieldKey}>Last Synced</span>
-                <span style={fieldVal}>
+              <div className="jus-field-row" style={fieldRow}>
+                <span className="jus-field-key" style={fieldKey}>Last Synced</span>
+                <span className="jus-field-val" style={fieldVal}>
                   {user.last_synced_at ? (
                     <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
                       <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#16A34A', display: 'inline-block' }} />
@@ -571,12 +571,12 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose }) => {
                   )}
                 </span>
               </div>
-              <div style={fieldRow}>
-                <span style={fieldKey}>Last Login</span>
-                <span style={fieldVal}>{formatDate(user.last_catalyst_login_at)}</span>
+              <div className="jus-field-row" style={fieldRow}>
+                <span className="jus-field-key" style={fieldKey}>Last Login</span>
+                <span className="jus-field-val" style={fieldVal}>{formatDate(user.last_catalyst_login_at)}</span>
               </div>
-              <div style={{ ...fieldRow, borderBottom: 'none' }}>
-                <span style={fieldKey}>Status</span>
+              <div className="jus-field-row" style={{ ...fieldRow, borderBottom: 'none' }}>
+                <span className="jus-field-key" style={fieldKey}>Status</span>
                 <span style={{
                   display: 'inline-block', padding: '0 7px', borderRadius: '3px',
                   fontSize: '10px', fontWeight: 700, textTransform: 'uppercase',
@@ -590,9 +590,9 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose }) => {
             </div>
 
             {/* Password & Auth */}
-            <div style={{ padding: '12px 16px', borderBottom: '1px solid rgba(15,23,42,0.06)' }}>
-              <div style={sectionLabel}>PASSWORD & AUTH</div>
-              <div style={{
+            <div className="jus-section-border" style={{ padding: '12px 16px', borderBottom: '1px solid rgba(15,23,42,0.06)' }}>
+              <div className="jus-section-label" style={sectionLabel}>PASSWORD & AUTH</div>
+              <div className="jus-pwd-box" style={{
                 background: '#F1F5F9', borderRadius: '4px', padding: '7px 10px',
                 display: 'flex', gap: '8px', alignItems: 'center', marginTop: '5px',
               }}>
@@ -631,7 +631,7 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose }) => {
                 </button>
               </div>
               {/* Info box */}
-              <div style={{
+              <div className="jus-info-box" style={{
                 marginTop: '7px', padding: '9px 11px', borderRadius: '5px',
                 display: 'flex', gap: '8px', alignItems: 'flex-start',
                 background: isJiraProxy ? '#F0FDFA' : '#F5F3FF',
@@ -655,7 +655,7 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose }) => {
 
             {/* Account Actions */}
             <div style={{ padding: '12px 16px' }}>
-              <div style={sectionLabel}>ACCOUNT ACTIONS</div>
+              <div className="jus-section-label" style={sectionLabel}>ACCOUNT ACTIONS</div>
               <div style={{ display: 'flex', gap: '7px', marginTop: '4px', flexWrap: 'wrap' }}>
                 <button
                   onClick={handleToggle}
@@ -672,6 +672,7 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose }) => {
                   {isInactive ? 'Reactivate' : 'Make Inactive'}
                 </button>
                 <button
+                  className="jus-action-btn"
                   onClick={() => toast.info('Select target users in the table first')}
                   style={{
                     display: 'inline-flex', alignItems: 'center', gap: '4px',
@@ -684,6 +685,7 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose }) => {
                 </button>
                 {!isCatalystOnly && (
                   <button
+                    className="jus-action-btn"
                     onClick={() => toast.info('Re-sync triggered for this user')}
                     style={{
                       display: 'inline-flex', alignItems: 'center', gap: '4px',
@@ -766,7 +768,7 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose }) => {
       </div>
 
       {/* ── Footer ── */}
-      <div style={{
+      <div className="jus-footer-sticky" style={{
         position: 'sticky', bottom: 0, background: '#FFFFFF',
         borderTop: '1px solid rgba(15,23,42,0.06)', padding: '10px 16px',
         display: 'flex', gap: '7px',
@@ -780,6 +782,7 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose }) => {
           Save All Changes
         </button>
         <button
+          className="jus-footer-btn-outline"
           onClick={handleToggle}
           disabled={toggling}
           style={{
