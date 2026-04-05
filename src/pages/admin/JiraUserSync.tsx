@@ -9,6 +9,7 @@ import {
   useCopyPermissions,
 } from '@/hooks/useJiraUserSync';
 import type { SyncFilter } from '@/types/jiraSync';
+import CreateCatalystUserModal from '@/components/admin/CreateCatalystUserModal';
 
 /* ── Stats Config ── */
 const STATS_CONFIG = [
