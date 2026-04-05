@@ -1,5 +1,6 @@
-import React, { lazy, Suspense } from "react";
+import React, { lazy, Suspense, useEffect } from "react";
 import { ENABLE_FULL_APP } from './lib/featureFlags';
+import { seedNotificationsForCurrentUser } from '@/utils/seedNotificationsForCurrentUser';
 
 // ─── Core infrastructure (always loaded) ────────────────────────────
 import { TooltipProvider } from "@/components/ui/tooltip";
