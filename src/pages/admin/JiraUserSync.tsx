@@ -709,6 +709,7 @@ const JiraUserSync: React.FC = () => {
         </span>
         <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
           <button
+            className="jus-pagination-btn"
             onClick={() => setPage(p => Math.max(1, p - 1))}
             disabled={page <= 1}
             style={{
@@ -725,6 +726,7 @@ const JiraUserSync: React.FC = () => {
               <span key={`ell-${i}`} style={{ width: '28px', textAlign: 'center', fontSize: '11px', color: '#94A3B8' }}>…</span>
             ) : (
               <button
+                className={`jus-pagination-btn ${page === p ? 'active' : ''}`}
                 key={p}
                 onClick={() => setPage(p as number)}
                 style={{
@@ -741,6 +743,7 @@ const JiraUserSync: React.FC = () => {
             )
           )}
           <button
+            className="jus-pagination-btn"
             onClick={() => setPage(p => Math.min(totalPages, p + 1))}
             disabled={page >= totalPages}
             style={{
