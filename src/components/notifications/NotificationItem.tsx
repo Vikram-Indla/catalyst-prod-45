@@ -74,7 +74,7 @@ function formatTimestamp(iso: string): string {
   return `${diffDay} days ago`;
 }
 
-function NotificationItemInner({ notification, onMarkRead, onClick }: NotificationItemProps) {
+function NotificationItemInner({ notification, actorProfile, onMarkRead, onClick }: NotificationItemProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [isPressed, setIsPressed] = useState(false);
   const isUnread = !notification.read_at;
@@ -82,16 +82,18 @@ function NotificationItemInner({ notification, onMarkRead, onClick }: Notificati
   const isComment = COMMENT_PREVIEW_TYPES.some(t => t === notification.notification_type);
   const isDeleted = notification.entity_deleted;
 
-  // Determine if this is a system-generated assignment (no actor)
-  const isSystemAssign = !notification.actor_user_id
+  // Determine if this is a system-generated assignment (no actor at all)
+  const hasActor = !!(notification.actor_user_id && (actorProfile || notification.actor));
+  const isSystemAssign = !hasActor
     && (notification.notification_type === 'assigned' || notification.notification_type === 'unassigned' || notification.notification_type === 'status_changed');
 
   const actorName = isSystemAssign
     ? ''
-    : (notification.actor?.full_name || (notification.metadata as any)?.actor_display_name || 'Unknown');
+    : (actorProfile?.full_name || notification.actor?.full_name || (notification.metadata as any)?.actor_display_name || 'Unknown');
   const actorId = notification.actor?.id || notification.actor_user_id || 'system';
   const avatarColor = isSystemAssign ? '#6B7280' : getAvatarColor(actorId);
   const initials = isSystemAssign ? '' : getUserInitials(actorName);
+  const avatarUrl = actorProfile?.avatar_url || notification.actor?.avatar_url || null;
 
   // m-15: read item opacity on text only, not avatar
   const textOpacity = isUnread ? 1 : 0.8;
