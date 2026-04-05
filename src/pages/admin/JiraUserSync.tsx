@@ -167,27 +167,33 @@ const JiraUserSync: React.FC = () => {
     chipBorder: 'rgba(15,23,42,0.10)',
   };
 
-  /* ── Lozenge (D03) ── */
+  /* ── Lozenge — 3-color guardrail only ── */
   const Lozenge = ({ status }: { status: string }) => {
-    const upper = status?.toUpperCase();
-    const isActive = upper === 'ACTIVE';
-    const isConflict = upper === 'CONFLICT';
-    const cls = isConflict ? '' : isActive ? 'jsu-lozenge-active' : 'jsu-lozenge-inactive';
+    const upper = (status || '').toUpperCase();
+    // GREEN = Active/Done/Approved | BLUE = In Progress/Syncing | GREY = everything else
+    const isGreen = ['ACTIVE', 'DONE', 'APPROVED', 'COMPLETED'].includes(upper);
+    const isBlue = ['IN PROGRESS', 'SYNCING', 'IN REVIEW'].includes(upper);
+    // Grey for: Inactive, Conflict, On Hold, Backlog, etc.
+    const bg = isGreen
+      ? (isDark ? '#1A2A1E' : '#E3FCEF')
+      : isBlue
+        ? (isDark ? '#1E2636' : '#DEEBFF')
+        : (isDark ? '#2C2926' : '#DFE1E6');
+    const color = isGreen
+      ? (isDark ? '#86EFAC' : '#006644')
+      : isBlue
+        ? (isDark ? '#93C5FD' : '#0747A6')
+        : (isDark ? '#B8BCC8' : '#253858');
     return (
-      <span
-        className={cls}
-        style={{
-          display: 'inline-flex', alignItems: 'center',
-          height: 20, padding: '0 8px', borderRadius: 3,
-          fontFamily: 'Inter,sans-serif', fontSize: 10, fontWeight: 700,
-          textTransform: 'uppercase' as const, letterSpacing: '0.04em', whiteSpace: 'nowrap' as const,
-          ...(isConflict ? {
-            background: isDark ? '#451A03' : '#FEF3C7',
-            color: isDark ? '#FCD34D' : '#92400E',
-          } : {}),
-        }}
-      >
-        {status}
+      <span style={{
+        display: 'inline-flex', alignItems: 'center',
+        height: 20, padding: '0 6px', borderRadius: 3,
+        fontFamily: 'Inter,sans-serif', fontSize: 11, fontWeight: 700,
+        textTransform: 'uppercase' as const, letterSpacing: '0.03em',
+        whiteSpace: 'nowrap' as const, lineHeight: '20px',
+        background: bg, color,
+      }}>
+        {upper}
       </span>
     );
   };
