@@ -20,7 +20,7 @@ export default function useToastQueue() {
       setToasts(prev => {
         const toast = prev.find(t => t.id === id);
         if (!toast || toast.isPaused) return prev;
-        const elapsed = 10;
+        const elapsed = 50;
         const remaining = toast.remainingMs - elapsed;
         if (remaining <= 0) {
           clearInterval(timer);
@@ -29,7 +29,7 @@ export default function useToastQueue() {
         }
         return prev.map(t => t.id === id ? { ...t, remainingMs: remaining } : t);
       });
-    }, 10);
+    }, 50);
     timersRef.current.set(id, timer);
   }, []);
 

@@ -11,6 +11,7 @@ interface AIDigestTabProps {
   items?: AIDigestItem[];
   lastGenerated?: string;
   onRefresh?: () => void;
+  hasNewDigest?: boolean;
 }
 
 const MOCK_ITEMS: AIDigestItem[] = [
@@ -22,6 +23,8 @@ const MOCK_ITEMS: AIDigestItem[] = [
 export default function AIDigestTab({ items = MOCK_ITEMS, lastGenerated = '2 hours ago', onRefresh }: AIDigestTabProps) {
   return (
     <div style={{ padding: '12px 20px' }}>
+      {/* m-12: pulse dot keyframes injected in NotificationPanel */}
+
       {/* Purple badge */}
       <div style={{
         display: 'inline-flex', alignItems: 'center', gap: 6,

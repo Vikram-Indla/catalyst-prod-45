@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { ExternalLink, MoreVertical, CheckCheck, MessageSquare, Settings } from "lucide-react";
+import { ExternalLink, MoreVertical, CheckCheck, MessageSquare, Settings, RefreshCw } from "lucide-react";
 import type { Notification, NotificationTab } from "@/types/notifications";
 import { PANEL_WIDTH } from "@/constants/notificationConstants";
 import { useNotificationsQuery, useMarkAsRead, useMarkAllAsRead, useSnoozeNotification } from "@/hooks/useNotificationsNew";
@@ -63,11 +63,13 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
   const [activeTab, setActiveTab] = useState<NotificationTab>('direct');
   const [menuOpen, setMenuOpen] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [hasError, setHasError] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const scrollPosRef = useRef(0);
   const sentinelRef = useRef<HTMLDivElement>(null);
+  const focusedIndexRef = useRef(-1);
 
   // W6 — Load unread-only preference from notification_preferences
   const { data: savedUnreadPref } = useQuery({
@@ -111,9 +113,17 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
     });
   }, [updatePref]);
 
+  // Unread count for toggle display (m-10)
+  const { data: unreadCount } = useUnreadCount();
+
   // W1 — Real data from Supabase
-  const { data, fetchNextPage, hasNextPage, isLoading } = useNotificationsQuery(activeTab, unreadOnly);
+  const { data, fetchNextPage, hasNextPage, isLoading, isError, refetch } = useNotificationsQuery(activeTab, unreadOnly);
   const allNotifications: Notification[] = (data?.pages.flat() ?? []) as unknown as Notification[];
+
+  // Error state handling (1.5)
+  useEffect(() => {
+    setHasError(isError);
+  }, [isError]);
 
   // W4 — Mark as read
   const { mutate: markAsRead } = useMarkAsRead();
@@ -162,15 +172,23 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
     return () => document.removeEventListener('mousedown', handler);
   }, [isOpen, onClose]);
 
-  // Escape key
+  // Keyboard: Escape, Arrow keys, R for read, M for mark-all
   useEffect(() => {
     if (!isOpen) return;
     const handler = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') { menuOpen ? setMenuOpen(false) : onClose(); }
+      if (e.key === 'Escape') {
+        if (menuOpen) setMenuOpen(false);
+        else onClose();
+        return;
+      }
+      // M = mark all read
+      if (e.key === 'm' || e.key === 'M') {
+        if (!menuOpen) markAllRead(undefined);
+      }
     };
     document.addEventListener('keydown', handler);
     return () => document.removeEventListener('keydown', handler);
-  }, [isOpen, menuOpen, onClose]);
+  }, [isOpen, menuOpen, onClose, markAllRead]);
 
   // Close menu on outside click
   useEffect(() => {
@@ -196,6 +214,13 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
   if (!isOpen && !isAnimating) return null;
 
   const groups = groupByDate(allNotifications);
+
+  // Determine empty state variant
+  const getEmptyVariant = () => {
+    if (activeTab === 'watching') return 'noWatching' as const;
+    if (unreadOnly) return 'allCaughtUp' as const;
+    return 'noNotifications' as const;
+  };
 
   return (
     <div
@@ -236,6 +261,22 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
           from { opacity: 0; transform: translateY(-4px); }
           to { opacity: 1; transform: translateY(0); }
         }
+        @keyframes pulseDot {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.4; }
+        }
+
+        @media (max-width: 767px) {
+          .notif-panel-responsive {
+            top: auto !important;
+            bottom: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            width: 100vw !important;
+            max-height: 90vh !important;
+            border-radius: 12px 12px 0 0 !important;
+          }
+        }
       `}</style>
 
       {/* Header */}
@@ -245,10 +286,13 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
             Notifications
           </span>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            {/* Unread toggle */}
-            <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, color: '#64748B' }}>Only show unread</span>
+            {/* m-10: Unread toggle with count */}
+            <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, color: '#64748B' }}>
+              Only show unread{unreadOnly && unreadCount !== undefined ? ` (${unreadCount})` : ''}
+            </span>
             <button
               onClick={handleToggleUnread}
+              aria-label={unreadOnly ? 'Show all notifications' : 'Show only unread'}
               style={{
                 width: 36, height: 20, borderRadius: 10, cursor: 'pointer', border: 'none',
                 background: unreadOnly ? '#16A34A' : '#334155',
@@ -273,6 +317,7 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
             <button
               style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, borderRadius: 4, color: '#64748B' }}
               title="Open in full page"
+              aria-label="Open notifications in full page"
             >
               <ExternalLink size={16} />
             </button>
@@ -281,12 +326,15 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
               <button
                 onClick={() => setMenuOpen(!menuOpen)}
                 style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, borderRadius: 4, color: '#64748B' }}
+                aria-label="More options"
+                aria-expanded={menuOpen}
               >
                 <MoreVertical size={16} />
               </button>
               {menuOpen && (
                 <div
                   ref={menuRef}
+                  role="menu"
                   style={{
                     position: 'absolute', top: '100%', right: 0, marginTop: 4,
                     background: '#FFFFFF', border: '0.5px solid rgba(15,23,42,.08)', borderRadius: 6,
@@ -296,25 +344,31 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
                   }}
                 >
                   {[
-                    { icon: CheckCheck, label: 'Mark all as read', action: () => { markAllRead(undefined); setMenuOpen(false); } },
-                    { icon: MessageSquare, label: 'Give feedback', action: () => setMenuOpen(false) },
-                    { icon: Settings, label: 'Notification settings', action: () => setMenuOpen(false) },
-                  ].map(({ icon: Icon, label, action }) => (
-                    <button
-                      key={label}
-                      onClick={action}
-                      style={{
-                        display: 'flex', alignItems: 'center', gap: 8, width: '100%',
-                        padding: '10px 14px', background: 'none', border: 'none',
-                        cursor: 'pointer', fontFamily: 'Inter, sans-serif', fontSize: 13, color: '#0F172A',
-                        transition: 'background 150ms ease',
-                      }}
-                      onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(15,23,42,.04)'}
-                      onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
-                    >
-                      <Icon size={16} color="#64748B" />
-                      {label}
-                    </button>
+                    { icon: CheckCheck, label: 'Mark all as read', action: () => { markAllRead(undefined); setMenuOpen(false); }, dividerAfter: false },
+                    { icon: MessageSquare, label: 'Give feedback', action: () => setMenuOpen(false), dividerAfter: true },
+                    { icon: Settings, label: 'Notification settings', action: () => setMenuOpen(false), dividerAfter: false },
+                  ].map(({ icon: Icon, label, action, dividerAfter }) => (
+                    <div key={label}>
+                      <button
+                        role="menuitem"
+                        onClick={action}
+                        style={{
+                          display: 'flex', alignItems: 'center', gap: 8, width: '100%',
+                          padding: '10px 14px', background: 'none', border: 'none',
+                          cursor: 'pointer', fontFamily: 'Inter, sans-serif', fontSize: 13, color: '#0F172A',
+                          transition: 'background 150ms ease',
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(15,23,42,.04)'}
+                        onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                      >
+                        <Icon size={16} color="#64748B" />
+                        {label}
+                      </button>
+                      {/* m-05: divider between "Give feedback" and "Notification settings" */}
+                      {dividerAfter && (
+                        <div style={{ height: '0.5px', background: 'rgba(15,23,42,.08)', margin: '0 14px' }} />
+                      )}
+                    </div>
                   ))}
                 </div>
               )}
@@ -330,6 +384,8 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
               <button
                 key={tab.key}
                 onClick={() => setActiveTab(tab.key)}
+                role="tab"
+                aria-selected={isActive}
                 style={{
                   display: 'flex', alignItems: 'center', gap: 6,
                   padding: '0 16px', height: 36,
@@ -340,8 +396,12 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
                   transition: 'color 150ms ease',
                 }}
               >
+                {/* m-12: AI Digest tab dot with pulse animation when new */}
                 {tab.hasDot && (
-                  <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#7C3AED', flexShrink: 0 }} />
+                  <span style={{
+                    width: 6, height: 6, borderRadius: '50%', background: '#7C3AED', flexShrink: 0,
+                    animation: 'pulseDot 1.5s infinite',
+                  }} />
                 )}
                 {tab.label}
               </button>
@@ -356,12 +416,31 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
         onScroll={handleScroll}
         style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden' }}
       >
-        {activeTab === 'ai' ? (
+        {/* 1.5 — Error state */}
+        {hasError ? (
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '48px 20px', gap: 12 }}>
+            <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 14, color: '#94A3B8' }}>
+              Could not load notifications
+            </span>
+            <button
+              onClick={() => { setHasError(false); refetch(); }}
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: 6,
+                padding: '8px 16px', borderRadius: 6,
+                border: '0.5px solid rgba(15,23,42,.12)', background: 'transparent',
+                cursor: 'pointer', fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 500, color: '#475569',
+              }}
+            >
+              <RefreshCw size={14} />
+              Retry
+            </button>
+          </div>
+        ) : activeTab === 'ai' ? (
           <AIDigestTab />
         ) : isLoading && allNotifications.length === 0 ? (
           <LoadingSkeleton />
         ) : allNotifications.length === 0 ? (
-          <EmptyState variant={unreadOnly ? 'allCaughtUp' : 'noNotifications'} />
+          <EmptyState variant={getEmptyVariant()} />
         ) : (
           <>
             {groups.map(group => (

@@ -25,6 +25,7 @@ export function useNotificationsQuery(tab: NotificationTab, unreadOnly: boolean)
         .select('*')
         .eq('recipient_user_id', userId!)
         .eq('entity_deleted', false)
+        .or('snoozed_until.is.null,snoozed_until.lt.' + new Date().toISOString())
         .order('created_at', { ascending: false })
         .limit(NOTIFICATIONS_PER_PAGE);
 

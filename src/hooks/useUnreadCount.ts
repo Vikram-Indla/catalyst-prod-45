@@ -12,7 +12,8 @@ export function useUnreadCount() {
         .select('*', { count: 'exact', head: true })
         .eq('recipient_user_id', user.id)
         .is('read_at', null)
-        .eq('entity_deleted', false);
+        .eq('entity_deleted', false)
+        .or('snoozed_until.is.null,snoozed_until.lt.' + new Date().toISOString());
       if (error) throw error;
       return count ?? 0;
     },

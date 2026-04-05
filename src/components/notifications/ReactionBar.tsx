@@ -11,6 +11,7 @@ interface ReactionBarProps {
 
 export default function ReactionBar({ reactions = {}, onReact, onReply, onViewThread }: ReactionBarProps) {
   const [hovered, setHovered] = useState<string | null>(null);
+  const [pressed, setPressed] = useState<string | null>(null);
 
   return (
     <div style={{
@@ -23,12 +24,15 @@ export default function ReactionBar({ reactions = {}, onReact, onReply, onViewTh
       {REACTIONS.map(emoji => {
         const count = reactions[emoji] || 0;
         const isHov = hovered === emoji;
+        const isPressed = pressed === emoji;
         return (
           <button
             key={emoji}
             onClick={(e) => { e.stopPropagation(); onReact?.(emoji); }}
             onMouseEnter={() => setHovered(emoji)}
-            onMouseLeave={() => setHovered(null)}
+            onMouseLeave={() => { setHovered(null); setPressed(null); }}
+            onMouseDown={() => setPressed(emoji)}
+            onMouseUp={() => setPressed(null)}
             style={{
               display: 'inline-flex', alignItems: 'center', gap: 2,
               padding: '4px 8px',
@@ -39,6 +43,8 @@ export default function ReactionBar({ reactions = {}, onReact, onReply, onViewTh
               fontSize: 13,
               transition: 'all 150ms ease',
               outline: 'none',
+              // m-01: scale on active/press
+              transform: isPressed ? 'scale(0.95)' : 'scale(1)',
             }}
           >
             <span>{emoji}</span>
@@ -72,6 +78,7 @@ export default function ReactionBar({ reactions = {}, onReact, onReply, onViewTh
           Reply
         </button>
       )}
+      {/* m-14: View thread with underline on hover */}
       {onViewThread && (
         <button
           onClick={(e) => { e.stopPropagation(); onViewThread(); }}
