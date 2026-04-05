@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { Search, Plus, List, Columns, RefreshCw } from 'lucide-react';
 import { useChanges, useReleases } from '@/hooks/useReleaseHub';
 import { RH, CHG_STATUS_LABELS } from '@/constants/releasehub.design';
+import { useTheme } from '@/hooks/useTheme';
 import { StatusLozenge } from '@/components/releasehub/StatusLozenge';
 import { SourceBadge } from '@/components/releasehub/SourceBadge';
 import { RiskBadge } from '@/components/releasehub/RiskBadge';
@@ -19,20 +20,25 @@ function mapRisk(risk: string) {
   return r;
 }
 
-function CustomDropdown({ label, value, options, onChange }: { label: string; value: string; options: { value: string; label: string }[]; onChange: (v: string) => void }) {
+function CustomDropdown({ label, value, options, onChange, isDark }: { label: string; value: string; options: { value: string; label: string }[]; onChange: (v: string) => void; isDark?: boolean }) {
   const [open, setOpen] = useState(false);
   return (
     <div className="relative">
-      <button onClick={() => setOpen(!open)} className="h-9 px-3 rounded-md border border-[rgba(15,23,42,0.12)] bg-white text-[13px] font-medium text-[#475569] flex items-center gap-1.5 hover:bg-[#F8FAFC] min-w-[140px]">
+      <button onClick={() => setOpen(!open)} className="h-9 px-3 rounded-md text-[13px] font-medium flex items-center gap-1.5 min-w-[140px]"
+        style={{ border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.12)'}`, background: isDark ? '#232019' : '#FFFFFF', color: isDark ? '#A09890' : '#475569' }}>
         {options.find(o => o.value === value)?.label || label}
       </button>
       {open && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
-          <div className="absolute top-full left-0 mt-1 w-48 bg-white rounded-md shadow-lg border border-[rgba(15,23,42,0.12)] z-50 py-1 max-h-60 overflow-y-auto">
+          <div className="absolute top-full left-0 mt-1 w-48 rounded-md shadow-lg z-50 py-1 max-h-60 overflow-y-auto"
+            style={{ background: isDark ? '#2C2823' : '#FFFFFF', border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.12)'}` }}>
             {options.map(o => (
               <button key={o.value} onClick={() => { onChange(o.value); setOpen(false); }}
-                className={`w-full px-3 h-9 text-left text-[13px] font-medium hover:bg-[#F8FAFC] ${value === o.value ? 'text-[#2563EB] font-semibold' : 'text-[#475569]'}`}>
+                className="w-full px-3 h-9 text-left text-[13px] font-medium"
+                style={{ color: value === o.value ? '#2563EB' : (isDark ? '#A09890' : '#475569') }}
+                onMouseEnter={e => (e.currentTarget.style.background = isDark ? '#3A3530' : '#F8FAFC')}
+                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
                 {o.label}
               </button>
             ))}
@@ -44,6 +50,7 @@ function CustomDropdown({ label, value, options, onChange }: { label: string; va
 }
 
 export default function AllChangesPage() {
+  const { isDark } = useTheme();
   const { data: changes = [], isLoading, error, refetch } = useChanges();
   const { data: releases = [] } = useReleases();
   const [params, setParams] = useSearchParams();
@@ -91,12 +98,12 @@ export default function AllChangesPage() {
   };
 
   return (
-    <div style={{ background: '#FFFFFF', minHeight: '100%', padding: '24px' }}>
+    <div style={{ background: isDark ? '#1A1714' : '#FFFFFF', minHeight: '100%', padding: '24px' }}>
       {/* Header */}
       <div className="flex items-center justify-between mb-5">
         <div>
-          <h1 className="text-[22px] font-extrabold" style={{ fontFamily: RH.fontDisplay, color: RH.ink1 }}>All Changes</h1>
-          <p className="text-[13px] text-[#64748B]" style={{ fontFamily: RH.fontBody }}>Every deployment change — past, present & future</p>
+          <h1 className="text-[22px] font-extrabold" style={{ fontFamily: RH.fontDisplay, color: isDark ? '#F5F3F0' : RH.ink1 }}>All Changes</h1>
+          <p className="text-[13px]" style={{ fontFamily: RH.fontBody, color: isDark ? '#6B6560' : '#64748B' }}>Every deployment change — past, present & future</p>
         </div>
         <button onClick={() => setShowCreateChg(true)}
           className="h-9 px-4 rounded-md text-white text-[13px] font-semibold flex items-center gap-1.5 active:scale-[0.98] transition-transform"

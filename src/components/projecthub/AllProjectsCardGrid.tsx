@@ -24,7 +24,7 @@ function getInitials(name: string): string {
 
 function getSyncStatus(lastSyncAt: string | null): { color: string; label: string; tooltip: string } {
   if (!lastSyncAt) return {
-    color: 'bg-slate-300 dark:bg-slate-500',
+    color: 'bg-slate-300 dark:bg-[#6B6560]',
     label: 'Not synced',
     tooltip: 'No Jira sync configured',
   };
@@ -102,7 +102,7 @@ export function AllProjectsCardGrid({ projects, favoriteIds, onToggleFav, onSele
                   size={14}
                   fill={isFav ? '#F59E0B' : 'none'}
                   color={isFav ? '#F59E0B' : undefined}
-                  className={isFav ? 'text-amber-400' : 'text-slate-300 hover:text-amber-300 dark:text-slate-600'}
+                  className={isFav ? 'text-amber-400' : 'text-slate-300 hover:text-amber-300 dark:text-[#6B6560]'}
                 />
               </button>
             </div>

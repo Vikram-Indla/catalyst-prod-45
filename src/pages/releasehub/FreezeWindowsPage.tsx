@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { CalendarOff, Plus, Trash2, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useFreezeWindows, useCreateFreezeWindow, useDeleteFreezeWindow } from '@/hooks/useReleaseHub';
 import { RH } from '@/constants/releasehub.design';
+import { useTheme } from '@/hooks/useTheme';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { toast } from 'sonner';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -17,6 +18,7 @@ function daysBetween(s: string, e: string) {
 }
 
 export default function FreezeWindowsPage() {
+  const { isDark } = useTheme();
   const { data: windows = [], isLoading } = useFreezeWindows();
   const createMut = useCreateFreezeWindow();
   const deleteMut = useDeleteFreezeWindow();
@@ -100,12 +102,12 @@ export default function FreezeWindowsPage() {
   const monthLabel = calMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
 
   return (
-    <div style={{ background: '#FFFFFF', minHeight: '100%', padding: '24px' }}>
+    <div style={{ background: isDark ? '#1A1714' : '#FFFFFF', minHeight: '100%', padding: '24px' }}>
       {/* Header */}
       <div className="flex items-center justify-between mb-5">
         <div>
-          <h1 className="text-[22px]" style={{ fontFamily: RH.fontDisplay, color: '#0F172A', fontWeight: 650 }}>Freeze Windows</h1>
-          <p className="text-[13px] text-[#64748B]" style={{ fontFamily: RH.fontBody }}>
+          <h1 className="text-[22px]" style={{ fontFamily: RH.fontDisplay, color: isDark ? '#F5F3F0' : '#0F172A', fontWeight: 650 }}>Freeze Windows</h1>
+          <p className="text-[13px]" style={{ fontFamily: RH.fontBody, color: isDark ? '#6B6560' : '#64748B' }}>
             Define deployment freeze periods. Releases targeting these dates will be flagged automatically.
           </p>
         </div>
@@ -116,21 +118,21 @@ export default function FreezeWindowsPage() {
       </div>
 
       {/* Calendar Strip */}
-      <div className="mb-6 border border-[#E2E8F0] rounded-lg p-4" style={{ background: '#FFFFFF' }}>
+      <div className="mb-6 rounded-lg p-4" style={{ background: isDark ? '#232019' : '#FFFFFF', border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}` }}>
         <div className="flex items-center justify-between mb-3">
           <button onClick={() => setCalMonth(new Date(calMonth.getFullYear(), calMonth.getMonth() - 1))}
-            className="h-7 w-7 rounded flex items-center justify-center hover:bg-[#F1F5F9] text-[#64748B]">
+            className="h-7 w-7 rounded flex items-center justify-center" style={{ color: isDark ? '#6B6560' : '#64748B' }}>
             <ChevronLeft size={16} />
           </button>
-          <span className="text-[14px] font-semibold" style={{ fontFamily: RH.fontDisplay, color: '#0F172A' }}>{monthLabel}</span>
+          <span className="text-[14px] font-semibold" style={{ fontFamily: RH.fontDisplay, color: isDark ? '#F5F3F0' : '#0F172A' }}>{monthLabel}</span>
           <button onClick={() => setCalMonth(new Date(calMonth.getFullYear(), calMonth.getMonth() + 1))}
-            className="h-7 w-7 rounded flex items-center justify-center hover:bg-[#F1F5F9] text-[#64748B]">
+            className="h-7 w-7 rounded flex items-center justify-center" style={{ color: isDark ? '#6B6560' : '#64748B' }}>
             <ChevronRight size={16} />
           </button>
         </div>
         <div className="grid grid-cols-7 gap-0.5">
           {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(d => (
-            <div key={d} className="text-center text-[10px] font-semibold uppercase tracking-[0.06em] text-[#94A3B8] pb-1">{d}</div>
+            <div key={d} className="text-center text-[10px] font-semibold uppercase tracking-[0.06em] pb-1" style={{ color: isDark ? '#6B6560' : '#94A3B8' }}>{d}</div>
           ))}
           {calendarDays.map((cd, i) => {
             const fw = isFreezeDate(cd.date);
@@ -140,10 +142,11 @@ export default function FreezeWindowsPage() {
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <div className={`h-9 w-full flex items-center justify-center text-[12px] rounded cursor-default
-                      ${!cd.inMonth ? 'text-[#CBD5E1]' : 'text-[#334155]'}
-                      ${fw ? 'bg-[#FEF3C7] border border-[#FCD34D]' : ''}
                       ${todayRing ? 'ring-2 ring-[#2563EB]' : ''}
-                    `}>
+                    `} style={{
+                      color: !cd.inMonth ? (isDark ? '#3A3530' : '#CBD5E1') : (isDark ? '#A09890' : '#334155'),
+                      ...(fw ? { background: isDark ? 'rgba(217,119,6,0.15)' : '#FEF3C7', border: `1px solid ${isDark ? 'rgba(217,119,6,0.3)' : '#FCD34D'}` } : {}),
+                    }}>
                       {cd.date.getDate()}
                     </div>
                   </TooltipTrigger>
@@ -161,38 +164,38 @@ export default function FreezeWindowsPage() {
       {isLoading ? (
         <div className="space-y-1">
           {[1, 2, 3].map(i => (
-            <div key={i} className="h-9 bg-[#F1F5F9] rounded animate-pulse" />
+            <div key={i} className="h-9 rounded animate-pulse" style={{ background: isDark ? '#2C2823' : '#F1F5F9' }} />
           ))}
         </div>
       ) : windows.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 text-center">
-          <div className="w-16 h-16 rounded-full bg-[#F1F5F9] flex items-center justify-center mb-4">
-            <CalendarOff className="w-8 h-8 text-[#94A3B8]" />
+          <div className="w-16 h-16 rounded-full flex items-center justify-center mb-4" style={{ background: isDark ? '#2C2823' : '#F1F5F9' }}>
+            <CalendarOff className="w-8 h-8" style={{ color: isDark ? '#6B6560' : '#94A3B8' }} />
           </div>
-          <h3 className="font-semibold text-lg mb-1" style={{ color: '#0F172A' }}>No freeze windows defined</h3>
-          <p className="text-[13px] text-[#64748B] max-w-md">Add one to protect critical periods.</p>
+          <h3 className="font-semibold text-lg mb-1" style={{ color: isDark ? '#F5F3F0' : '#0F172A' }}>No freeze windows defined</h3>
+          <p className="text-[13px] max-w-md" style={{ color: isDark ? '#6B6560' : '#64748B' }}>Add one to protect critical periods.</p>
         </div>
       ) : (
-        <div className="border border-[#E2E8F0] rounded-lg overflow-hidden" style={{ background: '#FFFFFF' }}>
+        <div className="rounded-lg overflow-hidden" style={{ background: isDark ? '#232019' : '#FFFFFF', border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}` }}>
           <table className="w-full text-[13px]" style={{ fontFamily: RH.fontBody }}>
             <thead>
-              <tr style={{ background: '#F1F5F9' }}>
+              <tr style={{ background: isDark ? '#2C2823' : '#F1F5F9' }}>
                 {['NAME', 'START DATE', 'END DATE', 'DURATION', 'REASON', 'ACTIONS'].map(h => (
-                  <th key={h} className="px-3 py-0 h-9 text-left text-[11px] font-semibold uppercase tracking-[0.06em] text-[#64748B]">{h}</th>
+                  <th key={h} className="px-3 py-0 h-9 text-left text-[11px] font-semibold uppercase tracking-[0.06em]" style={{ color: isDark ? '#6B6560' : '#64748B' }}>{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
               {windows.map((fw: any) => (
-                <tr key={fw.id} className="group border-b border-[rgba(15,23,42,0.06)]"
-                  style={{ height: 36, transition: 'background 120ms' }}
-                  onMouseEnter={e => (e.currentTarget.style.background = 'rgba(15,23,42,0.04)')}
-                  onMouseLeave={e => (e.currentTarget.style.background = '#FFFFFF')}>
-                  <td className="px-3 py-0 font-medium" style={{ color: '#0F172A', fontWeight: 650 }}>{fw.name}</td>
-                  <td className="px-3 py-0 text-[#475569]" style={{ fontFamily: RH.fontMono, fontSize: 12 }}>{formatDate(fw.start_date)}</td>
-                  <td className="px-3 py-0 text-[#475569]" style={{ fontFamily: RH.fontMono, fontSize: 12 }}>{formatDate(fw.end_date)}</td>
-                  <td className="px-3 py-0 text-[#475569]" style={{ fontFamily: RH.fontMono, fontSize: 12 }}>{daysBetween(fw.start_date, fw.end_date)} days</td>
-                  <td className="px-3 py-0 text-[#64748B] max-w-[240px] truncate" title={fw.reason || ''}>{fw.reason ? (fw.reason.length > 40 ? fw.reason.slice(0, 40) + '…' : fw.reason) : '—'}</td>
+                <tr key={fw.id} className="group"
+                  style={{ height: 36, transition: 'background 120ms', borderBottom: `0.75px solid ${isDark ? 'rgba(255,255,255,0.05)' : 'rgba(15,23,42,0.06)'}` }}
+                  onMouseEnter={e => (e.currentTarget.style.background = isDark ? '#2C2823' : 'rgba(15,23,42,0.04)')}
+                  onMouseLeave={e => (e.currentTarget.style.background = isDark ? '#232019' : '#FFFFFF')}>
+                  <td className="px-3 py-0 font-medium" style={{ color: isDark ? '#F5F3F0' : '#0F172A', fontWeight: 650 }}>{fw.name}</td>
+                  <td className="px-3 py-0" style={{ fontFamily: RH.fontMono, fontSize: 12, color: isDark ? '#A09890' : '#475569' }}>{formatDate(fw.start_date)}</td>
+                  <td className="px-3 py-0" style={{ fontFamily: RH.fontMono, fontSize: 12, color: isDark ? '#A09890' : '#475569' }}>{formatDate(fw.end_date)}</td>
+                  <td className="px-3 py-0" style={{ fontFamily: RH.fontMono, fontSize: 12, color: isDark ? '#A09890' : '#475569' }}>{daysBetween(fw.start_date, fw.end_date)} days</td>
+                  <td className="px-3 py-0 max-w-[240px] truncate" style={{ color: isDark ? '#6B6560' : '#64748B' }} title={fw.reason || ''}>{fw.reason ? (fw.reason.length > 40 ? fw.reason.slice(0, 40) + '…' : fw.reason) : '—'}</td>
                   <td className="px-3 py-0">
                     <button onClick={() => handleDelete(fw.id, fw.name)}
                       className="opacity-0 group-hover:opacity-100 transition-opacity h-7 w-7 rounded flex items-center justify-center hover:bg-[#FEE2E2] text-[#94A3B8] hover:text-[#DC2626]">

@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { Search, LayoutGrid, List, Plus, Package, Download, Clock, AlertTriangle } from 'lucide-react';
 import { useReleaseSummary, useFreezeWindows } from '@/hooks/useReleaseHub';
 import { RH } from '@/constants/releasehub.design';
+import { useTheme } from '@/hooks/useTheme';
 import { StatusLozenge } from '@/components/releasehub/StatusLozenge';
 import { SourceBadge } from '@/components/releasehub/SourceBadge';
 import { ReleaseDrawer } from '@/components/releasehub/ReleaseDrawer';
@@ -29,6 +30,7 @@ function relativeTime(dateStr: string | null | undefined): string {
 }
 
 export default function AllReleasesPage() {
+  const { isDark } = useTheme();
   const { data: releases = [], isLoading, error, refetch } = useReleaseSummary();
   const { data: freezeWindows = [] } = useFreezeWindows();
   const [search, setSearch] = useState('');
@@ -100,15 +102,16 @@ export default function AllReleasesPage() {
   };
 
   return (
-    <div style={{ background: '#FFFFFF', minHeight: '100%', padding: '24px' }}>
+    <div style={{ background: isDark ? '#1A1714' : '#FFFFFF', minHeight: '100%', padding: '24px' }}>
       <div className="flex items-center justify-between mb-5">
         <div>
-          <h1 className="text-[22px] font-extrabold" style={{ fontFamily: RH.fontDisplay, color: RH.ink1 }}>All Releases</h1>
-          <p className="text-[13px] text-[#64748B]" style={{ fontFamily: RH.fontBody }}>Manage and track all releases</p>
+          <h1 className="text-[22px] font-extrabold" style={{ fontFamily: RH.fontDisplay, color: isDark ? '#F5F3F0' : RH.ink1 }}>All Releases</h1>
+          <p className="text-[13px]" style={{ fontFamily: RH.fontBody, color: isDark ? '#6B6560' : '#64748B' }}>Manage and track all releases</p>
         </div>
         <div className="flex items-center gap-2">
           <button onClick={handleImport} disabled={importing}
-            className="h-9 px-4 rounded-md text-[13px] font-semibold flex items-center gap-1.5 border border-[#E2E8F0] bg-white hover:bg-[#F8FAFC] text-[#475569] disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+            className="h-9 px-4 rounded-md text-[13px] font-semibold flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            style={{ border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, background: isDark ? '#232019' : '#FFFFFF', color: isDark ? '#A09890' : '#475569' }}>
             <Download size={14} /> Import from Jira
           </button>
           <button onClick={() => setShowCreate(true)}
@@ -153,9 +156,14 @@ export default function AllReleasesPage() {
           { key: 'released', label: 'Released', count: counts.released },
         ].map(s => (
           <button key={s.key} onClick={() => setFilter(s.key)}
-            className={`h-8 px-3 rounded-md text-[12px] font-semibold flex items-center gap-1.5 border transition-colors ${filter === s.key ? 'border-[#2563EB] bg-[#EFF6FF] text-[#2563EB]' : 'border-[rgba(15,23,42,0.12)] bg-white hover:bg-[#F8FAFC] text-[#475569]'}`}>
+            className="h-8 px-3 rounded-md text-[12px] font-semibold flex items-center gap-1.5 border transition-colors"
+            style={filter === s.key
+              ? { borderColor: '#2563EB', background: isDark ? 'rgba(37,99,235,0.12)' : '#EFF6FF', color: '#2563EB' }
+              : { borderColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.12)', background: isDark ? '#232019' : '#FFFFFF', color: isDark ? '#A09890' : '#475569' }
+            }>
             {s.label}
-            <span className="inline-flex items-center justify-center min-w-[18px] h-[18px] rounded-full text-[10px] font-bold bg-[#F1F5F9] text-[#475569]">{s.count}</span>
+            <span className="inline-flex items-center justify-center min-w-[18px] h-[18px] rounded-full text-[10px] font-bold"
+              style={{ background: isDark ? '#2C2823' : '#F1F5F9', color: isDark ? '#A09890' : '#475569' }}>{s.count}</span>
           </button>
         ))}
       </div>
@@ -163,13 +171,14 @@ export default function AllReleasesPage() {
       {/* Search + View Toggle */}
       <div className="flex items-center justify-between mb-4">
         <div className="relative">
-          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#94A3B8]" />
+          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: isDark ? '#6B6560' : '#94A3B8' }} />
           <input type="text" placeholder="Search releases..." value={search} onChange={e => setSearch(e.target.value)}
-            className="h-9 w-64 pl-9 pr-3 rounded border border-[rgba(15,23,42,0.12)] bg-white text-[13px] placeholder:text-[#64748B] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" />
+            className="h-9 w-64 pl-9 pr-3 rounded text-[13px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]"
+            style={{ border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.12)'}`, background: isDark ? '#232019' : '#FFFFFF', color: isDark ? '#F5F3F0' : '#0F172A' }} />
         </div>
-        <div className="flex items-center gap-1 border border-[rgba(15,23,42,0.12)] rounded-md p-0.5 bg-white">
-          <button onClick={() => setView('cards')} className={`h-7 w-7 rounded flex items-center justify-center ${view === 'cards' ? 'bg-[#EFF6FF] text-[#2563EB]' : 'text-[#94A3B8] hover:text-[#475569]'}`}><LayoutGrid size={14} /></button>
-          <button onClick={() => setView('table')} className={`h-7 w-7 rounded flex items-center justify-center ${view === 'table' ? 'bg-[#EFF6FF] text-[#2563EB]' : 'text-[#94A3B8] hover:text-[#475569]'}`}><List size={14} /></button>
+        <div className="flex items-center gap-1 rounded-md p-0.5" style={{ border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.12)'}`, background: isDark ? '#232019' : '#FFFFFF' }}>
+          <button onClick={() => setView('cards')} className="h-7 w-7 rounded flex items-center justify-center" style={view === 'cards' ? { background: isDark ? 'rgba(37,99,235,0.12)' : '#EFF6FF', color: '#2563EB' } : { color: isDark ? '#6B6560' : '#94A3B8' }}><LayoutGrid size={14} /></button>
+          <button onClick={() => setView('table')} className="h-7 w-7 rounded flex items-center justify-center" style={view === 'table' ? { background: isDark ? 'rgba(37,99,235,0.12)' : '#EFF6FF', color: '#2563EB' } : { color: isDark ? '#6B6560' : '#94A3B8' }}><List size={14} /></button>
         </div>
       </div>
 
@@ -190,12 +199,12 @@ export default function AllReleasesPage() {
             const progress = getProgress(r);
             return (
               <button key={r.id} onClick={() => setSelectedRelease(r)}
-                className="bg-white rounded-md border border-[rgba(15,23,42,0.12)] overflow-hidden text-left hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)] hover:-translate-y-0.5 transition-all relative group"
-                style={{ borderRadius: 6 }}>
+                className="rounded-md overflow-hidden text-left hover:-translate-y-0.5 transition-all relative group"
+                style={{ borderRadius: 6, background: isDark ? '#232019' : '#FFFFFF', border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.12)'}` }}>
                 <div className="absolute left-0 top-0 bottom-0 w-[3px]" style={{ background: accentColor(r.status), borderRadius: '6px 0 0 6px' }} />
                 <div className="p-4 pl-5">
-                  <h3 className="text-[15px] font-bold mb-1" style={{ fontFamily: RH.fontDisplay, color: RH.ink1, fontWeight: 650 }}>{r.name}</h3>
-                  {r.jira_key && <span className="text-[11px] text-[#94A3B8] block mb-2" style={{ fontFamily: RH.fontMono }}>{r.jira_key}</span>}
+                  <h3 className="text-[15px] font-bold mb-1" style={{ fontFamily: RH.fontDisplay, color: isDark ? '#F5F3F0' : RH.ink1, fontWeight: 650 }}>{r.name}</h3>
+                  {r.jira_key && <span className="text-[11px] block mb-2" style={{ fontFamily: RH.fontMono, color: isDark ? '#6B6560' : '#94A3B8' }}>{r.jira_key}</span>}
 
                   <div className="flex items-center gap-2 flex-wrap mb-2">
                     <StatusLozenge status={mapStatus(r.status)} />
@@ -217,23 +226,23 @@ export default function AllReleasesPage() {
                     )}
                   </div>
 
-                  <div className="flex items-center gap-3 text-[12px] text-[#64748B] mb-3">
+                  <div className="flex items-center gap-3 text-[12px] mb-3" style={{ color: isDark ? '#6B6560' : '#64748B' }}>
                     <span>{r.target_date ? new Date(r.target_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'No date'}</span>
                     <span>·</span>
                     <span>{progress.total} {progress.total === 1 ? 'change' : 'changes'}</span>
                   </div>
 
                   {progress.empty ? (
-                    <p className="text-[11px] text-[#94A3B8]" style={{ fontFamily: RH.fontBody }}>No changes yet</p>
+                    <p className="text-[11px]" style={{ fontFamily: RH.fontBody, color: isDark ? '#6B6560' : '#94A3B8' }}>No changes yet</p>
                   ) : (
                     <>
-                      <div className="w-full h-1 bg-[#F1F5F9] rounded-full overflow-hidden">
+                      <div className="w-full h-1 rounded-full overflow-hidden" style={{ background: isDark ? '#2C2823' : '#F1F5F9' }}>
                         <div className="h-full rounded-full transition-all" style={{
                           width: progress.pct + '%',
                           background: accentColor(r.status)
                         }} />
                       </div>
-                      <p className="text-[11px] text-[#94A3B8] mt-1" style={{ fontFamily: RH.fontBody }}>
+                      <p className="text-[11px] mt-1" style={{ fontFamily: RH.fontBody, color: isDark ? '#6B6560' : '#94A3B8' }}>
                         {progress.pct}% · {progress.completed} of {progress.total} {progress.total === 1 ? 'change' : 'changes'} deployed
                       </p>
                     </>
@@ -244,12 +253,12 @@ export default function AllReleasesPage() {
           })}
         </div>
       ) : (
-        <div className="bg-white rounded border border-[rgba(15,23,42,0.12)] overflow-hidden">
+        <div className="rounded overflow-hidden" style={{ background: isDark ? '#232019' : '#FFFFFF', border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.12)'}` }}>
           <table className="w-full text-[13px]" style={{ fontFamily: RH.fontBody }} role="table">
             <thead>
-              <tr style={{ background: '#F1F5F9' }}>
+              <tr style={{ background: isDark ? '#2C2823' : '#F1F5F9' }}>
                 {['RELEASE', 'SOURCE', 'STATUS', 'TARGET DATE', 'CHANGES', 'PROGRESS'].map(h => (
-                  <th key={h} className="px-3 py-0 h-[36px] text-left text-[11px] font-semibold uppercase tracking-[0.06em] text-[#64748B]">{h}</th>
+                  <th key={h} className="px-3 py-0 h-[36px] text-left text-[11px] font-semibold uppercase tracking-[0.06em]" style={{ color: isDark ? '#6B6560' : '#64748B' }}>{h}</th>
                 ))}
               </tr>
             </thead>
@@ -258,11 +267,11 @@ export default function AllReleasesPage() {
                 const progress = getProgress(r);
                 return (
                   <tr key={r.id} onClick={() => setSelectedRelease(r)}
-                    className="border-b border-[rgba(15,23,42,0.06)] cursor-pointer"
-                    style={{ height: 36, background: '#FFFFFF', transition: 'background 120ms' }}
-                    onMouseEnter={e => (e.currentTarget.style.background = 'rgba(15,23,42,0.04)')}
-                    onMouseLeave={e => (e.currentTarget.style.background = '#FFFFFF')}>
-                    <td className="px-3 py-0 font-medium" style={{ color: RH.ink1 }}>
+                    className="cursor-pointer"
+                    style={{ height: 36, background: isDark ? '#232019' : '#FFFFFF', transition: 'background 120ms', borderBottom: `0.75px solid ${isDark ? 'rgba(255,255,255,0.05)' : 'rgba(15,23,42,0.06)'}` }}
+                    onMouseEnter={e => (e.currentTarget.style.background = isDark ? '#2C2823' : 'rgba(15,23,42,0.04)')}
+                    onMouseLeave={e => (e.currentTarget.style.background = isDark ? '#232019' : '#FFFFFF')}>
+                    <td className="px-3 py-0 font-medium" style={{ color: isDark ? '#F5F3F0' : RH.ink1 }}>
                       <div className="flex items-center gap-2">
                         {r.name}
                         {r.source === 'jira' && relativeTime(r.synced_at || r.updated_at) && (
@@ -283,19 +292,19 @@ export default function AllReleasesPage() {
                     </td>
                     <td className="px-3 py-0"><SourceBadge source={r.source || 'catalyst'} /></td>
                     <td className="px-3 py-0"><StatusLozenge status={mapStatus(r.status)} /></td>
-                    <td className="px-3 py-0 text-[#475569]" style={{ fontFamily: RH.fontMono, fontSize: 12 }}>
+                    <td className="px-3 py-0" style={{ fontFamily: RH.fontMono, fontSize: 12, color: isDark ? '#A09890' : '#475569' }}>
                       {r.target_date ? new Date(r.target_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}
                     </td>
-                    <td className="px-3 py-0"><span className="font-bold text-[#0F172A]" style={{ fontFamily: RH.fontMono }}>{progress.total}</span></td>
+                    <td className="px-3 py-0"><span className="font-bold" style={{ fontFamily: RH.fontMono, color: isDark ? '#F5F3F0' : '#0F172A' }}>{progress.total}</span></td>
                     <td className="px-3 py-0">
                       {progress.empty ? (
-                        <span className="text-[11px] text-[#94A3B8]">No changes yet</span>
+                        <span className="text-[11px]" style={{ color: isDark ? '#6B6560' : '#94A3B8' }}>No changes yet</span>
                       ) : (
                         <div className="flex items-center gap-2">
-                          <div className="w-16 h-1 bg-[#F1F5F9] rounded-full overflow-hidden">
+                          <div className="w-16 h-1 rounded-full overflow-hidden" style={{ background: isDark ? '#2C2823' : '#F1F5F9' }}>
                             <div className="h-full rounded-full" style={{ width: progress.pct + '%', background: accentColor(r.status) }} />
                           </div>
-                          <span className="text-[11px] text-[#64748B]" style={{ fontFamily: RH.fontMono }}>{progress.pct}%</span>
+                          <span className="text-[11px]" style={{ fontFamily: RH.fontMono, color: isDark ? '#6B6560' : '#64748B' }}>{progress.pct}%</span>
                         </div>
                       )}
                     </td>

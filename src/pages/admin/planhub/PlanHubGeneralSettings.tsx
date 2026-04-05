@@ -83,7 +83,7 @@ export default function PlanHubGeneralSettingsPage() {
             <div className="rounded-lg border border-yellow-500/30 bg-yellow-500/10 p-4 flex items-start gap-3">
               <AlertTriangle className="h-5 w-5 text-yellow-600 flex-shrink-0 mt-0.5" />
               <div>
-                <p className="text-sm font-medium text-yellow-800 dark:text-yellow-200">Admin access required</p>
+                <p className="text-sm font-medium text-yellow-800 dark:text-[#FCD34D]">Admin access required</p>
                 <p className="text-sm text-yellow-700 dark:text-yellow-300">
                   Changes made here affect all users of the PlanHub™ module.
                 </p>
