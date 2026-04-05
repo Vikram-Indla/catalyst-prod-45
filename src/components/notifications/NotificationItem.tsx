@@ -56,10 +56,17 @@ function NotificationItemInner({ notification, onMarkRead, onClick }: Notificati
   const isDueDate = DUE_DATE_TYPES.some(t => t === notification.notification_type);
   const isComment = COMMENT_PREVIEW_TYPES.some(t => t === notification.notification_type);
   const isDeleted = notification.entity_deleted;
-  const actorName = notification.actor?.full_name || (notification.metadata as any)?.actor_display_name || 'System';
+
+  // Determine if this is a system-generated assignment (no actor)
+  const isSystemAssign = !notification.actor_user_id
+    && (notification.notification_type === 'assigned' || notification.notification_type === 'status_changed');
+
+  const actorName = isSystemAssign
+    ? ''
+    : (notification.actor?.full_name || (notification.metadata as any)?.actor_display_name || 'Unknown');
   const actorId = notification.actor?.id || notification.actor_user_id || 'system';
-  const avatarColor = getAvatarColor(actorId);
-  const initials = getUserInitials(actorName);
+  const avatarColor = isSystemAssign ? '#6B7280' : getAvatarColor(actorId);
+  const initials = isSystemAssign ? '' : getUserInitials(actorName);
 
   // m-15: read item opacity on text only, not avatar
   const textOpacity = isUnread ? 1 : 0.8;
