@@ -42,7 +42,7 @@ const AVATAR_COLORS = [
   { bg: '#F5F3FF', text: '#7C3AED' }, { bg: '#CCFBF1', text: '#0F766E' },
 ];
 
-const HEADERS = ['User / Jira Identity', 'Auth Mode', 'Projects & Permissions', 'Synced At', 'Last Login', 'Status', ''];
+const HEADERS = ['User / Jira Identity', 'Auth Mode', 'Projects & Permissions', 'Synced At', 'Last Jira Login', 'Last in Catalyst', 'Status', ''];
 
 /* ── Debounce hook ── */
 function useDebouncedValue(value: string, delay: number) {
