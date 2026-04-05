@@ -82,11 +82,11 @@ const POBAWidget: React.FC<POBAWidgetProps> = ({
   const isPO = (role: string) => role === "Product Owner";
 
   return (
-    <div className="bg-white rounded-2xl border-2 border-gray-100 p-6 shadow-sm">
+    <div className="bg-white dark:bg-[#232019] rounded-2xl border-2 border-gray-100 dark:border-[rgba(255,255,255,0.08)] p-6 shadow-sm">
       {/* Header */}
       <div className="flex items-start justify-between mb-4">
         <div>
-          <h3 className="text-base font-bold text-gray-900">Product Owner / Business Analyst</h3>
+          <h3 className="text-base font-bold text-gray-900 dark:text-[#F5F3F0]">Product Owner / Business Analyst</h3>
           <span className="text-xs text-gray-400">{quarter}</span>
         </div>
 
@@ -94,7 +94,7 @@ const POBAWidget: React.FC<POBAWidgetProps> = ({
         <div className="relative" ref={dropdownRef}>
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="flex items-center gap-2 px-3 py-2 bg-white border-2 border-gray-100 rounded-xl text-sm font-medium text-gray-700 hover:border-gray-200 hover:bg-gray-50 transition-all"
+            className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-[#232019] border-2 border-gray-100 dark:border-[rgba(255,255,255,0.08)] rounded-xl text-sm font-medium text-gray-700 dark:text-[#F5F3F0] hover:border-gray-200 hover:bg-gray-50 dark:hover:bg-[#2C2823] transition-all"
           >
             <Users className="w-4 h-4 text-gray-400" />
             <span>Select Resources</span>
@@ -109,7 +109,7 @@ const POBAWidget: React.FC<POBAWidgetProps> = ({
           </button>
 
           {isOpen && (
-            <div className="absolute right-0 top-full mt-2 w-80 bg-white border border-gray-100 rounded-xl shadow-xl z-50 overflow-hidden">
+            <div className="absolute right-0 top-full mt-2 w-80 bg-white dark:bg-[#232019] border border-gray-100 dark:border-[rgba(255,255,255,0.08)] rounded-xl shadow-xl z-50 overflow-hidden">
               {/* Search */}
               <div className="p-3 border-b border-gray-100">
                 <div className="relative">
@@ -265,7 +265,7 @@ const POBAWidget: React.FC<POBAWidgetProps> = ({
 
                 {/* Hover Card */}
                 {isHovered && (
-                  <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 w-72 p-4 bg-white border border-gray-100 rounded-xl shadow-xl opacity-100 transition-all duration-200 z-50">
+                  <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 w-72 p-4 bg-white dark:bg-[#232019] border border-gray-100 dark:border-[rgba(255,255,255,0.08)] rounded-xl shadow-xl opacity-100 transition-all duration-200 z-50">
                     {/* Header */}
                     <div className="flex items-center gap-3 mb-3">
                       <div

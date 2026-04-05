@@ -2,6 +2,7 @@
  * WikiAdminSyncTab — Sync pipeline with real-time progress visibility
  */
 import React, { useState, useEffect, useRef } from 'react';
+import { useTheme } from '@/hooks/useTheme';
 import { useWikiSyncRuns, useWikiAdminStats, useTriggerSync, useWikiSyncRunsPolling } from '@/hooks/useWikiAdminData';
 import { SkeletonBlock } from '@/components/wiki/WikiTokens';
 import { Play, Check, Loader2, AlertTriangle, RefreshCw, Clock, Activity } from 'lucide-react';
@@ -40,6 +41,7 @@ function ElapsedTimer({ startedAt }: { startedAt: string }) {
 }
 
 export function WikiAdminSyncTab() {
+  const { isDark } = useTheme();
   const { data: stats } = useWikiAdminStats();
   const triggerSync = useTriggerSync();
 
@@ -259,8 +261,8 @@ export function WikiAdminSyncTab() {
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   flexShrink: 0, fontSize: 11, fontWeight: 700,
                   fontFamily: 'JetBrains Mono, monospace',
-                  background: isDone ? '#1B7F37' : isStepFailed ? 'rgba(220,38,38,0.08)' : isActive ? '#0C66E4' : 'var(--cp-bg-sunken, #F1F5F9)',
-                  color: isDone ? '#0D7331' : isStepFailed ? '#DC2626' : isActive ? '#FFFFFF' : 'var(--cp-text-tertiary, #64748B)',
+                  background: isDone ? '#1B7F37' : isStepFailed ? 'rgba(220,38,38,0.08)' : isActive ? '#0C66E4' : (isDark ? '#2C2823' : 'var(--cp-bg-sunken, #F1F5F9)'),
+                  color: isDone ? '#FFFFFF' : isStepFailed ? '#DC2626' : isActive ? '#FFFFFF' : (isDark ? '#6B6560' : 'var(--cp-text-tertiary, #64748B)'),
                   ...(isActive ? { boxShadow: '0 0 0 3px rgba(37,99,235,0.2)' } : {}),
                 }}>
                   {isDone
@@ -301,7 +303,7 @@ export function WikiAdminSyncTab() {
                   {isDone && (
                     <span style={{
                       padding: '2px 8px', borderRadius: 3,
-                      background: '#1B7F37', color: '#0D7331',
+                      background: '#1B7F37', color: '#FFFFFF',
                       fontWeight: 700, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.03em',
                     }}>Complete</span>
                   )}
@@ -334,9 +336,9 @@ export function WikiAdminSyncTab() {
       {latestRun?.status === 'complete' && (
         <div style={{
           padding: '10px 16px', borderRadius: 6,
-          background: '#1B7F37', border: '1px solid rgba(13,115,49,0.15)',
+          background: isDark ? 'rgba(27,127,55,0.15)' : '#E3FCEF', border: '1px solid rgba(13,115,49,0.15)',
           fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 500,
-          color: '#0D7331',
+          color: isDark ? '#4ADE80' : '#006644',
         }}>
           ✓ Sync completed · {latestRun.total_duration_ms ? `${(latestRun.total_duration_ms / 1000).toFixed(0)}s` : '—'} · {latestRun.total_items_processed ?? 0} items · {latestRun.new_pages ?? 0} new · {latestRun.updated_pages ?? 0} updated
         </div>
@@ -397,7 +399,7 @@ export function EmptyState({ icon, message, sub }: { icon: React.ReactNode; mess
 
 export function StatusLoz({ status }: { status: string }) {
   const map: Record<string, { bg: string; color: string }> = {
-    complete: { bg: '#1B7F37', color: '#0D7331' },
+    complete: { bg: '#E3FCEF', color: '#006644' },
     running: { bg: '#0C66E4', color: '#FFFFFF' },
     failed: { bg: 'rgba(220,38,38,0.08)', color: '#DC2626' },
     partial: { bg: '#DFE1E6', color: '#44546F' },

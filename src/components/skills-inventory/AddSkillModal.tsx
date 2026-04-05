@@ -83,7 +83,7 @@ export function AddSkillModal({ open, onClose, teamMembers, onSave }: AddSkillMo
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="max-w-lg bg-white">
+      <DialogContent className="max-w-lg bg-white dark:bg-[#232019]">
         <DialogHeader>
           <DialogTitle className="text-foreground">Add Skill Assessment</DialogTitle>
         </DialogHeader>
@@ -95,10 +95,10 @@ export function AddSkillModal({ open, onClose, teamMembers, onSave }: AddSkillMo
               value={formData.teamMemberId}
               onValueChange={(value) => setFormData({ ...formData, teamMemberId: value })}
             >
-              <SelectTrigger className="bg-white border-border">
+              <SelectTrigger className="bg-white dark:bg-[#232019] border-border dark:border-[rgba(255,255,255,0.08)]">
                 <SelectValue placeholder="Select team member" />
               </SelectTrigger>
-              <SelectContent className="bg-white">
+              <SelectContent className="bg-white dark:bg-[#232019]">
                 {teamMembers.map((member) => (
                   <SelectItem key={member.id} value={member.id.toString()}>
                     <div className="flex items-center gap-2">
@@ -121,7 +121,7 @@ export function AddSkillModal({ open, onClose, teamMembers, onSave }: AddSkillMo
               value={formData.skillName}
               onChange={(e) => setFormData({ ...formData, skillName: e.target.value })}
               placeholder="e.g., React, Python, AWS..."
-              className="bg-white border-border"
+              className="bg-white dark:bg-[#232019] border-border dark:border-[rgba(255,255,255,0.08)]"
             />
           </div>
 
@@ -137,7 +137,7 @@ export function AddSkillModal({ open, onClose, teamMembers, onSave }: AddSkillMo
                   className={`p-2 rounded-md border transition-all ${
                     formData.proficiency === level
                       ? 'border-brand-primary bg-brand-primary/10'
-                      : 'border-border hover:border-brand-primary/50 bg-white'
+                      : 'border-border hover:border-brand-primary/50 bg-white dark:bg-[#232019]'
                   }`}
                 >
                   <div
@@ -162,7 +162,7 @@ export function AddSkillModal({ open, onClose, teamMembers, onSave }: AddSkillMo
               onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
               rows={3}
               placeholder="Additional notes..."
-              className="bg-white border-border resize-none"
+              className="bg-white dark:bg-[#232019] border-border dark:border-[rgba(255,255,255,0.08)] resize-none"
             />
           </div>
 

@@ -4,6 +4,7 @@
 
 import { useRef, useEffect } from 'react';
 import { Check } from 'lucide-react';
+import { useTheme } from '@/hooks/useTheme';
 import { getStatusStyle } from './StatusBadge';
 
 interface StatusDropdownProps {
@@ -14,6 +15,7 @@ interface StatusDropdownProps {
 }
 
 export function StatusDropdown({ currentStatus, availableStatuses, onSelect, onClose }: StatusDropdownProps) {
+  const { isDark } = useTheme();
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -33,10 +35,10 @@ export function StatusDropdown({ currentStatus, availableStatuses, onSelect, onC
         left: 0,
         marginTop: 4,
         width: 200,
-        background: '#FFFFFF',
-        border: '1px solid #E2E8F0',
+        background: isDark ? '#232019' : '#FFFFFF',
+        border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0',
         borderRadius: 6,
-        boxShadow: '0 4px 16px rgba(0,0,0,0.10)',
+        boxShadow: isDark ? '0 4px 16px rgba(0,0,0,0.30)' : '0 4px 16px rgba(0,0,0,0.10)',
         maxHeight: 300,
         overflowY: 'auto',
         zIndex: 9999,
@@ -56,14 +58,14 @@ export function StatusDropdown({ currentStatus, availableStatuses, onSelect, onC
               alignItems: 'center',
               gap: 8,
               cursor: 'pointer',
-              background: isCurrent ? '#F8FAFC' : undefined,
+              background: isCurrent ? (isDark ? '#2C2823' : '#F8FAFC') : undefined,
               fontFamily: "'Inter', sans-serif",
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.background = '#F8FAFC')}
-            onMouseLeave={(e) => (e.currentTarget.style.background = isCurrent ? '#F8FAFC' : '')}
+            onMouseEnter={(e) => (e.currentTarget.style.background = isDark ? '#2C2823' : '#F8FAFC')}
+            onMouseLeave={(e) => (e.currentTarget.style.background = isCurrent ? (isDark ? '#2C2823' : '#F8FAFC') : '')}
           >
             <span style={{ width: 8, height: 8, borderRadius: '50%', background: style.color, flexShrink: 0 }} />
-            <span style={{ fontSize: 12, color: '#0F172A', flex: 1 }}>{status}</span>
+            <span style={{ fontSize: 12, color: isDark ? '#F5F3F0' : '#0F172A', flex: 1 }}>{status}</span>
             {isCurrent && <Check size={14} color="#2563EB" />}
           </div>
         );
