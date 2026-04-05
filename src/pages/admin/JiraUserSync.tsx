@@ -32,7 +32,7 @@ const FILTERS: { value: SyncFilter; label: string }[] = [
   { value: 'inactive', label: 'Inactive' },
 ];
 
-const PER_PAGE = 10;
+const PER_PAGE = 15;
 
 const AVATAR_COLORS = [
   { bg: '#DBEAFE', text: '#1D4ED8' }, { bg: '#DCFCE7', text: '#15803D' },
@@ -202,9 +202,9 @@ const JiraUserSync: React.FC = () => {
   const showEnd = Math.min(page * PER_PAGE, totalCount);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: '#FFFFFF' }}>
+    <div className="jus-page" style={{ display: 'flex', flexDirection: 'column', height: '100%', background: '#FFFFFF' }}>
       {/* ══ Page Header ══ */}
-      <div style={{
+      <div className="jus-surface" style={{
         position: 'sticky', top: 0, zIndex: 10, background: '#FFFFFF',
         borderBottom: '1px solid rgba(15,23,42,0.10)', padding: '14px 20px 0',
       }}>
@@ -212,13 +212,13 @@ const JiraUserSync: React.FC = () => {
           display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', paddingBottom: '12px',
         }}>
           <div>
-            <h1 style={{
+            <h1 className="jus-text-primary" style={{
               fontFamily: "'Sora', sans-serif", fontSize: '17px', fontWeight: 700,
               color: '#0F172A', letterSpacing: '-0.3px', margin: 0, lineHeight: 1.3,
             }}>
               Jira User Sync
             </h1>
-            <p style={{ fontSize: '11px', color: '#64748B', margin: '2px 0 0' }}>
+            <p className="jus-text-muted" style={{ fontSize: '11px', color: '#64748B', margin: '2px 0 0' }}>
               Bidirectional identity bridge · Jira Cloud ↔ Catalyst · Live proxy auth · Webhooks active
             </p>
           </div>
@@ -252,10 +252,11 @@ const JiraUserSync: React.FC = () => {
       </div>
 
       {/* ══ Stats Row ══ */}
-      <div style={{ display: 'flex', borderBottom: '1px solid rgba(15,23,42,0.10)' }}>
+      <div className="jus-surface" style={{ display: 'flex', borderBottom: '1px solid rgba(15,23,42,0.10)' }}>
         {STATS_CONFIG.map((card, i) => (
           <div
             key={card.key}
+            className="jus-stat-card"
             style={{
               flex: 1, padding: '10px 16px', background: '#FFFFFF',
               borderLeft: i > 0 ? '1px solid rgba(15,23,42,0.10)' : 'none',
@@ -266,18 +267,18 @@ const JiraUserSync: React.FC = () => {
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '3px' }}>
               <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: card.dot, flexShrink: 0 }} />
-              <span style={{ fontSize: '10px', fontWeight: 500, color: '#64748B' }}>{card.label}</span>
+              <span className="jus-stat-label" style={{ fontSize: '10px', fontWeight: 500, color: '#64748B' }}>{card.label}</span>
             </div>
-            <div style={{ fontSize: '20px', fontWeight: 700, color: '#0F172A', lineHeight: 1 }}>
+            <div className="jus-stat-value" style={{ fontSize: '20px', fontWeight: 700, color: '#0F172A', lineHeight: 1 }}>
               {getStatValue(card.key)}
             </div>
-            <div style={{ fontSize: '10px', color: '#94A3B8', marginTop: '1px' }}>{card.sub}</div>
+            <div className="jus-text-muted" style={{ fontSize: '10px', color: '#94A3B8', marginTop: '1px' }}>{card.sub}</div>
           </div>
         ))}
       </div>
 
       {/* ══ Toolbar ══ */}
-      <div style={{
+      <div className="jus-toolbar" style={{
         display: 'flex', alignItems: 'center', gap: '7px', padding: '9px 18px',
         borderBottom: '1px solid rgba(15,23,42,0.06)', flexWrap: 'wrap',
         position: 'sticky', top: 0, zIndex: 5, background: '#FFFFFF',
@@ -285,6 +286,7 @@ const JiraUserSync: React.FC = () => {
         <div style={{ position: 'relative', width: '220px' }}>
           <Search size={12} style={{ position: 'absolute', left: '8px', top: '50%', transform: 'translateY(-50%)', color: '#64748B' }} />
           <input
+            className="jus-search-input"
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Name, email, Jira ID, project…"
@@ -298,6 +300,7 @@ const JiraUserSync: React.FC = () => {
           {FILTERS.map(f => (
             <button
               key={f.value}
+              className={`jus-filter-tab ${filter === f.value ? 'active' : ''}`}
               onClick={() => setFilter(f.value)}
               style={{
                 padding: '4px 9px', borderRadius: '4px', fontSize: '11px', fontWeight: 500,
@@ -333,7 +336,7 @@ const JiraUserSync: React.FC = () => {
 
       {/* ══ Selection Bar ══ */}
       {selected.size > 0 && (
-        <div style={{
+        <div className="jus-selection-bar" style={{
           display: 'flex', alignItems: 'center', gap: '9px', padding: '7px 18px',
           background: '#EFF6FF', borderBottom: '1px solid #BFDBFE',
         }}>
@@ -374,10 +377,10 @@ const JiraUserSync: React.FC = () => {
       <div className="flex flex-1 overflow-hidden">
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
       {/* ══ Table ══ */}
-      <div style={{ flex: 1, overflowY: 'auto', overflowX: 'auto' }}>
+      <div className="jus-scroll" style={{ flex: 1, overflowY: 'auto', overflowX: 'auto' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '1000px' }}>
           <thead>
-            <tr style={{ background: '#F1F5F9', borderBottom: '1px solid rgba(15,23,42,0.06)' }}>
+            <tr className="jus-table-header" style={{ background: '#F1F5F9', borderBottom: '1px solid rgba(15,23,42,0.06)' }}>
               <th style={{ width: '36px', padding: '8px 12px', textAlign: 'center' }}>
                 <input
                   ref={headerCheckRef}
@@ -481,7 +484,7 @@ const JiraUserSync: React.FC = () => {
                 return (
                   <tr
                     key={user.id}
-                    className="group"
+                    className={`group jus-table-row ${isSelected || isActive ? 'selected' : ''}`}
                     onClick={() => setActiveUserId(user.id === activeUserId ? null : user.id)}
                     style={{
                       height: '40px', maxHeight: '40px',
@@ -523,7 +526,7 @@ const JiraUserSync: React.FC = () => {
                         </div>
                         <div style={{ minWidth: 0, maxWidth: '220px' }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                            <span style={{
+                            <span className="jus-text-primary" style={{
                               fontSize: '12px', fontWeight: 500, color: '#0F172A',
                               textDecoration: isInactive ? 'line-through' : 'none',
                               whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
@@ -539,7 +542,7 @@ const JiraUserSync: React.FC = () => {
                               </span>
                             )}
                           </div>
-                          <div style={{
+                          <div className="jus-text-secondary" style={{
                             fontSize: '10px', color: '#64748B',
                             fontFamily: "'JetBrains Mono', monospace",
                             whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
@@ -553,7 +556,7 @@ const JiraUserSync: React.FC = () => {
                     {/* Auth Mode */}
                     <td style={{ padding: '0 12px' }}>
                       {user.auth_mode === 'jira_proxy' ? (
-                        <span style={{
+                        <span className="badge-jira-proxy" style={{
                           display: 'inline-flex', alignItems: 'center', gap: '3px',
                           padding: '1px 6px', borderRadius: '3px', fontSize: '10px', fontWeight: 700,
                           letterSpacing: '0.03em', textTransform: 'uppercase',
@@ -562,7 +565,7 @@ const JiraUserSync: React.FC = () => {
                           <Share2 size={9} /> Jira Proxy
                         </span>
                       ) : (
-                        <span style={{
+                        <span className="badge-local-auth" style={{
                           display: 'inline-flex', alignItems: 'center', gap: '3px',
                           padding: '1px 6px', borderRadius: '3px', fontSize: '10px', fontWeight: 700,
                           letterSpacing: '0.03em', textTransform: 'uppercase',
@@ -613,11 +616,11 @@ const JiraUserSync: React.FC = () => {
                     {/* Synced At */}
                     <td style={{ padding: '0 12px' }}>
                       {isCatalystOnly ? (
-                        <span style={{ fontSize: '11px', color: '#94A3B8', fontStyle: 'italic' }}>Not synced</span>
+                        <span className="jus-text-muted" style={{ fontSize: '11px', color: '#94A3B8', fontStyle: 'italic' }}>Not synced</span>
                       ) : (
                         <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                           <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#16A34A', flexShrink: 0 }} />
-                          <span style={{ fontSize: '11px', color: '#64748B', fontFamily: "'JetBrains Mono', monospace", whiteSpace: 'nowrap' }}>
+                          <span className="jus-text-secondary" style={{ fontSize: '11px', color: '#64748B', fontFamily: "'JetBrains Mono', monospace", whiteSpace: 'nowrap' }}>
                             {formatSyncDate(user.last_synced_at)}
                           </span>
                         </div>
@@ -625,7 +628,7 @@ const JiraUserSync: React.FC = () => {
                     </td>
 
                     {/* Last Login */}
-                    <td style={{ padding: '0 12px', fontSize: '11px', color: '#64748B' }}>
+                    <td className="jus-text-secondary" style={{ padding: '0 12px', fontSize: '11px', color: '#64748B' }}>
                       {user.last_catalyst_login_at
                         ? formatSyncDate(user.last_catalyst_login_at)
                         : '—'}
@@ -634,7 +637,7 @@ const JiraUserSync: React.FC = () => {
                     {/* Status */}
                     <td style={{ padding: '0 12px' }}>
                       {hasConflicts ? (
-                        <span style={{
+                        <span className="lozenge-conflict" style={{
                           display: 'inline-block', padding: '0 7px', borderRadius: '3px',
                           fontSize: '10px', fontWeight: 700, textTransform: 'uppercase',
                           height: '20px', lineHeight: '20px',
@@ -643,7 +646,7 @@ const JiraUserSync: React.FC = () => {
                           CONFLICT
                         </span>
                       ) : isInactive ? (
-                        <span style={{
+                        <span className="lozenge-inactive" style={{
                           display: 'inline-block', padding: '0 7px', borderRadius: '3px',
                           fontSize: '10px', fontWeight: 700, textTransform: 'uppercase',
                           height: '20px', lineHeight: '20px',
@@ -652,7 +655,7 @@ const JiraUserSync: React.FC = () => {
                           INACTIVE
                         </span>
                       ) : (
-                        <span style={{
+                        <span className="lozenge-active" style={{
                           display: 'inline-block', padding: '0 7px', borderRadius: '3px',
                           fontSize: '10px', fontWeight: 700, textTransform: 'uppercase',
                           height: '20px', lineHeight: '20px',
@@ -696,16 +699,17 @@ const JiraUserSync: React.FC = () => {
       </div>
 
       {/* ══ Pagination ══ */}
-      <div style={{
+      <div className="jus-pagination" style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         padding: '9px 16px', borderTop: '1px solid rgba(15,23,42,0.06)',
         background: '#F8FAFC', flexShrink: 0,
       }}>
-        <span style={{ fontSize: '11px', color: '#64748B' }}>
+        <span className="jus-text-secondary" style={{ fontSize: '11px', color: '#64748B' }}>
           {totalCount > 0 ? `Showing ${showStart}–${showEnd} of ${totalCount} users` : 'No results'}
         </span>
         <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
           <button
+            className="jus-pagination-btn"
             onClick={() => setPage(p => Math.max(1, p - 1))}
             disabled={page <= 1}
             style={{
@@ -722,6 +726,7 @@ const JiraUserSync: React.FC = () => {
               <span key={`ell-${i}`} style={{ width: '28px', textAlign: 'center', fontSize: '11px', color: '#94A3B8' }}>…</span>
             ) : (
               <button
+                className={`jus-pagination-btn ${page === p ? 'active' : ''}`}
                 key={p}
                 onClick={() => setPage(p as number)}
                 style={{
@@ -738,6 +743,7 @@ const JiraUserSync: React.FC = () => {
             )
           )}
           <button
+            className="jus-pagination-btn"
             onClick={() => setPage(p => Math.min(totalPages, p + 1))}
             disabled={page >= totalPages}
             style={{

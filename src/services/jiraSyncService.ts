@@ -4,7 +4,8 @@ import type { PermissionLevel, CreateCatalystUserPayload } from '@/types/jiraSyn
 export const fetchJiraSyncUsers = async (
   page: number,
   filter: string,
-  search: string
+  search: string,
+  perPage: number = 15
 ) => {
   let query = supabase
     .from('jira_identity_map')
@@ -28,8 +29,8 @@ export const fetchJiraSyncUsers = async (
       `display_name.ilike.%${search}%,email.ilike.%${search}%,jira_account_id.ilike.%${search}%`
     );
 
-  const from = (page - 1) * 10;
-  return query.range(from, from + 9).order('display_name', { ascending: true });
+  const from = (page - 1) * perPage;
+  return query.range(from, from + perPage - 1).order('display_name', { ascending: true });
 };
 
 export const fetchSyncStats = async () => {
