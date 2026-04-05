@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Plus, RefreshCw, Search, ChevronLeft, ChevronRight, UserX, Copy, X, Loader2, Share2, Download } from 'lucide-react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { Plus, RefreshCw, Search, ChevronLeft, ChevronRight, UserX, Copy, X, Loader2, Share2, Download, Users2, FolderSearch } from 'lucide-react';
 import UserDetailPanel from '@/components/admin/UserDetailPanel';
 import { toast } from 'sonner';
 import {
@@ -106,7 +106,7 @@ const JiraUserSync: React.FC = () => {
   const debouncedSearch = useDebouncedValue(search, 300);
 
   const { data: statsData, isLoading: statsLoading } = useJiraSyncStats();
-  const { data: usersResult, isLoading: usersLoading } = useJiraSyncUsers(page, filter, debouncedSearch);
+  const { data: usersResult, isLoading: usersLoading, isFetching: usersFetching } = useJiraSyncUsers(page, filter, debouncedSearch);
   const { mutate: triggerSync, isPending: isSyncing } = useTriggerUserSync();
   const { mutate: toggleStatus } = useToggleUserStatus();
   const { mutate: copyPerms } = useCopyPermissions();
@@ -117,6 +117,17 @@ const JiraUserSync: React.FC = () => {
 
   useEffect(() => { setPage(1); }, [filter, debouncedSearch]);
   useEffect(() => { setSelected(new Set()); }, [page, filter, debouncedSearch]);
+
+  // ESC key to close panel
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && activeUserId && !createModalOpen) {
+        setActiveUserId(null);
+      }
+    };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  }, [activeUserId, createModalOpen]);
 
   const getStatValue = (key: StatsKey): string | number => {
     if (statsLoading || !statsData) return '—';
@@ -408,20 +419,48 @@ const JiraUserSync: React.FC = () => {
                   <td />
                 </tr>
               ))
-            ) : users.length === 0 ? (
+            ) : users.length === 0 && !usersFetching ? (
               <tr>
                 <td colSpan={8} style={{ textAlign: 'center', padding: '60px 20px' }}>
-                  <Search size={28} style={{ color: '#CBD5E1', margin: '0 auto 10px', display: 'block' }} />
-                  <div style={{ fontSize: '13px', color: '#64748B', fontWeight: 500 }}>No users match this filter</div>
-                  <button
-                    onClick={() => { setFilter('all'); setSearch(''); }}
-                    style={{
-                      marginTop: 8, fontSize: '12px', color: '#2563EB', background: 'none',
-                      border: 'none', cursor: 'pointer', textDecoration: 'underline',
-                    }}
-                  >
-                    Clear filter
-                  </button>
+                  {debouncedSearch ? (
+                    <>
+                      <Search size={24} style={{ color: '#94A3B8', margin: '0 auto 10px', display: 'block' }} />
+                      <div style={{ fontSize: '14px', color: '#334155', fontWeight: 500 }}>No users match '{debouncedSearch}'</div>
+                      <button
+                        onClick={() => setSearch('')}
+                        style={{ marginTop: 8, fontSize: '12px', color: '#2563EB', background: 'none', border: 'none', cursor: 'pointer' }}
+                      >Clear search</button>
+                    </>
+                  ) : filter !== 'all' ? (
+                    <>
+                      <FolderSearch size={24} style={{ color: '#94A3B8', margin: '0 auto 10px', display: 'block' }} />
+                      <div style={{ fontSize: '14px', color: '#334155', fontWeight: 500 }}>
+                        {filter === 'conflict' ? 'No conflicts found' : filter === 'inactive' ? 'No inactive users' : `No ${filter} users found`}
+                      </div>
+                      <button
+                        onClick={() => setFilter('all')}
+                        style={{ marginTop: 8, fontSize: '12px', color: '#2563EB', background: 'none', border: 'none', cursor: 'pointer' }}
+                      >View all users</button>
+                    </>
+                  ) : (
+                    <>
+                      <Users2 size={32} style={{ color: '#94A3B8', margin: '0 auto 10px', display: 'block' }} />
+                      <div style={{ fontSize: '14px', color: '#334155', fontWeight: 500 }}>No synced users yet</div>
+                      <button
+                        onClick={handleSync}
+                        disabled={isSyncing}
+                        style={{
+                          marginTop: 10, display: 'inline-flex', alignItems: 'center', gap: '5px',
+                          background: '#2563EB', color: '#FFFFFF', border: 'none',
+                          padding: '6px 14px', borderRadius: '5px', fontSize: '12px', fontWeight: 600,
+                          cursor: isSyncing ? 'not-allowed' : 'pointer',
+                        }}
+                      >
+                        <RefreshCw size={11} className={isSyncing ? 'animate-spin' : ''} />
+                        Sync Now to pull users from Jira
+                      </button>
+                    </>
+                  )}
                 </td>
               </tr>
             ) : (
@@ -482,7 +521,7 @@ const JiraUserSync: React.FC = () => {
                             : getInitials(user.display_name || '?')
                           }
                         </div>
-                        <div style={{ minWidth: 0 }}>
+                        <div style={{ minWidth: 0, maxWidth: '220px' }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
                             <span style={{
                               fontSize: '12px', fontWeight: 500, color: '#0F172A',
