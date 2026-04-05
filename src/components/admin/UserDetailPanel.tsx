@@ -254,7 +254,7 @@ const ActivityTab: React.FC<{ events: any[] }> = ({ events }) => {
 
   return (
     <div style={{ padding: '12px 16px' }}>
-      <div style={mkSectionLabel(isDark)}>SYNC ACTIVITY</div>
+      <div style={mkSectionLabel(false)}>SYNC ACTIVITY</div>
       {sorted.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '32px 16px' }}>
           <Activity size={24} color="#94A3B8" style={{ margin: '0 auto 8px' }} />
