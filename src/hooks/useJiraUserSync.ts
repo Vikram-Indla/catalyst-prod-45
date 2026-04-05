@@ -148,14 +148,6 @@ export const useAssignUsersToProject = () => {
         .from('jira_user_project_perms')
         .upsert(upsertRows, { onConflict: 'identity_map_id,project_id' });
       if (error) throw error;
-
-      // Queue write-back
-      const queueRows = userIds.map(id => ({
-        identity_map_id: id,
-        action: 'role_change',
-        payload: { project_key: projectKey, permission_level: permissionLevel },
-      }));
-      await supabase.from('jira_write_back_queue').insert(queueRows).throwOnError();
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['jira-sync-users'] });
