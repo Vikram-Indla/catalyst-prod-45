@@ -405,7 +405,7 @@ const JiraUserSync: React.FC = () => {
               ))
             ) : users.length === 0 && !usersFetching ? (
               <tr>
-                <td colSpan={8} style={{ textAlign: 'center', padding: '60px 20px' }}>
+                <td colSpan={9} style={{ textAlign: 'center', padding: '60px 20px' }}>
                   {debouncedSearch ? (
                     <>
                       <Search size={24} className="text-[#94A3B8] dark:text-[rgba(200,210,225,0.35)] mx-auto mb-[10px] block" />
