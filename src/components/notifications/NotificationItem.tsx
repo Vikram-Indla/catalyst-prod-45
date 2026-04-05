@@ -132,14 +132,25 @@ function NotificationItemInner({ notification, actorProfile, onMarkRead, onClick
     >
       <div style={{ display: 'flex', gap: 12 }}>
         {/* Avatar — always full opacity per m-15 */}
-        <div style={{
-          width: 40, height: 40, borderRadius: '50%', flexShrink: 0,
-          background: avatarColor,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          color: '#FFFFFF', fontFamily: 'Inter, sans-serif', fontSize: 14, fontWeight: 700,
-        }}>
-          {isSystemAssign ? <UserCheck size={20} color="#FFFFFF" /> : initials}
-        </div>
+        {avatarUrl && !isSystemAssign ? (
+          <img
+            src={avatarUrl}
+            alt={actorName}
+            style={{
+              width: 40, height: 40, borderRadius: '50%', flexShrink: 0,
+              objectFit: 'cover',
+            }}
+          />
+        ) : (
+          <div style={{
+            width: 40, height: 40, borderRadius: '50%', flexShrink: 0,
+            background: avatarColor,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            color: '#FFFFFF', fontFamily: 'Inter, sans-serif', fontSize: 14, fontWeight: 700,
+          }}>
+            {isSystemAssign ? <UserCheck size={20} color="#FFFFFF" /> : initials}
+          </div>
+        )}
 
         {/* Body — text opacity for read items */}
         <div style={{ flex: 1, minWidth: 0, opacity: textOpacity }}>
