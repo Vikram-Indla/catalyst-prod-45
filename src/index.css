@@ -4816,3 +4816,30 @@ input[type="range"]::-moz-range-thumb {
 [data-theme="dark"] .jus-pagination-btn.active { background-color: #2563EB !important; color: #FFFFFF !important; }
 [data-theme="dark"] .jus-selection-bar { background-color: rgba(37, 99, 235, 0.12) !important; border-bottom-color: rgba(37, 99, 235, 0.25); }
 [data-theme="dark"] .jus-detail-panel { background-color: #232019 !important; border-color: rgba(255,255,255,0.08) !important; }
+
+/* ═══════════════════════════════════════════════════
+   NOCTURNE GLOBAL DARK MODE CATCH-ALL
+   Ensures any remaining white surfaces are dark
+   ═══════════════════════════════════════════════════ */
+.dark [data-radix-popper-content-wrapper] > div,
+.dark [data-radix-popover-content],
+.dark [role="dialog"],
+.dark [data-state="open"][class*="bg-white"],
+[data-theme="dark"] [data-radix-popper-content-wrapper] > div,
+[data-theme="dark"] [data-radix-popover-content],
+[data-theme="dark"] [role="dialog"] {
+  background-color: #232019 !important;
+  color: #F5F3F0 !important;
+  border-color: rgba(255,255,255,0.08) !important;
+}
+
+.dark [data-radix-popper-content-wrapper] > div *,
+[data-theme="dark"] [data-radix-popper-content-wrapper] > div * {
+  border-color: rgba(255,255,255,0.08);
+}
+
+/* Force dark bg on any white notification/feed panels */
+.dark .bg-white,
+[data-theme="dark"] .bg-white {
+  background-color: #232019 !important;
+}
