@@ -610,7 +610,7 @@ const JiraUserSync: React.FC = () => {
             <div style={{ background: T.surface, border: `0.75px solid ${T.border}`, borderRadius: 8, overflow: 'hidden' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 1000 }}>
                 <thead>
-                  <tr style={{ background: T.sunken, borderBottom: `0.75px solid ${T.border}` }}>
+                  <tr style={{ background: T.sunken, borderBottom: `0.75px solid ${T.border}` }} className="jsu-sunken">
                     <th style={{ width: 36, padding: '10px 12px', textAlign: 'center' }}>
                       <input
                         ref={headerCheckRef}
@@ -621,10 +621,8 @@ const JiraUserSync: React.FC = () => {
                       />
                     </th>
                     {HEADERS.map(h => (
-                      <th key={h || 'action'} style={{
-                        padding: '10px 12px', textAlign: 'left', fontSize: 11, fontWeight: 600,
-                        textTransform: 'uppercase', letterSpacing: '0.05em',
-                        fontFamily: 'Inter,sans-serif', color: T.text2,
+                      <th key={h || 'action'} className="jsu-th" style={{
+                        padding: '10px 12px', textAlign: 'left',
                       }}>
                         {h}
                       </th>
