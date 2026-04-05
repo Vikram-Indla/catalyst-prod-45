@@ -7,6 +7,7 @@
  * Gate 9 fixes: DEF-02 through DEF-16
  */
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import { useTheme } from '@/hooks/useTheme';
 import { HUB_COLORS, HUB_SHORT, PRIORITY_COLORS } from '@/constants/resource360';
 import { X, ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
@@ -282,6 +283,7 @@ const CARD_POSITIONS = [
 ];
 
 const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, onItemClick }) => {
+  const { isDark } = useTheme();
   const ringCanvasRef = useRef<HTMLDivElement>(null);
   const centerRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<Record<string, HTMLDivElement | null>>({});
