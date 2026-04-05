@@ -462,6 +462,7 @@ const JiraUserSync: React.FC = () => {
                     </>
                   )}
                 </td>
+              </tr>
             ) : (
               users.map((user: any, idx: number) => {
                 const isInactive = !user.is_active_in_catalyst;
