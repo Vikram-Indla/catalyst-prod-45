@@ -519,6 +519,7 @@ const JiraUserSync: React.FC = () => {
                         onClick={() => {
                           assignToProject({
                             userIds: ids,
+                            projectId: proj.id,
                             projectKey: proj.project_key,
                             projectName: proj.project_name || proj.project_key,
                             permissionLevel: assignPermLevel,
