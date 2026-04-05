@@ -49,6 +49,7 @@ const adminPockets = [
     children: [
       { label: 'Resource Names', path: '/admin/users' },
       { label: 'Resource Roles', path: '/admin/roles-permissions' },
+      { label: 'Jira User Sync', path: '/admin/jira-user-sync' },
       { label: 'Module Access Matrix', path: '/admin/module-matrix' },
       { label: 'Resource Utilization', path: '/admin/resource-utilization' },
       { label: 'Resource Departments', path: '/admin/capacity-departments' },

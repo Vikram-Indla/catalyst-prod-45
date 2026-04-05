@@ -273,6 +273,7 @@ const ResourceAssignmentsPage = lazy(() => import("../pages/admin/ResourceAssign
 const ResourceLocationsPage = lazy(() => import("../pages/admin/ResourceLocations"));
 const ResourceCountriesPage = lazy(() => import("../pages/admin/ResourceCountries"));
 const ResourceVendorsPage = lazy(() => import("../pages/admin/ResourceVendors"));
+const JiraUserSyncPage = lazy(() => import("../pages/admin/JiraUserSync"));
 const BusinessOwnersAdmin = lazy(() => import("../pages/admin/BusinessOwners"));
 const BusinessProcesses = lazy(() => import("../pages/admin/BusinessProcesses"));
 const Portfolios = lazy(() => import("../pages/admin/Portfolios"));
@@ -807,6 +808,7 @@ export default function FullAppRoutes() {
           <Route path="resource-locations" element={<S><ResourceLocationsPage /></S>} />
           <Route path="resource-countries" element={<S><ResourceCountriesPage /></S>} />
           <Route path="resource-vendors" element={<S><ResourceVendorsPage /></S>} />
+          <Route path="jira-user-sync" element={<S><JiraUserSyncPage /></S>} />
           <Route path="business-owners" element={<S><BusinessOwnersAdmin /></S>} />
           <Route path="business-processes" element={<S><BusinessProcesses /></S>} />
           <Route path="business/ProcessStep" element={<S><ProcessSteps /></S>} />
