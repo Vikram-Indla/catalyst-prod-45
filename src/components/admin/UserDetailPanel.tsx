@@ -458,10 +458,10 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose }) => {
           </div>
           {/* Name block */}
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontFamily: "'Sora', sans-serif", fontSize: '15px', fontWeight: 700, color: '#0F172A', letterSpacing: '-0.2px' }}>
+            <div className="jus-name" style={{ fontFamily: "'Sora', sans-serif", fontSize: '15px', fontWeight: 700, color: '#0F172A', letterSpacing: '-0.2px' }}>
               {user.display_name}
             </div>
-            <div style={{ fontSize: '11px', color: '#64748B', marginTop: '2px' }}>
+            <div className="jus-subtitle" style={{ fontSize: '11px', color: '#64748B', marginTop: '2px' }}>
               {user.resource_role_id || 'No role assigned'}
             </div>
             <div style={{ display: 'flex', gap: '5px', marginTop: '7px' }}>
