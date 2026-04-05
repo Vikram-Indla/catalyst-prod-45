@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import { ExternalLink, MoreVertical, CheckCheck, MessageSquare, Settings, RefreshCw, X } from "lucide-react";
 import type { Notification, NotificationTab } from "@/types/notifications";
 import { PANEL_WIDTH } from "@/constants/notificationConstants";
@@ -204,8 +205,23 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
   const handleItemClick = useCallback((n: Notification) => {
     if (!n.read_at) markAsRead(n.id);
     onClose();
-    // Navigation would be: navigate(`/browse/${n.entity_key}`);
-  }, [markAsRead, onClose]);
+
+    const HUB_ROUTES: Record<string, string> = {
+      'TestHub':      '/test-hub',
+      'ProjectHub':   '/project-hub',
+      'ProductHub':   '/product-hub',
+      'ReleaseHub':   '/release-hub',
+      'IncidentHub':  '/incident-hub',
+      'TaskHub':      '/task-hub',
+      'PlanHub':      '/plan-hub',
+      'StrategyHub':  '/strategy-hub',
+    };
+
+    const base = HUB_ROUTES[n.hub_source];
+    if (base) {
+      navigate(`${base}?openItem=${n.entity_key}`);
+    }
+  }, [markAsRead, onClose, navigate]);
 
   const handleMarkRead = useCallback((id: string) => {
     markAsRead(id);

@@ -29,9 +29,7 @@ export function useNotificationsQuery(tab: NotificationTab, unreadOnly: boolean)
         .order('created_at', { ascending: false })
         .limit(NOTIFICATIONS_PER_PAGE);
 
-      if (tab !== 'ai') {
-        query = query.eq('tab', tab);
-      }
+      query = query.eq('tab', tab);
       if (unreadOnly) {
         query = query.is('read_at', null);
       }
