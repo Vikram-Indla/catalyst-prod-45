@@ -1,5 +1,6 @@
 import { memo, useState } from "react";
 import type { Notification } from "@/types/notifications";
+import type { ActorProfile } from "@/hooks/useActorProfiles";
 import { COMMENT_PREVIEW_TYPES, DUE_DATE_TYPES } from "@/constants/notificationConstants";
 import { getAvatarColor, getUserInitials } from "@/utils/avatarColor";
 import { WorkItemIcon } from "./WorkItemIcons";
@@ -10,6 +11,7 @@ import { Clock, UserCheck } from "lucide-react";
 
 interface NotificationItemProps {
   notification: Notification;
+  actorProfile?: ActorProfile;
   onMarkRead?: (id: string) => void;
   onClick?: (notification: Notification) => void;
 }
