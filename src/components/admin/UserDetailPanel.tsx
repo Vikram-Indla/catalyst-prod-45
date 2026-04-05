@@ -48,37 +48,39 @@ interface Props {
 }
 
 const mkSectionLabel = (isDark: boolean): React.CSSProperties => ({
-  fontSize: '10px', fontWeight: 700, color: isDark ? 'rgba(200,210,225,0.50)' : '#64748B',
+  fontSize: '10px', fontWeight: 700, color: isDark ? '#6B6560' : '#64748B',
   textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '6px',
 });
 
 const mkFieldRow = (isDark: boolean): React.CSSProperties => ({
   display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-  padding: '5px 0', borderBottom: `0.5px solid ${isDark ? 'rgba(200,210,225,0.06)' : 'rgba(15,23,42,0.06)'}`,
+  padding: '5px 0', borderBottom: `0.5px solid ${isDark ? 'rgba(255,255,255,0.05)' : 'rgba(15,23,42,0.06)'}`,
 });
 
-const mkFieldKey = (isDark: boolean): React.CSSProperties => ({ fontSize: '11px', color: isDark ? 'rgba(200,210,225,0.55)' : '#64748B' });
-const mkFieldVal = (isDark: boolean): React.CSSProperties => ({ fontSize: '12px', fontWeight: 500, color: isDark ? 'rgba(225,230,240,0.92)' : '#0F172A', textAlign: 'right' as const });
+const mkFieldKey = (isDark: boolean): React.CSSProperties => ({ fontSize: '11px', color: isDark ? '#A09890' : '#64748B' });
+const mkFieldVal = (isDark: boolean): React.CSSProperties => ({ fontSize: '12px', fontWeight: 500, color: isDark ? '#F5F3F0' : '#0F172A', textAlign: 'right' as const });
 const monoSmall: React.CSSProperties = { fontFamily: "'JetBrains Mono', monospace", fontSize: '10px' };
-const Code: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+const Code: React.FC<{ children: React.ReactNode; isDark?: boolean }> = ({ children, isDark = false }) => (
   <code style={{
     fontFamily: "'JetBrains Mono', monospace", fontSize: '10px',
-    background: '#F1F5F9', padding: '1px 4px', borderRadius: '2px', color: '#2563EB',
+    background: isDark ? '#2C2823' : '#F1F5F9', padding: '1px 4px', borderRadius: '2px',
+    color: isDark ? '#93C5FD' : '#2563EB',
   }}>{children}</code>
 );
 
-const InfoCard: React.FC<{ label: string; children: React.ReactNode }> = ({ label, children }) => (
+const InfoCard: React.FC<{ label: string; children: React.ReactNode; isDark?: boolean }> = ({ label, children, isDark = false }) => (
   <div style={{
-    background: '#F8FAFC', border: '1px solid rgba(15,23,42,0.10)',
+    background: isDark ? '#2C2823' : '#F8FAFC',
+    border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.10)'}`,
     borderRadius: '5px', padding: '10px 12px',
   }}>
     <div style={{
-      fontSize: '9.5px', fontWeight: 700, color: '#64748B',
+      fontSize: '9.5px', fontWeight: 700, color: isDark ? '#6B6560' : '#64748B',
       textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '5px',
     }}>
       {label}
     </div>
-    <div style={{ fontSize: '11px', color: '#334155', lineHeight: 1.55 }}>{children}</div>
+    <div style={{ fontSize: '11px', color: isDark ? '#A09890' : '#334155', lineHeight: 1.55 }}>{children}</div>
   </div>
 );
 const PERM_LEVELS = ['view', 'edit', 'full', 'none'] as const;
@@ -109,7 +111,7 @@ function getEventText(ev: any): string {
   }
 }
 
-const ProjectsTab: React.FC<{ perms: any[] }> = ({ perms }) => {
+const ProjectsTab: React.FC<{ perms: any[]; isDark?: boolean }> = ({ perms, isDark = false }) => {
   const [checkedPerms, setCheckedPerms] = useState<Set<string>>(new Set());
   const { mutate: updatePerm, isPending, variables } = useUpdatePerm();
 
@@ -126,7 +128,8 @@ const ProjectsTab: React.FC<{ perms: any[] }> = ({ perms }) => {
   const xsBtn: React.CSSProperties = {
     fontSize: '9px', fontWeight: 700, textTransform: 'uppercase',
     padding: '3px 7px', borderRadius: '3px', cursor: 'pointer',
-    border: '1px solid rgba(15,23,42,0.10)', background: '#FFFFFF', color: '#64748B',
+    border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.10)'}`,
+    background: isDark ? '#2C2823' : '#FFFFFF', color: isDark ? '#A09890' : '#64748B',
   };
   const xsBtnClass = 'jus-action-btn';
 
@@ -134,7 +137,7 @@ const ProjectsTab: React.FC<{ perms: any[] }> = ({ perms }) => {
     <div style={{ padding: '12px 16px' }}>
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-        <div style={{ ...mkSectionLabel(false), marginBottom: 0 }}>
+        <div style={{ ...mkSectionLabel(isDark), marginBottom: 0 }}>
           PROJECT ASSIGNMENTS ({perms.length})
         </div>
         <div style={{ display: 'flex', gap: '5px' }}>
@@ -149,7 +152,7 @@ const ProjectsTab: React.FC<{ perms: any[] }> = ({ perms }) => {
 
       {perms.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '32px 16px' }}>
-          <div style={{ fontSize: '12px', color: '#94A3B8', marginBottom: '10px' }}>No projects assigned yet</div>
+          <div style={{ fontSize: '12px', color: isDark ? '#6B6560' : '#94A3B8', marginBottom: '10px' }}>No projects assigned yet</div>
           <button
             style={{ fontSize: '11px', fontWeight: 600, background: '#2563EB', color: '#FFFFFF', border: 'none', borderRadius: '4px', padding: '5px 12px', cursor: 'pointer' }}
             onClick={() => toast.info('Project picker — Phase 2')}
@@ -159,8 +162,8 @@ const ProjectsTab: React.FC<{ perms: any[] }> = ({ perms }) => {
         <>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '11px', marginTop: '6px' }}>
             <thead>
-              <tr style={{ background: '#F1F5F9' }} className="jus-table-head">
-                <th style={{ padding: '6px 9px', fontSize: '9px', fontWeight: 700, color: '#64748B', textTransform: 'uppercase', textAlign: 'left', width: '28px' }}>
+              <tr style={{ background: isDark ? '#1A1714' : '#F1F5F9' }} className="jus-table-head">
+                <th style={{ padding: '6px 9px', fontSize: '9px', fontWeight: 700, color: isDark ? '#6B6560' : '#64748B', textTransform: 'uppercase', textAlign: 'left', width: '28px' }}>
                   <input
                     type="checkbox"
                     checked={checkedPerms.size === perms.length && perms.length > 0}
@@ -168,17 +171,17 @@ const ProjectsTab: React.FC<{ perms: any[] }> = ({ perms }) => {
                     style={{ width: '12px', height: '12px', accentColor: '#2563EB' }}
                   />
                 </th>
-                <th style={{ padding: '6px 9px', fontSize: '9px', fontWeight: 700, color: '#64748B', textTransform: 'uppercase', textAlign: 'left' }}>Project</th>
-                <th style={{ padding: '6px 9px', fontSize: '9px', fontWeight: 700, color: '#64748B', textTransform: 'uppercase', textAlign: 'left' }}>Key</th>
-                <th style={{ padding: '6px 9px', fontSize: '9px', fontWeight: 700, color: '#64748B', textTransform: 'uppercase', textAlign: 'right' }}>Permission</th>
+                <th style={{ padding: '6px 9px', fontSize: '9px', fontWeight: 700, color: isDark ? '#6B6560' : '#64748B', textTransform: 'uppercase', textAlign: 'left' }}>Project</th>
+                <th style={{ padding: '6px 9px', fontSize: '9px', fontWeight: 700, color: isDark ? '#6B6560' : '#64748B', textTransform: 'uppercase', textAlign: 'left' }}>Key</th>
+                <th style={{ padding: '6px 9px', fontSize: '9px', fontWeight: 700, color: isDark ? '#6B6560' : '#64748B', textTransform: 'uppercase', textAlign: 'right' }}>Permission</th>
               </tr>
             </thead>
             <tbody>
               {perms.map((p: any) => {
                 const isMutating = isPending && variables?.permId === p.id;
                 return (
-                  <tr key={p.id} style={{ borderBottom: '0.75px solid rgba(15,23,42,0.06)' }}
-                    onMouseEnter={e => (e.currentTarget.style.background = 'rgba(15,23,42,0.035)')}
+                  <tr key={p.id} style={{ borderBottom: `0.75px solid ${isDark ? 'rgba(255,255,255,0.05)' : 'rgba(15,23,42,0.06)'}` }}
+                    onMouseEnter={e => (e.currentTarget.style.background = isDark ? 'rgba(255,255,255,0.03)' : 'rgba(15,23,42,0.035)')}
                     onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                   >
                     <td style={{ padding: '6px 9px' }}>
@@ -189,18 +192,19 @@ const ProjectsTab: React.FC<{ perms: any[] }> = ({ perms }) => {
                         style={{ width: '12px', height: '12px', accentColor: '#2563EB' }}
                       />
                     </td>
-                    <td style={{ padding: '6px 9px', fontWeight: 500, color: '#0F172A', whiteSpace: 'nowrap' }} className="jus-field-val">
+                    <td style={{ padding: '6px 9px', fontWeight: 500, color: isDark ? '#F5F3F0' : '#0F172A', whiteSpace: 'nowrap' }} className="jus-field-val">
                       {p.project_name || p.project_key}
                     </td>
                     <td style={{ padding: '6px 9px' }}>
                       <span className="jus-project-key-chip" style={{
-                        fontFamily: "'JetBrains Mono', monospace", fontSize: '9px', color: '#64748B',
-                        background: '#F1F5F9', padding: '1px 4px', borderRadius: '2px',
+                        fontFamily: "'JetBrains Mono', monospace", fontSize: '9px',
+                        color: isDark ? '#A09890' : '#64748B',
+                        background: isDark ? '#2C2823' : '#F1F5F9', padding: '1px 4px', borderRadius: '2px',
                       }}>{p.project_key}</span>
                     </td>
                     <td style={{ padding: '6px 9px', textAlign: 'right' }}>
                       <div className="jus-perm-seg" style={{
-                        display: 'inline-flex', border: '1px solid rgba(15,23,42,0.10)',
+                        display: 'inline-flex', border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.10)'}`,
                         borderRadius: '4px', overflow: 'hidden',
                       }}>
                         {PERM_LEVELS.map((level, i) => {
@@ -216,9 +220,9 @@ const ProjectsTab: React.FC<{ perms: any[] }> = ({ perms }) => {
                                 padding: '3px 7px', fontSize: '9px', fontWeight: 700,
                                 textTransform: 'uppercase', cursor: active ? 'default' : 'pointer',
                                 background: active ? colors.bg : 'transparent',
-                                color: active ? colors.color : '#94A3B8',
+                                color: active ? colors.color : (isDark ? '#6B6560' : '#94A3B8'),
                                 border: 'none',
-                                borderRight: i < 3 ? '1px solid rgba(15,23,42,0.10)' : 'none',
+                                borderRight: i < 3 ? `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.10)'}` : 'none',
                               }}
                             >
                               {showSpinner ? <Loader2 size={10} className="animate-spin" /> : level}
@@ -247,33 +251,33 @@ const ProjectsTab: React.FC<{ perms: any[] }> = ({ perms }) => {
   );
 };
 
-const ActivityTab: React.FC<{ events: any[] }> = ({ events }) => {
+const ActivityTab: React.FC<{ events: any[]; isDark?: boolean }> = ({ events, isDark = false }) => {
   const sorted = [...events].sort((a, b) =>
     new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
   );
 
   return (
     <div style={{ padding: '12px 16px' }}>
-      <div style={mkSectionLabel(false)}>SYNC ACTIVITY</div>
+      <div style={mkSectionLabel(isDark)}>SYNC ACTIVITY</div>
       {sorted.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '32px 16px' }}>
-          <Activity size={24} color="#94A3B8" style={{ margin: '0 auto 8px' }} />
-          <div style={{ fontSize: '12px', color: '#94A3B8', fontWeight: 500 }}>No activity recorded yet</div>
-          <div style={{ fontSize: '11px', color: '#CBD5E1', marginTop: '4px' }}>Events will appear here after the first sync</div>
+          <Activity size={24} color={isDark ? '#6B6560' : '#94A3B8'} style={{ margin: '0 auto 8px' }} />
+          <div style={{ fontSize: '12px', color: isDark ? '#A09890' : '#94A3B8', fontWeight: 500 }}>No activity recorded yet</div>
+          <div style={{ fontSize: '11px', color: isDark ? '#6B6560' : '#CBD5E1', marginTop: '4px' }}>Events will appear here after the first sync</div>
         </div>
       ) : (
         sorted.slice(0, 30).map((ev: any) => (
           <div key={ev.id} style={{
             display: 'flex', gap: '9px', padding: '5px 0',
-            borderBottom: '0.5px solid rgba(15,23,42,0.06)',
+            borderBottom: `0.5px solid ${isDark ? 'rgba(255,255,255,0.05)' : 'rgba(15,23,42,0.06)'}`,
           }}>
             <div style={{
               width: '7px', height: '7px', borderRadius: '50%', flexShrink: 0,
               marginTop: '3px', background: getEventDotColor(ev),
             }} />
             <div style={{ flex: 1 }}>
-              <div className="jus-event-text" style={{ fontSize: '11px', color: '#334155' }}>{getEventText(ev)}</div>
-              <div className="jus-event-time" style={{ fontSize: '10px', color: '#94A3B8', marginTop: '1px' }}>{formatDate(ev.created_at)}</div>
+              <div className="jus-event-text" style={{ fontSize: '11px', color: isDark ? '#F5F3F0' : '#334155' }}>{getEventText(ev)}</div>
+              <div className="jus-event-time" style={{ fontSize: '10px', color: isDark ? '#6B6560' : '#94A3B8', marginTop: '1px' }}>{formatDate(ev.created_at)}</div>
             </div>
           </div>
         ))
@@ -291,9 +295,9 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
   const user = data?.data;
 
   const T = isDark ? {
-    surface: '#1E2027', border: 'rgba(200,210,225,0.08)', text1: 'rgba(225,230,240,0.92)',
-    text2: 'rgba(200,210,225,0.55)', text3: 'rgba(200,210,225,0.35)', sunken: '#12141A',
-    elevated: '#232019', inputBg: '#1A1714',
+    surface: '#232019', border: 'rgba(255,255,255,0.08)', text1: '#F5F3F0',
+    text2: '#A09890', text3: '#6B6560', sunken: '#1A1714',
+    elevated: '#2C2823', inputBg: '#1A1714',
   } : {
     surface: '#FFFFFF', border: 'rgba(15,23,42,0.10)', text1: '#0F172A',
     text2: '#64748B', text3: '#94A3B8', sunken: '#F1F5F9',
@@ -480,8 +484,8 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
                   display: 'inline-block', padding: '0 7px', borderRadius: '3px',
                   fontSize: '10px', fontWeight: 700, textTransform: 'uppercase',
                   height: '20px', lineHeight: '20px',
-                  background: isInactive ? '#FEE2E2' : '#E3FCEF',
-                  color: isInactive ? '#991B1B' : '#006644',
+                  background: isInactive ? (isDark ? '#450A0A' : '#FEE2E2') : (isDark ? '#064E3B' : '#E3FCEF'),
+                  color: isInactive ? (isDark ? '#FCA5A5' : '#991B1B') : (isDark ? '#6EE7B7' : '#006644'),
                 }}>
                   {isInactive ? 'INACTIVE' : 'ACTIVE'}
                 </span>
@@ -505,7 +509,9 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
                 {isJiraProxy ? (
                   <span style={{
                     padding: '1px 5px', borderRadius: '3px', fontSize: '9.5px', fontWeight: 700,
-                    background: '#F0FDFA', color: '#0D9488', border: '1px solid #99F6E4',
+                    background: isDark ? 'rgba(13,148,136,0.15)' : '#F0FDFA',
+                    color: isDark ? '#5EEAD4' : '#0D9488',
+                    border: `1px solid ${isDark ? 'rgba(13,148,136,0.25)' : '#99F6E4'}`,
                     whiteSpace: 'nowrap',
                   }}>
                     Jira Proxy
@@ -513,7 +519,9 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
                 ) : (
                   <span style={{
                     padding: '1px 5px', borderRadius: '3px', fontSize: '9.5px', fontWeight: 700,
-                    background: '#F5F3FF', color: '#7C3AED', border: '1px solid rgba(124,58,237,0.25)',
+                    background: isDark ? 'rgba(124,58,237,0.15)' : '#F5F3FF',
+                    color: isDark ? '#C4B5FD' : '#7C3AED',
+                    border: `1px solid rgba(124,58,237,0.25)`,
                     whiteSpace: 'nowrap',
                   }}>
                     Catalyst Auth
@@ -533,8 +541,12 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
               <div className="jus-info-box" style={{
                 marginTop: '7px', padding: '9px 11px', borderRadius: '5px',
                 display: 'flex', gap: '8px', alignItems: 'flex-start',
-                background: isJiraProxy ? '#F0FDFA' : '#F5F3FF',
-                border: isJiraProxy ? '1px solid #99F6E4' : '1px solid rgba(124,58,237,0.25)',
+                background: isJiraProxy
+                  ? (isDark ? 'rgba(13,148,136,0.10)' : '#F0FDFA')
+                  : (isDark ? 'rgba(124,58,237,0.10)' : '#F5F3FF'),
+                border: isJiraProxy
+                  ? `1px solid ${isDark ? 'rgba(13,148,136,0.20)' : '#99F6E4'}`
+                  : `1px solid rgba(124,58,237,0.25)`,
               }}>
                 {isJiraProxy
                   ? <ShieldCheck size={13} style={{ color: '#0D9488', flexShrink: 0, marginTop: 1 }} />
@@ -542,7 +554,9 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
                 }
                 <span style={{
                   fontSize: '11px', lineHeight: 1.55,
-                  color: isJiraProxy ? '#134E4A' : '#7C3AED',
+                  color: isJiraProxy
+                    ? (isDark ? '#5EEAD4' : '#134E4A')
+                    : (isDark ? '#C4B5FD' : '#7C3AED'),
                 }}>
                   {isJiraProxy
                     ? 'Jira password used as-is in Catalyst. No password is stored here. Changing the password in Jira takes effect on the next Catalyst login.'
@@ -602,11 +616,11 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
         )}
 
         {activeTab === 'projects' && (
-          <ProjectsTab perms={perms} />
+          <ProjectsTab perms={perms} isDark={isDark} />
         )}
 
         {activeTab === 'activity' && (
-          <ActivityTab events={events} />
+          <ActivityTab events={events} isDark={isDark} />
         )}
 
         {activeTab === 'info' && (
@@ -616,51 +630,51 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
             {/* 2×2 Grid */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '8px' }}>
               {/* Functional */}
-              <InfoCard label="Functional">
+              <InfoCard isDark={isDark} label="Functional">
                 {isJiraProxy
                   ? 'User authenticates with their Jira password via live proxy. The exact same credentials used in Jira log them into Catalyst. No separate password is needed.'
                   : 'User exists only in Catalyst. Authentication uses a Catalyst-managed password (bcrypt). This account is permanently excluded from all Jira sync operations.'}
               </InfoCard>
 
               {/* Technical */}
-              <InfoCard label="Technical">
+              <InfoCard isDark={isDark} label="Technical">
                 {isJiraProxy ? (
-                  <>Login calls Edge Function <Code>jira-auth-proxy</Code> which validates against Jira REST API <Code>/rest/auth/1/session</Code>. On success, a Supabase session is issued. Credentials are never logged or stored.</>
+                  <>Login calls Edge Function <Code isDark={isDark}>jira-auth-proxy</Code> which validates against Jira REST API <Code isDark={isDark}>/rest/auth/1/session</Code>. On success, a Supabase session is issued. Credentials are never logged or stored.</>
                 ) : (
-                  <>Created via <Code>supabase.auth.admin.createUser()</Code>. Record stored in <Code>jira_identity_map</Code> with <Code>catalyst_only=true</Code>. Auth handled entirely by Supabase Auth (bcrypt).</>
+                  <>Created via <Code isDark={isDark}>supabase.auth.admin.createUser()</Code>. Record stored in <Code isDark={isDark}>jira_identity_map</Code> with <Code isDark={isDark}>catalyst_only=true</Code>. Auth handled entirely by Supabase Auth (bcrypt).</>
                 )}
               </InfoCard>
 
               {/* Wiring */}
-              <InfoCard label="Wiring">
+              <InfoCard isDark={isDark} label="Wiring">
                 {isJiraProxy ? (
-                  <>Tables: <Code>jira_identity_map</Code> → <Code>auth.users</Code>. Sessions cached in <Code>jira_auth_sessions</Code> (TTL 8h). Projects in <Code>jira_user_project_perms</Code>. Events in <Code>jira_sync_user_events</Code>.</>
+                  <>Tables: <Code isDark={isDark}>jira_identity_map</Code> → <Code isDark={isDark}>auth.users</Code>. Sessions cached in <Code isDark={isDark}>jira_auth_sessions</Code> (TTL 8h). Projects in <Code isDark={isDark}>jira_user_project_perms</Code>. Events in <Code isDark={isDark}>jira_sync_user_events</Code>.</>
                 ) : (
-                  <>Tables: <Code>jira_identity_map</Code> (catalyst_only=true) → <Code>auth.users</Code>. Projects in <Code>jira_user_project_perms</Code>. No sync tables involved.</>
+                  <>Tables: <Code isDark={isDark}>jira_identity_map</Code> (catalyst_only=true) → <Code isDark={isDark}>auth.users</Code>. Projects in <Code isDark={isDark}>jira_user_project_perms</Code>. No sync tables involved.</>
                 )}
               </InfoCard>
 
               {/* BiSync */}
-              <InfoCard label="BiSync">
+              <InfoCard isDark={isDark} label="BiSync">
                 {isJiraProxy ? (
-                  <>Full bidirectional. Jira → Catalyst: scheduled every 6h via pg_cron + real-time webhooks. Catalyst → Jira: role changes call <Code>jira-write-back</Code> Edge Function to update Jira group membership.</>
+                  <>Full bidirectional. Jira → Catalyst: scheduled every 6h via pg_cron + real-time webhooks. Catalyst → Jira: role changes call <Code isDark={isDark}>jira-write-back</Code> Edge Function to update Jira group membership.</>
                 ) : (
-                  <><strong style={{ color: '#7C3AED' }}>Excluded from sync.</strong> The <Code>catalyst_only=true</Code> flag permanently blocks this user from all bidirectional sync operations. Jira will never receive any data about this user.</>
+                  <><strong style={{ color: '#7C3AED' }}>Excluded from sync.</strong> The <Code isDark={isDark}>catalyst_only=true</Code> flag permanently blocks this user from all bidirectional sync operations. Jira will never receive any data about this user.</>
                 )}
               </InfoCard>
             </div>
 
             {/* Single-row detail cards */}
-            <InfoCard label="Schema Tables">
-              <Code>jira_identity_map</Code> · <Code>jira_user_project_perms</Code> · <Code>jira_sync_runs</Code> · <Code>jira_sync_user_events</Code> · <Code>jira_auth_sessions</Code> · <Code>jira_webhook_events</Code>
+            <InfoCard isDark={isDark} label="Schema Tables">
+              <Code isDark={isDark}>jira_identity_map</Code> · <Code isDark={isDark}>jira_user_project_perms</Code> · <Code isDark={isDark}>jira_sync_runs</Code> · <Code isDark={isDark}>jira_sync_user_events</Code> · <Code isDark={isDark}>jira_auth_sessions</Code> · <Code isDark={isDark}>jira_webhook_events</Code>
             </InfoCard>
             <div style={{ height: '8px' }} />
-            <InfoCard label="Edge Functions">
-              <Code>jira-auth-proxy</Code> · <Code>jira-user-sync</Code> · <Code>jira-webhook-receiver</Code> · <Code>jira-write-back</Code> · <Code>jira-session-revoke</Code>
+            <InfoCard isDark={isDark} label="Edge Functions">
+              <Code isDark={isDark}>jira-auth-proxy</Code> · <Code isDark={isDark}>jira-user-sync</Code> · <Code isDark={isDark}>jira-webhook-receiver</Code> · <Code isDark={isDark}>jira-write-back</Code> · <Code isDark={isDark}>jira-session-revoke</Code>
             </InfoCard>
             <div style={{ height: '8px' }} />
-            <InfoCard label="Scheduled Jobs">
-              <Code>jira-user-sync-6h</Code> — runs every 6 hours (bidirectional sync) · <Code>jira-auth-session-cleanup</Code> — daily 02:00 AST (TTL session purge)
+            <InfoCard isDark={isDark} label="Scheduled Jobs">
+              <Code isDark={isDark}>jira-user-sync-6h</Code> — runs every 6 hours (bidirectional sync) · <Code isDark={isDark}>jira-auth-session-cleanup</Code> — daily 02:00 AST (TTL session purge)
             </InfoCard>
           </div>
         )}
@@ -669,7 +683,7 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
       {/* ── Footer ── */}
       <div className="jus-footer-sticky" style={{
         position: 'sticky', bottom: 0, background: T.surface,
-        borderTop: '1px solid rgba(15,23,42,0.06)', padding: '10px 16px',
+        borderTop: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.06)'}`, padding: '10px 16px',
         display: 'flex', gap: '7px',
       }}>
         <button style={{
