@@ -111,7 +111,7 @@ function NotificationItemInner({ notification, onMarkRead, onClick }: Notificati
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           color: '#FFFFFF', fontFamily: 'Inter, sans-serif', fontSize: 14, fontWeight: 700,
         }}>
-          {initials}
+          {isSystemAssign ? <UserCheck size={20} color="#FFFFFF" /> : initials}
         </div>
 
         {/* Body — text opacity for read items */}
@@ -122,8 +122,14 @@ function NotificationItemInner({ notification, onMarkRead, onClick }: Notificati
               fontFamily: 'Inter, sans-serif', fontSize: 13, color: '#0F172A', lineHeight: '18px',
               overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 360,
             }}>
-              <span style={{ fontWeight: 650 }}>{actorName}</span>{' '}
-              <span style={{ fontWeight: 500 }}>{getActionVerb(notification.notification_type)}</span>
+              {isSystemAssign ? (
+                <span style={{ fontWeight: 600 }}>{getActionVerb(notification.notification_type, true)}</span>
+              ) : (
+                <>
+                  <span style={{ fontWeight: 650 }}>{actorName}</span>{' '}
+                  <span style={{ fontWeight: 500 }}>{getActionVerb(notification.notification_type, false)}</span>
+                </>
+              )}
             </span>
             <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: '#64748B', whiteSpace: 'nowrap', flexShrink: 0 }}>
               {formatTimestamp(notification.created_at)}
