@@ -214,10 +214,10 @@ const JiraUserSync: React.FC = () => {
 
   return (
     /* Layer 1 — Page background */
-    <div className="flex flex-col h-full bg-[#F8FAFC] dark:bg-[#0F1114]">
+    <div className="flex flex-col h-full bg-[#F8FAFC] dark:bg-[#1A1714]">
 
       {/* Layer 2 — Main content surface */}
-      <div className="flex flex-col flex-1 overflow-hidden mx-5 my-4 bg-white dark:bg-[#181A1E] rounded-lg border border-[rgba(15,23,42,0.06)] dark:border-[rgba(200,210,225,0.08)]">
+      <div className="flex flex-col flex-1 overflow-hidden mx-5 my-4 bg-white dark:bg-[#1A1714] rounded-lg border border-[rgba(15,23,42,0.06)] dark:border-[rgba(200,210,225,0.08)]">
 
         {/* ══ Page Header ══ */}
         <div className="shrink-0" style={{ padding: '14px 20px 0', borderBottom: '0.75px solid rgba(15,23,42,0.06)' }}>
@@ -260,7 +260,7 @@ const JiraUserSync: React.FC = () => {
           {STATS_CONFIG.map((card) => (
             <div
               key={card.key}
-              className="bg-white dark:bg-[#1E2027] border border-[rgba(15,23,42,0.08)] dark:border-[rgba(200,210,225,0.10)]"
+              className="bg-white dark:bg-[#232019] border border-[rgba(15,23,42,0.08)] dark:border-[rgba(200,210,225,0.10)]"
               style={{
                 flex: '1 1 160px',
                 minWidth: '160px',
@@ -284,12 +284,12 @@ const JiraUserSync: React.FC = () => {
         </div>
 
         {/* ══ FIX 9 — Toolbar (no Group by Project) ══ */}
-        <div className="shrink-0 flex items-center gap-[7px] flex-wrap bg-white dark:bg-[#181A1E]"
+        <div className="shrink-0 flex items-center gap-[7px] flex-wrap bg-white dark:bg-[#1A1714]"
           style={{ padding: '9px 18px', borderBottom: '0.75px solid rgba(15,23,42,0.06)' }}>
           <div className="relative w-[220px]">
             <Search size={12} className="absolute left-2 top-1/2 -translate-y-1/2 text-[#64748B]" />
             <input
-              className="w-full bg-white dark:bg-[#181A1E] text-[#0F172A] dark:text-[#F5F3F0]"
+              className="w-full bg-white dark:bg-[#1A1714] text-[#0F172A] dark:text-[#F5F3F0]"
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder="Name, email, Jira ID, project…"
@@ -366,7 +366,7 @@ const JiraUserSync: React.FC = () => {
           <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '1000px' }}>
             {/* FIX 8 — Table headers: Layer 3 sunken */}
             <thead>
-              <tr className="bg-[#F1F5F9] dark:bg-[#12141A]" style={{ borderBottom: '0.75px solid rgba(15,23,42,0.06)' }}>
+              <tr className="bg-[#F1F5F9] dark:bg-[#1A1714]" style={{ borderBottom: '0.75px solid rgba(15,23,42,0.06)' }}>
                 <th style={{ width: '36px', padding: '10px 12px', textAlign: 'center' }}>
                   <input
                     ref={headerCheckRef}
@@ -583,7 +583,7 @@ const JiraUserSync: React.FC = () => {
         </div>
 
         {/* ══ Pagination ══ */}
-        <div className="shrink-0 flex items-center justify-between bg-[#F8FAFC] dark:bg-[#12141A]"
+        <div className="shrink-0 flex items-center justify-between bg-[#F8FAFC] dark:bg-[#1A1714]"
           style={{ padding: '9px 16px', borderTop: '0.75px solid rgba(15,23,42,0.06)' }}>
           <span className="text-[#64748B] dark:text-[#A09890]" style={{ fontSize: '11px' }}>
             {totalCount > 0 ? `Showing ${showStart}–${showEnd} of ${totalCount} users` : 'No results'}
