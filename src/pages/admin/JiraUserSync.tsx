@@ -260,13 +260,12 @@ const JiraUserSync: React.FC = () => {
           {STATS_CONFIG.map((card) => (
             <div
               key={card.key}
-              className="bg-white dark:bg-[#1E2027]"
+              className="bg-white dark:bg-[#1E2027] border border-[rgba(15,23,42,0.08)] dark:border-[rgba(200,210,225,0.10)]"
               style={{
                 flex: '1 1 160px',
                 minWidth: '160px',
                 padding: '16px 20px',
                 borderRadius: '6px',
-                border: '0.75px solid rgba(15,23,42,0.08)',
               }}
             >
               <div className="flex items-center gap-[5px] mb-[4px]">
