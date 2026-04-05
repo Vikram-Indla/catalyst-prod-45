@@ -325,10 +325,69 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose }) => {
   };
 
   return (
-    <div style={{
+    <div className="jus-detail-panel" style={{
       width: '420px', flexShrink: 0, borderLeft: '1px solid rgba(15,23,42,0.10)',
       background: '#FFFFFF', display: 'flex', flexDirection: 'column', overflow: 'hidden',
     }}>
+      {/* NOCTURNE dark mode overrides */}
+      <style>{`
+        .dark .jus-detail-panel {
+          background: #232019 !important;
+          border-color: rgba(255,255,255,0.08) !important;
+          color: #F5F3F0 !important;
+        }
+        .dark .jus-detail-panel [style*="background: #FFFFFF"],
+        .dark .jus-detail-panel [style*="background:#FFFFFF"],
+        .dark .jus-detail-panel [style*="background: rgb(255"] {
+          background: #232019 !important;
+        }
+        .dark .jus-detail-panel [style*="background: #F8FAFC"],
+        .dark .jus-detail-panel [style*="background: #F1F5F9"] {
+          background: #1A1714 !important;
+        }
+        .dark .jus-detail-panel [style*="color: #0F172A"],
+        .dark .jus-detail-panel [style*="color:#0F172A"] {
+          color: #F5F3F0 !important;
+        }
+        .dark .jus-detail-panel [style*="color: #334155"],
+        .dark .jus-detail-panel [style*="color:#334155"] {
+          color: #A09890 !important;
+        }
+        .dark .jus-detail-panel [style*="color: #64748B"],
+        .dark .jus-detail-panel [style*="color:#64748B"] {
+          color: #6B6560 !important;
+        }
+        .dark .jus-detail-panel [style*="border-bottom: 0.5px solid"],
+        .dark .jus-detail-panel [style*="border: 1px solid rgba(15"] {
+          border-color: rgba(255,255,255,0.06) !important;
+        }
+        .dark .jus-detail-panel [style*="borderBottom: 1px solid"],
+        .dark .jus-detail-panel [style*="borderBottom: 0.5px solid"] {
+          border-color: rgba(255,255,255,0.06) !important;
+        }
+        .dark .jus-detail-panel code {
+          background: #2C2823 !important;
+          color: #60A5FA !important;
+        }
+        .dark .jus-detail-panel input,
+        .dark .jus-detail-panel select {
+          background: #1A1714 !important;
+          color: #F5F3F0 !important;
+          border-color: rgba(255,255,255,0.08) !important;
+        }
+        .dark .jus-detail-panel table th {
+          color: #6B6560 !important;
+        }
+        .dark .jus-detail-panel table td {
+          border-color: rgba(255,255,255,0.06) !important;
+        }
+        .dark .jus-detail-panel button[style*="background: #FFFFFF"],
+        .dark .jus-detail-panel button[style*="background:#FFFFFF"] {
+          background: #232019 !important;
+          color: #A09890 !important;
+          border-color: rgba(255,255,255,0.08) !important;
+        }
+      `}</style>
       {/* ── Header ── */}
       <div style={{ position: 'sticky', top: 0, zIndex: 5, background: '#FFFFFF', borderBottom: '1px solid rgba(15,23,42,0.06)' }}>
         <div style={{ padding: '16px 16px 12px', display: 'flex', gap: '12px', position: 'relative' }}>
