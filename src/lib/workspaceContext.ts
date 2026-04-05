@@ -152,6 +152,8 @@ export function getActiveNavItem(workspaceType: WorkspaceType): string {
       return 'PlanHub';
     case 'wiki':
       return 'Wiki';
+    case 'admin':
+      return '';
     default:
       return '';
   }
