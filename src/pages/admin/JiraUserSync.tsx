@@ -32,7 +32,7 @@ const FILTERS: { value: SyncFilter; label: string }[] = [
   { value: 'inactive', label: 'Inactive' },
 ];
 
-const PER_PAGE = 10;
+const PER_PAGE = 15;
 
 const AVATAR_COLORS = [
   { bg: '#DBEAFE', text: '#1D4ED8' }, { bg: '#DCFCE7', text: '#15803D' },
