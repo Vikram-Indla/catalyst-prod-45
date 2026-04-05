@@ -234,7 +234,7 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
         top: 52,
         right: 16,
         width: PANEL_WIDTH,
-        maxHeight: 628,
+        bottom: 16,
         background: '#FFFFFF',
         border: '0.5px solid rgba(15,23,42,.08)',
         borderRadius: 6,
@@ -373,6 +373,20 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
                 </div>
               )}
             </div>
+            {/* X close button */}
+            <button
+              onClick={onClose}
+              aria-label="Close notifications"
+              style={{
+                background: 'none', border: 'none', cursor: 'pointer',
+                padding: 4, borderRadius: 4, color: '#64748B',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'rgba(15,23,42,0.04)')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+            >
+              <X size={16} />
+            </button>
           </div>
         </div>
 
