@@ -366,6 +366,8 @@ function StatusBadge({ status }: { status: string }) {
 
 /** Create Idea Dialog — wired to useCreateIdea() */
 function CreateIdeaDialog({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const { isDark } = useTheme();
+  const dk = isDark ? DK : LK;
   const createIdea = useCreateIdea();
   const [title, setTitle] = useState('');
   const [priority, setPriority] = useState('P3');
@@ -388,57 +390,60 @@ function CreateIdeaDialog({ open, onClose }: { open: boolean; onClose: () => voi
     onClose();
   };
 
+  const selectBg = isDark ? 'bg-transparent' : 'bg-white';
+  const selectDropdown = isDark ? 'bg-[#232019] border-gray-700 text-white' : 'bg-white';
+
   return (
     <Dialog open={open} onOpenChange={v => { if (!v) onClose(); }}>
       <DialogContent className="bg-white dark:bg-[#232019] sm:max-w-[480px]">
         <DialogHeader>
-          <DialogTitle style={{ fontFamily: "'Sora', sans-serif", fontWeight: 650, fontSize: '18px' }}>New Idea</DialogTitle>
+          <DialogTitle style={{ fontFamily: "'Sora', sans-serif", fontWeight: 650, fontSize: '18px', color: dk.t1 }}>New Idea</DialogTitle>
         </DialogHeader>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', marginTop: '8px' }}>
           <div>
-            <label style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#64748B', display: 'block', marginBottom: '6px' }}>TITLE *</label>
+            <label style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: dk.t2, display: 'block', marginBottom: '6px' }}>TITLE *</label>
             <input value={title} onChange={e => setTitle(e.target.value)} placeholder="Enter idea title..."
-              style={{ width: '100%', height: '36px', border: '1px solid rgba(15,23,42,0.12)', borderRadius: '6px', padding: '0 12px', fontSize: '13px', outline: 'none' }}
+              style={{ width: '100%', height: '36px', border: `1px solid ${dk.border}`, borderRadius: '6px', padding: '0 12px', fontSize: '13px', outline: 'none', color: dk.t1, background: isDark ? 'transparent' : '#FFFFFF' }}
             />
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
             <div>
-              <label style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#64748B', display: 'block', marginBottom: '6px' }}>PRIORITY</label>
+              <label style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: dk.t2, display: 'block', marginBottom: '6px' }}>PRIORITY</label>
               <Select value={priority} onValueChange={setPriority}>
-                <SelectTrigger className="h-9 bg-white"><SelectValue /></SelectTrigger>
-                <SelectContent className="bg-white">
+                <SelectTrigger className={`h-9 ${selectBg} dark:border-gray-700 dark:text-white`}><SelectValue /></SelectTrigger>
+                <SelectContent className={selectDropdown}>
                   {['P1', 'P2', 'P3', 'P4'].map(p => <SelectItem key={p} value={p}>{p}</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>
             <div>
-              <label style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#64748B', display: 'block', marginBottom: '6px' }}>TYPE</label>
+              <label style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: dk.t2, display: 'block', marginBottom: '6px' }}>TYPE</label>
               <Select value={type} onValueChange={setType}>
-                <SelectTrigger className="h-9 bg-white"><SelectValue /></SelectTrigger>
-                <SelectContent className="bg-white">
+                <SelectTrigger className={`h-9 ${selectBg} dark:border-gray-700 dark:text-white`}><SelectValue /></SelectTrigger>
+                <SelectContent className={selectDropdown}>
                   {['Feature Request', 'Enhancement', 'Bug Fix', 'Opportunity', 'Solution'].map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>
           </div>
           <div>
-            <label style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#64748B', display: 'block', marginBottom: '6px' }}>IDEAS THEME</label>
+            <label style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: dk.t2, display: 'block', marginBottom: '6px' }}>IDEAS THEME</label>
             <Select value={theme || '__none__'} onValueChange={v => setTheme(v === '__none__' ? '' : v)}>
-              <SelectTrigger className="h-9 bg-white"><SelectValue placeholder="Select theme" /></SelectTrigger>
-              <SelectContent className="bg-white">
+              <SelectTrigger className={`h-9 ${selectBg} dark:border-gray-700 dark:text-white`}><SelectValue placeholder="Select theme" /></SelectTrigger>
+              <SelectContent className={selectDropdown}>
                 <SelectItem value="__none__">— None —</SelectItem>
                 {THEMES.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
               </SelectContent>
             </Select>
           </div>
           <div>
-            <label style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#64748B', display: 'block', marginBottom: '6px' }}>DESCRIPTION</label>
+            <label style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: dk.t2, display: 'block', marginBottom: '6px' }}>DESCRIPTION</label>
             <textarea value={description} onChange={e => setDescription(e.target.value)} rows={3} placeholder="Optional description..."
-              style={{ width: '100%', border: '1px solid rgba(15,23,42,0.12)', borderRadius: '6px', padding: '8px 12px', fontSize: '13px', resize: 'vertical', outline: 'none', fontFamily: "'Inter', sans-serif" }}
+              style={{ width: '100%', border: `1px solid ${dk.border}`, borderRadius: '6px', padding: '8px 12px', fontSize: '13px', resize: 'vertical', outline: 'none', fontFamily: "'Inter', sans-serif", color: dk.t1, background: isDark ? 'transparent' : '#FFFFFF' }}
             />
           </div>
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginTop: '4px' }}>
-            <button onClick={onClose} style={{ height: '36px', padding: '0 16px', borderRadius: '6px', border: '1px solid rgba(15,23,42,0.12)', background: '#FFFFFF', color: '#334155', fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}>Cancel</button>
+            <button onClick={onClose} style={{ height: '36px', padding: '0 16px', borderRadius: '6px', border: `1px solid ${dk.border}`, background: isDark ? 'transparent' : '#FFFFFF', color: dk.t2, fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}>Cancel</button>
             <button onClick={handleCreate} disabled={createIdea.isPending} style={{ height: '36px', padding: '0 16px', borderRadius: '6px', border: 'none', background: '#2563EB', color: '#FFFFFF', fontSize: '13px', fontWeight: 600, cursor: 'pointer', opacity: createIdea.isPending ? 0.7 : 1 }}>
               {createIdea.isPending ? 'Creating...' : 'Create Idea'}
             </button>

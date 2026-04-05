@@ -4,8 +4,9 @@
  */
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  Plus, RefreshCw, Search, Filter, ArrowUpDown, 
+import { useTheme } from '@/hooks/useTheme';
+import {
+  Plus, RefreshCw, Search, Filter, ArrowUpDown,
   Calendar, ChevronDown
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
@@ -49,6 +50,7 @@ const statusConfig: Record<string, { label: string; color: string; bg: string }>
 
 export default function TestCyclesPage() {
   const navigate = useNavigate();
+  const { isDark } = useTheme();
   const [cycles, setCycles] = useState<TestCycle[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -64,6 +66,16 @@ export default function TestCyclesPage() {
   const [editCycle, setEditCycle] = useState<TestCycle | null>(null);
   const [deleteCycle, setDeleteCycle] = useState<TestCycle | null>(null);
   const [cloneCycle, setCloneCycle] = useState<TestCycle | null>(null);
+
+  // NOCTURNE tokens
+  const pageBg = isDark ? '#1A1714' : '#F8FAFC';
+  const surfaceBg = isDark ? '#232019' : '#FFFFFF';
+  const elevatedBg = isDark ? '#2C2823' : '#F8FAFC';
+  const borderColor = isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0';
+  const textPrimary = isDark ? '#F5F3F0' : '#0F172A';
+  const textBody = isDark ? '#A09890' : '#334155';
+  const textSecondary = isDark ? '#A09890' : '#64748B';
+  const textMuted = isDark ? '#6B6560' : '#94A3B8';
 
   const fetchCycles = async () => {
     setIsLoading(true);
@@ -134,10 +146,10 @@ export default function TestCyclesPage() {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: '#F8FAFC' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: pageBg }}>
       <TestHubPageHeader title="Test Cycles" subtitle="Plan and track test execution across cycles and releases">
             <button onClick={() => { fetchCycles(); catalystToast.success('Test cycles refreshed'); }} title="Refresh"
-              style={{ width: 40, height: 40, padding: 0, border: '1.5px solid #E2E8F0', borderRadius: 8, backgroundColor: '#FFFFFF', color: '#64748B', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+              style={{ width: 40, height: 40, padding: 0, border: `1.5px solid ${borderColor}`, borderRadius: 8, backgroundColor: surfaceBg, color: textSecondary, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
               <RefreshCw size={18} />
             </button>
             <button onClick={() => setIsCreateModalOpen(true)}
@@ -147,30 +159,30 @@ export default function TestCyclesPage() {
       </TestHubPageHeader>
 
       {/* Toolbar */}
-      <div style={{ padding: '16px 32px', backgroundColor: '#FFFFFF', borderBottom: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', gap: 12 }}>
+      <div style={{ padding: '16px 32px', backgroundColor: surfaceBg, borderBottom: `1px solid ${borderColor}`, display: 'flex', alignItems: 'center', gap: 12 }}>
         <div style={{ position: 'relative', flex: 1, maxWidth: 400 }}>
-          <Search size={16} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: '#94A3B8' }} />
+          <Search size={16} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: textMuted }} />
           <input type="text" placeholder="Search cycles..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
-            style={{ width: '100%', height: 40, paddingLeft: 40, paddingRight: 12, border: '1.5px solid #E2E8F0', borderRadius: 8, fontSize: 14, color: '#0F172A', backgroundColor: '#FFFFFF' }} />
+            style={{ width: '100%', height: 40, paddingLeft: 40, paddingRight: 12, border: `1.5px solid ${borderColor}`, borderRadius: 8, fontSize: 14, color: textPrimary, backgroundColor: surfaceBg }} />
         </div>
 
         {/* Status Filter */}
         <div style={{ position: 'relative' }}>
           <button onClick={(e) => { e.stopPropagation(); setIsFilterOpen(!isFilterOpen); setIsSortOpen(false); }}
-            style={{ height: 40, padding: '0 14px', border: `1.5px solid ${statusFilter.length > 0 ? '#2563EB' : '#E2E8F0'}`, borderRadius: 8, backgroundColor: statusFilter.length > 0 ? '#EFF6FF' : '#FFFFFF', color: statusFilter.length > 0 ? '#2563EB' : '#334155', fontSize: 14, fontWeight: 500, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+            style={{ height: 40, padding: '0 14px', border: `1.5px solid ${statusFilter.length > 0 ? '#2563EB' : borderColor}`, borderRadius: 8, backgroundColor: statusFilter.length > 0 ? (isDark ? '#1e293b' : '#EFF6FF') : surfaceBg, color: statusFilter.length > 0 ? '#2563EB' : textBody, fontSize: 14, fontWeight: 500, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
             <Filter size={16} /> Status
             {statusFilter.length > 0 && <span style={{ minWidth: 18, height: 18, padding: '0 5px', backgroundColor: '#2563EB', color: '#FFFFFF', fontSize: 11, fontWeight: 600, borderRadius: 9, display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>{statusFilter.length}</span>}
             <ChevronDown size={14} />
           </button>
           {isFilterOpen && (
-            <div onClick={(e) => e.stopPropagation()} style={{ position: 'absolute', top: 'calc(100% + 4px)', left: 0, width: 200, backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 12, boxShadow: '0 10px 40px rgba(0,0,0,0.12)', zIndex: 200, padding: 8 }}>
+            <div onClick={(e) => e.stopPropagation()} style={{ position: 'absolute', top: 'calc(100% + 4px)', left: 0, width: 200, backgroundColor: surfaceBg, border: `1px solid ${borderColor}`, borderRadius: 12, boxShadow: isDark ? '0 10px 40px rgba(0,0,0,0.4)' : '0 10px 40px rgba(0,0,0,0.12)', zIndex: 200, padding: 8 }}>
               {Object.entries(statusConfig).map(([key, config]) => {
                 const isChecked = statusFilter.includes(key);
                 return (
-                  <label key={key} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 8, cursor: 'pointer', backgroundColor: isChecked ? '#EFF6FF' : 'transparent' }}>
+                  <label key={key} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 8, cursor: 'pointer', backgroundColor: isChecked ? (isDark ? '#1e293b' : '#EFF6FF') : 'transparent' }}>
                     <input type="checkbox" checked={isChecked} onChange={() => setStatusFilter(prev => isChecked ? prev.filter(s => s !== key) : [...prev, key])} style={{ width: 16, height: 16, accentColor: '#2563EB' }} />
                     <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: config.color }} />
-                    <span style={{ fontSize: 14, color: '#334155' }}>{config.label}</span>
+                    <span style={{ fontSize: 14, color: textBody }}>{config.label}</span>
                   </label>
                 );
               })}
@@ -184,23 +196,23 @@ export default function TestCyclesPage() {
         {/* Date Filter */}
         <div style={{ position: 'relative' }}>
           <button onClick={(e) => { e.stopPropagation(); setIsDateFilterOpen(!isDateFilterOpen); setIsFilterOpen(false); setIsSortOpen(false); }}
-            style={{ height: 40, padding: '0 14px', border: `1.5px solid ${(dateFrom || dateTo) ? '#2563EB' : '#E2E8F0'}`, borderRadius: 8, backgroundColor: (dateFrom || dateTo) ? '#EFF6FF' : '#FFFFFF', color: (dateFrom || dateTo) ? '#2563EB' : '#334155', fontSize: 14, fontWeight: 500, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+            style={{ height: 40, padding: '0 14px', border: `1.5px solid ${(dateFrom || dateTo) ? '#2563EB' : borderColor}`, borderRadius: 8, backgroundColor: (dateFrom || dateTo) ? (isDark ? '#1e293b' : '#EFF6FF') : surfaceBg, color: (dateFrom || dateTo) ? '#2563EB' : textBody, fontSize: 14, fontWeight: 500, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
             <Calendar size={16} /> Date
             {(dateFrom || dateTo) && <span style={{ minWidth: 8, height: 8, backgroundColor: '#2563EB', borderRadius: '50%', display: 'inline-block' }} />}
             <ChevronDown size={14} />
           </button>
           {isDateFilterOpen && (
-            <div onClick={(e) => e.stopPropagation()} style={{ position: 'absolute', top: 'calc(100% + 4px)', left: 0, width: 260, backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 12, boxShadow: '0 10px 40px rgba(0,0,0,0.12)', zIndex: 200, padding: 16 }}>
-              <p style={{ fontSize: 11, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em', margin: '0 0 8px' }}>Date Range</p>
+            <div onClick={(e) => e.stopPropagation()} style={{ position: 'absolute', top: 'calc(100% + 4px)', left: 0, width: 260, backgroundColor: surfaceBg, border: `1px solid ${borderColor}`, borderRadius: 12, boxShadow: isDark ? '0 10px 40px rgba(0,0,0,0.4)' : '0 10px 40px rgba(0,0,0,0.12)', zIndex: 200, padding: 16 }}>
+              <p style={{ fontSize: 11, fontWeight: 600, color: textSecondary, textTransform: 'uppercase', letterSpacing: '0.05em', margin: '0 0 8px' }}>Date Range</p>
               <div style={{ marginBottom: 12 }}>
-                <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: '#334155', marginBottom: 4 }}>From</label>
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: textBody, marginBottom: 4 }}>From</label>
                 <input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)}
-                  style={{ width: '100%', height: 36, padding: '0 10px', border: '1.5px solid #E2E8F0', borderRadius: 8, fontSize: 13, color: '#0F172A' }} />
+                  style={{ width: '100%', height: 36, padding: '0 10px', border: `1.5px solid ${borderColor}`, borderRadius: 8, fontSize: 13, color: textPrimary, backgroundColor: surfaceBg }} />
               </div>
               <div style={{ marginBottom: 12 }}>
-                <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: '#334155', marginBottom: 4 }}>To</label>
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: textBody, marginBottom: 4 }}>To</label>
                 <input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} min={dateFrom}
-                  style={{ width: '100%', height: 36, padding: '0 10px', border: '1.5px solid #E2E8F0', borderRadius: 8, fontSize: 13, color: '#0F172A' }} />
+                  style={{ width: '100%', height: 36, padding: '0 10px', border: `1.5px solid ${borderColor}`, borderRadius: 8, fontSize: 13, color: textPrimary, backgroundColor: surfaceBg }} />
               </div>
               {(dateFrom || dateTo) && (
                 <button onClick={() => { setDateFrom(''); setDateTo(''); }} style={{ width: '100%', padding: '8px 12px', border: 'none', backgroundColor: 'transparent', color: '#2563EB', fontSize: 13, fontWeight: 500, cursor: 'pointer', textAlign: 'center' }}>Clear dates</button>
@@ -212,11 +224,11 @@ export default function TestCyclesPage() {
         {/* Sort */}
         <div style={{ position: 'relative' }}>
           <button onClick={(e) => { e.stopPropagation(); setIsSortOpen(!isSortOpen); setIsFilterOpen(false); }}
-            style={{ height: 40, padding: '0 14px', border: '1.5px solid #E2E8F0', borderRadius: 8, backgroundColor: '#FFFFFF', color: '#334155', fontSize: 14, fontWeight: 500, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+            style={{ height: 40, padding: '0 14px', border: `1.5px solid ${borderColor}`, borderRadius: 8, backgroundColor: surfaceBg, color: textBody, fontSize: 14, fontWeight: 500, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
             <ArrowUpDown size={16} /> Sort <ChevronDown size={14} />
           </button>
           {isSortOpen && (
-            <div onClick={(e) => e.stopPropagation()} style={{ position: 'absolute', top: 'calc(100% + 4px)', left: 0, width: 200, backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 12, boxShadow: '0 10px 40px rgba(0,0,0,0.12)', zIndex: 200, padding: 8 }}>
+            <div onClick={(e) => e.stopPropagation()} style={{ position: 'absolute', top: 'calc(100% + 4px)', left: 0, width: 200, backgroundColor: surfaceBg, border: `1px solid ${borderColor}`, borderRadius: 12, boxShadow: isDark ? '0 10px 40px rgba(0,0,0,0.4)' : '0 10px 40px rgba(0,0,0,0.12)', zIndex: 200, padding: 8 }}>
               {[
                 { field: 'start_date' as const, label: 'Start Date', defaultDir: 'desc' as const },
                 { field: 'name' as const, label: 'Name', defaultDir: 'asc' as const },
@@ -228,7 +240,7 @@ export default function TestCyclesPage() {
                     if (isActive) setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc');
                     else { setSortField(option.field); setSortDirection(option.defaultDir); }
                     setIsSortOpen(false);
-                  }} style={{ width: '100%', height: 40, padding: '0 12px', border: 'none', borderRadius: 8, backgroundColor: isActive ? '#EFF6FF' : 'transparent', color: isActive ? '#2563EB' : '#334155', fontSize: 14, fontWeight: isActive ? 600 : 400, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', textAlign: 'left' }}>
+                  }} style={{ width: '100%', height: 40, padding: '0 12px', border: 'none', borderRadius: 8, backgroundColor: isActive ? (isDark ? '#1e293b' : '#EFF6FF') : 'transparent', color: isActive ? '#2563EB' : textBody, fontSize: 14, fontWeight: isActive ? 600 : 400, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', textAlign: 'left' }}>
                     <span>{option.label}</span>
                     {isActive && <span style={{ fontSize: 12 }}>{sortDirection === 'asc' ? '↑' : '↓'}</span>}
                   </button>
@@ -239,22 +251,22 @@ export default function TestCyclesPage() {
         </div>
 
         <div style={{ flex: 1 }} />
-        <span style={{ fontSize: 13, color: '#64748B' }}>{cycles.length} cycle{cycles.length !== 1 ? 's' : ''}</span>
+        <span style={{ fontSize: 13, color: textSecondary }}>{cycles.length} cycle{cycles.length !== 1 ? 's' : ''}</span>
       </div>
 
       {/* Content */}
       <div style={{ flex: 1, padding: 32, overflowY: 'auto' }}>
         {isLoading ? (
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 300, color: '#64748B' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 300, color: textSecondary }}>
             <div style={{ textAlign: 'center' }}>
-              <div style={{ width: 32, height: 32, border: '3px solid #E2E8F0', borderTopColor: '#2563EB', borderRadius: '50%', animation: 'spin 1s linear infinite', margin: '0 auto 12px' }} />
+              <div style={{ width: 32, height: 32, border: `3px solid ${borderColor}`, borderTopColor: '#2563EB', borderRadius: '50%', animation: 'spin 1s linear infinite', margin: '0 auto 12px' }} />
               Loading test cycles...
             </div>
           </div>
         ) : cycles.length === 0 ? (
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: 300, color: '#94A3B8' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: 300, color: textMuted }}>
             <Calendar size={48} style={{ marginBottom: 16, opacity: 0.5 }} />
-            <p style={{ fontSize: 16, fontWeight: 500, margin: '0 0 8px', color: '#64748B' }}>
+            <p style={{ fontSize: 16, fontWeight: 500, margin: '0 0 8px', color: textSecondary }}>
               {searchQuery || statusFilter.length > 0 ? 'No matching cycles' : 'No test cycles yet'}
             </p>
             <p style={{ fontSize: 14, margin: 0 }}>
