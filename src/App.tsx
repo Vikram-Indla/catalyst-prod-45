@@ -61,6 +61,7 @@ const App = () => (
       <Toaster />
       <Suspense fallback={null}><HotToaster position="bottom-right" /></Suspense>
       <AuthProvider>
+        <NotificationSeeder />
         <FeatureFlagProvider>
         <NavigationProvider>
           <ProcessStepsProvider>
