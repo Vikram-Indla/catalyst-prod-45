@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Plus, RefreshCw, Search, ChevronLeft, ChevronRight, UserX, Copy, X, Loader2, Share2, Download, Users2, FolderSearch } from 'lucide-react';
+import { Plus, RefreshCw, Search, ChevronLeft, ChevronRight, UserX, Copy, X, Loader2, Share2, Download, Users2, FolderSearch, Layers, ChevronDown } from 'lucide-react';
 import UserDetailPanel from '@/components/admin/UserDetailPanel';
 import { toast } from 'sonner';
 import {
@@ -115,6 +115,7 @@ const JiraUserSync: React.FC = () => {
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [activeUserId, setActiveUserId] = useState<string | null>(null);
   const [togglingId, setTogglingId] = useState<string | null>(null);
+  const [groupByProject, setGroupByProject] = useState(false);
 
   const debouncedSearch = useDebouncedValue(search, 300);
 
@@ -317,6 +318,16 @@ const JiraUserSync: React.FC = () => {
             </button>
           )}
           <button
+            onClick={() => setGroupByProject(v => !v)}
+            className={`inline-flex items-center gap-1 border ${
+              groupByProject
+                ? 'bg-[#EFF6FF] dark:bg-[rgba(37,99,235,0.12)] text-[#2563EB] dark:text-[#93C5FD] border-[#BFDBFE] dark:border-[rgba(37,99,235,0.3)]'
+                : 'bg-white dark:bg-[#232019] text-[#334155] dark:text-[#A09890] border-[rgba(15,23,42,0.10)] dark:border-[rgba(255,255,255,0.08)]'
+            }`}
+            style={{ padding: '4px 9px', borderRadius: '4px', fontSize: '11px', fontWeight: 500, cursor: 'pointer' }}>
+            <Layers size={11} /> Group by Project
+          </button>
+          <button
             className="inline-flex items-center gap-1 bg-white dark:bg-[#232019] text-[#334155] dark:text-[#A09890] border border-[rgba(15,23,42,0.10)] dark:border-[rgba(255,255,255,0.08)]"
             style={{ padding: '4px 9px', borderRadius: '4px', fontSize: '11px', fontWeight: 500, cursor: 'pointer' }}>
             <Download size={11} /> Export
@@ -449,222 +460,130 @@ const JiraUserSync: React.FC = () => {
                   )}
                 </td>
               </tr>
-            ) : (
-              users.map((user: any, idx: number) => {
+            ) : (() => {
+              const renderRow = (user: any, idx: number) => {
                 const isInactive = !user.is_active_in_catalyst;
                 const isCatalystOnly = user.catalyst_only;
                 const hasConflicts = user.conflict_fields && user.conflict_fields.length > 0;
-                const isActive = activeUserId === user.id;
+                const isActiveRow = activeUserId === user.id;
                 const isSelected = selected.has(user.id);
                 const perms = user.jira_user_project_perms ?? [];
                 const avatarColor = AVATAR_COLORS[idx % AVATAR_COLORS.length];
-
                 return (
-                  <tr
-                    key={user.id}
-                    className={`group jus-table-row ${isSelected || isActive ? 'selected' : ''} ${
-                      hasConflicts ? 'bg-[rgba(251,191,36,0.04)] dark:bg-[rgba(251,191,36,0.06)]' : ''
-                    } ${isActive || isSelected ? 'bg-[rgba(37,99,235,0.07)] dark:bg-[rgba(37,99,235,0.12)]' : ''}`}
+                  <tr key={user.id}
+                    className={`group jus-table-row ${isSelected || isActiveRow ? 'selected' : ''} ${hasConflicts ? 'bg-[rgba(251,191,36,0.04)] dark:bg-[rgba(251,191,36,0.06)]' : ''} ${isActiveRow || isSelected ? 'bg-[rgba(37,99,235,0.07)] dark:bg-[rgba(37,99,235,0.12)]' : ''}`}
                     onClick={() => setActiveUserId(user.id === activeUserId ? null : user.id)}
-                    style={{
-                      height: '40px', maxHeight: '40px',
-                      borderBottom: '0.75px solid rgba(15,23,42,0.06)',
-                      borderLeft: isCatalystOnly ? '2px solid #7C3AED' : 'none',
-                      cursor: 'pointer',
-                      opacity: isInactive ? 0.5 : 1,
-                      transition: 'background 120ms ease',
-                    }}
-                  >
-                    {/* Checkbox */}
+                    style={{ height: '40px', maxHeight: '40px', borderBottom: '0.75px solid rgba(15,23,42,0.06)', borderLeft: isCatalystOnly ? '2px solid #7C3AED' : 'none', cursor: 'pointer', opacity: isInactive ? 0.5 : 1, transition: 'background 120ms ease' }}>
                     <td style={{ padding: '0 12px', textAlign: 'center' }} onClick={e => e.stopPropagation()}>
-                      <input
-                        type="checkbox"
-                        checked={isSelected}
-                        onChange={() => toggleSelectRow(user.id)}
-                        style={{ cursor: 'pointer', accentColor: '#2563EB' }}
-                      />
+                      <input type="checkbox" checked={isSelected} onChange={() => toggleSelectRow(user.id)} style={{ cursor: 'pointer', accentColor: '#2563EB' }} />
                     </td>
-
-                    {/* User / Jira Identity — min 55px height for name area */}
                     <td style={{ padding: '0 12px' }}>
                       <div className="flex items-center gap-2" style={{ minHeight: '55px' }}>
-                        <div style={{
-                          width: '28px', height: '28px', borderRadius: '50%', flexShrink: 0,
-                          background: user.avatar_url ? 'transparent' : avatarColor.bg,
-                          color: avatarColor.text,
-                          display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          fontSize: '10px', fontWeight: 700,
-                          overflow: 'hidden',
-                        }}>
-                          {user.avatar_url
-                            ? <img src={user.avatar_url} alt="" style={{ width: '28px', height: '28px', borderRadius: '50%' }} />
-                            : getInitials(user.display_name || '?')
-                          }
+                        <div style={{ width: '28px', height: '28px', borderRadius: '50%', flexShrink: 0, background: user.avatar_url ? 'transparent' : avatarColor.bg, color: avatarColor.text, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', fontWeight: 700, overflow: 'hidden' }}>
+                          {user.avatar_url ? <img src={user.avatar_url} alt="" style={{ width: '28px', height: '28px', borderRadius: '50%' }} /> : getInitials(user.display_name || '?')}
                         </div>
                         <div style={{ minWidth: 0, maxWidth: '220px' }}>
                           <div className="flex items-center gap-[5px]">
-                            <span className="jus-text-primary text-[#0F172A] dark:text-[#F5F3F0]" style={{
-                              fontSize: '12px', fontWeight: 500,
-                              textDecoration: isInactive ? 'line-through' : 'none',
-                              whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
-                            }}>
-                              {user.display_name}
-                            </span>
-                            {isCatalystOnly && (
-                              <span className="text-[#7C3AED] dark:text-[#C4B5FD]" style={{ fontSize: '9px', fontWeight: 600, whiteSpace: 'nowrap' }}>
-                                ◆ Local
-                              </span>
-                            )}
+                            <span className="jus-text-primary text-[#0F172A] dark:text-[#F5F3F0]" style={{ fontSize: '12px', fontWeight: 500, textDecoration: isInactive ? 'line-through' : 'none', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{user.display_name}</span>
+                            {isCatalystOnly && <span className="text-[#7C3AED] dark:text-[#C4B5FD]" style={{ fontSize: '9px', fontWeight: 600, whiteSpace: 'nowrap' }}>◆ Local</span>}
                           </div>
-                          <div className="jus-text-secondary text-[#64748B] dark:text-[#A09890]" style={{
-                            fontSize: '10px',
-                            fontFamily: "'JetBrains Mono', monospace",
-                            whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
-                          }}>
-                            {user.email && !user.email.includes('@jira.place')
-                              ? user.email
-                              : user.jira_account_id
-                                ? `@${user.display_name?.replace(/\s+/g, '.').toLowerCase()}`
-                                : '—'}
+                          <div className="jus-text-secondary text-[#64748B] dark:text-[#A09890]" style={{ fontSize: '10px', fontFamily: "'JetBrains Mono', monospace", whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                            {user.email && !user.email.includes('@jira.place') ? user.email : user.jira_account_id ? `@${user.display_name?.replace(/\s+/g, '.').toLowerCase()}` : '—'}
                           </div>
                         </div>
                       </div>
                     </td>
-
-                    {/* Auth Mode */}
                     <td style={{ padding: '0 12px' }}>
                       {user.auth_mode === 'jira_proxy' ? (
-                        <span className="badge-jira-proxy" style={{
-                          display: 'inline-flex', alignItems: 'center', gap: '3px',
-                          padding: '1px 6px', borderRadius: '3px', fontSize: '10px', fontWeight: 700,
-                          letterSpacing: '0.03em', textTransform: 'uppercase',
-                        }}>
-                          <Share2 size={9} /> Jira Proxy
-                        </span>
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '3px', padding: '1px 6px', borderRadius: '3px', fontSize: '10px', fontWeight: 700, letterSpacing: '0.03em', textTransform: 'uppercase' as const, background: '#DEEBFF', color: '#0747A6' }}><Share2 size={9} /> JIRA</span>
                       ) : (
-                        <span className="badge-local-auth" style={{
-                          display: 'inline-flex', alignItems: 'center', gap: '3px',
-                          padding: '1px 6px', borderRadius: '3px', fontSize: '10px', fontWeight: 700,
-                          letterSpacing: '0.03em', textTransform: 'uppercase',
-                        }}>
-                          Local Auth
-                        </span>
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '3px', padding: '1px 6px', borderRadius: '3px', fontSize: '10px', fontWeight: 700, letterSpacing: '0.03em', textTransform: 'uppercase' as const, background: '#EDE9FE', color: '#5B21B6' }}>CATALYST</span>
                       )}
                     </td>
-
-                    {/* Projects & Permissions */}
                     <td style={{ padding: '0 12px', maxWidth: '200px' }}>
                       <div className="flex gap-1 flex-nowrap overflow-hidden items-center">
-                        {perms.slice(0, 2).map((p: any) => {
-                          const ps = PERM_STYLES[p.permission_level] ?? PERM_STYLES.none;
-                          return (
-                            <span key={p.id}
-                              className="bg-[#F1F5F9] dark:bg-[#2C2823] text-[#374151] dark:text-[#F5F3F0]"
-                              style={{
-                              display: 'inline-flex', alignItems: 'center', gap: '3px',
-                              padding: '2px 6px', borderRadius: '3px', fontSize: '11px', fontWeight: 600,
-                              whiteSpace: 'nowrap',
-                            }}>
-                              {ps.dot !== 'transparent' && (
-                                <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: ps.dot, flexShrink: 0 }} />
-                              )}
-                              {p.project_key}
-                            </span>
-                          );
-                        })}
-                        {perms.length > 2 && (
-                          <span className="text-[#64748B] dark:text-[#A09890]" style={{
-                            fontSize: '10px', fontWeight: 500, whiteSpace: 'nowrap',
-                          }}>
-                            +{perms.length - 2} more
-                          </span>
-                        )}
-                        {perms.length === 0 && (
-                          <span className="text-[#94A3B8] dark:text-[#6B6560]" style={{ fontSize: '10px' }}>—</span>
-                        )}
+                        {perms.slice(0, 2).map((p: any) => { const ps = PERM_STYLES[p.permission_level] ?? PERM_STYLES.none; return (<span key={p.id} className="bg-[#F1F5F9] dark:bg-[#2C2823] text-[#374151] dark:text-[#F5F3F0]" style={{ display: 'inline-flex', alignItems: 'center', gap: '3px', padding: '2px 6px', borderRadius: '3px', fontSize: '11px', fontWeight: 600, whiteSpace: 'nowrap' }}>{ps.dot !== 'transparent' && <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: ps.dot, flexShrink: 0 }} />}{p.project_key}</span>); })}
+                        {perms.length > 2 && <span className="text-[#64748B] dark:text-[#A09890]" style={{ fontSize: '10px', fontWeight: 500, whiteSpace: 'nowrap' }}>+{perms.length - 2} more</span>}
+                        {perms.length === 0 && <span className="text-[#94A3B8] dark:text-[#6B6560]" style={{ fontSize: '10px' }}>—</span>}
                       </div>
                     </td>
-
-                    {/* Synced At */}
                     <td style={{ padding: '0 12px' }}>
-                      {isCatalystOnly ? (
-                        <span className="jus-text-muted text-[#94A3B8] dark:text-[#6B6560]" style={{ fontSize: '11px', fontStyle: 'italic' }}>Not synced</span>
-                      ) : (
-                        <div className="flex items-center gap-1">
-                          <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#16A34A', flexShrink: 0 }} />
-                          <span className="jus-text-secondary text-[#64748B] dark:text-[#A09890]" style={{ fontSize: '11px', fontFamily: "'JetBrains Mono', monospace", whiteSpace: 'nowrap' }}>
-                            {formatSyncDate(user.last_synced_at)}
-                          </span>
-                        </div>
-                      )}
+                      {isCatalystOnly ? (<span className="jus-text-muted text-[#94A3B8] dark:text-[#6B6560]" style={{ fontSize: '11px', fontStyle: 'italic' }}>Not synced</span>) : (<div className="flex items-center gap-1"><span style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#16A34A', flexShrink: 0 }} /><span className="jus-text-secondary text-[#64748B] dark:text-[#A09890]" style={{ fontSize: '11px', fontFamily: "'JetBrains Mono', monospace", whiteSpace: 'nowrap' }}>{formatSyncDate(user.last_synced_at)}</span></div>)}
                     </td>
-
-                    {/* Last Jira Login */}
-                    <td className="jus-text-secondary text-[#64748B] dark:text-[#A09890]" style={{ padding: '0 12px', fontSize: '11px', fontFamily: "'JetBrains Mono', monospace" }}>
-                      {relativeTime(user.last_jira_login_at)}
-                    </td>
-
-                    {/* Last in Catalyst */}
-                    <td className="jus-text-secondary text-[#64748B] dark:text-[#A09890]" style={{ padding: '0 12px', fontSize: '11px', fontFamily: "'JetBrains Mono', monospace" }}>
-                      {relativeTime(user.last_catalyst_login_at)}
-                    </td>
-
-                    {/* Status */}
+                    <td className="jus-text-secondary text-[#64748B] dark:text-[#A09890]" style={{ padding: '0 12px', fontSize: '11px', fontFamily: "'JetBrains Mono', monospace" }}>{relativeTime(user.last_jira_login_at)}</td>
+                    <td className="jus-text-secondary text-[#64748B] dark:text-[#A09890]" style={{ padding: '0 12px', fontSize: '11px', fontFamily: "'JetBrains Mono', monospace" }}>{relativeTime(user.last_catalyst_login_at)}</td>
                     <td style={{ padding: '0 12px' }}>
-                      {hasConflicts ? (
-                        <span className="lozenge-conflict bg-[#FEF3C7] dark:bg-[#451A03] text-[#92400E] dark:text-[#FCD34D]" style={{
-                          display: 'inline-block', padding: '0 7px', borderRadius: '3px',
-                          fontSize: '10px', fontWeight: 700, textTransform: 'uppercase',
-                          height: '20px', lineHeight: '20px',
-                        }}>
-                          CONFLICT
-                        </span>
-                      ) : isInactive ? (
-                        <span className="lozenge-inactive bg-[#FEE2E2] dark:bg-[#450A0A] text-[#991B1B] dark:text-[#FCA5A5]" style={{
-                          display: 'inline-block', padding: '0 7px', borderRadius: '3px',
-                          fontSize: '10px', fontWeight: 700, textTransform: 'uppercase',
-                          height: '20px', lineHeight: '20px',
-                        }}>
-                          INACTIVE
-                        </span>
-                      ) : (
-                        <span className="lozenge-active bg-[#E3FCEF] dark:bg-[#064E3B] text-[#006644] dark:text-[#6EE7B7]" style={{
-                          display: 'inline-block', padding: '0 7px', borderRadius: '3px',
-                          fontSize: '10px', fontWeight: 700, textTransform: 'uppercase',
-                          height: '20px', lineHeight: '20px',
-                        }}>
-                          ACTIVE
-                        </span>
-                      )}
+                      {hasConflicts ? (<span className="bg-[#FEF3C7] dark:bg-[#451A03] text-[#92400E] dark:text-[#FCD34D]" style={{ display: 'inline-block', padding: '0 7px', borderRadius: '3px', fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', height: '20px', lineHeight: '20px' }}>CONFLICT</span>
+                      ) : isInactive ? (<span className="bg-[#FEE2E2] dark:bg-[#450A0A] text-[#991B1B] dark:text-[#FCA5A5]" style={{ display: 'inline-block', padding: '0 7px', borderRadius: '3px', fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', height: '20px', lineHeight: '20px' }}>INACTIVE</span>
+                      ) : (<span className="bg-[#E3FCEF] dark:bg-[#064E3B] text-[#006644] dark:text-[#6EE7B7]" style={{ display: 'inline-block', padding: '0 7px', borderRadius: '3px', fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', height: '20px', lineHeight: '20px' }}>ACTIVE</span>)}
                     </td>
-
-                    {/* Action — hover reveal */}
                     <td style={{ padding: '0 12px', textAlign: 'right' }} onClick={e => e.stopPropagation()}>
-                      <button
-                        className="opacity-0 group-hover:opacity-100 transition-opacity bg-white dark:bg-[#232019]"
-                        onClick={(e) => handleToggleStatus(e, user)}
-                        disabled={togglingId === user.id}
-                        style={{
-                          display: 'inline-flex', alignItems: 'center', gap: '3px',
-                          padding: '3px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 500,
-                          border: `1px solid ${user.is_active_in_catalyst ? '#DC2626' : '#16A34A'}`,
-                          color: user.is_active_in_catalyst ? '#DC2626' : '#16A34A',
-                          cursor: togglingId === user.id ? 'not-allowed' : 'pointer',
-                          opacity: togglingId === user.id ? 0.6 : undefined,
-                          whiteSpace: 'nowrap',
-                        }}
-                      >
-                        {togglingId === user.id
-                          ? <Loader2 size={10} className="animate-spin" />
-                          : <UserX size={10} />
-                        }
+                      <button className="opacity-0 group-hover:opacity-100 transition-opacity bg-white dark:bg-[#232019]" onClick={(e) => handleToggleStatus(e, user)} disabled={togglingId === user.id}
+                        style={{ display: 'inline-flex', alignItems: 'center', gap: '3px', padding: '3px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 500, border: `1px solid ${user.is_active_in_catalyst ? '#DC2626' : '#16A34A'}`, color: user.is_active_in_catalyst ? '#DC2626' : '#16A34A', cursor: togglingId === user.id ? 'not-allowed' : 'pointer', opacity: togglingId === user.id ? 0.6 : undefined, whiteSpace: 'nowrap' }}>
+                        {togglingId === user.id ? <Loader2 size={10} className="animate-spin" /> : <UserX size={10} />}
                         {user.is_active_in_catalyst ? 'Deactivate' : 'Reactivate'}
                       </button>
                     </td>
                   </tr>
                 );
-              })
-            )}
+              };
+
+              if (!groupByProject) {
+                return users.map((user: any, idx: number) => renderRow(user, idx));
+              }
+
+              const projectGroups = new Map<string, { name: string; users: any[] }>();
+              const noProject: any[] = [];
+              users.forEach((user: any) => {
+                const perms = user.jira_user_project_perms ?? [];
+                if (perms.length === 0) {
+                  noProject.push(user);
+                } else {
+                  const firstPerm = perms[0];
+                  const key = firstPerm.project_key;
+                  if (!projectGroups.has(key)) {
+                    projectGroups.set(key, { name: firstPerm.project_name || key, users: [] });
+                  }
+                  projectGroups.get(key)!.users.push(user);
+                }
+              });
+
+              const sortedGroups = Array.from(projectGroups.entries()).sort((a, b) => b[1].users.length - a[1].users.length);
+              let globalIdx = 0;
+
+              return (
+                <>
+                  {sortedGroups.map(([key, group]) => (
+                    <React.Fragment key={key}>
+                      <tr>
+                        <td colSpan={9} className="bg-[#F1F5F9] dark:bg-[#232019]" style={{ padding: '7px 16px', borderBottom: '1px solid rgba(15,23,42,0.08)', borderTop: '1px solid rgba(15,23,42,0.08)' }}>
+                          <div className="flex items-center gap-2">
+                            <span style={{ display: 'inline-flex', alignItems: 'center', padding: '2px 8px', borderRadius: '3px', fontSize: '11px', fontWeight: 700, background: '#DEEBFF', color: '#0747A6', letterSpacing: '0.03em' }}>{key}</span>
+                            <span className="text-[#0F172A] dark:text-[#F5F3F0]" style={{ fontSize: '12px', fontWeight: 600 }}>{group.name}</span>
+                            <span className="text-[#94A3B8] dark:text-[#6B6560]" style={{ fontSize: '10px', fontWeight: 500 }}>{group.users.length} {group.users.length === 1 ? 'user' : 'users'}</span>
+                          </div>
+                        </td>
+                      </tr>
+                      {group.users.map((user: any) => renderRow(user, globalIdx++))}
+                    </React.Fragment>
+                  ))}
+                  {noProject.length > 0 && (
+                    <React.Fragment>
+                      <tr>
+                        <td colSpan={9} className="bg-[#F1F5F9] dark:bg-[#232019]" style={{ padding: '7px 16px', borderBottom: '1px solid rgba(15,23,42,0.08)', borderTop: '1px solid rgba(15,23,42,0.08)' }}>
+                          <div className="flex items-center gap-2">
+                            <span className="text-[#94A3B8] dark:text-[#6B6560]" style={{ fontSize: '12px', fontWeight: 600 }}>No Project Assigned</span>
+                            <span className="text-[#94A3B8] dark:text-[#6B6560]" style={{ fontSize: '10px', fontWeight: 500 }}>{noProject.length} users</span>
+                          </div>
+                        </td>
+                      </tr>
+                      {noProject.map((user: any) => renderRow(user, globalIdx++))}
+                    </React.Fragment>
+                  )}
+                </>
+              );
+            })()
+            }
           </tbody>
         </table>
       </div>
