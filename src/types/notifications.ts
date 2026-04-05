@@ -5,7 +5,7 @@ export type NotificationType =
   | 'incident_escalated' | 'test_case_failed' | 'risk_threshold_breached'
   | 'budget_exceeded' | 'okr_milestone_achieved' | 'document_shared'
   | 'ai_insight_generated' | 'due_date_approaching' | 'sla_breach_warning'
-  | 'tester_assigned';
+  | 'tester_assigned' | 'unassigned';
 
 export type NotificationEntityType =
   | 'work_item' | 'project' | 'release' | 'incident'
