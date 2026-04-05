@@ -133,6 +133,52 @@ Deno.serve(async (req) => {
 
     stats.usersDiscovered = jiraUsers.length
 
+    // ─── Step 3b: Resolve real emails via individual user fetch ──
+    // Jira bulk search hides emailAddress (GDPR). Fetch individually.
+    const BATCH_SIZE = 5
+    for (let i = 0; i < jiraUsers.length; i += BATCH_SIZE) {
+      const batch = jiraUsers.slice(i, i + BATCH_SIZE)
+      const results = await Promise.allSettled(
+        batch.map(async (u: any) => {
+          if (u.emailAddress) return // already has email
+          try {
+            const r = await fetch(
+              `${baseUrl}/rest/api/3/user?accountId=${u.accountId}`,
+              { headers: { 'Authorization': authHeader, 'Accept': 'application/json' } }
+            )
+            if (r.ok) {
+              const detail = await r.json()
+              if (detail.emailAddress) {
+                u.emailAddress = detail.emailAddress
+              }
+            }
+          } catch (_) { /* best effort */ }
+        })
+      )
+    }
+
+    // Also cross-reference profiles table for any remaining unresolved emails
+    const { data: profiles } = await supabase
+      .from('profiles')
+      .select('jira_account_id, email, full_name')
+      .not('email', 'is', null)
+
+    const profileByJiraId = new Map(
+      (profiles ?? []).filter((p: any) => p.jira_account_id).map((p: any) => [p.jira_account_id, p])
+    )
+    const profileByName = new Map(
+      (profiles ?? []).filter((p: any) => p.full_name).map((p: any) => [p.full_name, p])
+    )
+
+    for (const u of jiraUsers) {
+      if (!u.emailAddress || u.emailAddress.includes('@jira.placeholder')) {
+        const profileMatch = profileByJiraId.get(u.accountId) ?? profileByName.get(u.displayName)
+        if (profileMatch?.email) {
+          u.emailAddress = profileMatch.email
+        }
+      }
+    }
+
     // ─── Step 4: Fetch existing Catalyst identity records ────────
     const { data: existingRecords } = await supabase
       .from('jira_identity_map')
