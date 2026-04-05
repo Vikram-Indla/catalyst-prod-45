@@ -115,6 +115,7 @@ const JiraUserSync: React.FC = () => {
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [activeUserId, setActiveUserId] = useState<string | null>(null);
   const [togglingId, setTogglingId] = useState<string | null>(null);
+  const [groupByProject, setGroupByProject] = useState(false);
 
   const debouncedSearch = useDebouncedValue(search, 300);
 
@@ -316,6 +317,16 @@ const JiraUserSync: React.FC = () => {
               <Copy size={11} /> Copy Permissions
             </button>
           )}
+          <button
+            onClick={() => setGroupByProject(v => !v)}
+            className={`inline-flex items-center gap-1 border ${
+              groupByProject
+                ? 'bg-[#EFF6FF] dark:bg-[rgba(37,99,235,0.12)] text-[#2563EB] dark:text-[#93C5FD] border-[#BFDBFE] dark:border-[rgba(37,99,235,0.3)]'
+                : 'bg-white dark:bg-[#232019] text-[#334155] dark:text-[#A09890] border-[rgba(15,23,42,0.10)] dark:border-[rgba(255,255,255,0.08)]'
+            }`}
+            style={{ padding: '4px 9px', borderRadius: '4px', fontSize: '11px', fontWeight: 500, cursor: 'pointer' }}>
+            <Layers size={11} /> Group by Project
+          </button>
           <button
             className="inline-flex items-center gap-1 bg-white dark:bg-[#232019] text-[#334155] dark:text-[#A09890] border border-[rgba(15,23,42,0.10)] dark:border-[rgba(255,255,255,0.08)]"
             style={{ padding: '4px 9px', borderRadius: '4px', fontSize: '11px', fontWeight: 500, cursor: 'pointer' }}>
@@ -531,23 +542,27 @@ const JiraUserSync: React.FC = () => {
                       </div>
                     </td>
 
-                    {/* Auth Mode */}
                     <td style={{ padding: '0 12px' }}>
                       {user.auth_mode === 'jira_proxy' ? (
-                        <span className="badge-jira-proxy" style={{
+                        <span style={{
                           display: 'inline-flex', alignItems: 'center', gap: '3px',
                           padding: '1px 6px', borderRadius: '3px', fontSize: '10px', fontWeight: 700,
                           letterSpacing: '0.03em', textTransform: 'uppercase',
+                          background: '#DEEBFF', color: '#0747A6',
                         }}>
-                          <Share2 size={9} /> Jira Proxy
+                          <Share2 size={9} /> JIRA
                         </span>
                       ) : (
-                        <span className="badge-local-auth" style={{
+                        <span style={{
                           display: 'inline-flex', alignItems: 'center', gap: '3px',
                           padding: '1px 6px', borderRadius: '3px', fontSize: '10px', fontWeight: 700,
                           letterSpacing: '0.03em', textTransform: 'uppercase',
+                          background: '#EDE9FE', color: '#5B21B6',
                         }}>
-                          Local Auth
+                          CATALYST
+                        </span>
+                      )}
+                    </td>
                         </span>
                       )}
                     </td>
