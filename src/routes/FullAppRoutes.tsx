@@ -807,6 +807,7 @@ export default function FullAppRoutes() {
           <Route path="resource-locations" element={<S><ResourceLocationsPage /></S>} />
           <Route path="resource-countries" element={<S><ResourceCountriesPage /></S>} />
           <Route path="resource-vendors" element={<S><ResourceVendorsPage /></S>} />
+          <Route path="jira-user-sync" element={<S><JiraUserSyncPage /></S>} />
           <Route path="business-owners" element={<S><BusinessOwnersAdmin /></S>} />
           <Route path="business-processes" element={<S><BusinessProcesses /></S>} />
           <Route path="business/ProcessStep" element={<S><ProcessSteps /></S>} />
