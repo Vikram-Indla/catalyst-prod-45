@@ -98,7 +98,7 @@ export function deriveWorkspaceType(pathname: string): WorkspaceType {
   
   // Admin/Settings routes - no nav item should be highlighted
   if (pathname.startsWith('/admin')) {
-    return 'home'; // Neutral - won't highlight any specific nav item
+    return 'admin';
   }
   
   // Default to enterprise for other routes
