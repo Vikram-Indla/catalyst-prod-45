@@ -126,7 +126,7 @@ const ProjectsTab: React.FC<{ perms: any[] }> = ({ perms }) => {
   const xsBtn: React.CSSProperties = {
     fontSize: '9px', fontWeight: 700, textTransform: 'uppercase',
     padding: '3px 7px', borderRadius: '3px', cursor: 'pointer',
-    border: `1px solid ${T.border}`, background: T.surface, color: T.text2,
+    border: `1px solid ${rgba(15,23,42,0.10)}`, background: #FFFFFF, color: #64748B,
   };
   const xsBtnClass = 'jus-action-btn';
 
@@ -149,7 +149,7 @@ const ProjectsTab: React.FC<{ perms: any[] }> = ({ perms }) => {
 
       {perms.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '32px 16px' }}>
-          <div style={{ fontSize: '12px', color: T.text3, marginBottom: '10px' }}>No projects assigned yet</div>
+          <div style={{ fontSize: '12px', color: #94A3B8, marginBottom: '10px' }}>No projects assigned yet</div>
           <button
             style={{ fontSize: '11px', fontWeight: 600, background: '#2563EB', color: '#FFFFFF', border: 'none', borderRadius: '4px', padding: '5px 12px', cursor: 'pointer' }}
             onClick={() => toast.info('Project picker — Phase 2')}
@@ -159,8 +159,8 @@ const ProjectsTab: React.FC<{ perms: any[] }> = ({ perms }) => {
         <>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '11px', marginTop: '6px' }}>
             <thead>
-              <tr style={{ background: T.sunken }} className="jus-table-head">
-                <th style={{ padding: '6px 9px', fontSize: '9px', fontWeight: 700, color: T.text2, textTransform: 'uppercase', textAlign: 'left', width: '28px' }}>
+              <tr style={{ background: #F1F5F9 }} className="jus-table-head">
+                <th style={{ padding: '6px 9px', fontSize: '9px', fontWeight: 700, color: #64748B, textTransform: 'uppercase', textAlign: 'left', width: '28px' }}>
                   <input
                     type="checkbox"
                     checked={checkedPerms.size === perms.length && perms.length > 0}
@@ -168,9 +168,9 @@ const ProjectsTab: React.FC<{ perms: any[] }> = ({ perms }) => {
                     style={{ width: '12px', height: '12px', accentColor: '#2563EB' }}
                   />
                 </th>
-                <th style={{ padding: '6px 9px', fontSize: '9px', fontWeight: 700, color: T.text2, textTransform: 'uppercase', textAlign: 'left' }}>Project</th>
-                <th style={{ padding: '6px 9px', fontSize: '9px', fontWeight: 700, color: T.text2, textTransform: 'uppercase', textAlign: 'left' }}>Key</th>
-                <th style={{ padding: '6px 9px', fontSize: '9px', fontWeight: 700, color: T.text2, textTransform: 'uppercase', textAlign: 'right' }}>Permission</th>
+                <th style={{ padding: '6px 9px', fontSize: '9px', fontWeight: 700, color: #64748B, textTransform: 'uppercase', textAlign: 'left' }}>Project</th>
+                <th style={{ padding: '6px 9px', fontSize: '9px', fontWeight: 700, color: #64748B, textTransform: 'uppercase', textAlign: 'left' }}>Key</th>
+                <th style={{ padding: '6px 9px', fontSize: '9px', fontWeight: 700, color: #64748B, textTransform: 'uppercase', textAlign: 'right' }}>Permission</th>
               </tr>
             </thead>
             <tbody>
@@ -189,18 +189,18 @@ const ProjectsTab: React.FC<{ perms: any[] }> = ({ perms }) => {
                         style={{ width: '12px', height: '12px', accentColor: '#2563EB' }}
                       />
                     </td>
-                    <td style={{ padding: '6px 9px', fontWeight: 500, color: T.text1, whiteSpace: 'nowrap' }} className="jus-field-val">
+                    <td style={{ padding: '6px 9px', fontWeight: 500, color: #0F172A, whiteSpace: 'nowrap' }} className="jus-field-val">
                       {p.project_name || p.project_key}
                     </td>
                     <td style={{ padding: '6px 9px' }}>
                       <span className="jus-project-key-chip" style={{
-                        fontFamily: "'JetBrains Mono', monospace", fontSize: '9px', color: T.text2,
-                        background: T.sunken, padding: '1px 4px', borderRadius: '2px',
+                        fontFamily: "'JetBrains Mono', monospace", fontSize: '9px', color: #64748B,
+                        background: #F1F5F9, padding: '1px 4px', borderRadius: '2px',
                       }}>{p.project_key}</span>
                     </td>
                     <td style={{ padding: '6px 9px', textAlign: 'right' }}>
                       <div className="jus-perm-seg" style={{
-                        display: 'inline-flex', border: `1px solid ${T.border}`,
+                        display: 'inline-flex', border: `1px solid ${rgba(15,23,42,0.10)}`,
                         borderRadius: '4px', overflow: 'hidden',
                       }}>
                         {PERM_LEVELS.map((level, i) => {
@@ -258,7 +258,7 @@ const ActivityTab: React.FC<{ events: any[] }> = ({ events }) => {
       {sorted.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '32px 16px' }}>
           <Activity size={24} color="#94A3B8" style={{ margin: '0 auto 8px' }} />
-          <div style={{ fontSize: '12px', color: T.text3, fontWeight: 500 }}>No activity recorded yet</div>
+          <div style={{ fontSize: '12px', color: #94A3B8, fontWeight: 500 }}>No activity recorded yet</div>
           <div style={{ fontSize: '11px', color: '#CBD5E1', marginTop: '4px' }}>Events will appear here after the first sync</div>
         </div>
       ) : (
@@ -272,8 +272,8 @@ const ActivityTab: React.FC<{ events: any[] }> = ({ events }) => {
               marginTop: '3px', background: getEventDotColor(ev),
             }} />
             <div style={{ flex: 1 }}>
-              <div className="jus-event-text" style={{ fontSize: '11px', color: T.text1 }}>{getEventText(ev)}</div>
-              <div className="jus-event-time" style={{ fontSize: '10px', color: T.text3, marginTop: '1px' }}>{formatDate(ev.created_at)}</div>
+              <div className="jus-event-text" style={{ fontSize: '11px', color: #334155 }}>{getEventText(ev)}</div>
+              <div className="jus-event-time" style={{ fontSize: '10px', color: #94A3B8, marginTop: '1px' }}>{formatDate(ev.created_at)}</div>
             </div>
           </div>
         ))
