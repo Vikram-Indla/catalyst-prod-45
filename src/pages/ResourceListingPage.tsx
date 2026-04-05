@@ -296,7 +296,7 @@ export default function ResourceListingPage() {
           <Search size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: tk.t3 }} />
           <input
             value={search}
-            onChange={e => setSearch(e.target.value)}
+            onChange={e => { setSearch(e.target.value); setCurrentPage(1); }}
             placeholder="Search by name, role, or department…"
             style={{
               width: '100%', padding: '10px 14px 10px 40px',
@@ -311,10 +311,10 @@ export default function ResourceListingPage() {
 
         {/* Department pills */}
         <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', alignItems: 'center' }}>
-          <PillButton active={deptFilter === 'All'} onClick={() => { setDeptFilter('All'); setResourceTypeFilter('all'); }}
+          <PillButton active={deptFilter === 'All'} onClick={() => { setDeptFilter('All'); setResourceTypeFilter('all'); setCurrentPage(1); }}
             label="All" tk={tk} />
           {deptNames.map(d => (
-            <PillButton key={d} active={deptFilter === d} onClick={() => { setDeptFilter(d); setResourceTypeFilter('all'); }}
+            <PillButton key={d} active={deptFilter === d} onClick={() => { setDeptFilter(d); setResourceTypeFilter('all'); setCurrentPage(1); }}
               label={`${d} (${deptCounts[d]})`} tk={tk} />
           ))}
 
@@ -344,7 +344,7 @@ export default function ResourceListingPage() {
           return (
             <button
               key={pill.key}
-              onClick={() => setResourceTypeFilter(pill.key)}
+              onClick={() => { setResourceTypeFilter(pill.key); setCurrentPage(1); }}
               style={{
                 height: 28, padding: '0 12px', borderRadius: 14,
                 fontSize: 13, fontWeight: isActive ? 600 : 500, cursor: 'pointer',
