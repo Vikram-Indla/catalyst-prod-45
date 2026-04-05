@@ -112,7 +112,7 @@ export const createCatalystUser = async (payload: CreateCatalystUserPayload) => 
 
 export const triggerManualSync = () =>
   supabase.functions.invoke('jira-user-sync', {
-    body: { trigger: 'manual', direction: 'bidirectional' },
+    body: { trigger: 'manual', direction: 'both' },
   });
 
 export const copyPermissions = async (sourceId: string, targetIds: string[]) => {
