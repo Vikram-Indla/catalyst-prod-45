@@ -593,11 +593,14 @@ const JiraUserSync: React.FC = () => {
                       )}
                     </td>
 
-                    {/* Last Login */}
-                    <td className="jus-text-secondary text-[#64748B] dark:text-[rgba(200,210,225,0.55)]" style={{ padding: '0 12px', fontSize: '11px' }}>
-                      {user.last_catalyst_login_at
-                        ? formatSyncDate(user.last_catalyst_login_at)
-                        : '—'}
+                    {/* Last Jira Login */}
+                    <td className="jus-text-secondary text-[#64748B] dark:text-[rgba(200,210,225,0.55)]" style={{ padding: '0 12px', fontSize: '11px', fontFamily: "'JetBrains Mono', monospace" }}>
+                      {relativeTime(user.last_jira_login_at)}
+                    </td>
+
+                    {/* Last in Catalyst */}
+                    <td className="jus-text-secondary text-[#64748B] dark:text-[rgba(200,210,225,0.55)]" style={{ padding: '0 12px', fontSize: '11px', fontFamily: "'JetBrains Mono', monospace" }}>
+                      {relativeTime(user.last_catalyst_login_at)}
                     </td>
 
                     {/* Status */}
