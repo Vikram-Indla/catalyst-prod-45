@@ -434,10 +434,10 @@ export default function FeatureFlagsPage() {
           <div className="h-9 w-64 bg-[#F1F5F9] rounded animate-pulse" />
           <div className="h-9 w-16 bg-[#F1F5F9] rounded animate-pulse" />
         </div>
-        <div className="overflow-hidden bg-white" style={{ border: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.12)'}`, borderRadius: 6 }}>
+        <div className={`overflow-hidden ${isDark ? "bg-[#1A1714]" : "bg-white"}`} style={{ border: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.12)'}`, borderRadius: 6 }}>
           <div style={{ height: 40, background: isDark ? '#232019' : '#F1F5F9', borderBottom: `0.75px solid ${isDark ? 'rgba(255,255,255,0.05)' : 'rgba(15,23,42,0.06)'}` }} />
           {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="animate-pulse bg-white" style={{ height: 52, borderBottom: `0.75px solid ${isDark ? 'rgba(255,255,255,0.05)' : 'rgba(15,23,42,0.06)'}` }} />
+            <div key={i} className={`animate-pulse ${isDark ? "bg-[#1A1714]" : "bg-white"}`} style={{ height: 52, borderBottom: `0.75px solid ${isDark ? 'rgba(255,255,255,0.05)' : 'rgba(15,23,42,0.06)'}` }} />
           ))}
         </div>
       </div>

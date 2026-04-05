@@ -50,7 +50,7 @@ export function ReleasesToolbar({
           placeholder="Search releases..."
           value={filter.search}
           onChange={(e) => onSearch(e.target.value)}
-          className="pl-10 bg-white border-slate-200"
+          className="pl-10 bg-white dark:bg-[#232019] border-slate-200 dark:border-[rgba(255,255,255,0.08)]"
         />
         {filter.search && (
           <button
@@ -149,9 +149,9 @@ export function ReleasesToolbar({
           onClick={() => onViewModeChange('table')}
           className={cn(
             "px-3 py-2 flex items-center gap-2 text-sm font-medium transition-colors",
-            viewMode === 'table' 
-              ? "bg-primary text-white" 
-              : "bg-white text-slate-600 hover:bg-slate-50"
+            viewMode === 'table'
+              ? "bg-primary text-white"
+              : "bg-white dark:bg-[#232019] text-slate-600 hover:bg-slate-50 dark:hover:bg-[#1A1714]"
           )}
         >
           <LayoutList className="w-4 h-4" />
@@ -161,9 +161,9 @@ export function ReleasesToolbar({
           onClick={() => onViewModeChange('timeline')}
           className={cn(
             "px-3 py-2 flex items-center gap-2 text-sm font-medium transition-colors",
-            viewMode === 'timeline' 
-              ? "bg-primary text-white" 
-              : "bg-white text-slate-600 hover:bg-slate-50"
+            viewMode === 'timeline'
+              ? "bg-primary text-white"
+              : "bg-white dark:bg-[#232019] text-slate-600 hover:bg-slate-50 dark:hover:bg-[#1A1714]"
           )}
         >
           <GanttChartSquare className="w-4 h-4" />

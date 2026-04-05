@@ -4,6 +4,7 @@
  */
 import React, { useState } from 'react';
 import { Plus, Building2, Bot, Leaf, Target, Zap, Globe, TrendingUp, Lightbulb } from 'lucide-react';
+import { useTheme } from '@/hooks/useTheme';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import CreateDriveModal from './CreateDriveModal';
@@ -69,6 +70,7 @@ function getDriveIcon(title: string): React.ElementType {
 export default function IdeationDrivesView() {
   const { data: drives = [], isLoading, error } = useDrives();
   const [createOpen, setCreateOpen] = useState(false);
+  const { isDark } = useTheme();
 
   return (
     <div style={{ padding: '16px 28px 32px' }}>
@@ -76,7 +78,7 @@ export default function IdeationDrivesView() {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
-            <h2 style={{ fontSize: '22px', fontWeight: 800, color: '#0F172A', letterSpacing: '-0.5px', margin: 0, fontFamily: "'Sora', 'Inter', sans-serif" }}>Ideas Themes</h2>
+            <h2 style={{ fontSize: '22px', fontWeight: 800, color: isDark ? '#F5F3F0' : '#0F172A', letterSpacing: '-0.5px', margin: 0, fontFamily: "'Sora', 'Inter', sans-serif" }}>Ideas Themes</h2>
             <span style={{
               background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '10px',
               padding: '1px 7px', fontSize: '11px', fontWeight: 600,
@@ -117,7 +119,7 @@ export default function IdeationDrivesView() {
         const IconComponent = getDriveIcon(drive.title);
         return (
           <div key={drive.id} style={{
-            background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '6px',
+            background: isDark ? '#232019' : '#FFFFFF', border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0', borderRadius: '6px',
             padding: '20px', marginBottom: '16px',
           }}>
             {/* Title + Icon + Status */}
@@ -125,13 +127,13 @@ export default function IdeationDrivesView() {
               {/* V12: Lucide icon container */}
               <div style={{
                 width: 36, height: 36, borderRadius: 8,
-                background: '#F1F5F9', border: '1px solid #E2E8F0',
+                background: isDark ? '#2C2823' : '#F1F5F9', border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                flexShrink: 0, color: '#475569',
+                flexShrink: 0, color: isDark ? '#A09890' : '#475569',
               }}>
                 <IconComponent size={18} strokeWidth={2} />
               </div>
-              <span style={{ fontSize: '16px', fontWeight: 700, color: '#0F172A', flex: 1 }}>{drive.title}</span>
+              <span style={{ fontSize: '16px', fontWeight: 700, color: isDark ? '#F5F3F0' : '#0F172A', flex: 1 }}>{drive.title}</span>
               {/* V12 3-color lozenge for status */}
               <span style={{
                 display: 'inline-flex', alignItems: 'center',

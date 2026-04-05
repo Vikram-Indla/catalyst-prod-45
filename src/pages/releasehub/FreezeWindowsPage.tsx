@@ -220,25 +220,25 @@ export default function FreezeWindowsPage() {
               <label className="text-[12px] font-semibold text-[#475569] block mb-1">Name *</label>
               <input type="text" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
                 placeholder="e.g. Go-Live Freeze Q2"
-                className="h-9 w-full px-3 rounded border border-[#E2E8F0] bg-white text-[13px] placeholder:text-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" />
+                className="h-9 w-full px-3 rounded border border-[#E2E8F0] dark:border-[rgba(255,255,255,0.08)] bg-white dark:bg-[#232019] dark:text-[#F5F3F0] text-[13px] placeholder:text-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" />
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="text-[12px] font-semibold text-[#475569] block mb-1">Start Date *</label>
                 <input type="date" value={form.start_date} onChange={e => setForm(f => ({ ...f, start_date: e.target.value }))}
-                  className="h-9 w-full px-3 rounded border border-[#E2E8F0] bg-white text-[13px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" />
+                  className="h-9 w-full px-3 rounded border border-[#E2E8F0] dark:border-[rgba(255,255,255,0.08)] bg-white dark:bg-[#232019] dark:text-[#F5F3F0] text-[13px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" />
               </div>
               <div>
                 <label className="text-[12px] font-semibold text-[#475569] block mb-1">End Date *</label>
                 <input type="date" value={form.end_date} onChange={e => setForm(f => ({ ...f, end_date: e.target.value }))}
-                  className="h-9 w-full px-3 rounded border border-[#E2E8F0] bg-white text-[13px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" />
+                  className="h-9 w-full px-3 rounded border border-[#E2E8F0] dark:border-[rgba(255,255,255,0.08)] bg-white dark:bg-[#232019] dark:text-[#F5F3F0] text-[13px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" />
               </div>
             </div>
             <div>
               <label className="text-[12px] font-semibold text-[#475569] block mb-1">Reason</label>
               <textarea value={form.reason} onChange={e => setForm(f => ({ ...f, reason: e.target.value }))}
                 placeholder="e.g. National holiday / major go-live" rows={3}
-                className="w-full px-3 py-2 rounded border border-[#E2E8F0] bg-white text-[13px] placeholder:text-[#94A3B8] resize-none focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" />
+                className="w-full px-3 py-2 rounded border border-[#E2E8F0] dark:border-[rgba(255,255,255,0.08)] bg-white dark:bg-[#232019] dark:text-[#F5F3F0] text-[13px] placeholder:text-[#94A3B8] resize-none focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" />
             </div>
             {formError && <p className="text-[12px] text-[#DC2626]">{formError}</p>}
           </div>

@@ -130,9 +130,9 @@ export default function TimelineView() {
   }
 
   return (
-    <div className="h-full flex flex-col bg-white">
+    <div className="h-full flex flex-col bg-white dark:bg-[#1A1714]">
       {/* Header */}
-      <div className="sticky top-0 z-30 bg-white border-b shadow-sm">
+      <div className="sticky top-0 z-30 bg-white dark:bg-[#232019] border-b dark:border-[rgba(255,255,255,0.08)] shadow-sm">
         <div className="px-6 py-4">
           <div className="flex items-center justify-between">
             <div>
@@ -154,7 +154,7 @@ export default function TimelineView() {
                       'px-3 py-1.5 text-xs border-r last:border-r-0 transition-colors',
                       zoom === level
                         ? 'bg-[#2563eb] text-white'
-                        : 'bg-white text-gray-600 hover:bg-gray-50'
+                        : 'bg-white dark:bg-[#232019] text-gray-600 dark:text-[#A09890] hover:bg-gray-50 dark:hover:bg-[#2C2823]'
                     )}
                   >
                     {level.charAt(0).toUpperCase() + level.slice(1)}

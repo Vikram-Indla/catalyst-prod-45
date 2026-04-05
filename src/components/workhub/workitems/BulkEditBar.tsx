@@ -42,14 +42,14 @@ function BulkDropdown({ label, options, onSelect }: {
       </button>
       {open && (
         <div
-          className="absolute top-full left-0 mt-1 min-w-[180px] max-h-[200px] overflow-y-auto bg-white rounded-lg border shadow-lg"
+          className="absolute top-full left-0 mt-1 min-w-[180px] max-h-[200px] overflow-y-auto bg-white dark:bg-[#232019] rounded-lg border shadow-lg"
           style={{ zIndex: 'var(--wh-z-dropdown)', borderColor: 'var(--divider)' }}
         >
           {options.map(o => (
             <button
               key={o.id}
               onClick={() => { onSelect(o.id); setOpen(false); }}
-              className="w-full text-left px-3 py-2 text-xs hover:bg-slate-50 transition-colors"
+              className="w-full text-left px-3 py-2 text-xs hover:bg-slate-50 dark:hover:bg-[#1A1714] transition-colors"
               style={{ color: 'var(--fg-1)' }}
             >
               {o.label}
