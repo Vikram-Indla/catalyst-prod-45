@@ -336,34 +336,69 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose }) => {
           border-color: rgba(255,255,255,0.08) !important;
           color: #F5F3F0 !important;
         }
-        .dark .jus-detail-panel [style*="background: #FFFFFF"],
-        .dark .jus-detail-panel [style*="background:#FFFFFF"],
-        .dark .jus-detail-panel [style*="background: rgb(255"] {
+        .dark .jus-detail-panel .jus-header-sticky {
           background: #232019 !important;
         }
-        .dark .jus-detail-panel [style*="background: #F8FAFC"],
-        .dark .jus-detail-panel [style*="background: #F1F5F9"] {
+        .dark .jus-detail-panel .jus-footer-sticky {
+          background: #232019 !important;
+        }
+        .dark .jus-detail-panel .jus-pwd-box {
           background: #1A1714 !important;
+          border-color: rgba(255,255,255,0.06) !important;
         }
-        .dark .jus-detail-panel [style*="color: #0F172A"],
-        .dark .jus-detail-panel [style*="color:#0F172A"] {
-          color: #F5F3F0 !important;
-        }
-        .dark .jus-detail-panel [style*="color: #334155"],
-        .dark .jus-detail-panel [style*="color:#334155"] {
+        .dark .jus-detail-panel .jus-pwd-box span {
           color: #A09890 !important;
         }
-        .dark .jus-detail-panel [style*="color: #64748B"],
-        .dark .jus-detail-panel [style*="color:#64748B"] {
+        .dark .jus-detail-panel .jus-info-box {
+          background: rgba(255,255,255,0.04) !important;
+          border-color: rgba(255,255,255,0.08) !important;
+        }
+        .dark .jus-detail-panel .jus-info-box span {
+          color: #A09890 !important;
+        }
+        .dark .jus-detail-panel .jus-info-card {
+          background: #1A1714 !important;
+          border-color: rgba(255,255,255,0.06) !important;
+        }
+        .dark .jus-detail-panel .jus-info-card div {
+          color: #A09890 !important;
+        }
+        .dark .jus-detail-panel .jus-field-key {
           color: #6B6560 !important;
         }
-        .dark .jus-detail-panel [style*="border-bottom: 0.5px solid"],
-        .dark .jus-detail-panel [style*="border: 1px solid rgba(15"] {
+        .dark .jus-detail-panel .jus-field-val {
+          color: #F5F3F0 !important;
+        }
+        .dark .jus-detail-panel .jus-section-label {
+          color: #6B6560 !important;
+        }
+        .dark .jus-detail-panel .jus-field-row {
           border-color: rgba(255,255,255,0.06) !important;
         }
-        .dark .jus-detail-panel [style*="borderBottom: 1px solid"],
-        .dark .jus-detail-panel [style*="borderBottom: 0.5px solid"] {
+        .dark .jus-detail-panel .jus-section-border {
           border-color: rgba(255,255,255,0.06) !important;
+        }
+        .dark .jus-detail-panel .jus-action-btn {
+          background: #232019 !important;
+          color: #A09890 !important;
+          border-color: rgba(255,255,255,0.08) !important;
+        }
+        .dark .jus-detail-panel .jus-close-btn {
+          background: #2C2823 !important;
+          color: #A09890 !important;
+          border-color: rgba(255,255,255,0.08) !important;
+        }
+        .dark .jus-detail-panel .jus-tab-btn {
+          color: #6B6560 !important;
+        }
+        .dark .jus-detail-panel .jus-tab-btn.active {
+          color: #60A5FA !important;
+        }
+        .dark .jus-detail-panel .jus-name {
+          color: #F5F3F0 !important;
+        }
+        .dark .jus-detail-panel .jus-subtitle {
+          color: #6B6560 !important;
         }
         .dark .jus-detail-panel code {
           background: #2C2823 !important;
@@ -376,16 +411,34 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose }) => {
           border-color: rgba(255,255,255,0.08) !important;
         }
         .dark .jus-detail-panel table th {
+          background: #1A1714 !important;
           color: #6B6560 !important;
         }
         .dark .jus-detail-panel table td {
           border-color: rgba(255,255,255,0.06) !important;
-        }
-        .dark .jus-detail-panel button[style*="background: #FFFFFF"],
-        .dark .jus-detail-panel button[style*="background:#FFFFFF"] {
-          background: #232019 !important;
           color: #A09890 !important;
+        }
+        .dark .jus-detail-panel .jus-footer-btn-outline {
+          background: #232019 !important;
+        }
+        .dark .jus-detail-panel .jus-perm-seg {
           border-color: rgba(255,255,255,0.08) !important;
+        }
+        .dark .jus-detail-panel .jus-perm-seg button {
+          border-color: rgba(255,255,255,0.08) !important;
+        }
+        .dark .jus-detail-panel .jus-project-key-chip {
+          background: #2C2823 !important;
+          color: #6B6560 !important;
+        }
+        .dark .jus-detail-panel .jus-empty-text {
+          color: #6B6560 !important;
+        }
+        .dark .jus-detail-panel .jus-event-text {
+          color: #A09890 !important;
+        }
+        .dark .jus-detail-panel .jus-event-time {
+          color: #6B6560 !important;
         }
       `}</style>
       {/* ── Header ── */}
