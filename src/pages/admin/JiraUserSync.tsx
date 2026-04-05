@@ -384,22 +384,22 @@ const JiraUserSync: React.FC = () => {
       </div>
 
       {/* ══ D04 — Stat Cards (50px gap not specified, using grid gap 12px from existing) ══ */}
-      <div className="shrink-0 flex flex-nowrap" style={{ gap: 12, padding: '20px 24px 18px', background: T.page }}>
+      <div className="shrink-0 flex flex-nowrap" style={{ gap: 24, padding: '20px 24px 18px', background: T.page }}>
         {STAT_CARDS.map(card => (
-          <div key={card.key} style={{
-            flex: 1, minWidth: 140, padding: '16px 20px', borderRadius: 8,
-            background: T.surface, border: `0.75px solid ${T.border}`,
+          <div key={card.key} className="jsu-stat-card" style={{
+            flex: 1, minWidth: 0, minHeight: 120, padding: '20px 24px',
+            display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 0,
           }}>
-            <div className="flex items-center" style={{ gap: 5, marginBottom: 4 }}>
-              <span style={{ width: 6, height: 6, borderRadius: '50%', background: card.dotColor, flexShrink: 0 }} />
-              <span style={{ fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.03em', fontFamily: 'Inter,sans-serif', color: T.text3 }}>
+            <div className="flex items-center" style={{ gap: 7 }}>
+              <span style={{ width: 8, height: 8, borderRadius: '50%', background: card.dotColor, flexShrink: 0 }} />
+              <span className="jsu-text-2" style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.07em', fontFamily: 'Inter,sans-serif' }}>
                 {card.label}
               </span>
             </div>
-            <div style={{ fontSize: 28, fontWeight: 650, lineHeight: 1.1, fontFamily: "'Sora',sans-serif", color: T.text1 }}>
+            <div className="jsu-text-1" style={{ fontFamily: "'Sora',sans-serif", fontSize: 36, fontWeight: 700, lineHeight: 1, marginTop: 12, letterSpacing: '-0.02em' }}>
               {getStatValue(card.key)}
             </div>
-            <div style={{ fontSize: 11, marginTop: 4, color: T.text3 }}>
+            <div className="jsu-text-3" style={{ fontFamily: 'Inter,sans-serif', fontSize: 11, fontWeight: 400, marginTop: 6 }}>
               {card.subLabel}
             </div>
           </div>
