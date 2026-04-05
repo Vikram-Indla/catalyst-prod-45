@@ -910,6 +910,7 @@ const JiraUserSync: React.FC = () => {
         onSuccess={() => {}}
       />
     </div>
+    </>
   );
 };
 
