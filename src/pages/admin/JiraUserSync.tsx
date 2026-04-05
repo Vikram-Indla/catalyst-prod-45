@@ -268,14 +268,14 @@ const JiraUserSync: React.FC = () => {
         </div>
 
         {/* ══ FIX 1 — Stat Cards with surface ══ */}
-        <div className="shrink-0 flex gap-3 flex-wrap" style={{ padding: '14px 20px', borderBottom: '0.75px solid rgba(15,23,42,0.06)' }}>
+        <div className="shrink-0 flex flex-nowrap" style={{ gap: '50px', padding: '24px 24px 20px', borderBottom: '0.75px solid rgba(15,23,42,0.06)' }}>
           {STATS_CONFIG.map((card) => (
             <div
               key={card.key}
               className="bg-white dark:bg-[#232019] border border-[rgba(15,23,42,0.08)] dark:border-[rgba(200,210,225,0.10)]"
               style={{
-                flex: '1 1 160px',
-                minWidth: '160px',
+                flex: 1,
+                minWidth: '140px',
                 padding: '16px 20px',
                 borderRadius: '6px',
               }}
