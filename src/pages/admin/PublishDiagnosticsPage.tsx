@@ -196,9 +196,9 @@ export default function PublishDiagnosticsPage() {
 
       {/* Overall Status Banner */}
       <div className={`rounded-xl border-2 p-5 mb-6 ${
-        overallStatus === 'ready' ? 'bg-emerald-50 border-emerald-300 dark:bg-emerald-950/30 dark:border-emerald-800' :
-        overallStatus === 'caution' ? 'bg-amber-50 border-amber-300 dark:bg-amber-950/30 dark:border-amber-800' :
-        'bg-red-50 border-red-300 dark:bg-red-950/30 dark:border-red-800'
+        overallStatus === 'ready' ? 'bg-emerald-50 border-emerald-300 dark:bg-[rgba(34,197,94,0.12)] dark:border-emerald-800' :
+        overallStatus === 'caution' ? 'bg-amber-50 border-amber-300 dark:bg-[rgba(251,191,36,0.12)] dark:border-amber-800' :
+        'bg-red-50 border-red-300 dark:bg-[rgba(248,113,113,0.12)] dark:border-red-800'
       }`}>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -316,7 +316,7 @@ export default function PublishDiagnosticsPage() {
                 <Package size={12} className={dep.dynamic ? 'text-emerald-600' : 'text-amber-600'} />
                 <span className="font-mono text-xs text-foreground">{dep.name}</span>
                 {dep.dynamic && (
-                  <span className="text-[9px] bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-300 px-1.5 py-0.5 rounded-full font-medium">
+                  <span className="text-[9px] bg-emerald-100 text-emerald-700 dark:bg-[rgba(34,197,94,0.12)] dark:text-emerald-300 px-1.5 py-0.5 rounded-full font-medium">
                     dynamic
                   </span>
                 )}
@@ -435,9 +435,9 @@ function CheckRow({ check }: { check: DiagnosticCheck }) {
         )}
       </div>
       <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-medium ${
-        check.impact === 'critical' ? 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300' :
-        check.impact === 'high' ? 'bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300' :
-        check.impact === 'medium' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300' :
+        check.impact === 'critical' ? 'bg-red-100 text-red-700 dark:bg-[rgba(248,113,113,0.12)] dark:text-red-300' :
+        check.impact === 'high' ? 'bg-amber-100 text-amber-700 dark:bg-[rgba(251,191,36,0.12)] dark:text-amber-300' :
+        check.impact === 'medium' ? 'bg-blue-100 text-blue-700 dark:bg-[rgba(59,130,246,0.12)] dark:text-blue-300' :
         'bg-muted text-muted-foreground'
       }`}>
         {check.impact}

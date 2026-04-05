@@ -63,16 +63,16 @@ interface NewAssignmentRow {
 
 function getUtilizationColor(percent: number): string {
   if (percent === 0) return 'bg-muted';
-  if (percent <= 80) return 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400';
-  if (percent <= 100) return 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400';
-  return 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-400';
+  if (percent <= 80) return 'bg-green-100 dark:bg-[rgba(34,197,94,0.12)] text-green-800 dark:text-green-400';
+  if (percent <= 100) return 'bg-yellow-100 dark:bg-[rgba(251,191,36,0.12)] text-yellow-800 dark:text-yellow-400';
+  return 'bg-red-100 dark:bg-[rgba(248,113,113,0.12)] text-red-800 dark:text-red-400';
 }
 
 function getInputBorderColor(percent: number): string {
   if (percent === 0) return 'border-muted';
-  if (percent <= 80) return 'border-green-300 dark:border-green-700';
-  if (percent <= 100) return 'border-yellow-300 dark:border-yellow-700';
-  return 'border-red-300 dark:border-red-700';
+  if (percent <= 80) return 'border-green-300 dark:border-[rgba(34,197,94,0.25)]';
+  if (percent <= 100) return 'border-yellow-300 dark:border-[rgba(251,191,36,0.25)]';
+  return 'border-red-300 dark:border-[rgba(248,113,113,0.25)]';
 }
 
 export default function ResourceUtilization() {
@@ -383,7 +383,7 @@ export default function ResourceUtilization() {
         <Card>
           <CardContent className="pt-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-green-100 dark:bg-green-900/30">
+              <div className="p-2 rounded-lg bg-green-100 dark:bg-[rgba(34,197,94,0.12)]">
                 <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400" />
               </div>
               <div>
@@ -397,7 +397,7 @@ export default function ResourceUtilization() {
         <Card>
           <CardContent className="pt-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-yellow-100 dark:bg-yellow-900/30">
+              <div className="p-2 rounded-lg bg-yellow-100 dark:bg-[rgba(251,191,36,0.12)]">
                 <TrendingUp className="h-5 w-5 text-yellow-600 dark:text-yellow-400" />
               </div>
               <div>
@@ -411,7 +411,7 @@ export default function ResourceUtilization() {
         <Card>
           <CardContent className="pt-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-red-100 dark:bg-red-900/30">
+              <div className="p-2 rounded-lg bg-red-100 dark:bg-[rgba(248,113,113,0.12)]">
                 <AlertTriangle className="h-5 w-5 text-red-600 dark:text-red-400" />
               </div>
               <div>
@@ -474,13 +474,13 @@ export default function ResourceUtilization() {
             </CardTitle>
             <div className="flex items-center gap-4 text-xs text-muted-foreground">
               <span className="flex items-center gap-1">
-                <div className="w-3 h-3 rounded bg-green-200 dark:bg-green-900" /> 1-80%
+                <div className="w-3 h-3 rounded bg-green-200 dark:bg-[rgba(34,197,94,0.12)]" /> 1-80%
               </span>
               <span className="flex items-center gap-1">
-                <div className="w-3 h-3 rounded bg-yellow-200 dark:bg-yellow-900" /> 81-100%
+                <div className="w-3 h-3 rounded bg-yellow-200 dark:bg-[rgba(251,191,36,0.12)]" /> 81-100%
               </span>
               <span className="flex items-center gap-1">
-                <div className="w-3 h-3 rounded bg-red-200 dark:bg-red-900" /> &gt;100%
+                <div className="w-3 h-3 rounded bg-red-200 dark:bg-[rgba(248,113,113,0.12)]" /> &gt;100%
               </span>
               <span className="flex items-center gap-1">
                 <Lock className="h-3 w-3" /> Contract Ended

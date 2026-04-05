@@ -114,7 +114,7 @@ export default function AiIntegrationPage() {
         <div className="flex-1 overflow-auto p-6">
           <div className="max-w-2xl mx-auto space-y-6">
             {/* Info Card */}
-            <Card className="border-blue-200 bg-blue-50/50 dark:bg-blue-950/20">
+            <Card className="border-blue-200 bg-blue-50/50 dark:bg-[rgba(59,130,246,0.12)]">
               <CardContent className="pt-4">
                 <div className="flex items-start gap-3">
                   <Sparkles className="h-5 w-5 text-blue-500 mt-0.5" />

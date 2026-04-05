@@ -290,7 +290,7 @@ export default function CreateMenuConfig() {
       </div>
 
       {hasUnsavedChanges && (
-        <div className="flex items-center gap-2 p-3 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 rounded-lg">
+        <div className="flex items-center gap-2 p-3 bg-amber-50 dark:bg-[rgba(251,191,36,0.12)] border border-amber-200 dark:border-amber-800 rounded-lg">
           <AlertCircle className="h-4 w-4 text-amber-600" />
           <span className="text-sm text-amber-700 dark:text-amber-400">
             You have unsaved changes. Click "Save Settings" to apply them.
@@ -431,7 +431,7 @@ export default function CreateMenuConfig() {
                       className={cn(
                         "p-4 rounded-lg border transition-all",
                         hasChange 
-                          ? "border-amber-400 bg-amber-50/50 dark:bg-amber-950/20" 
+                          ? "border-amber-400 bg-amber-50/50 dark:bg-[rgba(251,191,36,0.12)]" 
                           : "border-border bg-card"
                       )}
                     >
@@ -446,7 +446,7 @@ export default function CreateMenuConfig() {
                           </p>
                         </div>
                         {hasChange && (
-                          <span className="ml-auto text-xs font-medium text-amber-600 dark:text-amber-400 px-2 py-1 bg-amber-100 dark:bg-amber-900/30 rounded">
+                          <span className="ml-auto text-xs font-medium text-amber-600 dark:text-amber-400 px-2 py-1 bg-amber-100 dark:bg-[rgba(251,191,36,0.12)] rounded">
                             Modified
                           </span>
                         )}

@@ -35,12 +35,12 @@ const typeIcons: Record<ComponentType, React.ReactNode> = {
 
 // Type colors
 const typeColors: Record<ComponentType, string> = {
-  Page: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
-  Drawer: 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300',
-  Table: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
-  Kanban: 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300',
-  Widget: 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300',
-  Layout: 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300',
+  Page: 'bg-blue-100 text-blue-800 dark:bg-[rgba(59,130,246,0.12)] dark:text-blue-300',
+  Drawer: 'bg-amber-100 text-amber-800 dark:bg-[rgba(251,191,36,0.12)] dark:text-amber-300',
+  Table: 'bg-green-100 text-green-800 dark:bg-[rgba(34,197,94,0.12)] dark:text-green-300',
+  Kanban: 'bg-amber-100 text-amber-800 dark:bg-[rgba(251,191,36,0.12)] dark:text-amber-300',
+  Widget: 'bg-gray-100 text-gray-800 dark:bg-[#2C2823] dark:text-gray-300',
+  Layout: 'bg-gray-100 text-gray-800 dark:bg-[#2C2823] dark:text-gray-300',
 };
 
 // Category colors
