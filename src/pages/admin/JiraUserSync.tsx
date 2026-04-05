@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Plus, RefreshCw, Search, ChevronLeft, ChevronRight, UserX, Copy, X, Loader2, Share2, Download } from 'lucide-react';
+import UserDetailPanel from '@/components/admin/UserDetailPanel';
 import { toast } from 'sonner';
 import {
   useJiraSyncStats,
@@ -358,6 +359,9 @@ const JiraUserSync: React.FC = () => {
         </div>
       )}
 
+      {/* ══ Table + Detail Panel ══ */}
+      <div className="flex flex-1 overflow-hidden">
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
       {/* ══ Table ══ */}
       <div style={{ flex: 1, overflowY: 'auto', overflowX: 'auto' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '1000px' }}>
@@ -708,6 +712,16 @@ const JiraUserSync: React.FC = () => {
           </button>
         </div>
       </div>
+      </div>{/* end table column */}
+
+      {activeUserId && (
+        <UserDetailPanel
+          userId={activeUserId}
+          onClose={() => setActiveUserId(null)}
+        />
+      )}
+      </div>{/* end flex row */}
+
       <CreateCatalystUserModal
         open={createModalOpen}
         onClose={() => setCreateModalOpen(false)}
