@@ -164,23 +164,21 @@ const JiraUserSync: React.FC = () => {
     const upper = status?.toUpperCase();
     const isActive = upper === 'ACTIVE';
     const isConflict = upper === 'CONFLICT';
+    const cls = isConflict ? '' : isActive ? 'jsu-lozenge-active' : 'jsu-lozenge-inactive';
     return (
-      <span style={{
-        display: 'inline-flex', alignItems: 'center',
-        height: 20, padding: '0 8px', borderRadius: 3,
-        fontFamily: 'Inter,sans-serif', fontSize: 10, fontWeight: 700,
-        textTransform: 'uppercase' as const, letterSpacing: '0.04em', whiteSpace: 'nowrap' as const,
-        background: isConflict
-          ? (isDark ? '#451A03' : '#FEF3C7')
-          : isActive
-            ? (isDark ? '#064E3B' : '#E3FCEF')
-            : (isDark ? '#450A0A' : '#FEE2E2'),
-        color: isConflict
-          ? (isDark ? '#FCD34D' : '#92400E')
-          : isActive
-            ? (isDark ? '#6EE7B7' : '#006644')
-            : (isDark ? '#FCA5A5' : '#991B1B'),
-      }}>
+      <span
+        className={cls}
+        style={{
+          display: 'inline-flex', alignItems: 'center',
+          height: 20, padding: '0 8px', borderRadius: 3,
+          fontFamily: 'Inter,sans-serif', fontSize: 10, fontWeight: 700,
+          textTransform: 'uppercase' as const, letterSpacing: '0.04em', whiteSpace: 'nowrap' as const,
+          ...(isConflict ? {
+            background: isDark ? '#451A03' : '#FEF3C7',
+            color: isDark ? '#FCD34D' : '#92400E',
+          } : {}),
+        }}
+      >
         {status}
       </span>
     );
