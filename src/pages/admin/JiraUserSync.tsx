@@ -526,7 +526,7 @@ const JiraUserSync: React.FC = () => {
                         </div>
                         <div style={{ minWidth: 0, maxWidth: '220px' }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                            <span style={{
+                            <span className="jus-text-primary" style={{
                               fontSize: '12px', fontWeight: 500, color: '#0F172A',
                               textDecoration: isInactive ? 'line-through' : 'none',
                               whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
@@ -542,7 +542,7 @@ const JiraUserSync: React.FC = () => {
                               </span>
                             )}
                           </div>
-                          <div style={{
+                          <div className="jus-text-secondary" style={{
                             fontSize: '10px', color: '#64748B',
                             fontFamily: "'JetBrains Mono', monospace",
                             whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
@@ -556,7 +556,7 @@ const JiraUserSync: React.FC = () => {
                     {/* Auth Mode */}
                     <td style={{ padding: '0 12px' }}>
                       {user.auth_mode === 'jira_proxy' ? (
-                        <span style={{
+                        <span className="badge-jira-proxy" style={{
                           display: 'inline-flex', alignItems: 'center', gap: '3px',
                           padding: '1px 6px', borderRadius: '3px', fontSize: '10px', fontWeight: 700,
                           letterSpacing: '0.03em', textTransform: 'uppercase',
@@ -565,7 +565,7 @@ const JiraUserSync: React.FC = () => {
                           <Share2 size={9} /> Jira Proxy
                         </span>
                       ) : (
-                        <span style={{
+                        <span className="badge-local-auth" style={{
                           display: 'inline-flex', alignItems: 'center', gap: '3px',
                           padding: '1px 6px', borderRadius: '3px', fontSize: '10px', fontWeight: 700,
                           letterSpacing: '0.03em', textTransform: 'uppercase',
@@ -637,7 +637,7 @@ const JiraUserSync: React.FC = () => {
                     {/* Status */}
                     <td style={{ padding: '0 12px' }}>
                       {hasConflicts ? (
-                        <span style={{
+                        <span className="lozenge-conflict" style={{
                           display: 'inline-block', padding: '0 7px', borderRadius: '3px',
                           fontSize: '10px', fontWeight: 700, textTransform: 'uppercase',
                           height: '20px', lineHeight: '20px',
@@ -646,7 +646,7 @@ const JiraUserSync: React.FC = () => {
                           CONFLICT
                         </span>
                       ) : isInactive ? (
-                        <span style={{
+                        <span className="lozenge-inactive" style={{
                           display: 'inline-block', padding: '0 7px', borderRadius: '3px',
                           fontSize: '10px', fontWeight: 700, textTransform: 'uppercase',
                           height: '20px', lineHeight: '20px',
@@ -655,7 +655,7 @@ const JiraUserSync: React.FC = () => {
                           INACTIVE
                         </span>
                       ) : (
-                        <span style={{
+                        <span className="lozenge-active" style={{
                           display: 'inline-block', padding: '0 7px', borderRadius: '3px',
                           fontSize: '10px', fontWeight: 700, textTransform: 'uppercase',
                           height: '20px', lineHeight: '20px',
@@ -699,12 +699,12 @@ const JiraUserSync: React.FC = () => {
       </div>
 
       {/* ══ Pagination ══ */}
-      <div style={{
+      <div className="jus-pagination" style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         padding: '9px 16px', borderTop: '1px solid rgba(15,23,42,0.06)',
         background: '#F8FAFC', flexShrink: 0,
       }}>
-        <span style={{ fontSize: '11px', color: '#64748B' }}>
+        <span className="jus-text-secondary" style={{ fontSize: '11px', color: '#64748B' }}>
           {totalCount > 0 ? `Showing ${showStart}–${showEnd} of ${totalCount} users` : 'No results'}
         </span>
         <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
