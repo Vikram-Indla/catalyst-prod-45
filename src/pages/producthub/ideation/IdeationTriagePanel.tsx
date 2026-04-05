@@ -152,15 +152,15 @@ export default function IdeationTriagePanel({ open, onClose, onMerge, ideas = []
         boxShadow: isDark ? 'none' : '-8px 0 32px rgba(0,0,0,0.12)', display: 'flex', flexDirection: 'column',
         animation: 'slideInRight 0.25s ease forwards',
       }}>
-        <div style={{ padding: '16px 20px', borderBottom: '1px solid #E2E8F0' }}>
+        <div style={{ padding: '16px 20px', borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}` }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Sparkles size={18} color="#2563EB" strokeWidth={2} />
-              <span style={{ fontSize: '16px', fontWeight: 600, color: '#0F172A' }}>AI Intelligence — Triage Results</span>
+              <span style={{ fontSize: '16px', fontWeight: 600, color: isDark ? '#F5F3F0' : '#0F172A' }}>AI Intelligence — Triage Results</span>
             </div>
-            <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#94A3B8', padding: '4px' }}><X size={18} /></button>
+            <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: isDark ? '#6B6560' : '#94A3B8', padding: '4px' }}><X size={18} /></button>
           </div>
-          <div style={{ fontSize: '13px', fontWeight: 500, color: '#64748B', marginTop: '4px' }}>
+          <div style={{ fontSize: '13px', fontWeight: 500, color: isDark ? '#A09890' : '#64748B', marginTop: '4px' }}>
             {ideas.length} ideas analyzed · {totalRecommendations} recommendations
           </div>
         </div>
@@ -219,26 +219,26 @@ export default function IdeationTriagePanel({ open, onClose, onMerge, ideas = []
           )}
 
           {totalRecommendations === 0 && (
-            <div style={{ textAlign: 'center', padding: '40px 0', color: '#94A3B8', fontSize: '14px' }}>
+            <div style={{ textAlign: 'center', padding: '40px 0', color: isDark ? '#6B6560' : '#94A3B8', fontSize: '14px' }}>
               No triage recommendations at this time.
             </div>
           )}
 
-          <div style={{ marginTop: '20px', borderTop: '1px solid #E2E8F0', paddingTop: '16px' }}>
-            <div style={{ fontSize: '10px', fontWeight: 700, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '10px' }}>Team Distribution</div>
+          <div style={{ marginTop: '20px', borderTop: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, paddingTop: '16px' }}>
+            <div style={{ fontSize: '10px', fontWeight: 700, color: isDark ? '#A09890' : '#64748B', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '10px' }}>Team Distribution</div>
             <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '16px' }}>
               {teamStats.map(([team, count]) => (
-                <span key={team} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '11px', fontWeight: 600, background: '#F1F5F9', border: '1px solid #E2E8F0', color: '#475569', padding: '4px 10px', borderRadius: '4px' }}>
-                  {team} <span style={{ fontWeight: 700, color: '#0F172A' }}>{count}</span>
+                <span key={team} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '11px', fontWeight: 600, background: isDark ? '#2C2823' : '#F1F5F9', border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, color: isDark ? '#A09890' : '#475569', padding: '4px 10px', borderRadius: '4px' }}>
+                  {team} <span style={{ fontWeight: 700, color: isDark ? '#F5F3F0' : '#0F172A' }}>{count}</span>
                 </span>
               ))}
             </div>
-            <div style={{ fontSize: '10px', fontWeight: 700, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '10px' }}>Top Themes</div>
+            <div style={{ fontSize: '10px', fontWeight: 700, color: isDark ? '#A09890' : '#64748B', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '10px' }}>Top Themes</div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
               {themeStats.map(([theme, count]) => (
-                <div key={theme} style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '8px', padding: '8px', textAlign: 'center' }}>
-                  <div style={{ fontSize: '16px', fontWeight: 800, color: '#0F172A' }}>{count}</div>
-                  <div style={{ fontSize: '9px', fontWeight: 600, color: '#64748B', marginTop: '2px', direction: /[\u0600-\u06FF]/.test(theme) ? 'rtl' : 'ltr' }}>{theme}</div>
+                <div key={theme} style={{ background: isDark ? '#2C2823' : '#F8FAFC', border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: '8px', padding: '8px', textAlign: 'center' }}>
+                  <div style={{ fontSize: '16px', fontWeight: 800, color: isDark ? '#F5F3F0' : '#0F172A' }}>{count}</div>
+                  <div style={{ fontSize: '9px', fontWeight: 600, color: isDark ? '#A09890' : '#64748B', marginTop: '2px', direction: /[\u0600-\u06FF]/.test(theme) ? 'rtl' : 'ltr' }}>{theme}</div>
                 </div>
               ))}
             </div>
@@ -257,12 +257,13 @@ export default function IdeationTriagePanel({ open, onClose, onMerge, ideas = []
 }
 
 function CategoryHeader({ label, sub }: { label: string; sub: string }) {
+  const { isDark } = useTheme();
   const color = CATEGORY_TEXT_COLORS[label] || '#64748B';
   return (
     <div style={{ marginBottom: '12px', marginTop: '8px' }}>
-      <div style={{ borderTop: '1px solid #E2E8F0', marginBottom: '16px' }} />
+      <div style={{ borderTop: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, marginBottom: '16px' }} />
       <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.08em', color, textTransform: 'uppercase' }}>{label}</div>
-      <div style={{ fontSize: '12px', color: '#64748B', marginTop: '2px' }}>{sub}</div>
+      <div style={{ fontSize: '12px', color: isDark ? '#A09890' : '#64748B', marginTop: '2px' }}>{sub}</div>
     </div>
   );
 }
@@ -277,16 +278,16 @@ function TriageCard({ badge, ideaKey, title, body, aiSuggestion, primary, second
   return (
     <div style={{ background: isDark ? 'transparent' : '#FFFFFF', border: `1px solid ${isDark ? 'rgba(255,255,255,0.10)' : '#E2E8F0'}`, borderRadius: '10px', padding: '16px', marginBottom: '10px', boxShadow: isDark ? 'none' : '0 1px 2px rgba(0,0,0,0.04)' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: '#F1F5F9', color: '#475569', padding: '3px 10px', borderRadius: '4px', fontSize: '11px', fontWeight: 600, letterSpacing: '0.02em', textTransform: 'uppercase' }}>
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: isDark ? '#2C2823' : '#F1F5F9', color: isDark ? '#A09890' : '#475569', padding: '3px 10px', borderRadius: '4px', fontSize: '11px', fontWeight: 600, letterSpacing: '0.02em', textTransform: 'uppercase' }}>
           <span style={{ width: '4px', height: '4px', borderRadius: '50%', background: dotColor, flexShrink: 0 }} />
           {badge}
         </span>
-        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '12px', fontWeight: 600, color: '#64748B' }}>{ideaKey}</span>
+        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '12px', fontWeight: 600, color: isDark ? '#A09890' : '#64748B' }}>{ideaKey}</span>
       </div>
-      <div style={{ fontSize: '14px', fontWeight: 600, color: '#0F172A', marginTop: '8px', lineHeight: 1.4 }}>{title}</div>
-      <div style={{ fontSize: '13px', fontWeight: 400, color: '#64748B', lineHeight: 1.5, marginTop: '4px' }}>{body}</div>
+      <div style={{ fontSize: '14px', fontWeight: 600, color: isDark ? '#F5F3F0' : '#0F172A', marginTop: '8px', lineHeight: 1.4 }}>{title}</div>
+      <div style={{ fontSize: '13px', fontWeight: 400, color: isDark ? '#A09890' : '#64748B', lineHeight: 1.5, marginTop: '4px' }}>{body}</div>
       {aiSuggestion && (
-        <div style={{ background: '#F8FAFC', borderLeft: '2px solid #CBD5E1', borderRadius: '0 6px 6px 0', padding: '8px 12px', marginTop: '10px', fontSize: '12px', fontWeight: 500, color: '#475569', lineHeight: 1.4 }}>
+        <div style={{ background: isDark ? '#2C2823' : '#F8FAFC', borderLeft: `2px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#CBD5E1'}`, borderRadius: '0 6px 6px 0', padding: '8px 12px', marginTop: '10px', fontSize: '12px', fontWeight: 500, color: isDark ? '#A09890' : '#475569', lineHeight: 1.4 }}>
           {aiSuggestion}
         </div>
       )}
@@ -295,8 +296,8 @@ function TriageCard({ badge, ideaKey, title, body, aiSuggestion, primary, second
           onMouseEnter={e => (e.currentTarget.style.background = '#1D4ED8')} onMouseLeave={e => (e.currentTarget.style.background = '#2563EB')}>
           {primary.icon} {primary.label}
         </button>
-        <button onClick={secondary.onClick} style={{ background: '#FFFFFF', color: '#475569', border: '1.5px solid #E2E8F0', borderRadius: '6px', padding: '7px 16px', fontSize: '13px', fontWeight: 500, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
-          onMouseEnter={e => { e.currentTarget.style.background = '#F8FAFC'; }} onMouseLeave={e => { e.currentTarget.style.background = '#FFFFFF'; }}>
+        <button onClick={secondary.onClick} style={{ background: isDark ? '#2C2823' : '#FFFFFF', color: isDark ? '#A09890' : '#475569', border: `1.5px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: '6px', padding: '7px 16px', fontSize: '13px', fontWeight: 500, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+          onMouseEnter={e => { e.currentTarget.style.background = isDark ? '#232019' : '#F8FAFC'; }} onMouseLeave={e => { e.currentTarget.style.background = isDark ? '#2C2823' : '#FFFFFF'; }}>
           {secondary.icon} {secondary.label}
         </button>
       </div>
