@@ -302,7 +302,32 @@ const JiraUserSync: React.FC = () => {
   const [hoveredRow, setHoveredRow] = useState<string | null>(null);
 
   return (
-    <div className="flex flex-col h-full" style={{ background: T.page, minHeight: '100vh' }}>
+    <>
+    <style>{`
+      .jsu-page { background: ${T.page} !important; min-height: 100vh; }
+      .jsu-surface { background: ${T.surface} !important; border-color: ${T.border} !important; }
+      .jsu-sunken { background: ${T.sunken} !important; }
+      .jsu-elevated { background: ${T.elevated} !important; border-color: ${T.border} !important; }
+      .jsu-text-1 { color: ${T.text1} !important; }
+      .jsu-text-2 { color: ${T.text2} !important; }
+      .jsu-text-3 { color: ${T.text3} !important; }
+      .jsu-border { border-color: ${T.border} !important; }
+      .jsu-row { background: ${T.surface} !important; border-bottom: 0.75px solid ${T.border} !important; height: 40px !important; max-height: 40px !important; }
+      .jsu-row:hover { background: ${isDark ? 'rgba(200,210,225,0.05)' : 'rgba(15,23,42,0.03)'} !important; }
+      .jsu-th { background: ${T.sunken} !important; color: ${T.text2} !important; font-family: Inter,sans-serif !important; font-size: 11px !important; font-weight: 600 !important; text-transform: uppercase !important; letter-spacing: 0.05em !important; padding: 10px 12px !important; border-bottom: 0.75px solid ${T.border} !important; }
+      .jsu-td { color: ${T.text1} !important; font-family: Inter,sans-serif !important; font-size: 13px !important; padding: 0 12px !important; }
+      .jsu-chip-active { background: ${isDark ? 'rgba(37,99,235,0.20)' : '#DBEAFE'} !important; border: 0.75px solid #2563EB !important; color: #2563EB !important; }
+      .jsu-chip-rest { background: transparent !important; border: 0.75px solid ${isDark ? 'rgba(200,210,225,0.12)' : 'rgba(15,23,42,0.10)'} !important; color: ${T.text2} !important; }
+      .jsu-search { background: ${T.inputBg} !important; border: 0.75px solid ${isDark ? 'rgba(200,210,225,0.12)' : 'rgba(15,23,42,0.12)'} !important; color: ${T.text1} !important; }
+      .jsu-search::placeholder { color: ${T.text3} !important; }
+      .jsu-stat-card { background: ${T.surface} !important; border: 0.75px solid ${T.border} !important; border-radius: 10px !important; }
+      .jsu-lozenge-active { background: ${isDark ? '#064E3B' : '#E3FCEF'} !important; color: ${isDark ? '#6EE7B7' : '#006644'} !important; }
+      .jsu-lozenge-inactive { background: ${isDark ? '#450A0A' : '#FEE2E2'} !important; color: ${isDark ? '#FCA5A5' : '#991B1B'} !important; }
+      .jsu-badge-project { background: ${isDark ? 'rgba(200,210,225,0.08)' : '#F1F5F9'} !important; color: ${isDark ? 'rgba(200,210,225,0.65)' : '#475569'} !important; }
+      .jsu-badge-jira { background: ${isDark ? 'rgba(37,99,235,0.15)' : '#EFF6FF'} !important; color: ${isDark ? '#93C5FD' : '#1D4ED8'} !important; border: 0.75px solid ${isDark ? 'rgba(37,99,235,0.25)' : '#BFDBFE'} !important; }
+      .jsu-toggle-btn { background: ${T.surface} !important; border: 0.75px solid ${isDark ? 'rgba(200,210,225,0.12)' : 'rgba(15,23,42,0.12)'} !important; color: ${T.text2} !important; }
+    `}</style>
+    <div className="jsu-page flex flex-col h-full" style={{ background: T.page, minHeight: '100vh' }}>
 
       {/* ══ Page Header ══ */}
       <div className="shrink-0" style={{ padding: '14px 24px 0', borderBottom: `0.75px solid ${T.border}`, background: T.page }}>
