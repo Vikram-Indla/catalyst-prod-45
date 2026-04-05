@@ -1,5 +1,5 @@
 /**
- * Dark mode color tokens for inline-style components
+ * NOCTURNE Warm Charcoal dark mode color tokens for inline-style components
  */
 export type DarkTokens = {
   pageBg: string; cardBg: string; headerBg: string; tableHeaderBg: string;
@@ -12,7 +12,7 @@ export type DarkTokens = {
 };
 
 export const DK: DarkTokens = {
-  // Backgrounds
+  // Backgrounds — NOCTURNE Warm Charcoal
   pageBg: '#1A1714',
   cardBg: 'transparent',
   headerBg: 'transparent',
@@ -24,16 +24,16 @@ export const DK: DarkTokens = {
   progressTrack: 'rgba(255,255,255,0.08)',
   iconBg: 'rgba(255,255,255,0.06)',
   
-  // Text
-  t1: 'rgba(235,238,245,0.92)',   // primary text (titles, values, data)
-  t2: 'rgba(235,238,245,0.72)',   // secondary (labels, legends)
-  t3: 'rgba(235,238,245,0.50)',   // tertiary (timestamps, muted labels)
-  t4: 'rgba(235,238,245,0.35)',   // decorative (placeholders)
+  // Text — NOCTURNE Warm Charcoal
+  t1: '#F5F3F0',   // primary text (titles, values, data)
+  t2: '#A09890',   // secondary (labels, legends)
+  t3: '#6B6560',   // tertiary (timestamps, muted labels)
+  t4: 'rgba(245,243,240,0.30)',   // decorative (placeholders)
   
   // Borders
-  border: 'rgba(255,255,255,0.10)',
-  borderStrong: 'rgba(255,255,255,0.18)',
-  divider: 'rgba(255,255,255,0.06)',
+  border: 'rgba(255,255,255,0.08)',
+  borderStrong: 'rgba(255,255,255,0.12)',
+  divider: 'rgba(255,255,255,0.05)',
   
   // Semantic
   blue: '#60A5FA',

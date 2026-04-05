@@ -78,7 +78,7 @@ export function ProjectTableRow({ project, isStarred, onToggleStar, onContextMen
               fontFamily: "'Sora', sans-serif",
             }}
           >
-            {project.key.slice(0, 2)}
+            {project.key}
           </div>
           <span className="truncate" style={{ fontSize: 14, fontWeight: 500, color: T.t1 }}>
             {project.name}

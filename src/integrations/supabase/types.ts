@@ -15645,6 +15645,39 @@ export type Database = {
           },
         ]
       }
+      jira_auth_sessions: {
+        Row: {
+          catalyst_user_id: string
+          expires_at: string | null
+          id: string
+          jira_account_id: string
+          jira_session_valid: boolean | null
+          revoked_at: string | null
+          session_token_hash: string
+          validated_at: string | null
+        }
+        Insert: {
+          catalyst_user_id: string
+          expires_at?: string | null
+          id?: string
+          jira_account_id: string
+          jira_session_valid?: boolean | null
+          revoked_at?: string | null
+          session_token_hash: string
+          validated_at?: string | null
+        }
+        Update: {
+          catalyst_user_id?: string
+          expires_at?: string | null
+          id?: string
+          jira_account_id?: string
+          jira_session_valid?: boolean | null
+          revoked_at?: string | null
+          session_token_hash?: string
+          validated_at?: string | null
+        }
+        Relationships: []
+      }
       jira_board_mappings: {
         Row: {
           catalyst_team_id: string | null
@@ -15865,6 +15898,78 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      jira_identity_map: {
+        Row: {
+          auth_mode: string | null
+          avatar_url: string | null
+          catalyst_only: boolean | null
+          catalyst_user_id: string | null
+          conflict_fields: string[] | null
+          created_at: string | null
+          display_name: string
+          email: string
+          id: string
+          is_active_in_catalyst: boolean | null
+          is_active_in_jira: boolean | null
+          jira_account_id: string | null
+          jira_connection_id: string | null
+          jira_groups: string[] | null
+          jira_project_keys: string[] | null
+          last_catalyst_login_at: string | null
+          last_jira_login_at: string | null
+          last_synced_at: string | null
+          resource_role_id: string | null
+          sync_version: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          auth_mode?: string | null
+          avatar_url?: string | null
+          catalyst_only?: boolean | null
+          catalyst_user_id?: string | null
+          conflict_fields?: string[] | null
+          created_at?: string | null
+          display_name: string
+          email: string
+          id?: string
+          is_active_in_catalyst?: boolean | null
+          is_active_in_jira?: boolean | null
+          jira_account_id?: string | null
+          jira_connection_id?: string | null
+          jira_groups?: string[] | null
+          jira_project_keys?: string[] | null
+          last_catalyst_login_at?: string | null
+          last_jira_login_at?: string | null
+          last_synced_at?: string | null
+          resource_role_id?: string | null
+          sync_version?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          auth_mode?: string | null
+          avatar_url?: string | null
+          catalyst_only?: boolean | null
+          catalyst_user_id?: string | null
+          conflict_fields?: string[] | null
+          created_at?: string | null
+          display_name?: string
+          email?: string
+          id?: string
+          is_active_in_catalyst?: boolean | null
+          is_active_in_jira?: boolean | null
+          jira_account_id?: string | null
+          jira_connection_id?: string | null
+          jira_groups?: string[] | null
+          jira_project_keys?: string[] | null
+          last_catalyst_login_at?: string | null
+          last_jira_login_at?: string | null
+          last_synced_at?: string | null
+          resource_role_id?: string | null
+          sync_version?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
       }
       jira_project_mappings: {
         Row: {
@@ -16384,6 +16489,105 @@ export type Database = {
           },
         ]
       }
+      jira_sync_runs: {
+        Row: {
+          completed_at: string | null
+          conflicts_detected: number | null
+          direction: string
+          duration_ms: number | null
+          id: string
+          run_type: string
+          started_at: string | null
+          status: string | null
+          triggered_by: string | null
+          users_created: number | null
+          users_deactivated: number | null
+          users_failed: number | null
+          users_updated: number | null
+        }
+        Insert: {
+          completed_at?: string | null
+          conflicts_detected?: number | null
+          direction: string
+          duration_ms?: number | null
+          id?: string
+          run_type: string
+          started_at?: string | null
+          status?: string | null
+          triggered_by?: string | null
+          users_created?: number | null
+          users_deactivated?: number | null
+          users_failed?: number | null
+          users_updated?: number | null
+        }
+        Update: {
+          completed_at?: string | null
+          conflicts_detected?: number | null
+          direction?: string
+          duration_ms?: number | null
+          id?: string
+          run_type?: string
+          started_at?: string | null
+          status?: string | null
+          triggered_by?: string | null
+          users_created?: number | null
+          users_deactivated?: number | null
+          users_failed?: number | null
+          users_updated?: number | null
+        }
+        Relationships: []
+      }
+      jira_sync_user_events: {
+        Row: {
+          changed_fields: string[] | null
+          created_at: string | null
+          direction: string | null
+          email: string | null
+          error_message: string | null
+          event_type: string
+          id: string
+          identity_map_id: string | null
+          sync_run_id: string | null
+        }
+        Insert: {
+          changed_fields?: string[] | null
+          created_at?: string | null
+          direction?: string | null
+          email?: string | null
+          error_message?: string | null
+          event_type: string
+          id?: string
+          identity_map_id?: string | null
+          sync_run_id?: string | null
+        }
+        Update: {
+          changed_fields?: string[] | null
+          created_at?: string | null
+          direction?: string | null
+          email?: string | null
+          error_message?: string | null
+          event_type?: string
+          id?: string
+          identity_map_id?: string | null
+          sync_run_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "jira_sync_user_events_identity_map_id_fkey"
+            columns: ["identity_map_id"]
+            isOneToOne: false
+            referencedRelation: "jira_identity_map"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "jira_sync_user_events_sync_run_id_fkey"
+            columns: ["sync_run_id"]
+            isOneToOne: false
+            referencedRelation: "jira_sync_runs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       jira_transitions_cache: {
         Row: {
           cached_at: string | null
@@ -16540,6 +16744,80 @@ export type Database = {
             referencedColumns: ["theme_owner_id"]
           },
         ]
+      }
+      jira_user_project_perms: {
+        Row: {
+          created_at: string | null
+          id: string
+          identity_map_id: string
+          permission_level: string | null
+          project_id: string
+          project_key: string
+          project_name: string
+          synced_from_jira: boolean | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          identity_map_id: string
+          permission_level?: string | null
+          project_id: string
+          project_key: string
+          project_name: string
+          synced_from_jira?: boolean | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          identity_map_id?: string
+          permission_level?: string | null
+          project_id?: string
+          project_key?: string
+          project_name?: string
+          synced_from_jira?: boolean | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "jira_user_project_perms_identity_map_id_fkey"
+            columns: ["identity_map_id"]
+            isOneToOne: false
+            referencedRelation: "jira_identity_map"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      jira_webhook_events: {
+        Row: {
+          event_type: string
+          hmac_valid: boolean | null
+          id: string
+          jira_account_id: string | null
+          processed: boolean | null
+          raw_payload: Json
+          received_at: string | null
+        }
+        Insert: {
+          event_type: string
+          hmac_valid?: boolean | null
+          id?: string
+          jira_account_id?: string | null
+          processed?: boolean | null
+          raw_payload: Json
+          received_at?: string | null
+        }
+        Update: {
+          event_type?: string
+          hmac_valid?: boolean | null
+          id?: string
+          jira_account_id?: string | null
+          processed?: boolean | null
+          raw_payload?: Json
+          received_at?: string | null
+        }
+        Relationships: []
       }
       jira_work_item_links: {
         Row: {
