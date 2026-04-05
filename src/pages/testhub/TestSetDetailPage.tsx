@@ -4,6 +4,7 @@
  */
 
 import { useState, useCallback, useEffect } from 'react';
+import { useTheme } from '@/hooks/useTheme';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Edit, Plus, RefreshCw, Zap, Layers, Users, Calendar, ExternalLink, X, GripVertical, Clock } from 'lucide-react';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core';
@@ -52,6 +53,7 @@ function DraggableRow({ item, isSelected, onToggle, navigate }: any) {
 }
 
 export default function TestSetDetailPage() {
+  const { isDark } = useTheme();
   const { setId } = useParams<{ setId: string }>();
   const navigate = useNavigate();
 
@@ -123,7 +125,7 @@ export default function TestSetDetailPage() {
   };
 
   return (
-    <div className="flex-1 p-6 overflow-auto">
+    <div className={cn("flex-1 p-6 overflow-auto", isDark && "bg-[#1A1714]")}>
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-4">
@@ -215,13 +217,13 @@ export default function TestSetDetailPage() {
         {isLoadingCases ? (
           <div className="space-y-2">{[1,2,3].map(i => <Skeleton key={i} className="h-12 w-full" />)}</div>
         ) : !displayItems?.length ? (
-          <div className="text-center py-8 border border-dashed border-border rounded-lg">
+          <div className={cn("text-center py-8 border border-dashed border-border rounded-lg", isDark && "bg-[#232019] border-[rgba(255,255,255,0.08)]")}>
             <p className="text-muted-foreground">{isStatic ? 'Click "Add Test Cases" to add tests' : 'Click "Refresh" to populate'}</p>
           </div>
         ) : (
           <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-            <div className="border border-border rounded-lg overflow-hidden">
-              <div className="grid grid-cols-[40px_40px_100px_1fr_100px_40px] bg-muted/50 border-b border-border h-9 items-center px-2">
+            <div className={cn("border border-border rounded-lg overflow-hidden", isDark && "border-[rgba(255,255,255,0.08)]")}>
+              <div className={cn("grid grid-cols-[40px_40px_100px_1fr_100px_40px] bg-muted/50 border-b border-border h-9 items-center px-2", isDark && "bg-[#2C2823] border-[rgba(255,255,255,0.08)]")}>
                 <span></span>
                 <Checkbox checked={selectedIds.size === displayItems.length && displayItems.length > 0}
                   onCheckedChange={ch => ch ? setSelectedIds(new Set(displayItems.map((tc: any) => tc.test_case?.id).filter(Boolean))) : setSelectedIds(new Set())} />

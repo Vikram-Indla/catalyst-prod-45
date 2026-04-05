@@ -84,11 +84,11 @@ const InfoCard: React.FC<{ label: string; children: React.ReactNode; isDark?: bo
   </div>
 );
 const PERM_LEVELS = ['view', 'edit', 'full', 'none'] as const;
-const PERM_COLORS: Record<string, { bg: string; color: string }> = {
-  view: { bg: '#EFF6FF', color: '#0747A6' },
-  edit: { bg: '#FEF3C7', color: '#92400E' },
-  full: { bg: '#DCFCE7', color: '#006644' },
-  none: { bg: '#F1F5F9', color: '#64748B' },
+const PERM_COLORS: Record<string, { bg: string; color: string; bgDark: string; colorDark: string }> = {
+  view: { bg: '#EFF6FF', color: '#0747A6', bgDark: 'rgba(37,99,235,0.12)', colorDark: '#93C5FD' },
+  edit: { bg: '#FEF3C7', color: '#92400E', bgDark: 'rgba(251,191,36,0.12)', colorDark: '#FCD34D' },
+  full: { bg: '#DCFCE7', color: '#006644', bgDark: 'rgba(34,197,94,0.12)', colorDark: '#86EFAC' },
+  none: { bg: '#F1F5F9', color: '#64748B', bgDark: '#232019', colorDark: '#6B6560' },
 };
 
 function getEventDotColor(ev: any): string {
@@ -219,8 +219,8 @@ const ProjectsTab: React.FC<{ perms: any[]; isDark?: boolean }> = ({ perms, isDa
                               style={{
                                 padding: '3px 7px', fontSize: '9px', fontWeight: 700,
                                 textTransform: 'uppercase', cursor: active ? 'default' : 'pointer',
-                                background: active ? colors.bg : 'transparent',
-                                color: active ? colors.color : (isDark ? '#6B6560' : '#94A3B8'),
+                                background: active ? (isDark ? colors.bgDark : colors.bg) : 'transparent',
+                                color: active ? (isDark ? colors.colorDark : colors.color) : (isDark ? '#6B6560' : '#94A3B8'),
                                 border: 'none',
                                 borderRight: i < 3 ? `1px solid ${isDark ? 'rgba(255,255,255,0.10)' : 'rgba(15,23,42,0.10)'}` : 'none',
                               }}
@@ -376,7 +376,9 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
                   display: 'inline-flex', alignItems: 'center', gap: '3px',
                   padding: '1px 6px', borderRadius: '3px', fontSize: '10px', fontWeight: 700,
                   letterSpacing: '0.03em', textTransform: 'uppercase',
-                  background: '#EFF6FF', color: '#2563EB', border: '1px solid #BFDBFE',
+                  background: isDark ? 'rgba(37,99,235,0.15)' : '#EFF6FF',
+                  color: isDark ? '#93C5FD' : '#2563EB',
+                  border: `1px solid ${isDark ? 'rgba(37,99,235,0.30)' : '#BFDBFE'}`,
                 }}>
                   Jira Proxy
                 </span>
@@ -384,7 +386,9 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
                 <span style={{
                   padding: '1px 6px', borderRadius: '3px', fontSize: '10px', fontWeight: 700,
                   letterSpacing: '0.03em', textTransform: 'uppercase',
-                  background: '#F5F3FF', color: '#7C3AED', border: '1px solid rgba(124,58,237,0.25)',
+                  background: isDark ? 'rgba(124,58,237,0.15)' : '#F5F3FF',
+                  color: isDark ? '#C4B5FD' : '#7C3AED',
+                  border: '1px solid rgba(124,58,237,0.25)',
                 }}>
                   Local Auth
                 </span>

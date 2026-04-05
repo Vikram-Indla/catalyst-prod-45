@@ -77,8 +77,8 @@ const CreateCatalystUserModal: React.FC<Props> = ({ open, onClose, onSuccess }) 
   return (
     <Dialog open={open} onOpenChange={v => { if (!v) onClose(); }}>
       <DialogContent
-        className="!bg-white !text-slate-900 p-0 gap-0"
-        style={{ backgroundColor: '#ffffff', color: '#0F172A', maxWidth: '460px', borderRadius: '8px' }}
+        className="!bg-white dark:!bg-[#232019] !text-slate-900 dark:!text-[#F5F3F0] p-0 gap-0"
+        style={{ maxWidth: '460px', borderRadius: '8px' }}
       >
         {/* Header */}
         <div style={{ padding: '16px 20px', borderBottom: '1px solid rgba(15,23,42,0.06)', position: 'relative' }}>
@@ -124,7 +124,7 @@ const CreateCatalystUserModal: React.FC<Props> = ({ open, onClose, onSuccess }) 
               value={displayName}
               onChange={e => { setDisplayName(e.target.value); setErrors(p => ({ ...p, displayName: '' })); }}
               placeholder="e.g. Dr. Ahmed Al-Rashid"
-              className="!bg-white !text-slate-900 !border-slate-200"
+              className="!bg-white dark:!bg-[#232019] !text-slate-900 dark:!text-[#F5F3F0] !border-slate-200 dark:!border-[rgba(255,255,255,0.08)]"
               style={{ fontSize: '12px', height: '34px' }}
             />
             {errors.displayName && <span style={{ fontSize: '10px', color: '#DC2626', marginTop: '2px', display: 'block' }}>{errors.displayName}</span>}
@@ -138,7 +138,7 @@ const CreateCatalystUserModal: React.FC<Props> = ({ open, onClose, onSuccess }) 
               value={email}
               onChange={e => { setEmail(e.target.value); setErrors(p => ({ ...p, email: '' })); }}
               placeholder="user@moi.gov.sa"
-              className="!bg-white !text-slate-900 !border-slate-200"
+              className="!bg-white dark:!bg-[#232019] !text-slate-900 dark:!text-[#F5F3F0] !border-slate-200 dark:!border-[rgba(255,255,255,0.08)]"
               style={{ fontSize: '12px', height: '34px' }}
             />
             {errors.email && <span style={{ fontSize: '10px', color: '#DC2626', marginTop: '2px', display: 'block' }}>{errors.email}</span>}
@@ -153,7 +153,7 @@ const CreateCatalystUserModal: React.FC<Props> = ({ open, onClose, onSuccess }) 
                 value={password}
                 onChange={e => { setPassword(e.target.value); setErrors(p => ({ ...p, password: '' })); }}
                 placeholder="Min 8 characters"
-                className="!bg-white !text-slate-900 !border-slate-200 pr-9"
+                className="!bg-white dark:!bg-[#232019] !text-slate-900 dark:!text-[#F5F3F0] !border-slate-200 dark:!border-[rgba(255,255,255,0.08)] pr-9"
                 style={{ fontSize: '12px', height: '34px' }}
               />
               <button
@@ -178,10 +178,10 @@ const CreateCatalystUserModal: React.FC<Props> = ({ open, onClose, onSuccess }) 
             <div>
               <label style={labelStyle}>Resource Role</label>
               <Select value={roleId} onValueChange={setRoleId}>
-                <SelectTrigger className="!bg-white !text-slate-900 !border-slate-200" style={{ height: '34px', fontSize: '12px' }}>
+                <SelectTrigger className="!bg-white dark:!bg-[#232019] !text-slate-900 dark:!text-[#F5F3F0] !border-slate-200 dark:!border-[rgba(255,255,255,0.08)]" style={{ height: '34px', fontSize: '12px' }}>
                   <SelectValue placeholder="Select role" />
                 </SelectTrigger>
-                <SelectContent className="!bg-white !text-slate-900">
+                <SelectContent className="!bg-white dark:!bg-[#2C2823] !text-slate-900 dark:!text-[#F5F3F0]">
                   {ROLES.map(r => (
                     <SelectItem key={r} value={r} style={{ fontSize: '12px' }}>{r}</SelectItem>
                   ))}
@@ -191,10 +191,10 @@ const CreateCatalystUserModal: React.FC<Props> = ({ open, onClose, onSuccess }) 
             <div>
               <label style={labelStyle}>Department</label>
               <Select value={department} onValueChange={setDepartment}>
-                <SelectTrigger className="!bg-white !text-slate-900 !border-slate-200" style={{ height: '34px', fontSize: '12px' }}>
+                <SelectTrigger className="!bg-white dark:!bg-[#232019] !text-slate-900 dark:!text-[#F5F3F0] !border-slate-200 dark:!border-[rgba(255,255,255,0.08)]" style={{ height: '34px', fontSize: '12px' }}>
                   <SelectValue placeholder="Select department" />
                 </SelectTrigger>
-                <SelectContent className="!bg-white !text-slate-900">
+                <SelectContent className="!bg-white dark:!bg-[#2C2823] !text-slate-900 dark:!text-[#F5F3F0]">
                   {DEPARTMENTS.map(d => (
                     <SelectItem key={d} value={d} style={{ fontSize: '12px' }}>{d}</SelectItem>
                   ))}
