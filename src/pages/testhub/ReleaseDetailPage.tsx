@@ -232,7 +232,7 @@ function CyclesTab({ cycles, isLoading, navigate, isDark }: { cycles: any[]; isL
             <th style={getThStyle(isDark)}>Total</th>
             <th style={getThStyle(isDark)}>Passed</th>
             <th style={getThStyle(isDark)}>Failed</th>
-            <th style={{ ...thStyle, width: 30 }}></th>
+            <th style={{ ...getThStyle(isDark), width: 30 }}></th>
           </tr>
         </thead>
         <tbody>
