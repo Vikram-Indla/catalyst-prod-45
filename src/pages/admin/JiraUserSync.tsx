@@ -854,6 +854,7 @@ const JiraUserSync: React.FC = () => {
           <UserDetailPanel
             userId={activeUserId}
             onClose={() => setActiveUserId(null)}
+            isDark={isDark}
           />
         )}
         </div>{/* end flex row */}
