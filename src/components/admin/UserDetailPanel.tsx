@@ -44,6 +44,7 @@ function hashColor(id: string): typeof AVATAR_COLORS[number] {
 interface Props {
   userId: string;
   onClose: () => void;
+  isDark?: boolean;
 }
 
 const sectionLabel: React.CSSProperties = {
@@ -281,7 +282,7 @@ const ActivityTab: React.FC<{ events: any[] }> = ({ events }) => {
   );
 };
 
-const UserDetailPanel: React.FC<Props> = ({ userId, onClose }) => {
+const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) => {
   const { data, isLoading } = useJiraUserDetail(userId);
   const { mutate: toggleStatus, isPending: toggling } = useToggleUserStatus();
   const [activeTab, setActiveTab] = useState<TabKey>('profile');
