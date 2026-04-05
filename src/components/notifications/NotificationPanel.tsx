@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { ExternalLink, MoreVertical, CheckCheck, MessageSquare, Settings, RefreshCw, X } from "lucide-react";
 import type { Notification, NotificationTab } from "@/types/notifications";
@@ -8,6 +8,7 @@ import { useUnreadCount } from "@/hooks/useUnreadCount";
 import { useRealtimeNotifications } from "@/hooks/useRealtimeNotifications";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useActorProfiles } from "@/hooks/useActorProfiles";
 import NotificationItem from "./NotificationItem";
 import SectionHeader from "./SectionHeader";
 import EmptyState from "./EmptyState";
