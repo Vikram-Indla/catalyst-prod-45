@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Plus, RefreshCw, Search, ChevronLeft, ChevronRight, UserX, Copy, Loader2, Share2, Download, Users2, FolderSearch } from 'lucide-react';
+import { Plus, RefreshCw, Search, ChevronLeft, ChevronRight, UserX, Copy, Loader2, Share2, Download, Users2, FolderSearch, FolderPlus, Check } from 'lucide-react';
 import UserDetailPanel from '@/components/admin/UserDetailPanel';
 import { toast } from 'sonner';
 import {
@@ -8,9 +8,16 @@ import {
   useJiraSyncUsers,
   useToggleUserStatus,
   useCopyPermissions,
+  useJiraProjects,
+  useAssignUsersToProject,
 } from '@/hooks/useJiraUserSync';
 import type { SyncFilter } from '@/types/jiraSync';
 import CreateCatalystUserModal from '@/components/admin/CreateCatalystUserModal';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 
 /* ── Stats Config ── */
 const STATS_CONFIG = [
@@ -32,7 +39,7 @@ const FILTERS: { value: SyncFilter; label: string }[] = [
   { value: 'inactive', label: 'Inactive' },
 ];
 
-const PER_PAGE = 15;
+const PER_PAGE = 10;
 
 const AVATAR_COLORS = [
   { bg: '#DBEAFE', text: '#1D4ED8' }, { bg: '#DCFCE7', text: '#15803D' },
@@ -114,6 +121,9 @@ const JiraUserSync: React.FC = () => {
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [activeUserId, setActiveUserId] = useState<string | null>(null);
   const [togglingId, setTogglingId] = useState<string | null>(null);
+  const [assignPopoverOpen, setAssignPopoverOpen] = useState(false);
+  const [assignPermLevel, setAssignPermLevel] = useState<'view' | 'edit' | 'full'>('view');
+  const [assignSearch, setAssignSearch] = useState('');
 
   const debouncedSearch = useDebouncedValue(search, 300);
 
@@ -122,6 +132,8 @@ const JiraUserSync: React.FC = () => {
   const { mutate: triggerSync, isPending: isSyncing } = useTriggerUserSync();
   const { mutate: toggleStatus } = useToggleUserStatus();
   const { mutate: copyPerms } = useCopyPermissions();
+  const { data: jiraProjects } = useJiraProjects();
+  const { mutate: assignToProject, isPending: isAssigning } = useAssignUsersToProject();
 
   const users = usersResult?.data ?? [];
   const totalCount = usersResult?.count ?? 0;
@@ -256,14 +268,14 @@ const JiraUserSync: React.FC = () => {
         </div>
 
         {/* ══ FIX 1 — Stat Cards with surface ══ */}
-        <div className="shrink-0 flex gap-3 flex-wrap" style={{ padding: '14px 20px', borderBottom: '0.75px solid rgba(15,23,42,0.06)' }}>
+        <div className="shrink-0 flex flex-nowrap" style={{ gap: '50px', padding: '24px 24px 20px', borderBottom: '0.75px solid rgba(15,23,42,0.06)' }}>
           {STATS_CONFIG.map((card) => (
             <div
               key={card.key}
               className="bg-white dark:bg-[#232019] border border-[rgba(15,23,42,0.08)] dark:border-[rgba(200,210,225,0.10)]"
               style={{
-                flex: '1 1 160px',
-                minWidth: '160px',
+                flex: 1,
+                minWidth: '140px',
                 padding: '16px 20px',
                 borderRadius: '6px',
               }}
@@ -271,14 +283,14 @@ const JiraUserSync: React.FC = () => {
               <div className="flex items-center gap-[5px] mb-[4px]">
                 <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: card.dot, flexShrink: 0 }} />
                 <span className="text-[#6B7280] dark:text-[rgba(200,210,225,0.50)]"
-                  style={{ fontSize: '11px', fontWeight: 500 }}>{card.label}</span>
+                  style={{ fontSize: '11px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.03em' }}>{card.label}</span>
               </div>
               <div className="text-[#111827] dark:text-[rgba(225,230,240,0.95)]"
-                style={{ fontSize: '24px', fontWeight: 650, lineHeight: 1.1 }}>
+                style={{ fontSize: '28px', fontWeight: 650, lineHeight: 1.1 }}>
                 {getStatValue(card.key)}
               </div>
               <div className="text-[#9CA3AF] dark:text-[rgba(200,210,225,0.35)]"
-                style={{ fontSize: '11px', marginTop: '2px' }}>{card.sub}</div>
+                style={{ fontSize: '11px', marginTop: '4px' }}>{card.sub}</div>
             </div>
           ))}
         </div>
@@ -339,20 +351,120 @@ const JiraUserSync: React.FC = () => {
             <span className="text-[#2563EB] dark:text-[#93C5FD]" style={{ fontSize: '12px', fontWeight: 500 }}>
               {selected.size} users selected
             </span>
-            <button onClick={handleCopyPermissions}
-              className="inline-flex items-center gap-1 bg-white dark:bg-[#232019] text-[#334155] dark:text-[#A09890]"
-              style={{ padding: '3px 10px', borderRadius: '4px', fontSize: '11px', fontWeight: 500, cursor: 'pointer', border: '1px solid rgba(15,23,42,0.10)' }}>
-              <Copy size={11} /> Copy permissions to selected
-            </button>
+            <span className="text-[#94A3B8] dark:text-[#6B6560]" style={{ fontSize: '11px' }}>|</span>
+
+            {/* Assign to Project popover */}
+            <Popover open={assignPopoverOpen} onOpenChange={setAssignPopoverOpen}>
+              <PopoverTrigger asChild>
+                <button
+                  className="inline-flex items-center gap-1 bg-[#2563EB] text-white"
+                  style={{ padding: '3px 10px', borderRadius: '4px', fontSize: '11px', fontWeight: 600, cursor: 'pointer', border: 'none' }}>
+                  <FolderPlus size={11} /> Assign to Project ▾
+                </button>
+              </PopoverTrigger>
+              <PopoverContent
+                className="!bg-white dark:!bg-[#232019] !border-[rgba(15,23,42,0.12)] dark:!border-[rgba(255,255,255,0.08)]"
+                style={{ width: '360px', padding: 0 }}
+                align="start"
+              >
+                <div style={{ padding: '12px 14px 8px' }}>
+                  <div className="text-[#0F172A] dark:text-[#F5F3F0]" style={{ fontSize: '13px', fontWeight: 600, marginBottom: '2px' }}>
+                    Assign to Jira Space
+                  </div>
+                  <div className="text-[#64748B] dark:text-[#6B6560]" style={{ fontSize: '11px', marginBottom: '8px' }}>
+                    Select a project. Permission level applies to all {selected.size} selected users.
+                  </div>
+                  <input
+                    value={assignSearch}
+                    onChange={e => setAssignSearch(e.target.value)}
+                    placeholder="Search projects..."
+                    className="w-full bg-[#F8FAFC] dark:bg-[#1A1714] text-[#0F172A] dark:text-[#F5F3F0]"
+                    style={{ padding: '5px 8px', borderRadius: '4px', fontSize: '11px', border: '1px solid rgba(15,23,42,0.10)', outline: 'none', marginBottom: '6px' }}
+                  />
+                  {/* Permission level selector */}
+                  <div className="flex items-center gap-1 mb-2">
+                    <span className="text-[#64748B] dark:text-[#6B6560]" style={{ fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', marginRight: '4px' }}>Level:</span>
+                    {(['view', 'edit', 'full'] as const).map(lvl => (
+                      <button
+                        key={lvl}
+                        onClick={() => setAssignPermLevel(lvl)}
+                        style={{
+                          padding: '2px 8px', borderRadius: '3px', fontSize: '10px', fontWeight: 700,
+                          textTransform: 'uppercase', cursor: 'pointer', border: '1px solid rgba(15,23,42,0.10)',
+                          background: assignPermLevel === lvl
+                            ? lvl === 'full' ? '#DCFCE7' : lvl === 'edit' ? '#EFF6FF' : '#F1F5F9'
+                            : 'transparent',
+                          color: assignPermLevel === lvl
+                            ? lvl === 'full' ? '#006644' : lvl === 'edit' ? '#1D4ED8' : '#64748B'
+                            : '#94A3B8',
+                        }}
+                      >
+                        {lvl}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div style={{ maxHeight: '200px', overflowY: 'auto', borderTop: '0.75px solid rgba(15,23,42,0.06)' }}>
+                  {(jiraProjects || [])
+                    .filter(p => !assignSearch || p.project_key.toLowerCase().includes(assignSearch.toLowerCase()) || (p.project_name || '').toLowerCase().includes(assignSearch.toLowerCase()))
+                    .map(proj => (
+                      <button
+                        key={proj.project_key}
+                        className="w-full flex items-center gap-2 hover:bg-[rgba(0,0,0,0.04)] dark:hover:bg-[rgba(255,255,255,0.04)] text-left"
+                        style={{ padding: '7px 14px', border: 'none', background: 'transparent', cursor: 'pointer' }}
+                        disabled={isAssigning}
+                        onClick={() => {
+                          const ids = Array.from(selected);
+                          assignToProject({
+                            userIds: ids,
+                            projectId: proj.project_id,
+                            projectKey: proj.project_key,
+                            projectName: proj.project_name || proj.project_key,
+                            permissionLevel: assignPermLevel,
+                          }, {
+                            onSuccess: () => {
+                              toast.success(`${ids.length} users assigned to ${proj.project_key} with ${assignPermLevel} access`);
+                              setAssignPopoverOpen(false);
+                              setAssignSearch('');
+                            },
+                            onError: () => toast.error('Failed to assign users'),
+                          });
+                        }}
+                      >
+                        <span
+                          className="bg-[#F1F5F9] dark:bg-[rgba(200,210,225,0.08)] text-[#374151] dark:text-[rgba(200,210,225,0.75)]"
+                          style={{ fontSize: '10px', fontWeight: 700, fontFamily: "'JetBrains Mono', monospace", padding: '1px 5px', borderRadius: '2px' }}>
+                          {proj.project_key}
+                        </span>
+                        <span className="text-[#334155] dark:text-[#A09890]" style={{ fontSize: '11px', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          {proj.project_name || proj.project_key}
+                        </span>
+                        <Check size={10} className="text-[#94A3B8] opacity-0" />
+                      </button>
+                    ))}
+                  {(jiraProjects || []).filter(p => !assignSearch || p.project_key.toLowerCase().includes(assignSearch.toLowerCase())).length === 0 && (
+                    <div className="text-[#94A3B8] dark:text-[#6B6560]" style={{ padding: '16px', textAlign: 'center', fontSize: '11px' }}>
+                      No projects found
+                    </div>
+                  )}
+                </div>
+              </PopoverContent>
+            </Popover>
+
             <button onClick={handleBulkDeactivate}
               className="inline-flex items-center gap-1 bg-white dark:bg-[#232019] text-[#DC2626] dark:text-[#FCA5A5]"
               style={{ padding: '3px 10px', borderRadius: '4px', fontSize: '11px', fontWeight: 500, cursor: 'pointer', border: '1px solid rgba(15,23,42,0.10)' }}>
-              <UserX size={11} /> Make Inactive
+              <UserX size={11} /> Deactivate
+            </button>
+            <button onClick={handleCopyPermissions}
+              className="inline-flex items-center gap-1 bg-white dark:bg-[#232019] text-[#334155] dark:text-[#A09890]"
+              style={{ padding: '3px 10px', borderRadius: '4px', fontSize: '11px', fontWeight: 500, cursor: 'pointer', border: '1px solid rgba(15,23,42,0.10)' }}>
+              <Copy size={11} /> Copy Permissions
             </button>
             <button onClick={clearAll}
               className="ml-auto text-[#64748B] dark:text-[#6B6560]"
               style={{ padding: '2px 6px', borderRadius: '4px', fontSize: '11px', fontWeight: 500, background: 'transparent', border: 'none', cursor: 'pointer' }}>
-              Clear
+              Clear selection
             </button>
           </div>
         )}
