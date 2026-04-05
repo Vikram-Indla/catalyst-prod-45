@@ -892,6 +892,7 @@ function getFromTagPrefix(ageDays: number): string {
 
 // Priority badge helper
 function PriorityBadge({ priority }: { priority: string }) {
+  const { isDark } = useTheme();
   const p = (priority || '').toLowerCase();
   if (p === 'highest' || p === 'critical') {
     return <span style={{ fontSize: '11px', fontWeight: 700, padding: '2px 6px', borderRadius: '3px', background: '#FEF2F2', color: '#DC2626' }}>{priority}</span>;
@@ -908,6 +909,7 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected, overview, 
   overview?: { department?: string } | null;
   onAvatarClick?: () => void;
 }) {
+  const { isDark } = useTheme();
   const canvasRef = useRef<HTMLDivElement>(null);
   const doneRef = useRef<HTMLDivElement>(null);
   const [W, setW] = useState(1000);
@@ -1376,6 +1378,7 @@ function CompletedSummaryBar({ items, testId, onViewClick }: { items: R360WorkIt
 // CHRONOLOGY VIEW
 // ═══════════════════════════════════════════
 function ChronologyView({ items, onSelect, weekStart, weekEnd }: { items: R360WorkItem[]; onSelect: (i: R360WorkItem) => void; weekStart: Date; weekEnd: Date }) {
+  const { isDark } = useTheme();
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
   const groupRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const carryoverRef = useRef<HTMLDivElement | null>(null);
@@ -1632,6 +1635,7 @@ function ChronologyView({ items, onSelect, weekStart, weekEnd }: { items: R360Wo
 // BOARD VIEW
 // ═══════════════════════════════════════════
 function BoardView({ items, onSelect }: { items: R360WorkItem[]; onSelect: (i: R360WorkItem) => void }) {
+  const { isDark } = useTheme();
   const doneColRef = useRef<HTMLDivElement>(null);
   const columns = useMemo(() => [
     { key: 'to_do', label: 'TO DO', color: '#D97706', items: items.filter(i => i.status_category === 'to_do' || i.status_category === 'blocked') },
