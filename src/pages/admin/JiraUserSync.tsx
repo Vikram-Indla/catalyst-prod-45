@@ -563,9 +563,6 @@ const JiraUserSync: React.FC = () => {
                         </span>
                       )}
                     </td>
-                        </span>
-                      )}
-                    </td>
 
                     {/* Projects & Permissions */}
                     <td style={{ padding: '0 12px', maxWidth: '200px' }}>
