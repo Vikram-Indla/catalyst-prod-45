@@ -419,26 +419,50 @@ const JiraUserSync: React.FC = () => {
                   <td />
                 </tr>
               ))
-            ) : users.length === 0 ? (
+            ) : users.length === 0 && !usersFetching ? (
               <tr>
                 <td colSpan={8} style={{ textAlign: 'center', padding: '60px 20px' }}>
-                  <Search size={28} style={{ color: '#CBD5E1', margin: '0 auto 10px', display: 'block' }} />
-                  <div style={{ fontSize: '13px', color: '#64748B', fontWeight: 500 }}>No users match this filter</div>
-                  <button
-                    onClick={() => { setFilter('all'); setSearch(''); }}
-                    style={{
-                      marginTop: 8, fontSize: '12px', color: '#2563EB', background: 'none',
-                      border: 'none', cursor: 'pointer', textDecoration: 'underline',
-                    }}
-                  >
-                    Clear filter
-                  </button>
+                  {debouncedSearch ? (
+                    <>
+                      <Search size={24} style={{ color: '#94A3B8', margin: '0 auto 10px', display: 'block' }} />
+                      <div style={{ fontSize: '14px', color: '#334155', fontWeight: 500 }}>No users match '{debouncedSearch}'</div>
+                      <button
+                        onClick={() => setSearch('')}
+                        style={{ marginTop: 8, fontSize: '12px', color: '#2563EB', background: 'none', border: 'none', cursor: 'pointer' }}
+                      >Clear search</button>
+                    </>
+                  ) : filter !== 'all' ? (
+                    <>
+                      <FolderSearch size={24} style={{ color: '#94A3B8', margin: '0 auto 10px', display: 'block' }} />
+                      <div style={{ fontSize: '14px', color: '#334155', fontWeight: 500 }}>
+                        {filter === 'conflict' ? 'No conflicts found' : filter === 'inactive' ? 'No inactive users' : `No ${filter} users found`}
+                      </div>
+                      <button
+                        onClick={() => setFilter('all')}
+                        style={{ marginTop: 8, fontSize: '12px', color: '#2563EB', background: 'none', border: 'none', cursor: 'pointer' }}
+                      >View all users</button>
+                    </>
+                  ) : (
+                    <>
+                      <Users2 size={32} style={{ color: '#94A3B8', margin: '0 auto 10px', display: 'block' }} />
+                      <div style={{ fontSize: '14px', color: '#334155', fontWeight: 500 }}>No synced users yet</div>
+                      <button
+                        onClick={handleSync}
+                        disabled={isSyncing}
+                        style={{
+                          marginTop: 10, display: 'inline-flex', alignItems: 'center', gap: '5px',
+                          background: '#2563EB', color: '#FFFFFF', border: 'none',
+                          padding: '6px 14px', borderRadius: '5px', fontSize: '12px', fontWeight: 600,
+                          cursor: isSyncing ? 'not-allowed' : 'pointer',
+                        }}
+                      >
+                        <RefreshCw size={11} className={isSyncing ? 'animate-spin' : ''} />
+                        Sync Now to pull users from Jira
+                      </button>
+                    </>
+                  )}
                 </td>
               </tr>
-            ) : (
-              users.map((user: any, idx: number) => {
-                const isInactive = !user.is_active_in_catalyst;
-                const isCatalystOnly = user.catalyst_only;
                 const hasConflicts = user.conflict_fields && user.conflict_fields.length > 0;
                 const isActive = activeUserId === user.id;
                 const isSelected = selected.has(user.id);
