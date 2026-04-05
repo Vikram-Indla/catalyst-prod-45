@@ -316,6 +316,26 @@ const JiraUserSync: React.FC = () => {
   return (
     <>
     <style>{`
+      /* ── Global dark via data-jsu ── */
+      [data-jsu="dark"] .catalyst-topnav,
+      [data-jsu="dark"] [class*="AdminSidebar"],
+      [data-jsu="dark"] nav,
+      [data-jsu="dark"] aside {
+        background: #0F1114 !important;
+        border-color: rgba(200,210,225,0.08) !important;
+        color: rgba(225,230,240,0.92) !important;
+      }
+      [data-jsu="dark"] .catalyst-topnav *,
+      [data-jsu="dark"] nav *,
+      [data-jsu="dark"] aside * {
+        color: inherit !important;
+        border-color: inherit !important;
+      }
+      [data-jsu="dark"] .catalyst-topnav a:hover,
+      [data-jsu="dark"] nav a:hover,
+      [data-jsu="dark"] aside button:hover {
+        background: rgba(200,210,225,0.06) !important;
+      }
       .jsu-page { background: ${T.page} !important; min-height: 100vh; }
       .jsu-surface { background: ${T.surface} !important; border-color: ${T.border} !important; }
       .jsu-sunken { background: ${T.sunken} !important; }
@@ -333,8 +353,6 @@ const JiraUserSync: React.FC = () => {
       .jsu-search { background: ${T.inputBg} !important; border: 0.75px solid ${isDark ? 'rgba(200,210,225,0.12)' : 'rgba(15,23,42,0.12)'} !important; color: ${T.text1} !important; }
       .jsu-search::placeholder { color: ${T.text3} !important; }
       .jsu-stat-card { background: ${T.surface} !important; border: 0.75px solid ${T.border} !important; border-radius: 10px !important; }
-      .jsu-lozenge-active { background: ${isDark ? '#064E3B' : '#E3FCEF'} !important; color: ${isDark ? '#6EE7B7' : '#006644'} !important; }
-      .jsu-lozenge-inactive { background: ${isDark ? '#450A0A' : '#FEE2E2'} !important; color: ${isDark ? '#FCA5A5' : '#991B1B'} !important; }
       .jsu-badge-project { background: ${isDark ? 'rgba(200,210,225,0.08)' : '#F1F5F9'} !important; color: ${isDark ? 'rgba(200,210,225,0.65)' : '#475569'} !important; }
       .jsu-badge-jira { background: ${isDark ? 'rgba(37,99,235,0.15)' : '#EFF6FF'} !important; color: ${isDark ? '#93C5FD' : '#1D4ED8'} !important; border: 0.75px solid ${isDark ? 'rgba(37,99,235,0.25)' : '#BFDBFE'} !important; }
       .jsu-toggle-btn { background: ${T.surface} !important; border: 0.75px solid ${isDark ? 'rgba(200,210,225,0.12)' : 'rgba(15,23,42,0.12)'} !important; color: ${T.text2} !important; }
