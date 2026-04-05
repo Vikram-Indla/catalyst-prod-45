@@ -303,7 +303,7 @@ function FilteredListPanel({
                 background: 'var(--bg-app)', cursor: 'pointer', transition: 'background 120ms',
               }}
               onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,0,0,0.03)'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = '#FFFFFF'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'var(--bg-app)'; }}
             >
               <span style={{ width: 20, flexShrink: 0, display: 'flex', justifyContent: 'center' }}>
                 <JiraIssueTypeIcon type={item.work_item_type || 'Task'} size={16} />
@@ -469,6 +469,7 @@ const TABS: { key: TabKey; label: string }[] = [
 ];
 
 const R360ProfileDrawer = memo(function R360ProfileDrawer({ resourceId, onClose }: R360ProfileDrawerProps) {
+  const { isDark } = useTheme();
   const [activeTab, setActiveTab] = useState<TabKey>('overview');
   const [panelStack, setPanelStack] = useState<PanelView[]>([]);
   const [weekOffset, setWeekOffset] = useState(0);
@@ -913,7 +914,7 @@ function OverviewTab({
 
   // Clickable tile style
   const clickableTileHover = (e: React.MouseEvent, entering: boolean) => {
-    (e.currentTarget as HTMLElement).style.background = entering ? 'rgba(37,99,235,0.04)' : '#FFFFFF';
+    (e.currentTarget as HTMLElement).style.background = entering ? 'rgba(37,99,235,0.04)' : 'var(--bg-app)';
   };
 
   // Clickable row style
@@ -1038,7 +1039,7 @@ function OverviewTab({
         <div style={{ display: 'flex', gap: 16 }}>
           {/* SVG Ring */}
           <svg width={110} height={110} viewBox="0 0 110 110" style={{ flexShrink: 0 }}>
-            <circle cx={55} cy={55} r={44} fill="none" stroke="#E2E8F0" strokeWidth={9} />
+            <circle cx={55} cy={55} r={44} fill="none" stroke="var(--divider)" strokeWidth={9} />
             <circle cx={55} cy={55} r={44} fill="none" stroke="#CBD5E1" strokeWidth={2}
               strokeDasharray="125 151" strokeDashoffset={-69} opacity={0.7} />
             <circle cx={55} cy={55} r={44} fill="none" stroke={loadColour} strokeWidth={9}
@@ -1232,7 +1233,7 @@ function OverviewTab({
             transition: 'background 100ms',
           }}
           onMouseEnter={e => { e.currentTarget.style.background = 'rgba(15,23,42,0.04)'; }}
-          onMouseLeave={e => { e.currentTarget.style.background = '#FFFFFF'; }}
+          onMouseLeave={e => { e.currentTarget.style.background = 'var(--bg-app)'; }}
         >
           <div style={{
             width: 32, height: 32, flexShrink: 0, background: 'var(--cp-blue-wash)', border: '1px solid #DBEAFE',
@@ -1270,7 +1271,7 @@ function OverviewTab({
               onClick={tile.onClick}
               style={{ background: 'var(--bg-app)', padding: '10px 12px', cursor: 'pointer', transition: 'background 120ms' }}
               onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,0,0,0.03)'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = '#FFFFFF'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'var(--bg-app)'; }}
             >
               <div style={{ fontFamily: "'Sora', sans-serif", fontSize: 28, fontWeight: 650, color: tile.color }}>{tile.value}</div>
               <div style={{ fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: MUTED, marginTop: 2 }}>{tile.label}</div>
@@ -1662,7 +1663,7 @@ function WeeklyStoryTab({ workItems, openCount, showFilteredList, weekStart, wee
                 cursor: 'pointer', transition: 'background 150ms',
               }}
               onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,0,0,0.03)'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = '#FFFFFF'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'var(--bg-app)'; }}
             >
               <div style={{ fontFamily: "'Sora', sans-serif", fontSize: 28, fontWeight: 650, color: INK1 }}>{tile.value}</div>
               <div style={{ fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: MUTED, marginTop: 4 }}>{tile.label}</div>
@@ -1804,7 +1805,7 @@ function WorkItemsTab({ workItems, weekStart, weekEnd, weekLabel, weekOffset, se
                 background: 'var(--bg-app)', transition: 'background 80ms',
               }}
               onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,0,0,0.03)'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = '#FFFFFF'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'var(--bg-app)'; }}
             >
               <span style={{ width: 40, display: 'flex', justifyContent: 'center' }}>
                 <JiraIssueTypeIcon type={item.work_item_type || 'Task'} size={16} />
