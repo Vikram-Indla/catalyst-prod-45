@@ -15,6 +15,7 @@ interface NotificationItemProps {
 }
 
 function getActionVerb(type: string, isSystemAssign: boolean): string {
+  if (isSystemAssign && type === 'unassigned') return 'You were removed from';
   if (isSystemAssign) return 'You were assigned to';
   const map: Record<string, string> = {
     assigned_work_item: 'assigned you to',
@@ -25,6 +26,7 @@ function getActionVerb(type: string, isSystemAssign: boolean): string {
     updated_work_item: 'updated',
     status_changed: 'changed status of',
     reassigned_work_item: 'reassigned',
+    unassigned: 'removed you from',
     created_work_item: 'created',
     release_approval_requested: 'requested approval for',
     incident_escalated: 'escalated',
@@ -59,7 +61,7 @@ function NotificationItemInner({ notification, onMarkRead, onClick }: Notificati
 
   // Determine if this is a system-generated assignment (no actor)
   const isSystemAssign = !notification.actor_user_id
-    && (notification.notification_type === 'assigned' || notification.notification_type === 'status_changed');
+    && (notification.notification_type === 'assigned' || notification.notification_type === 'unassigned' || notification.notification_type === 'status_changed');
 
   const actorName = isSystemAssign
     ? ''
