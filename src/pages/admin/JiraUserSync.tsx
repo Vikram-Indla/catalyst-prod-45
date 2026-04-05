@@ -241,18 +241,18 @@ const JiraUserSync: React.FC = () => {
   return (
     <div
       className="flex flex-col h-full"
-      style={{ background: isDark ? '#0F1114' : '#F8FAFC', minHeight: '100vh' }}
+      style={{ background: isDark ? '#1A1714' : '#F8FAFC', minHeight: '100vh' }}
     >
 
       {/* Layer 2 — Main content surface */}
       <div className="jira-surface flex flex-col flex-1 overflow-hidden mx-5 my-4 rounded-lg"
         style={{
-          background: isDark ? '#181A1E' : '#FFFFFF',
-          border: `0.75px solid ${isDark ? 'rgba(200,210,225,0.08)' : 'rgba(15,23,42,0.06)'}`,
+          background: isDark ? '#232019' : '#FFFFFF',
+          border: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.06)'}`,
         }}>
 
         {/* ══ Page Header ══ */}
-        <div className="jira-header-area shrink-0" style={{ padding: '14px 20px 0', borderBottom: `0.75px solid ${isDark ? 'rgba(200,210,225,0.08)' : 'rgba(15,23,42,0.06)'}` }}>
+        <div className="jira-header-area shrink-0" style={{ padding: '14px 20px 0', borderBottom: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.06)'}` }}>
           <div className="flex items-start justify-between pb-3">
             <div>
               <h1 className="jira-text-primary"
@@ -260,7 +260,7 @@ const JiraUserSync: React.FC = () => {
                 Jira User Sync
               </h1>
               <p className="jira-text-secondary"
-                style={{ fontSize: '11px', margin: '2px 0 0', color: isDark ? 'rgba(200,210,225,0.55)' : '#64748B' }}>
+                style={{ fontSize: '11px', margin: '2px 0 0', color: isDark ? '#A09890' : '#64748B' }}>
                 Bidirectional identity bridge · Jira Cloud ↔ Catalyst · Live proxy auth · Webhooks active
               </p>
             </div>
@@ -271,8 +271,8 @@ const JiraUserSync: React.FC = () => {
                 style={{
                   display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                   width: '30px', height: '30px', borderRadius: '5px', cursor: 'pointer',
-                  background: isDark ? '#1E2027' : '#FFFFFF',
-                  border: `1px solid ${isDark ? 'rgba(200,210,225,0.10)' : 'rgba(15,23,42,0.10)'}`,
+                  background: isDark ? '#2C2823' : '#FFFFFF',
+                  border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.10)'}`,
                   color: isDark ? '#A09890' : '#64748B',
                 }}>
                 {isDark ? <Sun size={13} /> : <Moon size={13} />}
@@ -284,9 +284,9 @@ const JiraUserSync: React.FC = () => {
                   display: 'inline-flex', alignItems: 'center', gap: '4px',
                   padding: '5px 11px', borderRadius: '5px', fontSize: '12px', fontWeight: 500,
                   cursor: 'pointer', lineHeight: 1,
-                  background: isDark ? '#1E2027' : '#FFFFFF',
+                  background: isDark ? '#2C2823' : '#FFFFFF',
                   color: isDark ? '#A09890' : '#334155',
-                  border: `1px solid ${isDark ? 'rgba(200,210,225,0.10)' : 'rgba(15,23,42,0.10)'}`,
+                  border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.10)'}`,
                 }}>
                 <Plus size={11} /> Create User
               </button>
@@ -307,30 +307,30 @@ const JiraUserSync: React.FC = () => {
         </div>
 
         {/* ══ Stat Cards ══ */}
-        <div className="jira-stat-band shrink-0 flex flex-nowrap" style={{ gap: '50px', padding: '24px 24px 20px', borderBottom: `0.75px solid ${isDark ? 'rgba(200,210,225,0.08)' : 'rgba(15,23,42,0.06)'}` }}>
+        <div className="jira-stat-band shrink-0 flex flex-nowrap" style={{ gap: '50px', padding: '24px 24px 20px', borderBottom: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.06)'}` }}>
           {STATS_CONFIG.map((card) => (
             <div
               key={card.key}
               className="jira-card"
               style={{
                 flex: 1, minWidth: '140px', padding: '16px 20px', borderRadius: '8px',
-                background: isDark ? '#1E2027' : '#FFFFFF',
-                border: `0.75px solid ${isDark ? 'rgba(200,210,225,0.10)' : 'rgba(15,23,42,0.08)'}`,
+                background: isDark ? '#2C2823' : '#FFFFFF',
+                border: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.08)'}`,
               }}
             >
               <div className="flex items-center gap-[5px] mb-[4px]">
                 <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: card.dot, flexShrink: 0 }} />
                 <span className="jira-stat-label"
-                  style={{ fontSize: '11px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.03em', fontFamily: "'Inter', sans-serif", color: isDark ? 'rgba(200,210,225,0.50)' : '#64748B' }}>
+                  style={{ fontSize: '11px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.03em', fontFamily: "'Inter', sans-serif", color: isDark ? '#6B6560' : '#64748B' }}>
                   {card.label}
                 </span>
               </div>
               <div className="jira-stat-value"
-                style={{ fontSize: '28px', fontWeight: 650, lineHeight: 1.1, fontFamily: "'Sora', sans-serif", color: isDark ? 'rgba(225,230,240,0.95)' : '#0F172A' }}>
+                style={{ fontSize: '28px', fontWeight: 650, lineHeight: 1.1, fontFamily: "'Sora', sans-serif", color: isDark ? '#F5F3F0' : '#0F172A' }}>
                 {getStatValue(card.key)}
               </div>
               <div className="jira-stat-sub"
-                style={{ fontSize: '11px', marginTop: '4px', color: isDark ? 'rgba(200,210,225,0.35)' : '#94A3B8' }}>
+                style={{ fontSize: '11px', marginTop: '4px', color: isDark ? '#6B6560' : '#94A3B8' }}>
                 {card.sub}
               </div>
             </div>
@@ -339,9 +339,9 @@ const JiraUserSync: React.FC = () => {
 
         {/* ══ Toolbar ══ */}
         <div className="jira-toolbar shrink-0 flex items-center gap-[7px] flex-wrap"
-          style={{ padding: '9px 18px', background: isDark ? '#181A1E' : '#FFFFFF', borderBottom: `0.75px solid ${isDark ? 'rgba(200,210,225,0.07)' : 'rgba(15,23,42,0.06)'}` }}>
+          style={{ padding: '9px 18px', background: isDark ? '#232019' : '#FFFFFF', borderBottom: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.06)'}` }}>
           <div className="relative w-[220px]">
-            <Search size={12} className="absolute left-2 top-1/2 -translate-y-1/2" style={{ color: isDark ? 'rgba(200,210,225,0.35)' : '#64748B' }} />
+            <Search size={12} className="absolute left-2 top-1/2 -translate-y-1/2" style={{ color: isDark ? '#6B6560' : '#64748B' }} />
             <input
               className="jira-input w-full"
               value={search}
@@ -349,9 +349,9 @@ const JiraUserSync: React.FC = () => {
               placeholder="Name, email, Jira ID, project…"
               style={{
                 padding: '5px 10px 5px 26px', borderRadius: '4px', fontSize: '12px', outline: 'none',
-                background: isDark ? '#12141A' : '#FFFFFF',
-                color: isDark ? 'rgba(225,230,240,0.92)' : '#0F172A',
-                border: `1px solid ${isDark ? 'rgba(200,210,225,0.12)' : 'rgba(15,23,42,0.10)'}`,
+                background: isDark ? '#1A1714' : '#FFFFFF',
+                color: isDark ? '#F5F3F0' : '#0F172A',
+                border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.10)'}`,
               }}
             />
           </div>
@@ -366,13 +366,13 @@ const JiraUserSync: React.FC = () => {
                   transition: 'all 120ms ease',
                   background: filter === f.value
                     ? (isDark ? 'rgba(37,99,235,0.12)' : '#EFF6FF')
-                    : (isDark ? '#1E2027' : '#FFFFFF'),
+                    : (isDark ? '#2C2823' : '#FFFFFF'),
                   color: filter === f.value
                     ? (isDark ? '#93C5FD' : '#2563EB')
                     : (isDark ? '#A09890' : '#334155'),
                   border: filter === f.value
                     ? `1px solid ${isDark ? 'rgba(37,99,235,0.25)' : '#BFDBFE'}`
-                    : `1px solid ${isDark ? 'rgba(200,210,225,0.10)' : 'rgba(15,23,42,0.10)'}`,
+                    : `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.10)'}`,
                 }}>
                 {f.label}
               </button>
@@ -385,9 +385,9 @@ const JiraUserSync: React.FC = () => {
                 style={{
                   display: 'inline-flex', alignItems: 'center', gap: '4px',
                   padding: '4px 9px', borderRadius: '4px', fontSize: '11px', fontWeight: 500, cursor: 'pointer',
-                  background: isDark ? '#1E2027' : '#FFFFFF',
+                  background: isDark ? '#2C2823' : '#FFFFFF',
                   color: isDark ? '#A09890' : '#334155',
-                  border: `1px solid ${isDark ? 'rgba(200,210,225,0.10)' : 'rgba(15,23,42,0.10)'}`,
+                  border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.10)'}`,
                 }}>
                 <Copy size={11} /> Copy Permissions
               </button>
@@ -397,9 +397,9 @@ const JiraUserSync: React.FC = () => {
               style={{
                 display: 'inline-flex', alignItems: 'center', gap: '4px',
                 padding: '4px 9px', borderRadius: '4px', fontSize: '11px', fontWeight: 500, cursor: 'pointer',
-                background: isDark ? '#1E2027' : '#FFFFFF',
+                background: isDark ? '#2C2823' : '#FFFFFF',
                 color: isDark ? '#A09890' : '#334155',
-                border: `1px solid ${isDark ? 'rgba(200,210,225,0.10)' : 'rgba(15,23,42,0.10)'}`,
+                border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.10)'}`,
               }}>
               <Download size={11} /> Export
             </button>
@@ -418,7 +418,7 @@ const JiraUserSync: React.FC = () => {
             <span className="jira-selection-count" style={{ fontSize: '12px', fontWeight: 500, color: isDark ? '#93C5FD' : '#2563EB' }}>
               {selected.size} users selected
             </span>
-            <span style={{ fontSize: '11px', color: isDark ? 'rgba(200,210,225,0.25)' : '#94A3B8' }}>|</span>
+            <span style={{ fontSize: '11px', color: isDark ? 'rgba(255,255,255,0.05)' : '#94A3B8' }}>|</span>
 
             <Popover open={assignPopoverOpen} onOpenChange={setAssignPopoverOpen}>
               <PopoverTrigger asChild>
@@ -435,7 +435,7 @@ const JiraUserSync: React.FC = () => {
                 className="jira-popover-surface"
                 style={{
                   width: '360px', padding: 0,
-                  background: isDark ? '#1E2027' : '#FFFFFF',
+                  background: isDark ? '#2C2823' : '#FFFFFF',
                   border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.12)'}`,
                 }}
                 align="start"
@@ -444,7 +444,7 @@ const JiraUserSync: React.FC = () => {
                   <div className="jira-text-primary" style={{ fontSize: '13px', fontWeight: 600, marginBottom: '2px', color: isDark ? '#F5F3F0' : '#0F172A' }}>
                     Assign to Jira Space
                   </div>
-                  <div className="jira-text-secondary" style={{ fontSize: '11px', marginBottom: '8px', color: isDark ? 'rgba(200,210,225,0.55)' : '#64748B' }}>
+                  <div className="jira-text-secondary" style={{ fontSize: '11px', marginBottom: '8px', color: isDark ? '#A09890' : '#64748B' }}>
                     Select a project. Permission level applies to all {selected.size} selected users.
                   </div>
                   <input
@@ -454,13 +454,13 @@ const JiraUserSync: React.FC = () => {
                     className="jira-input w-full"
                     style={{
                       padding: '5px 8px', borderRadius: '4px', fontSize: '11px', outline: 'none', marginBottom: '6px',
-                      background: isDark ? '#12141A' : '#F8FAFC',
-                      color: isDark ? 'rgba(225,230,240,0.92)' : '#0F172A',
-                      border: `1px solid ${isDark ? 'rgba(200,210,225,0.12)' : 'rgba(15,23,42,0.10)'}`,
+                      background: isDark ? '#1A1714' : '#F8FAFC',
+                      color: isDark ? '#F5F3F0' : '#0F172A',
+                      border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.10)'}`,
                     }}
                   />
                   <div className="flex items-center gap-1 mb-2">
-                    <span style={{ fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', marginRight: '4px', color: isDark ? 'rgba(200,210,225,0.50)' : '#64748B' }}>Level:</span>
+                    <span style={{ fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', marginRight: '4px', color: isDark ? '#6B6560' : '#64748B' }}>Level:</span>
                     {(['view', 'edit', 'full'] as const).map(lvl => (
                       <button
                         key={lvl}
@@ -468,7 +468,7 @@ const JiraUserSync: React.FC = () => {
                         style={{
                           padding: '2px 8px', borderRadius: '3px', fontSize: '10px', fontWeight: 700,
                           textTransform: 'uppercase', cursor: 'pointer',
-                          border: `1px solid ${isDark ? 'rgba(200,210,225,0.10)' : 'rgba(15,23,42,0.10)'}`,
+                          border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.10)'}`,
                           background: assignPermLevel === lvl
                             ? lvl === 'full' ? '#DCFCE7' : lvl === 'edit' ? '#EFF6FF' : '#F1F5F9'
                             : 'transparent',
@@ -482,7 +482,7 @@ const JiraUserSync: React.FC = () => {
                     ))}
                   </div>
                 </div>
-                <div style={{ maxHeight: '200px', overflowY: 'auto', borderTop: `0.75px solid ${isDark ? 'rgba(200,210,225,0.08)' : 'rgba(15,23,42,0.06)'}` }}>
+                <div style={{ maxHeight: '200px', overflowY: 'auto', borderTop: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.06)'}` }}>
                   {(jiraProjects || [])
                     .filter(p => !assignSearch || p.project_key.toLowerCase().includes(assignSearch.toLowerCase()) || (p.project_name || '').toLowerCase().includes(assignSearch.toLowerCase()))
                     .map(proj => (
@@ -512,8 +512,8 @@ const JiraUserSync: React.FC = () => {
                         <span className="jira-chip"
                           style={{
                             fontSize: '10px', fontWeight: 700, fontFamily: "'JetBrains Mono', monospace", padding: '1px 5px', borderRadius: '2px',
-                            background: isDark ? 'rgba(200,210,225,0.08)' : '#F1F5F9',
-                            color: isDark ? 'rgba(200,210,225,0.75)' : '#374151',
+                            background: isDark ? 'rgba(255,255,255,0.08)' : '#F1F5F9',
+                            color: isDark ? '#A09890' : '#374151',
                           }}>
                           {proj.project_key}
                         </span>
@@ -536,9 +536,9 @@ const JiraUserSync: React.FC = () => {
               style={{
                 display: 'inline-flex', alignItems: 'center', gap: '4px',
                 padding: '3px 10px', borderRadius: '4px', fontSize: '11px', fontWeight: 500, cursor: 'pointer',
-                background: isDark ? '#1E2027' : '#FFFFFF',
+                background: isDark ? '#2C2823' : '#FFFFFF',
                 color: '#DC2626',
-                border: `1px solid ${isDark ? 'rgba(200,210,225,0.10)' : 'rgba(15,23,42,0.10)'}`,
+                border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.10)'}`,
               }}>
               <UserX size={11} /> Deactivate
             </button>
@@ -546,9 +546,9 @@ const JiraUserSync: React.FC = () => {
               style={{
                 display: 'inline-flex', alignItems: 'center', gap: '4px',
                 padding: '3px 10px', borderRadius: '4px', fontSize: '11px', fontWeight: 500, cursor: 'pointer',
-                background: isDark ? '#1E2027' : '#FFFFFF',
+                background: isDark ? '#2C2823' : '#FFFFFF',
                 color: isDark ? '#A09890' : '#334155',
-                border: `1px solid ${isDark ? 'rgba(200,210,225,0.10)' : 'rgba(15,23,42,0.10)'}`,
+                border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.10)'}`,
               }}>
               <Copy size={11} /> Copy Permissions
             </button>
@@ -568,7 +568,7 @@ const JiraUserSync: React.FC = () => {
         <div className="flex-1 overflow-y-auto overflow-x-auto">
           <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '1000px' }}>
             <thead>
-              <tr className="jira-table-header" style={{ background: isDark ? '#12141A' : '#F1F5F9', borderBottom: `0.75px solid ${isDark ? 'rgba(200,210,225,0.08)' : 'rgba(15,23,42,0.06)'}` }}>
+              <tr className="jira-table-header" style={{ background: isDark ? '#1A1714' : '#F1F5F9', borderBottom: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.06)'}` }}>
                 <th style={{ width: '36px', padding: '10px 12px', textAlign: 'center' }}>
                   <input
                     ref={headerCheckRef}
@@ -584,7 +584,7 @@ const JiraUserSync: React.FC = () => {
                     style={{
                       padding: '10px 12px', textAlign: 'left', fontSize: '10px', fontWeight: 700,
                       textTransform: 'uppercase', letterSpacing: '0.04em',
-                      color: isDark ? 'rgba(200,210,225,0.45)' : '#6B7280',
+                      color: isDark ? '#6B6560' : '#6B7280',
                     }}>
                     {h}
                   </th>
@@ -595,7 +595,7 @@ const JiraUserSync: React.FC = () => {
               {usersLoading ? (
                 Array.from({ length: 10 }).map((_, i) => (
                   <tr key={`skel-${i}`} className="jira-row"
-                    style={{ height: '40px', maxHeight: '40px', borderBottom: `0.75px solid ${isDark ? 'rgba(200,210,225,0.06)' : 'rgba(15,23,42,0.06)'}` }}>
+                    style={{ height: '40px', maxHeight: '40px', borderBottom: `0.75px solid ${isDark ? 'rgba(255,255,255,0.05)' : 'rgba(15,23,42,0.06)'}` }}>
                     <td style={{ padding: '0 12px' }}><div className="jira-skeleton animate-pulse" style={{ width: 14, height: 14, borderRadius: 2, background: isDark ? 'rgba(255,255,255,0.05)' : '#E2E8F0' }} /></td>
                     <td style={{ padding: '0 12px' }}>
                       <div className="flex items-center gap-2">
@@ -668,7 +668,7 @@ const JiraUserSync: React.FC = () => {
                     onClick={() => setActiveUserId(user.id === activeUserId ? null : user.id)}
                     style={{
                       height: '40px', maxHeight: '40px',
-                      borderBottom: `0.75px solid ${isDark ? 'rgba(200,210,225,0.06)' : 'rgba(15,23,42,0.06)'}`,
+                      borderBottom: `0.75px solid ${isDark ? 'rgba(255,255,255,0.05)' : 'rgba(15,23,42,0.06)'}`,
                       borderLeft: isCatalystOnly ? '2px solid #7C3AED' : 'none',
                       cursor: 'pointer', opacity: isInactive ? 0.5 : 1,
                       transition: 'background 120ms ease',
@@ -690,7 +690,7 @@ const JiraUserSync: React.FC = () => {
                             <span className="jira-text-primary" style={{ fontSize: '12px', fontWeight: 500, textDecoration: isInactive ? 'line-through' : 'none', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: isDark ? '#F5F3F0' : '#0F172A' }}>{user.display_name}</span>
                             {isCatalystOnly && <span className="jira-local-marker" style={{ fontSize: '9px', fontWeight: 600, whiteSpace: 'nowrap', color: isDark ? '#C4B5FD' : '#7C3AED' }}>◆ Local</span>}
                           </div>
-                          <div className="jira-text-label" style={{ fontSize: '11px', fontFamily: "'JetBrains Mono', monospace", whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: isDark ? 'rgba(200,210,225,0.50)' : '#6B7280' }}>
+                          <div className="jira-text-label" style={{ fontSize: '11px', fontFamily: "'JetBrains Mono', monospace", whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: isDark ? '#6B6560' : '#6B7280' }}>
                             {displayEmail(user.email)}
                           </div>
                         </div>
@@ -729,8 +729,8 @@ const JiraUserSync: React.FC = () => {
                               style={{
                                 display: 'inline-flex', alignItems: 'center', gap: '3px', padding: '2px 6px', borderRadius: '3px',
                                 fontSize: '11px', fontWeight: 600, whiteSpace: 'nowrap',
-                                background: isDark ? 'rgba(200,210,225,0.08)' : '#F1F5F9',
-                                color: isDark ? 'rgba(200,210,225,0.75)' : '#374151',
+                                background: isDark ? 'rgba(255,255,255,0.08)' : '#F1F5F9',
+                                color: isDark ? '#A09890' : '#374151',
                               }}>
                               {dotColor && <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: dotColor, flexShrink: 0 }} />}
                               {p.project_key}
@@ -781,7 +781,7 @@ const JiraUserSync: React.FC = () => {
                         style={{
                           display: 'inline-flex', alignItems: 'center', gap: '3px',
                           padding: '3px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 500,
-                          background: isDark ? '#1E2027' : '#FFFFFF',
+                          background: isDark ? '#2C2823' : '#FFFFFF',
                           border: `1px solid ${user.is_active_in_catalyst ? '#DC2626' : '#16A34A'}`,
                           color: user.is_active_in_catalyst ? '#DC2626' : '#16A34A',
                           cursor: togglingId === user.id ? 'not-allowed' : 'pointer',
@@ -800,7 +800,7 @@ const JiraUserSync: React.FC = () => {
 
         {/* ══ Pagination ══ */}
         <div className="jira-pagination-bg shrink-0 flex items-center justify-between"
-          style={{ padding: '9px 16px', borderTop: `0.75px solid ${isDark ? 'rgba(200,210,225,0.08)' : 'rgba(15,23,42,0.06)'}`, background: isDark ? '#0F1114' : '#F8FAFC' }}>
+          style={{ padding: '9px 16px', borderTop: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.06)'}`, background: isDark ? '#1A1714' : '#F8FAFC' }}>
           <span style={{ fontSize: '11px', color: isDark ? '#A09890' : '#64748B' }}>
             {totalCount > 0 ? `Showing ${showStart}–${showEnd} of ${totalCount} users` : 'No results'}
           </span>
@@ -813,8 +813,8 @@ const JiraUserSync: React.FC = () => {
                 width: '28px', height: '28px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                 borderRadius: '4px', cursor: page <= 1 ? 'not-allowed' : 'pointer',
                 opacity: page <= 1 ? 0.4 : 1,
-                background: isDark ? '#1E2027' : '#FFFFFF',
-                border: `1px solid ${isDark ? 'rgba(200,210,225,0.10)' : 'rgba(15,23,42,0.10)'}`,
+                background: isDark ? '#2C2823' : '#FFFFFF',
+                border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.10)'}`,
                 color: isDark ? '#A09890' : '#334155',
               }}
             >
@@ -830,9 +830,9 @@ const JiraUserSync: React.FC = () => {
                   style={{
                     width: '28px', height: '28px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                     borderRadius: '4px', fontSize: '11px', fontWeight: 500, cursor: 'pointer',
-                    background: page === p ? '#2563EB' : (isDark ? '#1E2027' : '#FFFFFF'),
+                    background: page === p ? '#2563EB' : (isDark ? '#2C2823' : '#FFFFFF'),
                     color: page === p ? '#FFFFFF' : (isDark ? '#A09890' : '#64748B'),
-                    border: page === p ? 'none' : `1px solid ${isDark ? 'rgba(200,210,225,0.10)' : 'rgba(15,23,42,0.10)'}`,
+                    border: page === p ? 'none' : `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.10)'}`,
                   }}
                 >
                   {p}
@@ -847,8 +847,8 @@ const JiraUserSync: React.FC = () => {
                 width: '28px', height: '28px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                 borderRadius: '4px', cursor: page >= totalPages ? 'not-allowed' : 'pointer',
                 opacity: page >= totalPages ? 0.4 : 1,
-                background: isDark ? '#1E2027' : '#FFFFFF',
-                border: `1px solid ${isDark ? 'rgba(200,210,225,0.10)' : 'rgba(15,23,42,0.10)'}`,
+                background: isDark ? '#2C2823' : '#FFFFFF',
+                border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.10)'}`,
                 color: isDark ? '#A09890' : '#334155',
               }}
             >
