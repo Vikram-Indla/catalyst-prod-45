@@ -217,8 +217,7 @@ const JiraUserSync: React.FC = () => {
     <div className="flex flex-col h-full bg-[#F8FAFC] dark:bg-[#0F1114]">
 
       {/* Layer 2 — Main content surface */}
-      <div className="flex flex-col flex-1 overflow-hidden mx-5 my-4 bg-white dark:bg-[#181A1E] rounded-lg"
-        style={{ border: '0.75px solid rgba(15,23,42,0.06)' }}>
+      <div className="flex flex-col flex-1 overflow-hidden mx-5 my-4 bg-white dark:bg-[#181A1E] rounded-lg border border-[rgba(15,23,42,0.06)] dark:border-[rgba(200,210,225,0.08)]">
 
         {/* ══ Page Header ══ */}
         <div className="shrink-0" style={{ padding: '14px 20px 0', borderBottom: '0.75px solid rgba(15,23,42,0.06)' }}>
