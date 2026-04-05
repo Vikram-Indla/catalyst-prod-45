@@ -273,6 +273,7 @@ const ResourceAssignmentsPage = lazy(() => import("../pages/admin/ResourceAssign
 const ResourceLocationsPage = lazy(() => import("../pages/admin/ResourceLocations"));
 const ResourceCountriesPage = lazy(() => import("../pages/admin/ResourceCountries"));
 const ResourceVendorsPage = lazy(() => import("../pages/admin/ResourceVendors"));
+const JiraUserSyncPage = lazy(() => import("../pages/admin/JiraUserSync"));
 const BusinessOwnersAdmin = lazy(() => import("../pages/admin/BusinessOwners"));
 const BusinessProcesses = lazy(() => import("../pages/admin/BusinessProcesses"));
 const Portfolios = lazy(() => import("../pages/admin/Portfolios"));
