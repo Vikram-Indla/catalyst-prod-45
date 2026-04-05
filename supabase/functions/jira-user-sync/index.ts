@@ -200,7 +200,7 @@ Deno.serve(async (req) => {
 
           const payload = {
             jira_account_id:     jiraUser.accountId,
-            email:               jiraUser.emailAddress ?? `${jiraUser.accountId}@jira.placeholder`,
+            email:               jiraUser._resolvedEmail ?? jiraUser.emailAddress ?? `${jiraUser.accountId}@jira.placeholder`,
             display_name:        jiraUser.displayName,
             avatar_url:          jiraUser.avatarUrls?.['48x48'] ?? null,
             is_active_in_jira:   jiraUser.active ?? true,
