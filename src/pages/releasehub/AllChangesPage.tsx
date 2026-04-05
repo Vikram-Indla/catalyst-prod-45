@@ -208,7 +208,7 @@ export default function AllChangesPage() {
   );
 }
 
-function KanbanView({ changes, onSelect }: { changes: any[]; onSelect: (c: any) => void }) {
+function KanbanView({ changes, onSelect, isDark }: { changes: any[]; onSelect: (c: any) => void; isDark?: boolean }) {
   const columns = [
     { key: 'new', label: 'NEW' },
     { key: 'in_uat', label: 'IN UAT' },
@@ -221,17 +221,18 @@ function KanbanView({ changes, onSelect }: { changes: any[]; onSelect: (c: any) 
       {columns.map(col => {
         const items = changes.filter((c: any) => c.status === col.key);
         return (
-          <div key={col.key} className="rounded-lg" style={{ background: '#F1F5F9', minHeight: 200 }}>
+          <div key={col.key} className="rounded-lg" style={{ background: isDark ? '#232019' : '#F1F5F9', minHeight: 200 }}>
             <div className="px-3 py-2 flex items-center gap-2">
-              <span className="text-[11px] font-bold uppercase tracking-[0.06em] text-[#64748B]">{col.label}</span>
-              <span className="text-[10px] font-bold text-[#94A3B8] bg-white rounded-full px-1.5">{items.length}</span>
+              <span className="text-[11px] font-bold uppercase tracking-[0.06em]" style={{ color: isDark ? '#6B6560' : '#64748B' }}>{col.label}</span>
+              <span className="text-[10px] font-bold rounded-full px-1.5" style={{ color: isDark ? '#6B6560' : '#94A3B8', background: isDark ? '#2C2823' : '#FFFFFF' }}>{items.length}</span>
             </div>
             <div className="px-2 pb-2 space-y-2">
               {items.map((c: any) => (
                 <button key={c.id} onClick={() => onSelect(c)}
-                  className="w-full bg-white rounded-md border border-[rgba(15,23,42,0.12)] p-3 text-left hover:shadow-sm transition-shadow">
+                  className="w-full rounded-md p-3 text-left hover:shadow-sm transition-shadow"
+                  style={{ background: isDark ? '#2C2823' : '#FFFFFF', border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.12)'}` }}>
                   <span className="text-[11px] font-medium text-[#2563EB] block mb-1" style={{ fontFamily: RH.fontMono }}>{c.chg_number}</span>
-                  <span className="text-[13px] font-medium text-[#0F172A] block truncate">{c.title}</span>
+                  <span className="text-[13px] font-medium block truncate" style={{ color: isDark ? '#F5F3F0' : '#0F172A' }}>{c.title}</span>
                   <div className="flex items-center gap-2 mt-2">
                     <RiskBadge risk={c.risk_level?.toLowerCase() === 'low' || c.risk_level?.toLowerCase() === 'medium' ? 'standard' : c.risk_level} />
                     <SourceBadge source={c.source} />
