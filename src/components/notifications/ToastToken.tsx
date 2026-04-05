@@ -54,6 +54,14 @@ export default function ToastToken({ toast: t, onDismiss, onPause, onResume }: T
           from { opacity: 0; transform: translateX(24px); }
           to { opacity: 1; transform: translateX(0); }
         }
+        @media (max-width: 767px) {
+          .toast-responsive {
+            left: 0 !important;
+            right: 0 !important;
+            width: 100% !important;
+            border-radius: 0 !important;
+          }
+        }
       `}</style>
 
       <div style={{ padding: '12px 14px', display: 'flex', gap: 10, alignItems: 'flex-start' }}>
@@ -75,9 +83,11 @@ export default function ToastToken({ toast: t, onDismiss, onPause, onResume }: T
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4 }}>
             <WorkItemIcon type={n.entity_icon_type} />
+            {/* m-06: entity title truncation increased to 260px */}
             <span style={{
               fontFamily: 'Inter, sans-serif', fontSize: 13, color: '#0F172A',
-              overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1,
+              overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+              maxWidth: 260,
             }}>
               {n.entity_title}
             </span>
@@ -98,6 +108,7 @@ export default function ToastToken({ toast: t, onDismiss, onPause, onResume }: T
                     border: '0.5px solid rgba(15,23,42,.12)', background: 'transparent',
                     cursor: 'pointer', fontFamily: 'Inter, sans-serif', fontSize: 12, fontWeight: 500,
                     color: '#475569',
+                    minHeight: 44, // responsive: min tap target
                   }}
                 >
                   {label}
@@ -113,7 +124,10 @@ export default function ToastToken({ toast: t, onDismiss, onPause, onResume }: T
           style={{
             background: 'none', border: 'none', cursor: 'pointer', padding: 2,
             color: '#94A3B8', flexShrink: 0, borderRadius: 4,
+            minWidth: 44, minHeight: 44, // responsive: min tap target
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}
+          aria-label="Dismiss notification"
         >
           <X size={16} />
         </button>

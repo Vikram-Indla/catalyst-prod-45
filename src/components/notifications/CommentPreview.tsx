@@ -23,6 +23,9 @@ export default function CommentPreview({ text, attachmentFilename }: CommentPrev
       fontSize: 13,
       color: '#0F172A',
       lineHeight: '18px',
+      // m-11: max-height before "Show more"
+      maxHeight: expanded ? 'none' : 80,
+      overflow: 'hidden',
     }}>
       <span>{displayText}</span>
       {isTruncated && !expanded && (

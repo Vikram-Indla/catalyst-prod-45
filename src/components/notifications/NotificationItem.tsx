@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { memo, useState } from "react";
 import type { Notification } from "@/types/notifications";
 import { COMMENT_PREVIEW_TYPES, DUE_DATE_TYPES } from "@/constants/notificationConstants";
 import { getAvatarColor, getUserInitials } from "@/utils/avatarColor";
@@ -39,42 +39,54 @@ function formatTimestamp(iso: string): string {
   const diffMs = now.getTime() - d.getTime();
   const diffMin = Math.floor(diffMs / 60000);
   if (diffMin < 1) return 'Just now';
-  if (diffMin < 60) return `${diffMin}m ago`;
+  if (diffMin < 60) return `${diffMin} minute${diffMin !== 1 ? 's' : ''} ago`;
   const diffHr = Math.floor(diffMin / 60);
-  if (diffHr < 24) return `${diffHr}h ago`;
+  if (diffHr < 24) return `${diffHr} hour${diffHr !== 1 ? 's' : ''} ago`;
   const diffDay = Math.floor(diffHr / 24);
-  if (diffDay === 1) return 'Yesterday';
-  return `${diffDay}d ago`;
+  if (diffDay === 1) return '1 day ago';
+  return `${diffDay} days ago`;
 }
 
-export default function NotificationItem({ notification, onMarkRead, onClick }: NotificationItemProps) {
+function NotificationItemInner({ notification, onMarkRead, onClick }: NotificationItemProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [isPressed, setIsPressed] = useState(false);
   const isUnread = !notification.read_at;
   const isDueDate = DUE_DATE_TYPES.some(t => t === notification.notification_type);
   const isComment = COMMENT_PREVIEW_TYPES.some(t => t === notification.notification_type);
+  const isDeleted = notification.entity_deleted;
   const actorName = notification.actor?.full_name || 'System';
   const actorId = notification.actor?.id || notification.actor_user_id || 'system';
   const avatarColor = getAvatarColor(actorId);
   const initials = getUserInitials(actorName);
 
+  // m-15: read item opacity on text only, not avatar
+  const textOpacity = isUnread ? 1 : 0.8;
+
   const daysUntilDue = notification.metadata?.due_date
     ? Math.ceil((new Date(notification.metadata.due_date).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
     : null;
+
+  const handleClick = () => {
+    if (isDeleted) return; // entity_deleted — no navigation
+    onClick?.(notification);
+  };
 
   return (
     <div
       role="button"
       tabIndex={0}
-      onClick={() => onClick?.(notification)}
+      onClick={handleClick}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => { setIsHovered(false); setIsPressed(false); }}
       onMouseDown={() => setIsPressed(true)}
       onMouseUp={() => setIsPressed(false)}
-      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick?.(notification); } }}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleClick(); }
+        if (e.key === 'r' || e.key === 'R') { if (isUnread) onMarkRead?.(notification.id); }
+      }}
       style={{
         padding: '12px 20px',
-        cursor: 'pointer',
+        cursor: isDeleted ? 'default' : 'pointer',
         position: 'relative',
         background: isPressed ? 'rgba(15,23,42,.08)' : isHovered ? 'rgba(15,23,42,.04)' : 'transparent',
         borderLeft: isDueDate ? '3px solid #D97706' : '3px solid transparent',
@@ -83,7 +95,7 @@ export default function NotificationItem({ notification, onMarkRead, onClick }: 
       }}
     >
       <div style={{ display: 'flex', gap: 12 }}>
-        {/* Avatar */}
+        {/* Avatar — always full opacity per m-15 */}
         <div style={{
           width: 40, height: 40, borderRadius: '50%', flexShrink: 0,
           background: avatarColor,
@@ -93,11 +105,14 @@ export default function NotificationItem({ notification, onMarkRead, onClick }: 
           {initials}
         </div>
 
-        {/* Body */}
-        <div style={{ flex: 1, minWidth: 0 }}>
+        {/* Body — text opacity for read items */}
+        <div style={{ flex: 1, minWidth: 0, opacity: textOpacity }}>
           {/* Action text + timestamp */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
-            <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, color: '#0F172A', lineHeight: '18px' }}>
+            <span style={{
+              fontFamily: 'Inter, sans-serif', fontSize: 13, color: '#0F172A', lineHeight: '18px',
+              overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 360,
+            }}>
               <span style={{ fontWeight: 650 }}>{actorName}</span>{' '}
               <span style={{ fontWeight: 500 }}>{getActionVerb(notification.notification_type)}</span>
             </span>
@@ -110,16 +125,23 @@ export default function NotificationItem({ notification, onMarkRead, onClick }: 
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4 }}>
             <WorkItemIcon type={notification.entity_icon_type} />
             <span style={{
-              fontFamily: 'Inter, sans-serif', fontSize: 13, color: '#0F172A',
+              fontFamily: 'Inter, sans-serif', fontSize: 13,
+              color: isDeleted ? '#94A3B8' : '#0F172A',
               overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 360,
+              fontStyle: isDeleted ? 'italic' : 'normal',
             }}>
-              {notification.entity_title}
+              {isDeleted ? 'This item no longer exists' : notification.entity_title}
             </span>
           </div>
 
           {/* Meta row */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4 }}>
-            <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: '#2563EB', fontWeight: 500 }}>
+            <span style={{
+              fontFamily: 'Inter, sans-serif', fontSize: 12, fontWeight: 500,
+              color: isDeleted ? '#94A3B8' : '#2563EB',
+              textDecoration: isDeleted ? 'line-through' : 'none',
+              overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 200,
+            }}>
               {notification.entity_key}
             </span>
             <span style={{ color: '#94A3B8', fontSize: 10 }}>•</span>
@@ -189,3 +211,6 @@ export default function NotificationItem({ notification, onMarkRead, onClick }: 
     </div>
   );
 }
+
+const NotificationItem = memo(NotificationItemInner);
+export default NotificationItem;

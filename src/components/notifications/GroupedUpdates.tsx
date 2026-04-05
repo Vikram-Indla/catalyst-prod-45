@@ -43,7 +43,11 @@ export default function GroupedUpdates({ actors, count, primaryActorName, childr
             </div>
           ))}
         </div>
-        <span>+{count} updates from {primaryActorName}</span>
+        {/* m-02: +N is 650 weight, "from [Actor]" is 400 */}
+        <span>
+          <span style={{ fontWeight: 650 }}>+{count}</span>
+          <span style={{ fontWeight: 400 }}> updates from {primaryActorName}</span>
+        </span>
       </button>
       {expanded && children && (
         <div style={{ marginTop: 8, paddingLeft: 28, borderLeft: '1px solid rgba(15,23,42,.08)' }}>
