@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { X, ShieldCheck, Share2, Loader2, RefreshCw, Copy, UserX } from 'lucide-react';
+import { X, ShieldCheck, Share2, Loader2, RefreshCw, Copy, UserX, Activity } from 'lucide-react';
 import { toast } from 'sonner';
-import { useJiraUserDetail, useToggleUserStatus } from '@/hooks/useJiraUserSync';
+import { useJiraUserDetail, useToggleUserStatus, useUpdatePerm } from '@/hooks/useJiraUserSync';
 
 const AVATAR_COLORS = [
   { bg: '#DBEAFE', text: '#1D4ED8' }, { bg: '#DCFCE7', text: '#15803D' },
@@ -389,69 +389,11 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose }) => {
         )}
 
         {activeTab === 'projects' && (
-          <div style={{ padding: '12px 16px' }}>
-            <div style={sectionLabel}>PROJECT PERMISSIONS</div>
-            {perms.length === 0 ? (
-              <div style={{ fontSize: '12px', color: '#94A3B8', fontStyle: 'italic', padding: '16px 0' }}>
-                No project permissions assigned
-              </div>
-            ) : (
-              perms.map((p: any) => (
-                <div key={p.id} style={{
-                  display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                  padding: '6px 0', borderBottom: '0.5px solid rgba(15,23,42,0.06)',
-                }}>
-                  <div>
-                    <span style={{ fontSize: '12px', fontWeight: 500, color: '#0F172A' }}>{p.project_name || p.project_key}</span>
-                    <span style={{ fontSize: '10px', color: '#64748B', marginLeft: 6, fontFamily: "'JetBrains Mono', monospace" }}>{p.project_key}</span>
-                  </div>
-                  <span style={{
-                    fontSize: '9px', fontWeight: 700, textTransform: 'uppercase',
-                    padding: '1px 5px', borderRadius: '2px',
-                    background: p.permission_level === 'full' ? '#DCFCE7' : p.permission_level === 'edit' ? '#FEF3C7' : p.permission_level === 'view' ? '#DEEBFF' : '#F1F5F9',
-                    color: p.permission_level === 'full' ? '#006644' : p.permission_level === 'edit' ? '#92400E' : p.permission_level === 'view' ? '#0747A6' : '#64748B',
-                  }}>
-                    {p.permission_level}
-                  </span>
-                </div>
-              ))
-            )}
-          </div>
+          <ProjectsTab perms={perms} />
         )}
 
         {activeTab === 'activity' && (
-          <div style={{ padding: '12px 16px' }}>
-            <div style={sectionLabel}>SYNC ACTIVITY</div>
-            {events.length === 0 ? (
-              <div style={{ fontSize: '12px', color: '#94A3B8', fontStyle: 'italic', padding: '16px 0' }}>
-                No sync events recorded
-              </div>
-            ) : (
-              events.slice(0, 20).map((ev: any) => (
-                <div key={ev.id} style={{
-                  padding: '5px 0', borderBottom: '0.5px solid rgba(15,23,42,0.06)',
-                  display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                }}>
-                  <div>
-                    <span style={{
-                      fontSize: '10px', fontWeight: 700, textTransform: 'uppercase',
-                      padding: '0 5px', borderRadius: '2px',
-                      background: ev.event_type === 'created' ? '#DCFCE7' : ev.event_type === 'failed' ? '#FEE2E2' : '#DEEBFF',
-                      color: ev.event_type === 'created' ? '#006644' : ev.event_type === 'failed' ? '#991B1B' : '#0747A6',
-                    }}>
-                      {ev.event_type}
-                    </span>
-                    {ev.direction && (
-                      <span style={{ fontSize: '10px', color: '#94A3B8', marginLeft: 6 }}>{ev.direction}</span>
-                    )}
-                  </div>
-                  <span style={{ fontSize: '10px', color: '#94A3B8', fontFamily: "'JetBrains Mono', monospace" }}>
-                    {formatDate(ev.created_at)}
-                  </span>
-                </div>
-              ))
-            )}
-          </div>
+          <ActivityTab events={events} />
         )}
 
         {activeTab === 'info' && (
