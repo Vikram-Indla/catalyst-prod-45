@@ -183,7 +183,7 @@ function NotificationItemInner({ notification, onMarkRead, onClick }: Notificati
               {notification.entity_key}
             </span>
             <span style={{ color: '#94A3B8', fontSize: 10 }}>•</span>
-            <StatusLozenge label={notification.status} type={notification.status_type} />
+            <StatusLozenge label={normaliseStatus(notification.status).label} type={normaliseStatus(notification.status).type} />
           </div>
 
           {/* Due date alert */}
