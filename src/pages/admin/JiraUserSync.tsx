@@ -130,6 +130,12 @@ const JiraUserSync: React.FC = () => {
   const { resolvedTheme, setTheme } = useThemeMode();
   const isDark = resolvedTheme === 'dark';
 
+  /* ── Set data-jsu on documentElement for global dark (nav/sidebar) ── */
+  useEffect(() => {
+    document.documentElement.setAttribute('data-jsu', isDark ? 'dark' : 'light');
+    return () => { document.documentElement.removeAttribute('data-jsu'); };
+  }, [isDark]);
+
   /* ── T object: single source of truth for all themed colors ── */
   const T = isDark ? {
     page:       '#0F1114',
