@@ -277,7 +277,7 @@ export default function ResourceListingPage() {
   };
 
   return (
-    <div style={{ padding: '24px 28px', fontFamily: "'Inter', sans-serif", height: '100%', overflow: 'auto', background: tk.pageBg }}>
+    <div style={{ padding: '24px 28px', fontFamily: "'Inter', sans-serif", background: tk.pageBg }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
         <h1 style={{ fontSize: '20px', fontWeight: 800, color: tk.t1, margin: 0 }}>Resources</h1>
@@ -448,7 +448,7 @@ export default function ResourceListingPage() {
                 <tr
                   key={r.rid}
                   className="group"
-                  style={{ borderBottom: `0.75px solid ${tk.divider}`, cursor: 'pointer', height: '48px' }}
+                  style={{ borderBottom: `0.75px solid ${tk.divider}`, cursor: 'pointer', height: '56px' }}
                   onClick={() => navTo(r.id, 'ring')}
                   onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = tk.hover; }}
                   onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
