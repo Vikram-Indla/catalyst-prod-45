@@ -104,7 +104,7 @@ Deno.serve(async (req) => {
       while (true) {
         const gRes = await fetch(
           `${baseUrl}/rest/api/3/group/member?groupname=jira-software-users` +
-          `&maxResults=${maxResults}&startAt=${groupStart}&includeInactiveUsers=true`,
+          `&maxResults=${maxResults}&startAt=${groupStart}&includeInactiveUsers=false`,
           {
             headers: {
               'Authorization': authHeader,
@@ -118,7 +118,7 @@ Deno.serve(async (req) => {
         if (!members.length) break
 
         for (const u of members) {
-          if (u.accountType === 'atlassian' && !seenIds.has(u.accountId)) {
+          if (u.accountType === 'atlassian' && u.active && !seenIds.has(u.accountId)) {
             seenIds.add(u.accountId)
             jiraUsers.push(u)
           }
