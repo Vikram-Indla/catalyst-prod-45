@@ -337,124 +337,13 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
   };
 
   return (
-    <div className="jus-detail-panel" style={{
-      width: '420px', flexShrink: 0, borderLeft: '1px solid rgba(15,23,42,0.10)',
-      background: '#FFFFFF', display: 'flex', flexDirection: 'column', overflow: 'hidden',
+    <div style={{
+      width: '420px', flexShrink: 0, borderLeft: `1px solid ${T.border}`,
+      background: T.surface, display: 'flex', flexDirection: 'column', overflow: 'hidden',
+      color: T.text1,
     }}>
-      {/* NOCTURNE dark mode overrides */}
-      <style>{`
-        .dark .jus-detail-panel {
-          background: #232019 !important;
-          border-color: rgba(255,255,255,0.08) !important;
-          color: #F5F3F0 !important;
-        }
-        .dark .jus-detail-panel .jus-header-sticky {
-          background: #232019 !important;
-        }
-        .dark .jus-detail-panel .jus-footer-sticky {
-          background: #232019 !important;
-        }
-        .dark .jus-detail-panel .jus-pwd-box {
-          background: #1A1714 !important;
-          border-color: rgba(255,255,255,0.06) !important;
-        }
-        .dark .jus-detail-panel .jus-pwd-box span {
-          color: #A09890 !important;
-        }
-        .dark .jus-detail-panel .jus-info-box {
-          background: rgba(255,255,255,0.04) !important;
-          border-color: rgba(255,255,255,0.08) !important;
-        }
-        .dark .jus-detail-panel .jus-info-box span {
-          color: #A09890 !important;
-        }
-        .dark .jus-detail-panel .jus-info-card {
-          background: #1A1714 !important;
-          border-color: rgba(255,255,255,0.06) !important;
-        }
-        .dark .jus-detail-panel .jus-info-card div {
-          color: #A09890 !important;
-        }
-        .dark .jus-detail-panel .jus-field-key {
-          color: #6B6560 !important;
-        }
-        .dark .jus-detail-panel .jus-field-val {
-          color: #F5F3F0 !important;
-        }
-        .dark .jus-detail-panel .jus-section-label {
-          color: #6B6560 !important;
-        }
-        .dark .jus-detail-panel .jus-field-row {
-          border-color: rgba(255,255,255,0.06) !important;
-        }
-        .dark .jus-detail-panel .jus-section-border {
-          border-color: rgba(255,255,255,0.06) !important;
-        }
-        .dark .jus-detail-panel .jus-action-btn {
-          background: #232019 !important;
-          color: #A09890 !important;
-          border-color: rgba(255,255,255,0.08) !important;
-        }
-        .dark .jus-detail-panel .jus-close-btn {
-          background: #2C2823 !important;
-          color: #A09890 !important;
-          border-color: rgba(255,255,255,0.08) !important;
-        }
-        .dark .jus-detail-panel .jus-tab-btn {
-          color: #6B6560 !important;
-        }
-        .dark .jus-detail-panel .jus-tab-btn.active {
-          color: #60A5FA !important;
-        }
-        .dark .jus-detail-panel .jus-name {
-          color: #F5F3F0 !important;
-        }
-        .dark .jus-detail-panel .jus-subtitle {
-          color: #6B6560 !important;
-        }
-        .dark .jus-detail-panel code {
-          background: #2C2823 !important;
-          color: #60A5FA !important;
-        }
-        .dark .jus-detail-panel input,
-        .dark .jus-detail-panel select {
-          background: #1A1714 !important;
-          color: #F5F3F0 !important;
-          border-color: rgba(255,255,255,0.08) !important;
-        }
-        .dark .jus-detail-panel table th {
-          background: #1A1714 !important;
-          color: #6B6560 !important;
-        }
-        .dark .jus-detail-panel table td {
-          border-color: rgba(255,255,255,0.06) !important;
-          color: #A09890 !important;
-        }
-        .dark .jus-detail-panel .jus-footer-btn-outline {
-          background: #232019 !important;
-        }
-        .dark .jus-detail-panel .jus-perm-seg {
-          border-color: rgba(255,255,255,0.08) !important;
-        }
-        .dark .jus-detail-panel .jus-perm-seg button {
-          border-color: rgba(255,255,255,0.08) !important;
-        }
-        .dark .jus-detail-panel .jus-project-key-chip {
-          background: #2C2823 !important;
-          color: #6B6560 !important;
-        }
-        .dark .jus-detail-panel .jus-empty-text {
-          color: #6B6560 !important;
-        }
-        .dark .jus-detail-panel .jus-event-text {
-          color: #A09890 !important;
-        }
-        .dark .jus-detail-panel .jus-event-time {
-          color: #6B6560 !important;
-        }
-      `}</style>
       {/* ── Header ── */}
-      <div className="jus-header-sticky" style={{ position: 'sticky', top: 0, zIndex: 5, background: '#FFFFFF', borderBottom: '1px solid rgba(15,23,42,0.06)' }}>
+      <div style={{ position: 'sticky', top: 0, zIndex: 5, background: T.surface, borderBottom: `1px solid ${T.border}` }}>
         <div style={{ padding: '16px 16px 12px', display: 'flex', gap: '12px', position: 'relative' }}>
           {/* Avatar */}
           <div style={{
@@ -470,10 +359,10 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
           </div>
           {/* Name block */}
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div className="jus-name" style={{ fontFamily: "'Sora', sans-serif", fontSize: '15px', fontWeight: 700, color: '#0F172A', letterSpacing: '-0.2px' }}>
+            <div style={{ fontFamily: "'Sora', sans-serif", fontSize: '15px', fontWeight: 700, color: T.text1, letterSpacing: '-0.2px' }}>
               {user.display_name}
             </div>
-            <div className="jus-subtitle" style={{ fontSize: '11px', color: '#64748B', marginTop: '2px' }}>
+            <div style={{ fontSize: '11px', color: T.text2, marginTop: '2px' }}>
               {user.resource_role_id || 'No role assigned'}
             </div>
             <div style={{ display: 'flex', gap: '5px', marginTop: '7px' }}>
