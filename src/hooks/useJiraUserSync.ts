@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import * as svc from '@/services/jiraSyncService';
 import type { SyncFilter, PermissionLevel, CreateCatalystUserPayload } from '@/types/jiraSync';
 
@@ -8,6 +9,7 @@ const K = {
   stats: ['jira-sync-stats'] as const,
   runs: ['jira-sync-runs'] as const,
   detail: (id: string) => ['jira-sync-detail', id] as const,
+  projects: ['jira-sync', 'projects'] as const,
 };
 
 export const useJiraSyncUsers = (p: number, f: SyncFilter, s: string) =>
@@ -92,5 +94,72 @@ export const useCopyPermissions = () => {
     mutationFn: ({ sourceId, targetIds }: { sourceId: string; targetIds: string[] }) =>
       svc.copyPermissions(sourceId, targetIds),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['jira-sync-users'] }),
+  });
+};
+
+/* ── FIX 5 — Project list query ── */
+export const useJiraProjects = () =>
+  useQuery({
+    queryKey: K.projects,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('jira_user_project_perms')
+        .select('project_id, project_key, project_name')
+        .order('project_key', { ascending: true });
+      if (error) throw error;
+      const seen = new Set<string>();
+      return (data || []).filter(p => {
+        if (seen.has(p.project_key)) return false;
+        seen.add(p.project_key);
+        return true;
+      });
+    },
+    staleTime: 60_000,
+  });
+
+/* ── FIX 5 — Bulk assign users to project ── */
+export const useAssignUsersToProject = () => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({
+      userIds,
+      projectId,
+      projectKey,
+      projectName,
+      permissionLevel,
+    }: {
+      userIds: string[];
+      projectId: string;
+      projectKey: string;
+      projectName: string;
+      permissionLevel: 'full' | 'edit' | 'view';
+    }) => {
+      const upsertRows = userIds.map(id => ({
+        identity_map_id: id,
+        project_id: projectId,
+        project_key: projectKey,
+        project_name: projectName,
+        permission_level: permissionLevel,
+        synced_from_jira: false,
+        updated_at: new Date().toISOString(),
+      }));
+
+      const { error } = await supabase
+        .from('jira_user_project_perms')
+        .upsert(upsertRows, { onConflict: 'identity_map_id,project_id' });
+      if (error) throw error;
+
+      // Queue write-back
+      const queueRows = userIds.map(id => ({
+        identity_map_id: id,
+        action: 'role_change',
+        payload: { project_key: projectKey, permission_level: permissionLevel },
+      }));
+      await supabase.from('jira_write_back_queue').insert(queueRows).throwOnError();
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['jira-sync-users'] });
+      qc.invalidateQueries({ queryKey: K.projects });
+    },
   });
 };
