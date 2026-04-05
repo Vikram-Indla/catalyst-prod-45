@@ -546,8 +546,12 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
           {/* §7 VIEWPORT — fixed 720px, hard clip */}
           <div ref={ringCanvasRef} style={{
             position: 'relative', height: 720, overflow: 'hidden',
-            background: 'radial-gradient(circle at center, #fff 0%, #F8FAFC 55%, #F1F5F9 100%)',
-            backgroundImage: 'radial-gradient(circle at center, #fff 0%, #F8FAFC 55%, #F1F5F9 100%), radial-gradient(circle, #CBD5E1 1px, transparent 1px)',
+            background: isDark
+              ? 'radial-gradient(circle at center, #1A1714 0%, #1A1714 55%, #232019 100%)'
+              : 'radial-gradient(circle at center, #fff 0%, #F8FAFC 55%, #F1F5F9 100%)',
+            backgroundImage: isDark
+              ? 'radial-gradient(circle at center, #1A1714 0%, #1A1714 55%, #232019 100%), radial-gradient(circle, rgba(255,255,255,0.05) 1px, transparent 1px)'
+              : 'radial-gradient(circle at center, #fff 0%, #F8FAFC 55%, #F1F5F9 100%), radial-gradient(circle, #CBD5E1 1px, transparent 1px)',
             backgroundSize: 'cover, 24px 24px',
             boxSizing: 'border-box',
             padding: 20,
