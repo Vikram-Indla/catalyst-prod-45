@@ -2,10 +2,17 @@ import React from "react";
 import type { WorkItemIconType } from "@/types/notifications";
 
 export const BugIcon = () => (
-  <span style={{width:12,height:12,borderRadius:2,background:'#FEE2E2',display:'inline-flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
-    <svg width="8" height="8" viewBox="0 0 8 8" fill="none">
-      <circle cx="4" cy="4" r="3" fill="#DC2626"/>
-      <path d="M2.5 2.5L5.5 5.5M5.5 2.5L2.5 5.5" stroke="white" strokeWidth="1" strokeLinecap="round"/>
+  <span style={{width:14,height:14,display:'inline-flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+      <rect x="1" y="1" width="14" height="14" rx="3" fill="#E5493A"/>
+      <circle cx="8" cy="8" r="3.5" fill="white" fillOpacity="0.3"/>
+      <circle cx="8" cy="8" r="1.5" fill="white"/>
+      <line x1="8" y1="4" x2="8" y2="5.5" stroke="white" strokeWidth="1" strokeLinecap="round"/>
+      <line x1="8" y1="10.5" x2="8" y2="12" stroke="white" strokeWidth="1" strokeLinecap="round"/>
+      <line x1="4.5" y1="6.5" x2="5.8" y2="7.2" stroke="white" strokeWidth="1" strokeLinecap="round"/>
+      <line x1="10.2" y1="7.2" x2="11.5" y2="6.5" stroke="white" strokeWidth="1" strokeLinecap="round"/>
+      <line x1="4.5" y1="9.5" x2="5.8" y2="8.8" stroke="white" strokeWidth="1" strokeLinecap="round"/>
+      <line x1="10.2" y1="8.8" x2="11.5" y2="9.5" stroke="white" strokeWidth="1" strokeLinecap="round"/>
     </svg>
   </span>
 );

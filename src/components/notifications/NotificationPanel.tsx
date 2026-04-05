@@ -282,7 +282,7 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
       {/* Header */}
       <div style={{ padding: '16px 20px 0' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{ fontFamily: 'Sora, sans-serif', fontSize: 24, fontWeight: 700, color: '#0F172A' }}>
+          <span style={{ fontFamily: 'Sora, sans-serif', fontSize: 20, fontWeight: 700, color: '#0F172A', margin: 0, lineHeight: 1.2 }}>
             Notifications
           </span>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -450,7 +450,7 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
             </button>
           </div>
         ) : activeTab === 'ai' ? (
-          <AIDigestTab />
+          <AIDigestTab aiNotifications={allNotifications} />
         ) : isLoading && allNotifications.length === 0 ? (
           <LoadingSkeleton />
         ) : allNotifications.length === 0 ? (

@@ -606,7 +606,7 @@ export function CatalystHeader() {
                   fontFamily: 'Inter, sans-serif', fontSize: '10px', fontWeight: 700,
                   lineHeight: 1,
                 }}>
-                  {debouncedUnreadCount > 9 ? '9+' : String(debouncedUnreadCount)}
+                  {debouncedUnreadCount > 99 ? '99+' : String(debouncedUnreadCount)}
                 </span>
               )}
             </button>

@@ -1,4 +1,5 @@
 import PriorityChip from "./PriorityChip";
+import type { Notification } from "@/types/notifications";
 
 interface AIDigestItem {
   id: string;
@@ -9,6 +10,7 @@ interface AIDigestItem {
 
 interface AIDigestTabProps {
   items?: AIDigestItem[];
+  aiNotifications?: Notification[];
   lastGenerated?: string;
   onRefresh?: () => void;
   hasNewDigest?: boolean;
@@ -16,15 +18,13 @@ interface AIDigestTabProps {
 
 const MOCK_ITEMS: AIDigestItem[] = [
   { id: '1', title: 'Payment Gateway integration blocked by vendor API changes', priority: 'high', summary: 'Vendor updated authentication flow — 3 stories blocked.' },
-  { id: '2', title: 'Sprint velocity trending 18% below target', priority: 'medium', summary: 'Team capacity reduced due to Eid holidays.' },
+  { id: '2', title: 'Release cycle velocity trending 18% below target', priority: 'medium', summary: 'Team capacity reduced due to public holiday schedule.' },
   { id: '3', title: 'UAT sign-off pending for Release 4.2', priority: 'low', summary: 'All test cases passed — awaiting business owner approval.' },
 ];
 
-export default function AIDigestTab({ items = MOCK_ITEMS, lastGenerated = '2 hours ago', onRefresh }: AIDigestTabProps) {
+export default function AIDigestTab({ items = MOCK_ITEMS, aiNotifications, lastGenerated = '2 hours ago', onRefresh }: AIDigestTabProps) {
   return (
     <div style={{ padding: '12px 20px' }}>
-      {/* m-12: pulse dot keyframes injected in NotificationPanel */}
-
       {/* Purple badge */}
       <div style={{
         display: 'inline-flex', alignItems: 'center', gap: 6,
@@ -64,7 +64,29 @@ export default function AIDigestTab({ items = MOCK_ITEMS, lastGenerated = '2 hou
         </p>
       </div>
 
-      {/* Priority items */}
+      {/* Real AI notifications from Supabase */}
+      {aiNotifications && aiNotifications.length > 0 && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 16 }}>
+          {aiNotifications.map(n => (
+            <div key={n.id} style={{
+              padding: '12px 16px',
+              background: 'rgba(124,58,237,.06)',
+              border: '0.5px solid rgba(124,58,237,.15)',
+              borderRadius: 6,
+              cursor: 'pointer',
+            }}>
+              <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 600, color: '#0F172A' }}>
+                {n.entity_title}
+              </span>
+              <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: '#64748B', margin: '4px 0 0', lineHeight: '18px' }}>
+                {(n.metadata as any)?.summary || n.entity_title}
+              </p>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Priority items (mock fallback) */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         {items.map(item => (
           <div key={item.id} style={{
