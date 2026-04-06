@@ -4843,3 +4843,35 @@ input[type="range"]::-moz-range-thumb {
 [data-theme="dark"] .bg-white {
   background-color: #232019 !important;
 }
+
+/* Aggressive catch-all: any panel/sheet/drawer with white inline style */
+.dark [style*="background: white"],
+.dark [style*="background-color: white"],
+.dark [style*="background: #fff"],
+.dark [style*="background-color: #fff"],
+.dark [style*="background: #FFF"],
+.dark [style*="background-color: #FFF"],
+.dark [style*="background: rgb(255"],
+.dark [style*="background-color: rgb(255"],
+.dark [style*="background:#fff"],
+.dark [style*="background:#FFF"],
+[data-theme="dark"] [style*="background: white"],
+[data-theme="dark"] [style*="background-color: white"],
+[data-theme="dark"] [style*="background: #fff"],
+[data-theme="dark"] [style*="background-color: #fff"],
+[data-theme="dark"] [style*="background: #FFF"],
+[data-theme="dark"] [style*="background-color: #FFF"],
+[data-theme="dark"] [style*="background: rgb(255"],
+[data-theme="dark"] [style*="background-color: rgb(255"] {
+  background-color: #232019 !important;
+  color: #F5F3F0 !important;
+  border-color: rgba(255,255,255,0.08) !important;
+}
+
+/* Force card/background CSS var to NOCTURNE in dark mode */
+.dark [class*="bg-card"],
+.dark [class*="bg-background"],
+[data-theme="dark"] [class*="bg-card"],
+[data-theme="dark"] [class*="bg-background"] {
+  background-color: hsl(30 13% 9%) !important;
+}
