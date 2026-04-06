@@ -3469,20 +3469,20 @@ input[type="range"]::-moz-range-thumb {
 [data-theme="dark"] [data-radix-menu-content],
 [data-theme="dark"] [role="tablist"],
 [data-theme="dark"] nav {
-  border-color: rgba(255,255,255,0.04) !important;
+  border-color: #2E2E2E !important;
 }
 
 .dark tbody,
 .dark tfoot,
 [data-theme="dark"] tbody,
 [data-theme="dark"] tfoot {
-  border-color: rgba(255,255,255,0.035) !important;
+  border-color: #2E2E2E !important;
 }
 
 .dark tr,
 [data-theme="dark"] tr {
-  border-bottom-color: rgba(255,255,255,0.035) !important;
-  border-color: rgba(255,255,255,0.035) !important;
+  border-bottom-color: #2E2E2E !important;
+  border-color: #2E2E2E !important;
   border-left: none !important;
   border-right: none !important;
   border-top: none !important;
@@ -3490,7 +3490,7 @@ input[type="range"]::-moz-range-thumb {
 
 .dark th,
 [data-theme="dark"] th {
-  border-color: rgba(255,255,255,0.035) !important;
+  border-color: #2E2E2E !important;
   border-left: none !important;
   border-right: none !important;
 }
@@ -3536,8 +3536,8 @@ input[type="range"]::-moz-range-thumb {
 [data-theme="dark"] .ring-2,
 [data-theme="dark"] [class*="outline-"],
 [data-theme="dark"] [class*="ring-"] {
-  --tw-ring-color: rgba(255,255,255,0.04) !important;
-  outline-color: rgba(255,255,255,0.04) !important;
+  --tw-ring-color: #2E2E2E !important;
+  outline-color: #2E2E2E !important;
 }
 
 .dark *:focus-visible,
