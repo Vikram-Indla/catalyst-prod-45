@@ -1474,10 +1474,66 @@
   border-color: #454545 !important;
 }
 
-/* Generic white bg overrides */
+/* ═══════════════════════════════════════════════════════════════
+   NOCTURNE NUCLEAR OVERRIDES — Intercept ALL inline style leaks
+   These selectors catch hardcoded hex in style="" attributes
+   that bypass the design system. Last resort before refactor.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Page-level backgrounds — force #0A0A0A */
 .dark #r360-root [style*="background: #FFFFFF"],
 .dark #r360-root [style*="background: #fff"],
 .dark #r360-root [style*="background:#FFFFFF"],
-.dark #r360-root [style*="background:#fff"] {
+.dark #r360-root [style*="background:#fff"],
+.dark #r360-root [style*="background: white"],
+.dark #r360-root [style*="background: rgb(255"],
+.dark #r360-root [style*="backgroundColor: rgb(255"] {
   background: #0A0A0A !important;
+}
+
+/* Surface backgrounds — cards sitting on page → #1A1A1A */
+.dark #r360-root [style*="background: #EFF6FF"],
+.dark #r360-root [style*="background: #FEF2F2"],
+.dark #r360-root [style*="background: #FFFBEB"],
+.dark #r360-root [style*="background: #F8FAFC"],
+.dark #r360-root [style*="background: #F1F5F9"] {
+  background: #1A1A1A !important;
+}
+
+/* Light-mode border colors → Geist borders */
+.dark #r360-root [style*="border-bottom: 1px solid #F1F5F9"],
+.dark #r360-root [style*="border-top: 1px solid #F1F5F9"],
+.dark #r360-root [style*="border: 1px solid #E2E8F0"],
+.dark #r360-root [style*="border-bottom: 1px solid #E2E8F0"],
+.dark #r360-root [style*="borderBottom: 1px solid #F1F5F9"],
+.dark #r360-root [style*="border-color: #E2E8F0"] {
+  border-color: #2E2E2E !important;
+}
+
+/* Light text colors → Geist text hierarchy */
+.dark #r360-root [style*="color: #0F172A"],
+.dark #r360-root [style*="color: #020617"],
+.dark #r360-root [style*="color: #1E293B"],
+.dark #r360-root [style*="color: #334155"] {
+  color: #EDEDED !important;
+}
+.dark #r360-root [style*="color: #475569"],
+.dark #r360-root [style*="color: #64748B"] {
+  color: #A1A1A1 !important;
+}
+.dark #r360-root [style*="color: #94A3B8"],
+.dark #r360-root [style*="color: #92400E"] {
+  color: #878787 !important;
+}
+
+/* rgba wash backgrounds → solid Geist hex */
+.dark #r360-root [style*="background: rgba(15,23,42,0.05)"],
+.dark #r360-root [style*="background: rgba(15, 23, 42, 0.05)"] {
+  background: #1A1A1A !important;
+}
+
+/* Divider lines using light-mode colors */
+.dark #r360-root [style*="background: #E2E8F0"],
+.dark #r360-root [style*="background: #F1F5F9"] {
+  background: #2E2E2E !important;
 }
