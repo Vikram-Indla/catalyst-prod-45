@@ -72,7 +72,7 @@ const CreateCatalystUserModal: React.FC<Props> = ({ open, onClose, onSuccess }) 
     );
   };
 
-  const labelStyle: React.CSSProperties = { fontSize: '11px', fontWeight: 600, color: '#334155', marginBottom: '4px', display: 'block' };
+  const labelStyle: React.CSSProperties = { fontSize: '11px', fontWeight: 600, color: 'rgba(237,237,237,0.53)', marginBottom: '4px', display: 'block' };
 
   return (
     <Dialog open={open} onOpenChange={v => { if (!v) onClose(); }}>
@@ -82,10 +82,10 @@ const CreateCatalystUserModal: React.FC<Props> = ({ open, onClose, onSuccess }) 
       >
         {/* Header */}
         <div style={{ padding: '16px 20px', borderBottom: '1px solid rgba(15,23,42,0.06)', position: 'relative' }}>
-          <DialogTitle style={{ fontFamily: "'Sora', sans-serif", fontSize: '15px', fontWeight: 700, color: 'var(--fg-1, #0F172A)', margin: 0 }}>
+          <DialogTitle style={{ fontFamily: "'Sora', sans-serif", fontSize: '15px', fontWeight: 700, color: 'var(--fg-1, rgba(237,237,237,0.93))', margin: 0 }}>
             Create Catalyst User
           </DialogTitle>
-          <p style={{ fontSize: '11px', color: '#64748B', marginTop: '2px' }}>
+          <p style={{ fontSize: '11px', color: 'rgba(237,237,237,0.40)', marginTop: '2px' }}>
             Local account — not pushed to Jira
           </p>
           <button
@@ -95,7 +95,7 @@ const CreateCatalystUserModal: React.FC<Props> = ({ open, onClose, onSuccess }) 
               width: '26px', height: '26px', borderRadius: '50%',
               border: '1px solid rgba(15,23,42,0.10)', background: 'var(--bg-app, #FFFFFF)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              cursor: 'pointer', color: '#64748B',
+              cursor: 'pointer', color: 'rgba(237,237,237,0.40)',
             }}
           >
             <X size={12} />
@@ -161,13 +161,13 @@ const CreateCatalystUserModal: React.FC<Props> = ({ open, onClose, onSuccess }) 
                 onClick={() => setShowPassword(!showPassword)}
                 style={{
                   position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-50%)',
-                  background: 'none', border: 'none', cursor: 'pointer', color: '#64748B', padding: 0,
+                  background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(237,237,237,0.40)', padding: 0,
                 }}
               >
                 {showPassword ? <EyeOff size={14} /> : <Eye size={14} />}
               </button>
             </div>
-            <span style={{ fontSize: '10px', color: '#94A3B8', marginTop: '2px', display: 'block' }}>
+            <span style={{ fontSize: '10px', color: 'rgba(237,237,237,0.40)', marginTop: '2px', display: 'block' }}>
               Min 8 characters. Stored securely in Catalyst (bcrypt).
             </span>
             {errors.password && <span style={{ fontSize: '10px', color: '#DC2626', marginTop: '1px', display: 'block' }}>{errors.password}</span>}
@@ -207,7 +207,7 @@ const CreateCatalystUserModal: React.FC<Props> = ({ open, onClose, onSuccess }) 
           <div style={{
             background: '#FFFBEB', border: '1px solid rgba(217,119,6,0.25)',
             borderRadius: '4px', padding: '8px 10px',
-            fontSize: '10.5px', color: '#92400E', lineHeight: 1.5,
+            fontSize: '10.5px', color: '#FBBF24', lineHeight: 1.5,
           }}>
             ⚠ This user will be flagged catalyst_only = true and permanently excluded
             from bidirectional Jira sync. Jira will never receive this user's data.
@@ -217,7 +217,7 @@ const CreateCatalystUserModal: React.FC<Props> = ({ open, onClose, onSuccess }) 
         {/* Footer */}
         <div style={{
           padding: '14px 20px', borderTop: '1px solid rgba(15,23,42,0.06)',
-          background: 'var(--bg-1, #F8FAFC)', display: 'flex', gap: '8px', borderRadius: '0 0 8px 8px',
+          background: 'var(--bg-1, #1A1A1A)', display: 'flex', gap: '8px', borderRadius: '0 0 8px 8px',
         }}>
           <button
             onClick={handleSubmit}
@@ -236,7 +236,7 @@ const CreateCatalystUserModal: React.FC<Props> = ({ open, onClose, onSuccess }) 
             onClick={onClose}
             style={{
               padding: '8px 16px', borderRadius: '6px', fontSize: '13px', fontWeight: 500,
-              border: '1px solid rgba(15,23,42,0.10)', background: 'var(--bg-app, #FFFFFF)', color: '#334155',
+              border: '1px solid rgba(15,23,42,0.10)', background: 'var(--bg-app, #FFFFFF)', color: 'rgba(237,237,237,0.53)',
               cursor: 'pointer',
             }}
           >

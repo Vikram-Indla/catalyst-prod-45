@@ -80,7 +80,7 @@ export function HierarchyContextMenu({
     background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left',
   };
 
-  const sep = <div style={{ borderTop: '1px solid #F1F5F9', margin: '4px 0' }} />;
+  const sep = <div style={{ borderTop: '1px solid #1A1A1A', margin: '4px 0' }} />;
 
   return createPortal(
     <div data-ctx-menu style={{ ...menuStyle, top: adjustedY, left: adjustedX }}
@@ -161,7 +161,7 @@ export function HierarchyContextMenu({
           <div data-ctx-menu style={{
             ...menuStyle, position: 'absolute', top: -4, left: 218, width: 200, maxHeight: 240, overflowY: 'auto',
           }}>
-            <button style={{ ...itemStyle, fontStyle: 'italic', color: '#94A3B8' }}
+            <button style={{ ...itemStyle, fontStyle: 'italic', color: 'rgba(237,237,237,0.40)' }}
               onClick={() => { onChangeAssignee(null); onClose(); }}
               onMouseEnter={e => (e.currentTarget.style.background = 'var(--bg-1)')}
               onMouseLeave={e => (e.currentTarget.style.background = '')}>
@@ -208,7 +208,7 @@ export function HierarchyContextMenu({
       ) : (
         <button style={{ ...itemStyle, color: 'var(--sem-danger)' }}
           onClick={() => setConfirmDelete(true)}
-          onMouseEnter={e => (e.currentTarget.style.background = '#FEF2F2')}
+          onMouseEnter={e => (e.currentTarget.style.background = 'rgba(248,113,113,0.06)')}
           onMouseLeave={e => (e.currentTarget.style.background = '')}>
           <Trash2 size={13} /> Delete
         </button>

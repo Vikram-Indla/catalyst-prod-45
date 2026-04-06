@@ -251,7 +251,7 @@ export default function WorkItemsListPage() {
   }, [items]);
 
   return (
-    <div style={{ fontFamily: 'Inter, sans-serif', background: 'var(--bg-app, #FFFFFF)', minHeight: '100%' }}>
+    <div style={{ fontFamily: 'Geist, -apple-system, sans-serif', background: 'var(--bg-app, #FFFFFF)', minHeight: '100%' }}>
       {/* Sync Banner — conflictCount from real DB */}
       {!bannerDismissed && (
         <SyncBanner
@@ -266,20 +266,20 @@ export default function WorkItemsListPage() {
       <div className="px-6 py-4 max-w-[1400px] mx-auto">
         {/* Breadcrumb */}
         <div className="flex items-center gap-1 mb-3">
-          <span style={{ fontSize: 10, color: '#94A3B8' }}>ProjectHub</span>
-          <span style={{ fontSize: 10, color: '#CBD5E1' }}>/</span>
-          <span style={{ fontSize: 10, color: '#94A3B8' }}>{project?.key ?? key?.toUpperCase()} — {project?.name ?? 'Loading…'}</span>
-          <span style={{ fontSize: 10, color: '#CBD5E1' }}>/</span>
+          <span style={{ fontSize: 10, color: 'rgba(237,237,237,0.40)' }}>ProjectHub</span>
+          <span style={{ fontSize: 10, color: 'rgba(237,237,237,0.53)' }}>/</span>
+          <span style={{ fontSize: 10, color: 'rgba(237,237,237,0.40)' }}>{project?.key ?? key?.toUpperCase()} — {project?.name ?? 'Loading…'}</span>
+          <span style={{ fontSize: 10, color: 'rgba(237,237,237,0.53)' }}>/</span>
           <span style={{ fontSize: 10, fontWeight: 700, color: '#475569' }}>List</span>
         </div>
 
         {/* Page header */}
         <div className="flex items-center justify-between mb-1">
           <div className="flex items-center gap-2.5">
-            <h1 style={{ fontSize: 18, fontWeight: 700, letterSpacing: '-0.01em', fontFamily: 'Sora, sans-serif', color: 'var(--fg-1, #0F172A)', margin: 0 }}>
+            <h1 style={{ fontSize: 18, fontWeight: 700, letterSpacing: '-0.01em', fontFamily: 'Sora, sans-serif', color: 'var(--fg-1, rgba(237,237,237,0.93))', margin: 0 }}>
               Work Items
             </h1>
-            <span style={{ fontSize: 11, fontWeight: 500, padding: '1px 8px', borderRadius: 99, background: '#F1F5F9', color: '#64748B' }}>
+            <span style={{ fontSize: 11, fontWeight: 500, padding: '1px 8px', borderRadius: 99, background: '#1A1A1A', color: 'rgba(237,237,237,0.40)' }}>
               {listState.processed.length}
             </span>
           </div>
@@ -288,9 +288,9 @@ export default function WorkItemsListPage() {
             className="inline-flex items-center gap-1.5"
             style={{
               height: 30, padding: '0 10px', borderRadius: 4,
-              border: '0.75px solid var(--bd-default, #E2E8F0)', background: 'none',
+              border: '0.75px solid var(--bd-default, rgba(255,255,255,0.10))', background: 'none',
               fontSize: 11, fontWeight: 500, color: '#475569',
-              fontFamily: 'Inter, sans-serif', cursor: 'pointer',
+              fontFamily: 'Geist, -apple-system, sans-serif', cursor: 'pointer',
             }}
           >
             <History size={13} />

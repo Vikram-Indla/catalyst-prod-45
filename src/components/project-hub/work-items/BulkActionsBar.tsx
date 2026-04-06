@@ -13,7 +13,7 @@ interface BulkActionsBarProps {
 }
 
 const STATUS_COLORS: Record<string, string> = {
-  todo: '#64748B', in_progress: '#2563EB', done: '#16A34A', terminal: '#DC2626',
+  todo: 'rgba(237,237,237,0.40)', in_progress: '#2563EB', done: '#16A34A', terminal: '#DC2626',
 };
 
 const PRIORITIES = ['Critical', 'High', 'Medium', 'Low'];
@@ -34,7 +34,7 @@ export function BulkActionsBar({
       className="flex items-center gap-2 px-4 bg-[var(--cp-blue)]"
       style={{
         height: 40, borderRadius: '6px 6px 0 0',
-        fontFamily: 'Inter, sans-serif',
+        fontFamily: 'Geist, -apple-system, sans-serif',
       }}
     >
       <span className="text-[12px] font-semibold text-white mr-2">{selectedCount} selected</span>
@@ -58,7 +58,7 @@ export function BulkActionsBar({
               <button
                 key={s.id}
                 onClick={() => { onSetStatus(s.id); setStatusOpen(false); }}
-                className="w-full flex items-center gap-2 px-3 py-1.5 text-[12px] hover:bg-[#F8FAFC] text-left"
+                className="w-full flex items-center gap-2 px-3 py-1.5 text-[12px] hover:bg-[#1A1A1A] text-left"
                 style={{ color: 'var(--fg-1)' }}
               >
                 <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: STATUS_COLORS[s.category] || 'var(--fg-4)' }} />
@@ -88,7 +88,7 @@ export function BulkActionsBar({
               <button
                 key={p}
                 onClick={() => { onSetPriority(p); setPriorityOpen(false); }}
-                className="w-full text-left px-3 py-1.5 text-[12px] hover:bg-[#F8FAFC]"
+                className="w-full text-left px-3 py-1.5 text-[12px] hover:bg-[#1A1A1A]"
                 style={{ color: 'var(--fg-1)' }}
               >
                 {p}

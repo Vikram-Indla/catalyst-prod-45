@@ -31,7 +31,7 @@ export function SourceFilterPills({ value, onChange, catalystCount, jiraCount }:
 
   const pills: PillConfig[] = [
     { key: 'all', label: 'All', count: total, activeBg: 'var(--fg-1)', activeText: '#FFFFFF', activeBorder: 'var(--fg-1)' },
-    { key: 'catalyst', label: 'Catalyst', count: catalystCount, activeBg: 'var(--src-catalyst-bg, #EFF6FF)', activeText: 'var(--src-catalyst-text, #2563EB)', activeBorder: 'var(--src-catalyst-border, #BFDBFE)', icon: 'catalyst' },
+    { key: 'catalyst', label: 'Catalyst', count: catalystCount, activeBg: 'var(--src-catalyst-bg, rgba(59,130,246,0.06))', activeText: 'var(--src-catalyst-text, #2563EB)', activeBorder: 'var(--src-catalyst-border, #BFDBFE)', icon: 'catalyst' },
     { key: 'jira', label: 'Jira', count: jiraCount, activeBg: 'var(--src-jira-bg, #FFF7ED)', activeText: 'var(--src-jira-text, #9A3412)', activeBorder: 'var(--src-jira-border, #FED7AA)', icon: 'jira' },
   ];
 
@@ -41,7 +41,7 @@ export function SourceFilterPills({ value, onChange, catalystCount, jiraCount }:
         fontSize: 11.5,
         fontWeight: 500,
         color: 'var(--cp-text-tertiary, var(--fg-4))',
-        fontFamily: 'Inter, sans-serif',
+        fontFamily: 'Geist, -apple-system, sans-serif',
       }}>
         Source:
       </span>
@@ -58,7 +58,7 @@ export function SourceFilterPills({ value, onChange, catalystCount, jiraCount }:
               borderRadius: 13,
               fontSize: 11.5,
               fontWeight: 500,
-              fontFamily: 'Inter, sans-serif',
+              fontFamily: 'Geist, -apple-system, sans-serif',
               border: `0.75px solid ${isActive ? pill.activeBorder : 'var(--cp-border-default, rgba(15,23,42,0.12))'}`,
               backgroundColor: isActive ? pill.activeBg : 'var(--cp-float)',
               color: isActive ? pill.activeText : 'var(--cp-text-secondary, var(--fg-2))',

@@ -15,11 +15,11 @@ import { useTheme } from '@/hooks/useTheme';
 import { DK, LK } from '@/utils/dark-mode-styles';
 
 const BOARD_COLUMNS = [
-  { status: 'Submitted', label: 'SUBMITTED', headerColor: '#64748B', countBg: '#E2E8F0', countText: '#64748B' },
-  { status: 'Under Review', label: 'UNDER REVIEW', headerColor: '#64748B', countBg: '#E2E8F0', countText: '#64748B' },
-  { status: 'Approved', label: 'APPROVED', headerColor: '#64748B', countBg: '#E2E8F0', countText: '#64748B' },
+  { status: 'Submitted', label: 'SUBMITTED', headerColor: 'rgba(237,237,237,0.40)', countBg: 'rgba(255,255,255,0.10)', countText: 'rgba(237,237,237,0.40)' },
+  { status: 'Under Review', label: 'UNDER REVIEW', headerColor: 'rgba(237,237,237,0.40)', countBg: 'rgba(255,255,255,0.10)', countText: 'rgba(237,237,237,0.40)' },
+  { status: 'Approved', label: 'APPROVED', headerColor: 'rgba(237,237,237,0.40)', countBg: 'rgba(255,255,255,0.10)', countText: 'rgba(237,237,237,0.40)' },
   { status: 'Converted to Initiative', label: 'CONVERTED', headerColor: '#16A34A', countBg: '#D1FAE5', countText: '#11853D' },
-  { status: 'Rejected', label: 'REJECTED', headerColor: '#94A3B8', countBg: '#E2E8F0', countText: '#94A3B8' },
+  { status: 'Rejected', label: 'REJECTED', headerColor: 'rgba(237,237,237,0.40)', countBg: 'rgba(255,255,255,0.10)', countText: 'rgba(237,237,237,0.40)' },
 ];
 
 const FILTER_PILLS = [
@@ -172,7 +172,7 @@ function BoardCard({ idea, isConverted, onClick, isDark, dk }: { idea: IdeaRow; 
           {idea.roadmap_quarter && (
             <span style={{ display: 'inline-flex', alignItems: 'center', height: 18, padding: '0 4px', borderRadius: 4, fontSize: '10px', fontWeight: 700, background: QUARTER_BADGE[idea.roadmap_quarter]?.bg, color: QUARTER_BADGE[idea.roadmap_quarter]?.text }}>{idea.roadmap_quarter}</span>
           )}
-          <span style={{ fontSize: '9px', fontWeight: 800, background: isDark ? 'rgba(255,255,255,0.06)' : '#F1F5F9', color: dk.t2, padding: '1px 5px', borderRadius: '4px', border: `1px solid ${dk.border}`, fontFamily: "'JetBrains Mono', monospace" }}>{idea.priority || 'P2'}</span>
+          <span style={{ fontSize: '9px', fontWeight: 800, background: isDark ? 'rgba(255,255,255,0.06)' : '#1A1A1A', color: dk.t2, padding: '1px 5px', borderRadius: '4px', border: `1px solid ${dk.border}`, fontFamily: "'JetBrains Mono', monospace" }}>{idea.priority || 'P2'}</span>
         </div>
       </div>
 
@@ -181,8 +181,8 @@ function BoardCard({ idea, isConverted, onClick, isDark, dk }: { idea: IdeaRow; 
 
       {/* Row 3: type + team chips */}
       <div style={{ marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'wrap' }}>
-        <span style={{ background: isDark ? 'rgba(255,255,255,0.06)' : '#F1F5F9', color: dk.t2, padding: '1px 6px', borderRadius: '4px', fontSize: '11px', fontWeight: 500, border: isDark ? `1px solid ${dk.border}` : 'none' }}>{idea.idea_type || 'Feature'}</span>
-        {idea.assigned_team && <span style={{ background: isDark ? 'rgba(255,255,255,0.06)' : '#F1F5F9', color: dk.t2, padding: '1px 6px', borderRadius: '4px', fontSize: '11px', fontWeight: 500, border: isDark ? `1px solid ${dk.border}` : 'none' }}>{idea.assigned_team}</span>}
+        <span style={{ background: isDark ? 'rgba(255,255,255,0.06)' : '#1A1A1A', color: dk.t2, padding: '1px 6px', borderRadius: '4px', fontSize: '11px', fontWeight: 500, border: isDark ? `1px solid ${dk.border}` : 'none' }}>{idea.idea_type || 'Feature'}</span>
+        {idea.assigned_team && <span style={{ background: isDark ? 'rgba(255,255,255,0.06)' : '#1A1A1A', color: dk.t2, padding: '1px 6px', borderRadius: '4px', fontSize: '11px', fontWeight: 500, border: isDark ? `1px solid ${dk.border}` : 'none' }}>{idea.assigned_team}</span>}
       </div>
 
       {/* Row 4: impact */}

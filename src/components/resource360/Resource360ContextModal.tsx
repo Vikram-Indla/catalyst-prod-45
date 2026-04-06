@@ -29,7 +29,7 @@ export function Resource360ContextModal({ item, allItems, onClose, onNavigate }:
   const statusColor = statusCat === 'done' ? T.done : statusCat === 'progress' ? T.progress : T.todo;
   const stale = getStaleIndicator(item.age_days, item.status, item.status_category);
   const isDone = statusCat === 'done';
-  const hubColor = WH_HUB_COLORS[item.hub] ?? '#64748B';
+  const hubColor = WH_HUB_COLORS[item.hub] ?? 'rgba(237,237,237,0.40)';
   const hubShort = WH_HUB_SHORT[item.hub] ?? item.hub?.slice(0, 4).toUpperCase();
 
   const dueStr = item.release_end_date ?? '2026-03-30';
@@ -78,7 +78,7 @@ export function Resource360ContextModal({ item, allItems, onClose, onNavigate }:
                 {stale && (
                   <span style={{
                     fontSize: 9, fontWeight: 800, padding: '2px 6px', borderRadius: 4,
-                    background: '#FEF2F2', color: 'var(--sem-danger)', border: '1px solid #FECACA',
+                    background: 'rgba(248,113,113,0.06)', color: 'var(--sem-danger)', border: '1px solid #FECACA',
                   }}>🔴 Stale — {item.age_days}d</span>
                 )}
                 <span style={{ flex: 1 }} />
@@ -218,7 +218,7 @@ export function Resource360ContextModal({ item, allItems, onClose, onNavigate }:
                         onClick={() => { const t = allItems.find(a => a.item_key === s.item_key); if (t) onNavigate(t); }}
                         style={{
                           padding: '6px 8px', borderRadius: 6, cursor: 'pointer',
-                          background: isCurrent ? '#EFF6FF' : '#fff',
+                          background: isCurrent ? 'rgba(59,130,246,0.06)' : '#fff',
                           border: `1px solid ${isCurrent ? '#BFDBFE' : T.border}`,
                           transition: 'background .1s',
                         }}
@@ -313,7 +313,7 @@ const PRI_MAP: Record<string, { icon: string; color: string; label: string }> = 
   High:     { icon: '⬆', color: '#EA580C', label: 'High' },
   Medium:   { icon: '●', color: '#CA8A04', label: 'Medium' },
   Low:      { icon: '⬇', color: '#57534E', label: 'Low' },
-  Lowest:   { icon: '⬇⬇', color: '#94A3B8', label: 'Lowest' },
+  Lowest:   { icon: '⬇⬇', color: 'rgba(237,237,237,0.40)', label: 'Lowest' },
   Critical: { icon: '🔥', color: '#BE123C', label: 'Critical' },
 };
 

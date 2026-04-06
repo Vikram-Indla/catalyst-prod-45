@@ -20,9 +20,9 @@ import { InitiativeTypeSelect } from './InitiativeTypeSelect';
 /* ── Token constants ── */
 const T = {
   ink: '#09090B', inkSec: '#18181B', inkMuted: '#71717A',
-  surface: '#FFFFFF', surfSec: 'var(--bg-1, #F8FAFC)',
-  border: 'var(--bd-default, #E2E8F0)', borderStrong: '#CBD5E1',
-  primary: '#2563EB', primaryHover: '#1D4ED8', primaryBg: '#EFF6FF',
+  surface: '#FFFFFF', surfSec: 'var(--bg-1, #1A1A1A)',
+  border: 'var(--bd-default, rgba(255,255,255,0.10))', borderStrong: 'rgba(237,237,237,0.53)',
+  primary: '#2563EB', primaryHover: '#1D4ED8', primaryBg: 'rgba(59,130,246,0.06)',
   danger: '#DC2626',
 };
 
@@ -297,7 +297,7 @@ export function CreateInitiativeDrawer({ open, onClose, conversionSource, onCrea
 
           {/* Conversion banners */}
           {conversionSource?.type === 'single' && (
-            <div className="p-3 rounded-lg mb-3" style={{ background: '#F0FDF4', border: '1px solid #BBF7D0' }}>
+            <div className="p-3 rounded-lg mb-3" style={{ background: 'rgba(74,222,128,0.06)', border: '1px solid #BBF7D0' }}>
               <div className="text-[13px] font-bold flex items-center gap-1.5" style={{ color: T.ink }}>
                 <RefreshCw className="w-3.5 h-3.5" /> Converting idea to initiative
               </div>
@@ -308,7 +308,7 @@ export function CreateInitiativeDrawer({ open, onClose, conversionSource, onCrea
             </div>
           )}
           {conversionSource?.type === 'merge' && conversionSource.mergeIdea && (
-            <div className="p-3 rounded-lg mb-3" style={{ background: '#EFF6FF', border: '1px solid #BFDBFE' }}>
+            <div className="p-3 rounded-lg mb-3" style={{ background: 'rgba(59,130,246,0.06)', border: '1px solid #BFDBFE' }}>
               <div className="text-[13px] font-bold flex items-center gap-1.5" style={{ color: T.ink }}>
                 <GitMerge className="w-3.5 h-3.5" /> Merging 2 ideas into 1 initiative
               </div>

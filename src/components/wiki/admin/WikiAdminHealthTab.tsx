@@ -30,7 +30,7 @@ export function WikiAdminHealthTab() {
   if (isLoading) return <div>{Array.from({ length: 6 }).map((_, i) => <SkeletonBlock key={i} height={36} style={{ marginBottom: 4 }} />)}</div>;
 
   if (derivedChecks.length === 0) {
-    return <EmptyState icon={<HeartPulse style={{ width: 28, height: 28, color: 'var(--cp-text-tertiary, #64748B)' }} />} message="No health data" sub="Health checks will populate after the first sync run." />;
+    return <EmptyState icon={<HeartPulse style={{ width: 28, height: 28, color: 'var(--cp-text-tertiary, rgba(237,237,237,0.40))' }} />} message="No health data" sub="Health checks will populate after the first sync run." />;
   }
 
   const grouped = derivedChecks.reduce<Record<string, typeof derivedChecks>>((acc, c) => {
@@ -42,13 +42,13 @@ export function WikiAdminHealthTab() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       {Object.entries(grouped).map(([cat, items]) => (
         <div key={cat}>
-          <div style={{ fontFamily: 'Sora, sans-serif', fontSize: 13, fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)', marginBottom: 6 }}>{cat}</div>
+          <div style={{ fontFamily: 'Sora, sans-serif', fontSize: 13, fontWeight: 600, color: 'var(--cp-text-primary, rgba(237,237,237,0.93))', marginBottom: 6 }}>{cat}</div>
           <div style={{ border: '1px solid var(--cp-border-default, rgba(15,23,42,0.12))', borderRadius: 4, overflow: 'hidden' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: 'Inter, sans-serif', fontSize: 12 }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 12 }}>
               <thead>
-                <tr style={{ background: 'var(--cp-bg-sunken, #F8FAFC)' }}>
+                <tr style={{ background: 'var(--cp-bg-sunken, #1A1A1A)' }}>
                   {['Metric', 'Value', 'Threshold', 'Status'].map(h => (
-                    <th key={h} style={{ padding: '8px 12px', textAlign: 'start', fontWeight: 650, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.03em', color: 'var(--cp-text-tertiary, #64748B)' }}>{h}</th>
+                    <th key={h} style={{ padding: '8px 12px', textAlign: 'start', fontWeight: 650, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.03em', color: 'var(--cp-text-tertiary, rgba(237,237,237,0.40))' }}>{h}</th>
                   ))}
                 </tr>
               </thead>

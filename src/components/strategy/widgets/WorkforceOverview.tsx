@@ -15,12 +15,12 @@ import {
 } from '@/components/ui/tooltip';
 
 function getUtilizationColor(pct: number): string {
-  if (pct === 0) return 'var(--exec-text-muted, #94A3B8)';
+  if (pct === 0) return 'var(--exec-text-muted, rgba(237,237,237,0.40))';
   if (pct > 100) return 'var(--exec-signal-red, #DC2626)';
-  if (pct >= 95) return 'var(--exec-blue-700, #1E40AF)';
+  if (pct >= 95) return 'var(--exec-blue-700, #7DB8FC)';
   if (pct >= 80) return 'var(--exec-blue-500, #3B82F6)';
   if (pct > 0) return 'var(--exec-signal-amber, #D97706)';
-  return '#94A3B8';
+  return 'rgba(237,237,237,0.40)';
 }
 
 function getUtilizationLabel(pct: number): string {
@@ -67,10 +67,10 @@ export function WorkforceOverview() {
   const totalResources = data.totalHeadcount;
 
   const statusCards = [
-    { label: 'Unassigned', value: unassigned, color: 'var(--exec-text-muted, #94A3B8)' },
+    { label: 'Unassigned', value: unassigned, color: 'var(--exec-text-muted, rgba(237,237,237,0.40))' },
     { label: 'Under-util.', value: data.healthy, color: 'var(--exec-signal-amber, #D97706)' },
     { label: 'Committed', value: committed, color: 'var(--exec-confirm-green, #16A34A)' },
-    { label: 'Over-alloc.', value: overAllocated, color: overAllocated > 0 ? 'var(--exec-signal-red, #DC2626)' : 'var(--exec-text-muted, #94A3B8)' },
+    { label: 'Over-alloc.', value: overAllocated, color: overAllocated > 0 ? 'var(--exec-signal-red, #DC2626)' : 'var(--exec-text-muted, rgba(237,237,237,0.40))' },
   ];
 
   const totalForBar = totalResources || 1;
@@ -87,7 +87,7 @@ export function WorkforceOverview() {
   ];
 
   const barSegments = [
-    { label: 'Unassigned', count: unassigned, color: 'var(--bd-default, #E2E8F0)', tooltip: `Unassigned: ${unassigned} resources\nNo project assignment.\nAction: Review bench availability.` },
+    { label: 'Unassigned', count: unassigned, color: 'var(--bd-default, rgba(255,255,255,0.10))', tooltip: `Unassigned: ${unassigned} resources\nNo project assignment.\nAction: Review bench availability.` },
     { label: 'Under-utilized', count: data.healthy, color: '#D97706', tooltip: `Under-utilized: ${data.healthy} resources\nAllocated below 100% — capacity being wasted.\nAction: Optimize allocation or assign to new projects.` },
     { label: 'Fully Committed', count: committed, color: '#16A34A', tooltip: `Fully Committed: ${committed} resources\nAll capacity assigned to active projects. ✓` },
     { label: 'Over-allocated', count: overAllocated, color: '#DC2626', tooltip: `⚠ Over-allocated: ${overAllocated} resources\nAssigned beyond 100% capacity — burnout risk.\nAction: Rebalance workload or add resources.` },
@@ -104,7 +104,7 @@ export function WorkforceOverview() {
             <div style={{ fontSize: 11, color: 'var(--exec-text-secondary)', fontWeight: 500 }}>Team Members</div>
             <div style={{ fontSize: 10, color: 'var(--exec-text-tertiary)' }}>{data.departments.length} depts · {data.vendorBreakdown.length} vendors</div>
             <div className="flex items-center gap-1 mt-1" style={{ fontSize: 9, color: 'var(--exec-text-secondary)' }}>
-              <span><span style={{ fontWeight: 700, color: 'var(--exec-blue-700, #1E40AF)' }}>F:</span> {data.fixedCount}</span>
+              <span><span style={{ fontWeight: 700, color: 'var(--exec-blue-700, #7DB8FC)' }}>F:</span> {data.fixedCount}</span>
               <span>·</span>
               <span><span style={{ fontWeight: 700, color: 'var(--exec-blue-500, #3B82F6)' }}>V:</span> {data.variableCount}</span>
               <span>·</span>
@@ -116,7 +116,7 @@ export function WorkforceOverview() {
         {/* B) Status Grid */}
         <div className="grid grid-cols-4 gap-1.5 mb-3">
           {statusCards.map(card => (
-            <div key={card.label} className="text-center" style={{ border: '1px solid var(--exec-border, var(--bd-default, #E2E8F0))', borderRadius: 6, padding: '4px 6px' }}>
+            <div key={card.label} className="text-center" style={{ border: '1px solid var(--exec-border, var(--bd-default, rgba(255,255,255,0.10)))', borderRadius: 6, padding: '4px 6px' }}>
               <div style={{ fontSize: 16, fontWeight: 700, color: card.color }}>{card.value}</div>
               <div style={{ fontSize: 8, color: 'var(--exec-text-secondary)', fontWeight: 500 }}>{card.label}</div>
             </div>
@@ -147,7 +147,7 @@ export function WorkforceOverview() {
             const utilColor = getUtilizationColor(dept.avgUtilization);
             const barWidth = Math.min(dept.avgUtilization, 100);
             /* Dept bars: blue at 100%, amber <100%, red >100% */
-            const barColor = dept.avgUtilization > 100 ? 'var(--exec-signal-red, #DC2626)' : dept.avgUtilization === 100 ? 'var(--exec-blue-700, #1E40AF)' : 'var(--exec-signal-amber, #D97706)';
+            const barColor = dept.avgUtilization > 100 ? 'var(--exec-signal-red, #DC2626)' : dept.avgUtilization === 100 ? 'var(--exec-blue-700, #7DB8FC)' : 'var(--exec-signal-amber, #D97706)';
             const tooltipText = `${dept.name}: ${dept.headcount} resources\nAvg. utilization: ${dept.avgUtilization}%`;
             return (
               <Tooltip key={dept.did}>

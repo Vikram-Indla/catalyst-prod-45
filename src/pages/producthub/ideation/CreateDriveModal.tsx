@@ -114,12 +114,12 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
   const labelStyle: React.CSSProperties = {
     fontSize: '11px', fontWeight: 600, color: isDark ? '#A1A1A1' : '#475569',
     textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '6px', display: 'block',
-    fontFamily: 'Inter, sans-serif',
+    fontFamily: 'Geist, -apple-system, sans-serif',
   };
   const inputStyle: React.CSSProperties = {
-    width: '100%', border: `1.5px solid ${isDark ? 'rgba(255,255,255,0.12)' : '#CBD5E1'}`, borderRadius: '8px',
-    padding: '10px 12px', fontSize: '14px', color: isDark ? '#EDEDED' : '#0F172A', outline: 'none',
-    fontFamily: 'Inter, sans-serif', background: isDark ? 'transparent' : '#FFFFFF',
+    width: '100%', border: `1.5px solid ${isDark ? 'rgba(255,255,255,0.12)' : 'rgba(237,237,237,0.53)'}`, borderRadius: '8px',
+    padding: '10px 12px', fontSize: '14px', color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)', outline: 'none',
+    fontFamily: 'Geist, -apple-system, sans-serif', background: isDark ? 'transparent' : '#FFFFFF',
   };
   const errorStyle: React.CSSProperties = {
     fontSize: '12px', color: '#EF4444', marginTop: '4px',
@@ -142,13 +142,13 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
       }}>
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
-          <h3 style={{ fontSize: '18px', fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A', margin: 0, fontFamily: 'Inter, sans-serif' }}>
+          <h3 style={{ fontSize: '18px', fontWeight: 600, color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)', margin: 0, fontFamily: 'Geist, -apple-system, sans-serif' }}>
             Create Innovation Drive
           </h3>
           <button
             onClick={onClose}
             style={{
-              background: 'none', border: 'none', cursor: 'pointer', color: isDark ? '#878787' : '#64748B',
+              background: 'none', border: 'none', cursor: 'pointer', color: isDark ? '#878787' : 'rgba(237,237,237,0.40)',
               padding: '4px', borderRadius: '6px', display: 'flex',
             }}
           >
@@ -206,14 +206,14 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
                     style={{
                       width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center',
                       borderRadius: '8px', cursor: 'pointer',
-                      border: isSelected ? '1.5px solid #2563EB' : `1.5px solid ${isDark ? 'rgba(255,255,255,0.12)' : '#E2E8F0'}`,
-                      background: isSelected ? (isDark ? 'rgba(37,99,235,0.12)' : '#EFF6FF') : (isDark ? 'transparent' : '#FFFFFF'),
+                      border: isSelected ? '1.5px solid #2563EB' : `1.5px solid ${isDark ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.10)'}`,
+                      background: isSelected ? (isDark ? 'rgba(37,99,235,0.12)' : 'rgba(59,130,246,0.06)') : (isDark ? 'transparent' : '#FFFFFF'),
                       transition: 'all 150ms ease',
                     }}
-                    onMouseEnter={(e) => { if (!isSelected) { e.currentTarget.style.borderColor = isDark ? 'rgba(255,255,255,0.20)' : '#CBD5E1'; e.currentTarget.style.background = isDark ? 'rgba(255,255,255,0.03)' : '#F8FAFC'; } }}
-                    onMouseLeave={(e) => { if (!isSelected) { e.currentTarget.style.borderColor = isDark ? 'rgba(255,255,255,0.12)' : '#E2E8F0'; e.currentTarget.style.background = isDark ? 'transparent' : '#FFFFFF'; } }}
+                    onMouseEnter={(e) => { if (!isSelected) { e.currentTarget.style.borderColor = isDark ? 'rgba(255,255,255,0.20)' : 'rgba(237,237,237,0.53)'; e.currentTarget.style.background = isDark ? 'rgba(255,255,255,0.03)' : '#1A1A1A'; } }}
+                    onMouseLeave={(e) => { if (!isSelected) { e.currentTarget.style.borderColor = isDark ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.10)'; e.currentTarget.style.background = isDark ? 'transparent' : '#FFFFFF'; } }}
                   >
-                    <Icon size={20} strokeWidth={1.75} color={isSelected ? '#2563EB' : (isDark ? '#A1A1A1' : '#334155')} />
+                    <Icon size={20} strokeWidth={1.75} color={isSelected ? '#2563EB' : (isDark ? '#A1A1A1' : 'rgba(237,237,237,0.53)')} />
                   </button>
                 );
               })}
@@ -237,23 +237,23 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
                       padding: '6px 16px', borderRadius: '20px', cursor: 'pointer',
                       fontSize: '13px', fontWeight: isSelected ? 600 : 500,
                       border: isSelected
-                        ? (isActive ? '1.5px solid #16A34A' : `1.5px solid ${isDark ? 'rgba(255,255,255,0.20)' : '#CBD5E1'}`)
-                        : `1.5px solid ${isDark ? 'rgba(255,255,255,0.12)' : '#E2E8F0'}`,
+                        ? (isActive ? '1.5px solid #16A34A' : `1.5px solid ${isDark ? 'rgba(255,255,255,0.20)' : 'rgba(237,237,237,0.53)'}`)
+                        : `1.5px solid ${isDark ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.10)'}`,
                       background: isSelected
-                        ? (isActive ? (isDark ? 'rgba(22,163,74,0.12)' : '#F0FDF4') : (isDark ? 'rgba(255,255,255,0.06)' : '#F8FAFC'))
+                        ? (isActive ? (isDark ? 'rgba(22,163,74,0.12)' : 'rgba(74,222,128,0.06)') : (isDark ? 'rgba(255,255,255,0.06)' : '#1A1A1A'))
                         : (isDark ? 'transparent' : '#FFFFFF'),
                       color: isSelected
-                        ? (isActive ? (isDark ? '#86EFAC' : '#15803D') : (isDark ? '#A1A1A1' : '#64748B'))
-                        : (isDark ? '#878787' : '#94A3B8'),
+                        ? (isActive ? (isDark ? '#86EFAC' : '#15803D') : (isDark ? '#A1A1A1' : 'rgba(237,237,237,0.40)'))
+                        : (isDark ? '#878787' : 'rgba(237,237,237,0.40)'),
                       transition: 'all 150ms ease',
-                      fontFamily: 'Inter, sans-serif',
+                      fontFamily: 'Geist, -apple-system, sans-serif',
                     }}
                   >
                     <span style={{
                       width: '6px', height: '6px', borderRadius: '50%',
                       background: isSelected
-                        ? (isActive ? '#16A34A' : '#94A3B8')
-                        : '#CBD5E1',
+                        ? (isActive ? '#16A34A' : 'rgba(237,237,237,0.40)')
+                        : 'rgba(237,237,237,0.53)',
                     }} />
                     {isActive ? 'Active' : 'Draft'}
                   </button>
@@ -276,8 +276,8 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
                     ...(touched.deadline && errors.deadline ? { borderColor: '#EF4444' } : {}),
                   }}
                 >
-                  <CalendarIcon size={16} style={{ color: isDark ? '#878787' : '#64748B', flexShrink: 0 }} />
-                  <span style={{ fontWeight: 500, color: isDark ? '#EDEDED' : '#0F172A' }}>{format(deadline, 'MMM d, yyyy')}</span>
+                  <CalendarIcon size={16} style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)', flexShrink: 0 }} />
+                  <span style={{ fontWeight: 500, color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)' }}>{format(deadline, 'MMM d, yyyy')}</span>
                 </button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start" style={{ zIndex: 400 }}>
@@ -299,7 +299,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
             <label style={labelStyle}>Target Ideas</label>
             <div style={{
               display: 'inline-flex', alignItems: 'center',
-              border: `1.5px solid ${isDark ? 'rgba(255,255,255,0.12)' : '#CBD5E1'}`, borderRadius: '8px', overflow: 'hidden',
+              border: `1.5px solid ${isDark ? 'rgba(255,255,255,0.12)' : 'rgba(237,237,237,0.53)'}`, borderRadius: '8px', overflow: 'hidden',
             }}>
               <button
                 type="button"
@@ -308,7 +308,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
                   width: '36px', height: '50px', display: 'flex', alignItems: 'center', justifyContent: 'center',
                   border: 'none', background: isDark ? 'transparent' : '#FFFFFF',
                   cursor: targetCount <= 1 ? 'not-allowed' : 'pointer',
-                  color: targetCount <= 1 ? (isDark ? '#878787' : '#CBD5E1') : (isDark ? '#A1A1A1' : '#334155'),
+                  color: targetCount <= 1 ? (isDark ? '#878787' : 'rgba(237,237,237,0.53)') : (isDark ? '#A1A1A1' : 'rgba(237,237,237,0.53)'),
                   fontSize: '18px', fontWeight: 500,
                 }}
                 disabled={targetCount <= 1}
@@ -327,10 +327,10 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
                 onBlur={() => handleBlur('target_count')}
                 style={{
                   width: '48px', height: '50px',
-                  borderLeft: `1.5px solid ${isDark ? 'rgba(255,255,255,0.12)' : '#CBD5E1'}`, borderRight: `1.5px solid ${isDark ? 'rgba(255,255,255,0.12)' : '#CBD5E1'}`,
+                  borderLeft: `1.5px solid ${isDark ? 'rgba(255,255,255,0.12)' : 'rgba(237,237,237,0.53)'}`, borderRight: `1.5px solid ${isDark ? 'rgba(255,255,255,0.12)' : 'rgba(237,237,237,0.53)'}`,
                   borderTop: 'none', borderBottom: 'none',
-                  textAlign: 'center', fontSize: '16px', fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A', outline: 'none',
-                  fontFamily: 'Inter, sans-serif', background: isDark ? 'transparent' : '#FFFFFF',
+                  textAlign: 'center', fontSize: '16px', fontWeight: 600, color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)', outline: 'none',
+                  fontFamily: 'Geist, -apple-system, sans-serif', background: isDark ? 'transparent' : '#FFFFFF',
                 }}
               />
               <button
@@ -340,7 +340,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
                   width: '36px', height: '50px', display: 'flex', alignItems: 'center', justifyContent: 'center',
                   border: 'none', background: isDark ? 'transparent' : '#FFFFFF',
                   cursor: targetCount >= 50 ? 'not-allowed' : 'pointer',
-                  color: targetCount >= 50 ? (isDark ? '#878787' : '#CBD5E1') : (isDark ? '#A1A1A1' : '#334155'),
+                  color: targetCount >= 50 ? (isDark ? '#878787' : 'rgba(237,237,237,0.53)') : (isDark ? '#A1A1A1' : 'rgba(237,237,237,0.53)'),
                   fontSize: '18px', fontWeight: 500,
                 }}
                 disabled={targetCount >= 50}
@@ -354,7 +354,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
 
         {/* Footer */}
         <div style={{
-          paddingTop: '20px', borderTop: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, marginTop: '24px',
+          paddingTop: '20px', borderTop: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.10)'}`, marginTop: '24px',
           display: 'flex', justifyContent: 'flex-end', gap: '10px',
         }}>
           <button
@@ -363,9 +363,9 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
             style={{
               padding: '10px 20px', fontSize: '14px', fontWeight: 500,
               color: isDark ? '#A1A1A1' : '#475569', background: 'transparent', border: 'none',
-              borderRadius: '8px', cursor: 'pointer', fontFamily: 'Inter, sans-serif',
+              borderRadius: '8px', cursor: 'pointer', fontFamily: 'Geist, -apple-system, sans-serif',
             }}
-            onMouseEnter={(e) => { e.currentTarget.style.color = isDark ? '#EDEDED' : '#0F172A'; }}
+            onMouseEnter={(e) => { e.currentTarget.style.color = isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)'; }}
             onMouseLeave={(e) => { e.currentTarget.style.color = isDark ? '#A1A1A1' : '#475569'; }}
           >
             Cancel
@@ -382,7 +382,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
               cursor: (!isValid || createMutation.isPending) ? 'not-allowed' : 'pointer',
               display: 'inline-flex', alignItems: 'center', gap: '6px',
               boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
-              transition: 'background 150ms ease', fontFamily: 'Inter, sans-serif',
+              transition: 'background 150ms ease', fontFamily: 'Geist, -apple-system, sans-serif',
             }}
             onMouseEnter={(e) => { if (isValid && !createMutation.isPending) e.currentTarget.style.background = '#1D4ED8'; }}
             onMouseLeave={(e) => { if (isValid && !createMutation.isPending) e.currentTarget.style.background = '#2563EB'; }}

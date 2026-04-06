@@ -62,18 +62,18 @@ export default function ProjectSettingsPageNew() {
     <div className="ph-content-wrapper" style={{ fontFamily: "'Inter', sans-serif" }}>
       <div className="ph-inner-content">
         <div className="flex items-center gap-1.5 mb-5">
-          <span className="cursor-pointer hover:underline" style={{ fontSize: 13, color: '#64748B' }} onClick={() => navigate('/project-hub/projects')}>ProjectHub</span>
-          <ChevronRight size={12} color="#94A3B8" />
-          <span className="cursor-pointer hover:underline" style={{ fontSize: 13, color: '#64748B' }} onClick={() => navigate(`/project-hub/${key}/dashboard`)}>
+          <span className="cursor-pointer hover:underline" style={{ fontSize: 13, color: 'rgba(237,237,237,0.40)' }} onClick={() => navigate('/project-hub/projects')}>ProjectHub</span>
+          <ChevronRight size={12} color="rgba(237,237,237,0.40)" />
+          <span className="cursor-pointer hover:underline" style={{ fontSize: 13, color: 'rgba(237,237,237,0.40)' }} onClick={() => navigate(`/project-hub/${key}/dashboard`)}>
             {key?.toUpperCase()}{project ? ` — ${project.name}` : ''}
           </span>
-          <ChevronRight size={12} color="#94A3B8" />
-          <span style={{ fontSize: 13, color: 'var(--fg-1, #0F172A)', fontWeight: 500 }}>Settings</span>
+          <ChevronRight size={12} color="rgba(237,237,237,0.40)" />
+          <span style={{ fontSize: 13, color: 'var(--fg-1, rgba(237,237,237,0.93))', fontWeight: 500 }}>Settings</span>
         </div>
 
         <div className="flex items-center gap-3 mb-5">
           <Settings size={20} color="#2563EB" strokeWidth={1.75} />
-          <h1 style={{ fontSize: 20, fontWeight: 700, color: 'var(--fg-1, #0F172A)', fontFamily: "'Sora', sans-serif", letterSpacing: '-0.3px' }}>Project Settings</h1>
+          <h1 style={{ fontSize: 20, fontWeight: 700, color: 'var(--fg-1, rgba(237,237,237,0.93))', fontFamily: "'Sora', sans-serif", letterSpacing: '-0.3px' }}>Project Settings</h1>
         </div>
 
         <SettingsTabs active={activeTab} onChange={setActiveTab} />
@@ -120,7 +120,7 @@ export default function ProjectSettingsPageNew() {
           {activeTab === 'Notifications' && <NotificationsTab />}
 
           {!project && !isLoading && (
-            <div style={{ fontSize: 13, color: '#94A3B8', textAlign: 'center', padding: '40px 0' }}>Project not found.</div>
+            <div style={{ fontSize: 13, color: 'rgba(237,237,237,0.40)', textAlign: 'center', padding: '40px 0' }}>Project not found.</div>
           )}
         </div>
       </div>

@@ -28,7 +28,7 @@ export default function WorkHubGroupHeader({ label, count, collapsed, onToggle, 
       onFocus={e => (e.currentTarget.style.boxShadow = 'inset 0 0 0 2px #2563EB')}
       onBlur={e => (e.currentTarget.style.boxShadow = 'none')}
     >
-      <ChevronRight size={16} color="#334155" style={{ transform: collapsed ? 'rotate(0deg)' : 'rotate(90deg)', transition: 'transform 200ms ease' }} />
+      <ChevronRight size={16} color="rgba(237,237,237,0.53)" style={{ transform: collapsed ? 'rotate(0deg)' : 'rotate(90deg)', transition: 'transform 200ms ease' }} />
       <span style={{ fontSize: 12, fontWeight: 650, textTransform: 'uppercase', color: 'var(--fg-2)', letterSpacing: '0.03em' }}>{label}</span>
       <span style={{
         display: 'inline-flex', alignItems: 'center', justifyContent: 'center',

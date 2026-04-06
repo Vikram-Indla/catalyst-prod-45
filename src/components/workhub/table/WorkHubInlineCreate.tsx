@@ -48,7 +48,7 @@ export default function WorkHubInlineCreate({ defaultType, groupCategory, onSubm
           borderBottom: '0.75px solid var(--bd-subtle, rgba(255,255,255,0.05))',
         }}
       >
-        <Plus size={14} color="#94A3B8" />
+        <Plus size={14} color="rgba(237,237,237,0.40)" />
         <span style={{ fontSize: 12, color: 'var(--fg-4)' }}>Add {defaultType.toLowerCase()}</span>
       </div>
     );
@@ -69,7 +69,7 @@ export default function WorkHubInlineCreate({ defaultType, groupCategory, onSubm
         placeholder="What needs to be done?"
         style={{
           flex: 1, border: 'none', background: 'transparent', outline: 'none',
-          fontSize: 13, color: 'var(--fg-1)', fontFamily: 'Inter, sans-serif',
+          fontSize: 13, color: 'var(--fg-1)', fontFamily: 'Geist, -apple-system, sans-serif',
         }}
       />
       <button onClick={handleCancel} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px 8px', fontSize: 12, color: 'var(--fg-3)' }}>Cancel</button>

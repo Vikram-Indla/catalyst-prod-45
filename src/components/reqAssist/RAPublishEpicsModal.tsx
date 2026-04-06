@@ -177,7 +177,7 @@ export default function RAPublishEpicsModal({ brdId, epics, onClose, onPublished
             <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
               <button onClick={onClose} style={{
                 padding: '8px 16px', fontSize: 13, fontWeight: 500, borderRadius: 6,
-                border: '0.75px solid #CBD5E1', background: 'var(--bg-app)', color: 'var(--fg-2)', cursor: 'pointer',
+                border: '0.75px solid rgba(237,237,237,0.53)', background: 'var(--bg-app)', color: 'var(--fg-2)', cursor: 'pointer',
               }}>Cancel</button>
             </div>
           </>
@@ -198,7 +198,7 @@ export default function RAPublishEpicsModal({ brdId, epics, onClose, onPublished
                 <div key={e.id} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0' }}>
                   <span style={{
                     fontFamily: "'JetBrains Mono', monospace", fontSize: 10,
-                    color: 'var(--fg-2)', background: '#F1F5F9', padding: '1px 6px', borderRadius: 4,
+                    color: 'var(--fg-2)', background: '#1A1A1A', padding: '1px 6px', borderRadius: 4,
                   }}>{e.ra_tag || '—'}</span>
                   <span style={{ fontSize: 12, color: 'var(--fg-1)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {e.title}
@@ -214,7 +214,7 @@ export default function RAPublishEpicsModal({ brdId, epics, onClose, onPublished
             <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
               <button onClick={() => setStep(1)} style={{
                 padding: '8px 16px', fontSize: 13, fontWeight: 500, borderRadius: 6,
-                border: '0.75px solid #CBD5E1', background: 'var(--bg-app)', color: 'var(--fg-2)', cursor: 'pointer',
+                border: '0.75px solid rgba(237,237,237,0.53)', background: 'var(--bg-app)', color: 'var(--fg-2)', cursor: 'pointer',
               }}>Back</button>
               <button
                 onClick={handlePublish}

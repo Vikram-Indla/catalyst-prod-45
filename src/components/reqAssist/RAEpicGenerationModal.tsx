@@ -239,7 +239,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
           <>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, marginBottom: 20 }}>
               <div style={{
-                width: 64, height: 64, borderRadius: '50%', background: '#F0FDF4',
+                width: 64, height: 64, borderRadius: '50%', background: 'rgba(74,222,128,0.06)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
                 <CheckCircle2 size={40} color="var(--sem-success)" />
@@ -278,7 +278,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
                 onClick={onClose}
                 style={{
                   padding: '8px 16px', fontSize: 13, fontWeight: 500, borderRadius: 6,
-                  border: '0.75px solid #CBD5E1', background: 'var(--bg-app)', color: 'var(--fg-2)', cursor: 'pointer',
+                  border: '0.75px solid rgba(237,237,237,0.53)', background: 'var(--bg-app)', color: 'var(--fg-2)', cursor: 'pointer',
                 }}
               >
                 Close
@@ -308,7 +308,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
           <>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, marginBottom: 20 }}>
               <div style={{
-                width: 56, height: 56, borderRadius: '50%', background: '#FEF2F2',
+                width: 56, height: 56, borderRadius: '50%', background: 'rgba(248,113,113,0.06)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
                 <XCircle size={32} color="var(--sem-danger)" />
@@ -319,11 +319,11 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
             </div>
 
             <div style={{
-              background: '#FEF2F2', border: '1.5px solid #DC2626', borderRadius: 6,
+              background: 'rgba(248,113,113,0.06)', border: '1.5px solid #DC2626', borderRadius: 6,
               padding: '14px 16px', marginBottom: 16, maxHeight: 120, overflowY: 'auto' as const,
             }}>
               <code style={{
-                fontSize: 13, color: '#991B1B', lineHeight: 1.5, whiteSpace: 'pre-wrap', wordBreak: 'break-all' as const,
+                fontSize: 13, color: '#F87171', lineHeight: 1.5, whiteSpace: 'pre-wrap', wordBreak: 'break-all' as const,
                 fontFamily: 'monospace', display: 'block',
               }}>
                 {errorMsg || 'Unknown error — check browser console'}
@@ -344,7 +344,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
                 onClick={onClose}
                 style={{
                   padding: '8px 16px', fontSize: 13, fontWeight: 500, borderRadius: 6,
-                  border: '0.75px solid #CBD5E1', background: 'var(--bg-app)', color: 'var(--fg-2)', cursor: 'pointer',
+                  border: '0.75px solid rgba(237,237,237,0.53)', background: 'var(--bg-app)', color: 'var(--fg-2)', cursor: 'pointer',
                 }}
               >
                 Close
@@ -454,7 +454,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
                 onClick={onClose}
                 style={{
                   padding: '8px 16px', fontSize: 13, fontWeight: 500, borderRadius: 6,
-                  border: '0.75px solid #CBD5E1', background: 'var(--bg-app)', color: 'var(--fg-2)', cursor: 'pointer',
+                  border: '0.75px solid rgba(237,237,237,0.53)', background: 'var(--bg-app)', color: 'var(--fg-2)', cursor: 'pointer',
                 }}
               >
                 Stay on this page
@@ -463,7 +463,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
                 onClick={onClose}
                 style={{
                   padding: '8px 16px', fontSize: 13, fontWeight: 500, borderRadius: 6,
-                  border: '0.75px solid #CBD5E1', background: 'var(--bg-app)', color: 'var(--fg-2)', cursor: 'pointer',
+                  border: '0.75px solid rgba(237,237,237,0.53)', background: 'var(--bg-app)', color: 'var(--fg-2)', cursor: 'pointer',
                 }}
               >
                 Leave & Notify Me When Done

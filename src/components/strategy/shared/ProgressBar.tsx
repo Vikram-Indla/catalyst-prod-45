@@ -12,7 +12,7 @@ interface ProgressBarProps {
 }
 
 function getProgressColor(value: number): string {
-  if (value >= 70) return 'var(--exec-blue-700, #1E40AF)';
+  if (value >= 70) return 'var(--exec-blue-700, #7DB8FC)';
   if (value >= 40) return 'var(--exec-signal-amber, #D97706)';
   return 'var(--exec-signal-red, #DC2626)';
 }
@@ -28,7 +28,7 @@ export function ProgressBar({ value, color, height = 6, showLabel = false, anima
           flex: 1,
           height,
           borderRadius: height / 2,
-          background: 'var(--exec-bg-hover, #F1F5F9)',
+          background: 'var(--exec-bg-hover, #1A1A1A)',
           overflow: 'hidden',
         }}
       >

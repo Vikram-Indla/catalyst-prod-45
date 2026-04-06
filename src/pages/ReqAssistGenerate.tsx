@@ -256,7 +256,7 @@ export default function ReqAssistGenerate() {
   }, []);
 
   return (
-    <div style={{ background: isDark ? '#0A0A0A' : '#F8FAFC', minHeight: '100%' }}>
+    <div style={{ background: isDark ? '#0A0A0A' : '#1A1A1A', minHeight: '100%' }}>
       <CatalystTopNav />
 
       <div style={{ padding: '24px 28px' }}>
@@ -272,7 +272,7 @@ export default function ReqAssistGenerate() {
         </div>
 
         {/* INPUT CARD */}
-        <div style={{ background: isDark ? '#1A1A1A' : '#FFFFFF', border: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 6, padding: 24, marginBottom: 20 }}>
+        <div style={{ background: isDark ? '#1A1A1A' : '#FFFFFF', border: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.10)'}`, borderRadius: 6, padding: 24, marginBottom: 20 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
             <FileText size={15} color="#7C3AED" />
             <span style={{ fontSize: 13, fontWeight: 650, color: isDark ? '#EDEDED' : '#111827', fontFamily: "'Inter', sans-serif" }}>Requirements Input</span>
@@ -283,31 +283,31 @@ export default function ReqAssistGenerate() {
             value={text}
             onChange={(e) => { setText(e.target.value); setQualifyResult(null); setGenResult(null); setGenError(null); setSavedDocId(null); setHasEpics(false); setDuplicateDoc(null); setWikiState('idle'); setShowSavedBanner(false); }}
             placeholder="Paste your requirements here..."
-            style={{ width: '100%', minHeight: 200, padding: 14, fontSize: 14, lineHeight: 1.65, border: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 4, outline: 'none', resize: 'vertical', fontFamily: "'Inter', sans-serif", color: isDark ? '#EDEDED' : '#111827', transition: 'border-color 150ms, box-shadow 150ms' }}
+            style={{ width: '100%', minHeight: 200, padding: 14, fontSize: 14, lineHeight: 1.65, border: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.10)'}`, borderRadius: 4, outline: 'none', resize: 'vertical', fontFamily: "'Inter', sans-serif", color: isDark ? '#EDEDED' : '#111827', transition: 'border-color 150ms, box-shadow 150ms' }}
             onFocus={(e) => { e.currentTarget.style.borderColor = '#7C3AED'; e.currentTarget.style.boxShadow = '0 0 0 2px rgba(124,58,237,0.10)'; }}
-            onBlur={(e) => { e.currentTarget.style.borderColor = isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'; e.currentTarget.style.boxShadow = 'none'; }}
+            onBlur={(e) => { e.currentTarget.style.borderColor = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.10)'; e.currentTarget.style.boxShadow = 'none'; }}
           />
           <p style={{ fontSize: 12, color: isDark ? '#878787' : '#6B7280', margin: '6px 0 0', fontFamily: "'Inter', sans-serif" }}>The AI will first qualify whether this text contains enough structured requirements.</p>
 
           {/* Qualify fail */}
           {qualifyResult && !qualifyResult.qualified && (
-            <div style={{ marginTop: 12, padding: '14px 16px', background: '#FEF2F2', border: '0.75px solid rgba(220,38,38,0.12)', borderRadius: 6, display: 'flex', gap: 10 }}>
-              <div style={{ width: 20, height: 20, borderRadius: '50%', background: '#FEE2E2', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><X size={12} color="#DC2626" /></div>
+            <div style={{ marginTop: 12, padding: '14px 16px', background: 'rgba(248,113,113,0.06)', border: '0.75px solid rgba(220,38,38,0.12)', borderRadius: 6, display: 'flex', gap: 10 }}>
+              <div style={{ width: 20, height: 20, borderRadius: '50%', background: 'rgba(248,113,113,0.10)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><X size={12} color="#DC2626" /></div>
               <div>
                 <div style={{ fontSize: 13, fontWeight: 600, color: '#DC2626', fontFamily: "'Inter', sans-serif" }}>✗ Not Qualified</div>
-                {qualifyResult.reasons.map((r, i) => <p key={i} style={{ fontSize: 12, color: '#991B1B', margin: '4px 0 0', lineHeight: 1.5, fontFamily: "'Inter', sans-serif" }}>• {r}</p>)}
+                {qualifyResult.reasons.map((r, i) => <p key={i} style={{ fontSize: 12, color: '#F87171', margin: '4px 0 0', lineHeight: 1.5, fontFamily: "'Inter', sans-serif" }}>• {r}</p>)}
               </div>
             </div>
           )}
 
           {/* Qualify pass */}
           {qualifyResult && qualifyResult.qualified && (
-            <div style={{ marginTop: 12, padding: '14px 16px', background: '#F0FDF4', border: '0.75px solid #DCFCE7', borderRadius: 6, display: 'flex', gap: 10 }}>
+            <div style={{ marginTop: 12, padding: '14px 16px', background: 'rgba(74,222,128,0.06)', border: '0.75px solid #DCFCE7', borderRadius: 6, display: 'flex', gap: 10 }}>
               <div style={{ width: 20, height: 20, borderRadius: '50%', background: '#DCFCE7', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><Check size={12} color="#16A34A" /></div>
               <div>
                 <div style={{ fontSize: 13, fontWeight: 600, color: '#16A34A', fontFamily: "'Inter', sans-serif" }}>✓ Qualified — Score {qualifyResult.score}/100</div>
                 {qualifyResult.reasons.map((r, i) => <p key={i} style={{ fontSize: 12, color: '#166534', margin: '4px 0 0', lineHeight: 1.5, fontFamily: "'Inter', sans-serif" }}>• {r}</p>)}
-                <p style={{ fontSize: 11, color: isDark ? '#878787' : '#64748B', margin: '6px 0 0', fontFamily: "'Inter', sans-serif" }}>
+                <p style={{ fontSize: 11, color: isDark ? '#878787' : 'rgba(237,237,237,0.40)', margin: '6px 0 0', fontFamily: "'Inter', sans-serif" }}>
                   Domain: {qualifyResult.domain_detected} · ~{qualifyResult.requirement_count_estimate} requirements · {qualifyResult.language.toUpperCase()}
                 </p>
               </div>
@@ -316,9 +316,9 @@ export default function ReqAssistGenerate() {
 
           {/* Error */}
           {genError && (
-            <div style={{ marginTop: 12, padding: '14px 16px', background: '#FEF2F2', border: '0.75px solid rgba(220,38,38,0.12)', borderRadius: 6 }}>
+            <div style={{ marginTop: 12, padding: '14px 16px', background: 'rgba(248,113,113,0.06)', border: '0.75px solid rgba(220,38,38,0.12)', borderRadius: 6 }}>
               <div style={{ fontSize: 13, fontWeight: 600, color: '#DC2626', fontFamily: "'Inter', sans-serif" }}>Generation Error</div>
-              <p style={{ fontSize: 12, color: '#991B1B', margin: '4px 0 0', fontFamily: "'Inter', sans-serif" }}>{sanitiseError(genError)}</p>
+              <p style={{ fontSize: 12, color: '#F87171', margin: '4px 0 0', fontFamily: "'Inter', sans-serif" }}>{sanitiseError(genError)}</p>
             </div>
           )}
 
@@ -339,7 +339,7 @@ export default function ReqAssistGenerate() {
 
         {/* Generating spinner */}
         {generating && !genResult && (
-          <div style={{ background: isDark ? '#1A1A1A' : '#FFFFFF', border: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 6, padding: '40px 24px', textAlign: 'center' }}>
+          <div style={{ background: isDark ? '#1A1A1A' : '#FFFFFF', border: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.10)'}`, borderRadius: 6, padding: '40px 24px', textAlign: 'center' }}>
             <Loader2 size={24} color="#7C3AED" style={{ animation: 'ra-spin 1s linear infinite', margin: '0 auto 12px', display: 'block' }} />
             <p style={{ fontSize: 14, fontWeight: 500, color: isDark ? '#A1A1A1' : '#374151', margin: '0 0 4px', fontFamily: "'Inter', sans-serif" }}>Generating BRD sections from your input…</p>
             <p style={{ fontSize: 12, color: isDark ? '#878787' : '#6B7280', margin: 0, fontFamily: "'Inter', sans-serif" }}>This typically takes 15–30 seconds</p>
@@ -348,12 +348,12 @@ export default function ReqAssistGenerate() {
 
         {/* GENERATED BRD */}
         {genResult && genResult.sections.length > 0 && (
-          <div style={{ border: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 6, overflow: 'hidden', background: isDark ? '#1A1A1A' : '#FFFFFF' }}>
+          <div style={{ border: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.10)'}`, borderRadius: 6, overflow: 'hidden', background: isDark ? '#1A1A1A' : '#FFFFFF' }}>
             {/* Header */}
-            <div style={{ padding: '12px 16px', borderBottom: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span style={{ fontSize: 14, fontWeight: 650, color: isDark ? '#EDEDED' : '#0F172A', fontFamily: "'Sora', sans-serif" }}>Generated BRD</span>
+            <div style={{ padding: '12px 16px', borderBottom: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.10)'}`, display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span style={{ fontSize: 14, fontWeight: 650, color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)', fontFamily: "'Sora', sans-serif" }}>Generated BRD</span>
               <span style={{ display: 'inline-flex', alignItems: 'center', padding: '0 6px', height: 20, borderRadius: 4, fontSize: 11, fontWeight: 700, textTransform: 'uppercase' as const, background: '#1B7F37', color: '#FFFFFF' }}>QUALIFIED</span>
-              <span style={{ fontSize: 11, color: isDark ? '#878787' : '#64748B', marginLeft: 'auto', fontFamily: "'JetBrains Mono', monospace" }}>
+              <span style={{ fontSize: 11, color: isDark ? '#878787' : 'rgba(237,237,237,0.40)', marginLeft: 'auto', fontFamily: "'JetBrains Mono', monospace" }}>
                 {genResult.section_count} sections · {genResult.language.toUpperCase()} · {genResult.total_requirements} requirements
               </span>
             </div>
@@ -366,8 +366,8 @@ export default function ReqAssistGenerate() {
                   paddingBottom: i < genResult.sections.length - 1 ? 20 : 0,
                   borderBottom: i < genResult.sections.length - 1 ? '0.75px solid rgba(0,0,0,0.06)' : 'none',
                 }}>
-                  <span style={{ fontSize: 11, fontWeight: 700, color: isDark ? '#878787' : '#94A3B8', textTransform: 'uppercase' as const, letterSpacing: '0.06em', fontFamily: "'Inter', sans-serif" }}>SECTION {section.sectionNumber}</span>
-                  <h4 style={{ fontSize: 15, fontWeight: 650, color: isDark ? '#EDEDED' : '#0F172A', margin: '4px 0 8px', fontFamily: "'Sora', sans-serif" }}>{section.title}</h4>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: isDark ? '#878787' : 'rgba(237,237,237,0.40)', textTransform: 'uppercase' as const, letterSpacing: '0.06em', fontFamily: "'Inter', sans-serif" }}>SECTION {section.sectionNumber}</span>
+                  <h4 style={{ fontSize: 15, fontWeight: 650, color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)', margin: '4px 0 8px', fontFamily: "'Sora', sans-serif" }}>{section.title}</h4>
                   <div className="ra-brd-markdown">
                     <ReactMarkdown components={{
                       p: ({ children }) => <p style={{ fontSize: 14, color: isDark ? '#A1A1A1' : '#374151', lineHeight: 1.6, marginBottom: 12, fontFamily: "'Inter', sans-serif" }}>{children}</p>,
@@ -385,7 +385,7 @@ export default function ReqAssistGenerate() {
 
             {/* STATE BANNERS */}
             {brdState === 'generated' && (
-              <div style={{ margin: '0 16px 12px', padding: '10px 14px', background: '#FEF2F2', border: '0.75px solid #FECACA', borderRadius: 6, display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div style={{ margin: '0 16px 12px', padding: '10px 14px', background: 'rgba(248,113,113,0.06)', border: '0.75px solid #FECACA', borderRadius: 6, display: 'flex', alignItems: 'center', gap: 8 }}>
                 <AlertTriangle size={15} color="#DC2626" style={{ flexShrink: 0 }} />
                 <span style={{ fontSize: 13, color: '#DC2626', fontFamily: "'Inter', sans-serif" }}>
                   This BRD has not been saved yet. Save to Library to enable Epics generation and WikiHub sync.
@@ -393,14 +393,14 @@ export default function ReqAssistGenerate() {
               </div>
             )}
             {showSavedBanner && brdState === 'saved' && (
-              <div style={{ margin: '0 16px 12px', padding: '10px 14px', background: '#F0FDF4', border: '0.75px solid #BBF7D0', borderRadius: 6, display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div style={{ margin: '0 16px 12px', padding: '10px 14px', background: 'rgba(74,222,128,0.06)', border: '0.75px solid #BBF7D0', borderRadius: 6, display: 'flex', alignItems: 'center', gap: 8 }}>
                 <Check size={15} color="#166534" style={{ flexShrink: 0 }} />
                 <span style={{ fontSize: 13, color: '#166534', fontFamily: "'Inter', sans-serif" }}>Saved to Library. Ready to generate Epics.</span>
               </div>
             )}
 
             {/* ACTION BAR */}
-            <div style={{ padding: '12px 16px', background: isDark ? '#1A1A1A' : '#FFFFFF', borderTop: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, display: 'flex', gap: 8, alignItems: 'center' }}>
+            <div style={{ padding: '12px 16px', background: isDark ? '#1A1A1A' : '#FFFFFF', borderTop: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.10)'}`, display: 'flex', gap: 8, alignItems: 'center' }}>
               {brdState === 'generated' && (
                 <>
                   <BtnPrimary onClick={() => doSave()} disabled={saving}>
@@ -479,7 +479,7 @@ export default function ReqAssistGenerate() {
         <ModalOverlay>
           <div style={{ width: 480, background: isDark ? '#1A1A1A' : '#FFFFFF', borderRadius: 6, padding: 24, fontFamily: "'Inter', sans-serif" }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-              <AlertTriangle size={20} color="#64748B" />
+              <AlertTriangle size={20} color="rgba(237,237,237,0.40)" />
               <span style={{ fontSize: 16, fontWeight: 650, color: isDark ? '#EDEDED' : '#111827', fontFamily: "'Sora', sans-serif" }}>Document Already Exists</span>
             </div>
             <p style={{ fontSize: 14, color: isDark ? '#A1A1A1' : '#374151', lineHeight: 1.6, margin: '0 0 20px' }}>
@@ -615,7 +615,7 @@ function BtnOutline({ children, ...props }: React.ButtonHTMLAttributes<HTMLButto
   return (
     <button {...props} style={{
       display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', fontSize: 14, fontWeight: 500,
-      border: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#CBD5E1'}`, borderRadius: 6, cursor: props.disabled ? 'not-allowed' : 'pointer',
+      border: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(237,237,237,0.53)'}`, borderRadius: 6, cursor: props.disabled ? 'not-allowed' : 'pointer',
       background: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#A1A1A1' : '#374151', fontFamily: "'Inter', sans-serif",
       transition: 'background 120ms',
       ...props.style,
@@ -629,7 +629,7 @@ function BtnGhost({ children, ...props }: React.ButtonHTMLAttributes<HTMLButtonE
     <button {...props} style={{
       display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', fontSize: 14, fontWeight: 500,
       border: 'none', borderRadius: 6, cursor: 'pointer',
-      background: 'transparent', color: isDark ? '#878787' : '#64748B', fontFamily: "'Inter', sans-serif",
+      background: 'transparent', color: isDark ? '#878787' : 'rgba(237,237,237,0.40)', fontFamily: "'Inter', sans-serif",
       ...props.style,
     }}>{children}</button>
   );
@@ -671,13 +671,13 @@ function CatalystTopNav() {
     { label: 'WikiHub', path: '/wikihub' },
   ];
   return (
-    <nav style={{ height: 48, display: 'flex', alignItems: 'center', gap: 0, background: isDark ? '#1A1A1A' : '#FFFFFF', borderBottom: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, padding: '0 24px', fontFamily: "'Inter', sans-serif" }}>
+    <nav style={{ height: 48, display: 'flex', alignItems: 'center', gap: 0, background: isDark ? '#1A1A1A' : '#FFFFFF', borderBottom: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.10)'}`, padding: '0 24px', fontFamily: "'Inter', sans-serif" }}>
       {HUBS.map(h => {
         const isActive = h.label === 'ProductHub';
         return (
           <button key={h.label} onClick={() => navigate(h.path)} style={{
             height: 48, padding: '0 14px', fontSize: 13, fontWeight: isActive ? 600 : 400,
-            color: isActive ? '#2563EB' : '#64748B', background: 'transparent', border: 'none', cursor: 'pointer',
+            color: isActive ? '#2563EB' : 'rgba(237,237,237,0.40)', background: 'transparent', border: 'none', cursor: 'pointer',
             borderBottom: isActive ? '3px solid #2563EB' : '3px solid transparent', transition: 'color 120ms', fontFamily: "'Inter', sans-serif",
           }}>{h.label}</button>
         );

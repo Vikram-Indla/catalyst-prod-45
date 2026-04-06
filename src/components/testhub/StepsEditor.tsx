@@ -101,7 +101,7 @@ function SortableStepRow({
           <div>
             <label style={{ display: 'block', fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--fg-3)', marginBottom: 6 }}>Action</label>
             <textarea value={step.action} onChange={(e) => onUpdate('action', e.target.value)} placeholder="Describe the action to perform..."
-              style={{ width: '100%', minHeight: 80, padding: '10px 12px', fontSize: 14, fontFamily: 'Inter, sans-serif', color: 'var(--fg-1)', backgroundColor: 'var(--cp-float)', border: '1.5px solid var(--divider)', borderRadius: 8, resize: 'vertical', outline: 'none', transition: 'border-color 0.15s, box-shadow 0.15s' }}
+              style={{ width: '100%', minHeight: 80, padding: '10px 12px', fontSize: 14, fontFamily: 'Geist, -apple-system, sans-serif', color: 'var(--fg-1)', backgroundColor: 'var(--cp-float)', border: '1.5px solid var(--divider)', borderRadius: 8, resize: 'vertical', outline: 'none', transition: 'border-color 0.15s, box-shadow 0.15s' }}
               onFocus={(e) => { e.target.style.borderColor = 'var(--cp-blue)'; e.target.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.12)'; }}
               onBlur={(e) => { e.target.style.borderColor = 'var(--divider)'; e.target.style.boxShadow = 'none'; }}
             />
@@ -109,7 +109,7 @@ function SortableStepRow({
           <div>
             <label style={{ display: 'block', fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--fg-3)', marginBottom: 6 }}>Expected Result</label>
             <textarea value={step.expectedResult} onChange={(e) => onUpdate('expectedResult', e.target.value)} placeholder="Describe the expected outcome..."
-              style={{ width: '100%', minHeight: 80, padding: '10px 12px', fontSize: 14, fontFamily: 'Inter, sans-serif', color: 'var(--fg-1)', backgroundColor: 'var(--cp-float)', border: '1.5px solid var(--divider)', borderRadius: 8, resize: 'vertical', outline: 'none', transition: 'border-color 0.15s, box-shadow 0.15s' }}
+              style={{ width: '100%', minHeight: 80, padding: '10px 12px', fontSize: 14, fontFamily: 'Geist, -apple-system, sans-serif', color: 'var(--fg-1)', backgroundColor: 'var(--cp-float)', border: '1.5px solid var(--divider)', borderRadius: 8, resize: 'vertical', outline: 'none', transition: 'border-color 0.15s, box-shadow 0.15s' }}
               onFocus={(e) => { e.target.style.borderColor = 'var(--cp-blue)'; e.target.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.12)'; }}
               onBlur={(e) => { e.target.style.borderColor = 'var(--divider)'; e.target.style.boxShadow = 'none'; }}
             />
@@ -524,7 +524,7 @@ function ActionButton({
       onMouseEnter={(e) => {
         if (!disabled) {
           if (danger) {
-            e.currentTarget.style.backgroundColor = '#FEF2F2';
+            e.currentTarget.style.backgroundColor = 'rgba(248,113,113,0.06)';
             e.currentTarget.style.borderColor = 'color-mix(in srgb, var(--sem-danger) 20%, transparent)';
             e.currentTarget.style.color = 'var(--sem-danger)';
           } else {

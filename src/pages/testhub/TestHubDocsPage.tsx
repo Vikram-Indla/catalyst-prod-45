@@ -416,21 +416,21 @@ export default function TestHubDocsPage() {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: isDark ? '#0A0A0A' : '#F8FAFC' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: isDark ? '#0A0A0A' : '#1A1A1A' }}>
       {/* Header */}
       <div style={{
         padding: '24px 32px',
         backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF',
-        borderBottom: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0',
+        borderBottom: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(255,255,255,0.10)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
       }}>
         <div>
-          <h1 style={{ fontSize: 22, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A', margin: 0, fontFamily: 'Inter, sans-serif' }}>
+          <h1 style={{ fontSize: 22, fontWeight: 700, color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)', margin: 0, fontFamily: 'Geist, -apple-system, sans-serif' }}>
             📘 TestHub Functional Flow Guide
           </h1>
-          <p style={{ fontSize: 14, color: isDark ? '#878787' : '#64748B', margin: '4px 0 0', fontFamily: 'Inter, sans-serif' }}>
+          <p style={{ fontSize: 14, color: isDark ? '#878787' : 'rgba(237,237,237,0.40)', margin: '4px 0 0', fontFamily: 'Geist, -apple-system, sans-serif' }}>
             Complete dependency map, step-by-step testing flow, database schema, and business rules
           </p>
         </div>
@@ -441,14 +441,14 @@ export default function TestHubDocsPage() {
             alignItems: 'center',
             gap: 8,
             padding: '10px 20px',
-            backgroundColor: '#0F172A',
+            backgroundColor: 'rgba(237,237,237,0.93)',
             color: '#FFFFFF',
             border: 'none',
             borderRadius: 8,
             fontSize: 14,
             fontWeight: 600,
             cursor: 'pointer',
-            fontFamily: 'Inter, sans-serif',
+            fontFamily: 'Geist, -apple-system, sans-serif',
           }}
         >
           <Download size={16} />
@@ -462,23 +462,23 @@ export default function TestHubDocsPage() {
         <div style={{
           backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF',
           borderRadius: 12,
-          border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0',
+          border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(255,255,255,0.10)',
           padding: 24,
           marginBottom: 24,
         }}>
-          <h2 style={{ fontSize: 16, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A', margin: '0 0 16px', fontFamily: 'Inter, sans-serif' }}>
+          <h2 style={{ fontSize: 16, fontWeight: 700, color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)', margin: '0 0 16px', fontFamily: 'Geist, -apple-system, sans-serif' }}>
             Dependency Flow (Follow This Order)
           </h2>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
             {[
-              { label: 'Folders / Tags / Envs', color: '#DBEAFE', textColor: '#1E40AF' },
-              { label: 'Test Cases', color: '#D1FAE5', textColor: '#065F46' },
-              { label: 'Test Sets / Plans', color: '#EDE9FE', textColor: '#5B21B6' },
-              { label: 'Test Cycles', color: '#FEF3C7', textColor: '#92400E' },
+              { label: 'Folders / Tags / Envs', color: '#DBEAFE', textColor: '#7DB8FC' },
+              { label: 'Test Cases', color: '#D1FAE5', textColor: '#4ADE80' },
+              { label: 'Test Sets / Plans', color: '#EDE9FE', textColor: '#A78BFA' },
+              { label: 'Test Cycles', color: 'rgba(251,191,36,0.10)', textColor: '#FBBF24' },
               { label: 'Execution & Runs', color: '#FFE4E6', textColor: '#9F1239' },
               { label: 'Defects', color: '#FCE7F3', textColor: '#9D174D' },
               { label: 'Releases / Gates', color: '#CCFBF1', textColor: '#134E4A' },
-              { label: 'Reports / AI', color: '#F1F5F9', textColor: '#475569' },
+              { label: 'Reports / AI', color: '#1A1A1A', textColor: '#475569' },
             ].map((item, i, arr) => (
               <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <div style={{
@@ -488,12 +488,12 @@ export default function TestHubDocsPage() {
                   borderRadius: 8,
                   fontSize: 13,
                   fontWeight: 600,
-                  fontFamily: 'Inter, sans-serif',
+                  fontFamily: 'Geist, -apple-system, sans-serif',
                   whiteSpace: 'nowrap',
                 }}>
                   {item.label}
                 </div>
-                {i < arr.length - 1 && <ArrowRight size={16} style={{ color: '#94A3B8', flexShrink: 0 }} />}
+                {i < arr.length - 1 && <ArrowRight size={16} style={{ color: 'rgba(237,237,237,0.40)', flexShrink: 0 }} />}
               </div>
             ))}
           </div>
@@ -510,7 +510,7 @@ export default function TestHubDocsPage() {
                 style={{
                   backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF',
                   borderRadius: 12,
-                  border: `1px solid ${isOpen ? section.color + '40' : isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`,
+                  border: `1px solid ${isOpen ? section.color + '40' : isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.10)'}`,
                   overflow: 'hidden',
                   transition: 'border-color 0.2s',
                 }}
@@ -542,25 +542,25 @@ export default function TestHubDocsPage() {
                     <Icon size={18} style={{ color: section.color }} />
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 15, fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A', fontFamily: 'Inter, sans-serif' }}>
+                    <div style={{ fontSize: 15, fontWeight: 600, color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)', fontFamily: 'Geist, -apple-system, sans-serif' }}>
                       {section.title}
                     </div>
-                    <div style={{ fontSize: 13, color: isDark ? '#878787' : '#64748B', fontFamily: 'Inter, sans-serif', marginTop: 2 }}>
+                    <div style={{ fontSize: 13, color: isDark ? '#878787' : 'rgba(237,237,237,0.40)', fontFamily: 'Geist, -apple-system, sans-serif', marginTop: 2 }}>
                       {section.summary}
                     </div>
                   </div>
-                  {isOpen ? <ChevronDown size={18} style={{ color: '#94A3B8' }} /> : <ChevronRight size={18} style={{ color: '#94A3B8' }} />}
+                  {isOpen ? <ChevronDown size={18} style={{ color: 'rgba(237,237,237,0.40)' }} /> : <ChevronRight size={18} style={{ color: 'rgba(237,237,237,0.40)' }} />}
                 </button>
                 {isOpen && (
                   <div style={{
                     padding: '0 20px 20px',
                     fontSize: 14,
-                    color: isDark ? '#A1A1A1' : '#334155',
-                    fontFamily: 'Inter, sans-serif',
+                    color: isDark ? '#A1A1A1' : 'rgba(237,237,237,0.53)',
+                    fontFamily: 'Geist, -apple-system, sans-serif',
                     lineHeight: 1.7,
                   }}>
                     <div style={{
-                      backgroundColor: isDark ? '#1A1A1A' : '#F8FAFC',
+                      backgroundColor: isDark ? '#1A1A1A' : '#1A1A1A',
                       borderRadius: 8,
                       padding: 16,
                       whiteSpace: 'pre-wrap',
@@ -568,7 +568,7 @@ export default function TestHubDocsPage() {
                       fontSize: 12,
                       lineHeight: 1.6,
                       overflowX: 'auto',
-                      border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0',
+                      border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(255,255,255,0.10)',
                       color: isDark ? '#A1A1A1' : undefined,
                     }}>
                       {getMarkdownSection(section.id)}
@@ -584,17 +584,17 @@ export default function TestHubDocsPage() {
         <div style={{
           marginTop: 24,
           padding: 20,
-          backgroundColor: '#0F172A',
+          backgroundColor: 'rgba(237,237,237,0.93)',
           borderRadius: 12,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
         }}>
           <div>
-            <div style={{ fontSize: 15, fontWeight: 600, color: '#FFFFFF', fontFamily: 'Inter, sans-serif' }}>
+            <div style={{ fontSize: 15, fontWeight: 600, color: '#FFFFFF', fontFamily: 'Geist, -apple-system, sans-serif' }}>
               Download the full guide as Markdown
             </div>
-            <div style={{ fontSize: 13, color: '#94A3B8', fontFamily: 'Inter, sans-serif', marginTop: 4 }}>
+            <div style={{ fontSize: 13, color: 'rgba(237,237,237,0.40)', fontFamily: 'Geist, -apple-system, sans-serif', marginTop: 4 }}>
               Open in any Markdown editor (VS Code, Obsidian, Notion) for the best reading experience
             </div>
           </div>
@@ -606,13 +606,13 @@ export default function TestHubDocsPage() {
               gap: 8,
               padding: '10px 20px',
               backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF',
-              color: isDark ? '#EDEDED' : '#0F172A',
+              color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)',
               border: 'none',
               borderRadius: 8,
               fontSize: 14,
               fontWeight: 600,
               cursor: 'pointer',
-              fontFamily: 'Inter, sans-serif',
+              fontFamily: 'Geist, -apple-system, sans-serif',
             }}
           >
             <Download size={16} />

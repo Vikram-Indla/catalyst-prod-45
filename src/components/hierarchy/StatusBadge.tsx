@@ -1,8 +1,8 @@
 /**
  * StatusBadge — V12 Pale Lozenge 3-colour guardrail (ABSOLUTE)
  * GREY  (#DFE1E6 bg, #253858 text) = not started / waiting
- * BLUE  (#DEEBFF bg, #0747A6 text) = in progress / active
- * GREEN (#E3FCEF bg, #006644 text) = done / resolved
+ * BLUE  (rgba(59,130,246,0.10) bg, #0747A6 text) = in progress / active
+ * GREEN (rgba(74,222,128,0.10) bg, #006644 text) = done / resolved
  */
 
 import React from 'react';
@@ -64,8 +64,8 @@ const STATUS_CATEGORY_MAP: Record<string, StatusCategory> = {
 
 const STATUS_STYLES_LIGHT: Record<StatusCategory, { background: string; color: string }> = {
   grey:  { background: '#DFE1E6', color: '#253858' },
-  blue:  { background: '#DEEBFF', color: '#0747A6' },
-  green: { background: '#E3FCEF', color: '#006644' },
+  blue:  { background: 'rgba(59,130,246,0.10)', color: '#0747A6' },
+  green: { background: 'rgba(74,222,128,0.10)', color: '#006644' },
 };
 
 const STATUS_STYLES_DARK: Record<StatusCategory, { background: string; color: string }> = {

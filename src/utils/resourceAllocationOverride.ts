@@ -17,7 +17,7 @@ const CONFIG = {
   // Neutral colors
   neutralAvatar: '#64748b',
   neutralBadge: '#64748b',
-  neutralText: '#334155',
+  neutralText: 'rgba(237,237,237,0.53)',
   
   // Track background (gray bar behind colored bar)
   trackColor: '#e2e8f0',

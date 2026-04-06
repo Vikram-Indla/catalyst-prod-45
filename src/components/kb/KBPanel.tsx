@@ -250,7 +250,7 @@ export function KBPanel({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
               onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--cp-interact-hover, rgba(15,23,42,0.04))'; }}
               onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
             >
-              <MessageSquarePlus size={16} color="var(--cp-text-tertiary, #64748B)" />
+              <MessageSquarePlus size={16} color="var(--cp-text-tertiary, rgba(237,237,237,0.40))" />
             </button>
             <button
               onClick={onClose}
@@ -262,7 +262,7 @@ export function KBPanel({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
               onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--cp-interact-hover, rgba(15,23,42,0.04))'; }}
               onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
             >
-              <X size={16} color="var(--cp-text-tertiary, #64748B)" />
+              <X size={16} color="var(--cp-text-tertiary, rgba(237,237,237,0.40))" />
             </button>
           </div>
         </div>
@@ -277,7 +277,7 @@ export function KBPanel({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
           {error && (
             <div style={{
               display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', marginTop: 16,
-              background: 'var(--cp-danger-5, #FEF2F2)', border: '1px solid var(--cp-danger-20, #FECACA)', borderRadius: 'var(--cp-radius-md, 4px)', fontSize: 'var(--cp-type-caption-md, 12px)', color: 'var(--cp-danger-60, var(--sem-danger))',
+              background: 'var(--cp-danger-5, rgba(248,113,113,0.06))', border: '1px solid var(--cp-danger-20, #FECACA)', borderRadius: 'var(--cp-radius-md, 4px)', fontSize: 'var(--cp-type-caption-md, 12px)', color: 'var(--cp-danger-60, var(--sem-danger))',
             }}>
               <AlertCircle size={14} />
               <span style={{ flex: 1 }}>{error}</span>

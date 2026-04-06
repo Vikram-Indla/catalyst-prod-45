@@ -4,10 +4,10 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
 const CATEGORY_PILL: Record<string, { bg: string; text: string; label: string }> = {
-  todo: { bg: '#F1F5F9', text: '#64748B', label: 'To Do' },
-  in_progress: { bg: '#EFF6FF', text: '#2563EB', label: 'In Progress' },
+  todo: { bg: '#1A1A1A', text: 'rgba(237,237,237,0.40)', label: 'To Do' },
+  in_progress: { bg: 'rgba(59,130,246,0.06)', text: '#2563EB', label: 'In Progress' },
   done: { bg: '#F0FDFA', text: '#0D9488', label: 'Done' },
-  terminal: { bg: '#F1F5F9', text: '#64748B', label: 'Terminal' },
+  terminal: { bg: '#1A1A1A', text: 'rgba(237,237,237,0.40)', label: 'Terminal' },
 };
 
 interface StatusRowProps {
@@ -48,14 +48,14 @@ export function StatusRow({ id, name, color, category, isDefault, itemCount, onE
   // Determine pill styling
   const catKey = category.toLowerCase().replace(/\s+/g, '_');
   const pill = isDefault
-    ? { bg: '#EFF6FF', text: '#2563EB', label: 'Default' }
+    ? { bg: 'rgba(59,130,246,0.06)', text: '#2563EB', label: 'Default' }
     : CATEGORY_PILL[catKey] || CATEGORY_PILL.todo;
 
   return (
     <div
       ref={setNodeRef}
       style={style}
-      className="flex items-center gap-3 px-3 rounded-lg hover:bg-[#F8FAFC] transition-colors"
+      className="flex items-center gap-3 px-3 rounded-lg hover:bg-[#1A1A1A] transition-colors"
       {...attributes}
     >
       {/* Drag handle */}
@@ -95,7 +95,7 @@ export function StatusRow({ id, name, color, category, isDefault, itemCount, onE
       <div className="relative" ref={menuRef}>
         <button
           onClick={() => setMenuOpen(!menuOpen)}
-          className="flex items-center justify-center rounded transition-colors hover:bg-[var(--bd-default, #E2E8F0)]"
+          className="flex items-center justify-center rounded transition-colors hover:bg-[var(--bd-default, rgba(255,255,255,0.10))]"
           style={{ width: 28, height: 28, border: 'none', background: 'transparent', cursor: 'pointer' }}
         >
           <MoreHorizontal size={16} color="var(--fg-3)" />
@@ -112,7 +112,7 @@ export function StatusRow({ id, name, color, category, isDefault, itemCount, onE
           >
             <button
               onClick={() => { onEdit(); setMenuOpen(false); }}
-              className="w-full text-left px-3 py-2 hover:bg-[#F8FAFC] transition-colors"
+              className="w-full text-left px-3 py-2 hover:bg-[#1A1A1A] transition-colors"
               style={{ fontSize: 12, color: 'var(--fg-2)', border: 'none', background: 'transparent', cursor: 'pointer', display: 'block' }}
             >
               Edit
@@ -120,7 +120,7 @@ export function StatusRow({ id, name, color, category, isDefault, itemCount, onE
             {!isDefault && (
               <button
                 onClick={() => { onDelete(); setMenuOpen(false); }}
-                className="w-full text-left px-3 py-2 hover:bg-[#FEF2F2] transition-colors"
+                className="w-full text-left px-3 py-2 hover:bg-[rgba(248,113,113,0.06)] transition-colors"
                 style={{ fontSize: 12, color: 'var(--sem-danger)', border: 'none', background: 'transparent', cursor: 'pointer', display: 'block' }}
               >
                 Delete

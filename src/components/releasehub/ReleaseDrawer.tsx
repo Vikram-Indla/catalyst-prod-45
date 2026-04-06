@@ -180,17 +180,17 @@ export function ReleaseDrawer({ release, onClose }: Props) {
               <SourceBadge source={release.source || 'catalyst'} />
             </div>
             <div className="flex items-center gap-1.5">
-              <button className="w-7 h-7 rounded flex items-center justify-center text-[#94A3B8] hover:bg-[#F1F5F9]"><Download size={14} /></button>
-              <button className="w-7 h-7 rounded flex items-center justify-center text-[#94A3B8] hover:bg-[#F1F5F9]"><RefreshCw size={14} /></button>
-              <button onClick={onClose} aria-label="Close drawer" className="w-7 h-7 rounded flex items-center justify-center text-[#94A3B8] hover:bg-[#F1F5F9]"><XIcon size={14} /></button>
+              <button className="w-7 h-7 rounded flex items-center justify-center text-[rgba(237,237,237,0.40)] hover:bg-[#1A1A1A]"><Download size={14} /></button>
+              <button className="w-7 h-7 rounded flex items-center justify-center text-[rgba(237,237,237,0.40)] hover:bg-[#1A1A1A]"><RefreshCw size={14} /></button>
+              <button onClick={onClose} aria-label="Close drawer" className="w-7 h-7 rounded flex items-center justify-center text-[rgba(237,237,237,0.40)] hover:bg-[#1A1A1A]"><XIcon size={14} /></button>
             </div>
           </div>
           <h2 className="text-[18px] font-extrabold mb-2" style={{ fontFamily: RH.fontDisplay, color: RH.ink1 }}>{release.name}</h2>
           <div className="flex items-center gap-2 flex-wrap">
             <StatusLozenge status={mapStatus(release.status)} />
-            <span className="text-[12px] text-[#64748B]">{release.target_date ? new Date(release.target_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}</span>
-            <span className="text-[11px] font-bold text-[#0F172A] bg-[#F1F5F9] px-1.5 py-0.5 rounded">{relChanges.length} CHGs</span>
-            <span className="text-[11px] font-bold text-[#2563EB] bg-[#EFF6FF] px-1.5 py-0.5 rounded">{testCycles.length} cycles</span>
+            <span className="text-[12px] text-[rgba(237,237,237,0.40)]">{release.target_date ? new Date(release.target_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}</span>
+            <span className="text-[11px] font-bold text-[rgba(237,237,237,0.93)] bg-[#1A1A1A] px-1.5 py-0.5 rounded">{relChanges.length} CHGs</span>
+            <span className="text-[11px] font-bold text-[#2563EB] bg-[rgba(59,130,246,0.06)] px-1.5 py-0.5 rounded">{testCycles.length} cycles</span>
           </div>
         </div>
 
@@ -198,10 +198,10 @@ export function ReleaseDrawer({ release, onClose }: Props) {
         <div className="border-b border-[rgba(15,23,42,0.12)] px-6 flex gap-0">
           {TABS.map(tab => (
             <button key={tab} onClick={() => setActiveTab(tab)}
-              className={`px-3 py-2.5 text-[13px] font-medium border-b-2 transition-colors ${activeTab === tab ? 'border-[#2563EB] text-[#2563EB]' : 'border-transparent text-[#64748B] hover:text-[#475569]'}`}>
+              className={`px-3 py-2.5 text-[13px] font-medium border-b-2 transition-colors ${activeTab === tab ? 'border-[#2563EB] text-[#2563EB]' : 'border-transparent text-[rgba(237,237,237,0.40)] hover:text-[#475569]'}`}>
               {tab}
-              {tab === 'Changes' && <span className="ml-1 text-[10px] font-bold bg-[#F1F5F9] text-[#475569] px-1 rounded">{relChanges.length}</span>}
-              {tab === 'Test Cycles' && <span className="ml-1 text-[10px] font-bold bg-[#EFF6FF] text-[#2563EB] px-1 rounded">{testCycles.length}</span>}
+              {tab === 'Changes' && <span className="ml-1 text-[10px] font-bold bg-[#1A1A1A] text-[#475569] px-1 rounded">{relChanges.length}</span>}
+              {tab === 'Test Cycles' && <span className="ml-1 text-[10px] font-bold bg-[rgba(59,130,246,0.06)] text-[#2563EB] px-1 rounded">{testCycles.length}</span>}
             </button>
           ))}
         </div>
@@ -323,16 +323,16 @@ Do not use jargon. Do not hallucinate features not listed above.`;
   return (
     <div className="space-y-5">
       <div className="grid grid-cols-3 gap-3">
-        <div className="bg-[#F8FAFC] rounded-lg p-3">
-          <p className="text-[10px] font-bold uppercase text-[#64748B] mb-1">Status</p>
+        <div className="bg-[#1A1A1A] rounded-lg p-3">
+          <p className="text-[10px] font-bold uppercase text-[rgba(237,237,237,0.40)] mb-1">Status</p>
           <StatusLozenge status={release.status === 'todo' ? 'planning' : release.status === 'done' ? 'released' : release.status} />
         </div>
-        <div className="bg-[#F8FAFC] rounded-lg p-3">
-          <p className="text-[10px] font-bold uppercase text-[#64748B] mb-1">Changes</p>
+        <div className="bg-[#1A1A1A] rounded-lg p-3">
+          <p className="text-[10px] font-bold uppercase text-[rgba(237,237,237,0.40)] mb-1">Changes</p>
           <p className="text-[20px] font-extrabold" style={{ fontFamily: RH.fontMono, color: RH.ink1 }}>{changesCount}</p>
         </div>
-        <div className="bg-[#F8FAFC] rounded-lg p-3">
-          <p className="text-[10px] font-bold uppercase text-[#64748B] mb-1">Quality Gates</p>
+        <div className="bg-[#1A1A1A] rounded-lg p-3">
+          <p className="text-[10px] font-bold uppercase text-[rgba(237,237,237,0.40)] mb-1">Quality Gates</p>
           <p className="text-[20px] font-extrabold" style={{ fontFamily: RH.fontMono, color: RH.ink1 }}>{gatesPassCount}/{gatesTotalCount}</p>
         </div>
       </div>
@@ -348,7 +348,7 @@ Do not use jargon. Do not hallucinate features not listed above.`;
             let Icon: typeof CheckCircle2;
 
             if (isPass) {
-              bgColor = '#E3FCEF'; borderColor = '#36B37E'; labelColor = '#006644'; detailColor = '#0F7B4D';
+              bgColor = 'rgba(74,222,128,0.10)'; borderColor = '#36B37E'; labelColor = '#006644'; detailColor = '#0F7B4D';
               Icon = CheckCircle2;
             } else if (isFail) {
               bgColor = '#FFEBE6'; borderColor = '#FF5630'; labelColor = '#BF2600'; detailColor = '#7A2300';
@@ -384,7 +384,7 @@ Do not use jargon. Do not hallucinate features not listed above.`;
       </div>
 
       {/* ── AI Release Notes Panel ── */}
-      <div className="border border-[var(--bd-default, #E2E8F0)] dark:border-[rgba(255,255,255,0.08)] rounded-md p-4 bg-white dark:bg-[#1A1A1A]">
+      <div className="border border-[var(--bd-default, rgba(255,255,255,0.10))] dark:border-[rgba(255,255,255,0.08)] rounded-md p-4 bg-white dark:bg-[#1A1A1A]">
         <div className="flex justify-between items-center mb-3">
           <span className="inline-flex items-center gap-1 text-[11px] font-bold rounded-full px-2 py-0.5 bg-[#F5F3FF] text-[#7C3AED] border border-[#DDD6FE]">
             ✦ Catalyst AI
@@ -400,7 +400,7 @@ Do not use jargon. Do not hallucinate features not listed above.`;
         </div>
 
         {notesState === 'idle' && (
-          <div className="flex items-center gap-2 py-6 justify-center text-[#94A3B8] text-[13px]">
+          <div className="flex items-center gap-2 py-6 justify-center text-[rgba(237,237,237,0.40)] text-[13px]">
             <FileText size={16} />
             <span>Click Generate to create AI release notes.</span>
           </div>
@@ -415,20 +415,20 @@ Do not use jargon. Do not hallucinate features not listed above.`;
 
         {notesState === 'success' && generatedNotes && (
           <div>
-            <div className="max-h-[300px] overflow-auto text-[13px] text-[#0F172A] leading-relaxed whitespace-pre-wrap" style={{ fontFamily: RH.fontBody }}>
+            <div className="max-h-[300px] overflow-auto text-[13px] text-[rgba(237,237,237,0.93)] leading-relaxed whitespace-pre-wrap" style={{ fontFamily: RH.fontBody }}>
               {generatedNotes}
             </div>
-            <div className="flex items-center gap-3 mt-3 pt-3 border-t border-[#F1F5F9]">
+            <div className="flex items-center gap-3 mt-3 pt-3 border-t border-[#1A1A1A]">
               <button
                 onClick={handleCopy}
-                className="inline-flex items-center gap-1 h-7 px-2.5 rounded border border-[var(--bd-default, #E2E8F0)] text-[12px] font-medium text-[#475569] hover:bg-[#F8FAFC] focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2 outline-none"
+                className="inline-flex items-center gap-1 h-7 px-2.5 rounded border border-[var(--bd-default, rgba(255,255,255,0.10))] text-[12px] font-medium text-[#475569] hover:bg-[#1A1A1A] focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2 outline-none"
               >
                 <Copy size={12} />
                 {copied ? 'Copied!' : 'Copy'}
               </button>
               <button
                 onClick={generateReleaseNotes}
-                className="text-[12px] text-[#64748B] hover:text-[#475569] focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2 outline-none rounded"
+                className="text-[12px] text-[rgba(237,237,237,0.40)] hover:text-[#475569] focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2 outline-none rounded"
               >
                 Regenerate
               </button>
@@ -442,7 +442,7 @@ Do not use jargon. Do not hallucinate features not listed above.`;
             <span className="text-[#475569]">Could not generate notes.</span>
             <button
               onClick={generateReleaseNotes}
-              className="inline-flex items-center gap-1 h-7 px-2.5 rounded border border-[var(--bd-default, #E2E8F0)] text-[12px] font-medium text-[#475569] hover:bg-[#F8FAFC] focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2 outline-none"
+              className="inline-flex items-center gap-1 h-7 px-2.5 rounded border border-[var(--bd-default, rgba(255,255,255,0.10))] text-[12px] font-medium text-[#475569] hover:bg-[#1A1A1A] focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2 outline-none"
             >
               <RefreshCw size={12} /> Try again
             </button>
@@ -455,13 +455,13 @@ Do not use jargon. Do not hallucinate features not listed above.`;
 
 // ── Changes Tab ────────────────────────────────────────
 function ChangesTab({ changes }: { changes: any[] }) {
-  if (changes.length === 0) return <div className="text-center py-10 text-[#94A3B8] text-[13px]">No changes linked to this release</div>;
+  if (changes.length === 0) return <div className="text-center py-10 text-[rgba(237,237,237,0.40)] text-[13px]">No changes linked to this release</div>;
   return (
     <table className="w-full text-[13px]" style={{ fontFamily: RH.fontBody }}>
       <thead>
         <tr className="border-b border-[rgba(15,23,42,0.12)]">
           {['KEY', 'TITLE', 'STATUS', 'RISK', 'DATE'].map(h => (
-            <th key={h} className="px-3 py-2 text-left text-[11px] font-semibold uppercase tracking-[0.06em] text-[#64748B]">{h}</th>
+            <th key={h} className="px-3 py-2 text-left text-[11px] font-semibold uppercase tracking-[0.06em] text-[rgba(237,237,237,0.40)]">{h}</th>
           ))}
         </tr>
       </thead>
@@ -514,13 +514,13 @@ function TestCyclesTab({ testCycles, release }: { testCycles: any[]; release: an
     <div>
       {testCycles.length === 0 ? (
         <div className="text-center py-10">
-          <p className="text-[#94A3B8] text-[13px] mb-3">No test cycles linked</p>
-          <button onClick={openLinkModal} className="h-9 px-4 rounded-md border border-[#2563EB] text-[#2563EB] text-[13px] font-semibold hover:bg-[#EFF6FF]">Link Test Cycle</button>
+          <p className="text-[rgba(237,237,237,0.40)] text-[13px] mb-3">No test cycles linked</p>
+          <button onClick={openLinkModal} className="h-9 px-4 rounded-md border border-[#2563EB] text-[#2563EB] text-[13px] font-semibold hover:bg-[rgba(59,130,246,0.06)]">Link Test Cycle</button>
         </div>
       ) : (
         <div className="space-y-3">
           <div className="flex justify-end mb-2">
-            <button onClick={openLinkModal} className="h-8 px-3 rounded-md border border-[#2563EB] text-[#2563EB] text-[12px] font-semibold hover:bg-[#EFF6FF]">Link Test Cycle</button>
+            <button onClick={openLinkModal} className="h-8 px-3 rounded-md border border-[#2563EB] text-[#2563EB] text-[12px] font-semibold hover:bg-[rgba(59,130,246,0.06)]">Link Test Cycle</button>
           </div>
           {testCycles.map((tc: any) => {
             const cycle = tc.tm_test_cycles;
@@ -533,7 +533,7 @@ function TestCyclesTab({ testCycles, release }: { testCycles: any[]; release: an
               <div key={tc.id} className="border border-[rgba(15,23,42,0.12)] rounded-lg p-4 group relative">
                 <button
                   onClick={() => handleUnlink(tc.test_cycle_id)}
-                  className="absolute top-3 right-3 w-6 h-6 rounded flex items-center justify-center opacity-0 group-hover:opacity-100 text-[#94A3B8] hover:text-[#DC2626] hover:bg-[#FEF2F2] transition-opacity"
+                  className="absolute top-3 right-3 w-6 h-6 rounded flex items-center justify-center opacity-0 group-hover:opacity-100 text-[rgba(237,237,237,0.40)] hover:text-[#DC2626] hover:bg-[rgba(248,113,113,0.06)] transition-opacity"
                   title="Unlink test cycle"
                 >
                   <XIcon size={14} />
@@ -546,9 +546,9 @@ function TestCyclesTab({ testCycles, release }: { testCycles: any[]; release: an
                 </div>
                 <div className="flex items-center gap-2 mb-2">
                   <StatusLozenge status={cycle?.status || 'not_started'} />
-                  <span className="text-[11px] text-[#64748B]">{passCount}/{totalCases} cases</span>
+                  <span className="text-[11px] text-[rgba(237,237,237,0.40)]">{passCount}/{totalCases} cases</span>
                 </div>
-                <div className="w-full h-2 bg-[#F1F5F9] rounded-full overflow-hidden">
+                <div className="w-full h-2 bg-[#1A1A1A] rounded-full overflow-hidden">
                   <div className="h-full bg-[var(--sem-success)] rounded-full" style={{ width: `${passRate}%` }} />
                 </div>
                 {atRisk && <CatalystAIChip label="test cycle at risk — recommend pause release" className="mt-2" />}
@@ -565,7 +565,7 @@ function TestCyclesTab({ testCycles, release }: { testCycles: any[]; release: an
           </DialogHeader>
           <div className="max-h-[320px] overflow-y-auto space-y-0">
             {availableCycles.length === 0 && (
-              <p className="text-center py-6 text-[#94A3B8] text-[13px]">No test cycles found for this project</p>
+              <p className="text-center py-6 text-[rgba(237,237,237,0.40)] text-[13px]">No test cycles found for this project</p>
             )}
             {availableCycles.map((cycle: any) => {
               const alreadyLinked = linkedCycleIds.has(cycle.id);
@@ -580,16 +580,16 @@ function TestCyclesTab({ testCycles, release }: { testCycles: any[]; release: an
                 >
                   <div className="flex-1 min-w-0">
                     <span className="text-[13px] font-medium block truncate" style={{ color: RH.ink1 }}>{cycle.name}</span>
-                    <span className="text-[11px] text-[#64748B]">{cycle.total_cases ?? 0} cases</span>
+                    <span className="text-[11px] text-[rgba(237,237,237,0.40)]">{cycle.total_cases ?? 0} cases</span>
                   </div>
                   <StatusLozenge status={cycle.status || 'not_started'} />
-                  {alreadyLinked && <span className="text-[11px] text-[#94A3B8] font-medium">Linked</span>}
+                  {alreadyLinked && <span className="text-[11px] text-[rgba(237,237,237,0.40)] font-medium">Linked</span>}
                 </button>
               );
             })}
           </div>
           <DialogFooter>
-            <button onClick={() => setShowLinkModal(false)} className="h-8 px-4 rounded-md text-[13px] font-medium text-[#64748B] hover:bg-[#F1F5F9]">Close</button>
+            <button onClick={() => setShowLinkModal(false)} className="h-8 px-4 rounded-md text-[13px] font-medium text-[rgba(237,237,237,0.40)] hover:bg-[#1A1A1A]">Close</button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -613,7 +613,7 @@ function SignoffsTab({ releaseId, changes }: { releaseId: string; changes: any[]
   const approveSignoff = useApproveSignoff();
   const rejectSignoff = useRejectSignoff();
 
-  if (isLoading) return <div className="text-center py-6 text-[#94A3B8] text-[13px]">Loading...</div>;
+  if (isLoading) return <div className="text-center py-6 text-[rgba(237,237,237,0.40)] text-[13px]">Loading...</div>;
 
   const stages = [
     { stage: 'QA', key: 'in_qa' },
@@ -635,7 +635,7 @@ function SignoffsTab({ releaseId, changes }: { releaseId: string; changes: any[]
             <div className={`w-8 h-8 rounded-full flex items-center justify-center text-[12px] font-bold shrink-0 ${
               status === 'approved' ? 'bg-[#1B7F37] text-white' :
               status === 'pending' ? 'bg-[#0C66E4] text-white' :
-              'bg-[#F1F5F9] text-[#94A3B8]'
+              'bg-[#1A1A1A] text-[rgba(237,237,237,0.40)]'
             }`}>
               {status === 'approved' ? '✓' : status === 'pending' ? i + 1 : '🔒'}
             </div>
@@ -655,13 +655,13 @@ function SignoffsTab({ releaseId, changes }: { releaseId: string; changes: any[]
                 <button onClick={() => approveSignoff.mutate(so.id, { onSuccess: () => toast.success('Approved') })}
                   className="h-7 px-3 rounded bg-[#1B7F37] text-white text-[11px] font-bold hover:bg-[#004D33]">Approve</button>
                 <button onClick={() => rejectSignoff.mutate({ signoffId: so.id, comment: 'Rejected' }, { onSuccess: () => toast.success('Rejected') })}
-                  className="h-7 px-3 rounded border border-[#FCA5A5] text-[#DC2626] text-[11px] font-bold hover:bg-[#FEF2F2]">Reject</button>
+                  className="h-7 px-3 rounded border border-[#FCA5A5] text-[#DC2626] text-[11px] font-bold hover:bg-[rgba(248,113,113,0.06)]">Reject</button>
               </div>
             ))}
           </div>
         );
       })}
-      {signoffs.length === 0 && <div className="text-center py-6 text-[#94A3B8] text-[13px]">No sign-offs configured</div>}
+      {signoffs.length === 0 && <div className="text-center py-6 text-[rgba(237,237,237,0.40)] text-[13px]">No sign-offs configured</div>}
     </div>
   );
 }
@@ -673,10 +673,10 @@ function ActivityFeed({ entries, loading }: { entries: any[]; loading: boolean }
       <div className="space-y-4">
         {[1, 2, 3].map(i => (
           <div key={i} className="flex gap-3 animate-pulse">
-            <div className="w-7 h-7 rounded-full bg-[#F1F5F9] flex-shrink-0" />
+            <div className="w-7 h-7 rounded-full bg-[#1A1A1A] flex-shrink-0" />
             <div className="flex-1 space-y-2">
-              <div className="h-3 bg-[#F1F5F9] rounded w-3/4" />
-              <div className="h-2.5 bg-[#F1F5F9] rounded w-1/2" />
+              <div className="h-3 bg-[#1A1A1A] rounded w-3/4" />
+              <div className="h-2.5 bg-[#1A1A1A] rounded w-1/2" />
             </div>
           </div>
         ))}
@@ -700,7 +700,7 @@ function ActivityFeed({ entries, loading }: { entries: any[]; loading: boolean }
     <div className="space-y-0">
       {entries.map((entry: any, idx: number) => {
         const isAI = !!entry.is_ai;
-        const avatarBg = isAI ? '#F3E8FF' : '#EFF6FF';
+        const avatarBg = isAI ? '#F3E8FF' : 'rgba(59,130,246,0.06)';
         const avatarColor = isAI ? '#7C3AED' : '#2563EB';
         const initials = isAI ? 'AI' : (entry.actor_initials || '??');
 

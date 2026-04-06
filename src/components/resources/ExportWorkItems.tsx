@@ -470,8 +470,8 @@ export default function ExportWorkItems({ deptFilter }: { deptFilter: string }) 
           cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px',
           transition: 'border-color 150ms',
         }}
-        onMouseEnter={e => { e.currentTarget.style.borderColor = dk ? '#878787' : '#94A3B8'; }}
-        onMouseLeave={e => { e.currentTarget.style.borderColor = dk ? 'rgba(255,255,255,0.10)' : 'var(--bd-default, #E2E8F0)'; }}
+        onMouseEnter={e => { e.currentTarget.style.borderColor = dk ? '#878787' : 'rgba(237,237,237,0.40)'; }}
+        onMouseLeave={e => { e.currentTarget.style.borderColor = dk ? 'rgba(255,255,255,0.10)' : 'var(--bd-default, rgba(255,255,255,0.10))'; }}
       >
         <Download size={14} strokeWidth={2} />
         Export
@@ -514,7 +514,7 @@ export default function ExportWorkItems({ deptFilter }: { deptFilter: string }) 
                     display: 'flex', alignItems: 'center', gap: 10,
                     padding: '8px 10px', borderRadius: 8, marginBottom: 4,
                     cursor: 'pointer', transition: 'background 100ms',
-                    background: checked ? (dk ? 'rgba(74, 222, 128, 0.06)' : '#F0FDF4') : 'transparent',
+                    background: checked ? (dk ? 'rgba(74, 222, 128, 0.06)' : 'rgba(74,222,128,0.06)') : 'transparent',
                     border: `1.5px solid ${checked ? 'var(--sem-success)' : 'transparent'}`,
                   }}
                   onMouseEnter={e => { if (!checked) e.currentTarget.style.background = dk ? 'rgba(255,255,255,0.03)' : '#f8f9fa'; }}

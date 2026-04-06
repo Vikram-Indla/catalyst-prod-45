@@ -10,7 +10,7 @@ export function PriorityBadge({ priority }: { priority: string }) {
       style={{
         height: 20,
         padding: '0 6px',
-        backgroundColor: '#F1F5F9',
+        backgroundColor: '#1A1A1A',
         color: '#475569',
         fontSize: 11,
         fontWeight: 600,

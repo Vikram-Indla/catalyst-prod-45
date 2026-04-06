@@ -157,7 +157,7 @@ const AIIntelligencePanel: React.FC<Props> = ({ resourceId, onClose }) => {
                 animation: 'spin 1s linear infinite',
               }} />
               <div>
-                <div style={{ fontSize: 13, fontWeight: 600, color: '#1E40AF' }}>
+                <div style={{ fontSize: 13, fontWeight: 600, color: '#7DB8FC' }}>
                   Generating AI Intelligence…
                 </div>
                 <div style={{ fontSize: 11, color: 'var(--cp-blue)', marginTop: 2 }}>

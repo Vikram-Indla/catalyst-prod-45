@@ -3,8 +3,8 @@ import { useAiDigest, type DigestItem } from "@/hooks/useAiDigest";
 import { useTheme } from "@/hooks/useTheme";
 
 const PRIORITY_LIGHT: Record<string, { bg: string; text: string }> = {
-  HIGH: { bg: "#FEE2E2", text: "#991B1B" },
-  MED: { bg: "#FEF3C7", text: "#92400E" },
+  HIGH: { bg: "rgba(248,113,113,0.10)", text: "#F87171" },
+  MED: { bg: "rgba(251,191,36,0.10)", text: "#FBBF24" },
   LOW: { bg: "#DCFCE7", text: "#166534" },
 };
 
@@ -19,13 +19,13 @@ export default function AIDigestTab() {
   const { isDark } = useTheme();
 
   const T = {
-    text1: isDark ? '#F5F3F0' : '#0F172A',
+    text1: isDark ? '#F5F3F0' : 'rgba(237,237,237,0.93)',
     text2: isDark ? '#A09890' : '#475569',
-    text3: isDark ? '#6B6560' : '#94A3B8',
-    cardBg: isDark ? '#232019' : '#F8FAFC',
+    text3: isDark ? '#6B6560' : 'rgba(237,237,237,0.40)',
+    cardBg: isDark ? '#232019' : '#1A1A1A',
     cardBorder: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.08)',
-    btnBorder: isDark ? 'rgba(255,255,255,0.10)' : '#E2E8F0',
-    loaderText: isDark ? '#A09890' : '#64748B',
+    btnBorder: isDark ? 'rgba(255,255,255,0.10)' : 'rgba(255,255,255,0.10)',
+    loaderText: isDark ? '#A09890' : 'rgba(237,237,237,0.40)',
   };
   const PS = isDark ? PRIORITY_DARK : PRIORITY_LIGHT;
 

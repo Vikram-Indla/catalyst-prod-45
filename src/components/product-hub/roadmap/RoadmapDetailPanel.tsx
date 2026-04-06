@@ -56,27 +56,27 @@ const STATUS_OPTIONS = [
 ];
 
 const HEALTH_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
-  on_track: { label: 'On Track', color: '#16A34A', bg: '#F0FDF4' },
+  on_track: { label: 'On Track', color: '#16A34A', bg: 'rgba(74,222,128,0.06)' },
   at_risk: { label: 'At Risk', color: '#D97706', bg: '#FFFBEB' },
-  off_track: { label: 'Off Track', color: '#EF4444', bg: '#FEF2F2' },
+  off_track: { label: 'Off Track', color: '#EF4444', bg: 'rgba(248,113,113,0.06)' },
 };
 
 const STATUS_PILL: Record<string, { color: string; bg: string }> = {
   Planned: { color: '#1D4ED8', bg: '#DBEAFE' },
   Active: { color: '#0F766E', bg: '#F0FDFA' },
-  Completed: { color: '#16A34A', bg: '#F0FDF4' },
-  Cancelled: { color: '#DC2626', bg: '#FEF2F2' },
+  Completed: { color: '#16A34A', bg: 'rgba(74,222,128,0.06)' },
+  Cancelled: { color: '#DC2626', bg: 'rgba(248,113,113,0.06)' },
   'On Hold': { color: '#D97706', bg: '#FFFBEB' },
   'Under Review': { color: '#7C3AED', bg: '#F5F3FF' },
   Approved: { color: '#0D9488', bg: '#F0FDFA' },
-  New: { color: '#2563EB', bg: '#EFF6FF' },
+  New: { color: '#2563EB', bg: 'rgba(59,130,246,0.06)' },
 };
 
 // ── Field component (matches backlog) ──
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
-      <div className="text-[11px] font-semibold uppercase tracking-[0.05em] mb-1" style={{ color: '#334155' }}>
+      <div className="text-[11px] font-semibold uppercase tracking-[0.05em] mb-1" style={{ color: 'rgba(237,237,237,0.53)' }}>
         {label}
       </div>
       <div className="text-[13px] text-foreground">{children}</div>
@@ -169,7 +169,7 @@ export function RoadmapDetailPanel({ item, isOpen, onClose }: RoadmapDetailPanel
 
   if (!item) return null;
 
-  const statusInfo = STATUS_PILL[item.status] || { color: '#334155', bg: '#F1F5F9' };
+  const statusInfo = STATUS_PILL[item.status] || { color: 'rgba(237,237,237,0.53)', bg: '#1A1A1A' };
   const ownerProfile = approvedProfiles?.find(p => p.id === item.rawAssigneeId);
 
   return createPortal(
@@ -273,7 +273,7 @@ export function RoadmapDetailPanel({ item, isOpen, onClose }: RoadmapDetailPanel
             <div className="p-5 space-y-5">
               {/* Description */}
               <div>
-                <div className="text-[11px] font-semibold uppercase tracking-[0.05em] mb-1" style={{ color: '#94A3B8' }}>
+                <div className="text-[11px] font-semibold uppercase tracking-[0.05em] mb-1" style={{ color: 'rgba(237,237,237,0.40)' }}>
                   Description
                 </div>
                 <p className="text-[13px] text-muted-foreground italic leading-relaxed">
@@ -283,7 +283,7 @@ export function RoadmapDetailPanel({ item, isOpen, onClose }: RoadmapDetailPanel
 
               {/* Initiative Type — segmented control with icons */}
               <div>
-                <div className="text-[11px] font-semibold uppercase tracking-[0.05em] mb-2" style={{ color: '#334155' }}>
+                <div className="text-[11px] font-semibold uppercase tracking-[0.05em] mb-2" style={{ color: 'rgba(237,237,237,0.53)' }}>
                   Initiative Type
                 </div>
                 <div className="flex items-center gap-2">
@@ -303,7 +303,7 @@ export function RoadmapDetailPanel({ item, isOpen, onClose }: RoadmapDetailPanel
                         }}
                       >
                         <opt.Icon className="w-4 h-4 mb-0.5" style={{ color: opt.color }} />
-                        <span className="text-[10px] font-semibold" style={{ color: isActive ? opt.color : '#64748B' }}>
+                        <span className="text-[10px] font-semibold" style={{ color: isActive ? opt.color : 'rgba(237,237,237,0.40)' }}>
                           {opt.label}
                         </span>
                       </button>

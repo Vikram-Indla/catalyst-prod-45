@@ -60,10 +60,10 @@ export function ExecutionActionBar({
   const isExecuted = currentStatus !== 'not_run';
 
   const actionButtons = [
-    { key: 'passed', label: 'Pass', shortcut: 'P', icon: CheckCircle2, onClick: onPass, activeGradient: 'linear-gradient(135deg, #10B981 0%, #059669 100%)', inactiveBg: '#ECFDF5', activeColor: '#FFFFFF', inactiveColor: 'var(--sem-success)', shadow: 'rgba(16,185,129,0.3)' },
-    { key: 'failed', label: 'Fail', shortcut: 'F', icon: XCircle, onClick: onFail, activeGradient: 'linear-gradient(135deg, #EF4444 0%, #DC2626 100%)', inactiveBg: '#FEF2F2', activeColor: '#FFFFFF', inactiveColor: 'var(--sem-danger)', shadow: 'rgba(220,38,38,0.3)' },
+    { key: 'passed', label: 'Pass', shortcut: 'P', icon: CheckCircle2, onClick: onPass, activeGradient: 'linear-gradient(135deg, #10B981 0%, #059669 100%)', inactiveBg: 'rgba(74,222,128,0.06)', activeColor: '#FFFFFF', inactiveColor: 'var(--sem-success)', shadow: 'rgba(16,185,129,0.3)' },
+    { key: 'failed', label: 'Fail', shortcut: 'F', icon: XCircle, onClick: onFail, activeGradient: 'linear-gradient(135deg, #EF4444 0%, #DC2626 100%)', inactiveBg: 'rgba(248,113,113,0.06)', activeColor: '#FFFFFF', inactiveColor: 'var(--sem-danger)', shadow: 'rgba(220,38,38,0.3)' },
     { key: 'blocked', label: 'Blocked', shortcut: 'B', icon: AlertTriangle, onClick: onBlocked, activeGradient: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)', inactiveBg: '#FFFBEB', activeColor: '#FFFFFF', inactiveColor: 'var(--sem-warning)', shadow: 'rgba(217,119,6,0.3)' },
-    { key: 'skipped', label: 'Skip', shortcut: 'S', icon: SkipForward, onClick: onSkip, activeGradient: 'linear-gradient(135deg, #64748B 0%, #475569 100%)', inactiveBg: '#FFFFFF', activeColor: '#FFFFFF', inactiveColor: 'var(--fg-3)', shadow: 'rgba(100,116,139,0.3)' },
+    { key: 'skipped', label: 'Skip', shortcut: 'S', icon: SkipForward, onClick: onSkip, activeGradient: 'linear-gradient(135deg, rgba(237,237,237,0.40) 0%, #475569 100%)', inactiveBg: '#FFFFFF', activeColor: '#FFFFFF', inactiveColor: 'var(--fg-3)', shadow: 'rgba(100,116,139,0.3)' },
   ];
 
   return (
@@ -84,7 +84,7 @@ export function ExecutionActionBar({
           return (
             <button key={btn.key} onClick={btn.onClick} disabled={isSubmitting} title={`${btn.label} (${btn.shortcut})`}
               style={{
-                height: 44, padding: '0 24px', border: isActive || btn.key !== 'skipped' ? 'none' : '1.5px solid var(--bd-default, #E2E8F0)', borderRadius: 8,
+                height: 44, padding: '0 24px', border: isActive || btn.key !== 'skipped' ? 'none' : '1.5px solid var(--bd-default, rgba(255,255,255,0.10))', borderRadius: 8,
                 background: isActive ? btn.activeGradient : btn.inactiveBg,
                 color: isActive ? btn.activeColor : btn.inactiveColor,
                 fontSize: 14, fontWeight: 600, cursor: isSubmitting ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: 8,

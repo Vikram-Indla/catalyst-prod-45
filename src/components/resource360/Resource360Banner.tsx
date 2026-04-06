@@ -49,8 +49,8 @@ export function Resource360Banner({ summary, isLoading, items = [] }: Props) {
 
   const kpis = [
     { label: 'TOTAL', value: String(totalCount), color: 'var(--fg-1)', bg: 'var(--bg-app)' },
-    { label: 'CLOSURE', value: `${closurePct}%`, color: 'var(--sem-success)', bg: isDark ? 'rgba(14,138,95,0.1)' : '#F0FDF4' },
-    { label: 'PENDING', value: String(pendingCount), color: 'var(--sem-danger)', bg: isDark ? 'rgba(226,54,54,0.1)' : '#FEF2F2' },
+    { label: 'CLOSURE', value: `${closurePct}%`, color: 'var(--sem-success)', bg: isDark ? 'rgba(14,138,95,0.1)' : 'rgba(74,222,128,0.06)' },
+    { label: 'PENDING', value: String(pendingCount), color: 'var(--sem-danger)', bg: isDark ? 'rgba(226,54,54,0.1)' : 'rgba(248,113,113,0.06)' },
     { label: 'AVG AGE', value: `${avgAge}d`, color: 'var(--fg-1)', bg: 'var(--bg-app)' },
     { label: 'STALE', value: String(staleCount), color: 'var(--fg-1)', bg: 'var(--bg-app)' },
   ];

@@ -14,8 +14,8 @@ interface FeedItem {
 /* All human avatars: exec-blue-700. AI avatar: exec-ai-purple. */
 const TEMP_MOCK_FEED: FeedItem[] = [
   {
-    initials: 'AH', color: '#1E40AF',
-    text: <><strong>Ahmed Hassan</strong> updated KR "Digitize 80% of permits" progress to <strong style={{ color: '#1E40AF' }}>82%</strong></>,
+    initials: 'AH', color: '#7DB8FC',
+    text: <><strong>Ahmed Hassan</strong> updated KR "Digitize 80% of permits" progress to <strong style={{ color: '#7DB8FC' }}>82%</strong></>,
     time: '2 hours ago',
   },
   {
@@ -24,22 +24,22 @@ const TEMP_MOCK_FEED: FeedItem[] = [
     time: '3 hours ago',
   },
   {
-    initials: 'SR', color: '#1E40AF',
+    initials: 'SR', color: '#7DB8FC',
     text: <><strong>Sara Al-Rashid</strong> completed STEM scholarship pipeline quarterly review — <strong style={{ color: '#16A34A' }}>on track</strong></>,
     time: '5 hours ago',
   },
   {
-    initials: 'MK', color: '#1E40AF',
+    initials: 'MK', color: '#7DB8FC',
     text: <><strong>Mohammed Khan</strong> requested budget reallocation for Supply Chain — <strong style={{ color: '#D97706' }}>pending</strong></>,
     time: 'Yesterday',
   },
   {
-    initials: 'FN', color: '#1E40AF',
+    initials: 'FN', color: '#7DB8FC',
     text: <><strong>Fatima Noor</strong> submitted ESG compliance framework draft for review</>,
     time: 'Yesterday',
   },
   {
-    initials: 'KA', color: '#1E40AF',
+    initials: 'KA', color: '#7DB8FC',
     text: <><strong>Khalid Al-Otaibi</strong> closed Epic "Ministry Integration Phase 2" — all features delivered</>,
     time: '2 days ago',
   },
@@ -54,12 +54,12 @@ export function ActivityFeed() {
           className="flex gap-3"
           style={{
             padding: '10px 4px',
-            borderBottom: i < TEMP_MOCK_FEED.length - 1 ? '1px solid var(--exec-border, var(--bd-default, #E2E8F0))' : 'none',
+            borderBottom: i < TEMP_MOCK_FEED.length - 1 ? '1px solid var(--exec-border, var(--bd-default, rgba(255,255,255,0.10)))' : 'none',
             transition: 'background 120ms',
             borderRadius: 6,
             margin: '0 -4px',
           }}
-          onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--exec-bg-hover, #F1F5F9)'; }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--exec-bg-hover, #1A1A1A)'; }}
           onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
         >
           <div

@@ -73,7 +73,7 @@ export const HIERARCHY_LEVELS: HierarchyLevel[] = [
   { id: 1, name: 'Epic',     color: '#2563EB', colorText: '#1D4ED8', icon: 'zap' },
   { id: 2, name: 'Feature',  color: '#7C3AED', colorText: '#6D28D9', icon: 'puzzle' },
   { id: 3, name: 'Story',    color: '#16A34A', colorText: '#15803D', icon: 'book-open' },
-  { id: 4, name: 'Sub-task', color: '#64748B', colorText: '#475569', icon: 'list-checks' },
+  { id: 4, name: 'Sub-task', color: 'rgba(237,237,237,0.40)', colorText: '#475569', icon: 'list-checks' },
 ];
 
 // Flexible parenting rules

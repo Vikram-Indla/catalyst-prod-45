@@ -15,7 +15,7 @@ interface Props {
 
 // Funnel status order & colors
 const FUNNEL_ORDER: { key: string; label: string; color: string }[] = [
-  { key: 'draft', label: 'Draft', color: '#94A3B8' },
+  { key: 'draft', label: 'Draft', color: 'rgba(237,237,237,0.40)' },
   { key: 'submitted', label: 'Submitted', color: '#2563EB' },
   { key: 'under_review', label: 'Under Review', color: '#D97706' },
   { key: 'approved', label: 'Approved', color: '#16A34A' },
@@ -23,7 +23,7 @@ const FUNNEL_ORDER: { key: string; label: string; color: string }[] = [
   { key: 'rejected', label: 'Rejected', color: '#EF4444' },
 ];
 
-const DEPT_COLORS = ['#2563EB', '#0D9488', '#D97706', '#7C3AED', '#16A34A', '#EF4444', '#94A3B8', '#0F766E', '#6366F1', '#DC2626'];
+const DEPT_COLORS = ['#2563EB', '#0D9488', '#D97706', '#7C3AED', '#16A34A', '#EF4444', 'rgba(237,237,237,0.40)', '#0F766E', '#6366F1', '#DC2626'];
 
 function getInitials(name: string): string {
   return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
@@ -124,11 +124,11 @@ export default function IdeationAnalyticsView({ ideas }: Props) {
 
   // ── Metric cards ──
   const METRICS = [
-    { label: 'TOTAL SUBMISSIONS', value: String(stats.total), color: dk.t1, sub: `${stats.total} ideas in backlog`, subColor: dk.t3, icon: ClipboardList, iconBg: isDark ? 'rgba(59,130,246,0.12)' : '#EFF6FF', iconColor: '#2563EB' },
-    { label: 'AVG IMPACT SCORE', value: stats.avgImpact.toFixed(2), color: '#2563EB', sub: 'across all ideas', subColor: dk.t3, icon: BarChart3, iconBg: isDark ? 'rgba(59,130,246,0.12)' : '#EFF6FF', iconColor: '#2563EB' },
+    { label: 'TOTAL SUBMISSIONS', value: String(stats.total), color: dk.t1, sub: `${stats.total} ideas in backlog`, subColor: dk.t3, icon: ClipboardList, iconBg: isDark ? 'rgba(59,130,246,0.12)' : 'rgba(59,130,246,0.06)', iconColor: '#2563EB' },
+    { label: 'AVG IMPACT SCORE', value: stats.avgImpact.toFixed(2), color: '#2563EB', sub: 'across all ideas', subColor: dk.t3, icon: BarChart3, iconBg: isDark ? 'rgba(59,130,246,0.12)' : 'rgba(59,130,246,0.06)', iconColor: '#2563EB' },
     { label: 'CONVERSION RATE', value: `${stats.convRate.toFixed(1)}%`, color: dk.greenText, sub: `${stats.converted} ideas → initiatives`, subColor: dk.greenText, icon: RefreshCw, iconBg: isDark ? 'rgba(13,148,136,0.12)' : '#F0FDFA', iconColor: '#0D9488' },
-    { label: 'AI COVERAGE', value: `${stats.aiPct}%`, color: '#3B82F6', sub: `${stats.aiReady} of ${stats.total} enriched`, subColor: dk.t3, icon: Sparkles, iconBg: isDark ? 'rgba(59,130,246,0.12)' : '#EFF6FF', iconColor: '#3B82F6' },
-    { label: 'PIPELINE VALUE', value: String(stats.pipeline), color: dk.greenText, sub: 'Active ideas in pipeline', subColor: dk.greenText, icon: Rocket, iconBg: isDark ? 'rgba(22,163,74,0.12)' : '#F0FDF4', iconColor: '#16A34A' },
+    { label: 'AI COVERAGE', value: `${stats.aiPct}%`, color: '#3B82F6', sub: `${stats.aiReady} of ${stats.total} enriched`, subColor: dk.t3, icon: Sparkles, iconBg: isDark ? 'rgba(59,130,246,0.12)' : 'rgba(59,130,246,0.06)', iconColor: '#3B82F6' },
+    { label: 'PIPELINE VALUE', value: String(stats.pipeline), color: dk.greenText, sub: 'Active ideas in pipeline', subColor: dk.greenText, icon: Rocket, iconBg: isDark ? 'rgba(22,163,74,0.12)' : 'rgba(74,222,128,0.06)', iconColor: '#16A34A' },
   ];
 
   return (
@@ -218,7 +218,7 @@ export default function IdeationAnalyticsView({ ideas }: Props) {
               <span style={{ fontSize: '13px', fontWeight: 600, color: dk.t2, width: '100px', flexShrink: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.name}</span>
               <span style={{
                 fontFamily: MONO, fontSize: '11px', fontWeight: 700, color: dk.t3,
-                background: isDark ? 'rgba(255,255,255,0.06)' : '#F8FAFC', border: `1px solid ${dk.border}`, borderRadius: '4px', padding: '1px 6px',
+                background: isDark ? 'rgba(255,255,255,0.06)' : '#1A1A1A', border: `1px solid ${dk.border}`, borderRadius: '4px', padding: '1px 6px',
               }}>{c.count}</span>
               <div style={{ flex: 1, height: '6px', background: barTrack, borderRadius: '4px', overflow: 'hidden' }}>
                 <div style={{ width: `${c.pct}%`, height: '100%', background: '#2563EB', borderRadius: '4px' }} />

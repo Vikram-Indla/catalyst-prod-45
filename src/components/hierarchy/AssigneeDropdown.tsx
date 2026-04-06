@@ -51,7 +51,7 @@ export function AssigneeDropdown({ currentAssignee, availableAssignees, onSelect
       }}
     >
       {/* Search */}
-      <div style={{ padding: '8px 10px', borderBottom: '1px solid #F1F5F9', display: 'flex', alignItems: 'center', gap: 6 }}>
+      <div style={{ padding: '8px 10px', borderBottom: '1px solid #1A1A1A', display: 'flex', alignItems: 'center', gap: 6 }}>
         <Search size={14} color="var(--fg-4)" />
         <input
           ref={inputRef}
@@ -75,7 +75,7 @@ export function AssigneeDropdown({ currentAssignee, availableAssignees, onSelect
         onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--bg-1)')}
         onMouseLeave={(e) => (e.currentTarget.style.background = '')}
       >
-        <div style={{ width: 24, height: 24, borderRadius: '50%', border: '1px dashed #CBD5E1', flexShrink: 0 }} />
+        <div style={{ width: 24, height: 24, borderRadius: '50%', border: '1px dashed rgba(237,237,237,0.53)', flexShrink: 0 }} />
         <span style={{ fontSize: 12, color: 'var(--fg-4)', fontStyle: 'italic' }}>Unassigned</span>
         {!currentAssignee && <Check size={14} color="var(--cp-blue)" style={{ marginLeft: 'auto' }} />}
       </div>
@@ -95,7 +95,7 @@ export function AssigneeDropdown({ currentAssignee, availableAssignees, onSelect
                 fontFamily: "'Inter', sans-serif",
               }}
               onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--bg-1)')}
-              onMouseLeave={(e) => (e.currentTarget.style.background = isCurrent ? 'var(--bg-1, #F8FAFC)' : '')}
+              onMouseLeave={(e) => (e.currentTarget.style.background = isCurrent ? 'var(--bg-1, #1A1A1A)' : '')}
             >
               <div style={{ width: 24, height: 24, borderRadius: '50%', background: 'var(--cp-blue)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                 <span style={{ fontSize: 9, fontWeight: 700, color: '#FFFFFF' }}>{initials}</span>

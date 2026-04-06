@@ -34,7 +34,7 @@ const TYPE_CONFIG: Record<string, { label: string; color: string }> = {
   coverage: { label: 'Coverage', color: '#0891B2' },
   defect: { label: 'Defect Report', color: '#DC2626' },
   trend: { label: 'Trend Analysis', color: '#059669' },
-  custom: { label: 'Custom', color: '#64748B' },
+  custom: { label: 'Custom', color: 'rgba(237,237,237,0.40)' },
 };
 
 export default function ReportDetailPage() {
@@ -45,14 +45,14 @@ export default function ReportDetailPage() {
   const [isLoading, setIsLoading] = useState(true);
 
   // NOCTURNE tokens
-  const pageBg = isDark ? '#0A0A0A' : '#F8FAFC';
+  const pageBg = isDark ? '#0A0A0A' : '#1A1A1A';
   const surfaceBg = isDark ? '#1A1A1A' : '#FFF';
-  const borderColor = isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0';
-  const borderSubtle = isDark ? 'rgba(255,255,255,0.05)' : '#F1F5F9';
-  const textPrimary = isDark ? '#EDEDED' : '#0F172A';
-  const textSecondary = isDark ? '#A1A1A1' : '#64748B';
-  const textMuted = isDark ? '#878787' : '#94A3B8';
-  const textBody = isDark ? '#A1A1A1' : '#334155';
+  const borderColor = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.10)';
+  const borderSubtle = isDark ? 'rgba(255,255,255,0.05)' : '#1A1A1A';
+  const textPrimary = isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)';
+  const textSecondary = isDark ? '#A1A1A1' : 'rgba(237,237,237,0.40)';
+  const textMuted = isDark ? '#878787' : 'rgba(237,237,237,0.40)';
+  const textBody = isDark ? '#A1A1A1' : 'rgba(237,237,237,0.53)';
 
   const fetchReport = async () => {
     if (!reportId) return;
@@ -154,7 +154,7 @@ export default function ReportDetailPage() {
           <button onClick={() => window.print()} style={{ display: 'flex', alignItems: 'center', gap: 6, height: 40, padding: '0 14px', border: `1px solid ${borderColor}`, borderRadius: 8, backgroundColor: surfaceBg, color: textBody, fontSize: 13, cursor: 'pointer' }}>
             <Printer size={16} />
           </button>
-          <button onClick={deleteReport} style={{ display: 'flex', alignItems: 'center', gap: 6, height: 40, padding: '0 14px', border: '1px solid #FECACA', borderRadius: 8, backgroundColor: isDark ? '#3D2020' : '#FEF2F2', color: '#DC2626', fontSize: 13, cursor: 'pointer' }}>
+          <button onClick={deleteReport} style={{ display: 'flex', alignItems: 'center', gap: 6, height: 40, padding: '0 14px', border: '1px solid #FECACA', borderRadius: 8, backgroundColor: isDark ? '#3D2020' : 'rgba(248,113,113,0.06)', color: '#DC2626', fontSize: 13, cursor: 'pointer' }}>
             <Trash2 size={16} />
           </button>
         </div>
@@ -178,12 +178,12 @@ export default function ReportDetailPage() {
               <p style={{ fontSize: 28, fontWeight: 700, color: textPrimary, margin: 0 }}>{data.summary.total_cases}</p>
               <p style={{ fontSize: 12, color: textSecondary, margin: '4px 0 0' }}>Total Tests</p>
             </div>
-            <div style={{ backgroundColor: isDark ? '#1A2E1A' : '#ECFDF5', borderRadius: 12, padding: 20, border: `1px solid ${isDark ? '#2D4A2D' : '#A7F3D0'}`, textAlign: 'center' }}>
+            <div style={{ backgroundColor: isDark ? '#1A2E1A' : 'rgba(74,222,128,0.06)', borderRadius: 12, padding: 20, border: `1px solid ${isDark ? '#2D4A2D' : '#A7F3D0'}`, textAlign: 'center' }}>
               <CheckCircle2 size={24} style={{ color: '#059669', marginBottom: 8 }} />
               <p style={{ fontSize: 28, fontWeight: 700, color: '#059669', margin: 0 }}>{data.summary.passed}</p>
               <p style={{ fontSize: 12, color: '#059669', margin: '4px 0 0' }}>Passed</p>
             </div>
-            <div style={{ backgroundColor: isDark ? '#3D2020' : '#FEF2F2', borderRadius: 12, padding: 20, border: `1px solid ${isDark ? '#5C2020' : '#FECACA'}`, textAlign: 'center' }}>
+            <div style={{ backgroundColor: isDark ? '#3D2020' : 'rgba(248,113,113,0.06)', borderRadius: 12, padding: 20, border: `1px solid ${isDark ? '#5C2020' : '#FECACA'}`, textAlign: 'center' }}>
               <XCircle size={24} style={{ color: '#DC2626', marginBottom: 8 }} />
               <p style={{ fontSize: 28, fontWeight: 700, color: '#DC2626', margin: 0 }}>{data.summary.failed}</p>
               <p style={{ fontSize: 12, color: '#DC2626', margin: '4px 0 0' }}>Failed</p>
@@ -201,13 +201,13 @@ export default function ReportDetailPage() {
               <span style={{ fontSize: 14, fontWeight: 600, color: textPrimary }}>Execution Progress</span>
               <span style={{ fontSize: 14, fontWeight: 700, color: '#2563EB' }}>{data.summary.progress_percent}%</span>
             </div>
-            <div style={{ height: 16, backgroundColor: isDark ? '#292929' : '#E2E8F0', borderRadius: 8, overflow: 'hidden', display: 'flex' }}>
+            <div style={{ height: 16, backgroundColor: isDark ? '#292929' : 'rgba(255,255,255,0.10)', borderRadius: 8, overflow: 'hidden', display: 'flex' }}>
               {data.summary.total_cases > 0 && (
                 <>
                   <div style={{ width: `${(data.summary.passed / data.summary.total_cases) * 100}%`, backgroundColor: '#10B981' }} />
                   <div style={{ width: `${(data.summary.failed / data.summary.total_cases) * 100}%`, backgroundColor: '#EF4444' }} />
                   <div style={{ width: `${(data.summary.blocked / data.summary.total_cases) * 100}%`, backgroundColor: '#F59E0B' }} />
-                  <div style={{ width: `${(data.summary.skipped / data.summary.total_cases) * 100}%`, backgroundColor: '#94A3B8' }} />
+                  <div style={{ width: `${(data.summary.skipped / data.summary.total_cases) * 100}%`, backgroundColor: 'rgba(237,237,237,0.40)' }} />
                 </>
               )}
             </div>
@@ -215,7 +215,7 @@ export default function ReportDetailPage() {
               <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><span style={{ width: 10, height: 10, backgroundColor: '#10B981', borderRadius: 4, display: 'inline-block' }} /> Passed ({data.summary.passed})</span>
               <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><span style={{ width: 10, height: 10, backgroundColor: '#EF4444', borderRadius: 4, display: 'inline-block' }} /> Failed ({data.summary.failed})</span>
               <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><span style={{ width: 10, height: 10, backgroundColor: '#F59E0B', borderRadius: 4, display: 'inline-block' }} /> Blocked ({data.summary.blocked})</span>
-              <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><span style={{ width: 10, height: 10, backgroundColor: '#94A3B8', borderRadius: 4, display: 'inline-block' }} /> Not Run ({data.summary.not_run})</span>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><span style={{ width: 10, height: 10, backgroundColor: 'rgba(237,237,237,0.40)', borderRadius: 4, display: 'inline-block' }} /> Not Run ({data.summary.not_run})</span>
             </div>
           </div>
 
@@ -227,7 +227,7 @@ export default function ReportDetailPage() {
               </h3>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 12 }}>
                 {data.assignee_breakdown.map((a: any, i: number) => (
-                  <div key={i} style={{ padding: 14, backgroundColor: isDark ? '#1A1A1A' : '#F8FAFC', borderRadius: 8 }}>
+                  <div key={i} style={{ padding: 14, backgroundColor: isDark ? '#1A1A1A' : '#1A1A1A', borderRadius: 8 }}>
                     <p style={{ fontSize: 14, fontWeight: 600, color: textPrimary, margin: '0 0 8px' }}>{a.assignee_name}</p>
                     <div style={{ display: 'flex', gap: 12, fontSize: 12 }}>
                       <span>Total: {a.total}</span>
@@ -259,14 +259,14 @@ export default function ReportDetailPage() {
                     {data.test_cases.map((tc: any, i: number) => (
                       <tr key={i} style={{ borderBottom: `1px solid ${borderSubtle}` }}>
                         <td style={{ padding: '12px 8px' }}>
-                          <span style={{ fontSize: 12, fontWeight: 600, color: '#2563EB', backgroundColor: isDark ? '#1e293b' : '#EFF6FF', padding: '2px 6px', borderRadius: 4 }}>{tc.case_key}</span>
+                          <span style={{ fontSize: 12, fontWeight: 600, color: '#2563EB', backgroundColor: isDark ? '#1e293b' : 'rgba(59,130,246,0.06)', padding: '2px 6px', borderRadius: 4 }}>{tc.case_key}</span>
                         </td>
                         <td style={{ padding: '12px 8px', color: textPrimary }}>{tc.title}</td>
                         <td style={{ padding: '12px 8px', textTransform: 'capitalize', color: textBody }}>{tc.priority}</td>
                         <td style={{ padding: '12px 8px' }}>
                           <span style={{
                             fontSize: 11, fontWeight: 500, padding: '3px 8px', borderRadius: 4,
-                            backgroundColor: tc.status === 'passed' ? (isDark ? '#1A2E1A' : '#ECFDF5') : tc.status === 'failed' ? (isDark ? '#3D2020' : '#FEF2F2') : (isDark ? '#1A1A1A' : '#F1F5F9'),
+                            backgroundColor: tc.status === 'passed' ? (isDark ? '#1A2E1A' : 'rgba(74,222,128,0.06)') : tc.status === 'failed' ? (isDark ? '#3D2020' : 'rgba(248,113,113,0.06)') : (isDark ? '#1A1A1A' : '#1A1A1A'),
                             color: tc.status === 'passed' ? '#059669' : tc.status === 'failed' ? '#DC2626' : textSecondary,
                           }}>
                             {tc.status || 'Not Run'}
@@ -293,7 +293,7 @@ export default function ReportDetailPage() {
           {data.severity_breakdown && (
             <div style={{ display: 'flex', gap: 16, marginBottom: 16, flexWrap: 'wrap' }}>
               {Object.entries(data.severity_breakdown).map(([sev, count]) => (
-                <div key={sev} style={{ padding: '8px 16px', backgroundColor: isDark ? '#1A1A1A' : '#F8FAFC', borderRadius: 8, fontSize: 13, color: textBody }}>
+                <div key={sev} style={{ padding: '8px 16px', backgroundColor: isDark ? '#1A1A1A' : '#1A1A1A', borderRadius: 8, fontSize: 13, color: textBody }}>
                   <span style={{ fontWeight: 600, textTransform: 'capitalize' }}>{sev}</span>: {String(count)}
                 </div>
               ))}
@@ -313,7 +313,7 @@ export default function ReportDetailPage() {
               <tbody>
                 {data.defects.map((d: any, i: number) => (
                   <tr key={i} style={{ borderBottom: `1px solid ${borderSubtle}` }}>
-                    <td style={{ padding: '12px 8px' }}><span style={{ fontSize: 12, fontWeight: 600, color: '#DC2626', backgroundColor: isDark ? '#3D2020' : '#FEF2F2', padding: '2px 6px', borderRadius: 4 }}>{d.defect_key}</span></td>
+                    <td style={{ padding: '12px 8px' }}><span style={{ fontSize: 12, fontWeight: 600, color: '#DC2626', backgroundColor: isDark ? '#3D2020' : 'rgba(248,113,113,0.06)', padding: '2px 6px', borderRadius: 4 }}>{d.defect_key}</span></td>
                     <td style={{ padding: '12px 8px', color: textPrimary }}>{d.title}</td>
                     <td style={{ padding: '12px 8px', textTransform: 'capitalize', color: textBody }}>{d.severity}</td>
                     <td style={{ padding: '12px 8px', textTransform: 'capitalize', color: textBody }}>{d.status}</td>
@@ -329,7 +329,7 @@ export default function ReportDetailPage() {
       {/* Generic placeholder for other types */}
       {!['cycle_summary', 'defect'].includes(report.type) && (
         <div style={{ backgroundColor: surfaceBg, borderRadius: 12, padding: 40, border: `1px solid ${borderColor}`, textAlign: 'center' }}>
-          <FileBarChart size={48} style={{ color: isDark ? '#878787' : '#CBD5E1', marginBottom: 16 }} />
+          <FileBarChart size={48} style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.53)', marginBottom: 16 }} />
           <p style={{ fontSize: 16, color: textSecondary, margin: 0 }}>Report data visualization coming soon</p>
           <p style={{ fontSize: 13, color: textMuted, margin: '8px 0 0' }}>Raw data has been captured and stored</p>
         </div>

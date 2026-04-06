@@ -167,7 +167,7 @@ export function ThemeCreateModal({ open, onClose, onSubmit, initialData }: Props
               <div className="flex gap-2">
                 {THEME_COLORS.map(c => (
                   <button key={c} onClick={() => setForm(f => ({ ...f, color: c }))} className="rounded-full w-7 h-7 cursor-pointer transition-[border] duration-150" style={{
-                    background: c, border: form.color === c ? '3px solid var(--cp-text-primary, #0F172A)' : '2px solid transparent',
+                    background: c, border: form.color === c ? '3px solid var(--cp-text-primary, rgba(237,237,237,0.93))' : '2px solid transparent',
                   }} />
                 ))}
               </div>

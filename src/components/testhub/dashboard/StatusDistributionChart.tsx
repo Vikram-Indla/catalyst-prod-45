@@ -53,7 +53,7 @@ export function StatusDistributionChart({ stats }: Props) {
   return (
     <div style={{ backgroundColor: 'var(--bg-app)', border: '1px solid var(--divider)', borderRadius: 12, padding: 24, minHeight: 280 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>
-        <div style={{ width: 36, height: 50, borderRadius: 12, backgroundColor: '#ECFDF5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ width: 36, height: 50, borderRadius: 12, backgroundColor: 'rgba(74,222,128,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <Activity size={18} color="var(--sem-success)" />
         </div>
         <div>

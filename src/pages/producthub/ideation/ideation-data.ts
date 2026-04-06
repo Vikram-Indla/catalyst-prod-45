@@ -57,19 +57,19 @@ export const STATUS_CONFIG: Record<IdeaStatus, { bg: string; text: string; label
 
 // ─── TYPE CONFIG — ALL NEUTRAL GREY ─────────────────────────────
 export const TYPE_CONFIG: Record<IdeaType, { bg: string; text: string; label: string }> = {
-  opportunity:  { bg: '#F1F5F9', text: '#334155', label: 'Opportunity' },
-  solution:     { bg: '#F1F5F9', text: '#334155', label: 'Solution' },
-  feature:      { bg: '#F1F5F9', text: '#334155', label: 'Feature' },
-  improvement:  { bg: '#F1F5F9', text: '#334155', label: 'Improvement' },
-  problem:      { bg: '#F1F5F9', text: '#334155', label: 'Problem' },
+  opportunity:  { bg: '#1A1A1A', text: 'rgba(237,237,237,0.53)', label: 'Opportunity' },
+  solution:     { bg: '#1A1A1A', text: 'rgba(237,237,237,0.53)', label: 'Solution' },
+  feature:      { bg: '#1A1A1A', text: 'rgba(237,237,237,0.53)', label: 'Feature' },
+  improvement:  { bg: '#1A1A1A', text: 'rgba(237,237,237,0.53)', label: 'Improvement' },
+  problem:      { bg: '#1A1A1A', text: 'rgba(237,237,237,0.53)', label: 'Problem' },
 };
 
 // ─── V12 PRIORITY BADGES — ALL NEUTRAL GREY ─────────────────────
 export const PRIORITY_CONFIG: Record<string, { bg: string; text: string; border: string }> = {
-  P1: { bg: '#F1F5F9', text: '#334155', border: 'var(--bd-default, #E2E8F0)' },
-  P2: { bg: '#F1F5F9', text: '#334155', border: 'var(--bd-default, #E2E8F0)' },
-  P3: { bg: '#F1F5F9', text: '#334155', border: 'var(--bd-default, #E2E8F0)' },
-  P4: { bg: '#F1F5F9', text: '#334155', border: 'var(--bd-default, #E2E8F0)' },
+  P1: { bg: '#1A1A1A', text: 'rgba(237,237,237,0.53)', border: 'var(--bd-default, rgba(255,255,255,0.10))' },
+  P2: { bg: '#1A1A1A', text: 'rgba(237,237,237,0.53)', border: 'var(--bd-default, rgba(255,255,255,0.10))' },
+  P3: { bg: '#1A1A1A', text: 'rgba(237,237,237,0.53)', border: 'var(--bd-default, rgba(255,255,255,0.10))' },
+  P4: { bg: '#1A1A1A', text: 'rgba(237,237,237,0.53)', border: 'var(--bd-default, rgba(255,255,255,0.10))' },
 };
 
 export const VIEW_TITLES: Record<IdeationView, string> = {
@@ -94,8 +94,8 @@ export const FILTER_PILLS: { key: StatusFilter; label: string }[] = [
 
 // ─── Quarter badge — HIGH CONTRAST (AAA) ────────────────────────
 export const QUARTER_BADGE: Record<string, { bg: string; text: string }> = {
-  Q1: { bg: '#991B1B', text: '#FFFFFF' },
-  Q2: { bg: '#1E40AF', text: '#FFFFFF' },
+  Q1: { bg: '#F87171', text: '#FFFFFF' },
+  Q2: { bg: '#7DB8FC', text: '#FFFFFF' },
   Q3: { bg: '#115E59', text: '#FFFFFF' },
   Q4: { bg: '#78350F', text: '#FFFFFF' },
 };
@@ -104,8 +104,8 @@ export const QUARTER_BADGE: Record<string, { bg: string; text: string }> = {
 export function getImpactColor(score: number) {
   if (score >= 4.0) return { gradient: 'linear-gradient(90deg, #16A34A, #22C55E)', text: '#16A34A' };
   if (score >= 3.0) return { gradient: 'linear-gradient(90deg, #2563EB, #3B82F6)', text: '#2563EB' };
-  if (score >= 2.0) return { gradient: 'linear-gradient(90deg, #64748B, #94A3B8)', text: '#64748B' };
-  return { gradient: 'linear-gradient(90deg, #CBD5E1, var(--bd-default, #E2E8F0))', text: '#94A3B8' };
+  if (score >= 2.0) return { gradient: 'linear-gradient(90deg, rgba(237,237,237,0.40), rgba(237,237,237,0.40))', text: 'rgba(237,237,237,0.40)' };
+  return { gradient: 'linear-gradient(90deg, rgba(237,237,237,0.53), var(--bd-default, rgba(255,255,255,0.10)))', text: 'rgba(237,237,237,0.40)' };
 }
 
 export const AI_INSIGHTS: Record<string, string> = {};

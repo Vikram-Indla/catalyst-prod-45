@@ -106,12 +106,12 @@ export default function AllReleasesPage() {
       <div className="flex items-center justify-between mb-5">
         <div>
           <h1 className="text-[22px] font-extrabold" style={{ fontFamily: RH.fontDisplay, color: isDark ? '#EDEDED' : RH.ink1 }}>All Releases</h1>
-          <p className="text-[13px]" style={{ fontFamily: RH.fontBody, color: isDark ? '#878787' : '#64748B' }}>Manage and track all releases</p>
+          <p className="text-[13px]" style={{ fontFamily: RH.fontBody, color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>Manage and track all releases</p>
         </div>
         <div className="flex items-center gap-2">
           <button onClick={handleImport} disabled={importing}
             className="h-9 px-4 rounded-md text-[13px] font-semibold flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            style={{ border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, background: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#A1A1A1' : '#475569' }}>
+            style={{ border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.10)'}`, background: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#A1A1A1' : '#475569' }}>
             <Download size={14} /> Import from Jira
           </button>
           <button onClick={() => setShowCreate(true)}
@@ -124,7 +124,7 @@ export default function AllReleasesPage() {
       {/* Freeze conflict banner */}
       {freezeConflicts.length > 0 && (
         <div style={{
-          background: '#FEF3C7',
+          background: 'rgba(251,191,36,0.10)',
           border: '1px solid #FCD34D',
           borderRadius: '6px',
           padding: '10px 14px',
@@ -134,7 +134,7 @@ export default function AllReleasesPage() {
           marginBottom: '12px',
         }}>
           <AlertTriangle size={16} color="#D97706" />
-          <span style={{ fontSize: '13px', color: '#92400E' }}>
+          <span style={{ fontSize: '13px', color: '#FBBF24' }}>
             {freezeConflicts.length === 1
               ? `"${freezeConflicts[0].name}" targets a date within a freeze window.`
               : `${freezeConflicts.length} releases target dates within freeze windows.`}
@@ -158,12 +158,12 @@ export default function AllReleasesPage() {
           <button key={s.key} onClick={() => setFilter(s.key)}
             className="h-8 px-3 rounded-md text-[12px] font-semibold flex items-center gap-1.5 border transition-colors"
             style={filter === s.key
-              ? { borderColor: '#2563EB', background: isDark ? 'rgba(37,99,235,0.12)' : '#EFF6FF', color: '#2563EB' }
+              ? { borderColor: '#2563EB', background: isDark ? 'rgba(37,99,235,0.12)' : 'rgba(59,130,246,0.06)', color: '#2563EB' }
               : { borderColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.12)', background: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#A1A1A1' : '#475569' }
             }>
             {s.label}
             <span className="inline-flex items-center justify-center min-w-[18px] h-[18px] rounded-full text-[10px] font-bold"
-              style={{ background: isDark ? '#1A1A1A' : '#F1F5F9', color: isDark ? '#A1A1A1' : '#475569' }}>{s.count}</span>
+              style={{ background: isDark ? '#1A1A1A' : '#1A1A1A', color: isDark ? '#A1A1A1' : '#475569' }}>{s.count}</span>
           </button>
         ))}
       </div>
@@ -171,14 +171,14 @@ export default function AllReleasesPage() {
       {/* Search + View Toggle */}
       <div className="flex items-center justify-between mb-4">
         <div className="relative">
-          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: isDark ? '#878787' : '#94A3B8' }} />
+          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }} />
           <input type="text" placeholder="Search releases..." value={search} onChange={e => setSearch(e.target.value)}
             className="h-9 w-64 pl-9 pr-3 rounded text-[13px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]"
-            style={{ border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.12)'}`, background: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#EDEDED' : '#0F172A' }} />
+            style={{ border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.12)'}`, background: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)' }} />
         </div>
         <div className="flex items-center gap-1 rounded-md p-0.5" style={{ border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.12)'}`, background: isDark ? '#1A1A1A' : '#FFFFFF' }}>
-          <button onClick={() => setView('cards')} className="h-7 w-7 rounded flex items-center justify-center" style={view === 'cards' ? { background: isDark ? 'rgba(37,99,235,0.12)' : '#EFF6FF', color: '#2563EB' } : { color: isDark ? '#878787' : '#94A3B8' }}><LayoutGrid size={14} /></button>
-          <button onClick={() => setView('table')} className="h-7 w-7 rounded flex items-center justify-center" style={view === 'table' ? { background: isDark ? 'rgba(37,99,235,0.12)' : '#EFF6FF', color: '#2563EB' } : { color: isDark ? '#878787' : '#94A3B8' }}><List size={14} /></button>
+          <button onClick={() => setView('cards')} className="h-7 w-7 rounded flex items-center justify-center" style={view === 'cards' ? { background: isDark ? 'rgba(37,99,235,0.12)' : 'rgba(59,130,246,0.06)', color: '#2563EB' } : { color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}><LayoutGrid size={14} /></button>
+          <button onClick={() => setView('table')} className="h-7 w-7 rounded flex items-center justify-center" style={view === 'table' ? { background: isDark ? 'rgba(37,99,235,0.12)' : 'rgba(59,130,246,0.06)', color: '#2563EB' } : { color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}><List size={14} /></button>
         </div>
       </div>
 
@@ -204,7 +204,7 @@ export default function AllReleasesPage() {
                 <div className="absolute left-0 top-0 bottom-0 w-[3px]" style={{ background: accentColor(r.status), borderRadius: '6px 0 0 6px' }} />
                 <div className="p-4 pl-5">
                   <h3 className="text-[15px] font-bold mb-1" style={{ fontFamily: RH.fontDisplay, color: isDark ? '#EDEDED' : RH.ink1, fontWeight: 650 }}>{r.name}</h3>
-                  {r.jira_key && <span className="text-[11px] block mb-2" style={{ fontFamily: RH.fontMono, color: isDark ? '#878787' : '#94A3B8' }}>{r.jira_key}</span>}
+                  {r.jira_key && <span className="text-[11px] block mb-2" style={{ fontFamily: RH.fontMono, color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>{r.jira_key}</span>}
 
                   <div className="flex items-center gap-2 flex-wrap mb-2">
                     <StatusLozenge status={mapStatus(r.status)} />
@@ -213,7 +213,7 @@ export default function AllReleasesPage() {
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <span className="inline-flex items-center gap-1 text-[11px] text-[#94A3B8] cursor-default">
+                            <span className="inline-flex items-center gap-1 text-[11px] text-[rgba(237,237,237,0.40)] cursor-default">
                               <Clock size={12} />
                               Synced {relativeTime(r.synced_at || r.updated_at)}
                             </span>
@@ -226,23 +226,23 @@ export default function AllReleasesPage() {
                     )}
                   </div>
 
-                  <div className="flex items-center gap-3 text-[12px] mb-3" style={{ color: isDark ? '#878787' : '#64748B' }}>
+                  <div className="flex items-center gap-3 text-[12px] mb-3" style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>
                     <span>{r.target_date ? new Date(r.target_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'No date'}</span>
                     <span>·</span>
                     <span>{progress.total} {progress.total === 1 ? 'change' : 'changes'}</span>
                   </div>
 
                   {progress.empty ? (
-                    <p className="text-[11px]" style={{ fontFamily: RH.fontBody, color: isDark ? '#878787' : '#94A3B8' }}>No changes yet</p>
+                    <p className="text-[11px]" style={{ fontFamily: RH.fontBody, color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>No changes yet</p>
                   ) : (
                     <>
-                      <div className="w-full h-1 rounded-full overflow-hidden" style={{ background: isDark ? '#1A1A1A' : '#F1F5F9' }}>
+                      <div className="w-full h-1 rounded-full overflow-hidden" style={{ background: isDark ? '#1A1A1A' : '#1A1A1A' }}>
                         <div className="h-full rounded-full transition-all" style={{
                           width: progress.pct + '%',
                           background: accentColor(r.status)
                         }} />
                       </div>
-                      <p className="text-[11px] mt-1" style={{ fontFamily: RH.fontBody, color: isDark ? '#878787' : '#94A3B8' }}>
+                      <p className="text-[11px] mt-1" style={{ fontFamily: RH.fontBody, color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>
                         {progress.pct}% · {progress.completed} of {progress.total} {progress.total === 1 ? 'change' : 'changes'} deployed
                       </p>
                     </>
@@ -256,9 +256,9 @@ export default function AllReleasesPage() {
         <div className="rounded overflow-hidden" style={{ background: isDark ? '#1A1A1A' : '#FFFFFF', border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.12)'}` }}>
           <table className="w-full text-[13px]" style={{ fontFamily: RH.fontBody }} role="table">
             <thead>
-              <tr style={{ background: isDark ? '#1A1A1A' : '#F1F5F9' }}>
+              <tr style={{ background: isDark ? '#1A1A1A' : '#1A1A1A' }}>
                 {['RELEASE', 'SOURCE', 'STATUS', 'TARGET DATE', 'CHANGES', 'PROGRESS'].map(h => (
-                  <th key={h} className="px-3 py-0 h-[50px] text-left text-[11px] font-semibold uppercase tracking-[0.06em]" style={{ color: isDark ? '#878787' : '#64748B' }}>{h}</th>
+                  <th key={h} className="px-3 py-0 h-[50px] text-left text-[11px] font-semibold uppercase tracking-[0.06em]" style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>{h}</th>
                 ))}
               </tr>
             </thead>
@@ -278,7 +278,7 @@ export default function AllReleasesPage() {
                           <TooltipProvider>
                             <Tooltip>
                               <TooltipTrigger asChild>
-                                <span className="inline-flex items-center gap-0.5 text-[11px] text-[#94A3B8] cursor-default">
+                                <span className="inline-flex items-center gap-0.5 text-[11px] text-[rgba(237,237,237,0.40)] cursor-default">
                                   <Clock size={12} />
                                 </span>
                               </TooltipTrigger>
@@ -295,16 +295,16 @@ export default function AllReleasesPage() {
                     <td className="px-3 py-0" style={{ fontFamily: RH.fontMono, fontSize: 12, color: isDark ? '#A1A1A1' : '#475569' }}>
                       {r.target_date ? new Date(r.target_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}
                     </td>
-                    <td className="px-3 py-0"><span className="font-bold" style={{ fontFamily: RH.fontMono, color: isDark ? '#EDEDED' : '#0F172A' }}>{progress.total}</span></td>
+                    <td className="px-3 py-0"><span className="font-bold" style={{ fontFamily: RH.fontMono, color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)' }}>{progress.total}</span></td>
                     <td className="px-3 py-0">
                       {progress.empty ? (
-                        <span className="text-[11px]" style={{ color: isDark ? '#878787' : '#94A3B8' }}>No changes yet</span>
+                        <span className="text-[11px]" style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>No changes yet</span>
                       ) : (
                         <div className="flex items-center gap-2">
-                          <div className="w-16 h-1 rounded-full overflow-hidden" style={{ background: isDark ? '#1A1A1A' : '#F1F5F9' }}>
+                          <div className="w-16 h-1 rounded-full overflow-hidden" style={{ background: isDark ? '#1A1A1A' : '#1A1A1A' }}>
                             <div className="h-full rounded-full" style={{ width: progress.pct + '%', background: accentColor(r.status) }} />
                           </div>
-                          <span className="text-[11px]" style={{ fontFamily: RH.fontMono, color: isDark ? '#878787' : '#64748B' }}>{progress.pct}%</span>
+                          <span className="text-[11px]" style={{ fontFamily: RH.fontMono, color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>{progress.pct}%</span>
                         </div>
                       )}
                     </td>

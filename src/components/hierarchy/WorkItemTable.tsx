@@ -93,7 +93,7 @@ function SourceBadge({ source }: { source?: 'jira' | 'catalyst' }) {
 }
 
 /* ── Avatar color palette (no purple/yellow) ── */
-const AVATAR_COLORS = ['#0D9488','#2563EB','#DC2626','#16A34A','#64748B','#0284C7','#059669','#BE123C','#1D4ED8','#0F766E'];
+const AVATAR_COLORS = ['#0D9488','#2563EB','#DC2626','#16A34A','rgba(237,237,237,0.40)','#0284C7','#059669','#BE123C','#1D4ED8','#0F766E'];
 function getAvatarColor(name: string): string {
   let hash = 0;
   for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
@@ -105,7 +105,7 @@ function AssigneeCell({ assignee, onClick }: { assignee?: WorkItem['assignee']; 
   if (!assignee) {
     return (
       <div style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: onClick ? 'pointer' : 'default' }} onClick={onClick}>
-        <div style={{ width: 24, height: 24, borderRadius: '50%', border: '1px dashed #CBD5E1', flexShrink: 0 }} />
+        <div style={{ width: 24, height: 24, borderRadius: '50%', border: '1px dashed rgba(237,237,237,0.53)', flexShrink: 0 }} />
         <span style={{ fontSize: 12, color: 'var(--fg-4)', fontStyle: 'italic' }}>Unassigned</span>
       </div>
     );
@@ -185,8 +185,8 @@ function DueDateCell({ date }: { date?: string }) {
 
 /* ── Type colors ── */
 const TYPE_COLORS: Record<string, string> = {
-  'Epic': '#2563EB', 'Feature': '#0D9488', 'Story': '#16A34A', 'Sub-task': '#64748B',
-  'Task': '#64748B', 'Bug': '#DC2626',
+  'Epic': '#2563EB', 'Feature': '#0D9488', 'Story': '#16A34A', 'Sub-task': 'rgba(237,237,237,0.40)',
+  'Task': 'rgba(237,237,237,0.40)', 'Bug': '#DC2626',
 };
 
 /* ── Parent cell (chip style matching ParentEpicChip) ── */
@@ -583,7 +583,7 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
       case 'type':
         return (
           <div style={{ padding: '0 8px' }}>
-            <span style={{ fontSize: 12, fontWeight: 500, color: TYPE_COLORS[item.issueType || ''] || '#64748B' }}>
+            <span style={{ fontSize: 12, fontWeight: 500, color: TYPE_COLORS[item.issueType || ''] || 'rgba(237,237,237,0.40)' }}>
               {item.issueType || '—'}
             </span>
           </div>
@@ -618,7 +618,7 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
             alignItems: 'center',
             height: 50,
             minWidth: 1100,
-                background: isDark ? 'rgba(255,255,255,0.03)' : '#F1F5F9',
+                background: isDark ? 'rgba(255,255,255,0.03)' : '#1A1A1A',
                 borderBottom: isDark ? '2px solid #2E2E2E' : '2px solid var(--divider)',
           }}
         >
@@ -665,7 +665,7 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
                 display: 'grid',
                 gridTemplateColumns,
                 alignItems: 'center',
-                borderBottom: isDark ? '1px solid #292929' : '1px solid #F1F5F9',
+                borderBottom: isDark ? '1px solid #292929' : '1px solid #1A1A1A',
                 cursor: 'pointer',
                 background: isChecked ? 'var(--cp-primary-5)' : isSelected ? 'rgba(37, 99, 235, 0.08)' : isDark ? (index % 2 === 1 ? 'rgba(255,255,255,0.02)' : 'transparent') : (index % 2 === 1 ? '#FAFAFA' : '#FFFFFF'),
               }}
@@ -751,8 +751,8 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
 
       <style>{`
         .hi-table-row { border-left: 3px solid transparent; transition: all 80ms ease; }
-        .hi-table-row:hover { background: ${isDark ? '#1F1F1F' : '#F8FAFC'} !important; border-left-color: #2563EB; box-shadow: ${isDark ? 'none' : '0 1px 3px rgba(0,0,0,0.06)'}; }
-        .hi-table-row.checked { background: ${isDark ? 'rgba(37,99,235,0.12)' : '#EFF6FF'} !important; }
+        .hi-table-row:hover { background: ${isDark ? '#1F1F1F' : '#1A1A1A'} !important; border-left-color: #2563EB; box-shadow: ${isDark ? 'none' : '0 1px 3px rgba(0,0,0,0.06)'}; }
+        .hi-table-row.checked { background: ${isDark ? 'rgba(37,99,235,0.12)' : 'rgba(59,130,246,0.06)'} !important; }
         .hi-table-row .hi-row-action { opacity: 0; transition: opacity 100ms ease; }
         .hi-table-row:hover .hi-row-action { opacity: 1; }
         .hi-parent-cell:hover .hi-parent-key { text-decoration: underline; text-underline-offset: 2px; }

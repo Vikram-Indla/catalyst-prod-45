@@ -2395,7 +2395,7 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, groupedB
           return <span className="text-[13px] text-[#475569]">-</span>;
         }
         return (
-          <span className="text-[13px] font-medium text-[#334155]">{vendor}</span>
+          <span className="text-[13px] font-medium text-[rgba(237,237,237,0.53)]">{vendor}</span>
         );
       },
     },
@@ -2443,7 +2443,7 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, groupedB
               return (
                 <span 
                   key={idx}
-                  className="inline-flex items-center gap-2.5 px-3 py-1.5 rounded bg-white text-[13px] font-medium text-[#334155]"
+                  className="inline-flex items-center gap-2.5 px-3 py-1.5 rounded bg-white text-[13px] font-medium text-[rgba(237,237,237,0.53)]"
                   style={{ 
                     border: '1px solid #e2e8f0',
                     borderLeftWidth: '3px',
@@ -2471,7 +2471,7 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, groupedB
       width: '130px',
       sortable: true,
       render: (value: string) => (
-        <span className="text-[13px] font-medium text-[#334155] dark:text-slate-300">{value || '-'}</span>
+        <span className="text-[13px] font-medium text-[rgba(237,237,237,0.53)] dark:text-slate-300">{value || '-'}</span>
       ),
     },
     {
@@ -2522,7 +2522,7 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, groupedB
         const endDate = row.contract_end_date;
         
         if (!endDate) {
-          return <span className="text-[13px] text-[#334155]">Permanent</span>;
+          return <span className="text-[13px] text-[rgba(237,237,237,0.53)]">Permanent</span>;
         }
         
         const endDateObj = new Date(endDate);
@@ -2543,12 +2543,12 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, groupedB
             : `Expired ${Math.abs(daysRemaining)} days ago`;
         
         // Calculate status based on days remaining - Catalyst V1 style guide
-        // Critical: < 30 days (#b91c1c), Warning: 30-90 days (#92400e), Safe: > 90 days (#334155)
+        // Critical: < 30 days (#b91c1c), Warning: 30-90 days (#92400e), Safe: > 90 days (rgba(237,237,237,0.53))
         const status = daysRemaining <= 0 ? 'expired' : daysRemaining < 30 ? 'critical' : daysRemaining < 90 ? 'warning' : 'safe';
         const textColors: Record<string, string> = {
           critical: '#b91c1c',
           warning: '#92400e', 
-          safe: '#334155',
+          safe: 'rgba(237,237,237,0.53)',
           expired: '#64748b',
         };
         

@@ -100,7 +100,7 @@ export function WikiOnboardingWizard({ onComplete }: WikiOnboardingWizardProps) 
               cursor: 'pointer', textAlign: 'left', fontSize: 12, transition: 'all 80ms',
               display: 'flex', alignItems: 'center', gap: 8,
             }}>
-              <span style={{ fontSize: 9, fontWeight: 700, padding: '1px 5px', borderRadius: 4, background: active ? 'var(--cp-primary-20)' : (isDark ? '#1A1A1A' : 'var(--cp-bd-zone)'), color: active ? '#1E40AF' : (isDark ? '#878787' : 'var(--fg-3)') }}>{d.code}</span>
+              <span style={{ fontSize: 9, fontWeight: 700, padding: '1px 5px', borderRadius: 4, background: active ? 'var(--cp-primary-20)' : (isDark ? '#1A1A1A' : 'var(--cp-bd-zone)'), color: active ? '#7DB8FC' : (isDark ? '#878787' : 'var(--fg-3)') }}>{d.code}</span>
               <span style={{ fontWeight: active ? 600 : 400, color: active ? (isDark ? '#EDEDED' : 'var(--fg-1)') : (isDark ? '#A1A1A1' : 'var(--fg-2)'), flex: 1, fontSize: 11.5 }}>{d.name}</span>
               {active && <Check size={12} style={{ color: 'var(--cp-blue)' }} />}
             </button>
@@ -115,7 +115,7 @@ export function WikiOnboardingWizard({ onComplete }: WikiOnboardingWizardProps) 
       <p style={{ fontSize: 12, color: isDark ? '#878787' : 'var(--fg-3)', marginBottom: 20, textAlign: 'center' }}>Pick one to begin structured learning.</p>
       <div style={{ display: 'grid', gap: 8 }}>
         {(paths as any[]).slice(0, 3).map((p: any) => {
-          const diffColor = DIFF_COLORS[p.difficulty] || '#64748B';
+          const diffColor = DIFF_COLORS[p.difficulty] || 'rgba(237,237,237,0.40)';
           return (
             <div key={p.id} style={{
               padding: 16, borderRadius: 8, background: isDark ? '#0A0A0A' : 'var(--bg-app)',

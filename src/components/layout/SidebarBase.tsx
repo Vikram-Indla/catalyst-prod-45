@@ -109,23 +109,23 @@ export function SidebarBase({
   // Dark mode token helpers — ECLIPSE D8-R3
   const tokens: DarkTokens = {
     isDark,
-    itemText: isDark ? 'var(--cp-t1)' : '#334155',
+    itemText: isDark ? 'var(--cp-t1)' : 'rgba(237,237,237,0.53)',
     activeText: isDark ? '#7DB8FC' : '#2563EB',
-    activeBg: isDark ? 'rgba(59,130,246,0.10)' : '#EFF6FF',
-    hoverBg: isDark ? 'rgba(59,130,246,0.06)' : '#F1F5F9',
-    hoverText: isDark ? 'var(--cp-t1)' : '#0F172A',
+    activeBg: isDark ? 'rgba(59,130,246,0.10)' : 'rgba(59,130,246,0.06)',
+    hoverBg: isDark ? 'rgba(59,130,246,0.06)' : '#1A1A1A',
+    hoverText: isDark ? 'var(--cp-t1)' : 'rgba(237,237,237,0.93)',
     iconOpacityInactive: isDark ? 0.72 : 0.65,
-    badgeBg: isDark ? 'rgba(255,255,255,0.08)' : '#F1F5F9',
-    badgeText: isDark ? 'var(--cp-t2)' : '#94A3B8',
+    badgeBg: isDark ? 'rgba(255,255,255,0.08)' : '#1A1A1A',
+    badgeText: isDark ? 'var(--cp-t2)' : 'rgba(237,237,237,0.40)',
   };
 
-  const chevronColor = isDark ? 'var(--cp-t2)' : '#94A3B8';
-  const chevronHoverColor = isDark ? 'var(--cp-t1)' : '#334155';
+  const chevronColor = isDark ? 'var(--cp-t2)' : 'rgba(237,237,237,0.40)';
+  const chevronHoverColor = isDark ? 'var(--cp-t1)' : 'rgba(237,237,237,0.53)';
   const sidebarBg = isDark ? '#0A0A0A' : '#FFFFFF';
-  const sidebarBorder = isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0';
-  const dividerColor = isDark ? 'rgba(255,255,255,0.08)' : '#F1F5F9';
-  const sectionLabel = isDark ? 'var(--cp-t2)' : '#94A3B8';
-  const hubLabel = isDark ? 'var(--cp-t1)' : '#0F172A';
+  const sidebarBorder = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.10)';
+  const dividerColor = isDark ? 'rgba(255,255,255,0.08)' : '#1A1A1A';
+  const sectionLabel = isDark ? 'var(--cp-t2)' : 'rgba(237,237,237,0.40)';
+  const hubLabel = isDark ? 'var(--cp-t1)' : 'rgba(237,237,237,0.93)';
 
   const isActive = (path: string, exact: boolean = false, activeMatchPaths: string[] = []) => {
     if (activeMatchPaths.some((matchPath) => location.pathname === matchPath || location.pathname.startsWith(matchPath + '/'))) {
@@ -168,7 +168,7 @@ export function SidebarBase({
           backfaceVisibility: 'hidden',
           transition: 'width 220ms cubic-bezier(0.4, 0, 0.2, 1)',
           scrollbarWidth: 'thin' as any,
-          scrollbarColor: isDark ? 'rgba(255,255,255,0.15) transparent' : '#E2E8F0 transparent',
+          scrollbarColor: isDark ? 'rgba(255,255,255,0.15) transparent' : 'rgba(255,255,255,0.10) transparent',
         }}
       >
         {/* Header with collapse toggle */}
@@ -585,7 +585,7 @@ function renderMenuItem(
           sideOffset={10}
           className="z-[200]"
           style={{
-            background: '#0F172A',
+            background: 'rgba(237,237,237,0.93)',
             color: '#FFFFFF',
             fontFamily: "'Inter', sans-serif",
             fontSize: '12px',

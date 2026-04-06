@@ -9,7 +9,7 @@ import { useLifecycle } from '@/hooks/useProjectDashboard';
 import { useDashboardStore } from './useDashboardStore';
 import { format } from 'date-fns';
 
-const DOT_COLORS: Record<string, string> = { gray: '#94A3B8', blue: '#2563EB', green: '#16A34A' };
+const DOT_COLORS: Record<string, string> = { gray: 'rgba(237,237,237,0.40)', blue: '#2563EB', green: '#16A34A' };
 
 export default function LifecycleDrawer() {
   const { activeDrawer, drawerPayload, closeDrawer } = useDashboardStore();

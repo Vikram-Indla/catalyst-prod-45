@@ -238,7 +238,7 @@ export function WorkItemsTable({
         borderTopLeftRadius: selectedIds.size > 0 ? 0 : undefined,
         borderTopRightRadius: selectedIds.size > 0 ? 0 : undefined,
       }}>
-        <table className="w-full border-collapse table-fixed" style={{ fontFamily: 'Inter, sans-serif' }}>
+        <table className="w-full border-collapse table-fixed" style={{ fontFamily: 'Geist, -apple-system, sans-serif' }}>
           <thead>
             <tr style={{ height: 34 }} className="sticky top-0 z-10 bg-[var(--bg-1)]">
               {visibleCols.map(col => {
@@ -250,7 +250,7 @@ export function WorkItemsTable({
                     style={{
                       width: col.width ?? undefined,
                       fontSize: 11, fontWeight: 700, color: 'var(--fg-4)', letterSpacing: '0.06em',
-                      textTransform: 'uppercase', fontFamily: 'Inter, sans-serif',
+                      textTransform: 'uppercase', fontFamily: 'Geist, -apple-system, sans-serif',
                       borderBottom: '1px solid var(--divider)',
                       cursor: col.sortable ? 'pointer' : 'default',
                     }}
@@ -289,12 +289,12 @@ export function WorkItemsTable({
                     <td colSpan={visibleCols.length}>
                       <button
                         onClick={() => toggleGroup(group.key)}
-                        className="w-full flex items-center gap-2 px-3 text-left transition-colors hover:bg-[#EFF6FF] bg-[var(--bg-1)]"
+                        className="w-full flex items-center gap-2 px-3 text-left transition-colors hover:bg-[rgba(59,130,246,0.06)] bg-[var(--bg-1)]"
                         style={{ height: 32, borderBottom: '1px solid var(--divider)' }}
                       >
                         {collapsedGroups.has(group.key)
-                          ? <ChevronRight size={14} className="text-[#94A3B8]" />
-                          : <ChevronDown size={14} className="text-[#94A3B8]" />
+                          ? <ChevronRight size={14} className="text-[rgba(237,237,237,0.40)]" />
+                          : <ChevronDown size={14} className="text-[rgba(237,237,237,0.40)]" />
                         }
                         <span className="text-[12px] font-semibold" style={{ color: 'var(--fg-1)' }}>{group.label}</span>
                         <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-[var(--divider)]" style={{ color: 'var(--fg-3)' }}>
@@ -371,7 +371,7 @@ export function WorkItemsTable({
                 <td colSpan={visibleCols.length}>
                   <button
                     onClick={onCreateClick}
-                    className="w-full flex items-center gap-2 px-4 py-2 text-[11px] font-medium hover:bg-[#F8FAFC] transition-colors cursor-pointer"
+                    className="w-full flex items-center gap-2 px-4 py-2 text-[11px] font-medium hover:bg-[#1A1A1A] transition-colors cursor-pointer"
                     style={{ color: 'var(--fg-4)', height: 50, border: 'none', background: 'transparent' }}
                   >
                     <Plus size={14} />

@@ -71,7 +71,7 @@ export default function SidePanelComments({ workItemId }: Props) {
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                 {c.is_internal && (
-                  <span style={{ fontSize: 10, fontWeight: 600, background: '#FEF3C7', color: '#92400E', padding: '1px 6px', borderRadius: 3 }}>Internal</span>
+                  <span style={{ fontSize: 10, fontWeight: 600, background: 'rgba(251,191,36,0.10)', color: '#FBBF24', padding: '1px 6px', borderRadius: 3 }}>Internal</span>
                 )}
                 <span style={{ fontSize: 12, color: 'var(--fg-4)', fontFamily: "'JetBrains Mono', monospace" }}>
                   {relativeTime(c.comment_created_at)}
@@ -96,7 +96,7 @@ export default function SidePanelComments({ workItemId }: Props) {
           placeholder="Add a comment..." rows={2}
           style={{
             width: '100%', border: '1px solid var(--bd-default, rgba(255,255,255,0.08))', borderRadius: 6,
-            padding: '8px 12px', fontSize: 14, color: 'var(--fg-1)', fontFamily: 'Inter, sans-serif',
+            padding: '8px 12px', fontSize: 14, color: 'var(--fg-1)', fontFamily: 'Geist, -apple-system, sans-serif',
             resize: 'vertical', outline: 'none', minHeight: 50, maxHeight: 120, background: 'var(--bg-app)',
             transition: 'border-color 150ms',
           }}

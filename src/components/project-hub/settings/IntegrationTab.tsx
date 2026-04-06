@@ -6,11 +6,11 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 function StatusLozenge({ status }: { status: string }) {
   const map: Record<string, { bg: string; text: string }> = {
-    success: { bg: '#E3FCEF', text: '#006644' },
+    success: { bg: 'rgba(74,222,128,0.10)', text: '#006644' },
     error: { bg: '#DFE1E6', text: '#253858' },
     skipped: { bg: '#DFE1E6', text: '#253858' },
-    processing: { bg: '#DEEBFF', text: '#0747A6' },
-    Connected: { bg: '#E3FCEF', text: '#006644' },
+    processing: { bg: 'rgba(59,130,246,0.10)', text: '#0747A6' },
+    Connected: { bg: 'rgba(74,222,128,0.10)', text: '#006644' },
     'Not Connected': { bg: '#DFE1E6', text: '#253858' },
   };
   const colors = map[status] || map.skipped;
@@ -105,8 +105,8 @@ export function IntegrationTab() {
   return (
     <div className="space-y-6 dark:bg-[#0A0A0A]">
       {/* Section 1 — Connection Status */}
-      <div className="bg-white dark:bg-[#1A1A1A] border border-[var(--bd-default, #E2E8F0)] dark:border-[#292929] rounded-md p-4">
-        <h3 className="text-sm font-semibold text-[#0F172A] dark:text-white mb-3">Jira Connection</h3>
+      <div className="bg-white dark:bg-[#1A1A1A] border border-[var(--bd-default, rgba(255,255,255,0.10))] dark:border-[#292929] rounded-md p-4">
+        <h3 className="text-sm font-semibold text-[rgba(237,237,237,0.93)] dark:text-white mb-3">Jira Connection</h3>
         {connLoading ? (
           <Skeleton className="h-10 w-64" />
         ) : connection ? (
@@ -146,7 +146,7 @@ export function IntegrationTab() {
           return (
             <div
               key={card.label}
-              className="relative bg-white dark:bg-[#1A1A1A] border border-[var(--bd-default, #E2E8F0)] dark:border-[#292929] rounded-md p-4"
+              className="relative bg-white dark:bg-[#1A1A1A] border border-[var(--bd-default, rgba(255,255,255,0.10))] dark:border-[#292929] rounded-md p-4"
             >
               <Icon size={16} className={`absolute top-4 right-4 ${card.iconClass}`} />
               <div style={{ fontFamily: 'Sora, sans-serif', fontSize: 24, fontWeight: 700 }} className="text-[var(--fg-1)] dark:text-white">
@@ -161,8 +161,8 @@ export function IntegrationTab() {
       </div>
 
       {/* Section 3 — Recent Sync Log */}
-      <div className="bg-white dark:bg-[#1A1A1A] border border-[var(--bd-default, #E2E8F0)] dark:border-[#292929] rounded-md overflow-hidden">
-        <h3 className="text-sm font-semibold text-[#0F172A] dark:text-white p-4 pb-2">Recent Sync Events</h3>
+      <div className="bg-white dark:bg-[#1A1A1A] border border-[var(--bd-default, rgba(255,255,255,0.10))] dark:border-[#292929] rounded-md overflow-hidden">
+        <h3 className="text-sm font-semibold text-[rgba(237,237,237,0.93)] dark:text-white p-4 pb-2">Recent Sync Events</h3>
 
         {logsError ? (
           <div className="flex items-center justify-center gap-2 py-8">
@@ -183,11 +183,11 @@ export function IntegrationTab() {
         ) : (
           <table className="w-full border-collapse">
             <thead>
-              <tr className="border-b border-[var(--bd-default, #E2E8F0)] dark:border-[#292929]">
+              <tr className="border-b border-[var(--bd-default, rgba(255,255,255,0.10))] dark:border-[#292929]">
                 {['Time', 'Event', 'Jira Key', 'Status', 'Items', 'Duration'].map((h) => (
                   <th
                     key={h}
-                    className="text-left px-4 text-[#64748B] dark:text-gray-400"
+                    className="text-left px-4 text-[rgba(237,237,237,0.40)] dark:text-gray-400"
                     style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', height: 50, maxHeight: 50 }}
                   >
                     {h}
@@ -201,7 +201,7 @@ export function IntegrationTab() {
                 return (
                   <tr
                     key={log.id}
-                    className="border-b border-[var(--bd-default, #E2E8F0)] dark:border-[#292929]"
+                    className="border-b border-[var(--bd-default, rgba(255,255,255,0.10))] dark:border-[#292929]"
                     style={{ height: 50, maxHeight: 50 }}
                   >
                     <td className="px-4 text-[var(--fg-1)] dark:text-white" style={{ fontSize: 12 }}>

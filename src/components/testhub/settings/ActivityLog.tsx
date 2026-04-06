@@ -121,7 +121,7 @@ export function ActivityLog({ limit = 20, showHeader = true }: ActivityLogProps)
             const ActionIcon = actionConfig.icon;
 
             return (
-              <div key={activity.id} style={{ display: 'flex', gap: 12, padding: '14px 0', borderBottom: index < activities.length - 1 ? '1px solid #F1F5F9' : 'none' }}>
+              <div key={activity.id} style={{ display: 'flex', gap: 12, padding: '14px 0', borderBottom: index < activities.length - 1 ? '1px solid #1A1A1A' : 'none' }}>
                 <div style={{ width: 36, height: 50, borderRadius: 8, backgroundColor: `${actionConfig.color}10`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                   <ActionIcon size={18} style={{ color: actionConfig.color }} />
                 </div>

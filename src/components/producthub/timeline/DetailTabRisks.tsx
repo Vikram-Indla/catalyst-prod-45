@@ -63,8 +63,8 @@ function sevLabel(score: number) {
   return 'Low';
 }
 function cellBg(score: number) {
-  if (score >= 20) return '#FEE2E2';
-  if (score >= 12) return '#FEF3C7';
+  if (score >= 20) return 'rgba(248,113,113,0.10)';
+  if (score >= 12) return 'rgba(251,191,36,0.10)';
   if (score >= 5) return '#DBEAFE';
   return '#DCFCE7';
 }

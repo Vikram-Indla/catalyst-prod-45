@@ -236,8 +236,8 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
                     {/* D01: Epic key badge — neutral grey, not purple */}
                     <span style={{
                       display: 'inline-flex', alignItems: 'center',
-                      background: isDark ? '#1A1A1A' : '#F1F5F9',
-                      border: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid #CBD5E1',
+                      background: isDark ? '#1A1A1A' : '#1A1A1A',
+                      border: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(237,237,237,0.53)',
                       borderRadius: 4,
                       padding: '2px 8px',
                       fontFamily: "'JetBrains Mono', monospace",
@@ -255,11 +255,11 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
                         onChange={e => setEditTitle(e.target.value)}
                         style={{
                           width: '100%', fontSize: 14, fontWeight: 650, color: 'var(--fg-1)',
-                          border: '1px solid #CBD5E1', borderRadius: 4, padding: '6px 8px',
+                          border: '1px solid rgba(237,237,237,0.53)', borderRadius: 4, padding: '6px 8px',
                           fontFamily: "'Inter', sans-serif", outline: 'none',
                         }}
                         onFocus={e => (e.currentTarget.style.borderColor = 'var(--cp-blue)')}
-                        onBlur={e => (e.currentTarget.style.borderColor = '#CBD5E1')}
+                        onBlur={e => (e.currentTarget.style.borderColor = 'rgba(237,237,237,0.53)')}
                       />
                       <textarea
                         value={editDesc}
@@ -267,12 +267,12 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
                         rows={3}
                         style={{
                           width: '100%', fontSize: 13, color: 'var(--fg-2)', marginTop: 6,
-                          border: '1px solid #CBD5E1', borderRadius: 4, padding: '6px 8px',
+                          border: '1px solid rgba(237,237,237,0.53)', borderRadius: 4, padding: '6px 8px',
                           fontFamily: "'Inter', sans-serif", resize: 'vertical', outline: 'none',
                           lineHeight: 1.5,
                         }}
                         onFocus={e => (e.currentTarget.style.borderColor = 'var(--cp-blue)')}
-                        onBlur={e => (e.currentTarget.style.borderColor = '#CBD5E1')}
+                        onBlur={e => (e.currentTarget.style.borderColor = 'rgba(237,237,237,0.53)')}
                       />
                       <div style={{ display: 'flex', gap: 6, marginTop: 8, justifyContent: 'flex-end' }}>
                         <button onClick={cancelEdit} style={{

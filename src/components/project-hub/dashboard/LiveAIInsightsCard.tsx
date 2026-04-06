@@ -61,9 +61,9 @@ export function LiveAIInsightsCard({ projectId }: LiveAIInsightsCardProps) {
   const data = insights;
 
   const balanceColors: Record<string, { bg: string; text: string }> = {
-    Balanced: { bg: '#ECFDF5', text: '#059669' },
-    Uneven: { bg: '#FEF3C7', text: '#D97706' },
-    Overloaded: { bg: '#FEE2E2', text: '#ef4444' },
+    Balanced: { bg: 'rgba(74,222,128,0.06)', text: '#059669' },
+    Uneven: { bg: 'rgba(251,191,36,0.10)', text: '#D97706' },
+    Overloaded: { bg: 'rgba(248,113,113,0.10)', text: '#ef4444' },
   };
   const balance = balanceColors[data.teamWorkload?.balance] || balanceColors.Balanced;
 

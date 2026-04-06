@@ -69,11 +69,11 @@ export function KBInputArea({
             onMouseEnter={(e) => {
               e.currentTarget.style.borderColor = 'var(--cp-primary-60, #2563EB)';
               e.currentTarget.style.color = 'var(--cp-primary-60, #2563EB)';
-              e.currentTarget.style.background = 'var(--cp-primary-5, #EFF6FF)';
+              e.currentTarget.style.background = 'var(--cp-primary-5, rgba(59,130,246,0.06))';
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.borderColor = 'var(--cp-border-default, rgba(15,23,42,0.12))';
-              e.currentTarget.style.color = 'var(--cp-text-secondary, #334155)';
+              e.currentTarget.style.color = 'var(--cp-text-secondary, rgba(237,237,237,0.53))';
               e.currentTarget.style.background = 'transparent';
             }}
           >
@@ -118,11 +118,11 @@ export function KBInputArea({
             if (!isListening) e.currentTarget.style.color = 'var(--cp-primary-60, #2563EB)';
           }}
           onMouseLeave={(e) => {
-            if (!isListening) e.currentTarget.style.color = 'var(--cp-text-tertiary, #64748B)';
+            if (!isListening) e.currentTarget.style.color = 'var(--cp-text-tertiary, rgba(237,237,237,0.40))';
           }}
           title={isListening ? 'Stop listening' : 'Voice input'}
         >
-          <Mic size={18} color={isListening ? 'var(--cp-text-inverse, #FFFFFF)' : 'var(--cp-text-tertiary, #64748B)'} />
+          <Mic size={18} color={isListening ? 'var(--cp-text-inverse, #FFFFFF)' : 'var(--cp-text-tertiary, rgba(237,237,237,0.40))'} />
         </button>
 
         {/* Text input */}
@@ -172,7 +172,7 @@ export function KBInputArea({
             else e.currentTarget.style.background = 'transparent';
           }}
         >
-          <ArrowUp size={18} color={hasText ? 'var(--cp-text-inverse, #FFFFFF)' : 'var(--cp-text-muted, #94A3B8)'} />
+          <ArrowUp size={18} color={hasText ? 'var(--cp-text-inverse, #FFFFFF)' : 'var(--cp-text-muted, rgba(237,237,237,0.40))'} />
         </button>
       </div>
 
@@ -198,7 +198,7 @@ export function KBInputArea({
           appearance: none !important;
         }
         .kb-input-field::placeholder {
-          color: var(--cp-text-tertiary, #64748B);
+          color: var(--cp-text-tertiary, rgba(237,237,237,0.40));
         }
         @keyframes kb-mic-pulse {
           0% { box-shadow: 0 0 0 0 rgba(220,38,38,0.4); }

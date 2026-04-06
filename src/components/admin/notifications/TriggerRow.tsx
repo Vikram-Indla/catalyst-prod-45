@@ -35,7 +35,7 @@ const HUB_LABELS: Record<string, string> = {
 const PRIORITY_STYLES: Record<string, string> = {
   P1: 'bg-[#FFEBE6] text-[#BF2600] border-transparent',
   P2: 'bg-[#FFF0B3] text-[#974F0C] border-transparent',
-  P3: 'bg-[#DEEBFF] text-[#0747A6] border-transparent',
+  P3: 'bg-[rgba(59,130,246,0.10)] text-[#0747A6] border-transparent',
   P4: 'bg-[#DFE1E6] text-[#253858] border-transparent',
 };
 
@@ -81,7 +81,7 @@ export const TriggerRow = memo(function TriggerRow({
 
   return (
     <div
-      className={`grid grid-cols-[32px_1fr_90px_80px_52px_52px_52px_52px_48px] gap-2 px-4 items-center border-b border-[#F1F5F9] transition-colors duration-150 group ${
+      className={`grid grid-cols-[32px_1fr_90px_80px_52px_52px_52px_52px_48px] gap-2 px-4 items-center border-b border-[#1A1A1A] transition-colors duration-150 group ${
         isSelected
           ? 'bg-[rgba(37,99,235,0.04)]'
           : 'hover:bg-[rgba(0,0,0,0.02)]'
@@ -95,7 +95,7 @@ export const TriggerRow = memo(function TriggerRow({
           checked={isSelected}
           onChange={onSelect}
           disabled={isMandatory}
-          className="h-3.5 w-3.5 rounded border-[#CBD5E1] text-[#2563EB] focus:ring-[#2563EB] focus:ring-offset-0 disabled:opacity-40 cursor-pointer disabled:cursor-not-allowed"
+          className="h-3.5 w-3.5 rounded border-[rgba(237,237,237,0.53)] text-[#2563EB] focus:ring-[#2563EB] focus:ring-offset-0 disabled:opacity-40 cursor-pointer disabled:cursor-not-allowed"
         />
       </div>
 
@@ -108,7 +108,7 @@ export const TriggerRow = memo(function TriggerRow({
                 className="flex items-center gap-1.5 min-w-0 text-left"
                 onClick={onOpenRecipients}
               >
-                <span className="text-xs font-medium text-[#0F172A] truncate leading-none">
+                <span className="text-xs font-medium text-[rgba(237,237,237,0.93)] truncate leading-none">
                   {displayName}
                 </span>
               </button>
@@ -148,7 +148,7 @@ export const TriggerRow = memo(function TriggerRow({
         {isSilent && (
           <Badge
             variant="outline"
-            className="text-[8px] h-3.5 px-1 border-[#CBD5E1] text-[#94A3B8] leading-none"
+            className="text-[8px] h-3.5 px-1 border-[rgba(237,237,237,0.53)] text-[rgba(237,237,237,0.40)] leading-none"
           >
             SILENT
           </Badge>
@@ -174,7 +174,7 @@ export const TriggerRow = memo(function TriggerRow({
           className="opacity-0 group-hover:opacity-100 transition-opacity duration-150 ml-auto flex-shrink-0"
           title="Edit recipients"
         >
-          <Users className="h-3 w-3 text-[#94A3B8] hover:text-[#2563EB]" />
+          <Users className="h-3 w-3 text-[rgba(237,237,237,0.40)] hover:text-[#2563EB]" />
         </button>
       </div>
 
@@ -182,7 +182,7 @@ export const TriggerRow = memo(function TriggerRow({
       <div>
         <Badge
           variant="outline"
-          className="text-[9px] h-5 px-1.5 font-medium border-[var(--bd-default, #E2E8F0)] text-[#475569] whitespace-nowrap"
+          className="text-[9px] h-5 px-1.5 font-medium border-[var(--bd-default, rgba(255,255,255,0.10))] text-[#475569] whitespace-nowrap"
         >
           {HUB_LABELS[hubSource] || hubSource}
         </Badge>

@@ -35,7 +35,7 @@ export default function RAGenerationBar({ slots, artifactCounts, isProcessing, e
   const barColor = isComplete ? '#16A34A' : isFailed ? '#DC2626' : '#2563EB';
 
   let labelText = '';
-  let labelColor = '#64748B';
+  let labelColor = 'rgba(237,237,237,0.40)';
 
   if (isProcessing) {
     labelText = `~${etaMinutes ?? 4}m left`;
@@ -60,7 +60,7 @@ export default function RAGenerationBar({ slots, artifactCounts, isProcessing, e
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 8, maxWidth: 160 }}>
       {/* Progress bar — 80px fixed */}
-      <div style={{ width: 80, height: 4, borderRadius: 4, background: 'var(--bd-default, #E2E8F0)', flexShrink: 0, overflow: 'hidden' }}>
+      <div style={{ width: 80, height: 4, borderRadius: 4, background: 'var(--bd-default, rgba(255,255,255,0.10))', flexShrink: 0, overflow: 'hidden' }}>
         <div style={{ width: `${pct}%`, height: '100%', borderRadius: 4, background: barColor, transition: 'width 300ms ease' }} />
       </div>
       {/* Label */}
@@ -69,7 +69,7 @@ export default function RAGenerationBar({ slots, artifactCounts, isProcessing, e
           {labelText}
         </span>
       ) : (
-        <span style={{ color: '#94A3B8', fontSize: 13 }}>—</span>
+        <span style={{ color: 'rgba(237,237,237,0.40)', fontSize: 13 }}>—</span>
       )}
     </div>
   );

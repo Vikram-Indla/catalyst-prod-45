@@ -144,7 +144,7 @@ export function AddInitiativeModal({ isOpen, onClose }: AddInitiativeModalProps)
           )}
 
           {!isLoading && !error && filtered.map((item: any) => {
-            const typeColor = TYPE_COLORS[item.type]?.solid || '#94A3B8';
+            const typeColor = TYPE_COLORS[item.type]?.solid || 'rgba(237,237,237,0.40)';
             const isOnRoadmap = item.alreadyOnRoadmap;
             return (
               <div
@@ -175,7 +175,7 @@ export function AddInitiativeModal({ isOpen, onClose }: AddInitiativeModalProps)
                 {isOnRoadmap ? (
                   <span
                     className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-md"
-                    style={{ color: '#16A34A', border: '1px solid #BBF7D0', background: '#F0FDF4' }}
+                    style={{ color: '#16A34A', border: '1px solid #BBF7D0', background: 'rgba(74,222,128,0.06)' }}
                   >
                     <CheckCircle2 size={12} /> On Roadmap
                   </span>
@@ -184,9 +184,9 @@ export function AddInitiativeModal({ isOpen, onClose }: AddInitiativeModalProps)
                     onClick={() => handleAdd(item.id, item.title)}
                     disabled={addMutation.isPending}
                     className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-md disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-blue-500"
-                    style={{ color: '#2563EB', border: '1px solid #BFDBFE', background: '#EFF6FF', transition: 'background-color 0.15s ease' }}
+                    style={{ color: '#2563EB', border: '1px solid #BFDBFE', background: 'rgba(59,130,246,0.06)', transition: 'background-color 0.15s ease' }}
                     onMouseEnter={e => { if (!addMutation.isPending) e.currentTarget.style.backgroundColor = '#DBEAFE'; }}
-                    onMouseLeave={e => (e.currentTarget.style.backgroundColor = '#EFF6FF')}
+                    onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'rgba(59,130,246,0.06)')}
                   >
                     {addMutation.isPending ? <Loader2 size={12} className="animate-spin" /> : <Plus size={12} />} Add
                   </button>

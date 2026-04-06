@@ -39,7 +39,7 @@ function ContextMenuItem({ icon: Icon, children, onClick, danger }: MenuItemProp
         border: 'none',
         borderRadius: 6,
         backgroundColor: 'transparent',
-        fontFamily: 'Inter, sans-serif',
+        fontFamily: 'Geist, -apple-system, sans-serif',
         fontSize: 13,
         color: danger ? 'var(--sem-danger)' : 'var(--fg-2)',
         cursor: 'pointer',
@@ -49,7 +49,7 @@ function ContextMenuItem({ icon: Icon, children, onClick, danger }: MenuItemProp
         transition: 'background-color 0.15s',
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.backgroundColor = danger ? '#FEF2F2' : 'var(--bg-1)';
+        e.currentTarget.style.backgroundColor = danger ? 'rgba(248,113,113,0.06)' : 'var(--bg-1)';
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.backgroundColor = 'transparent';

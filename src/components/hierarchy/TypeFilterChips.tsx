@@ -29,8 +29,8 @@ const TYPE_COLORS: Record<string, string> = {
   'Epic': '#2563EB',
   'Feature': '#7C3AED',
   'Story': '#16A34A',
-  'Sub-task': '#64748B',
-  'Task': '#64748B',
+  'Sub-task': 'rgba(237,237,237,0.40)',
+  'Task': 'rgba(237,237,237,0.40)',
   'Bug': '#DC2626',
 };
 
@@ -56,7 +56,7 @@ export function TypeFilterChips({ items, activeType, onTypeChange }: TypeFilterC
           key={type}
           label={`${type} (${count})`}
           active={activeType === type}
-          color={TYPE_COLORS[type] || '#64748B'}
+          color={TYPE_COLORS[type] || 'rgba(237,237,237,0.40)'}
           onClick={() => onTypeChange(activeType === type ? null : type)}
         />
       ))}
@@ -73,9 +73,9 @@ function ChipButton({ label, active, color, onClick }: {
       style={{
         height: 28, padding: '0 10px', fontSize: 12, fontWeight: 500,
         fontFamily: "'Inter', sans-serif",
-        color: active ? color : '#64748B',
+        color: active ? color : 'rgba(237,237,237,0.40)',
         background: active ? `${color}10` : '#FFFFFF',
-        border: `1px solid ${active ? color : 'var(--bd-default, #E2E8F0)'}`,
+        border: `1px solid ${active ? color : 'var(--bd-default, rgba(255,255,255,0.10))'}`,
         borderRadius: 9999, cursor: 'pointer',
         display: 'flex', alignItems: 'center', gap: 4,
         transition: 'all 120ms ease',

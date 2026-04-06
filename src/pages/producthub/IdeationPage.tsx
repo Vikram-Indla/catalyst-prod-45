@@ -231,7 +231,7 @@ export default function IdeationPage() {
 
       {/* Filtered context indicator */}
       {activeFilter !== 'all' && (
-        <div style={{ padding: '6px 28px', background: isDark ? 'rgba(37,99,235,0.08)' : '#EFF6FF', borderBottom: `1px solid ${isDark ? 'rgba(37,99,235,0.15)' : '#DBEAFE'}`, display: 'flex', alignItems: 'center', gap: '6px' }}>
+        <div style={{ padding: '6px 28px', background: isDark ? 'rgba(37,99,235,0.08)' : 'rgba(59,130,246,0.06)', borderBottom: `1px solid ${isDark ? 'rgba(37,99,235,0.15)' : '#DBEAFE'}`, display: 'flex', alignItems: 'center', gap: '6px' }}>
           <span style={{ fontSize: '11px', fontWeight: 500, color: isDark ? '#60A5FA' : '#2563EB' }}>
             Showing {activeFilter.replace('_', ' ')} ideas only
           </span>
@@ -255,7 +255,7 @@ export default function IdeationPage() {
             placeholder="Search ideas..."
             style={{
               width: '100%', height: '32px', paddingLeft: '32px', paddingRight: '10px',
-              background: isDark ? 'transparent' : '#F8FAFC', border: `1px solid ${dk.border}`, borderRadius: '6px',
+              background: isDark ? 'transparent' : '#1A1A1A', border: `1px solid ${dk.border}`, borderRadius: '6px',
               fontSize: '13px', color: dk.t1, outline: 'none',
             }}
             onFocus={e => { e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.08)'; e.currentTarget.style.borderColor = '#2563EB'; }}
@@ -358,7 +358,7 @@ function IdeationListView({ ideas, selectedRows, toggleRow, toggleAll, onOpenDet
     }}>
       <table style={{ width: '100%', borderCollapse: 'collapse' }}>
         <thead>
-          <tr style={{ height: '50px', background: isDark ? 'rgba(255,255,255,0.03)' : '#F8FAFC' }}>
+          <tr style={{ height: '50px', background: isDark ? 'rgba(255,255,255,0.03)' : '#1A1A1A' }}>
             <th style={{ width: '40px', padding: '0 8px', textAlign: 'center' }}>
               <input type="checkbox" checked={selectedRows.size === ideas.length && ideas.length > 0} onChange={toggleAll} style={{ cursor: 'pointer', accentColor: '#2563EB' }} />
             </th>
@@ -471,7 +471,7 @@ function TypeBadge({ type }: { type: Idea['type'] }) {
     <span style={{
       display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px',
       borderRadius: 4, fontSize: '11px', fontWeight: 500,
-      background: c.bg, color: c.text, border: '1px solid #E2E8F0',
+      background: c.bg, color: c.text, border: '1px solid rgba(255,255,255,0.10)',
     }}>
       {c.label}
     </span>
@@ -493,7 +493,7 @@ function PriorityBadge({ priority }: { priority: string }) {
 }
 
 function ImpactCell({ score }: { score: number }) {
-  const textColor = score >= 4 ? '#16A34A' : score >= 3 ? '#2563EB' : score >= 2 ? '#64748B' : '#94A3B8';
+  const textColor = score >= 4 ? '#16A34A' : score >= 3 ? '#2563EB' : score >= 2 ? 'rgba(237,237,237,0.40)' : 'rgba(237,237,237,0.40)';
   return (
     <span style={{
       fontFamily: "'JetBrains Mono', monospace", fontSize: '13px', fontWeight: 500,
@@ -506,10 +506,10 @@ function ImpactCell({ score }: { score: number }) {
 
 function QuarterBadge({ quarter }: { quarter?: string | null }) {
   if (!quarter) {
-    return <span style={{ fontSize: '11px', color: '#94A3B8' }}>—</span>;
+    return <span style={{ fontSize: '11px', color: 'rgba(237,237,237,0.40)' }}>—</span>;
   }
   const qb = QUARTER_BADGE[quarter];
-  if (!qb) return <span style={{ fontSize: '11px', color: '#94A3B8' }}>{quarter}</span>;
+  if (!qb) return <span style={{ fontSize: '11px', color: 'rgba(237,237,237,0.40)' }}>{quarter}</span>;
   return (
     <span style={{
       display: 'inline-flex', alignItems: 'center', justifyContent: 'center',

@@ -140,7 +140,7 @@ export default function IdeasAnalyticsPage() {
               <div style={{ color: dk.t3, fontSize: '13px' }}>No ideas assigned to quarters</div>
             ) : stats.byQuarter.map(q => (
               <div key={q.quarter} style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                <span style={{ width: '40px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', height: 20, borderRadius: 4, fontSize: '10px', fontWeight: 700, background: QUARTER_BADGE[q.quarter]?.bg || '#E2E8F0', color: QUARTER_BADGE[q.quarter]?.text || '#94A3B8' }}>{q.quarter}</span>
+                <span style={{ width: '40px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', height: 20, borderRadius: 4, fontSize: '10px', fontWeight: 700, background: QUARTER_BADGE[q.quarter]?.bg || 'rgba(255,255,255,0.10)', color: QUARTER_BADGE[q.quarter]?.text || 'rgba(237,237,237,0.40)' }}>{q.quarter}</span>
                 <div style={{ flex: 1, height: '28px', background: barTrack, borderRadius: '4px', overflow: 'hidden' }}>
                   <div style={{ width: `${(q.count / maxQuarter) * 100}%`, height: '100%', background: QUARTER_BADGE[q.quarter]?.bg || '#2563EB', borderRadius: '4px', display: 'flex', alignItems: 'center', paddingLeft: '8px', color: '#FFFFFF', fontSize: '12px', fontWeight: 700 }}>{q.count}</div>
                 </div>
@@ -171,7 +171,7 @@ export default function IdeasAnalyticsPage() {
             <div style={{ fontSize: '14px', fontWeight: 700, color: dk.t1, marginBottom: '16px', fontFamily: "'Sora', sans-serif" }}>Conversion by Quarter</div>
             {convByQuarter.map(q => (
               <div key={q.quarter} style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                <span style={{ width: '40px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', height: 20, borderRadius: 4, fontSize: '10px', fontWeight: 700, background: QUARTER_BADGE[q.quarter]?.bg || '#E2E8F0', color: QUARTER_BADGE[q.quarter]?.text || '#94A3B8' }}>{q.quarter}</span>
+                <span style={{ width: '40px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', height: 20, borderRadius: 4, fontSize: '10px', fontWeight: 700, background: QUARTER_BADGE[q.quarter]?.bg || 'rgba(255,255,255,0.10)', color: QUARTER_BADGE[q.quarter]?.text || 'rgba(237,237,237,0.40)' }}>{q.quarter}</span>
                 <div style={{ flex: 1, height: '28px', background: barTrack, borderRadius: '4px', overflow: 'hidden' }}>
                   <div style={{ width: `${q.total > 0 ? (q.total / maxConvQ) * 100 : 0}%`, height: '100%', background: QUARTER_BADGE[q.quarter]?.bg || '#2563EB', borderRadius: '4px', display: 'flex', alignItems: 'center', paddingLeft: '8px', color: '#FFFFFF', fontSize: '12px', fontWeight: 700 }}>{q.converted} <span style={{ fontWeight: 500, opacity: 0.8, marginLeft: 4 }}>of {q.total}</span></div>
                 </div>

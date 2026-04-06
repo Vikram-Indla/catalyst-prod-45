@@ -36,7 +36,7 @@ const CARDS = [
   {
     label: 'Overall Pass Rate',
     icon: TrendingUp,
-    iconBg: '#ECFDF5',
+    iconBg: 'rgba(74,222,128,0.06)',
     iconColor: '#10B981',
     getValue: (s: DashboardStats) => `${s.overall_pass_rate}%`,
     getSub: (s: DashboardStats) => `${s.total_executed} tests executed`,

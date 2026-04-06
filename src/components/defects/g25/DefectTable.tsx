@@ -35,15 +35,15 @@ export function DefectTable({ defects, selectedIds, onSelectionChange, onDelete 
   return (
     <Table>
       <TableHeader>
-        <TableRow className="h-9" style={{ backgroundColor: 'var(--bg-1, #F8FAFC)' }}>
-          <TableHead className="w-10" style={{ fontSize: '10.5px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em', color: '#64748B' }}><Checkbox checked={defects.length > 0 && selectedIds.size === defects.length} onCheckedChange={toggleAll} /></TableHead>
-          <TableHead className="w-28" style={{ fontSize: '10.5px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em', color: '#64748B' }}>Key</TableHead>
-          <TableHead style={{ fontSize: '10.5px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em', color: '#64748B' }}>Title</TableHead>
-          <TableHead className="w-24" style={{ fontSize: '10.5px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em', color: '#64748B' }}>Severity</TableHead>
-          <TableHead className="w-24" style={{ fontSize: '10.5px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em', color: '#64748B' }}>Priority</TableHead>
-          <TableHead className="w-28" style={{ fontSize: '10.5px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em', color: '#64748B' }}>Status</TableHead>
-          <TableHead className="w-36" style={{ fontSize: '10.5px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em', color: '#64748B' }}>Assignee</TableHead>
-          <TableHead className="w-24" style={{ fontSize: '10.5px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em', color: '#64748B' }}>Age</TableHead>
+        <TableRow className="h-9" style={{ backgroundColor: 'var(--bg-1, #1A1A1A)' }}>
+          <TableHead className="w-10" style={{ fontSize: '10.5px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em', color: 'rgba(237,237,237,0.40)' }}><Checkbox checked={defects.length > 0 && selectedIds.size === defects.length} onCheckedChange={toggleAll} /></TableHead>
+          <TableHead className="w-28" style={{ fontSize: '10.5px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em', color: 'rgba(237,237,237,0.40)' }}>Key</TableHead>
+          <TableHead style={{ fontSize: '10.5px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em', color: 'rgba(237,237,237,0.40)' }}>Title</TableHead>
+          <TableHead className="w-24" style={{ fontSize: '10.5px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em', color: 'rgba(237,237,237,0.40)' }}>Severity</TableHead>
+          <TableHead className="w-24" style={{ fontSize: '10.5px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em', color: 'rgba(237,237,237,0.40)' }}>Priority</TableHead>
+          <TableHead className="w-28" style={{ fontSize: '10.5px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em', color: 'rgba(237,237,237,0.40)' }}>Status</TableHead>
+          <TableHead className="w-36" style={{ fontSize: '10.5px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em', color: 'rgba(237,237,237,0.40)' }}>Assignee</TableHead>
+          <TableHead className="w-24" style={{ fontSize: '10.5px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em', color: 'rgba(237,237,237,0.40)' }}>Age</TableHead>
           <TableHead className="w-10" />
         </TableRow>
       </TableHeader>

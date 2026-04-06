@@ -16,7 +16,7 @@ interface CreateCategoryModalProps {
 
 const PRESET_COLORS = [
   '#3B82F6', '#8B5CF6', '#10B981', '#F97316', '#EC4899',
-  '#06B6D4', '#EAB308', '#64748B', '#EF4444', '#14B8A6',
+  '#06B6D4', '#EAB308', 'rgba(237,237,237,0.40)', '#EF4444', '#14B8A6',
 ];
 
 const AVAILABLE_ICONS = [
@@ -102,8 +102,8 @@ export function CreateCategoryModal({ isOpen, onClose, onSuccess, existingCatego
         {/* Header */}
         <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--divider)', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <div>
-            <h2 style={{ fontSize: 18, fontWeight: 700, color: 'var(--fg-1)', margin: 0, fontFamily: 'Inter' }}>Create Category</h2>
-            <p style={{ fontSize: 13, color: 'var(--fg-3)', margin: '4px 0 0', fontFamily: 'Inter' }}>Organize your shared steps with categories</p>
+            <h2 style={{ fontSize: 18, fontWeight: 700, color: 'var(--fg-1)', margin: 0, fontFamily: 'Geist, -apple-system, sans-serif' }}>Create Category</h2>
+            <p style={{ fontSize: 13, color: 'var(--fg-3)', margin: '4px 0 0', fontFamily: 'Geist, -apple-system, sans-serif' }}>Organize your shared steps with categories</p>
           </div>
           <button onClick={onClose} style={{ width: 32, height: 32, padding: 0, border: 'none', backgroundColor: 'transparent', color: 'var(--fg-4)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 6 }}>
             <X size={18} />
@@ -111,7 +111,7 @@ export function CreateCategoryModal({ isOpen, onClose, onSuccess, existingCatego
         </div>
 
         {/* Body */}
-        <div style={{ padding: 24, overflowY: 'auto', flex: 1, display: 'flex', flexDirection: 'column', gap: 20, fontFamily: 'Inter' }}>
+        <div style={{ padding: 24, overflowY: 'auto', flex: 1, display: 'flex', flexDirection: 'column', gap: 20, fontFamily: 'Geist, -apple-system, sans-serif' }}>
           {/* Preview */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 16, backgroundColor: 'var(--bg-1)', borderRadius: 12, border: '1px solid var(--divider)' }}>
             <div style={{ width: 40, height: 40, borderRadius: 12, backgroundColor: `${color}20`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -129,7 +129,7 @@ export function CreateCategoryModal({ isOpen, onClose, onSuccess, existingCatego
             <input
               value={name} onChange={e => { setName(e.target.value); setError(''); }}
               placeholder="e.g., Authentication" maxLength={50}
-              style={{ width: '100%', height: 40, padding: '8px 12px', border: `1.5px solid ${error ? 'var(--sem-danger)' : 'var(--divider)'}`, borderRadius: 8, fontSize: 14, color: 'var(--fg-1)', fontFamily: 'Inter' }}
+              style={{ width: '100%', height: 40, padding: '8px 12px', border: `1.5px solid ${error ? 'var(--sem-danger)' : 'var(--divider)'}`, borderRadius: 8, fontSize: 14, color: 'var(--fg-1)', fontFamily: 'Geist, -apple-system, sans-serif' }}
             />
             {error && <p style={{ fontSize: 12, color: 'var(--sem-danger)', margin: '4px 0 0' }}>{error}</p>}
           </div>
@@ -140,7 +140,7 @@ export function CreateCategoryModal({ isOpen, onClose, onSuccess, existingCatego
             <input
               value={description} onChange={e => setDescription(e.target.value)}
               placeholder="Brief description (optional)" maxLength={100}
-              style={{ width: '100%', height: 40, padding: '8px 12px', border: '1.5px solid var(--divider)', borderRadius: 8, fontSize: 14, color: 'var(--fg-1)', fontFamily: 'Inter' }}
+              style={{ width: '100%', height: 40, padding: '8px 12px', border: '1.5px solid var(--divider)', borderRadius: 8, fontSize: 14, color: 'var(--fg-1)', fontFamily: 'Geist, -apple-system, sans-serif' }}
             />
           </div>
 
@@ -150,7 +150,7 @@ export function CreateCategoryModal({ isOpen, onClose, onSuccess, existingCatego
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
               {PRESET_COLORS.map(c => (
                 <button key={c} onClick={() => setColor(c)} style={{
-                  width: 36, height: 50, borderRadius: 8, backgroundColor: c, border: color === c ? '3px solid #0F172A' : '3px solid transparent',
+                  width: 36, height: 50, borderRadius: 8, backgroundColor: c, border: color === c ? '3px solid rgba(237,237,237,0.93)' : '3px solid transparent',
                   cursor: 'pointer', transition: 'transform 0.1s', padding: 0,
                 }} onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.1)'} onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'} />
               ))}
@@ -181,10 +181,10 @@ export function CreateCategoryModal({ isOpen, onClose, onSuccess, existingCatego
 
         {/* Footer */}
         <div style={{ padding: '16px 24px', borderTop: '1px solid var(--divider)', display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
-          <button onClick={onClose} style={{ height: 40, padding: '0 20px', backgroundColor: 'var(--cp-float)', border: '1.5px solid var(--divider)', borderRadius: 8, fontSize: 14, fontWeight: 500, color: 'var(--fg-2)', cursor: 'pointer', fontFamily: 'Inter' }}>Cancel</button>
+          <button onClick={onClose} style={{ height: 40, padding: '0 20px', backgroundColor: 'var(--cp-float)', border: '1.5px solid var(--divider)', borderRadius: 8, fontSize: 14, fontWeight: 500, color: 'var(--fg-2)', cursor: 'pointer', fontFamily: 'Geist, -apple-system, sans-serif' }}>Cancel</button>
           <button onClick={handleSubmit} disabled={isSubmitting} style={{
             height: 40, padding: '0 24px', background: 'linear-gradient(135deg, var(--cp-blue) 0%, var(--cp-primary-70) 100%)',
-            border: 'none', borderRadius: 8, color: '#FFFFFF', fontSize: 14, fontWeight: 600, cursor: isSubmitting ? 'not-allowed' : 'pointer', fontFamily: 'Inter', opacity: isSubmitting ? 0.7 : 1,
+            border: 'none', borderRadius: 8, color: '#FFFFFF', fontSize: 14, fontWeight: 600, cursor: isSubmitting ? 'not-allowed' : 'pointer', fontFamily: 'Geist, -apple-system, sans-serif', opacity: isSubmitting ? 0.7 : 1,
           }}>{isSubmitting ? 'Creating...' : 'Create Category'}</button>
         </div>
       </div>

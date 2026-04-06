@@ -63,13 +63,13 @@ export function useBoardCards(boardId: string | undefined) {
         // Map priority
         const priorityColors: Record<string, string> = {
           Critical: '#FF5630', Highest: '#FF5630', High: '#FF7452',
-          Medium: '#D97706', Low: '#94A3B8', Lowest: '#94A3B8',
+          Medium: '#D97706', Low: 'rgba(237,237,237,0.40)', Lowest: 'rgba(237,237,237,0.40)',
         };
         const pName = item.priority ?? '';
         const priorityObj = pName ? {
           id: pName.toLowerCase(),
           name: pName.toLowerCase() as any,
-          color: priorityColors[pName] ?? '#94A3B8',
+          color: priorityColors[pName] ?? 'rgba(237,237,237,0.40)',
         } : null;
 
         // Parse fix_versions
@@ -100,7 +100,7 @@ export function useBoardCards(boardId: string | undefined) {
               labelsList = parsed.map((l: any) => ({
                 id: typeof l === 'string' ? l : l.id ?? l.name,
                 name: typeof l === 'string' ? l : l.name,
-                color: typeof l === 'object' ? l.color ?? '#94A3B8' : '#94A3B8',
+                color: typeof l === 'object' ? l.color ?? 'rgba(237,237,237,0.40)' : 'rgba(237,237,237,0.40)',
               }));
             }
           } catch {}

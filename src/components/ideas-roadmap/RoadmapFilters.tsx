@@ -20,15 +20,15 @@ export function RoadmapFilters({ teams, activeTeam, onTeamChange, ideaCount }: R
           style={{
             height: 24, padding: '0 10px', borderRadius: 100, border: 'none', cursor: 'pointer',
             fontSize: 12, fontWeight: 600, fontFamily: "'Inter', sans-serif",
-            background: activeTeam === t ? '#1E293B' : '#F1F5F9',
+            background: activeTeam === t ? 'rgba(237,237,237,0.93)' : '#1A1A1A',
             color: activeTeam === t ? 'var(--bg-app)' : 'var(--fg-3)',
             transition: 'background 120ms, color 120ms',
           }}
           onMouseEnter={e => {
-            if (activeTeam !== t) e.currentTarget.style.background = 'var(--bd-default, #E2E8F0)';
+            if (activeTeam !== t) e.currentTarget.style.background = 'var(--bd-default, rgba(255,255,255,0.10))';
           }}
           onMouseLeave={e => {
-            if (activeTeam !== t) e.currentTarget.style.background = '#F1F5F9';
+            if (activeTeam !== t) e.currentTarget.style.background = '#1A1A1A';
           }}
         >
           {t}

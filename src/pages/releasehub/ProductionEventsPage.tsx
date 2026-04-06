@@ -10,12 +10,12 @@ import { format } from 'date-fns';
 const EVENT_TYPE_LOZENGE: Record<string, { bg: string; color: string; label: string }> = {
   DEPLOYMENT: { bg: '#1B7F37', color: '#FFFFFF', label: 'DEPLOYMENT' },
   HOTFIX: { bg: '#DFE1E6', color: '#42526E', label: 'HOTFIX' },
-  ROLLBACK: { bg: '#FEF2F2', color: '#991B1B', label: 'ROLLBACK' },
+  ROLLBACK: { bg: 'rgba(248,113,113,0.06)', color: '#F87171', label: 'ROLLBACK' },
 };
 
 const RESULT_BADGE: Record<string, { bg: string; color: string; label: string; icon?: boolean }> = {
   SUCCESS: { bg: '#1B7F37', color: '#FFFFFF', label: 'SUCCESS', icon: true },
-  ROLLED_BACK: { bg: '#FEF2F2', color: '#991B1B', label: 'ROLLED BACK' },
+  ROLLED_BACK: { bg: 'rgba(248,113,113,0.06)', color: '#F87171', label: 'ROLLED BACK' },
   MONITORING: { bg: '#0C66E4', color: '#FFFFFF', label: 'MONITORING' },
 };
 
@@ -44,7 +44,7 @@ function getDotStyle(event: any) {
     borderColor = '#DC2626';
     size = 14;
   } else if (type === 'HOTFIX') {
-    borderColor = '#64748B';
+    borderColor = 'rgba(237,237,237,0.40)';
     size = 12;
   }
 
@@ -87,7 +87,7 @@ export default function ProductionEventsPage() {
           }}>
             Production Events
           </h1>
-          <p style={{ fontSize: 13, color: isDark ? '#878787' : '#64748B', marginTop: 2 }}>
+          <p style={{ fontSize: 13, color: isDark ? '#878787' : 'rgba(237,237,237,0.40)', marginTop: 2 }}>
             Post-deployment monitoring & event log
           </p>
         </div>
@@ -112,8 +112,8 @@ export default function ProductionEventsPage() {
             style={{
               fontWeight: 600,
               border: `0.75px solid ${resultFilter === chip.key ? '#2563EB' : isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.12)'}`,
-              background: resultFilter === chip.key ? (isDark ? 'rgba(37,99,235,0.15)' : '#EFF6FF') : (isDark ? '#1A1A1A' : '#FFFFFF'),
-              color: resultFilter === chip.key ? '#2563EB' : (isDark ? '#A1A1A1' : '#64748B'),
+              background: resultFilter === chip.key ? (isDark ? 'rgba(37,99,235,0.15)' : 'rgba(59,130,246,0.06)') : (isDark ? '#1A1A1A' : '#FFFFFF'),
+              color: resultFilter === chip.key ? '#2563EB' : (isDark ? '#A1A1A1' : 'rgba(237,237,237,0.40)'),
             }}
           >
             {chip.label}
@@ -175,7 +175,7 @@ export default function ProductionEventsPage() {
                   </div>
 
                   {/* Meta row */}
-                  <div className="flex flex-wrap" style={{ gap: 16, fontSize: 12, color: isDark ? '#878787' : '#64748B' }}>
+                  <div className="flex flex-wrap" style={{ gap: 16, fontSize: 12, color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>
                     {ev.change_key && <span style={{ fontFamily: RH.fontMono }}>{ev.change_key}</span>}
                     {ev.release_key && <span style={{ fontFamily: RH.fontMono }}>{ev.release_key}</span>}
                     {ev.deployed_at && <span>{formatDateTime(ev.deployed_at)}</span>}
@@ -185,7 +185,7 @@ export default function ProductionEventsPage() {
 
                   {/* Notes (if any) */}
                   {ev.notes && (
-                    <p style={{ fontSize: 12, color: '#94A3B8', marginTop: 6 }}>{ev.notes}</p>
+                    <p style={{ fontSize: 12, color: 'rgba(237,237,237,0.40)', marginTop: 6 }}>{ev.notes}</p>
                   )}
                 </div>
               </div>

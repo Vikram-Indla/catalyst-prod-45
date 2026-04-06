@@ -81,7 +81,7 @@ export function RoadmapTimelinePanel({ items, groups, config, selectedItemId, on
         style={{
           height: 44,
           backgroundColor: isSelected ? 'rgba(37,99,235,0.06)' : 'transparent',
-          borderBottom: '1px solid #F1F5F9',
+          borderBottom: '1px solid #1A1A1A',
         }}
         onClick={() => onItemClick(item.id)}
         onMouseEnter={e => { if (!isSelected) e.currentTarget.style.backgroundColor = '#FAFBFC'; }}
@@ -100,7 +100,7 @@ export function RoadmapTimelinePanel({ items, groups, config, selectedItemId, on
           // Fallback: bar is entirely outside visible timeline range — show indicator
           <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
             <div className="w-2 h-2 rounded-full" style={{ background: '#2563EB' }} />
-            <span style={{ fontSize: 12, color: '#64748B' }}>Outside timeline range</span>
+            <span style={{ fontSize: 12, color: 'rgba(237,237,237,0.40)' }}>Outside timeline range</span>
           </div>
         )}
       </div>
@@ -118,7 +118,7 @@ export function RoadmapTimelinePanel({ items, groups, config, selectedItemId, on
             style={{
               minWidth: periodMinWidth,
               width: `${100 / periods.length}%`,
-              borderRight: `1px solid ${isQuarterBoundary ? 'var(--bd-default, #E2E8F0)' : '#F1F5F9'}`,
+              borderRight: `1px solid ${isQuarterBoundary ? 'var(--bd-default, rgba(255,255,255,0.10))' : '#1A1A1A'}`,
               background: period.isCurrent ? 'rgba(37,99,235,0.03)' : 'transparent',
             }}
           />
@@ -139,8 +139,8 @@ export function RoadmapTimelinePanel({ items, groups, config, selectedItemId, on
               {todayPosition !== null && config.showToday && <RoadmapTodayMarker position={todayPosition} />}
               {groups.map(group => (
                 <div key={group.key}>
-                  <div style={{ height: 50, background: '#FAFBFC', borderBottom: '1px solid var(--bd-default, #E2E8F0)' }}>
-                    <span style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748B', paddingLeft: 16, lineHeight: '36px' }}>
+                  <div style={{ height: 50, background: '#FAFBFC', borderBottom: '1px solid var(--bd-default, rgba(255,255,255,0.10))' }}>
+                    <span style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'rgba(237,237,237,0.40)', paddingLeft: 16, lineHeight: '36px' }}>
                       {group.label}
                     </span>
                   </div>

@@ -97,14 +97,14 @@ export function IssueDetailPanel({ item, onClose, onFieldChange }: IssueDetailPa
       style={{
         fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
         backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF',
-        borderLeft: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`,
+        borderLeft: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.10)'}`,
       }}
     >
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 flex-shrink-0" style={{ borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}` }}>
+      <div className="flex items-center justify-between px-4 py-3 flex-shrink-0" style={{ borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.10)'}` }}>
         <div className="flex items-center gap-2">
           <JiraIssueTypeIcon type={item.type} size={16} />
-          <span className="text-[13px] font-medium" style={{ color: isDark ? '#EDEDED' : '#334155' }}>{item.key}</span>
+          <span className="text-[13px] font-medium" style={{ color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.53)' }}>{item.key}</span>
         </div>
         <div className="flex items-center gap-1">
           <Button variant="ghost" size="sm" className={cn("h-7 px-2 text-[12px] gap-1", isDark ? "text-[#A1A1A1] hover:bg-[#1A1A1A]" : "text-slate-600 hover:bg-slate-100")}>
@@ -112,12 +112,12 @@ export function IssueDetailPanel({ item, onClose, onFieldChange }: IssueDetailPa
             <span>1</span>
           </Button>
           <Button variant="ghost" size="icon" className={cn("h-7 w-7", isDark ? "hover:bg-[#1A1A1A]" : "hover:bg-slate-100")}>
-            <Share2 className="h-4 w-4" style={{ color: isDark ? '#878787' : '#64748B' }} />
+            <Share2 className="h-4 w-4" style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }} />
           </Button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon" className={cn("h-7 w-7", isDark ? "hover:bg-[#1A1A1A]" : "hover:bg-slate-100")}>
-                <MoreHorizontal className="h-4 w-4" style={{ color: isDark ? '#878787' : '#64748B' }} />
+                <MoreHorizontal className="h-4 w-4" style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }} />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className={cn("w-56 shadow-lg", isDark ? "bg-[#1A1A1A] border-[rgba(255,255,255,0.08)]" : "bg-white border-slate-200")}>
@@ -132,7 +132,7 @@ export function IssueDetailPanel({ item, onClose, onFieldChange }: IssueDetailPa
             </DropdownMenuContent>
           </DropdownMenu>
           <Button variant="ghost" size="icon" className={cn("h-7 w-7", isDark ? "hover:bg-[#1A1A1A]" : "hover:bg-slate-100")} onClick={onClose}>
-            <X className="h-4 w-4" style={{ color: isDark ? '#878787' : '#64748B' }} />
+            <X className="h-4 w-4" style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }} />
           </Button>
         </div>
       </div>
@@ -144,7 +144,7 @@ export function IssueDetailPanel({ item, onClose, onFieldChange }: IssueDetailPa
           <div className="p-5 space-y-6">
             {/* Issue Title */}
             <div>
-              <h1 className="text-[20px] font-semibold leading-tight mb-3" style={{ color: isDark ? '#EDEDED' : '#0F172A' }}>
+              <h1 className="text-[20px] font-semibold leading-tight mb-3" style={{ color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)' }}>
                 {item.summary}
               </h1>
 
@@ -163,50 +163,50 @@ export function IssueDetailPanel({ item, onClose, onFieldChange }: IssueDetailPa
 
             {/* Description section */}
             <div>
-              <h3 className="text-[14px] font-semibold mb-2" style={{ color: isDark ? '#EDEDED' : '#0F172A' }}>Description</h3>
-              <div className="text-[14px] leading-relaxed" style={{ color: isDark ? '#A1A1A1' : '#334155' }}>
+              <h3 className="text-[14px] font-semibold mb-2" style={{ color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)' }}>Description</h3>
+              <div className="text-[14px] leading-relaxed" style={{ color: isDark ? '#A1A1A1' : 'rgba(237,237,237,0.53)' }}>
                 {item.description || (
-                  <p style={{ color: isDark ? '#878787' : '#64748B', fontStyle: 'italic' }}>
+                  <p style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)', fontStyle: 'italic' }}>
                     The system display alignment issue in Competitiveness Program page
                   </p>
                 )}
-                <div className="mt-4 p-4 rounded text-center" style={{ backgroundColor: isDark ? '#1A1A1A' : '#F8FAFC', border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, color: isDark ? '#878787' : '#64748B' }}>
-                  <FileText className="h-8 w-8 mx-auto mb-2" style={{ color: isDark ? '#878787' : '#94A3B8' }} />
+                <div className="mt-4 p-4 rounded text-center" style={{ backgroundColor: isDark ? '#1A1A1A' : '#1A1A1A', border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.10)'}`, color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>
+                  <FileText className="h-8 w-8 mx-auto mb-2" style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }} />
                   <p className="text-[12px]">Embedded content preview</p>
                 </div>
               </div>
             </div>
 
             {/* Attachments section */}
-            <div className="rounded" style={{ border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}` }}>
+            <div className="rounded" style={{ border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.10)'}` }}>
               <button
                 className={cn("w-full flex items-center justify-between px-4 py-3 transition-colors", isDark ? "hover:bg-[#1A1A1A]" : "hover:bg-slate-50")}
                 onClick={() => setAttachmentsExpanded(!attachmentsExpanded)}
               >
                 <div className="flex items-center gap-2">
-                  <Paperclip className="h-4 w-4" style={{ color: isDark ? '#878787' : '#64748B' }} />
-                  <span className="text-[14px] font-semibold" style={{ color: isDark ? '#EDEDED' : '#0F172A' }}>
-                    Attachments <span className="font-normal" style={{ color: isDark ? '#878787' : '#64748B' }}>{attachments.length}</span>
+                  <Paperclip className="h-4 w-4" style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }} />
+                  <span className="text-[14px] font-semibold" style={{ color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)' }}>
+                    Attachments <span className="font-normal" style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>{attachments.length}</span>
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Button variant="ghost" size="icon" className={cn("h-7 w-7", isDark ? "hover:bg-[#1A1A1A]" : "hover:bg-slate-100")}>
-                    <MoreHorizontal className="h-4 w-4" style={{ color: isDark ? '#878787' : '#94A3B8' }} />
+                    <MoreHorizontal className="h-4 w-4" style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }} />
                   </Button>
                   <Button variant="ghost" size="icon" className={cn("h-7 w-7", isDark ? "hover:bg-[#1A1A1A]" : "hover:bg-slate-100")}>
-                    <Plus className="h-4 w-4" style={{ color: isDark ? '#878787' : '#94A3B8' }} />
+                    <Plus className="h-4 w-4" style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }} />
                   </Button>
                   {attachmentsExpanded ? (
-                    <ChevronUp className="h-4 w-4" style={{ color: isDark ? '#878787' : '#94A3B8' }} />
+                    <ChevronUp className="h-4 w-4" style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }} />
                   ) : (
-                    <ChevronDown className="h-4 w-4" style={{ color: isDark ? '#878787' : '#94A3B8' }} />
+                    <ChevronDown className="h-4 w-4" style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }} />
                   )}
                 </div>
               </button>
 
               {attachmentsExpanded && (
-                <div style={{ borderTop: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}` }}>
-                  <div className="grid grid-cols-[1fr_80px_140px_60px] px-4 py-2 text-[11px] font-medium uppercase" style={{ backgroundColor: isDark ? '#1A1A1A' : '#F8FAFC', borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, color: isDark ? '#878787' : '#64748B' }}>
+                <div style={{ borderTop: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.10)'}` }}>
+                  <div className="grid grid-cols-[1fr_80px_140px_60px] px-4 py-2 text-[11px] font-medium uppercase" style={{ backgroundColor: isDark ? '#1A1A1A' : '#1A1A1A', borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.10)'}`, color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>
                     <span>Name</span>
                     <span>Size</span>
                     <span>Date added</span>
@@ -216,10 +216,10 @@ export function IssueDetailPanel({ item, onClose, onFieldChange }: IssueDetailPa
                     <div
                       key={att.id}
                       className={cn("grid grid-cols-[1fr_80px_140px_60px] px-4 py-2 items-center", isDark ? "hover:bg-[#1A1A1A]" : "hover:bg-slate-50")}
-                      style={{ borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.05)' : '#F1F5F9'}` }}
+                      style={{ borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.05)' : '#1A1A1A'}` }}
                     >
                       <div className="flex items-center gap-2 min-w-0">
-                        <FileText className="h-4 w-4 flex-shrink-0" style={{ color: isDark ? '#878787' : '#94A3B8' }} />
+                        <FileText className="h-4 w-4 flex-shrink-0" style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }} />
                         <span className="text-[13px] text-blue-600 hover:underline cursor-pointer truncate">
                           {att.name}
                         </span>
@@ -228,10 +228,10 @@ export function IssueDetailPanel({ item, onClose, onFieldChange }: IssueDetailPa
                       <span className="text-[13px]" style={{ color: isDark ? '#A1A1A1' : '#475569' }}>{formatIssueDateWithTime(att.dateAdded)}</span>
                       <div className="flex items-center gap-1 justify-end">
                         <Button variant="ghost" size="icon" className={cn("h-6 w-6", isDark ? "hover:bg-[#1A1A1A]" : "hover:bg-slate-100")}>
-                          <Eye className="h-3.5 w-3.5" style={{ color: isDark ? '#878787' : '#94A3B8' }} />
+                          <Eye className="h-3.5 w-3.5" style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }} />
                         </Button>
                         <Button variant="ghost" size="icon" className={cn("h-6 w-6", isDark ? "hover:bg-[#1A1A1A]" : "hover:bg-slate-100")}>
-                          <Download className="h-3.5 w-3.5" style={{ color: isDark ? '#878787' : '#94A3B8' }} />
+                          <Download className="h-3.5 w-3.5" style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }} />
                         </Button>
                       </div>
                     </div>
@@ -242,7 +242,7 @@ export function IssueDetailPanel({ item, onClose, onFieldChange }: IssueDetailPa
 
             {/* Subtasks section */}
             <div>
-              <h3 className="text-[14px] font-semibold mb-2" style={{ color: isDark ? '#EDEDED' : '#0F172A' }}>Subtasks</h3>
+              <h3 className="text-[14px] font-semibold mb-2" style={{ color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)' }}>Subtasks</h3>
               <button className={cn("text-[13px] px-2 py-1 rounded -ml-2", isDark ? "text-[#878787] hover:text-blue-500 hover:bg-[#1A1A1A]" : "text-slate-500 hover:text-blue-600 hover:bg-slate-50")}>
                 <Plus className="h-4 w-4 inline mr-1" />
                 Add subtask
@@ -251,7 +251,7 @@ export function IssueDetailPanel({ item, onClose, onFieldChange }: IssueDetailPa
 
             {/* Linked work items section */}
             <div>
-              <h3 className="text-[14px] font-semibold mb-2" style={{ color: isDark ? '#EDEDED' : '#0F172A' }}>Linked work items</h3>
+              <h3 className="text-[14px] font-semibold mb-2" style={{ color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)' }}>Linked work items</h3>
               <button className={cn("text-[13px] px-2 py-1 rounded -ml-2", isDark ? "text-[#878787] hover:text-blue-500 hover:bg-[#1A1A1A]" : "text-slate-500 hover:text-blue-600 hover:bg-slate-50")}>
                 <LinkIcon className="h-4 w-4 inline mr-1" />
                 Add linked work item
@@ -260,10 +260,10 @@ export function IssueDetailPanel({ item, onClose, onFieldChange }: IssueDetailPa
 
             {/* Activity section */}
             <div>
-              <h3 className="text-[14px] font-semibold mb-3" style={{ color: isDark ? '#EDEDED' : '#0F172A' }}>Activity</h3>
+              <h3 className="text-[14px] font-semibold mb-3" style={{ color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)' }}>Activity</h3>
 
               {/* Activity tabs */}
-              <div className="flex items-center gap-1 mb-4 -mx-1 px-1" style={{ borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}` }}>
+              <div className="flex items-center gap-1 mb-4 -mx-1 px-1" style={{ borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.10)'}` }}>
                 {ACTIVITY_TABS.map((tab) => (
                   <button
                     key={tab.id}
@@ -283,7 +283,7 @@ export function IssueDetailPanel({ item, onClose, onFieldChange }: IssueDetailPa
                 ))}
                 <div className="ml-auto">
                   <Button variant="ghost" size="icon" className={cn("h-7 w-7", isDark ? "hover:bg-[#1A1A1A]" : "hover:bg-slate-100")}>
-                    <Settings2 className="h-4 w-4" style={{ color: isDark ? '#878787' : '#94A3B8' }} />
+                    <Settings2 className="h-4 w-4" style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }} />
                   </Button>
                 </div>
               </div>
@@ -310,14 +310,14 @@ export function IssueDetailPanel({ item, onClose, onFieldChange }: IssueDetailPa
                       </button>
                     ))}
                   </div>
-                  <p className="text-[11px] mt-2" style={{ color: isDark ? '#878787' : '#94A3B8' }}>
-                    <span className="font-medium">Pro tip:</span> press <kbd className="px-1 py-0.5 rounded text-[10px]" style={{ backgroundColor: isDark ? 'rgba(255,255,255,0.06)' : '#F1F5F9' }}>M</kbd> to comment
+                  <p className="text-[11px] mt-2" style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>
+                    <span className="font-medium">Pro tip:</span> press <kbd className="px-1 py-0.5 rounded text-[10px]" style={{ backgroundColor: isDark ? 'rgba(255,255,255,0.06)' : '#1A1A1A' }}>M</kbd> to comment
                   </p>
                 </div>
               </div>
 
               {item.comments > 0 && (
-                <div className="text-[13px] text-center py-4" style={{ color: isDark ? '#878787' : '#64748B' }}>
+                <div className="text-[13px] text-center py-4" style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>
                   {item.comments} previous comment{item.comments > 1 ? 's' : ''}
                 </div>
               )}
@@ -326,7 +326,7 @@ export function IssueDetailPanel({ item, onClose, onFieldChange }: IssueDetailPa
         </ScrollArea>
 
         {/* Right sidebar */}
-        <div className="w-[260px] flex-shrink-0" style={{ borderLeft: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, backgroundColor: isDark ? '#1A1A1A' : 'rgba(248,250,252,0.5)' }}>
+        <div className="w-[260px] flex-shrink-0" style={{ borderLeft: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.10)'}`, backgroundColor: isDark ? '#1A1A1A' : 'rgba(248,250,252,0.5)' }}>
           <ScrollArea className="h-full">
             <div className="p-4 space-y-4">
               {/* Status badge */}
@@ -349,30 +349,30 @@ export function IssueDetailPanel({ item, onClose, onFieldChange }: IssueDetailPa
                   </DropdownMenuContent>
                 </DropdownMenu>
                 <Button variant="ghost" size="icon" className={cn("h-7 w-7", isDark ? "hover:bg-[#1A1A1A]" : "hover:bg-slate-100")}>
-                  <Zap className="h-4 w-4" style={{ color: isDark ? '#878787' : '#64748B' }} />
+                  <Zap className="h-4 w-4" style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }} />
                 </Button>
-                <span className="text-[11px] px-2 py-1 rounded" style={{ color: isDark ? '#A1A1A1' : '#64748B', backgroundColor: isDark ? 'rgba(255,255,255,0.06)' : '#F1F5F9' }}>
+                <span className="text-[11px] px-2 py-1 rounded" style={{ color: isDark ? '#A1A1A1' : 'rgba(237,237,237,0.40)', backgroundColor: isDark ? 'rgba(255,255,255,0.06)' : '#1A1A1A' }}>
                   Improve Production Incident
                 </span>
               </div>
 
               {/* Your pinned fields - collapsible */}
-              <div className="rounded" style={{ border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF' }}>
+              <div className="rounded" style={{ border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.10)'}`, backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF' }}>
                 <button
                   className={cn("w-full flex items-center justify-between px-3 py-2", isDark ? "hover:bg-[#232323]" : "hover:bg-slate-50")}
                   onClick={() => setPinnedFieldsExpanded(!pinnedFieldsExpanded)}
                 >
-                  <span className="text-[12px] font-semibold" style={{ color: isDark ? '#EDEDED' : '#334155' }}>Your pinned fields</span>
+                  <span className="text-[12px] font-semibold" style={{ color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.53)' }}>Your pinned fields</span>
                   {pinnedFieldsExpanded ? (
-                    <ChevronUp className="h-4 w-4" style={{ color: isDark ? '#878787' : '#94A3B8' }} />
+                    <ChevronUp className="h-4 w-4" style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }} />
                   ) : (
-                    <ChevronDown className="h-4 w-4" style={{ color: isDark ? '#878787' : '#94A3B8' }} />
+                    <ChevronDown className="h-4 w-4" style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }} />
                   )}
                 </button>
                 {pinnedFieldsExpanded && (
-                  <div className="px-3 pb-3 pt-1" style={{ borderTop: `1px solid ${isDark ? 'rgba(255,255,255,0.05)' : '#F1F5F9'}` }}>
-                    <div className="text-[11px] mb-1" style={{ color: isDark ? '#878787' : '#64748B' }}>Fix versions</div>
-                    <div className="text-[13px]" style={{ color: isDark ? '#EDEDED' : '#334155' }}>
+                  <div className="px-3 pb-3 pt-1" style={{ borderTop: `1px solid ${isDark ? 'rgba(255,255,255,0.05)' : '#1A1A1A'}` }}>
+                    <div className="text-[11px] mb-1" style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>Fix versions</div>
+                    <div className="text-[13px]" style={{ color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.53)' }}>
                       {fixVersions.join(', ') || 'None'}
                     </div>
                   </div>
@@ -380,23 +380,23 @@ export function IssueDetailPanel({ item, onClose, onFieldChange }: IssueDetailPa
               </div>
 
               {/* Details section - collapsible */}
-              <div className="rounded" style={{ border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF' }}>
+              <div className="rounded" style={{ border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.10)'}`, backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF' }}>
                 <button
                   className={cn("w-full flex items-center justify-between px-3 py-2", isDark ? "hover:bg-[#232323]" : "hover:bg-slate-50")}
                   onClick={() => setDetailsExpanded(!detailsExpanded)}
                 >
-                  <span className="text-[12px] font-semibold" style={{ color: isDark ? '#EDEDED' : '#334155' }}>Details</span>
+                  <span className="text-[12px] font-semibold" style={{ color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.53)' }}>Details</span>
                   {detailsExpanded ? (
-                    <ChevronUp className="h-4 w-4" style={{ color: isDark ? '#878787' : '#94A3B8' }} />
+                    <ChevronUp className="h-4 w-4" style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }} />
                   ) : (
-                    <ChevronDown className="h-4 w-4" style={{ color: isDark ? '#878787' : '#94A3B8' }} />
+                    <ChevronDown className="h-4 w-4" style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }} />
                   )}
                 </button>
                 {detailsExpanded && (
-                  <div className="px-3 pb-3 space-y-3 pt-3" style={{ borderTop: `1px solid ${isDark ? 'rgba(255,255,255,0.05)' : '#F1F5F9'}` }}>
+                  <div className="px-3 pb-3 space-y-3 pt-3" style={{ borderTop: `1px solid ${isDark ? 'rgba(255,255,255,0.05)' : '#1A1A1A'}` }}>
                     {/* Assignee */}
                     <div>
-                      <div className="text-[11px] mb-1" style={{ color: isDark ? '#878787' : '#64748B' }}>Assignee</div>
+                      <div className="text-[11px] mb-1" style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>Assignee</div>
                       <div className="flex items-center gap-2">
                         {item.assignee ? (
                           <>
@@ -406,41 +406,41 @@ export function IssueDetailPanel({ item, onClose, onFieldChange }: IssueDetailPa
                               </AvatarFallback>
                             </Avatar>
                             <div>
-                              <div className="text-[13px]" style={{ color: isDark ? '#EDEDED' : '#334155' }}>{item.assignee.name}</div>
+                              <div className="text-[13px]" style={{ color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.53)' }}>{item.assignee.name}</div>
                               <button className="text-[11px] text-blue-600 hover:underline">Assign to me</button>
                             </div>
                           </>
                         ) : (
-                          <span className="text-[13px]" style={{ color: isDark ? '#878787' : '#64748B' }}>Unassigned</span>
+                          <span className="text-[13px]" style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>Unassigned</span>
                         )}
                       </div>
                     </div>
 
                     {/* Reporter */}
                     <div>
-                      <div className="text-[11px] mb-1" style={{ color: isDark ? '#878787' : '#64748B' }}>Reporter</div>
+                      <div className="text-[11px] mb-1" style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>Reporter</div>
                       <div className="flex items-center gap-2">
                         <Avatar className="h-6 w-6">
                           <AvatarFallback className={cn("text-[9px] text-white", getAvatarColor(reporter.name))}>
                             {getInitials(reporter.name)}
                           </AvatarFallback>
                         </Avatar>
-                        <span className="text-[13px]" style={{ color: isDark ? '#EDEDED' : '#334155' }}>{reporter.name}</span>
+                        <span className="text-[13px]" style={{ color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.53)' }}>{reporter.name}</span>
                       </div>
                     </div>
 
                     {/* Service Now# (custom field) */}
                     <div>
-                      <div className="text-[11px] mb-1" style={{ color: isDark ? '#878787' : '#64748B' }}>Service Now#</div>
-                      <button className="text-[13px]" style={{ color: isDark ? '#878787' : '#94A3B8' }}>Add text</button>
+                      <div className="text-[11px] mb-1" style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>Service Now#</div>
+                      <button className="text-[13px]" style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>Add text</button>
                     </div>
 
                     {/* Priority */}
                     <div>
-                      <div className="text-[11px] mb-1" style={{ color: isDark ? '#878787' : '#64748B' }}>Priority</div>
+                      <div className="text-[11px] mb-1" style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>Priority</div>
                       <div className="flex items-center gap-1">
                         <span className="text-orange-500">--</span>
-                        <span className="text-[13px]" style={{ color: isDark ? '#EDEDED' : '#334155' }}>{item.priority}</span>
+                        <span className="text-[13px]" style={{ color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.53)' }}>{item.priority}</span>
                       </div>
                     </div>
                   </div>
@@ -448,15 +448,15 @@ export function IssueDetailPanel({ item, onClose, onFieldChange }: IssueDetailPa
               </div>
 
               {/* Automation section */}
-              <div className="rounded" style={{ border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF' }}>
+              <div className="rounded" style={{ border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.10)'}`, backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF' }}>
                 <div className="flex items-center justify-between px-3 py-2">
                   <div className="flex items-center gap-2">
-                    <span className="text-[12px] font-semibold" style={{ color: isDark ? '#EDEDED' : '#334155' }}>Automation</span>
-                    <Zap className="h-3.5 w-3.5" style={{ color: isDark ? '#878787' : '#94A3B8' }} />
+                    <span className="text-[12px] font-semibold" style={{ color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.53)' }}>Automation</span>
+                    <Zap className="h-3.5 w-3.5" style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }} />
                   </div>
-                  <span className="text-[11px]" style={{ color: isDark ? '#878787' : '#64748B' }}>Rule executions</span>
+                  <span className="text-[11px]" style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>Rule executions</span>
                 </div>
-                <div className="px-3 pb-2 pt-2" style={{ borderTop: `1px solid ${isDark ? 'rgba(255,255,255,0.05)' : '#F1F5F9'}` }}>
+                <div className="px-3 pb-2 pt-2" style={{ borderTop: `1px solid ${isDark ? 'rgba(255,255,255,0.05)' : '#1A1A1A'}` }}>
                   <button className="text-[12px] text-blue-600 hover:underline flex items-center gap-1">
                     <Settings2 className="h-3.5 w-3.5" />
                     Configure
@@ -465,7 +465,7 @@ export function IssueDetailPanel({ item, onClose, onFieldChange }: IssueDetailPa
               </div>
 
               {/* Timestamps */}
-              <div className="text-[11px] space-y-1 px-1" style={{ color: isDark ? '#878787' : '#94A3B8' }}>
+              <div className="text-[11px] space-y-1 px-1" style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>
                 <div>Created {formatIssueDateWithTime(item.created)}</div>
                 <div>Updated {formatIssueDateWithTime(item.updated)}</div>
               </div>

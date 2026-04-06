@@ -45,9 +45,9 @@ export function JiraSyncCTA() {
   const webhookActive = conn?.last_test_result?.checks?.every((c: any) => c.pass) ?? false;
 
   // Dot color derived from actual connection state
-  const dotColor = connLoading ? '#94A3B8'
+  const dotColor = connLoading ? 'rgba(237,237,237,0.40)'
     : isConnected ? (webhookActive ? '#16A34A' : '#F59E0B')
-    : '#94A3B8';
+    : 'rgba(237,237,237,0.40)';
 
   const statusLabel = connLoading ? 'Loading...'
     : isAnySyncActive ? 'Syncing…'
@@ -95,9 +95,9 @@ export function JiraSyncCTA() {
           display: 'flex', alignItems: 'center', gap: 6,
           height: 32, padding: '8px 12px',
           fontSize: 13, fontWeight: 500,
-          color: 'var(--catalyst-text-secondary, #64748B)',
+          color: 'var(--catalyst-text-secondary, rgba(237,237,237,0.40))',
           background: 'var(--catalyst-bg-surface, #FFF)',
-          border: '1px solid var(--catalyst-border, #E2E8F0)',
+          border: '1px solid var(--catalyst-border, rgba(255,255,255,0.10))',
           borderRadius: 6, cursor: 'pointer',
           fontFamily: "'Inter', sans-serif",
           opacity: isAnySyncActive ? 1 : 1,
@@ -116,7 +116,7 @@ export function JiraSyncCTA() {
         ↔ Jira Sync
         <span style={{
           fontSize: 11,
-          color: isAnySyncActive ? '#2563EB' : '#94A3B8',
+          color: isAnySyncActive ? '#2563EB' : 'rgba(237,237,237,0.40)',
           marginLeft: 2,
           fontWeight: isAnySyncActive ? 600 : 400,
         }}>
@@ -132,7 +132,7 @@ export function JiraSyncCTA() {
         <div style={{
           position: 'absolute', top: 38, right: 0, zIndex: 50,
           width: 380, background: isDark ? '#1A1A1A' : '#FFF', borderRadius: 12,
-          border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0',
+          border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(255,255,255,0.10)',
           boxShadow: '0 12px 40px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.04)',
           fontFamily: "'Inter', sans-serif",
           overflow: 'hidden',
@@ -140,15 +140,15 @@ export function JiraSyncCTA() {
           {/* Loading */}
           {connLoading && (
             <div style={{ padding: 40, textAlign: 'center' }}>
-              <Loader2 size={20} className="animate-spin" style={{ margin: '0 auto', color: '#94A3B8' }} />
+              <Loader2 size={20} className="animate-spin" style={{ margin: '0 auto', color: 'rgba(237,237,237,0.40)' }} />
             </div>
           )}
 
           {/* Not connected */}
           {!connLoading && !isConnected && (
             <div style={{ padding: 20, textAlign: 'center' }}>
-              <div style={{ fontSize: 14, fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A', marginBottom: 8 }}>No Jira Connection</div>
-              <p style={{ fontSize: 12, color: isDark ? '#878787' : '#64748B', marginBottom: 16, lineHeight: 1.5 }}>
+              <div style={{ fontSize: 14, fontWeight: 600, color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)', marginBottom: 8 }}>No Jira Connection</div>
+              <p style={{ fontSize: 12, color: isDark ? '#878787' : 'rgba(237,237,237,0.40)', marginBottom: 16, lineHeight: 1.5 }}>
                 Configure your Jira connection in the WorkHub admin to enable bidirectional sync.
               </p>
               <button
@@ -169,48 +169,48 @@ export function JiraSyncCTA() {
           {/* Connected: Status panel */}
           {!connLoading && isConnected && conn && panelView === 'status' && (
             <div>
-              <div style={{ padding: '16px 20px 12px', borderBottom: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid #F1F5F9' }}>
+              <div style={{ padding: '16px 20px 12px', borderBottom: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid #1A1A1A' }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <span style={{ fontSize: 14, fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A' }}>Jira Sync Status</span>
-                  <span style={{ fontSize: 11, color: isDark ? '#878787' : '#94A3B8', fontFamily: "'JetBrains Mono', monospace" }}>
+                  <span style={{ fontSize: 14, fontWeight: 600, color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)' }}>Jira Sync Status</span>
+                  <span style={{ fontSize: 11, color: isDark ? '#878787' : 'rgba(237,237,237,0.40)', fontFamily: "'JetBrains Mono', monospace" }}>
                     {formatAge(health?.lastSync?.completed_at)}
                   </span>
                 </div>
-                <div style={{ fontSize: 11, color: isDark ? '#878787' : '#64748B', marginTop: 4, fontFamily: "'JetBrains Mono', monospace" }}>
+                <div style={{ fontSize: 11, color: isDark ? '#878787' : 'rgba(237,237,237,0.40)', marginTop: 4, fontFamily: "'JetBrains Mono', monospace" }}>
                   {conn.site_url?.replace('https://', '').replace(/\/$/, '')}
                 </div>
               </div>
 
               {/* Stats grid */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 1, background: isDark ? 'rgba(255,255,255,0.05)' : '#F1F5F9' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 1, background: isDark ? 'rgba(255,255,255,0.05)' : '#1A1A1A' }}>
                 {[
                   { label: 'Projects', value: conn.project_count || 0 },
                   { label: 'Issues cached', value: health?.issueCachedCount ?? 0 },
                   { label: 'Versions', value: health?.versionCachedCount ?? 0 },
                 ].map((s, i) => (
                   <div key={i} style={{ background: isDark ? '#1A1A1A' : '#FFF', padding: '14px 8px', textAlign: 'center' }}>
-                    <div style={{ fontSize: 18, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A', fontFamily: "'Sora', sans-serif" }}>{s.value}</div>
-                    <div style={{ fontSize: 10, color: isDark ? '#878787' : '#64748B', marginTop: 2 }}>{s.label}</div>
+                    <div style={{ fontSize: 18, fontWeight: 700, color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)', fontFamily: "'Sora', sans-serif" }}>{s.value}</div>
+                    <div style={{ fontSize: 10, color: isDark ? '#878787' : 'rgba(237,237,237,0.40)', marginTop: 2 }}>{s.label}</div>
                   </div>
                 ))}
               </div>
 
               {/* Connection details */}
-              <div style={{ padding: '12px 20px', borderTop: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid #F1F5F9', fontSize: 13 }}>
+              <div style={{ padding: '12px 20px', borderTop: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid #1A1A1A', fontSize: 13 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-                  <span style={{ color: isDark ? '#878787' : '#64748B' }}>Direction</span>
-                  <span style={{ fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A' }}>↔ Bi-directional</span>
+                  <span style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>Direction</span>
+                  <span style={{ fontWeight: 600, color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)' }}>↔ Bi-directional</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-                  <span style={{ color: isDark ? '#878787' : '#64748B' }}>Auth method</span>
-                  <span style={{ fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A' }}>{conn.auth_method === 'api_token' ? 'API Token' : 'OAuth'}</span>
+                  <span style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>Auth method</span>
+                  <span style={{ fontWeight: 600, color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)' }}>{conn.auth_method === 'api_token' ? 'API Token' : 'OAuth'}</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-                  <span style={{ color: isDark ? '#878787' : '#64748B' }}>Permissions</span>
-                  <span style={{ fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A' }}>{conn.permissions_level || 'read_write'}</span>
+                  <span style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>Permissions</span>
+                  <span style={{ fontWeight: 600, color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)' }}>{conn.permissions_level || 'read_write'}</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ color: isDark ? '#878787' : '#64748B' }}>Webhook status</span>
+                  <span style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>Webhook status</span>
                   <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                     <span style={{
                       width: 6, height: 6, borderRadius: '50%',
@@ -224,7 +224,7 @@ export function JiraSyncCTA() {
               </div>
 
               {/* Actions */}
-              <div style={{ padding: '12px 20px', borderTop: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid #F1F5F9', display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <div style={{ padding: '12px 20px', borderTop: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid #1A1A1A', display: 'flex', flexDirection: 'column', gap: 8 }}>
                 <button
                   onClick={handleSyncNow}
                   disabled={isAnySyncActive}
@@ -243,8 +243,8 @@ export function JiraSyncCTA() {
                     onClick={() => setPanelView('webhook')}
                     style={{
                       flex: 1, height: 32, fontSize: 12, fontWeight: 500,
-                      color: isDark ? '#A1A1A1' : '#64748B', background: isDark ? '#1A1A1A' : '#F8FAFC',
-                      border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0', borderRadius: 6, cursor: 'pointer',
+                      color: isDark ? '#A1A1A1' : 'rgba(237,237,237,0.40)', background: isDark ? '#1A1A1A' : '#1A1A1A',
+                      border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(255,255,255,0.10)', borderRadius: 6, cursor: 'pointer',
                       display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4,
                     }}
                   >
@@ -254,8 +254,8 @@ export function JiraSyncCTA() {
                     onClick={() => window.open('/workhub/admin', '_blank')}
                     style={{
                       flex: 1, height: 32, fontSize: 12, fontWeight: 500,
-                      color: isDark ? '#A1A1A1' : '#64748B', background: isDark ? '#1A1A1A' : '#F8FAFC',
-                      border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0', borderRadius: 6, cursor: 'pointer',
+                      color: isDark ? '#A1A1A1' : 'rgba(237,237,237,0.40)', background: isDark ? '#1A1A1A' : '#1A1A1A',
+                      border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(255,255,255,0.10)', borderRadius: 6, cursor: 'pointer',
                       display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4,
                     }}
                   >
@@ -267,8 +267,8 @@ export function JiraSyncCTA() {
                     rel="noreferrer"
                     style={{
                       flex: 1, height: 32, fontSize: 12, fontWeight: 500,
-                      color: isDark ? '#A1A1A1' : '#64748B', background: isDark ? '#1A1A1A' : '#F8FAFC',
-                      border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0', borderRadius: 6, cursor: 'pointer',
+                      color: isDark ? '#A1A1A1' : 'rgba(237,237,237,0.40)', background: isDark ? '#1A1A1A' : '#1A1A1A',
+                      border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(255,255,255,0.10)', borderRadius: 6, cursor: 'pointer',
                       display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4,
                       textDecoration: 'none',
                     }}
@@ -284,7 +284,7 @@ export function JiraSyncCTA() {
           {!connLoading && isConnected && panelView === 'webhook' && (
             <div style={{ padding: 20 }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-                <span style={{ fontSize: 14, fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A' }}>Webhook Configuration</span>
+                <span style={{ fontSize: 14, fontWeight: 600, color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)' }}>Webhook Configuration</span>
                 <button
                   onClick={() => setPanelView('status')}
                   style={{ fontSize: 11, color: '#2563EB', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600 }}
@@ -294,14 +294,14 @@ export function JiraSyncCTA() {
               </div>
 
               <div style={{
-                padding: 12, background: isDark ? '#1A1A1A' : '#F8FAFC', borderRadius: 8,
-                border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0', marginBottom: 12,
+                padding: 12, background: isDark ? '#1A1A1A' : '#1A1A1A', borderRadius: 8,
+                border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(255,255,255,0.10)', marginBottom: 12,
               }}>
                 <div style={{ fontSize: 11, fontWeight: 600, color: isDark ? '#A1A1A1' : '#374151', marginBottom: 6 }}>Webhook URL (for Jira → Catalyst)</div>
                 <div style={{
                   display: 'flex', alignItems: 'center', gap: 6,
                   padding: '6px 10px', background: isDark ? '#0A0A0A' : '#FFF', borderRadius: 6,
-                  border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0', fontSize: 11,
+                  border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(255,255,255,0.10)', fontSize: 11,
                   fontFamily: "'JetBrains Mono', monospace", color: isDark ? '#A1A1A1' : '#374151',
                   wordBreak: 'break-all',
                 }}>
@@ -323,7 +323,7 @@ export function JiraSyncCTA() {
 
               <div style={{
                 padding: 12, background: '#FFFBEB', borderRadius: 8,
-                border: '1px solid #FDE68A', fontSize: 12, color: '#92400E',
+                border: '1px solid #FDE68A', fontSize: 12, color: '#FBBF24',
                 lineHeight: 1.5,
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontWeight: 600, marginBottom: 6 }}>
@@ -339,7 +339,7 @@ export function JiraSyncCTA() {
                 </ol>
               </div>
 
-              <div style={{ marginTop: 12, fontSize: 12, color: isDark ? '#878787' : '#64748B' }}>
+              <div style={{ marginTop: 12, fontSize: 12, color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
                   <span>Edge function</span>
                   <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10, color: '#16A34A', fontWeight: 600 }}>

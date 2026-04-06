@@ -42,20 +42,20 @@ interface LinkedTest {
 }
 
 const TYPE_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
-  functional: { label: 'Functional', color: '#2563EB', bg: '#EFF6FF' },
-  non_functional: { label: 'Non-Functional', color: '#64748B', bg: '#F1F5F9' },
+  functional: { label: 'Functional', color: '#2563EB', bg: 'rgba(59,130,246,0.06)' },
+  non_functional: { label: 'Non-Functional', color: 'rgba(237,237,237,0.40)', bg: '#1A1A1A' },
   user_story: { label: 'User Story', color: '#0891B2', bg: '#ECFEFF' },
-  epic: { label: 'Epic', color: '#64748B', bg: '#F1F5F9' },
-  feature: { label: 'Feature', color: '#059669', bg: '#ECFDF5' },
-  bug_fix: { label: 'Bug Fix', color: '#DC2626', bg: '#FEF2F2' },
+  epic: { label: 'Epic', color: 'rgba(237,237,237,0.40)', bg: '#1A1A1A' },
+  feature: { label: 'Feature', color: '#059669', bg: 'rgba(74,222,128,0.06)' },
+  bug_fix: { label: 'Bug Fix', color: '#DC2626', bg: 'rgba(248,113,113,0.06)' },
 };
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
   draft:        { label: 'DRAFT',        color: '#253858', bg: '#DFE1E6' },
-  approved:     { label: 'APPROVED',     color: '#0747A6', bg: '#DEEBFF' },
-  in_progress:  { label: 'IN PROGRESS',  color: '#0747A6', bg: '#DEEBFF' },
-  implemented:  { label: 'IMPLEMENTED',  color: '#006644', bg: '#E3FCEF' },
-  verified:     { label: 'VERIFIED',     color: '#006644', bg: '#E3FCEF' },
+  approved:     { label: 'APPROVED',     color: '#0747A6', bg: 'rgba(59,130,246,0.10)' },
+  in_progress:  { label: 'IN PROGRESS',  color: '#0747A6', bg: 'rgba(59,130,246,0.10)' },
+  implemented:  { label: 'IMPLEMENTED',  color: '#006644', bg: 'rgba(74,222,128,0.10)' },
+  verified:     { label: 'VERIFIED',     color: '#006644', bg: 'rgba(74,222,128,0.10)' },
   deprecated:   { label: 'DEPRECATED',   color: '#253858', bg: '#DFE1E6' },
 };
 
@@ -145,7 +145,7 @@ export default function RequirementDetailPage() {
 
   if (isLoading) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', backgroundColor: isDark ? '#0A0A0A' : '#F8FAFC' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', backgroundColor: isDark ? '#0A0A0A' : '#1A1A1A' }}>
         <RefreshCw size={32} style={{ animation: 'spin 1s linear infinite', color: '#2563EB' }} />
         <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
       </div>
@@ -153,7 +153,7 @@ export default function RequirementDetailPage() {
   }
 
   if (!requirement) {
-    return <div style={{ padding: 24, textAlign: 'center', color: '#64748B' }}>Requirement not found</div>;
+    return <div style={{ padding: 24, textAlign: 'center', color: 'rgba(237,237,237,0.40)' }}>Requirement not found</div>;
   }
 
   const type = TYPE_CONFIG[requirement.type] || TYPE_CONFIG.functional;
@@ -161,9 +161,9 @@ export default function RequirementDetailPage() {
   const status = STATUS_CONFIG[safeStatus] ?? STATUS_CONFIG.draft;
 
   return (
-    <div style={{ padding: 24, backgroundColor: isDark ? '#0A0A0A' : '#F8FAFC', minHeight: '100vh' }}>
+    <div style={{ padding: 24, backgroundColor: isDark ? '#0A0A0A' : '#1A1A1A', minHeight: '100vh' }}>
       <button onClick={() => navigate('/testhub/requirements')}
-        style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 12px', border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0', borderRadius: 8, backgroundColor: isDark ? '#1A1A1A' : '#FFF', color: isDark ? '#A1A1A1' : '#64748B', fontSize: 13, cursor: 'pointer', marginBottom: 16 }}>
+        style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 12px', border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(255,255,255,0.10)', borderRadius: 8, backgroundColor: isDark ? '#1A1A1A' : '#FFF', color: isDark ? '#A1A1A1' : 'rgba(237,237,237,0.40)', fontSize: 13, cursor: 'pointer', marginBottom: 16 }}>
         <ArrowLeft size={16} /> Back to Requirements
       </button>
 
@@ -171,7 +171,7 @@ export default function RequirementDetailPage() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-            <span style={{ fontSize: 14, fontWeight: 600, color: '#2563EB', backgroundColor: '#EFF6FF', padding: '6px 14px', borderRadius: 8 }}>{requirement.req_key}</span>
+            <span style={{ fontSize: 14, fontWeight: 600, color: '#2563EB', backgroundColor: 'rgba(59,130,246,0.06)', padding: '6px 14px', borderRadius: 8 }}>{requirement.req_key}</span>
             <span style={{ fontSize: 12, fontWeight: 500, color: type.color, backgroundColor: type.bg, padding: '4px 10px', borderRadius: 6 }}>{type.label}</span>
             <span style={{
               fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em',
@@ -179,13 +179,13 @@ export default function RequirementDetailPage() {
               padding: '2px 6px', borderRadius: 4, height: 20, display: 'inline-flex', alignItems: 'center',
             }}>{status.label}</span>
             {requirement.external_id && (
-              <span style={{ fontSize: 12, fontWeight: 500, color: '#64748B', backgroundColor: '#F1F5F9', padding: '4px 10px', borderRadius: 6, display: 'flex', alignItems: 'center', gap: 4 }}>
+              <span style={{ fontSize: 12, fontWeight: 500, color: 'rgba(237,237,237,0.40)', backgroundColor: '#1A1A1A', padding: '4px 10px', borderRadius: 6, display: 'flex', alignItems: 'center', gap: 4 }}>
                 <ExternalLink size={12} /> {requirement.external_id}
               </span>
             )}
           </div>
-          <h1 style={{ fontSize: 24, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A', margin: 0 }}>{requirement.title}</h1>
-          <div style={{ display: 'flex', gap: 16, marginTop: 8, fontSize: 13, color: '#64748B' }}>
+          <h1 style={{ fontSize: 24, fontWeight: 700, color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)', margin: 0 }}>{requirement.title}</h1>
+          <div style={{ display: 'flex', gap: 16, marginTop: 8, fontSize: 13, color: 'rgba(237,237,237,0.40)' }}>
             {requirement.release_version && <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><Tag size={14} /> v{requirement.release_version}</span>}
             <span>Created {formatDate(requirement.created_at)}</span>
           </div>
@@ -198,7 +198,7 @@ export default function RequirementDetailPage() {
             </SelectContent>
           </Select>
           <button onClick={deleteRequirement}
-            style={{ display: 'flex', alignItems: 'center', gap: 6, height: 40, padding: '0 14px', border: '1px solid #FECACA', borderRadius: 8, backgroundColor: '#FEF2F2', color: '#DC2626', fontSize: 13, cursor: 'pointer' }}>
+            style={{ display: 'flex', alignItems: 'center', gap: 6, height: 40, padding: '0 14px', border: '1px solid #FECACA', borderRadius: 8, backgroundColor: 'rgba(248,113,113,0.06)', color: '#DC2626', fontSize: 13, cursor: 'pointer' }}>
             <Trash2 size={16} />
           </button>
         </div>
@@ -206,18 +206,18 @@ export default function RequirementDetailPage() {
 
       {/* Description */}
       {requirement.description && (
-        <div style={{ backgroundColor: isDark ? '#1A1A1A' : '#FFF', borderRadius: 12, padding: 24, border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0', marginBottom: 24 }}>
-          <h3 style={{ fontSize: 16, fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A', margin: '0 0 12px', display: 'flex', alignItems: 'center', gap: 8 }}>
+        <div style={{ backgroundColor: isDark ? '#1A1A1A' : '#FFF', borderRadius: 12, padding: 24, border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(255,255,255,0.10)', marginBottom: 24 }}>
+          <h3 style={{ fontSize: 16, fontWeight: 600, color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)', margin: '0 0 12px', display: 'flex', alignItems: 'center', gap: 8 }}>
             <FileText size={18} style={{ color: '#2563EB' }} /> Description
           </h3>
-          <p style={{ fontSize: 14, color: '#334155', margin: 0, whiteSpace: 'pre-wrap' }}>{requirement.description}</p>
+          <p style={{ fontSize: 14, color: 'rgba(237,237,237,0.53)', margin: 0, whiteSpace: 'pre-wrap' }}>{requirement.description}</p>
         </div>
       )}
 
       {/* Linked Tests */}
-      <div style={{ backgroundColor: isDark ? '#1A1A1A' : '#FFF', borderRadius: 12, padding: 24, border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0' }}>
+      <div style={{ backgroundColor: isDark ? '#1A1A1A' : '#FFF', borderRadius: 12, padding: 24, border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(255,255,255,0.10)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-          <h3 style={{ fontSize: 16, fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A', margin: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
+          <h3 style={{ fontSize: 16, fontWeight: 600, color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)', margin: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
             <Link2 size={18} style={{ color: '#2563EB' }} /> Linked Test Cases ({linkedTests.length})
           </h3>
           <button onClick={() => setShowLinkModal(true)}
@@ -227,7 +227,7 @@ export default function RequirementDetailPage() {
         </div>
 
         {linkedTests.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: 40, color: '#94A3B8' }}>
+          <div style={{ textAlign: 'center', padding: 40, color: 'rgba(237,237,237,0.40)' }}>
             <Link2 size={40} style={{ marginBottom: 12, opacity: 0.5 }} />
             <p style={{ margin: 0 }}>No test cases linked</p>
             <p style={{ margin: '8px 0 0', fontSize: 13 }}>Link test cases to track coverage</p>
@@ -236,21 +236,21 @@ export default function RequirementDetailPage() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {linkedTests.map((test) => (
               <div key={test.link_id}
-                style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 14, backgroundColor: isDark ? '#1A1A1A' : '#F8FAFC', borderRadius: 12, border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0' }}>
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 14, backgroundColor: isDark ? '#1A1A1A' : '#1A1A1A', borderRadius: 12, border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(255,255,255,0.10)' }}>
                 <div style={{ flex: 1 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                    <span style={{ fontSize: 12, fontWeight: 600, color: '#2563EB', backgroundColor: '#EFF6FF', padding: '2px 8px', borderRadius: 4 }}>{test.case_key}</span>
-                    <span style={{ fontSize: 11, fontWeight: 500, color: '#64748B' }}>{test.priority}</span>
+                    <span style={{ fontSize: 12, fontWeight: 600, color: '#2563EB', backgroundColor: 'rgba(59,130,246,0.06)', padding: '2px 8px', borderRadius: 4 }}>{test.case_key}</span>
+                    <span style={{ fontSize: 11, fontWeight: 500, color: 'rgba(237,237,237,0.40)' }}>{test.priority}</span>
                   </div>
-                  <p style={{ fontSize: 14, color: '#0F172A', margin: 0 }}>{test.title}</p>
+                  <p style={{ fontSize: 14, color: 'rgba(237,237,237,0.93)', margin: 0 }}>{test.title}</p>
                 </div>
                 <div style={{ display: 'flex', gap: 8 }}>
                   <button onClick={() => navigate(`/testhub/repository?view=${test.test_case_id}`)}
-                    style={{ display: 'flex', alignItems: 'center', gap: 4, height: 32, padding: '8px 12px', border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0', borderRadius: 6, backgroundColor: isDark ? '#1A1A1A' : '#FFF', color: isDark ? '#A1A1A1' : '#334155', fontSize: 12, cursor: 'pointer' }}>
+                    style={{ display: 'flex', alignItems: 'center', gap: 4, height: 32, padding: '8px 12px', border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(255,255,255,0.10)', borderRadius: 6, backgroundColor: isDark ? '#1A1A1A' : '#FFF', color: isDark ? '#A1A1A1' : 'rgba(237,237,237,0.53)', fontSize: 12, cursor: 'pointer' }}>
                     View <ChevronRight size={14} />
                   </button>
                   <button onClick={() => unlinkTest(test.link_id)}
-                    style={{ width: 32, height: 32, border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0', borderRadius: 6, backgroundColor: isDark ? '#1A1A1A' : '#FFF', color: isDark ? '#878787' : '#94A3B8', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    style={{ width: 32, height: 32, border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(255,255,255,0.10)', borderRadius: 6, backgroundColor: isDark ? '#1A1A1A' : '#FFF', color: isDark ? '#878787' : 'rgba(237,237,237,0.40)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <Unlink size={14} />
                   </button>
                 </div>

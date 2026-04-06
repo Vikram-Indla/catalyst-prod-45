@@ -35,7 +35,7 @@ const statusStyles: Record<string, { bg: string; text: string; label: string }> 
   'Backlog': { bg: 'bg-[#DFE1E6]', text: 'text-[#42526E]', label: 'BACKLOG' },
   'To Do': { bg: 'bg-[#DFE1E6]', text: 'text-[#42526E]', label: 'TO DO' },
   'In Progress': { bg: 'bg-[#0C66E4]', text: 'text-white', label: 'IN PROGRESS' },
-  'Ready for QA': { bg: 'bg-[#EAE6FF]', text: 'text-[#403294]', label: 'READY FOR QA' },
+  'Ready for QA': { bg: 'bg-[rgba(139,92,246,0.10)]', text: 'text-[#403294]', label: 'READY FOR QA' },
   'In Production': { bg: 'bg-[#1B7F37]', text: 'text-white', label: 'IN PRODUCTION' },
   'Done': { bg: 'bg-[#1B7F37]', text: 'text-white', label: 'DONE' },
 };
@@ -96,11 +96,11 @@ export function AllWorkDetailPanel({ item, onClose, onNavigateToParent }: AllWor
           className="px-4 py-2"
           style={{
             borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#DFE1E6'}`,
-            backgroundColor: isDark ? '#1A1A1A' : '#F8FAFC',
+            backgroundColor: isDark ? '#1A1A1A' : '#1A1A1A',
           }}
         >
           <div className="flex items-center gap-2 text-[12px]">
-            <span style={{ color: isDark ? '#878787' : '#64748B' }}>Parent:</span>
+            <span style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>Parent:</span>
             <button
               onClick={() => onNavigateToParent?.(item.parent!, item.parentType || 'Feature')}
               className="flex items-center gap-1 text-blue-600 hover:underline font-medium"
@@ -116,7 +116,7 @@ export function AllWorkDetailPanel({ item, onClose, onNavigateToParent }: AllWor
       {/* Main Content */}
       <div className="flex-1 overflow-hidden flex flex-col">
         {/* Title Section */}
-        <div className="px-4 py-4" style={{ borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#F1F5F9'}` }}>
+        <div className="px-4 py-4" style={{ borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#1A1A1A'}` }}>
           <h1 className="text-[18px] font-semibold leading-tight mb-3" style={{ color: isDark ? '#EDEDED' : '#172B4D' }}>
             {item.summary}
           </h1>
@@ -137,7 +137,7 @@ export function AllWorkDetailPanel({ item, onClose, onNavigateToParent }: AllWor
           <TabsList
             className="px-4 h-10 rounded-none justify-start gap-0"
             style={{
-              borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`,
+              borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.10)'}`,
               backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF',
             }}
           >
@@ -177,13 +177,13 @@ export function AllWorkDetailPanel({ item, onClose, onNavigateToParent }: AllWor
               <div
                 className="text-[14px] leading-relaxed rounded p-3 min-h-[60px]"
                 style={{
-                  backgroundColor: isDark ? '#1A1A1A' : '#F8FAFC',
+                  backgroundColor: isDark ? '#1A1A1A' : '#1A1A1A',
                   color: isDark ? '#EDEDED' : '#172B4D',
                   border: isDark ? '1px solid rgba(255,255,255,0.08)' : 'none',
                 }}
               >
                 {item.description || (
-                  <span style={{ color: isDark ? '#878787' : '#94A3B8', fontStyle: 'italic' }}>Click to add description...</span>
+                  <span style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)', fontStyle: 'italic' }}>Click to add description...</span>
                 )}
               </div>
             </div>
@@ -195,7 +195,7 @@ export function AllWorkDetailPanel({ item, onClose, onNavigateToParent }: AllWor
               <div className="grid grid-cols-2 gap-4">
                 {/* Assignee */}
                 <div>
-                  <div className="text-[11px] mb-1" style={{ color: isDark ? '#878787' : '#64748B' }}>Assignee</div>
+                  <div className="text-[11px] mb-1" style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>Assignee</div>
                   <div className="flex items-center gap-2">
                     {item.assignee ? (
                       <>
@@ -207,14 +207,14 @@ export function AllWorkDetailPanel({ item, onClose, onNavigateToParent }: AllWor
                         <span className="text-[13px]" style={{ color: isDark ? '#EDEDED' : '#172B4D' }}>{item.assignee}</span>
                       </>
                     ) : (
-                      <span className="text-[13px]" style={{ color: isDark ? '#878787' : '#94A3B8' }}>Unassigned</span>
+                      <span className="text-[13px]" style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>Unassigned</span>
                     )}
                   </div>
                 </div>
 
                 {/* Reporter */}
                 <div>
-                  <div className="text-[11px] mb-1" style={{ color: isDark ? '#878787' : '#64748B' }}>Reporter</div>
+                  <div className="text-[11px] mb-1" style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>Reporter</div>
                   <div className="flex items-center gap-2">
                     <Avatar className="h-6 w-6">
                       <AvatarFallback className={cn("text-[10px] text-white", getAvatarColor(item.reporter))}>
@@ -227,7 +227,7 @@ export function AllWorkDetailPanel({ item, onClose, onNavigateToParent }: AllWor
 
                 {/* Type */}
                 <div>
-                  <div className="text-[11px] mb-1" style={{ color: isDark ? '#878787' : '#64748B' }}>Type</div>
+                  <div className="text-[11px] mb-1" style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>Type</div>
                   <div className="flex items-center gap-2">
                     <JiraIssueTypeIcon type={item.type} size={16} />
                     <span className="text-[13px]" style={{ color: isDark ? '#EDEDED' : '#172B4D' }}>{item.type}</span>
@@ -236,13 +236,13 @@ export function AllWorkDetailPanel({ item, onClose, onNavigateToParent }: AllWor
 
                 {/* Created */}
                 <div>
-                  <div className="text-[11px] mb-1" style={{ color: isDark ? '#878787' : '#64748B' }}>Created</div>
+                  <div className="text-[11px] mb-1" style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>Created</div>
                   <span className="text-[13px]" style={{ color: isDark ? '#EDEDED' : '#172B4D' }}>{item.created}</span>
                 </div>
               </div>
 
               {/* Links Section */}
-              <div className="pt-4" style={{ borderTop: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#F1F5F9'}` }}>
+              <div className="pt-4" style={{ borderTop: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#1A1A1A'}` }}>
                 <div className="flex items-center justify-between mb-2">
                   <div className="text-[11px] font-semibold uppercase" style={{ color: isDark ? '#878787' : '#6B778C' }}>Links</div>
                   <Button variant="ghost" size="sm" className="h-6 text-[11px] text-blue-600">
@@ -255,43 +255,43 @@ export function AllWorkDetailPanel({ item, onClose, onNavigateToParent }: AllWor
                   <div
                     className="rounded p-3"
                     style={{
-                      backgroundColor: isDark ? '#1A1A1A' : '#F8FAFC',
+                      backgroundColor: isDark ? '#1A1A1A' : '#1A1A1A',
                       border: isDark ? '1px solid rgba(255,255,255,0.08)' : 'none',
                     }}
                   >
-                    <div className="text-[10px] uppercase mb-1" style={{ color: isDark ? '#878787' : '#64748B' }}>is child of</div>
+                    <div className="text-[10px] uppercase mb-1" style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>is child of</div>
                     <button
                       onClick={() => onNavigateToParent?.(item.parent!, item.parentType || 'Feature')}
                       className="flex items-center gap-2 text-blue-600 hover:underline"
                     >
                       <JiraIssueTypeIcon type={item.parentType || 'Epic'} size={16} />
                       <span className="text-[13px] font-medium">{item.parent}</span>
-                      <span className="text-[12px]" style={{ color: isDark ? '#878787' : '#64748B' }}>
+                      <span className="text-[12px]" style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>
                         {item.parentType === 'Epic' ? '(Epic)' : '(Feature)'}
                       </span>
                     </button>
                   </div>
                 ) : (
-                  <div className="text-[12px] italic" style={{ color: isDark ? '#878787' : '#94A3B8' }}>No links</div>
+                  <div className="text-[12px] italic" style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>No links</div>
                 )}
               </div>
             </div>
           </TabsContent>
 
           <TabsContent value="comments" className="flex-1 overflow-auto mt-0 p-4">
-            <div className="text-[13px] text-center py-8" style={{ color: isDark ? '#878787' : '#64748B' }}>
+            <div className="text-[13px] text-center py-8" style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>
               No comments yet
             </div>
           </TabsContent>
 
           <TabsContent value="attachments" className="flex-1 overflow-auto mt-0 p-4">
-            <div className="text-[13px] text-center py-8" style={{ color: isDark ? '#878787' : '#64748B' }}>
+            <div className="text-[13px] text-center py-8" style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>
               No attachments
             </div>
           </TabsContent>
 
           <TabsContent value="history" className="flex-1 overflow-auto mt-0 p-4">
-            <div className="text-[13px] text-center py-8" style={{ color: isDark ? '#878787' : '#64748B' }}>
+            <div className="text-[13px] text-center py-8" style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>
               No history available
             </div>
           </TabsContent>

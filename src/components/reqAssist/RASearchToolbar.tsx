@@ -66,7 +66,7 @@ export default function RASearchToolbar({ tab, onTabChange, search, onSearchChan
       {/* Filter Tabs */}
       <div style={{
         display: 'inline-flex', alignItems: 'center', gap: 2,
-        background: '#F1F5F9', borderRadius: 8, padding: 3,
+        background: '#1A1A1A', borderRadius: 8, padding: 3,
       }}>
         {TABS.map(t => {
           const active = tab === t.key;
@@ -120,7 +120,7 @@ export default function RASearchToolbar({ tab, onTabChange, search, onSearchChan
             whiteSpace: 'nowrap', flexShrink: 0,
             transition: 'box-shadow 150ms ease',
           }}
-          onMouseEnter={e => { if (!syncingAll) { e.currentTarget.style.background = 'linear-gradient(135deg, #1D4ED8 0%, #1E40AF 100%)'; e.currentTarget.style.boxShadow = '0 2px 6px rgba(37,99,235,0.45)'; } }}
+          onMouseEnter={e => { if (!syncingAll) { e.currentTarget.style.background = 'linear-gradient(135deg, #1D4ED8 0%, #7DB8FC 100%)'; e.currentTarget.style.boxShadow = '0 2px 6px rgba(37,99,235,0.45)'; } }}
           onMouseLeave={e => { if (!syncingAll) { e.currentTarget.style.background = 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)'; e.currentTarget.style.boxShadow = '0 1px 3px rgba(37,99,235,0.35)'; } }}
         >
           {syncingAll ? (

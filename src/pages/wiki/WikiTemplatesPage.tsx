@@ -20,7 +20,7 @@ function DuplicateWarning({ duplicates, onDismiss, isDark }: { duplicates: any[]
     }}>
       <AlertTriangle size={16} style={{ color: '#D97706', flexShrink: 0, marginTop: 2 }} />
       <div style={{ flex: 1 }}>
-        <div style={{ fontSize: 12, fontWeight: 650, color: isDark ? '#FBBF24' : '#92400E', marginBottom: 4 }}>
+        <div style={{ fontSize: 12, fontWeight: 650, color: isDark ? '#FBBF24' : '#FBBF24', marginBottom: 4 }}>
           Similar article{duplicates.length > 1 ? 's' : ''} found
         </div>
         {duplicates.map((d: any) => (
@@ -28,7 +28,7 @@ function DuplicateWarning({ duplicates, onDismiss, isDark }: { duplicates: any[]
             <span style={{
               fontFamily: 'JetBrains Mono, monospace', fontSize: 10, fontWeight: 700,
               padding: '1px 5px', borderRadius: 4,
-              background: isDark ? 'rgba(217,119,6,0.2)' : '#FEF3C7',
+              background: isDark ? 'rgba(217,119,6,0.2)' : 'rgba(251,191,36,0.10)',
               color: '#D97706',
             }}>{Math.round((d.similarity ?? 0.8) * 100)}%</span>
             <span
@@ -37,7 +37,7 @@ function DuplicateWarning({ duplicates, onDismiss, isDark }: { duplicates: any[]
             >{d.title}</span>
           </div>
         ))}
-        <div style={{ fontSize: 11, color: isDark ? '#A1A1A1' : '#92400E', marginTop: 4 }}>
+        <div style={{ fontSize: 11, color: isDark ? '#A1A1A1' : '#FBBF24', marginTop: 4 }}>
           You can proceed or navigate to an existing article instead.
         </div>
       </div>
@@ -55,7 +55,7 @@ function SimpleDateInput({ label, value, onChange, helperText, isDark }: {
   return (
     <div style={{ flex: 1, minWidth: 200 }}>
       <label style={{
-        fontSize: 11, fontWeight: 700, color: isDark ? '#878787' : '#64748B', marginBottom: 4,
+        fontSize: 11, fontWeight: 700, color: isDark ? '#878787' : 'rgba(237,237,237,0.40)', marginBottom: 4,
         textTransform: 'uppercase' as const, letterSpacing: '0.04em', display: 'block',
       }}>{label}</label>
       <div style={{ position: 'relative' }}>
@@ -67,11 +67,11 @@ function SimpleDateInput({ label, value, onChange, helperText, isDark }: {
             width: '100%', padding: '7px 10px', fontSize: 12, borderRadius: 4,
             border: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.12)'}`,
             background: isDark ? '#1A1A1A' : '#FFFFFF',
-            color: isDark ? '#EDEDED' : '#0F172A', fontFamily: 'Inter, sans-serif',
+            color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)', fontFamily: 'Geist, -apple-system, sans-serif',
           }}
         />
       </div>
-      <div style={{ fontSize: 10, color: isDark ? '#878787' : '#94A3B8', marginTop: 4 }}>{helperText}</div>
+      <div style={{ fontSize: 10, color: isDark ? '#878787' : 'rgba(237,237,237,0.40)', marginTop: 4 }}>{helperText}</div>
     </div>
   );
 }
@@ -169,19 +169,19 @@ export default function WikiTemplatesPage() {
 
   return (
     <div style={{
-      fontFamily: 'Inter, sans-serif',
-      color: isDark ? '#EDEDED' : '#0F172A',
-      background: isDark ? '#0A0A0A' : '#F8FAFC',
+      fontFamily: 'Geist, -apple-system, sans-serif',
+      color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)',
+      background: isDark ? '#0A0A0A' : '#1A1A1A',
       minHeight: '100%', padding: '24px 40px 48px',
     }}>
       <nav style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 24 }}>
         <span onClick={() => navigate('/wiki')} style={{ fontSize: 13, color: '#2563EB', cursor: 'pointer' }}>Wiki</span>
-        <ChevronRight size={12} style={{ color: isDark ? '#878787' : '#94A3B8' }} />
-        <span style={{ fontSize: 13, color: isDark ? '#A1A1A1' : '#64748B', fontWeight: 600 }}>Templates</span>
+        <ChevronRight size={12} style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }} />
+        <span style={{ fontSize: 13, color: isDark ? '#A1A1A1' : 'rgba(237,237,237,0.40)', fontWeight: 600 }}>Templates</span>
       </nav>
 
-      <h1 style={{ fontFamily: "'Sora', sans-serif", fontSize: 18, fontWeight: 700, marginBottom: 8, color: isDark ? '#EDEDED' : '#0F172A' }}>Article Templates</h1>
-      <p style={{ fontSize: 12, color: isDark ? '#A1A1A1' : '#64748B', marginBottom: 16 }}>Pre-built structures for common article types. Click "Use Template" to create a pre-filled article.</p>
+      <h1 style={{ fontFamily: "'Sora', sans-serif", fontSize: 18, fontWeight: 700, marginBottom: 8, color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)' }}>Article Templates</h1>
+      <p style={{ fontSize: 12, color: isDark ? '#A1A1A1' : 'rgba(237,237,237,0.40)', marginBottom: 16 }}>Pre-built structures for common article types. Click "Use Template" to create a pre-filled article.</p>
 
       {/* ── Duplicate Detection Warning ── */}
       <DuplicateWarning
@@ -208,12 +208,12 @@ export default function WikiTemplatesPage() {
         border: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.08)'}`,
       }}>
         <button onClick={() => setShowScheduling(!showScheduling)} style={{
-          fontSize: 12, fontWeight: 650, color: isDark ? '#EDEDED' : '#0F172A', background: 'transparent',
+          fontSize: 12, fontWeight: 650, color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)', background: 'transparent',
           border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8, width: '100%',
         }}>
           <CalendarIcon size={14} style={{ color: '#2563EB' }} />
           Content Scheduling
-          <span style={{ fontSize: 10, color: isDark ? '#878787' : '#94A3B8', fontWeight: 500, marginLeft: 'auto' }}>
+          <span style={{ fontSize: 10, color: isDark ? '#878787' : 'rgba(237,237,237,0.40)', fontWeight: 500, marginLeft: 'auto' }}>
             {showScheduling ? '▾' : '▸'} {publishAt || archiveAt ? '(configured)' : '(optional)'}
           </span>
         </button>
@@ -236,7 +236,7 @@ export default function WikiTemplatesPage() {
             {(publishAt || archiveAt) && (
               <button onClick={() => { setPublishAt(''); setArchiveAt(''); }} style={{
                 fontSize: 10, fontWeight: 600, padding: '4px 10px', borderRadius: 4,
-                border: '1px solid rgba(220,38,38,0.2)', background: isDark ? 'rgba(220,38,38,0.12)' : '#FEF2F2', color: '#DC2626',
+                border: '1px solid rgba(220,38,38,0.2)', background: isDark ? 'rgba(220,38,38,0.12)' : 'rgba(248,113,113,0.06)', color: '#DC2626',
                 cursor: 'pointer', alignSelf: 'flex-end', marginBottom: 18,
               }}>Clear Dates</button>
             )}
@@ -265,26 +265,26 @@ export default function WikiTemplatesPage() {
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
                 <div style={{
                   width: 32, height: 32, borderRadius: 6,
-                  background: isDark ? '#1A1A1A' : '#F1F5F9',
+                  background: isDark ? '#1A1A1A' : '#1A1A1A',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                 }}>
-                  <FileText size={16} style={{ color: isDark ? '#A1A1A1' : '#64748B' }} />
+                  <FileText size={16} style={{ color: isDark ? '#A1A1A1' : 'rgba(237,237,237,0.40)' }} />
                 </div>
                 <div>
-                  <div style={{ fontFamily: "'Sora', sans-serif", fontSize: 13, fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A' }}>{t.name}</div>
-                  <div style={{ fontSize: 11, color: isDark ? '#A1A1A1' : '#64748B' }}>{t.description}</div>
+                  <div style={{ fontFamily: "'Sora', sans-serif", fontSize: 13, fontWeight: 600, color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)' }}>{t.name}</div>
+                  <div style={{ fontSize: 11, color: isDark ? '#A1A1A1' : 'rgba(237,237,237,0.40)' }}>{t.description}</div>
                 </div>
               </div>
-              <div style={{ fontSize: 11, color: isDark ? '#A1A1A1' : '#64748B', marginBottom: 12 }}>{sections.length} sections</div>
+              <div style={{ fontSize: 11, color: isDark ? '#A1A1A1' : 'rgba(237,237,237,0.40)', marginBottom: 12 }}>{sections.length} sections</div>
               <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 12 }}>
                 {sections.slice(0, 4).map((s: any, i: number) => (
                   <span key={i} style={{
                     fontSize: 9, padding: '2px 6px', borderRadius: 4,
-                    background: isDark ? '#1A1A1A' : '#F1F5F9',
-                    color: isDark ? '#A1A1A1' : '#64748B',
+                    background: isDark ? '#1A1A1A' : '#1A1A1A',
+                    color: isDark ? '#A1A1A1' : 'rgba(237,237,237,0.40)',
                   }}>{s.title}</span>
                 ))}
-                {sections.length > 4 && <span style={{ fontSize: 9, color: isDark ? '#878787' : '#94A3B8' }}>+{sections.length - 4} more</span>}
+                {sections.length > 4 && <span style={{ fontSize: 9, color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>+{sections.length - 4} more</span>}
               </div>
               <button
                 onClick={() => handleUseTemplate(t)}

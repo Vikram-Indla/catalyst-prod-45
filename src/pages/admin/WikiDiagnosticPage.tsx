@@ -47,7 +47,7 @@ function MetricCard({ label, value, subtitle, icon: Icon, status }: {
         </div>
         <span className="text-xs font-semibold uppercase tracking-wide text-[#44546F]">{label}</span>
       </div>
-      <p className="text-2xl font-bold font-[var(--cp-font-mono,monospace)] text-[#0F172A]">{value}</p>
+      <p className="text-2xl font-bold font-[var(--cp-font-mono,monospace)] text-[rgba(237,237,237,0.93)]">{value}</p>
       {subtitle && <p className="text-xs text-[#44546F] mt-0.5">{subtitle}</p>}
     </div>
   );
@@ -59,7 +59,7 @@ function Section({ title, icon: Icon, children }: { title: string; icon: React.E
     <section className="border border-[rgba(15,23,42,0.12)] dark:border-[rgba(255,255,255,0.08)] rounded-md bg-white dark:bg-[#1A1A1A]">
       <div className="px-4 py-3 border-b border-[rgba(15,23,42,0.12)] flex items-center gap-2 bg-[#FAFBFC]">
         <Icon className="w-4 h-4 text-[#44546F]" />
-        <h3 className="text-sm font-semibold uppercase tracking-wide text-[#0F172A]">{title}</h3>
+        <h3 className="text-sm font-semibold uppercase tracking-wide text-[rgba(237,237,237,0.93)]">{title}</h3>
       </div>
       <div className="p-0">{children}</div>
     </section>
@@ -82,7 +82,7 @@ function DiagTable({ headers, rows }: { headers: string[]; rows: React.ReactNode
           {rows.map((cells, ri) => (
             <tr key={ri} className="border-b border-[rgba(15,23,42,0.06)] h-9 hover:bg-[rgba(15,23,42,0.02)]">
               {cells.map((cell, ci) => (
-                <td key={ci} className="px-4 py-1.5 font-[var(--cp-font-mono,monospace)] text-xs text-[#0F172A]">{cell}</td>
+                <td key={ci} className="px-4 py-1.5 font-[var(--cp-font-mono,monospace)] text-xs text-[rgba(237,237,237,0.93)]">{cell}</td>
               ))}
             </tr>
           ))}
@@ -163,7 +163,7 @@ export default function WikiDiagnosticPage() {
         <div className="flex items-center gap-3">
           <Stethoscope className="w-6 h-6 text-[#7C3AED]" />
           <div>
-            <h1 className="text-lg font-bold text-[#0F172A]">Wiki Pipeline Diagnostic</h1>
+            <h1 className="text-lg font-bold text-[rgba(237,237,237,0.93)]">Wiki Pipeline Diagnostic</h1>
             <p className="text-xs text-[#44546F]">Live health checks against all wiki-related tables</p>
           </div>
         </div>
@@ -330,7 +330,7 @@ export default function WikiDiagnosticPage() {
           </button>
           <button
             onClick={() => { runDiagnostics(); toast.success('Diagnostics refreshed'); }}
-            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded border border-[rgba(15,23,42,0.12)] dark:border-[rgba(255,255,255,0.08)] bg-white dark:bg-[#1A1A1A] text-[#0F172A] hover:bg-[#F4F5F7]"
+            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded border border-[rgba(15,23,42,0.12)] dark:border-[rgba(255,255,255,0.08)] bg-white dark:bg-[#1A1A1A] text-[rgba(237,237,237,0.93)] hover:bg-[#F4F5F7]"
           >
             <Wrench className="w-4 h-4" /> Refresh All
           </button>

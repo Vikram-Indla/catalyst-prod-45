@@ -18,7 +18,7 @@ interface Props {
   onToggleFav: () => void;
 }
 
-const CAT_DOT: Record<string, string> = { todo: '#94A3B8', in_progress: '#2563EB', done: '#16A34A' };
+const CAT_DOT: Record<string, string> = { todo: 'rgba(237,237,237,0.40)', in_progress: '#2563EB', done: '#16A34A' };
 
 function getAvatarGradient(key: string) {
   const letter = (key[0] || '').toUpperCase();
@@ -56,7 +56,7 @@ export function ProjectDetailPanel({ project, open, onClose, isFav, onToggleFav 
               <div style={{ fontSize: 12, color: 'var(--fg-3)' }}>{project.department || 'No department'} · {project.project_key}</div>
             </div>
             <button onClick={onToggleFav} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
-              <Star size={18} fill={isFav ? '#EAB308' : 'none'} color={isFav ? '#EAB308' : '#CBD5E1'} />
+              <Star size={18} fill={isFav ? '#EAB308' : 'none'} color={isFav ? '#EAB308' : 'rgba(237,237,237,0.53)'} />
             </button>
           </div>
 

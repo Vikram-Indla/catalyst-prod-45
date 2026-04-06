@@ -26,8 +26,8 @@ interface ScopeItem {
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
   not_run:     { label: 'NOT RUN',     color: '#253858', bg: '#DFE1E6' },
-  in_progress: { label: 'IN PROGRESS', color: '#0747A6', bg: '#DEEBFF' },
-  passed:      { label: 'PASSED',      color: '#006644', bg: '#E3FCEF' },
+  in_progress: { label: 'IN PROGRESS', color: '#0747A6', bg: 'rgba(59,130,246,0.10)' },
+  passed:      { label: 'PASSED',      color: '#006644', bg: 'rgba(74,222,128,0.10)' },
   failed:      { label: 'FAILED',      color: '#253858', bg: '#DFE1E6' },
   blocked:     { label: 'BLOCKED',     color: '#253858', bg: '#DFE1E6' },
   skipped:     { label: 'SKIPPED',     color: '#253858', bg: '#DFE1E6' },
@@ -131,11 +131,11 @@ export default function MyTestScopePage() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <UserCheck size={22} style={{ color: '#2563EB' }} />
-          <h1 style={{ fontSize: 20, fontWeight: 700, color: 'var(--fg-1, #0F172A)', margin: 0, fontFamily: 'Sora, sans-serif' }}>
+          <h1 style={{ fontSize: 20, fontWeight: 700, color: 'var(--fg-1, rgba(237,237,237,0.93))', margin: 0, fontFamily: 'Sora, sans-serif' }}>
             My Test Scope
           </h1>
           <span style={{
-            fontSize: 12, fontWeight: 600, color: '#64748B', backgroundColor: '#F1F5F9',
+            fontSize: 12, fontWeight: 600, color: 'rgba(237,237,237,0.40)', backgroundColor: '#1A1A1A',
             padding: '2px 10px', borderRadius: 12,
           }}>
             {filteredItems.length} items
@@ -145,8 +145,8 @@ export default function MyTestScopePage() {
           onClick={fetchMyScope}
           style={{
             display: 'flex', alignItems: 'center', gap: 6, height: 50,
-            padding: '0 14px', border: '1px solid var(--bd-default, #E2E8F0)', borderRadius: 8,
-            backgroundColor: '#FFF', color: '#334155', fontSize: 13, cursor: 'pointer',
+            padding: '0 14px', border: '1px solid var(--bd-default, rgba(255,255,255,0.10))', borderRadius: 8,
+            backgroundColor: '#FFF', color: 'rgba(237,237,237,0.53)', fontSize: 13, cursor: 'pointer',
           }}
         >
           <RefreshCw size={14} /> Refresh
@@ -162,7 +162,7 @@ export default function MyTestScopePage() {
             style={{
               height: 32, padding: '0 14px', border: 'none', borderRadius: 6,
               fontSize: 13, fontWeight: 500, cursor: 'pointer',
-              backgroundColor: statusFilter === tab.key ? '#2563EB' : '#F1F5F9',
+              backgroundColor: statusFilter === tab.key ? '#2563EB' : '#1A1A1A',
               color: statusFilter === tab.key ? '#FFF' : '#475569',
               transition: 'all 0.15s',
             }}
@@ -176,23 +176,23 @@ export default function MyTestScopePage() {
       {items.length === 0 ? (
         <div style={{
           textAlign: 'center', padding: 60, backgroundColor: '#FFF',
-          borderRadius: 12, border: '1px solid var(--bd-default, #E2E8F0)',
+          borderRadius: 12, border: '1px solid var(--bd-default, rgba(255,255,255,0.10))',
         }}>
-          <UserCheck size={48} style={{ marginBottom: 16, opacity: 0.3, color: '#94A3B8' }} />
-          <h3 style={{ fontSize: 16, fontWeight: 600, color: '#334155', margin: '0 0 8px' }}>
+          <UserCheck size={48} style={{ marginBottom: 16, opacity: 0.3, color: 'rgba(237,237,237,0.40)' }} />
+          <h3 style={{ fontSize: 16, fontWeight: 600, color: 'rgba(237,237,237,0.53)', margin: '0 0 8px' }}>
             No active assignments
           </h3>
-          <p style={{ fontSize: 14, color: '#94A3B8', margin: 0 }}>
+          <p style={{ fontSize: 14, color: 'rgba(237,237,237,0.40)', margin: 0 }}>
             Contact your Test Manager to get test cases assigned.
           </p>
         </div>
       ) : filteredItems.length === 0 ? (
         <div style={{
           textAlign: 'center', padding: 40, backgroundColor: '#FFF',
-          borderRadius: 12, border: '1px solid var(--bd-default, #E2E8F0)',
+          borderRadius: 12, border: '1px solid var(--bd-default, rgba(255,255,255,0.10))',
         }}>
-          <Filter size={32} style={{ marginBottom: 12, opacity: 0.3, color: '#94A3B8' }} />
-          <p style={{ fontSize: 14, color: '#94A3B8', margin: 0 }}>
+          <Filter size={32} style={{ marginBottom: 12, opacity: 0.3, color: 'rgba(237,237,237,0.40)' }} />
+          <p style={{ fontSize: 14, color: 'rgba(237,237,237,0.40)', margin: 0 }}>
             No items match the current filter.
           </p>
         </div>
@@ -202,13 +202,13 @@ export default function MyTestScopePage() {
             const first = cycleItems[0];
             return (
               <div key={cycleId} style={{
-                backgroundColor: '#FFF', borderRadius: 12, border: '1px solid var(--bd-default, #E2E8F0)',
+                backgroundColor: '#FFF', borderRadius: 12, border: '1px solid var(--bd-default, rgba(255,255,255,0.10))',
                 overflow: 'hidden',
               }}>
                 {/* Cycle Header */}
                 <div style={{
-                  padding: '12px 16px', backgroundColor: 'var(--bg-1, #F8FAFC)',
-                  borderBottom: '1px solid var(--bd-default, #E2E8F0)',
+                  padding: '12px 16px', backgroundColor: 'var(--bg-1, #1A1A1A)',
+                  borderBottom: '1px solid var(--bd-default, rgba(255,255,255,0.10))',
                   display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -218,19 +218,19 @@ export default function MyTestScopePage() {
                     }}>
                       {first.cycle_key}
                     </span>
-                    <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--fg-1, #0F172A)' }}>
+                    <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--fg-1, rgba(237,237,237,0.93))' }}>
                       {first.cycle_name}
                     </span>
                     <span style={{
                       fontSize: 11, fontWeight: 700, textTransform: 'uppercase' as const,
                       letterSpacing: '0.03em', padding: '2px 6px', borderRadius: 4, height: 20,
                       display: 'inline-flex', alignItems: 'center',
-                      color: '#0747A6', backgroundColor: '#DEEBFF',
+                      color: '#0747A6', backgroundColor: 'rgba(59,130,246,0.10)',
                     }}>
                       {first.cycle_status === 'active' ? 'IN PROGRESS' : first.cycle_status.toUpperCase()}
                     </span>
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: '#64748B' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'rgba(237,237,237,0.40)' }}>
                     <Clock size={13} />
                     Ends {formatDate(first.planned_end)}
                     {isOverdue(first.planned_end) && (
@@ -249,7 +249,7 @@ export default function MyTestScopePage() {
                         style={{
                           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                           padding: '10px 16px', height: 44,
-                          borderBottom: idx < cycleItems.length - 1 ? '0.75px solid var(--bd-default, #E2E8F0)' : 'none',
+                          borderBottom: idx < cycleItems.length - 1 ? '0.75px solid var(--bd-default, rgba(255,255,255,0.10))' : 'none',
                           transition: 'background-color 0.1s',
                         }}
                         onMouseEnter={e => e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.02)'}
@@ -262,7 +262,7 @@ export default function MyTestScopePage() {
                           }}>
                             {item.case_key}
                           </span>
-                          <span style={{ fontSize: 13, color: 'var(--fg-1, #0F172A)', fontWeight: 500 }}>
+                          <span style={{ fontSize: 13, color: 'var(--fg-1, rgba(237,237,237,0.93))', fontWeight: 500 }}>
                             {item.title}
                           </span>
                         </div>
@@ -276,7 +276,7 @@ export default function MyTestScopePage() {
                           </span>
                           {item.due_date && (
                             <span style={{
-                              fontSize: 12, color: isOverdue(item.due_date) ? '#EF4444' : '#64748B',
+                              fontSize: 12, color: isOverdue(item.due_date) ? '#EF4444' : 'rgba(237,237,237,0.40)',
                               fontWeight: isOverdue(item.due_date) ? 600 : 400,
                             }}>
                               {formatDate(item.due_date)}

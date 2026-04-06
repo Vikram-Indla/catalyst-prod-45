@@ -78,17 +78,17 @@ export function ExecutionTestCaseView({
 
   const statusConfig: Record<string, { color: string; bg: string; label: string }> = {
     not_run: { color: 'var(--fg-3)', bg: 'var(--cp-bd-zone)', label: 'Not Run' },
-    passed: { color: 'var(--sem-success)', bg: '#ECFDF5', label: 'Passed' },
-    failed: { color: 'var(--sem-danger)', bg: '#FEF2F2', label: 'Failed' },
+    passed: { color: 'var(--sem-success)', bg: 'rgba(74,222,128,0.06)', label: 'Passed' },
+    failed: { color: 'var(--sem-danger)', bg: 'rgba(248,113,113,0.06)', label: 'Failed' },
     blocked: { color: 'var(--sem-warning)', bg: '#FFFBEB', label: 'Blocked' },
     skipped: { color: 'var(--fg-4)', bg: 'var(--bg-1)', label: 'Skipped' },
   };
 
   const priorityConfig: Record<string, { color: string; bg: string }> = {
-    critical: { color: 'var(--sem-danger)', bg: '#FEF2F2' },
+    critical: { color: 'var(--sem-danger)', bg: 'rgba(248,113,113,0.06)' },
     high: { color: '#EA580C', bg: '#FFF7ED' },
     medium: { color: 'var(--sem-warning)', bg: '#FFFBEB' },
-    low: { color: 'var(--sem-success)', bg: '#ECFDF5' },
+    low: { color: 'var(--sem-success)', bg: 'rgba(74,222,128,0.06)' },
   };
 
   const formatTime = (seconds: number) => {
@@ -136,7 +136,7 @@ export function ExecutionTestCaseView({
             <button onClick={() => setIsHistoryOpen(true)} title="View Execution History" style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '6px 10px', backgroundColor: 'var(--cp-bd-zone)', border: 'none', borderRadius: 6, color: 'var(--fg-3)', fontSize: 12, fontWeight: 500, cursor: 'pointer' }}>
               <History size={14} /> History
             </button>
-            <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px', backgroundColor: elapsedTime > 0 ? '#FEF3C7' : 'var(--cp-bd-zone)', borderRadius: 6 }}>
+            <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px', backgroundColor: elapsedTime > 0 ? 'rgba(251,191,36,0.10)' : 'var(--cp-bd-zone)', borderRadius: 6 }}>
               <Timer size={14} style={{ color: elapsedTime > 0 ? 'var(--sem-warning)' : 'var(--fg-3)' }} />
               <span style={{ fontSize: 14, fontWeight: 600, fontFamily: 'monospace', color: elapsedTime > 0 ? 'var(--sem-warning)' : 'var(--fg-3)' }}>
                 {formatTime(elapsedTime)}
@@ -157,9 +157,9 @@ export function ExecutionTestCaseView({
           <div style={{ marginBottom: 24, padding: 16, backgroundColor: '#FFFBEB', border: '1px solid color-mix(in srgb, var(--sem-warning) 30%, transparent)', borderRadius: 10 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
               <AlertTriangle size={16} style={{ color: 'var(--sem-warning)' }} />
-              <span style={{ fontSize: 13, fontWeight: 600, color: '#92400E' }}>Preconditions</span>
+              <span style={{ fontSize: 13, fontWeight: 600, color: '#FBBF24' }}>Preconditions</span>
             </div>
-            <p style={{ fontSize: 14, color: '#92400E', margin: 0, lineHeight: 1.5 }}>{highlightVariables(testCase.preconditions)}</p>
+            <p style={{ fontSize: 14, color: '#FBBF24', margin: 0, lineHeight: 1.5 }}>{highlightVariables(testCase.preconditions)}</p>
           </div>
         )}
 
@@ -184,12 +184,12 @@ export function ExecutionTestCaseView({
                       <p style={{ fontSize: 14, color: 'var(--fg-2)', margin: 0, lineHeight: 1.6 }}>{highlightVariables(step.action)}</p>
                     </div>
                     {step.expected_result && (
-                      <div style={{ padding: 12, backgroundColor: '#ECFDF5', borderRadius: 8, borderLeft: '3px solid #10B981' }}>
+                      <div style={{ padding: 12, backgroundColor: 'rgba(74,222,128,0.06)', borderRadius: 8, borderLeft: '3px solid #10B981' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
                           <Target size={12} style={{ color: 'var(--sem-success)' }} />
                           <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--sem-success)', textTransform: 'uppercase' }}>Expected</span>
                         </div>
-                        <p style={{ fontSize: 13, color: '#065F46', margin: 0, lineHeight: 1.5 }}>{highlightVariables(step.expected_result)}</p>
+                        <p style={{ fontSize: 13, color: '#4ADE80', margin: 0, lineHeight: 1.5 }}>{highlightVariables(step.expected_result)}</p>
                       </div>
                     )}
                   </div>
@@ -206,12 +206,12 @@ export function ExecutionTestCaseView({
 
         {/* Overall Expected Result */}
         {testCase?.expected_result && (
-          <div style={{ marginBottom: 24, padding: 16, backgroundColor: '#ECFDF5', border: '1px solid #A7F3D0', borderRadius: 10 }}>
+          <div style={{ marginBottom: 24, padding: 16, backgroundColor: 'rgba(74,222,128,0.06)', border: '1px solid #A7F3D0', borderRadius: 10 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
               <Target size={16} style={{ color: 'var(--sem-success)' }} />
-              <span style={{ fontSize: 13, fontWeight: 600, color: '#065F46' }}>Expected Result</span>
+              <span style={{ fontSize: 13, fontWeight: 600, color: '#4ADE80' }}>Expected Result</span>
             </div>
-            <p style={{ fontSize: 14, color: '#065F46', margin: 0, lineHeight: 1.5 }}>{highlightVariables(testCase.expected_result)}</p>
+            <p style={{ fontSize: 14, color: '#4ADE80', margin: 0, lineHeight: 1.5 }}>{highlightVariables(testCase.expected_result)}</p>
           </div>
         )}
 

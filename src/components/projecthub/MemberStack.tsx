@@ -24,7 +24,7 @@ function getMemberGradient(name: string): [string, string] {
     S: ['#0284C7', '#0369A1'], T: ['#0284C7', '#0369A1'],
     U: ['#0D9488', '#115E59'], V: ['#0D9488', '#115E59'],
     W: ['#0284C7', '#075985'], X: ['#0284C7', '#075985'],
-    Y: ['#7C3AED', '#5B21B6'], Z: ['#7C3AED', '#5B21B6'],
+    Y: ['#7C3AED', '#A78BFA'], Z: ['#7C3AED', '#A78BFA'],
   };
   return map[c] || ['#2563EB', '#1D4ED8'];
 }

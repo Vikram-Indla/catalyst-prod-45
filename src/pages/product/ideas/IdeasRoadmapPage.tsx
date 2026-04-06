@@ -49,7 +49,7 @@ import { useLocation } from 'react-router-dom';
 const TEAMS = ['All Teams', 'Senaie BAU', 'Integration Team', 'Mobile App Team'];
 
 function SkeletonCard({ isDark }: { isDark?: boolean }) {
-  return <div style={{ height: 80, background: isDark ? '#1A1A1A' : '#F1F5F9', borderRadius: 8, animation: 'shimmer 1.5s infinite' }} />;
+  return <div style={{ height: 80, background: isDark ? '#1A1A1A' : '#1A1A1A', borderRadius: 8, animation: 'shimmer 1.5s infinite' }} />;
 }
 
 function LoadingSkeleton({ isDark }: { isDark?: boolean }) {
@@ -58,9 +58,9 @@ function LoadingSkeleton({ isDark }: { isDark?: boolean }) {
       {[1, 2, 3, 4, 5].map(col => (
         <div key={col} style={{
           flex: 1, minWidth: 220, display: 'flex', flexDirection: 'column', gap: 8,
-          borderRadius: 8, border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0', padding: 12,
+          borderRadius: 8, border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(255,255,255,0.10)', padding: 12,
         }}>
-          <div style={{ height: 20, width: 100, background: isDark ? '#1A1A1A' : '#F1F5F9', borderRadius: 4, marginBottom: 8 }} />
+          <div style={{ height: 20, width: 100, background: isDark ? '#1A1A1A' : '#1A1A1A', borderRadius: 4, marginBottom: 8 }} />
           {[1, 2, 3].map(i => <SkeletonCard key={i} isDark={isDark} />)}
         </div>
       ))}
@@ -208,11 +208,11 @@ export default function IdeasRoadmapPage() {
           onPresent={handlePresent} onExport={handleExport} onGantt={handleGantt} />
         <div style={{
           flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center',
-          justifyContent: 'center', gap: 12, color: isDark ? '#878787' : '#64748B',
+          justifyContent: 'center', gap: 12, color: isDark ? '#878787' : 'rgba(237,237,237,0.40)',
         }}>
           <div style={{ fontSize: 40, opacity: 0.3 }}>💡</div>
-          <div style={{ fontSize: 14, fontWeight: 600, color: isDark ? '#A1A1A1' : '#334155' }}>No ideas in backlog yet</div>
-          <div style={{ fontSize: 13, color: isDark ? '#878787' : '#94A3B8' }}>Add ideas from the Ideas list to get started.</div>
+          <div style={{ fontSize: 14, fontWeight: 600, color: isDark ? '#A1A1A1' : 'rgba(237,237,237,0.53)' }}>No ideas in backlog yet</div>
+          <div style={{ fontSize: 13, color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>Add ideas from the Ideas list to get started.</div>
           <a href="/producthub/ideation" style={{
             marginTop: 8, fontSize: 13, fontWeight: 600, color: '#2563EB', textDecoration: 'none',
           }}>Go to Ideas →</a>
@@ -251,7 +251,7 @@ export default function IdeasRoadmapPage() {
             flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center',
             justifyContent: 'center', gap: 8, padding: 24, textAlign: 'center',
           }}>
-            <div style={{ fontSize: 14, color: isDark ? '#878787' : '#64748B', maxWidth: 340, lineHeight: 1.5 }}>
+            <div style={{ fontSize: 14, color: isDark ? '#878787' : 'rgba(237,237,237,0.40)', maxWidth: 340, lineHeight: 1.5 }}>
               No committed ideas yet. Toggle an idea's committed switch to include it on the roadmap.
             </div>
             <button
@@ -267,7 +267,7 @@ export default function IdeasRoadmapPage() {
             flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center',
             justifyContent: 'center', gap: 8,
           }}>
-            <div style={{ fontSize: 14, color: isDark ? '#878787' : '#64748B' }}>No ideas match the current filters</div>
+            <div style={{ fontSize: 14, color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>No ideas match the current filters</div>
             <button
               onClick={() => { setTeamFilter('All Teams'); setCommittedOnly(false); }}
               style={{
@@ -326,7 +326,7 @@ export default function IdeasRoadmapPage() {
       {toast && (
         <div style={{
           position: 'fixed', bottom: 24, left: '50%', transform: 'translateX(-50%)',
-          background: '#1E293B', color: '#FFFFFF', padding: '8px 20px',
+          background: 'rgba(237,237,237,0.93)', color: '#FFFFFF', padding: '8px 20px',
           borderRadius: 8, fontSize: 13, fontWeight: 600, zIndex: 100,
           boxShadow: '0 4px 12px rgba(0,0,0,.15)',
           animation: 'fadeInUp 250ms ease',

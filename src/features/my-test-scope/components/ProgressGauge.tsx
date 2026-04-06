@@ -40,7 +40,7 @@ export function ProgressGauge({ summary }: ProgressGaugeProps) {
         <StatusItem icon={CheckCircle2} count={passedTests} label="Passed" color="#10B981" />
         <StatusItem icon={XCircle} count={failedTests} label="Failed" color="#EF4444" />
         <StatusItem icon={Ban} count={blockedTests} label="Blocked" color="#F59E0B" />
-        <StatusItem icon={Circle} count={notRunTests} label="Not Run" color="#94A3B8" />
+        <StatusItem icon={Circle} count={notRunTests} label="Not Run" color="rgba(237,237,237,0.40)" />
       </div>
     </div>
   );

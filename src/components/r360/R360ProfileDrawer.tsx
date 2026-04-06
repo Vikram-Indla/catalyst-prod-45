@@ -30,10 +30,10 @@ const TYPE_COLORS: Record<string, { color: string; opacity: number }> = {
 };
 
 // ── Colour tokens ──
-const INK1 = '#0F172A';
-const INK2 = '#334155';
-const INK4 = '#64748B';
-const MUTED = '#94A3B8';
+const INK1 = 'rgba(237,237,237,0.93)';
+const INK2 = 'rgba(237,237,237,0.53)';
+const INK4 = 'rgba(237,237,237,0.40)';
+const MUTED = 'rgba(237,237,237,0.40)';
 const SUCCESS = '#16A34A';
 const WARNING = '#D97706';
 const DANGER = '#DC2626';
@@ -180,7 +180,7 @@ function getInitials(name: string): string {
   return name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
 }
 
-const SLATE = '#64748B';
+const SLATE = 'rgba(237,237,237,0.40)';
 
 function computeLoadColour(openCount: number, roleAvg: number): string {
   if (openCount === 0) return SUCCESS;
@@ -1040,14 +1040,14 @@ function OverviewTab({
           {/* SVG Ring */}
           <svg width={110} height={110} viewBox="0 0 110 110" style={{ flexShrink: 0 }}>
             <circle cx={55} cy={55} r={44} fill="none" stroke="var(--divider)" strokeWidth={9} />
-            <circle cx={55} cy={55} r={44} fill="none" stroke="#CBD5E1" strokeWidth={2}
+            <circle cx={55} cy={55} r={44} fill="none" stroke="rgba(237,237,237,0.53)" strokeWidth={2}
               strokeDasharray="125 151" strokeDashoffset={-69} opacity={0.7} />
             <circle cx={55} cy={55} r={44} fill="none" stroke={loadColour} strokeWidth={9}
               strokeDasharray={`${Math.min((openCount / 11) * 276.5, 276.5)} ${276.5 - Math.min((openCount / 11) * 276.5, 276.5)}`}
               strokeDashoffset={-69} strokeLinecap="round" />
             <text x={55} y={52} textAnchor="middle" fontFamily="'Sora', sans-serif" fontSize={22} fontWeight={700} fill={loadColour}>{openCount}</text>
             <text x={55} y={67} textAnchor="middle" fontFamily="'Inter', sans-serif" fontSize={11} fontWeight={700} fill={MUTED}>OPEN</text>
-            <text x={55} y={82} textAnchor="middle" fontFamily="'Inter', sans-serif" fontSize={11} fill="#CBD5E1">avg {roleAvg}</text>
+            <text x={55} y={82} textAnchor="middle" fontFamily="'Inter', sans-serif" fontSize={11} fill="rgba(237,237,237,0.53)">avg {roleAvg}</text>
           </svg>
 
           {/* Stat rows — CLICKABLE */}
@@ -1118,7 +1118,7 @@ function OverviewTab({
             borderRadius: 4, padding: '8px 12px', display: 'flex', alignItems: 'center', gap: 8,
           }}>
             <AlertTriangle size={13} color={WARNING} />
-            <span style={{ fontSize: 12, color: '#92400E' }}>
+            <span style={{ fontSize: 12, color: '#FBBF24' }}>
               {concurrent} items in progress simultaneously — may indicate context-switching
             </span>
           </div>
@@ -1181,7 +1181,7 @@ function OverviewTab({
         <SectionTitle>WORK MIX</SectionTitle>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           {workMix.map(row => {
-            const tc = TYPE_COLORS[row.type] || { color: '#94A3B8', opacity: 0.6 };
+            const tc = TYPE_COLORS[row.type] || { color: 'rgba(237,237,237,0.40)', opacity: 0.6 };
             return (
               <div
                 key={row.type}
@@ -1248,8 +1248,8 @@ function OverviewTab({
             </div>
             <div style={{ display: 'flex', gap: 6, marginTop: 6 }}>
               <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: 'var(--fg-3)' }} />
-              <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#CBD5E1' }} />
-              <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#CBD5E1' }} />
+              <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: 'rgba(237,237,237,0.53)' }} />
+              <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: 'rgba(237,237,237,0.53)' }} />
             </div>
           </div>
           <ChevronRight size={14} color={INK4} />

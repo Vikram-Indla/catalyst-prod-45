@@ -41,7 +41,7 @@ export function ArchiveConfirmModal({ open, projectName, onClose, onConfirm, loa
           </div>
           <button
             onClick={onClose}
-            className="flex items-center justify-center rounded-md hover:bg-[#F1F5F9] transition-colors"
+            className="flex items-center justify-center rounded-md hover:bg-[#1A1A1A] transition-colors"
             style={{ width: 28, height: 28, border: 'none', background: 'transparent', cursor: 'pointer' }}
           >
             <X size={16} color="var(--fg-3)" />

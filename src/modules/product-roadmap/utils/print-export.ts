@@ -39,10 +39,10 @@ export function doPrintExport(items: RoadmapDemand[]) {
       <td style="font-weight:500">${item.priority_tier || '—'}</td>
       <td>
         <div style="display:flex;align-items:center;gap:6px">
-          <div style="flex:1;height:4px;background:#F1F5F9;border-radius:999px;overflow:hidden;min-width:50px">
+          <div style="flex:1;height:4px;background:#1A1A1A;border-radius:999px;overflow:hidden;min-width:50px">
             <div style="width:${item.progress}%;height:100%;background:#2563EB;border-radius:999px"></div>
           </div>
-          <span style="font-size:11px;font-weight:600;color:#334155;min-width:32px">${item.progress}%</span>
+          <span style="font-size:11px;font-weight:600;color:rgba(237,237,237,0.53);min-width:32px">${item.progress}%</span>
         </div>
       </td>
     </tr>`;

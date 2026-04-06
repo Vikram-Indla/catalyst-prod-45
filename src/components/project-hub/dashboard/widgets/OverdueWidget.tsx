@@ -7,7 +7,7 @@ export default function OverdueWidget({ projectId, projectKey, collapsed, onTogg
   const count = items?.length ?? 0;
 
   const badge = (
-    <span className={count === 0 ? 'bg-[#E3FCEF] dark:bg-[#1a3a2a] text-[#006644] dark:text-[#57d9a3]' : 'bg-[#FFEBE6] dark:bg-[#3a1a1a] text-[#BF2600] dark:text-[#ff8f73]'} style={{
+    <span className={count === 0 ? 'bg-[rgba(74,222,128,0.10)] dark:bg-[#1a3a2a] text-[#006644] dark:text-[#57d9a3]' : 'bg-[#FFEBE6] dark:bg-[#3a1a1a] text-[#BF2600] dark:text-[#ff8f73]'} style={{
       display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 8px',
       fontSize: 11, fontWeight: 700, borderRadius: 'var(--cp-radius-sm)',
     }}>{count}</span>
@@ -16,7 +16,7 @@ export default function OverdueWidget({ projectId, projectKey, collapsed, onTogg
   return (
     <WidgetWrapper title="Overdue" subtitle="Past due date" collapsed={collapsed} onToggleCollapse={onToggleCollapse} span={1} headerBadges={badge}>
       {isLoading ? (
-        <div className="animate-pulse"><div className="h-12 rounded bg-[#F1F5F9] dark:bg-[#1A1A1A]" /></div>
+        <div className="animate-pulse"><div className="h-12 rounded bg-[#1A1A1A] dark:bg-[#1A1A1A]" /></div>
       ) : count === 0 ? (
         <div className="flex flex-col items-center py-6 text-center">
           <div style={{ fontSize: 28, color: 'var(--cp-text-muted)', marginBottom: 8 }}>✓</div>

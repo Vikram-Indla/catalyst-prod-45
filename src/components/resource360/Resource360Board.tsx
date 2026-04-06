@@ -69,7 +69,7 @@ export function Resource360Board({ items, onItemClick }: Props) {
             {/* Cards */}
             <div style={{ flex: 1, overflowY: 'auto', paddingRight: 4 }}>
               {col.items.map(item => {
-                const hubColor = WH_HUB_COLORS[item.hub] ?? '#64748B';
+                const hubColor = WH_HUB_COLORS[item.hub] ?? 'rgba(237,237,237,0.40)';
                 const hubShort = WH_HUB_SHORT[item.hub] ?? item.hub?.slice(0, 4).toUpperCase();
                 const stale = getStaleIndicator(item.age_days, item.status, item.status_category);
 

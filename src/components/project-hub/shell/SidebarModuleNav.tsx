@@ -13,7 +13,7 @@ export function SidebarModuleNav({ collapsed, onToggle }: SidebarModuleNavProps)
 
   return (
     <div
-      className="flex flex-col h-full flex-shrink-0 bg-white dark:bg-[#0A0A0A] border-r border-[var(--bd-default, #E2E8F0)] dark:border-[rgba(255,255,255,0.10)]"
+      className="flex flex-col h-full flex-shrink-0 bg-white dark:bg-[#0A0A0A] border-r border-[var(--bd-default, rgba(255,255,255,0.10))] dark:border-[rgba(255,255,255,0.10)]"
       style={{
         width: collapsed ? 56 : 192,
         transition: 'width 200ms ease',
@@ -23,7 +23,7 @@ export function SidebarModuleNav({ collapsed, onToggle }: SidebarModuleNavProps)
     >
       {/* Header */}
       <div
-        className="flex items-center gap-2 flex-shrink-0 border-b border-[var(--bd-default, #E2E8F0)] dark:border-[rgba(255,255,255,0.10)]"
+        className="flex items-center gap-2 flex-shrink-0 border-b border-[var(--bd-default, rgba(255,255,255,0.10))] dark:border-[rgba(255,255,255,0.10)]"
         style={{ padding: collapsed ? '12px 10px' : '12px 10px' }}
       >
         <div
@@ -34,7 +34,7 @@ export function SidebarModuleNav({ collapsed, onToggle }: SidebarModuleNavProps)
         </div>
         {!collapsed && (
           <span
-            className="flex-1 truncate text-[#0F172A] dark:text-[rgba(255,255,255,0.92)]"
+            className="flex-1 truncate text-[rgba(237,237,237,0.93)] dark:text-[rgba(255,255,255,0.92)]"
             style={{ fontSize: 13, fontWeight: 600, fontFamily: "'Sora', sans-serif" }}
           >
             ProjectHub
@@ -42,14 +42,14 @@ export function SidebarModuleNav({ collapsed, onToggle }: SidebarModuleNavProps)
         )}
         <button
           onClick={onToggle}
-          className="flex items-center justify-center rounded hover:bg-[#F1F5F9] dark:hover:bg-[rgba(255,255,255,0.03)] transition-colors flex-shrink-0"
+          className="flex items-center justify-center rounded hover:bg-[#1A1A1A] dark:hover:bg-[rgba(255,255,255,0.03)] transition-colors flex-shrink-0"
           style={{ width: 24, height: 24, border: 'none', background: 'transparent', cursor: 'pointer' }}
           title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         >
           {collapsed ? (
-            <ChevronsRight size={16} className="text-[#64748B] dark:text-[rgba(255,255,255,0.55)]" />
+            <ChevronsRight size={16} className="text-[rgba(237,237,237,0.40)] dark:text-[rgba(255,255,255,0.55)]" />
           ) : (
-            <ChevronsLeft size={16} className="text-[#64748B] dark:text-[rgba(255,255,255,0.55)]" />
+            <ChevronsLeft size={16} className="text-[rgba(237,237,237,0.40)] dark:text-[rgba(255,255,255,0.55)]" />
           )}
         </button>
       </div>

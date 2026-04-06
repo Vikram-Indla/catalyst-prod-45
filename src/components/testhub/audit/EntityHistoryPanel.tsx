@@ -177,7 +177,7 @@ export function EntityHistoryPanel({ entityType, entityId, maxEntries = 20 }: En
                           <div key={field} style={{ marginBottom: 8 }}>
                             <p style={{ fontSize: 11, fontWeight: 600, color: 'var(--fg-3)', margin: '0 0 4px', textTransform: 'uppercase' }}>{label}</p>
                             <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13 }}>
-                              <span style={{ padding: '2px 8px', backgroundColor: '#FEE2E2', borderRadius: 4, color: '#991B1B', textDecoration: 'line-through', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                              <span style={{ padding: '2px 8px', backgroundColor: 'rgba(248,113,113,0.10)', borderRadius: 4, color: '#F87171', textDecoration: 'line-through', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                                 {formatValue(oldVal)}
                               </span>
                               <ArrowRight size={14} style={{ color: 'var(--fg-4)', flexShrink: 0 }} />

@@ -110,7 +110,7 @@ export default function WorkHubSidePanel({ itemId, projectKey, onClose }: WorkHu
             </>
           )}
           <button onClick={onClose} aria-label="Close panel" style={{ marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
-            <X size={20} color="#64748B" />
+            <X size={20} color="rgba(237,237,237,0.40)" />
           </button>
         </div>
 
@@ -202,7 +202,7 @@ export default function WorkHubSidePanel({ itemId, projectKey, onClose }: WorkHu
                     <textarea value={descValue} onChange={e => setDescValue(e.target.value)}
                       onBlur={() => { handleUpdate('description_text', descValue); setEditingDesc(false); }}
                       autoFocus rows={4}
-                      style={{ width: '100%', border: '1.5px solid #2563EB', borderRadius: 4, padding: 8, fontSize: 14, color: 'var(--fg-1)', fontFamily: 'Inter, sans-serif', outline: 'none', resize: 'vertical', minHeight: 80, marginBottom: 16 }} />
+                      style={{ width: '100%', border: '1.5px solid #2563EB', borderRadius: 4, padding: 8, fontSize: 14, color: 'var(--fg-1)', fontFamily: 'Geist, -apple-system, sans-serif', outline: 'none', resize: 'vertical', minHeight: 80, marginBottom: 16 }} />
                   ) : (
                     <div onClick={() => setEditingDesc(true)} style={{
                       fontSize: 14, color: item.description_text ? 'var(--fg-2)' : 'var(--fg-4)',
@@ -287,7 +287,7 @@ export default function WorkHubSidePanel({ itemId, projectKey, onClose }: WorkHu
                       <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--fg-3)' }}>
                         Subtasks ({item.completed_child_count}/{item.child_count} done)
                       </span>
-                      <button style={{ background: 'none', border: 'none', cursor: 'pointer' }}><Plus size={14} color="#64748B" /></button>
+                      <button style={{ background: 'none', border: 'none', cursor: 'pointer' }}><Plus size={14} color="rgba(237,237,237,0.40)" /></button>
                     </div>
                     {item.child_count > 0 ? (
                       <div style={{ height: 4, background: 'var(--bg-1)', borderRadius: 4, overflow: 'hidden', marginBottom: 4 }}>
@@ -330,7 +330,7 @@ export default function WorkHubSidePanel({ itemId, projectKey, onClose }: WorkHu
       <style>{`
         @keyframes slideInRight { from{transform:translateX(100%)} to{transform:translateX(0)} }
         @keyframes wh-pulse { 0%,100%{opacity:.4} 50%{opacity:1} }
-        .wh-skeleton { background: var(--bd-default, #E2E8F0); animation: wh-pulse 1.5s ease-in-out infinite; }
+        .wh-skeleton { background: var(--bd-default, rgba(255,255,255,0.10)); animation: wh-pulse 1.5s ease-in-out infinite; }
       `}</style>
     </>
   );
