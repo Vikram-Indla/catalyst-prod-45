@@ -405,49 +405,50 @@
 /* ── END DRAWER OVERLAY FIX ─────────────────────────── */
 
 /* ═══════════════════════════════════════════
-   NOCTURNE DARK MODE OVERRIDES
+   GEIST DARK MODE OVERRIDES — Solid hex only
+   Consolidated: April 2026
    ═══════════════════════════════════════════ */
 
-/* FIX 3: Table header background */
+/* Table header */
 .dark #r360-root .r3-table th {
-  background: rgba(255,255,255,0.04);
-  color: rgba(255,255,255,0.55);
-  border-bottom-color: rgba(255,255,255,0.10);
+  background: #1A1A1A;
+  color: #878787;
+  border-bottom-color: #2E2E2E;
 }
 .dark #r360-root .r3-table td {
-  color: rgba(255,255,255,0.92);
-  border-bottom-color: rgba(255,255,255,0.08);
+  color: #EDEDED;
+  border-bottom-color: #292929;
 }
 .dark #r360-root .r3-table tbody tr:hover {
-  background: rgba(255,255,255,0.04);
+  background: #1F1F1F;
 }
 
-/* FIX 4: Location labels — neutral text */
+/* Location labels */
 .dark #r360-root .r3-loc-on,
 .dark #r360-root .r3-loc-off {
-  color: rgba(255,255,255,0.72);
+  color: #A1A1A1;
 }
 
-/* FIX 5: Action icons — neutral at rest, brighter on hover */
+/* Action icons */
 .dark #r360-root .r3-btn {
   background: transparent;
-  border-color: rgba(255,255,255,0.10);
-  color: rgba(255,255,255,0.55);
+  border-color: #2E2E2E;
+  color: #878787;
 }
 .dark #r360-root .r3-btn:hover {
-  color: rgba(255,255,255,0.72);
-  border-color: rgba(255,255,255,0.20);
-  background: rgba(255,255,255,0.04);
+  color: #A1A1A1;
+  border-color: #454545;
+  background: #1F1F1F;
 }
 
-/* FIX 6: Filter chips dark mode */
+/* Filter chips */
 .dark #r360-root .r3-chip {
   background: transparent;
-  border-color: rgba(255,255,255,0.10);
-  color: rgba(255,255,255,0.72);
+  border-color: #2E2E2E;
+  color: #A1A1A1;
 }
 .dark #r360-root .r3-chip:hover {
-  border-color: rgba(255,255,255,0.20);
+  border-color: #454545;
 }
 .dark #r360-root .r3-chip--active {
   background: #3B82F6;
@@ -455,31 +456,31 @@
   color: #FFFFFF;
 }
 
-/* FIX 7: Resource type tabs dark mode */
+/* Tabs */
 .dark #r360-root .r3-tab {
-  color: rgba(255,255,255,0.55);
+  color: #878787;
   background: transparent;
 }
 .dark #r360-root .r3-tab:hover {
-  background: rgba(255,255,255,0.04);
+  background: #1F1F1F;
 }
 .dark #r360-root .r3-tab--active {
   background: transparent;
-  color: rgba(255,255,255,0.92);
+  color: #EDEDED;
   border-bottom-color: #3B82F6;
 }
 
-/* General dark overrides for R360 surfaces */
+/* General surface */
 .dark #r360-root {
-  color: rgba(255,255,255,0.92);
+  color: #EDEDED;
 }
 .dark #r360-root .r3-title {
-  color: rgba(255,255,255,0.92);
+  color: #EDEDED;
 }
 .dark #r360-root .r3-search {
-  background-color: transparent;
-  border-color: rgba(255,255,255,0.10);
-  color: rgba(255,255,255,0.92);
+  background-color: #1A1A1A;
+  border-color: #2E2E2E;
+  color: #EDEDED;
 }
 .dark #r360-root .r3-search:focus {
   border-color: #3B82F6;
@@ -492,47 +493,43 @@
   color: #878787;
 }
 .dark #r360-root .r3-dept {
-  background: rgba(255,255,255,0.04) !important;
+  background: #1A1A1A !important;
 }
-
-/* ═══════════════════════════════════════════════════════
-   ECLIPSE — NOCTURNE DARK MODE (R360 Member Detail Page)
-   ═══════════════════════════════════════════════════════ */
 
 /* Profile card */
 .dark #r360-root .r3-profile {
   background: #1A1A1A !important;
-  border-color: rgba(255,255,255,0.08) !important;
+  border-color: #2E2E2E !important;
 }
 
 /* KPI cards */
 .dark #r360-root .r3-kpi--stale,
 .dark #r360-root .r3-kpi {
   background: #1A1A1A !important;
-  border-color: rgba(255,255,255,0.08) !important;
+  border-color: #2E2E2E !important;
 }
 
 /* Tab bar */
 .dark #r360-root .r3-tab-bar {
   background: #0A0A0A !important;
-  border-color: rgba(255,255,255,0.06) !important;
+  border-color: #292929 !important;
 }
 .dark #r360-root .r3-tab {
-  color: #A1A1A1 !important;
+  color: #878787 !important;
 }
 .dark #r360-root .r3-tab:hover {
-  background: rgba(255,255,255,0.04) !important;
+  background: #1F1F1F !important;
 }
 .dark #r360-root .r3-tab.active {
   color: #2563EB !important;
   border-color: #2563EB !important;
 }
 
-/* Period toggle (Weekly/Monthly) */
+/* Period toggle */
 .dark #r360-root .r3-toggle button {
   background: #1A1A1A !important;
   color: #A1A1A1 !important;
-  border-color: rgba(255,255,255,0.08) !important;
+  border-color: #2E2E2E !important;
 }
 .dark #r360-root .r3-toggle button.active {
   background: #2563EB !important;
@@ -540,19 +537,19 @@
   border-color: #2563EB !important;
 }
 
-/* Week header / date strip */
+/* Week strip */
 .dark #r360-root .r3-week-strip {
-  background: #0A0A0A !important;
-  border-color: rgba(255,255,255,0.06) !important;
+  background: #1A1A1A !important;
+  border-color: #292929 !important;
 }
 .dark #r360-root .r3-week-label {
   color: #EDEDED !important;
 }
 
-/* Calendar day cells */
+/* Date cells */
 .dark #r360-root .r3-date-cell {
   background: #1A1A1A !important;
-  border-color: rgba(255,255,255,0.06) !important;
+  border-color: #292929 !important;
 }
 .dark #r360-root .r3-date-cell.current {
   background: rgba(37,99,235,0.1) !important;
@@ -563,11 +560,11 @@
   border-color: #878787 !important;
 }
 
-/* Status filter chips */
+/* Status chips */
 .dark #r360-root .r3-status-chip {
   background: #1A1A1A !important;
   color: #A1A1A1 !important;
-  border-color: rgba(255,255,255,0.08) !important;
+  border-color: #2E2E2E !important;
 }
 .dark #r360-root .r3-status-chip.active {
   background: rgba(37,99,235,0.12) !important;
@@ -575,67 +572,69 @@
   border-color: rgba(37,99,235,0.3) !important;
 }
 
-/* Summary bar ("0 open · 0 stale · 0 done") */
+/* Summary strip */
 .dark #r360-root .r3-summary-strip {
   color: #A1A1A1 !important;
 }
 
-/* Progress bar */
+/* Progress bg */
 .dark #r360-root .r3-progress-bg {
-  background: #1A1A1A !important;
+  background: #292929 !important;
 }
 
-/* Ring view cards */
+/* Ring cards */
 .dark #r360-root .r3-ring-card {
   background: #1A1A1A !important;
-  border-color: rgba(255,255,255,0.08) !important;
+  border-color: #2E2E2E !important;
 }
 .dark #r360-root .r3-ring-card:hover {
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3) !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4) !important;
+  border-color: #454545 !important;
 }
 
-/* Board columns */
+/* Board */
 .dark #r360-root .r3-board-col {
   background: #0A0A0A !important;
 }
 .dark #r360-root .r3-board-item {
   background: #1A1A1A !important;
-  border-color: rgba(255,255,255,0.08) !important;
+  border-color: #2E2E2E !important;
 }
 .dark #r360-root .r3-board-item:hover {
-  box-shadow: 0 2px 8px rgba(0,0,0,0.3) !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.4) !important;
+  border-color: #454545 !important;
 }
 
-/* Chronology rows */
+/* Chronology */
 .dark #r360-root .r3-day-group {
-  border-color: rgba(255,255,255,0.06) !important;
+  border-color: #292929 !important;
 }
 .dark #r360-root .r3-day-label {
   color: #A1A1A1 !important;
 }
 .dark #r360-root .r3-chrono-item {
   background: #1A1A1A !important;
-  border-color: rgba(255,255,255,0.08) !important;
+  border-color: #2E2E2E !important;
 }
 
-/* Detail panel / drawer */
+/* Detail panel */
 .dark #r360-root .r3-detail-panel {
   background: #1A1A1A !important;
-  border-color: rgba(255,255,255,0.08) !important;
+  border-color: #2E2E2E !important;
 }
 
-/* Search input */
+/* Search */
 .dark #r360-root .r3-search {
   background: #1A1A1A !important;
-  border-color: rgba(255,255,255,0.08) !important;
+  border-color: #2E2E2E !important;
   color: #EDEDED !important;
 }
 
-/* Quarter select + nav buttons */
+/* Nav buttons */
 .dark #r360-root .r3-quarter-picker,
 .dark #r360-root .r3-nav-btn {
   background: #1A1A1A !important;
-  border-color: rgba(255,255,255,0.08) !important;
+  border-color: #2E2E2E !important;
   color: #A1A1A1 !important;
 }
 
@@ -655,7 +654,7 @@
 }
 .dark #r360-root [style*="border-color: #E2E8F0"],
 .dark #r360-root [style*="border: 1px solid #E2E8F0"] {
-  border-color: rgba(255,255,255,0.08) !important;
+  border-color: #2E2E2E !important;
 }
 .dark #r360-root [style*="color: #0F172A"],
 .dark #r360-root [style*="color: #020617"],
