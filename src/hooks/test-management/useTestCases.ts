@@ -149,7 +149,7 @@ export function useTestCases(projectId: string | undefined, filters?: CaseFilter
         updated_by: c.created_by || '',
         objective: c.description,
         is_ai_generated: c.is_ai_generated || false,
-        created_by_profile: c.created_by_profile,
+        created_by_profile: (c as any).created_by_profile,
         assigned_user: (c as any).assigned_user || null,
         release: (c as any).release || null,
         steps_count: stepsCounts[c.id] || 0,

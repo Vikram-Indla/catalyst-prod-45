@@ -231,7 +231,7 @@ export function recipientTypesToConfig(types: RecipientType[]): RecipientsConfig
   };
   for (const t of types) {
     if (RECIPIENT_KEYS.includes(t as keyof Omit<RecipientsConfig, 'custom_roles'>)) {
-      (config as Record<string, boolean>)[t] = true;
+      (config as unknown as Record<string, boolean>)[t] = true;
     }
   }
   return config;
