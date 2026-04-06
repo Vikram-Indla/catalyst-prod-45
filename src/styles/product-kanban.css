@@ -25,10 +25,10 @@
 /* ═══ DARK MODE — Nocturne One Surface Model ═══ */
 .dark [data-module="product-kanban"],
 [data-theme="dark"] [data-module="product-kanban"] {
-  --pk-ink: rgba(235,238,245,0.92);
-  --pk-ink-secondary: rgba(235,238,245,0.85);
-  --pk-ink-tertiary: rgba(235,238,245,0.72);
-  --pk-ink-muted: rgba(235,238,245,0.50);
+  --pk-ink: rgba(255,255,255,0.92);
+  --pk-ink-secondary: rgba(255,255,255,0.85);
+  --pk-ink-tertiary: rgba(255,255,255,0.72);
+  --pk-ink-muted: rgba(255,255,255,0.50);
   --pk-surface: #0A0A0A;
   --pk-surface-column: rgba(255,255,255,0.03);
   --pk-surface-tertiary: rgba(255,255,255,0.05);
@@ -48,11 +48,11 @@
 }
 .dark .pk-card-title,
 [data-theme="dark"] .pk-card-title {
-  color: rgba(235,238,245,0.92);
+  color: rgba(255,255,255,0.92);
 }
 .dark .pk-chip,
 [data-theme="dark"] .pk-chip {
-  color: rgba(235,238,245,0.72) !important;
+  color: rgba(255,255,255,0.72) !important;
   background: transparent !important;
   border-color: rgba(255,255,255,0.10) !important;
 }

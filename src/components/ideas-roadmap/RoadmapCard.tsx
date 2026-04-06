@@ -79,7 +79,7 @@ export function RoadmapCard({ idea, onSelectIdea, onToggleCommitted, onMoveToQua
                 opacity: 0, transition: 'opacity 150ms',
               }}
             >
-              <Move size={10} color={isDark ? 'rgba(235,238,245,0.50)' : '#94A3B8'} />
+              <Move size={10} color={isDark ? 'rgba(255,255,255,0.50)' : '#94A3B8'} />
             </button>
             {moveOpen && (
               <div style={{
@@ -172,7 +172,7 @@ export function RoadmapCard({ idea, onSelectIdea, onToggleCommitted, onMoveToQua
             beta: { bg: isDark ? 'rgba(13,148,136,0.15)' : '#CCFBF1', text: isDark ? '#5EEAD4' : '#0F766E', border: isDark ? 'rgba(13,148,136,0.25)' : '#5EEAD4' },
             prod: { bg: isDark ? 'rgba(22,163,74,0.15)' : '#D1FAE5', text: isDark ? '#86EFAC' : '#065F46', border: isDark ? 'rgba(22,163,74,0.25)' : '#6EE7B7' },
           };
-          const unsetStyle = { bg: isDark ? 'rgba(255,255,255,0.04)' : '#F1F5F9', text: isDark ? 'rgba(235,238,245,0.25)' : '#CBD5E1', border: isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0' };
+          const unsetStyle = { bg: isDark ? 'rgba(255,255,255,0.04)' : '#F1F5F9', text: isDark ? 'rgba(255,255,255,0.25)' : '#CBD5E1', border: isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0' };
           const style = isSet ? CHIP_STYLES[m.key] : unsetStyle;
           return (
             <span key={m.key} style={{
@@ -219,7 +219,7 @@ export function RoadmapCard({ idea, onSelectIdea, onToggleCommitted, onMoveToQua
           }}
           onMouseLeave={e => {
             e.currentTarget.style.background = isDark ? 'transparent' : '#FFFFFF';
-            e.currentTarget.style.color = isDark ? 'rgba(235,238,245,0.60)' : '#64748B';
+            e.currentTarget.style.color = isDark ? 'rgba(255,255,255,0.60)' : '#64748B';
             e.currentTarget.style.borderColor = isDark ? 'rgba(255,255,255,0.10)' : '#E2E8F0';
           }}
         >

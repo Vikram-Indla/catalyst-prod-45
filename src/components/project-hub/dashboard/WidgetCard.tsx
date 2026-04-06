@@ -30,7 +30,7 @@ function WidgetCardInner({ title, subtitle, count, countColor, leftBorder, heade
 
   const getCountBadgeStyle = () => {
     if (!countColor) return dark
-      ? { bg: 'rgba(255,255,255,0.06)', text: 'rgba(235,238,245,0.72)', border: 'rgba(255,255,255,0.12)' }
+      ? { bg: 'rgba(255,255,255,0.06)', text: 'rgba(255,255,255,0.72)', border: 'rgba(255,255,255,0.12)' }
       : { bg: 'var(--cp-bd-zone)', text: 'var(--fg-2)', border: '#CBD5E1' };
     if (countColor === '#D97706' || countColor === '#EF4444') return dark
       ? { bg: 'rgba(220,38,38,0.15)', text: '#FCA5A5', border: 'rgba(220,38,38,0.3)' }

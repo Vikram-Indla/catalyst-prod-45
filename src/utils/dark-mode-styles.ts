@@ -28,7 +28,7 @@ export const DK: DarkTokens = {
   t1: '#EDEDED',   // primary text (titles, values, data)
   t2: '#888888',   // secondary (labels, legends)
   t3: '#666666',   // tertiary (timestamps, muted labels)
-  t4: 'rgba(245,243,240,0.30)',   // decorative (placeholders)
+  t4: 'rgba(237,237,237,0.30)',   // decorative (placeholders)
   
   // Borders
   border: 'rgba(255,255,255,0.08)',

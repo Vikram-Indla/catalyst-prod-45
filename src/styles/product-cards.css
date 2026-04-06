@@ -37,10 +37,10 @@
 /* ── DARK MODE ── */
 .dark [data-module="product-cards"],
 [data-theme="dark"] [data-module="product-cards"] {
-  --pc-ink: rgba(235,238,245,0.92);
-  --pc-ink-secondary: rgba(235,238,245,0.85);
-  --pc-ink-tertiary: rgba(235,238,245,0.72);
-  --pc-ink-muted: rgba(235,238,245,0.50);
+  --pc-ink: rgba(255,255,255,0.92);
+  --pc-ink-secondary: rgba(255,255,255,0.85);
+  --pc-ink-tertiary: rgba(255,255,255,0.72);
+  --pc-ink-muted: rgba(255,255,255,0.50);
   --pc-surface: transparent;
   --pc-surface-secondary: transparent;
   --pc-surface-tertiary: rgba(255,255,255,0.03);
