@@ -3,6 +3,7 @@
  */
 import { useRef, useEffect } from 'react';
 import { Check } from 'lucide-react';
+import { useTheme } from '@/hooks/useTheme';
 
 const PRIORITIES = [
   { name: 'Critical', level: 4 },
@@ -13,10 +14,11 @@ const PRIORITIES = [
 ];
 
 function PriorityBarsInline({ level }: { level: number }) {
+  const { isDark } = useTheme();
   return (
     <div style={{ display: 'flex', gap: 2, alignItems: 'center' }}>
       {[1, 2, 3, 4].map((i) => (
-        <div key={i} style={{ width: 10, height: 4, borderRadius: 1, background: i <= level ? '#64748B' : '#E2E8F0' }} />
+        <div key={i} style={{ width: 10, height: 4, borderRadius: 1, background: i <= level ? (isDark ? '#A09890' : '#64748B') : (isDark ? '#3A3530' : '#E2E8F0') }} />
       ))}
     </div>
   );
@@ -29,6 +31,7 @@ interface PriorityDropdownProps {
 }
 
 export function PriorityDropdown({ currentPriority, onSelect, onClose }: PriorityDropdownProps) {
+  const { isDark } = useTheme();
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -46,8 +49,8 @@ export function PriorityDropdown({ currentPriority, onSelect, onClose }: Priorit
       ref={ref}
       style={{
         position: 'absolute', top: '100%', left: 0, marginTop: 4, width: 180,
-        background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 6,
-        boxShadow: '0 4px 16px rgba(0,0,0,0.10)', zIndex: 9999, overflow: 'hidden',
+        background: isDark ? '#232019' : '#FFFFFF', border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0', borderRadius: 6,
+        boxShadow: isDark ? '0 4px 16px rgba(0,0,0,0.30)' : '0 4px 16px rgba(0,0,0,0.10)', zIndex: 9999, overflow: 'hidden',
       }}
     >
       {PRIORITIES.map((p) => {
@@ -58,14 +61,14 @@ export function PriorityDropdown({ currentPriority, onSelect, onClose }: Priorit
             onClick={() => { onSelect(p.name); onClose(); }}
             style={{
               height: 36, padding: '0 12px', display: 'flex', alignItems: 'center', gap: 8,
-              cursor: 'pointer', background: isCurrent ? '#F8FAFC' : undefined,
+              cursor: 'pointer', background: isCurrent ? (isDark ? '#2C2823' : '#F8FAFC') : undefined,
               fontFamily: "'Inter', sans-serif",
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.background = '#F8FAFC')}
-            onMouseLeave={(e) => (e.currentTarget.style.background = isCurrent ? '#F8FAFC' : '')}
+            onMouseEnter={(e) => (e.currentTarget.style.background = isDark ? '#2C2823' : '#F8FAFC')}
+            onMouseLeave={(e) => (e.currentTarget.style.background = isCurrent ? (isDark ? '#2C2823' : '#F8FAFC') : '')}
           >
             <PriorityBarsInline level={p.level} />
-            <span style={{ fontSize: 12, color: '#0F172A', flex: 1 }}>{p.name}</span>
+            <span style={{ fontSize: 12, color: isDark ? '#F5F3F0' : '#0F172A', flex: 1 }}>{p.name}</span>
             {isCurrent && <Check size={14} color="#2563EB" />}
           </div>
         );

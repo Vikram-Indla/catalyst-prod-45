@@ -12,6 +12,7 @@ import { useNotifications, Notification } from "@/hooks/useNotifications";
 import { formatDistanceToNow } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import { useTheme } from "@/hooks/useTheme";
 
 interface NotificationsPanelProps {
   className?: string;
@@ -22,6 +23,7 @@ export const NotificationsPanel = forwardRef<HTMLDivElement, NotificationsPanelP
     const navigate = useNavigate();
     const [open, setOpen] = useState(false);
     const [activeTab, setActiveTab] = useState<string>("all");
+    const { isDark } = useTheme();
     
     const { 
       notifications, 
@@ -94,14 +96,14 @@ export const NotificationsPanel = forwardRef<HTMLDivElement, NotificationsPanelP
               )}
             </Button>
           </PopoverTrigger>
-          <PopoverContent align="end" className="w-96 p-0 bg-popover z-[300]">
+          <PopoverContent align="end" className="w-96 p-0 bg-popover dark:bg-[#232019] dark:border-[rgba(255,255,255,0.08)] z-[300]">
             {/* Header */}
-            <div className="flex items-center justify-between p-4 border-b">
+            <div className="flex items-center justify-between p-4 border-b dark:border-[rgba(255,255,255,0.08)]">
               <div>
-                <h3 className="font-semibold text-sm">Notifications</h3>
-                <p className="text-xs text-muted-foreground mt-0.5">
-                  {unreadCount > 0 
-                    ? `${unreadCount} unread notification${unreadCount !== 1 ? 's' : ''}` 
+                <h3 className="font-semibold text-sm dark:text-[#F5F3F0]">Notifications</h3>
+                <p className="text-xs text-muted-foreground dark:text-[#6B6560] mt-0.5">
+                  {unreadCount > 0
+                    ? `${unreadCount} unread notification${unreadCount !== 1 ? 's' : ''}`
                     : 'All caught up!'}
                 </p>
               </div>
@@ -111,7 +113,7 @@ export const NotificationsPanel = forwardRef<HTMLDivElement, NotificationsPanelP
                     variant="ghost"
                     size="sm"
                     onClick={handleMarkAllAsRead}
-                    className="h-8 text-xs"
+                    className="h-8 text-xs dark:text-[#A09890] dark:hover:text-[#F5F3F0] dark:hover:bg-[rgba(255,255,255,0.08)]"
                   >
                     <Check className="h-3 w-3 mr-1" />
                     Mark all read
@@ -120,7 +122,7 @@ export const NotificationsPanel = forwardRef<HTMLDivElement, NotificationsPanelP
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-8 w-8"
+                  className="h-8 w-8 dark:text-[#A09890] dark:hover:text-[#F5F3F0] dark:hover:bg-[rgba(255,255,255,0.08)]"
                   onClick={() => {
                     setOpen(false);
                     navigate('/admin/settings/notifications');
@@ -133,22 +135,22 @@ export const NotificationsPanel = forwardRef<HTMLDivElement, NotificationsPanelP
 
             {/* Tabs */}
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="w-full grid grid-cols-3 rounded-none border-b bg-transparent h-10">
-                <TabsTrigger 
-                  value="all" 
-                  className="rounded-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:shadow-none"
+              <TabsList className="w-full grid grid-cols-3 rounded-none border-b dark:border-[rgba(255,255,255,0.08)] bg-transparent dark:bg-[#1A1714] h-10">
+                <TabsTrigger
+                  value="all"
+                  className="rounded-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:shadow-none dark:text-[#A09890] dark:data-[state=active]:text-[#F5F3F0] dark:data-[state=active]:bg-transparent dark:hover:text-[#F5F3F0]"
                 >
                   All
                 </TabsTrigger>
-                <TabsTrigger 
+                <TabsTrigger
                   value="unread"
-                  className="rounded-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:shadow-none"
+                  className="rounded-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:shadow-none dark:text-[#A09890] dark:data-[state=active]:text-[#F5F3F0] dark:data-[state=active]:bg-transparent dark:hover:text-[#F5F3F0]"
                 >
                   Unread {unreadCount > 0 && `(${unreadCount})`}
                 </TabsTrigger>
-                <TabsTrigger 
+                <TabsTrigger
                   value="mentions"
-                  className="rounded-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:shadow-none"
+                  className="rounded-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:shadow-none dark:text-[#A09890] dark:data-[state=active]:text-[#F5F3F0] dark:data-[state=active]:bg-transparent dark:hover:text-[#F5F3F0]"
                 >
                   Mentions
                 </TabsTrigger>
@@ -160,37 +162,40 @@ export const NotificationsPanel = forwardRef<HTMLDivElement, NotificationsPanelP
                   {isLoading ? (
                     <div className="p-8 text-center">
                       <div className="animate-pulse flex flex-col items-center gap-2">
-                        <div className="h-10 w-10 bg-muted rounded-full" />
-                        <div className="h-4 w-24 bg-muted rounded" />
+                        <div className="h-10 w-10 bg-muted dark:bg-[#2C2823] rounded-full" />
+                        <div className="h-4 w-24 bg-muted dark:bg-[#2C2823] rounded" />
                       </div>
                     </div>
                   ) : filteredNotifications.length === 0 ? (
-                    <div className="p-8 text-center text-muted-foreground">
+                    <div className="p-8 text-center text-muted-foreground dark:text-[#6B6560]">
                       <Bell className="h-12 w-12 mx-auto mb-3 opacity-20" />
-                      <p className="text-sm font-medium">No notifications</p>
-                      <p className="text-xs mt-1">
-                        {activeTab === "unread" 
-                          ? "You've read all your notifications" 
+                      <p className="text-sm font-medium dark:text-[#A09890]">No notifications</p>
+                      <p className="text-xs mt-1 dark:text-[#6B6560]">
+                        {activeTab === "unread"
+                          ? "You've read all your notifications"
                           : activeTab === "mentions"
                           ? "No mentions yet"
                           : "You're all caught up!"}
                       </p>
                     </div>
                   ) : (
-                    <div className="divide-y">
+                    <div className="divide-y dark:divide-[rgba(255,255,255,0.08)]">
                       {filteredNotifications.map((notification) => (
                         <div
                           key={notification.id}
                           onClick={() => handleNotificationClick(notification)}
                           className={cn(
-                            "p-4 hover:bg-accent/50 transition-colors cursor-pointer",
-                            !notification.is_read && "bg-accent/20"
+                            "p-4 transition-colors cursor-pointer",
+                            "hover:bg-accent/50 dark:hover:bg-[rgba(255,255,255,0.04)]",
+                            !notification.is_read
+                              ? "bg-accent/20 dark:bg-[rgba(255,255,255,0.03)]"
+                              : "dark:bg-[#1A1714]"
                           )}
                         >
                           <div className="flex items-start justify-between gap-3">
                             <div className="flex-1 min-w-0 space-y-1">
                               <div className="flex items-center gap-2">
-                                <h4 className="font-medium text-sm truncate">
+                                <h4 className="font-medium text-sm truncate dark:text-[#F5F3F0]">
                                   {notification.title}
                                 </h4>
                                 {!notification.is_read && (
@@ -198,11 +203,11 @@ export const NotificationsPanel = forwardRef<HTMLDivElement, NotificationsPanelP
                                 )}
                               </div>
                               {notification.message && (
-                                <p className="text-sm text-muted-foreground line-clamp-2">
+                                <p className="text-sm text-muted-foreground dark:text-[#A09890] line-clamp-2">
                                   {notification.message}
                                 </p>
                               )}
-                              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                              <div className="flex items-center gap-2 text-xs text-muted-foreground dark:text-[#6B6560]">
                                 <span>
                                   {formatDistanceToNow(new Date(notification.created_at), {
                                     addSuffix: true,
@@ -218,7 +223,7 @@ export const NotificationsPanel = forwardRef<HTMLDivElement, NotificationsPanelP
                                 <Button
                                   variant="ghost"
                                   size="icon"
-                                  className="h-7 w-7"
+                                  className="h-7 w-7 dark:text-[#A09890] dark:hover:text-[#F5F3F0] dark:hover:bg-[rgba(255,255,255,0.08)]"
                                   onClick={(e) => handleMarkAsRead(e, notification.id)}
                                   title="Mark as read"
                                 >
@@ -228,7 +233,7 @@ export const NotificationsPanel = forwardRef<HTMLDivElement, NotificationsPanelP
                               <Button
                                 variant="ghost"
                                 size="icon"
-                                className="h-7 w-7 text-muted-foreground hover:text-destructive"
+                                className="h-7 w-7 text-muted-foreground hover:text-destructive dark:text-[#6B6560] dark:hover:text-destructive dark:hover:bg-[rgba(255,255,255,0.08)]"
                                 onClick={(e) => handleDelete(e, notification.id)}
                                 title="Delete notification"
                               >
@@ -246,11 +251,11 @@ export const NotificationsPanel = forwardRef<HTMLDivElement, NotificationsPanelP
 
             {/* Footer */}
             {filteredNotifications.length > 0 && (
-              <div className="p-3 border-t">
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className="w-full text-xs"
+              <div className="p-3 border-t dark:border-[rgba(255,255,255,0.08)]">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="w-full text-xs dark:text-[#A09890] dark:hover:text-[#F5F3F0] dark:hover:bg-[rgba(255,255,255,0.08)]"
                   onClick={() => {
                     setOpen(false);
                     navigate('/notifications');

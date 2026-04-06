@@ -4,6 +4,7 @@
 
 import { useState } from 'react';
 import { Users, Plus } from 'lucide-react';
+import { useTheme } from '@/hooks/useTheme';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -12,15 +13,16 @@ import { SeverityChip } from './components/SeverityChip';
 import { StatusLozenge } from './components/StatusLozenge';
 
 export default function CommitteeQueuePage() {
+  const { isDark } = useTheme();
   const navigate = useNavigate();
   const { data: queue, isLoading } = useCommitteeQueueView();
 
   if (isLoading) {
-    return <div className="flex-1 p-6" style={{ backgroundColor: '#FFFFFF' }}><Skeleton className="h-8 w-48 mb-6" /><Skeleton className="h-64 w-full" /></div>;
+    return <div className="flex-1 p-6" style={{ backgroundColor: isDark ? '#1A1714' : '#FFFFFF' }}><Skeleton className="h-8 w-48 mb-6" /><Skeleton className="h-64 w-full" /></div>;
   }
 
   return (
-    <div className="flex-1 overflow-auto" style={{ backgroundColor: '#FFFFFF' }}>
+    <div className="flex-1 overflow-auto" style={{ backgroundColor: isDark ? '#1A1714' : '#FFFFFF' }}>
       <div className="px-6 pt-6 pb-4">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
@@ -28,7 +30,7 @@ export default function CommitteeQueuePage() {
             <div className="flex items-center justify-center rounded-md" style={{ width: 32, height: 32, backgroundColor: '#FEF3C7' }}>
               <Users size={18} style={{ color: '#D97706' }} />
             </div>
-            <h1 style={{ fontFamily: 'Sora, sans-serif', fontSize: 18, fontWeight: 700, color: '#0F172A' }}>Committee Queue</h1>
+            <h1 style={{ fontFamily: 'Sora, sans-serif', fontSize: 18, fontWeight: 700, color: isDark ? '#F5F3F0' : '#0F172A' }}>Committee Queue</h1>
           </div>
           <Button size="sm" className="gap-1.5" style={{ backgroundColor: '#2563EB', borderRadius: 6 }}>
             <Plus size={14} /> New Committee
@@ -36,18 +38,18 @@ export default function CommitteeQueuePage() {
         </div>
 
         {/* Table */}
-        <div style={{ border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6, overflow: 'hidden' }}>
+        <div style={{ border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(15,23,42,0.12)', borderRadius: 6, overflow: 'hidden' }}>
           {/* Header */}
           <div className="grid items-center" style={{
             gridTemplateColumns: '120px 1fr 70px 100px 80px 160px 80px 100px',
-            backgroundColor: '#F1F5F9',
+            backgroundColor: isDark ? '#2C2823' : '#F1F5F9',
             height: 36,
-            borderBottom: '0.75px solid rgba(15,23,42,0.06)',
+            borderBottom: isDark ? '0.75px solid rgba(255,255,255,0.05)' : '0.75px solid rgba(15,23,42,0.06)',
           }}>
             {['KEY', 'INCIDENT', 'SEV', 'STATUS', 'AGE', 'APPROVAL', 'TYPE', 'ACTIONS'].map(h => (
               <div key={h} className="px-3" style={{
                 fontFamily: 'Inter, sans-serif', fontSize: 11, fontWeight: 700,
-                textTransform: 'uppercase' as const, letterSpacing: '0.06em', color: '#64748B',
+                textTransform: 'uppercase' as const, letterSpacing: '0.06em', color: isDark ? '#6B6560' : '#64748B',
               }}>{h}</div>
             ))}
           </div>
@@ -55,7 +57,7 @@ export default function CommitteeQueuePage() {
           {/* Empty */}
           {(!queue || queue.length === 0) && (
             <div className="flex items-center justify-center py-12">
-              <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: '#94A3B8' }}>No committee members assigned.</p>
+              <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: isDark ? '#6B6560' : '#94A3B8' }}>No committee members assigned.</p>
             </div>
           )}
 
@@ -73,28 +75,28 @@ export default function CommitteeQueuePage() {
                 style={{
                   gridTemplateColumns: '120px 1fr 70px 100px 80px 160px 80px 100px',
                   height: 36,
-                  borderBottom: '0.75px solid rgba(15,23,42,0.06)',
-                  backgroundColor: '#FFFFFF',
+                  borderBottom: isDark ? '0.75px solid rgba(255,255,255,0.05)' : '0.75px solid rgba(15,23,42,0.06)',
+                  backgroundColor: isDark ? '#232019' : '#FFFFFF',
                 }}
-                onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'rgba(15,23,42,0.04)')}
-                onMouseLeave={e => (e.currentTarget.style.backgroundColor = '#FFFFFF')}
+                onMouseEnter={e => (e.currentTarget.style.backgroundColor = isDark ? '#2C2823' : 'rgba(15,23,42,0.04)')}
+                onMouseLeave={e => (e.currentTarget.style.backgroundColor = isDark ? '#232019' : '#FFFFFF')}
                 onClick={() => navigate(`/incident-hub/view/${item.incident_id}`)}
               >
                 <div className="px-3">
-                  <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 12, color: '#2563EB', backgroundColor: '#EFF6FF', padding: '0 4px', borderRadius: 3 }}>
+                  <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 12, color: '#2563EB', backgroundColor: isDark ? 'rgba(37,99,235,0.12)' : '#EFF6FF', padding: '0 4px', borderRadius: 3 }}>
                     {item.incident_key}
                   </span>
                 </div>
-                <div className="px-3 truncate" style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, fontWeight: 650, color: '#0F172A' }}>
+                <div className="px-3 truncate" style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, fontWeight: 650, color: isDark ? '#F5F3F0' : '#0F172A' }}>
                   {item.title}
                 </div>
                 <div className="px-3"><SeverityChip severity={item.severity || 'SEV4'} /></div>
                 <div className="px-3"><StatusLozenge status={item.committee_status || 'pending'} /></div>
-                <div className="px-3" style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: '#64748B' }}>
+                <div className="px-3" style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: isDark ? '#6B6560' : '#64748B' }}>
                   {item.age_hours ? `${Math.round(item.age_hours)}h` : '\u2014'}
                 </div>
                 <div className="px-3 flex items-center gap-2">
-                  <div style={{ flex: 1, height: 6, borderRadius: 3, backgroundColor: '#E2E8F0', overflow: 'hidden' }}>
+                  <div style={{ flex: 1, height: 6, borderRadius: 3, backgroundColor: isDark ? '#3A3530' : '#E2E8F0', overflow: 'hidden' }}>
                     <div style={{
                       height: '100%',
                       width: `${progress * 100}%`,
@@ -103,7 +105,7 @@ export default function CommitteeQueuePage() {
                       transition: 'width 400ms ease',
                     }} />
                   </div>
-                  <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, color: '#64748B', whiteSpace: 'nowrap' }}>
+                  <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, color: isDark ? '#6B6560' : '#64748B', whiteSpace: 'nowrap' }}>
                     {approved}/{total}
                   </span>
                 </div>

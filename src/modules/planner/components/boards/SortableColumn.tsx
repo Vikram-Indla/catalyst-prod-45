@@ -100,7 +100,7 @@ export function SortableColumn({
       ref={setSortableRef}
       style={style}
       className={cn(
-        'boards-column',
+        'boards-column dark:text-[#F5F3F0]',
         isDragging && 'boards-column--dragging'
       )}
     >
@@ -109,7 +109,7 @@ export function SortableColumn({
         <div className="boards-column__header-left">
           {/* Drag Handle - Always visible with proper touch handling */}
           <div
-            className="boards-column__drag-handle"
+            className="boards-column__drag-handle dark:text-[#6B6560] dark:hover:text-[#A09890]"
             {...attributes}
             {...listeners}
             style={{ touchAction: 'none' }}
@@ -125,10 +125,10 @@ export function SortableColumn({
           />
           
           {/* Title */}
-          <h3 className="boards-column__title">{column.name}</h3>
-          
+          <h3 className="boards-column__title dark:text-[#F5F3F0]">{column.name}</h3>
+
           {/* Task Count */}
-          <span className="boards-column__count">{column.task_count}</span>
+          <span className="boards-column__count dark:bg-[#2C2823] dark:text-[#A09890]">{column.task_count}</span>
         </div>
         
         <div className="flex items-center gap-1">
@@ -180,13 +180,13 @@ export function SortableColumn({
         </SortableContext>
 
         {tasks.length === 0 && (
-          <div className="boards-column__empty">
+          <div className="boards-column__empty dark:bg-[#232019] dark:border-[rgba(255,255,255,0.08)] dark:text-[#6B6560]">
             No tasks
           </div>
         )}
 
         {/* Add Task Button at bottom */}
-        <button className="boards-add-task" onClick={() => onAddTask?.(column.id)}>
+        <button className="boards-add-task dark:border-[rgba(255,255,255,0.08)] dark:text-[#6B6560] dark:hover:bg-[#2C2823] dark:hover:text-[#F5F3F0] dark:hover:border-[rgba(255,255,255,0.15)]" onClick={() => onAddTask?.(column.id)}>
           <Plus className="w-4 h-4" />
           Add Task
         </button>

@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Zap } from 'lucide-react';
+import { useTheme } from '@/hooks/useTheme';
 
 export type R360View = 'ring' | 'chronology' | 'list';
 export type RoleFilter = 'all' | 'assigned' | 'reported';
@@ -39,6 +40,7 @@ function FilterDropdown({ label, value, options, onChange }: {
   options: { key: string; label: string }[];
   onChange: (k: string) => void;
 }) {
+  const { isDark } = useTheme();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -82,7 +84,7 @@ function FilterDropdown({ label, value, options, onChange }: {
                 display: 'block', width: '100%', textAlign: 'left',
                 padding: '6px 10px', fontSize: 12, fontWeight: value === o.key ? 600 : 400,
                 color: value === o.key ? 'var(--cp-blue)' : 'var(--fg-2)',
-                background: value === o.key ? '#EFF6FF' : 'transparent',
+                background: value === o.key ? (isDark ? 'rgba(37,99,235,0.12)' : '#EFF6FF') : 'transparent',
                 border: 'none', borderRadius: 4, cursor: 'pointer',
               }}
             >

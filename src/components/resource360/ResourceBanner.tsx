@@ -1,16 +1,17 @@
 import React from 'react';
+import { useTheme } from '@/hooks/useTheme';
 
 interface ResourceBannerProps {
   resource: any;
   summary: any;
 }
 
-const StatCard = ({ label, value, color }: { label: string; value: number | string; color: string }) => (
+const StatCard = ({ label, value, color, isDark }: { label: string; value: number | string; color: string; isDark: boolean }) => (
   <div
     tabIndex={0}
     aria-label={`${label}: ${value}`}
     style={{
-      background: 'var(--r360-surface, #FFFFFF)', border: '1px solid var(--r360-border, #C5BDB3)',
+      background: isDark ? '#232019' : 'var(--r360-surface, #FFFFFF)', border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid var(--r360-border, #C5BDB3)',
       borderRadius: 8, padding: '10px 16px', minWidth: 90, textAlign: 'center',
       boxShadow: '0 1px 3px rgba(0,0,0,.06)',
     }}
@@ -21,6 +22,7 @@ const StatCard = ({ label, value, color }: { label: string; value: number | stri
 );
 
 const ResourceBanner: React.FC<ResourceBannerProps> = ({ resource, summary }) => {
+  const { isDark } = useTheme();
   const initials = resource?.initials || resource?.full_name?.split(' ').map((n: string) => n[0]).join('').slice(0, 2) || '??';
   const deptName = resource?.r360_departments?.name || '—';
   const vendorName = resource?.r360_vendors?.name || '—';
@@ -49,8 +51,8 @@ const ResourceBanner: React.FC<ResourceBannerProps> = ({ resource, summary }) =>
   return (
     <header style={{
       display: 'flex', alignItems: 'center', gap: 20,
-      padding: '16px 20px', background: 'var(--r360-surface, #FFFFFF)',
-      borderBottom: '1px solid var(--r360-border-light, #D9D2C9)',
+      padding: '16px 20px', background: isDark ? '#232019' : 'var(--r360-surface, #FFFFFF)',
+      borderBottom: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid var(--r360-border-light, #D9D2C9)',
       boxShadow: 'var(--r360-shadow-card, 0 2px 8px rgba(0,0,0,.12))',
       fontFamily: "'Inter', sans-serif",
     }}>
@@ -78,10 +80,10 @@ const ResourceBanner: React.FC<ResourceBannerProps> = ({ resource, summary }) =>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
           {metaPills.map((label, i) => (
             <span key={i} style={{
-              fontSize: 11.5, color: 'var(--r360-text-2, #1A1A2E)',
-              background: 'var(--r360-surface, #FFFFFF)', borderRadius: 4,
+              fontSize: 11.5, color: isDark ? '#A09890' : 'var(--r360-text-2, #1A1A2E)',
+              background: isDark ? '#2C2823' : 'var(--r360-surface, #FFFFFF)', borderRadius: 4,
               padding: '3px 8px', fontWeight: 600,
-              border: '1px solid var(--r360-border, #C5BDB3)',
+              border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid var(--r360-border, #C5BDB3)',
             }}>
               {label}
             </span>
@@ -91,10 +93,10 @@ const ResourceBanner: React.FC<ResourceBannerProps> = ({ resource, summary }) =>
 
       {/* Stat Cards */}
       <div style={{ display: 'flex', gap: 8, marginLeft: 'auto', flexShrink: 0 }}>
-        <StatCard label="Total" value={summary?.total_items ?? '–'} color="var(--r360-text-1, #0A0A0A)" />
-        <StatCard label="To Do" value={summary?.todo_count ?? '–'} color="var(--r360-todo, #E23636)" />
-        <StatCard label="In Progress" value={summary?.in_progress_count ?? summary?.progress_count ?? '–'} color="var(--r360-progress, #2563EB)" />
-        <StatCard label="Done" value={summary?.done_count ?? '–'} color="var(--r360-done, #0E8A5F)" />
+        <StatCard label="Total" value={summary?.total_items ?? '–'} color="var(--r360-text-1, #0A0A0A)" isDark={isDark} />
+        <StatCard label="To Do" value={summary?.todo_count ?? '–'} color="var(--r360-todo, #E23636)" isDark={isDark} />
+        <StatCard label="In Progress" value={summary?.in_progress_count ?? summary?.progress_count ?? '–'} color="var(--r360-progress, #2563EB)" isDark={isDark} />
+        <StatCard label="Done" value={summary?.done_count ?? '–'} color="var(--r360-done, #0E8A5F)" isDark={isDark} />
       </div>
     </header>
   );

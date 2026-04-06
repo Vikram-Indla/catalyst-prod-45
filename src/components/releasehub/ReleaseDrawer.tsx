@@ -171,10 +171,10 @@ export function ReleaseDrawer({ release, onClose }: Props) {
   return (
     <div className="fixed inset-0 z-50 flex justify-end" onClick={onClose}>
       <div className="absolute inset-0 bg-[#080E1D]/38 backdrop-blur-[1px]" />
-      <div className="relative w-[700px] h-full bg-white shadow-2xl flex flex-col animate-in slide-in-from-right duration-300"
+      <div className="relative w-[700px] h-full bg-white dark:bg-[#232019] shadow-2xl flex flex-col animate-in slide-in-from-right duration-300"
         onClick={e => e.stopPropagation()}>
         {/* Header */}
-        <div className="sticky top-0 bg-white z-10 border-b border-[rgba(15,23,42,0.12)] px-6 py-4">
+        <div className="sticky top-0 bg-white dark:bg-[#232019] z-10 border-b border-[rgba(15,23,42,0.12)] dark:border-[rgba(255,255,255,0.08)] px-6 py-4">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
               <SourceBadge source={release.source || 'catalyst'} />
@@ -384,7 +384,7 @@ Do not use jargon. Do not hallucinate features not listed above.`;
       </div>
 
       {/* ── AI Release Notes Panel ── */}
-      <div className="border border-[#E2E8F0] rounded-md p-4 bg-white">
+      <div className="border border-[#E2E8F0] dark:border-[rgba(255,255,255,0.08)] rounded-md p-4 bg-white dark:bg-[#232019]">
         <div className="flex justify-between items-center mb-3">
           <span className="inline-flex items-center gap-1 text-[11px] font-bold rounded-full px-2 py-0.5 bg-[#F5F3FF] text-[#7C3AED] border border-[#DDD6FE]">
             ✦ Catalyst AI

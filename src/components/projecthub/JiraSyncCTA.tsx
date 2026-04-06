@@ -5,6 +5,7 @@
  */
 import { useState, useEffect, useRef } from 'react';
 import { RefreshCw, Link2, Loader2, ChevronDown, AlertTriangle, Settings, ExternalLink } from 'lucide-react';
+import { useTheme } from '@/hooks/useTheme';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useJiraConnection } from '@/modules/workhub/admin/hooks/useJiraConnection';
@@ -14,6 +15,7 @@ import { useQueryClient } from '@tanstack/react-query';
 type PanelView = 'status' | 'webhook';
 
 export function JiraSyncCTA() {
+  const { isDark } = useTheme();
   const { data: conn, isLoading: connLoading, error: connError } = useJiraConnection();
   const { data: health } = useSyncHealth();
   const { data: isSyncRunning } = useIsSyncRunning();
@@ -129,8 +131,8 @@ export function JiraSyncCTA() {
       {popoverOpen && (
         <div style={{
           position: 'absolute', top: 38, right: 0, zIndex: 50,
-          width: 380, background: '#FFF', borderRadius: 12,
-          border: '1px solid #E2E8F0',
+          width: 380, background: isDark ? '#232019' : '#FFF', borderRadius: 12,
+          border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0',
           boxShadow: '0 12px 40px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.04)',
           fontFamily: "'Inter', sans-serif",
           overflow: 'hidden',
@@ -145,8 +147,8 @@ export function JiraSyncCTA() {
           {/* Not connected */}
           {!connLoading && !isConnected && (
             <div style={{ padding: 20, textAlign: 'center' }}>
-              <div style={{ fontSize: 14, fontWeight: 600, color: '#0F172A', marginBottom: 8 }}>No Jira Connection</div>
-              <p style={{ fontSize: 12, color: '#64748B', marginBottom: 16, lineHeight: 1.5 }}>
+              <div style={{ fontSize: 14, fontWeight: 600, color: isDark ? '#F5F3F0' : '#0F172A', marginBottom: 8 }}>No Jira Connection</div>
+              <p style={{ fontSize: 12, color: isDark ? '#6B6560' : '#64748B', marginBottom: 16, lineHeight: 1.5 }}>
                 Configure your Jira connection in the WorkHub admin to enable bidirectional sync.
               </p>
               <button
@@ -167,48 +169,48 @@ export function JiraSyncCTA() {
           {/* Connected: Status panel */}
           {!connLoading && isConnected && conn && panelView === 'status' && (
             <div>
-              <div style={{ padding: '16px 20px 12px', borderBottom: '1px solid #F1F5F9' }}>
+              <div style={{ padding: '16px 20px 12px', borderBottom: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid #F1F5F9' }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <span style={{ fontSize: 14, fontWeight: 600, color: '#0F172A' }}>Jira Sync Status</span>
-                  <span style={{ fontSize: 11, color: '#94A3B8', fontFamily: "'JetBrains Mono', monospace" }}>
+                  <span style={{ fontSize: 14, fontWeight: 600, color: isDark ? '#F5F3F0' : '#0F172A' }}>Jira Sync Status</span>
+                  <span style={{ fontSize: 11, color: isDark ? '#6B6560' : '#94A3B8', fontFamily: "'JetBrains Mono', monospace" }}>
                     {formatAge(health?.lastSync?.completed_at)}
                   </span>
                 </div>
-                <div style={{ fontSize: 11, color: '#64748B', marginTop: 4, fontFamily: "'JetBrains Mono', monospace" }}>
+                <div style={{ fontSize: 11, color: isDark ? '#6B6560' : '#64748B', marginTop: 4, fontFamily: "'JetBrains Mono', monospace" }}>
                   {conn.site_url?.replace('https://', '').replace(/\/$/, '')}
                 </div>
               </div>
 
               {/* Stats grid */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 1, background: '#F1F5F9' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 1, background: isDark ? 'rgba(255,255,255,0.05)' : '#F1F5F9' }}>
                 {[
                   { label: 'Projects', value: conn.project_count || 0 },
                   { label: 'Issues cached', value: health?.issueCachedCount ?? 0 },
                   { label: 'Versions', value: health?.versionCachedCount ?? 0 },
                 ].map((s, i) => (
-                  <div key={i} style={{ background: '#FFF', padding: '14px 8px', textAlign: 'center' }}>
-                    <div style={{ fontSize: 18, fontWeight: 700, color: '#0F172A', fontFamily: "'Sora', sans-serif" }}>{s.value}</div>
-                    <div style={{ fontSize: 10, color: '#64748B', marginTop: 2 }}>{s.label}</div>
+                  <div key={i} style={{ background: isDark ? '#232019' : '#FFF', padding: '14px 8px', textAlign: 'center' }}>
+                    <div style={{ fontSize: 18, fontWeight: 700, color: isDark ? '#F5F3F0' : '#0F172A', fontFamily: "'Sora', sans-serif" }}>{s.value}</div>
+                    <div style={{ fontSize: 10, color: isDark ? '#6B6560' : '#64748B', marginTop: 2 }}>{s.label}</div>
                   </div>
                 ))}
               </div>
 
               {/* Connection details */}
-              <div style={{ padding: '12px 20px', borderTop: '1px solid #F1F5F9', fontSize: 13 }}>
+              <div style={{ padding: '12px 20px', borderTop: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid #F1F5F9', fontSize: 13 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-                  <span style={{ color: '#64748B' }}>Direction</span>
-                  <span style={{ fontWeight: 600, color: '#0F172A' }}>↔ Bi-directional</span>
+                  <span style={{ color: isDark ? '#6B6560' : '#64748B' }}>Direction</span>
+                  <span style={{ fontWeight: 600, color: isDark ? '#F5F3F0' : '#0F172A' }}>↔ Bi-directional</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-                  <span style={{ color: '#64748B' }}>Auth method</span>
-                  <span style={{ fontWeight: 600, color: '#0F172A' }}>{conn.auth_method === 'api_token' ? 'API Token' : 'OAuth'}</span>
+                  <span style={{ color: isDark ? '#6B6560' : '#64748B' }}>Auth method</span>
+                  <span style={{ fontWeight: 600, color: isDark ? '#F5F3F0' : '#0F172A' }}>{conn.auth_method === 'api_token' ? 'API Token' : 'OAuth'}</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-                  <span style={{ color: '#64748B' }}>Permissions</span>
-                  <span style={{ fontWeight: 600, color: '#0F172A' }}>{conn.permissions_level || 'read_write'}</span>
+                  <span style={{ color: isDark ? '#6B6560' : '#64748B' }}>Permissions</span>
+                  <span style={{ fontWeight: 600, color: isDark ? '#F5F3F0' : '#0F172A' }}>{conn.permissions_level || 'read_write'}</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ color: '#64748B' }}>Webhook status</span>
+                  <span style={{ color: isDark ? '#6B6560' : '#64748B' }}>Webhook status</span>
                   <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                     <span style={{
                       width: 6, height: 6, borderRadius: '50%',
@@ -222,7 +224,7 @@ export function JiraSyncCTA() {
               </div>
 
               {/* Actions */}
-              <div style={{ padding: '12px 20px', borderTop: '1px solid #F1F5F9', display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <div style={{ padding: '12px 20px', borderTop: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid #F1F5F9', display: 'flex', flexDirection: 'column', gap: 8 }}>
                 <button
                   onClick={handleSyncNow}
                   disabled={isAnySyncActive}
@@ -241,8 +243,8 @@ export function JiraSyncCTA() {
                     onClick={() => setPanelView('webhook')}
                     style={{
                       flex: 1, height: 32, fontSize: 12, fontWeight: 500,
-                      color: '#64748B', background: '#F8FAFC',
-                      border: '1px solid #E2E8F0', borderRadius: 6, cursor: 'pointer',
+                      color: isDark ? '#A09890' : '#64748B', background: isDark ? '#2C2823' : '#F8FAFC',
+                      border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0', borderRadius: 6, cursor: 'pointer',
                       display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4,
                     }}
                   >
@@ -252,8 +254,8 @@ export function JiraSyncCTA() {
                     onClick={() => window.open('/workhub/admin', '_blank')}
                     style={{
                       flex: 1, height: 32, fontSize: 12, fontWeight: 500,
-                      color: '#64748B', background: '#F8FAFC',
-                      border: '1px solid #E2E8F0', borderRadius: 6, cursor: 'pointer',
+                      color: isDark ? '#A09890' : '#64748B', background: isDark ? '#2C2823' : '#F8FAFC',
+                      border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0', borderRadius: 6, cursor: 'pointer',
                       display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4,
                     }}
                   >
@@ -265,8 +267,8 @@ export function JiraSyncCTA() {
                     rel="noreferrer"
                     style={{
                       flex: 1, height: 32, fontSize: 12, fontWeight: 500,
-                      color: '#64748B', background: '#F8FAFC',
-                      border: '1px solid #E2E8F0', borderRadius: 6, cursor: 'pointer',
+                      color: isDark ? '#A09890' : '#64748B', background: isDark ? '#2C2823' : '#F8FAFC',
+                      border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0', borderRadius: 6, cursor: 'pointer',
                       display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4,
                       textDecoration: 'none',
                     }}
@@ -282,7 +284,7 @@ export function JiraSyncCTA() {
           {!connLoading && isConnected && panelView === 'webhook' && (
             <div style={{ padding: 20 }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-                <span style={{ fontSize: 14, fontWeight: 600, color: '#0F172A' }}>Webhook Configuration</span>
+                <span style={{ fontSize: 14, fontWeight: 600, color: isDark ? '#F5F3F0' : '#0F172A' }}>Webhook Configuration</span>
                 <button
                   onClick={() => setPanelView('status')}
                   style={{ fontSize: 11, color: '#2563EB', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600 }}
@@ -292,15 +294,15 @@ export function JiraSyncCTA() {
               </div>
 
               <div style={{
-                padding: 12, background: '#F8FAFC', borderRadius: 8,
-                border: '1px solid #E2E8F0', marginBottom: 12,
+                padding: 12, background: isDark ? '#2C2823' : '#F8FAFC', borderRadius: 8,
+                border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0', marginBottom: 12,
               }}>
-                <div style={{ fontSize: 11, fontWeight: 600, color: '#374151', marginBottom: 6 }}>Webhook URL (for Jira → Catalyst)</div>
+                <div style={{ fontSize: 11, fontWeight: 600, color: isDark ? '#A09890' : '#374151', marginBottom: 6 }}>Webhook URL (for Jira → Catalyst)</div>
                 <div style={{
                   display: 'flex', alignItems: 'center', gap: 6,
-                  padding: '6px 10px', background: '#FFF', borderRadius: 6,
-                  border: '1px solid #E2E8F0', fontSize: 11,
-                  fontFamily: "'JetBrains Mono', monospace", color: '#374151',
+                  padding: '6px 10px', background: isDark ? '#1A1714' : '#FFF', borderRadius: 6,
+                  border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0', fontSize: 11,
+                  fontFamily: "'JetBrains Mono', monospace", color: isDark ? '#A09890' : '#374151',
                   wordBreak: 'break-all',
                 }}>
                   {webhookUrl}
@@ -337,7 +339,7 @@ export function JiraSyncCTA() {
                 </ol>
               </div>
 
-              <div style={{ marginTop: 12, fontSize: 12, color: '#64748B' }}>
+              <div style={{ marginTop: 12, fontSize: 12, color: isDark ? '#6B6560' : '#64748B' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
                   <span>Edge function</span>
                   <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10, color: '#16A34A', fontWeight: 600 }}>

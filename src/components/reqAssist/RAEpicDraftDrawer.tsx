@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { X, Clock, Pencil, Archive, Loader2, ChevronLeft } from 'lucide-react';
+import { useTheme } from '@/hooks/useTheme';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { RA_KEYS } from '@/hooks/useReqAssist';
@@ -45,6 +46,7 @@ function StatusLozenge({ status }: { status: string | null }) {
 }
 
 export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }: Props) {
+  const { isDark } = useTheme();
   const qc = useQueryClient();
   const [epics, setEpics] = useState<Epic[]>([]);
   const [loading, setLoading] = useState(true);
@@ -234,8 +236,8 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
                     {/* D01: Epic key badge — neutral grey, not purple */}
                     <span style={{
                       display: 'inline-flex', alignItems: 'center',
-                      background: '#F1F5F9',
-                      border: '0.75px solid #CBD5E1',
+                      background: isDark ? '#2C2823' : '#F1F5F9',
+                      border: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid #CBD5E1',
                       borderRadius: 3,
                       padding: '2px 8px',
                       fontFamily: "'JetBrains Mono', monospace",
@@ -311,8 +313,8 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
                           <span style={{ color: 'var(--fg-2)', fontFamily: "'Inter', sans-serif" }}>Archive this epic?</span>
                           <button onClick={() => setArchiveConfirmId(null)} style={{
                             height: 28, padding: '0 10px', fontSize: 12, fontWeight: 500,
-                            borderRadius: 5, border: '0.75px solid rgba(15,23,42,0.15)',
-                            background: '#FFFFFF', color: 'var(--fg-2)', cursor: 'pointer',
+                            borderRadius: 5, border: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(15,23,42,0.15)',
+                            background: isDark ? '#232019' : '#FFFFFF', color: 'var(--fg-2)', cursor: 'pointer',
                             fontFamily: "'Inter', sans-serif",
                           }}>Cancel</button>
                           <button onClick={() => handleArchiveEpic(epic.id)} style={{
@@ -331,11 +333,11 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
                               display: 'inline-flex', alignItems: 'center', gap: 4,
                               fontSize: 12, fontWeight: 500, color: 'var(--fg-2)',
                               border: '0.75px solid rgba(15,23,42,0.15)', borderRadius: 5,
-                              background: '#FFFFFF', cursor: 'pointer',
+                              background: isDark ? '#232019' : '#FFFFFF', cursor: 'pointer',
                               fontFamily: "'Inter', sans-serif",
                             }}
-                            onMouseEnter={e => (e.currentTarget.style.background = 'rgba(37,99,235,0.04)')}
-                            onMouseLeave={e => (e.currentTarget.style.background = 'var(--bg-app)')}
+                            onMouseEnter={e => (e.currentTarget.style.background = isDark ? '#2C2823' : 'rgba(37,99,235,0.04)')}
+                            onMouseLeave={e => (e.currentTarget.style.background = isDark ? '#232019' : 'var(--bg-app)')}
                           >
                             <Pencil size={13} /> Edit
                           </button>
