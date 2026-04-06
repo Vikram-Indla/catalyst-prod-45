@@ -24,7 +24,7 @@ function getInitials(name: string): string {
 
 function getSyncStatus(lastSyncAt: string | null): { color: string; label: string; tooltip: string } {
   if (!lastSyncAt) return {
-    color: 'bg-slate-300 dark:bg-[#6B6560]',
+    color: 'bg-slate-300 dark:bg-[#666666]',
     label: 'Not synced',
     tooltip: 'No Jira sync configured',
   };
@@ -70,7 +70,7 @@ export function AllProjectsCardGrid({ projects, favoriteIds, onToggleFav, onSele
             className={cn(
               "rounded-xl p-5 flex flex-col h-full cursor-pointer transition-all duration-150",
               "bg-white border border-slate-200 shadow-sm hover:shadow-md",
-              "dark:bg-[#1A1714] dark:border-[rgba(255,255,255,0.08)] dark:hover:border-[rgba(255,255,255,0.15)]"
+              "dark:bg-[#0A0A0A] dark:border-[rgba(255,255,255,0.08)] dark:hover:border-[rgba(255,255,255,0.15)]"
             )}
           >
             {/* Header: badge + name + key + star */}
@@ -83,14 +83,14 @@ export function AllProjectsCardGrid({ projects, favoriteIds, onToggleFav, onSele
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-1.5">
-                  <span className="font-semibold text-[15px] leading-tight text-slate-900 dark:text-[#F5F3F0] truncate">
+                  <span className="font-semibold text-[15px] leading-tight text-slate-900 dark:text-[#EDEDED] truncate">
                     {p.name}
                   </span>
-                  <span className="font-mono text-[11px] bg-slate-100 dark:bg-[rgba(255,255,255,0.08)] text-slate-500 dark:text-[#A09890] px-1.5 py-0.5 rounded tracking-wide flex-shrink-0">
+                  <span className="font-mono text-[11px] bg-slate-100 dark:bg-[rgba(255,255,255,0.08)] text-slate-500 dark:text-[#888888] px-1.5 py-0.5 rounded tracking-wide flex-shrink-0">
                     {p.project_key}
                   </span>
                 </div>
-                <div className="text-[12px] text-slate-500 dark:text-[#6B6560] mt-0.5">
+                <div className="text-[12px] text-slate-500 dark:text-[#666666] mt-0.5">
                   {p.department || '—'}
                 </div>
               </div>
@@ -102,7 +102,7 @@ export function AllProjectsCardGrid({ projects, favoriteIds, onToggleFav, onSele
                   size={14}
                   fill={isFav ? '#F59E0B' : 'none'}
                   color={isFav ? '#F59E0B' : undefined}
-                  className={isFav ? 'text-amber-400' : 'text-slate-300 hover:text-amber-300 dark:text-[#6B6560]'}
+                  className={isFav ? 'text-amber-400' : 'text-slate-300 hover:text-amber-300 dark:text-[#666666]'}
                 />
               </button>
             </div>
@@ -118,12 +118,12 @@ export function AllProjectsCardGrid({ projects, favoriteIds, onToggleFav, onSele
                       {getInitials(p.lead_name)}
                     </AvatarFallback>
                   </Avatar>
-                  <span className="text-xs text-slate-600 dark:text-[#6B6560]">
+                  <span className="text-xs text-slate-600 dark:text-[#666666]">
                     {p.lead_name.split(' ').slice(0, 2).join(' ')}
                   </span>
                 </div>
               ) : (
-                <span className="text-xs text-slate-400 dark:text-[#A09890]">—</span>
+                <span className="text-xs text-slate-400 dark:text-[#888888]">—</span>
               )}
             </div>
 
@@ -139,17 +139,17 @@ export function AllProjectsCardGrid({ projects, favoriteIds, onToggleFav, onSele
                   className={cn(
                     "text-center p-3 rounded-lg",
                     "bg-slate-50",
-                    "dark:bg-[#232019] dark:border dark:border-[rgba(255,255,255,0.08)]"
+                    "dark:bg-[#111111] dark:border dark:border-[rgba(255,255,255,0.08)]"
                   )}
                 >
-                  <div className="text-[22px] font-semibold text-slate-900 dark:text-[#F5F3F0]">{s.v || 0}</div>
-                  <div className="text-[10px] font-medium tracking-widest uppercase text-slate-400 dark:text-[#A09890] mt-1">{s.l}</div>
+                  <div className="text-[22px] font-semibold text-slate-900 dark:text-[#EDEDED]">{s.v || 0}</div>
+                  <div className="text-[10px] font-medium tracking-widest uppercase text-slate-400 dark:text-[#888888] mt-1">{s.l}</div>
                 </div>
               ))}
             </div>
 
             {/* Footer: sync + members + updated — pinned bottom */}
-            <div className="flex items-center justify-between mt-auto pt-3 border-t border-slate-100 dark:border-[rgba(255,255,255,0.08)] text-xs text-slate-500 dark:text-[#6B6560]">
+            <div className="flex items-center justify-between mt-auto pt-3 border-t border-slate-100 dark:border-[rgba(255,255,255,0.08)] text-xs text-slate-500 dark:text-[#666666]">
               <Tooltip>
                 <TooltipTrigger asChild>
                   <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-100 dark:bg-[rgba(255,255,255,0.08)] text-[11px] font-medium cursor-default">
@@ -163,7 +163,7 @@ export function AllProjectsCardGrid({ projects, favoriteIds, onToggleFav, onSele
               </Tooltip>
               <div className="flex items-center gap-2">
                 <MemberStack memberIds={p.member_ids} memberCount={p.member_count} max={3} />
-                <span className="text-[11px] text-slate-400 dark:text-[#A09890]">
+                <span className="text-[11px] text-slate-400 dark:text-[#888888]">
                   {p.updated_at ? formatDistanceToNowStrict(new Date(p.updated_at), { addSuffix: true }) : '—'}
                 </span>
               </div>

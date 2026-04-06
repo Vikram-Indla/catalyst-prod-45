@@ -135,7 +135,7 @@ export default function EnvironmentsListPage() {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: isDark ? '#1A1714' : '#F8FAFC' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: isDark ? '#0A0A0A' : '#F8FAFC' }}>
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
         <div>
@@ -148,8 +148,8 @@ export default function EnvironmentsListPage() {
               <Server size={24} style={{ color: '#FFFFFF' }} />
             </div>
             <div>
-              <h1 style={{ fontSize: 24, fontWeight: 700, color: isDark ? '#F5F3F0' : '#0F172A', margin: 0 }}>Test Environments</h1>
-              <p style={{ fontSize: 14, color: isDark ? '#A09890' : '#64748B', margin: '4px 0 0' }}>Manage and monitor test environments</p>
+              <h1 style={{ fontSize: 24, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A', margin: 0 }}>Test Environments</h1>
+              <p style={{ fontSize: 14, color: isDark ? '#888888' : '#64748B', margin: '4px 0 0' }}>Manage and monitor test environments</p>
             </div>
           </div>
         </div>
@@ -170,11 +170,11 @@ export default function EnvironmentsListPage() {
       {/* Summary Cards */}
       {summary && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 24 }}>
-          <div style={{ backgroundColor: isDark ? '#232019' : '#FFF', borderRadius: 12, padding: 20, border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}` }}>
+          <div style={{ backgroundColor: isDark ? '#111111' : '#FFF', borderRadius: 12, padding: 20, border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}` }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div>
-                <p style={{ fontSize: 12, color: isDark ? '#A09890' : '#64748B', margin: 0, textTransform: 'uppercase' }}>Total</p>
-                <p style={{ fontSize: 28, fontWeight: 700, color: isDark ? '#F5F3F0' : '#0F172A', margin: '8px 0 0' }}>{summary.total_environments}</p>
+                <p style={{ fontSize: 12, color: isDark ? '#888888' : '#64748B', margin: 0, textTransform: 'uppercase' }}>Total</p>
+                <p style={{ fontSize: 28, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A', margin: '8px 0 0' }}>{summary.total_environments}</p>
               </div>
               <Server size={24} style={{ color: '#6366F1' }} />
             </div>
@@ -220,7 +220,7 @@ export default function EnvironmentsListPage() {
             onChange={(e) => setSearchTerm(e.target.value)}
             style={{
               width: '100%', height: 44, padding: '0 14px 0 44px',
-              border: `1.5px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 10, fontSize: 14, backgroundColor: isDark ? '#232019' : '#FFFFFF', color: isDark ? '#F5F3F0' : undefined,
+              border: `1.5px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 10, fontSize: 14, backgroundColor: isDark ? '#111111' : '#FFFFFF', color: isDark ? '#EDEDED' : undefined,
             }}
           />
         </div>
@@ -250,7 +250,7 @@ export default function EnvironmentsListPage() {
         </Select>
         {hasActiveFilters && (
           <button onClick={clearFilters}
-            style={{ display: 'flex', alignItems: 'center', gap: 6, height: 44, padding: '0 16px', border: `1.5px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 10, backgroundColor: isDark ? '#232019' : '#FFF', color: isDark ? '#A09890' : '#64748B', fontSize: 14, cursor: 'pointer' }}>
+            style={{ display: 'flex', alignItems: 'center', gap: 6, height: 44, padding: '0 16px', border: `1.5px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 10, backgroundColor: isDark ? '#111111' : '#FFF', color: isDark ? '#888888' : '#64748B', fontSize: 14, cursor: 'pointer' }}>
             <X size={16} /> Clear
           </button>
         )}
@@ -262,10 +262,10 @@ export default function EnvironmentsListPage() {
           <RefreshCw size={32} style={{ animation: 'spin 1s linear infinite', color: '#6366F1' }} />
         </div>
       ) : filteredEnvironments.length === 0 ? (
-        <div style={{ backgroundColor: isDark ? '#232019' : '#FFFFFF', borderRadius: 12, padding: 60, textAlign: 'center', border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}` }}>
-          <Server size={48} style={{ color: isDark ? '#6B6560' : '#CBD5E1', marginBottom: 16 }} />
-          <p style={{ fontSize: 16, color: isDark ? '#A09890' : '#64748B', margin: 0 }}>No environments found</p>
-          <p style={{ fontSize: 14, color: isDark ? '#6B6560' : '#94A3B8', margin: '8px 0 0' }}>Add an environment to get started</p>
+        <div style={{ backgroundColor: isDark ? '#111111' : '#FFFFFF', borderRadius: 12, padding: 60, textAlign: 'center', border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}` }}>
+          <Server size={48} style={{ color: isDark ? '#666666' : '#CBD5E1', marginBottom: 16 }} />
+          <p style={{ fontSize: 16, color: isDark ? '#888888' : '#64748B', margin: 0 }}>No environments found</p>
+          <p style={{ fontSize: 14, color: isDark ? '#666666' : '#94A3B8', margin: '8px 0 0' }}>Add an environment to get started</p>
         </div>
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: 16 }}>
@@ -281,7 +281,7 @@ export default function EnvironmentsListPage() {
                 key={env.id}
                 onClick={() => navigate(`/testhub/environments/${env.id}`)}
                 style={{
-                  backgroundColor: isDark ? '#232019' : '#FFFFFF', borderRadius: 12, padding: 20,
+                  backgroundColor: isDark ? '#111111' : '#FFFFFF', borderRadius: 12, padding: 20,
                   border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, cursor: 'pointer', transition: 'all 0.15s',
                 }}
                 onMouseEnter={(e) => { e.currentTarget.style.borderColor = isDark ? 'rgba(255,255,255,0.15)' : '#CBD5E1'; e.currentTarget.style.boxShadow = isDark ? 'none' : '0 4px 12px rgba(0,0,0,0.05)'; }}
@@ -296,9 +296,9 @@ export default function EnvironmentsListPage() {
                     <HealthIcon size={12} /> {health.label}
                   </div>
                 </div>
-                <h3 style={{ fontSize: 18, fontWeight: 600, color: isDark ? '#F5F3F0' : '#0F172A', margin: '0 0 8px' }}>{env.name}</h3>
+                <h3 style={{ fontSize: 18, fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A', margin: '0 0 8px' }}>{env.name}</h3>
                 {env.url && (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: isDark ? '#A09890' : '#64748B', marginBottom: 12, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: isDark ? '#888888' : '#64748B', marginBottom: 12, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     <ExternalLink size={14} /> {env.url}
                   </div>
                 )}
@@ -306,7 +306,7 @@ export default function EnvironmentsListPage() {
                   <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, fontWeight: 500, color: status.color }}>
                     <StatusIcon size={14} /> {status.label}
                   </div>
-                  <div style={{ fontSize: 12, color: isDark ? '#6B6560' : '#94A3B8' }}>Checked: {formatDate(env.last_health_check)}</div>
+                  <div style={{ fontSize: 12, color: isDark ? '#666666' : '#94A3B8' }}>Checked: {formatDate(env.last_health_check)}</div>
                 </div>
               </div>
             );

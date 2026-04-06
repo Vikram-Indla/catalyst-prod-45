@@ -137,7 +137,7 @@ export default function JiraIntegrationConfig() {
 
   return (
     <AdminGuard>
-      <div className="h-full w-full flex flex-col bg-background dark:bg-[#1A1714] overflow-hidden">
+      <div className="h-full w-full flex flex-col bg-background dark:bg-[#0A0A0A] overflow-hidden">
         <div className="h-[72px] border-b bg-card flex-shrink-0">
           <div className="h-full px-6 flex items-center justify-between">
             <div className="min-w-0">

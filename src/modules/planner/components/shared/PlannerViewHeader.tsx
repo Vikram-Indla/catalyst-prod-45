@@ -24,12 +24,12 @@ export function PlannerViewHeader({
   showAddTask = true,
 }: PlannerViewHeaderProps) {
   return (
-    <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-[rgba(255,255,255,0.08)] bg-white dark:bg-[#1A1714]">
+    <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-[rgba(255,255,255,0.08)] bg-white dark:bg-[#0A0A0A]">
       <div>
-        <h1 className="text-xl font-bold text-slate-900 dark:text-[#F5F3F0]">
+        <h1 className="text-xl font-bold text-slate-900 dark:text-[#EDEDED]">
           {title}
         </h1>
-        <p className="text-sm text-slate-500 dark:text-[#A09890]">
+        <p className="text-sm text-slate-500 dark:text-[#888888]">
           {subtitle}
         </p>
       </div>

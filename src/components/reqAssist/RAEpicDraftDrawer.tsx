@@ -236,7 +236,7 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
                     {/* D01: Epic key badge — neutral grey, not purple */}
                     <span style={{
                       display: 'inline-flex', alignItems: 'center',
-                      background: isDark ? '#2C2823' : '#F1F5F9',
+                      background: isDark ? '#1A1A1A' : '#F1F5F9',
                       border: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid #CBD5E1',
                       borderRadius: 3,
                       padding: '2px 8px',
@@ -314,7 +314,7 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
                           <button onClick={() => setArchiveConfirmId(null)} style={{
                             height: 28, padding: '0 10px', fontSize: 12, fontWeight: 500,
                             borderRadius: 5, border: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(15,23,42,0.15)',
-                            background: isDark ? '#232019' : '#FFFFFF', color: 'var(--fg-2)', cursor: 'pointer',
+                            background: isDark ? '#111111' : '#FFFFFF', color: 'var(--fg-2)', cursor: 'pointer',
                             fontFamily: "'Inter', sans-serif",
                           }}>Cancel</button>
                           <button onClick={() => handleArchiveEpic(epic.id)} style={{
@@ -333,11 +333,11 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
                               display: 'inline-flex', alignItems: 'center', gap: 4,
                               fontSize: 12, fontWeight: 500, color: 'var(--fg-2)',
                               border: '0.75px solid rgba(15,23,42,0.15)', borderRadius: 5,
-                              background: isDark ? '#232019' : '#FFFFFF', cursor: 'pointer',
+                              background: isDark ? '#111111' : '#FFFFFF', cursor: 'pointer',
                               fontFamily: "'Inter', sans-serif",
                             }}
-                            onMouseEnter={e => (e.currentTarget.style.background = isDark ? '#2C2823' : 'rgba(37,99,235,0.04)')}
-                            onMouseLeave={e => (e.currentTarget.style.background = isDark ? '#232019' : 'var(--bg-app)')}
+                            onMouseEnter={e => (e.currentTarget.style.background = isDark ? '#1A1A1A' : 'rgba(37,99,235,0.04)')}
+                            onMouseLeave={e => (e.currentTarget.style.background = isDark ? '#111111' : 'var(--bg-app)')}
                           >
                             <Pencil size={13} /> Edit
                           </button>

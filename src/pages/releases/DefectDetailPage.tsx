@@ -150,7 +150,7 @@ function ContentCard({
   children: React.ReactNode;
 }) {
   return (
-    <div className="bg-white dark:bg-[#232019] rounded-lg border border-gray-200 dark:border-[rgba(255,255,255,0.08)] shadow-sm">
+    <div className="bg-white dark:bg-[#111111] rounded-lg border border-gray-200 dark:border-[rgba(255,255,255,0.08)] shadow-sm">
       <div className="px-4 py-2.5 border-b border-gray-100 dark:border-[rgba(255,255,255,0.05)] flex items-center justify-between">
         <h2 className={cn("text-[13px] font-semibold flex items-center gap-1.5", titleClass)}>
           {titleIcon}
@@ -173,7 +173,7 @@ function SidebarPanel({
   children: React.ReactNode;
 }) {
   return (
-    <div className="bg-white dark:bg-[#232019] rounded-lg border border-gray-200 dark:border-[rgba(255,255,255,0.08)] shadow-sm">
+    <div className="bg-white dark:bg-[#111111] rounded-lg border border-gray-200 dark:border-[rgba(255,255,255,0.08)] shadow-sm">
       <div className="px-4 py-2.5 border-b border-gray-100 dark:border-[rgba(255,255,255,0.05)] flex items-center justify-between">
         <h3 className="text-[11px] font-bold uppercase text-gray-500 tracking-wider">{title}</h3>
         {action}
@@ -429,12 +429,12 @@ export default function DefectDetailPage() {
   const assigneeColor = avatarColors[defect.assignee?.color || 'gray'] || avatarColors.gray;
 
   return (
-    <div className="h-full w-full bg-gray-50 dark:bg-[#1A1714] overflow-auto">
+    <div className="h-full w-full bg-gray-50 dark:bg-[#0A0A0A] overflow-auto">
       
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {/* HEADER - Full Width, Dense                                          */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
-      <header className="bg-white dark:bg-[#232019] border-b border-gray-200 dark:border-[rgba(255,255,255,0.08)] shadow-sm">
+      <header className="bg-white dark:bg-[#111111] border-b border-gray-200 dark:border-[rgba(255,255,255,0.08)] shadow-sm">
         <div className="w-full px-6">
           
           {/* Row 1: Breadcrumb + ID + Badges + Actions (44px height) */}
@@ -501,7 +501,7 @@ export default function DefectDetailPage() {
                     <MoreHorizontal className="w-4 h-4" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-44 bg-white dark:bg-[#232019]">
+                <DropdownMenuContent align="end" className="w-44 bg-white dark:bg-[#111111]">
                   <DropdownMenuItem onClick={handleCopyLink} className="text-[13px]">
                     <Copy className="w-3.5 h-3.5 mr-2" />
                     Copy Link

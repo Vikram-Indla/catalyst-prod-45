@@ -376,11 +376,11 @@ export function GlobalSearch() {
   ));
   const portalTheme = (isDark ? {
     "--gs-backdrop": "rgba(10,10,10,0.58)",
-    "--gs-bg": "#232019",
-    "--gs-bar-bg": "#1A1714",
+    "--gs-bg": "#111111",
+    "--gs-bar-bg": "#0A0A0A",
     "--gs-footer-bg": "rgba(235,238,245,0.03)",
     "--gs-section-bg": "rgba(235,238,245,0.03)",
-    "--gs-dropdown-bg": "#232019",
+    "--gs-dropdown-bg": "#111111",
     "--gs-shadow": "0 20px 60px rgba(0,0,0,0.5)",
     "--gs-dropdown-shadow": "0 12px 32px rgba(0,0,0,0.4)",
     "--gs-border": "rgba(235,238,245,0.10)",
@@ -400,7 +400,7 @@ export function GlobalSearch() {
     "--gs-chip-active-bg": "rgba(59,130,246,0.10)",
     "--gs-chip-active-border": "rgba(96,165,250,0.25)",
     "--gs-chip-active-text": "#60A5FA",
-    "--gs-kbd-bg": "#1A1714",
+    "--gs-kbd-bg": "#0A0A0A",
     "--gs-kbd-border": "rgba(235,238,245,0.10)",
     "--gs-kbd-text": "rgba(235,238,245,0.55)",
     "--gs-skeleton": "rgba(235,238,245,0.06)",
@@ -802,7 +802,7 @@ export function GlobalSearchTrigger() {
           <kbd key={k} style={{
             fontSize: 10, fontFamily: "JetBrains Mono, monospace",
             color: dk ? 'rgba(235,238,245,0.30)' : "#97A0AF",
-            backgroundColor: dk ? '#1A1714' : "#fff",
+            backgroundColor: dk ? '#0A0A0A' : "#fff",
             border: `1px solid ${dk ? 'rgba(235,238,245,0.10)' : "#DFE1E6"}`,
             borderRadius: 3, padding: "1px 4px",
           }}>{k}</kbd>

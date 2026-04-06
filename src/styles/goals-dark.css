@@ -6,13 +6,13 @@
 
 /* ── Goals Page Wrapper ── */
 [data-theme="dark"] [data-goals-page] {
-  background-color: #1A1714 !important;
+  background-color: #0A0A0A !important;
   color: rgba(235,238,245,0.92);
 }
 
 /* ── Stats Strip Cards ── */
 [data-theme="dark"] .goals-stats-grid > div {
-  background: #1A1714 !important;
+  background: #0A0A0A !important;
   border-color: rgba(235,238,245,0.10) !important;
   box-shadow: none !important;
 }
@@ -21,7 +21,7 @@
 [data-theme="dark"] .goals-tree-container,
 [data-theme="dark"] [data-goals-page] > div > div[style*="border: 1px solid"][style*="borderRadius"],
 [data-theme="dark"] .heatmap-scroll {
-  background: #1A1714 !important;
+  background: #0A0A0A !important;
   border-color: rgba(235,238,245,0.10) !important;
 }
 
@@ -134,7 +134,7 @@
 
 /* Filter dropdown panels (float layer) */
 [data-theme="dark"] [data-goals-page] div[style*="background: rgb(255, 255, 255)"][style*="boxShadow"][style*="position: absolute"] {
-  background: #232019 !important;
+  background: #111111 !important;
   border-color: rgba(235,238,245,0.10) !important;
   box-shadow: 0 4px 16px rgba(0,0,0,0.4) !important;
 }
@@ -209,7 +209,7 @@
 /* Draft/Not Started/Cancelled — grey lozenges */
 [data-theme="dark"] [data-goals-page] span[style*="background: rgb(241, 245, 249)"][style*="borderRadius: 99"],
 [data-theme="dark"] [data-goals-page] span[style*="background: #F1F5F9"][style*="borderRadius: 99"] {
-  background: #2C2823 !important;
+  background: #1A1A1A !important;
   color: #B8BCC8 !important;
 }
 
@@ -223,7 +223,7 @@
    ══════════════════════════════════════════════════════════════════════════ */
 
 [data-theme="dark"] .heatmap-scroll {
-  background: #1A1714 !important;
+  background: #0A0A0A !important;
   border-color: rgba(235,238,245,0.10) !important;
 }
 
@@ -276,7 +276,7 @@
 [data-theme="dark"] [data-goals-page] div[style*="background: rgb(255, 255, 255)"][style*="width: 520px"],
 [data-theme="dark"] [data-goals-page] div[style*="background: #FFFFFF"][style*="width: 520px"],
 [data-theme="dark"] [data-goals-page] div[style*="background: rgb(255, 255, 255)"][style*="position: fixed"] {
-  background: #232019 !important;
+  background: #111111 !important;
   border-color: rgba(235,238,245,0.10) !important;
 }
 

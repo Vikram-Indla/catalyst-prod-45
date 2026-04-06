@@ -11,7 +11,7 @@ export function LiveAIInsightsCard({ projectId }: LiveAIInsightsCardProps) {
   // LOADING STATE
   if (loading && !insights) {
     return (
-      <div className="bg-[var(--cp-float)] dark:bg-[#232019]" style={{ gridColumn: '1 / -1', border: '1px solid var(--divider)', borderRadius: 8, padding: 20, boxShadow: '0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px -1px rgba(0,0,0,0.1)' }}>
+      <div className="bg-[var(--cp-float)] dark:bg-[#111111]" style={{ gridColumn: '1 / -1', border: '1px solid var(--divider)', borderRadius: 8, padding: 20, boxShadow: '0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px -1px rgba(0,0,0,0.1)' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: 12, marginBottom: 16, borderBottom: '1px solid var(--cp-bd-zone)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <Sparkles size={16} color="var(--cp-blue)" />
@@ -21,7 +21,7 @@ export function LiveAIInsightsCard({ projectId }: LiveAIInsightsCardProps) {
         </div>
         <div style={{ display: 'flex', gap: 16 }}>
           {[1, 2, 3].map((i) => (
-            <div key={i} className="bg-[var(--bg-1)] dark:bg-[#2C2823]" style={{ flex: 1, borderRadius: 8, padding: 16 }}>
+            <div key={i} className="bg-[var(--bg-1)] dark:bg-[#1A1A1A]" style={{ flex: 1, borderRadius: 8, padding: 16 }}>
               <div className="bg-[var(--divider)] ph-skeleton" style={{ height: 14, borderRadius: 4, width: '60%', marginBottom: 12 }} />
               <div className="bg-[var(--divider)] ph-skeleton" style={{ height: 20, borderRadius: 4, width: '80%', marginBottom: 8 }} />
               <div className="bg-[var(--divider)] ph-skeleton" style={{ height: 12, borderRadius: 4, width: '50%' }} />
@@ -35,7 +35,7 @@ export function LiveAIInsightsCard({ projectId }: LiveAIInsightsCardProps) {
   // ERROR STATE
   if (error && !insights) {
     return (
-      <div className="bg-[var(--cp-float)] dark:bg-[#232019]" style={{ gridColumn: '1 / -1', border: '1px solid var(--divider)', borderRadius: 8, padding: 20, boxShadow: '0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px -1px rgba(0,0,0,0.1)' }}>
+      <div className="bg-[var(--cp-float)] dark:bg-[#111111]" style={{ gridColumn: '1 / -1', border: '1px solid var(--divider)', borderRadius: 8, padding: 20, boxShadow: '0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px -1px rgba(0,0,0,0.1)' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: 12, marginBottom: 16, borderBottom: '1px solid var(--cp-bd-zone)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <Sparkles size={16} color="var(--cp-blue)" />
@@ -68,7 +68,7 @@ export function LiveAIInsightsCard({ projectId }: LiveAIInsightsCardProps) {
   const balance = balanceColors[data.teamWorkload?.balance] || balanceColors.Balanced;
 
   return (
-    <div className="bg-[var(--cp-float)] dark:bg-[#232019]" style={{ gridColumn: '1 / -1', border: '1px solid var(--divider)', borderRadius: 8, padding: 20, boxShadow: '0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px -1px rgba(0,0,0,0.1)' }}>
+    <div className="bg-[var(--cp-float)] dark:bg-[#111111]" style={{ gridColumn: '1 / -1', border: '1px solid var(--divider)', borderRadius: 8, padding: 20, boxShadow: '0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px -1px rgba(0,0,0,0.1)' }}>
       {/* HEADER */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: 12, marginBottom: 16, borderBottom: '1px solid var(--cp-bd-zone)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -99,7 +99,7 @@ export function LiveAIInsightsCard({ projectId }: LiveAIInsightsCardProps) {
       {/* THREE SUB-CARDS */}
       <div style={{ display: 'flex', gap: 16 }}>
         {/* Completion Forecast */}
-        <div className="bg-[var(--bg-1)] dark:bg-[#2C2823]" style={{ flex: 1, borderRadius: 8, padding: 16 }}>
+        <div className="bg-[var(--bg-1)] dark:bg-[#1A1A1A]" style={{ flex: 1, borderRadius: 8, padding: 16 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
             <Target size={15} color="var(--cp-blue)" />
             <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1)' }}>Completion Forecast</span>
@@ -120,7 +120,7 @@ export function LiveAIInsightsCard({ projectId }: LiveAIInsightsCardProps) {
         </div>
 
         {/* Blockers Summary */}
-        <div className="bg-[var(--bg-1)] dark:bg-[#2C2823]" style={{ flex: 1, borderRadius: 8, padding: 16 }}>
+        <div className="bg-[var(--bg-1)] dark:bg-[#1A1A1A]" style={{ flex: 1, borderRadius: 8, padding: 16 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
             <AlertTriangle size={15} color="var(--sem-warning)" />
             <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1)' }}>Blockers Summary</span>
@@ -141,7 +141,7 @@ export function LiveAIInsightsCard({ projectId }: LiveAIInsightsCardProps) {
         </div>
 
         {/* Team Workload */}
-        <div className="bg-[var(--bg-1)] dark:bg-[#2C2823]" style={{ flex: 1, borderRadius: 8, padding: 16 }}>
+        <div className="bg-[var(--bg-1)] dark:bg-[#1A1A1A]" style={{ flex: 1, borderRadius: 8, padding: 16 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
             <TrendingUp size={15} color="var(--sem-success)" />
             <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1)' }}>Team Workload</span>

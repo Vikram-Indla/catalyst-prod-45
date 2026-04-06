@@ -31,7 +31,7 @@ function getStatusCategory(status: string): StatusCategory {
 function getLozengeTokens(category: StatusCategory): { bg: string; text: string } {
   const isDark = document.documentElement.classList.contains('dark');
   const map: Record<StatusCategory, { bg: [string, string]; text: [string, string] }> = {
-    todo:       { bg: ['#DFE1E6', '#2C2823'], text: ['#42526E', '#B8BCC8'] },
+    todo:       { bg: ['#DFE1E6', '#1A1A1A'], text: ['#42526E', '#B8BCC8'] },
     inprogress: { bg: ['#0C66E4', '#1A2030'], text: ['#FFFFFF', '#93C5FD'] },
     done:       { bg: ['#1B7F37', '#182820'], text: ['#FFFFFF', '#86EFAC'] },
   };

@@ -71,7 +71,7 @@ export function StrategyRoomActions({ density, setDensity, isIntelligenceOpen, o
                     className={`flex items-center justify-center w-8 h-8 border-none cursor-pointer transition-all duration-[120ms] focus-visible:outline-2 focus-visible:outline-offset-2 ${
                       isActive
                         ? 'bg-[#2563EB] text-white'
-                        : 'bg-white dark:bg-[#232019] text-slate-500 dark:text-[#A09890]'
+                        : 'bg-white dark:bg-[#111111] text-slate-500 dark:text-[#888888]'
                     }`}
                   >
                     {opt.icon}
@@ -94,7 +94,7 @@ export function StrategyRoomActions({ density, setDensity, isIntelligenceOpen, o
 
       {/* Export button */}
       <button
-        className="flex items-center gap-1.5 h-8 px-3 text-[13px] font-medium text-slate-500 dark:text-[#A09890] bg-white dark:bg-[#232019] border border-slate-200 dark:border-[rgba(255,255,255,0.08)] rounded-md cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2"
+        className="flex items-center gap-1.5 h-8 px-3 text-[13px] font-medium text-slate-500 dark:text-[#888888] bg-white dark:bg-[#111111] border border-slate-200 dark:border-[rgba(255,255,255,0.08)] rounded-md cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2"
       >
         <Download size={14} />
         Export

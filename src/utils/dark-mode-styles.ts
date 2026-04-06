@@ -13,21 +13,21 @@ export type DarkTokens = {
 
 export const DK: DarkTokens = {
   // Backgrounds — NOCTURNE Warm Charcoal
-  pageBg: '#1A1714',
+  pageBg: '#0A0A0A',
   cardBg: 'transparent',
   headerBg: 'transparent',
   tableHeaderBg: 'rgba(255,255,255,0.03)',
   hoverBg: 'rgba(255,255,255,0.03)',
   selectedBg: 'rgba(59,130,246,0.08)',
-  floatBg: '#232019',
+  floatBg: '#111111',
   chipBg: 'rgba(255,255,255,0.06)',
   progressTrack: 'rgba(255,255,255,0.08)',
   iconBg: 'rgba(255,255,255,0.06)',
   
   // Text — NOCTURNE Warm Charcoal
-  t1: '#F5F3F0',   // primary text (titles, values, data)
-  t2: '#A09890',   // secondary (labels, legends)
-  t3: '#6B6560',   // tertiary (timestamps, muted labels)
+  t1: '#EDEDED',   // primary text (titles, values, data)
+  t2: '#888888',   // secondary (labels, legends)
+  t3: '#666666',   // tertiary (timestamps, muted labels)
   t4: 'rgba(245,243,240,0.30)',   // decorative (placeholders)
   
   // Borders

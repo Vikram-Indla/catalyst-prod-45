@@ -136,7 +136,7 @@ function MultiSelectDropdown({
       <button
         type="button"
         className={cn(
-          "flex items-center justify-between w-full h-10 px-3 border rounded-md text-sm bg-white dark:bg-[#232019] transition-colors",
+          "flex items-center justify-between w-full h-10 px-3 border rounded-md text-sm bg-white dark:bg-[#111111] transition-colors",
           selected.length > 0 ? "border-border text-foreground" : "border-border text-muted-foreground",
           "hover:border-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-brand-primary"
         )}
@@ -152,7 +152,7 @@ function MultiSelectDropdown({
       {isOpen && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
-          <div className="absolute z-50 top-full left-0 mt-1 w-full bg-white dark:bg-[#2C2823] border border-border dark:border-[rgba(255,255,255,0.08)] rounded-md shadow-lg max-h-48 overflow-y-auto">
+          <div className="absolute z-50 top-full left-0 mt-1 w-full bg-white dark:bg-[#1A1A1A] border border-border dark:border-[rgba(255,255,255,0.08)] rounded-md shadow-lg max-h-48 overflow-y-auto">
             {options.map((option) => (
               <label
                 key={option}
@@ -249,7 +249,7 @@ export function SkillsFiltersDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleCancel}>
-      <DialogContent className="max-w-[480px] w-[95vw] p-0 bg-white dark:bg-[#232019] border dark:border-[rgba(255,255,255,0.08)] shadow-xl rounded-lg overflow-hidden gap-0 [&>button.absolute]:hidden">
+      <DialogContent className="max-w-[480px] w-[95vw] p-0 bg-white dark:bg-[#111111] border dark:border-[rgba(255,255,255,0.08)] shadow-xl rounded-lg overflow-hidden gap-0 [&>button.absolute]:hidden">
         {/* Header */}
         <div className="flex items-center justify-between px-4 sm:px-5 py-4 border-b border-border">
           <h2 className="text-base font-semibold text-foreground">Filters</h2>
@@ -276,7 +276,7 @@ export function SkillsFiltersDialog({
                         "px-3 py-1.5 border rounded-md text-sm cursor-pointer transition-all whitespace-nowrap font-medium",
                         localFilters.activeQuickFilter === sf.id
                           ? "bg-brand-primary border-brand-primary text-white"
-                          : "bg-white dark:bg-[#232019] border-border text-foreground hover:border-brand-primary hover:bg-brand-primary/5"
+                          : "bg-white dark:bg-[#111111] border-border text-foreground hover:border-brand-primary hover:bg-brand-primary/5"
                       )}
                       onClick={() => handleQuickFilterClick(sf.id)}
                     >
@@ -413,7 +413,7 @@ export function SkillsFiltersDialog({
                     max="100"
                     value={localFilters.coverageMin ?? ''}
                     onChange={(e) => updateFilter('coverageMin', e.target.value ? parseInt(e.target.value) : null)}
-                    className="w-full h-10 px-3 border border-border dark:border-[rgba(255,255,255,0.08)] rounded-md text-sm bg-white dark:bg-[#232019] dark:text-[#F5F3F0] focus:outline-none focus:ring-1 focus:ring-brand-primary"
+                    className="w-full h-10 px-3 border border-border dark:border-[rgba(255,255,255,0.08)] rounded-md text-sm bg-white dark:bg-[#111111] dark:text-[#EDEDED] focus:outline-none focus:ring-1 focus:ring-brand-primary"
                     placeholder="0"
                   />
                 </div>
@@ -425,7 +425,7 @@ export function SkillsFiltersDialog({
                     max="100"
                     value={localFilters.coverageMax ?? ''}
                     onChange={(e) => updateFilter('coverageMax', e.target.value ? parseInt(e.target.value) : null)}
-                    className="w-full h-10 px-3 border border-border dark:border-[rgba(255,255,255,0.08)] rounded-md text-sm bg-white dark:bg-[#232019] dark:text-[#F5F3F0] focus:outline-none focus:ring-1 focus:ring-brand-primary"
+                    className="w-full h-10 px-3 border border-border dark:border-[rgba(255,255,255,0.08)] rounded-md text-sm bg-white dark:bg-[#111111] dark:text-[#EDEDED] focus:outline-none focus:ring-1 focus:ring-brand-primary"
                     placeholder="100"
                   />
                 </div>
@@ -435,7 +435,7 @@ export function SkillsFiltersDialog({
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between px-4 sm:px-5 py-3.5 border-t border-border bg-white dark:bg-[#232019]">
+        <div className="flex items-center justify-between px-4 sm:px-5 py-3.5 border-t border-border bg-white dark:bg-[#111111]">
           <span className="text-sm">
             <span className="text-brand-primary font-medium">{activeFilterCount}</span>
             <span className="text-muted-foreground ml-1">filters applied</span>

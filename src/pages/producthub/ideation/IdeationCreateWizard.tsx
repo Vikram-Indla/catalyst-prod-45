@@ -82,12 +82,12 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
     width: '100%', height: '44px',
     border: `1px solid ${isDark ? 'rgba(255,255,255,0.12)' : '#E2E8F0'}`,
     borderRadius: '8px', padding: '0 14px', fontSize: '14px',
-    color: isDark ? '#F5F3F0' : '#0F172A',
+    color: isDark ? '#EDEDED' : '#0F172A',
     background: isDark ? 'transparent' : '#FFFFFF', outline: 'none',
   };
   const labelBase: React.CSSProperties = {
     display: 'block', fontSize: '13px', fontWeight: 600,
-    color: isDark ? '#F5F3F0' : '#0F172A', marginBottom: '6px',
+    color: isDark ? '#EDEDED' : '#0F172A', marginBottom: '6px',
   };
   const focusHandlers = isDark ? focusHandlersDark : focusHandlersLight;
 
@@ -235,7 +235,7 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
         <div
           onClick={e => e.stopPropagation()}
           style={{
-            background: isDark ? '#232019' : '#FFFFFF',
+            background: isDark ? '#111111' : '#FFFFFF',
             borderRadius: '16px',
             width: '720px',
             maxHeight: '90vh',
@@ -251,12 +251,12 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
             borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`,
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           }}>
-            <span style={{ fontSize: '20px', fontWeight: 700, color: isDark ? '#F5F3F0' : '#0F172A' }}>Submit New Idea</span>
+            <span style={{ fontSize: '20px', fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A' }}>Submit New Idea</span>
             <button
               onClick={onClose}
               style={{
                 width: '32px', height: '32px', borderRadius: '8px',
-                background: 'transparent', border: 'none', color: isDark ? '#6B6560' : '#94A3B8',
+                background: 'transparent', border: 'none', color: isDark ? '#666666' : '#94A3B8',
                 fontSize: '16px', cursor: 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}
@@ -488,13 +488,13 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
                   <span key={tag} style={{
                     display: 'inline-flex', alignItems: 'center', gap: '4px',
                     padding: '2px 8px', background: isDark ? 'rgba(255,255,255,0.06)' : '#F1F5F9', border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`,
-                    borderRadius: '4px', fontSize: '12px', color: isDark ? '#A09890' : '#334155',
+                    borderRadius: '4px', fontSize: '12px', color: isDark ? '#888888' : '#334155',
                   }}>
                     {tag}
                     <button
                       onClick={() => removeTag(tag)}
                       style={{
-                        background: 'none', border: 'none', color: isDark ? '#6B6560' : '#94A3B8',
+                        background: 'none', border: 'none', color: isDark ? '#666666' : '#94A3B8',
                         cursor: 'pointer', padding: 0, fontSize: '14px', lineHeight: 1,
                       }}
                     >×</button>
@@ -507,7 +507,7 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
                   placeholder={tags.length === 0 ? 'Type a tag and press Enter...' : ''}
                   style={{
                     flex: 1, minWidth: '120px', border: 'none', outline: 'none',
-                    fontSize: '13px', color: isDark ? '#F5F3F0' : '#0F172A', background: 'transparent',
+                    fontSize: '13px', color: isDark ? '#EDEDED' : '#0F172A', background: 'transparent',
                     height: '28px',
                   }}
                 />
@@ -523,13 +523,13 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
             justifyContent: 'flex-end',
             alignItems: 'center',
             gap: '12px',
-            background: isDark ? '#1A1714' : '#FAFAFA',
+            background: isDark ? '#0A0A0A' : '#FAFAFA',
             borderRadius: '0 0 16px 16px',
           }}>
             <button
               onClick={onClose}
               style={{
-                background: 'transparent', color: isDark ? '#A09890' : '#64748B',
+                background: 'transparent', color: isDark ? '#888888' : '#64748B',
                 border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: '8px',
                 padding: '10px 20px', fontSize: '14px', fontWeight: 600, cursor: 'pointer',
               }}

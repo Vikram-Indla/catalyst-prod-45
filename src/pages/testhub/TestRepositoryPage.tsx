@@ -613,7 +613,7 @@ export function TestRepositoryPage() {
                 width: 40,
                 height: 40,
                 padding: 0,
-                backgroundColor: isDark ? '#232019' : '#FFFFFF',
+                backgroundColor: isDark ? '#111111' : '#FFFFFF',
                 border: isDark ? '1.5px solid rgba(255,255,255,0.08)' : '1.5px solid #E2E8F0',
                 borderRadius: 8,
                 cursor: 'pointer',
@@ -623,11 +623,11 @@ export function TestRepositoryPage() {
                 transition: 'all 0.15s',
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = isDark ? '#2C2823' : '#F8FAFC';
+                e.currentTarget.style.backgroundColor = isDark ? '#1A1A1A' : '#F8FAFC';
                 e.currentTarget.style.borderColor = isDark ? 'rgba(255,255,255,0.15)' : '#CBD5E1';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = isDark ? '#232019' : '#FFFFFF';
+                e.currentTarget.style.backgroundColor = isDark ? '#111111' : '#FFFFFF';
                 e.currentTarget.style.borderColor = isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0';
               }}
             >
@@ -638,13 +638,13 @@ export function TestRepositoryPage() {
             <button 
               onClick={() => setIsImportModalOpen(true)}
               style={{
-                height: 40, padding: '0 16px', backgroundColor: isDark ? '#232019' : '#FFFFFF',
+                height: 40, padding: '0 16px', backgroundColor: isDark ? '#111111' : '#FFFFFF',
                 border: isDark ? '1.5px solid rgba(255,255,255,0.08)' : '1.5px solid #E2E8F0', borderRadius: 8, fontFamily: 'Inter, sans-serif',
-                fontSize: 14, fontWeight: 500, color: isDark ? '#A09890' : '#334155', cursor: 'pointer',
+                fontSize: 14, fontWeight: 500, color: isDark ? '#888888' : '#334155', cursor: 'pointer',
                 display: 'flex', alignItems: 'center', gap: 8, transition: 'all 0.15s',
               }}
             >
-              <Download style={{ width: 16, height: 16, color: isDark ? '#6B6560' : '#64748B' }} />
+              <Download style={{ width: 16, height: 16, color: isDark ? '#666666' : '#64748B' }} />
               Import
             </button>
 
@@ -652,13 +652,13 @@ export function TestRepositoryPage() {
             <button 
               onClick={() => setIsExportModalOpen(true)}
               style={{
-                height: 40, padding: '0 16px', backgroundColor: isDark ? '#232019' : '#FFFFFF',
+                height: 40, padding: '0 16px', backgroundColor: isDark ? '#111111' : '#FFFFFF',
                 border: isDark ? '1.5px solid rgba(255,255,255,0.08)' : '1.5px solid #E2E8F0', borderRadius: 8, fontFamily: 'Inter, sans-serif',
-                fontSize: 14, fontWeight: 500, color: isDark ? '#A09890' : '#334155', cursor: 'pointer',
+                fontSize: 14, fontWeight: 500, color: isDark ? '#888888' : '#334155', cursor: 'pointer',
                 display: 'flex', alignItems: 'center', gap: 8, transition: 'all 0.15s',
               }}
             >
-              <Upload style={{ width: 16, height: 16, color: isDark ? '#6B6560' : '#64748B' }} />
+              <Upload style={{ width: 16, height: 16, color: isDark ? '#666666' : '#64748B' }} />
               Export
             </button>
 
@@ -772,13 +772,13 @@ export function TestRepositoryPage() {
                     style={{
                       height: 32,
                       padding: '0 12px',
-                      backgroundColor: isDark ? '#232019' : '#FFFFFF',
+                      backgroundColor: isDark ? '#111111' : '#FFFFFF',
                       border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0',
                       borderRadius: 6,
                       fontFamily: 'Inter, sans-serif',
                       fontSize: 13,
                       fontWeight: 500,
-                      color: isDark ? '#A09890' : '#334155',
+                      color: isDark ? '#888888' : '#334155',
                       cursor: 'pointer',
                       display: 'flex',
                       alignItems: 'center',
@@ -798,13 +798,13 @@ export function TestRepositoryPage() {
                     style={{
                       height: 32,
                       padding: '0 12px',
-                      backgroundColor: isDark ? '#232019' : '#FFFFFF',
+                      backgroundColor: isDark ? '#111111' : '#FFFFFF',
                       border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0',
                       borderRadius: 6,
                       fontFamily: 'Inter, sans-serif',
                       fontSize: 13,
                       fontWeight: 500,
-                      color: isDark ? '#A09890' : '#334155',
+                      color: isDark ? '#888888' : '#334155',
                       cursor: 'pointer',
                       display: 'flex',
                       alignItems: 'center',
@@ -819,7 +819,7 @@ export function TestRepositoryPage() {
                     style={{
                       height: 32,
                       padding: '0 12px',
-                      backgroundColor: isDark ? '#232019' : '#FFFFFF',
+                      backgroundColor: isDark ? '#111111' : '#FFFFFF',
                       border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0',
                       borderRadius: 6,
                       fontFamily: 'Inter, sans-serif',
@@ -832,11 +832,11 @@ export function TestRepositoryPage() {
                       gap: 6,
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = isDark ? '#2C2823' : '#FEF2F2';
+                      e.currentTarget.style.backgroundColor = isDark ? '#1A1A1A' : '#FEF2F2';
                       e.currentTarget.style.borderColor = '#FECACA';
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = isDark ? '#232019' : '#FFFFFF';
+                      e.currentTarget.style.backgroundColor = isDark ? '#111111' : '#FFFFFF';
                       e.currentTarget.style.borderColor = isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0';
                     }}
                   >

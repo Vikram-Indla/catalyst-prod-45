@@ -160,11 +160,11 @@ export default function AllProjectsPage() {
             {/* Jira Sync CTA */}
             <Popover open={syncPanelOpen} onOpenChange={setSyncPanelOpen}>
               <PopoverTrigger asChild>
-                <button className="h-10 px-4 bg-white dark:!bg-[#232019] border border-slate-200 dark:border-slate-700 rounded-md text-[13px] font-semibold flex items-center gap-2.5 hover:border-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950 hover:text-blue-600 transition-all text-slate-700 dark:text-slate-300 focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 outline-none">
+                <button className="h-10 px-4 bg-white dark:!bg-[#111111] border border-slate-200 dark:border-slate-700 rounded-md text-[13px] font-semibold flex items-center gap-2.5 hover:border-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950 hover:text-blue-600 transition-all text-slate-700 dark:text-slate-300 focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 outline-none">
                   <SyncCTALabel />
                 </button>
               </PopoverTrigger>
-              <PopoverContent className="w-[360px] p-5 bg-white dark:!bg-[#232019] dark:border-slate-700" align="end">
+              <PopoverContent className="w-[360px] p-5 bg-white dark:!bg-[#111111] dark:border-slate-700" align="end">
                 <JiraSyncPanel />
               </PopoverContent>
             </Popover>
@@ -180,7 +180,7 @@ export default function AllProjectsPage() {
         }
       />
 
-      <div className="flex-1 overflow-auto px-6 py-3 bg-slate-50 dark:!bg-[#1A1714] text-foreground">
+      <div className="flex-1 overflow-auto px-6 py-3 bg-slate-50 dark:!bg-[#0A0A0A] text-foreground">
         {/* Toolbar */}
         <div className="mb-2.5">
           <AllProjectsToolbar
@@ -194,7 +194,7 @@ export default function AllProjectsPage() {
 
         {/* Content */}
         {isLoading ? (
-          <div className="rounded-lg border border-slate-200 dark:border-slate-700 p-10 bg-white dark:!bg-[#1A1714]">
+          <div className="rounded-lg border border-slate-200 dark:border-slate-700 p-10 bg-white dark:!bg-[#0A0A0A]">
             <div className="flex flex-col gap-3">
               {Array.from({ length: 6 }).map((_, i) => (
                 <div key={i} className="animate-pulse flex items-center gap-4">
@@ -245,7 +245,7 @@ export default function AllProjectsPage() {
           /* QA1: Search — no results */
           <p className="text-sm text-slate-500 dark:text-slate-400 py-12 text-center">No projects match &ldquo;{filters.search}&rdquo;</p>
         ) : filtered.length === 0 ? (
-          <div className="flex flex-1 flex-col items-center justify-center rounded-lg border border-slate-200 dark:border-slate-700 px-10 py-20 text-center bg-white dark:!bg-[#1A1714]">
+          <div className="flex flex-1 flex-col items-center justify-center rounded-lg border border-slate-200 dark:border-slate-700 px-10 py-20 text-center bg-white dark:!bg-[#0A0A0A]">
             <FolderKanban size={48} className="text-slate-300 dark:text-slate-600" strokeWidth={1.25} />
             <h3 className="mt-4 text-lg font-semibold text-foreground" style={{ fontFamily: "'Sora', sans-serif" }}>
               No projects match your filters
@@ -255,7 +255,7 @@ export default function AllProjectsPage() {
             </p>
           </div>
         ) : view === 'list' ? (
-          <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-lg border border-slate-100 dark:border-slate-700 bg-white dark:!bg-[#1A1714]">
+          <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-lg border border-slate-100 dark:border-slate-700 bg-white dark:!bg-[#0A0A0A]">
             <div className="flex-1 min-h-0 overflow-auto">
               <AllProjectsTable
                 projects={pageData}
@@ -274,7 +274,7 @@ export default function AllProjectsPage() {
             {/* Pagination Footer — only when totalPages > 1 */}
             {totalPages > 1 && (
               <div
-                className="flex shrink-0 items-center justify-between px-4 py-2 border-t border-slate-100 dark:border-slate-700 bg-white dark:!bg-[#1A1714]"
+                className="flex shrink-0 items-center justify-between px-4 py-2 border-t border-slate-100 dark:border-slate-700 bg-white dark:!bg-[#0A0A0A]"
                 style={{ fontSize: 13 }}
               >
                 <span className="text-muted-foreground">
@@ -318,7 +318,7 @@ export default function AllProjectsPage() {
             />
             {totalPages > 1 && (
               <div
-                className="mt-6 flex items-center justify-between px-4 py-2 border-t border-slate-100 dark:border-slate-700 bg-white dark:!bg-[#1A1714] rounded-lg"
+                className="mt-6 flex items-center justify-between px-4 py-2 border-t border-slate-100 dark:border-slate-700 bg-white dark:!bg-[#0A0A0A] rounded-lg"
                 style={{ fontSize: 13 }}
               >
                 <span className="text-muted-foreground">

@@ -27,24 +27,24 @@ export function NotificationsPanel({ onClose, onClearAll }: NotificationsPanelPr
   };
 
   return (
-    <div className="absolute top-full right-0 mt-1 w-96 bg-popover dark:bg-[#232019] border dark:border-[rgba(255,255,255,0.08)] rounded-md shadow-lg z-50">
+    <div className="absolute top-full right-0 mt-1 w-96 bg-popover dark:bg-[#111111] border dark:border-[rgba(255,255,255,0.08)] rounded-md shadow-lg z-50">
       <div className="p-3 border-b dark:border-[rgba(255,255,255,0.08)]">
-        <h3 className="font-semibold dark:text-[#F5F3F0]">Notifications</h3>
+        <h3 className="font-semibold dark:text-[#EDEDED]">Notifications</h3>
       </div>
       <ScrollArea className="max-h-96">
         <div className="p-2">
-          <p className="text-xs font-semibold text-muted-foreground dark:text-[#6B6560] px-3 py-2">Action Required</p>
+          <p className="text-xs font-semibold text-muted-foreground dark:text-[#666666] px-3 py-2">Action Required</p>
           {notifications.map((notif, idx) => (
             <div key={idx} className="flex gap-3 px-3 py-2 hover:bg-accent dark:hover:bg-[rgba(255,255,255,0.04)] rounded">
               <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
                 <User className="h-5 w-5 text-primary" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium dark:text-[#F5F3F0]">{notif.title}</p>
+                <p className="text-sm font-medium dark:text-[#EDEDED]">{notif.title}</p>
                 <p className="text-sm text-primary hover:underline cursor-pointer truncate">
                   {notif.link}
                 </p>
-                <p className="text-xs text-muted-foreground dark:text-[#6B6560] mt-1">Changed: {notif.changed}</p>
+                <p className="text-xs text-muted-foreground dark:text-[#666666] mt-1">Changed: {notif.changed}</p>
               </div>
             </div>
           ))}
@@ -55,7 +55,7 @@ export function NotificationsPanel({ onClose, onClearAll }: NotificationsPanelPr
           variant="ghost"
           size="sm"
           onClick={handleClearAll}
-          className="w-full dark:text-[#A09890] dark:hover:text-[#F5F3F0] dark:hover:bg-[rgba(255,255,255,0.08)]"
+          className="w-full dark:text-[#888888] dark:hover:text-[#EDEDED] dark:hover:bg-[rgba(255,255,255,0.08)]"
         >
           Clear All
         </Button>

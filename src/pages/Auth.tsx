@@ -266,7 +266,7 @@ export default function Auth() {
     <div className="min-h-screen flex flex-col lg:flex-row">
       {/* Left Panel - Brand Panel with white background */}
       <div 
-        className="hidden lg:flex relative w-full lg:w-[45%] flex-col justify-start p-6 sm:p-8 md:p-12 lg:p-16 overflow-hidden min-h-[40vh] lg:min-h-screen bg-white dark:bg-[#232019]"
+        className="hidden lg:flex relative w-full lg:w-[45%] flex-col justify-start p-6 sm:p-8 md:p-12 lg:p-16 overflow-hidden min-h-[40vh] lg:min-h-screen bg-white dark:bg-[#111111]"
         style={{ paddingTop: "clamp(100px, 15vh, 160px)" }}
       >
         {/* Decorative Gradient 1 */}
@@ -356,7 +356,7 @@ export default function Auth() {
       </div>
 
       {/* Right Panel - Login/Password Reset Panel - LIGHT MODE ONLY */}
-      <div className="relative w-full lg:w-[55%] p-6 sm:p-8 md:p-12 lg:p-16 bg-white dark:bg-[#232019]">
+      <div className="relative w-full lg:w-[55%] p-6 sm:p-8 md:p-12 lg:p-16 bg-white dark:bg-[#111111]">
         {/* Subtle background gradients */}
         <div 
           className="absolute top-0 right-0 w-96 h-96 rounded-full pointer-events-none"
@@ -442,7 +442,7 @@ export default function Auth() {
                         onChange={e => { setEmail(e.target.value); setLoginError(null); }} 
                         placeholder="name@company.com" 
                         required 
-                        className={`w-full transition-all outline-none font-body text-base py-3.5 px-4 rounded-[10px] border-2 focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/10 bg-white dark:bg-[#232019] text-gray-900 placeholder:text-gray-400 ${
+                        className={`w-full transition-all outline-none font-body text-base py-3.5 px-4 rounded-[10px] border-2 focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/10 bg-white dark:bg-[#111111] text-gray-900 placeholder:text-gray-400 ${
                           loginError ? 'border-red-500' : 'border-gray-200 dark:border-[rgba(255,255,255,0.08)]'
                         }`}
                       />
@@ -472,7 +472,7 @@ export default function Auth() {
                           type="checkbox" 
                           checked={rememberMe} 
                           onChange={e => setRememberMe(e.target.checked)} 
-                          className="w-4 h-4 rounded border-2 cursor-pointer appearance-none transition-all checked:bg-brand-primary checked:border-brand-primary border-gray-300 bg-white dark:bg-[#232019]"
+                          className="w-4 h-4 rounded border-2 cursor-pointer appearance-none transition-all checked:bg-brand-primary checked:border-brand-primary border-gray-300 bg-white dark:bg-[#111111]"
                           style={{
                             backgroundImage: rememberMe ? "url(\"data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3e%3c/svg%3e\")" : "none",
                             backgroundSize: "100% 100%",

@@ -21,18 +21,18 @@ export function TeamDetailsDrawer({ teamId, open, onOpenChange }: TeamDetailsDra
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="right" className="executive-drawer w-full sm:max-w-2xl p-0 flex flex-col overflow-hidden bg-white dark:bg-[#232019]">
+      <SheetContent side="right" className="executive-drawer w-full sm:max-w-2xl p-0 flex flex-col overflow-hidden bg-white dark:bg-[#111111]">
         {isLoading ? (
-          <div className="flex items-center justify-center h-full bg-white dark:bg-[#232019]">
+          <div className="flex items-center justify-center h-full bg-white dark:bg-[#111111]">
             <div className="text-muted-foreground">Loading team details...</div>
           </div>
         ) : !team ? (
-          <div className="flex items-center justify-center h-full bg-white dark:bg-[#232019]">
+          <div className="flex items-center justify-center h-full bg-white dark:bg-[#111111]">
             <div className="text-muted-foreground">Team not found</div>
           </div>
         ) : (
           <>
-            <SheetHeader className="executive-drawer-header flex-row items-center justify-between space-y-0 shrink-0 bg-white dark:bg-[#232019] px-3 md:px-4 py-2 border-b border-neutral-200 dark:border-[rgba(255,255,255,0.08)]">
+            <SheetHeader className="executive-drawer-header flex-row items-center justify-between space-y-0 shrink-0 bg-white dark:bg-[#111111] px-3 md:px-4 py-2 border-b border-neutral-200 dark:border-[rgba(255,255,255,0.08)]">
               <div className="flex-1 min-w-0">
                 <SheetTitle className="executive-drawer-title truncate">{team.name}</SheetTitle>
                 {team.short_name && (

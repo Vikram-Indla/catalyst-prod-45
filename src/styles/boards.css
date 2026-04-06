@@ -127,16 +127,16 @@
 
 /* Dark mode overrides — NOCTURNE Warm Charcoal */
 .dark {
-  --boards-card-title-color: #F5F3F0;
-  --boards-card-title-color-done: #6B6560;
-  --boards-card-id-color: #A09890;
-  --boards-column-title-color: #F5F3F0;
-  --boards-column-count-color: #A09890;
+  --boards-card-title-color: #EDEDED;
+  --boards-card-title-color-done: #666666;
+  --boards-card-id-color: #888888;
+  --boards-column-title-color: #EDEDED;
+  --boards-column-count-color: #888888;
 
-  --boards-bg-page: #1A1714;
-  --boards-bg-card: #232019;
-  --boards-bg-card-hover: #2C2823;
-  --boards-bg-empty: #232019;
+  --boards-bg-page: #0A0A0A;
+  --boards-bg-card: #111111;
+  --boards-bg-card-hover: #1A1A1A;
+  --boards-bg-empty: #111111;
 
   --boards-border-card: rgba(255,255,255,0.08);
   --boards-border-card-hover: rgba(255,255,255,0.15);
@@ -146,54 +146,54 @@
   --boards-shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.3);
   --boards-shadow-card-dragging: 0 8px 24px rgba(0, 0, 0, 0.4);
 
-  --boards-date-color-upcoming: #6B6560;
+  --boards-date-color-upcoming: #666666;
 }
 
 /* NOCTURNE — Direct property overrides to guarantee dark card backgrounds */
 .dark .boards-card,
 [data-theme="dark"] .boards-card {
-  background-color: #232019 !important;
+  background-color: #111111 !important;
   border-color: rgba(255,255,255,0.08) !important;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2) !important;
-  color: #F5F3F0 !important;
+  color: #EDEDED !important;
 }
 
 .dark .boards-card:hover,
 [data-theme="dark"] .boards-card:hover {
-  background-color: #2C2823 !important;
+  background-color: #1A1A1A !important;
   border-color: rgba(255,255,255,0.15) !important;
 }
 
 .dark .boards-column__empty,
 [data-theme="dark"] .boards-column__empty {
-  background-color: #232019 !important;
+  background-color: #111111 !important;
   border-color: rgba(255,255,255,0.08) !important;
-  color: #6B6560 !important;
+  color: #666666 !important;
 }
 
 .dark .boards-column__header,
 [data-theme="dark"] .boards-column__header {
-  color: #F5F3F0 !important;
+  color: #EDEDED !important;
 }
 
 .dark .boards-container,
 [data-theme="dark"] .boards-container {
-  background-color: #1A1714 !important;
+  background-color: #0A0A0A !important;
 }
 
 .dark .boards-card__id,
 [data-theme="dark"] .boards-card__id {
-  color: #A09890 !important;
+  color: #888888 !important;
 }
 
 .dark .boards-card__title,
 [data-theme="dark"] .boards-card__title {
-  color: #F5F3F0 !important;
+  color: #EDEDED !important;
 }
 
 .dark .boards-card__date,
 [data-theme="dark"] .boards-card__date {
-  color: #6B6560 !important;
+  color: #666666 !important;
 }
 
 
@@ -268,8 +268,8 @@
 }
 
 .dark .boards-column__count {
-  background-color: #2C2823;
-  color: #A09890;
+  background-color: #1A1A1A;
+  color: #888888;
 }
 
 .boards-column__add-btn {
@@ -292,8 +292,8 @@
 }
 
 .dark .boards-column__add-btn:hover {
-  background-color: #2C2823;
-  color: #A09890;
+  background-color: #1A1A1A;
+  color: #888888;
 }
 
 .boards-column__add-btn svg {
@@ -347,13 +347,13 @@
 
 .dark .boards-add-task {
   border-color: rgba(255,255,255,0.08);
-  color: #6B6560;
+  color: #666666;
 }
 
 .dark .boards-add-task:hover {
-  background-color: #2C2823;
+  background-color: #1A1A1A;
   border-color: rgba(255,255,255,0.15);
-  color: #F5F3F0;
+  color: #EDEDED;
 }
 
 .boards-add-task svg {
@@ -605,9 +605,9 @@
 }
 
 .dark .boards-card__avatar--empty {
-  background-color: #2C2823;
+  background-color: #1A1A1A;
   border-color: rgba(255,255,255,0.08);
-  color: #6B6560;
+  color: #666666;
 }
 
 
@@ -645,8 +645,8 @@
 }
 
 .dark .boards-card__avatar-overflow {
-  background-color: #2C2823;
-  color: #A09890;
+  background-color: #1A1A1A;
+  color: #888888;
 }
 
 
@@ -738,7 +738,7 @@
 }
 
 .dark .boards-card--placeholder {
-  background-color: #232019;
+  background-color: #111111;
   border-color: rgba(255,255,255,0.08);
 }
 
@@ -810,12 +810,12 @@
 }
 
 .dark .boards-column__drag-handle {
-  color: #6B6560;
+  color: #666666;
 }
 
 .dark .boards-column__drag-handle:hover {
   color: #60a5fa;
-  background-color: #2C2823;
+  background-color: #1A1A1A;
 }
 
 /* Delete button for custom columns */
@@ -899,13 +899,13 @@
 
 .dark .boards-add-column {
   border-color: rgba(255,255,255,0.08);
-  color: #6B6560;
+  color: #666666;
 }
 
 .dark .boards-add-column:hover {
-  background-color: #232019;
+  background-color: #111111;
   border-color: rgba(255,255,255,0.15);
-  color: #F5F3F0;
+  color: #EDEDED;
 }
 
 .boards-add-column svg {

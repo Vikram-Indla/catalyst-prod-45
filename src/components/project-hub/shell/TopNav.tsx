@@ -25,7 +25,7 @@ export function TopNav({ onCreateClick }: TopNavProps) {
 
   return (
     <header
-      className="flex items-center flex-shrink-0 bg-white dark:bg-[#1A1714] border-b border-[#E2E8F0] dark:border-[rgba(235,238,245,0.10)]"
+      className="flex items-center flex-shrink-0 bg-white dark:bg-[#0A0A0A] border-b border-[#E2E8F0] dark:border-[rgba(235,238,245,0.10)]"
       style={{
         height: 48,
         paddingLeft: 16,

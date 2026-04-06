@@ -121,7 +121,7 @@ export function SidebarBase({
 
   const chevronColor = isDark ? 'var(--cp-t2)' : '#94A3B8';
   const chevronHoverColor = isDark ? 'var(--cp-t1)' : '#334155';
-  const sidebarBg = isDark ? '#1A1714' : '#FFFFFF';
+  const sidebarBg = isDark ? '#0A0A0A' : '#FFFFFF';
   const sidebarBorder = isDark ? 'rgba(235,238,245,0.08)' : '#E2E8F0';
   const dividerColor = isDark ? 'rgba(235,238,245,0.08)' : '#F1F5F9';
   const sectionLabel = isDark ? 'var(--cp-t2)' : '#94A3B8';

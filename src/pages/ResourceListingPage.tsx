@@ -70,36 +70,36 @@ const hashColor = (name: string) => {
 /* ── Dark mode token map ── */
 function useTokens(dk: boolean) {
   return useMemo(() => ({
-    pageBg:       dk ? '#1A1714' : '#F8FAFC',
-    surfaceBg:    dk ? '#1A1714' : '#FFFFFF',
-    elevatedBg:   dk ? '#232019' : '#FFFFFF',
-    headerBg:     dk ? '#232019' : '#FAFAFA',
+    pageBg:       dk ? '#0A0A0A' : '#F8FAFC',
+    surfaceBg:    dk ? '#0A0A0A' : '#FFFFFF',
+    elevatedBg:   dk ? '#111111' : '#FFFFFF',
+    headerBg:     dk ? '#111111' : '#FAFAFA',
     hoverBg:      dk ? 'rgba(255,255,255,0.04)' : '#F8FAFC',
     border:       dk ? 'rgba(255,255,255,0.08)' : '#E2E8F0',
     borderSubtle: dk ? 'rgba(255,255,255,0.05)' : '#f3f4f6',
     borderInput:  dk ? 'rgba(255,255,255,0.12)' : '#B0B8C4',
     borderFocus:  '#2563EB',
-    text1:        dk ? '#F5F3F0' : '#0F172A',
-    text2:        dk ? '#A09890' : '#475569',
-    text3:        dk ? '#6B6560' : '#94A3B8',
-    textMuted:    dk ? '#6B6560' : '#9ca3af',
-    textDim:      dk ? '#6B6560' : '#d1d5db',
-    inputBg:      dk ? '#232019' : '#FFFFFF',
-    badgeBg:      dk ? '#2C2823' : '#F1F5F9',
-    badgeText:    dk ? '#A09890' : '#475569',
-    pillBg:       dk ? '#232019' : '#FFFFFF',
+    text1:        dk ? '#EDEDED' : '#0F172A',
+    text2:        dk ? '#888888' : '#475569',
+    text3:        dk ? '#666666' : '#94A3B8',
+    textMuted:    dk ? '#666666' : '#9ca3af',
+    textDim:      dk ? '#666666' : '#d1d5db',
+    inputBg:      dk ? '#111111' : '#FFFFFF',
+    badgeBg:      dk ? '#1A1A1A' : '#F1F5F9',
+    badgeText:    dk ? '#888888' : '#475569',
+    pillBg:       dk ? '#111111' : '#FFFFFF',
     pillBorder:   dk ? 'rgba(255,255,255,0.12)' : '#e5e7eb',
-    pillActiveBorder: dk ? '#F5F3F0' : '#111',
-    pillActiveText:   dk ? '#F5F3F0' : '#111',
-    pillInactiveText: dk ? '#A09890' : '#6b7280',
-    pillHoverBg:  dk ? '#2C2823' : '#E2E8F0',
-    pillHoverText: dk ? '#F5F3F0' : '#1E293B',
-    typePillBg:       dk ? '#2C2823' : '#F1F5F9',
-    typePillActiveBg: dk ? '#232019' : '#FFFFFF',
-    shimmerFrom:  dk ? '#232019' : '#F1F5F9',
-    shimmerMid:   dk ? '#2C2823' : '#E2E8F0',
-    tooltipBg:    dk ? '#2C2823' : '#1e293b',
-    tooltipText:  dk ? '#F5F3F0' : '#f1f5f9',
+    pillActiveBorder: dk ? '#EDEDED' : '#111',
+    pillActiveText:   dk ? '#EDEDED' : '#111',
+    pillInactiveText: dk ? '#888888' : '#6b7280',
+    pillHoverBg:  dk ? '#1A1A1A' : '#E2E8F0',
+    pillHoverText: dk ? '#EDEDED' : '#1E293B',
+    typePillBg:       dk ? '#1A1A1A' : '#F1F5F9',
+    typePillActiveBg: dk ? '#111111' : '#FFFFFF',
+    shimmerFrom:  dk ? '#111111' : '#F1F5F9',
+    shimmerMid:   dk ? '#1A1A1A' : '#E2E8F0',
+    tooltipBg:    dk ? '#1A1A1A' : '#1e293b',
+    tooltipText:  dk ? '#EDEDED' : '#f1f5f9',
     divider:      dk ? 'rgba(255,255,255,0.06)' : '#E2E8F0',
     focusShadow:  dk ? '0 0 0 3px rgba(37,99,235,.2)' : '0 0 0 3px rgba(37,99,235,.1)',
     onsite:       dk ? '#4ade80' : '#16a34a',
@@ -297,10 +297,10 @@ export default function ResourceListingPage() {
           Resource Type
         </span>
         {([
-          { key: 'all' as const, label: 'All', accentColor: isDark ? '#F5F3F0' : '#1E293B', tooltip: 'Show all resource types' },
+          { key: 'all' as const, label: 'All', accentColor: isDark ? '#EDEDED' : '#1E293B', tooltip: 'Show all resource types' },
           { key: 'core' as const, label: 'Core', accentColor: '#0D9488', tooltip: 'Variable + Permanent (org headcount)' },
           { key: 'project' as const, label: 'Project', accentColor: '#2563EB', tooltip: 'Fixed-term project resources' },
-          { key: 'temporary' as const, label: 'Temporary', accentColor: isDark ? '#A09890' : '#64748B', tooltip: 'Freelance / time-bounded engagements' },
+          { key: 'temporary' as const, label: 'Temporary', accentColor: isDark ? '#888888' : '#64748B', tooltip: 'Freelance / time-bounded engagements' },
         ] as const).map(pill => {
           const isActive = resourceTypeFilter === pill.key;
           const count = resourceTypeCounts[pill.key];
@@ -488,7 +488,7 @@ export default function ResourceListingPage() {
                       />
                       <ActionBtn
                         tooltip="Resource 360°"
-                        bg={isDark ? '#A09890' : '#1e293b'} bgHover={isDark ? '#F5F3F0' : '#0f172a'}
+                        bg={isDark ? '#888888' : '#1e293b'} bgHover={isDark ? '#EDEDED' : '#0f172a'}
                         icon={<RotateCw size={14} strokeWidth={1.9} />}
                         onClick={(e) => { e.stopPropagation(); navTo(r.id, 'ring'); }}
                       />

@@ -117,14 +117,14 @@ export default function DefectsPage() {
   } : null;
 
   return (
-    <div className={cn("flex flex-col h-full", isDark && "bg-[#1A1714]")}>
+    <div className={cn("flex flex-col h-full", isDark && "bg-[#0A0A0A]")}>
       <TestHubPageHeader title="Defects" subtitle="Track and manage bugs discovered during testing">
         <Button variant="outline" size="sm"><Download className="h-4 w-4 mr-2" />Export</Button>
         <Button onClick={() => setShowCreate(true)} className="bg-[#2563EB] text-white hover:opacity-90">
           <Plus className="h-4 w-4 mr-2" />Create Defect
         </Button>
       </TestHubPageHeader>
-      <div className={cn("p-6 space-y-6 flex-1 overflow-auto", isDark && "bg-[#1A1714]")}>
+      <div className={cn("p-6 space-y-6 flex-1 overflow-auto", isDark && "bg-[#0A0A0A]")}>
 
         {/* Stats Bar */}
         {loadingStats ? <Skeleton className="h-12 w-full" /> : statsBar && (
@@ -151,7 +151,7 @@ export default function DefectsPage() {
             {[1,2,3,4,5].map(i => <Skeleton key={i} className="h-10 w-full" />)}
           </div>
         ) : defects.length === 0 ? (
-          <div className={cn("border rounded-lg p-12 text-center", isDark && "border-[rgba(255,255,255,0.08)] bg-[#232019]")}>
+          <div className={cn("border rounded-lg p-12 text-center", isDark && "border-[rgba(255,255,255,0.08)] bg-[#111111]")}>
             <Bug className="h-12 w-12 text-muted-foreground/40 mx-auto mb-4" />
             <p className="font-medium text-foreground mb-1">No defects recorded</p>
             <p className="text-muted-foreground text-sm mb-4">
