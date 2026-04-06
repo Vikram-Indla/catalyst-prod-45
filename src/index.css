@@ -4818,9 +4818,41 @@ input[type="range"]::-moz-range-thumb {
 [data-theme="dark"] .jus-detail-panel { background-color: #111111 !important; border-color: rgba(255,255,255,0.08) !important; }
 
 /* ═══════════════════════════════════════════════════
-   NOCTURNE GLOBAL DARK MODE CATCH-ALL
+   NEUTRAL DARK — GLOBAL CATCH-ALL
    Ensures any remaining white surfaces are dark
    ═══════════════════════════════════════════════════ */
+
+/* NOTIFICATION PANEL — inline style="background: rgb(255,255,255)" override */
+.dark [role="dialog"][aria-label="Notifications"],
+[data-theme="dark"] [role="dialog"][aria-label="Notifications"] {
+  background: #111111 !important;
+  color: #EDEDED !important;
+  border-color: rgba(255,255,255,0.08) !important;
+}
+
+.dark [role="dialog"][aria-label="Notifications"] *,
+[data-theme="dark"] [role="dialog"][aria-label="Notifications"] * {
+  background: transparent !important;
+  color: inherit;
+  border-color: rgba(255,255,255,0.08);
+}
+
+.dark [role="dialog"][aria-label="Notifications"] [role="button"],
+[data-theme="dark"] [role="dialog"][aria-label="Notifications"] [role="button"] {
+  background: transparent !important;
+  color: #EDEDED !important;
+}
+
+.dark [role="dialog"][aria-label="Notifications"] [role="button"]:hover,
+[data-theme="dark"] [role="dialog"][aria-label="Notifications"] [role="button"]:hover {
+  background: rgba(255,255,255,0.06) !important;
+}
+
+/* Notification section wrapper */
+.dark section[aria-label="Notifications"],
+[data-theme="dark"] section[aria-label="Notifications"] {
+  color: #EDEDED;
+}
 .dark [data-radix-popper-content-wrapper] > div,
 .dark [data-radix-popover-content],
 .dark [role="dialog"],
@@ -4828,7 +4860,7 @@ input[type="range"]::-moz-range-thumb {
 [data-theme="dark"] [data-radix-popper-content-wrapper] > div,
 [data-theme="dark"] [data-radix-popover-content],
 [data-theme="dark"] [role="dialog"] {
-  background-color: #111111 !important;
+  background: #111111 !important;
   color: #EDEDED !important;
   border-color: rgba(255,255,255,0.08) !important;
 }
@@ -4863,15 +4895,15 @@ input[type="range"]::-moz-range-thumb {
 [data-theme="dark"] [style*="background-color: #FFF"],
 [data-theme="dark"] [style*="background: rgb(255"],
 [data-theme="dark"] [style*="background-color: rgb(255"] {
-  background-color: #111111 !important;
+  background: #111111 !important;
   color: #EDEDED !important;
   border-color: rgba(255,255,255,0.08) !important;
 }
 
-/* Force card/background CSS var to NOCTURNE in dark mode */
+/* Force card/background CSS var to neutral dark */
 .dark [class*="bg-card"],
 .dark [class*="bg-background"],
 [data-theme="dark"] [class*="bg-card"],
 [data-theme="dark"] [class*="bg-background"] {
-  background-color: hsl(30 13% 9%) !important;
+  background: hsl(0 0% 4%) !important;
 }
