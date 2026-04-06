@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTheme } from '@/hooks/useTheme';
 import { MoreVertical, ChevronUp, ChevronDown } from 'lucide-react';
 
 interface TestCase {
@@ -42,6 +43,7 @@ export function TestCasesTable({
   sortDirection,
 }: TestCasesTableProps) {
   const [hoveredRowId, setHoveredRowId] = useState<string | null>(null);
+  const { isDark } = useTheme();
   const allSelected = testCases.length > 0 && testCases.every(tc => selectedIds.has(tc.id));
   const someSelected = testCases.some(tc => selectedIds.has(tc.id)) && !allSelected;
 
@@ -93,13 +95,13 @@ export function TestCasesTable({
   const headerCellStyle: React.CSSProperties = {
     height: 44,
     padding: '8px 12px',
-    backgroundColor: 'var(--bg-1)',
-    borderBottom: '1px solid var(--divider)',
+    backgroundColor: isDark ? '#111111' : 'var(--bg-1)',
+    borderBottom: isDark ? '1px solid #2E2E2E' : '1px solid var(--divider)',
     fontSize: 11,
     fontWeight: 600,
     textTransform: 'uppercase',
     letterSpacing: '0.05em',
-    color: 'var(--fg-3)',
+    color: isDark ? '#878787' : 'var(--fg-3)',
     verticalAlign: 'middle',
   };
 
@@ -107,14 +109,14 @@ export function TestCasesTable({
   const bodyCellStyle: React.CSSProperties = {
     height: 50,
     padding: '8px 12px',
-    borderBottom: '1px solid var(--divider)',
+    borderBottom: isDark ? '0.75px solid #2E2E2E' : '1px solid var(--divider)',
     verticalAlign: 'middle',
   };
 
   return (
     <div className="th-table-wrapper" style={{
-      backgroundColor: 'var(--cp-float)',
-      border: '1px solid var(--divider)',
+      backgroundColor: isDark ? '#1A1A1A' : 'var(--cp-float)',
+      border: isDark ? '1px solid #2E2E2E' : '1px solid var(--divider)',
       borderRadius: 8,
       overflow: 'hidden',
     }}>
@@ -212,7 +214,7 @@ export function TestCasesTable({
                 onMouseLeave={() => setHoveredRowId(null)}
                 style={{
                   height: 50,
-                  backgroundColor: isSelected ? 'rgba(37, 99, 235, 0.06)' : isHovered ? 'var(--cp-bd-zone)' : 'var(--cp-float)',
+                  backgroundColor: isSelected ? 'rgba(37, 99, 235, 0.06)' : isHovered ? (isDark ? '#1F1F1F' : 'var(--cp-bd-zone)') : (isDark ? '#1A1A1A' : 'var(--cp-float)'),
                   cursor: 'pointer',
                   transition: 'background-color 0.1s',
                 }}
@@ -259,9 +261,9 @@ export function TestCasesTable({
                   <span style={{
                     fontWeight: 600,
                     fontSize: 13,
-                    color: tc.priority === 'critical' ? '#991B1B' :
-                           tc.priority === 'high' ? '#C2410C' :
-                           tc.priority === 'medium' ? '#A16207' : 'var(--fg-3)',
+                    color: isDark
+                      ? (tc.priority === 'critical' ? '#F87171' : tc.priority === 'high' ? '#FB923C' : tc.priority === 'medium' ? '#FBBF24' : '#A1A1A1')
+                      : (tc.priority === 'critical' ? '#991B1B' : tc.priority === 'high' ? '#C2410C' : tc.priority === 'medium' ? '#A16207' : 'var(--fg-3)'),
                   }}>
                     {tc.priority.charAt(0).toUpperCase() + tc.priority.slice(1)}
                   </span>
