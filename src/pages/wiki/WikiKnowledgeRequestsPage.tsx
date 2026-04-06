@@ -15,7 +15,7 @@ const PRIORITY_STYLES_DARK: Record<string, { bg: string; color: string }> = {
   critical: { bg: 'rgba(220,38,38,0.15)', color: '#FCA5A5' },
   high: { bg: 'rgba(217,119,6,0.15)', color: '#FCD34D' },
   medium: { bg: 'rgba(37,99,235,0.15)', color: '#93C5FD' },
-  low: { bg: 'rgba(255,255,255,0.06)', color: '#878787' },
+  low: { bg: '#292929', color: '#878787' },
 };
 
 const STATUS_STYLES: Record<string, { bg: string; color: string; label: string }> = {
@@ -29,7 +29,7 @@ const STATUS_STYLES_DARK: Record<string, { bg: string; color: string; label: str
   open: { bg: 'rgba(37,99,235,0.15)', color: '#93C5FD', label: 'OPEN' },
   in_progress: { bg: 'rgba(217,119,6,0.15)', color: '#FCD34D', label: 'IN PROGRESS' },
   resolved: { bg: 'rgba(22,163,74,0.15)', color: '#86EFAC', label: 'RESOLVED' },
-  closed: { bg: 'rgba(255,255,255,0.06)', color: '#878787', label: 'CLOSED' },
+  closed: { bg: '#292929', color: '#878787', label: 'CLOSED' },
 };
 
 export default function WikiKnowledgeRequestsPage() {
@@ -37,7 +37,7 @@ export default function WikiKnowledgeRequestsPage() {
   const { data: requests, isLoading } = useWikiKnowledgeRequests('all');
   const { isDark } = useTheme();
 
-  const border = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)';
+  const border = isDark ? '#2E2E2E' : 'rgba(0,0,0,0.06)';
 
   return (
     <div style={{ fontFamily: 'Inter, sans-serif', color: isDark ? '#EDEDED' : '#0F172A', background: isDark ? '#0A0A0A' : '#F8FAFC', minHeight: '100%', padding: '24px 40px 48px' }}>

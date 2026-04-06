@@ -32,8 +32,8 @@ const TL = {
 const TD = {
   ink: '#EDEDED', inkSecondary: 'rgba(255,255,255,0.82)', inkTertiary: 'rgba(255,255,255,0.60)',
   inkMuted: 'rgba(255,255,255,0.45)', inkMutedStrong: 'rgba(255,255,255,0.50)',
-  surface: '#1A1A1A', surfaceSecondary: '#0A0A0A', surfaceTertiary: 'rgba(255,255,255,0.04)',
-  border: 'rgba(255,255,255,0.10)', borderStrong: 'rgba(255,255,255,0.18)',
+  surface: '#1A1A1A', surfaceSecondary: '#0A0A0A', surfaceTertiary: '#1F1F1F',
+  border: '#2E2E2E', borderStrong: '#454545',
   primary: '#60A5FA', primaryHover: '#93C5FD', primaryBg: 'rgba(59,130,246,0.12)',
   teal: '#5EEAD4', tealText: '#5EEAD4', tealBg: 'rgba(13,148,136,0.15)',
   success: '#86EFAC', successText: '#86EFAC', successBg: 'rgba(22,163,74,0.15)',

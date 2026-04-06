@@ -55,13 +55,13 @@
   --wh-sf: #0A0A0A;
   --wh-sf2: #1A1A1A;
   --wh-sf3: #1A1A1A;
-  --wh-bdr: rgba(255,255,255,0.10);
+  --wh-bdr: #2E2E2E;
 
   /* Text — warm white ladder */
-  --wh-tx: rgba(255,255,255,0.92);
-  --wh-tx2: rgba(255,255,255,0.72);
-  --wh-tx3: rgba(255,255,255,0.55);
-  --wh-tx4: rgba(255,255,255,0.30);
+  --wh-tx: #EDEDED;
+  --wh-tx2: #A1A1A1;
+  --wh-tx3: #878787;
+  --wh-tx4: #7D7D7D;
 
   /* Primary */
   --wh-pri: #3B82F6;

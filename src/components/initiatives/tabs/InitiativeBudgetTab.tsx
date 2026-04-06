@@ -141,7 +141,7 @@ export function InitiativeBudgetTab({ initiativeId, budgetAllocated, onBudgetAll
         const opexActual = opexItems.reduce((s: number, i: any) => s + (Number(i.actual_amount) || 0), 0);
         return (
           <div className="grid grid-cols-2 gap-3 mb-6">
-            <div className="border border-zinc-200 dark:border-[rgba(255,255,255,0.08)] rounded-lg p-3">
+            <div className="border border-zinc-200 dark:border-[#2E2E2E] rounded-lg p-3">
               <div className="flex items-center gap-2 mb-2">
                 <span className="w-2 h-2 rounded-full bg-blue-500" /><span className="text-xs font-semibold text-zinc-700 dark:text-[#EDEDED]">CapEx</span>
                 <span className="text-[10px] text-zinc-400 ml-auto">{capexItems.length} items</span>
@@ -149,7 +149,7 @@ export function InitiativeBudgetTab({ initiativeId, budgetAllocated, onBudgetAll
               <div className="flex items-center justify-between text-[11px]"><span className="text-zinc-500">Planned</span><span className="text-zinc-700 font-medium">SAR {capexPlanned.toLocaleString()}</span></div>
               <div className="flex items-center justify-between text-[11px] mt-1"><span className="text-zinc-500">Actual</span><span className="text-zinc-700 font-medium">SAR {capexActual.toLocaleString()}</span></div>
             </div>
-            <div className="border border-zinc-200 dark:border-[rgba(255,255,255,0.08)] rounded-lg p-3">
+            <div className="border border-zinc-200 dark:border-[#2E2E2E] rounded-lg p-3">
               <div className="flex items-center gap-2 mb-2">
                 <span className="w-2 h-2 rounded-full bg-teal-500" /><span className="text-xs font-semibold text-zinc-700 dark:text-[#EDEDED]">OpEx</span>
                 <span className="text-[10px] text-zinc-400 ml-auto">{opexItems.length} items</span>
@@ -163,17 +163,17 @@ export function InitiativeBudgetTab({ initiativeId, budgetAllocated, onBudgetAll
 
       {/* Inline Add Form */}
       {showAddBudget && (
-        <div className="border border-zinc-200 dark:border-[rgba(255,255,255,0.08)] rounded-lg p-5 bg-zinc-50 dark:bg-[#0A0A0A] space-y-4 mb-6">
+        <div className="border border-zinc-200 dark:border-[#2E2E2E] rounded-lg p-5 bg-zinc-50 dark:bg-[#0A0A0A] space-y-4 mb-6">
           <h4 className="text-xs font-semibold text-zinc-700">New Budget Item</h4>
           <div className="grid grid-cols-2 gap-4">
             <div className="relative">
               <label className="text-[10px] font-medium text-zinc-500 uppercase tracking-wide mb-1 block">Category *</label>
               <button type="button" onClick={() => setShowCatDropdown(v => !v)}
-                className="w-full flex items-center justify-between border border-zinc-200 dark:border-[rgba(255,255,255,0.08)] rounded-lg px-3 py-2 text-sm text-zinc-700 dark:text-[#EDEDED] bg-white dark:bg-[#1A1A1A] hover:bg-zinc-50 dark:hover:bg-[#1A1A1A]">
+                className="w-full flex items-center justify-between border border-zinc-200 dark:border-[#2E2E2E] rounded-lg px-3 py-2 text-sm text-zinc-700 dark:text-[#EDEDED] bg-white dark:bg-[#1A1A1A] hover:bg-zinc-50 dark:hover:bg-[#1A1A1A]">
                 <span className="capitalize">{budgetForm.category}</span><ChevronDown className="w-4 h-4 text-zinc-400" />
               </button>
               {showCatDropdown && (
-                <div className="absolute left-0 right-0 top-full mt-1 bg-white dark:bg-[#1A1A1A] border border-zinc-200 dark:border-[rgba(255,255,255,0.08)] rounded-lg shadow-lg z-50 py-1 max-h-48 overflow-y-auto">
+                <div className="absolute left-0 right-0 top-full mt-1 bg-white dark:bg-[#1A1A1A] border border-zinc-200 dark:border-[#2E2E2E] rounded-lg shadow-lg z-50 py-1 max-h-48 overflow-y-auto">
                   {BUDGET_CATEGORIES.map(cat => (
                     <button key={cat} onClick={() => { setBudgetForm(f => ({ ...f, category: cat })); setShowCatDropdown(false); }}
                       className={`w-full text-left px-3 py-1.5 text-xs capitalize transition-colors ${budgetForm.category === cat ? 'bg-blue-50 text-blue-700 font-medium' : 'text-zinc-600 hover:bg-zinc-50'}`}>
@@ -196,22 +196,22 @@ export function InitiativeBudgetTab({ initiativeId, budgetAllocated, onBudgetAll
           <div>
             <label className="text-[10px] font-medium text-zinc-500 uppercase tracking-wide mb-1 block">Description *</label>
             <textarea value={budgetForm.description} onChange={e => setBudgetForm(f => ({ ...f, description: e.target.value }))}
-              rows={2} placeholder="What does this cover..." className="w-full border border-zinc-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-[#1A1A1A] dark:border-[rgba(255,255,255,0.08)] dark:text-[#EDEDED] resize-y" />
+              rows={2} placeholder="What does this cover..." className="w-full border border-zinc-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-[#1A1A1A] dark:border-[#2E2E2E] dark:text-[#EDEDED] resize-y" />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="text-[10px] font-medium text-zinc-500 uppercase tracking-wide mb-1 block">Planned Amount (SAR) *</label>
               <input type="number" value={budgetForm.planned_amount} onChange={e => setBudgetForm(f => ({ ...f, planned_amount: e.target.value }))}
-                placeholder="Enter amount" className="w-full border border-zinc-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-[#1A1A1A] dark:border-[rgba(255,255,255,0.08)] dark:text-[#EDEDED]" />
+                placeholder="Enter amount" className="w-full border border-zinc-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-[#1A1A1A] dark:border-[#2E2E2E] dark:text-[#EDEDED]" />
             </div>
             <div className="relative">
               <label className="text-[10px] font-medium text-zinc-500 uppercase tracking-wide mb-1 block">Fiscal Quarter</label>
               <button type="button" onClick={() => setShowQtrDropdown(v => !v)}
-                className="w-full flex items-center justify-between border border-zinc-200 dark:border-[rgba(255,255,255,0.08)] rounded-lg px-3 py-2 text-sm text-zinc-700 dark:text-[#EDEDED] bg-white dark:bg-[#1A1A1A] hover:bg-zinc-50 dark:hover:bg-[#1A1A1A]">
+                className="w-full flex items-center justify-between border border-zinc-200 dark:border-[#2E2E2E] rounded-lg px-3 py-2 text-sm text-zinc-700 dark:text-[#EDEDED] bg-white dark:bg-[#1A1A1A] hover:bg-zinc-50 dark:hover:bg-[#1A1A1A]">
                 <span>{budgetForm.fiscal_quarter || 'Select quarter'}</span><ChevronDown className="w-4 h-4 text-zinc-400" />
               </button>
               {showQtrDropdown && (
-                <div className="absolute left-0 right-0 top-full mt-1 bg-white dark:bg-[#1A1A1A] border border-zinc-200 dark:border-[rgba(255,255,255,0.08)] rounded-lg shadow-lg z-50 py-1 max-h-48 overflow-y-auto">
+                <div className="absolute left-0 right-0 top-full mt-1 bg-white dark:bg-[#1A1A1A] border border-zinc-200 dark:border-[#2E2E2E] rounded-lg shadow-lg z-50 py-1 max-h-48 overflow-y-auto">
                   {FISCAL_QUARTERS.map(q => (
                     <button key={q} onClick={() => { setBudgetForm(f => ({ ...f, fiscal_quarter: q })); setShowQtrDropdown(false); }}
                       className={`w-full text-left px-3 py-1.5 text-xs transition-colors ${budgetForm.fiscal_quarter === q ? 'bg-blue-50 text-blue-700 font-medium' : 'text-zinc-600 hover:bg-zinc-50'}`}>
@@ -226,12 +226,12 @@ export function InitiativeBudgetTab({ initiativeId, budgetAllocated, onBudgetAll
             <div>
               <label className="text-[10px] font-medium text-zinc-500 uppercase tracking-wide mb-1 block">Vendor</label>
               <input value={budgetForm.vendor} onChange={e => setBudgetForm(f => ({ ...f, vendor: e.target.value }))}
-                placeholder="Vendor name" className="w-full border border-zinc-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-[#1A1A1A] dark:border-[rgba(255,255,255,0.08)] dark:text-[#EDEDED]" />
+                placeholder="Vendor name" className="w-full border border-zinc-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-[#1A1A1A] dark:border-[#2E2E2E] dark:text-[#EDEDED]" />
             </div>
             <div>
               <label className="text-[10px] font-medium text-zinc-500 uppercase tracking-wide mb-1 block">PO Number</label>
               <input value={budgetForm.po_number} onChange={e => setBudgetForm(f => ({ ...f, po_number: e.target.value }))}
-                placeholder="PO-12345" className="w-full border border-zinc-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-[#1A1A1A] dark:border-[rgba(255,255,255,0.08)] dark:text-[#EDEDED]" />
+                placeholder="PO-12345" className="w-full border border-zinc-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-[#1A1A1A] dark:border-[#2E2E2E] dark:text-[#EDEDED]" />
             </div>
           </div>
           <div className="flex items-center gap-2 pt-2">
@@ -245,7 +245,7 @@ export function InitiativeBudgetTab({ initiativeId, budgetAllocated, onBudgetAll
 
       {/* Line Items */}
       {budgetItems.length === 0 && !showAddBudget ? (
-        <div className="border border-zinc-200 dark:border-[rgba(255,255,255,0.08)] rounded-lg px-4 py-12 text-center">
+        <div className="border border-zinc-200 dark:border-[#2E2E2E] rounded-lg px-4 py-12 text-center">
           <div className="mx-auto w-12 h-12 bg-zinc-100 rounded-full flex items-center justify-center mb-3">
             <Wallet className="w-6 h-6 text-zinc-400" />
           </div>
@@ -265,7 +265,7 @@ export function InitiativeBudgetTab({ initiativeId, budgetAllocated, onBudgetAll
               item.status === 'rejected' ? 'bg-red-50 text-red-700' : 'bg-zinc-100 text-zinc-600';
             const variance = (Number(item.planned_amount) || 0) - (Number(item.actual_amount) || 0);
             return (
-              <div key={item.id} className="bg-white dark:bg-[#1A1A1A] border border-zinc-200 dark:border-[rgba(255,255,255,0.08)] rounded-lg p-4 hover:border-zinc-300 transition-colors">
+              <div key={item.id} className="bg-white dark:bg-[#1A1A1A] border border-zinc-200 dark:border-[#2E2E2E] rounded-lg p-4 hover:border-zinc-300 transition-colors">
                 <div className="flex items-start justify-between mb-2">
                   <div className="flex items-center gap-2">
                     <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${item.expense_type === 'capex' ? 'bg-blue-100 text-blue-700' : 'bg-teal-100 text-teal-700'}`}>

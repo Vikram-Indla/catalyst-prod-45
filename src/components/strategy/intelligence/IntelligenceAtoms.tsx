@@ -30,7 +30,7 @@ export function MiniBar({ value, max, height = 6 }: {
 }) {
   const pct = max > 0 ? Math.min(100, (value / max) * 100) : 0;
   return (
-    <div className="bg-slate-100 dark:bg-[rgba(255,255,255,0.08)] w-full overflow-hidden" style={{ height, borderRadius: height / 2 }}>
+    <div className="bg-slate-100 dark:bg-[#2E2E2E] w-full overflow-hidden" style={{ height, borderRadius: height / 2 }}>
       <div className="bg-[#2563EB] h-full transition-[width] duration-[800ms] ease-out" style={{ width: `${pct}%`, borderRadius: height / 2 }} />
     </div>
   );

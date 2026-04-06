@@ -23,9 +23,9 @@ const DK = {
   t2: 'var(--cp-t2)',
   t3: 'var(--cp-t3)',
   t4: 'var(--cp-t4)',
-  border: 'rgba(255,255,255,0.10)',
-  borderSubtle: 'rgba(255,255,255,0.08)',
-  hover: 'rgba(255,255,255,0.03)',
+  border: '#2E2E2E',
+  borderSubtle: '#2E2E2E',
+  hover: '#1F1F1F',
 };
 
 export default function GoalsKeyResultsPage() {

@@ -16,14 +16,14 @@ export default function CommentPreview({ text, attachmentFilename }: CommentPrev
 
   return (
     <div style={{
-      background: isDark ? '#232019' : '#F8FAFC',
-      border: `0.5px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,.08)'}`,
+      background: isDark ? '#1A1A1A' : '#F8FAFC',
+      border: `0.5px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,.08)'}`,
       borderRadius: 4,
       padding: '10px 12px',
       marginTop: 8,
       fontFamily: 'Inter, sans-serif',
       fontSize: 13,
-      color: isDark ? '#F5F3F0' : '#0F172A',
+      color: isDark ? '#EDEDED' : '#0F172A',
       lineHeight: '18px',
       maxHeight: expanded ? 'none' : 80,
       overflow: 'hidden',
@@ -41,7 +41,7 @@ export default function CommentPreview({ text, attachmentFilename }: CommentPrev
         </button>
       )}
       {attachmentFilename && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 6, color: isDark ? '#6B6560' : '#64748B', fontSize: 12 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 6, color: isDark ? '#878787' : '#64748B', fontSize: 12 }}>
           <Paperclip size={13} />
           <span>{attachmentFilename}</span>
         </div>

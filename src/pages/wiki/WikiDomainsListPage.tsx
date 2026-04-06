@@ -30,7 +30,7 @@ export default function WikiDomainsListPage() {
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 12 }}>
         {isLoading ? Array.from({ length: 9 }).map((_, i) => (
-          <div key={i} style={{ padding: 20, borderRadius: 8, background: isDark ? '#1A1A1A' : '#FFFFFF', border: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(0,0,0,0.06)', height: 120 }} />
+          <div key={i} style={{ padding: 20, borderRadius: 8, background: isDark ? '#1A1A1A' : '#FFFFFF', border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(0,0,0,0.06)', height: 120 }} />
         )) : (domains ?? []).map((d: any) => {
           const Icon = DOMAIN_ICONS[d.domain_code] || Globe;
           const tagRaw = TAG_STYLES[d.tag] || TAG_STYLES.SUPPORT;
@@ -38,8 +38,8 @@ export default function WikiDomainsListPage() {
           const coverageColor = d.coverage_percent >= 80 ? '#16A34A' : d.coverage_percent >= 60 ? '#2563EB' : '#D97706';
           return (
             <div key={d.domain_code} onClick={() => navigate(`/wiki/domains/${d.domain_code}`)} style={{
-              padding: 20, borderRadius: 8, background: isDark ? '#1A1A1A' : '#FFFFFF', border: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(0,0,0,0.06)', cursor: 'pointer', transition: 'border-color 120ms',
-            }} onMouseEnter={e => e.currentTarget.style.borderColor = '#2563EB'} onMouseLeave={e => e.currentTarget.style.borderColor = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'}>
+              padding: 20, borderRadius: 8, background: isDark ? '#1A1A1A' : '#FFFFFF', border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(0,0,0,0.06)', cursor: 'pointer', transition: 'border-color 120ms',
+            }} onMouseEnter={e => e.currentTarget.style.borderColor = '#2563EB'} onMouseLeave={e => e.currentTarget.style.borderColor = isDark ? '#2E2E2E' : 'rgba(0,0,0,0.06)'}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
                 <div style={{ width: 32, height: 32, borderRadius: 6, background: isDark ? '#1A1A1A' : '#F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <Icon size={16} style={{ color: isDark ? '#A1A1A1' : '#64748B' }} />

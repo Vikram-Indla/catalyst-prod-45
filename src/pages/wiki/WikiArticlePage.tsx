@@ -76,13 +76,13 @@ function VersionHistoryPanel({ versions, onRestore, onClose }: {
   return (
     <div style={{
       position: 'fixed', top: 0, right: 0, bottom: 0, width: 400, zIndex: 200,
-      background: isDark ? '#1A1A1A' : '#FFFFFF', borderLeft: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(15,23,42,0.12)',
+      background: isDark ? '#1A1A1A' : '#FFFFFF', borderLeft: isDark ? '1px solid #2E2E2E' : '1px solid rgba(15,23,42,0.12)',
       boxShadow: isDark ? '-8px 0 24px rgba(0,0,0,0.3)' : '-8px 0 24px rgba(15,23,42,0.08)',
       display: 'flex', flexDirection: 'column', fontFamily: 'Inter, sans-serif',
     }}>
       {/* Header */}
       <div style={{
-        padding: '16px 20px', borderBottom: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(15,23,42,0.08)',
+        padding: '16px 20px', borderBottom: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.08)',
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -109,10 +109,10 @@ function VersionHistoryPanel({ versions, onRestore, onClose }: {
           </div>
         ) : versions.map((v: any, i: number) => (
           <div key={v.id || i} style={{
-            padding: '12px 20px', borderBottom: isDark ? '0.75px solid rgba(255,255,255,0.05)' : '0.75px solid rgba(15,23,42,0.04)',
+            padding: '12px 20px', borderBottom: isDark ? '0.75px solid #292929' : '0.75px solid rgba(15,23,42,0.04)',
             transition: 'background 120ms',
           }}
-            onMouseEnter={e => e.currentTarget.style.background = isDark ? 'rgba(255,255,255,0.04)' : '#F8FAFC'}
+            onMouseEnter={e => e.currentTarget.style.background = isDark ? '#1F1F1F' : '#F8FAFC'}
             onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
@@ -168,7 +168,7 @@ function ExportDropdown({ onClose }: { onClose: () => void }) {
   return (
     <div style={{
       position: 'absolute', top: '100%', right: 0, marginTop: 4, zIndex: 50,
-      background: isDark ? '#1A1A1A' : '#FFFFFF', borderRadius: 6, border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(15,23,42,0.12)',
+      background: isDark ? '#1A1A1A' : '#FFFFFF', borderRadius: 6, border: isDark ? '1px solid #2E2E2E' : '1px solid rgba(15,23,42,0.12)',
       boxShadow: isDark ? '0 4px 12px rgba(0,0,0,0.3)' : '0 4px 12px rgba(15,23,42,0.08)', minWidth: 160, overflow: 'hidden',
     }}>
       <button onClick={handlePdf} style={{
@@ -176,7 +176,7 @@ function ExportDropdown({ onClose }: { onClose: () => void }) {
         color: isDark ? '#EDEDED' : '#0F172A', background: 'transparent', border: 'none', cursor: 'pointer',
         display: 'flex', alignItems: 'center', gap: 8, textAlign: 'left',
       }}
-        onMouseEnter={e => e.currentTarget.style.background = isDark ? 'rgba(255,255,255,0.04)' : '#F8FAFC'}
+        onMouseEnter={e => e.currentTarget.style.background = isDark ? '#1F1F1F' : '#F8FAFC'}
         onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
       >
         <Download size={13} style={{ color: '#DC2626' }} /> Export as PDF
@@ -186,7 +186,7 @@ function ExportDropdown({ onClose }: { onClose: () => void }) {
         color: isDark ? '#EDEDED' : '#0F172A', background: 'transparent', border: 'none', cursor: 'pointer',
         display: 'flex', alignItems: 'center', gap: 8, textAlign: 'left',
       }}
-        onMouseEnter={e => e.currentTarget.style.background = isDark ? 'rgba(255,255,255,0.04)' : '#F8FAFC'}
+        onMouseEnter={e => e.currentTarget.style.background = isDark ? '#1F1F1F' : '#F8FAFC'}
         onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
       >
         <Printer size={13} style={{ color: isDark ? '#A1A1A1' : '#64748B' }} /> Print
@@ -202,7 +202,7 @@ function CrossModuleLinks({ links }: { links: any[] }) {
   return (
     <div style={{
       marginTop: 32, padding: 16, borderRadius: 6,
-      border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(15,23,42,0.12)', background: isDark ? '#1A1A1A' : '#FFFFFF',
+      border: isDark ? '1px solid #2E2E2E' : '1px solid rgba(15,23,42,0.12)', background: isDark ? '#1A1A1A' : '#FFFFFF',
     }}>
       <div style={{
         fontSize: 11, fontWeight: 700, textTransform: 'uppercase' as const,
@@ -419,7 +419,7 @@ export default function WikiArticlePage() {
       {/* Scroll progress bar */}
       <div style={{
         position: 'fixed', top: 0, left: 0, right: 0, height: 3, zIndex: 100,
-        background: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(15,23,42,0.04)',
+        background: isDark ? '#292929' : 'rgba(15,23,42,0.04)',
       }}>
         <div style={{
           height: '100%', background: '#2563EB', width: `${scrollPct}%`,
@@ -464,7 +464,7 @@ export default function WikiArticlePage() {
               )}
               <button onClick={handleBookmark} style={{
                 fontSize: 11, fontWeight: 600, padding: '3px 8px', borderRadius: 4, cursor: 'pointer',
-                border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(15,23,42,0.12)', background: bookmarked ? (isDark ? 'rgba(217,119,6,0.12)' : '#FEF3C7') : 'transparent',
+                border: isDark ? '1px solid #2E2E2E' : '1px solid rgba(15,23,42,0.12)', background: bookmarked ? (isDark ? 'rgba(217,119,6,0.12)' : '#FEF3C7') : 'transparent',
                 color: bookmarked ? '#D97706' : (isDark ? '#A1A1A1' : '#64748B'), display: 'flex', alignItems: 'center', gap: 4,
               }}>
                 <Star size={12} fill={bookmarked ? 'currentColor' : 'none'} /> {bookmarked ? 'Saved' : 'Save'}
@@ -473,7 +473,7 @@ export default function WikiArticlePage() {
               {/* ── History button ── */}
               <button onClick={() => setShowHistory(prev => !prev)} style={{
                 fontSize: 11, fontWeight: 600, padding: '3px 8px', borderRadius: 4, cursor: 'pointer',
-                border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(15,23,42,0.12)', background: showHistory ? (isDark ? 'rgba(37,99,235,0.12)' : '#EFF6FF') : 'transparent',
+                border: isDark ? '1px solid #2E2E2E' : '1px solid rgba(15,23,42,0.12)', background: showHistory ? (isDark ? 'rgba(37,99,235,0.12)' : '#EFF6FF') : 'transparent',
                 color: showHistory ? '#2563EB' : (isDark ? '#A1A1A1' : '#64748B'), display: 'flex', alignItems: 'center', gap: 4,
               }}>
                 <History size={12} /> History
@@ -483,7 +483,7 @@ export default function WikiArticlePage() {
               <div style={{ position: 'relative' }}>
                 <button onClick={(e) => { e.stopPropagation(); setShowExport(prev => !prev); }} style={{
                   fontSize: 11, fontWeight: 600, padding: '3px 8px', borderRadius: 4, cursor: 'pointer',
-                  border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(15,23,42,0.12)', background: showExport ? (isDark ? 'rgba(37,99,235,0.12)' : '#EFF6FF') : 'transparent',
+                  border: isDark ? '1px solid #2E2E2E' : '1px solid rgba(15,23,42,0.12)', background: showExport ? (isDark ? 'rgba(37,99,235,0.12)' : '#EFF6FF') : 'transparent',
                   color: showExport ? '#2563EB' : (isDark ? '#A1A1A1' : '#64748B'), display: 'flex', alignItems: 'center', gap: 4,
                 }}>
                   <Download size={12} /> Export <ChevronDown size={10} />
@@ -546,7 +546,7 @@ export default function WikiArticlePage() {
               <div style={{
                 fontFamily: 'Georgia, serif', fontSize: 15, lineHeight: 1.85,
                 color: isDark ? '#A1A1A1' : '#334155', marginBottom: 24, paddingBottom: 20,
-                borderBottom: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(15,23,42,0.08)',
+                borderBottom: isDark ? '1px solid #2E2E2E' : '1px solid rgba(15,23,42,0.08)',
               }}>
                 {page.lead_content}
               </div>
@@ -555,7 +555,7 @@ export default function WikiArticlePage() {
             {/* ── Table of Contents ── */}
             {sections.length > 0 && (
               <nav style={{
-                background: isDark ? '#1A1A1A' : '#F8FAFC', border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(15,23,42,0.12)',
+                background: isDark ? '#1A1A1A' : '#F8FAFC', border: isDark ? '1px solid #2E2E2E' : '1px solid rgba(15,23,42,0.12)',
                 borderRadius: 6, padding: 16, marginBottom: 28,
               }}>
                 <div style={{
@@ -616,7 +616,7 @@ export default function WikiArticlePage() {
             {/* ── Feedback footer ── */}
             <div style={{
               marginTop: 32, padding: 20, borderRadius: 6,
-              border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(15,23,42,0.12)', background: isDark ? '#1A1A1A' : '#FFFFFF',
+              border: isDark ? '1px solid #2E2E2E' : '1px solid rgba(15,23,42,0.12)', background: isDark ? '#1A1A1A' : '#FFFFFF',
               display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16,
             }}>
               <div>
@@ -659,11 +659,11 @@ export default function WikiArticlePage() {
                   {(related ?? []).map((r: any) => (
                     <div key={r.id} onClick={() => navigate(`/wiki/${r.slug}`)} style={{
                       padding: 16, borderRadius: 6, background: isDark ? '#1A1A1A' : '#FFFFFF',
-                      border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(15,23,42,0.12)', cursor: 'pointer',
+                      border: isDark ? '1px solid #2E2E2E' : '1px solid rgba(15,23,42,0.12)', cursor: 'pointer',
                       transition: 'border-color 120ms',
                     }}
                       onMouseEnter={e => e.currentTarget.style.borderColor = '#2563EB'}
-                      onMouseLeave={e => e.currentTarget.style.borderColor = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.12)'}
+                      onMouseLeave={e => e.currentTarget.style.borderColor = isDark ? '#2E2E2E' : 'rgba(15,23,42,0.12)'}
                     >
                       <div style={{ fontSize: 13, fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A', marginBottom: 6 }}>{r.title}</div>
                       <div style={{ fontSize: 11, color: isDark ? '#A1A1A1' : '#64748B' }}>
@@ -681,7 +681,7 @@ export default function WikiArticlePage() {
           {/* ── Infobox sidebar ── */}
           <aside style={{
             position: 'sticky', top: 80, borderRadius: 6,
-            border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(15,23,42,0.12)', background: isDark ? '#1A1A1A' : '#FFFFFF',
+            border: isDark ? '1px solid #2E2E2E' : '1px solid rgba(15,23,42,0.12)', background: isDark ? '#1A1A1A' : '#FFFFFF',
             overflow: 'hidden', fontSize: 12,
           }}>
             <div style={{
@@ -692,7 +692,7 @@ export default function WikiArticlePage() {
             {infoRows.map(row => (
               <div key={row.label} style={{
                 display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                padding: '7px 14px', borderBottom: isDark ? '0.75px solid rgba(255,255,255,0.05)' : '0.75px solid rgba(15,23,42,0.06)',
+                padding: '7px 14px', borderBottom: isDark ? '0.75px solid #292929' : '0.75px solid rgba(15,23,42,0.06)',
               }}>
                 <span style={{ color: isDark ? '#A1A1A1' : '#64748B', fontSize: 11 }}>{row.label}</span>
                 <span style={{ fontSize: 11, color: isDark ? '#EDEDED' : '#0F172A', fontWeight: 500 }}>{row.value}</span>
@@ -732,7 +732,7 @@ function DeliveryStatusSection({ content }: { content: string | null }) {
   if (!content) return <div style={{ fontSize: 13, color: isDark ? '#878787' : '#94A3B8' }}>No delivery data available.</div>;
   return (
     <div style={{
-      borderRadius: 6, border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(15,23,42,0.12)', overflow: 'hidden',
+      borderRadius: 6, border: isDark ? '1px solid #2E2E2E' : '1px solid rgba(15,23,42,0.12)', overflow: 'hidden',
     }}>
       <div style={{ fontSize: 13, color: isDark ? '#A1A1A1' : '#334155', padding: 16, lineHeight: 1.7 }}>{content}</div>
     </div>
@@ -782,10 +782,10 @@ function ArticleSkeleton() {
           <Sk w="100%" h={16} style={{ marginBottom: 8 }} isDark={isDark} />
           <Sk w="85%" h={16} isDark={isDark} />
         </div>
-        <div style={{ borderRadius: 6, border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(15,23,42,0.12)', overflow: 'hidden' }}>
+        <div style={{ borderRadius: 6, border: isDark ? '1px solid #2E2E2E' : '1px solid rgba(15,23,42,0.12)', overflow: 'hidden' }}>
           <Sk w="100%" h={36} style={{ borderRadius: 0 }} isDark={isDark} />
           {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} style={{ padding: '8px 14px', display: 'flex', justifyContent: 'space-between', borderBottom: isDark ? '0.75px solid rgba(255,255,255,0.05)' : '0.75px solid rgba(15,23,42,0.06)' }}>
+            <div key={i} style={{ padding: '8px 14px', display: 'flex', justifyContent: 'space-between', borderBottom: isDark ? '0.75px solid #292929' : '0.75px solid rgba(15,23,42,0.06)' }}>
               <Sk w={60} h={12} isDark={isDark} /><Sk w={80} h={12} isDark={isDark} />
             </div>
           ))}

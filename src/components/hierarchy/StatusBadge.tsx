@@ -69,7 +69,7 @@ const STATUS_STYLES_LIGHT: Record<StatusCategory, { background: string; color: s
 };
 
 const STATUS_STYLES_DARK: Record<StatusCategory, { background: string; color: string }> = {
-  grey:  { background: 'rgba(255,255,255,0.08)', color: '#A1A1A1' },
+  grey:  { background: '#2E2E2E', color: '#A1A1A1' },
   blue:  { background: 'rgba(59,130,246,0.10)', color: '#7DB8FC' },
   green: { background: 'rgba(74,222,128,0.10)', color: '#4ADE80' },
 };

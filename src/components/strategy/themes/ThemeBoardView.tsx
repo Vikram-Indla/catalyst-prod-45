@@ -28,7 +28,7 @@ export function ThemeBoardView({ themes, onSelect, isDark = false }: Props) {
             className="rounded-xl border cursor-pointer overflow-hidden"
             style={{
               background: isDark ? '#1A1A1A' : 'var(--bg-app)',
-              borderColor: isDark ? 'rgba(255,255,255,0.10)' : 'var(--divider)',
+              borderColor: isDark ? '#2E2E2E' : 'var(--divider)',
               transition: 'transform 200ms ease, box-shadow 200ms ease',
               animation: `fadeUp 300ms ease ${i * 60}ms both`,
             }}
@@ -77,7 +77,7 @@ export function ThemeBoardView({ themes, onSelect, isDark = false }: Props) {
                   { label: 'KRs', value: theme.kr_count },
                   { label: 'Budget', value: formatBudget(theme.planned_budget) },
                 ].map(m => (
-                  <div key={m.label} className="rounded-md text-center" style={{ background: isDark ? 'rgba(255,255,255,0.05)' : 'var(--bg-1)', padding: '6px 0' }}>
+                  <div key={m.label} className="rounded-md text-center" style={{ background: isDark ? '#292929' : 'var(--bg-1)', padding: '6px 0' }}>
                     <p style={{ fontSize: 14, fontWeight: 700, color: isDark ? DK.t1 : 'var(--fg-1)' }}>{m.value}</p>
                     <p style={{ fontSize: 10, color: isDark ? DK.t3 : 'var(--fg-3)' }}>{m.label}</p>
                   </div>
@@ -87,7 +87,7 @@ export function ThemeBoardView({ themes, onSelect, isDark = false }: Props) {
               {/* Progress + Owner */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 flex-1 mr-3">
-                  <div className="flex-1 rounded-full overflow-hidden" style={{ height: 6, background: isDark ? 'rgba(255,255,255,0.12)' : 'var(--divider)' }}>
+                  <div className="flex-1 rounded-full overflow-hidden" style={{ height: 6, background: isDark ? '#454545' : 'var(--divider)' }}>
                     <div className="h-full rounded-full" style={{ width: `${Math.min(theme.progress_pct, 100)}%`, background: progressColor }} />
                   </div>
                   <span style={{ fontSize: 11, fontWeight: 600, color: isDark ? DK.t2 : 'var(--fg-2)' }}>{theme.progress_pct}%</span>
@@ -107,7 +107,7 @@ export function ThemeBoardView({ themes, onSelect, isDark = false }: Props) {
       })}
 
       {themes.length === 0 && (
-        <div className="col-span-full flex items-center justify-center rounded-xl border" style={{ height: 200, borderColor: isDark ? 'rgba(255,255,255,0.10)' : 'var(--divider)', color: isDark ? DK.t3 : 'var(--fg-4)', fontSize: 13 }}>
+        <div className="col-span-full flex items-center justify-center rounded-xl border" style={{ height: 200, borderColor: isDark ? '#2E2E2E' : 'var(--divider)', color: isDark ? DK.t3 : 'var(--fg-4)', fontSize: 13 }}>
           No themes match the current filters.
         </div>
       )}

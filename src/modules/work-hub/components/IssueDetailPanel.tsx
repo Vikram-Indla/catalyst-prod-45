@@ -97,11 +97,11 @@ export function IssueDetailPanel({ item, onClose, onFieldChange }: IssueDetailPa
       style={{
         fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
         backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF',
-        borderLeft: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`,
+        borderLeft: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`,
       }}
     >
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 flex-shrink-0" style={{ borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}` }}>
+      <div className="flex items-center justify-between px-4 py-3 flex-shrink-0" style={{ borderBottom: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}` }}>
         <div className="flex items-center gap-2">
           <JiraIssueTypeIcon type={item.type} size={16} />
           <span className="text-[13px] font-medium" style={{ color: isDark ? '#EDEDED' : '#334155' }}>{item.key}</span>
@@ -120,7 +120,7 @@ export function IssueDetailPanel({ item, onClose, onFieldChange }: IssueDetailPa
                 <MoreHorizontal className="h-4 w-4" style={{ color: isDark ? '#878787' : '#64748B' }} />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className={cn("w-56 shadow-lg", isDark ? "bg-[#1A1A1A] border-[rgba(255,255,255,0.08)]" : "bg-white border-slate-200")}>
+            <DropdownMenuContent align="end" className={cn("w-56 shadow-lg", isDark ? "bg-[#1A1A1A] border-[#2E2E2E]" : "bg-white border-slate-200")}>
               {ISSUE_ACTIONS.map((action, idx) => (
                 <React.Fragment key={action.id}>
                   <DropdownMenuItem className={cn("text-[13px] cursor-pointer", isDark ? "text-[#EDEDED] hover:bg-[#232323]" : "text-slate-700 hover:bg-slate-50")}>
@@ -170,7 +170,7 @@ export function IssueDetailPanel({ item, onClose, onFieldChange }: IssueDetailPa
                     The system display alignment issue in Competitiveness Program page
                   </p>
                 )}
-                <div className="mt-4 p-4 rounded text-center" style={{ backgroundColor: isDark ? '#1A1A1A' : '#F8FAFC', border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, color: isDark ? '#878787' : '#64748B' }}>
+                <div className="mt-4 p-4 rounded text-center" style={{ backgroundColor: isDark ? '#1A1A1A' : '#F8FAFC', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, color: isDark ? '#878787' : '#64748B' }}>
                   <FileText className="h-8 w-8 mx-auto mb-2" style={{ color: isDark ? '#878787' : '#94A3B8' }} />
                   <p className="text-[12px]">Embedded content preview</p>
                 </div>
@@ -178,7 +178,7 @@ export function IssueDetailPanel({ item, onClose, onFieldChange }: IssueDetailPa
             </div>
 
             {/* Attachments section */}
-            <div className="rounded" style={{ border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}` }}>
+            <div className="rounded" style={{ border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}` }}>
               <button
                 className={cn("w-full flex items-center justify-between px-4 py-3 transition-colors", isDark ? "hover:bg-[#1A1A1A]" : "hover:bg-slate-50")}
                 onClick={() => setAttachmentsExpanded(!attachmentsExpanded)}
@@ -205,8 +205,8 @@ export function IssueDetailPanel({ item, onClose, onFieldChange }: IssueDetailPa
               </button>
 
               {attachmentsExpanded && (
-                <div style={{ borderTop: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}` }}>
-                  <div className="grid grid-cols-[1fr_80px_140px_60px] px-4 py-2 text-[11px] font-medium uppercase" style={{ backgroundColor: isDark ? '#1A1A1A' : '#F8FAFC', borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, color: isDark ? '#878787' : '#64748B' }}>
+                <div style={{ borderTop: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}` }}>
+                  <div className="grid grid-cols-[1fr_80px_140px_60px] px-4 py-2 text-[11px] font-medium uppercase" style={{ backgroundColor: isDark ? '#1A1A1A' : '#F8FAFC', borderBottom: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, color: isDark ? '#878787' : '#64748B' }}>
                     <span>Name</span>
                     <span>Size</span>
                     <span>Date added</span>
@@ -216,7 +216,7 @@ export function IssueDetailPanel({ item, onClose, onFieldChange }: IssueDetailPa
                     <div
                       key={att.id}
                       className={cn("grid grid-cols-[1fr_80px_140px_60px] px-4 py-2 items-center", isDark ? "hover:bg-[#1A1A1A]" : "hover:bg-slate-50")}
-                      style={{ borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.05)' : '#F1F5F9'}` }}
+                      style={{ borderBottom: `1px solid ${isDark ? '#292929' : '#F1F5F9'}` }}
                     >
                       <div className="flex items-center gap-2 min-w-0">
                         <FileText className="h-4 w-4 flex-shrink-0" style={{ color: isDark ? '#878787' : '#94A3B8' }} />
@@ -263,7 +263,7 @@ export function IssueDetailPanel({ item, onClose, onFieldChange }: IssueDetailPa
               <h3 className="text-[14px] font-semibold mb-3" style={{ color: isDark ? '#EDEDED' : '#0F172A' }}>Activity</h3>
 
               {/* Activity tabs */}
-              <div className="flex items-center gap-1 mb-4 -mx-1 px-1" style={{ borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}` }}>
+              <div className="flex items-center gap-1 mb-4 -mx-1 px-1" style={{ borderBottom: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}` }}>
                 {ACTIVITY_TABS.map((tab) => (
                   <button
                     key={tab.id}
@@ -298,20 +298,20 @@ export function IssueDetailPanel({ item, onClose, onFieldChange }: IssueDetailPa
                     placeholder="Add a comment..."
                     value={commentText}
                     onChange={(e) => setCommentText(e.target.value)}
-                    className={cn("min-h-[60px] text-[13px] rounded resize-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400", isDark ? "border-[rgba(255,255,255,0.08)] bg-[#1A1A1A] text-[#EDEDED]" : "border-slate-200")}
+                    className={cn("min-h-[60px] text-[13px] rounded resize-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400", isDark ? "border-[#2E2E2E] bg-[#1A1A1A] text-[#EDEDED]" : "border-slate-200")}
                   />
                   <div className="flex items-center gap-2 mt-2">
                     {QUICK_COMMENT_ACTIONS.map((action) => (
                       <button
                         key={action.id}
-                        className={cn("px-3 py-1 text-[12px] rounded transition-colors", isDark ? "text-[#A1A1A1] bg-[rgba(255,255,255,0.06)] hover:bg-[rgba(255,255,255,0.10)]" : "text-slate-600 bg-slate-100 hover:bg-slate-200")}
+                        className={cn("px-3 py-1 text-[12px] rounded transition-colors", isDark ? "text-[#A1A1A1] bg-[#292929] hover:bg-[#2E2E2E]" : "text-slate-600 bg-slate-100 hover:bg-slate-200")}
                       >
                         {action.label}
                       </button>
                     ))}
                   </div>
                   <p className="text-[11px] mt-2" style={{ color: isDark ? '#878787' : '#94A3B8' }}>
-                    <span className="font-medium">Pro tip:</span> press <kbd className="px-1 py-0.5 rounded text-[10px]" style={{ backgroundColor: isDark ? 'rgba(255,255,255,0.06)' : '#F1F5F9' }}>M</kbd> to comment
+                    <span className="font-medium">Pro tip:</span> press <kbd className="px-1 py-0.5 rounded text-[10px]" style={{ backgroundColor: isDark ? '#292929' : '#F1F5F9' }}>M</kbd> to comment
                   </p>
                 </div>
               </div>
@@ -326,7 +326,7 @@ export function IssueDetailPanel({ item, onClose, onFieldChange }: IssueDetailPa
         </ScrollArea>
 
         {/* Right sidebar */}
-        <div className="w-[260px] flex-shrink-0" style={{ borderLeft: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, backgroundColor: isDark ? '#1A1A1A' : 'rgba(248,250,252,0.5)' }}>
+        <div className="w-[260px] flex-shrink-0" style={{ borderLeft: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, backgroundColor: isDark ? '#1A1A1A' : 'rgba(248,250,252,0.5)' }}>
           <ScrollArea className="h-full">
             <div className="p-4 space-y-4">
               {/* Status badge */}
@@ -338,7 +338,7 @@ export function IssueDetailPanel({ item, onClose, onFieldChange }: IssueDetailPa
                       <ChevronDown className="h-3 w-3" />
                     </button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="start" className={cn("w-48", isDark ? "bg-[#1A1A1A] border-[rgba(255,255,255,0.08)]" : "bg-white")}>
+                  <DropdownMenuContent align="start" className={cn("w-48", isDark ? "bg-[#1A1A1A] border-[#2E2E2E]" : "bg-white")}>
                     {['Backlog', 'To Do', 'In Progress', 'In Requirement', 'In Production', 'In QA', 'Ready for QA', 'Done', 'Closed', 'Blocked'].map((status) => (
                       <DropdownMenuItem key={status} className="cursor-pointer">
                         <span className="catalyst-status inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium uppercase bg-muted/50 text-foreground border border-border">
@@ -351,13 +351,13 @@ export function IssueDetailPanel({ item, onClose, onFieldChange }: IssueDetailPa
                 <Button variant="ghost" size="icon" className={cn("h-7 w-7", isDark ? "hover:bg-[#1A1A1A]" : "hover:bg-slate-100")}>
                   <Zap className="h-4 w-4" style={{ color: isDark ? '#878787' : '#64748B' }} />
                 </Button>
-                <span className="text-[11px] px-2 py-1 rounded" style={{ color: isDark ? '#A1A1A1' : '#64748B', backgroundColor: isDark ? 'rgba(255,255,255,0.06)' : '#F1F5F9' }}>
+                <span className="text-[11px] px-2 py-1 rounded" style={{ color: isDark ? '#A1A1A1' : '#64748B', backgroundColor: isDark ? '#292929' : '#F1F5F9' }}>
                   Improve Production Incident
                 </span>
               </div>
 
               {/* Your pinned fields - collapsible */}
-              <div className="rounded" style={{ border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF' }}>
+              <div className="rounded" style={{ border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF' }}>
                 <button
                   className={cn("w-full flex items-center justify-between px-3 py-2", isDark ? "hover:bg-[#232323]" : "hover:bg-slate-50")}
                   onClick={() => setPinnedFieldsExpanded(!pinnedFieldsExpanded)}
@@ -370,7 +370,7 @@ export function IssueDetailPanel({ item, onClose, onFieldChange }: IssueDetailPa
                   )}
                 </button>
                 {pinnedFieldsExpanded && (
-                  <div className="px-3 pb-3 pt-1" style={{ borderTop: `1px solid ${isDark ? 'rgba(255,255,255,0.05)' : '#F1F5F9'}` }}>
+                  <div className="px-3 pb-3 pt-1" style={{ borderTop: `1px solid ${isDark ? '#292929' : '#F1F5F9'}` }}>
                     <div className="text-[11px] mb-1" style={{ color: isDark ? '#878787' : '#64748B' }}>Fix versions</div>
                     <div className="text-[13px]" style={{ color: isDark ? '#EDEDED' : '#334155' }}>
                       {fixVersions.join(', ') || 'None'}
@@ -380,7 +380,7 @@ export function IssueDetailPanel({ item, onClose, onFieldChange }: IssueDetailPa
               </div>
 
               {/* Details section - collapsible */}
-              <div className="rounded" style={{ border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF' }}>
+              <div className="rounded" style={{ border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF' }}>
                 <button
                   className={cn("w-full flex items-center justify-between px-3 py-2", isDark ? "hover:bg-[#232323]" : "hover:bg-slate-50")}
                   onClick={() => setDetailsExpanded(!detailsExpanded)}
@@ -393,7 +393,7 @@ export function IssueDetailPanel({ item, onClose, onFieldChange }: IssueDetailPa
                   )}
                 </button>
                 {detailsExpanded && (
-                  <div className="px-3 pb-3 space-y-3 pt-3" style={{ borderTop: `1px solid ${isDark ? 'rgba(255,255,255,0.05)' : '#F1F5F9'}` }}>
+                  <div className="px-3 pb-3 space-y-3 pt-3" style={{ borderTop: `1px solid ${isDark ? '#292929' : '#F1F5F9'}` }}>
                     {/* Assignee */}
                     <div>
                       <div className="text-[11px] mb-1" style={{ color: isDark ? '#878787' : '#64748B' }}>Assignee</div>
@@ -448,7 +448,7 @@ export function IssueDetailPanel({ item, onClose, onFieldChange }: IssueDetailPa
               </div>
 
               {/* Automation section */}
-              <div className="rounded" style={{ border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF' }}>
+              <div className="rounded" style={{ border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF' }}>
                 <div className="flex items-center justify-between px-3 py-2">
                   <div className="flex items-center gap-2">
                     <span className="text-[12px] font-semibold" style={{ color: isDark ? '#EDEDED' : '#334155' }}>Automation</span>
@@ -456,7 +456,7 @@ export function IssueDetailPanel({ item, onClose, onFieldChange }: IssueDetailPa
                   </div>
                   <span className="text-[11px]" style={{ color: isDark ? '#878787' : '#64748B' }}>Rule executions</span>
                 </div>
-                <div className="px-3 pb-2 pt-2" style={{ borderTop: `1px solid ${isDark ? 'rgba(255,255,255,0.05)' : '#F1F5F9'}` }}>
+                <div className="px-3 pb-2 pt-2" style={{ borderTop: `1px solid ${isDark ? '#292929' : '#F1F5F9'}` }}>
                   <button className="text-[12px] text-blue-600 hover:underline flex items-center gap-1">
                     <Settings2 className="h-3.5 w-3.5" />
                     Configure

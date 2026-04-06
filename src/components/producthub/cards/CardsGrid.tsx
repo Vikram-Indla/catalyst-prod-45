@@ -55,10 +55,10 @@ export const CardsGrid: React.FC<CardsGridProps> = ({ initiatives, gridSize, gro
           {group.label && (
             <div className="flex items-center gap-3 mb-3">
               <h3 className="text-sm font-semibold text-zinc-700 dark:text-[#EDEDED]">{group.label}</h3>
-              <span className="text-xs font-medium text-zinc-400 dark:text-[#A1A1A1] bg-zinc-100 dark:bg-transparent dark:border dark:border-[rgba(255,255,255,0.08)] px-2 py-0.5 rounded-full">
+              <span className="text-xs font-medium text-zinc-400 dark:text-[#A1A1A1] bg-zinc-100 dark:bg-transparent dark:border dark:border-[#2E2E2E] px-2 py-0.5 rounded-full">
                 {group.items.length}
               </span>
-              <div className="flex-1 h-px bg-zinc-200 dark:bg-[rgba(255,255,255,0.08)]" />
+              <div className="flex-1 h-px bg-zinc-200 dark:bg-[#2E2E2E]" />
             </div>
           )}
           <div className={cn('grid', GRID_CLASSES[gridSize])}>

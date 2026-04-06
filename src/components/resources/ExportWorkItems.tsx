@@ -471,7 +471,7 @@ export default function ExportWorkItems({ deptFilter }: { deptFilter: string }) 
           transition: 'border-color 150ms',
         }}
         onMouseEnter={e => { e.currentTarget.style.borderColor = dk ? '#878787' : '#94A3B8'; }}
-        onMouseLeave={e => { e.currentTarget.style.borderColor = dk ? 'rgba(255,255,255,0.10)' : 'var(--bd-default, #E2E8F0)'; }}
+        onMouseLeave={e => { e.currentTarget.style.borderColor = dk ? '#2E2E2E' : 'var(--bd-default, #E2E8F0)'; }}
       >
         <Download size={14} strokeWidth={2} />
         Export
@@ -483,7 +483,7 @@ export default function ExportWorkItems({ deptFilter }: { deptFilter: string }) 
         <div style={{
           position: 'absolute', top: '100%', right: 0, marginTop: 6,
           width: 330, borderRadius: 14,
-          background: dk ? '#232019' : '#fff', border: `1px solid ${dk ? 'rgba(255,255,255,0.10)' : '#e5e7eb'}`,
+          background: dk ? '#1A1A1A' : '#fff', border: `1px solid ${dk ? '#2E2E2E' : '#e5e7eb'}`,
           boxShadow: dk ? '0 12px 40px rgba(0,0,0,0.50), 0 2px 8px rgba(0,0,0,0.30)' : '0 12px 40px rgba(27,42,74,0.16), 0 2px 8px rgba(27,42,74,0.08)',
           zIndex: 50, overflow: 'hidden',
           animation: 'ewi-fadein 0.2s ease-out',
@@ -501,7 +501,7 @@ export default function ExportWorkItems({ deptFilter }: { deptFilter: string }) 
 
           {/* Month selection */}
           <div style={{ padding: '14px 16px 8px' }}>
-            <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', color: dk ? '#6B6560' : '#6B6B6B', letterSpacing: '0.06em', marginBottom: 10 }}>
+            <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', color: dk ? '#878787' : '#6B6B6B', letterSpacing: '0.06em', marginBottom: 10 }}>
               SELECT PERIOD
             </div>
 
@@ -517,7 +517,7 @@ export default function ExportWorkItems({ deptFilter }: { deptFilter: string }) 
                     background: checked ? (dk ? 'rgba(74, 222, 128, 0.06)' : '#F0FDF4') : 'transparent',
                     border: `1.5px solid ${checked ? 'var(--sem-success)' : 'transparent'}`,
                   }}
-                  onMouseEnter={e => { if (!checked) e.currentTarget.style.background = dk ? 'rgba(255,255,255,0.03)' : '#f8f9fa'; }}
+                  onMouseEnter={e => { if (!checked) e.currentTarget.style.background = dk ? '#1F1F1F' : '#f8f9fa'; }}
                   onMouseLeave={e => { if (!checked) e.currentTarget.style.background = 'transparent'; }}
                 >
                   <input
@@ -535,7 +535,7 @@ export default function ExportWorkItems({ deptFilter }: { deptFilter: string }) 
                   }}>
                     {checked && <Check size={12} strokeWidth={3} color="#16A34A" />}
                   </div>
-                  <span style={{ fontSize: 13, fontWeight: 500, color: dk ? '#F5F3F0' : '#1e293b', flex: 1 }}>{opt.label}</span>
+                  <span style={{ fontSize: 13, fontWeight: 500, color: dk ? '#EDEDED' : '#1e293b', flex: 1 }}>{opt.label}</span>
                   {opt.isCurrent && (
                     <span style={{
                       fontSize: 10, fontWeight: 700, color: '#fff',
@@ -585,7 +585,7 @@ export default function ExportWorkItems({ deptFilter }: { deptFilter: string }) 
               )}
             </button>
             {totalSelected > 0 && (
-              <div style={{ textAlign: 'center', fontSize: 11, color: dk ? '#6B6560' : '#6B6B6B', marginTop: 6 }}>
+              <div style={{ textAlign: 'center', fontSize: 11, color: dk ? '#878787' : '#6B6B6B', marginTop: 6 }}>
                 {totalSelected} {totalSelected === 1 ? 'month' : 'months'} selected
               </div>
             )}

@@ -19,13 +19,13 @@ export default function AIDigestTab() {
   const { isDark } = useTheme();
 
   const T = {
-    text1: isDark ? '#F5F3F0' : '#0F172A',
-    text2: isDark ? '#A09890' : '#475569',
-    text3: isDark ? '#6B6560' : '#94A3B8',
-    cardBg: isDark ? '#232019' : '#F8FAFC',
-    cardBorder: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.08)',
-    btnBorder: isDark ? 'rgba(255,255,255,0.10)' : '#E2E8F0',
-    loaderText: isDark ? '#A09890' : '#64748B',
+    text1: isDark ? '#EDEDED' : '#0F172A',
+    text2: isDark ? '#A1A1A1' : '#475569',
+    text3: isDark ? '#878787' : '#94A3B8',
+    cardBg: isDark ? '#1A1A1A' : '#F8FAFC',
+    cardBorder: isDark ? '#2E2E2E' : 'rgba(15,23,42,0.08)',
+    btnBorder: isDark ? '#2E2E2E' : '#E2E8F0',
+    loaderText: isDark ? '#A1A1A1' : '#64748B',
   };
   const PS = isDark ? PRIORITY_DARK : PRIORITY_LIGHT;
 

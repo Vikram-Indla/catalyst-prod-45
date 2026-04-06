@@ -196,7 +196,7 @@ export default function AdminDiagnosticPage() {
                   onClick={() => selectPreset(p.name)}
                   style={{
                     fontSize: 11, padding: '3px 8px', borderRadius: 4,
-                    border: fnName === p.name ? '1px solid #7C3AED' : isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0',
+                    border: fnName === p.name ? '1px solid #7C3AED' : isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0',
                     background: fnName === p.name ? (isDark ? 'rgba(124,58,237,0.12)' : '#F5F3FF') : (isDark ? '#1A1A1A' : '#FFFFFF'),
                     color: fnName === p.name ? '#7C3AED' : (isDark ? '#A1A1A1' : '#334155'),
                     cursor: 'pointer', fontFamily: 'JetBrains Mono, monospace',
@@ -262,7 +262,7 @@ export default function AdminDiagnosticPage() {
                   <div key={g.label} style={{
                     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                     height: 50, padding: '8px 12px', borderRadius: 4,
-                    border: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid #E2E8F0', background: isDark ? '#1A1A1A' : '#FFFFFF',
+                    border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid #E2E8F0', background: isDark ? '#1A1A1A' : '#FFFFFF',
                   }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                       {result ? (
@@ -308,12 +308,12 @@ export default function AdminDiagnosticPage() {
               </div>
             )}
             {tableData && tableData.length > 0 && (
-              <div style={{ overflowX: 'auto', border: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid #E2E8F0', borderRadius: 4 }}>
+              <div style={{ overflowX: 'auto', border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid #E2E8F0', borderRadius: 4 }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 11, fontFamily: 'JetBrains Mono, monospace' }}>
                   <thead>
                     <tr style={{ background: isDark ? '#1A1A1A' : '#F8FAFC' }}>
                       {Object.keys(tableData[0]).map(col => (
-                        <th key={col} style={{ height: 50, padding: '0 10px', textAlign: 'left', fontWeight: 650, fontSize: 10, textTransform: 'uppercase', color: isDark ? '#878787' : '#64748B', borderBottom: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid #E2E8F0', whiteSpace: 'nowrap' }}>
+                        <th key={col} style={{ height: 50, padding: '0 10px', textAlign: 'left', fontWeight: 650, fontSize: 10, textTransform: 'uppercase', color: isDark ? '#878787' : '#64748B', borderBottom: isDark ? '0.75px solid #2E2E2E' : '0.75px solid #E2E8F0', whiteSpace: 'nowrap' }}>
                           {col}
                         </th>
                       ))}
@@ -321,7 +321,7 @@ export default function AdminDiagnosticPage() {
                   </thead>
                   <tbody>
                     {tableData.map((row, i) => (
-                      <tr key={i} style={{ borderBottom: isDark ? '0.75px solid rgba(255,255,255,0.05)' : '0.75px solid #E2E8F0' }}>
+                      <tr key={i} style={{ borderBottom: isDark ? '0.75px solid #292929' : '0.75px solid #E2E8F0' }}>
                         {Object.values(row).map((val, j) => (
                           <td key={j} style={{ height: 50, padding: '0 10px', color: isDark ? '#A1A1A1' : '#334155', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                             {val === null ? <span style={{ color: isDark ? '#878787' : '#94A3B8' }}>null</span> : typeof val === 'object' ? JSON.stringify(val).slice(0, 50) : String(val).slice(0, 80)}
@@ -374,7 +374,7 @@ function Card({ title, icon, children }: { title: string; icon?: React.ReactNode
   const { isDark } = useTheme();
   return (
     <div style={{
-      background: isDark ? '#1A1A1A' : '#FFFFFF', border: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid #E2E8F0', borderRadius: 8, padding: 16,
+      background: isDark ? '#1A1A1A' : '#FFFFFF', border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid #E2E8F0', borderRadius: 8, padding: 16,
     }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 12 }}>
         {icon}

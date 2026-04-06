@@ -112,7 +112,7 @@ function FilterTrigger({ label, values, onClear, onClick, isOpen }: {
         fontSize: 12, fontWeight: 500, fontFamily: "'Inter', sans-serif",
         color: active ? '#2563EB' : isDark ? '#A1A1A1' : '#334155',
         background: active ? 'rgba(37,99,235,0.06)' : isDark ? '#1A1A1A' : '#FFFFFF',
-        border: `1px solid ${active ? 'rgba(37,99,235,0.3)' : isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`,
+        border: `1px solid ${active ? 'rgba(37,99,235,0.3)' : isDark ? '#2E2E2E' : '#E2E8F0'}`,
         borderRadius: 6, cursor: 'pointer', whiteSpace: 'nowrap',
         transition: 'all 80ms ease',
         boxShadow: isOpen ? '0 0 0 3px rgba(37,99,235,0.08)' : 'none',
@@ -166,7 +166,7 @@ function PriorityIcon({ name }: { name: string }) {
   return (
     <div style={{ display: 'flex', gap: 1.5, alignItems: 'flex-end', height: 14, width: 14 }}>
       {[1, 2, 3, 4].map(i => (
-        <div key={i} style={{ width: 2.5, height: 3 + i * 2.5, borderRadius: 1, background: i <= level ? color : isDark ? 'rgba(255,255,255,0.10)' : '#E2E8F0' }} />
+        <div key={i} style={{ width: 2.5, height: 3 + i * 2.5, borderRadius: 1, background: i <= level ? color : isDark ? '#2E2E2E' : '#E2E8F0' }} />
       ))}
     </div>
   );
@@ -196,13 +196,13 @@ function FilterDropdown({ options, selected, onChange, onClose, searchable = fal
       <div style={{ position: 'fixed', inset: 0, zIndex: 99 }} onClick={onClose} />
       <div ref={ref} style={{
         position: 'absolute', top: 'calc(100% + 6px)', left: 0, width: variant === 'assignee' ? 280 : 260,
-        background: isDark ? '#1A1A1A' : '#FFFFFF', border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 12,
+        background: isDark ? '#1A1A1A' : '#FFFFFF', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 12,
         boxShadow: isDark ? '0 12px 40px rgba(0,0,0,0.40), 0 2px 8px rgba(0,0,0,0.20)' : '0 12px 40px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.04)', zIndex: 100, maxHeight: 360,
         display: 'flex', flexDirection: 'column', overflow: 'hidden',
       }}>
         {/* Search */}
         {searchable && (
-          <div style={{ padding: '10px 12px', borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.05)' : '#F1F5F9'}` }}>
+          <div style={{ padding: '10px 12px', borderBottom: `1px solid ${isDark ? '#292929' : '#F1F5F9'}` }}>
             <div style={{
               display: 'flex', alignItems: 'center', gap: 6, padding: '0 8px',
               height: 32, background: isDark ? '#0A0A0A' : '#F8FAFC', borderRadius: 6, border: '1px solid transparent',
@@ -223,7 +223,7 @@ function FilterDropdown({ options, selected, onChange, onClose, searchable = fal
         )}
 
         {/* Select all / Clear */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 12px', borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.05)' : '#F1F5F9'}` }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 12px', borderBottom: `1px solid ${isDark ? '#292929' : '#F1F5F9'}` }}>
           <button onClick={selectAll} style={{ fontSize: 11, fontWeight: 500, color: '#2563EB', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>Select all</button>
           <button onClick={clearAll} style={{ fontSize: 11, fontWeight: 500, color: isDark ? '#878787' : '#94A3B8', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>Clear</button>
         </div>
@@ -241,7 +241,7 @@ function FilterDropdown({ options, selected, onChange, onClose, searchable = fal
                   transition: 'background 80ms', borderRadius: 0,
                   background: isSelected ? 'rgba(37,99,235,0.04)' : 'transparent',
                 }}
-                onMouseEnter={e => (e.currentTarget.style.background = isSelected ? 'rgba(37,99,235,0.08)' : isDark ? 'rgba(255,255,255,0.04)' : 'rgba(15,23,42,0.04)')}
+                onMouseEnter={e => (e.currentTarget.style.background = isSelected ? 'rgba(37,99,235,0.08)' : isDark ? '#1F1F1F' : 'rgba(15,23,42,0.04)')}
                 onMouseLeave={e => (e.currentTarget.style.background = isSelected ? 'rgba(37,99,235,0.04)' : 'transparent')}
               >
                 <div style={{
@@ -309,7 +309,7 @@ function FilterDropdown({ options, selected, onChange, onClose, searchable = fal
         </div>
 
         {/* Footer: count */}
-        <div style={{ padding: '6px 12px', borderTop: `1px solid ${isDark ? 'rgba(255,255,255,0.05)' : '#F1F5F9'}`, fontSize: 11, color: isDark ? '#878787' : '#94A3B8', textAlign: 'center' }}>
+        <div style={{ padding: '6px 12px', borderTop: `1px solid ${isDark ? '#292929' : '#F1F5F9'}`, fontSize: 11, color: isDark ? '#878787' : '#94A3B8', textAlign: 'center' }}>
           {selected.length} of {options.length} selected
         </div>
       </div>
@@ -372,7 +372,7 @@ export default function HierarchyPage() {
   return (
     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', background: isDark ? '#0A0A0A' : '#F8FAFC', fontFamily: "'Inter', sans-serif" }}>
       {/* PAGE HEADER */}
-      <div style={{ padding: '20px 24px 16px', borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, background: isDark ? '#1A1A1A' : '#FFFFFF' }}>
+      <div style={{ padding: '20px 24px 16px', borderBottom: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, background: isDark ? '#1A1A1A' : '#FFFFFF' }}>
         <h1 style={{ fontSize: 22, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A', margin: 0, letterSpacing: '-0.025em', lineHeight: 1.2 }}>
           All Work Items
         </h1>
@@ -384,18 +384,18 @@ export default function HierarchyPage() {
 
       {/* TOOLBAR — Search + Filter + Spacer + View Toggle ONLY */}
       <div style={{
-        height: 48, padding: '0 24px', borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, background: isDark ? '#1A1A1A' : '#FFFFFF',
+        height: 48, padding: '0 24px', borderBottom: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, background: isDark ? '#1A1A1A' : '#FFFFFF',
         display: 'flex', alignItems: 'center', gap: 8,
         boxShadow: '0 1px 2px rgba(0,0,0,0.03)',
       }}>
         {/* Search */}
         <div style={{
           width: 240, height: 50, display: 'flex', alignItems: 'center', gap: 6,
-          padding: '0 10px', background: isDark ? '#0A0A0A' : '#F8FAFC', border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 6,
+          padding: '0 10px', background: isDark ? '#0A0A0A' : '#F8FAFC', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 6,
           transition: 'border-color 80ms, box-shadow 80ms',
         }}
           onFocus={e => { e.currentTarget.style.borderColor = '#2563EB'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.08)'; }}
-          onBlur={e => { e.currentTarget.style.borderColor = isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'; e.currentTarget.style.boxShadow = 'none'; }}
+          onBlur={e => { e.currentTarget.style.borderColor = isDark ? '#2E2E2E' : '#E2E8F0'; e.currentTarget.style.boxShadow = 'none'; }}
         >
           <Search size={14} color="#94A3B8" />
           <input
@@ -417,7 +417,7 @@ export default function HierarchyPage() {
             fontSize: 13, fontWeight: 500, fontFamily: "'Inter', sans-serif",
             color: activeFilterCount > 0 ? '#2563EB' : isDark ? '#A1A1A1' : '#334155',
             background: activeFilterCount > 0 ? (isDark ? 'rgba(37,99,235,0.10)' : '#EFF6FF') : isDark ? '#1A1A1A' : '#FFFFFF',
-            border: `1px solid ${activeFilterCount > 0 ? '#2563EB' : isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`,
+            border: `1px solid ${activeFilterCount > 0 ? '#2563EB' : isDark ? '#2E2E2E' : '#E2E8F0'}`,
             borderRadius: 6, cursor: 'pointer', transition: 'all 80ms ease',
           }}
         >
@@ -435,7 +435,7 @@ export default function HierarchyPage() {
         <div style={{ flex: 1 }} />
 
         {/* View toggle */}
-        <div style={{ display: 'flex', border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 6, overflow: 'hidden' }}>
+        <div style={{ display: 'flex', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 6, overflow: 'hidden' }}>
           <button onClick={() => setViewMode('table')}
             style={{
               width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -448,7 +448,7 @@ export default function HierarchyPage() {
             style={{
               width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center',
               background: viewMode === 'tree' ? (isDark ? 'rgba(37,99,235,0.10)' : '#EFF6FF') : (isDark ? '#1A1A1A' : '#FFFFFF'), border: 'none', cursor: 'pointer',
-              borderLeft: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, transition: 'background 80ms',
+              borderLeft: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, transition: 'background 80ms',
             }}>
             <GitBranch size={14} color={viewMode === 'tree' ? '#2563EB' : '#64748B'} />
           </button>
@@ -464,7 +464,7 @@ export default function HierarchyPage() {
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.15, ease: 'easeOut' }}
             style={{
-              overflow: 'visible', background: isDark ? '#1A1A1A' : '#FFFFFF', borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`,
+              overflow: 'visible', background: isDark ? '#1A1A1A' : '#FFFFFF', borderBottom: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`,
               display: 'flex', alignItems: 'center', gap: 8, padding: '0 24px',
               position: 'relative', zIndex: 50,
             }}
@@ -544,11 +544,11 @@ export default function HierarchyPage() {
               onClick={handleClearAllFilters}
               style={{
                 marginLeft: 'auto', width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                background: 'none', border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 4, cursor: 'pointer',
+                background: 'none', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 4, cursor: 'pointer',
                 color: isDark ? '#878787' : '#64748B', transition: 'all 80ms',
               }}
               onMouseEnter={e => { e.currentTarget.style.borderColor = '#DC2626'; e.currentTarget.style.color = '#DC2626'; }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'; e.currentTarget.style.color = '#64748B'; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = isDark ? '#2E2E2E' : '#E2E8F0'; e.currentTarget.style.color = '#64748B'; }}
               title="Clear all filters"
             >
               <X size={14} />
@@ -563,7 +563,7 @@ export default function HierarchyPage() {
           {isLoading ? (
             <TableSkeleton rows={10} />
           ) : isError ? (
-            <div style={{ border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 8, background: isDark ? '#1A1A1A' : '#FFFFFF', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 200, gap: 12, padding: 24, textAlign: 'center' }}>
+            <div style={{ border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 8, background: isDark ? '#1A1A1A' : '#FFFFFF', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 200, gap: 12, padding: 24, textAlign: 'center' }}>
               <p style={{ fontSize: 14, fontWeight: 600, color: '#DC2626', margin: 0 }}>Failed to load work items</p>
               <p style={{ fontSize: 12, color: isDark ? '#878787' : '#64748B', margin: 0 }}>There was an error fetching the work items.</p>
               <button onClick={() => refetch()} style={{ height: 32, padding: '0 14px', fontSize: 13, fontWeight: 600, fontFamily: "'Inter', sans-serif", color: '#FFFFFF', background: '#2563EB', border: 'none', borderRadius: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -571,8 +571,8 @@ export default function HierarchyPage() {
               </button>
             </div>
           ) : filteredItems.length === 0 ? (
-            <div style={{ border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 8, background: isDark ? '#1A1A1A' : '#FFFFFF', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 300, gap: 12, textAlign: 'center', padding: 48 }}>
-              <div style={{ width: 48, height: 48, borderRadius: 12, background: isDark ? 'rgba(255,255,255,0.04)' : '#F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 8, background: isDark ? '#1A1A1A' : '#FFFFFF', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 300, gap: 12, textAlign: 'center', padding: 48 }}>
+              <div style={{ width: 48, height: 48, borderRadius: 12, background: isDark ? '#1F1F1F' : '#F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <Search size={20} color="#94A3B8" />
               </div>
               <p style={{ fontSize: 14, fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A', margin: 0 }}>
@@ -584,7 +584,7 @@ export default function HierarchyPage() {
               {(search || activeFilterCount > 0) && (
                 <button onClick={handleClearAllFilters} style={{
                   height: 32, padding: '0 14px', fontSize: 12, fontWeight: 500, fontFamily: "'Inter', sans-serif",
-                  color: isDark ? '#A1A1A1' : '#334155', background: isDark ? '#1A1A1A' : '#FFFFFF', border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 6, cursor: 'pointer',
+                  color: isDark ? '#A1A1A1' : '#334155', background: isDark ? '#1A1A1A' : '#FFFFFF', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 6, cursor: 'pointer',
                 }}>
                   Clear filters
                 </button>
@@ -634,7 +634,7 @@ export default function HierarchyPage() {
                   width: 'min(62vw, 920px)',
                   minWidth: 480,
                   background: isDark ? '#1A1A1A' : '#FFFFFF',
-                  borderLeft: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`,
+                  borderLeft: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`,
                   zIndex: 61,
                   padding: 16,
                   overflowY: 'auto',

@@ -62,7 +62,7 @@ export function KBIntelligenceButton({ isOpen, onClick }: KBIntelligenceButtonPr
           position: absolute;
           inset: 0;
           border-radius: inherit;
-          background: conic-gradient(from 0deg, transparent, rgba(255,255,255,0.1), transparent, rgba(255,255,255,0.15), transparent);
+          background: conic-gradient(from 0deg, transparent, #2E2E2E, transparent, #454545, transparent);
           animation: ka-btn-conic 4s linear infinite;
           pointer-events: none;
         }

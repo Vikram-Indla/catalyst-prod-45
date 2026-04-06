@@ -212,7 +212,7 @@ export default function IdeasBacklogPage() {
           <div style={{ background: isDark ? 'transparent' : '#FFFFFF', borderRadius: '6px', border: `1px solid ${dk.border}`, overflow: 'hidden' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
-                <tr style={{ height: '50px', background: isDark ? 'rgba(255,255,255,0.03)' : '#F1F5F9' }}>
+                <tr style={{ height: '50px', background: isDark ? '#1F1F1F' : '#F1F5F9' }}>
                   <th style={{ width: '40px', padding: '0 8px', textAlign: 'center' }}>
                     <input type="checkbox" checked={selectedRows.size === ideas.length && ideas.length > 0} onChange={toggleAll} style={{ cursor: 'pointer', accentColor: '#2563EB' }} />
                   </th>
@@ -224,7 +224,7 @@ export default function IdeasBacklogPage() {
                   ].map(col => (
                     <th key={col.label} style={{
                       textAlign: 'left', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase',
-                      letterSpacing: '0.06em', color: isDark ? 'rgba(255,255,255,0.50)' : '#64748B', padding: '10px 12px',
+                      letterSpacing: '0.06em', color: isDark ? '#7D7D7D' : '#64748B', padding: '10px 12px',
                       borderBottom: `0.75px solid ${dk.divider}`, whiteSpace: 'nowrap', width: col.width,
                     }}>{col.label}</th>
                   ))}
@@ -262,12 +262,12 @@ export default function IdeasBacklogPage() {
                         </div>
                       </td>
                       <td style={{ padding: '8px 12px' }}>
-                        <span style={{ display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px', borderRadius: 4, fontSize: '11px', fontWeight: 500, background: isDark ? 'rgba(255,255,255,0.06)' : '#F1F5F9', color: dk.t2, border: `1px solid ${dk.border}` }}>
+                        <span style={{ display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px', borderRadius: 4, fontSize: '11px', fontWeight: 500, background: isDark ? '#292929' : '#F1F5F9', color: dk.t2, border: `1px solid ${dk.border}` }}>
                           {(idea.idea_type || 'Feature').substring(0, 7)}
                         </span>
                       </td>
                       <td style={{ padding: '8px 12px' }}>
-                        <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', height: 20, minWidth: 26, padding: '0 4px', borderRadius: 4, fontSize: '11px', fontWeight: 650, background: isDark ? 'rgba(255,255,255,0.06)' : '#F1F5F9', color: dk.t2, border: `1px solid ${dk.border}` }}>
+                        <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', height: 20, minWidth: 26, padding: '0 4px', borderRadius: 4, fontSize: '11px', fontWeight: 650, background: isDark ? '#292929' : '#F1F5F9', color: dk.t2, border: `1px solid ${dk.border}` }}>
                           {idea.priority || 'P2'}
                         </span>
                       </td>
@@ -343,16 +343,16 @@ export default function IdeasBacklogPage() {
 function StatusBadge({ status }: { status: string }) {
   const { isDark } = useTheme();
   const darkColors: Record<string, { bg: string; text: string }> = {
-    'Draft':                    { bg: 'rgba(255,255,255,0.08)', text: 'rgba(255,255,255,0.72)' },
-    'Submitted':                { bg: 'rgba(255,255,255,0.08)', text: 'rgba(255,255,255,0.72)' },
+    'Draft':                    { bg: '#2E2E2E', text: 'rgba(255,255,255,0.72)' },
+    'Submitted':                { bg: '#2E2E2E', text: 'rgba(255,255,255,0.72)' },
     'Under Review':             { bg: 'rgba(59,130,246,0.15)', text: '#93C5FD' },
     'Approved':                 { bg: 'rgba(59,130,246,0.15)', text: '#93C5FD' },
-    'Rejected':                 { bg: 'rgba(255,255,255,0.08)', text: 'rgba(255,255,255,0.72)' },
+    'Rejected':                 { bg: '#2E2E2E', text: 'rgba(255,255,255,0.72)' },
     'Converted':                { bg: 'rgba(22,163,74,0.15)', text: '#86EFAC' },
     'Converted to Initiative':  { bg: 'rgba(22,163,74,0.15)', text: '#86EFAC' },
   };
   const s = isDark
-    ? (darkColors[status] ?? { bg: 'rgba(255,255,255,0.08)', text: 'rgba(255,255,255,0.72)' })
+    ? (darkColors[status] ?? { bg: '#2E2E2E', text: '#A1A1A1' })
     : (STATUS_LOZENGE_COLORS[status] ?? { bg: '#DFE1E6', text: '#42526E' });
   const label = status === 'Converted to Initiative' ? 'CONVERTED' : status.toUpperCase();
   return (

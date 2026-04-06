@@ -36,8 +36,8 @@ export function NotificationBell() {
             )}
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-96 p-0 dark:bg-[#1A1A1A] dark:border-[rgba(255,255,255,0.08)]" align="end">
-          <div className="flex items-center justify-between p-4 border-b dark:border-[rgba(255,255,255,0.08)]">
+        <PopoverContent className="w-96 p-0 dark:bg-[#1A1A1A] dark:border-[#2E2E2E]" align="end">
+          <div className="flex items-center justify-between p-4 border-b dark:border-[#2E2E2E]">
             <h3 className="font-semibold dark:text-[#EDEDED]">Notifications</h3>
             <div className="flex gap-1">
               <Button
@@ -63,7 +63,7 @@ export function NotificationBell() {
           </div>
 
           <Tabs value={filter} onValueChange={setFilter} className="w-full">
-            <TabsList className="w-full grid grid-cols-4 rounded-none border-b dark:border-[rgba(255,255,255,0.08)] dark:bg-[#0A0A0A]">
+            <TabsList className="w-full grid grid-cols-4 rounded-none border-b dark:border-[#2E2E2E] dark:bg-[#0A0A0A]">
               <TabsTrigger value="all" className="dark:text-[#A1A1A1] dark:data-[state=active]:text-[#EDEDED]">All</TabsTrigger>
               <TabsTrigger value="unread" className="dark:text-[#A1A1A1] dark:data-[state=active]:text-[#EDEDED]">Unread</TabsTrigger>
               <TabsTrigger value="assignment" className="dark:text-[#A1A1A1] dark:data-[state=active]:text-[#EDEDED]">Assigned</TabsTrigger>
@@ -78,12 +78,12 @@ export function NotificationBell() {
                     <p className="dark:text-[#A1A1A1]">No notifications</p>
                   </div>
                 ) : (
-                  <div className="divide-y dark:divide-[rgba(255,255,255,0.08)]">
+                  <div className="divide-y dark:divide-[#2E2E2E]">
                     {filteredNotifications.map((notification) => (
                       <div
                         key={notification.id}
-                        className={`p-4 hover:bg-accent/50 dark:hover:bg-[rgba(255,255,255,0.04)] transition-colors ${
-                          !notification.is_read ? 'bg-accent/20 dark:bg-[rgba(255,255,255,0.03)]' : 'dark:bg-[#0A0A0A]'
+                        className={`p-4 hover:bg-accent/50 dark:hover:bg-[#1F1F1F] transition-colors ${
+                          !notification.is_read ? 'bg-accent/20 dark:bg-[#1F1F1F]' : 'dark:bg-[#0A0A0A]'
                         }`}
                       >
                         <div className="flex items-start justify-between gap-2">
@@ -110,7 +110,7 @@ export function NotificationBell() {
                               <Button
                                 variant="ghost"
                                 size="icon"
-                                className="h-8 w-8 dark:text-[#A1A1A1] dark:hover:text-[#EDEDED] dark:hover:bg-[rgba(255,255,255,0.08)]"
+                                className="h-8 w-8 dark:text-[#A1A1A1] dark:hover:text-[#EDEDED] dark:hover:bg-[#2E2E2E]"
                                 onClick={() => markAsRead(notification.id)}
                               >
                                 <Check className="h-4 w-4" />
@@ -119,7 +119,7 @@ export function NotificationBell() {
                             <Button
                               variant="ghost"
                               size="icon"
-                              className="h-8 w-8 dark:text-[#878787] dark:hover:text-destructive dark:hover:bg-[rgba(255,255,255,0.08)]"
+                              className="h-8 w-8 dark:text-[#878787] dark:hover:text-destructive dark:hover:bg-[#2E2E2E]"
                               onClick={() => deleteNotification(notification.id)}
                             >
                               <Trash2 className="h-4 w-4" />

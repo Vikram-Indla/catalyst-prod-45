@@ -180,23 +180,23 @@
   --r360-bg-alt: #1A1A1A;
   --r360-bg-warm: #1A1A1A;
   --r360-surface: #1A1A1A;
-  --r360-surface-hover: rgba(255,255,255,0.04);
-  --r360-surface-active: rgba(255,255,255,0.06);
+  --r360-surface-hover: #1F1F1F;
+  --r360-surface-active: #292929;
 
   --r360-text-1: #EDEDED;
   --r360-text-2: #A1A1A1;
   --r360-text-3: #A1A1A1;
   --r360-text-4: #878787;
 
-  --r360-border: rgba(255,255,255,0.08);
-  --r360-border-light: rgba(255,255,255,0.06);
-  --r360-border-strong: rgba(255,255,255,0.12);
+  --r360-border: #2E2E2E;
+  --r360-border-light: #292929;
+  --r360-border-strong: #454545;
 
   --r360-todo-soft: rgba(226,54,54,0.12);
   --r360-progress-soft: rgba(37,99,235,0.12);
   --r360-done-soft: rgba(14,138,95,0.12);
 
-  --r360-shadow-card: 0 2px 10px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.04);
+  --r360-shadow-card: 0 2px 10px rgba(0,0,0,0.3), 0 0 0 1px #1F1F1F;
   --r360-shadow-hover: 0 8px 24px rgba(0,0,0,0.4);
   --r360-shadow-modal: 0 12px 40px rgba(0,0,0,0.5);
   --r360-sidebar-shadow: -4px 0 12px rgba(0,0,0,0.3);

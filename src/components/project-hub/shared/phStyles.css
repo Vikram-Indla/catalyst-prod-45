@@ -11,7 +11,7 @@
 }
 
 .dark .ph-skeleton {
-  background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.08) 37%, rgba(255,255,255,0.04) 63%) !important;
+  background: linear-gradient(90deg, #1F1F1F 25%, #2E2E2E 37%, #1F1F1F 63%) !important;
 }
 
 /* Card enterprise styling override */
@@ -25,7 +25,7 @@
 
 .dark .ph-card {
   background: transparent;
-  border-color: rgba(255,255,255,0.12);
+  border-color: #454545;
   box-shadow: none;
 }
 
@@ -36,12 +36,12 @@
 }
 .dark .ph-content-wrapper ::-webkit-scrollbar-thumb,
 .dark .ph-inner-content ::-webkit-scrollbar-thumb {
-  background: rgba(255,255,255,0.10);
+  background: #2E2E2E;
   border-radius: 4px;
 }
 .dark .ph-content-wrapper ::-webkit-scrollbar-thumb:hover,
 .dark .ph-inner-content ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255,255,255,0.18);
+  background: #454545;
 }
 
 .ph-card-title {
@@ -55,8 +55,8 @@
 }
 
 .dark .ph-card-title {
-  color: rgba(255,255,255,0.92);
-  border-bottom-color: rgba(255,255,255,0.06);
+  color: #EDEDED;
+  border-bottom-color: #292929;
 }
 
 /* Focus ring for form inputs */

@@ -58,7 +58,7 @@ function LoadingSkeleton({ isDark }: { isDark?: boolean }) {
       {[1, 2, 3, 4, 5].map(col => (
         <div key={col} style={{
           flex: 1, minWidth: 220, display: 'flex', flexDirection: 'column', gap: 8,
-          borderRadius: 8, border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0', padding: 12,
+          borderRadius: 8, border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0', padding: 12,
         }}>
           <div style={{ height: 20, width: 100, background: isDark ? '#1A1A1A' : '#F1F5F9', borderRadius: 4, marginBottom: 8 }} />
           {[1, 2, 3].map(i => <SkeletonCard key={i} isDark={isDark} />)}

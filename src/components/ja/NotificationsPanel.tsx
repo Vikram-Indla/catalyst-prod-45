@@ -96,9 +96,9 @@ export const NotificationsPanel = forwardRef<HTMLDivElement, NotificationsPanelP
               )}
             </Button>
           </PopoverTrigger>
-          <PopoverContent align="end" className="w-96 p-0 bg-popover dark:bg-[#1A1A1A] dark:border-[rgba(255,255,255,0.08)] z-[300]">
+          <PopoverContent align="end" className="w-96 p-0 bg-popover dark:bg-[#1A1A1A] dark:border-[#2E2E2E] z-[300]">
             {/* Header */}
-            <div className="flex items-center justify-between p-4 border-b dark:border-[rgba(255,255,255,0.08)]">
+            <div className="flex items-center justify-between p-4 border-b dark:border-[#2E2E2E]">
               <div>
                 <h3 className="font-semibold text-sm dark:text-[#EDEDED]">Notifications</h3>
                 <p className="text-xs text-muted-foreground dark:text-[#878787] mt-0.5">
@@ -113,7 +113,7 @@ export const NotificationsPanel = forwardRef<HTMLDivElement, NotificationsPanelP
                     variant="ghost"
                     size="sm"
                     onClick={handleMarkAllAsRead}
-                    className="h-8 text-xs dark:text-[#A1A1A1] dark:hover:text-[#EDEDED] dark:hover:bg-[rgba(255,255,255,0.08)]"
+                    className="h-8 text-xs dark:text-[#A1A1A1] dark:hover:text-[#EDEDED] dark:hover:bg-[#2E2E2E]"
                   >
                     <Check className="h-3 w-3 mr-1" />
                     Mark all read
@@ -122,7 +122,7 @@ export const NotificationsPanel = forwardRef<HTMLDivElement, NotificationsPanelP
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-8 w-8 dark:text-[#A1A1A1] dark:hover:text-[#EDEDED] dark:hover:bg-[rgba(255,255,255,0.08)]"
+                  className="h-8 w-8 dark:text-[#A1A1A1] dark:hover:text-[#EDEDED] dark:hover:bg-[#2E2E2E]"
                   onClick={() => {
                     setOpen(false);
                     navigate('/admin/settings/notifications');
@@ -135,7 +135,7 @@ export const NotificationsPanel = forwardRef<HTMLDivElement, NotificationsPanelP
 
             {/* Tabs */}
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="w-full grid grid-cols-3 rounded-none border-b dark:border-[rgba(255,255,255,0.08)] bg-transparent dark:bg-[#0A0A0A] h-10">
+              <TabsList className="w-full grid grid-cols-3 rounded-none border-b dark:border-[#2E2E2E] bg-transparent dark:bg-[#0A0A0A] h-10">
                 <TabsTrigger
                   value="all"
                   className="rounded-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:shadow-none dark:text-[#A1A1A1] dark:data-[state=active]:text-[#EDEDED] dark:data-[state=active]:bg-transparent dark:hover:text-[#EDEDED]"
@@ -179,16 +179,16 @@ export const NotificationsPanel = forwardRef<HTMLDivElement, NotificationsPanelP
                       </p>
                     </div>
                   ) : (
-                    <div className="divide-y dark:divide-[rgba(255,255,255,0.08)]">
+                    <div className="divide-y dark:divide-[#2E2E2E]">
                       {filteredNotifications.map((notification) => (
                         <div
                           key={notification.id}
                           onClick={() => handleNotificationClick(notification)}
                           className={cn(
                             "p-4 transition-colors cursor-pointer",
-                            "hover:bg-accent/50 dark:hover:bg-[rgba(255,255,255,0.04)]",
+                            "hover:bg-accent/50 dark:hover:bg-[#1F1F1F]",
                             !notification.is_read
-                              ? "bg-accent/20 dark:bg-[rgba(255,255,255,0.03)]"
+                              ? "bg-accent/20 dark:bg-[#1F1F1F]"
                               : "dark:bg-[#0A0A0A]"
                           )}
                         >
@@ -223,7 +223,7 @@ export const NotificationsPanel = forwardRef<HTMLDivElement, NotificationsPanelP
                                 <Button
                                   variant="ghost"
                                   size="icon"
-                                  className="h-7 w-7 dark:text-[#A1A1A1] dark:hover:text-[#EDEDED] dark:hover:bg-[rgba(255,255,255,0.08)]"
+                                  className="h-7 w-7 dark:text-[#A1A1A1] dark:hover:text-[#EDEDED] dark:hover:bg-[#2E2E2E]"
                                   onClick={(e) => handleMarkAsRead(e, notification.id)}
                                   title="Mark as read"
                                 >
@@ -233,7 +233,7 @@ export const NotificationsPanel = forwardRef<HTMLDivElement, NotificationsPanelP
                               <Button
                                 variant="ghost"
                                 size="icon"
-                                className="h-7 w-7 text-muted-foreground hover:text-destructive dark:text-[#878787] dark:hover:text-destructive dark:hover:bg-[rgba(255,255,255,0.08)]"
+                                className="h-7 w-7 text-muted-foreground hover:text-destructive dark:text-[#878787] dark:hover:text-destructive dark:hover:bg-[#2E2E2E]"
                                 onClick={(e) => handleDelete(e, notification.id)}
                                 title="Delete notification"
                               >
@@ -251,11 +251,11 @@ export const NotificationsPanel = forwardRef<HTMLDivElement, NotificationsPanelP
 
             {/* Footer */}
             {filteredNotifications.length > 0 && (
-              <div className="p-3 border-t dark:border-[rgba(255,255,255,0.08)]">
+              <div className="p-3 border-t dark:border-[#2E2E2E]">
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="w-full text-xs dark:text-[#A1A1A1] dark:hover:text-[#EDEDED] dark:hover:bg-[rgba(255,255,255,0.08)]"
+                  className="w-full text-xs dark:text-[#A1A1A1] dark:hover:text-[#EDEDED] dark:hover:bg-[#2E2E2E]"
                   onClick={() => {
                     setOpen(false);
                     navigate('/notifications');

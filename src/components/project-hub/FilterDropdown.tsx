@@ -47,7 +47,7 @@ export function FilterDropdown({ filters, onChange }: FilterDropdownProps) {
         className={`flex items-center gap-1.5 rounded-md transition-colors ${
           hasFilters
             ? 'bg-[var(--cp-blue-wash)] dark:bg-[rgba(37,99,235,0.15)] border-[var(--cp-blue)] text-[var(--cp-blue)] dark:text-[var(--cp-blue-light)]'
-            : 'bg-[var(--bg-app)] dark:bg-transparent border-[var(--divider)] dark:border-[rgba(255,255,255,0.12)] text-[var(--fg-2)] dark:text-[rgba(255,255,255,0.72)]'
+            : 'bg-[var(--bg-app)] dark:bg-transparent border-[var(--divider)] dark:border-[#454545] text-[var(--fg-2)] dark:text-[#A1A1A1]'
         }`}
         style={{
           height: 34,
@@ -74,7 +74,7 @@ export function FilterDropdown({ filters, onChange }: FilterDropdownProps) {
 
       {open && (
         <div
-          className="absolute top-full left-0 mt-1 z-50 bg-[var(--bg-app)] dark:bg-[#1A1A1A] border border-[var(--divider)] dark:border-[rgba(255,255,255,0.12)]"
+          className="absolute top-full left-0 mt-1 z-50 bg-[var(--bg-app)] dark:bg-[#1A1A1A] border border-[var(--divider)] dark:border-[#454545]"
           style={{
             width: 280,
             borderRadius: 8,
@@ -101,10 +101,10 @@ export function FilterDropdown({ filters, onChange }: FilterDropdownProps) {
             />
           </div>
 
-          <div className="flex items-center justify-between px-3 py-2" style={{ borderTop: `1px solid ${dark ? 'rgba(255,255,255,0.08)' : 'var(--divider)'}` }}>
+          <div className="flex items-center justify-between px-3 py-2" style={{ borderTop: `1px solid ${dark ? '#2E2E2E' : 'var(--divider)'}` }}>
             <button
               onClick={() => onChange({ statuses: [], healths: [] })}
-              style={{ fontSize: 12, color: dark ? 'rgba(255,255,255,0.50)' : 'var(--fg-3)', background: 'transparent', border: 'none', cursor: 'pointer' }}
+              style={{ fontSize: 12, color: dark ? '#7D7D7D' : 'var(--fg-3)', background: 'transparent', border: 'none', cursor: 'pointer' }}
             >
               Clear all
             </button>
@@ -147,12 +147,12 @@ function FilterSection({
   dark: boolean;
 }) {
   return (
-    <div className="px-3 py-2" style={{ borderBottom: `1px solid ${dark ? 'rgba(255,255,255,0.06)' : 'var(--cp-bd-zone)'}` }}>
+    <div className="px-3 py-2" style={{ borderBottom: `1px solid ${dark ? '#292929' : 'var(--cp-bd-zone)'}` }}>
       <div
         style={{
           fontSize: 10,
           fontWeight: 600,
-          color: dark ? 'rgba(255,255,255,0.50)' : 'var(--fg-3)',
+          color: dark ? '#7D7D7D' : 'var(--fg-3)',
           letterSpacing: '0.05em',
           textTransform: 'uppercase',
           marginBottom: 6,
@@ -164,8 +164,8 @@ function FilterSection({
         <label
           key={opt}
           className="flex items-center gap-2 py-1 cursor-pointer rounded px-1"
-          style={{ fontSize: 12, color: dark ? 'rgba(255,255,255,0.85)' : 'var(--fg-2)' }}
-          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = dark ? 'rgba(255,255,255,0.04)' : 'var(--bg-1)'; }}
+          style={{ fontSize: 12, color: dark ? '#EDEDED' : 'var(--fg-2)' }}
+          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = dark ? '#1F1F1F' : 'var(--bg-1)'; }}
           onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = ''; }}
         >
           <input
@@ -238,7 +238,7 @@ export function FilterChips({
       ))}
       <button
         onClick={() => onChange({ statuses: [], healths: [] })}
-        style={{ fontSize: 11, color: dark ? 'rgba(255,255,255,0.50)' : 'var(--fg-3)', background: 'transparent', border: 'none', cursor: 'pointer' }}
+        style={{ fontSize: 11, color: dark ? '#7D7D7D' : 'var(--fg-3)', background: 'transparent', border: 'none', cursor: 'pointer' }}
       >
         Clear all
       </button>

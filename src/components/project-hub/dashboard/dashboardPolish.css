@@ -21,18 +21,18 @@
   background: #EFF6FF !important;
 }
 .dark .ph-table-row:hover {
-  background: rgba(255,255,255,0.04) !important;
+  background: #1F1F1F !important;
 }
 
 /* Dark mode scrollbar */
 .dark .ph-tis-scroll::-webkit-scrollbar-track {
-  background: rgba(255,255,255,0.05);
+  background: #292929;
 }
 .dark .ph-tis-scroll::-webkit-scrollbar-thumb {
-  background: rgba(255,255,255,0.15);
+  background: #454545;
 }
 .dark .ph-tis-scroll::-webkit-scrollbar-thumb:hover {
-  background: rgba(255,255,255,0.25);
+  background: #454545;
 }
 
 /* Focus ring for accessibility */

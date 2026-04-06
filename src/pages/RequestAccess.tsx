@@ -788,7 +788,7 @@ export default function RequestAccess() {
       </header>
 
       {/* Page Title Section */}
-      <div className="bg-white dark:bg-[#1A1A1A] border-b border-[#E5E7EB] dark:border-[rgba(255,255,255,0.08)] shadow-sm">
+      <div className="bg-white dark:bg-[#1A1A1A] border-b border-[#E5E7EB] dark:border-[#2E2E2E] shadow-sm">
         <div className="max-w-[1200px] mx-auto px-6 py-5">
           <h1 className="text-xl sm:text-2xl font-bold text-[#1A1A1A]">{t.pageTitle}</h1>
         </div>
@@ -798,7 +798,7 @@ export default function RequestAccess() {
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6 py-6">
         <div className="flex gap-6">
           {/* Left: Form Content */}
-          <main className="flex-1 bg-white dark:bg-[#1A1A1A] border border-[#E5E7EB] dark:border-[rgba(255,255,255,0.08)] rounded-2xl shadow-[0_6px_16px_rgba(15,23,42,0.06)]">
+          <main className="flex-1 bg-white dark:bg-[#1A1A1A] border border-[#E5E7EB] dark:border-[#2E2E2E] rounded-2xl shadow-[0_6px_16px_rgba(15,23,42,0.06)]">
             <div className="p-5 sm:p-6">
               {/* Step 1: Request Details */}
               {currentStep === 0 && (
@@ -1022,7 +1022,7 @@ export default function RequestAccess() {
                   {stagedAttachments.length > 0 && (
                     <div className="space-y-2 mt-3">
                       {stagedAttachments.map((attachment) => (
-                        <div key={attachment.id} className="flex items-center justify-between gap-3 px-3 py-2.5 border border-[#E5E7EB] dark:border-[rgba(255,255,255,0.08)] rounded-xl bg-white dark:bg-[#1A1A1A] text-[13px]">
+                        <div key={attachment.id} className="flex items-center justify-between gap-3 px-3 py-2.5 border border-[#E5E7EB] dark:border-[#2E2E2E] rounded-xl bg-white dark:bg-[#1A1A1A] text-[13px]">
                           <span className="truncate">{attachment.file_name}</span>
                           <div className="flex items-center gap-2">
                             <span className="text-[#6B7280]">{Math.round((attachment.file_size || 0) / 1024)} KB</span>
@@ -1043,32 +1043,32 @@ export default function RequestAccess() {
                   <p className="text-[13px] text-[#6B7280] leading-snug">{t.reviewHint}</p>
                   
                   <div className="space-y-2">
-                    <div className="flex items-center justify-between gap-3 px-3 py-2.5 border border-[#E5E7EB] dark:border-[rgba(255,255,255,0.08)] rounded-xl bg-white dark:bg-[#1A1A1A] text-[13px]">
+                    <div className="flex items-center justify-between gap-3 px-3 py-2.5 border border-[#E5E7EB] dark:border-[#2E2E2E] rounded-xl bg-white dark:bg-[#1A1A1A] text-[13px]">
                       <strong>{t.summaryLabel}:</strong>
                       <span className="text-[#6B7280] truncate">{formData.summary || '—'}</span>
                     </div>
-                    <div className="flex items-center justify-between gap-3 px-3 py-2.5 border border-[#E5E7EB] dark:border-[rgba(255,255,255,0.08)] rounded-xl bg-white dark:bg-[#1A1A1A] text-[13px]">
+                    <div className="flex items-center justify-between gap-3 px-3 py-2.5 border border-[#E5E7EB] dark:border-[#2E2E2E] rounded-xl bg-white dark:bg-[#1A1A1A] text-[13px]">
                       <strong>{t.platformLabel}:</strong>
                       <span className="text-[#6B7280]">{formData.deliveryPlatform || '—'}</span>
                     </div>
-                    <div className="flex items-center justify-between gap-3 px-3 py-2.5 border border-[#E5E7EB] dark:border-[rgba(255,255,255,0.08)] rounded-xl bg-white dark:bg-[#1A1A1A] text-[13px]">
+                    <div className="flex items-center justify-between gap-3 px-3 py-2.5 border border-[#E5E7EB] dark:border-[#2E2E2E] rounded-xl bg-white dark:bg-[#1A1A1A] text-[13px]">
                       <strong>{t.requestedByLabel}:</strong>
                       <span className="text-[#6B7280]">{formData.reporter || '—'}</span>
                     </div>
-                    <div className="flex items-center justify-between gap-3 px-3 py-2.5 border border-[#E5E7EB] dark:border-[rgba(255,255,255,0.08)] rounded-xl bg-white dark:bg-[#1A1A1A] text-[13px]">
+                    <div className="flex items-center justify-between gap-3 px-3 py-2.5 border border-[#E5E7EB] dark:border-[#2E2E2E] rounded-xl bg-white dark:bg-[#1A1A1A] text-[13px]">
                       <strong>{t.emailLabel}:</strong>
                       <span className="text-[#6B7280]">{formData.email || '—'}</span>
                     </div>
-                    <div className="flex items-center justify-between gap-3 px-3 py-2.5 border border-[#E5E7EB] dark:border-[rgba(255,255,255,0.08)] rounded-xl bg-white dark:bg-[#1A1A1A] text-[13px]">
+                    <div className="flex items-center justify-between gap-3 px-3 py-2.5 border border-[#E5E7EB] dark:border-[#2E2E2E] rounded-xl bg-white dark:bg-[#1A1A1A] text-[13px]">
                       <strong>{t.deptLabel}:</strong>
                       <span className="text-[#6B7280]">{formData.department || '—'}</span>
                     </div>
-                    <div className="flex items-center justify-between gap-3 px-3 py-2.5 border border-[#E5E7EB] dark:border-[rgba(255,255,255,0.08)] rounded-xl bg-white dark:bg-[#1A1A1A] text-[13px]">
+                    <div className="flex items-center justify-between gap-3 px-3 py-2.5 border border-[#E5E7EB] dark:border-[#2E2E2E] rounded-xl bg-white dark:bg-[#1A1A1A] text-[13px]">
                       <strong>{t.ownerLabel}:</strong>
                       <span className="text-[#6B7280]">{formData.businessOwner || '—'}</span>
                     </div>
                     {stagedAttachments.length > 0 && (
-                      <div className="flex items-center justify-between gap-3 px-3 py-2.5 border border-[#E5E7EB] dark:border-[rgba(255,255,255,0.08)] rounded-xl bg-white dark:bg-[#1A1A1A] text-[13px]">
+                      <div className="flex items-center justify-between gap-3 px-3 py-2.5 border border-[#E5E7EB] dark:border-[#2E2E2E] rounded-xl bg-white dark:bg-[#1A1A1A] text-[13px]">
                         <strong>{t.attachLabel}:</strong>
                         <span className="text-[#6B7280]">{stagedAttachments.length} file(s)</span>
                       </div>
@@ -1081,7 +1081,7 @@ export default function RequestAccess() {
             </div>
 
             {/* Actions */}
-            <div className="flex justify-between gap-3 p-3.5 border-t border-[#E5E7EB] dark:border-[rgba(255,255,255,0.08)] bg-white dark:bg-[#1A1A1A] rounded-b-2xl sticky bottom-0">
+            <div className="flex justify-between gap-3 p-3.5 border-t border-[#E5E7EB] dark:border-[#2E2E2E] bg-white dark:bg-[#1A1A1A] rounded-b-2xl sticky bottom-0">
               <Button
                 type="button"
                 variant="ghost"
@@ -1104,7 +1104,7 @@ export default function RequestAccess() {
 
           {/* Right: Vertical Stepper */}
           <aside className="hidden lg:block w-[260px] shrink-0">
-            <div className="bg-white dark:bg-[#1A1A1A] border border-[#E5E7EB] dark:border-[rgba(255,255,255,0.08)] rounded-2xl shadow-[0_6px_16px_rgba(15,23,42,0.06)] p-5 sticky top-6">
+            <div className="bg-white dark:bg-[#1A1A1A] border border-[#E5E7EB] dark:border-[#2E2E2E] rounded-2xl shadow-[0_6px_16px_rgba(15,23,42,0.06)] p-5 sticky top-6">
               <h3 className="text-sm font-bold text-[#1A1A1A] mb-4">{t.progressTitle || 'Progress'}</h3>
               <div className="space-y-1">
                 {steps.map((step, idx) => (

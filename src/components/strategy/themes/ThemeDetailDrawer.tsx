@@ -55,10 +55,10 @@ export function ThemeDetailDrawer({ theme, open, onClose, onEdit, onDelete, isDa
   const t1 = isDark ? DK.t1 : 'var(--fg-1)';
   const t2 = isDark ? DK.t2 : 'var(--fg-3)';
   const t3 = isDark ? DK.t3 : 'var(--fg-4)';
-  const border = isDark ? 'rgba(255,255,255,0.10)' : 'var(--divider)';
-  const borderSubtle = isDark ? 'rgba(255,255,255,0.06)' : 'var(--bg-1)';
-  const hoverBg = isDark ? 'rgba(255,255,255,0.05)' : 'var(--bg-1)';
-  const cardBg = isDark ? 'rgba(255,255,255,0.04)' : 'var(--bg-1)';
+  const border = isDark ? '#2E2E2E' : 'var(--divider)';
+  const borderSubtle = isDark ? '#292929' : 'var(--bg-1)';
+  const hoverBg = isDark ? '#292929' : 'var(--bg-1)';
+  const cardBg = isDark ? '#1F1F1F' : 'var(--bg-1)';
   const linkBlue = isDark ? '#60A5FA' : 'var(--cp-blue)';
 
   return (
@@ -147,10 +147,10 @@ function dk(isDark: boolean) {
     t1: isDark ? DK.t1 : 'var(--fg-1)',
     t2: isDark ? DK.t2 : 'var(--fg-3)',
     t3: isDark ? DK.t3 : 'var(--fg-4)',
-    border: isDark ? 'rgba(255,255,255,0.10)' : 'var(--divider)',
-    borderSubtle: isDark ? 'rgba(255,255,255,0.06)' : 'var(--bg-1)',
-    cardBg: isDark ? 'rgba(255,255,255,0.04)' : 'var(--bg-1)',
-    hoverBg: isDark ? 'rgba(255,255,255,0.05)' : 'var(--bg-1)',
+    border: isDark ? '#2E2E2E' : 'var(--divider)',
+    borderSubtle: isDark ? '#292929' : 'var(--bg-1)',
+    cardBg: isDark ? '#1F1F1F' : 'var(--bg-1)',
+    hoverBg: isDark ? '#292929' : 'var(--bg-1)',
     linkBlue: isDark ? '#60A5FA' : 'var(--cp-blue)',
   };
 }
@@ -180,7 +180,7 @@ function EmptyState({ icon: Icon, title, description, cta, isDark = false }: { i
   const d = dk(isDark);
   return (
     <div className="flex flex-col items-center justify-center text-center" style={{ padding: '48px 24px' }}>
-      <div className="rounded-xl flex items-center justify-center mb-4" style={{ width: 48, height: 48, background: isDark ? 'rgba(255,255,255,0.06)' : '#F1F5F9' }}>
+      <div className="rounded-xl flex items-center justify-center mb-4" style={{ width: 48, height: 48, background: isDark ? '#292929' : '#F1F5F9' }}>
         <Icon size={22} color={d.t3} strokeWidth={1.5} />
       </div>
       <p style={{ fontSize: 13, fontWeight: 600, color: d.t1, marginBottom: 4 }}>{title}</p>
@@ -231,8 +231,8 @@ function OverviewTab({ theme, sc, bsc, pri, isDark = false }: { theme: Strategic
               { label: 'Alignment', value: Math.round(theme.ai_health_score * 0.2) },
             ].map(f => (
               <div key={f.label} className="rounded-md text-center" style={{
-                background: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.6)',
-                border: isDark ? '1px solid rgba(255,255,255,0.08)' : 'none',
+                background: isDark ? '#292929' : 'rgba(255,255,255,0.6)',
+                border: isDark ? '1px solid #2E2E2E' : 'none',
                 padding: '6px 0',
               }}>
                 <p style={{ fontSize: 13, fontWeight: 700, color: isDark ? DK.t1 : '#1E40AF' }}>{f.value}</p>
@@ -289,11 +289,11 @@ function GoalsTab({ theme, isDark = false }: { theme: StrategicTheme; isDark?: b
                   <span className="inline-flex rounded-full px-2 py-0.5 shrink-0 ml-2" style={{ fontSize: 10, fontWeight: 500, background: statusColor + (isDark ? '25' : '18'), color: isDark ? statusColor + 'CC' : statusColor }}>{g.status}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="flex-1 rounded-full overflow-hidden" style={{ height: 4, background: isDark ? 'rgba(255,255,255,0.12)' : 'var(--divider)' }}>
+                  <div className="flex-1 rounded-full overflow-hidden" style={{ height: 4, background: isDark ? '#454545' : 'var(--divider)' }}>
                     <div className="h-full rounded-full" style={{ width: `${g.progress_pct}%`, background: statusColor }} />
                   </div>
                   <span style={{ fontSize: 10, fontWeight: 600, color: d.t2 }}>{g.progress_pct}%</span>
-                  <span className="rounded px-1.5 py-0.5" style={{ fontSize: 9, fontWeight: 500, background: isDark ? 'rgba(255,255,255,0.06)' : '#F1F5F9', color: d.t2 }}>{g.kr_count} KRs</span>
+                  <span className="rounded px-1.5 py-0.5" style={{ fontSize: 9, fontWeight: 500, background: isDark ? '#292929' : '#F1F5F9', color: d.t2 }}>{g.kr_count} KRs</span>
                 </div>
               </div>
             );
@@ -324,7 +324,7 @@ function InitiativesTab({ theme, isDark = false }: { theme: StrategicTheme; isDa
             <div key={ini.id} className="rounded-lg border p-3" style={{ borderColor: d.border, background: isDark ? 'transparent' : undefined }}>
               <div className="flex items-start justify-between mb-1">
                 <span style={{ fontSize: 12, fontWeight: 600, color: d.t1 }}>{ini.title}</span>
-                <span className="inline-flex rounded-full px-2 py-0.5 shrink-0 ml-2" style={{ fontSize: 10, fontWeight: 500, background: isDark ? 'rgba(255,255,255,0.06)' : '#F1F5F9', color: d.t2 }}>{ini.status}</span>
+                <span className="inline-flex rounded-full px-2 py-0.5 shrink-0 ml-2" style={{ fontSize: 10, fontWeight: 500, background: isDark ? '#292929' : '#F1F5F9', color: d.t2 }}>{ini.status}</span>
               </div>
               <div className="flex items-center gap-3" style={{ fontSize: 10, color: d.t2 }}>
                 <span>Budget: {formatBudget(ini.budget_allocated)}</span>
@@ -359,7 +359,7 @@ function FinancialsTab({ theme, isDark = false }: { theme: StrategicTheme; isDar
           <span style={{ fontSize: 11, color: d.t2 }}>Budget Utilization</span>
           <span style={{ fontSize: 11, fontWeight: 600, color: d.t1 }}>{utilization}%</span>
         </div>
-        <div className="rounded-full overflow-hidden" style={{ height: 8, background: isDark ? 'rgba(255,255,255,0.12)' : 'var(--divider)' }}>
+        <div className="rounded-full overflow-hidden" style={{ height: 8, background: isDark ? '#454545' : 'var(--divider)' }}>
           {utilization > 0 && (
             <div className="h-full rounded-full" style={{
               width: `${Math.min(utilization, 100)}%`,
@@ -463,7 +463,7 @@ function MilestonesTab({ theme, isDark = false }: { theme: StrategicTheme; isDar
             >
               <div className="shrink-0 rounded-full" style={{ width: 8, height: 8, background: STATE_COLORS[m.state] || d.t3 }} />
               <span className="flex-1 truncate" style={{ fontSize: 12, fontWeight: 500, color: d.t1 }}>{m.name}</span>
-              <span className="shrink-0 rounded px-1.5 py-0.5" style={{ fontSize: 9, background: isDark ? 'rgba(255,255,255,0.06)' : '#F1F5F9', color: d.t2 }}>{m.category}</span>
+              <span className="shrink-0 rounded px-1.5 py-0.5" style={{ fontSize: 9, background: isDark ? '#292929' : '#F1F5F9', color: d.t2 }}>{m.category}</span>
               <span className="shrink-0" style={{ fontSize: 10, color: d.t3 }}>{m.state.replace(/_/g, ' ')}</span>
               <button onClick={() => startEdit(m)} className="opacity-0 group-hover:opacity-100 p-0.5" style={{ border: 'none', background: 'none', cursor: 'pointer' }}><Pencil size={12} color={d.t2} /></button>
               <button onClick={() => deleteMilestone.mutate({ id: m.id, themeId: theme.id })} className="opacity-0 group-hover:opacity-100 p-0.5" style={{ border: 'none', background: 'none', cursor: 'pointer' }}><Trash2 size={12} color="#DC2626" /></button>
@@ -500,7 +500,7 @@ function ActivityTab({ theme, isDark = false }: { theme: StrategicTheme; isDark?
       ) : (
         <div className="relative pl-6">
           {/* Timeline line */}
-          <div className="absolute left-[11px] top-2 bottom-2" style={{ width: 2, background: isDark ? 'rgba(255,255,255,0.10)' : 'var(--divider)' }} />
+          <div className="absolute left-[11px] top-2 bottom-2" style={{ width: 2, background: isDark ? '#2E2E2E' : 'var(--divider)' }} />
           {activities.map((a, i) => (
             <div key={i} className="relative flex items-start gap-3 mb-4">
               <div className="absolute left-[-17px] top-1.5 rounded-full" style={{ width: 10, height: 10, background: a.color, border: `2px solid ${isDark ? '#1A1A1A' : 'var(--bg-app)'}` }} />

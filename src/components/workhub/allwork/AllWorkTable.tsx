@@ -178,7 +178,7 @@ export function AllWorkTable({
             height: 44,
             maxHeight: 44,
             backgroundColor: 'var(--bg-app)',
-            borderBottom: '1px solid var(--bd-default, rgba(255,255,255,0.08))',
+            borderBottom: '1px solid var(--bd-default, #2E2E2E)',
           }}
         >
           <div className="flex justify-center" role="columnheader">
@@ -277,11 +277,11 @@ const TableRow = memo(function TableRow({
         gridTemplateColumns: GRID_TEMPLATE,
         height: 44,
         maxHeight: 44,
-        borderBottom: '0.75px solid var(--bd-subtle, rgba(255,255,255,0.05))',
+        borderBottom: '0.75px solid var(--bd-subtle, #292929)',
         backgroundColor: isSelected ? 'rgba(37,99,235,0.08)' : node.depth > 0 ? 'var(--bg-1)' : 'var(--bg-app)',
         transition: 'background-color 80ms ease',
       }}
-      onMouseEnter={e => { if (!isSelected) (e.currentTarget.style.backgroundColor = 'var(--hover, rgba(255,255,255,0.04))'); }}
+      onMouseEnter={e => { if (!isSelected) (e.currentTarget.style.backgroundColor = 'var(--hover, #1F1F1F)'); }}
       onMouseLeave={e => { if (!isSelected) (e.currentTarget.style.backgroundColor = node.depth > 0 ? 'var(--bg-1)' : 'var(--bg-app)'); }}
       onClick={() => onOpenItem(item.issue_key)}
       onContextMenu={(e) => { e.preventDefault(); onContextMenu({ x: e.clientX, y: e.clientY, item }); }}

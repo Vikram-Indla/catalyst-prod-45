@@ -331,9 +331,9 @@ function Skeleton({ className }: { className?: string }) {
 
 function TableSkeleton({ rows = 6 }: { rows?: number }) {
   return (
-    <div className="bg-white dark:bg-[#1A1A1A] rounded-xl border border-gray-200 dark:border-[rgba(255,255,255,0.08)] overflow-hidden">
+    <div className="bg-white dark:bg-[#1A1A1A] rounded-xl border border-gray-200 dark:border-[#2E2E2E] overflow-hidden">
       <table className="w-full">
-        <thead className="bg-gray-50 dark:bg-[#0A0A0A] border-b border-gray-200 dark:border-[rgba(255,255,255,0.08)]">
+        <thead className="bg-gray-50 dark:bg-[#0A0A0A] border-b border-gray-200 dark:border-[#2E2E2E]">
           <tr>
             <th className="w-10 px-4 py-3"><Skeleton className="w-4 h-4" /></th>
             <th className="w-20 px-4 py-3"><Skeleton className="w-8 h-3" /></th>
@@ -728,7 +728,7 @@ export default function TestCasesLibraryPage() {
     <TooltipProvider>
       <div className="flex flex-col h-full min-h-0">
         {/* Header - Sticky */}
-        <header className="flex-shrink-0 bg-white dark:bg-[#1A1A1A] border-b border-gray-200 dark:border-[rgba(255,255,255,0.08)] sticky top-0 z-20">
+        <header className="flex-shrink-0 bg-white dark:bg-[#1A1A1A] border-b border-gray-200 dark:border-[#2E2E2E] sticky top-0 z-20">
           <div className="w-full px-6">
             {/* Row 1: Breadcrumb + Stats + Actions */}
             <div className="h-14 flex items-center justify-between">
@@ -864,7 +864,7 @@ export default function TestCasesLibraryPage() {
         <main className="flex-1 overflow-hidden">
           <div className="h-full flex gap-4 px-6 py-4">
             {/* Left: Folder Sidebar */}
-            <aside className="w-56 flex-shrink-0 bg-white dark:bg-[#1A1A1A] rounded-xl border border-gray-200 dark:border-[rgba(255,255,255,0.08)] flex flex-col overflow-hidden">
+            <aside className="w-56 flex-shrink-0 bg-white dark:bg-[#1A1A1A] rounded-xl border border-gray-200 dark:border-[#2E2E2E] flex flex-col overflow-hidden">
               {/* Header */}
               <div className="flex items-center justify-between px-3 py-2.5 border-b border-gray-100">
                 <div className="flex items-center gap-1.5">
@@ -998,10 +998,10 @@ export default function TestCasesLibraryPage() {
                     exit={{ opacity: 0 }}
                     className="flex-1 flex flex-col min-h-0"
                   >
-                    <div className="bg-white dark:bg-[#1A1A1A] rounded-xl border border-gray-200 dark:border-[rgba(255,255,255,0.08)] overflow-hidden flex-1 flex flex-col">
+                    <div className="bg-white dark:bg-[#1A1A1A] rounded-xl border border-gray-200 dark:border-[#2E2E2E] overflow-hidden flex-1 flex flex-col">
                       <div className="overflow-auto flex-1">
                         <table className="w-full" role="grid">
-                          <thead className="bg-gray-50 dark:bg-[#0A0A0A] border-b border-gray-200 dark:border-[rgba(255,255,255,0.08)] sticky top-0 z-10">
+                          <thead className="bg-gray-50 dark:bg-[#0A0A0A] border-b border-gray-200 dark:border-[#2E2E2E] sticky top-0 z-10">
                             <tr>
                               <th className="w-10 px-4 py-3 text-left">
                                 <Checkbox

@@ -211,7 +211,7 @@ export default function TestCycleDetailPage() {
     return (
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', backgroundColor: isDark ? '#0A0A0A' : '#F8FAFC' }}>
         <div style={{ textAlign: 'center', color: isDark ? '#878787' : '#64748B' }}>
-          <div style={{ width: 32, height: 32, border: `3px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderTopColor: '#2563EB', borderRadius: '50%', animation: 'spin 1s linear infinite', margin: '0 auto 12px' }} />
+          <div style={{ width: 32, height: 32, border: `3px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderTopColor: '#2563EB', borderRadius: '50%', animation: 'spin 1s linear infinite', margin: '0 auto 12px' }} />
           Loading cycle...
         </div>
       </div>
@@ -224,7 +224,7 @@ export default function TestCycleDetailPage() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: isDark ? '#0A0A0A' : '#F8FAFC' }}>
       {/* Header */}
-      <div style={{ padding: '20px 32px', backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}` }}>
+      <div style={{ padding: '20px 32px', backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', borderBottom: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}` }}>
         <button onClick={() => navigate('/testhub/cycles')} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: 0, border: 'none', backgroundColor: 'transparent', color: isDark ? '#878787' : '#64748B', fontSize: 13, fontWeight: 500, cursor: 'pointer', marginBottom: 16 }}>
           <ArrowLeft size={16} /> Back to Cycles
         </button>
@@ -253,15 +253,15 @@ export default function TestCycleDetailPage() {
           </div>
           <div style={{ display: 'flex', gap: 8 }}>
             <button onClick={() => navigate(`/testhub/cycles/${cycleId}/report`)}
-              style={{ height: 40, padding: '0 16px', border: `1.5px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 8, backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#A1A1A1' : '#334155', fontSize: 14, fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
+              style={{ height: 40, padding: '0 16px', border: `1.5px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 8, backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#A1A1A1' : '#334155', fontSize: 14, fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
               <BarChart3 size={16} /> Report
             </button>
             <button onClick={handleExportCSV} title="Export CSV" disabled={testCases.length === 0}
-              style={{ width: 40, height: 40, padding: 0, border: `1.5px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 8, backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', color: testCases.length > 0 ? (isDark ? '#A1A1A1' : '#64748B') : (isDark ? '#878787' : '#CBD5E1'), cursor: testCases.length > 0 ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              style={{ width: 40, height: 40, padding: 0, border: `1.5px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 8, backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', color: testCases.length > 0 ? (isDark ? '#A1A1A1' : '#64748B') : (isDark ? '#878787' : '#CBD5E1'), cursor: testCases.length > 0 ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Download size={18} />
             </button>
             <button onClick={() => { setIsLoading(true); fetchCycle(); fetchTestCases(); catalystToast.success('Refreshed'); }} title="Refresh"
-              style={{ width: 40, height: 40, padding: 0, border: `1.5px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 8, backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#A1A1A1' : '#64748B', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              style={{ width: 40, height: 40, padding: 0, border: `1.5px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 8, backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#A1A1A1' : '#64748B', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <RefreshCw size={18} />
             </button>
             {/* FSM Status Transition Button */}
@@ -288,13 +288,13 @@ export default function TestCycleDetailPage() {
                 const { error } = await (supabase as any).from('tm_test_cycles').update({ status: 'archived', updated_at: new Date().toISOString() }).eq('id', cycleId);
                 if (error) { catalystToast.error(error.message); return; }
                 catalystToast.success('Cycle archived'); fetchCycle();
-              }} style={{ height: 40, padding: '0 16px', border: `1.5px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 8, backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#A1A1A1' : '#334155', fontSize: 14, fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
+              }} style={{ height: 40, padding: '0 16px', border: `1.5px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 8, backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#A1A1A1' : '#334155', fontSize: 14, fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
                 Archive
               </button>
             )}
             {canEdit && (
               <button onClick={() => setIsEditModalOpen(true)}
-                style={{ height: 40, padding: '0 16px', border: `1.5px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 8, backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#A1A1A1' : '#334155', fontSize: 14, fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
+                style={{ height: 40, padding: '0 16px', border: `1.5px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 8, backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#A1A1A1' : '#334155', fontSize: 14, fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
                 <Pencil size={16} /> Edit
               </button>
             )}
@@ -327,11 +327,11 @@ export default function TestCycleDetailPage() {
         return (
       <div style={{ padding: '24px 32px', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
         {/* Progress Panel */}
-        <div style={{ backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 12, padding: 24, textAlign: 'center' }}>
+        <div style={{ backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 12, padding: 24, textAlign: 'center' }}>
           <p style={{ fontSize: 13, fontWeight: 600, color: isDark ? '#878787' : '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em', margin: '0 0 16px' }}>Progress</p>
           <div style={{ width: 100, height: 100, margin: '0 auto 16px', position: 'relative' }}>
             <svg viewBox="0 0 36 36" style={{ width: '100%', height: '100%', transform: 'rotate(-90deg)' }}>
-              <circle cx="18" cy="18" r="15.9155" fill="none" stroke={isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'} strokeWidth="3" />
+              <circle cx="18" cy="18" r="15.9155" fill="none" stroke={isDark ? '#2E2E2E' : '#E2E8F0'} strokeWidth="3" />
               <circle cx="18" cy="18" r="15.9155" fill="none" stroke={pp === 100 ? '#059669' : '#2563EB'} strokeWidth="3" strokeDasharray={`${pp} ${100 - pp}`} strokeLinecap="round" />
             </svg>
             <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, fontWeight: 700, color: pp === 100 ? '#059669' : '#2563EB' }}>
@@ -342,7 +342,7 @@ export default function TestCycleDetailPage() {
         </div>
 
         {/* By Status Panel */}
-        <div style={{ backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 12, padding: 24 }}>
+        <div style={{ backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 12, padding: 24 }}>
           <p style={{ fontSize: 13, fontWeight: 600, color: isDark ? '#878787' : '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em', margin: '0 0 16px' }}>By Status</p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <button onClick={() => setStatusFilter('passed')} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', border: 'none', borderRadius: 8, backgroundColor: statusFilter === 'passed' ? (isDark ? 'rgba(5,150,105,0.12)' : '#ECFDF5') : 'transparent', cursor: 'pointer', width: '100%', textAlign: 'left' }}>
@@ -360,7 +360,7 @@ export default function TestCycleDetailPage() {
               <span style={{ flex: 1, fontSize: 14, color: isDark ? '#A1A1A1' : '#334155' }}>Blocked</span>
               <span style={{ fontSize: 16, fontWeight: 700, color: '#D97706' }}>{blockedCount}</span>
             </button>
-            <button onClick={() => setStatusFilter('not_run')} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', border: 'none', borderRadius: 8, backgroundColor: statusFilter === 'not_run' ? (isDark ? 'rgba(255,255,255,0.05)' : '#F8FAFC') : 'transparent', cursor: 'pointer', width: '100%', textAlign: 'left' }}>
+            <button onClick={() => setStatusFilter('not_run')} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', border: 'none', borderRadius: 8, backgroundColor: statusFilter === 'not_run' ? (isDark ? '#292929' : '#F8FAFC') : 'transparent', cursor: 'pointer', width: '100%', textAlign: 'left' }}>
               <Clock size={18} style={{ color: isDark ? '#878787' : '#64748B' }} />
               <span style={{ flex: 1, fontSize: 14, color: isDark ? '#A1A1A1' : '#334155' }}>Not Run</span>
               <span style={{ fontSize: 16, fontWeight: 700, color: isDark ? '#878787' : '#64748B' }}>{notRunCount}</span>
@@ -374,7 +374,7 @@ export default function TestCycleDetailPage() {
         </div>
 
         {/* By Tester Panel */}
-        <div style={{ backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 12, padding: 24 }}>
+        <div style={{ backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 12, padding: 24 }}>
           <p style={{ fontSize: 13, fontWeight: 600, color: isDark ? '#878787' : '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em', margin: '0 0 16px', display: 'flex', alignItems: 'center', gap: 8 }}>
             <Users size={14} /> By Tester
           </p>
@@ -390,7 +390,7 @@ export default function TestCycleDetailPage() {
                       <span style={{ fontSize: 13, fontWeight: 500, color: isDark ? '#EDEDED' : '#334155' }}>{ts.name}</span>
                       <span style={{ fontSize: 12, color: isDark ? '#878787' : '#64748B' }}>{ts.executed}/{ts.total}</span>
                     </div>
-                    <div style={{ height: 6, backgroundColor: isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0', borderRadius: 4, overflow: 'hidden' }}>
+                    <div style={{ height: 6, backgroundColor: isDark ? '#2E2E2E' : '#E2E8F0', borderRadius: 4, overflow: 'hidden' }}>
                       <div style={{ height: '100%', width: `${pct}%`, backgroundColor: pct === 100 ? '#059669' : '#2563EB', borderRadius: 4, transition: 'width 0.3s' }} />
                     </div>
                   </div>
@@ -477,7 +477,7 @@ export default function TestCycleDetailPage() {
             )}
             {/* Status Filter */}
             <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}
-              style={{ height: 50, padding: '8px 12px', border: `1.5px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 8, fontSize: 13, color: isDark ? '#A1A1A1' : '#334155', backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF' }}>
+              style={{ height: 50, padding: '8px 12px', border: `1.5px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 8, fontSize: 13, color: isDark ? '#A1A1A1' : '#334155', backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF' }}>
               <option value="all">All Statuses</option>
               <option value="not_run">Not Run</option>
               <option value="passed">Passed</option>
@@ -493,7 +493,7 @@ export default function TestCycleDetailPage() {
           </div>
         </div>
 
-        <div style={{ flex: 1, backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 12, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+        <div style={{ flex: 1, backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 12, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
           {testCases.length === 0 ? (
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: isDark ? '#878787' : '#94A3B8', padding: 40 }}>
               <Clock size={48} style={{ marginBottom: 16, opacity: 0.5 }} />
@@ -512,7 +512,7 @@ export default function TestCycleDetailPage() {
                   <tr style={{ backgroundColor: isDark ? '#1A1A1A' : '#F8FAFC' }}>
                     {/* Checkbox Header */}
                     {canEdit && (
-                      <th style={{ padding: '14px 16px', textAlign: 'center', borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, width: 50 }}>
+                      <th style={{ padding: '14px 16px', textAlign: 'center', borderBottom: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, width: 50 }}>
                         <input
                           type="checkbox"
                           checked={filteredTestCases.length > 0 && filteredTestCases.every(tc => selectedTestCaseIds.has(tc.id))}
@@ -521,11 +521,11 @@ export default function TestCycleDetailPage() {
                         />
                       </th>
                     )}
-                    <th style={{ padding: '14px 16px', textAlign: 'left', fontSize: 11, fontWeight: 600, color: isDark ? '#878787' : '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}` }}>Test Case</th>
-                    <th style={{ padding: '14px 16px', textAlign: 'left', fontSize: 11, fontWeight: 600, color: isDark ? '#878787' : '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, width: 100 }}>Priority</th>
-                    <th style={{ padding: '14px 16px', textAlign: 'left', fontSize: 11, fontWeight: 600, color: isDark ? '#878787' : '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, width: 140 }}>Assigned To</th>
-                    <th style={{ padding: '14px 16px', textAlign: 'center', fontSize: 11, fontWeight: 600, color: isDark ? '#878787' : '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, width: 120 }}>Status</th>
-                    <th style={{ padding: '14px 16px', textAlign: 'center', fontSize: 11, fontWeight: 600, color: isDark ? '#878787' : '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, width: 100 }}>Actions</th>
+                    <th style={{ padding: '14px 16px', textAlign: 'left', fontSize: 11, fontWeight: 600, color: isDark ? '#878787' : '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}` }}>Test Case</th>
+                    <th style={{ padding: '14px 16px', textAlign: 'left', fontSize: 11, fontWeight: 600, color: isDark ? '#878787' : '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, width: 100 }}>Priority</th>
+                    <th style={{ padding: '14px 16px', textAlign: 'left', fontSize: 11, fontWeight: 600, color: isDark ? '#878787' : '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, width: 140 }}>Assigned To</th>
+                    <th style={{ padding: '14px 16px', textAlign: 'center', fontSize: 11, fontWeight: 600, color: isDark ? '#878787' : '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, width: 120 }}>Status</th>
+                    <th style={{ padding: '14px 16px', textAlign: 'center', fontSize: 11, fontWeight: 600, color: isDark ? '#878787' : '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, width: 100 }}>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -535,7 +535,7 @@ export default function TestCycleDetailPage() {
                     const priority = priorityConfig[ctc.test_case?.priority?.name?.toLowerCase() || ''] ?? priorityConfig.medium;
                     const isSelected = selectedTestCaseIds.has(ctc.id);
                     return (
-                      <tr key={ctc.id} style={{ borderBottom: index < filteredTestCases.length - 1 ? `1px solid ${isDark ? 'rgba(255,255,255,0.05)' : '#F1F5F9'}` : 'none', backgroundColor: isSelected ? (isDark ? 'rgba(37,99,235,0.12)' : '#EFF6FF') : 'transparent' }}>
+                      <tr key={ctc.id} style={{ borderBottom: index < filteredTestCases.length - 1 ? `1px solid ${isDark ? '#292929' : '#F1F5F9'}` : 'none', backgroundColor: isSelected ? (isDark ? 'rgba(37,99,235,0.12)' : '#EFF6FF') : 'transparent' }}>
                         {/* Checkbox Cell */}
                         {canEdit && (
                           <td style={{ padding: '14px 16px', textAlign: 'center' }}>
@@ -652,7 +652,7 @@ export default function TestCycleDetailPage() {
             boxShadow: '0 20px 60px rgba(0,0,0,0.15)',
           }}>
             <div style={{
-              padding: '20px 24px', borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`,
+              padding: '20px 24px', borderBottom: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`,
               display: 'flex', alignItems: 'center', gap: 12,
             }}>
               <div style={{
@@ -674,12 +674,12 @@ export default function TestCycleDetailPage() {
               </p>
             </div>
             <div style={{
-              padding: '16px 24px', borderTop: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`,
+              padding: '16px 24px', borderTop: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`,
               display: 'flex', justifyContent: 'flex-end', gap: 12,
             }}>
               <button
                 onClick={() => setIsRemoveConfirmOpen(false)}
-                style={{ height: 40, padding: '0 20px', backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', border: `1.5px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 8, fontSize: 14, fontWeight: 500, color: isDark ? '#A1A1A1' : '#334155', cursor: 'pointer' }}
+                style={{ height: 40, padding: '0 20px', backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', border: `1.5px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 8, fontSize: 14, fontWeight: 500, color: isDark ? '#A1A1A1' : '#334155', cursor: 'pointer' }}
               >
                 Cancel
               </button>

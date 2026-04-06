@@ -253,12 +253,12 @@ export default function ReqAssistLibrary() {
             style={{
               display: 'inline-flex', alignItems: 'center', gap: 6,
               padding: '0 14px', height: 50, fontSize: 13, fontWeight: 500,
-              border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.18)'}`, borderRadius: 6,
+              border: `1px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.18)'}`, borderRadius: 6,
               background: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#A1A1A1' : '#374151', cursor: 'pointer',
               fontFamily: "'Inter', sans-serif",
               transition: 'background 80ms ease',
             }}
-            onMouseEnter={e => (e.currentTarget.style.background = isDark ? 'rgba(255,255,255,0.04)' : 'rgba(15,23,42,0.04)')}
+            onMouseEnter={e => (e.currentTarget.style.background = isDark ? '#1F1F1F' : 'rgba(15,23,42,0.04)')}
             onMouseLeave={e => (e.currentTarget.style.background = isDark ? '#1A1A1A' : '#FFFFFF')}
           >
             <Download size={14} color="#374151" /> Import from Jira
@@ -301,7 +301,7 @@ export default function ReqAssistLibrary() {
           <div style={{
             display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
             padding: '80px 0', background: isDark ? '#1A1A1A' : '#FFFFFF',
-            border: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.10)'}`, borderRadius: 8,
+            border: `0.75px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.10)'}`, borderRadius: 8,
           }}>
             <FileText size={32} color="#94A3B8" style={{ marginBottom: 12 }} />
             <p style={{ fontSize: 16, fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A', margin: '0 0 6px', fontFamily: "'Sora', sans-serif" }}>No documents yet</p>
@@ -320,7 +320,7 @@ export default function ReqAssistLibrary() {
           /* Table container */
           <div style={{
             background: isDark ? '#1A1A1A' : '#FFFFFF',
-            border: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.10)'}`,
+            border: `0.75px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.10)'}`,
             borderRadius: 8,
             overflow: 'hidden',
           }}>
@@ -342,7 +342,7 @@ export default function ReqAssistLibrary() {
               <div style={{
                 display: 'flex', alignItems: 'center', gap: 8,
                 padding: '8px 28px', fontSize: 12, color: isDark ? '#878787' : '#64748B',
-                background: isDark ? '#1A1A1A' : '#FFFFFF', borderBottom: `0.75px solid ${isDark ? 'rgba(255,255,255,0.06)' : 'rgba(15,23,42,0.08)'}`,
+                background: isDark ? '#1A1A1A' : '#FFFFFF', borderBottom: `0.75px solid ${isDark ? '#292929' : 'rgba(15,23,42,0.08)'}`,
                 fontFamily: "'Inter', sans-serif",
               }}>
                 Showing {documents?.length ?? 0} of {totalCount} documents
@@ -364,7 +364,7 @@ export default function ReqAssistLibrary() {
             {/* Table */}
             <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed' }}>
               <thead>
-                <tr style={{ borderBottom: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.10)'}` }}>
+                <tr style={{ borderBottom: `0.75px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.10)'}` }}>
                   {[
                     { label: 'JIRA TICKET', w: 120 },
                     { label: 'TITLE', w: undefined },
@@ -394,7 +394,7 @@ export default function ReqAssistLibrary() {
                     <tr key={i} style={{ height: 50 }}>
                       {Array.from({ length: 8 }).map((_, j) => (
                         <td key={j} style={{ padding: '8px 12px' }}>
-                          <div style={{ width: j === 1 ? '80%' : '60%', height: 12, background: isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0', borderRadius: 4, animation: 'ra-pulse 1.5s ease-in-out infinite' }} />
+                          <div style={{ width: j === 1 ? '80%' : '60%', height: 12, background: isDark ? '#2E2E2E' : '#E2E8F0', borderRadius: 4, animation: 'ra-pulse 1.5s ease-in-out infinite' }} />
                         </td>
                       ))}
                     </tr>
@@ -414,7 +414,7 @@ export default function ReqAssistLibrary() {
                           background: isProcessingRow ? 'rgba(37,99,235,0.04)' : isDark ? '#0A0A0A' : 'transparent',
                           transition: 'background 120ms ease',
                         }}
-                        onMouseEnter={e => { if (!isProcessingRow) (e.currentTarget as HTMLElement).style.background = isDark ? 'rgba(255,255,255,0.02)' : 'rgba(15,23,42,0.02)'; }}
+                        onMouseEnter={e => { if (!isProcessingRow) (e.currentTarget as HTMLElement).style.background = isDark ? '#1F1F1F' : 'rgba(15,23,42,0.02)'; }}
                         onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = isProcessingRow ? 'rgba(37,99,235,0.04)' : 'transparent'; }}
                       >
                         {/* Jira Ticket — with parent hierarchy */}
@@ -584,7 +584,7 @@ export default function ReqAssistLibrary() {
                 display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                 height: 50, padding: '8px 12px',
                 background: isDark ? '#0A0A0A' : '#FAFAFA',
-                borderTop: `0.75px solid ${isDark ? 'rgba(255,255,255,0.06)' : 'rgba(15,23,42,0.08)'}`,
+                borderTop: `0.75px solid ${isDark ? '#292929' : 'rgba(15,23,42,0.08)'}`,
               }}>
                 <span style={{ fontSize: 12, fontWeight: 400, color: isDark ? '#878787' : '#64748B', fontFamily: "'Inter', sans-serif" }}>
                   Showing {documents.length} of {totalCount} documents
@@ -637,7 +637,7 @@ export default function ReqAssistLibrary() {
           <div style={{
             position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
             width: 420, background: isDark ? '#1A1A1A' : '#FFFFFF', borderRadius: 8, zIndex: 90,
-            padding: 24, border: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.10)'}`,
+            padding: 24, border: `0.75px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.10)'}`,
             fontFamily: "'Inter', sans-serif",
           }}>
             <h3 style={{ fontSize: 16, fontWeight: 650, color: isDark ? '#EDEDED' : '#0F172A', margin: '0 0 8px', fontFamily: "'Sora', sans-serif" }}>
@@ -662,7 +662,7 @@ export default function ReqAssistLibrary() {
                 setDraftDrawer({ brdId, docTitle: doc.title, jiraKey: (doc as any).jira_ticket_key || null });
               }} style={{
                 padding: '8px 16px', fontSize: 13, fontWeight: 500, borderRadius: 6,
-                border: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.15)'}`, background: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#A1A1A1' : '#334155', cursor: 'pointer',
+                border: `0.75px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.15)'}`, background: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#A1A1A1' : '#334155', cursor: 'pointer',
               }}>View Drafts</button>
               <button onClick={() => { const d = regenConfirm.doc; setRegenConfirm(null); setBgModal({ type: 'epics', doc: d }); }} style={{
                 padding: '8px 16px', fontSize: 13, fontWeight: 600, borderRadius: 6,
@@ -884,7 +884,7 @@ function ActionsCell({ doc, epicCount, onSyncKb, onSelect, onViewDrafts }: {
           style={{
             display: 'inline-flex', alignItems: 'center', gap: 4,
             height: 28, padding: '0 10px', fontSize: 12, fontWeight: 500,
-            borderRadius: 6, border: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.15)'}`,
+            borderRadius: 6, border: `0.75px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.15)'}`,
             background: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#A1A1A1' : '#374151', cursor: 'pointer',
             fontFamily: "'Inter', sans-serif", whiteSpace: 'nowrap',
           }}
@@ -938,7 +938,7 @@ function ActionsCell({ doc, epicCount, onSyncKb, onSelect, onViewDrafts }: {
         display: 'inline-flex', alignItems: 'center',
         height: 28, padding: '0 10px', fontSize: 12, fontWeight: 500,
         borderRadius: 6, border: 'none', cursor: 'not-allowed',
-        background: isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0', color: isDark ? '#878787' : '#94A3B8',
+        background: isDark ? '#2E2E2E' : '#E2E8F0', color: isDark ? '#878787' : '#94A3B8',
         fontFamily: "'Inter', sans-serif", whiteSpace: 'nowrap',
       }}>
         Generate
@@ -953,7 +953,7 @@ function ActionsCell({ doc, epicCount, onSyncKb, onSelect, onViewDrafts }: {
       style={{
         display: 'inline-flex', alignItems: 'center', gap: 4,
         height: 28, padding: '0 10px', fontSize: 12, fontWeight: 500,
-        borderRadius: 6, border: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.15)'}`,
+        borderRadius: 6, border: `0.75px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.15)'}`,
         background: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#A1A1A1' : '#374151', cursor: 'pointer',
         fontFamily: "'Inter', sans-serif", whiteSpace: 'nowrap',
         transition: 'all 80ms ease',

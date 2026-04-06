@@ -193,7 +193,7 @@ export function InitiativeRisksTab({ initiativeId }: InitiativeRisksTabProps) {
           {risks.map((risk: any) => {
             const sev = getSeverity(risk.risk_score || 0);
             return (
-              <div key={risk.id} className={`bg-white dark:bg-[#1A1A1A] border border-zinc-200 dark:border-[rgba(255,255,255,0.08)] border-l-4 ${sev.border} rounded-lg p-4`}>
+              <div key={risk.id} className={`bg-white dark:bg-[#1A1A1A] border border-zinc-200 dark:border-[#2E2E2E] border-l-4 ${sev.border} rounded-lg p-4`}>
                 <div className="flex items-start justify-between mb-2">
                   <div className="flex items-center gap-2">
                     <span className="text-[10px] font-mono bg-zinc-100 text-zinc-500 px-1.5 py-0.5 rounded">{risk.risk_key}</span>
@@ -294,12 +294,12 @@ export function InitiativeRisksTab({ initiativeId }: InitiativeRisksTabProps) {
               <div className="relative">
                 <label className="text-xs font-medium text-zinc-500 uppercase tracking-wide mb-1.5 block">Category</label>
                 <button type="button" onClick={() => setShowCatDropdown(v => !v)}
-                  className="w-full flex items-center justify-between border border-zinc-200 dark:border-[rgba(255,255,255,0.08)] rounded-lg px-3 py-2.5 text-sm text-zinc-700 bg-white dark:bg-[#1A1A1A] hover:bg-zinc-50 dark:hover:bg-[#0A0A0A]">
+                  className="w-full flex items-center justify-between border border-zinc-200 dark:border-[#2E2E2E] rounded-lg px-3 py-2.5 text-sm text-zinc-700 bg-white dark:bg-[#1A1A1A] hover:bg-zinc-50 dark:hover:bg-[#0A0A0A]">
                   <span className="capitalize">{riskForm.category}</span>
                   <ChevronDown className="w-4 h-4 text-zinc-400" />
                 </button>
                 {showCatDropdown && (
-                  <div className="absolute left-0 right-0 top-full mt-1 bg-white dark:bg-[#1A1A1A] border border-zinc-200 dark:border-[rgba(255,255,255,0.08)] rounded-lg shadow-lg z-50 py-1 max-h-48 overflow-y-auto">
+                  <div className="absolute left-0 right-0 top-full mt-1 bg-white dark:bg-[#1A1A1A] border border-zinc-200 dark:border-[#2E2E2E] rounded-lg shadow-lg z-50 py-1 max-h-48 overflow-y-auto">
                     {CATEGORIES.map(cat => (
                       <button key={cat} onClick={() => { setRiskForm(f => ({ ...f, category: cat })); setShowCatDropdown(false); }}
                         className={`w-full text-left px-3 py-1.5 text-xs capitalize transition-colors ${riskForm.category === cat ? 'bg-blue-50 text-blue-700 font-medium' : 'text-zinc-600 hover:bg-zinc-50'}`}>

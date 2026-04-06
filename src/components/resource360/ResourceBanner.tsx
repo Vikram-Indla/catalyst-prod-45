@@ -11,7 +11,7 @@ const StatCard = ({ label, value, color, isDark }: { label: string; value: numbe
     tabIndex={0}
     aria-label={`${label}: ${value}`}
     style={{
-      background: isDark ? '#1A1A1A' : 'var(--r360-surface, #FFFFFF)', border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid var(--r360-border, #C5BDB3)',
+      background: isDark ? '#1A1A1A' : 'var(--r360-surface, #FFFFFF)', border: isDark ? '1px solid #2E2E2E' : '1px solid var(--r360-border, #C5BDB3)',
       borderRadius: 8, padding: '10px 16px', minWidth: 90, textAlign: 'center',
       boxShadow: '0 1px 3px rgba(0,0,0,.06)',
     }}
@@ -52,7 +52,7 @@ const ResourceBanner: React.FC<ResourceBannerProps> = ({ resource, summary }) =>
     <header style={{
       display: 'flex', alignItems: 'center', gap: 20,
       padding: '16px 20px', background: isDark ? '#1A1A1A' : 'var(--r360-surface, #FFFFFF)',
-      borderBottom: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid var(--r360-border-light, #D9D2C9)',
+      borderBottom: isDark ? '1px solid #2E2E2E' : '1px solid var(--r360-border-light, #D9D2C9)',
       boxShadow: 'var(--r360-shadow-card, 0 2px 8px rgba(0,0,0,.12))',
       fontFamily: "'Inter', sans-serif",
     }}>
@@ -83,7 +83,7 @@ const ResourceBanner: React.FC<ResourceBannerProps> = ({ resource, summary }) =>
               fontSize: 11.5, color: isDark ? '#A1A1A1' : 'var(--r360-text-2, #1A1A2E)',
               background: isDark ? '#1A1A1A' : 'var(--r360-surface, #FFFFFF)', borderRadius: 4,
               padding: '3px 8px', fontWeight: 600,
-              border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid var(--r360-border, #C5BDB3)',
+              border: isDark ? '1px solid #2E2E2E' : '1px solid var(--r360-border, #C5BDB3)',
             }}>
               {label}
             </span>

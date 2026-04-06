@@ -117,7 +117,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
     fontFamily: 'Inter, sans-serif',
   };
   const inputStyle: React.CSSProperties = {
-    width: '100%', border: `1.5px solid ${isDark ? 'rgba(255,255,255,0.12)' : '#CBD5E1'}`, borderRadius: '8px',
+    width: '100%', border: `1.5px solid ${isDark ? '#454545' : '#CBD5E1'}`, borderRadius: '8px',
     padding: '10px 12px', fontSize: '14px', color: isDark ? '#EDEDED' : '#0F172A', outline: 'none',
     fontFamily: 'Inter, sans-serif', background: isDark ? 'transparent' : '#FFFFFF',
   };
@@ -206,12 +206,12 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
                     style={{
                       width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center',
                       borderRadius: '8px', cursor: 'pointer',
-                      border: isSelected ? '1.5px solid #2563EB' : `1.5px solid ${isDark ? 'rgba(255,255,255,0.12)' : '#E2E8F0'}`,
+                      border: isSelected ? '1.5px solid #2563EB' : `1.5px solid ${isDark ? '#454545' : '#E2E8F0'}`,
                       background: isSelected ? (isDark ? 'rgba(37,99,235,0.12)' : '#EFF6FF') : (isDark ? 'transparent' : '#FFFFFF'),
                       transition: 'all 150ms ease',
                     }}
-                    onMouseEnter={(e) => { if (!isSelected) { e.currentTarget.style.borderColor = isDark ? 'rgba(255,255,255,0.20)' : '#CBD5E1'; e.currentTarget.style.background = isDark ? 'rgba(255,255,255,0.03)' : '#F8FAFC'; } }}
-                    onMouseLeave={(e) => { if (!isSelected) { e.currentTarget.style.borderColor = isDark ? 'rgba(255,255,255,0.12)' : '#E2E8F0'; e.currentTarget.style.background = isDark ? 'transparent' : '#FFFFFF'; } }}
+                    onMouseEnter={(e) => { if (!isSelected) { e.currentTarget.style.borderColor = isDark ? '#454545' : '#CBD5E1'; e.currentTarget.style.background = isDark ? '#1F1F1F' : '#F8FAFC'; } }}
+                    onMouseLeave={(e) => { if (!isSelected) { e.currentTarget.style.borderColor = isDark ? '#454545' : '#E2E8F0'; e.currentTarget.style.background = isDark ? 'transparent' : '#FFFFFF'; } }}
                   >
                     <Icon size={20} strokeWidth={1.75} color={isSelected ? '#2563EB' : (isDark ? '#A1A1A1' : '#334155')} />
                   </button>
@@ -237,10 +237,10 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
                       padding: '6px 16px', borderRadius: '20px', cursor: 'pointer',
                       fontSize: '13px', fontWeight: isSelected ? 600 : 500,
                       border: isSelected
-                        ? (isActive ? '1.5px solid #16A34A' : `1.5px solid ${isDark ? 'rgba(255,255,255,0.20)' : '#CBD5E1'}`)
-                        : `1.5px solid ${isDark ? 'rgba(255,255,255,0.12)' : '#E2E8F0'}`,
+                        ? (isActive ? '1.5px solid #16A34A' : `1.5px solid ${isDark ? '#454545' : '#CBD5E1'}`)
+                        : `1.5px solid ${isDark ? '#454545' : '#E2E8F0'}`,
                       background: isSelected
-                        ? (isActive ? (isDark ? 'rgba(22,163,74,0.12)' : '#F0FDF4') : (isDark ? 'rgba(255,255,255,0.06)' : '#F8FAFC'))
+                        ? (isActive ? (isDark ? 'rgba(22,163,74,0.12)' : '#F0FDF4') : (isDark ? '#292929' : '#F8FAFC'))
                         : (isDark ? 'transparent' : '#FFFFFF'),
                       color: isSelected
                         ? (isActive ? (isDark ? '#86EFAC' : '#15803D') : (isDark ? '#A1A1A1' : '#64748B'))
@@ -299,7 +299,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
             <label style={labelStyle}>Target Ideas</label>
             <div style={{
               display: 'inline-flex', alignItems: 'center',
-              border: `1.5px solid ${isDark ? 'rgba(255,255,255,0.12)' : '#CBD5E1'}`, borderRadius: '8px', overflow: 'hidden',
+              border: `1.5px solid ${isDark ? '#454545' : '#CBD5E1'}`, borderRadius: '8px', overflow: 'hidden',
             }}>
               <button
                 type="button"
@@ -327,7 +327,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
                 onBlur={() => handleBlur('target_count')}
                 style={{
                   width: '48px', height: '50px',
-                  borderLeft: `1.5px solid ${isDark ? 'rgba(255,255,255,0.12)' : '#CBD5E1'}`, borderRight: `1.5px solid ${isDark ? 'rgba(255,255,255,0.12)' : '#CBD5E1'}`,
+                  borderLeft: `1.5px solid ${isDark ? '#454545' : '#CBD5E1'}`, borderRight: `1.5px solid ${isDark ? '#454545' : '#CBD5E1'}`,
                   borderTop: 'none', borderBottom: 'none',
                   textAlign: 'center', fontSize: '16px', fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A', outline: 'none',
                   fontFamily: 'Inter, sans-serif', background: isDark ? 'transparent' : '#FFFFFF',
@@ -354,7 +354,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
 
         {/* Footer */}
         <div style={{
-          paddingTop: '20px', borderTop: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, marginTop: '24px',
+          paddingTop: '20px', borderTop: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, marginTop: '24px',
           display: 'flex', justifyContent: 'flex-end', gap: '10px',
         }}>
           <button

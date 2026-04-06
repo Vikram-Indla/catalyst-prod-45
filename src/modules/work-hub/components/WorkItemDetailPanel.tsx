@@ -66,13 +66,13 @@ export function WorkItemDetailPanel({ item, onClose }: WorkItemDetailPanelProps)
       style={{
         fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
         backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF',
-        borderColor: isDark ? 'rgba(255,255,255,0.08)' : undefined,
+        borderColor: isDark ? '#2E2E2E' : undefined,
       }}
     >
       {/* Header */}
       <div
         className="flex items-center justify-between px-4 py-3"
-        style={{ borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}` }}
+        style={{ borderBottom: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}` }}
       >
         <div className="flex items-center gap-2">
           <JiraIssueTypeIcon type={item.type} size={16} />
@@ -95,7 +95,7 @@ export function WorkItemDetailPanel({ item, onClose }: WorkItemDetailPanelProps)
       {item.parentKey && (
         <div
           className="px-4 py-2 text-xs"
-          style={{ borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}` }}
+          style={{ borderBottom: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}` }}
         >
           <span style={{ color: isDark ? '#878787' : '#6B778C' }}>{item.parentKey}</span>
           <span style={{ color: isDark ? '#878787' : '#6B778C' }} className="mx-1">/</span>
@@ -136,7 +136,7 @@ export function WorkItemDetailPanel({ item, onClose }: WorkItemDetailPanelProps)
               className="flex items-center gap-2 p-2 rounded-md"
               style={{
                 backgroundColor: isDark ? '#1A1A1A' : '#F1F5F9',
-                border: isDark ? '1px solid rgba(255,255,255,0.08)' : 'none',
+                border: isDark ? '1px solid #2E2E2E' : 'none',
               }}
             >
               <JiraIssueTypeIcon type="Epic" size={16} />
@@ -158,7 +158,7 @@ export function WorkItemDetailPanel({ item, onClose }: WorkItemDetailPanelProps)
         </div>
 
         {/* Details Section */}
-        <div className="pt-4" style={{ borderTop: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#DFE1E6'}` }}>
+        <div className="pt-4" style={{ borderTop: `1px solid ${isDark ? '#2E2E2E' : '#DFE1E6'}` }}>
           <div className="text-[11px] font-semibold uppercase mb-3" style={{ color: isDark ? '#878787' : '#6B778C' }}>Details</div>
 
           <div className="space-y-3">
@@ -207,7 +207,7 @@ export function WorkItemDetailPanel({ item, onClose }: WorkItemDetailPanelProps)
                       variant="secondary"
                       className="text-[11px]"
                       style={{
-                        backgroundColor: isDark ? 'rgba(255,255,255,0.06)' : '#DFE1E6',
+                        backgroundColor: isDark ? '#292929' : '#DFE1E6',
                         color: isDark ? '#A1A1A1' : '#42526E',
                       }}
                     >

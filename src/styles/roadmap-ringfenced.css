@@ -149,26 +149,26 @@
   --roadmap-type-improvement-bg:    rgba(22, 163, 74, 0.15);
   --roadmap-type-improvement-bar:   linear-gradient(135deg, #4ADE80, #22C55E);
 
-  --roadmap-timeline-header-bg:     rgba(255,255,255,0.03);
-  --roadmap-timeline-quarter-text:  rgba(255,255,255,0.72);
-  --roadmap-timeline-month-text:    rgba(255,255,255,0.92);
-  --roadmap-timeline-grid:          rgba(255,255,255,0.06);
+  --roadmap-timeline-header-bg:     #1F1F1F;
+  --roadmap-timeline-quarter-text:  #A1A1A1;
+  --roadmap-timeline-month-text:    #EDEDED;
+  --roadmap-timeline-grid:          #292929;
 
-  --roadmap-group-bg:               rgba(255,255,255,0.03);
-  --roadmap-group-text:             rgba(255,255,255,0.72);
-  --roadmap-group-border:           rgba(255,255,255,0.08);
-  --roadmap-group-count-bg:         rgba(255,255,255,0.05);
-  --roadmap-group-count-border:     rgba(255,255,255,0.10);
+  --roadmap-group-bg:               #1F1F1F;
+  --roadmap-group-text:             #A1A1A1;
+  --roadmap-group-border:           #2E2E2E;
+  --roadmap-group-count-bg:         #292929;
+  --roadmap-group-count-border:     #2E2E2E;
   
   --roadmap-kpi-bg:                 transparent;
-  --roadmap-kpi-border:             rgba(255,255,255,0.08);
+  --roadmap-kpi-border:             #2E2E2E;
   
   --roadmap-bar-shadow:             none;
   --roadmap-bar-shadow-hover:       0 4px 12px rgba(0,0,0,0.3);
 }
 .dark .roadmap-group-header:hover,
 [data-theme="dark"] .roadmap-group-header:hover {
-  background: rgba(255,255,255,0.05);
+  background: #292929;
 }
 
 
@@ -376,7 +376,7 @@
   font-family: var(--cp-font-mono);
   font-size: var(--roadmap-bar-date-font-size);
   font-weight: 500;
-  color: rgba(255,255,255, var(--roadmap-bar-date-opacity));
+  color: #878787;
   margin-left: auto;
   padding-left: 8px;
   flex-shrink: 0;

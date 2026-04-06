@@ -173,7 +173,7 @@ export default function StoryBacklogPage({ projectId: propProjectId }: { project
                       {/* PRIORITY */}
                       <div style={{ width: 78, flexShrink: 0, fontSize: 12, position: 'relative' }}>
                         <span style={{ color: getPriorityColor(story.priority) }}>{getPriorityLabel(story.priority)}</span>
-                        <div className="absolute right-0 top-1/2 -translate-y-1/2 hidden group-hover:flex items-center gap-1" style={{ background: isDark ? 'rgba(10,10,10,0.95)' : 'rgba(255,255,255,0.95)' }}>
+                        <div className="absolute right-0 top-1/2 -translate-y-1/2 hidden group-hover:flex items-center gap-1" style={{ background: isDark ? 'rgba(10,10,10,0.95)' : '#EDEDED' }}>
                           <button onClick={(e) => { e.stopPropagation(); setEditStoryId(story.id); }} className="p-1 rounded" onMouseEnter={(e) => (e.currentTarget.style.background = tk.hoverBg)} onMouseLeave={(e) => (e.currentTarget.style.background = '')} title="Edit"><Pencil className="h-3.5 w-3.5" style={{ color: tk.t2 }} /></button>
                           <button onClick={(e) => { e.stopPropagation(); setDeleteTarget(story); }} className="p-1 rounded" onMouseEnter={(e) => (e.currentTarget.style.background = tk.hoverBg)} onMouseLeave={(e) => (e.currentTarget.style.background = '')} title="Delete"><Trash2 className="h-3.5 w-3.5" style={{ color: '#DC2626' }} /></button>
                         </div>

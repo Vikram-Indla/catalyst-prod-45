@@ -132,12 +132,12 @@ export function CreateProjectDialog({ open, onClose }: Props) {
   const textPrimary = dk ? 'rgba(255,255,255,0.92)' : 'var(--fg-1)';
   const textSecondary = dk ? 'rgba(255,255,255,0.72)' : 'var(--fg-2)';
   const textMuted = dk ? 'rgba(255,255,255,0.55)' : 'var(--fg-4)';
-  const border = dk ? 'rgba(255,255,255,0.10)' : 'var(--divider)';
-  const divider = dk ? 'rgba(255,255,255,0.08)' : 'var(--divider)';
+  const border = dk ? '#2E2E2E' : 'var(--divider)';
+  const divider = dk ? '#2E2E2E' : 'var(--divider)';
   const inputBg = dk ? 'transparent' : 'var(--bg-app)';
-  const closeHoverBg = dk ? 'rgba(255,255,255,0.06)' : 'var(--cp-bd-zone)';
+  const closeHoverBg = dk ? '#292929' : 'var(--cp-bd-zone)';
   const cancelBg = dk ? 'transparent' : 'var(--bg-app)';
-  const cancelHoverBg = dk ? 'rgba(255,255,255,0.06)' : 'var(--bg-1)';
+  const cancelHoverBg = dk ? '#292929' : 'var(--bg-1)';
   const dropdownBg = dk ? '#1A1A1A' : 'var(--cp-float)';
 
   const inputStyle: React.CSSProperties = {
@@ -360,7 +360,7 @@ export function CreateProjectDialog({ open, onClose }: Props) {
           <div style={{
             padding: '12px 16px', borderRadius: 8,
             border: `1px solid ${border}`,
-            background: dk ? 'rgba(255,255,255,0.02)' : 'var(--bg-1, #F8FAFC)',
+            background: dk ? '#1F1F1F' : 'var(--bg-1, #F8FAFC)',
           }}>
             <div className="flex items-center justify-between">
               <Switch checked={linkJira} onCheckedChange={setLinkJira} />

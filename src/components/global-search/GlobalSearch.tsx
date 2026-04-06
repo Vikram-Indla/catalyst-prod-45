@@ -378,13 +378,13 @@ export function GlobalSearch() {
     "--gs-backdrop": "rgba(10,10,10,0.58)",
     "--gs-bg": "#1A1A1A",
     "--gs-bar-bg": "#0A0A0A",
-    "--gs-footer-bg": "rgba(255,255,255,0.03)",
-    "--gs-section-bg": "rgba(255,255,255,0.03)",
+    "--gs-footer-bg": "#1F1F1F",
+    "--gs-section-bg": "#1F1F1F",
     "--gs-dropdown-bg": "#1A1A1A",
     "--gs-shadow": "0 20px 60px rgba(0,0,0,0.5)",
     "--gs-dropdown-shadow": "0 12px 32px rgba(0,0,0,0.4)",
-    "--gs-border": "rgba(255,255,255,0.10)",
-    "--gs-border-subtle": "rgba(255,255,255,0.06)",
+    "--gs-border": "#2E2E2E",
+    "--gs-border-subtle": "#292929",
     "--gs-text": "rgba(255,255,255,0.92)",
     "--gs-text-secondary": "rgba(255,255,255,0.55)",
     "--gs-text-muted": "rgba(255,255,255,0.30)",
@@ -392,18 +392,18 @@ export function GlobalSearch() {
     "--gs-placeholder": "rgba(255,255,255,0.30)",
     "--gs-icon": "rgba(255,255,255,0.55)",
     "--gs-key": "#60A5FA",
-    "--gs-hover": "rgba(255,255,255,0.03)",
+    "--gs-hover": "#1F1F1F",
     "--gs-selected": "rgba(59,130,246,0.10)",
-    "--gs-chip-bg": "rgba(255,255,255,0.06)",
-    "--gs-chip-border": "rgba(255,255,255,0.10)",
+    "--gs-chip-bg": "#292929",
+    "--gs-chip-border": "#2E2E2E",
     "--gs-chip-text": "rgba(255,255,255,0.55)",
     "--gs-chip-active-bg": "rgba(59,130,246,0.10)",
     "--gs-chip-active-border": "rgba(96,165,250,0.25)",
     "--gs-chip-active-text": "#60A5FA",
     "--gs-kbd-bg": "#0A0A0A",
-    "--gs-kbd-border": "rgba(255,255,255,0.10)",
+    "--gs-kbd-border": "#2E2E2E",
     "--gs-kbd-text": "rgba(255,255,255,0.55)",
-    "--gs-skeleton": "rgba(255,255,255,0.06)",
+    "--gs-skeleton": "#292929",
     "--gs-danger": "#F87171",
     "--gs-danger-hover": "rgba(248,113,113,0.12)",
   } : {
@@ -786,14 +786,14 @@ export function GlobalSearchTrigger() {
       style={{
         display: "flex", alignItems: "center", gap: 8,
         height: 32, padding: "0 12px",
-        backgroundColor: dk ? 'rgba(255,255,255,0.06)' : "#F4F5F7",
-        border: `1px solid ${dk ? 'rgba(255,255,255,0.10)' : "#DFE1E6"}`,
+        backgroundColor: dk ? '#292929' : "#F4F5F7",
+        border: `1px solid ${dk ? '#2E2E2E' : "#DFE1E6"}`,
         borderRadius: 6, cursor: "pointer",
         fontSize: 13, fontFamily: "Inter, sans-serif",
         color: dk ? 'rgba(255,255,255,0.55)' : "#6B778C",
       }}
-      onMouseEnter={e => { e.currentTarget.style.backgroundColor = dk ? 'rgba(255,255,255,0.08)' : "#EBECF0"; }}
-      onMouseLeave={e => { e.currentTarget.style.backgroundColor = dk ? 'rgba(255,255,255,0.06)' : "#F4F5F7"; }}
+      onMouseEnter={e => { e.currentTarget.style.backgroundColor = dk ? '#2E2E2E' : "#EBECF0"; }}
+      onMouseLeave={e => { e.currentTarget.style.backgroundColor = dk ? '#292929' : "#F4F5F7"; }}
     >
       <Search size={14} />
       <span>Search...</span>
@@ -803,7 +803,7 @@ export function GlobalSearchTrigger() {
             fontSize: 10, fontFamily: "JetBrains Mono, monospace",
             color: dk ? 'rgba(255,255,255,0.30)' : "#97A0AF",
             backgroundColor: dk ? '#0A0A0A' : "#fff",
-            border: `1px solid ${dk ? 'rgba(255,255,255,0.10)' : "#DFE1E6"}`,
+            border: `1px solid ${dk ? '#2E2E2E' : "#DFE1E6"}`,
             borderRadius: 4, padding: "1px 4px",
           }}>{k}</kbd>
         ))}

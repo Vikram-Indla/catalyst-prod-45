@@ -76,8 +76,8 @@ export const INK_DARK = {
 export const SURFACE_DARK = {
   page: '#0A0A0A',
   card: 'transparent',
-  border: 'rgba(255,255,255,0.10)',
-  borderLight: 'rgba(255,255,255,0.06)',
+  border: '#2E2E2E',
+  borderLight: '#292929',
 };
 
 // ── Typography — Catalyst spec: Sora (headings) + Inter (body) + JetBrains Mono (data) ──

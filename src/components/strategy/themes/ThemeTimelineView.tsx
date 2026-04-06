@@ -30,15 +30,15 @@ export function ThemeTimelineView({ themes, onSelect }: Props) {
   const noDates = themes.filter(t => !t.start_date || !t.target_completion);
 
   return (
-    <div className="rounded-xl border overflow-hidden bg-white dark:bg-[#0A0A0A] border-slate-200 dark:border-[rgba(255,255,255,0.08)]">
+    <div className="rounded-xl border overflow-hidden bg-white dark:bg-[#0A0A0A] border-slate-200 dark:border-[#2E2E2E]">
       {/* Header */}
-      <div className="flex border-b border-slate-200 dark:border-[rgba(255,255,255,0.08)]">
-        <div className="shrink-0 flex items-center bg-slate-50 dark:bg-[rgba(255,255,255,0.03)]" style={{ width: 220, height: 50, padding: '8px 12px' }}>
+      <div className="flex border-b border-slate-200 dark:border-[#2E2E2E]">
+        <div className="shrink-0 flex items-center bg-slate-50 dark:bg-[#1F1F1F]" style={{ width: 220, height: 50, padding: '8px 12px' }}>
           <span className="text-[10.5px] font-semibold text-slate-400 dark:text-[#878787] uppercase tracking-wide">Theme</span>
         </div>
-        <div className="flex-1 grid bg-slate-50 dark:bg-[rgba(255,255,255,0.03)]" style={{ gridTemplateColumns: `repeat(12, 1fr)` }}>
+        <div className="flex-1 grid bg-slate-50 dark:bg-[#1F1F1F]" style={{ gridTemplateColumns: `repeat(12, 1fr)` }}>
           {MONTHS.map((m, i) => (
-            <div key={m} className="flex items-center justify-center text-[10.5px] font-medium text-slate-400 dark:text-[#878787] border-l border-slate-100 dark:border-[rgba(255,255,255,0.04)]" style={{
+            <div key={m} className="flex items-center justify-center text-[10.5px] font-medium text-slate-400 dark:text-[#878787] border-l border-slate-100 dark:border-[#1F1F1F]" style={{
               height: 50,
               background: i % 2 === 0 ? 'rgba(248,250,252,0.5)' : 'transparent',
             }}>
@@ -61,7 +61,7 @@ export function ThemeTimelineView({ themes, onSelect }: Props) {
           <div
             key={theme.id}
             onClick={() => onSelect(theme)}
-            className="flex cursor-pointer transition-colors border-b border-slate-100 dark:border-[rgba(255,255,255,0.04)] hover:bg-slate-50 dark:hover:bg-[rgba(255,255,255,0.03)]"
+            className="flex cursor-pointer transition-colors border-b border-slate-100 dark:border-[#1F1F1F] hover:bg-slate-50 dark:hover:bg-[#1F1F1F]"
             style={{ height: 48 }}
           >
             {/* Label */}
@@ -75,10 +75,10 @@ export function ThemeTimelineView({ themes, onSelect }: Props) {
             </div>
 
             {/* Timeline area */}
-            <div className="flex-1 relative border-l border-slate-200 dark:border-[rgba(255,255,255,0.08)]">
+            <div className="flex-1 relative border-l border-slate-200 dark:border-[#2E2E2E]">
               {/* Month gridlines + alternating shading */}
               {MONTHS.map((_, i) => (
-                <div key={i} className="absolute top-0 bottom-0 border-l border-dashed border-slate-100 dark:border-[rgba(255,255,255,0.04)]" style={{
+                <div key={i} className="absolute top-0 bottom-0 border-l border-dashed border-slate-100 dark:border-[#1F1F1F]" style={{
                   left: `${(i / 12) * 100}%`,
                   width: `${100 / 12}%`,
                   background: i % 2 === 0 ? 'rgba(248,250,252,0.5)' : 'transparent',
@@ -119,14 +119,14 @@ export function ThemeTimelineView({ themes, onSelect }: Props) {
         <div
           key={theme.id}
           onClick={() => onSelect(theme)}
-          className="flex cursor-pointer transition-colors border-b border-slate-100 dark:border-[rgba(255,255,255,0.04)] hover:bg-slate-50 dark:hover:bg-[rgba(255,255,255,0.03)]"
+          className="flex cursor-pointer transition-colors border-b border-slate-100 dark:border-[#1F1F1F] hover:bg-slate-50 dark:hover:bg-[#1F1F1F]"
           style={{ height: 48 }}
         >
           <div className="shrink-0 flex items-center gap-2 min-w-0" style={{ width: 220, padding: '8px 12px' }}>
             <div className="shrink-0 rounded-full" style={{ width: 8, height: 8, background: theme.color }} />
             <span className="truncate text-xs font-medium text-slate-900 dark:text-[#EDEDED]">{theme.title}</span>
           </div>
-          <div className="flex-1 flex items-center justify-center border-l border-slate-200 dark:border-[rgba(255,255,255,0.08)]">
+          <div className="flex-1 flex items-center justify-center border-l border-slate-200 dark:border-[#2E2E2E]">
             <span className="text-[11px] text-slate-400 dark:text-[#878787]">No dates set</span>
           </div>
         </div>

@@ -132,7 +132,7 @@ export default function TimelineView() {
   return (
     <div className="h-full flex flex-col bg-white dark:bg-[#0A0A0A]">
       {/* Header */}
-      <div className="sticky top-0 z-30 bg-white dark:bg-[#1A1A1A] border-b dark:border-[rgba(255,255,255,0.08)] shadow-sm">
+      <div className="sticky top-0 z-30 bg-white dark:bg-[#1A1A1A] border-b dark:border-[#2E2E2E] shadow-sm">
         <div className="px-6 py-4">
           <div className="flex items-center justify-between">
             <div>

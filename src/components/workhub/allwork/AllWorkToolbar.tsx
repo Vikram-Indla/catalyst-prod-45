@@ -42,9 +42,9 @@ function FilterDropdown({ label, options, selected, onToggle, isLoading }: {
     <div className="relative" ref={ref}>
       <button
         onClick={() => setOpen(!open)}
-        className="inline-flex items-center gap-1.5 px-3 h-8 text-[13px] rounded border transition-colors duration-[80ms] hover:bg-[var(--hover, rgba(255,255,255,0.04))] focus-visible:outline-2 focus-visible:outline-[#2563EB]"
+        className="inline-flex items-center gap-1.5 px-3 h-8 text-[13px] rounded border transition-colors duration-[80ms] hover:bg-[var(--hover, #1F1F1F)] focus-visible:outline-2 focus-visible:outline-[#2563EB]"
         style={{
-          borderColor: selected.length > 0 ? 'var(--cp-blue)' : 'var(--bd-default, rgba(255,255,255,0.08))',
+          borderColor: selected.length > 0 ? 'var(--cp-blue)' : 'var(--bd-default, #2E2E2E)',
           color: selected.length > 0 ? 'var(--cp-blue)' : 'var(--fg-2)',
           backgroundColor: selected.length > 0 ? 'rgba(37,99,235,0.08)' : 'var(--bg-app)',
           fontWeight: selected.length > 0 ? 500 : 400,
@@ -65,7 +65,7 @@ function FilterDropdown({ label, options, selected, onToggle, isLoading }: {
       {open && (
         <div
           className="absolute top-full left-0 mt-1 w-56 rounded-lg border shadow-lg z-50 py-1 max-h-64 bg-[var(--bg-app)] overflow-y-auto animate-scale-in"
-          style={{ borderColor: 'var(--bd-default, rgba(255,255,255,0.08))' }}
+          style={{ borderColor: 'var(--bd-default, #2E2E2E)' }}
           role="listbox"
         >
           {isLoading ? (
@@ -80,7 +80,7 @@ function FilterDropdown({ label, options, selected, onToggle, isLoading }: {
               <button
                 key={opt}
                 onClick={() => onToggle(opt)}
-                className="w-full flex items-center gap-2 px-3 py-1.5 text-[13px] hover:bg-[var(--hover, rgba(255,255,255,0.04))] text-left transition-colors duration-[80ms]"
+                className="w-full flex items-center gap-2 px-3 py-1.5 text-[13px] hover:bg-[var(--hover, #1F1F1F)] text-left transition-colors duration-[80ms]"
                 style={{ color: 'var(--fg-1)', fontFamily: 'Inter, sans-serif' }}
                 role="option"
                 aria-selected={selected.includes(opt)}
@@ -88,7 +88,7 @@ function FilterDropdown({ label, options, selected, onToggle, isLoading }: {
                 <span
                   className="w-4 h-4 rounded border flex items-center justify-center shrink-0"
                   style={{
-                    borderColor: selected.includes(opt) ? 'var(--cp-blue)' : 'var(--bd-default, rgba(255,255,255,0.08))',
+                    borderColor: selected.includes(opt) ? 'var(--cp-blue)' : 'var(--bd-default, #2E2E2E)',
                     backgroundColor: selected.includes(opt) ? 'var(--cp-blue)' : 'var(--bg-app)',
                   }}
                 >
@@ -127,7 +127,7 @@ export function AllWorkToolbar({
   const hasFilters = !!(filters.types?.length || filters.statuses?.length || filters.priorities?.length);
 
   return (
-    <div className="px-8 py-3 flex items-center gap-3 flex-wrap" style={{ borderBottom: '1px solid var(--bd-subtle, rgba(255,255,255,0.05))' }}>
+    <div className="px-8 py-3 flex items-center gap-3 flex-wrap" style={{ borderBottom: '1px solid var(--bd-subtle, #292929)' }}>
       <FilterDropdown
         label="Type"
         options={issueTypes ?? []}
@@ -164,7 +164,7 @@ export function AllWorkToolbar({
       {/* Search */}
       <div
         className="flex items-center gap-2 h-8 px-2.5 rounded border bg-[var(--bg-app)] focus-within:border-[#2563EB] transition-colors duration-[80ms]"
-        style={{ minWidth: 140, borderColor: 'var(--bd-default, rgba(255,255,255,0.08))' }}
+        style={{ minWidth: 140, borderColor: 'var(--bd-default, #2E2E2E)' }}
       >
         <Search className="w-3.5 h-3.5 shrink-0" style={{ color: 'var(--fg-3)' }} />
         <input
@@ -215,7 +215,7 @@ export function AllWorkToolbar({
       </span>
 
       {/* View toggle */}
-      <div className="inline-flex rounded border overflow-hidden" style={{ borderColor: 'var(--bd-default, rgba(255,255,255,0.08))' }} role="radiogroup" aria-label="View mode">
+      <div className="inline-flex rounded border overflow-hidden" style={{ borderColor: 'var(--bd-default, #2E2E2E)' }} role="radiogroup" aria-label="View mode">
         {([
           { key: 'grid' as const, icon: LayoutGrid, label: 'Grid' },
           { key: 'split' as const, icon: Columns2, label: 'Split' },
@@ -228,7 +228,7 @@ export function AllWorkToolbar({
               backgroundColor: viewMode === key ? 'rgba(37,99,235,0.08)' : 'var(--bg-app)',
               color: viewMode === key ? 'var(--cp-blue)' : 'var(--fg-3)',
               fontWeight: viewMode === key ? 500 : 400,
-              borderLeft: key === 'split' ? '1px solid var(--bd-default, rgba(255,255,255,0.08))' : 'none',
+              borderLeft: key === 'split' ? '1px solid var(--bd-default, #2E2E2E)' : 'none',
               boxShadow: viewMode === key ? 'inset 0 1px 2px rgba(0,0,0,0.06)' : 'none',
               fontFamily: 'Inter, sans-serif',
             }}

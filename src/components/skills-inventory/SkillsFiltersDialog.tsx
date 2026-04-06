@@ -152,7 +152,7 @@ function MultiSelectDropdown({
       {isOpen && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
-          <div className="absolute z-50 top-full left-0 mt-1 w-full bg-white dark:bg-[#1A1A1A] border border-border dark:border-[rgba(255,255,255,0.08)] rounded-md shadow-lg max-h-48 overflow-y-auto">
+          <div className="absolute z-50 top-full left-0 mt-1 w-full bg-white dark:bg-[#1A1A1A] border border-border dark:border-[#2E2E2E] rounded-md shadow-lg max-h-48 overflow-y-auto">
             {options.map((option) => (
               <label
                 key={option}
@@ -249,7 +249,7 @@ export function SkillsFiltersDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleCancel}>
-      <DialogContent className="max-w-[480px] w-[95vw] p-0 bg-white dark:bg-[#1A1A1A] border dark:border-[rgba(255,255,255,0.08)] shadow-xl rounded-lg overflow-hidden gap-0 [&>button.absolute]:hidden">
+      <DialogContent className="max-w-[480px] w-[95vw] p-0 bg-white dark:bg-[#1A1A1A] border dark:border-[#2E2E2E] shadow-xl rounded-lg overflow-hidden gap-0 [&>button.absolute]:hidden">
         {/* Header */}
         <div className="flex items-center justify-between px-4 sm:px-5 py-4 border-b border-border">
           <h2 className="text-base font-semibold text-foreground">Filters</h2>
@@ -413,7 +413,7 @@ export function SkillsFiltersDialog({
                     max="100"
                     value={localFilters.coverageMin ?? ''}
                     onChange={(e) => updateFilter('coverageMin', e.target.value ? parseInt(e.target.value) : null)}
-                    className="w-full h-10 px-3 border border-border dark:border-[rgba(255,255,255,0.08)] rounded-md text-sm bg-white dark:bg-[#1A1A1A] dark:text-[#EDEDED] focus:outline-none focus:ring-1 focus:ring-brand-primary"
+                    className="w-full h-10 px-3 border border-border dark:border-[#2E2E2E] rounded-md text-sm bg-white dark:bg-[#1A1A1A] dark:text-[#EDEDED] focus:outline-none focus:ring-1 focus:ring-brand-primary"
                     placeholder="0"
                   />
                 </div>
@@ -425,7 +425,7 @@ export function SkillsFiltersDialog({
                     max="100"
                     value={localFilters.coverageMax ?? ''}
                     onChange={(e) => updateFilter('coverageMax', e.target.value ? parseInt(e.target.value) : null)}
-                    className="w-full h-10 px-3 border border-border dark:border-[rgba(255,255,255,0.08)] rounded-md text-sm bg-white dark:bg-[#1A1A1A] dark:text-[#EDEDED] focus:outline-none focus:ring-1 focus:ring-brand-primary"
+                    className="w-full h-10 px-3 border border-border dark:border-[#2E2E2E] rounded-md text-sm bg-white dark:bg-[#1A1A1A] dark:text-[#EDEDED] focus:outline-none focus:ring-1 focus:ring-brand-primary"
                     placeholder="100"
                   />
                 </div>

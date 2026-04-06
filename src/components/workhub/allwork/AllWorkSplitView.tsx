@@ -105,10 +105,10 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem }: Props
   ];
 
   return (
-    <div className="flex h-full gap-0 rounded border overflow-hidden" style={{ borderColor: isDark ? 'rgba(255,255,255,0.08)' : 'var(--bd-default, rgba(255,255,255,0.08))', borderRadius: 4 }}>
+    <div className="flex h-full gap-0 rounded border overflow-hidden" style={{ borderColor: isDark ? '#2E2E2E' : 'var(--bd-default, #2E2E2E)', borderRadius: 4 }}>
       {/* Left card list — 320px */}
-      <div className="flex flex-col" style={{ width: 320, borderRight: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid var(--bd-subtle, rgba(255,255,255,0.05))', backgroundColor: isDark ? '#0A0A0A' : 'var(--bg-app)' }}>
-        <div className="flex items-center justify-between px-3 py-2" style={{ borderBottom: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid var(--bd-subtle, rgba(255,255,255,0.05))' }}>
+      <div className="flex flex-col" style={{ width: 320, borderRight: isDark ? '1px solid #2E2E2E' : '1px solid var(--bd-subtle, #292929)', backgroundColor: isDark ? '#0A0A0A' : 'var(--bg-app)' }}>
+        <div className="flex items-center justify-between px-3 py-2" style={{ borderBottom: isDark ? '1px solid #2E2E2E' : '1px solid var(--bd-subtle, #292929)' }}>
           <button className="flex items-center gap-1 text-[12px]" style={{ color: isDark ? '#A1A1A1' : '#6b6e76', fontFamily: 'Inter, sans-serif' }}>
             {sortBy} <ChevronDown className="w-3 h-3" />
           </button>
@@ -127,7 +127,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem }: Props
                 onClick={() => handleListSelect(item.issue_key)}
                 className="px-3 py-2.5 cursor-pointer transition-colors duration-[80ms]"
                 style={{
-                  borderBottom: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid var(--bd-subtle, rgba(255,255,255,0.05))',
+                  borderBottom: isDark ? '1px solid #292929' : '1px solid var(--bd-subtle, #292929)',
                   backgroundColor: isActive ? 'rgba(37,99,235,0.08)' : isDark ? '#0A0A0A' : 'var(--bg-app)',
                   borderLeft: isActive ? '3px solid #2563EB' : '3px solid transparent',
                 }}
@@ -159,7 +159,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem }: Props
           })}
         </div>
 
-        <div className="px-3 py-2 text-[11px]" style={{ color: 'var(--fg-3)', borderTop: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid var(--bd-subtle, rgba(255,255,255,0.05))', fontFamily: "'JetBrains Mono', monospace" }}>
+        <div className="px-3 py-2 text-[11px]" style={{ color: 'var(--fg-3)', borderTop: isDark ? '1px solid #2E2E2E' : '1px solid var(--bd-subtle, #292929)', fontFamily: "'JetBrains Mono', monospace" }}>
           {items.length} of {items.length}
         </div>
       </div>
@@ -168,13 +168,13 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem }: Props
       {currentItem ? (
         <div className="flex-1 flex flex-col overflow-hidden" style={{ backgroundColor: isDark ? '#0A0A0A' : 'var(--bg-app)' }}>
           {/* Detail header */}
-          <div className="flex items-center justify-between px-5 py-3" style={{ borderBottom: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid var(--bd-subtle, rgba(255,255,255,0.05))' }}>
+          <div className="flex items-center justify-between px-5 py-3" style={{ borderBottom: isDark ? '1px solid #2E2E2E' : '1px solid var(--bd-subtle, #292929)' }}>
             <div className="flex items-center gap-2">
               {/* Back button */}
               {canGoBack && (
                 <button
                   onClick={handleBack}
-                  className="flex items-center gap-1 px-2 py-1 rounded-md transition-colors duration-[80ms] hover:bg-[var(--hover, rgba(255,255,255,0.04))] focus-visible:outline-2 focus-visible:outline-[#2563EB]"
+                  className="flex items-center gap-1 px-2 py-1 rounded-md transition-colors duration-[80ms] hover:bg-[var(--hover, #1F1F1F)] focus-visible:outline-2 focus-visible:outline-[#2563EB]"
                   style={{ color: 'var(--fg-2)', fontSize: 13, fontWeight: 500, fontFamily: 'Inter, sans-serif', border: 'none', background: 'none', cursor: 'pointer' }}
                   aria-label="Go back"
                 >
@@ -196,11 +196,11 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem }: Props
             <div className="flex items-center gap-1">
               {!canGoBack && (
                 <>
-                  <button onClick={goPrev} disabled={selectedIdx <= 0} className="p-1 rounded hover:bg-[var(--hover, rgba(255,255,255,0.04))] disabled:opacity-30 focus-visible:outline-2 focus-visible:outline-[#2563EB]" aria-label="Previous item">
+                  <button onClick={goPrev} disabled={selectedIdx <= 0} className="p-1 rounded hover:bg-[var(--hover, #1F1F1F)] disabled:opacity-30 focus-visible:outline-2 focus-visible:outline-[#2563EB]" aria-label="Previous item">
                     <ChevronLeft className="w-4 h-4" style={{ color: isDark ? '#878787' : '#6b6e76' }} />
                   </button>
                   <span className="text-[11px]" style={{ color: 'var(--fg-3)', fontFamily: "'JetBrains Mono', monospace" }}>{selectedIdx + 1}/{items.length}</span>
-                  <button onClick={goNext} disabled={selectedIdx >= items.length - 1} className="p-1 rounded hover:bg-[var(--hover, rgba(255,255,255,0.04))] disabled:opacity-30 focus-visible:outline-2 focus-visible:outline-[#2563EB]" aria-label="Next item">
+                  <button onClick={goNext} disabled={selectedIdx >= items.length - 1} className="p-1 rounded hover:bg-[var(--hover, #1F1F1F)] disabled:opacity-30 focus-visible:outline-2 focus-visible:outline-[#2563EB]" aria-label="Next item">
                     <ChevronRight className="w-4 h-4" style={{ color: isDark ? '#878787' : '#6b6e76' }} />
                   </button>
                 </>
@@ -212,7 +212,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem }: Props
           {panelStack.length > 1 && (
             <div
               className="flex items-center gap-1.5 px-5 py-2"
-              style={{ fontSize: 12, color: 'var(--fg-3)', borderBottom: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid var(--bd-subtle, rgba(255,255,255,0.05))', backgroundColor: isDark ? '#1A1A1A' : 'var(--bg-1)' }}
+              style={{ fontSize: 12, color: 'var(--fg-3)', borderBottom: isDark ? '1px solid #292929' : '1px solid var(--bd-subtle, #292929)', backgroundColor: isDark ? '#1A1A1A' : 'var(--bg-1)' }}
             >
               {panelStack.slice(0, -1).map((item, i) => (
                 <Fragment key={item.issue_key}>
@@ -238,7 +238,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem }: Props
           {/* Tabs */}
           <div
             className="flex items-center gap-0 px-5"
-            style={{ borderBottom: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid var(--bd-subtle, rgba(255,255,255,0.05))' }}
+            style={{ borderBottom: isDark ? '1px solid #2E2E2E' : '1px solid var(--bd-subtle, #292929)' }}
             role="tablist"
           >
             {TABS.map(tab => {
@@ -267,7 +267,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem }: Props
                       style={{
                         fontSize: 10, fontWeight: 700, minWidth: 18, textAlign: 'center',
                         padding: '1px 5px', borderRadius: 12,
-                        backgroundColor: isActive ? 'rgba(21,88,188,0.10)' : isDark ? 'rgba(255,255,255,0.06)' : 'var(--bd-subtle, rgba(255,255,255,0.05))',
+                        backgroundColor: isActive ? 'rgba(21,88,188,0.10)' : isDark ? '#292929' : 'var(--bd-subtle, #292929)',
                         color: isActive ? '#1558bc' : 'var(--fg-3)',
                         fontFamily: "'JetBrains Mono', monospace",
                       }}
@@ -326,7 +326,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem }: Props
 
                   {/* Activity section */}
                   <div>
-                    <div className="flex items-center gap-4 mb-3" style={{ borderBottom: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid var(--bd-subtle, rgba(255,255,255,0.05))', paddingBottom: 8 }}>
+                    <div className="flex items-center gap-4 mb-3" style={{ borderBottom: isDark ? '1px solid #2E2E2E' : '1px solid var(--bd-subtle, #292929)', paddingBottom: 8 }}>
                       {(['all', 'comments', 'history', 'worklog'] as const).map(tab => (
                         <button
                           key={tab}
@@ -367,7 +367,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem }: Props
                       <div className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold text-white shrink-0" style={{ backgroundColor: '#4C6EF5' }}>
                         U
                       </div>
-                      <div className="flex-1 rounded-lg border px-3 py-2 focus-within:border-[#2563EB] transition-colors duration-[80ms]" style={{ borderColor: isDark ? 'rgba(255,255,255,0.08)' : 'var(--bd-default, rgba(255,255,255,0.08))' }}>
+                      <div className="flex-1 rounded-lg border px-3 py-2 focus-within:border-[#2563EB] transition-colors duration-[80ms]" style={{ borderColor: isDark ? '#2E2E2E' : 'var(--bd-default, #2E2E2E)' }}>
                         <input
                           type="text"
                           placeholder="Add a comment..."
@@ -376,17 +376,17 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem }: Props
                           aria-label="Add a comment"
                         />
                         <div className="flex items-center gap-2 mt-2">
-                          <span className="text-[10px] px-2 py-0.5 rounded-full cursor-pointer hover:bg-[var(--bd-subtle, rgba(255,255,255,0.05))] transition-colors duration-[80ms]" style={{ backgroundColor: isDark ? 'rgba(255,255,255,0.06)' : 'var(--hover, rgba(255,255,255,0.04))', color: isDark ? '#878787' : '#6b6e76' }}>
+                          <span className="text-[10px] px-2 py-0.5 rounded-full cursor-pointer hover:bg-[var(--bd-subtle, #292929)] transition-colors duration-[80ms]" style={{ backgroundColor: isDark ? '#292929' : 'var(--hover, #1F1F1F)', color: isDark ? '#878787' : '#6b6e76' }}>
                             Status update...
                           </span>
-                          <span className="text-[10px] px-2 py-0.5 rounded-full cursor-pointer hover:bg-[var(--bd-subtle, rgba(255,255,255,0.05))] transition-colors duration-[80ms]" style={{ backgroundColor: isDark ? 'rgba(255,255,255,0.06)' : 'var(--hover, rgba(255,255,255,0.04))', color: isDark ? '#878787' : '#6b6e76' }}>
+                          <span className="text-[10px] px-2 py-0.5 rounded-full cursor-pointer hover:bg-[var(--bd-subtle, #292929)] transition-colors duration-[80ms]" style={{ backgroundColor: isDark ? '#292929' : 'var(--hover, #1F1F1F)', color: isDark ? '#878787' : '#6b6e76' }}>
                             Thanks!
                           </span>
                         </div>
                       </div>
                     </div>
                     <p className="text-[10px] mt-2 ml-9" style={{ color: 'var(--fg-3)' }}>
-                      <b>Pro tip:</b> press <kbd className="px-1 py-0.5 rounded text-[10px]" style={{ backgroundColor: isDark ? 'rgba(255,255,255,0.06)' : 'var(--hover, rgba(255,255,255,0.04))', border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid var(--bd-subtle, rgba(255,255,255,0.05))' }}>M</kbd> to comment
+                      <b>Pro tip:</b> press <kbd className="px-1 py-0.5 rounded text-[10px]" style={{ backgroundColor: isDark ? '#292929' : 'var(--hover, #1F1F1F)', border: isDark ? '1px solid #2E2E2E' : '1px solid var(--bd-subtle, #292929)' }}>M</kbd> to comment
                     </p>
                   </div>
                 </>
@@ -422,7 +422,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem }: Props
             </div>
 
             {/* Right detail sidebar — 260px */}
-            <div className="overflow-y-auto py-4 px-4" style={{ width: 260, borderLeft: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid var(--bd-subtle, rgba(255,255,255,0.05))', backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF' }}>
+            <div className="overflow-y-auto py-4 px-4" style={{ width: 260, borderLeft: isDark ? '1px solid #2E2E2E' : '1px solid var(--bd-subtle, #292929)', backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF' }}>
               <div className="mb-4">
                 <span className="text-[11px] uppercase font-semibold block mb-1.5" style={{ color: isDark ? '#878787' : '#6b6e76', letterSpacing: '0.05em' }}>Status</span>
                 <StatusLozenge status={currentItem.status} />
@@ -470,7 +470,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem }: Props
                 {currentItem.labels?.length ? (
                   <div className="flex flex-wrap gap-1">
                     {currentItem.labels.map(l => (
-                      <span key={l} className="text-[11px] px-2 py-0.5 rounded" style={{ backgroundColor: isDark ? 'rgba(255,255,255,0.06)' : 'var(--hover, rgba(255,255,255,0.04))', color: isDark ? '#A1A1A1' : '#44546f' }}>{l}</span>
+                      <span key={l} className="text-[11px] px-2 py-0.5 rounded" style={{ backgroundColor: isDark ? '#292929' : 'var(--hover, #1F1F1F)', color: isDark ? '#A1A1A1' : '#44546f' }}>{l}</span>
                     ))}
                   </div>
                 ) : (
@@ -478,7 +478,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem }: Props
                 )}
               </div>
 
-              <div className="mt-6 pt-4" style={{ borderTop: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid var(--bd-subtle, rgba(255,255,255,0.05))' }}>
+              <div className="mt-6 pt-4" style={{ borderTop: isDark ? '1px solid #2E2E2E' : '1px solid var(--bd-subtle, #292929)' }}>
                 <div className="mb-2">
                   <span className="text-[11px] uppercase font-semibold block mb-0.5" style={{ color: isDark ? '#878787' : '#6b6e76', letterSpacing: '0.05em' }}>Created</span>
                   <span className="text-[12px]" style={{ color: isDark ? '#A1A1A1' : '#44546f', fontFamily: "'JetBrains Mono', monospace" }} title={currentItem.jira_created_at || ''}>

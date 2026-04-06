@@ -67,20 +67,20 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
 
   // Dark mode tokens
   const T = {
-    panelBg: isDark ? '#1A1714' : '#FFFFFF',
-    surfaceBg: isDark ? '#232019' : '#FFFFFF',
-    text1: isDark ? '#F5F3F0' : '#0F172A',
-    text2: isDark ? '#A09890' : '#64748B',
-    text3: isDark ? '#6B6560' : '#94A3B8',
-    border: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.08)',
-    borderStrong: isDark ? 'rgba(255,255,255,0.12)' : 'rgba(15,23,42,0.12)',
-    hover: isDark ? 'rgba(255,255,255,0.04)' : 'rgba(15,23,42,0.04)',
-    press: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.08)',
+    panelBg: isDark ? '#0A0A0A' : '#FFFFFF',
+    surfaceBg: isDark ? '#1A1A1A' : '#FFFFFF',
+    text1: isDark ? '#EDEDED' : '#0F172A',
+    text2: isDark ? '#A1A1A1' : '#64748B',
+    text3: isDark ? '#878787' : '#94A3B8',
+    border: isDark ? '#2E2E2E' : 'rgba(15,23,42,0.08)',
+    borderStrong: isDark ? '#454545' : 'rgba(15,23,42,0.12)',
+    hover: isDark ? '#1F1F1F' : 'rgba(15,23,42,0.04)',
+    press: isDark ? '#2E2E2E' : 'rgba(15,23,42,0.08)',
     shadow: isDark
       ? '0 8px 24px rgba(0,0,0,0.4), 0 0 1px rgba(0,0,0,0.5)'
       : '0 8px 24px rgba(15,23,42,0.12), 0 0 1px rgba(15,23,42,0.08)',
-    menuBg: isDark ? '#232019' : '#FFFFFF',
-    divider: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(15,23,42,0.08)',
+    menuBg: isDark ? '#1A1A1A' : '#FFFFFF',
+    divider: isDark ? '#292929' : 'rgba(15,23,42,0.08)',
   };
 
   const [activeTab, setActiveTab] = useState<NotificationTab>('direct');

@@ -11,12 +11,12 @@ export default function SectionHeader({ label }: SectionHeaderProps) {
       position: 'sticky',
       top: 0,
       zIndex: 10,
-      background: isDark ? '#1A1714' : '#FFFFFF',
+      background: isDark ? '#0A0A0A' : '#FFFFFF',
       padding: '10px 20px 4px',
       fontFamily: 'Inter, sans-serif',
       fontSize: 11,
       fontWeight: 600,
-      color: isDark ? '#A09890' : '#64748B',
+      color: isDark ? '#A1A1A1' : '#64748B',
     }}>
       {label}
     </div>

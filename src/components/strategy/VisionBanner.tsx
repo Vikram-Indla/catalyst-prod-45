@@ -70,13 +70,13 @@ function VisionSkeleton() {
       <div
         className="absolute inset-0"
         style={{
-          background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.08) 50%, transparent 100%)',
+          background: 'linear-gradient(90deg, transparent 0%, #2E2E2E 50%, transparent 100%)',
           animation: 'shimmer 1.5s infinite',
         }}
       />
       <div className="flex items-center gap-4">
-        <div style={{ height: 10, width: 140, background: 'rgba(255,255,255,0.15)', borderRadius: 4 }} />
-        <div style={{ height: 16, width: '40%', background: 'rgba(255,255,255,0.15)', borderRadius: 4 }} />
+        <div style={{ height: 10, width: 140, background: '#454545', borderRadius: 4 }} />
+        <div style={{ height: 16, width: '40%', background: '#454545', borderRadius: 4 }} />
       </div>
       <style>{`
         @keyframes shimmer {
@@ -134,7 +134,7 @@ function VisionEmpty({ isOwner, onDefine }: { isOwner: boolean; onDefine: () => 
         borderRadius: 'var(--catalyst-radius-xl, 12px)',
         borderLeft: '3px solid #F59E0B',
         padding: '12px 20px',
-        boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.1), inset 0 -1px 0 rgba(0,0,0,0.1)',
+        boxShadow: 'inset 0 1px 0 #2E2E2E, inset 0 -1px 0 rgba(0,0,0,0.1)',
       }}
     >
       <div className="vision-pattern absolute inset-0 pointer-events-none" style={{ zIndex: 1 }} />
@@ -227,14 +227,14 @@ export function VisionBanner() {
           background: 'linear-gradient(135deg, #1E3A8A 0%, #1E40AF 50%, #2563EB 100%)',
           borderRadius: 'var(--catalyst-radius-xl, 12px)',
           borderLeft: '3px solid #F59E0B',
-          boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.1), inset 0 -1px 0 rgba(0,0,0,0.1)',
+          boxShadow: 'inset 0 1px 0 #2E2E2E, inset 0 -1px 0 rgba(0,0,0,0.1)',
           transition: 'box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1)',
         }}
         onMouseEnter={(e) => {
-          e.currentTarget.style.boxShadow = '0 8px 32px rgba(30, 58, 138, 0.25), inset 0 1px 0 rgba(255,255,255,0.1), inset 0 -1px 0 rgba(0,0,0,0.1)';
+          e.currentTarget.style.boxShadow = '0 8px 32px rgba(30, 58, 138, 0.25), inset 0 1px 0 #2E2E2E, inset 0 -1px 0 rgba(0,0,0,0.1)';
         }}
         onMouseLeave={(e) => {
-          e.currentTarget.style.boxShadow = 'inset 0 1px 0 rgba(255,255,255,0.1), inset 0 -1px 0 rgba(0,0,0,0.1)';
+          e.currentTarget.style.boxShadow = 'inset 0 1px 0 #2E2E2E, inset 0 -1px 0 rgba(0,0,0,0.1)';
         }}
       >
         {/* Geometric pattern overlay */}
@@ -342,7 +342,7 @@ export function VisionBanner() {
                     style={{
                       fontSize: 10,
                       color: 'rgba(255,255,255,0.7)',
-                      background: 'rgba(255,255,255,0.12)',
+                      background: '#454545',
                       backdropFilter: 'blur(4px)',
                       borderRadius: 9999,
                       padding: '2px 8px',
@@ -380,7 +380,7 @@ export function VisionBanner() {
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.color = 'rgba(255,255,255,1)';
-                    e.currentTarget.style.background = 'rgba(255,255,255,0.1)';
+                    e.currentTarget.style.background = '#2E2E2E';
                     e.currentTarget.style.transform = 'scale(1.1)';
                   }}
                   onMouseLeave={(e) => {
@@ -402,7 +402,7 @@ export function VisionBanner() {
           content: '';
           position: absolute;
           inset: 0;
-          background-image: radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px);
+          background-image: radial-gradient(circle, #292929 1px, transparent 1px);
           background-size: 16px 16px;
           pointer-events: none;
           z-index: 1;

@@ -84,7 +84,7 @@
   --cp-chart-8: #4B5563;
 }
 
-/* ── DARK MODE — V12 NOCTURNE WARM CHARCOAL ── */
+/* ── DARK MODE — NOCTURNE Geist (canonical Apr 2026) ── */
 [data-theme="dark"] {
   /* Surfaces — ONE SURFACE MODEL. No luminance zones. */
   --cp-bg:              #0A0A0A;
@@ -92,21 +92,21 @@
   --cp-bg-sunken:       #0A0A0A;
   --cp-float:           #1A1A1A;
 
-  /* Text — warm off-white opacity scale */
-  --cp-t1:              rgba(255,255,255, 0.92);
-  --cp-t2:              rgba(255,255,255, 0.72);
-  --cp-t3:              rgba(255,255,255, 0.60);
-  --cp-t4:              rgba(255,255,255, 0.35);
+  /* Text — Geist solid hex scale */
+  --cp-t1:              #EDEDED;
+  --cp-t2:              #A1A1A1;
+  --cp-t3:              #878787;
+  --cp-t4:              #555555;
 
-  /* Borders — warm off-white opacity scale */
-  --cp-bd:              rgba(255,255,255, 0.10);
-  --cp-bd-zone:         rgba(255,255,255, 0.08);
-  --cp-bd-hover:        rgba(255,255,255, 0.18);
-  --cp-bd-table:        rgba(255,255,255, 0.08);
+  /* Borders — Geist solid hex */
+  --cp-bd:              #2E2E2E;
+  --cp-bd-zone:         #2E2E2E;
+  --cp-bd-hover:        #454545;
+  --cp-bd-table:        #2E2E2E;
 
-  /* Interactive */
-  --cp-hover:           rgba(255,255,255, 0.03);
-  --cp-press:           rgba(255,255,255, 0.06);
+  /* Interactive — Geist solid hex */
+  --cp-hover:           #1F1F1F;
+  --cp-press:           #292929;
   --cp-focus-ring:      rgba(59,130,246, 0.45);
 
   /* Brand */
@@ -148,10 +148,10 @@
   --status-done-text:       #FFFFFF;
 
   /* Progress */
-  --cp-prg-bg:          rgba(255,255,255, 0.05);
+  --cp-prg-bg:          #292929;
 
   /* Scrollbar */
-  --cp-scroll:          rgba(255,255,255, 0.10);
+  --cp-scroll:          #2E2E2E;
 
   /* Chart Palette */
   --cp-chart-1: #60A5FA;

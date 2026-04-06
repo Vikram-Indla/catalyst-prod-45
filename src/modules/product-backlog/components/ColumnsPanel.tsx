@@ -84,22 +84,22 @@ export function ColumnsPanel({
       className="absolute top-full right-0 mt-2 w-64 rounded-lg shadow-lg z-[500] overflow-hidden"
       style={{
         backgroundColor: isDark ? '#1A1A1A' : 'var(--surface-1)',
-        border: isDark ? '1px solid rgba(255,255,255,0.10)' : '1px solid var(--border-color)',
+        border: isDark ? '1px solid #2E2E2E' : '1px solid var(--border-color)',
       }}
     >
       <div 
         className="px-4 py-3 border-b flex items-center justify-between"
-        style={{ borderColor: isDark ? 'rgba(255,255,255,0.10)' : 'var(--divider)' }}
+        style={{ borderColor: isDark ? '#2E2E2E' : 'var(--divider)' }}
       >
         <span 
           className="text-sm font-semibold"
-          style={{ color: isDark ? 'rgba(255,255,255,0.92)' : 'var(--text-1)' }}
+          style={{ color: isDark ? '#EDEDED' : 'var(--text-1)' }}
         >
           Columns
         </span>
         <span 
           className="text-xs"
-          style={{ color: isDark ? 'rgba(255,255,255,0.60)' : 'var(--text-3)' }}
+          style={{ color: isDark ? '#878787' : 'var(--text-3)' }}
         >
           {visibleColumns.length} of {columns.length}
         </span>
@@ -129,7 +129,7 @@ export function ColumnsPanel({
               />
               <span 
                 className="text-sm"
-                style={{ color: isDark ? 'rgba(255,255,255,0.92)' : 'var(--text-1)' }}
+                style={{ color: isDark ? '#EDEDED' : 'var(--text-1)' }}
               >
                 {col.header}
               </span>
@@ -141,7 +141,7 @@ export function ColumnsPanel({
       <div 
         className="px-4 py-3 border-t flex gap-2"
         style={{ 
-          borderColor: isDark ? 'rgba(255,255,255,0.10)' : 'var(--divider)',
+          borderColor: isDark ? '#2E2E2E' : 'var(--divider)',
           backgroundColor: isDark ? '#0A0A0A' : 'var(--surface-2)',
         }}
       >

@@ -27,7 +27,7 @@ export function AllWorkBulkBar({ selectedIds, totalCount, onSelectAll, onClear, 
         style={{
           backgroundColor: '#1e1f21',
           color: 'var(--bg-app)',
-          border: '1px solid rgba(255,255,255,0.1)',
+          border: '1px solid #2E2E2E',
           borderRadius: 8,
         }}
         role="toolbar"

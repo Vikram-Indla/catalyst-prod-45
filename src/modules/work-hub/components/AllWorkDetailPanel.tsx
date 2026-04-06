@@ -65,7 +65,7 @@ export function AllWorkDetailPanel({ item, onClose, onNavigateToParent }: AllWor
       {/* Header */}
       <div
         className="flex items-center justify-between px-4 py-3"
-        style={{ borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#DFE1E6'}` }}
+        style={{ borderBottom: `1px solid ${isDark ? '#2E2E2E' : '#DFE1E6'}` }}
       >
         <div className="flex items-center gap-2">
           <JiraIssueTypeIcon type={item.type} size={20} />
@@ -95,7 +95,7 @@ export function AllWorkDetailPanel({ item, onClose, onNavigateToParent }: AllWor
         <div
           className="px-4 py-2"
           style={{
-            borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#DFE1E6'}`,
+            borderBottom: `1px solid ${isDark ? '#2E2E2E' : '#DFE1E6'}`,
             backgroundColor: isDark ? '#1A1A1A' : '#F8FAFC',
           }}
         >
@@ -116,7 +116,7 @@ export function AllWorkDetailPanel({ item, onClose, onNavigateToParent }: AllWor
       {/* Main Content */}
       <div className="flex-1 overflow-hidden flex flex-col">
         {/* Title Section */}
-        <div className="px-4 py-4" style={{ borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#F1F5F9'}` }}>
+        <div className="px-4 py-4" style={{ borderBottom: `1px solid ${isDark ? '#2E2E2E' : '#F1F5F9'}` }}>
           <h1 className="text-[18px] font-semibold leading-tight mb-3" style={{ color: isDark ? '#EDEDED' : '#172B4D' }}>
             {item.summary}
           </h1>
@@ -137,7 +137,7 @@ export function AllWorkDetailPanel({ item, onClose, onNavigateToParent }: AllWor
           <TabsList
             className="px-4 h-10 rounded-none justify-start gap-0"
             style={{
-              borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`,
+              borderBottom: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`,
               backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF',
             }}
           >
@@ -179,7 +179,7 @@ export function AllWorkDetailPanel({ item, onClose, onNavigateToParent }: AllWor
                 style={{
                   backgroundColor: isDark ? '#1A1A1A' : '#F8FAFC',
                   color: isDark ? '#EDEDED' : '#172B4D',
-                  border: isDark ? '1px solid rgba(255,255,255,0.08)' : 'none',
+                  border: isDark ? '1px solid #2E2E2E' : 'none',
                 }}
               >
                 {item.description || (
@@ -242,7 +242,7 @@ export function AllWorkDetailPanel({ item, onClose, onNavigateToParent }: AllWor
               </div>
 
               {/* Links Section */}
-              <div className="pt-4" style={{ borderTop: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#F1F5F9'}` }}>
+              <div className="pt-4" style={{ borderTop: `1px solid ${isDark ? '#2E2E2E' : '#F1F5F9'}` }}>
                 <div className="flex items-center justify-between mb-2">
                   <div className="text-[11px] font-semibold uppercase" style={{ color: isDark ? '#878787' : '#6B778C' }}>Links</div>
                   <Button variant="ghost" size="sm" className="h-6 text-[11px] text-blue-600">
@@ -256,7 +256,7 @@ export function AllWorkDetailPanel({ item, onClose, onNavigateToParent }: AllWor
                     className="rounded p-3"
                     style={{
                       backgroundColor: isDark ? '#1A1A1A' : '#F8FAFC',
-                      border: isDark ? '1px solid rgba(255,255,255,0.08)' : 'none',
+                      border: isDark ? '1px solid #2E2E2E' : 'none',
                     }}
                   >
                     <div className="text-[10px] uppercase mb-1" style={{ color: isDark ? '#878787' : '#64748B' }}>is child of</div>

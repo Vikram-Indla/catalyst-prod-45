@@ -115,15 +115,15 @@ export function SidebarBase({
     hoverBg: isDark ? 'rgba(59,130,246,0.06)' : '#F1F5F9',
     hoverText: isDark ? 'var(--cp-t1)' : '#0F172A',
     iconOpacityInactive: isDark ? 0.72 : 0.65,
-    badgeBg: isDark ? 'rgba(255,255,255,0.08)' : '#F1F5F9',
+    badgeBg: isDark ? '#2E2E2E' : '#F1F5F9',
     badgeText: isDark ? 'var(--cp-t2)' : '#94A3B8',
   };
 
   const chevronColor = isDark ? 'var(--cp-t2)' : '#94A3B8';
   const chevronHoverColor = isDark ? 'var(--cp-t1)' : '#334155';
   const sidebarBg = isDark ? '#0A0A0A' : '#FFFFFF';
-  const sidebarBorder = isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0';
-  const dividerColor = isDark ? 'rgba(255,255,255,0.08)' : '#F1F5F9';
+  const sidebarBorder = isDark ? '#2E2E2E' : '#E2E8F0';
+  const dividerColor = isDark ? '#2E2E2E' : '#F1F5F9';
   const sectionLabel = isDark ? 'var(--cp-t2)' : '#94A3B8';
   const hubLabel = isDark ? 'var(--cp-t1)' : '#0F172A';
 
@@ -168,7 +168,7 @@ export function SidebarBase({
           backfaceVisibility: 'hidden',
           transition: 'width 220ms cubic-bezier(0.4, 0, 0.2, 1)',
           scrollbarWidth: 'thin' as any,
-          scrollbarColor: isDark ? 'rgba(255,255,255,0.15) transparent' : '#E2E8F0 transparent',
+          scrollbarColor: isDark ? '#454545 transparent' : '#E2E8F0 transparent',
         }}
       >
         {/* Header with collapse toggle */}

@@ -61,7 +61,7 @@ export function TopNav() {
 
         {/* Separator */}
         <div style={{
-          width: 1, height: 24, background: 'rgba(255,255,255,0.15)',
+          width: 1, height: 24, background: '#454545',
           marginRight: 16, flexShrink: 0,
         }} />
 
@@ -114,13 +114,13 @@ export function TopNav() {
             fontSize: 12,
             fontWeight: 600,
             fontFamily: "'Inter', sans-serif",
-            background: kbOpen ? 'rgba(37,99,235,0.2)' : 'rgba(255,255,255,0.08)',
+            background: kbOpen ? 'rgba(37,99,235,0.2)' : '#2E2E2E',
             color: kbOpen ? '#60A5FA' : 'rgba(255,255,255,0.65)',
             transition: 'all 150ms',
             flexShrink: 0,
           }}
-          onMouseEnter={e => { if (!kbOpen) e.currentTarget.style.background = 'rgba(255,255,255,0.14)'; }}
-          onMouseLeave={e => { if (!kbOpen) e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; }}
+          onMouseEnter={e => { if (!kbOpen) e.currentTarget.style.background = '#454545'; }}
+          onMouseLeave={e => { if (!kbOpen) e.currentTarget.style.background = '#2E2E2E'; }}
         >
           <BookOpen size={14} />
           KB

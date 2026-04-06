@@ -71,7 +71,7 @@ export function WikiKnowledgeRequestForm({ open, onClose }: Props) {
 
   const inputStyle: React.CSSProperties = {
     width: '100%', fontSize: 12, padding: '8px 12px', borderRadius: 6,
-    border: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(0,0,0,0.10)',
+    border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(0,0,0,0.10)',
     outline: 'none', fontFamily: 'Inter, sans-serif',
     transition: 'border-color 150ms',
     background: 'transparent',
@@ -93,7 +93,7 @@ export function WikiKnowledgeRequestForm({ open, onClose }: Props) {
         animation: 'fadeScaleIn 180ms ease-out',
       }}>
         {/* Header */}
-        <div style={{ padding: '20px 24px 16px', borderBottom: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(0,0,0,0.06)', display: 'flex', alignItems: 'center' }}>
+        <div style={{ padding: '20px 24px 16px', borderBottom: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(0,0,0,0.06)', display: 'flex', alignItems: 'center' }}>
           <h2 style={{ fontFamily: 'Sora, sans-serif', fontSize: 14, fontWeight: 700, margin: 0, flex: 1, color: isDark ? '#EDEDED' : undefined }}>New Knowledge Request</h2>
           <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
             <X size={16} style={{ color: isDark ? '#878787' : 'var(--fg-3)' }} />
@@ -109,7 +109,7 @@ export function WikiKnowledgeRequestForm({ open, onClose }: Props) {
               placeholder="What knowledge are you looking for?"
               style={inputStyle}
               onFocus={e => e.currentTarget.style.borderColor = 'var(--cp-blue)'}
-              onBlur={e => e.currentTarget.style.borderColor = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.10)'}
+              onBlur={e => e.currentTarget.style.borderColor = isDark ? '#2E2E2E' : 'rgba(0,0,0,0.10)'}
             />
           </div>
 
@@ -121,7 +121,7 @@ export function WikiKnowledgeRequestForm({ open, onClose }: Props) {
               rows={3}
               style={{ ...inputStyle, resize: 'vertical' }}
               onFocus={e => e.currentTarget.style.borderColor = 'var(--cp-blue)'}
-              onBlur={e => e.currentTarget.style.borderColor = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.10)'}
+              onBlur={e => e.currentTarget.style.borderColor = isDark ? '#2E2E2E' : 'rgba(0,0,0,0.10)'}
             />
           </div>
 
@@ -154,10 +154,10 @@ export function WikiKnowledgeRequestForm({ open, onClose }: Props) {
         </div>
 
         {/* Footer */}
-        <div style={{ padding: '16px 24px 20px', borderTop: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(0,0,0,0.06)', display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
+        <div style={{ padding: '16px 24px 20px', borderTop: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(0,0,0,0.06)', display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
           <button onClick={onClose} style={{
             fontSize: 12, fontWeight: 600, padding: '8px 16px', borderRadius: 6, cursor: 'pointer',
-            border: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(0,0,0,0.10)', background: isDark ? '#1A1A1A' : 'var(--cp-float)', color: isDark ? '#A1A1A1' : 'var(--fg-2)',
+            border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(0,0,0,0.10)', background: isDark ? '#1A1A1A' : 'var(--cp-float)', color: isDark ? '#A1A1A1' : 'var(--fg-2)',
           }}>Cancel</button>
           <button onClick={handleSubmit} disabled={!canSubmit || submitting} style={{
             fontSize: 12, fontWeight: 650, padding: '8px 20px', borderRadius: 6, cursor: canSubmit ? 'pointer' : 'not-allowed',

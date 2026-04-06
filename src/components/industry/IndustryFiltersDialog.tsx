@@ -112,7 +112,7 @@ export function IndustryFiltersDialog({
                   className={`px-4 py-2 rounded-full text-sm font-medium border transition-colors ${
                     filters.quickFilter === qf.id
                       ? 'bg-brand-primary text-white border-brand-primary'
-                      : 'bg-white dark:bg-[#0A0A0A] text-foreground border-border dark:border-[rgba(255,255,255,0.08)] hover:border-brand-primary/50'
+                      : 'bg-white dark:bg-[#0A0A0A] text-foreground border-border dark:border-[#2E2E2E] hover:border-brand-primary/50'
                   }`}
                 >
                   {qf.label}
@@ -140,7 +140,7 @@ export function IndustryFiltersDialog({
                       value={filters.reporter || 'all'}
                       onValueChange={(value) => onFiltersChange({ ...filters, reporter: value === 'all' ? undefined : value })}
                     >
-                      <SelectTrigger className="bg-white dark:bg-[#0A0A0A] border-border dark:border-[rgba(255,255,255,0.08)]">
+                      <SelectTrigger className="bg-white dark:bg-[#0A0A0A] border-border dark:border-[#2E2E2E]">
                         <SelectValue placeholder="Select reporters..." />
                       </SelectTrigger>
                       <SelectContent className="bg-white dark:bg-[#1A1A1A]">
@@ -154,7 +154,7 @@ export function IndustryFiltersDialog({
                       value={filters.businessOwner || 'all'}
                       onValueChange={(value) => onFiltersChange({ ...filters, businessOwner: value === 'all' ? undefined : value })}
                     >
-                      <SelectTrigger className="bg-white dark:bg-[#0A0A0A] border-border dark:border-[rgba(255,255,255,0.08)]">
+                      <SelectTrigger className="bg-white dark:bg-[#0A0A0A] border-border dark:border-[#2E2E2E]">
                         <SelectValue placeholder="Search business owners..." />
                       </SelectTrigger>
                       <SelectContent className="bg-white dark:bg-[#1A1A1A]">
@@ -170,7 +170,7 @@ export function IndustryFiltersDialog({
                       value={filters.assignee || 'all'}
                       onValueChange={(value) => onFiltersChange({ ...filters, assignee: value === 'all' ? undefined : value })}
                     >
-                      <SelectTrigger className="bg-white dark:bg-[#0A0A0A] border-border dark:border-[rgba(255,255,255,0.08)]">
+                      <SelectTrigger className="bg-white dark:bg-[#0A0A0A] border-border dark:border-[#2E2E2E]">
                         <SelectValue placeholder="Select assignees..." />
                       </SelectTrigger>
                       <SelectContent className="bg-white dark:bg-[#1A1A1A]">
@@ -184,7 +184,7 @@ export function IndustryFiltersDialog({
                       value={filters.department || 'all'}
                       onValueChange={(value) => onFiltersChange({ ...filters, department: value === 'all' ? undefined : value })}
                     >
-                      <SelectTrigger className="bg-white dark:bg-[#0A0A0A] border-border dark:border-[rgba(255,255,255,0.08)]">
+                      <SelectTrigger className="bg-white dark:bg-[#0A0A0A] border-border dark:border-[#2E2E2E]">
                         <SelectValue placeholder="Select..." />
                       </SelectTrigger>
                       <SelectContent className="bg-white dark:bg-[#1A1A1A]">
@@ -221,7 +221,7 @@ export function IndustryFiltersDialog({
                       value={filters.processStep || 'all'}
                       onValueChange={(value) => onFiltersChange({ ...filters, processStep: value === 'all' ? undefined : value })}
                     >
-                      <SelectTrigger className="bg-white dark:bg-[#0A0A0A] border-border dark:border-[rgba(255,255,255,0.08)]">
+                      <SelectTrigger className="bg-white dark:bg-[#0A0A0A] border-border dark:border-[#2E2E2E]">
                         <SelectValue placeholder="Select..." />
                       </SelectTrigger>
                       <SelectContent className="bg-white dark:bg-[#1A1A1A]">
@@ -240,7 +240,7 @@ export function IndustryFiltersDialog({
                       value={filters.ageing || 'all'}
                       onValueChange={(value) => onFiltersChange({ ...filters, ageing: value === 'all' ? undefined : value })}
                     >
-                      <SelectTrigger className="bg-white dark:bg-[#0A0A0A] border-border dark:border-[rgba(255,255,255,0.08)]">
+                      <SelectTrigger className="bg-white dark:bg-[#0A0A0A] border-border dark:border-[#2E2E2E]">
                         <SelectValue placeholder="All" />
                       </SelectTrigger>
                       <SelectContent className="bg-white dark:bg-[#1A1A1A]">

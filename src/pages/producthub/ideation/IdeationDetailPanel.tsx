@@ -134,8 +134,8 @@ const formatSource = (source: string): string => {
 export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Props) {
   const { isDark } = useTheme();
   const dk = isDark ? DK : LK;
-  const darkSelectStyle: React.CSSProperties = { ...selectStyle, color: dk.t1, background: isDark ? 'transparent' : '#FFFFFF', borderColor: isDark ? 'rgba(255,255,255,0.12)' : 'rgba(15,23,42,0.14)' };
-  const darkInputStyle: React.CSSProperties = { ...inputStyle, color: dk.t1, background: isDark ? 'transparent' : '#FFFFFF', borderColor: isDark ? 'rgba(255,255,255,0.12)' : 'rgba(15,23,42,0.14)' };
+  const darkSelectStyle: React.CSSProperties = { ...selectStyle, color: dk.t1, background: isDark ? 'transparent' : '#FFFFFF', borderColor: isDark ? '#454545' : 'rgba(15,23,42,0.14)' };
+  const darkInputStyle: React.CSSProperties = { ...inputStyle, color: dk.t1, background: isDark ? 'transparent' : '#FFFFFF', borderColor: isDark ? '#454545' : 'rgba(15,23,42,0.14)' };
   const { data: rawIdea, isLoading } = useIdeaRaw(ideaKey);
   const { data: dbFactors } = useImpactFactors(ideaKey);
   const updateIdea = useUpdateIdea();
@@ -448,7 +448,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
                   onClick={() => setLocalIsCommitted(!localIsCommitted)}
                   style={{
                     width: '44px', height: '24px', borderRadius: '12px', border: 'none',
-                    backgroundColor: localIsCommitted ? '#2563EB' : (isDark ? 'rgba(255,255,255,0.12)' : '#E2E8F0'),
+                    backgroundColor: localIsCommitted ? '#2563EB' : (isDark ? '#454545' : '#E2E8F0'),
                     cursor: 'pointer', position: 'relative', transition: 'background 200ms ease',
                   }}
                 >
@@ -476,7 +476,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
                 rows={4}
                 placeholder="Add a description..."
                 style={{
-                  width: '100%', borderRadius: '4px', border: `1px solid ${isDark ? 'rgba(255,255,255,0.12)' : 'rgba(15,23,42,0.14)'}`,
+                  width: '100%', borderRadius: '4px', border: `1px solid ${isDark ? '#454545' : 'rgba(15,23,42,0.14)'}`,
                   padding: '8px 12px', fontSize: '13px', color: dk.t1, resize: 'vertical',
                   fontFamily: "'Inter', sans-serif", outline: 'none', background: isDark ? 'transparent' : '#FFFFFF',
                 }}
@@ -526,7 +526,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
               <div key={dim.letter} style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '14px' }}>
                 <div style={{
                   width: '32px', height: '32px', borderRadius: '50%',
-                  backgroundColor: isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0', color: dk.t2,
+                  backgroundColor: isDark ? '#2E2E2E' : '#E2E8F0', color: dk.t2,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   fontSize: '13px', fontWeight: 700, flexShrink: 0,
                 }}>
@@ -537,7 +537,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
                     <span style={{ fontSize: '13px', fontWeight: 500, color: dk.t1 }}>{dim.name}</span>
                     <span style={{ fontSize: '12px', color: dk.t2 }}>{dim.weight}</span>
                   </div>
-                  <div style={{ height: '4px', borderRadius: '4px', backgroundColor: isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0', overflow: 'hidden' }}>
+                  <div style={{ height: '4px', borderRadius: '4px', backgroundColor: isDark ? '#2E2E2E' : '#E2E8F0', overflow: 'hidden' }}>
                     <div style={{
                       height: '100%', width: `${(dim.score / 5) * 100}%`,
                       backgroundColor: dim.score > 0 ? '#2563EB' : 'transparent',
@@ -641,7 +641,7 @@ function CommentsSection({ ideaId }: { ideaId: string | null }) {
             const timeAgo = c.created_at ? getRelativeTime(c.created_at) : '';
             return (
               <div key={c.id} style={{
-                background: isDark ? 'rgba(255,255,255,0.03)' : '#FFFFFF', border: `1px solid ${dk.divider}`,
+                background: isDark ? '#1F1F1F' : '#FFFFFF', border: `1px solid ${dk.divider}`,
                 borderRadius: '6px', padding: '12px 16px',
               }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>

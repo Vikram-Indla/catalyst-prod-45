@@ -60,7 +60,7 @@ export default function SidePanelComments({ workItemId }: Props) {
         )}
         {comments.map((c: any) => (
           <div key={c.id} style={{
-            background: 'var(--bg-app)', border: '1px solid var(--bd-subtle, rgba(255,255,255,0.05))', borderRadius: 6,
+            background: 'var(--bg-app)', border: '1px solid var(--bd-subtle, #292929)', borderRadius: 6,
             padding: '12px 16px', marginBottom: 12,
           }}>
             {/* Header */}
@@ -90,18 +90,18 @@ export default function SidePanelComments({ workItemId }: Props) {
       </div>
 
       {/* Input */}
-      <div style={{ borderTop: '1px solid var(--bd-subtle, rgba(255,255,255,0.05))', padding: '12px 0 0', background: 'var(--bg-app)' }}>
+      <div style={{ borderTop: '1px solid var(--bd-subtle, #292929)', padding: '12px 0 0', background: 'var(--bg-app)' }}>
         <textarea
           value={text} onChange={e => setText(e.target.value)} onKeyDown={handleKeyDown}
           placeholder="Add a comment..." rows={2}
           style={{
-            width: '100%', border: '1px solid var(--bd-default, rgba(255,255,255,0.08))', borderRadius: 6,
+            width: '100%', border: '1px solid var(--bd-default, #2E2E2E)', borderRadius: 6,
             padding: '8px 12px', fontSize: 14, color: 'var(--fg-1)', fontFamily: 'Inter, sans-serif',
             resize: 'vertical', outline: 'none', minHeight: 50, maxHeight: 120, background: 'var(--bg-app)',
             transition: 'border-color 150ms',
           }}
           onFocus={e => (e.currentTarget.style.borderColor = 'var(--cp-blue)')}
-          onBlur={e => (e.currentTarget.style.borderColor = 'var(--bd-default, rgba(255,255,255,0.08))')}
+          onBlur={e => (e.currentTarget.style.borderColor = 'var(--bd-default, #2E2E2E)')}
         />
         {text.trim() && (
           <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 8, marginTop: 6 }}>

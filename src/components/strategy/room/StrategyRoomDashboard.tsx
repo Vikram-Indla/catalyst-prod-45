@@ -85,9 +85,9 @@ const TOKENS = `
   --srd-ink-m: rgba(255,255,255,0.60);
   --srd-bg: #0A0A0A;
   --srd-bg-2: #0A0A0A;
-  --srd-bg-3: rgba(255,255,255,0.05);
-  --srd-bdr: rgba(255,255,255,0.10);
-  --srd-bdr-s: rgba(255,255,255,0.18);
+  --srd-bg-3: #292929;
+  --srd-bdr: #2E2E2E;
+  --srd-bdr-s: #454545;
   --srd-blue: #3B82F6;
   --srd-blue-h: #60A5FA;
   --srd-blue-bg: rgba(59,130,246,0.08);

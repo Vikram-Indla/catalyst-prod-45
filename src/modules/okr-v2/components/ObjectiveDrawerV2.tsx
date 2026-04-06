@@ -155,7 +155,7 @@ function PremiumProgressBar({ progress, health }: { progress: number; health: st
         <div 
           className="absolute inset-0 opacity-30"
           style={{
-            backgroundImage: 'repeating-linear-gradient(90deg, transparent, transparent 10px, rgba(255,255,255,0.03) 10px, rgba(255,255,255,0.03) 20px)'
+            backgroundImage: 'repeating-linear-gradient(90deg, transparent, transparent 10px, #1F1F1F 10px, #1F1F1F 20px)'
           }}
         />
         <div 

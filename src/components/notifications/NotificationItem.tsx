@@ -87,14 +87,14 @@ function NotificationItemInner({ notification, actorProfile, onMarkRead, onClick
 
   // Dark mode tokens
   const T = {
-    text1: isDark ? '#F5F3F0' : '#0F172A',
-    text2: isDark ? '#A09890' : '#64748B',
-    text3: isDark ? '#6B6560' : '#94A3B8',
-    hover: isDark ? 'rgba(255,255,255,0.04)' : 'rgba(15,23,42,0.04)',
-    press: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.08)',
-    borderStrong: isDark ? 'rgba(255,255,255,0.20)' : 'rgba(15,23,42,0.2)',
+    text1: isDark ? '#EDEDED' : '#0F172A',
+    text2: isDark ? '#A1A1A1' : '#64748B',
+    text3: isDark ? '#878787' : '#94A3B8',
+    hover: isDark ? '#1F1F1F' : 'rgba(15,23,42,0.04)',
+    press: isDark ? '#2E2E2E' : 'rgba(15,23,42,0.08)',
+    borderStrong: isDark ? '#454545' : 'rgba(15,23,42,0.2)',
     entityKey: isDark ? '#60A5FA' : '#2563EB',
-    checkStroke: isDark ? '#A09890' : '#64748B',
+    checkStroke: isDark ? '#A1A1A1' : '#64748B',
   };
 
   // Determine if this is a system-generated assignment (no actor at all)

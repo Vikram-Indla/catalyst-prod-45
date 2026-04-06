@@ -35,7 +35,7 @@ function ConnectionStatusCard({ projectId }: { projectId: string }) {
 
   if (isLoading) {
     return (
-      <Card className="border-[var(--bd-default, #E2E8F0)] dark:border-[rgba(255,255,255,0.08)]">
+      <Card className="border-[var(--bd-default, #E2E8F0)] dark:border-[#2E2E2E]">
         <CardContent className="p-6">
           <div className="animate-pulse h-16 rounded" />
         </CardContent>
@@ -46,7 +46,7 @@ function ConnectionStatusCard({ projectId }: { projectId: string }) {
   const isConnected = !!connection;
 
   return (
-    <Card className="border-[var(--bd-default, #E2E8F0)] dark:border-[rgba(255,255,255,0.08)] bg-background">
+    <Card className="border-[var(--bd-default, #E2E8F0)] dark:border-[#2E2E2E] bg-background">
       <CardHeader className="pb-3">
         <CardTitle className="text-sm font-semibold uppercase tracking-[0.06em] text-foreground">
           Jira Connection
@@ -86,7 +86,7 @@ function StatusMappingTable({ projectId }: { projectId: string }) {
   const updateMapping = useUpdateStatusMapping();
 
   return (
-    <Card className="border-[var(--bd-default, #E2E8F0)] dark:border-[rgba(255,255,255,0.08)] bg-background">
+    <Card className="border-[var(--bd-default, #E2E8F0)] dark:border-[#2E2E2E] bg-background">
       <CardHeader className="pb-3">
         <CardTitle className="text-sm font-semibold uppercase tracking-[0.06em] text-foreground">
           Status Mapping
@@ -102,7 +102,7 @@ function StatusMappingTable({ projectId }: { projectId: string }) {
         ) : (
           <Table>
             <TableHeader>
-              <TableRow className="h-9 border-b border-[var(--bd-default, #E2E8F0)] dark:border-[rgba(255,255,255,0.08)]">
+              <TableRow className="h-9 border-b border-[var(--bd-default, #E2E8F0)] dark:border-[#2E2E2E]">
                 <TableHead className="text-[11px] font-bold uppercase tracking-[0.06em] text-muted-foreground bg-[#F8FAFC] dark:bg-[#1A1A1A]">
                   Jira Status
                 </TableHead>
@@ -115,7 +115,7 @@ function StatusMappingTable({ projectId }: { projectId: string }) {
               {mappings.map((m) => (
                 <TableRow
                   key={m.id}
-                  className="h-9 border-b border-[var(--bd-default, #E2E8F0)] dark:border-[rgba(255,255,255,0.08)]"
+                  className="h-9 border-b border-[var(--bd-default, #E2E8F0)] dark:border-[#2E2E2E]"
                   style={{ maxHeight: 36 }}
                 >
                   <TableCell className="py-2 px-3 text-[13px] text-foreground">
@@ -165,7 +165,7 @@ function SyncDirectionSelector({ projectId }: { projectId: string }) {
   if (!connection) return null;
 
   return (
-    <Card className="border-[var(--bd-default, #E2E8F0)] dark:border-[rgba(255,255,255,0.08)] bg-background">
+    <Card className="border-[var(--bd-default, #E2E8F0)] dark:border-[#2E2E2E] bg-background">
       <CardHeader className="pb-3">
         <CardTitle className="text-sm font-semibold uppercase tracking-[0.06em] text-foreground">
           Sync Direction
@@ -237,7 +237,7 @@ function SyncHealthCard({ projectId }: { projectId: string }) {
   const isQueueBackedUp = pendingCount > 10;
 
   return (
-    <Card className="border-[var(--bd-default, #E2E8F0)] dark:border-[rgba(255,255,255,0.08)] bg-background">
+    <Card className="border-[var(--bd-default, #E2E8F0)] dark:border-[#2E2E2E] bg-background">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <CardTitle className="text-sm font-semibold uppercase tracking-[0.06em] text-foreground">
@@ -316,7 +316,7 @@ function RecentEventsTable({ projectId }: { projectId: string }) {
   };
 
   return (
-    <Card className="border-[var(--bd-default, #E2E8F0)] dark:border-[rgba(255,255,255,0.08)] bg-background">
+    <Card className="border-[var(--bd-default, #E2E8F0)] dark:border-[#2E2E2E] bg-background">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <CardTitle className="text-sm font-semibold uppercase tracking-[0.06em] text-foreground">
@@ -335,7 +335,7 @@ function RecentEventsTable({ projectId }: { projectId: string }) {
         ) : (
           <Table>
             <TableHeader>
-              <TableRow className="h-9 border-b border-[var(--bd-default, #E2E8F0)] dark:border-[rgba(255,255,255,0.08)]">
+              <TableRow className="h-9 border-b border-[var(--bd-default, #E2E8F0)] dark:border-[#2E2E2E]">
                 {['Time', 'Event', 'Entity', 'Status'].map((h) => (
                   <TableHead
                     key={h}
@@ -350,7 +350,7 @@ function RecentEventsTable({ projectId }: { projectId: string }) {
               {events.map((evt) => (
                 <TableRow
                   key={evt.id}
-                  className="h-9 border-b border-[var(--bd-default, #E2E8F0)] dark:border-[rgba(255,255,255,0.08)] hover:bg-[rgba(0,0,0,0.04)] dark:hover:bg-[rgba(255,255,255,0.04)]"
+                  className="h-9 border-b border-[var(--bd-default, #E2E8F0)] dark:border-[#2E2E2E] hover:bg-[rgba(0,0,0,0.04)] dark:hover:bg-[#1F1F1F]"
                   style={{ maxHeight: 36 }}
                 >
                   <TableCell className="py-2 px-3 text-[12px] font-mono text-muted-foreground">

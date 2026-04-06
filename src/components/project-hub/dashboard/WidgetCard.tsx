@@ -30,7 +30,7 @@ function WidgetCardInner({ title, subtitle, count, countColor, leftBorder, heade
 
   const getCountBadgeStyle = () => {
     if (!countColor) return dark
-      ? { bg: 'rgba(255,255,255,0.06)', text: 'rgba(255,255,255,0.72)', border: 'rgba(255,255,255,0.12)' }
+      ? { bg: '#292929', text: 'rgba(255,255,255,0.72)', border: '#454545' }
       : { bg: 'var(--cp-bd-zone)', text: 'var(--fg-2)', border: '#CBD5E1' };
     if (countColor === '#D97706' || countColor === '#EF4444') return dark
       ? { bg: 'rgba(220,38,38,0.15)', text: '#FCA5A5', border: 'rgba(220,38,38,0.3)' }
@@ -50,7 +50,7 @@ function WidgetCardInner({ title, subtitle, count, countColor, leftBorder, heade
       aria-label={title}
       className={`ph-widget-card ${dark ? 'bg-[#0A0A0A]' : 'bg-[var(--bg-app)]'}`}
       style={{
-        border: dark ? '1px solid rgba(255,255,255,0.08)' : '1px solid var(--divider)',
+        border: dark ? '1px solid #2E2E2E' : '1px solid var(--divider)',
         borderRadius: 12,
         borderLeft: leftBorder ? `3px solid ${leftBorder}` : undefined,
         overflow: 'hidden',
@@ -66,7 +66,7 @@ function WidgetCardInner({ title, subtitle, count, countColor, leftBorder, heade
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          borderBottom: dark ? '1px solid rgba(255,255,255,0.08)' : '1px solid var(--cp-bd-zone)',
+          borderBottom: dark ? '1px solid #2E2E2E' : '1px solid var(--cp-bd-zone)',
           flexShrink: 0,
         }}
       >

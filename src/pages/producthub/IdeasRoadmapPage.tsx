@@ -88,7 +88,7 @@ export default function IdeasRoadmapPage() {
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px', height: 50 }}>
                   <span style={{ fontSize: '11px', fontWeight: 700, color: isDark ? dk.t3 : col.textColor, textTransform: 'uppercase', letterSpacing: '0.07em' }}>{col.label}</span>
-                  <span style={{ fontSize: '10px', fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, background: isDark ? 'rgba(255,255,255,0.06)' : '#F1F5F9', borderRadius: '100px', padding: '0 6px', height: 18, display: 'inline-flex', alignItems: 'center', color: dk.t3 }}>{colIdeas.length}</span>
+                  <span style={{ fontSize: '10px', fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, background: isDark ? '#292929' : '#F1F5F9', borderRadius: '100px', padding: '0 6px', height: 18, display: 'inline-flex', alignItems: 'center', color: dk.t3 }}>{colIdeas.length}</span>
                 </div>
                 {colIdeas.length === 0 && (
                   <div style={{ padding: '20px', textAlign: 'center', color: dk.t3, fontSize: '12px', border: `1px dashed ${dk.border}`, borderRadius: '8px' }}>No ideas</div>
@@ -112,7 +112,7 @@ function RoadmapCard({ idea, onClick, isDark, dk }: { idea: IdeaRow; onClick: ()
   return (
     <div onClick={onClick} style={{
       background: isDark ? '#0A0A0A' : '#FFFFFF',
-      border: `1px solid ${isDark ? 'rgba(255,255,255,0.14)' : dk.border}`,
+      border: `1px solid ${isDark ? '#454545' : dk.border}`,
       borderLeft: isConverted ? '3px solid #16A34A' : `1px solid ${dk.border}`,
       borderRadius: '6px',
       padding: '12px', marginBottom: '8px', cursor: 'pointer',
@@ -124,24 +124,24 @@ function RoadmapCard({ idea, onClick, isDark, dk }: { idea: IdeaRow; onClick: ()
           e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.10)';
           e.currentTarget.style.transform = 'translateY(-1px)';
         }
-        e.currentTarget.style.borderColor = isDark ? 'rgba(255,255,255,0.18)' : 'rgba(37,99,235,0.3)';
+        e.currentTarget.style.borderColor = isDark ? '#454545' : 'rgba(37,99,235,0.3)';
       }}
       onMouseLeave={e => {
         if (!isDark) {
           e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.06)';
           e.currentTarget.style.transform = 'none';
         }
-        e.currentTarget.style.borderColor = isDark ? 'rgba(255,255,255,0.10)' : 'rgba(15,23,42,0.12)';
+        e.currentTarget.style.borderColor = isDark ? '#2E2E2E' : 'rgba(15,23,42,0.12)';
       }}
     >
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
         <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', fontWeight: 600, color: dk.blueKey }}>{idea.idea_key}</span>
-        <span style={{ fontSize: '9px', fontWeight: 800, background: isDark ? 'rgba(255,255,255,0.06)' : '#F1F5F9', color: dk.t2, padding: '1px 5px', borderRadius: '4px', border: `1px solid ${dk.border}`, fontFamily: "'JetBrains Mono', monospace" }}>{idea.priority || 'P2'}</span>
+        <span style={{ fontSize: '9px', fontWeight: 800, background: isDark ? '#292929' : '#F1F5F9', color: dk.t2, padding: '1px 5px', borderRadius: '4px', border: `1px solid ${dk.border}`, fontFamily: "'JetBrains Mono', monospace" }}>{idea.priority || 'P2'}</span>
       </div>
       <div style={{ fontSize: '13px', fontWeight: 500, color: dk.t1, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', marginBottom: '6px', lineHeight: 1.35 }}>{idea.title}</div>
       <div style={{ marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'wrap' }}>
-        {idea.assigned_team && <span style={{ background: isDark ? 'rgba(255,255,255,0.06)' : '#F1F5F9', color: dk.t2, padding: '1px 6px', borderRadius: '4px', fontSize: '11px', fontWeight: 500, border: isDark ? `1px solid ${dk.border}` : 'none' }}>{idea.assigned_team}</span>}
-        {idea.theme && <span style={{ background: isDark ? 'rgba(255,255,255,0.06)' : '#F1F5F9', color: dk.t2, padding: '1px 6px', borderRadius: '4px', fontSize: '11px', fontWeight: 500, maxWidth: '160px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', border: isDark ? `1px solid ${dk.border}` : 'none' }}>{idea.theme}</span>}
+        {idea.assigned_team && <span style={{ background: isDark ? '#292929' : '#F1F5F9', color: dk.t2, padding: '1px 6px', borderRadius: '4px', fontSize: '11px', fontWeight: 500, border: isDark ? `1px solid ${dk.border}` : 'none' }}>{idea.assigned_team}</span>}
+        {idea.theme && <span style={{ background: isDark ? '#292929' : '#F1F5F9', color: dk.t2, padding: '1px 6px', borderRadius: '4px', fontSize: '11px', fontWeight: 500, maxWidth: '160px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', border: isDark ? `1px solid ${dk.border}` : 'none' }}>{idea.theme}</span>}
       </div>
       <div style={{ borderTop: `1px solid ${dk.divider}`, paddingTop: '8px' }}>
         <span style={{ fontSize: '11px', fontWeight: 700, color: idea.impact_total > 0 ? dk.t2 : dk.t3, fontFamily: "'JetBrains Mono', monospace" }}>IMPACT {idea.impact_total.toFixed(2)}</span>

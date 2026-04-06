@@ -915,8 +915,8 @@ export default function TestHubExecutionPage() {
                             passed:  { text: '#16A34A', bg: 'rgba(34,197,94,0.12)', border: 'rgba(34,197,94,0.3)' },
                             failed:  { text: '#DC2626', bg: 'rgba(248,113,113,0.12)', border: 'rgba(248,113,113,0.3)' },
                             blocked: { text: '#D97706', bg: 'rgba(251,191,36,0.12)', border: 'rgba(251,191,36,0.3)' },
-                            skipped: { text: '#878787', bg: '#1A1A1A', border: 'rgba(255,255,255,0.08)' },
-                            not_run: { text: '#878787', bg: '#1A1A1A', border: 'rgba(255,255,255,0.08)' },
+                            skipped: { text: '#878787', bg: '#1A1A1A', border: '#2E2E2E' },
+                            not_run: { text: '#878787', bg: '#1A1A1A', border: '#2E2E2E' },
                           } : {
                             passed:  { text: '#16A34A', bg: '#F0FDF4', border: '#BBF7D0' },
                             failed:  { text: '#DC2626', bg: '#FEF2F2', border: '#FECACA' },
@@ -928,7 +928,7 @@ export default function TestHubExecutionPage() {
                           return (
                             <div key={i} style={{
                               padding: '12px 16px', backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF',
-                              border: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 6,
+                              border: `0.75px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 6,
                               borderLeft: `3px solid ${colors.border}`,
                             }}>
                               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
@@ -1217,7 +1217,7 @@ export default function TestHubExecutionPage() {
                           disabled={isDisabled}
                           title={!anyStepMarked ? 'Mark all steps before completing' : `Complete with status: ${derivedStatus}`}
                           style={{
-                            height: 34, padding: '0 14px', border: isDisabled ? `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}` : 'none',
+                            height: 34, padding: '0 14px', border: isDisabled ? `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}` : 'none',
                             borderRadius: 6, backgroundColor: isDisabled ? (isDark ? '#1A1A1A' : '#F8FAFC') : colors.bg,
                             color: isDisabled ? (isDark ? '#878787' : '#94A3B8') : colors.text, fontSize: 12, fontWeight: 700,
                             cursor: isDisabled ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: 5,

@@ -760,7 +760,7 @@ const drawerCSS = `
   box-shadow: -12px 0 40px rgba(0,0,0,0.5) !important;
 }
 .dark .um-drawer .um-drawer-header {
-  border-color: rgba(255,255,255,0.08) !important;
+  border-color: #2E2E2E !important;
 }
 .dark .um-drawer .um-drawer-header h2 {
   color: #EDEDED !important;
@@ -772,7 +772,7 @@ const drawerCSS = `
 .dark .um-form-group select {
   background: #0A0A0A !important;
   color: #EDEDED !important;
-  border-color: rgba(255,255,255,0.08) !important;
+  border-color: #2E2E2E !important;
 }
 .dark .um-form-group input:focus,
 .dark .um-form-group select:focus {
@@ -786,7 +786,7 @@ const drawerCSS = `
 .dark .um-drawer .um-btn {
   background: #0A0A0A !important;
   color: #A1A1A1 !important;
-  border-color: rgba(255,255,255,0.08) !important;
+  border-color: #2E2E2E !important;
 }
 .dark .um-drawer .um-btn:hover {
   border-color: #2563eb !important;

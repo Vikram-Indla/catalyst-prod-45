@@ -27,8 +27,8 @@ const DK = {
   t1: 'var(--cp-t1)',
   t2: 'var(--cp-t2)',
   t3: 'var(--cp-t3)',
-  border: 'rgba(255,255,255,0.10)',
-  hover: 'rgba(255,255,255,0.03)',
+  border: '#2E2E2E',
+  hover: '#1F1F1F',
   float: '#1A1A1A',
 };
 
@@ -97,7 +97,7 @@ function FilterDropdown({
             const isSelected = selected.includes(opt.id);
             return (
               <label key={opt.id} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '5px 8px', borderRadius: 4, cursor: 'pointer', fontSize: 12, color: isDark ? DK.t1 : 'var(--fg-1)' }}
-                onMouseEnter={e => (e.currentTarget.style.background = isDark ? 'rgba(255,255,255,0.05)' : 'var(--cp-bd-zone)')}
+                onMouseEnter={e => (e.currentTarget.style.background = isDark ? '#292929' : 'var(--cp-bd-zone)')}
                 onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
               >
                 <input type="checkbox" checked={isSelected} onChange={() => onToggle(opt.id)} style={{ accentColor: 'var(--cp-blue)' }} />
@@ -138,7 +138,7 @@ export function GoalsToolbar({
     <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 12 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
         {/* View Switcher */}
-        <div style={{ display: 'inline-flex', background: isDark ? 'rgba(255,255,255,0.04)' : 'var(--cp-bd-zone)', borderRadius: 8, padding: 3, gap: 2 }}>
+        <div style={{ display: 'inline-flex', background: isDark ? '#1F1F1F' : 'var(--cp-bd-zone)', borderRadius: 8, padding: 3, gap: 2 }}>
           {viewButtons.map(vb => {
             const active = currentView === vb.key;
             return (
@@ -147,7 +147,7 @@ export function GoalsToolbar({
                 padding: '5px 12px', fontSize: 12,
                 fontWeight: active ? 600 : 500,
                 color: active ? (isDark ? 'var(--bg-app)' : 'var(--fg-1)') : (isDark ? 'var(--fg-4)' : 'var(--fg-3)'),
-                background: active ? (isDark ? 'rgba(255,255,255,0.08)' : 'var(--bg-app)') : 'transparent',
+                background: active ? (isDark ? '#2E2E2E' : 'var(--bg-app)') : 'transparent',
                 border: 'none', borderRadius: 6, cursor: 'pointer',
                 boxShadow: active && !isDark ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
                 transition: 'all 150ms',
@@ -161,7 +161,7 @@ export function GoalsToolbar({
 
         {/* Search */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: isDark ? 'transparent' : 'var(--bg-app)', border: `1px solid ${isDark ? DK.border : 'var(--divider)'}`, borderRadius: 8, padding: '5px 10px', minWidth: 220 }}>
-          <Search size={14} color={isDark ? 'rgba(255,255,255,0.35)' : '#94A3B8'} />
+          <Search size={14} color={isDark ? '#7D7D7D' : '#94A3B8'} />
           <input
             type="text" placeholder="Search goals or KRs..."
             value={searchQuery} onChange={e => onSearch(e.target.value)}
@@ -169,7 +169,7 @@ export function GoalsToolbar({
           />
           {searchQuery && (
             <button onClick={() => onSearch('')} style={{ border: 'none', background: 'none', cursor: 'pointer', padding: 0, display: 'flex' }}>
-              <X size={12} color={isDark ? 'rgba(255,255,255,0.35)' : '#94A3B8'} />
+              <X size={12} color={isDark ? '#7D7D7D' : '#94A3B8'} />
             </button>
           )}
         </div>

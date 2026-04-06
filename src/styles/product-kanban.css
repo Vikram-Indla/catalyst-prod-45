@@ -25,41 +25,41 @@
 /* ═══ DARK MODE — Nocturne One Surface Model ═══ */
 .dark [data-module="product-kanban"],
 [data-theme="dark"] [data-module="product-kanban"] {
-  --pk-ink: rgba(255,255,255,0.92);
-  --pk-ink-secondary: rgba(255,255,255,0.85);
-  --pk-ink-tertiary: rgba(255,255,255,0.72);
-  --pk-ink-muted: rgba(255,255,255,0.50);
+  --pk-ink: #EDEDED;
+  --pk-ink-secondary: #EDEDED;
+  --pk-ink-tertiary: #A1A1A1;
+  --pk-ink-muted: #7D7D7D;
   --pk-surface: #0A0A0A;
-  --pk-surface-column: rgba(255,255,255,0.03);
-  --pk-surface-tertiary: rgba(255,255,255,0.05);
-  --pk-border: rgba(255,255,255,0.10);
-  --pk-border-strong: rgba(255,255,255,0.18);
+  --pk-surface-column: #1F1F1F;
+  --pk-surface-tertiary: #292929;
+  --pk-border: #2E2E2E;
+  --pk-border-strong: #454545;
   --pk-primary-bg: rgba(59,130,246,0.12);
 }
 .dark .pk-card,
 [data-theme="dark"] .pk-card {
   background: transparent;
-  border-color: rgba(255,255,255,0.10);
+  border-color: #2E2E2E;
 }
 .dark .pk-card:hover,
 [data-theme="dark"] .pk-card:hover {
-  border-color: rgba(255,255,255,0.18);
+  border-color: #454545;
   box-shadow: none;
 }
 .dark .pk-card-title,
 [data-theme="dark"] .pk-card-title {
-  color: rgba(255,255,255,0.92);
+  color: #EDEDED;
 }
 .dark .pk-chip,
 [data-theme="dark"] .pk-chip {
-  color: rgba(255,255,255,0.72) !important;
+  color: #A1A1A1 !important;
   background: transparent !important;
-  border-color: rgba(255,255,255,0.10) !important;
+  border-color: #2E2E2E !important;
 }
 .dark .pk-chip:hover,
 [data-theme="dark"] .pk-chip:hover {
-  background: rgba(255,255,255,0.05) !important;
-  border-color: rgba(255,255,255,0.18) !important;
+  background: #292929 !important;
+  border-color: #454545 !important;
 }
 .dark .pk-chip.pk-chip--active,
 [data-theme="dark"] .pk-chip.pk-chip--active {
@@ -70,22 +70,22 @@
 .dark .pk-dropdown,
 [data-theme="dark"] .pk-dropdown {
   background: #1A1A1A;
-  border-color: rgba(255,255,255,0.12);
+  border-color: #454545;
   box-shadow: 0 8px 24px rgba(0,0,0,0.4);
 }
 .dark .pk-dropdown-item:hover,
 [data-theme="dark"] .pk-dropdown-item:hover {
-  background: rgba(255,255,255,0.06);
+  background: #292929;
 }
 .dark .pk-context-menu,
 [data-theme="dark"] .pk-context-menu {
   background: #1A1A1A;
-  border-color: rgba(255,255,255,0.12);
+  border-color: #454545;
   box-shadow: 0 8px 24px rgba(0,0,0,0.5);
 }
 .dark .pk-column-collapsed:hover,
 [data-theme="dark"] .pk-column-collapsed:hover {
-  background: rgba(255,255,255,0.05);
+  background: #292929;
 }
 .dark .pk-card--overlay,
 [data-theme="dark"] .pk-card--overlay {

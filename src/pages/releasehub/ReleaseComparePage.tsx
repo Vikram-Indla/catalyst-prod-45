@@ -70,7 +70,7 @@ export default function ReleaseComparePage() {
               const isSelected = selected.includes(r.id);
               return (
                 <button key={r.id} onClick={() => toggleSelect(r.id)}
-                  className={`bg-white dark:bg-[#1A1A1A] rounded-lg border p-3 text-left transition-all ${isSelected ? 'border-[#0D9488] border-2 ring-2 ring-[#0D9488]/20' : 'border-[var(--bd-default, #E2E8F0)] dark:border-[rgba(255,255,255,0.08)] hover:border-[#C9D3E0]'}`}
+                  className={`bg-white dark:bg-[#1A1A1A] rounded-lg border p-3 text-left transition-all ${isSelected ? 'border-[#0D9488] border-2 ring-2 ring-[#0D9488]/20' : 'border-[var(--bd-default, #E2E8F0)] dark:border-[#2E2E2E] hover:border-[#C9D3E0]'}`}
                   style={{ transition: 'all 0.12s ease' }}>
                   <span className="text-[13px] font-semibold block truncate" style={{ color: RH.ink1 }}>{r.name}</span>
                   <div className="flex items-center gap-2 mt-1.5">
@@ -84,7 +84,7 @@ export default function ReleaseComparePage() {
 
           {selectedReleases.length >= 2 ? (
             <div className="space-y-4">
-              <div className="bg-white dark:bg-[#1A1A1A] rounded-lg border border-[var(--bd-default, #E2E8F0)] dark:border-[rgba(255,255,255,0.08)] overflow-hidden">
+              <div className="bg-white dark:bg-[#1A1A1A] rounded-lg border border-[var(--bd-default, #E2E8F0)] dark:border-[#2E2E2E] overflow-hidden">
                 <table className="w-full text-[13px]" style={{ fontFamily: RH.fontBody }} role="table">
                   <thead>
                     <tr className="bg-[#F4F7FA] border-b border-[var(--bd-default, #E2E8F0)]">
@@ -113,7 +113,7 @@ export default function ReleaseComparePage() {
               </div>
 
               {radarData.length > 0 && (
-                <div className="bg-white dark:bg-[#1A1A1A] rounded-lg border border-[var(--bd-default, #E2E8F0)] dark:border-[rgba(255,255,255,0.08)] p-4">
+                <div className="bg-white dark:bg-[#1A1A1A] rounded-lg border border-[var(--bd-default, #E2E8F0)] dark:border-[#2E2E2E] p-4">
                   <h3 className="text-[14px] font-bold mb-3" style={{ fontFamily: RH.fontDisplay, color: RH.ink1 }}>Radar Comparison</h3>
                   <ResponsiveContainer width="100%" height={320}>
                     <RadarChart data={radarData}>
@@ -130,7 +130,7 @@ export default function ReleaseComparePage() {
               )}
             </div>
           ) : (
-            <div className="bg-white dark:bg-[#1A1A1A] rounded-lg border border-[var(--bd-default, #E2E8F0)] dark:border-[rgba(255,255,255,0.08)] p-8 text-center text-[#94A3B8] text-[13px]">
+            <div className="bg-white dark:bg-[#1A1A1A] rounded-lg border border-[var(--bd-default, #E2E8F0)] dark:border-[#2E2E2E] p-8 text-center text-[#94A3B8] text-[13px]">
               Select at least 2 releases above to see a comparison
             </div>
           )}

@@ -46,13 +46,13 @@ export default function WorkHubBulkBar({ selectedCount, onSetStatus, onSetPriori
         <PopoverTrigger asChild>
           <button style={{
             display: 'inline-flex', alignItems: 'center', gap: 4, padding: '8px 12px', height: 32,
-            background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)',
+            background: '#2E2E2E', border: '1px solid rgba(255,255,255,0.2)',
             borderRadius: 4, color: 'var(--bg-app)', fontSize: 12, fontWeight: 500, cursor: 'pointer',
           }}>
             Set Status <ChevronDown size={12} />
           </button>
         </PopoverTrigger>
-        <PopoverContent align="center" side="top" style={{ width: 220, padding: '4px 0', background: 'var(--bg-app)', border: '1px solid var(--bd-default, rgba(255,255,255,0.08))', borderRadius: 6, zIndex: 99999, maxHeight: 320, overflowY: 'auto' }}>
+        <PopoverContent align="center" side="top" style={{ width: 220, padding: '4px 0', background: 'var(--bg-app)', border: '1px solid var(--bd-default, #2E2E2E)', borderRadius: 6, zIndex: 99999, maxHeight: 320, overflowY: 'auto' }}>
           {STATUS_GROUPS.map(group => (
             <div key={group.label}>
               <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--fg-4)', padding: '6px 12px 2px' }}>{group.label}</div>
@@ -74,13 +74,13 @@ export default function WorkHubBulkBar({ selectedCount, onSetStatus, onSetPriori
         <PopoverTrigger asChild>
           <button style={{
             display: 'inline-flex', alignItems: 'center', gap: 4, padding: '8px 12px', height: 32,
-            background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)',
+            background: '#2E2E2E', border: '1px solid rgba(255,255,255,0.2)',
             borderRadius: 4, color: 'var(--bg-app)', fontSize: 12, fontWeight: 500, cursor: 'pointer',
           }}>
             Priority <ChevronDown size={12} />
           </button>
         </PopoverTrigger>
-        <PopoverContent align="center" side="top" style={{ width: 160, padding: '4px 0', background: 'var(--bg-app)', border: '1px solid var(--bd-default, rgba(255,255,255,0.08))', borderRadius: 6, zIndex: 99999 }}>
+        <PopoverContent align="center" side="top" style={{ width: 160, padding: '4px 0', background: 'var(--bg-app)', border: '1px solid var(--bd-default, #2E2E2E)', borderRadius: 6, zIndex: 99999 }}>
           {PRIORITY_OPTIONS.map(p => (
             <button key={p} onClick={() => onSetPriority(p)} style={{
               width: '100%', padding: '5px 12px', fontSize: 13, border: 'none', textAlign: 'left',

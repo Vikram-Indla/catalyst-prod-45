@@ -65,7 +65,7 @@ function SimpleDateInput({ label, value, onChange, helperText, isDark }: {
           onChange={e => onChange(e.target.value)}
           style={{
             width: '100%', padding: '7px 10px', fontSize: 12, borderRadius: 4,
-            border: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.12)'}`,
+            border: `0.75px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.12)'}`,
             background: isDark ? '#1A1A1A' : '#FFFFFF',
             color: isDark ? '#EDEDED' : '#0F172A', fontFamily: 'Inter, sans-serif',
           }}
@@ -164,7 +164,7 @@ export default function WikiTemplatesPage() {
     navigate(`/wiki/${slug}`);
   };
 
-  const borderColor = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)';
+  const borderColor = isDark ? '#2E2E2E' : 'rgba(0,0,0,0.06)';
   const cardBorderHover = '#2563EB';
 
   return (
@@ -205,7 +205,7 @@ export default function WikiTemplatesPage() {
       <div style={{
         marginBottom: 20, padding: '14px 16px', borderRadius: 6,
         background: isDark ? '#1A1A1A' : '#FFFFFF',
-        border: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.08)'}`,
+        border: `0.75px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.08)'}`,
       }}>
         <button onClick={() => setShowScheduling(!showScheduling)} style={{
           fontSize: 12, fontWeight: 650, color: isDark ? '#EDEDED' : '#0F172A', background: 'transparent',

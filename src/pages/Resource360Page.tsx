@@ -104,7 +104,7 @@ const Resource360Page = () => {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%', fontFamily: "'Inter', sans-serif" }}>
         {/* Banner skeleton */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 20, padding: '16px 20px', background: isDark ? '#0A0A0A' : '#FFFFFF', borderBottom: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 20, padding: '16px 20px', background: isDark ? '#0A0A0A' : '#FFFFFF', borderBottom: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0' }}>
           <div className="r360-skeleton" style={{ width: 64, height: 64, borderRadius: '50%' }} />
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8 }}>
             <SkeletonBlock height={20} />
@@ -122,7 +122,7 @@ const Resource360Page = () => {
           </div>
         </div>
         {/* Toolbar skeleton */}
-        <div style={{ padding: '8px 20px', background: isDark ? '#0A0A0A' : '#FFFFFF', borderBottom: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0' }}>
+        <div style={{ padding: '8px 20px', background: isDark ? '#0A0A0A' : '#FFFFFF', borderBottom: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0' }}>
           <SkeletonBlock height={36} />
         </div>
         {/* Content skeleton */}
@@ -150,7 +150,7 @@ const Resource360Page = () => {
   return (
     <div className="r360-root" style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%', fontFamily: "'Inter', sans-serif" }}>
       {summaryLoading ? (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 20, padding: '16px 20px', background: isDark ? '#0A0A0A' : '#FFFFFF', borderBottom: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 20, padding: '16px 20px', background: isDark ? '#0A0A0A' : '#FFFFFF', borderBottom: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0' }}>
           <div className="r360-skeleton" style={{ width: 64, height: 64, borderRadius: '50%' }} />
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8 }}>
             <SkeletonBlock height={20} />

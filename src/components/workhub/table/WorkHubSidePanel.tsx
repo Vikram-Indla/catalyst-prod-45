@@ -99,7 +99,7 @@ export default function WorkHubSidePanel({ itemId, projectKey, onClose }: WorkHu
         {/* Sticky Header */}
         <div style={{
           position: 'sticky', top: 0, zIndex: 10, background: 'var(--bg-app)',
-          borderBottom: '0.75px solid var(--bd-subtle, rgba(255,255,255,0.05))',
+          borderBottom: '0.75px solid var(--bd-subtle, #292929)',
           padding: '16px 20px', display: 'flex', alignItems: 'center', gap: 10,
         }}>
           {isLoading ? <FieldSkeleton /> : item && (
@@ -116,7 +116,7 @@ export default function WorkHubSidePanel({ itemId, projectKey, onClose }: WorkHu
 
         {/* Tabs */}
         <div style={{
-          display: 'flex', borderBottom: '1px solid var(--bd-subtle, rgba(255,255,255,0.05))',
+          display: 'flex', borderBottom: '1px solid var(--bd-subtle, #292929)',
           padding: '0 20px', background: 'var(--bg-app)', position: 'sticky', top: 62, zIndex: 10,
         }}>
           {TABS.map(tab => (
@@ -165,7 +165,7 @@ export default function WorkHubSidePanel({ itemId, projectKey, onClose }: WorkHu
                           <WorkHubStatusLozenge status={item.status} statusCategory={item.status_category} />
                         </button>
                       </PopoverTrigger>
-                      <PopoverContent align="start" style={{ width: 220, padding: '4px 0', background: 'var(--bg-app)', border: '1px solid var(--bd-default, rgba(255,255,255,0.08))', borderRadius: 6, zIndex: 9999, maxHeight: 320, overflowY: 'auto' }}>
+                      <PopoverContent align="start" style={{ width: 220, padding: '4px 0', background: 'var(--bg-app)', border: '1px solid var(--bd-default, #2E2E2E)', borderRadius: 6, zIndex: 9999, maxHeight: 320, overflowY: 'auto' }}>
                         {STATUS_GROUPS.map(group => (
                           <div key={group.label}>
                             <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--fg-4)', padding: '6px 12px 2px' }}>{group.label}</div>
@@ -217,7 +217,7 @@ export default function WorkHubSidePanel({ itemId, projectKey, onClose }: WorkHu
                   <SidePanelCycleTime workItemId={item.id} />
 
                   {/* Key Details */}
-                  <div style={{ border: '0.75px solid var(--bd-subtle, rgba(255,255,255,0.05))', borderRadius: 6, padding: '8px 16px', marginBottom: 20 }}>
+                  <div style={{ border: '0.75px solid var(--bd-subtle, #292929)', borderRadius: 6, padding: '8px 16px', marginBottom: 20 }}>
                     <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--fg-3)', marginBottom: 4 }}>Key Details</div>
 
                     <DetailRow label="Status">
@@ -230,7 +230,7 @@ export default function WorkHubSidePanel({ itemId, projectKey, onClose }: WorkHu
                             <WorkHubPriorityIcon priority={item.priority || 'Medium'} size={16} showLabel />
                           </button>
                         </PopoverTrigger>
-                        <PopoverContent align="start" style={{ width: 160, padding: '4px 0', background: 'var(--bg-app)', border: '1px solid var(--bd-default, rgba(255,255,255,0.08))', borderRadius: 6, zIndex: 9999 }}>
+                        <PopoverContent align="start" style={{ width: 160, padding: '4px 0', background: 'var(--bg-app)', border: '1px solid var(--bd-default, #2E2E2E)', borderRadius: 6, zIndex: 9999 }}>
                           {PRIORITY_OPTIONS.map(p => (
                             <button key={p} onClick={() => handleUpdate('priority', p)} style={{
                               width: '100%', padding: '5px 12px', fontSize: 13, border: 'none', textAlign: 'left',
@@ -282,7 +282,7 @@ export default function WorkHubSidePanel({ itemId, projectKey, onClose }: WorkHu
                   </div>
 
                   {/* Subtasks */}
-                  <div style={{ border: '0.75px solid var(--bd-subtle, rgba(255,255,255,0.05))', borderRadius: 6, padding: '8px 16px', marginBottom: 20 }}>
+                  <div style={{ border: '0.75px solid var(--bd-subtle, #292929)', borderRadius: 6, padding: '8px 16px', marginBottom: 20 }}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
                       <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--fg-3)' }}>
                         Subtasks ({item.completed_child_count}/{item.child_count} done)
@@ -299,7 +299,7 @@ export default function WorkHubSidePanel({ itemId, projectKey, onClose }: WorkHu
                   </div>
 
                   {/* Linked Items */}
-                  <div style={{ border: '0.75px solid var(--bd-subtle, rgba(255,255,255,0.05))', borderRadius: 6, padding: '8px 16px' }}>
+                  <div style={{ border: '0.75px solid var(--bd-subtle, #292929)', borderRadius: 6, padding: '8px 16px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
                       <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--fg-3)' }}>Linked Items</span>
                       <button style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 12, color: 'var(--cp-blue)' }}>+ Link an item</button>

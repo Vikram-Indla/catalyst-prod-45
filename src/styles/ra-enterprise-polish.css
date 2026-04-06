@@ -321,10 +321,10 @@
   /* END Cell — dark pattern */
   --ra-end-pattern-polish: repeating-linear-gradient(
     -45deg,
-    rgba(255,255,255,0.03),
-    rgba(255,255,255,0.03) 4px,
-    rgba(255,255,255,0.06) 4px,
-    rgba(255,255,255,0.06) 8px
+    #1F1F1F,
+    #1F1F1F 4px,
+    #292929 4px,
+    #292929 8px
   );
-  --ra-end-text-bg: rgba(255,255,255,0.06);
+  --ra-end-text-bg: #292929;
 }

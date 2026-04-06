@@ -151,7 +151,7 @@ function MultiSelectDropdown({
           </svg>
         </button>
       </PopoverTrigger>
-      <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-1 bg-white dark:bg-[#1A1A1A] border dark:border-[rgba(255,255,255,0.08)] shadow-lg rounded-md max-h-[200px] overflow-y-auto z-[100]" align="start">
+      <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-1 bg-white dark:bg-[#1A1A1A] border dark:border-[#2E2E2E] shadow-lg rounded-md max-h-[200px] overflow-y-auto z-[100]" align="start">
         {options.map(option => (
           <div
             key={option.value}
@@ -249,7 +249,7 @@ function DateInput({
           <CalendarIcon className="h-4 w-4 text-muted-foreground shrink-0" />
         </button>
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-0 bg-white dark:bg-[#1A1A1A] border dark:border-[rgba(255,255,255,0.08)] shadow-lg rounded-md z-[100]" align="start">
+      <PopoverContent className="w-auto p-0 bg-white dark:bg-[#1A1A1A] border dark:border-[#2E2E2E] shadow-lg rounded-md z-[100]" align="start">
         <Calendar 
           mode="single" 
           selected={value} 
@@ -388,7 +388,7 @@ export function FilterDemandsDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleCancel}>
-      <DialogContent className="max-w-[480px] w-[95vw] p-0 bg-white dark:bg-[#1A1A1A] border dark:border-[rgba(255,255,255,0.08)] shadow-xl rounded-lg overflow-hidden gap-0 [&>button.absolute]:hidden">
+      <DialogContent className="max-w-[480px] w-[95vw] p-0 bg-white dark:bg-[#1A1A1A] border dark:border-[#2E2E2E] shadow-xl rounded-lg overflow-hidden gap-0 [&>button.absolute]:hidden">
         {/* Header */}
         <div className="flex items-center justify-between px-4 sm:px-5 py-4 border-b border-border">
           <h2 className="text-base font-semibold text-foreground">Filters</h2>

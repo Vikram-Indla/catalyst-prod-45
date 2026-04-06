@@ -6,23 +6,23 @@
 /* Panel container */
 .dark .strategy-intel-panel {
   background: #1A1A1A !important;
-  border-color: rgba(255,255,255,0.10) !important;
-  color: rgba(255,255,255,0.92) !important;
+  border-color: #2E2E2E !important;
+  color: #EDEDED !important;
 }
 
 /* Text overrides */
 .dark .strategy-intel-panel .text-slate-900,
 .dark .strategy-intel-panel .text-slate-800,
 .dark .strategy-intel-panel .text-\[15px\].font-\[700\] {
-  color: rgba(255,255,255,0.92) !important;
+  color: #EDEDED !important;
 }
 .dark .strategy-intel-panel .text-slate-700,
 .dark .strategy-intel-panel .text-slate-600 {
-  color: rgba(255,255,255,0.72) !important;
+  color: #A1A1A1 !important;
 }
 .dark .strategy-intel-panel .text-slate-500,
 .dark .strategy-intel-panel .text-slate-400 {
-  color: rgba(255,255,255,0.50) !important;
+  color: #7D7D7D !important;
 }
 
 /* Backgrounds */
@@ -31,30 +31,30 @@
 }
 .dark .strategy-intel-panel .bg-slate-100,
 .dark .strategy-intel-panel .bg-slate-50 {
-  background: rgba(255,255,255,0.06) !important;
+  background: #292929 !important;
 }
 
 /* Borders */
 .dark .strategy-intel-panel .border-slate-200,
 .dark .strategy-intel-panel .border-slate-100 {
-  border-color: rgba(255,255,255,0.10) !important;
+  border-color: #2E2E2E !important;
 }
 .dark .strategy-intel-panel .border-l {
-  border-color: rgba(255,255,255,0.10) !important;
+  border-color: #2E2E2E !important;
 }
 
 /* Hover states */
 .dark .strategy-intel-panel .hover\:bg-slate-100:hover,
 .dark .strategy-intel-panel .hover\:bg-slate-50:hover {
-  background: rgba(255,255,255,0.06) !important;
+  background: #292929 !important;
 }
 
 /* Tab bar */
 .dark .strategy-intel-panel .border-b {
-  border-color: rgba(255,255,255,0.10) !important;
+  border-color: #2E2E2E !important;
 }
 .dark .strategy-intel-panel .border-t {
-  border-color: rgba(255,255,255,0.08) !important;
+  border-color: #2E2E2E !important;
 }
 
 /* Footer */
@@ -64,13 +64,13 @@
 
 /* Metric cards in Executive Brief tab */
 .dark .strategy-intel-panel .border.border-slate-200.rounded-lg {
-  background: rgba(255,255,255,0.03) !important;
-  border-color: rgba(255,255,255,0.10) !important;
+  background: #1F1F1F !important;
+  border-color: #2E2E2E !important;
 }
 
 /* Close button */
 .dark .strategy-intel-panel button.p-1\.5:hover {
-  background: rgba(255,255,255,0.06) !important;
+  background: #292929 !important;
 }
 
 /* Shadow kill */
@@ -80,26 +80,26 @@
 
 /* Markdown content */
 .dark .strategy-intel-panel h2.border-b {
-  border-color: rgba(255,255,255,0.08) !important;
+  border-color: #2E2E2E !important;
 }
 
 /* Status banner left border cards */
 .dark .strategy-intel-panel .p-4.bg-white.border.border-slate-200 {
-  background: rgba(255,255,255,0.03) !important;
-  border-color: rgba(255,255,255,0.10) !important;
+  background: #1F1F1F !important;
+  border-color: #2E2E2E !important;
 }
 
 /* Chain breadcrumb badges — keep colored backgrounds */
 
 /* Scrollbar */
 .dark .strategy-intel-panel ::-webkit-scrollbar-track {
-  background: rgba(255,255,255,0.03);
+  background: #1F1F1F;
 }
 .dark .strategy-intel-panel ::-webkit-scrollbar-thumb {
-  background: rgba(255,255,255,0.12);
+  background: #454545;
 }
 
 /* Health bars */
 .dark .strategy-intel-panel .bg-slate-100.rounded-full {
-  background: rgba(255,255,255,0.08) !important;
+  background: #2E2E2E !important;
 }

@@ -61,7 +61,7 @@ export default function WorkHubToolbar({
     <div style={{
       display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8,
       padding: '0 16px', height: 48, minHeight: 48,
-      borderBottom: '0.75px solid var(--bd-subtle, rgba(255,255,255,0.05))',
+      borderBottom: '0.75px solid var(--bd-subtle, #292929)',
       background: 'var(--bg-app)', flexShrink: 0,
     }} role="toolbar" aria-label="Work items toolbar">
       {/* LEFT */}
@@ -97,7 +97,7 @@ export default function WorkHubToolbar({
           trigger={
             <button style={{
               display: 'inline-flex', alignItems: 'center', gap: 4, height: 32, padding: '0 10px',
-              border: (filters.statuses?.length || 0) > 0 ? '1px solid #2563EB' : '1px solid var(--bd-default, rgba(255,255,255,0.08))',
+              border: (filters.statuses?.length || 0) > 0 ? '1px solid #2563EB' : '1px solid var(--bd-default, #2E2E2E)',
               borderRadius: 4, background: (filters.statuses?.length || 0) > 0 ? 'rgba(37,99,235,0.08)' : 'transparent',
               fontSize: 12, fontWeight: 500, color: (filters.statuses?.length || 0) > 0 ? 'var(--cp-blue)' : 'var(--fg-2)', cursor: 'pointer',
             }}>
@@ -115,7 +115,7 @@ export default function WorkHubToolbar({
           trigger={
             <button style={{
               display: 'inline-flex', alignItems: 'center', gap: 4, height: 32, padding: '0 10px',
-              border: (filters.types?.length || 0) > 0 ? '1px solid #2563EB' : '1px solid var(--bd-default, rgba(255,255,255,0.08))',
+              border: (filters.types?.length || 0) > 0 ? '1px solid #2563EB' : '1px solid var(--bd-default, #2E2E2E)',
               borderRadius: 4, background: (filters.types?.length || 0) > 0 ? 'rgba(37,99,235,0.08)' : 'transparent',
               fontSize: 12, fontWeight: 500, color: (filters.types?.length || 0) > 0 ? 'var(--cp-blue)' : 'var(--fg-2)', cursor: 'pointer',
             }}>
@@ -133,7 +133,7 @@ export default function WorkHubToolbar({
           trigger={
             <button style={{
               display: 'inline-flex', alignItems: 'center', gap: 4, height: 32, padding: '0 10px',
-              border: (filters.priorities?.length || 0) > 0 ? '1px solid #2563EB' : '1px solid var(--bd-default, rgba(255,255,255,0.08))',
+              border: (filters.priorities?.length || 0) > 0 ? '1px solid #2563EB' : '1px solid var(--bd-default, #2E2E2E)',
               borderRadius: 4, background: (filters.priorities?.length || 0) > 0 ? 'rgba(37,99,235,0.08)' : 'transparent',
               fontSize: 12, fontWeight: 500, color: (filters.priorities?.length || 0) > 0 ? 'var(--cp-blue)' : 'var(--fg-2)', cursor: 'pointer',
             }}>
@@ -158,14 +158,14 @@ export default function WorkHubToolbar({
           <PopoverTrigger asChild>
             <button style={{
               display: 'inline-flex', alignItems: 'center', gap: 4, height: 32, padding: '0 10px',
-              border: '1px solid var(--bd-default, rgba(255,255,255,0.08))', borderRadius: 4, background: 'transparent',
+              border: '1px solid var(--bd-default, #2E2E2E)', borderRadius: 4, background: 'transparent',
               fontSize: 12, fontWeight: 500, color: 'var(--fg-2)', cursor: 'pointer',
             }}>
               Group: {GROUP_OPTIONS.find(g => g.value === groupBy)?.label || 'Status'}
               <ChevronDown size={12} />
             </button>
           </PopoverTrigger>
-          <PopoverContent align="end" style={{ width: 160, padding: '4px 0', background: 'var(--bg-app)', border: '1px solid var(--bd-default, rgba(255,255,255,0.08))', borderRadius: 6, zIndex: 9999 }}>
+          <PopoverContent align="end" style={{ width: 160, padding: '4px 0', background: 'var(--bg-app)', border: '1px solid var(--bd-default, #2E2E2E)', borderRadius: 6, zIndex: 9999 }}>
             {GROUP_OPTIONS.map(opt => (
               <button key={opt.value} onClick={() => onGroupByChange(opt.value)}
                 style={{
@@ -183,11 +183,11 @@ export default function WorkHubToolbar({
         {columns && onColumnToggle && (
           <Popover>
             <PopoverTrigger asChild>
-              <button style={{ width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid var(--bd-default, rgba(255,255,255,0.08))', borderRadius: 4, background: 'transparent', cursor: 'pointer' }} aria-label="Toggle columns">
+              <button style={{ width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid var(--bd-default, #2E2E2E)', borderRadius: 4, background: 'transparent', cursor: 'pointer' }} aria-label="Toggle columns">
                 <Settings2 size={16} color="#64748B" />
               </button>
             </PopoverTrigger>
-            <PopoverContent align="end" style={{ width: 220, padding: '8px 0', background: 'var(--bg-app)', border: '1px solid var(--bd-default, rgba(255,255,255,0.08))', borderRadius: 6, zIndex: 9999 }}>
+            <PopoverContent align="end" style={{ width: 220, padding: '8px 0', background: 'var(--bg-app)', border: '1px solid var(--bd-default, #2E2E2E)', borderRadius: 6, zIndex: 9999 }}>
               <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--fg-4)', padding: '4px 12px 6px' }}>Columns</div>
               {columns.map(col => (
                 <button key={col.id} onClick={() => onColumnToggle(col.id)} style={{
@@ -203,7 +203,7 @@ export default function WorkHubToolbar({
         )}
 
         {/* View Switcher */}
-        <div style={{ display: 'flex', border: '1px solid var(--bd-default, rgba(255,255,255,0.08))', borderRadius: 4, overflow: 'hidden' }}>
+        <div style={{ display: 'flex', border: '1px solid var(--bd-default, #2E2E2E)', borderRadius: 4, overflow: 'hidden' }}>
           {([
             { mode: 'list' as ViewMode, icon: LayoutList },
             { mode: 'backlog' as ViewMode, icon: Table2 },

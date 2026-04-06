@@ -161,7 +161,7 @@ function KanbanColumn({ column, defects, headerColorClass }: KanbanColumnProps) 
       headerColorClass
     )}>
       {/* Column Header */}
-      <div className="p-3 border-b border-gray-200 dark:border-[rgba(255,255,255,0.08)] bg-white/50 dark:bg-[#1A1A1A]/50">
+      <div className="p-3 border-b border-gray-200 dark:border-[#2E2E2E] bg-white/50 dark:bg-[#1A1A1A]/50">
         <div className="flex items-center justify-between mb-1">
           <h3 className="font-semibold text-gray-900">{column.name}</h3>
           <Badge variant="secondary">{defects.length}</Badge>
@@ -219,7 +219,7 @@ function DefectKanbanCard({ defect }: DefectKanbanCardProps) {
   
   return (
     <div 
-      className="bg-white dark:bg-[#1A1A1A] border border-gray-200 dark:border-[rgba(255,255,255,0.08)] rounded-lg p-3 hover:shadow-md cursor-pointer transition-all"
+      className="bg-white dark:bg-[#1A1A1A] border border-gray-200 dark:border-[#2E2E2E] rounded-lg p-3 hover:shadow-md cursor-pointer transition-all"
       onClick={() => navigate(`/releases/defects/${defect.id}`)}
     >
       {/* Header: ID + Severity */}

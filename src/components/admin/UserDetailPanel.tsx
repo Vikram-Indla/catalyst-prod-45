@@ -54,7 +54,7 @@ const mkSectionLabel = (isDark: boolean): React.CSSProperties => ({
 
 const mkFieldRow = (isDark: boolean): React.CSSProperties => ({
   display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-  padding: '5px 0', borderBottom: `0.5px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.06)'}`,
+  padding: '5px 0', borderBottom: `0.5px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.06)'}`,
 });
 
 const mkFieldKey = (isDark: boolean): React.CSSProperties => ({ fontSize: '11px', color: isDark ? '#A1A1A1' : '#64748B' });
@@ -71,7 +71,7 @@ const Code: React.FC<{ children: React.ReactNode; isDark?: boolean }> = ({ child
 const InfoCard: React.FC<{ label: string; children: React.ReactNode; isDark?: boolean }> = ({ label, children, isDark = false }) => (
   <div style={{
     background: isDark ? '#1A1A1A' : '#F8FAFC',
-    border: `1px solid ${isDark ? 'rgba(255,255,255,0.10)' : 'rgba(15,23,42,0.10)'}`,
+    border: `1px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.10)'}`,
     borderRadius: '6px', padding: '10px 12px',
   }}>
     <div style={{
@@ -128,7 +128,7 @@ const ProjectsTab: React.FC<{ perms: any[]; isDark?: boolean }> = ({ perms, isDa
   const xsBtn: React.CSSProperties = {
     fontSize: '9px', fontWeight: 700, textTransform: 'uppercase',
     padding: '3px 7px', borderRadius: '4px', cursor: 'pointer',
-    border: `1px solid ${isDark ? 'rgba(255,255,255,0.10)' : 'rgba(15,23,42,0.10)'}`,
+    border: `1px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.10)'}`,
     background: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#A1A1A1' : '#64748B',
   };
   const xsBtnClass = 'jus-action-btn';
@@ -180,8 +180,8 @@ const ProjectsTab: React.FC<{ perms: any[]; isDark?: boolean }> = ({ perms, isDa
               {perms.map((p: any) => {
                 const isMutating = isPending && variables?.permId === p.id;
                 return (
-                  <tr key={p.id} style={{ borderBottom: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.06)'}` }}
-                    onMouseEnter={e => (e.currentTarget.style.background = isDark ? 'rgba(255,255,255,0.03)' : 'rgba(15,23,42,0.035)')}
+                  <tr key={p.id} style={{ borderBottom: `0.75px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.06)'}` }}
+                    onMouseEnter={e => (e.currentTarget.style.background = isDark ? '#1F1F1F' : 'rgba(15,23,42,0.035)')}
                     onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                   >
                     <td style={{ padding: '6px 9px' }}>
@@ -204,7 +204,7 @@ const ProjectsTab: React.FC<{ perms: any[]; isDark?: boolean }> = ({ perms, isDa
                     </td>
                     <td style={{ padding: '6px 9px', textAlign: 'right' }}>
                       <div className="jus-perm-seg" style={{
-                        display: 'inline-flex', border: `1px solid ${isDark ? 'rgba(255,255,255,0.10)' : 'rgba(15,23,42,0.10)'}`,
+                        display: 'inline-flex', border: `1px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.10)'}`,
                         borderRadius: '4px', overflow: 'hidden',
                       }}>
                         {PERM_LEVELS.map((level, i) => {
@@ -222,7 +222,7 @@ const ProjectsTab: React.FC<{ perms: any[]; isDark?: boolean }> = ({ perms, isDa
                                 background: active ? (isDark ? colors.bgDark : colors.bg) : 'transparent',
                                 color: active ? (isDark ? colors.colorDark : colors.color) : (isDark ? '#878787' : '#94A3B8'),
                                 border: 'none',
-                                borderRight: i < 3 ? `1px solid ${isDark ? 'rgba(255,255,255,0.10)' : 'rgba(15,23,42,0.10)'}` : 'none',
+                                borderRight: i < 3 ? `1px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.10)'}` : 'none',
                               }}
                             >
                               {showSpinner ? <Loader2 size={10} className="animate-spin" /> : level}
@@ -269,7 +269,7 @@ const ActivityTab: React.FC<{ events: any[]; isDark?: boolean }> = ({ events, is
         sorted.slice(0, 30).map((ev: any) => (
           <div key={ev.id} style={{
             display: 'flex', gap: '9px', padding: '5px 0',
-            borderBottom: `0.5px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.06)'}`,
+            borderBottom: `0.5px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.06)'}`,
           }}>
             <div style={{
               width: '7px', height: '7px', borderRadius: '50%', flexShrink: 0,
@@ -295,7 +295,7 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
   const user = data?.data;
 
   const T = isDark ? {
-    surface: '#0A0A0A', border: 'rgba(255,255,255,0.10)', text1: '#EDEDED',
+    surface: '#0A0A0A', border: '#2E2E2E', text1: '#EDEDED',
     text2: '#A1A1A1', text3: '#878787', sunken: '#0A0A0A',
     elevated: '#1A1A1A', inputBg: '#1A1A1A',
   } : {
@@ -314,7 +314,7 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
           {Array.from({ length: 8 }).map((_, i) => (
             <div key={i} className="animate-pulse" style={{
               height: i === 0 ? 48 : 14, width: i === 0 ? 48 : `${70 + (i * 10)}%`,
-              borderRadius: i === 0 ? '50%' : 3, background: isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0',
+              borderRadius: i === 0 ? '50%' : 3, background: isDark ? '#2E2E2E' : '#E2E8F0',
               marginBottom: i === 0 ? 12 : 10,
             }} />
           ))}
@@ -687,7 +687,7 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
       {/* ── Footer ── */}
       <div className="jus-footer-sticky" style={{
         position: 'sticky', bottom: 0, background: T.surface,
-        borderTop: `1px solid ${isDark ? 'rgba(255,255,255,0.10)' : 'rgba(15,23,42,0.06)'}`, padding: '10px 16px',
+        borderTop: `1px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.06)'}`, padding: '10px 16px',
         display: 'flex', gap: '7px',
       }}>
         <button style={{

@@ -161,7 +161,7 @@ const AiIntelligenceOverlay: React.FC<AiIntelligenceOverlayProps> = ({ resourceI
           disabled={refreshing || generating}
           aria-label="Refresh Metrics"
           style={{
-            background: refreshing ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.15)',
+            background: refreshing ? '#2E2E2E' : '#454545',
             border: 'none', borderRadius: 6,
             padding: '6px 10px', color: '#FFFFFF', fontSize: 11, fontWeight: 600,
             cursor: refreshing ? 'wait' : 'pointer', opacity: refreshing ? 0.6 : 1,
@@ -174,7 +174,7 @@ const AiIntelligenceOverlay: React.FC<AiIntelligenceOverlayProps> = ({ resourceI
           disabled={generating || refreshing}
           aria-label="Generate AI Profile"
           style={{
-            background: generating ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.2)',
+            background: generating ? '#2E2E2E' : 'rgba(255,255,255,0.2)',
             border: 'none', borderRadius: 6,
             padding: '6px 14px', color: '#FFFFFF', fontSize: 12, fontWeight: 600,
             cursor: generating ? 'wait' : 'pointer', opacity: generating ? 0.6 : 1,
@@ -486,7 +486,7 @@ const AiIntelligenceOverlay: React.FC<AiIntelligenceOverlayProps> = ({ resourceI
             {/* 9. Generation Footer */}
             <div style={{
               marginTop: 24, padding: '12px 16px', borderRadius: 8,
-              background: isDark ? '#1A1A1A' : '#F8FAFC', border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0',
+              background: isDark ? '#1A1A1A' : '#F8FAFC', border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0',
               display: 'flex', alignItems: 'center', gap: 12,
               fontSize: 11, color: isDark ? '#878787' : '#64748B',
             }}>
@@ -523,7 +523,7 @@ const Section = ({ title, children, isDark }: { title: string; children: React.R
     }}>
       <span style={{ fontSize: 10, fontWeight: 800 }}>✦</span>
       {title}
-      <div style={{ flex: 1, height: 1, background: isDark ? 'rgba(255,255,255,0.08)' : '#DBEAFE' }} />
+      <div style={{ flex: 1, height: 1, background: isDark ? '#2E2E2E' : '#DBEAFE' }} />
     </div>
     {children}
   </div>

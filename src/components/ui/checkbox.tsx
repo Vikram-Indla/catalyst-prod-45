@@ -13,7 +13,7 @@ const Checkbox = React.forwardRef<
     className={cn(
       "peer h-4 w-4 shrink-0 rounded-sm ring-offset-background",
       // Catalyst V5: Visible border in both light and dark modes
-      "border-2 border-[hsl(var(--border-default))] dark:border-[rgba(255,255,255,0.25)]",
+      "border-2 border-[hsl(var(--border-default))] dark:border-[#454545]",
       // Unchecked state - transparent background
       "data-[state=unchecked]:bg-transparent",
       // Checked state - BLUE primary (Catalyst V5 spec: #2563eb / #3b82f6)
@@ -23,7 +23,7 @@ const Checkbox = React.forwardRef<
       "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3b82f6] dark:focus-visible:ring-[#60a5fa] focus-visible:ring-offset-2",
       "disabled:cursor-not-allowed disabled:opacity-50",
       // Hover state for unchecked
-      "data-[state=unchecked]:hover:border-[hsl(217,91%,53%)]/70 dark:data-[state=unchecked]:hover:border-[rgba(255,255,255,0.4)]",
+      "data-[state=unchecked]:hover:border-[hsl(217,91%,53%)]/70 dark:data-[state=unchecked]:hover:border-[#7D7D7D]",
       "transition-colors duration-150",
       className,
     )}

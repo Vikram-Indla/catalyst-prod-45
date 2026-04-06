@@ -14,7 +14,7 @@ export default function WikiVerificationPage() {
   const [refreshing, setRefreshing] = useState(false);
   const { isDark } = useTheme();
 
-  const border = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)';
+  const border = isDark ? '#2E2E2E' : 'rgba(0,0,0,0.06)';
 
   const handleVerify = async (id: string) => {
     const { data: session } = await supabase.auth.getSession();
@@ -66,7 +66,7 @@ export default function WikiVerificationPage() {
         </div>
         <button onClick={handleRefreshFreshness} disabled={refreshing} style={{
           fontSize: 11, fontWeight: 650, padding: '6px 14px', borderRadius: 6,
-          border: `0.75px solid ${isDark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.12)'}`, background: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#A1A1A1' : '#334155',
+          border: `0.75px solid ${isDark ? '#454545' : 'rgba(0,0,0,0.12)'}`, background: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#A1A1A1' : '#334155',
           cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
           opacity: refreshing ? 0.6 : 1,
         }}>
@@ -127,7 +127,7 @@ export default function WikiVerificationPage() {
                   }}><ShieldCheck size={11} /> Verify</button>
                   <button onClick={() => handleRequestChanges(a.id)} style={{
                     fontSize: 10, fontWeight: 650, padding: '4px 10px', borderRadius: 4,
-                    border: `0.75px solid ${isDark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.12)'}`, background: isDark ? '#1A1A1A' : '#FFFFFF', color: '#D97706',
+                    border: `0.75px solid ${isDark ? '#454545' : 'rgba(0,0,0,0.12)'}`, background: isDark ? '#1A1A1A' : '#FFFFFF', color: '#D97706',
                     cursor: 'pointer',
                   }}>Request Changes</button>
                 </div>

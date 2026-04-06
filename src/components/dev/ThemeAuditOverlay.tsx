@@ -242,7 +242,7 @@ export function ThemeAuditOverlay() {
           style={{
             backgroundColor: '#1a1a1a',
             color: '#e5e5e5',
-            border: '1px solid rgba(255,255,255,0.1)',
+            border: '1px solid #2E2E2E',
           }}
         >
           <div className="sticky top-0 px-3 py-2 border-b border-white/10 bg-[#262626]">

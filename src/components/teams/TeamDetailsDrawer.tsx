@@ -32,7 +32,7 @@ export function TeamDetailsDrawer({ teamId, open, onOpenChange }: TeamDetailsDra
           </div>
         ) : (
           <>
-            <SheetHeader className="executive-drawer-header flex-row items-center justify-between space-y-0 shrink-0 bg-white dark:bg-[#1A1A1A] px-3 md:px-4 py-2 border-b border-neutral-200 dark:border-[rgba(255,255,255,0.08)]">
+            <SheetHeader className="executive-drawer-header flex-row items-center justify-between space-y-0 shrink-0 bg-white dark:bg-[#1A1A1A] px-3 md:px-4 py-2 border-b border-neutral-200 dark:border-[#2E2E2E]">
               <div className="flex-1 min-w-0">
                 <SheetTitle className="executive-drawer-title truncate">{team.name}</SheetTitle>
                 {team.short_name && (

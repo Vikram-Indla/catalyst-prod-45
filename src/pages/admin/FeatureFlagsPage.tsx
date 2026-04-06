@@ -105,11 +105,11 @@ const FlagRow = memo(function FlagRow({ flag, isSelected, isPending, onToggle, o
       style={{
         gridTemplateColumns: GRID_COLS,
         height: 52,
-        borderBottom: `0.75px solid ${isDark ? 'rgba(255,255,255,0.05)' : 'rgba(15,23,42,0.06)'}`,
+        borderBottom: `0.75px solid ${isDark ? '#292929' : 'rgba(15,23,42,0.06)'}`,
         transition: 'background-color 120ms ease',
         ...(isSelected ? { backgroundColor: 'rgba(37,99,235,0.08)' } : {}),
       }}
-      onMouseEnter={(e) => { if (!isSelected) e.currentTarget.style.backgroundColor = isDark ? 'rgba(255,255,255,0.04)' : 'rgba(15,23,42,0.04)'; }}
+      onMouseEnter={(e) => { if (!isSelected) e.currentTarget.style.backgroundColor = isDark ? '#1F1F1F' : 'rgba(15,23,42,0.04)'; }}
       onMouseLeave={(e) => { if (!isSelected) e.currentTarget.style.backgroundColor = isDark ? '#0A0A0A' : '#FFFFFF'; }}
     >
       {/* Checkbox */}
@@ -262,8 +262,8 @@ const GroupHeaderRow = memo(function GroupHeaderRow({ category, count, isCollaps
         height: 50,
         padding: '8px 12px',
         background: isDark ? '#1A1A1A' : '#F8FAFC',
-        borderTop: isFirst ? 'none' : `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.12)'}`,
-        borderBottom: `0.75px solid ${isDark ? 'rgba(255,255,255,0.05)' : 'rgba(15,23,42,0.06)'}`,
+        borderTop: isFirst ? 'none' : `0.75px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.12)'}`,
+        borderBottom: `0.75px solid ${isDark ? '#292929' : 'rgba(15,23,42,0.06)'}`,
       }}
       role="row"
       aria-expanded={!isCollapsed}
@@ -289,7 +289,7 @@ const GroupHeaderRow = memo(function GroupHeaderRow({ category, count, isCollaps
           fontSize: 11,
           fontWeight: 500,
           color: isDark ? '#878787' : '#64748B',
-          background: isDark ? 'rgba(255,255,255,0.10)' : '#E5E5E5',
+          background: isDark ? '#2E2E2E' : '#E5E5E5',
           borderRadius: 9999,
           padding: '1px 6px',
         }}
@@ -429,15 +429,15 @@ export default function FeatureFlagsPage() {
       <div className={`flex-1 min-w-0 ${isDark ? "bg-[#0A0A0A]" : "bg-white"}`} style={{ padding: '24px 32px' }}>
         <div className="h-7 w-48 bg-[#F1F5F9] rounded mb-1 animate-pulse" />
         <div className="h-4 w-80 bg-[#F1F5F9] rounded mb-6 animate-pulse" />
-        <div className="h-14 bg-[#F1F5F9] rounded-md mb-4 animate-pulse" style={{ border: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.12)'}`, borderRadius: 6 }} />
+        <div className="h-14 bg-[#F1F5F9] rounded-md mb-4 animate-pulse" style={{ border: `0.75px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.12)'}`, borderRadius: 6 }} />
         <div className="flex gap-2 mb-3">
           <div className="h-9 w-64 bg-[#F1F5F9] rounded animate-pulse" />
           <div className="h-9 w-16 bg-[#F1F5F9] rounded animate-pulse" />
         </div>
-        <div className={`overflow-hidden ${isDark ? "bg-[#0A0A0A]" : "bg-white"}`} style={{ border: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.12)'}`, borderRadius: 6 }}>
-          <div style={{ height: 40, background: isDark ? '#1A1A1A' : '#F1F5F9', borderBottom: `0.75px solid ${isDark ? 'rgba(255,255,255,0.05)' : 'rgba(15,23,42,0.06)'}` }} />
+        <div className={`overflow-hidden ${isDark ? "bg-[#0A0A0A]" : "bg-white"}`} style={{ border: `0.75px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.12)'}`, borderRadius: 6 }}>
+          <div style={{ height: 40, background: isDark ? '#1A1A1A' : '#F1F5F9', borderBottom: `0.75px solid ${isDark ? '#292929' : 'rgba(15,23,42,0.06)'}` }} />
           {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className={`animate-pulse ${isDark ? "bg-[#0A0A0A]" : "bg-white"}`} style={{ height: 52, borderBottom: `0.75px solid ${isDark ? 'rgba(255,255,255,0.05)' : 'rgba(15,23,42,0.06)'}` }} />
+            <div key={i} className={`animate-pulse ${isDark ? "bg-[#0A0A0A]" : "bg-white"}`} style={{ height: 52, borderBottom: `0.75px solid ${isDark ? '#292929' : 'rgba(15,23,42,0.06)'}` }} />
           ))}
         </div>
       </div>
@@ -505,7 +505,7 @@ export default function FeatureFlagsPage() {
           className="flex items-center mb-4"
           style={{
             padding: '10px 16px',
-            border: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.12)'}`,
+            border: `0.75px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.12)'}`,
             borderRadius: 6,
             background: isDark ? '#1A1A1A' : '#F1F5F9',
             gap: 0,
@@ -524,11 +524,11 @@ export default function FeatureFlagsPage() {
           </div>
 
           {/* Divider */}
-          <div style={{ width: 0.75, height: 28, background: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.12)', margin: '0 16px', flexShrink: 0 }} />
+          <div style={{ width: 0.75, height: 28, background: isDark ? '#2E2E2E' : 'rgba(15,23,42,0.12)', margin: '0 16px', flexShrink: 0 }} />
 
           {/* Center: progress */}
           <div className="flex items-center gap-3 flex-1 min-w-0">
-            <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: isDark ? 'rgba(255,255,255,0.10)' : '#DFE1E6' }}>
+            <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: isDark ? '#2E2E2E' : '#DFE1E6' }}>
               <div
                 className="h-full rounded-full"
                 style={{
@@ -544,7 +544,7 @@ export default function FeatureFlagsPage() {
           </div>
 
           {/* Divider */}
-          <div style={{ width: 0.75, height: 28, background: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.12)', margin: '0 16px', flexShrink: 0 }} />
+          <div style={{ width: 0.75, height: 28, background: isDark ? '#2E2E2E' : 'rgba(15,23,42,0.12)', margin: '0 16px', flexShrink: 0 }} />
 
           {/* Right: Enable All / Disable All — D08 */}
           <div className="flex items-center gap-2 flex-shrink-0">
@@ -605,13 +605,13 @@ export default function FeatureFlagsPage() {
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
             className="h-9 pl-8 focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2"
-            style={{ fontFamily: "'Inter', system-ui", fontSize: 13, borderRadius: 4, border: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.14)'}` }}
+            style={{ fontFamily: "'Inter', system-ui", fontSize: 13, borderRadius: 4, border: `0.75px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.14)'}` }}
             aria-label="Search feature flags"
           />
         </div>
 
         {/* Filter mode */}
-        <div className="flex items-center overflow-hidden" style={{ border: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.12)'}`, borderRadius: 6 }}>
+        <div className="flex items-center overflow-hidden" style={{ border: `0.75px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.12)'}`, borderRadius: 6 }}>
           {(['all', 'enabled', 'disabled'] as FilterMode[]).map((mode) => (
             <button
               key={mode}
@@ -644,7 +644,7 @@ export default function FeatureFlagsPage() {
             padding: '8px 12px',
             fontFamily: "'Inter', system-ui",
             fontSize: 12,
-            border: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.14)'}`,
+            border: `0.75px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.14)'}`,
             borderRadius: 4,
             background: isDark ? '#1A1A1A' : '#FFFFFF',
             color: isDark ? '#EDEDED' : '#0F172A',
@@ -683,7 +683,7 @@ export default function FeatureFlagsPage() {
         role="table"
         className={isDark ? "bg-[#0A0A0A]" : "bg-white"}
         style={{
-          border: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.12)'}`,
+          border: `0.75px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.12)'}`,
           borderRadius: 6,
           overflow: 'hidden',
           opacity: isFetching && !isLoading ? 0.7 : 1,
@@ -698,7 +698,7 @@ export default function FeatureFlagsPage() {
             gridTemplateColumns: GRID_COLS,
             height: 40,
             background: isDark ? '#1A1A1A' : '#F1F5F9',
-            borderBottom: `0.75px solid ${isDark ? 'rgba(255,255,255,0.05)' : 'rgba(15,23,42,0.06)'}`,
+            borderBottom: `0.75px solid ${isDark ? '#292929' : 'rgba(15,23,42,0.06)'}`,
             fontFamily: "'Inter', system-ui, sans-serif",
             fontSize: 11,
             fontWeight: 600,
@@ -828,7 +828,7 @@ export default function FeatureFlagsPage() {
             value={confirmText}
             onChange={(e) => setConfirmText(e.target.value)}
             className="mt-2 focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2"
-            style={{ borderRadius: 4, border: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.14)'}` }}
+            style={{ borderRadius: 4, border: `0.75px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.14)'}` }}
             autoFocus
             onKeyDown={(e) => { if (e.key === 'Enter') handleBulkDisableConfirm(); if (e.key === 'Escape') { setBulkDisableOpen(false); setConfirmText(''); } }}
           />

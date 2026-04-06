@@ -54,11 +54,11 @@
   --text-4: #444444;
   --text-inv: #FFFFFF;
   --text-link: #60A5FA;
-  --bd-subtle: rgba(255,255,255,0.05);
-  --bd-default: rgba(255,255,255,0.08);
-  --bd-strong: rgba(255,255,255,0.12);
-  --hover: rgba(255,255,255,0.04);
-  --press: rgba(255,255,255,0.08);
+  --bd-subtle: #292929;
+  --bd-default: #2E2E2E;
+  --bd-strong: #454545;
+  --hover: #1F1F1F;
+  --press: #2E2E2E;
   --sel: rgba(96,165,250,0.10);
   --sel-hover: rgba(96,165,250,0.15);
   --p60: #3B82F6;
@@ -74,7 +74,7 @@
   --loz-gn-bg: #0F2A1A;
   --loz-gn-tx: #86EFAC;
   --pop-bg: #1A1A1A;
-  --pop-border: rgba(255,255,255,0.08);
-  --pop-hover: rgba(255,255,255,0.04);
+  --pop-border: #2E2E2E;
+  --pop-hover: #1F1F1F;
   --shadow-pop: 0 8px 24px rgba(0,0,0,0.4), 0 0 1px rgba(0,0,0,0.5);
 }

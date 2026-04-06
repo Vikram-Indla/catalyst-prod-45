@@ -232,7 +232,7 @@ export function BoardKanban({ filters, onTaskClick, onAddTask }: BoardKanbanProp
 
               {/* Add Column Button */}
               <button
-                className="boards-add-column dark:border-[rgba(255,255,255,0.08)] dark:text-[#878787] dark:hover:bg-[#1A1A1A] dark:hover:text-[#EDEDED] dark:hover:border-[rgba(255,255,255,0.15)]"
+                className="boards-add-column dark:border-[#2E2E2E] dark:text-[#878787] dark:hover:bg-[#1A1A1A] dark:hover:text-[#EDEDED] dark:hover:border-[#454545]"
                 onClick={() => setIsAddColumnOpen(true)}
               >
                 <Plus className="w-5 h-5" />

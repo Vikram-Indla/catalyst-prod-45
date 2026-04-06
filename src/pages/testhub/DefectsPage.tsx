@@ -151,7 +151,7 @@ export default function DefectsPage() {
             {[1,2,3,4,5].map(i => <Skeleton key={i} className="h-10 w-full" />)}
           </div>
         ) : defects.length === 0 ? (
-          <div className={cn("border rounded-lg p-12 text-center", isDark && "border-[rgba(255,255,255,0.08)] bg-[#1A1A1A]")}>
+          <div className={cn("border rounded-lg p-12 text-center", isDark && "border-[#2E2E2E] bg-[#1A1A1A]")}>
             <Bug className="h-12 w-12 text-muted-foreground/40 mx-auto mb-4" />
             <p className="font-medium text-foreground mb-1">No defects recorded</p>
             <p className="text-muted-foreground text-sm mb-4">
@@ -164,7 +164,7 @@ export default function DefectsPage() {
             </Button>
           </div>
         ) : (
-          <div className={cn("border rounded-lg", isDark && "border-[rgba(255,255,255,0.08)]")}>
+          <div className={cn("border rounded-lg", isDark && "border-[#2E2E2E]")}>
             <DefectTable defects={defects} selectedIds={selectedIds} onSelectionChange={setSelectedIds} onDelete={handleDelete} />
           </div>
         )}

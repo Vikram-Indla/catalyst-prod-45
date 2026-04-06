@@ -71,19 +71,19 @@ export default function WorkHubSidePanelActivity({ activities, onAddComment, isL
         ))}
       </div>
 
-      <div style={{ borderTop: '0.75px solid var(--bd-subtle, rgba(255,255,255,0.05))', paddingTop: 12, marginTop: 8 }}>
+      <div style={{ borderTop: '0.75px solid var(--bd-subtle, #292929)', paddingTop: 12, marginTop: 8 }}>
         <textarea
           value={comment} onChange={e => setComment(e.target.value)} onKeyDown={handleKeyDown}
           placeholder="Add a comment..." rows={2}
           aria-label="Add a comment"
           style={{
-            width: '100%', border: '1px solid var(--bd-default, rgba(255,255,255,0.08))', borderRadius: 6,
+            width: '100%', border: '1px solid var(--bd-default, #2E2E2E)', borderRadius: 6,
             padding: '8px 12px', fontSize: 13, color: 'var(--fg-1)', fontFamily: 'Inter, sans-serif',
             resize: 'vertical', outline: 'none', minHeight: 48, background: 'var(--bg-app)',
             transition: 'border-color 150ms',
           }}
           onFocus={e => (e.currentTarget.style.borderColor = 'var(--cp-blue)')}
-          onBlur={e => (e.currentTarget.style.borderColor = 'var(--bd-default, rgba(255,255,255,0.08))')}
+          onBlur={e => (e.currentTarget.style.borderColor = 'var(--bd-default, #2E2E2E)')}
         />
         {comment.trim() && (
           <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 8, marginTop: 6 }}>

@@ -29,7 +29,7 @@ export function NavItem({ icon: Icon, label, isActive, onClick, collapsed, badge
         fontWeight: isActive ? 600 : 500,
         color: isActive
           ? 'var(--cp-blue)'
-          : isDark ? 'rgba(255,255,255,0.72)' : 'var(--fg-2)',
+          : isDark ? '#A1A1A1' : 'var(--fg-2)',
         backgroundColor: isActive
           ? (isDark ? 'rgba(59,130,246,0.10)' : 'var(--cp-blue-wash)')
           : 'transparent',
@@ -39,7 +39,7 @@ export function NavItem({ icon: Icon, label, isActive, onClick, collapsed, badge
         cursor: 'pointer',
       }}
       onMouseEnter={(e) => {
-        if (!isActive) e.currentTarget.style.backgroundColor = isDark ? 'rgba(255,255,255,0.03)' : 'var(--cp-bd-zone)';
+        if (!isActive) e.currentTarget.style.backgroundColor = isDark ? '#1F1F1F' : 'var(--cp-bd-zone)';
       }}
       onMouseLeave={(e) => {
         if (!isActive) e.currentTarget.style.backgroundColor = 'transparent';
@@ -72,10 +72,10 @@ export function NavItem({ icon: Icon, label, isActive, onClick, collapsed, badge
               style={{
                 fontSize: 11,
                 fontWeight: 600,
-                color: isDark ? 'rgba(255,255,255,0.55)' : 'var(--fg-4)',
+                color: isDark ? '#878787' : 'var(--fg-4)',
                 fontFamily: "'JetBrains Mono', monospace",
                 borderRadius: 12,
-                backgroundColor: isDark ? 'rgba(255,255,255,0.06)' : 'var(--cp-bd-zone)',
+                backgroundColor: isDark ? '#292929' : 'var(--cp-bd-zone)',
                 padding: '1px 6px',
               }}
             >

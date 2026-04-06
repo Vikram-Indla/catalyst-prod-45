@@ -143,7 +143,7 @@ export default function ActivityFeedPage() {
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: isDark ? '#0A0A0A' : '#F8FAFC' }}>
       <TestHubPageHeader title="Activity Feed" subtitle="Track all changes and actions across TestHub">
         <button onClick={fetchActivities}
-          style={{ display: 'flex', alignItems: 'center', gap: 8, height: 40, padding: '0 20px', border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 8, backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#A1A1A1' : '#334155', fontSize: 14, fontWeight: 500, cursor: 'pointer' }}>
+          style={{ display: 'flex', alignItems: 'center', gap: 8, height: 40, padding: '0 20px', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 8, backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#A1A1A1' : '#334155', fontSize: 14, fontWeight: 500, cursor: 'pointer' }}>
           <RefreshCw size={16} /> Refresh
         </button>
       </TestHubPageHeader>
@@ -152,7 +152,7 @@ export default function ActivityFeedPage() {
       {/* Stats Cards */}
       {stats && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 16, marginBottom: 24 }}>
-          <div style={{ backgroundColor: isDark ? '#1A1A1A' : '#FFF', borderRadius: 12, padding: 16, border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}` }}>
+          <div style={{ backgroundColor: isDark ? '#1A1A1A' : '#FFF', borderRadius: 12, padding: 16, border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}` }}>
             <p style={{ fontSize: 11, color: isDark ? '#A1A1A1' : '#64748B', margin: 0, textTransform: 'uppercase' }}>Total (30d)</p>
             <p style={{ fontSize: 24, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A', margin: '4px 0 0' }}>{stats.total_events}</p>
           </div>
@@ -168,7 +168,7 @@ export default function ActivityFeedPage() {
             <p style={{ fontSize: 11, color: '#DC2626', margin: 0, textTransform: 'uppercase' }}>Deleted</p>
             <p style={{ fontSize: 24, fontWeight: 700, color: '#DC2626', margin: '4px 0 0' }}>{stats.deletes}</p>
           </div>
-          <div style={{ backgroundColor: isDark ? '#1A1A1A' : '#FFF', borderRadius: 12, padding: 16, border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}` }}>
+          <div style={{ backgroundColor: isDark ? '#1A1A1A' : '#FFF', borderRadius: 12, padding: 16, border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}` }}>
             <p style={{ fontSize: 11, color: isDark ? '#A1A1A1' : '#64748B', margin: 0, textTransform: 'uppercase' }}>Active Users</p>
             <p style={{ fontSize: 24, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A', margin: '4px 0 0' }}>{stats.active_users}</p>
           </div>
@@ -180,10 +180,10 @@ export default function ActivityFeedPage() {
         <div style={{ position: 'relative', flex: '1 1 300px', maxWidth: 400 }}>
           <Search size={18} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: '#94A3B8' }} />
           <input type="text" placeholder="Search activity..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}
-            style={{ width: '100%', height: 44, padding: '0 14px 0 44px', border: `1.5px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 12, fontSize: 14, backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#EDEDED' : undefined }} />
+            style={{ width: '100%', height: 44, padding: '0 14px 0 44px', border: `1.5px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 12, fontSize: 14, backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#EDEDED' : undefined }} />
         </div>
         <select value={entityFilter} onChange={(e) => setEntityFilter(e.target.value)}
-          style={{ height: 44, padding: '0 36px 0 14px', border: `1.5px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 12, fontSize: 14, backgroundColor: isDark ? '#1A1A1A' : '#FFF', color: isDark ? '#EDEDED' : undefined, cursor: 'pointer' }}>
+          style={{ height: 44, padding: '0 36px 0 14px', border: `1.5px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 12, fontSize: 14, backgroundColor: isDark ? '#1A1A1A' : '#FFF', color: isDark ? '#EDEDED' : undefined, cursor: 'pointer' }}>
           <option value="all">All Entities</option>
           <option value="test_case">Test Cases</option>
           <option value="defect">Defects</option>
@@ -193,7 +193,7 @@ export default function ActivityFeedPage() {
           <option value="environment">Environments</option>
         </select>
         <select value={actionFilter} onChange={(e) => setActionFilter(e.target.value)}
-          style={{ height: 44, padding: '0 36px 0 14px', border: `1.5px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 12, fontSize: 14, backgroundColor: isDark ? '#1A1A1A' : '#FFF', color: isDark ? '#EDEDED' : undefined, cursor: 'pointer' }}>
+          style={{ height: 44, padding: '0 36px 0 14px', border: `1.5px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 12, fontSize: 14, backgroundColor: isDark ? '#1A1A1A' : '#FFF', color: isDark ? '#EDEDED' : undefined, cursor: 'pointer' }}>
           <option value="all">All Actions</option>
           <option value="create">Created</option>
           <option value="update">Updated</option>
@@ -203,7 +203,7 @@ export default function ActivityFeedPage() {
         </select>
         {hasActiveFilters && (
           <button onClick={clearFilters}
-            style={{ display: 'flex', alignItems: 'center', gap: 6, height: 44, padding: '0 16px', border: `1.5px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 12, backgroundColor: isDark ? '#1A1A1A' : '#FFF', color: isDark ? '#A1A1A1' : '#64748B', fontSize: 14, cursor: 'pointer' }}>
+            style={{ display: 'flex', alignItems: 'center', gap: 6, height: 44, padding: '0 16px', border: `1.5px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 12, backgroundColor: isDark ? '#1A1A1A' : '#FFF', color: isDark ? '#A1A1A1' : '#64748B', fontSize: 14, cursor: 'pointer' }}>
             <X size={16} /> Clear
           </button>
         )}
@@ -215,7 +215,7 @@ export default function ActivityFeedPage() {
           <RefreshCw size={32} style={{ animation: 'spin 1s linear infinite', color: '#8B5CF6' }} />
         </div>
       ) : filteredActivities.length === 0 ? (
-        <div style={{ backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', borderRadius: 12, padding: 60, textAlign: 'center', border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}` }}>
+        <div style={{ backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', borderRadius: 12, padding: 60, textAlign: 'center', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}` }}>
           <Activity size={48} style={{ color: isDark ? '#878787' : '#CBD5E1', marginBottom: 16 }} />
           <p style={{ fontSize: 16, color: isDark ? '#A1A1A1' : '#64748B', margin: 0 }}>No activity found</p>
           <p style={{ fontSize: 14, color: isDark ? '#878787' : '#94A3B8', margin: '8px 0 0' }}>Activity will appear here as users make changes</p>
@@ -225,7 +225,7 @@ export default function ActivityFeedPage() {
           {Object.entries(groupedActivities).map(([date, items]) => (
             <div key={date}>
               <h3 style={{ fontSize: 13, fontWeight: 600, color: isDark ? '#A1A1A1' : '#64748B', margin: '0 0 12px', textTransform: 'uppercase' }}>{date}</h3>
-              <div style={{ backgroundColor: isDark ? '#1A1A1A' : '#FFF', borderRadius: 12, border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, overflow: 'hidden' }}>
+              <div style={{ backgroundColor: isDark ? '#1A1A1A' : '#FFF', borderRadius: 12, border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, overflow: 'hidden' }}>
                 {items.map((activity, index) => {
                   const action = ACTION_CONFIG[activity.action] || ACTION_CONFIG.view;
                   const entity = ENTITY_CONFIG[activity.entity_type] || { label: activity.entity_type, color: '#64748B', icon: FileText };
@@ -234,7 +234,7 @@ export default function ActivityFeedPage() {
 
                   return (
                     <div key={activity.id}
-                      style={{ display: 'flex', alignItems: 'center', gap: 16, padding: 16, borderBottom: index < items.length - 1 ? `1px solid ${isDark ? 'rgba(255,255,255,0.05)' : '#F1F5F9'}` : 'none' }}>
+                      style={{ display: 'flex', alignItems: 'center', gap: 16, padding: 16, borderBottom: index < items.length - 1 ? `1px solid ${isDark ? '#292929' : '#F1F5F9'}` : 'none' }}>
                       <div style={{ width: 36, height: 50, borderRadius: 8, backgroundColor: `${action.color}15`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                         <ActionIcon size={18} style={{ color: action.color }} />
                       </div>

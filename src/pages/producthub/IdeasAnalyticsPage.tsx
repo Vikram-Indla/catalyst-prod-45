@@ -18,7 +18,7 @@ const STATUS_TEXT_COLORS: Record<string, string> = {
   'Draft': '#42526E', 'Submitted': '#42526E', 'Under Review': '#FFFFFF', 'Approved': '#FFFFFF', 'Converted to Initiative': '#FFFFFF',
 };
 const STATUS_BAR_COLORS_DARK: Record<string, string> = {
-  'Draft': 'rgba(255,255,255,0.08)', 'Submitted': 'rgba(255,255,255,0.08)', 'Under Review': 'rgba(59,130,246,0.15)',
+  'Draft': '#2E2E2E', 'Submitted': '#2E2E2E', 'Under Review': 'rgba(59,130,246,0.15)',
   'Approved': 'rgba(59,130,246,0.15)', 'Converted to Initiative': 'rgba(22,163,74,0.15)',
 };
 const STATUS_TEXT_COLORS_DARK: Record<string, string> = {
@@ -88,9 +88,9 @@ export default function IdeasAnalyticsPage() {
   }, [allIdeas]);
   const maxConvQ = Math.max(...convByQuarter.map(q => q.total), 1);
 
-  const barTrack = isDark ? 'rgba(255,255,255,0.08)' : '#F4F4F5';
+  const barTrack = isDark ? '#2E2E2E' : '#F4F4F5';
   const containerBg = isDark ? '#0A0A0A' : '#FFFFFF';
-  const containerBorder = `1px solid ${isDark ? 'rgba(255,255,255,0.14)' : dk.border}`;
+  const containerBorder = `1px solid ${isDark ? '#454545' : dk.border}`;
 
   return (
     <div className="flex flex-col h-full" style={{ background: dk.pageBg }}>
@@ -123,7 +123,7 @@ export default function IdeasAnalyticsPage() {
                   <div style={{ flex: 1, height: '28px', background: barTrack, borderRadius: '4px', overflow: 'hidden' }}>
                     <div style={{
                       width: `${Math.max((s.count / maxFunnel) * 100, s.count > 0 ? 8 : 0)}%`, height: '100%',
-                      background: isDark ? (STATUS_BAR_COLORS_DARK[s.status] || 'rgba(255,255,255,0.08)') : (STATUS_BAR_COLORS[s.status] || '#DFE1E6'),
+                      background: isDark ? (STATUS_BAR_COLORS_DARK[s.status] || '#2E2E2E') : (STATUS_BAR_COLORS[s.status] || '#DFE1E6'),
                       borderRadius: '4px', display: 'flex', alignItems: 'center', paddingLeft: '8px',
                       color: isDark ? (STATUS_TEXT_COLORS_DARK[s.status] || dk.t2) : (STATUS_TEXT_COLORS[s.status] || '#42526E'),
                       fontSize: '12px', fontWeight: 700, minWidth: s.count > 0 ? '32px' : undefined,
@@ -186,7 +186,7 @@ export default function IdeasAnalyticsPage() {
 
 function StatCard({ label, value, subtitle, color, isDark, dk }: { label: string; value: string; subtitle: string; color: string; isDark: boolean; dk: typeof DK }) {
   return (
-    <div style={{ background: isDark ? '#0A0A0A' : '#FFFFFF', border: `1px solid ${isDark ? 'rgba(255,255,255,0.14)' : dk.border}`, borderRadius: '6px', padding: '20px' }}>
+    <div style={{ background: isDark ? '#0A0A0A' : '#FFFFFF', border: `1px solid ${isDark ? '#454545' : dk.border}`, borderRadius: '6px', padding: '20px' }}>
       <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: dk.t3, marginBottom: '8px' }}>{label}</div>
       <span style={{ fontSize: '32px', fontWeight: 800, fontFamily: "'JetBrains Mono', monospace", color, letterSpacing: '-0.5px' }}>{value}</span>
       <div style={{ fontSize: '12px', color: dk.t3, marginTop: '4px' }}>{subtitle}</div>

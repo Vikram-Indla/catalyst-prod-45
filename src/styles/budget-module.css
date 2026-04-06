@@ -116,15 +116,15 @@
 [data-theme="dark"] .budget-module {
   /* Neutrals — hex only (no HSL) */
   --slate-900: var(--fg-1, #EDEDED);
-  --slate-800: rgba(255,255,255,0.85);
+  --slate-800: #EDEDED;
   --slate-700: var(--fg-2, #A1A1A1);
   --slate-600: var(--fg-3, #878787);
-  --slate-500: rgba(255,255,255,0.50);
+  --slate-500: #7D7D7D;
   --slate-400: var(--fg-4, rgba(237,237,237,0.30));
-  --slate-300: rgba(255,255,255,0.18);
-  --slate-200: rgba(255,255,255,0.10);
-  --slate-100: rgba(255,255,255,0.06);
-  --slate-50: rgba(255,255,255,0.03);
+  --slate-300: #454545;
+  --slate-200: #2E2E2E;
+  --slate-100: #292929;
+  --slate-50: #1F1F1F;
   --white: #1A1A1A;
 
   /* Surfaces + text */
@@ -133,14 +133,14 @@
   --budget-text-primary: var(--fg-1, #EDEDED);
   --budget-text-secondary: var(--fg-2, #A1A1A1);
   --budget-text-muted: var(--fg-3, #878787);
-  --budget-border: rgba(255,255,255,0.10);
-  --budget-border-strong: rgba(255,255,255,0.18);
+  --budget-border: #2E2E2E;
+  --budget-border-strong: #454545;
 
   /* Legacy aliases */
   --budget-bg: #0A0A0A;
   --budget-surface: #1A1A1A;
   --budget-text: var(--fg-1, #EDEDED);
-  --budget-border-light: rgba(255,255,255,0.10);
+  --budget-border-light: #2E2E2E;
 
   /* Primary surfaces used in info/expanded rows */
   --budget-primary-bg: rgba(59,130,246,0.10);

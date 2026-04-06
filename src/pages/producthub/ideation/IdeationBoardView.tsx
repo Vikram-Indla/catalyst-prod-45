@@ -59,7 +59,7 @@ export default function IdeationBoardView({ ideas, onOpenDetail, onConvert }: Pr
               <span style={{ fontSize: '11px', fontWeight: 700, color: dk.t2, textTransform: 'uppercase', letterSpacing: '0.07em' }}>{sc.label}</span>
               <span style={{
                 fontSize: '10px', fontFamily: "'JetBrains Mono', monospace", fontWeight: 700,
-                background: isDark ? 'rgba(255,255,255,0.06)' : '#F1F5F9', borderRadius: '100px',
+                background: isDark ? '#292929' : '#F1F5F9', borderRadius: '100px',
                 padding: '0 6px', height: 18, display: 'inline-flex', alignItems: 'center',
                 color: dk.t3,
               }}>
@@ -113,7 +113,7 @@ function IdeaBoardCard({ idea, columnStatus, onClick, onConvert, isDark, dk }: {
         boxShadow: isDark ? 'none' : undefined,
       }}
       onMouseEnter={e => {
-        e.currentTarget.style.background = isDark ? 'rgba(255,255,255,0.03)' : 'rgba(15,23,42,0.04)';
+        e.currentTarget.style.background = isDark ? '#1F1F1F' : 'rgba(15,23,42,0.04)';
         if (!isDark) e.currentTarget.style.transform = 'translateY(-1px)';
       }}
       onMouseLeave={e => {
@@ -139,7 +139,7 @@ function IdeaBoardCard({ idea, columnStatus, onClick, onConvert, isDark, dk }: {
         </span>
         <span style={{
           fontFamily: "'JetBrains Mono', monospace", fontSize: '9px', fontWeight: 800,
-          background: isDark ? 'rgba(255,255,255,0.06)' : pc.bg, color: isDark ? dk.t2 : pc.text,
+          background: isDark ? '#292929' : pc.bg, color: isDark ? dk.t2 : pc.text,
           padding: '1px 5px', borderRadius: '4px',
           border: `1px solid ${isDark ? dk.border : pc.border}`,
         }}>
@@ -160,7 +160,7 @@ function IdeaBoardCard({ idea, columnStatus, onClick, onConvert, isDark, dk }: {
       {/* Type badge + Ideas Theme */}
       <div style={{ marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'wrap' }}>
         <span style={{
-          background: isDark ? 'rgba(255,255,255,0.06)' : '#F4F4F5', color: dk.t2,
+          background: isDark ? '#292929' : '#F4F4F5', color: dk.t2,
           padding: '2px 6px', borderRadius: '4px',
           fontSize: '10px', fontWeight: 600,
           border: isDark ? `1px solid ${dk.border}` : 'none',

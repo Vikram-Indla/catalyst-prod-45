@@ -138,9 +138,9 @@
   --boards-bg-card-hover: #1A1A1A;
   --boards-bg-empty: #1A1A1A;
 
-  --boards-border-card: rgba(255,255,255,0.08);
-  --boards-border-card-hover: rgba(255,255,255,0.15);
-  --boards-border-empty: rgba(255,255,255,0.08);
+  --boards-border-card: #2E2E2E;
+  --boards-border-card-hover: #454545;
+  --boards-border-empty: #2E2E2E;
 
   --boards-shadow-card: 0 1px 3px rgba(0, 0, 0, 0.2);
   --boards-shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.3);
@@ -153,7 +153,7 @@
 .dark .boards-card,
 [data-theme="dark"] .boards-card {
   background-color: #1A1A1A !important;
-  border-color: rgba(255,255,255,0.08) !important;
+  border-color: #2E2E2E !important;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2) !important;
   color: #EDEDED !important;
 }
@@ -161,13 +161,13 @@
 .dark .boards-card:hover,
 [data-theme="dark"] .boards-card:hover {
   background-color: #1A1A1A !important;
-  border-color: rgba(255,255,255,0.15) !important;
+  border-color: #454545 !important;
 }
 
 .dark .boards-column__empty,
 [data-theme="dark"] .boards-column__empty {
   background-color: #1A1A1A !important;
-  border-color: rgba(255,255,255,0.08) !important;
+  border-color: #2E2E2E !important;
   color: #878787 !important;
 }
 
@@ -346,13 +346,13 @@
 }
 
 .dark .boards-add-task {
-  border-color: rgba(255,255,255,0.08);
+  border-color: #2E2E2E;
   color: #878787;
 }
 
 .dark .boards-add-task:hover {
   background-color: #1A1A1A;
-  border-color: rgba(255,255,255,0.15);
+  border-color: #454545;
   color: #EDEDED;
 }
 
@@ -606,7 +606,7 @@
 
 .dark .boards-card__avatar--empty {
   background-color: #1A1A1A;
-  border-color: rgba(255,255,255,0.08);
+  border-color: #2E2E2E;
   color: #878787;
 }
 
@@ -739,7 +739,7 @@
 
 .dark .boards-card--placeholder {
   background-color: #1A1A1A;
-  border-color: rgba(255,255,255,0.08);
+  border-color: #2E2E2E;
 }
 
 
@@ -898,13 +898,13 @@
 }
 
 .dark .boards-add-column {
-  border-color: rgba(255,255,255,0.08);
+  border-color: #2E2E2E;
   color: #878787;
 }
 
 .dark .boards-add-column:hover {
   background-color: #1A1A1A;
-  border-color: rgba(255,255,255,0.15);
+  border-color: #454545;
   color: #EDEDED;
 }
 

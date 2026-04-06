@@ -259,7 +259,7 @@ export default function IdeationPage() {
               fontSize: '13px', color: dk.t1, outline: 'none',
             }}
             onFocus={e => { e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.08)'; e.currentTarget.style.borderColor = '#2563EB'; }}
-            onBlur={e => { e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.borderColor = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.12)'; }}
+            onBlur={e => { e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.borderColor = isDark ? '#2E2E2E' : 'rgba(15,23,42,0.12)'; }}
           />
         </div>
 
@@ -358,7 +358,7 @@ function IdeationListView({ ideas, selectedRows, toggleRow, toggleAll, onOpenDet
     }}>
       <table style={{ width: '100%', borderCollapse: 'collapse' }}>
         <thead>
-          <tr style={{ height: '50px', background: isDark ? 'rgba(255,255,255,0.03)' : '#F8FAFC' }}>
+          <tr style={{ height: '50px', background: isDark ? '#1F1F1F' : '#F8FAFC' }}>
             <th style={{ width: '40px', padding: '0 8px', textAlign: 'center' }}>
               <input type="checkbox" checked={selectedRows.size === ideas.length && ideas.length > 0} onChange={toggleAll} style={{ cursor: 'pointer', accentColor: '#2563EB' }} />
             </th>

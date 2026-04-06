@@ -22,14 +22,14 @@ export const CatalystCheckbox = forwardRef<HTMLInputElement, CatalystCheckboxPro
               "w-4 h-4 rounded-sm border-2 flex items-center justify-center",
               "transition-all duration-150",
               // Catalyst V5: Visible border in both light and dark modes
-              "border-[hsl(var(--border-default))] dark:border-[rgba(255,255,255,0.35)]",
+              "border-[hsl(var(--border-default))] dark:border-[#7D7D7D]",
               "bg-transparent",
               // Checked state
               "peer-checked:bg-primary peer-checked:border-primary",
               // Focus state
               "peer-focus:ring-2 peer-focus:ring-primary/30 peer-focus:ring-offset-1 dark:peer-focus:ring-offset-[hsl(var(--background))]",
               // Hover state
-              "group-hover:border-primary/70 dark:group-hover:border-[rgba(255,255,255,0.5)]",
+              "group-hover:border-primary/70 dark:group-hover:border-[#7D7D7D]",
               className
             )}
           >
@@ -40,7 +40,7 @@ export const CatalystCheckbox = forwardRef<HTMLInputElement, CatalystCheckboxPro
           </div>
         </div>
         {label && (
-          <span className="text-[13px] leading-snug text-muted-foreground dark:text-[rgba(255,255,255,0.72)]">
+          <span className="text-[13px] leading-snug text-muted-foreground dark:text-[#A1A1A1]">
             {label}
           </span>
         )}

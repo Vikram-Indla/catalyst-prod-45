@@ -125,7 +125,7 @@ function SortablePriorityCard({
       style={style}
       onClick={onClick}
       className={`
-        flex items-center gap-4 p-4 bg-white dark:bg-[#1A1A1A] border border-gray-200 dark:border-[rgba(255,255,255,0.08)] rounded-xl cursor-pointer
+        flex items-center gap-4 p-4 bg-white dark:bg-[#1A1A1A] border border-gray-200 dark:border-[#2E2E2E] rounded-xl cursor-pointer
         hover:border-blue-200 hover:shadow-sm transition-all
         ${isCompleted ? 'bg-gray-50' : ''}
         ${isDragging ? 'shadow-lg border-blue-500' : ''}
@@ -380,7 +380,7 @@ function SidePanel({
                     <ChevronRight className="w-4 h-4 text-gray-400" />
                   </button>
                   {showAssigneeDropdown && (
-                    <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-[#1A1A1A] border border-gray-200 dark:border-[rgba(255,255,255,0.08)] rounded-xl shadow-xl z-10 py-2 max-h-64 overflow-y-auto">
+                    <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-[#1A1A1A] border border-gray-200 dark:border-[#2E2E2E] rounded-xl shadow-xl z-10 py-2 max-h-64 overflow-y-auto">
                       <input
                         type="text"
                         placeholder="Search users..."
@@ -830,7 +830,7 @@ export default function Task10DetailPage() {
   return (
     <div className="min-h-screen bg-[#f8fafc]">
       {/* HEADER */}
-      <header className="flex items-center justify-between px-6 py-3 bg-white dark:bg-[#1A1A1A] border-b border-gray-200 dark:border-[rgba(255,255,255,0.08)]">
+      <header className="flex items-center justify-between px-6 py-3 bg-white dark:bg-[#1A1A1A] border-b border-gray-200 dark:border-[#2E2E2E]">
         <div className="flex items-center gap-5">
           <button onClick={() => navigate('/task10')} className="flex items-center gap-3">
             <div className="w-10 h-10 flex items-center justify-center text-white rounded-xl font-bold text-sm" style={{ backgroundColor: '#2563eb' }}>
@@ -888,7 +888,7 @@ export default function Task10DetailPage() {
       {/* MAIN */}
       <main className="max-w-4xl mx-auto px-6 py-6">
         {/* AI SUGGESTIONS */}
-        <div className="mb-5 p-5 bg-white dark:bg-[#1A1A1A] border border-gray-200 dark:border-[rgba(255,255,255,0.08)] rounded-xl">
+        <div className="mb-5 p-5 bg-white dark:bg-[#1A1A1A] border border-gray-200 dark:border-[#2E2E2E] rounded-xl">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 flex items-center justify-center bg-blue-50 border border-blue-200 rounded-xl">
@@ -937,7 +937,7 @@ export default function Task10DetailPage() {
 
         {/* ADD INPUT */}
         <div className="mb-5">
-          <div className="flex items-center bg-white dark:bg-[#1A1A1A] border-2 border-gray-200 dark:border-[rgba(255,255,255,0.08)] rounded-xl overflow-hidden transition-all focus-within:border-blue-500 focus-within:shadow-lg focus-within:shadow-blue-500/10">
+          <div className="flex items-center bg-white dark:bg-[#1A1A1A] border-2 border-gray-200 dark:border-[#2E2E2E] rounded-xl overflow-hidden transition-all focus-within:border-blue-500 focus-within:shadow-lg focus-within:shadow-blue-500/10">
             <div className="px-4" style={{ color: '#2563eb' }}>
               <Plus className="w-5 h-5" strokeWidth={2.5} />
             </div>
@@ -984,11 +984,11 @@ export default function Task10DetailPage() {
             <div className="flex items-center gap-2 mb-4">
               <Archive className="w-4 h-4 text-gray-500" />
               <span className="text-xs font-bold text-gray-600 uppercase tracking-wider">Buffer Zone</span>
-              <span className="px-2 py-0.5 text-xs font-semibold text-gray-500 dark:text-[#A1A1A1] bg-white dark:bg-[#1A1A1A] border border-gray-200 dark:border-[rgba(255,255,255,0.08)] rounded">{bufferItems.length}</span>
+              <span className="px-2 py-0.5 text-xs font-semibold text-gray-500 dark:text-[#A1A1A1] bg-white dark:bg-[#1A1A1A] border border-gray-200 dark:border-[#2E2E2E] rounded">{bufferItems.length}</span>
             </div>
             <div className="space-y-2">
               {bufferItems.map((item) => (
-                <div key={item.id} className="flex items-center gap-4 p-4 bg-white dark:bg-[#1A1A1A] border border-gray-200 dark:border-[rgba(255,255,255,0.08)] rounded-xl">
+                <div key={item.id} className="flex items-center gap-4 p-4 bg-white dark:bg-[#1A1A1A] border border-gray-200 dark:border-[#2E2E2E] rounded-xl">
                   <div className="w-8 h-8 flex items-center justify-center text-xs font-semibold text-gray-500 bg-gray-100 border border-dashed border-gray-300 rounded-lg">
                     {item.rank}
                   </div>
@@ -1042,7 +1042,7 @@ export default function Task10DetailPage() {
               </div>
             </div>
             <div className="flex gap-3 p-5 bg-gray-50 border-t border-gray-200">
-              <button onClick={() => setShowCheckoutModal(false)} className="flex-1 py-3 text-sm font-medium text-gray-700 dark:text-[#A1A1A1] bg-white dark:bg-[#1A1A1A] border border-gray-200 dark:border-[rgba(255,255,255,0.08)] rounded-lg hover:bg-gray-50 dark:hover:bg-[#1A1A1A]">
+              <button onClick={() => setShowCheckoutModal(false)} className="flex-1 py-3 text-sm font-medium text-gray-700 dark:text-[#A1A1A1] bg-white dark:bg-[#1A1A1A] border border-gray-200 dark:border-[#2E2E2E] rounded-lg hover:bg-gray-50 dark:hover:bg-[#1A1A1A]">
                 Cancel
               </button>
               <button
@@ -1070,7 +1070,7 @@ export default function Task10DetailPage() {
               <p className="text-sm text-gray-600">Are you sure you want to delete this item? This action cannot be undone.</p>
             </div>
             <div className="flex gap-3 p-5 bg-gray-50 border-t border-gray-200">
-              <button onClick={() => setShowDeleteModal(false)} className="flex-1 py-3 text-sm font-medium text-gray-700 dark:text-[#A1A1A1] bg-white dark:bg-[#1A1A1A] border border-gray-200 dark:border-[rgba(255,255,255,0.08)] rounded-lg hover:bg-gray-50 dark:hover:bg-[#1A1A1A]">
+              <button onClick={() => setShowDeleteModal(false)} className="flex-1 py-3 text-sm font-medium text-gray-700 dark:text-[#A1A1A1] bg-white dark:bg-[#1A1A1A] border border-gray-200 dark:border-[#2E2E2E] rounded-lg hover:bg-gray-50 dark:hover:bg-[#1A1A1A]">
                 Cancel
               </button>
               <button

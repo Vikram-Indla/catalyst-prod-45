@@ -13,7 +13,7 @@ export function SidebarModuleNav({ collapsed, onToggle }: SidebarModuleNavProps)
 
   return (
     <div
-      className="flex flex-col h-full flex-shrink-0 bg-white dark:bg-[#0A0A0A] border-r border-[var(--bd-default, #E2E8F0)] dark:border-[rgba(255,255,255,0.10)]"
+      className="flex flex-col h-full flex-shrink-0 bg-white dark:bg-[#0A0A0A] border-r border-[var(--bd-default, #E2E8F0)] dark:border-[#2E2E2E]"
       style={{
         width: collapsed ? 56 : 192,
         transition: 'width 200ms ease',
@@ -23,7 +23,7 @@ export function SidebarModuleNav({ collapsed, onToggle }: SidebarModuleNavProps)
     >
       {/* Header */}
       <div
-        className="flex items-center gap-2 flex-shrink-0 border-b border-[var(--bd-default, #E2E8F0)] dark:border-[rgba(255,255,255,0.10)]"
+        className="flex items-center gap-2 flex-shrink-0 border-b border-[var(--bd-default, #E2E8F0)] dark:border-[#2E2E2E]"
         style={{ padding: collapsed ? '12px 10px' : '12px 10px' }}
       >
         <div
@@ -34,7 +34,7 @@ export function SidebarModuleNav({ collapsed, onToggle }: SidebarModuleNavProps)
         </div>
         {!collapsed && (
           <span
-            className="flex-1 truncate text-[#0F172A] dark:text-[rgba(255,255,255,0.92)]"
+            className="flex-1 truncate text-[#0F172A] dark:text-[#EDEDED]"
             style={{ fontSize: 13, fontWeight: 600, fontFamily: "'Sora', sans-serif" }}
           >
             ProjectHub
@@ -42,14 +42,14 @@ export function SidebarModuleNav({ collapsed, onToggle }: SidebarModuleNavProps)
         )}
         <button
           onClick={onToggle}
-          className="flex items-center justify-center rounded hover:bg-[#F1F5F9] dark:hover:bg-[rgba(255,255,255,0.03)] transition-colors flex-shrink-0"
+          className="flex items-center justify-center rounded hover:bg-[#F1F5F9] dark:hover:bg-[#1F1F1F] transition-colors flex-shrink-0"
           style={{ width: 24, height: 24, border: 'none', background: 'transparent', cursor: 'pointer' }}
           title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         >
           {collapsed ? (
-            <ChevronsRight size={16} className="text-[#64748B] dark:text-[rgba(255,255,255,0.55)]" />
+            <ChevronsRight size={16} className="text-[#64748B] dark:text-[#878787]" />
           ) : (
-            <ChevronsLeft size={16} className="text-[#64748B] dark:text-[rgba(255,255,255,0.55)]" />
+            <ChevronsLeft size={16} className="text-[#64748B] dark:text-[#878787]" />
           )}
         </button>
       </div>
@@ -61,7 +61,7 @@ export function SidebarModuleNav({ collapsed, onToggle }: SidebarModuleNavProps)
         {/* Resource 360° Section */}
         {!collapsed && (
           <div className="pt-3 pb-1">
-            <div className="text-[var(--fg-3)] dark:text-[rgba(255,255,255,0.55)]" style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' as const, padding: '0 10px 4px' }}>
+            <div className="text-[var(--fg-3)] dark:text-[#878787]" style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' as const, padding: '0 10px 4px' }}>
               Resource 360°
             </div>
           </div>
@@ -76,10 +76,10 @@ export function SidebarModuleNav({ collapsed, onToggle }: SidebarModuleNavProps)
         {/* Favorites section */}
         {!collapsed && (
           <div className="pt-3">
-            <div className="text-[var(--fg-3)] dark:text-[rgba(255,255,255,0.55)]" style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' as const, padding: '0 10px 4px' }}>
+            <div className="text-[var(--fg-3)] dark:text-[#878787]" style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' as const, padding: '0 10px 4px' }}>
               Favorites
             </div>
-            <div className="flex items-center gap-2 px-[10px] py-2 text-[var(--fg-4)] dark:text-[rgba(255,255,255,0.40)]" style={{ fontSize: 12 }}>
+            <div className="flex items-center gap-2 px-[10px] py-2 text-[var(--fg-4)] dark:text-[#7D7D7D]" style={{ fontSize: 12 }}>
               <Star size={14} />
               <span>No starred projects</span>
             </div>

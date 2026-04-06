@@ -52,7 +52,7 @@ export function AllWorkPagination({ currentPage, totalPages, totalCount, pageSiz
   return (
     <div
       className="flex items-center justify-between px-8 py-2.5"
-      style={{ borderTop: '1px solid var(--bd-subtle, rgba(255,255,255,0.05))', backgroundColor: 'var(--bg-app)' }}
+      style={{ borderTop: '1px solid var(--bd-subtle, #292929)', backgroundColor: 'var(--bg-app)' }}
     >
       {/* Left: count */}
       <span className="text-[12px]" style={{ color: 'var(--fg-3)', fontFamily: 'Inter, sans-serif' }}>
@@ -64,8 +64,8 @@ export function AllWorkPagination({ currentPage, totalPages, totalCount, pageSiz
         <button
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 0}
-          className="p-1.5 rounded border disabled:opacity-30 hover:bg-[var(--hover, rgba(255,255,255,0.04))] transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[#2563EB]"
-          style={{ borderColor: 'var(--bd-default, rgba(255,255,255,0.08))' }}
+          className="p-1.5 rounded border disabled:opacity-30 hover:bg-[var(--hover, #1F1F1F)] transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[#2563EB]"
+          style={{ borderColor: 'var(--bd-default, #2E2E2E)' }}
           aria-label="Previous page"
         >
           <ChevronLeft className="w-3.5 h-3.5" style={{ color: 'var(--fg-3)' }} />
@@ -95,8 +95,8 @@ export function AllWorkPagination({ currentPage, totalPages, totalCount, pageSiz
         <button
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage >= totalPages - 1}
-          className="p-1.5 rounded border disabled:opacity-30 hover:bg-[var(--hover, rgba(255,255,255,0.04))] transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[#2563EB]"
-          style={{ borderColor: 'var(--bd-default, rgba(255,255,255,0.08))' }}
+          className="p-1.5 rounded border disabled:opacity-30 hover:bg-[var(--hover, #1F1F1F)] transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[#2563EB]"
+          style={{ borderColor: 'var(--bd-default, #2E2E2E)' }}
           aria-label="Next page"
         >
           <ChevronRight className="w-3.5 h-3.5" style={{ color: 'var(--fg-3)' }} />
@@ -108,8 +108,8 @@ export function AllWorkPagination({ currentPage, totalPages, totalCount, pageSiz
         <span className="text-[12px]" style={{ color: 'var(--fg-3)' }}>Per page:</span>
         <button
           onClick={() => setSizeOpen(!sizeOpen)}
-          className="inline-flex items-center gap-1 px-2.5 h-8 text-[12px] rounded border hover:bg-[var(--hover, rgba(255,255,255,0.04))] transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[#2563EB]"
-          style={{ borderColor: 'var(--bd-default, rgba(255,255,255,0.08))', color: 'var(--fg-1)', fontFamily: "'JetBrains Mono', monospace" }}
+          className="inline-flex items-center gap-1 px-2.5 h-8 text-[12px] rounded border hover:bg-[var(--hover, #1F1F1F)] transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[#2563EB]"
+          style={{ borderColor: 'var(--bd-default, #2E2E2E)', color: 'var(--fg-1)', fontFamily: "'JetBrains Mono', monospace" }}
           aria-haspopup="listbox"
           aria-expanded={sizeOpen}
         >
@@ -119,14 +119,14 @@ export function AllWorkPagination({ currentPage, totalPages, totalCount, pageSiz
         {sizeOpen && (
           <div
             className="absolute bottom-full right-0 mb-1 w-24 rounded border shadow-lg z-50 py-1"
-            style={{ borderColor: 'var(--bd-default, rgba(255,255,255,0.08))', backgroundColor: 'var(--bg-app)' }}
+            style={{ borderColor: 'var(--bd-default, #2E2E2E)', backgroundColor: 'var(--bg-app)' }}
             role="listbox"
           >
             {PAGE_SIZES.map(s => (
               <button
                 key={s}
                 onClick={() => { onPageSizeChange(s); setSizeOpen(false); }}
-                className="w-full flex items-center justify-between px-3 py-1.5 text-[12px] hover:bg-[var(--hover, rgba(255,255,255,0.04))] transition-colors duration-[80ms]"
+                className="w-full flex items-center justify-between px-3 py-1.5 text-[12px] hover:bg-[var(--hover, #1F1F1F)] transition-colors duration-[80ms]"
                 style={{ color: 'var(--fg-1)', fontFamily: "'JetBrains Mono', monospace" }}
                 role="option"
                 aria-selected={s === pageSize}

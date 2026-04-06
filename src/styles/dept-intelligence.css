@@ -42,15 +42,15 @@
 
 /* ── Dark mode overrides ── */
 [data-theme="dark"] {
-  --di-ink: rgba(255,255,255, 0.92);
-  --di-ink-secondary: rgba(255,255,255, 0.82);
-  --di-ink-tertiary: rgba(255,255,255, 0.65);
-  --di-ink-muted: rgba(255,255,255, 0.45);
+  --di-ink: #EDEDED;
+  --di-ink-secondary: #EDEDED;
+  --di-ink-tertiary: #878787;
+  --di-ink-muted: #7D7D7D;
   --di-surface: #0A0A0A;
   --di-surface-secondary: #1A1A1A;
   --di-surface-tertiary: #1A1A1A;
-  --di-border: rgba(255,255,255, 0.10);
-  --di-border-strong: rgba(255,255,255, 0.16);
+  --di-border: #2E2E2E;
+  --di-border-strong: #454545;
   --di-primary: #3B82F6;
   --di-primary-hover: #60A5FA;
   --di-primary-bg: rgba(59,130,246, 0.10);
@@ -346,7 +346,7 @@
 [data-theme="dark"] .hub-prj { background: #1A2030; color: #93C5FD; }
 [data-theme="dark"] .hub-tst { background: rgba(167,139,250,0.10); color: #A78BFA; }
 [data-theme="dark"] .hub-rel { background: rgba(253,230,138,0.10); color: #FDE68A; }
-[data-theme="dark"] .hub-oth { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.55); }
+[data-theme="dark"] .hub-oth { background: #292929; color: #878787; }
 
 .di-ev-content { flex: 1; }
 
@@ -405,7 +405,7 @@
 [data-theme="dark"] .sig-esc     { background: #2A1C1E; color: #FCA5A5; }
 [data-theme="dark"] .sig-action  { background: #1A2030; color: #93C5FD; }
 [data-theme="dark"] .sig-gap     { background: #182820; color: #86EFAC; }
-[data-theme="dark"] .sig-observe { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.55); }
+[data-theme="dark"] .sig-observe { background: #292929; color: #878787; }
 
 /* ══════════════════════════════════════════════════════════
    TAB 1 — EXECUTIVE SUMMARY V5 (Role-Based)

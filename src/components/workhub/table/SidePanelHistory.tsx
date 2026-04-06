@@ -104,7 +104,7 @@ export default function SidePanelHistory({ workItemId, currentStatus, currentSta
         ) : (
           <div style={{ position: 'relative', paddingLeft: 28 }}>
             {/* Vertical line */}
-            <div style={{ position: 'absolute', left: 5, top: 6, bottom: 6, width: 2, background: 'var(--bd-default, rgba(255,255,255,0.08))' }} />
+            <div style={{ position: 'absolute', left: 5, top: 6, bottom: 6, width: 2, background: 'var(--bd-default, #2E2E2E)' }} />
 
             {transWithDuration.map((t: any, i: number) => {
               const nc = nodeColor(t.to_status_category);
@@ -150,7 +150,7 @@ export default function SidePanelHistory({ workItemId, currentStatus, currentSta
 
                   {/* Duration card */}
                   <div style={{
-                    background: 'var(--bg-1)', border: '1px solid var(--bd-subtle, rgba(255,255,255,0.05))', borderRadius: 4,
+                    background: 'var(--bg-1)', border: '1px solid var(--bd-subtle, #292929)', borderRadius: 4,
                     padding: '8px 12px', marginBottom: 16,
                   }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -217,7 +217,7 @@ export default function SidePanelHistory({ workItemId, currentStatus, currentSta
             {entries.map((cl: any) => (
               <div key={cl.id} style={{
                 display: 'flex', alignItems: 'flex-start', gap: 10, padding: '8px 0',
-                borderBottom: '0.75px solid var(--bd-subtle, rgba(255,255,255,0.05))',
+                borderBottom: '0.75px solid var(--bd-subtle, #292929)',
               }}>
                 <AvatarCircle name={cl.changed_by} size={24} />
                 <div style={{ flex: 1, minWidth: 0 }}>

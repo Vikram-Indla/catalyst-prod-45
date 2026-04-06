@@ -618,7 +618,7 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
             alignItems: 'center',
             height: 50,
             minWidth: 1100,
-                background: isDark ? 'rgba(255,255,255,0.03)' : '#F1F5F9',
+                background: isDark ? '#1F1F1F' : '#F1F5F9',
                 borderBottom: isDark ? '2px solid #2E2E2E' : '2px solid var(--divider)',
           }}
         >
@@ -667,7 +667,7 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
                 alignItems: 'center',
                 borderBottom: isDark ? '1px solid #292929' : '1px solid #F1F5F9',
                 cursor: 'pointer',
-                background: isChecked ? 'var(--cp-primary-5)' : isSelected ? 'rgba(37, 99, 235, 0.08)' : isDark ? (index % 2 === 1 ? 'rgba(255,255,255,0.02)' : 'transparent') : (index % 2 === 1 ? '#FAFAFA' : '#FFFFFF'),
+                background: isChecked ? 'var(--cp-primary-5)' : isSelected ? 'rgba(37, 99, 235, 0.08)' : isDark ? (index % 2 === 1 ? '#111111' : 'transparent') : (index % 2 === 1 ? '#FAFAFA' : '#FFFFFF'),
               }}
             >
               <div style={{ width: 44, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>

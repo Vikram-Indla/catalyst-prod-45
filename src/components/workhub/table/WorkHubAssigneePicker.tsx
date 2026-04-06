@@ -57,8 +57,8 @@ export default function WorkHubAssigneePicker({ value, displayName, options, onC
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>{trigger || defaultTrigger}</PopoverTrigger>
-      <PopoverContent align="start" style={{ width: 260, maxHeight: 320, padding: 0, background: 'var(--bg-app)', border: '1px solid var(--bd-default, rgba(255,255,255,0.08))', borderRadius: 6, overflow: 'hidden', zIndex: 9999 }}>
-        <div style={{ padding: '8px 8px 4px', borderBottom: '0.75px solid var(--bd-subtle, rgba(255,255,255,0.05))' }}>
+      <PopoverContent align="start" style={{ width: 260, maxHeight: 320, padding: 0, background: 'var(--bg-app)', border: '1px solid var(--bd-default, #2E2E2E)', borderRadius: 6, overflow: 'hidden', zIndex: 9999 }}>
+        <div style={{ padding: '8px 8px 4px', borderBottom: '0.75px solid var(--bd-subtle, #292929)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '0 8px', height: 32, background: 'var(--bg-1)', borderRadius: 4 }}>
             <Search size={14} style={{ color: 'var(--fg-4)', flexShrink: 0 }} />
             <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search people..." autoFocus

@@ -132,7 +132,7 @@ export function JiraSyncCTA() {
         <div style={{
           position: 'absolute', top: 38, right: 0, zIndex: 50,
           width: 380, background: isDark ? '#1A1A1A' : '#FFF', borderRadius: 12,
-          border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0',
+          border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0',
           boxShadow: '0 12px 40px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.04)',
           fontFamily: "'Inter', sans-serif",
           overflow: 'hidden',
@@ -169,7 +169,7 @@ export function JiraSyncCTA() {
           {/* Connected: Status panel */}
           {!connLoading && isConnected && conn && panelView === 'status' && (
             <div>
-              <div style={{ padding: '16px 20px 12px', borderBottom: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid #F1F5F9' }}>
+              <div style={{ padding: '16px 20px 12px', borderBottom: isDark ? '1px solid #292929' : '1px solid #F1F5F9' }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <span style={{ fontSize: 14, fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A' }}>Jira Sync Status</span>
                   <span style={{ fontSize: 11, color: isDark ? '#878787' : '#94A3B8', fontFamily: "'JetBrains Mono', monospace" }}>
@@ -182,7 +182,7 @@ export function JiraSyncCTA() {
               </div>
 
               {/* Stats grid */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 1, background: isDark ? 'rgba(255,255,255,0.05)' : '#F1F5F9' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 1, background: isDark ? '#292929' : '#F1F5F9' }}>
                 {[
                   { label: 'Projects', value: conn.project_count || 0 },
                   { label: 'Issues cached', value: health?.issueCachedCount ?? 0 },
@@ -196,7 +196,7 @@ export function JiraSyncCTA() {
               </div>
 
               {/* Connection details */}
-              <div style={{ padding: '12px 20px', borderTop: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid #F1F5F9', fontSize: 13 }}>
+              <div style={{ padding: '12px 20px', borderTop: isDark ? '1px solid #292929' : '1px solid #F1F5F9', fontSize: 13 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
                   <span style={{ color: isDark ? '#878787' : '#64748B' }}>Direction</span>
                   <span style={{ fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A' }}>↔ Bi-directional</span>
@@ -224,7 +224,7 @@ export function JiraSyncCTA() {
               </div>
 
               {/* Actions */}
-              <div style={{ padding: '12px 20px', borderTop: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid #F1F5F9', display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <div style={{ padding: '12px 20px', borderTop: isDark ? '1px solid #292929' : '1px solid #F1F5F9', display: 'flex', flexDirection: 'column', gap: 8 }}>
                 <button
                   onClick={handleSyncNow}
                   disabled={isAnySyncActive}
@@ -244,7 +244,7 @@ export function JiraSyncCTA() {
                     style={{
                       flex: 1, height: 32, fontSize: 12, fontWeight: 500,
                       color: isDark ? '#A1A1A1' : '#64748B', background: isDark ? '#1A1A1A' : '#F8FAFC',
-                      border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0', borderRadius: 6, cursor: 'pointer',
+                      border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0', borderRadius: 6, cursor: 'pointer',
                       display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4,
                     }}
                   >
@@ -255,7 +255,7 @@ export function JiraSyncCTA() {
                     style={{
                       flex: 1, height: 32, fontSize: 12, fontWeight: 500,
                       color: isDark ? '#A1A1A1' : '#64748B', background: isDark ? '#1A1A1A' : '#F8FAFC',
-                      border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0', borderRadius: 6, cursor: 'pointer',
+                      border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0', borderRadius: 6, cursor: 'pointer',
                       display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4,
                     }}
                   >
@@ -268,7 +268,7 @@ export function JiraSyncCTA() {
                     style={{
                       flex: 1, height: 32, fontSize: 12, fontWeight: 500,
                       color: isDark ? '#A1A1A1' : '#64748B', background: isDark ? '#1A1A1A' : '#F8FAFC',
-                      border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0', borderRadius: 6, cursor: 'pointer',
+                      border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0', borderRadius: 6, cursor: 'pointer',
                       display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4,
                       textDecoration: 'none',
                     }}
@@ -295,13 +295,13 @@ export function JiraSyncCTA() {
 
               <div style={{
                 padding: 12, background: isDark ? '#1A1A1A' : '#F8FAFC', borderRadius: 8,
-                border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0', marginBottom: 12,
+                border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0', marginBottom: 12,
               }}>
                 <div style={{ fontSize: 11, fontWeight: 600, color: isDark ? '#A1A1A1' : '#374151', marginBottom: 6 }}>Webhook URL (for Jira → Catalyst)</div>
                 <div style={{
                   display: 'flex', alignItems: 'center', gap: 6,
                   padding: '6px 10px', background: isDark ? '#0A0A0A' : '#FFF', borderRadius: 6,
-                  border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0', fontSize: 11,
+                  border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0', fontSize: 11,
                   fontFamily: "'JetBrains Mono', monospace", color: isDark ? '#A1A1A1' : '#374151',
                   wordBreak: 'break-all',
                 }}>

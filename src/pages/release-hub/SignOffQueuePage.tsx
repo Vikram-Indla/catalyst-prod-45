@@ -68,7 +68,7 @@ export default function SignOffQueuePage() {
           <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: isDark ? '#878787' : '#94A3B8' }} />
           <input type="text" placeholder="Search changes or approvers..." value={search} onChange={e => setSearch(e.target.value)}
             className="h-9 w-72 pl-9 pr-3 rounded-[4px] text-[13px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20"
-            style={{ border: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(15,23,42,0.12)', fontFamily: RH.fontBody, background: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#EDEDED' : undefined }} />
+            style={{ border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.12)', fontFamily: RH.fontBody, background: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#EDEDED' : undefined }} />
         </div>
       </div>
 
@@ -78,7 +78,7 @@ export default function SignOffQueuePage() {
       ) : signoffs.length === 0 ? (
         <EmptyState icon={CheckSquare} title="No pending sign-offs" subtitle="All approvals are up to date" />
       ) : (
-        <div className="rounded-[6px] overflow-hidden" style={{ border: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(15,23,42,0.12)', background: isDark ? '#1A1A1A' : '#FFFFFF' }}>
+        <div className="rounded-[6px] overflow-hidden" style={{ border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.12)', background: isDark ? '#1A1A1A' : '#FFFFFF' }}>
           <table className="w-full text-[13px]" style={{ fontFamily: RH.fontBody }}>
             <thead>
               <tr style={{ background: isDark ? '#1A1A1A' : '#F1F5F9' }}>
@@ -95,7 +95,7 @@ export default function SignOffQueuePage() {
                   <tr key={so.id}
                     onClick={() => setSelectedChange(so.rh_changes)}
                     className="cursor-pointer group"
-                    style={{ height: 50, maxHeight: 50, borderBottom: isDark ? '0.75px solid rgba(255,255,255,0.05)' : '0.75px solid rgba(15,23,42,0.06)', background: isDark ? '#1A1A1A' : undefined }}
+                    style={{ height: 50, maxHeight: 50, borderBottom: isDark ? '0.75px solid #292929' : '0.75px solid rgba(15,23,42,0.06)', background: isDark ? '#1A1A1A' : undefined }}
                     onMouseEnter={e => (e.currentTarget.style.background = isDark ? '#1A1A1A' : 'rgba(15,23,42,0.04)')}
                     onMouseLeave={e => (e.currentTarget.style.background = isDark ? '#1A1A1A' : '')}
                   >
@@ -144,12 +144,12 @@ export default function SignOffQueuePage() {
                 <label className="block text-[12px] font-semibold mb-1" style={{ color: isDark ? '#A1A1A1' : '#475569' }}>Comment {actionModal.action === 'reject' && '*'}</label>
                 <textarea value={comment} onChange={e => setComment(e.target.value)} placeholder="Add a comment..."
                   className="w-full h-24 px-3 py-2 rounded-[4px] text-[13px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 resize-none"
-                  style={{ border: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(15,23,42,0.12)', background: isDark ? '#1A1A1A' : undefined, color: isDark ? '#EDEDED' : undefined }} />
+                  style={{ border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.12)', background: isDark ? '#1A1A1A' : undefined, color: isDark ? '#EDEDED' : undefined }} />
               </div>
             </div>
           )}
           <DialogFooter>
-            <button onClick={() => { setActionModal(null); setComment(''); }} className="h-9 px-4 rounded-[6px] text-[13px] font-medium" style={{ color: isDark ? '#A1A1A1' : '#475569', border: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(15,23,42,0.12)', background: isDark ? '#1A1A1A' : undefined }}>Cancel</button>
+            <button onClick={() => { setActionModal(null); setComment(''); }} className="h-9 px-4 rounded-[6px] text-[13px] font-medium" style={{ color: isDark ? '#A1A1A1' : '#475569', border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.12)', background: isDark ? '#1A1A1A' : undefined }}>Cancel</button>
             <button onClick={handleAction} disabled={approveSignoff.isPending || rejectSignoff.isPending}
               className={`h-9 px-4 rounded-[6px] text-[13px] font-semibold text-white disabled:opacity-50 ${actionModal?.action === 'approve' ? 'bg-[#16A34A] hover:bg-[#15803D]' : 'bg-[#DC2626] hover:bg-[#B91C1C]'}`}>
               {actionModal?.action === 'approve' ? 'Approve' : 'Reject'}

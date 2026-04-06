@@ -55,7 +55,7 @@ export function EmptyProjectState({
         </div>
 
         {/* Getting Started */}
-        <div className="p-6 rounded-xl bg-white dark:bg-[#1A1A1A] border dark:border-[rgba(255,255,255,0.08)] shadow-sm text-left">
+        <div className="p-6 rounded-xl bg-white dark:bg-[#1A1A1A] border dark:border-[#2E2E2E] shadow-sm text-left">
           <h3 className="font-semibold mb-4 flex items-center gap-2">
             <FileText className="w-5 h-5 text-[#2563eb]" />
             Getting Started
@@ -102,7 +102,7 @@ export function EmptyProjectState({
 
         {/* View Options */}
         <div className="mt-8 grid grid-cols-3 gap-4">
-          <div className="p-4 rounded-lg bg-white dark:bg-[#1A1A1A] border dark:border-[rgba(255,255,255,0.08)] text-center">
+          <div className="p-4 rounded-lg bg-white dark:bg-[#1A1A1A] border dark:border-[#2E2E2E] text-center">
             <div className="w-10 h-10 mx-auto mb-2 rounded-lg bg-[rgba(37,99,235,0.1)] flex items-center justify-center">
               <svg className="w-5 h-5 text-[#2563eb]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2" />
@@ -112,7 +112,7 @@ export function EmptyProjectState({
             <p className="text-xs text-neutral-500">Kanban workflow</p>
           </div>
           
-          <div className="p-4 rounded-lg bg-white dark:bg-[#1A1A1A] border dark:border-[rgba(255,255,255,0.08)] text-center">
+          <div className="p-4 rounded-lg bg-white dark:bg-[#1A1A1A] border dark:border-[#2E2E2E] text-center">
             <div className="w-10 h-10 mx-auto mb-2 rounded-lg bg-[rgba(13,148,136,0.1)] flex items-center justify-center">
               <svg className="w-5 h-5 text-[#0d9488]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -122,7 +122,7 @@ export function EmptyProjectState({
             <p className="text-xs text-neutral-500">Gantt roadmap</p>
           </div>
           
-          <div className="p-4 rounded-lg bg-white dark:bg-[#1A1A1A] border dark:border-[rgba(255,255,255,0.08)] text-center">
+          <div className="p-4 rounded-lg bg-white dark:bg-[#1A1A1A] border dark:border-[#2E2E2E] text-center">
             <div className="w-10 h-10 mx-auto mb-2 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
               <svg className="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />

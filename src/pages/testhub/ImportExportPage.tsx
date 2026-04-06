@@ -134,7 +134,7 @@ export default function ImportExportPage() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: isDark ? '#0A0A0A' : '#F8FAFC' }}>
       <TestHubPageHeader title="Import / Export" subtitle="Import data from files or export your test data">
-        <button onClick={fetchData} style={{ display: 'flex', alignItems: 'center', gap: 8, height: 40, padding: '0 16px', border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 8, backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#A1A1A1' : '#334155', fontSize: 14, fontWeight: 500, cursor: 'pointer' }}>
+        <button onClick={fetchData} style={{ display: 'flex', alignItems: 'center', gap: 8, height: 40, padding: '0 16px', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 8, backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#A1A1A1' : '#334155', fontSize: 14, fontWeight: 500, cursor: 'pointer' }}>
           <RefreshCw size={16} /> Refresh
         </button>
       </TestHubPageHeader>
@@ -143,7 +143,7 @@ export default function ImportExportPage() {
       {/* Stats Cards */}
       {stats && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 24 }}>
-          <div style={{ backgroundColor: isDark ? '#1A1A1A' : '#FFF', borderRadius: 12, padding: 20, border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}` }}>
+          <div style={{ backgroundColor: isDark ? '#1A1A1A' : '#FFF', borderRadius: 12, padding: 20, border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}` }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
               <FileUp size={18} style={{ color: '#14B8A6' }} />
               <span style={{ fontSize: 12, color: isDark ? '#A1A1A1' : '#64748B', textTransform: 'uppercase' }}>Total Imports</span>
@@ -153,7 +153,7 @@ export default function ImportExportPage() {
               {stats.records_imported.toLocaleString()} records
             </p>
           </div>
-          <div style={{ backgroundColor: isDark ? '#1A1A1A' : '#FFF', borderRadius: 12, padding: 20, border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}` }}>
+          <div style={{ backgroundColor: isDark ? '#1A1A1A' : '#FFF', borderRadius: 12, padding: 20, border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}` }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
               <FileDown size={18} style={{ color: '#14B8A6' }} />
               <span style={{ fontSize: 12, color: isDark ? '#A1A1A1' : '#64748B', textTransform: 'uppercase' }}>Total Exports</span>
@@ -219,7 +219,7 @@ export default function ImportExportPage() {
         </div>
       ) : activeTab === 'import' ? (
         importJobs.length === 0 ? (
-          <div style={{ backgroundColor: isDark ? '#1A1A1A' : '#FFF', borderRadius: 12, padding: 60, textAlign: 'center', border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}` }}>
+          <div style={{ backgroundColor: isDark ? '#1A1A1A' : '#FFF', borderRadius: 12, padding: 60, textAlign: 'center', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}` }}>
             <Upload size={48} style={{ color: isDark ? '#878787' : '#CBD5E1', marginBottom: 16 }} />
             <p style={{ fontSize: 16, color: isDark ? '#A1A1A1' : '#64748B', margin: 0 }}>No import jobs yet</p>
             <p style={{ fontSize: 14, color: isDark ? '#878787' : '#94A3B8', margin: '8px 0 0' }}>
@@ -237,7 +237,7 @@ export default function ImportExportPage() {
               return (
                 <div key={job.id} style={{
                   backgroundColor: isDark ? '#1A1A1A' : '#FFF', borderRadius: 12, padding: 20,
-                  border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                  border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
                     <div style={{
@@ -296,7 +296,7 @@ export default function ImportExportPage() {
         )
       ) : (
         exportJobs.length === 0 ? (
-          <div style={{ backgroundColor: isDark ? '#1A1A1A' : '#FFF', borderRadius: 12, padding: 60, textAlign: 'center', border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}` }}>
+          <div style={{ backgroundColor: isDark ? '#1A1A1A' : '#FFF', borderRadius: 12, padding: 60, textAlign: 'center', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}` }}>
             <Download size={48} style={{ color: isDark ? '#878787' : '#CBD5E1', marginBottom: 16 }} />
             <p style={{ fontSize: 16, color: isDark ? '#A1A1A1' : '#64748B', margin: 0 }}>No export jobs yet</p>
             <p style={{ fontSize: 14, color: isDark ? '#878787' : '#94A3B8', margin: '8px 0 0' }}>
@@ -314,7 +314,7 @@ export default function ImportExportPage() {
               return (
                 <div key={job.id} style={{
                   backgroundColor: isDark ? '#1A1A1A' : '#FFF', borderRadius: 12, padding: 20,
-                  border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                  border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
                     <div style={{

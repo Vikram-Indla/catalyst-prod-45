@@ -50,13 +50,13 @@
 [data-theme="dark"] .strategy-room {
   --exec-bg-page: #0A0A0A;
   --exec-bg-card: #0A0A0A;
-  --exec-bg-hover: rgba(255,255,255,0.03);
-  --exec-bg-subtle: rgba(255,255,255,0.03);
+  --exec-bg-hover: #1F1F1F;
+  --exec-bg-subtle: #1F1F1F;
 
-  --exec-text-primary: rgba(255,255,255,0.92);
-  --exec-text-secondary: rgba(255,255,255,0.72);
-  --exec-text-tertiary: rgba(255,255,255,0.55);
-  --exec-text-muted: rgba(255,255,255,0.45);
+  --exec-text-primary: #EDEDED;
+  --exec-text-secondary: #A1A1A1;
+  --exec-text-tertiary: #878787;
+  --exec-text-muted: #7D7D7D;
 
   --exec-blue-900: #93C5FD;
   --exec-blue-700: #60A5FA;
@@ -77,6 +77,6 @@
   --exec-ai-purple: #A78BFA;
   --exec-ai-purple-bg: rgba(167,139,250,0.08);
 
-  --exec-border: rgba(255,255,255,0.10);
-  --exec-border-strong: rgba(255,255,255,0.18);
+  --exec-border: #2E2E2E;
+  --exec-border-strong: #454545;
 }

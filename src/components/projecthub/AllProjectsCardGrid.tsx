@@ -70,7 +70,7 @@ export function AllProjectsCardGrid({ projects, favoriteIds, onToggleFav, onSele
             className={cn(
               "rounded-xl p-5 flex flex-col h-full cursor-pointer transition-all duration-150",
               "bg-white border border-slate-200 shadow-sm hover:shadow-md",
-              "dark:bg-[#0A0A0A] dark:border-[rgba(255,255,255,0.08)] dark:hover:border-[rgba(255,255,255,0.15)]"
+              "dark:bg-[#0A0A0A] dark:border-[#2E2E2E] dark:hover:border-[#454545]"
             )}
           >
             {/* Header: badge + name + key + star */}
@@ -86,7 +86,7 @@ export function AllProjectsCardGrid({ projects, favoriteIds, onToggleFav, onSele
                   <span className="font-semibold text-[15px] leading-tight text-slate-900 dark:text-[#EDEDED] truncate">
                     {p.name}
                   </span>
-                  <span className="font-mono text-[11px] bg-slate-100 dark:bg-[rgba(255,255,255,0.08)] text-slate-500 dark:text-[#A1A1A1] px-1.5 py-0.5 rounded tracking-wide flex-shrink-0">
+                  <span className="font-mono text-[11px] bg-slate-100 dark:bg-[#2E2E2E] text-slate-500 dark:text-[#A1A1A1] px-1.5 py-0.5 rounded tracking-wide flex-shrink-0">
                     {p.project_key}
                   </span>
                 </div>
@@ -139,7 +139,7 @@ export function AllProjectsCardGrid({ projects, favoriteIds, onToggleFav, onSele
                   className={cn(
                     "text-center p-3 rounded-lg",
                     "bg-slate-50",
-                    "dark:bg-[#1A1A1A] dark:border dark:border-[rgba(255,255,255,0.08)]"
+                    "dark:bg-[#1A1A1A] dark:border dark:border-[#2E2E2E]"
                   )}
                 >
                   <div className="text-[22px] font-semibold text-slate-900 dark:text-[#EDEDED]">{s.v || 0}</div>
@@ -149,10 +149,10 @@ export function AllProjectsCardGrid({ projects, favoriteIds, onToggleFav, onSele
             </div>
 
             {/* Footer: sync + members + updated — pinned bottom */}
-            <div className="flex items-center justify-between mt-auto pt-3 border-t border-slate-100 dark:border-[rgba(255,255,255,0.08)] text-xs text-slate-500 dark:text-[#878787]">
+            <div className="flex items-center justify-between mt-auto pt-3 border-t border-slate-100 dark:border-[#2E2E2E] text-xs text-slate-500 dark:text-[#878787]">
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-100 dark:bg-[rgba(255,255,255,0.08)] text-[11px] font-medium cursor-default">
+                  <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-100 dark:bg-[#2E2E2E] text-[11px] font-medium cursor-default">
                     <span className={cn("w-1.5 h-1.5 rounded-full", sync.color)} />
                     {sync.label}
                   </div>

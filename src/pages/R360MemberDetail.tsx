@@ -193,7 +193,7 @@ function WeekStripCollapsible({
   const dayCells = useMemo(() => periodType === 'weekly' ? getSaudiWorkDays(period.start) : getWeekCells(period.start), [periodType, period.start]);
 
   return (
-    <div style={{ padding: '10px 0', borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.05)' : '#F1F5F9'}` }}>
+    <div style={{ padding: '10px 0', borderBottom: `1px solid ${isDark ? '#292929' : '#F1F5F9'}` }}>
       {/* Top toolbar: Toggle + Date + Mode Badge + Nav arrows */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px', flexWrap: 'wrap' as const }}>
         {/* Prominent Period Toggle */}
@@ -202,7 +202,7 @@ function WeekStripCollapsible({
           <button className={periodType === 'monthly' ? 'active' : ''} onClick={() => onPeriodTypeChange('monthly')}>Monthly</button>
         </div>
 
-        <div style={{ width: '1px', height: '20px', background: isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0' }} />
+        <div style={{ width: '1px', height: '20px', background: isDark ? '#2E2E2E' : '#E2E8F0' }} />
         <span style={{ fontSize: '13px', fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A' }}>📅 {period.label}</span>
         <span style={{ fontSize: '13px', fontWeight: 500, color: isDark ? '#A1A1A1' : '#334155' }}>{period.range}</span>
 
@@ -211,16 +211,16 @@ function WeekStripCollapsible({
           {isLive ? 'LIVE' : 'SNAPSHOT'}
         </span>
 
-        <button style={{ width: '28px', height: '28px', border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: '4px', background: isDark ? '#1A1A1A' : '#FFF', cursor: 'pointer', fontSize: '13px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', transition: 'background var(--cp-duration-fast, 0.15s) ease' }} onClick={() => onNavigatePeriod(-1)}
-          onMouseEnter={e => { e.currentTarget.style.background = isDark ? 'rgba(255,255,255,0.04)' : 'rgba(15,23,42,0.04)'; }}
+        <button style={{ width: '28px', height: '28px', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: '4px', background: isDark ? '#1A1A1A' : '#FFF', cursor: 'pointer', fontSize: '13px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', transition: 'background var(--cp-duration-fast, 0.15s) ease' }} onClick={() => onNavigatePeriod(-1)}
+          onMouseEnter={e => { e.currentTarget.style.background = isDark ? '#1F1F1F' : 'rgba(15,23,42,0.04)'; }}
           onMouseLeave={e => { e.currentTarget.style.background = isDark ? '#1A1A1A' : '#FFF'; }}
         >‹</button>
-        <button style={{ width: '28px', height: '28px', border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: '4px', background: isDark ? '#1A1A1A' : '#FFF', cursor: 'pointer', fontSize: '13px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', transition: 'background var(--cp-duration-fast, 0.15s) ease' }} onClick={() => onNavigatePeriod(1)}
-          onMouseEnter={e => { e.currentTarget.style.background = isDark ? 'rgba(255,255,255,0.04)' : 'rgba(15,23,42,0.04)'; }}
+        <button style={{ width: '28px', height: '28px', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: '4px', background: isDark ? '#1A1A1A' : '#FFF', cursor: 'pointer', fontSize: '13px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', transition: 'background var(--cp-duration-fast, 0.15s) ease' }} onClick={() => onNavigatePeriod(1)}
+          onMouseEnter={e => { e.currentTarget.style.background = isDark ? '#1F1F1F' : 'rgba(15,23,42,0.04)'; }}
           onMouseLeave={e => { e.currentTarget.style.background = isDark ? '#1A1A1A' : '#FFF'; }}
         >›</button>
 
-        <div style={{ width: '1px', height: '20px', background: isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0', margin: '0 4px' }} />
+        <div style={{ width: '1px', height: '20px', background: isDark ? '#2E2E2E' : '#E2E8F0', margin: '0 4px' }} />
         {/* Status filter tabs */}
         {([
           { key: null, label: `All (${counts.all})` },
@@ -236,7 +236,7 @@ function WeekStripCollapsible({
               color: isActive ? '#2563EB' : '#64748B',
               border: 'none',
             }}
-            onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = isDark ? 'rgba(255,255,255,0.04)' : 'rgba(15,23,42,0.04)'; }}
+            onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = isDark ? '#1F1F1F' : 'rgba(15,23,42,0.04)'; }}
             onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = isActive ? 'rgba(37,99,235,0.10)' : 'transparent'; }}
             >{f.label}</span>
           );
@@ -993,7 +993,7 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected, overview, 
           onClick={e => e.stopPropagation()}
         >
           {/* Header */}
-          <div style={{ padding: '12px 16px', borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.05)' : '#F1F5F9'}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ padding: '12px 16px', borderBottom: `1px solid ${isDark ? '#292929' : '#F1F5F9'}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <div style={{
                 width: '22px', height: '22px', borderRadius: '50%', background: '#1B7F37',
@@ -1005,12 +1005,12 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected, overview, 
               <span style={{ fontSize: '11px', fontWeight: 700, color: '#FFFFFF', background: '#1B7F37', padding: '2px 8px', borderRadius: '12px' }}>{doneCount}</span>
             </div>
             <button onClick={(e) => { e.stopPropagation(); setShowDone(false); }}
-              style={{ width: '24px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: '4px', background: isDark ? '#1A1A1A' : '#FFF', cursor: 'pointer', color: isDark ? '#878787' : '#64748B', fontSize: '14px' }}
+              style={{ width: '24px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: '4px', background: isDark ? '#1A1A1A' : '#FFF', cursor: 'pointer', color: isDark ? '#878787' : '#64748B', fontSize: '14px' }}
               aria-label="Close completed panel"
             >✕</button>
           </div>
           {/* Throughput */}
-          <div style={{ padding: '8px 16px', fontSize: '12px', color: isDark ? '#878787' : '#64748B', borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.05)' : '#F1F5F9'}` }}>
+          <div style={{ padding: '8px 16px', fontSize: '12px', color: isDark ? '#878787' : '#64748B', borderBottom: `1px solid ${isDark ? '#292929' : '#F1F5F9'}` }}>
             {doneCount} of {totalItems} total resolved ({totalItems > 0 ? Math.round((doneCount / totalItems) * 100) : 0}%)
           </div>
           {/* Item list */}
@@ -1021,7 +1021,7 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected, overview, 
               return (
                 <div key={item.id} onClick={(e) => { e.stopPropagation(); onSelect(item); setShowDone(false); }}
                   style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', padding: '10px 16px', cursor: 'pointer', borderBottom: '1px solid #F8FAFC', transition: 'background 80ms' }}
-                  onMouseEnter={e => (e.currentTarget.style.background = isDark ? 'rgba(255,255,255,0.04)' : 'rgba(15,23,42,0.04)')}
+                  onMouseEnter={e => (e.currentTarget.style.background = isDark ? '#1F1F1F' : 'rgba(15,23,42,0.04)')}
                   onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                 >
                   <div style={{ flexShrink: 0, marginTop: '2px' }}>{getJiraIcon(item.item_type)}</div>
@@ -1039,7 +1039,7 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected, overview, 
             })}
           </div>
           {/* Footer */}
-          <div style={{ padding: '10px 16px', borderTop: `1px solid ${isDark ? 'rgba(255,255,255,0.05)' : '#F1F5F9'}`, fontSize: '11px', color: isDark ? '#878787' : '#94A3B8', textAlign: 'center', fontStyle: 'italic' }}>
+          <div style={{ padding: '10px 16px', borderTop: `1px solid ${isDark ? '#292929' : '#F1F5F9'}`, fontSize: '11px', color: isDark ? '#878787' : '#94A3B8', textAlign: 'center', fontStyle: 'italic' }}>
             Click any item to view details
           </div>
         </div>
@@ -1242,7 +1242,7 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected, overview, 
               onClick={() => onSelect(item)}
               tabIndex={0}
               data-testid={`r360-ring-card-${item.item_key}`}
-              onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = isDark ? 'rgba(255,255,255,0.04)' : 'rgba(15,23,42,0.04)'; }}
+              onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = isDark ? '#1F1F1F' : 'rgba(15,23,42,0.04)'; }}
               onMouseLeave={e => { e.currentTarget.style.background = isDark ? '#1A1A1A' : '#FFFFFF'; }}
             >
               {/* Row 1: type + priority — fixed 18px */}
@@ -1293,7 +1293,7 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected, overview, 
           position: 'absolute', bottom: '8px', left: '50%', transform: 'translateX(-50%)',
           display: 'flex', alignItems: 'center', gap: '8px',
           fontSize: '11px', fontWeight: 600, color: isDark ? '#878787' : '#64748B', background: isDark ? '#0A0A0A' : '#F8FAFC',
-          border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: '12px', padding: '3px 8px',
+          border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: '12px', padding: '3px 8px',
           fontFamily: "'JetBrains Mono', monospace", zIndex: 8,
         }}>
           <button
@@ -1908,7 +1908,7 @@ function TicketListDrawer({ mode, items, onClose, onSelectItem }: {
                   cursor: 'pointer', transition: 'background 80ms ease',
                   borderBottom: '1px solid rgba(15,23,42,0.05)',
                 }}
-                onMouseEnter={e => { e.currentTarget.style.background = isDark ? 'rgba(255,255,255,0.04)' : 'rgba(15,23,42,0.04)'; }}
+                onMouseEnter={e => { e.currentTarget.style.background = isDark ? '#1F1F1F' : 'rgba(15,23,42,0.04)'; }}
                 onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
               >
                 {/* Type icon */}

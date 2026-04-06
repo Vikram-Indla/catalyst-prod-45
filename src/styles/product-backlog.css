@@ -116,32 +116,32 @@
 [data-theme="dark"] [data-module="product-backlog"] {
   --cp-bg-page: #0A0A0A;
   --cp-bg-surface: transparent;
-  --cp-bg-sunken: rgba(255,255,255,0.03);
+  --cp-bg-sunken: #1F1F1F;
   --cp-bg-elevated: transparent;
 
-  --cp-text-primary: rgba(255,255,255,0.92);
-  --cp-text-secondary: rgba(255,255,255,0.85);
-  --cp-text-tertiary: rgba(255,255,255,0.72);
-  --cp-text-muted: rgba(255,255,255,0.50);
+  --cp-text-primary: #EDEDED;
+  --cp-text-secondary: #EDEDED;
+  --cp-text-tertiary: #A1A1A1;
+  --cp-text-muted: #7D7D7D;
   --cp-text-link: #60A5FA;
 
-  --cp-border-subtle: rgba(255,255,255,0.06);
-  --cp-border-default: rgba(255,255,255,0.10);
-  --cp-border-strong: rgba(255,255,255,0.18);
+  --cp-border-subtle: #292929;
+  --cp-border-default: #2E2E2E;
+  --cp-border-strong: #454545;
 
-  --cp-interact-hover: rgba(255,255,255,0.04);
-  --cp-interact-press: rgba(255,255,255,0.08);
+  --cp-interact-hover: #1F1F1F;
+  --cp-interact-press: #2E2E2E;
   --cp-interact-selected: rgba(59,130,246,0.10);
   --cp-interact-selected-hover: rgba(59,130,246,0.15);
 
-  --cp-toolbar-bg: rgba(255,255,255,0.05);
-  --cp-toolbar-bg-hover: rgba(255,255,255,0.08);
-  --cp-toolbar-bg-press: rgba(255,255,255,0.12);
+  --cp-toolbar-bg: #292929;
+  --cp-toolbar-bg-hover: #2E2E2E;
+  --cp-toolbar-bg-press: #454545;
   --cp-toolbar-bg-active: rgba(59,130,246,0.12);
 
   --cp-input-bg: transparent;
-  --cp-input-border: rgba(255,255,255,0.12);
-  --cp-input-border-hover: rgba(255,255,255,0.20);
+  --cp-input-border: #454545;
+  --cp-input-border-hover: #454545;
 
   --cp-shadow-xs: none;
   --cp-shadow-focus: 0 0 0 2px rgba(59,130,246,0.25);
@@ -169,13 +169,13 @@
 [data-theme="dark"] .pb-table thead,
 [data-theme="dark"] .pb-table thead tr,
 [data-theme="dark"] .pb-table thead th {
-  background-color: rgba(255,255,255,0.03) !important;
-  color: rgba(255,255,255,0.50);
-  border-bottom-color: rgba(255,255,255,0.08);
+  background-color: #1F1F1F !important;
+  color: #7D7D7D;
+  border-bottom-color: #2E2E2E;
 }
 .dark .pb-table thead th:hover,
 [data-theme="dark"] .pb-table thead th:hover {
-  background-color: rgba(255,255,255,0.06) !important;
+  background-color: #292929 !important;
 }
 .dark .pb-table tbody,
 .dark .pb-table tbody tr,
@@ -186,7 +186,7 @@
 }
 .dark .pb-table tbody tr:hover,
 [data-theme="dark"] .pb-table tbody tr:hover {
-  background: rgba(255,255,255,0.04) !important;
+  background: #1F1F1F !important;
 }
 
 /* ═══ Page Header ═══ */

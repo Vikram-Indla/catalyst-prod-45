@@ -1,5 +1,6 @@
 /**
- * NOCTURNE Warm Charcoal dark mode color tokens for inline-style components
+ * NOCTURNE Geist — canonical dark mode tokens for inline-style components
+ * All surfaces/borders use solid hex (never rgba). Apr 2026.
  */
 export type DarkTokens = {
   pageBg: string; cardBg: string; headerBg: string; tableHeaderBg: string;
@@ -12,35 +13,35 @@ export type DarkTokens = {
 };
 
 export const DK: DarkTokens = {
-  // Backgrounds — NOCTURNE Warm Charcoal
+  // Backgrounds — Geist Neutral Dark
   pageBg: '#0A0A0A',
   cardBg: 'transparent',
   headerBg: 'transparent',
-  tableHeaderBg: 'rgba(255,255,255,0.03)',
-  hoverBg: 'rgba(255,255,255,0.03)',
+  tableHeaderBg: '#111111',
+  hoverBg: '#1F1F1F',
   selectedBg: 'rgba(59,130,246,0.08)',
   floatBg: '#1A1A1A',
-  chipBg: 'rgba(255,255,255,0.06)',
-  progressTrack: 'rgba(255,255,255,0.08)',
-  iconBg: 'rgba(255,255,255,0.06)',
-  
-  // Text — NOCTURNE Warm Charcoal
+  chipBg: '#292929',
+  progressTrack: '#2E2E2E',
+  iconBg: '#292929',
+
+  // Text — Geist Neutral Dark
   t1: '#EDEDED',   // primary text (titles, values, data)
   t2: '#A1A1A1',   // secondary (labels, legends)
   t3: '#878787',   // tertiary (timestamps, muted labels)
-  t4: 'rgba(237,237,237,0.30)',   // decorative (placeholders)
-  
-  // Borders
-  border: 'rgba(255,255,255,0.08)',
-  borderStrong: 'rgba(255,255,255,0.12)',
-  divider: 'rgba(255,255,255,0.05)',
-  
+  t4: '#7D7D7D',   // decorative (placeholders)
+
+  // Borders — solid hex only
+  border: '#2E2E2E',
+  borderStrong: '#454545',
+  divider: '#292929',
+
   // Semantic
   blue: '#60A5FA',
   blueKey: '#60A5FA',
   green: '#86EFAC',
   greenText: '#86EFAC',
-  
+
   // No shadow
   shadow: 'none',
   cardShadow: 'none',

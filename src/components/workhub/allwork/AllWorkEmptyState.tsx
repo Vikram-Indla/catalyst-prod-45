@@ -46,7 +46,7 @@ export function AllWorkEmptyState({ type, message, query, onAction, onClear, onR
   return (
     <div
       className={`flex flex-col items-center justify-center rounded-lg border ${isSmall ? 'py-8' : 'py-16'}`}
-      style={{ borderColor: 'var(--bd-default, rgba(255,255,255,0.08))', backgroundColor: 'var(--bg-app)' }}
+      style={{ borderColor: 'var(--bd-default, #2E2E2E)', backgroundColor: 'var(--bg-app)' }}
     >
       <Icon
         className={isSmall ? 'w-8 h-8 mb-2' : 'w-10 h-10 mb-3'}

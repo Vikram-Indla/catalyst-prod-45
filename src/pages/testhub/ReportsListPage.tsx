@@ -142,7 +142,7 @@ export default function ReportsListPage() {
       {/* Stats Cards */}
       {stats && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 24 }}>
-          <div style={{ backgroundColor: isDark ? '#1A1A1A' : '#FFF', borderRadius: 12, padding: 20, border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0' }}>
+          <div style={{ backgroundColor: isDark ? '#1A1A1A' : '#FFF', borderRadius: 12, padding: 20, border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div>
                 <p style={{ fontSize: 12, color: isDark ? '#878787' : '#64748B', margin: 0, textTransform: 'uppercase' }}>Total Reports</p>
@@ -160,7 +160,7 @@ export default function ReportsListPage() {
               <CheckCircle2 size={24} style={{ color: '#059669' }} />
             </div>
           </div>
-          <div style={{ backgroundColor: isDark ? '#1A1A1A' : '#FFF', borderRadius: 12, padding: 20, border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0' }}>
+          <div style={{ backgroundColor: isDark ? '#1A1A1A' : '#FFF', borderRadius: 12, padding: 20, border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div>
                 <p style={{ fontSize: 12, color: isDark ? '#878787' : '#64748B', margin: 0, textTransform: 'uppercase' }}>This Month</p>
@@ -177,9 +177,9 @@ export default function ReportsListPage() {
         <div style={{ position: 'relative', flex: '1 1 300px', maxWidth: 400 }}>
           <Search size={18} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: '#94A3B8' }} />
           <input type="text" placeholder="Search reports..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}
-            style={{ width: '100%', height: 44, padding: '0 14px 0 44px', border: isDark ? '1.5px solid rgba(255,255,255,0.08)' : '1.5px solid #E2E8F0', borderRadius: 12, fontSize: 14, backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#EDEDED' : undefined }} />
+            style={{ width: '100%', height: 44, padding: '0 14px 0 44px', border: isDark ? '1.5px solid #2E2E2E' : '1.5px solid #E2E8F0', borderRadius: 12, fontSize: 14, backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#EDEDED' : undefined }} />
         </div>
-        <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} style={{ height: 44, padding: '0 36px 0 14px', border: isDark ? '1.5px solid rgba(255,255,255,0.08)' : '1.5px solid #E2E8F0', borderRadius: 12, fontSize: 14, backgroundColor: isDark ? '#1A1A1A' : '#FFF', color: isDark ? '#EDEDED' : undefined, cursor: 'pointer' }}>
+        <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} style={{ height: 44, padding: '0 36px 0 14px', border: isDark ? '1.5px solid #2E2E2E' : '1.5px solid #E2E8F0', borderRadius: 12, fontSize: 14, backgroundColor: isDark ? '#1A1A1A' : '#FFF', color: isDark ? '#EDEDED' : undefined, cursor: 'pointer' }}>
           <option value="all">All Types</option>
           <option value="cycle_summary">Cycle Summary</option>
           <option value="plan_summary">Plan Summary</option>
@@ -188,7 +188,7 @@ export default function ReportsListPage() {
           <option value="trend">Trend Analysis</option>
           <option value="custom">Custom</option>
         </select>
-        <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} style={{ height: 44, padding: '0 36px 0 14px', border: isDark ? '1.5px solid rgba(255,255,255,0.08)' : '1.5px solid #E2E8F0', borderRadius: 12, fontSize: 14, backgroundColor: isDark ? '#1A1A1A' : '#FFF', color: isDark ? '#EDEDED' : undefined, cursor: 'pointer' }}>
+        <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} style={{ height: 44, padding: '0 36px 0 14px', border: isDark ? '1.5px solid #2E2E2E' : '1.5px solid #E2E8F0', borderRadius: 12, fontSize: 14, backgroundColor: isDark ? '#1A1A1A' : '#FFF', color: isDark ? '#EDEDED' : undefined, cursor: 'pointer' }}>
           <option value="all">All Status</option>
           <option value="draft">Draft</option>
           <option value="generating">Generating</option>
@@ -197,7 +197,7 @@ export default function ReportsListPage() {
           <option value="archived">Archived</option>
         </select>
         {hasActiveFilters && (
-          <button onClick={clearFilters} style={{ display: 'flex', alignItems: 'center', gap: 6, height: 44, padding: '0 16px', border: isDark ? '1.5px solid rgba(255,255,255,0.08)' : '1.5px solid #E2E8F0', borderRadius: 12, backgroundColor: isDark ? '#1A1A1A' : '#FFF', color: isDark ? '#A1A1A1' : '#64748B', fontSize: 14, cursor: 'pointer' }}>
+          <button onClick={clearFilters} style={{ display: 'flex', alignItems: 'center', gap: 6, height: 44, padding: '0 16px', border: isDark ? '1.5px solid #2E2E2E' : '1.5px solid #E2E8F0', borderRadius: 12, backgroundColor: isDark ? '#1A1A1A' : '#FFF', color: isDark ? '#A1A1A1' : '#64748B', fontSize: 14, cursor: 'pointer' }}>
             <X size={16} /> Clear
           </button>
         )}
@@ -213,7 +213,7 @@ export default function ReportsListPage() {
           <RefreshCw size={32} style={{ animation: 'spin 1s linear infinite', color: '#F59E0B' }} />
         </div>
       ) : filteredReports.length === 0 ? (
-        <div style={{ backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', borderRadius: 12, padding: 60, textAlign: 'center', border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0' }}>
+        <div style={{ backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', borderRadius: 12, padding: 60, textAlign: 'center', border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0' }}>
           <FileBarChart size={48} style={{ color: isDark ? '#878787' : '#CBD5E1', marginBottom: 16 }} />
           <p style={{ fontSize: 16, color: isDark ? '#A1A1A1' : '#64748B', margin: 0 }}>No reports found</p>
           <p style={{ fontSize: 14, color: isDark ? '#878787' : '#94A3B8', margin: '8px 0 0' }}>Generate a new report to get started</p>
@@ -226,9 +226,9 @@ export default function ReportsListPage() {
             const TypeIcon = type.icon;
             return (
               <div key={report.id} onClick={() => navigate(`/testhub/reports/${report.id}`)}
-                style={{ backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', borderRadius: 12, padding: 20, border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0', cursor: 'pointer', transition: 'all 0.15s' }}
-                onMouseEnter={(e) => { e.currentTarget.style.borderColor = isDark ? 'rgba(255,255,255,0.15)' : '#CBD5E1'; e.currentTarget.style.boxShadow = isDark ? '0 4px 12px rgba(0,0,0,0.2)' : '0 4px 12px rgba(0,0,0,0.05)'; }}
-                onMouseLeave={(e) => { e.currentTarget.style.borderColor = isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'; e.currentTarget.style.boxShadow = 'none'; }}>
+                style={{ backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', borderRadius: 12, padding: 20, border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0', cursor: 'pointer', transition: 'all 0.15s' }}
+                onMouseEnter={(e) => { e.currentTarget.style.borderColor = isDark ? '#454545' : '#CBD5E1'; e.currentTarget.style.boxShadow = isDark ? '0 4px 12px rgba(0,0,0,0.2)' : '0 4px 12px rgba(0,0,0,0.05)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.borderColor = isDark ? '#2E2E2E' : '#E2E8F0'; e.currentTarget.style.boxShadow = 'none'; }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                   <div style={{ display: 'flex', gap: 16, flex: 1 }}>
                     <div style={{ width: 44, height: 44, borderRadius: 12, backgroundColor: type.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>

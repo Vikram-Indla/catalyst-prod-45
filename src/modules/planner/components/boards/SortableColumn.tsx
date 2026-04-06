@@ -180,13 +180,13 @@ export function SortableColumn({
         </SortableContext>
 
         {tasks.length === 0 && (
-          <div className="boards-column__empty dark:bg-[#1A1A1A] dark:border-[rgba(255,255,255,0.08)] dark:text-[#878787]">
+          <div className="boards-column__empty dark:bg-[#1A1A1A] dark:border-[#2E2E2E] dark:text-[#878787]">
             No tasks
           </div>
         )}
 
         {/* Add Task Button at bottom */}
-        <button className="boards-add-task dark:border-[rgba(255,255,255,0.08)] dark:text-[#878787] dark:hover:bg-[#1A1A1A] dark:hover:text-[#EDEDED] dark:hover:border-[rgba(255,255,255,0.15)]" onClick={() => onAddTask?.(column.id)}>
+        <button className="boards-add-task dark:border-[#2E2E2E] dark:text-[#878787] dark:hover:bg-[#1A1A1A] dark:hover:text-[#EDEDED] dark:hover:border-[#454545]" onClick={() => onAddTask?.(column.id)}>
           <Plus className="w-4 h-4" />
           Add Task
         </button>

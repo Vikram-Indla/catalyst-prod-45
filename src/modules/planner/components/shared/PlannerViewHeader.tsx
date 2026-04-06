@@ -24,7 +24,7 @@ export function PlannerViewHeader({
   showAddTask = true,
 }: PlannerViewHeaderProps) {
   return (
-    <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-[rgba(255,255,255,0.08)] bg-white dark:bg-[#0A0A0A]">
+    <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-[#2E2E2E] bg-white dark:bg-[#0A0A0A]">
       <div>
         <h1 className="text-xl font-bold text-slate-900 dark:text-[#EDEDED]">
           {title}

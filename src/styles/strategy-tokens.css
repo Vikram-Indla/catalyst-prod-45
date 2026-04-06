@@ -101,20 +101,20 @@
   --catalyst-bg-surface-0: #0A0A0A;
   --catalyst-bg-surface-1: #0A0A0A;
   --catalyst-bg-surface-2: #0A0A0A;
-  --catalyst-bg-surface-3: rgba(255,255,255,0.06);
-  --catalyst-bg-hover: rgba(255,255,255,0.03);
-  --catalyst-bg-active: rgba(255,255,255,0.06);
+  --catalyst-bg-surface-3: #292929;
+  --catalyst-bg-hover: #1F1F1F;
+  --catalyst-bg-active: #292929;
   --catalyst-bg-selected: rgba(59,130,246,0.08);
 
-  --catalyst-text-primary: rgba(255,255,255,0.92);
-  --catalyst-text-secondary: rgba(255,255,255,0.72);
-  --catalyst-text-tertiary: rgba(255,255,255,0.55);
+  --catalyst-text-primary: #EDEDED;
+  --catalyst-text-secondary: #A1A1A1;
+  --catalyst-text-tertiary: #878787;
   --catalyst-text-inverse: #0A0A0A;
   --catalyst-text-link: #7DB8FC;
   --catalyst-text-on-primary: #FFFFFF;
 
-  --catalyst-border-default: rgba(255,255,255,0.10);
-  --catalyst-border-strong: rgba(255,255,255,0.18);
+  --catalyst-border-default: #2E2E2E;
+  --catalyst-border-strong: #454545;
   --catalyst-border-focus: #3B82F6;
   --catalyst-border-interactive: #3B82F6;
 

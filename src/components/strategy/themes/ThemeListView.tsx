@@ -234,8 +234,8 @@ export function ThemeListView({ themes, onSelect, isDark = false }: Props) {
           boxShadow: '0 8px 30px rgba(0,0,0,0.25)', zIndex: 50,
         }}>
           <span style={{ fontSize: 13, fontWeight: 500 }}>{selected.size} selected</span>
-          <button style={{ fontSize: 11, background: 'rgba(255,255,255,0.1)', padding: '4px 12px', borderRadius: 4, border: 'none', color: '#FFF', cursor: 'pointer' }}>Change Status</button>
-          <button style={{ fontSize: 11, background: 'rgba(255,255,255,0.1)', padding: '4px 12px', borderRadius: 4, border: 'none', color: '#FFF', cursor: 'pointer' }}>Assign Owner</button>
+          <button style={{ fontSize: 11, background: '#2E2E2E', padding: '4px 12px', borderRadius: 4, border: 'none', color: '#FFF', cursor: 'pointer' }}>Change Status</button>
+          <button style={{ fontSize: 11, background: '#2E2E2E', padding: '4px 12px', borderRadius: 4, border: 'none', color: '#FFF', cursor: 'pointer' }}>Assign Owner</button>
           <button style={{ fontSize: 11, background: 'rgba(239,68,68,0.7)', padding: '4px 12px', borderRadius: 4, border: 'none', color: '#FFF', cursor: 'pointer' }}>Delete</button>
         </div>
       )}

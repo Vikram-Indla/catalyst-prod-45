@@ -659,7 +659,7 @@
   left: 0;
   top: 0;
   height: 100%;
-  background: rgba(255,255,255,0.25);
+  background: #454545;
   border-radius: var(--rh-radius-sm) 0 0 var(--rh-radius-sm);
 }
 .todayLine {
@@ -895,14 +895,14 @@
 [data-theme="dark"] .releaseHub {
   --rh-bg-page: var(--bg-0, #0A0A0A);
   --rh-bg-card: var(--bg-2, #1A1A1A);
-  --rh-bg-muted: rgba(255,255,255,0.03);
+  --rh-bg-muted: #1F1F1F;
   --rh-text-primary: var(--fg-1, #EDEDED);
   --rh-text-secondary: var(--fg-2, #A1A1A1);
   --rh-text-tertiary: var(--fg-3, #878787);
   --rh-text-muted: var(--fg-4, rgba(237,237,237,0.30));
-  --rh-border-subtle: rgba(255,255,255,0.05);
-  --rh-border-default: rgba(255,255,255,0.10);
-  --rh-border-strong: rgba(255,255,255,0.18);
+  --rh-border-subtle: #292929;
+  --rh-border-default: #2E2E2E;
+  --rh-border-strong: #454545;
   --rh-success-bg: rgba(74,222,128,0.12);
   --rh-warning-bg: rgba(253,230,138,0.10);
   --rh-danger-bg: rgba(239,68,68,0.10);

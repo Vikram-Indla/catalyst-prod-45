@@ -36,7 +36,7 @@ export default function WorkHubHeader({ columns, sort, onSort, allSelected, onSe
   return (
     <div role="row" style={{
       display: 'flex', alignItems: 'center', height: 40,
-      background: 'var(--bg-1)', borderBottom: '0.75px solid var(--bd-subtle, rgba(255,255,255,0.05))',
+      background: 'var(--bg-1)', borderBottom: '0.75px solid var(--bd-subtle, #292929)',
       position: 'sticky', top: 0, zIndex: 20, flexShrink: 0,
     }}>
       <div style={{ width: 44, minWidth: 44, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }} role="columnheader">

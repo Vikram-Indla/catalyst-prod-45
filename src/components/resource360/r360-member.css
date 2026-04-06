@@ -1239,8 +1239,8 @@
 /* Root background */
 .dark #r360-root {
   background: #0A0A0A !important;
-  --cp-interact-hover: rgba(255,255,255,0.04);
-  --cp-interact-press: rgba(255,255,255,0.08);
+  --cp-interact-hover: #1F1F1F;
+  --cp-interact-press: #2E2E2E;
   --cp-interact-selected: rgba(37,99,235,0.12);
   --cp-shadow-xs: 0 1px 3px rgba(0,0,0,0.3);
   --cp-shadow-overlay: 0 8px 24px rgba(0,0,0,0.5);
@@ -1248,7 +1248,7 @@
 
 /* Period toggle */
 .dark #r360-root .r3-period-toggle {
-  border-color: rgba(255,255,255,0.08) !important;
+  border-color: #2E2E2E !important;
 }
 .dark #r360-root .r3-period-toggle button {
   background: #1A1A1A !important;
@@ -1301,13 +1301,13 @@
 .dark #r360-root .r3-section-divider,
 .dark #r360-root .r3-timeline-row,
 .dark #r360-root [class*="border"] {
-  border-color: rgba(255,255,255,0.08) !important;
+  border-color: #2E2E2E !important;
 }
 
 /* Separator bars */
 .dark #r360-root .r3-divider,
 .dark #r360-root .r3-separator {
-  background: rgba(255,255,255,0.06) !important;
+  background: #292929 !important;
 }
 
 /* Table & list backgrounds */
@@ -1319,7 +1319,7 @@
 .dark #r360-root .r3-week-row:hover,
 .dark #r360-root .r3-timeline-row:hover,
 .dark #r360-root .r3-item-row:hover {
-  background: rgba(255,255,255,0.04) !important;
+  background: #1F1F1F !important;
 }
 
 /* Card surfaces */
@@ -1328,14 +1328,14 @@
 .dark #r360-root .r3-detail-card,
 .dark #r360-root .r3-card-surface {
   background: #1A1A1A !important;
-  border-color: rgba(255,255,255,0.08) !important;
+  border-color: #2E2E2E !important;
 }
 
 /* Filter chips & status buttons */
 .dark #r360-root .r3-filter-chip,
 .dark #r360-root .r3-status-filter {
   background: #1A1A1A !important;
-  border-color: rgba(255,255,255,0.08) !important;
+  border-color: #2E2E2E !important;
   color: #A1A1A1 !important;
 }
 .dark #r360-root .r3-filter-chip.active,
@@ -1359,10 +1359,10 @@
 /* Drawer / side panel */
 .dark #r360-root .item-drawer {
   background: #1A1A1A !important;
-  border-color: rgba(255,255,255,0.08) !important;
+  border-color: #2E2E2E !important;
 }
 .dark #r360-root .item-drawer .drawer-header {
-  border-color: rgba(255,255,255,0.08) !important;
+  border-color: #2E2E2E !important;
 }
 
 /* Board column backgrounds */
@@ -1373,7 +1373,7 @@
 /* Chronology view */
 .dark #r360-root .r3-chrono-cell {
   background: #0A0A0A !important;
-  border-color: rgba(255,255,255,0.05) !important;
+  border-color: #292929 !important;
 }
 .dark #r360-root .r3-chrono-cell.current {
   background: rgba(37,99,235,0.08) !important;
@@ -1383,13 +1383,13 @@
 .dark #r360-root select {
   background: #1A1A1A !important;
   color: #EDEDED !important;
-  border-color: rgba(255,255,255,0.08) !important;
+  border-color: #2E2E2E !important;
 }
 
 /* Hover for board cards */
 .dark #r360-root .r3-board-card:hover {
   box-shadow: 0 2px 8px rgba(0,0,0,0.3) !important;
-  border-color: rgba(255,255,255,0.15) !important;
+  border-color: #454545 !important;
 }
 
 /* Generic white bg overrides */

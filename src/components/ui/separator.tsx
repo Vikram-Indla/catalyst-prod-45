@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 
 /**
  * Separator — Catalyst Dark-Mode Grammar v3
- * Ultra-subtle in dark mode: rgba(255,255,255,0.035)
+ * Ultra-subtle in dark mode: #1F1F1F
  * Nearly invisible - surface contrast does the work
  */
 const Separator = React.forwardRef<

@@ -29,7 +29,7 @@ type TabKey = (typeof TABS)[number]['key'];
 /* ═══════════════════════════════════════════
    SHARED STYLES
    ═══════════════════════════════════════════ */
-const card = 'bg-white dark:bg-[#1A1A1A] border border-zinc-200 dark:border-[rgba(255,255,255,0.08)] rounded-lg p-5 shadow-sm';
+const card = 'bg-white dark:bg-[#1A1A1A] border border-zinc-200 dark:border-[#2E2E2E] rounded-lg p-5 shadow-sm';
 const badge = (color: string) =>
   `inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wide ${color}`;
 
@@ -340,7 +340,7 @@ function HealthTab() {
         <button
           onClick={runChecks}
           disabled={loading}
-          className="flex items-center gap-1.5 px-4 py-2 bg-white dark:bg-[#1A1A1A] border border-zinc-200 dark:border-[rgba(255,255,255,0.08)] rounded-lg text-xs font-semibold text-zinc-700 dark:text-[#A1A1A1] hover:bg-zinc-50 dark:hover:bg-[#1A1A1A] transition-colors disabled:opacity-50"
+          className="flex items-center gap-1.5 px-4 py-2 bg-white dark:bg-[#1A1A1A] border border-zinc-200 dark:border-[#2E2E2E] rounded-lg text-xs font-semibold text-zinc-700 dark:text-[#A1A1A1] hover:bg-zinc-50 dark:hover:bg-[#1A1A1A] transition-colors disabled:opacity-50"
         >
           <RefreshCw size={13} className={loading ? 'animate-spin' : ''} />
           Re-check
@@ -743,7 +743,7 @@ function QueryLogTab() {
                             </div>
                           </div>
 
-                          <div className="bg-white dark:bg-[#1A1A1A] rounded-lg border border-zinc-200 dark:border-[rgba(255,255,255,0.08)] p-3">
+                          <div className="bg-white dark:bg-[#1A1A1A] rounded-lg border border-zinc-200 dark:border-[#2E2E2E] p-3">
                             <p className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wide mb-1">User Question</p>
                             <p className="text-sm text-zinc-800 font-medium">{log.query_text}</p>
                           </div>
@@ -1286,15 +1286,15 @@ function TrainingTab() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search questions or answers..."
-            className="flex-1 min-w-[200px] px-3 py-1.5 text-xs border border-zinc-200 dark:border-[rgba(255,255,255,0.08)] rounded bg-white dark:bg-[#1A1A1A] dark:text-[#EDEDED] focus:outline-none focus:ring-1 focus:ring-blue-400"
+            className="flex-1 min-w-[200px] px-3 py-1.5 text-xs border border-zinc-200 dark:border-[#2E2E2E] rounded bg-white dark:bg-[#1A1A1A] dark:text-[#EDEDED] focus:outline-none focus:ring-1 focus:ring-blue-400"
           />
-          <select value={catFilter} onChange={(e) => setCatFilter(e.target.value)} className="px-3 py-1.5 text-xs border border-zinc-200 dark:border-[rgba(255,255,255,0.08)] rounded bg-white dark:bg-[#1A1A1A] dark:text-[#EDEDED]">
+          <select value={catFilter} onChange={(e) => setCatFilter(e.target.value)} className="px-3 py-1.5 text-xs border border-zinc-200 dark:border-[#2E2E2E] rounded bg-white dark:bg-[#1A1A1A] dark:text-[#EDEDED]">
             <option value="all">All Categories ({questions.length})</option>
             {categories.map(c => (
               <option key={c.category} value={c.category}>{c.category} ({c.count})</option>
             ))}
           </select>
-          <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value as any)} className="px-3 py-1.5 text-xs border border-zinc-200 dark:border-[rgba(255,255,255,0.08)] rounded bg-white dark:bg-[#1A1A1A] dark:text-[#EDEDED]">
+          <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value as any)} className="px-3 py-1.5 text-xs border border-zinc-200 dark:border-[#2E2E2E] rounded bg-white dark:bg-[#1A1A1A] dark:text-[#EDEDED]">
             <option value="all">All Status</option>
             <option value="answered">Has Answer</option>
             <option value="unanswered">No Answer</option>
@@ -1429,13 +1429,13 @@ export default function KBAdminPage() {
   return (
     <div className="min-h-screen bg-zinc-50" style={{ paddingTop: 48 }}>
       {/* Page header */}
-      <div className="bg-white dark:bg-[#1A1A1A] border-b border-zinc-200 dark:border-[rgba(255,255,255,0.08)] px-6 py-4">
+      <div className="bg-white dark:bg-[#1A1A1A] border-b border-zinc-200 dark:border-[#2E2E2E] px-6 py-4">
         <h1 className="text-lg font-bold text-zinc-900 dark:text-[#EDEDED]">Knowledge Base — Admin</h1>
         <p className="text-xs text-zinc-500 mt-0.5">Manage training, sources, access control, and pipeline configuration</p>
       </div>
 
       {/* Tabs */}
-      <div className="bg-white dark:bg-[#1A1A1A] border-b border-zinc-200 dark:border-[rgba(255,255,255,0.08)] px-6">
+      <div className="bg-white dark:bg-[#1A1A1A] border-b border-zinc-200 dark:border-[#2E2E2E] px-6">
         <nav className="flex gap-0 overflow-x-auto">
           {TABS.map((tab) => (
             <button

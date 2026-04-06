@@ -189,7 +189,7 @@ function SleekGadget({ title, subtitle, icon: Icon, collapsedContent, expandedCo
   const { isDark } = useTheme();
 
   return (
-    <div className={cn("bg-brand-dark rounded-xl sm:rounded-2xl overflow-hidden shadow-lg border border-brand-primary/20", isDark && "bg-[#1A1A1A] border-[rgba(255,255,255,0.08)]")}>
+    <div className={cn("bg-brand-dark rounded-xl sm:rounded-2xl overflow-hidden shadow-lg border border-brand-primary/20", isDark && "bg-[#1A1A1A] border-[#2E2E2E]")}>
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="w-full px-3 sm:px-5 py-3 sm:py-4 flex items-center justify-between hover:bg-white/5 transition-colors"
@@ -335,7 +335,7 @@ export default function DemandSummaryPage() {
   return (
     <div className={cn("min-h-screen bg-background", isArabic && "rtl", isDark && "bg-[#0A0A0A]")} style={{ fontFamily: "'Inter', sans-serif" }} dir={isArabic ? 'rtl' : 'ltr'}>
       {/* Header */}
-      <header className={cn("h-[72px] bg-card border-b border-border sticky top-0 z-50 flex-shrink-0", isDark && "bg-[#1A1A1A] border-[rgba(255,255,255,0.08)]")}>
+      <header className={cn("h-[72px] bg-card border-b border-border sticky top-0 z-50 flex-shrink-0", isDark && "bg-[#1A1A1A] border-[#2E2E2E]")}>
         <div className="h-full px-4 sm:px-6 flex items-center">
           <div className="max-w-[1400px] mx-auto flex justify-between items-center flex-wrap gap-3 sm:gap-4 w-full">
             <div className="min-w-0">

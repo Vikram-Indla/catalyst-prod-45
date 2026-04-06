@@ -148,18 +148,18 @@ const getAvatarColor = (initials: string) => {
             >
               <div className="text-sm text-[#A5ADBA] mb-2">Add a comment...</div>
               <div className="flex gap-2 flex-wrap">
-                <button className="text-sm text-[#42526E] dark:text-[#A1A1A1] bg-white dark:bg-[#1A1A1A] border border-[#DFE1E6] dark:border-[rgba(255,255,255,0.08)] px-3 py-1 rounded hover:bg-[#F4F5F7] dark:hover:bg-[#1A1A1A]">
+                <button className="text-sm text-[#42526E] dark:text-[#A1A1A1] bg-white dark:bg-[#1A1A1A] border border-[#DFE1E6] dark:border-[#2E2E2E] px-3 py-1 rounded hover:bg-[#F4F5F7] dark:hover:bg-[#1A1A1A]">
                   Suggest a reply...
                 </button>
-                <button className="text-sm text-[#42526E] dark:text-[#A1A1A1] bg-white dark:bg-[#1A1A1A] border border-[#DFE1E6] dark:border-[rgba(255,255,255,0.08)] px-3 py-1 rounded hover:bg-[#F4F5F7] dark:hover:bg-[#1A1A1A]">
+                <button className="text-sm text-[#42526E] dark:text-[#A1A1A1] bg-white dark:bg-[#1A1A1A] border border-[#DFE1E6] dark:border-[#2E2E2E] px-3 py-1 rounded hover:bg-[#F4F5F7] dark:hover:bg-[#1A1A1A]">
                   Status update...
                 </button>
-                <button className="text-sm text-[#42526E] dark:text-[#A1A1A1] bg-white dark:bg-[#1A1A1A] border border-[#DFE1E6] dark:border-[rgba(255,255,255,0.08)] px-3 py-1 rounded hover:bg-[#F4F5F7] dark:hover:bg-[#1A1A1A]">
+                <button className="text-sm text-[#42526E] dark:text-[#A1A1A1] bg-white dark:bg-[#1A1A1A] border border-[#DFE1E6] dark:border-[#2E2E2E] px-3 py-1 rounded hover:bg-[#F4F5F7] dark:hover:bg-[#1A1A1A]">
                   Thanks...
                 </button>
               </div>
               <div className="text-[11px] text-[#A5ADBA] mt-2">
-                Pro tip: press <kbd className="inline-block bg-white dark:bg-[#1A1A1A] border border-[#DFE1E6] dark:border-[rgba(255,255,255,0.08)] px-1 rounded text-[11px]">M</kbd> to comment
+                Pro tip: press <kbd className="inline-block bg-white dark:bg-[#1A1A1A] border border-[#DFE1E6] dark:border-[#2E2E2E] px-1 rounded text-[11px]">M</kbd> to comment
               </div>
             </div>
           ) : (
@@ -239,11 +239,11 @@ const getAvatarColor = (initials: string) => {
               {/* Content based on type */}
               {activity.changeType === 'status' && (
                 <div className="flex items-center gap-2 mt-1.5">
-                  <span className="text-[11px] font-medium px-2 py-0.5 rounded border border-[#DFE1E6] dark:border-[rgba(255,255,255,0.08)] bg-white dark:bg-[#1A1A1A] text-[#172B4D] dark:text-[#EDEDED]">
+                  <span className="text-[11px] font-medium px-2 py-0.5 rounded border border-[#DFE1E6] dark:border-[#2E2E2E] bg-white dark:bg-[#1A1A1A] text-[#172B4D] dark:text-[#EDEDED]">
                     {activity.oldValue}
                   </span>
                   <span className="text-[#A5ADBA]">→</span>
-                  <span className="text-[11px] font-medium px-2 py-0.5 rounded border border-[#DFE1E6] dark:border-[rgba(255,255,255,0.08)] bg-white dark:bg-[#1A1A1A] text-[#172B4D] dark:text-[#EDEDED]">
+                  <span className="text-[11px] font-medium px-2 py-0.5 rounded border border-[#DFE1E6] dark:border-[#2E2E2E] bg-white dark:bg-[#1A1A1A] text-[#172B4D] dark:text-[#EDEDED]">
                     {activity.newValue}
                   </span>
                 </div>

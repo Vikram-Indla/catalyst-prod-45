@@ -940,15 +940,15 @@
    ═══════════════════════════════════════════════════════════════════════════════ */
 [data-theme="dark"] {
   /* Neutral Slate Scale — inverted for dark */
-  --planner-slate-50: rgba(255,255,255,0.03);
-  --planner-slate-100: rgba(255,255,255,0.06);
-  --planner-slate-200: rgba(255,255,255,0.10);
-  --planner-slate-300: rgba(255,255,255,0.18);
+  --planner-slate-50: #1F1F1F;
+  --planner-slate-100: #292929;
+  --planner-slate-200: #2E2E2E;
+  --planner-slate-300: #454545;
   --planner-slate-400: var(--fg-4, rgba(237,237,237,0.30));
-  --planner-slate-500: rgba(255,255,255,0.50);
+  --planner-slate-500: #7D7D7D;
   --planner-slate-600: var(--fg-3, #878787);
   --planner-slate-700: var(--fg-2, #A1A1A1);
-  --planner-slate-800: rgba(255,255,255,0.85);
+  --planner-slate-800: #EDEDED;
   --planner-slate-900: var(--fg-1, #EDEDED);
 
   /* Primary — lightened */
@@ -1010,7 +1010,7 @@
   --planner-text-purple-dark: #A78BFA;
 
   /* Status Colors */
-  --planner-status-backlog: rgba(255,255,255,0.50);
+  --planner-status-backlog: #7D7D7D;
   --planner-status-planned: #60A5FA;
   --planner-status-progress: #FBBF24;
   --planner-status-review: #A78BFA;
@@ -1046,8 +1046,8 @@
   --planner-priority-high-bg: rgba(234,88,12,0.10);
   --planner-priority-medium: #60A5FA;
   --planner-priority-medium-bg: rgba(59,130,246,0.10);
-  --planner-priority-low: rgba(255,255,255,0.50);
-  --planner-priority-low-bg: rgba(255,255,255,0.03);
+  --planner-priority-low: #7D7D7D;
+  --planner-priority-low-bg: #1F1F1F;
 
   /* Shadows — suppressed in dark mode */
   --planner-shadow-sm: none;

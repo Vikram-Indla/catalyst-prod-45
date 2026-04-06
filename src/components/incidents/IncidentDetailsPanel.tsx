@@ -80,7 +80,7 @@ export function IncidentDetailsPanel({
   return (
     <div className="space-y-4">
       {/* Status Panel - Jira style */}
-      <div className="bg-white dark:bg-[#1A1A1A] border border-[#E8E8E8] dark:border-[rgba(255,255,255,0.08)] rounded-lg p-4">
+      <div className="bg-white dark:bg-[#1A1A1A] border border-[#E8E8E8] dark:border-[#2E2E2E] rounded-lg p-4">
         <IncidentStatusDropdown
           currentStatus={currentStatus}
           onStatusChange={onStatusChange}
@@ -89,7 +89,7 @@ export function IncidentDetailsPanel({
       </div>
 
       {/* Details Panel */}
-      <div className="bg-white dark:bg-[#1A1A1A] border border-[#E8E8E8] dark:border-[rgba(255,255,255,0.08)] rounded-lg p-4">
+      <div className="bg-white dark:bg-[#1A1A1A] border border-[#E8E8E8] dark:border-[#2E2E2E] rounded-lg p-4">
         <h4 className="text-[11px] font-semibold uppercase text-[#8C8C8C] mb-3">Details</h4>
         <div className="space-y-0">
           {/* Priority (calculated, read-only) */}
@@ -199,7 +199,7 @@ export function IncidentDetailsPanel({
       </div>
 
       {/* Labels */}
-      <div className="bg-white dark:bg-[#1A1A1A] border border-[#E8E8E8] dark:border-[rgba(255,255,255,0.08)] rounded-lg p-4">
+      <div className="bg-white dark:bg-[#1A1A1A] border border-[#E8E8E8] dark:border-[#2E2E2E] rounded-lg p-4">
         <h4 className="text-[11px] font-semibold uppercase text-[#8C8C8C] mb-3">Labels</h4>
         <div className="flex flex-wrap gap-1.5">
           {currentLabels.map(label => (

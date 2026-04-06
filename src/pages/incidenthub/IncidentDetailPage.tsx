@@ -96,7 +96,7 @@ export default function IncidentDetailPage() {
       {/* Breadcrumb */}
       <div className="flex items-center justify-between px-6 shrink-0" style={{
         height: 50,
-        borderBottom: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(15,23,42,0.06)',
+        borderBottom: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.06)',
       }}>
         <div className="flex items-center gap-1" style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: isDark ? '#878787' : '#64748B' }}>
           <span className="cursor-pointer hover:underline" onClick={() => navigate('/incident-hub')}>Incident List</span>
@@ -175,7 +175,7 @@ export default function IncidentDetailPage() {
               <h3 style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A', marginBottom: 8 }}>Labels</h3>
               <div className="flex flex-wrap gap-1">
                 {(incident.labels as string[]).map((label: string) => (
-                  <span key={label} className="px-2 py-0.5" style={{ fontSize: 11, backgroundColor: isDark ? '#1A1A1A' : '#F1F5F9', border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(15,23,42,0.08)', borderRadius: 4, color: isDark ? '#A1A1A1' : '#475569' }}>{label}</span>
+                  <span key={label} className="px-2 py-0.5" style={{ fontSize: 11, backgroundColor: isDark ? '#1A1A1A' : '#F1F5F9', border: isDark ? '1px solid #2E2E2E' : '1px solid rgba(15,23,42,0.08)', borderRadius: 4, color: isDark ? '#A1A1A1' : '#475569' }}>{label}</span>
                 ))}
               </div>
             </div>
@@ -226,7 +226,7 @@ export default function IncidentDetailPage() {
                   <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: isDark ? '#878787' : '#94A3B8' }}>No comments yet. Be the first to comment.</p>
                 )}
                 {incident.comments?.map((c: any) => (
-                  <div key={c.id} className="mb-3 pb-3" style={{ borderBottom: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(15,23,42,0.06)' }}>
+                  <div key={c.id} className="mb-3 pb-3" style={{ borderBottom: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.06)' }}>
                     <div className="flex items-center gap-2 mb-1">
                       <div className="rounded-full flex items-center justify-center" style={{ width: 24, height: 24, backgroundColor: isDark ? '#1A1A1A' : '#E2E8F0', fontSize: 10, fontWeight: 650, color: isDark ? '#A1A1A1' : '#475569' }}>
                         {(c.author?.full_name || c.author_name || 'U').charAt(0).toUpperCase()}
@@ -250,7 +250,7 @@ export default function IncidentDetailPage() {
                   <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: isDark ? '#878787' : '#94A3B8' }}>No history entries.</p>
                 )}
                 {incident.history?.map((h: any) => (
-                  <div key={h.id} className="flex items-start gap-3 mb-3 pb-3" style={{ borderBottom: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(15,23,42,0.06)' }}>
+                  <div key={h.id} className="flex items-start gap-3 mb-3 pb-3" style={{ borderBottom: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.06)' }}>
                     <div className="shrink-0 mt-1" style={{ width: 10, height: 10, borderRadius: '50%', backgroundColor: '#2563EB', border: isDark ? '2px solid #0A0A0A' : '2px solid #FFFFFF', boxShadow: '0 0 0 1px #2563EB' }} />
                     <div>
                       <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, fontWeight: 650, color: isDark ? '#EDEDED' : '#0F172A' }}>
@@ -275,7 +275,7 @@ export default function IncidentDetailPage() {
         {/* Right Column (300px rail) */}
         <div className="shrink-0 overflow-y-auto" style={{
           width: 300,
-          borderLeft: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(15,23,42,0.06)',
+          borderLeft: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.06)',
           padding: 16,
           backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF',
         }}>
@@ -301,7 +301,7 @@ export default function IncidentDetailPage() {
           </div>
 
           {/* Custom Fields */}
-          <div className="mt-4 pt-4" style={{ borderTop: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(15,23,42,0.06)' }}>
+          <div className="mt-4 pt-4" style={{ borderTop: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.06)' }}>
             <div className="flex items-center gap-2 mb-2">
               <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: isDark ? '#878787' : '#64748B', width: 80 }}>Created</span>
               <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 12, color: isDark ? '#A1A1A1' : '#64748B' }}>

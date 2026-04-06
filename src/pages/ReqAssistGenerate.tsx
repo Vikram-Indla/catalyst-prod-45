@@ -272,7 +272,7 @@ export default function ReqAssistGenerate() {
         </div>
 
         {/* INPUT CARD */}
-        <div style={{ background: isDark ? '#1A1A1A' : '#FFFFFF', border: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 6, padding: 24, marginBottom: 20 }}>
+        <div style={{ background: isDark ? '#1A1A1A' : '#FFFFFF', border: `0.75px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 6, padding: 24, marginBottom: 20 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
             <FileText size={15} color="#7C3AED" />
             <span style={{ fontSize: 13, fontWeight: 650, color: isDark ? '#EDEDED' : '#111827', fontFamily: "'Inter', sans-serif" }}>Requirements Input</span>
@@ -283,9 +283,9 @@ export default function ReqAssistGenerate() {
             value={text}
             onChange={(e) => { setText(e.target.value); setQualifyResult(null); setGenResult(null); setGenError(null); setSavedDocId(null); setHasEpics(false); setDuplicateDoc(null); setWikiState('idle'); setShowSavedBanner(false); }}
             placeholder="Paste your requirements here..."
-            style={{ width: '100%', minHeight: 200, padding: 14, fontSize: 14, lineHeight: 1.65, border: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 4, outline: 'none', resize: 'vertical', fontFamily: "'Inter', sans-serif", color: isDark ? '#EDEDED' : '#111827', transition: 'border-color 150ms, box-shadow 150ms' }}
+            style={{ width: '100%', minHeight: 200, padding: 14, fontSize: 14, lineHeight: 1.65, border: `0.75px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 4, outline: 'none', resize: 'vertical', fontFamily: "'Inter', sans-serif", color: isDark ? '#EDEDED' : '#111827', transition: 'border-color 150ms, box-shadow 150ms' }}
             onFocus={(e) => { e.currentTarget.style.borderColor = '#7C3AED'; e.currentTarget.style.boxShadow = '0 0 0 2px rgba(124,58,237,0.10)'; }}
-            onBlur={(e) => { e.currentTarget.style.borderColor = isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'; e.currentTarget.style.boxShadow = 'none'; }}
+            onBlur={(e) => { e.currentTarget.style.borderColor = isDark ? '#2E2E2E' : '#E2E8F0'; e.currentTarget.style.boxShadow = 'none'; }}
           />
           <p style={{ fontSize: 12, color: isDark ? '#878787' : '#6B7280', margin: '6px 0 0', fontFamily: "'Inter', sans-serif" }}>The AI will first qualify whether this text contains enough structured requirements.</p>
 
@@ -339,7 +339,7 @@ export default function ReqAssistGenerate() {
 
         {/* Generating spinner */}
         {generating && !genResult && (
-          <div style={{ background: isDark ? '#1A1A1A' : '#FFFFFF', border: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 6, padding: '40px 24px', textAlign: 'center' }}>
+          <div style={{ background: isDark ? '#1A1A1A' : '#FFFFFF', border: `0.75px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 6, padding: '40px 24px', textAlign: 'center' }}>
             <Loader2 size={24} color="#7C3AED" style={{ animation: 'ra-spin 1s linear infinite', margin: '0 auto 12px', display: 'block' }} />
             <p style={{ fontSize: 14, fontWeight: 500, color: isDark ? '#A1A1A1' : '#374151', margin: '0 0 4px', fontFamily: "'Inter', sans-serif" }}>Generating BRD sections from your input…</p>
             <p style={{ fontSize: 12, color: isDark ? '#878787' : '#6B7280', margin: 0, fontFamily: "'Inter', sans-serif" }}>This typically takes 15–30 seconds</p>
@@ -348,9 +348,9 @@ export default function ReqAssistGenerate() {
 
         {/* GENERATED BRD */}
         {genResult && genResult.sections.length > 0 && (
-          <div style={{ border: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 6, overflow: 'hidden', background: isDark ? '#1A1A1A' : '#FFFFFF' }}>
+          <div style={{ border: `0.75px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 6, overflow: 'hidden', background: isDark ? '#1A1A1A' : '#FFFFFF' }}>
             {/* Header */}
-            <div style={{ padding: '12px 16px', borderBottom: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{ padding: '12px 16px', borderBottom: `0.75px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, display: 'flex', alignItems: 'center', gap: 8 }}>
               <span style={{ fontSize: 14, fontWeight: 650, color: isDark ? '#EDEDED' : '#0F172A', fontFamily: "'Sora', sans-serif" }}>Generated BRD</span>
               <span style={{ display: 'inline-flex', alignItems: 'center', padding: '0 6px', height: 20, borderRadius: 4, fontSize: 11, fontWeight: 700, textTransform: 'uppercase' as const, background: '#1B7F37', color: '#FFFFFF' }}>QUALIFIED</span>
               <span style={{ fontSize: 11, color: isDark ? '#878787' : '#64748B', marginLeft: 'auto', fontFamily: "'JetBrains Mono', monospace" }}>
@@ -400,7 +400,7 @@ export default function ReqAssistGenerate() {
             )}
 
             {/* ACTION BAR */}
-            <div style={{ padding: '12px 16px', background: isDark ? '#1A1A1A' : '#FFFFFF', borderTop: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, display: 'flex', gap: 8, alignItems: 'center' }}>
+            <div style={{ padding: '12px 16px', background: isDark ? '#1A1A1A' : '#FFFFFF', borderTop: `0.75px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, display: 'flex', gap: 8, alignItems: 'center' }}>
               {brdState === 'generated' && (
                 <>
                   <BtnPrimary onClick={() => doSave()} disabled={saving}>
@@ -615,7 +615,7 @@ function BtnOutline({ children, ...props }: React.ButtonHTMLAttributes<HTMLButto
   return (
     <button {...props} style={{
       display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', fontSize: 14, fontWeight: 500,
-      border: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#CBD5E1'}`, borderRadius: 6, cursor: props.disabled ? 'not-allowed' : 'pointer',
+      border: `0.75px solid ${isDark ? '#2E2E2E' : '#CBD5E1'}`, borderRadius: 6, cursor: props.disabled ? 'not-allowed' : 'pointer',
       background: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#A1A1A1' : '#374151', fontFamily: "'Inter', sans-serif",
       transition: 'background 120ms',
       ...props.style,
@@ -671,7 +671,7 @@ function CatalystTopNav() {
     { label: 'WikiHub', path: '/wikihub' },
   ];
   return (
-    <nav style={{ height: 48, display: 'flex', alignItems: 'center', gap: 0, background: isDark ? '#1A1A1A' : '#FFFFFF', borderBottom: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, padding: '0 24px', fontFamily: "'Inter', sans-serif" }}>
+    <nav style={{ height: 48, display: 'flex', alignItems: 'center', gap: 0, background: isDark ? '#1A1A1A' : '#FFFFFF', borderBottom: `0.75px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, padding: '0 24px', fontFamily: "'Inter', sans-serif" }}>
       {HUBS.map(h => {
         const isActive = h.label === 'ProductHub';
         return (

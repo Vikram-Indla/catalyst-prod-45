@@ -96,7 +96,7 @@ export default function WikiAnalyticsPage() {
 
   const { isDark } = useTheme();
   const F = { sora: "'Sora', sans-serif", mono: "'JetBrains Mono', monospace" };
-  const border = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)';
+  const border = isDark ? '#2E2E2E' : 'rgba(0,0,0,0.06)';
 
   return (
     <div style={{ fontFamily: 'Inter, sans-serif', color: isDark ? '#EDEDED' : '#0F172A', background: isDark ? '#0A0A0A' : '#F8FAFC', minHeight: '100%', padding: '24px 40px 48px' }}>
@@ -130,7 +130,7 @@ export default function WikiAnalyticsPage() {
               <CartesianGrid strokeDasharray="3 3" stroke={border} />
               <XAxis dataKey="domain" tick={{ fontSize: 10, fill: isDark ? '#A1A1A1' : '#64748B' }} />
               <YAxis tick={{ fontSize: 10, fill: isDark ? '#A1A1A1' : '#64748B' }} />
-              <Tooltip contentStyle={{ fontSize: 12, borderRadius: 6, border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, background: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#EDEDED' : undefined }} />
+              <Tooltip contentStyle={{ fontSize: 12, borderRadius: 6, border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, background: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#EDEDED' : undefined }} />
               <Bar dataKey="count" radius={[4, 4, 0, 0]}>
                 {(domainDistribution ?? []).map((d: any) => (
                   <Cell key={d.domain} fill={DOMAIN_COLORS[d.domain] || '#64748B'} />
@@ -150,7 +150,7 @@ export default function WikiAnalyticsPage() {
                   <Cell key={i} fill={entry.fill} />
                 ))}
               </Pie>
-              <Tooltip contentStyle={{ fontSize: 12, borderRadius: 6, background: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#EDEDED' : undefined, border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}` }} />
+              <Tooltip contentStyle={{ fontSize: 12, borderRadius: 6, background: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#EDEDED' : undefined, border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}` }} />
               <Legend wrapperStyle={{ fontSize: 11, color: isDark ? '#A1A1A1' : undefined }} />
             </PieChart>
           </ResponsiveContainer>

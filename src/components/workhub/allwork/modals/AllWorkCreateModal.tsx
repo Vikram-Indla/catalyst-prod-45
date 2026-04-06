@@ -47,7 +47,7 @@ function CustomSelect({ label, required, value, options, onChange, placeholder, 
           onClick={() => setOpen(!open)}
           className="w-full flex items-center justify-between px-3 py-2 rounded-md border text-[13px] text-left transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[#2563EB]"
           style={{
-            borderColor: open ? 'var(--cp-blue)' : 'var(--bd-default, rgba(255,255,255,0.08))',
+            borderColor: open ? 'var(--cp-blue)' : 'var(--bd-default, #2E2E2E)',
             color: value ? 'var(--fg-1)' : 'var(--fg-3)',
             fontFamily: 'Inter, sans-serif',
           }}
@@ -60,7 +60,7 @@ function CustomSelect({ label, required, value, options, onChange, placeholder, 
         {open && (
           <div
             className="absolute top-full left-0 right-0 mt-1 rounded-lg border bg-white shadow-lg z-50 py-1 max-h-52 overflow-y-auto animate-scale-in"
-            style={{ borderColor: 'var(--bd-default, rgba(255,255,255,0.08))' }}
+            style={{ borderColor: 'var(--bd-default, #2E2E2E)' }}
             role="listbox"
           >
             {isLoading ? (
@@ -76,7 +76,7 @@ function CustomSelect({ label, required, value, options, onChange, placeholder, 
                   key={opt}
                   type="button"
                   onClick={() => { onChange(opt); setOpen(false); }}
-                  className="w-full flex items-center justify-between px-3 py-1.5 text-[13px] hover:bg-[var(--hover, rgba(255,255,255,0.04))] text-left transition-colors duration-[80ms]"
+                  className="w-full flex items-center justify-between px-3 py-1.5 text-[13px] hover:bg-[var(--hover, #1F1F1F)] text-left transition-colors duration-[80ms]"
                   style={{ color: 'var(--fg-1)', fontFamily: 'Inter, sans-serif' }}
                   role="option"
                   aria-selected={opt === value}
@@ -148,9 +148,9 @@ export function AllWorkCreateModal({ onClose, onCreated }: Props) {
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: '1px solid var(--bd-subtle, rgba(255,255,255,0.05))' }}>
+        <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: '1px solid var(--bd-subtle, #292929)' }}>
           <h2 className="text-[16px] font-semibold" style={{ color: 'var(--fg-1)', fontFamily: 'Inter, sans-serif' }}>Create Work Item</h2>
-          <button onClick={onClose} className="p-1 rounded hover:bg-[var(--hover, rgba(255,255,255,0.04))] transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[#2563EB]" aria-label="Close modal">
+          <button onClick={onClose} className="p-1 rounded hover:bg-[var(--hover, #1F1F1F)] transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[#2563EB]" aria-label="Close modal">
             <X className="w-5 h-5" style={{ color: '#6b6e76' }} />
           </button>
         </div>
@@ -160,7 +160,7 @@ export function AllWorkCreateModal({ onClose, onCreated }: Props) {
           {/* Project */}
           <div>
             <label className="text-[11px] uppercase font-semibold block mb-1" style={{ color: 'var(--fg-2)', letterSpacing: '0.05em', fontFamily: 'Inter, sans-serif' }}>Project</label>
-            <div className="flex items-center gap-2 px-3 py-2 rounded-md border" style={{ borderColor: 'var(--bd-default, rgba(255,255,255,0.08))', backgroundColor: 'var(--hover, rgba(255,255,255,0.02))' }}>
+            <div className="flex items-center gap-2 px-3 py-2 rounded-md border" style={{ borderColor: 'var(--bd-default, #2E2E2E)', backgroundColor: 'var(--hover, #1F1F1F)' }}>
               <div className="w-5 h-5 rounded flex items-center justify-center text-[10px] font-bold text-white" style={{ backgroundColor: 'var(--sem-success)' }}>B</div>
               <span className="text-[13px]" style={{ color: 'var(--fg-1)', fontFamily: 'Inter, sans-serif' }}>Senaei BAU</span>
             </div>
@@ -195,7 +195,7 @@ export function AllWorkCreateModal({ onClose, onCreated }: Props) {
               onChange={e => setSummary(e.target.value)}
               placeholder="What needs to be done?"
               className="w-full px-3 py-2 rounded-md border text-[13px] transition-colors duration-[80ms] focus:border-[#2563EB] focus:outline-none"
-              style={{ borderColor: 'var(--bd-default, rgba(255,255,255,0.08))', color: 'var(--fg-1)', fontFamily: 'Inter, sans-serif' }}
+              style={{ borderColor: 'var(--bd-default, #2E2E2E)', color: 'var(--fg-1)', fontFamily: 'Inter, sans-serif' }}
               autoFocus
             />
           </div>
@@ -209,13 +209,13 @@ export function AllWorkCreateModal({ onClose, onCreated }: Props) {
               placeholder="Add more details..."
               rows={3}
               className="w-full px-3 py-2 rounded-md border text-[13px] resize-none transition-colors duration-[80ms] focus:border-[#2563EB] focus:outline-none"
-              style={{ borderColor: 'var(--bd-default, rgba(255,255,255,0.08))', color: 'var(--fg-1)', fontFamily: 'Inter, sans-serif' }}
+              style={{ borderColor: 'var(--bd-default, #2E2E2E)', color: 'var(--fg-1)', fontFamily: 'Inter, sans-serif' }}
             />
           </div>
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between px-6 py-4" style={{ borderTop: '1px solid var(--bd-subtle, rgba(255,255,255,0.05))' }}>
+        <div className="flex items-center justify-between px-6 py-4" style={{ borderTop: '1px solid var(--bd-subtle, #292929)' }}>
           <label className="flex items-center gap-2 text-[12px] cursor-pointer" style={{ color: '#6b6e76', fontFamily: 'Inter, sans-serif' }}>
             <input
               type="checkbox"
@@ -228,7 +228,7 @@ export function AllWorkCreateModal({ onClose, onCreated }: Props) {
           <div className="flex items-center gap-2">
             <button
               onClick={onClose}
-              className="px-4 py-2 text-[13px] rounded-md hover:bg-[var(--hover, rgba(255,255,255,0.04))] transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[#2563EB]"
+              className="px-4 py-2 text-[13px] rounded-md hover:bg-[var(--hover, #1F1F1F)] transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[#2563EB]"
               style={{ color: '#6b6e76', fontFamily: 'Inter, sans-serif' }}
             >
               Cancel

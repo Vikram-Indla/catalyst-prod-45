@@ -25,7 +25,7 @@ export function WikiQuickRefDrawer({ open, onClose, qr }: Props) {
       }}>
         {/* Header */}
         <div style={{
-          padding: '20px 24px', borderBottom: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(0,0,0,0.06)',
+          padding: '20px 24px', borderBottom: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(0,0,0,0.06)',
           display: 'flex', alignItems: 'center', gap: 12,
         }}>
           <div style={{ width: 36, height: 50, borderRadius: 6, background: isDark ? 'rgba(37,99,235,0.12)' : 'var(--cp-blue-wash)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>

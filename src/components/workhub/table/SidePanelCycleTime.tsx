@@ -30,7 +30,7 @@ export default function SidePanelCycleTime({ workItemId }: Props) {
 
   if (isLoading) {
     return (
-      <div style={{ border: '1px solid var(--bd-default, rgba(255,255,255,0.08))', borderRadius: 6, padding: 16, marginBottom: 20 }}>
+      <div style={{ border: '1px solid var(--bd-default, #2E2E2E)', borderRadius: 6, padding: 16, marginBottom: 20 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 12 }}>
           <Clock size={16} color="#64748B" />
           <span style={{ fontSize: 11, fontWeight: 650, textTransform: 'uppercase', color: 'var(--fg-3)', letterSpacing: '0.06em' }}>Cycle Time</span>
@@ -60,7 +60,7 @@ export default function SidePanelCycleTime({ workItemId }: Props) {
 
   if (summary.length === 0 && timeline.length === 0) {
     return (
-      <div style={{ border: '1px solid var(--bd-default, rgba(255,255,255,0.08))', borderRadius: 6, padding: 16, marginBottom: 20 }}>
+      <div style={{ border: '1px solid var(--bd-default, #2E2E2E)', borderRadius: 6, padding: 16, marginBottom: 20 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
           <Clock size={16} color="#64748B" />
           <span style={{ fontSize: 11, fontWeight: 650, textTransform: 'uppercase', color: 'var(--fg-3)', letterSpacing: '0.06em' }}>Cycle Time</span>
@@ -73,7 +73,7 @@ export default function SidePanelCycleTime({ workItemId }: Props) {
   }
 
   return (
-    <div style={{ border: '1px solid var(--bd-default, rgba(255,255,255,0.08))', borderRadius: 6, padding: 16, marginBottom: 20 }}>
+    <div style={{ border: '1px solid var(--bd-default, #2E2E2E)', borderRadius: 6, padding: 16, marginBottom: 20 }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 12 }}>
         <Clock size={16} color="#64748B" />
@@ -89,7 +89,7 @@ export default function SidePanelCycleTime({ workItemId }: Props) {
 
           return (
             <div key={phase.key} style={{
-              flex: 1, background: 'var(--bg-app)', border: '1px solid var(--bd-subtle, rgba(255,255,255,0.05))',
+              flex: 1, background: 'var(--bg-app)', border: '1px solid var(--bd-subtle, #292929)',
               borderRadius: 6, padding: 12, display: 'flex', flexDirection: 'column', gap: 4,
             }}>
               <span style={{ fontSize: 11, fontWeight: 650, textTransform: 'uppercase', color: phase.labelColor, letterSpacing: '0.04em' }}>

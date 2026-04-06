@@ -73,7 +73,7 @@ export default function WikiAllArticlesPage() {
 
   const F = { sora: "'Sora', sans-serif", mono: "'JetBrains Mono', monospace" };
 
-  const borderColor = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)';
+  const borderColor = isDark ? '#2E2E2E' : 'rgba(0,0,0,0.06)';
 
   return (
     <div style={{ fontFamily: 'Inter, sans-serif', color: isDark ? '#EDEDED' : '#0F172A', background: isDark ? '#0A0A0A' : '#F8FAFC', minHeight: '100%', padding: '24px 40px 48px' }}>
@@ -96,7 +96,7 @@ export default function WikiAllArticlesPage() {
             ].map(a => (
               <button key={a.key} onClick={() => { setBulkAction(a.key); if (a.key === 'archive') setShowConfirm(true); }} style={{
                 fontSize: 10, fontWeight: 650, padding: '4px 10px', borderRadius: 4,
-                border: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(0,0,0,0.12)', background: isDark ? '#1A1A1A' : '#FFFFFF',
+                border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(0,0,0,0.12)', background: isDark ? '#1A1A1A' : '#FFFFFF',
                 color: a.key === 'archive' ? '#DC2626' : (isDark ? '#A1A1A1' : '#334155'), cursor: 'pointer',
                 display: 'flex', alignItems: 'center', gap: 4,
               }}>{a.icon} {a.label}</button>
@@ -116,7 +116,7 @@ export default function WikiAllArticlesPage() {
           </span>
           {bulkAction === 'verification' ? (
             <select value={bulkValue} onChange={e => setBulkValue(e.target.value)} style={{
-              fontSize: 12, padding: '4px 8px', borderRadius: 4, border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #CBD5E1',
+              fontSize: 12, padding: '4px 8px', borderRadius: 4, border: isDark ? '1px solid #2E2E2E' : '1px solid #CBD5E1',
               background: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#EDEDED' : '#0F172A',
             }}>
               <option value="">Select...</option>
@@ -126,7 +126,7 @@ export default function WikiAllArticlesPage() {
             </select>
           ) : (
             <input value={bulkValue} onChange={e => setBulkValue(e.target.value)} placeholder={bulkAction === 'domain' ? 'e.g. D1' : 'tag1, tag2'}
-              style={{ fontSize: 12, padding: '4px 8px', borderRadius: 4, border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #CBD5E1', width: 200, background: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#EDEDED' : '#0F172A' }} />
+              style={{ fontSize: 12, padding: '4px 8px', borderRadius: 4, border: isDark ? '1px solid #2E2E2E' : '1px solid #CBD5E1', width: 200, background: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#EDEDED' : '#0F172A' }} />
           )}
           <button onClick={() => setShowConfirm(true)} disabled={!bulkValue} style={{
             fontSize: 11, fontWeight: 650, padding: '4px 12px', borderRadius: 4, border: 'none',
@@ -151,7 +151,7 @@ export default function WikiAllArticlesPage() {
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
               <button onClick={() => setShowConfirm(false)} style={{
                 fontSize: 12, fontWeight: 600, padding: '8px 16px', borderRadius: 6,
-                border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0', background: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#A1A1A1' : '#334155', cursor: 'pointer',
+                border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0', background: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#A1A1A1' : '#334155', cursor: 'pointer',
               }}>Cancel</button>
               <button onClick={executeBulk} style={{
                 fontSize: 12, fontWeight: 600, padding: '8px 16px', borderRadius: 6, border: 'none',
@@ -193,7 +193,7 @@ export default function WikiAllArticlesPage() {
                 borderBottom: `0.75px solid ${borderColor}`, fontSize: 12,
                 background: isSelected ? 'rgba(37,99,235,0.06)' : 'transparent',
                 transition: 'background 80ms',
-              }} onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = isDark ? 'rgba(255,255,255,0.04)' : 'rgba(15,23,42,0.04)'; }}
+              }} onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = isDark ? '#1F1F1F' : 'rgba(15,23,42,0.04)'; }}
                  onMouseLeave={e => { if (!isSelected) e.currentTarget.style.background = 'transparent'; }}>
                 <span onClick={e => e.stopPropagation()}>
                   <input type="checkbox" checked={isSelected} onChange={() => toggleSelect(a.id)}

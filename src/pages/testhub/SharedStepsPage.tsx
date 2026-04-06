@@ -263,7 +263,7 @@ export default function SharedStepsPage() {
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: isDark ? '#0A0A0A' : '#F8FAFC' }}>
       <TestHubPageHeader title="Shared Steps Library" subtitle="Reusable test steps for consistency across test cases">
             <button onClick={handleRefresh} title="Refresh" style={{
-              width: 40, height: 40, padding: 0, border: `1.5px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 8,
+              width: 40, height: 40, padding: 0, border: `1.5px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 8,
               backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#A1A1A1' : '#64748B', cursor: 'pointer',
               display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
             }}>
@@ -285,12 +285,12 @@ export default function SharedStepsPage() {
       <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
         {/* Category Sidebar */}
         <div style={{
-          width: 260, backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', borderRight: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`,
+          width: 260, backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', borderRight: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`,
           display: 'flex', flexDirection: 'column', overflow: 'hidden',
         }}>
           {/* Sidebar Header */}
           <div style={{
-            padding: '16px 16px 12px', borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.05)' : '#F1F5F9'}`,
+            padding: '16px 16px 12px', borderBottom: `1px solid ${isDark ? '#292929' : '#F1F5F9'}`,
             display: 'flex', justifyContent: 'space-between', alignItems: 'center',
           }}>
             <h2 style={{
@@ -298,7 +298,7 @@ export default function SharedStepsPage() {
               letterSpacing: '0.05em', margin: 0, fontFamily: 'Inter, sans-serif',
             }}>Categories</h2>
             <button onClick={() => setIsCreateCategoryModalOpen(true)} title="Add category" style={{
-              width: 28, height: 28, padding: 0, border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 6,
+              width: 28, height: 28, padding: 0, border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 6,
               backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#A1A1A1' : '#64748B', cursor: 'pointer',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
@@ -319,7 +319,7 @@ export default function SharedStepsPage() {
               isDark={isDark}
             />
 
-            <div style={{ height: 1, backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : '#F1F5F9', margin: '8px 0' }} />
+            <div style={{ height: 1, backgroundColor: isDark ? '#292929' : '#F1F5F9', margin: '8px 0' }} />
 
             {categories.map(cat => (
               <CategorySidebarItem
@@ -336,7 +336,7 @@ export default function SharedStepsPage() {
           </div>
 
           {/* Sidebar Footer */}
-          <div style={{ padding: '12px 16px', borderTop: `1px solid ${isDark ? 'rgba(255,255,255,0.05)' : '#F1F5F9'}`, fontSize: 12, color: isDark ? '#878787' : '#94A3B8' }}>
+          <div style={{ padding: '12px 16px', borderTop: `1px solid ${isDark ? '#292929' : '#F1F5F9'}`, fontSize: 12, color: isDark ? '#878787' : '#94A3B8' }}>
             {categories.length} categories
           </div>
         </div>
@@ -345,7 +345,7 @@ export default function SharedStepsPage() {
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
           {/* Toolbar */}
           <div style={{
-            padding: '16px 24px', backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`,
+            padding: '16px 24px', backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', borderBottom: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`,
             display: 'flex', alignItems: 'center', gap: 12,
           }}>
             <div style={{ position: 'relative', flex: 1, maxWidth: 400 }}>
@@ -355,7 +355,7 @@ export default function SharedStepsPage() {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 style={{
                   width: '100%', height: 40, paddingLeft: 40, paddingRight: 12,
-                  border: `1.5px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 8, fontSize: 14,
+                  border: `1.5px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 8, fontSize: 14,
                   color: isDark ? '#EDEDED' : '#0F172A', backgroundColor: isDark ? '#0A0A0A' : '#FFFFFF', fontFamily: 'Inter, sans-serif',
                 }}
               />
@@ -367,7 +367,7 @@ export default function SharedStepsPage() {
                 onClick={(e) => { e.stopPropagation(); setIsFilterOpen(!isFilterOpen); setIsSortOpen(false); }}
                 style={{
                   height: 40, padding: '0 14px',
-                  border: `1.5px solid ${activeFilters.length > 0 ? '#2563EB' : (isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0')}`,
+                  border: `1.5px solid ${activeFilters.length > 0 ? '#2563EB' : (isDark ? '#2E2E2E' : '#E2E8F0')}`,
                   borderRadius: 8,
                   backgroundColor: activeFilters.length > 0 ? (isDark ? 'rgba(37,99,235,0.15)' : '#EFF6FF') : (isDark ? '#1A1A1A' : '#FFFFFF'),
                   color: activeFilters.length > 0 ? '#2563EB' : (isDark ? '#A1A1A1' : '#334155'),
@@ -394,12 +394,12 @@ export default function SharedStepsPage() {
                   onClick={(e) => e.stopPropagation()}
                   style={{
                     position: 'absolute', top: 'calc(100% + 4px)', left: 0, width: 280,
-                    backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 12,
+                    backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 12,
                     boxShadow: isDark ? '0 10px 40px rgba(0,0,0,0.4)' : '0 10px 40px rgba(0,0,0,0.12)', zIndex: 200, overflow: 'hidden',
                   }}
                 >
                   <div style={{
-                    padding: '12px 16px', borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.05)' : '#F1F5F9'}`,
+                    padding: '12px 16px', borderBottom: `1px solid ${isDark ? '#292929' : '#F1F5F9'}`,
                     display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                   }}>
                     <span style={{ fontSize: 12, fontWeight: 600, color: isDark ? '#A1A1A1' : '#64748B', fontFamily: 'Inter' }}>Filter by Category</span>
@@ -437,7 +437,7 @@ export default function SharedStepsPage() {
                       );
                     })}
                   </div>
-                  <div style={{ padding: '8px 12px', borderTop: `1px solid ${isDark ? 'rgba(255,255,255,0.05)' : '#F1F5F9'}` }}>
+                  <div style={{ padding: '8px 12px', borderTop: `1px solid ${isDark ? '#292929' : '#F1F5F9'}` }}>
                     <button onClick={() => setIsFilterOpen(false)} style={{
                       width: '100%', height: 50,
                       background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
@@ -456,7 +456,7 @@ export default function SharedStepsPage() {
               <button
                 onClick={(e) => { e.stopPropagation(); setIsSortOpen(!isSortOpen); setIsFilterOpen(false); }}
                 style={{
-                  height: 40, padding: '0 14px', border: `1.5px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 8,
+                  height: 40, padding: '0 14px', border: `1.5px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 8,
                   backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#A1A1A1' : '#334155', fontSize: 14, fontWeight: 500,
                   cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8, fontFamily: 'Inter',
                 }}
@@ -471,7 +471,7 @@ export default function SharedStepsPage() {
                   onClick={(e) => e.stopPropagation()}
                   style={{
                     position: 'absolute', top: 'calc(100% + 4px)', left: 0, width: 220,
-                    backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 12,
+                    backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 12,
                     boxShadow: isDark ? '0 10px 40px rgba(0,0,0,0.4)' : '0 10px 40px rgba(0,0,0,0.12)', zIndex: 200, padding: 8,
                   }}
                 >
@@ -516,7 +516,7 @@ export default function SharedStepsPage() {
             <div style={{ flex: 1 }} />
 
             {/* View Toggle */}
-            <div style={{ display: 'flex', border: `1.5px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 8, overflow: 'hidden' }}>
+            <div style={{ display: 'flex', border: `1.5px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 8, overflow: 'hidden' }}>
               <button onClick={() => setViewMode('list')} title="List view" style={{
                 width: 40, height: 38, padding: 0, border: 'none',
                 backgroundColor: viewMode === 'list' ? (isDark ? 'rgba(37,99,235,0.15)' : '#EFF6FF') : (isDark ? '#1A1A1A' : '#FFFFFF'),
@@ -527,7 +527,7 @@ export default function SharedStepsPage() {
               </button>
               <button onClick={() => setViewMode('card')} title="Card view" style={{
                 width: 40, height: 38, padding: 0, border: 'none',
-                borderLeft: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`,
+                borderLeft: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`,
                 backgroundColor: viewMode === 'card' ? (isDark ? 'rgba(37,99,235,0.15)' : '#EFF6FF') : (isDark ? '#1A1A1A' : '#FFFFFF'),
                 color: viewMode === 'card' ? '#2563EB' : (isDark ? '#A1A1A1' : '#64748B'), cursor: 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -546,7 +546,7 @@ export default function SharedStepsPage() {
             {loading ? (
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 300 }}>
                 <div style={{
-                  width: 40, height: 40, border: `3px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderTopColor: '#2563EB',
+                  width: 40, height: 40, border: `3px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderTopColor: '#2563EB',
                   borderRadius: '50%', animation: 'spin 1s linear infinite',
                 }} />
               </div>
@@ -564,10 +564,10 @@ export default function SharedStepsPage() {
                 </p>
               </div>
             ) : viewMode === 'list' ? (
-              <div style={{ backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 12, overflow: 'hidden' }}>
+              <div style={{ backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 12, overflow: 'hidden' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: 'Inter' }}>
                   <thead>
-                    <tr style={{ borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, backgroundColor: isDark ? '#1A1A1A' : '#F8FAFC' }}>
+                    <tr style={{ borderBottom: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, backgroundColor: isDark ? '#1A1A1A' : '#F8FAFC' }}>
                       <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: 11, fontWeight: 600, color: isDark ? '#878787' : '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Name</th>
                       <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: 11, fontWeight: 600, color: isDark ? '#878787' : '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Category</th>
                       <th style={{ padding: '12px 16px', textAlign: 'center', fontSize: 11, fontWeight: 600, color: isDark ? '#878787' : '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em', width: 80 }}>Variables</th>
@@ -583,7 +583,7 @@ export default function SharedStepsPage() {
                           key={step.id}
                           onClick={() => setViewStep(step)}
                           style={{
-                            borderBottom: index < sharedSteps.length - 1 ? `1px solid ${isDark ? 'rgba(255,255,255,0.05)' : '#F1F5F9'}` : 'none',
+                            borderBottom: index < sharedSteps.length - 1 ? `1px solid ${isDark ? '#292929' : '#F1F5F9'}` : 'none',
                             cursor: 'pointer', transition: 'background-color 0.15s',
                           }}
                           onMouseEnter={(e) => e.currentTarget.style.backgroundColor = isDark ? '#1A1A1A' : '#F8FAFC'}
@@ -779,11 +779,11 @@ function SharedStepCard({ step, onView, onEdit, onDuplicate, onDelete, isDark = 
   return (
     <div
       style={{
-        backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 12,
+        backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 12,
         padding: 20, cursor: 'pointer', transition: 'border-color 0.15s, box-shadow 0.15s',
       }}
-      onMouseEnter={(e) => { e.currentTarget.style.borderColor = isDark ? 'rgba(255,255,255,0.15)' : '#CBD5E1'; e.currentTarget.style.boxShadow = isDark ? '0 4px 12px rgba(0,0,0,0.2)' : '0 4px 12px rgba(0,0,0,0.08)'; }}
-      onMouseLeave={(e) => { e.currentTarget.style.borderColor = isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'; e.currentTarget.style.boxShadow = 'none'; }}
+      onMouseEnter={(e) => { e.currentTarget.style.borderColor = isDark ? '#454545' : '#CBD5E1'; e.currentTarget.style.boxShadow = isDark ? '0 4px 12px rgba(0,0,0,0.2)' : '0 4px 12px rgba(0,0,0,0.08)'; }}
+      onMouseLeave={(e) => { e.currentTarget.style.borderColor = isDark ? '#2E2E2E' : '#E2E8F0'; e.currentTarget.style.boxShadow = 'none'; }}
       onClick={onView}
     >
       {/* Top row: category badge + usage + kebab */}
@@ -823,14 +823,14 @@ function SharedStepCard({ step, onView, onEdit, onDuplicate, onDelete, isDark = 
               onClick={(e) => e.stopPropagation()}
               style={{
                 position: 'absolute', right: 0, top: 36, width: 160, backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF',
-                borderRadius: 8, border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, boxShadow: isDark ? '0 8px 24px rgba(0,0,0,0.4)' : '0 8px 24px rgba(0,0,0,0.12)',
+                borderRadius: 8, border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, boxShadow: isDark ? '0 8px 24px rgba(0,0,0,0.4)' : '0 8px 24px rgba(0,0,0,0.12)',
                 padding: 4, zIndex: 50,
               }}
             >
               <MenuButton icon={<Eye size={14} />} label="View" onClick={() => { onView(); setMenuOpen(false); }} />
               <MenuButton icon={<Pencil size={14} />} label="Edit" onClick={() => { onEdit(); setMenuOpen(false); }} />
               <MenuButton icon={<Copy size={14} />} label="Duplicate" onClick={() => { onDuplicate(); setMenuOpen(false); }} />
-              <div style={{ height: 1, backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : '#F1F5F9', margin: '4px 0' }} />
+              <div style={{ height: 1, backgroundColor: isDark ? '#292929' : '#F1F5F9', margin: '4px 0' }} />
               <MenuButton icon={<Trash2 size={14} />} label="Delete" onClick={() => { onDelete(); setMenuOpen(false); }} danger />
             </div>
           )}
@@ -868,7 +868,7 @@ function SharedStepCard({ step, onView, onEdit, onDuplicate, onDelete, isDark = 
 
       {/* Variables */}
       {variables.length > 0 && (
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, paddingTop: 12, borderTop: `1px solid ${isDark ? 'rgba(255,255,255,0.05)' : '#F1F5F9'}` }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, paddingTop: 12, borderTop: `1px solid ${isDark ? '#292929' : '#F1F5F9'}` }}>
           {variables.map((v, i) => (
             <span key={i} style={{
               padding: '2px 8px', backgroundColor: isDark ? '#1A1A1A' : '#F1F5F9', borderRadius: 4,

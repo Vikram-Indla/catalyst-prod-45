@@ -38,13 +38,13 @@ export default function CommitteeQueuePage() {
         </div>
 
         {/* Table */}
-        <div style={{ border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(15,23,42,0.12)', borderRadius: 6, overflow: 'hidden' }}>
+        <div style={{ border: isDark ? '1px solid #2E2E2E' : '1px solid rgba(15,23,42,0.12)', borderRadius: 6, overflow: 'hidden' }}>
           {/* Header */}
           <div className="grid items-center" style={{
             gridTemplateColumns: '120px 1fr 70px 100px 80px 160px 80px 100px',
             backgroundColor: isDark ? '#1A1A1A' : '#F1F5F9',
             height: 50,
-            borderBottom: isDark ? '0.75px solid rgba(255,255,255,0.05)' : '0.75px solid rgba(15,23,42,0.06)',
+            borderBottom: isDark ? '0.75px solid #292929' : '0.75px solid rgba(15,23,42,0.06)',
           }}>
             {['KEY', 'INCIDENT', 'SEV', 'STATUS', 'AGE', 'APPROVAL', 'TYPE', 'ACTIONS'].map(h => (
               <div key={h} className="px-3" style={{
@@ -75,7 +75,7 @@ export default function CommitteeQueuePage() {
                 style={{
                   gridTemplateColumns: '120px 1fr 70px 100px 80px 160px 80px 100px',
                   height: 50,
-                  borderBottom: isDark ? '0.75px solid rgba(255,255,255,0.05)' : '0.75px solid rgba(15,23,42,0.06)',
+                  borderBottom: isDark ? '0.75px solid #292929' : '0.75px solid rgba(15,23,42,0.06)',
                   backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF',
                 }}
                 onMouseEnter={e => (e.currentTarget.style.backgroundColor = isDark ? '#1A1A1A' : 'rgba(15,23,42,0.04)')}

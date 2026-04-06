@@ -614,7 +614,7 @@ export function TestRepositoryPage() {
                 height: 40,
                 padding: 0,
                 backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF',
-                border: isDark ? '1.5px solid rgba(255,255,255,0.08)' : '1.5px solid #E2E8F0',
+                border: isDark ? '1.5px solid #2E2E2E' : '1.5px solid #E2E8F0',
                 borderRadius: 8,
                 cursor: 'pointer',
                 display: 'flex',
@@ -624,11 +624,11 @@ export function TestRepositoryPage() {
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.backgroundColor = isDark ? '#1A1A1A' : '#F8FAFC';
-                e.currentTarget.style.borderColor = isDark ? 'rgba(255,255,255,0.15)' : '#CBD5E1';
+                e.currentTarget.style.borderColor = isDark ? '#454545' : '#CBD5E1';
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.backgroundColor = isDark ? '#1A1A1A' : '#FFFFFF';
-                e.currentTarget.style.borderColor = isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0';
+                e.currentTarget.style.borderColor = isDark ? '#2E2E2E' : '#E2E8F0';
               }}
             >
               <RefreshCw style={{ width: 16, height: 16, color: '#64748B' }} />
@@ -639,7 +639,7 @@ export function TestRepositoryPage() {
               onClick={() => setIsImportModalOpen(true)}
               style={{
                 height: 40, padding: '0 16px', backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF',
-                border: isDark ? '1.5px solid rgba(255,255,255,0.08)' : '1.5px solid #E2E8F0', borderRadius: 8, fontFamily: 'Inter, sans-serif',
+                border: isDark ? '1.5px solid #2E2E2E' : '1.5px solid #E2E8F0', borderRadius: 8, fontFamily: 'Inter, sans-serif',
                 fontSize: 14, fontWeight: 500, color: isDark ? '#A1A1A1' : '#334155', cursor: 'pointer',
                 display: 'flex', alignItems: 'center', gap: 8, transition: 'all 0.15s',
               }}
@@ -653,7 +653,7 @@ export function TestRepositoryPage() {
               onClick={() => setIsExportModalOpen(true)}
               style={{
                 height: 40, padding: '0 16px', backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF',
-                border: isDark ? '1.5px solid rgba(255,255,255,0.08)' : '1.5px solid #E2E8F0', borderRadius: 8, fontFamily: 'Inter, sans-serif',
+                border: isDark ? '1.5px solid #2E2E2E' : '1.5px solid #E2E8F0', borderRadius: 8, fontFamily: 'Inter, sans-serif',
                 fontSize: 14, fontWeight: 500, color: isDark ? '#A1A1A1' : '#334155', cursor: 'pointer',
                 display: 'flex', alignItems: 'center', gap: 8, transition: 'all 0.15s',
               }}
@@ -773,7 +773,7 @@ export function TestRepositoryPage() {
                       height: 32,
                       padding: '8px 12px',
                       backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF',
-                      border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0',
+                      border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0',
                       borderRadius: 6,
                       fontFamily: 'Inter, sans-serif',
                       fontSize: 13,
@@ -799,7 +799,7 @@ export function TestRepositoryPage() {
                       height: 32,
                       padding: '8px 12px',
                       backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF',
-                      border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0',
+                      border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0',
                       borderRadius: 6,
                       fontFamily: 'Inter, sans-serif',
                       fontSize: 13,
@@ -820,7 +820,7 @@ export function TestRepositoryPage() {
                       height: 32,
                       padding: '8px 12px',
                       backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF',
-                      border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0',
+                      border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0',
                       borderRadius: 6,
                       fontFamily: 'Inter, sans-serif',
                       fontSize: 13,
@@ -837,7 +837,7 @@ export function TestRepositoryPage() {
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.backgroundColor = isDark ? '#1A1A1A' : '#FFFFFF';
-                      e.currentTarget.style.borderColor = isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0';
+                      e.currentTarget.style.borderColor = isDark ? '#2E2E2E' : '#E2E8F0';
                     }}
                   >
                     <Trash2 style={{ width: 14, height: 14 }} />

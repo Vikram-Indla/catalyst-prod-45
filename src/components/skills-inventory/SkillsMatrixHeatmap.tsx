@@ -197,7 +197,7 @@ export const SkillsMatrixHeatmap: React.FC = () => {
             transform: 'translate(-50%, -100%)',
           }}
         >
-          <div className="bg-white dark:bg-[#1A1A1A] border border-neutral-200 dark:border-[rgba(255,255,255,0.08)] rounded-xl px-4 py-3 shadow-xl min-w-[180px]">
+          <div className="bg-white dark:bg-[#1A1A1A] border border-neutral-200 dark:border-[#2E2E2E] rounded-xl px-4 py-3 shadow-xl min-w-[180px]">
             <p className="font-semibold text-brand-dark text-sm">
               {tooltip.memberName}
             </p>

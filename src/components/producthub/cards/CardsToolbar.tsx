@@ -54,7 +54,7 @@ export const CardsToolbar: React.FC<CardsToolbarProps> = ({
   const activeSortLabel = SORT_OPTIONS.find(o => o.value === sortBy)?.label ?? 'Score';
 
   return (
-    <div className="flex items-center justify-between px-5 py-2 border-b border-zinc-200 dark:border-[rgba(255,255,255,0.08)] bg-white dark:bg-transparent">
+    <div className="flex items-center justify-between px-5 py-2 border-b border-zinc-200 dark:border-[#2E2E2E] bg-white dark:bg-transparent">
       {/* Left */}
       <div className="flex items-center gap-2">
         {/* Group dropdown */}

@@ -81,7 +81,7 @@ export function EditSkillModal({ open, onClose, skill, onDelete, onSave }: EditS
           {/* Team Member - Read Only */}
           <div className="space-y-2">
             <Label className="text-foreground">Team Member</Label>
-            <div className="flex items-center gap-3 px-3 py-2.5 bg-white dark:bg-[#1A1A1A] rounded-md border border-border dark:border-[rgba(255,255,255,0.08)]">
+            <div className="flex items-center gap-3 px-3 py-2.5 bg-white dark:bg-[#1A1A1A] rounded-md border border-border dark:border-[#2E2E2E]">
               <div className="w-7 h-7 rounded bg-brand-primary flex items-center justify-center text-[10px] text-white font-medium">
                 {getInitials(skill.name)}
               </div>
@@ -98,7 +98,7 @@ export function EditSkillModal({ open, onClose, skill, onDelete, onSave }: EditS
             <Input
               value={formData.skillName}
               onChange={(e) => setFormData({ ...formData, skillName: e.target.value })}
-              className="bg-white dark:bg-[#1A1A1A] border-border dark:border-[rgba(255,255,255,0.08)]"
+              className="bg-white dark:bg-[#1A1A1A] border-border dark:border-[#2E2E2E]"
             />
           </div>
 
@@ -139,7 +139,7 @@ export function EditSkillModal({ open, onClose, skill, onDelete, onSave }: EditS
               onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
               rows={3}
               placeholder="Additional notes..."
-              className="bg-white dark:bg-[#1A1A1A] border-border dark:border-[rgba(255,255,255,0.08)] resize-none"
+              className="bg-white dark:bg-[#1A1A1A] border-border dark:border-[#2E2E2E] resize-none"
             />
           </div>
 

@@ -95,7 +95,7 @@ export function AddSkillModal({ open, onClose, teamMembers, onSave }: AddSkillMo
               value={formData.teamMemberId}
               onValueChange={(value) => setFormData({ ...formData, teamMemberId: value })}
             >
-              <SelectTrigger className="bg-white dark:bg-[#1A1A1A] border-border dark:border-[rgba(255,255,255,0.08)]">
+              <SelectTrigger className="bg-white dark:bg-[#1A1A1A] border-border dark:border-[#2E2E2E]">
                 <SelectValue placeholder="Select team member" />
               </SelectTrigger>
               <SelectContent className="bg-white dark:bg-[#1A1A1A]">
@@ -121,7 +121,7 @@ export function AddSkillModal({ open, onClose, teamMembers, onSave }: AddSkillMo
               value={formData.skillName}
               onChange={(e) => setFormData({ ...formData, skillName: e.target.value })}
               placeholder="e.g., React, Python, AWS..."
-              className="bg-white dark:bg-[#1A1A1A] border-border dark:border-[rgba(255,255,255,0.08)]"
+              className="bg-white dark:bg-[#1A1A1A] border-border dark:border-[#2E2E2E]"
             />
           </div>
 
@@ -162,7 +162,7 @@ export function AddSkillModal({ open, onClose, teamMembers, onSave }: AddSkillMo
               onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
               rows={3}
               placeholder="Additional notes..."
-              className="bg-white dark:bg-[#1A1A1A] border-border dark:border-[rgba(255,255,255,0.08)] resize-none"
+              className="bg-white dark:bg-[#1A1A1A] border-border dark:border-[#2E2E2E] resize-none"
             />
           </div>
 

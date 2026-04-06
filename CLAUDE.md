@@ -61,17 +61,25 @@ Home | StrategyHub | ProductHub | ProjectHub | ReleaseHub | TestHub | IncidentHu
 
 ## 3. ECLIPSE DARK MODE PIPELINE
 
-### NOCTURNE Warm Charcoal Theme — Locked Values
+### NOCTURNE Geist — Canonical Dark Tokens (Apr 2026)
 
 ```
-Page background:    #1A1714   (rgb: 26, 23, 20)
-Floating surfaces:  #232019   (elevated cards, panels)
-Elevated +2:        #2C2823   (modals, dropdowns)
-Border primary:     rgba(255,255,255,0.08)
-Border subtle:      rgba(255,255,255,0.05)
-Text primary:       #F5F3F0
-Text secondary:     #A09890
-Text muted:         #6B6560
+Page background:    #0A0A0A
+Card / surface:     #1A1A1A
+Hover surface:      #1F1F1F   (solid hex — NEVER rgba)
+Active / pressed:   #292929
+Sidebar bg:         #111111
+Modal / overlay:    #000000
+Border default:     #2E2E2E   (solid hex — NEVER rgba)
+Border subtle:      #292929
+Border medium:      #454545
+Text primary:       #EDEDED
+Text secondary:     #A1A1A1
+Text muted:         #878787
+Text tertiary:      #7D7D7D
+Placeholder:        #878787
+Shadow sm:          none
+Shadow md:          0 2px 8px rgba(0,0,0,0.4)
 ```
 
 ### ECLIPSE Lessons — ENFORCED IN EVERY FIX
@@ -81,7 +89,7 @@ These are hard-won lessons from the ECLIPSE pipeline. Violating them causes regr
 **L27 — CRITICAL: Lovable/Tailwind Dark Mode**
 > Lovable ignores CSS custom property (`var()`) declarations inside `.dark {}` blocks.
 > **Rule:** Use Tailwind `dark:` utility classes directly on elements. Never rely on CSS vars for dark mode overrides in Tailwind context.
-> `dark:bg-[#1A1714]` NOT `background: var(--bg-nocturne)`
+> `dark:bg-[#0A0A0A]` NOT `background: var(--bg-nocturne)`
 
 **L32 — Cascade Audit Mandatory**
 > Before touching `index.css`, run: `grep -r ".dark .bg-white" src/`
@@ -117,8 +125,8 @@ These are hard-won lessons from the ECLIPSE pipeline. Violating them causes regr
 **Primary violation type:** Inline `style={{ background: '#...' }}` props on JSX elements override Tailwind `dark:` classes. Tailwind dark cannot override inline styles.
 
 **Fix strategy:** Option C Hybrid
-1. Replace inline `style={{ background }}` with conditional className: `className={isDark ? 'bg-[#1A1714]' : 'bg-white'}`
-2. Add scoped CSS override as fallback: `.dark .component-name { background: #1A1714 !important }`
+1. Replace inline `style={{ background }}` with conditional className: `className={isDark ? 'bg-[#0A0A0A]' : 'bg-white'}`
+2. Add scoped CSS override as fallback: `.dark .component-name { background: #0A0A0A !important }`
 3. Consolidate all `.dark` blocks — never allow duplicates
 
 ---
@@ -540,18 +548,20 @@ There is **ONE** `.dark` block. Never add a second. Always consolidate.
 
 ---
 
-## 18. QUICK REFERENCE — NOCTURNE HEX PALETTE
+## 18. QUICK REFERENCE — NOCTURNE GEIST HEX PALETTE
 
 ```
-#1A1714  page background     (rgb 26,23,20)
-#232019  elevated surface    (rgb 35,32,25)
-#2C2823  elevated +2         (rgb 44,40,35)
-#3A3530  border strong
-rgba(255,255,255,0.08)  border default (dark)
-rgba(255,255,255,0.05)  border subtle (dark)
-#F5F3F0  text primary (dark)
-#A09890  text secondary (dark)
-#6B6560  text muted (dark)
+#0A0A0A  page background
+#1A1A1A  card / surface
+#1F1F1F  hover surface
+#292929  active / pressed / border subtle
+#111111  sidebar bg / table header bg
+#2E2E2E  border default
+#454545  border medium
+#EDEDED  text primary (dark)
+#A1A1A1  text secondary (dark)
+#878787  text muted (dark)
+#7D7D7D  text tertiary (dark)
 ```
 
 ---

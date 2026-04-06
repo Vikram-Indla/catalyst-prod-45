@@ -72,7 +72,7 @@ export default function IncidentAnalyticsPage() {
             { label: 'Total Incidents', value: stats.total, accent: '#0F172A' },
             { label: 'MTTR', value: '\u2014', accent: '#16A34A' },
           ].map(s => (
-            <div key={s.label} className="p-3" style={{ backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(15,23,42,0.12)', borderRadius: 6 }}>
+            <div key={s.label} className="p-3" style={{ backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', border: isDark ? '1px solid #2E2E2E' : '1px solid rgba(15,23,42,0.12)', borderRadius: 6 }}>
               <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: '#64748B', marginBottom: 4 }}>{s.label}</div>
               <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 22, fontWeight: 700, color: s.accent }}>{s.value}</div>
             </div>

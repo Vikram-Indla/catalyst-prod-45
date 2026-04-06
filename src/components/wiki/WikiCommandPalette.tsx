@@ -106,14 +106,14 @@ export function WikiCommandPalette({ open, onClose }: Props) {
         width: 560, maxHeight: 420, background: isDark ? '#1A1A1A' : 'var(--cp-bg-elevated)',
         borderRadius: 12, boxShadow: isDark ? '0 16px 48px rgba(0,0,0,0.4)' : 'var(--cp-shadow-overlay)',
         display: 'flex', flexDirection: 'column', overflow: 'hidden',
-        border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid var(--cp-border-default)',
+        border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border-default)',
         transform: 'translateY(0)', opacity: 1,
         transition: 'transform 150ms ease, opacity 150ms ease',
       }}>
         {/* Search input */}
         <div style={{
           display: 'flex', alignItems: 'center', gap: 10,
-          padding: '12px 16px', borderBottom: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid var(--cp-border-default)',
+          padding: '12px 16px', borderBottom: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border-default)',
         }}>
           <Search size={16} style={{ color: isDark ? '#878787' : 'var(--cp-text-muted)', flexShrink: 0 }} />
           <input
@@ -160,12 +160,12 @@ export function WikiCommandPalette({ open, onClose }: Props) {
         </div>
         {/* Footer */}
         <div style={{
-          padding: '8px 16px', borderTop: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid var(--cp-border-default)',
+          padding: '8px 16px', borderTop: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border-default)',
           display: 'flex', gap: 16, fontSize: 11, color: isDark ? '#878787' : 'var(--cp-text-muted)',
         }}>
-          <span><kbd style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 10, padding: '1px 4px', borderRadius: 4, border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid var(--cp-border-default)', background: isDark ? '#0A0A0A' : 'var(--cp-bg-sunken)' }}>↑↓</kbd> Navigate</span>
-          <span><kbd style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 10, padding: '1px 4px', borderRadius: 4, border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid var(--cp-border-default)', background: isDark ? '#0A0A0A' : 'var(--cp-bg-sunken)' }}>↵</kbd> Open</span>
-          <span><kbd style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 10, padding: '1px 4px', borderRadius: 4, border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid var(--cp-border-default)', background: isDark ? '#0A0A0A' : 'var(--cp-bg-sunken)' }}>ESC</kbd> Close</span>
+          <span><kbd style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 10, padding: '1px 4px', borderRadius: 4, border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border-default)', background: isDark ? '#0A0A0A' : 'var(--cp-bg-sunken)' }}>↑↓</kbd> Navigate</span>
+          <span><kbd style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 10, padding: '1px 4px', borderRadius: 4, border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border-default)', background: isDark ? '#0A0A0A' : 'var(--cp-bg-sunken)' }}>↵</kbd> Open</span>
+          <span><kbd style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 10, padding: '1px 4px', borderRadius: 4, border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border-default)', background: isDark ? '#0A0A0A' : 'var(--cp-bg-sunken)' }}>ESC</kbd> Close</span>
         </div>
       </div>
     </div>

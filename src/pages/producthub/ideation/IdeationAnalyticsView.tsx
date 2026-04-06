@@ -120,7 +120,7 @@ export default function IdeationAnalyticsView({ ideas }: Props) {
     boxShadow: isDark ? 'none' : undefined,
   };
 
-  const barTrack = isDark ? 'rgba(255,255,255,0.06)' : '#F4F4F5';
+  const barTrack = isDark ? '#292929' : '#F4F4F5';
 
   // ── Metric cards ──
   const METRICS = [
@@ -218,7 +218,7 @@ export default function IdeationAnalyticsView({ ideas }: Props) {
               <span style={{ fontSize: '13px', fontWeight: 600, color: dk.t2, width: '100px', flexShrink: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.name}</span>
               <span style={{
                 fontFamily: MONO, fontSize: '11px', fontWeight: 700, color: dk.t3,
-                background: isDark ? 'rgba(255,255,255,0.06)' : '#F8FAFC', border: `1px solid ${dk.border}`, borderRadius: '4px', padding: '1px 6px',
+                background: isDark ? '#292929' : '#F8FAFC', border: `1px solid ${dk.border}`, borderRadius: '4px', padding: '1px 6px',
               }}>{c.count}</span>
               <div style={{ flex: 1, height: '6px', background: barTrack, borderRadius: '4px', overflow: 'hidden' }}>
                 <div style={{ width: `${c.pct}%`, height: '100%', background: '#2563EB', borderRadius: '4px' }} />

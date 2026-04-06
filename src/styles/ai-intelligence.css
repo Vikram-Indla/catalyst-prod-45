@@ -794,7 +794,7 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.4) 50%, transparent 100%);
+  background: linear-gradient(90deg, transparent 0%, #454545 50%, transparent 100%);
   animation: raiShimmer 4s infinite;
   pointer-events: none;
 }
@@ -964,14 +964,14 @@
    ═══════════════════════════════════════════════════════════ */
 [data-theme="dark"] [data-module="ai-intelligence"] {
   --rai-ink: var(--fg-1, #EDEDED);
-  --rai-ink-secondary: rgba(255,255,255,0.85);
+  --rai-ink-secondary: #EDEDED;
   --rai-ink-tertiary: var(--fg-3, #878787);
   --rai-ink-muted: var(--fg-4, rgba(237,237,237,0.30));
   --rai-surface: #0A0A0A;
   --rai-surface-secondary: #1A1A1A;
-  --rai-surface-tertiary: rgba(255,255,255,0.06);
-  --rai-border: rgba(255,255,255,0.10);
-  --rai-border-strong: rgba(255,255,255,0.18);
+  --rai-surface-tertiary: #292929;
+  --rai-border: #2E2E2E;
+  --rai-border-strong: #454545;
   --rai-primary: #60A5FA;
   --rai-primary-hover: #3B82F6;
   --rai-primary-bg: rgba(59,130,246,0.10);

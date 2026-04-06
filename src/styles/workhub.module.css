@@ -136,8 +136,8 @@
   --wh-bg: #0A0A0A;
   --wh-surface: #1A1A1A;
   --wh-surface-elevated: #1A1A1A;
-  --wh-border: rgba(255,255,255,0.08);
-  --wh-border-light: rgba(255,255,255,0.05);
+  --wh-border: #2E2E2E;
+  --wh-border-light: #292929;
   --wh-text-primary: #EDEDED;
   --wh-text-secondary: #A1A1A1;
   --wh-text-tertiary: #878787;

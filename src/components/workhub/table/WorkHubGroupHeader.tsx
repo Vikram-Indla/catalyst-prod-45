@@ -21,7 +21,7 @@ export default function WorkHubGroupHeader({ label, count, collapsed, onToggle, 
       onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onToggle(); } }}
       style={{
         display: 'flex', alignItems: 'center', height: 32, padding: '8px 12px', gap: 8,
-        borderBottom: '0.75px solid var(--bd-subtle, rgba(255,255,255,0.05))', cursor: 'pointer',
+        borderBottom: '0.75px solid var(--bd-subtle, #292929)', cursor: 'pointer',
         background: 'transparent', userSelect: 'none', outline: 'none',
       }}
       onClick={onToggle}

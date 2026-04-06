@@ -251,7 +251,7 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
             <div style={{ padding: '0 20px 16px' }}>
               <div style={{ background: isDark ? 'rgba(22,163,74,0.08)' : '#F0FDF4', border: `0.75px solid ${isDark ? 'rgba(22,163,74,0.20)' : '#BBF7D0'}`, borderRadius: '6px', padding: '14px' }}>
                 <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: isDark ? '#86EFAC' : '#11853D', marginBottom: '8px' }}>CONVERTED TO INITIATIVE</div>
-                <div style={{ background: isDark ? 'rgba(255,255,255,0.03)' : '#FFFFFF', border: `0.75px solid ${isDark ? 'rgba(22,163,74,0.20)' : '#BBF7D0'}`, borderRadius: '4px', padding: '10px 12px' }}>
+                <div style={{ background: isDark ? '#1F1F1F' : '#FFFFFF', border: `0.75px solid ${isDark ? 'rgba(22,163,74,0.20)' : '#BBF7D0'}`, borderRadius: '4px', padding: '10px 12px' }}>
                   <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '13px', fontWeight: 700, color: '#11853D' }}>
                     {rawIdea.linked_initiative_key}
                   </span>
@@ -374,7 +374,7 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
             {canEdit ? (
               <textarea value={localDescription} onChange={(e) => setLocalDescription(e.target.value)} rows={4}
                 placeholder="Add a description..."
-                style={{ width: '100%', borderRadius: '4px', border: `0.75px solid ${isDark ? 'rgba(255,255,255,0.12)' : 'rgba(15,23,42,0.14)'}`, padding: '8px 12px', fontSize: '13px', color: dk.t1, resize: 'vertical', fontFamily: "'Inter', sans-serif", outline: 'none', background: isDark ? 'transparent' : '#FFFFFF' }}
+                style={{ width: '100%', borderRadius: '4px', border: `0.75px solid ${isDark ? '#454545' : 'rgba(15,23,42,0.14)'}`, padding: '8px 12px', fontSize: '13px', color: dk.t1, resize: 'vertical', fontFamily: "'Inter', sans-serif", outline: 'none', background: isDark ? 'transparent' : '#FFFFFF' }}
               />
             ) : (
               <p style={{ fontSize: '13px', color: rawIdea.description ? dk.t1 : dk.t3, lineHeight: 1.6, margin: 0 }}>
@@ -402,7 +402,7 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
               <div key={dim.letter} style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '14px' }}>
                 <div style={{
                   width: '28px', height: '28px', borderRadius: '50%',
-                  backgroundColor: isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0', color: dk.t2,
+                  backgroundColor: isDark ? '#2E2E2E' : '#E2E8F0', color: dk.t2,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   fontSize: '12px', fontWeight: 700, flexShrink: 0,
                 }}>{dim.letter}</div>
@@ -419,7 +419,7 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
                       className="w-full"
                     />
                   ) : (
-                    <div style={{ height: '4px', borderRadius: '4px', backgroundColor: isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0', overflow: 'hidden' }}>
+                    <div style={{ height: '4px', borderRadius: '4px', backgroundColor: isDark ? '#2E2E2E' : '#E2E8F0', overflow: 'hidden' }}>
                       <div style={{
                         height: '100%', width: `${(dim.value / 5) * 100}%`,
                         backgroundColor: dim.value > 0 ? '#2563EB' : 'transparent',

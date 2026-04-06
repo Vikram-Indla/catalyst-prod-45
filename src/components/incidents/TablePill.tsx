@@ -40,8 +40,8 @@ const catalyst = {
   
   // Neutral (using CSS variables)
   muted: 'var(--fg-3, #8a8a8a)',
-  mutedBg: 'var(--neutral-bg, rgba(255,255,255,0.06))',
-  mutedBorder: 'var(--neutral-bd, rgba(255,255,255,0.10))',
+  mutedBg: 'var(--neutral-bg, #292929)',
+  mutedBorder: 'var(--neutral-bd, #2E2E2E)',
   
   // Text (using CSS variables)
   text1: 'var(--fg-1, #f5f5f5)',

@@ -83,7 +83,7 @@ function saveSort(projectKey: string, viewMode: string, sort: SortConfig | null)
 function SkeletonRow({ columns, idx }: { columns: ColumnConfig[]; idx: number }) {
   const vis = columns.filter(c => c.visible);
   return (
-    <div style={{ display: 'flex', alignItems: 'center', height: 50, borderBottom: '0.75px solid var(--bd-subtle, rgba(255,255,255,0.05))' }} aria-hidden>
+    <div style={{ display: 'flex', alignItems: 'center', height: 50, borderBottom: '0.75px solid var(--bd-subtle, #292929)' }} aria-hidden>
       <div style={{ width: 44, minWidth: 44, display: 'flex', justifyContent: 'center', flexShrink: 0 }}>
         <div className="wh-skeleton" style={{ width: 16, height: 16, borderRadius: 3 }} />
       </div>
@@ -392,7 +392,7 @@ export default function WorkHubTable({ projectKey, projectId, defaultType = 'Sto
               </div>
             )}
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
-              <button onClick={() => setDeleteConfirm(null)} style={{ padding: '8px 16px', fontSize: 13, fontWeight: 500, color: 'var(--fg-2)', background: 'transparent', border: '1px solid var(--bd-default, rgba(255,255,255,0.08))', borderRadius: 6, cursor: 'pointer' }}>Cancel</button>
+              <button onClick={() => setDeleteConfirm(null)} style={{ padding: '8px 16px', fontSize: 13, fontWeight: 500, color: 'var(--fg-2)', background: 'transparent', border: '1px solid var(--bd-default, #2E2E2E)', borderRadius: 6, cursor: 'pointer' }}>Cancel</button>
               <button onClick={confirmDelete} style={{ padding: '8px 16px', fontSize: 13, fontWeight: 600, color: 'var(--bg-app)', background: 'var(--sem-danger)', border: 'none', borderRadius: 6, cursor: 'pointer' }}>
                 {deleteConfirm.ids.length === 1 ? 'Delete' : `Delete ${deleteConfirm.ids.length} items`}
               </button>

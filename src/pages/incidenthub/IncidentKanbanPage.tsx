@@ -44,12 +44,12 @@ export default function IncidentKanbanPage() {
   const surfaceBg = isDark ? '#1A1A1A' : '#FFFFFF';
   const laneBg = isDark ? '#1A1A1A' : '#F1F5F9';
   const cardBg = isDark ? '#1A1A1A' : '#FFFFFF';
-  const borderColor = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.12)';
+  const borderColor = isDark ? '#2E2E2E' : 'rgba(15,23,42,0.12)';
   const textPrimary = isDark ? '#EDEDED' : '#0F172A';
   const textSecondary = isDark ? '#A1A1A1' : '#64748B';
   const textMuted = isDark ? '#878787' : '#94A3B8';
   const countBg = isDark ? '#1A1A1A' : '#F1F5F9';
-  const avatarBg = isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0';
+  const avatarBg = isDark ? '#2E2E2E' : '#E2E8F0';
   const avatarText = isDark ? '#A1A1A1' : '#475569';
 
   if (isLoading) {

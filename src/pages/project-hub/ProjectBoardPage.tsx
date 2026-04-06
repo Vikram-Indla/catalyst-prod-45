@@ -161,8 +161,8 @@ export default function ProjectBoardPage() {
             className="flex items-center gap-3"
             style={{
               background: isDark ? '#1A1A1A' : '#FFFFFF', borderRadius: 12, padding: '12px 16px',
-              border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0',
-              borderLeft: s.accent ? `3px solid ${s.accent}` : (isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0'),
+              border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0',
+              borderLeft: s.accent ? `3px solid ${s.accent}` : (isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0'),
             }}
           >
             <div
@@ -232,7 +232,7 @@ export default function ProjectBoardPage() {
               paddingLeft: 30, paddingRight: 10,
               height: 32, width: 200,
               fontSize: 12, fontWeight: 500,
-              border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0',
+              border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0',
               background: isDark ? '#1A1A1A' : '#fff', color: isDark ? '#EDEDED' : '#0F172A',
               fontFamily: "'Inter', sans-serif",
             }}
@@ -247,7 +247,7 @@ export default function ProjectBoardPage() {
             padding: '6px 12px', height: 32,
             fontSize: 12, fontWeight: 500,
             borderRadius: 6, cursor: 'pointer',
-            border: hasActiveFilters ? '1px solid #BFDBFE' : (isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0'),
+            border: hasActiveFilters ? '1px solid #BFDBFE' : (isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0'),
             background: hasActiveFilters ? (isDark ? 'rgba(37,99,235,0.15)' : '#EFF6FF') : (isDark ? '#1A1A1A' : '#fff'),
             color: hasActiveFilters ? '#2563EB' : (isDark ? '#A1A1A1' : '#64748B'),
             fontFamily: "'Inter', sans-serif",
@@ -277,7 +277,7 @@ export default function ProjectBoardPage() {
               padding: '6px 12px', height: 32,
               fontSize: 12, fontWeight: 500,
               borderRadius: 6, cursor: 'pointer',
-              border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0',
+              border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0',
               background: isDark ? '#1A1A1A' : '#fff', color: isDark ? '#A1A1A1' : '#64748B',
               fontFamily: "'Inter', sans-serif",
             }}
@@ -292,7 +292,7 @@ export default function ProjectBoardPage() {
       {showFilters && (
         <div
           className="flex items-center gap-3 mb-3 p-3 rounded-lg"
-          style={{ background: isDark ? '#1A1A1A' : '#F8FAFC', border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0' }}
+          style={{ background: isDark ? '#1A1A1A' : '#F8FAFC', border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0' }}
         >
           <FilterDropdown
             label="Type"
@@ -385,7 +385,7 @@ export default function ProjectBoardPage() {
       {activeView === 'timeline' && (
         <div
           className="flex flex-col items-center justify-center rounded-xl border"
-          style={{ padding: '80px 40px', background: isDark ? '#1A1A1A' : '#FFFFFF', borderColor: isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0' }}
+          style={{ padding: '80px 40px', background: isDark ? '#1A1A1A' : '#FFFFFF', borderColor: isDark ? '#2E2E2E' : '#E2E8F0' }}
         >
           <GanttChart size={36} color="#94A3B8" strokeWidth={1.5} />
           <span style={{ fontSize: 14, fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A', marginTop: 12, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>

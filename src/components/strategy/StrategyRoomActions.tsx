@@ -54,7 +54,7 @@ export function StrategyRoomActions({ density, setDensity, isIntelligenceOpen, o
       {/* Density segmented control */}
       <TooltipProvider delayDuration={200}>
         <div
-          className="flex items-center rounded-md overflow-hidden border border-slate-200 dark:border-[rgba(255,255,255,0.08)]"
+          className="flex items-center rounded-md overflow-hidden border border-slate-200 dark:border-[#2E2E2E]"
           role="radiogroup"
           aria-label="Display density"
         >
@@ -94,7 +94,7 @@ export function StrategyRoomActions({ density, setDensity, isIntelligenceOpen, o
 
       {/* Export button */}
       <button
-        className="flex items-center gap-1.5 h-8 px-3 text-[13px] font-medium text-slate-500 dark:text-[#A1A1A1] bg-white dark:bg-[#1A1A1A] border border-slate-200 dark:border-[rgba(255,255,255,0.08)] rounded-md cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2"
+        className="flex items-center gap-1.5 h-8 px-3 text-[13px] font-medium text-slate-500 dark:text-[#A1A1A1] bg-white dark:bg-[#1A1A1A] border border-slate-200 dark:border-[#2E2E2E] rounded-md cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2"
       >
         <Download size={14} />
         Export

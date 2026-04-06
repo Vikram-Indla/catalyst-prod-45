@@ -118,7 +118,7 @@ export default function FreezeWindowsPage() {
       </div>
 
       {/* Calendar Strip */}
-      <div className="mb-6 rounded-lg p-4" style={{ background: isDark ? '#1A1A1A' : '#FFFFFF', border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}` }}>
+      <div className="mb-6 rounded-lg p-4" style={{ background: isDark ? '#1A1A1A' : '#FFFFFF', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}` }}>
         <div className="flex items-center justify-between mb-3">
           <button onClick={() => setCalMonth(new Date(calMonth.getFullYear(), calMonth.getMonth() - 1))}
             className="h-7 w-7 rounded flex items-center justify-center" style={{ color: isDark ? '#878787' : '#64748B' }}>
@@ -176,7 +176,7 @@ export default function FreezeWindowsPage() {
           <p className="text-[13px] max-w-md" style={{ color: isDark ? '#878787' : '#64748B' }}>Add one to protect critical periods.</p>
         </div>
       ) : (
-        <div className="rounded-lg overflow-hidden" style={{ background: isDark ? '#1A1A1A' : '#FFFFFF', border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}` }}>
+        <div className="rounded-lg overflow-hidden" style={{ background: isDark ? '#1A1A1A' : '#FFFFFF', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}` }}>
           <table className="w-full text-[13px]" style={{ fontFamily: RH.fontBody }}>
             <thead>
               <tr style={{ background: isDark ? '#1A1A1A' : '#F1F5F9' }}>
@@ -188,7 +188,7 @@ export default function FreezeWindowsPage() {
             <tbody>
               {windows.map((fw: any) => (
                 <tr key={fw.id} className="group"
-                  style={{ height: 50, transition: 'background 120ms', borderBottom: `0.75px solid ${isDark ? 'rgba(255,255,255,0.05)' : 'rgba(15,23,42,0.06)'}` }}
+                  style={{ height: 50, transition: 'background 120ms', borderBottom: `0.75px solid ${isDark ? '#292929' : 'rgba(15,23,42,0.06)'}` }}
                   onMouseEnter={e => (e.currentTarget.style.background = isDark ? '#1A1A1A' : 'rgba(15,23,42,0.04)')}
                   onMouseLeave={e => (e.currentTarget.style.background = isDark ? '#1A1A1A' : '#FFFFFF')}>
                   <td className="px-3 py-0 font-medium" style={{ color: isDark ? '#EDEDED' : '#0F172A', fontWeight: 650 }}>{fw.name}</td>
@@ -220,25 +220,25 @@ export default function FreezeWindowsPage() {
               <label className="text-[12px] font-semibold text-[#475569] block mb-1">Name *</label>
               <input type="text" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
                 placeholder="e.g. Go-Live Freeze Q2"
-                className="h-9 w-full px-3 rounded border border-[#E2E8F0] dark:border-[rgba(255,255,255,0.08)] bg-white dark:bg-[#1A1A1A] dark:text-[#EDEDED] text-[13px] placeholder:text-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" />
+                className="h-9 w-full px-3 rounded border border-[#E2E8F0] dark:border-[#2E2E2E] bg-white dark:bg-[#1A1A1A] dark:text-[#EDEDED] text-[13px] placeholder:text-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" />
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="text-[12px] font-semibold text-[#475569] block mb-1">Start Date *</label>
                 <input type="date" value={form.start_date} onChange={e => setForm(f => ({ ...f, start_date: e.target.value }))}
-                  className="h-9 w-full px-3 rounded border border-[#E2E8F0] dark:border-[rgba(255,255,255,0.08)] bg-white dark:bg-[#1A1A1A] dark:text-[#EDEDED] text-[13px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" />
+                  className="h-9 w-full px-3 rounded border border-[#E2E8F0] dark:border-[#2E2E2E] bg-white dark:bg-[#1A1A1A] dark:text-[#EDEDED] text-[13px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" />
               </div>
               <div>
                 <label className="text-[12px] font-semibold text-[#475569] block mb-1">End Date *</label>
                 <input type="date" value={form.end_date} onChange={e => setForm(f => ({ ...f, end_date: e.target.value }))}
-                  className="h-9 w-full px-3 rounded border border-[#E2E8F0] dark:border-[rgba(255,255,255,0.08)] bg-white dark:bg-[#1A1A1A] dark:text-[#EDEDED] text-[13px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" />
+                  className="h-9 w-full px-3 rounded border border-[#E2E8F0] dark:border-[#2E2E2E] bg-white dark:bg-[#1A1A1A] dark:text-[#EDEDED] text-[13px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" />
               </div>
             </div>
             <div>
               <label className="text-[12px] font-semibold text-[#475569] block mb-1">Reason</label>
               <textarea value={form.reason} onChange={e => setForm(f => ({ ...f, reason: e.target.value }))}
                 placeholder="e.g. National holiday / major go-live" rows={3}
-                className="w-full px-3 py-2 rounded border border-[#E2E8F0] dark:border-[rgba(255,255,255,0.08)] bg-white dark:bg-[#1A1A1A] dark:text-[#EDEDED] text-[13px] placeholder:text-[#94A3B8] resize-none focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" />
+                className="w-full px-3 py-2 rounded border border-[#E2E8F0] dark:border-[#2E2E2E] bg-white dark:bg-[#1A1A1A] dark:text-[#EDEDED] text-[13px] placeholder:text-[#94A3B8] resize-none focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" />
             </div>
             {formError && <p className="text-[12px] text-[#DC2626]">{formError}</p>}
           </div>

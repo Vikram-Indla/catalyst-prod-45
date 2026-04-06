@@ -41,10 +41,10 @@ const TOKENS = `
   --sri-ink-3: rgba(255,255,255,0.75);
   --sri-ink-m: rgba(255,255,255,0.70);
   --sri-bg: #1A1A1A;
-  --sri-bg-2: rgba(255,255,255,0.04);
-  --sri-bg-3: rgba(255,255,255,0.07);
-  --sri-bdr: rgba(255,255,255,0.10);
-  --sri-bdr-s: rgba(255,255,255,0.18);
+  --sri-bg-2: #1F1F1F;
+  --sri-bg-3: #2E2E2E;
+  --sri-bdr: #2E2E2E;
+  --sri-bdr-s: #454545;
   --sri-ai: #3B82F6;
   --sri-ai-d: #60A5FA;
   --sri-ai-bg: rgba(59,130,246,0.08);

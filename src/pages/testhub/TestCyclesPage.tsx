@@ -71,7 +71,7 @@ export default function TestCyclesPage() {
   const pageBg = isDark ? '#0A0A0A' : '#F8FAFC';
   const surfaceBg = isDark ? '#1A1A1A' : '#FFFFFF';
   const elevatedBg = isDark ? '#1A1A1A' : '#F8FAFC';
-  const borderColor = isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0';
+  const borderColor = isDark ? '#2E2E2E' : '#E2E8F0';
   const textPrimary = isDark ? '#EDEDED' : '#0F172A';
   const textBody = isDark ? '#A1A1A1' : '#334155';
   const textSecondary = isDark ? '#A1A1A1' : '#64748B';

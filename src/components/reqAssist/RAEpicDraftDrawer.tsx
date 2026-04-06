@@ -237,7 +237,7 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
                     <span style={{
                       display: 'inline-flex', alignItems: 'center',
                       background: isDark ? '#1A1A1A' : '#F1F5F9',
-                      border: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid #CBD5E1',
+                      border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid #CBD5E1',
                       borderRadius: 4,
                       padding: '2px 8px',
                       fontFamily: "'JetBrains Mono', monospace",
@@ -313,7 +313,7 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
                           <span style={{ color: 'var(--fg-2)', fontFamily: "'Inter', sans-serif" }}>Archive this epic?</span>
                           <button onClick={() => setArchiveConfirmId(null)} style={{
                             height: 28, padding: '0 10px', fontSize: 12, fontWeight: 500,
-                            borderRadius: 6, border: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(15,23,42,0.15)',
+                            borderRadius: 6, border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.15)',
                             background: isDark ? '#1A1A1A' : '#FFFFFF', color: 'var(--fg-2)', cursor: 'pointer',
                             fontFamily: "'Inter', sans-serif",
                           }}>Cancel</button>

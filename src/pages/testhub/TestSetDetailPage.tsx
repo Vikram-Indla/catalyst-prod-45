@@ -217,13 +217,13 @@ export default function TestSetDetailPage() {
         {isLoadingCases ? (
           <div className="space-y-2">{[1,2,3].map(i => <Skeleton key={i} className="h-12 w-full" />)}</div>
         ) : !displayItems?.length ? (
-          <div className={cn("text-center py-8 border border-dashed border-border rounded-lg", isDark && "bg-[#1A1A1A] border-[rgba(255,255,255,0.08)]")}>
+          <div className={cn("text-center py-8 border border-dashed border-border rounded-lg", isDark && "bg-[#1A1A1A] border-[#2E2E2E]")}>
             <p className="text-muted-foreground">{isStatic ? 'Click "Add Test Cases" to add tests' : 'Click "Refresh" to populate'}</p>
           </div>
         ) : (
           <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-            <div className={cn("border border-border rounded-lg overflow-hidden", isDark && "border-[rgba(255,255,255,0.08)]")}>
-              <div className={cn("grid grid-cols-[40px_40px_100px_1fr_100px_40px] bg-muted/50 border-b border-border h-9 items-center px-2", isDark && "bg-[#1A1A1A] border-[rgba(255,255,255,0.08)]")}>
+            <div className={cn("border border-border rounded-lg overflow-hidden", isDark && "border-[#2E2E2E]")}>
+              <div className={cn("grid grid-cols-[40px_40px_100px_1fr_100px_40px] bg-muted/50 border-b border-border h-9 items-center px-2", isDark && "bg-[#1A1A1A] border-[#2E2E2E]")}>
                 <span></span>
                 <Checkbox checked={selectedIds.size === displayItems.length && displayItems.length > 0}
                   onCheckedChange={ch => ch ? setSelectedIds(new Set(displayItems.map((tc: any) => tc.test_case?.id).filter(Boolean))) : setSelectedIds(new Set())} />

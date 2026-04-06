@@ -37,15 +37,15 @@
 /* ── DARK MODE ── */
 .dark [data-module="product-cards"],
 [data-theme="dark"] [data-module="product-cards"] {
-  --pc-ink: rgba(255,255,255,0.92);
-  --pc-ink-secondary: rgba(255,255,255,0.85);
-  --pc-ink-tertiary: rgba(255,255,255,0.72);
-  --pc-ink-muted: rgba(255,255,255,0.50);
+  --pc-ink: #EDEDED;
+  --pc-ink-secondary: #EDEDED;
+  --pc-ink-tertiary: #A1A1A1;
+  --pc-ink-muted: #7D7D7D;
   --pc-surface: transparent;
   --pc-surface-secondary: transparent;
-  --pc-surface-tertiary: rgba(255,255,255,0.03);
-  --pc-border: rgba(255,255,255,0.10);
-  --pc-border-strong: rgba(255,255,255,0.18);
+  --pc-surface-tertiary: #1F1F1F;
+  --pc-border: #2E2E2E;
+  --pc-border-strong: #454545;
   --pc-primary-bg: rgba(59,130,246,0.12);
   --pc-teal-bg: rgba(13,148,136,0.12);
   --pc-success-bg: rgba(22,163,74,0.12);

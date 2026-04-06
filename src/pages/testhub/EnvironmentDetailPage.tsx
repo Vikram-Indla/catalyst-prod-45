@@ -167,7 +167,7 @@ export default function EnvironmentDetailPage() {
   return (
     <div style={{ padding: 24, backgroundColor: isDark ? '#0A0A0A' : '#F8FAFC', minHeight: '100vh' }}>
       <button onClick={() => navigate('/testhub/environments')}
-        style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 12px', border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 8, backgroundColor: isDark ? '#1A1A1A' : '#FFF', color: isDark ? '#A1A1A1' : '#64748B', fontSize: 13, cursor: 'pointer', marginBottom: 16 }}>
+        style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 12px', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 8, backgroundColor: isDark ? '#1A1A1A' : '#FFF', color: isDark ? '#A1A1A1' : '#64748B', fontSize: 13, cursor: 'pointer', marginBottom: 16 }}>
         <ArrowLeft size={16} /> Back to Environments
       </button>
 
@@ -188,7 +188,7 @@ export default function EnvironmentDetailPage() {
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
           <select value={environment.status} onChange={(e) => updateStatus(e.target.value)}
-            style={{ height: 40, padding: '0 14px', border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 8, fontSize: 13, backgroundColor: isDark ? '#1A1A1A' : '#FFF', color: isDark ? '#EDEDED' : undefined, cursor: 'pointer' }}>
+            style={{ height: 40, padding: '0 14px', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 8, fontSize: 13, backgroundColor: isDark ? '#1A1A1A' : '#FFF', color: isDark ? '#EDEDED' : undefined, cursor: 'pointer' }}>
             {Object.entries(STATUS_CONFIG).map(([key, val]) => <option key={key} value={key}>{val.label}</option>)}
           </select>
           <button onClick={deleteEnvironment}
@@ -210,7 +210,7 @@ export default function EnvironmentDetailPage() {
           </div>
         </div>
         <select value={environment.health_status} onChange={(e) => updateHealthStatus(e.target.value)}
-          style={{ height: 50, padding: '8px 12px', border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 6, fontSize: 13, backgroundColor: isDark ? '#1A1A1A' : '#FFF', color: isDark ? '#EDEDED' : undefined, cursor: 'pointer' }}>
+          style={{ height: 50, padding: '8px 12px', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 6, fontSize: 13, backgroundColor: isDark ? '#1A1A1A' : '#FFF', color: isDark ? '#EDEDED' : undefined, cursor: 'pointer' }}>
           <option value="healthy">Healthy</option>
           <option value="degraded">Degraded</option>
           <option value="down">Down</option>
@@ -221,7 +221,7 @@ export default function EnvironmentDetailPage() {
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
         {/* Left Column */}
         <div>
-          <div style={{ backgroundColor: isDark ? '#1A1A1A' : '#FFF', borderRadius: 12, padding: 24, border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, marginBottom: 24 }}>
+          <div style={{ backgroundColor: isDark ? '#1A1A1A' : '#FFF', borderRadius: 12, padding: 24, border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, marginBottom: 24 }}>
             <h3 style={{ fontSize: 16, fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A', margin: '0 0 16px', display: 'flex', alignItems: 'center', gap: 8 }}>
               <Settings size={18} style={{ color: '#6366F1' }} /> Connection Info
             </h3>
@@ -254,7 +254,7 @@ export default function EnvironmentDetailPage() {
           </div>
 
           {environment.description && (
-            <div style={{ backgroundColor: isDark ? '#1A1A1A' : '#FFF', borderRadius: 12, padding: 24, border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}` }}>
+            <div style={{ backgroundColor: isDark ? '#1A1A1A' : '#FFF', borderRadius: 12, padding: 24, border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}` }}>
               <h3 style={{ fontSize: 16, fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A', margin: '0 0 12px', display: 'flex', alignItems: 'center', gap: 8 }}>
                 <FileText size={18} style={{ color: '#6366F1' }} /> Description
               </h3>
@@ -266,7 +266,7 @@ export default function EnvironmentDetailPage() {
         {/* Right Column */}
         <div>
           {/* Variables */}
-          <div style={{ backgroundColor: isDark ? '#1A1A1A' : '#FFF', borderRadius: 12, padding: 24, border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, marginBottom: 24 }}>
+          <div style={{ backgroundColor: isDark ? '#1A1A1A' : '#FFF', borderRadius: 12, padding: 24, border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, marginBottom: 24 }}>
             <h3 style={{ fontSize: 16, fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A', margin: '0 0 16px', display: 'flex', alignItems: 'center', gap: 8 }}>
               <Key size={18} style={{ color: '#6366F1' }} /> Variables ({variables.length})
             </h3>
@@ -301,7 +301,7 @@ export default function EnvironmentDetailPage() {
           </div>
 
           {/* Linked Cycles */}
-          <div style={{ backgroundColor: isDark ? '#1A1A1A' : '#FFF', borderRadius: 12, padding: 24, border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}` }}>
+          <div style={{ backgroundColor: isDark ? '#1A1A1A' : '#FFF', borderRadius: 12, padding: 24, border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}` }}>
             <h3 style={{ fontSize: 16, fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A', margin: '0 0 16px', display: 'flex', alignItems: 'center', gap: 8 }}>
               <Activity size={18} style={{ color: '#6366F1' }} /> Test Cycles ({linkedCycles.length})
             </h3>

@@ -150,8 +150,8 @@ function ContentCard({
   children: React.ReactNode;
 }) {
   return (
-    <div className="bg-white dark:bg-[#1A1A1A] rounded-lg border border-gray-200 dark:border-[rgba(255,255,255,0.08)] shadow-sm">
-      <div className="px-4 py-2.5 border-b border-gray-100 dark:border-[rgba(255,255,255,0.05)] flex items-center justify-between">
+    <div className="bg-white dark:bg-[#1A1A1A] rounded-lg border border-gray-200 dark:border-[#2E2E2E] shadow-sm">
+      <div className="px-4 py-2.5 border-b border-gray-100 dark:border-[#292929] flex items-center justify-between">
         <h2 className={cn("text-[13px] font-semibold flex items-center gap-1.5", titleClass)}>
           {titleIcon}
           {title}
@@ -173,8 +173,8 @@ function SidebarPanel({
   children: React.ReactNode;
 }) {
   return (
-    <div className="bg-white dark:bg-[#1A1A1A] rounded-lg border border-gray-200 dark:border-[rgba(255,255,255,0.08)] shadow-sm">
-      <div className="px-4 py-2.5 border-b border-gray-100 dark:border-[rgba(255,255,255,0.05)] flex items-center justify-between">
+    <div className="bg-white dark:bg-[#1A1A1A] rounded-lg border border-gray-200 dark:border-[#2E2E2E] shadow-sm">
+      <div className="px-4 py-2.5 border-b border-gray-100 dark:border-[#292929] flex items-center justify-between">
         <h3 className="text-[11px] font-bold uppercase text-gray-500 tracking-wider">{title}</h3>
         {action}
       </div>
@@ -434,7 +434,7 @@ export default function DefectDetailPage() {
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {/* HEADER - Full Width, Dense                                          */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
-      <header className="bg-white dark:bg-[#1A1A1A] border-b border-gray-200 dark:border-[rgba(255,255,255,0.08)] shadow-sm">
+      <header className="bg-white dark:bg-[#1A1A1A] border-b border-gray-200 dark:border-[#2E2E2E] shadow-sm">
         <div className="w-full px-6">
           
           {/* Row 1: Breadcrumb + ID + Badges + Actions (44px height) */}

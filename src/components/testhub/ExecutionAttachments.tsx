@@ -136,7 +136,7 @@ export function ExecutionAttachments({ cycleTestCaseId, attachments, onAttachmen
 
       {previewUrl && (
         <div onClick={closePreview} style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.9)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2000, padding: 40 }}>
-          <button onClick={closePreview} style={{ position: 'absolute', top: 20, right: 20, width: 40, height: 40, border: 'none', borderRadius: '50%', backgroundColor: 'rgba(255,255,255,0.1)', color: 'var(--cp-float)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <button onClick={closePreview} style={{ position: 'absolute', top: 20, right: 20, width: 40, height: 40, border: 'none', borderRadius: '50%', backgroundColor: '#2E2E2E', color: 'var(--cp-float)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <X size={24} />
           </button>
           <div style={{ textAlign: 'center' }}>

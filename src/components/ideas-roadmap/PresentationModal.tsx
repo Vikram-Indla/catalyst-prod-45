@@ -33,7 +33,7 @@ export function PresentationModal({ ideas, onClose }: Props) {
       {/* Top bar */}
       <div style={{
         height: 48, display: 'flex', alignItems: 'center', padding: '0 24px', gap: 12,
-        background: 'rgba(15,23,42,0.95)', borderBottom: '1px solid rgba(255,255,255,0.06)',
+        background: 'rgba(15,23,42,0.95)', borderBottom: '1px solid #292929',
         flexShrink: 0,
       }}>
         <div style={{
@@ -41,7 +41,7 @@ export function PresentationModal({ ideas, onClose }: Props) {
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           color: 'var(--bg-app)', fontSize: 9, fontWeight: 800,
         }}>MIM</div>
-        <div style={{ width: 1, height: 20, background: 'rgba(255,255,255,0.1)' }} />
+        <div style={{ width: 1, height: 20, background: '#2E2E2E' }} />
         <span style={{ color: 'var(--divider)', fontSize: 14, fontWeight: 600, flex: 1 }}>
           {slide === 0 ? 'Ideas Roadmap — FY 2026' : `${QUARTERS[slide - 1]} 2026 — Delivery Plan`}
         </span>
@@ -51,7 +51,7 @@ export function PresentationModal({ ideas, onClose }: Props) {
       </div>
 
       {/* Progress bar */}
-      <div style={{ height: 2, background: 'rgba(255,255,255,0.05)', flexShrink: 0 }}>
+      <div style={{ height: 2, background: '#292929', flexShrink: 0 }}>
         <div style={{
           height: '100%', background: 'var(--sem-success)', transition: 'width 300ms',
           width: `${((slide + 1) / TOTAL_SLIDES) * 100}%`,
@@ -70,11 +70,11 @@ export function PresentationModal({ ideas, onClose }: Props) {
       {/* Navigation */}
       <div style={{
         height: 48, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16, flexShrink: 0,
-        background: 'rgba(15,23,42,0.95)', borderTop: '1px solid rgba(255,255,255,0.06)',
+        background: 'rgba(15,23,42,0.95)', borderTop: '1px solid #292929',
       }}>
         <button onClick={() => setSlide(s => Math.max(0, s - 1))} disabled={slide === 0}
           style={{
-            width: 30, height: 30, borderRadius: '50%', background: 'rgba(255,255,255,0.08)',
+            width: 30, height: 30, borderRadius: '50%', background: '#2E2E2E',
             border: 'none', color: '#fff', cursor: 'pointer', opacity: slide === 0 ? 0.3 : 1,
             fontSize: 14,
           }}>←</button>
@@ -90,7 +90,7 @@ export function PresentationModal({ ideas, onClose }: Props) {
         </div>
         <button onClick={() => setSlide(s => Math.min(TOTAL_SLIDES - 1, s + 1))} disabled={slide === TOTAL_SLIDES - 1}
           style={{
-            width: 30, height: 30, borderRadius: '50%', background: 'rgba(255,255,255,0.08)',
+            width: 30, height: 30, borderRadius: '50%', background: '#2E2E2E',
             border: 'none', color: '#fff', cursor: 'pointer', opacity: slide === TOTAL_SLIDES - 1 ? 0.3 : 1,
             fontSize: 14,
           }}>→</button>
@@ -133,7 +133,7 @@ function CoverSlide({ committed, ideas }: { committed: RoadmapIdea[]; ideas: Roa
             { label: 'FISCAL YEAR', value: '2026', sub: new Date().toLocaleDateString('en-GB', { month: 'long', year: 'numeric' }) },
           ].map(s => (
             <div key={s.label} style={{
-              background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)',
+              background: '#292929', border: '1px solid #2E2E2E',
               borderRadius: 8, padding: '16px 20px', minWidth: 140,
             }}>
               <div style={{ fontSize: 9, fontWeight: 700, color: 'var(--fg-3)', letterSpacing: '0.1em', marginBottom: 6 }}>{s.label}</div>
@@ -152,7 +152,7 @@ function CoverSlide({ committed, ideas }: { committed: RoadmapIdea[]; ideas: Roa
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
           {(['Q1', 'Q2', 'Q3', 'Q4'] as const).map((q, i) => (
             <div key={q} style={{
-              background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)',
+              background: '#1F1F1F', border: '1px solid #292929',
               borderRadius: 8, padding: '16px 20px', borderTop: `3px solid ${qColors[i]}`, minWidth: 140,
             }}>
               <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--fg-4)', marginBottom: 8 }}>{q} {Q_LABELS[q]}</div>
@@ -201,8 +201,8 @@ function QuarterSlide({ quarter, ideas, color }: { quarter: string; ideas: Roadm
         return (
           <div key={idea.id} style={{
             display: 'flex', alignItems: 'center', height: 40,
-            background: ri % 2 === 1 ? 'rgba(255,255,255,0.02)' : 'transparent',
-            borderBottom: '1px solid rgba(255,255,255,0.04)',
+            background: ri % 2 === 1 ? '#1F1F1F' : 'transparent',
+            borderBottom: '1px solid #1F1F1F',
           }}>
             <div style={{ width: 240, paddingRight: 16 }}>
               <div style={{ fontSize: 10, color: 'var(--fg-3)', fontFamily: "'JetBrains Mono', monospace" }}>{idea.ideaKey}</div>
@@ -212,7 +212,7 @@ function QuarterSlide({ quarter, ideas, color }: { quarter: string; ideas: Roadm
               {months.map((m, mi) => (
                 <div key={m} style={{
                   flex: 1, height: '100%',
-                  borderLeft: mi > 0 ? '1px solid rgba(255,255,255,0.04)' : 'none',
+                  borderLeft: mi > 0 ? '1px solid #1F1F1F' : 'none',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                 }}>
                   {/* Show a diamond if PROD date falls in this month */}

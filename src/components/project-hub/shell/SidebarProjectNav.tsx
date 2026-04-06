@@ -68,7 +68,7 @@ export function SidebarProjectNav({
 
   return (
     <div
-      className="flex flex-col h-full flex-shrink-0 bg-white dark:bg-[#0A0A0A] border-r border-[var(--bd-default, #E2E8F0)] dark:border-[rgba(255,255,255,0.10)]"
+      className="flex flex-col h-full flex-shrink-0 bg-white dark:bg-[#0A0A0A] border-r border-[var(--bd-default, #E2E8F0)] dark:border-[#2E2E2E]"
       style={{
         width: collapsed ? 56 : 200,
         transition: 'width 200ms ease',
@@ -77,7 +77,7 @@ export function SidebarProjectNav({
       }}
     >
       {/* Header with project switcher */}
-      <div className="relative flex-shrink-0 border-b border-[var(--bd-default, #E2E8F0)] dark:border-[rgba(255,255,255,0.10)]">
+      <div className="relative flex-shrink-0 border-b border-[var(--bd-default, #E2E8F0)] dark:border-[#2E2E2E]">
         <div
           className="flex items-center gap-2"
           style={{ padding: collapsed ? '12px 10px' : '12px 10px' }}
@@ -107,23 +107,23 @@ export function SidebarProjectNav({
                 style={{ border: 'none', background: 'transparent', cursor: 'pointer', textAlign: 'left' }}
               >
                 <div className="min-w-0">
-                  <div className="text-[var(--fg-3)] dark:text-[rgba(255,255,255,0.55)]" style={{ fontSize: 10, fontWeight: 500 }}>{projectKey}</div>
+                  <div className="text-[var(--fg-3)] dark:text-[#878787]" style={{ fontSize: 10, fontWeight: 500 }}>{projectKey}</div>
                   <div
-                    className="truncate text-[#0F172A] dark:text-[rgba(255,255,255,0.92)]"
+                    className="truncate text-[#0F172A] dark:text-[#EDEDED]"
                     style={{ fontSize: 13, fontWeight: 600, fontFamily: "'Sora', sans-serif" }}
                   >
                     {projectName}
                   </div>
                 </div>
-                <ChevronDown size={14} className="flex-shrink-0 text-[#94A3B8] dark:text-[rgba(255,255,255,0.40)]" />
+                <ChevronDown size={14} className="flex-shrink-0 text-[#94A3B8] dark:text-[#7D7D7D]" />
               </button>
               <button
                 onClick={onToggle}
-                className="flex items-center justify-center rounded hover:bg-[#F1F5F9] dark:hover:bg-[rgba(255,255,255,0.03)] transition-colors flex-shrink-0"
+                className="flex items-center justify-center rounded hover:bg-[#F1F5F9] dark:hover:bg-[#1F1F1F] transition-colors flex-shrink-0"
                 style={{ width: 24, height: 24, border: 'none', background: 'transparent', cursor: 'pointer' }}
                 title="Collapse sidebar"
               >
-                <ChevronsLeft size={16} className="text-[#64748B] dark:text-[rgba(255,255,255,0.55)]" />
+                <ChevronsLeft size={16} className="text-[#64748B] dark:text-[#878787]" />
               </button>
             </>
           )}
@@ -131,10 +131,10 @@ export function SidebarProjectNav({
           {collapsed && (
             <button
               onClick={onToggle}
-              className="absolute top-2 right-1 flex items-center justify-center rounded hover:bg-[#F1F5F9] dark:hover:bg-[rgba(255,255,255,0.03)]"
+              className="absolute top-2 right-1 flex items-center justify-center rounded hover:bg-[#F1F5F9] dark:hover:bg-[#1F1F1F]"
               style={{ width: 20, height: 20, border: 'none', background: 'transparent', cursor: 'pointer' }}
             >
-              <ChevronsRight size={14} className="text-[#64748B] dark:text-[rgba(255,255,255,0.55)]" />
+              <ChevronsRight size={14} className="text-[#64748B] dark:text-[#878787]" />
             </button>
           )}
         </div>
@@ -156,7 +156,7 @@ export function SidebarProjectNav({
       <div className="px-1.5 pt-2">
         <button
           onClick={() => navigate('/project-hub/projects')}
-          className="flex items-center gap-1.5 w-full rounded-md transition-colors hover:bg-[#F1F5F9] dark:hover:bg-[rgba(255,255,255,0.03)]"
+          className="flex items-center gap-1.5 w-full rounded-md transition-colors hover:bg-[#F1F5F9] dark:hover:bg-[#1F1F1F]"
           style={{
             height: 30,
             padding: collapsed ? '0' : '0 10px',
@@ -168,8 +168,8 @@ export function SidebarProjectNav({
             justifyContent: collapsed ? 'center' : 'flex-start',
           }}
         >
-          <ArrowLeft size={14} strokeWidth={1.75} className="text-[#64748B] dark:text-[rgba(255,255,255,0.55)]" />
-          {!collapsed && <span className="text-[#64748B] dark:text-[rgba(255,255,255,0.55)]">All Projects</span>}
+          <ArrowLeft size={14} strokeWidth={1.75} className="text-[#64748B] dark:text-[#878787]" />
+          {!collapsed && <span className="text-[#64748B] dark:text-[#878787]">All Projects</span>}
         </button>
       </div>
 
@@ -187,7 +187,7 @@ export function SidebarProjectNav({
         ))}
 
         {!collapsed && (
-          <div className="text-[var(--fg-3)] dark:text-[rgba(255,255,255,0.55)]" style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' as const, padding: '8px 10px 4px' }}>
+          <div className="text-[var(--fg-3)] dark:text-[#878787]" style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' as const, padding: '8px 10px 4px' }}>
             Planning
           </div>
         )}
@@ -196,7 +196,7 @@ export function SidebarProjectNav({
         ))}
 
         {!collapsed && (
-          <div className="text-[var(--fg-3)] dark:text-[rgba(255,255,255,0.55)]" style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' as const, padding: '12px 10px 4px' }}>
+          <div className="text-[var(--fg-3)] dark:text-[#878787]" style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' as const, padding: '12px 10px 4px' }}>
             Tracking
           </div>
         )}
@@ -205,7 +205,7 @@ export function SidebarProjectNav({
         ))}
 
         {!collapsed && (
-          <div className="text-[var(--fg-3)] dark:text-[rgba(255,255,255,0.55)]" style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' as const, padding: '12px 10px 4px' }}>
+          <div className="text-[var(--fg-3)] dark:text-[#878787]" style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' as const, padding: '12px 10px 4px' }}>
             AI Intelligence
           </div>
         )}
@@ -214,7 +214,7 @@ export function SidebarProjectNav({
       </div>
 
       {/* Settings pinned to bottom */}
-      <div className="border-t border-[var(--divider)] dark:border-[rgba(255,255,255,0.10)]" style={{ padding: '8px 6px' }}>
+      <div className="border-t border-[var(--divider)] dark:border-[#2E2E2E]" style={{ padding: '8px 6px' }}>
         <NavItem icon={Settings} label="Settings" isActive={isPathActive('settings')} onClick={() => navigate(`${basePath}/settings`)} collapsed={collapsed} />
       </div>
     </div>

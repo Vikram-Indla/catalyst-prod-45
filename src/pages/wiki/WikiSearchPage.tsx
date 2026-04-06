@@ -96,7 +96,7 @@ export default function WikiSearchPage() {
   const confColor = (c: number) => c >= 90 ? '#FFFFFF' : c >= 70 ? '#FFFFFF' : isDark ? '#FCD34D' : '#9A5402';
   const confBg = (c: number) => c >= 90 ? '#1B7F37' : c >= 70 ? '#0C66E4' : isDark ? 'rgba(251,191,36,0.12)' : '#FEF3C7';
 
-  const borderColor = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.12)';
+  const borderColor = isDark ? '#2E2E2E' : 'rgba(15,23,42,0.12)';
 
   return (
     <div style={{ fontFamily: 'Inter, sans-serif', color: isDark ? '#EDEDED' : '#0F172A', background: isDark ? '#0A0A0A' : '#F8FAFC', minHeight: '100%' }}>
@@ -305,7 +305,7 @@ export default function WikiSearchPage() {
                         padding: '14px 0', borderBottom: `0.75px solid ${borderColor}`,
                         cursor: 'pointer', transition: 'background 80ms',
                       }}
-                      onMouseEnter={e => e.currentTarget.style.background = isDark ? 'rgba(255,255,255,0.04)' : 'rgba(37,99,235,0.03)'}
+                      onMouseEnter={e => e.currentTarget.style.background = isDark ? '#1F1F1F' : 'rgba(37,99,235,0.03)'}
                       onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                     >
                       {/* Title row */}

@@ -443,7 +443,7 @@ export default function Auth() {
                         placeholder="name@company.com" 
                         required 
                         className={`w-full transition-all outline-none font-body text-base py-3.5 px-4 rounded-[10px] border-2 focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/10 bg-white dark:bg-[#1A1A1A] text-gray-900 placeholder:text-gray-400 ${
-                          loginError ? 'border-red-500' : 'border-gray-200 dark:border-[rgba(255,255,255,0.08)]'
+                          loginError ? 'border-red-500' : 'border-gray-200 dark:border-[#2E2E2E]'
                         }`}
                       />
                     </div>

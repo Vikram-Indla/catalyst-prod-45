@@ -125,7 +125,7 @@ export default memo(function WorkHubRow({ item, columns, selected, onSelect, onO
                 <WorkHubStatusLozenge status={item.status} statusCategory={item.status_category} />
               </button>
             </PopoverTrigger>
-            <PopoverContent align="start" style={{ width: 220, padding: '4px 0', background: 'var(--bg-app)', border: '1px solid var(--bd-default, rgba(255,255,255,0.08))', borderRadius: 6, zIndex: 9999, maxHeight: 320, overflowY: 'auto' }}>
+            <PopoverContent align="start" style={{ width: 220, padding: '4px 0', background: 'var(--bg-app)', border: '1px solid var(--bd-default, #2E2E2E)', borderRadius: 6, zIndex: 9999, maxHeight: 320, overflowY: 'auto' }}>
               {STATUS_GROUPS.map(group => (
                 <div key={group.label}>
                   <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--fg-4)', padding: '6px 12px 2px' }}>{group.label}</div>
@@ -173,7 +173,7 @@ export default memo(function WorkHubRow({ item, columns, selected, onSelect, onO
                 <WorkHubPriorityIcon priority={item.priority || 'Medium'} size={16} />
               </button>
             </PopoverTrigger>
-            <PopoverContent align="start" style={{ width: 160, padding: '4px 0', background: 'var(--bg-app)', border: '1px solid var(--bd-default, rgba(255,255,255,0.08))', borderRadius: 6, zIndex: 9999 }}>
+            <PopoverContent align="start" style={{ width: 160, padding: '4px 0', background: 'var(--bg-app)', border: '1px solid var(--bd-default, #2E2E2E)', borderRadius: 6, zIndex: 9999 }}>
               {PRIORITY_OPTIONS.map(p => (
                 <button key={p} onClick={() => onInlineEdit(item.id, 'priority', p)} style={{
                   width: '100%', padding: '5px 12px', fontSize: 13, border: 'none', textAlign: 'left',
@@ -234,8 +234,8 @@ export default memo(function WorkHubRow({ item, columns, selected, onSelect, onO
         style={{
           display: 'flex', alignItems: 'center',
           height: 50, maxHeight: 50, minHeight: 50,
-          borderBottom: '0.75px solid var(--bd-subtle, rgba(255,255,255,0.05))',
-          background: selected ? 'rgba(37,99,235,0.08)' : hovered ? 'var(--hover, rgba(255,255,255,0.04))' : 'transparent',
+          borderBottom: '0.75px solid var(--bd-subtle, #292929)',
+          background: selected ? 'rgba(37,99,235,0.08)' : hovered ? 'var(--hover, #1F1F1F)' : 'transparent',
           transition: 'background 150ms ease',
           position: 'relative', cursor: 'default',
           outline: 'none',
@@ -263,12 +263,12 @@ export default memo(function WorkHubRow({ item, columns, selected, onSelect, onO
           opacity: hovered ? 1 : 0, transition: 'opacity 120ms', pointerEvents: hovered ? 'auto' : 'none',
         }}>
           <button onClick={e => { e.stopPropagation(); startEdit('summary', item.summary); }} title="Edit" aria-label="Edit summary"
-            style={{ width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-app)', border: '1px solid var(--bd-default, rgba(255,255,255,0.08))', borderRadius: 4, cursor: 'pointer' }}>
+            style={{ width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-app)', border: '1px solid var(--bd-default, #2E2E2E)', borderRadius: 4, cursor: 'pointer' }}>
             <Pencil size={14} color="#64748B" />
           </button>
           {onDelete && (
             <button onClick={e => { e.stopPropagation(); onDelete(item.id); }} title="Delete" aria-label="Delete item"
-              style={{ width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-app)', border: '1px solid var(--bd-default, rgba(255,255,255,0.08))', borderRadius: 4, cursor: 'pointer' }}>
+              style={{ width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-app)', border: '1px solid var(--bd-default, #2E2E2E)', borderRadius: 4, cursor: 'pointer' }}>
               <Trash2 size={14} color="#DC2626" />
             </button>
           )}
@@ -278,7 +278,7 @@ export default memo(function WorkHubRow({ item, columns, selected, onSelect, onO
       {contextMenu && (
         <div style={{
           position: 'fixed', top: contextMenu.y, left: contextMenu.x,
-          width: 200, background: 'var(--bg-app)', border: '1px solid var(--bd-default, rgba(255,255,255,0.08))',
+          width: 200, background: 'var(--bg-app)', border: '1px solid var(--bd-default, #2E2E2E)',
           borderRadius: 6, padding: '4px 0', zIndex: 99999,
           boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
         }} role="menu">
@@ -290,7 +290,7 @@ export default memo(function WorkHubRow({ item, columns, selected, onSelect, onO
             style={{ width: '100%', padding: '6px 12px', fontSize: 13, border: 'none', background: 'transparent', color: 'var(--fg-1)', cursor: 'pointer', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 8 }}>
             <Copy size={13} /> Copy key
           </button>
-          <div style={{ height: 1, background: 'var(--bd-subtle, rgba(255,255,255,0.05))', margin: '4px 0' }} />
+          <div style={{ height: 1, background: 'var(--bd-subtle, #292929)', margin: '4px 0' }} />
           {onDelete && (
             <button role="menuitem" onClick={() => { onDelete(item.id); setContextMenu(null); }}
               style={{ width: '100%', padding: '6px 12px', fontSize: 13, border: 'none', background: 'transparent', color: 'var(--sem-danger)', cursor: 'pointer', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 8 }}>

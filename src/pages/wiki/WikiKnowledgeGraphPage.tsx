@@ -96,7 +96,7 @@ export default function WikiKnowledgeGraphPage() {
       .selectAll('line')
       .data(links)
       .join('line')
-      .attr('stroke', isDark ? 'rgba(255,255,255,0.15)' : '#CBD5E1')
+      .attr('stroke', isDark ? '#454545' : '#CBD5E1')
       .attr('stroke-width', 1)
       .attr('stroke-opacity', 0.5);
 
@@ -178,12 +178,12 @@ export default function WikiKnowledgeGraphPage() {
         </div>
       </div>
 
-      <div style={{ flex: 1, position: 'relative', borderTop: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(0,0,0,0.06)' }}>
+      <div style={{ flex: 1, position: 'relative', borderTop: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(0,0,0,0.06)' }}>
         <svg ref={svgRef} style={{ width: '100%', height: '100%', background: isDark ? '#1A1A1A' : '#FFFFFF' }} />
         {tooltip && (
           <div style={{
             position: 'absolute', left: tooltip.x + 12, top: tooltip.y - 8,
-            background: isDark ? '#1A1A1A' : '#FFFFFF', border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0', borderRadius: 6,
+            background: isDark ? '#1A1A1A' : '#FFFFFF', border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0', borderRadius: 6,
             padding: '8px 12px', boxShadow: isDark ? '0 4px 12px rgba(0,0,0,0.3)' : '0 4px 12px rgba(0,0,0,0.1)',
             pointerEvents: 'none', zIndex: 10, fontSize: 12, maxWidth: 200,
           }}>
