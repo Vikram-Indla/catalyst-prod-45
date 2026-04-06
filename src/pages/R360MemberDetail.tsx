@@ -81,7 +81,7 @@ function StatusPill({ label, color, bg, dot }: { label: string; color: string; b
 
 // ── Project tag ──
 function ProjTag({ projectKey }: { projectKey: string }) {
-  const bg = R360_PROJECT_COLORS[projectKey] || 'rgba(237,237,237,0.40)';
+  const bg = R360_PROJECT_COLORS[projectKey] || '#878787';
   return <span className="r3-proj-tag" style={{ background: bg }}>{projectKey}</span>;
 }
 
@@ -96,7 +96,7 @@ function priorityDotColor(p: string) {
   if (l === 'highest' || l === 'critical') return '#EF4444';
   if (l === 'high') return '#F97316';
   if (l === 'medium') return '#D97706';
-  return 'rgba(237,237,237,0.40)';
+  return '#878787';
 }
 
 // ── Priority border color for board/ring cards (D-R7) ──
@@ -104,7 +104,7 @@ function priorityBorderColor(p: string): string {
   const l = (p || '').toLowerCase();
   if (l === 'highest' || l === 'critical' || l === 'high') return '#DC2626';
   if (l === 'medium') return '#D97706';
-  return 'rgba(237,237,237,0.40)';
+  return '#878787';
 }
 
 // ── Mini Avatar for assignee on contributed items ──
@@ -233,7 +233,7 @@ function WeekStripCollapsible({
               padding: '5px 14px', fontSize: '12.5px', fontWeight: isActive ? 600 : 500,
               borderRadius: '6px', cursor: 'pointer', transition: 'all var(--cp-duration-fast, 0.15s) ease',
               background: isActive ? 'rgba(37,99,235,0.10)' : 'transparent',
-              color: isActive ? '#2563EB' : 'rgba(237,237,237,0.40)',
+              color: isActive ? '#2563EB' : '#878787',
               border: 'none',
             }}
             onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = isDark ? '#1F1F1F' : 'rgba(15,23,42,0.04)'; }}
@@ -570,7 +570,7 @@ export default function R360MemberDetail() {
     );
   }
 
-  const deptColor = R360_DEPT_COLORS[overview.department] || 'rgba(237,237,237,0.40)';
+  const deptColor = R360_DEPT_COLORS[overview.department] || '#878787';
 
   return (
     <>
@@ -1084,9 +1084,9 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected, overview, 
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px', fontSize: '13px' }}>
             <span style={{ fontWeight: 650, color: isDark ? '#A1A1A1' : '#334155' }}>{nonDone.length} open</span>
             <span style={{ color: isDark ? '#878787' : '#94A3B8' }}>·</span>
-            <span style={{ fontWeight: 650, color: staleItems.length > 0 ? '#DC2626' : 'rgba(237,237,237,0.53)' }}>{staleItems.length} stale</span>
+            <span style={{ fontWeight: 650, color: staleItems.length > 0 ? '#DC2626' : '#878787' }}>{staleItems.length} stale</span>
             <span style={{ color: isDark ? '#878787' : '#94A3B8' }}>·</span>
-            <span style={{ fontWeight: 650, color: doneCount > 0 ? '#FFFFFF' : 'rgba(237,237,237,0.53)' }}>{doneCount} done</span>
+            <span style={{ fontWeight: 650, color: doneCount > 0 ? '#FFFFFF' : '#878787' }}>{doneCount} done</span>
           </div>
 
           {/* Divider */}
@@ -1099,7 +1099,7 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected, overview, 
               {nonDone.map(item => {
                 const hasHighP = isHighPriority(item.priority);
                 const hasMedP = isMediumPriority(item.priority);
-                const borderColor = hasHighP ? '#DC2626' : hasMedP ? '#D97706' : 'rgba(237,237,237,0.40)';
+                const borderColor = hasHighP ? '#DC2626' : hasMedP ? '#D97706' : '#878787';
                 const fromClass = getFromTagClass(item.age_days);
                 return (
                   <div key={item.id} onClick={() => onSelect(item)} style={{
@@ -1191,11 +1191,11 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected, overview, 
   // ══════════════════════════════════════════
   return (
     <div ref={canvasRef} className="r3-ring-canvas" style={{ marginTop: '8px', overflow: 'visible', position: 'relative' }}>
-      {/* SVG CONNECTORS — 2px solid rgba(237,237,237,0.53), avatar-edge to card-edge */}
+      {/* SVG CONNECTORS — 2px solid #878787, avatar-edge to card-edge */}
       <svg width={W} height={RING_CANVAS_H} style={{ position: 'absolute', top: 0, left: 0, zIndex: 0, pointerEvents: 'none', overflow: 'visible' }}>
         {spokes.map((s, i) => (
           <line key={i} x1={s.x1} y1={s.y1} x2={s.x2} y2={s.y2}
-            stroke="rgba(237,237,237,0.53)" strokeWidth={2} opacity={1} />
+            stroke="#878787" strokeWidth={2} opacity={1} />
         ))}
       </svg>
 
@@ -1260,7 +1260,7 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected, overview, 
                 <span style={{
                   marginLeft: 'auto', fontSize: '10px', fontWeight: 600,
                   padding: '1px 6px', borderRadius: '4px', background: isDark ? '#0A0A0A' : '#F8FAFC',
-                  color: item.age_days > 30 ? '#D97706' : 'rgba(237,237,237,0.40)',
+                  color: item.age_days > 30 ? '#D97706' : '#878787',
                   fontFamily: "'JetBrains Mono', monospace",
                 }}>{item.age_days}d</span>
               </div>
@@ -1301,7 +1301,7 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected, overview, 
             disabled={safePage === 0}
             style={{
               background: 'none', border: 'none', cursor: safePage === 0 ? 'default' : 'pointer',
-              color: safePage === 0 ? 'rgba(237,237,237,0.53)' : '#2563EB', fontSize: '13px', fontWeight: 700,
+              color: safePage === 0 ? '#878787' : '#2563EB', fontSize: '13px', fontWeight: 700,
               padding: '0 4px', lineHeight: 1,
             }}
             aria-label="Previous page"
@@ -1314,7 +1314,7 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected, overview, 
             disabled={safePage >= totalPages - 1}
             style={{
               background: 'none', border: 'none', cursor: safePage >= totalPages - 1 ? 'default' : 'pointer',
-              color: safePage >= totalPages - 1 ? 'rgba(237,237,237,0.53)' : '#2563EB', fontSize: '13px', fontWeight: 700,
+              color: safePage >= totalPages - 1 ? '#878787' : '#2563EB', fontSize: '13px', fontWeight: 700,
               padding: '0 4px', lineHeight: 1,
             }}
             aria-label="Next page"
