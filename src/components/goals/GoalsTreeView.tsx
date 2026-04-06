@@ -41,9 +41,9 @@ function statusBadge(status: string, isDark = false) {
     achieved:    { dot: '#4F46E5', bg: 'rgba(79,70,229,0.08)',  text: '#4338CA', bgDark: '#1A2030', textDark: '#93C5FD', label: 'Achieved' },
     at_risk:     { dot: '#D97706', bg: 'rgba(217,119,6,0.08)',  text: '#B45309', bgDark: '#2A2418', textDark: '#FBBF24', label: 'At Risk' },
     off_track:   { dot: '#EF4444', bg: 'rgba(239,68,68,0.08)',  text: '#DC2626', bgDark: '#2A1C1E', textDark: '#FCA5A5', label: 'Off Track' },
-    draft:       { dot: 'rgba(237,237,237,0.40)', bg: '#1A1A1A',               text: 'rgba(237,237,237,0.40)', bgDark: '#1A1A1A', textDark: '#A1A1A1', label: 'Draft' },
-    not_started: { dot: 'rgba(237,237,237,0.40)', bg: '#1A1A1A',               text: 'rgba(237,237,237,0.40)', bgDark: '#1A1A1A', textDark: '#A1A1A1', label: 'Not Started' },
-    cancelled:   { dot: 'rgba(237,237,237,0.40)', bg: '#1A1A1A',               text: 'rgba(237,237,237,0.40)', bgDark: '#1A1A1A', textDark: '#A1A1A1', label: 'Cancelled' },
+    draft:       { dot: '#94A3B8', bg: '#F1F5F9',               text: '#64748B', bgDark: '#1A1A1A', textDark: '#A1A1A1', label: 'Draft' },
+    not_started: { dot: '#94A3B8', bg: '#F1F5F9',               text: '#64748B', bgDark: '#1A1A1A', textDark: '#A1A1A1', label: 'Not Started' },
+    cancelled:   { dot: '#94A3B8', bg: '#F1F5F9',               text: '#64748B', bgDark: '#1A1A1A', textDark: '#A1A1A1', label: 'Cancelled' },
   };
   const s = map[status] || map.draft;
   return (
@@ -108,22 +108,22 @@ function computeThemeStatus(goals: Goal[]): string {
 }
 
 const AVATAR_COLORS: Record<string, { bg: string; text: string; bgDark: string; textDark: string }> = {
-  'Nada Alfassam':      { bg: '#DBEAFE', text: '#7DB8FC', bgDark: 'rgba(59,130,246,0.15)',  textDark: '#93C5FD' },
+  'Nada Alfassam':      { bg: '#DBEAFE', text: '#1E40AF', bgDark: 'rgba(59,130,246,0.15)',  textDark: '#93C5FD' },
   'Sitah Alqahtani':    { bg: '#E0E7FF', text: '#3730A3', bgDark: 'rgba(99,102,241,0.15)',  textDark: '#A5B4FC' },
-  'Sulaiman Alessa':    { bg: '#D1FAE5', text: '#4ADE80', bgDark: 'rgba(52,211,153,0.15)',  textDark: '#6EE7B7' },
-  'ibrahim alqusiyer':  { bg: 'rgba(251,191,36,0.10)', text: '#FBBF24', bgDark: 'rgba(251,191,36,0.15)',  textDark: '#FCD34D' },
+  'Sulaiman Alessa':    { bg: '#D1FAE5', text: '#065F46', bgDark: 'rgba(52,211,153,0.15)',  textDark: '#6EE7B7' },
+  'ibrahim alqusiyer':  { bg: '#FEF3C7', text: '#92400E', bgDark: 'rgba(251,191,36,0.15)',  textDark: '#FCD34D' },
   'Khaled Alghithy':    { bg: '#CFFAFE', text: '#155E75', bgDark: 'rgba(34,211,238,0.15)',  textDark: '#67E8F9' },
-  'Izza Ali':           { bg: '#EDE9FE', text: '#A78BFA', bgDark: 'rgba(139,92,246,0.15)',  textDark: '#C4B5FD' },
+  'Izza Ali':           { bg: '#EDE9FE', text: '#5B21B6', bgDark: 'rgba(139,92,246,0.15)',  textDark: '#C4B5FD' },
 };
 
 function getAvatarColors(name: string, isDark = false) {
   const palettes = [
-    { bg: '#DBEAFE', text: '#7DB8FC', bgDark: 'rgba(59,130,246,0.15)',  textDark: '#93C5FD' },
-    { bg: '#D1FAE5', text: '#4ADE80', bgDark: 'rgba(52,211,153,0.15)',  textDark: '#6EE7B7' },
+    { bg: '#DBEAFE', text: '#1E40AF', bgDark: 'rgba(59,130,246,0.15)',  textDark: '#93C5FD' },
+    { bg: '#D1FAE5', text: '#065F46', bgDark: 'rgba(52,211,153,0.15)',  textDark: '#6EE7B7' },
     { bg: '#E0E7FF', text: '#3730A3', bgDark: 'rgba(99,102,241,0.15)',  textDark: '#A5B4FC' },
-    { bg: 'rgba(251,191,36,0.10)', text: '#FBBF24', bgDark: 'rgba(251,191,36,0.15)',  textDark: '#FCD34D' },
+    { bg: '#FEF3C7', text: '#92400E', bgDark: 'rgba(251,191,36,0.15)',  textDark: '#FCD34D' },
     { bg: '#CFFAFE', text: '#155E75', bgDark: 'rgba(34,211,238,0.15)',  textDark: '#67E8F9' },
-    { bg: '#EDE9FE', text: '#A78BFA', bgDark: 'rgba(139,92,246,0.15)',  textDark: '#C4B5FD' },
+    { bg: '#EDE9FE', text: '#5B21B6', bgDark: 'rgba(139,92,246,0.15)',  textDark: '#C4B5FD' },
   ];
   let entry;
   if (AVATAR_COLORS[name]) {

@@ -43,7 +43,7 @@ export function TestCaseGridView({ testCases, selectedIds, onSelectOne, onRowCli
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'critical': return '#F87171';
+      case 'critical': return '#991B1B';
       case 'high': return '#C2410C';
       case 'medium': return '#A16207';
       default: return 'var(--fg-3)';

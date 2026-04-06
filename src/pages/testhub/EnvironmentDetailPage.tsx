@@ -46,26 +46,26 @@ interface LinkedCycle {
 }
 
 const TYPE_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
-  development: { label: 'Development', color: '#2563EB', bg: 'rgba(59,130,246,0.06)' },
+  development: { label: 'Development', color: '#2563EB', bg: '#EFF6FF' },
   testing: { label: 'Testing', color: '#7C3AED', bg: '#F5F3FF' },
   staging: { label: 'Staging', color: '#D97706', bg: '#FFFBEB' },
   uat: { label: 'UAT', color: '#0891B2', bg: '#ECFEFF' },
-  production: { label: 'Production', color: '#DC2626', bg: 'rgba(248,113,113,0.06)' },
-  other: { label: 'Other', color: 'rgba(237,237,237,0.40)', bg: '#1A1A1A' },
+  production: { label: 'Production', color: '#DC2626', bg: '#FEF2F2' },
+  other: { label: 'Other', color: '#64748B', bg: '#F1F5F9' },
 };
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
-  active: { label: 'Active', color: '#059669', bg: 'rgba(74,222,128,0.06)' },
+  active: { label: 'Active', color: '#059669', bg: '#ECFDF5' },
   maintenance: { label: 'Maintenance', color: '#D97706', bg: '#FFFBEB' },
-  inactive: { label: 'Inactive', color: 'rgba(237,237,237,0.40)', bg: '#1A1A1A' },
-  deprecated: { label: 'Deprecated', color: 'rgba(237,237,237,0.40)', bg: '#1A1A1A' },
+  inactive: { label: 'Inactive', color: '#64748B', bg: '#F1F5F9' },
+  deprecated: { label: 'Deprecated', color: '#94A3B8', bg: '#F8FAFC' },
 };
 
 const HEALTH_CONFIG: Record<string, { label: string; color: string; bg: string; icon: any }> = {
-  healthy: { label: 'Healthy', color: '#059669', bg: 'rgba(74,222,128,0.06)', icon: CheckCircle2 },
+  healthy: { label: 'Healthy', color: '#059669', bg: '#ECFDF5', icon: CheckCircle2 },
   degraded: { label: 'Degraded', color: '#D97706', bg: '#FFFBEB', icon: AlertTriangle },
-  down: { label: 'Down', color: '#DC2626', bg: 'rgba(248,113,113,0.06)', icon: XCircle },
-  unknown: { label: 'Unknown', color: 'rgba(237,237,237,0.40)', bg: '#1A1A1A', icon: HelpCircle },
+  down: { label: 'Down', color: '#DC2626', bg: '#FEF2F2', icon: XCircle },
+  unknown: { label: 'Unknown', color: '#64748B', bg: '#F1F5F9', icon: HelpCircle },
 };
 
 export default function EnvironmentDetailPage() {
@@ -192,7 +192,7 @@ export default function EnvironmentDetailPage() {
             {Object.entries(STATUS_CONFIG).map(([key, val]) => <option key={key} value={key}>{val.label}</option>)}
           </select>
           <button onClick={deleteEnvironment}
-            style={{ display: 'flex', alignItems: 'center', gap: 6, height: 40, padding: '0 14px', border: '1px solid #FECACA', borderRadius: 8, backgroundColor: 'rgba(248,113,113,0.06)', color: '#DC2626', fontSize: 13, cursor: 'pointer' }}>
+            style={{ display: 'flex', alignItems: 'center', gap: 6, height: 40, padding: '0 14px', border: '1px solid #FECACA', borderRadius: 8, backgroundColor: '#FEF2F2', color: '#DC2626', fontSize: 13, cursor: 'pointer' }}>
             <Trash2 size={16} />
           </button>
         </div>
@@ -231,7 +231,7 @@ export default function EnvironmentDetailPage() {
                   <p style={{ fontSize: 12, color: isDark ? '#A1A1A1' : '#64748B', margin: '0 0 4px', display: 'flex', alignItems: 'center', gap: 4 }}><Globe size={12} /> Application URL</p>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     <a href={environment.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 14, color: '#2563EB', textDecoration: 'none' }}>{environment.url}</a>
-                    <ExternalLink size={14} style={{ color: 'rgba(237,237,237,0.40)' }} />
+                    <ExternalLink size={14} style={{ color: '#94A3B8' }} />
                   </div>
                 </div>
               )}
@@ -285,12 +285,12 @@ export default function EnvironmentDetailPage() {
                     <div style={{ display: 'flex', gap: 4 }}>
                       {v.is_secret && (
                         <button onClick={() => toggleSecretVisibility(v.id)}
-                          style={{ width: 28, height: 28, border: 'none', borderRadius: 4, backgroundColor: 'transparent', color: 'rgba(237,237,237,0.40)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          style={{ width: 28, height: 28, border: 'none', borderRadius: 4, backgroundColor: 'transparent', color: '#64748B', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                           {showSecrets[v.id] ? <EyeOff size={14} /> : <Eye size={14} />}
                         </button>
                       )}
                       <button onClick={() => copyToClipboard(v.value || '')}
-                        style={{ width: 28, height: 28, border: 'none', borderRadius: 4, backgroundColor: 'transparent', color: 'rgba(237,237,237,0.40)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        style={{ width: 28, height: 28, border: 'none', borderRadius: 4, backgroundColor: 'transparent', color: '#64748B', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <Copy size={14} />
                       </button>
                     </div>
@@ -313,12 +313,12 @@ export default function EnvironmentDetailPage() {
                   <div key={cycle.cycle_id} onClick={() => navigate(`/testhub/cycles/${cycle.cycle_id}`)}
                     style={{ padding: 12, backgroundColor: isDark ? '#1A1A1A' : '#F8FAFC', borderRadius: 8, cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div>
-                      <span style={{ fontSize: 11, fontWeight: 600, color: '#2563EB', backgroundColor: 'rgba(59,130,246,0.06)', padding: '2px 6px', borderRadius: 4, marginRight: 8 }}>{cycle.cycle_key}</span>
+                      <span style={{ fontSize: 11, fontWeight: 600, color: '#2563EB', backgroundColor: '#EFF6FF', padding: '2px 6px', borderRadius: 4, marginRight: 8 }}>{cycle.cycle_key}</span>
                       <span style={{ fontSize: 13, color: isDark ? '#EDEDED' : '#0F172A' }}>{cycle.name}</span>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                       <span style={{ fontSize: 12, color: isDark ? '#A1A1A1' : '#64748B' }}>{cycle.progress_percent}%</span>
-                      <ChevronRight size={16} style={{ color: 'rgba(237,237,237,0.40)' }} />
+                      <ChevronRight size={16} style={{ color: '#94A3B8' }} />
                     </div>
                   </div>
                 ))}

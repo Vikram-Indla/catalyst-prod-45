@@ -48,7 +48,7 @@ export function ProjectSwitcher({ projects, currentKey, isOpen, onClose, onSelec
   return (
     <div
       ref={ref}
-      className="absolute top-full left-0 mt-1 z-50 bg-white dark:bg-[#1A1A1A] border border-[rgba(255,255,255,0.10)] dark:border-[rgba(255,255,255,0.10)]"
+      className="absolute top-full left-0 mt-1 z-50 bg-white dark:bg-[#1A1A1A] border border-[#E2E8F0] dark:border-[rgba(255,255,255,0.10)]"
       style={{
         width: 280,
         borderRadius: 8,
@@ -57,14 +57,14 @@ export function ProjectSwitcher({ projects, currentKey, isOpen, onClose, onSelec
       }}
     >
       {/* Search */}
-      <div className="flex items-center gap-2 px-3 py-2 border-b border-[rgba(255,255,255,0.10)] dark:border-[rgba(255,255,255,0.08)]">
-        <Search size={13} className="flex-shrink-0 text-[rgba(237,237,237,0.40)] dark:text-[rgba(255,255,255,0.40)]" />
+      <div className="flex items-center gap-2 px-3 py-2 border-b border-[#E2E8F0] dark:border-[rgba(255,255,255,0.08)]">
+        <Search size={13} className="flex-shrink-0 text-[#94A3B8] dark:text-[rgba(255,255,255,0.40)]" />
         <input
           autoFocus
           value={search}
           onChange={e => setSearch(e.target.value)}
           placeholder="Search projects..."
-          className="flex-1 bg-transparent outline-none border-none text-[rgba(237,237,237,0.93)] dark:text-[rgba(255,255,255,0.92)]"
+          className="flex-1 bg-transparent outline-none border-none text-[#0F172A] dark:text-[rgba(255,255,255,0.92)]"
           style={{ fontSize: 12 }}
         />
       </div>

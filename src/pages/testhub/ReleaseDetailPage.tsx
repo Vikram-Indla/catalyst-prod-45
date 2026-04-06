@@ -15,23 +15,23 @@ import { useTheme } from '@/hooks/useTheme';
 import { format } from 'date-fns';
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; icon: any }> = {
-  planning: { label: 'Planning', color: 'rgba(237,237,237,0.40)', bg: '#1A1A1A', icon: Clock },
-  planned: { label: 'Planned', color: 'rgba(237,237,237,0.40)', bg: '#1A1A1A', icon: Clock },
+  planning: { label: 'Planning', color: '#64748B', bg: '#F1F5F9', icon: Clock },
+  planned: { label: 'Planned', color: '#64748B', bg: '#F1F5F9', icon: Clock },
   development: { label: 'Development', color: '#8B5CF6', bg: '#F5F3FF', icon: Settings2 },
-  testing: { label: 'Testing', color: '#2563EB', bg: 'rgba(59,130,246,0.06)', icon: Beaker },
+  testing: { label: 'Testing', color: '#2563EB', bg: '#EFF6FF', icon: Beaker },
   uat: { label: 'UAT', color: '#EA580C', bg: '#FFF7ED', icon: Monitor },
   staging: { label: 'Staging', color: '#D97706', bg: '#FFFBEB', icon: Rocket },
-  ready: { label: 'Ready', color: '#059669', bg: 'rgba(74,222,128,0.06)', icon: CheckCircle2 },
-  released: { label: 'Released', color: '#059669', bg: 'rgba(74,222,128,0.06)', icon: CheckCircle2 },
-  shipped: { label: 'Shipped', color: '#059669', bg: 'rgba(74,222,128,0.06)', icon: CheckCircle2 },
-  archived: { label: 'Archived', color: 'rgba(237,237,237,0.40)', bg: '#1A1A1A', icon: Archive },
+  ready: { label: 'Ready', color: '#059669', bg: '#ECFDF5', icon: CheckCircle2 },
+  released: { label: 'Released', color: '#059669', bg: '#ECFDF5', icon: CheckCircle2 },
+  shipped: { label: 'Shipped', color: '#059669', bg: '#ECFDF5', icon: CheckCircle2 },
+  archived: { label: 'Archived', color: '#94A3B8', bg: '#F8FAFC', icon: Archive },
 };
 
 const HEALTH_CONFIG: Record<string, { label: string; color: string; dot: string }> = {
   healthy: { label: 'Healthy', color: '#059669', dot: '#22C55E' },
   at_risk: { label: 'At Risk', color: '#D97706', dot: '#F59E0B' },
   critical: { label: 'Critical', color: '#DC2626', dot: '#EF4444' },
-  none: { label: '—', color: 'rgba(237,237,237,0.40)', dot: 'rgba(237,237,237,0.53)' },
+  none: { label: '—', color: '#94A3B8', dot: '#CBD5E1' },
 };
 
 export default function ReleaseDetailPage() {
@@ -252,7 +252,7 @@ function CyclesTab({ cycles, isLoading, navigate, isDark }: { cycles: any[]; isL
                 <td style={tdStyle}>{cycle.total_cases || 0}</td>
                 <td style={tdStyle}><span style={{ color: '#059669', fontWeight: 600 }}>{cycle.passed_count || 0}</span></td>
                 <td style={tdStyle}><span style={{ color: '#DC2626', fontWeight: 600 }}>{cycle.failed_count || 0}</span></td>
-                <td style={tdStyle}><ChevronRight style={{ width: 14, height: 14, color: 'rgba(237,237,237,0.53)' }} /></td>
+                <td style={tdStyle}><ChevronRight style={{ width: 14, height: 14, color: '#CBD5E1' }} /></td>
               </tr>
             );
           })}

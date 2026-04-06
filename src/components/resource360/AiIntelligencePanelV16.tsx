@@ -7,8 +7,8 @@ import React, { useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
 
 const T = {
-  bg: 'var(--bg-1, #1A1A1A)', surface: '#FFFFFF', ink1: 'var(--fg-1, rgba(237,237,237,0.93))', ink2: 'rgba(237,237,237,0.53)',
-  ink3: 'rgba(237,237,237,0.40)', ink4: 'rgba(237,237,237,0.40)', border: 'var(--bd-default, rgba(255,255,255,0.10))', accent: '#2563EB',
+  bg: 'var(--bg-1, #F8FAFC)', surface: '#FFFFFF', ink1: 'var(--fg-1, #0F172A)', ink2: '#334155',
+  ink3: '#64748B', ink4: '#94A3B8', border: 'var(--bd-default, #E2E8F0)', accent: '#2563EB',
   danger: '#EF4444', warning: '#D97706', success: '#0E8A5F',
   mono: "'JetBrains Mono', 'SF Mono', monospace",
   sora: "'Sora', 'Inter', sans-serif",
@@ -30,7 +30,7 @@ const MOCK = {
   trend: '+12%',
   types: [
     { type: 'Bug', pct: 62, color: '#0D9488' },
-    { type: 'Task', pct: 38, color: 'rgba(237,237,237,0.93)' },
+    { type: 'Task', pct: 38, color: '#1E293B' },
   ],
 };
 

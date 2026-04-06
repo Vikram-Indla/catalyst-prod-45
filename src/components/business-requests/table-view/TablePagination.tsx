@@ -1,4 +1,4 @@
-/* V12 — TablePagination: #1A1A1A bg, JetBrains Mono for numeric text */
+/* V12 — TablePagination: #F1F5F9 bg, JetBrains Mono for numeric text */
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -39,7 +39,7 @@ export function TablePagination({
       style={{
         padding: '8px 12px', /* V12 */
         borderTop: '0.75px solid rgba(15, 23, 42, 0.06)', /* V12 */
-        background: '#1A1A1A', /* V12 */
+        background: '#F1F5F9', /* V12 */
       }}
     >
       {/* Left: Items info */}

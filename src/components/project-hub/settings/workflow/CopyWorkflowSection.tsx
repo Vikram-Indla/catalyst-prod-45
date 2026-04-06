@@ -97,7 +97,7 @@ export function CopyWorkflowSection({ projectId, onCopied }: CopyWorkflowSection
           <button
             onClick={() => sourceProjectId && setConfirmOpen(true)}
             disabled={!sourceProjectId}
-            className="flex items-center gap-1.5 hover:bg-[#1A1A1A] transition-colors disabled:opacity-40"
+            className="flex items-center gap-1.5 hover:bg-[#F8FAFC] transition-colors disabled:opacity-40"
             style={{
               height: 50, padding: '0 14px', fontSize: 13, fontWeight: 500,
               color: 'var(--fg-2)', border: '1px solid var(--divider)', borderRadius: 6,

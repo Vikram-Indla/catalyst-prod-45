@@ -16,7 +16,7 @@ interface LabelsManagerProps {
 
 const COLORS = {
   textPrimary: '#0f172a',
-  textSecondary: 'rgba(237,237,237,0.53)',
+  textSecondary: '#334155',
   textMuted: '#64748b',
   textLight: '#94a3b8',
   surfaceCard: '#ffffff',

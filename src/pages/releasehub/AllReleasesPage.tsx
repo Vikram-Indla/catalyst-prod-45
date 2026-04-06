@@ -124,7 +124,7 @@ export default function AllReleasesPage() {
       {/* Freeze conflict banner */}
       {freezeConflicts.length > 0 && (
         <div style={{
-          background: 'rgba(251,191,36,0.10)',
+          background: '#FEF3C7',
           border: '1px solid #FCD34D',
           borderRadius: '6px',
           padding: '10px 14px',
@@ -134,7 +134,7 @@ export default function AllReleasesPage() {
           marginBottom: '12px',
         }}>
           <AlertTriangle size={16} color="#D97706" />
-          <span style={{ fontSize: '13px', color: '#FBBF24' }}>
+          <span style={{ fontSize: '13px', color: '#92400E' }}>
             {freezeConflicts.length === 1
               ? `"${freezeConflicts[0].name}" targets a date within a freeze window.`
               : `${freezeConflicts.length} releases target dates within freeze windows.`}
@@ -213,7 +213,7 @@ export default function AllReleasesPage() {
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <span className="inline-flex items-center gap-1 text-[11px] text-[rgba(237,237,237,0.40)] cursor-default">
+                            <span className="inline-flex items-center gap-1 text-[11px] text-[#94A3B8] cursor-default">
                               <Clock size={12} />
                               Synced {relativeTime(r.synced_at || r.updated_at)}
                             </span>
@@ -278,7 +278,7 @@ export default function AllReleasesPage() {
                           <TooltipProvider>
                             <Tooltip>
                               <TooltipTrigger asChild>
-                                <span className="inline-flex items-center gap-0.5 text-[11px] text-[rgba(237,237,237,0.40)] cursor-default">
+                                <span className="inline-flex items-center gap-0.5 text-[11px] text-[#94A3B8] cursor-default">
                                   <Clock size={12} />
                                 </span>
                               </TooltipTrigger>

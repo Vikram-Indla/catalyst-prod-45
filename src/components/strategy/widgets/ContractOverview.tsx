@@ -110,7 +110,7 @@ export function ContractOverview() {
     { label: 'EXPIRED', value: expired.length, color: 'var(--exec-signal-red, #DC2626)', pulse: expired.length > 0 },
     { label: '≤3 MONTHS', value: critical.length, color: 'var(--exec-signal-red, #DC2626)', pulse: false },
     { label: '3–6 MONTHS', value: warning.length, color: 'var(--exec-signal-amber, #D97706)', pulse: false },
-    { label: '>6 MONTHS', value: safe.length, color: 'var(--exec-blue-700, #7DB8FC)', pulse: false },
+    { label: '>6 MONTHS', value: safe.length, color: 'var(--exec-blue-700, #1E40AF)', pulse: false },
   ];
 
   /* Timeline bar: red/amber/blue (not green for safe) */
@@ -128,7 +128,7 @@ export function ContractOverview() {
         <div className="grid grid-cols-4 gap-1.5 mb-3">
           {kpis.map(kpi => (
             <div key={kpi.label} className="text-center relative" style={{
-              border: '1px solid var(--exec-border, var(--bd-default, rgba(255,255,255,0.10)))', borderRadius: 6, padding: '4px 6px',
+              border: '1px solid var(--exec-border, var(--bd-default, #E2E8F0))', borderRadius: 6, padding: '4px 6px',
             }}>
               {kpi.pulse && (
                 <span className="contract-pulse-dot" style={{
@@ -222,7 +222,7 @@ export function ContractOverview() {
           )}
           {critical.length > 3 && (
             <button onClick={(e) => { e.stopPropagation(); navigate('/planhub/capacity'); }}
-              style={{ fontSize: 10, color: 'var(--exec-blue-700, #7DB8FC)', background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontWeight: 500 }}>
+              style={{ fontSize: 10, color: 'var(--exec-blue-700, #1E40AF)', background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontWeight: 500 }}>
               +{critical.length - 3} more expiring within 3 months →
             </button>
           )}

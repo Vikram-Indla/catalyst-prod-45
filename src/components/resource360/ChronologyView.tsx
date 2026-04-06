@@ -192,7 +192,7 @@ const ChronologyView: React.FC<ChronologyViewProps> = ({ resourceId, onItemClick
                 const cat = getStatusCategory(item.status_category || item.status);
                 const isPending = cat !== 'done';
                 const statusColor = cat === 'todo' ? T.todo : cat === 'progress' ? T.progress : T.done;
-                const hubColor = HUB_COLORS[item.hub || item.source_hub] ?? 'rgba(237,237,237,0.40)';
+                const hubColor = HUB_COLORS[item.hub || item.source_hub] ?? '#64748B';
                 const hub = item.hub || item.source_hub || 'ProjectHub';
                 const baseBg = idx % 2 === 0 ? T.surface : '#FAF8F5';
                 const highlightBg = showPendingOnly && isPending ? T.pendingHighlight : baseBg;

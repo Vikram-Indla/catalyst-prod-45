@@ -554,7 +554,7 @@ export function getStatusCategory(status: string, statusCategory?: string): Stat
 /** Status category color tokens — Catalyst V5 compliant */
 export const STATUS_COLORS: Record<StatusCategory, { bg: string; text: string; border: string; dot: string }> = {
   all:      { bg: '#F3F4F6', text: '#374151', border: '#D1D5DB', dot: '#6B7280' },
-  todo:     { bg: '#1A1A1A', text: 'rgba(237,237,237,0.40)', border: 'rgba(237,237,237,0.53)', dot: 'rgba(237,237,237,0.40)' },
+  todo:     { bg: '#F1F5F9', text: '#64748B', border: '#CBD5E1', dot: '#64748B' },
   progress: { bg: '#DBEAFE', text: '#2563EB', border: '#93C5FD', dot: '#2563EB' },
   done:     { bg: '#D1FAE5', text: '#059669', border: '#6EE7B7', dot: '#059669' },
 };
@@ -567,7 +567,7 @@ export const WH_HUB_COLORS: Record<string, string> = {
   ReleaseHub:   '#D97706',
   TestHub:      '#DC2626',
   IncidentHub:  '#EF4444',
-  TaskHub:      'rgba(237,237,237,0.40)',
+  TaskHub:      '#64748B',
 };
 
 /** Hub short names for badges (V3) */

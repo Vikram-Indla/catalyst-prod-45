@@ -28,27 +28,27 @@ import { AIStrategyIntelligencePanel } from '@/components/strategy/intelligence/
 
 // ── Layer colors (NO purple for KRs) ──
 const LAYER = {
-  theme:      { color: '#2563EB', badgeBg: 'rgba(59,130,246,0.06)', badgeText: '#7DB8FC', border: '#2563EB' },
+  theme:      { color: '#2563EB', badgeBg: '#EFF6FF', badgeText: '#1E40AF', border: '#2563EB' },
   goal:       { color: '#0D9488', badgeBg: '#F0FDFA', badgeText: '#115E59', border: '#0D9488' },
-  kr:         { color: '#2563EB', badgeBg: '#DBEAFE', badgeText: '#7DB8FC', border: '#2563EB' },
-  initiative: { color: '#D97706', badgeBg: '#FFFBEB', badgeText: '#FBBF24', border: '#D97706' },
+  kr:         { color: '#2563EB', badgeBg: '#DBEAFE', badgeText: '#1E40AF', border: '#2563EB' },
+  initiative: { color: '#D97706', badgeBg: '#FFFBEB', badgeText: '#92400E', border: '#D97706' },
   epic:       { color: '#4F46E5', badgeBg: '#EEF2FF', badgeText: '#3730A3', border: '#4F46E5' },
 } as const;
 
 const STATUS_CONFIG: Record<string, { dot: string; bg: string; text: string; label: string }> = {
-  active:       { dot: '#16A34A', bg: 'rgba(74,222,128,0.06)', text: '#166534', label: 'Active' },
-  on_track:     { dot: '#16A34A', bg: 'rgba(74,222,128,0.06)', text: '#166534', label: 'On Track' },
-  at_risk:      { dot: '#D97706', bg: '#FFFBEB', text: '#FBBF24', label: 'At Risk' },
-  off_track:    { dot: '#EF4444', bg: 'rgba(248,113,113,0.06)', text: '#F87171', label: 'Off Track' },
-  draft:        { dot: 'rgba(237,237,237,0.40)', bg: 'var(--bg-1, #1A1A1A)', text: '#475569', label: 'Draft' },
-  planned:      { dot: 'rgba(237,237,237,0.40)', bg: 'var(--bg-1, #1A1A1A)', text: '#475569', label: 'Planned' },
-  completed:    { dot: '#2563EB', bg: 'rgba(59,130,246,0.06)', text: '#7DB8FC', label: 'Done' },
-  cancelled:    { dot: 'rgba(237,237,237,0.40)', bg: 'var(--bg-1, #1A1A1A)', text: '#475569', label: 'Cancelled' },
-  in_progress:  { dot: '#2563EB', bg: 'rgba(59,130,246,0.06)', text: '#7DB8FC', label: 'In Progress' },
-  not_started:  { dot: 'rgba(237,237,237,0.40)', bg: 'var(--bg-1, #1A1A1A)', text: '#475569', label: 'Not Started' },
+  active:       { dot: '#16A34A', bg: '#F0FDF4', text: '#166534', label: 'Active' },
+  on_track:     { dot: '#16A34A', bg: '#F0FDF4', text: '#166534', label: 'On Track' },
+  at_risk:      { dot: '#D97706', bg: '#FFFBEB', text: '#92400E', label: 'At Risk' },
+  off_track:    { dot: '#EF4444', bg: '#FEF2F2', text: '#991B1B', label: 'Off Track' },
+  draft:        { dot: '#94A3B8', bg: 'var(--bg-1, #F8FAFC)', text: '#475569', label: 'Draft' },
+  planned:      { dot: '#94A3B8', bg: 'var(--bg-1, #F8FAFC)', text: '#475569', label: 'Planned' },
+  completed:    { dot: '#2563EB', bg: '#EFF6FF', text: '#1E40AF', label: 'Done' },
+  cancelled:    { dot: '#94A3B8', bg: 'var(--bg-1, #F8FAFC)', text: '#475569', label: 'Cancelled' },
+  in_progress:  { dot: '#2563EB', bg: '#EFF6FF', text: '#1E40AF', label: 'In Progress' },
+  not_started:  { dot: '#94A3B8', bg: 'var(--bg-1, #F8FAFC)', text: '#475569', label: 'Not Started' },
   approved:     { dot: '#0D9488', bg: '#F0FDFA', text: '#115E59', label: 'Approved' },
-  proposed:     { dot: 'rgba(237,237,237,0.40)', bg: 'var(--bg-1, #1A1A1A)', text: '#475569', label: 'Proposed' },
-  analyzing:    { dot: 'rgba(237,237,237,0.40)', bg: 'var(--bg-1, #1A1A1A)', text: '#475569', label: 'Analyzing' },
+  proposed:     { dot: '#94A3B8', bg: 'var(--bg-1, #F8FAFC)', text: '#475569', label: 'Proposed' },
+  analyzing:    { dot: '#94A3B8', bg: 'var(--bg-1, #F8FAFC)', text: '#475569', label: 'Analyzing' },
 };
 
 function getProgressColor(v: number) {
@@ -88,9 +88,9 @@ function ChainStat({ label, value, total }: { label: string; value: number; tota
 function GhostNode({ label }: { label: string }) {
   return (
     <div className="flex items-center justify-center gap-1.5 border border-dashed rounded-lg"
-      style={{ width: 180, padding: 12, borderColor: 'rgba(237,237,237,0.53)', background: 'rgba(248,250,252,0.5)' }}>
-      <Unlink size={12} style={{ color: 'rgba(237,237,237,0.40)' }} />
-      <span style={{ fontSize: 11, color: 'rgba(237,237,237,0.40)' }}>No linked {label}</span>
+      style={{ width: 180, padding: 12, borderColor: '#CBD5E1', background: 'rgba(248,250,252,0.5)' }}>
+      <Unlink size={12} style={{ color: '#94A3B8' }} />
+      <span style={{ fontSize: 11, color: '#94A3B8' }}>No linked {label}</span>
     </div>
   );
 }
@@ -102,7 +102,7 @@ function ChainPill({ color, keyLabel, title }: { color: string; keyLabel: string
         style={{ fontSize: 9, background: `${color}15`, color }}>
         {keyLabel}
       </span>
-      <span className="font-medium truncate" style={{ fontSize: 11, color: 'rgba(237,237,237,0.53)' }}>{title}</span>
+      <span className="font-medium truncate" style={{ fontSize: 11, color: '#334155' }}>{title}</span>
     </div>
   );
 }
@@ -171,7 +171,7 @@ function getChainHealthColor(chain: LockedChainData | null): string {
     case 'Critical': return '#EF4444';
     case 'Broken': return '#EF4444';
     case 'Partial': return '#D97706';
-    default: return 'rgba(237,237,237,0.40)';
+    default: return '#94A3B8';
   }
 }
 
@@ -678,7 +678,7 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
       if (srcIn && tgtIn) {
         return { stroke: p.layerColor, strokeWidth: 3, opacity: 1, filter: 'drop-shadow(0 0 4px rgba(37, 99, 235, 0.3))' };
       }
-      return { stroke: 'var(--bd-default, rgba(255,255,255,0.10))', strokeWidth: 0.5, opacity: 0.05, filter: 'none' };
+      return { stroke: 'var(--bd-default, #E2E8F0)', strokeWidth: 0.5, opacity: 0.05, filter: 'none' };
     }
     // Hover-only
     const isLit = highlightedNodes.has(p.sourceId) && highlightedNodes.has(p.targetId);
@@ -810,13 +810,13 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
         <div className="flex items-center gap-2 text-muted-foreground dark:text-gray-300" style={{ fontSize: 12 }}>
           <span className="font-semibold text-foreground">Reading this map:</span>
           <span>Each</span>
-          <Badge variant="outline" className="font-semibold text-[11px] py-0 px-1.5 dark:bg-gray-800 dark:border-gray-700" style={{ color: '#7DB8FC', background: 'rgba(59,130,246,0.06)', borderColor: '#BFDBFE' }}>● Theme</Badge>
+          <Badge variant="outline" className="font-semibold text-[11px] py-0 px-1.5 dark:bg-gray-800 dark:border-gray-700" style={{ color: '#1E40AF', background: '#EFF6FF', borderColor: '#BFDBFE' }}>● Theme</Badge>
           <span>breaks down into</span>
           <Badge variant="outline" className="font-semibold text-[11px] py-0 px-1.5 dark:bg-gray-800 dark:border-gray-700" style={{ color: '#115E59', background: '#F0FDFA', borderColor: '#99F6E4' }}>● Goals</Badge>
           <span>measured by</span>
-          <Badge variant="outline" className="font-semibold text-[11px] py-0 px-1.5 dark:bg-gray-800 dark:border-gray-700" style={{ color: '#7DB8FC', background: '#DBEAFE', borderColor: '#93C5FD' }}>● Key Results</Badge>
+          <Badge variant="outline" className="font-semibold text-[11px] py-0 px-1.5 dark:bg-gray-800 dark:border-gray-700" style={{ color: '#1E40AF', background: '#DBEAFE', borderColor: '#93C5FD' }}>● Key Results</Badge>
           <span>delivered through</span>
-          <Badge variant="outline" className="font-semibold text-[11px] py-0 px-1.5 dark:bg-gray-800 dark:border-gray-700" style={{ color: '#FBBF24', background: '#FFFBEB', borderColor: '#FDE68A' }}>● Initiatives</Badge>
+          <Badge variant="outline" className="font-semibold text-[11px] py-0 px-1.5 dark:bg-gray-800 dark:border-gray-700" style={{ color: '#92400E', background: '#FFFBEB', borderColor: '#FDE68A' }}>● Initiatives</Badge>
           <span>executed as</span>
           <Badge variant="outline" className="font-semibold text-[11px] py-0 px-1.5 dark:bg-gray-800 dark:border-gray-700" style={{ color: '#3730A3', background: '#EEF2FF', borderColor: '#C7D2FE' }}>● Epics</Badge>
         </div>
@@ -829,7 +829,7 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
           ref={canvasRef}
           className="overflow-auto select-none transition-all duration-[400ms] ease-out"
           style={{
-            background: 'var(--bg-1, #1A1A1A)',
+            background: 'var(--bg-1, #F8FAFC)',
             cursor: isPanning ? 'grabbing' : 'grab',
             width: isIntelOpen ? '50vw' : '100%',
             flexShrink: 0,

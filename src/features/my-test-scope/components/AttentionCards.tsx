@@ -26,7 +26,7 @@ export function AttentionCards({ summary, onCardClick }: AttentionCardsProps) {
     { id: 'overdue', icon: Flame, label: 'Overdue', count: summary.overdueCount, color: '#DC2626', bgClass: 'bg-red-50 dark:bg-red-950/30' },
     { id: 'today', icon: Clock, label: 'Due Today', count: summary.dueTodayCount, color: '#D97706', bgClass: 'bg-amber-50 dark:bg-amber-950/30' },
     { id: 'defects', icon: Bug, label: 'Defects', count: summary.linkedDefectsCount, color: '#DC2626', bgClass: 'bg-red-50 dark:bg-red-950/30' },
-    { id: 'incidents', icon: Zap, label: 'Incidents', count: summary.activeIncidentsCount, color: 'rgba(237,237,237,0.40)', bgClass: 'bg-muted' },
+    { id: 'incidents', icon: Zap, label: 'Incidents', count: summary.activeIncidentsCount, color: '#64748B', bgClass: 'bg-muted' },
   ];
 
   return (

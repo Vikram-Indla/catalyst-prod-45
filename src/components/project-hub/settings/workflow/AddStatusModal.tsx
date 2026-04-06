@@ -38,7 +38,7 @@ export function AddStatusModal({ open, onClose, onSubmit, loading }: AddStatusMo
         <div className="flex items-center justify-between mb-5">
           <h3 className="text-[var(--fg-1)] dark:text-[rgba(255,255,255,0.92)]" style={{ fontSize: 16, fontWeight: 700, fontFamily: "'Sora', sans-serif" }}>Add Status</h3>
           <button onClick={onClose} className="flex items-center justify-center rounded-md hover:bg-[var(--cp-bd-zone)] dark:hover:bg-[rgba(255,255,255,0.03)] transition-colors" style={{ width: 28, height: 28, border: 'none', background: 'transparent', cursor: 'pointer' }}>
-            <X size={16} className="text-[rgba(237,237,237,0.40)] dark:text-[rgba(255,255,255,0.55)]" />
+            <X size={16} className="text-[#64748B] dark:text-[rgba(255,255,255,0.55)]" />
           </button>
         </div>
 
@@ -46,7 +46,7 @@ export function AddStatusModal({ open, onClose, onSubmit, loading }: AddStatusMo
           <div>
             <label className="text-[var(--fg-2)] dark:text-[rgba(255,255,255,0.72)]" style={{ fontSize: 12, fontWeight: 500, display: 'block', marginBottom: 4 }}>Status Name <span style={{ color: 'var(--sem-danger)' }}>*</span></label>
             <input value={name} onChange={e => setName(e.target.value)} placeholder="e.g. In Review"
-              className="w-full bg-white dark:bg-transparent border border-[var(--bd-default, rgba(255,255,255,0.10))] dark:border-[rgba(255,255,255,0.10)] text-[rgba(237,237,237,0.93)] dark:text-[rgba(255,255,255,0.92)] placeholder:text-[rgba(237,237,237,0.40)] dark:placeholder:text-[rgba(255,255,255,0.40)]"
+              className="w-full bg-white dark:bg-transparent border border-[var(--bd-default, #E2E8F0)] dark:border-[rgba(255,255,255,0.10)] text-[#0F172A] dark:text-[rgba(255,255,255,0.92)] placeholder:text-[#94A3B8] dark:placeholder:text-[rgba(255,255,255,0.40)]"
               style={{ height: 40, padding: '8px 12px', fontSize: 13, borderRadius: 6, outline: 'none', fontFamily: "'Inter', sans-serif" }}
             />
           </div>
@@ -54,7 +54,7 @@ export function AddStatusModal({ open, onClose, onSubmit, loading }: AddStatusMo
           <div>
             <label className="text-[var(--fg-2)] dark:text-[rgba(255,255,255,0.72)]" style={{ fontSize: 12, fontWeight: 500, display: 'block', marginBottom: 4 }}>Category <span style={{ color: 'var(--sem-danger)' }}>*</span></label>
             <select value={category} onChange={e => setCategory(e.target.value)}
-              className="w-full bg-white dark:bg-transparent border border-[var(--bd-default, rgba(255,255,255,0.10))] dark:border-[rgba(255,255,255,0.10)] text-[rgba(237,237,237,0.93)] dark:text-[rgba(255,255,255,0.92)]"
+              className="w-full bg-white dark:bg-transparent border border-[var(--bd-default, #E2E8F0)] dark:border-[rgba(255,255,255,0.10)] text-[#0F172A] dark:text-[rgba(255,255,255,0.92)]"
               style={{ height: 40, padding: '8px 12px', fontSize: 13, borderRadius: 6, outline: 'none', cursor: 'pointer', fontFamily: "'Inter', sans-serif" }}
             >
               {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
@@ -81,7 +81,7 @@ export function AddStatusModal({ open, onClose, onSubmit, loading }: AddStatusMo
 
         <div className="flex justify-end gap-2 mt-6">
           <button onClick={onClose}
-            className="bg-white dark:bg-transparent border border-[var(--bd-default, rgba(255,255,255,0.10))] dark:border-[rgba(255,255,255,0.10)] text-[rgba(237,237,237,0.53)] dark:text-[rgba(255,255,255,0.72)]"
+            className="bg-white dark:bg-transparent border border-[var(--bd-default, #E2E8F0)] dark:border-[rgba(255,255,255,0.10)] text-[#334155] dark:text-[rgba(255,255,255,0.72)]"
             style={{ height: 50, padding: '0 16px', fontSize: 13, fontWeight: 500, borderRadius: 6, cursor: 'pointer' }}
           >Cancel</button>
           <button

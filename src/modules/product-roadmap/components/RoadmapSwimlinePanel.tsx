@@ -13,7 +13,7 @@ import type { RoadmapDemand, TimelineConfig } from '../types/roadmap';
 import { addMonths } from 'date-fns';
 import { User } from 'lucide-react';
 
-const AVATAR_COLORS = ['#2563EB', '#6366F1', '#0D9488', '#D97706', '#16A34A', '#0891B2', '#DC2626', 'rgba(237,237,237,0.53)'];
+const AVATAR_COLORS = ['#2563EB', '#6366F1', '#0D9488', '#D97706', '#16A34A', '#0891B2', '#DC2626', '#334155'];
 
 function hashColor(name: string): string {
   let hash = 0;
@@ -75,7 +75,7 @@ export function RoadmapSwimlanePanel({ items, config, selectedItemId, onItemClic
   }, [items]);
 
   const hc = highContrast;
-  const borderColor = hc ? '#09090B' : 'var(--bd-default, rgba(255,255,255,0.10))';
+  const borderColor = hc ? '#09090B' : 'var(--bd-default, #E2E8F0)';
 
   const renderGridlines = () => (
     <div className="absolute inset-0 pointer-events-none flex">
@@ -88,7 +88,7 @@ export function RoadmapSwimlanePanel({ items, config, selectedItemId, onItemClic
             style={{
               minWidth: periodMinWidth,
               width: `${100 / periods.length}%`,
-              borderRight: `1px solid ${isQuarterBoundary ? borderColor : '#1A1A1A'}`,
+              borderRight: `1px solid ${isQuarterBoundary ? borderColor : '#F1F5F9'}`,
               background: period.isCurrent ? 'rgba(37,99,235,0.03)' : 'transparent',
             }}
           />
@@ -109,7 +109,7 @@ export function RoadmapSwimlanePanel({ items, config, selectedItemId, onItemClic
             {lanes.map(([key, lane]) => {
               const isUnassigned = lane.name === 'Unassigned';
               const initials = isUnassigned ? '?' : getInitials(lane.name);
-              const avatarColor = isUnassigned ? 'rgba(237,237,237,0.40)' : hashColor(lane.name);
+              const avatarColor = isUnassigned ? '#94A3B8' : hashColor(lane.name);
               
               return (
                 <div key={key}>
@@ -137,15 +137,15 @@ export function RoadmapSwimlanePanel({ items, config, selectedItemId, onItemClic
                     >
                       {isUnassigned ? <User className="w-3 h-3" /> : initials}
                     </div>
-                    <span style={{ fontSize: 12, fontWeight: 600, color: 'rgba(237,237,237,0.53)' }}>
+                    <span style={{ fontSize: 12, fontWeight: 600, color: '#334155' }}>
                       {lane.name}
                     </span>
                     <span
                       style={{
                         fontSize: 10,
                         fontWeight: 600,
-                        color: 'rgba(237,237,237,0.40)',
-                        background: '#1A1A1A',
+                        color: '#64748B',
+                        background: '#F1F5F9',
                         borderRadius: 12,
                         padding: '2px 7px',
                         fontFamily: 'JetBrains Mono, monospace',
@@ -168,7 +168,7 @@ export function RoadmapSwimlanePanel({ items, config, selectedItemId, onItemClic
                         style={{
                           height: 40,
                           backgroundColor: isSelected ? 'rgba(37,99,235,0.06)' : 'transparent',
-                          borderBottom: '1px solid #1A1A1A',
+                          borderBottom: '1px solid #F1F5F9',
                         }}
                         onClick={() => onItemClick(item.id)}
                         onMouseEnter={e => { if (!isSelected) e.currentTarget.style.backgroundColor = '#FAFBFC'; }}
@@ -186,7 +186,7 @@ export function RoadmapSwimlanePanel({ items, config, selectedItemId, onItemClic
                         ) : (
                           <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
                             <div className="w-2 h-2 rounded-full" style={{ background: '#2563EB' }} />
-                            <span style={{ fontSize: 12, color: 'rgba(237,237,237,0.40)' }}>Outside range</span>
+                            <span style={{ fontSize: 12, color: '#64748B' }}>Outside range</span>
                           </div>
                         )}
                       </div>

@@ -295,7 +295,7 @@ export function JiraSyncDialog({ open, onClose }: Props) {
             <div style={{
               display: 'inline-flex', alignItems: 'center', gap: 5,
               padding: '3px 10px', borderRadius: 20,
-              background: 'rgba(74,222,128,0.06)', border: '1px solid #BBF7D0',
+              background: '#F0FDF4', border: '1px solid #BBF7D0',
               fontSize: 10, fontWeight: 600, color: 'var(--sem-success)',
               fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.02em',
             }}>
@@ -321,7 +321,7 @@ export function JiraSyncDialog({ open, onClose }: Props) {
               <>
                 <div style={{
                   width: 72, height: 72, borderRadius: 20,
-                  background: 'linear-gradient(135deg, rgba(59,130,246,0.06), #DBEAFE)',
+                  background: 'linear-gradient(135deg, #EFF6FF, #DBEAFE)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   marginBottom: 24, position: 'relative',
                 }}>
@@ -391,7 +391,7 @@ export function JiraSyncDialog({ open, onClose }: Props) {
               <>
                 <div style={{
                   width: 72, height: 72, borderRadius: 20,
-                  background: 'linear-gradient(135deg, rgba(74,222,128,0.06), #DCFCE7)',
+                  background: 'linear-gradient(135deg, #F0FDF4, #DCFCE7)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 24,
                 }}>
                   <CheckCircle2 size={32} color="#16A34A" />
@@ -441,7 +441,7 @@ export function JiraSyncDialog({ open, onClose }: Props) {
               <>
                 <div style={{
                   width: 72, height: 72, borderRadius: 20,
-                  background: 'linear-gradient(135deg, rgba(248,113,113,0.06), rgba(248,113,113,0.10))',
+                  background: 'linear-gradient(135deg, #FEF2F2, #FEE2E2)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 24,
                 }}>
                   <AlertCircle size={32} color="#DC2626" />
@@ -541,7 +541,7 @@ export function JiraSyncDialog({ open, onClose }: Props) {
                     {SYNC_OPTIONS.map(opt => (
                       <button key={opt.value} onClick={() => { setSyncMode(opt.value); setShowModeDropdown(false); }} style={{
                         width: '100%', padding: '10px 14px', textAlign: 'left',
-                        background: syncMode === opt.value ? 'rgba(59,130,246,0.06)' : 'transparent',
+                        background: syncMode === opt.value ? '#EFF6FF' : 'transparent',
                         border: 'none', cursor: 'pointer', fontSize: 13,
                         display: 'flex', alignItems: 'center', gap: 10, borderBottom: '1px solid var(--cp-bd-zone)',
                       }}>

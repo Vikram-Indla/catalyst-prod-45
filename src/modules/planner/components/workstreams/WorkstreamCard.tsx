@@ -18,7 +18,7 @@ interface WorkstreamCardProps {
 
 const COLORS = {
   textPrimary: '#0f172a',
-  textSecondary: 'rgba(237,237,237,0.53)',
+  textSecondary: '#334155',
   textMuted: '#64748b',
   textLight: '#94a3b8',
   
@@ -338,7 +338,7 @@ const MenuOption: React.FC<{
         border: 'none',
         borderRadius: '6px',
         fontSize: '14px',
-        color: disabled ? '#94a3b8' : (danger ? '#dc2626' : 'rgba(237,237,237,0.53)'),
+        color: disabled ? '#94a3b8' : (danger ? '#dc2626' : '#334155'),
         cursor: disabled ? 'not-allowed' : 'pointer',
         fontFamily: 'inherit',
         textAlign: 'left',

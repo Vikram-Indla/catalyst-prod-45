@@ -211,7 +211,7 @@ function OverviewTab({ theme, sc, bsc, pri, isDark = false }: { theme: Strategic
         <div className="rounded-lg mb-5 overflow-hidden" style={{
           background: isDark
             ? 'rgba(59, 130, 246, 0.12)'
-            : 'linear-gradient(135deg, #DBEAFE, rgba(59,130,246,0.06))',
+            : 'linear-gradient(135deg, #DBEAFE, #EFF6FF)',
           border: `1px solid ${isDark ? 'rgba(59, 130, 246, 0.25)' : '#BFDBFE'}`,
           padding: 16,
         }}>
@@ -378,7 +378,7 @@ function FinancialsTab({ theme, isDark = false }: { theme: StrategicTheme; isDar
 // ═══ MILESTONES ═══
 const MILESTONE_CATEGORIES = ['discover', 'define', 'design', 'deliver'] as const;
 const MILESTONE_STATES = ['not_started', 'in_progress', 'completed', 'missed'] as const;
-const STATE_COLORS: Record<string, string> = { not_started: 'rgba(237,237,237,0.40)', in_progress: '#2563EB', completed: '#16A34A', missed: '#DC2626' };
+const STATE_COLORS: Record<string, string> = { not_started: '#94A3B8', in_progress: '#2563EB', completed: '#16A34A', missed: '#DC2626' };
 
 function MilestonesTab({ theme, isDark = false }: { theme: StrategicTheme; isDark?: boolean }) {
   const d = dk(isDark);

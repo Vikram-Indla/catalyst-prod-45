@@ -275,7 +275,7 @@ export default function ReqAssistLibrary() {
               fontFamily: "'Inter', sans-serif",
               transition: 'box-shadow 150ms ease',
             }}
-            onMouseEnter={e => { e.currentTarget.style.background = 'linear-gradient(135deg, #1D4ED8 0%, #7DB8FC 100%)'; e.currentTarget.style.boxShadow = '0 2px 6px rgba(37,99,235,0.45)'; }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'linear-gradient(135deg, #1D4ED8 0%, #1E40AF 100%)'; e.currentTarget.style.boxShadow = '0 2px 6px rgba(37,99,235,0.45)'; }}
             onMouseLeave={e => { e.currentTarget.style.background = 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)'; e.currentTarget.style.boxShadow = '0 1px 3px rgba(37,99,235,0.35)'; }}
           >
             <Sparkles size={14} /> Generate BRD from Text
@@ -303,7 +303,7 @@ export default function ReqAssistLibrary() {
             padding: '80px 0', background: isDark ? '#1A1A1A' : '#FFFFFF',
             border: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.10)'}`, borderRadius: 8,
           }}>
-            <FileText size={32} color="rgba(237,237,237,0.40)" style={{ marginBottom: 12 }} />
+            <FileText size={32} color="#94A3B8" style={{ marginBottom: 12 }} />
             <p style={{ fontSize: 16, fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A', margin: '0 0 6px', fontFamily: "'Sora', sans-serif" }}>No documents yet</p>
             <p style={{ fontSize: 14, color: isDark ? '#878787' : '#64748B', margin: '0 0 20px', fontFamily: "'Inter', sans-serif" }}>Import from Jira or generate a BRD from text to get started.</p>
             <div style={{ display: 'flex', gap: 8 }}>
@@ -423,7 +423,7 @@ export default function ReqAssistLibrary() {
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                               {/* Parent line */}
                               <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                                <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M3.5 2L6.5 5L3.5 8" stroke="rgba(237,237,237,0.53)" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M3.5 2L6.5 5L3.5 8" stroke="#CBD5E1" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
                                 <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 500, color: isDark ? '#878787' : '#94A3B8' }}>
                                   {parentKeys[doc.id]}
                                 </span>
@@ -564,7 +564,7 @@ export default function ReqAssistLibrary() {
                 ) : (
                   <tr>
                     <td colSpan={8} style={{ padding: '48px 0', textAlign: 'center' }}>
-                      <FileSearch size={24} color="rgba(237,237,237,0.40)" style={{ margin: '0 auto 8px', display: 'block' }} />
+                      <FileSearch size={24} color="#94A3B8" style={{ margin: '0 auto 8px', display: 'block' }} />
                       <p style={{ fontSize: 14, color: isDark ? '#878787' : '#64748B', margin: '0 0 8px', fontFamily: "'Inter', sans-serif" }}>
                         No documents match "{search || 'your search term'}"
                       </p>
@@ -763,9 +763,9 @@ function PdfUploadCell({ brdId: initialBrdId, jiraKey }: { brdId: string | null;
         }}
       >
         {uploading ? (
-          <Loader2 size={14} color="rgba(237,237,237,0.40)" style={{ animation: 'ra-pulse 1s linear infinite' }} />
+          <Loader2 size={14} color="#94A3B8" style={{ animation: 'ra-pulse 1s linear infinite' }} />
         ) : (
-          <FileUp size={14} color="rgba(237,237,237,0.40)" />
+          <FileUp size={14} color="#94A3B8" />
         )}
       </button>
       <input
@@ -852,7 +852,7 @@ function ActionsCell({ doc, epicCount, onSyncKb, onSelect, onViewDrafts }: {
             transition: 'background 80ms ease',
           }}
           onMouseEnter={e => { e.currentTarget.style.background = '#DBEAFE'; e.currentTarget.style.borderColor = '#93C5FD'; }}
-          onMouseLeave={e => { e.currentTarget.style.background = 'rgba(59,130,246,0.06)'; e.currentTarget.style.borderColor = '#BFDBFE'; }}
+          onMouseLeave={e => { e.currentTarget.style.background = '#EFF6FF'; e.currentTarget.style.borderColor = '#BFDBFE'; }}
         >
           View Drafts
         </button>
@@ -976,10 +976,10 @@ function ActionsCell({ doc, epicCount, onSyncKb, onSelect, onViewDrafts }: {
 
 /* ── Ticket Type Badge ── */
 const TICKET_TYPE_STYLES: Record<string, { bg: string; color: string; label: string }> = {
-  subtask: { bg: 'rgba(251,191,36,0.10)', color: '#FBBF24', label: 'SUBTASK' },
-  story:   { bg: 'rgba(59,130,246,0.06)', color: '#1D4ED8', label: 'STORY' },
+  subtask: { bg: '#FEF3C7', color: '#92400E', label: 'SUBTASK' },
+  story:   { bg: '#EFF6FF', color: '#1D4ED8', label: 'STORY' },
   epic:    { bg: '#F3E8FF', color: '#6B21A8', label: 'EPIC' },
-  task:    { bg: '#1A1A1A', color: '#475569', label: 'TASK' },
+  task:    { bg: '#F1F5F9', color: '#475569', label: 'TASK' },
 };
 
 function TicketTypeBadge({ type }: { type: string | null | undefined }) {

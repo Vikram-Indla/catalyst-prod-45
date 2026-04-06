@@ -14,10 +14,10 @@ interface Props {
 }
 
 const SEV_STYLE: Record<string, { bg: string; text: string; border: string }> = {
-  critical: { bg: 'rgba(248,113,113,0.06)', text: '#F87171', border: '#FCA5A5' },
-  high: { bg: '#FFFBEB', text: '#FBBF24', border: '#FCD34D' },
+  critical: { bg: '#FEF2F2', text: '#991B1B', border: '#FCA5A5' },
+  high: { bg: '#FFFBEB', text: '#92400E', border: '#FCD34D' },
   medium: { bg: '#F0F9FF', text: '#075985', border: '#7DD3FC' },
-  low: { bg: 'rgba(74,222,128,0.06)', text: '#166534', border: '#86EFAC' },
+  low: { bg: '#F0FDF4', text: '#166534', border: '#86EFAC' },
 };
 
 export default function QADefects({ projectId, releaseMap }: Props) {

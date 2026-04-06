@@ -127,7 +127,7 @@ export function CreateRequirementModal({ isOpen, onClose, onCreated }: CreateReq
             </div>
             <h2 style={{ fontSize: 18, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A', margin: 0 }}>Add Requirement</h2>
           </div>
-          <button onClick={onClose} style={{ width: 36, height: 50, border: 'none', borderRadius: 8, backgroundColor: 'transparent', color: 'rgba(237,237,237,0.40)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <button onClick={onClose} style={{ width: 36, height: 50, border: 'none', borderRadius: 8, backgroundColor: 'transparent', color: '#64748B', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <X size={20} />
           </button>
         </div>

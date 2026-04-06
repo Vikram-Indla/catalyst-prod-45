@@ -161,7 +161,7 @@ function NotificationItemInner({ notification, actorProfile, onMarkRead, onClick
             width: 40, height: 40, borderRadius: '50%', flexShrink: 0,
             background: avatarColor,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            color: '#FFFFFF', fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 14, fontWeight: 700,
+            color: '#FFFFFF', fontFamily: 'Inter, sans-serif', fontSize: 14, fontWeight: 700,
           }}>
             {isSystemAssign ? <UserCheck size={20} color="#FFFFFF" /> : initials}
           </div>
@@ -172,7 +172,7 @@ function NotificationItemInner({ notification, actorProfile, onMarkRead, onClick
           {/* Action text + timestamp */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
             <span style={{
-              fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 13, color: T.text1, lineHeight: '18px',
+              fontFamily: 'Inter, sans-serif', fontSize: 13, color: T.text1, lineHeight: '18px',
               overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 360,
             }}>
               {isSystemAssign ? (
@@ -184,7 +184,7 @@ function NotificationItemInner({ notification, actorProfile, onMarkRead, onClick
                 </>
               )}
             </span>
-            <span style={{ fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 12, color: T.text2, whiteSpace: 'nowrap', flexShrink: 0 }}>
+            <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: T.text2, whiteSpace: 'nowrap', flexShrink: 0 }}>
               {formatTimestamp(notification.created_at)}
             </span>
           </div>
@@ -193,7 +193,7 @@ function NotificationItemInner({ notification, actorProfile, onMarkRead, onClick
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4 }}>
             <WorkItemIcon type={notification.entity_icon_type} />
             <span style={{
-              fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 13,
+              fontFamily: 'Inter, sans-serif', fontSize: 13,
               color: isDeleted ? T.text3 : T.text1,
               overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 360,
               fontStyle: isDeleted ? 'italic' : 'normal',
@@ -205,7 +205,7 @@ function NotificationItemInner({ notification, actorProfile, onMarkRead, onClick
           {/* Meta row */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4 }}>
             <span style={{
-              fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 12, fontWeight: 500,
+              fontFamily: 'Inter, sans-serif', fontSize: 12, fontWeight: 500,
               color: isDeleted ? T.text3 : T.entityKey,
               textDecoration: isDeleted ? 'line-through' : 'none',
               overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 200,

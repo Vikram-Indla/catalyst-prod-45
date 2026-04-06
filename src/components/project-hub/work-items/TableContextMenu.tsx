@@ -46,7 +46,7 @@ export function TableContextMenu({
         position: 'fixed', top: adjustedY, left: adjustedX, zIndex: 99999,
         width: 200, background: 'var(--cp-float)', border: '1px solid var(--divider)',
         borderRadius: 6, boxShadow: '0 12px 32px rgba(0,0,0,0.18)',
-        fontFamily: 'Geist, -apple-system, sans-serif',
+        fontFamily: 'Inter, sans-serif',
       }}
       onMouseDown={e => e.stopPropagation()}
     >
@@ -57,10 +57,10 @@ export function TableContextMenu({
             <button
               key={item.label}
               onClick={() => { item.action(); onClose(); }}
-              className="w-full flex items-center gap-2.5 px-3 py-1.5 text-[13px] hover:bg-[#1A1A1A] text-left transition-colors"
+              className="w-full flex items-center gap-2.5 px-3 py-1.5 text-[13px] hover:bg-[#F8FAFC] text-left transition-colors"
               style={{ color: 'var(--fg-2)' }}
             >
-              <Icon size={13} className="text-[rgba(237,237,237,0.40)]" />
+              <Icon size={13} className="text-[#94A3B8]" />
               {item.label}
             </button>
           );
@@ -77,7 +77,7 @@ export function TableContextMenu({
             </button>
             <button
               onClick={() => setDeleteConfirm(false)}
-              className="text-[11px] px-2 py-0.5 text-[rgba(237,237,237,0.40)]"
+              className="text-[11px] px-2 py-0.5 text-[#64748B]"
             >
               No
             </button>
@@ -85,7 +85,7 @@ export function TableContextMenu({
         ) : (
           <button
             onClick={() => setDeleteConfirm(true)}
-            className="w-full flex items-center gap-2.5 px-3 py-1.5 text-[13px] hover:bg-[rgba(248,113,113,0.06)] text-left transition-colors"
+            className="w-full flex items-center gap-2.5 px-3 py-1.5 text-[13px] hover:bg-[#FEF2F2] text-left transition-colors"
             style={{ color: 'var(--sem-danger)' }}
           >
             <Trash2 size={13} />

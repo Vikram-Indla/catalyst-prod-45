@@ -254,7 +254,7 @@ export default function BoardCanvasPage({ projectIdOverride, basePath }: BoardCa
           }}>
             <ArrowLeft size={13} /> All Boards
           </button>
-          <span style={{ color: 'rgba(237,237,237,0.53)' }}>›</span>
+          <span style={{ color: '#CBD5E1' }}>›</span>
           <span>{board.name}</span>
         </div>
 
@@ -262,7 +262,7 @@ export default function BoardCanvasPage({ projectIdOverride, basePath }: BoardCa
         <div style={{ display: 'flex', alignItems: 'center', gap: 0, marginBottom: 0 }}>
           {boardTabs.map(tab => {
             const active = tab.id === boardId;
-            const accent = BOARD_ACCENT[tab.name] || tab.color || 'rgba(237,237,237,0.40)';
+            const accent = BOARD_ACCENT[tab.name] || tab.color || '#64748B';
             const isPersonal = tab.name === 'My Planning Board';
             return (
               <button
@@ -280,7 +280,7 @@ export default function BoardCanvasPage({ projectIdOverride, basePath }: BoardCa
                   transition: 'color 150ms, border-color 150ms',
                 }}
               >
-                {isPersonal && <User size={12} color={active ? '#D97706' : 'rgba(237,237,237,0.40)'} />}
+                {isPersonal && <User size={12} color={active ? '#D97706' : '#94A3B8'} />}
                 {tab.name}
               </button>
             );
@@ -308,7 +308,7 @@ export default function BoardCanvasPage({ projectIdOverride, basePath }: BoardCa
               cursor: 'pointer',
             }}>
               Group by: <strong style={{ fontWeight: 600 }}>{board.swimlaneType === 'none' ? 'None' : board.swimlaneType.charAt(0).toUpperCase() + board.swimlaneType.slice(1)}</strong>
-              <ChevronDown size={12} color="rgba(237,237,237,0.40)" />
+              <ChevronDown size={12} color="#64748B" />
             </button>
             <button onClick={() => setSettingsOpen(true)} style={{
               display: 'flex', alignItems: 'center', gap: 5, height: 32, padding: '8px 12px',
@@ -354,7 +354,7 @@ export default function BoardCanvasPage({ projectIdOverride, basePath }: BoardCa
               }}>{col.name}</span>
               <span style={{
                 fontSize: 10.5, fontWeight: 600, padding: '1px 6px', borderRadius: 8,
-                background: col.isDone ? 'rgba(74,222,128,0.06)' : 'var(--bg-1)',
+                background: col.isDone ? '#F0FDF4' : 'var(--bg-1)',
                 color: col.isDone ? 'var(--sem-success)' : 'var(--fg-4)',
                 fontFamily: "'JetBrains Mono', monospace",
               }}>{count}</span>
@@ -362,7 +362,7 @@ export default function BoardCanvasPage({ projectIdOverride, basePath }: BoardCa
               {maxWip != null && (
                 <span style={{
                   fontSize: 10.5, padding: '1px 5px', borderRadius: 4,
-                  background: atLimit ? 'rgba(248,113,113,0.06)' : 'var(--bg-1)',
+                  background: atLimit ? '#FEF2F2' : 'var(--bg-1)',
                   color: atLimit ? 'var(--sem-danger)' : 'var(--fg-3)',
                   fontFamily: "'Inter', sans-serif",
                 }}>max {maxWip}</span>
@@ -394,7 +394,7 @@ export default function BoardCanvasPage({ projectIdOverride, basePath }: BoardCa
                   onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                 >
                   <span style={{ transition: 'transform 0.2s', transform: collapsed ? 'rotate(-90deg)' : 'rotate(0deg)', display: 'flex' }}>
-                    <ChevronDown size={14} color="rgba(237,237,237,0.40)" />
+                    <ChevronDown size={14} color="#94A3B8" />
                   </span>
                 {/* Release pill in swimlane header */}
                 {lane.id !== 'default' && (
@@ -412,7 +412,7 @@ export default function BoardCanvasPage({ projectIdOverride, basePath }: BoardCa
                 )}
                 {lane.id === 'default' && (
                   <span style={{
-                    fontSize: 12, fontWeight: 600, color: 'rgba(237,237,237,0.93)',
+                    fontSize: 12, fontWeight: 600, color: '#0F172A',
                     fontFamily: "'JetBrains Mono', monospace",
                   }}>{lane.name}</span>
                 )}
@@ -461,7 +461,7 @@ export default function BoardCanvasPage({ projectIdOverride, basePath }: BoardCa
                           }}>{col.name}</span>
                           <span style={{
                             fontSize: 10, fontWeight: 600, padding: '1px 5px', borderRadius: 6,
-                            background: col.isDone ? 'rgba(74,222,128,0.06)' : 'var(--bg-1)',
+                            background: col.isDone ? '#F0FDF4' : 'var(--bg-1)',
                             color: col.isDone ? 'var(--sem-success)' : 'var(--fg-4)',
                             fontFamily: "'JetBrains Mono', monospace",
                           }}>{laneCards.length}</span>

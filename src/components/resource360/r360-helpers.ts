@@ -60,35 +60,35 @@ function getStatusStyleFallback(statusName: string, statusCategory?: string): St
   if (lower === 'todo' || lower === 'to do')
     return { dot: '#D97706', bg: '#FFFBEB', text: '#78350F', category: 'unstarted' };
   if (lower === 'in progress' || lower === 'under implementation' || lower === 'in development')
-    return { dot: '#2563EB', bg: 'rgba(59,130,246,0.06)', text: '#1E3A5F', category: 'started' };
+    return { dot: '#2563EB', bg: '#EFF6FF', text: '#1E3A5F', category: 'started' };
   if (lower === 'in review' || lower === 'in qa' || lower === 'ready for qa' || lower === 'retest')
     return { dot: '#0D9488', bg: '#F0FDFA', text: '#134E4A', category: 'started' };
   if (lower === 'in uat' || lower === 'uat ready')
     return { dot: '#7C3AED', bg: '#F5F3FF', text: '#4C1D95', category: 'started' };
   if (lower === 'done' || lower === 'closed' || lower === 'resolved' || lower === 'ready for production' || lower === 'beta ready')
-    return { dot: '#16A34A', bg: 'rgba(74,222,128,0.06)', text: '#14532D', category: 'completed' };
+    return { dot: '#16A34A', bg: '#F0FDF4', text: '#14532D', category: 'completed' };
   if (lower === 'blocked')
-    return { dot: '#EF4444', bg: 'rgba(248,113,113,0.06)', text: '#7F1D1D', category: 'blocked' };
+    return { dot: '#EF4444', bg: '#FEF2F2', text: '#7F1D1D', category: 'blocked' };
   if (lower === 're-open' || lower === 'reopen')
     return { dot: '#D97706', bg: '#FFFBEB', text: '#78350F', category: 'unstarted' };
   if (lower === 'in requirements' || lower === 'awaiting info')
     return { dot: '#D97706', bg: '#FFFBEB', text: '#78350F', category: 'unstarted' };
   if (lower === 'rejected')
-    return { dot: '#EF4444', bg: 'rgba(248,113,113,0.06)', text: '#7F1D1D', category: 'completed' };
+    return { dot: '#EF4444', bg: '#FEF2F2', text: '#7F1D1D', category: 'completed' };
 
   // Fallback to statusCategory if available
   if (statusCategory) {
     const catLower = statusCategory.toLowerCase();
     if (catLower === 'done' || catLower === 'complete')
-      return { dot: '#16A34A', bg: 'rgba(74,222,128,0.06)', text: '#14532D', category: 'completed' };
+      return { dot: '#16A34A', bg: '#F0FDF4', text: '#14532D', category: 'completed' };
     if (catLower === 'in progress' || catLower === 'indeterminate')
-      return { dot: '#2563EB', bg: 'rgba(59,130,246,0.06)', text: '#1E3A5F', category: 'started' };
+      return { dot: '#2563EB', bg: '#EFF6FF', text: '#1E3A5F', category: 'started' };
     if (catLower === 'to do' || catLower === 'new')
       return { dot: '#D97706', bg: '#FFFBEB', text: '#78350F', category: 'unstarted' };
   }
 
   // Default — gray for truly unknown statuses
-  return { dot: 'rgba(237,237,237,0.40)', bg: '#1A1A1A', text: 'rgba(237,237,237,0.53)', category: 'unstarted' };
+  return { dot: '#64748B', bg: '#F1F5F9', text: '#334155', category: 'unstarted' };
 }
 
 /** @deprecated Use resolveStatusStyle instead */
@@ -102,7 +102,7 @@ export function getPriorityColor(priority: string): string {
     case 'high': return '#EA580C';
     case 'medium': return '#CA8A04';
     case 'low': return '#57534E';
-    default: return 'rgba(237,237,237,0.40)';
+    default: return '#64748B';
   }
 }
 

@@ -41,7 +41,7 @@ export function ThemeStatsStrip({ themes, isDark = false }: Props) {
       iconColor: progressDelta >= 0 ? '#0D9488' : '#DC2626',
       iconBg: isDark
         ? (progressDelta >= 0 ? 'rgba(13,148,136,0.12)' : 'rgba(220,38,38,0.12)')
-        : (progressDelta >= 0 ? '#F0FDFA' : 'rgba(248,113,113,0.06)'),
+        : (progressDelta >= 0 ? '#F0FDFA' : '#FEF2F2'),
       subColor: progressDelta >= 0 ? '#0D9488' : '#DC2626',
       cardBg: undefined,
     },
@@ -71,7 +71,7 @@ export function ThemeStatsStrip({ themes, isDark = false }: Props) {
       iconColor: atRiskCount > 0 ? '#DC2626' : '#059669',
       iconBg: isDark
         ? (atRiskCount > 0 ? 'rgba(220,38,38,0.12)' : 'rgba(5,150,105,0.12)')
-        : (atRiskCount > 0 ? 'rgba(248,113,113,0.06)' : 'rgba(74,222,128,0.06)'),
+        : (atRiskCount > 0 ? '#FEF2F2' : '#ECFDF5'),
       valueColor: atRiskCount > 0 ? '#DC2626' : undefined,
       cardBg: undefined,
     },

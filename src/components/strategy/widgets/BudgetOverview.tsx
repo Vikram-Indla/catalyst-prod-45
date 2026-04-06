@@ -23,7 +23,7 @@ function formatSAR(amount: number): string {
 
 /* Blue-scale spend distribution: darkest = largest segment */
 const BUDGET_COLORS = {
-  insourced: 'var(--exec-blue-700, #7DB8FC)',
+  insourced: 'var(--exec-blue-700, #1E40AF)',
   outsourced: 'var(--exec-blue-500, #3B82F6)',
   cosourced: 'var(--exec-blue-300, #93C5FD)',
   licenses: 'var(--exec-blue-100, #DBEAFE)',
@@ -82,14 +82,14 @@ export function BudgetOverview() {
     { color: confidenceColor, count: `${data.dataQualityPct}%`, label: 'Data Quality', show: true },
     { color: 'var(--exec-signal-red, #DC2626)', count: String(data.missingCTC), label: 'Missing CTC', show: data.missingCTC > 0 },
     { color: 'var(--exec-signal-red, #DC2626)', count: String(data.unpaidInvoices), label: 'Unpaid Invoices', show: data.unpaidInvoices > 0 },
-    { color: data.renewals90d > 0 ? 'var(--exec-signal-amber, #D97706)' : 'var(--exec-text-tertiary, rgba(237,237,237,0.40))', count: String(data.renewals90d), label: 'Renewals ≤90d', show: true },
+    { color: data.renewals90d > 0 ? 'var(--exec-signal-amber, #D97706)' : 'var(--exec-text-tertiary, #64748B)', count: String(data.renewals90d), label: 'Renewals ≤90d', show: true },
   ];
 
   return (
     <div onClick={() => navigate('/planhub/budget-planner')} style={{ cursor: 'pointer' }}>
       {/* A) Total Budget Block */}
       <div className="text-center mb-3">
-        <div style={{ fontSize: 22, fontWeight: 800, color: 'var(--exec-blue-700, #7DB8FC)', letterSpacing: '-0.02em' }}>
+        <div style={{ fontSize: 22, fontWeight: 800, color: 'var(--exec-blue-700, #1E40AF)', letterSpacing: '-0.02em' }}>
           {formatSAR(data.totalBudget)}
         </div>
         <div style={{ fontSize: 11, color: 'var(--exec-text-secondary)', fontWeight: 500 }}>
@@ -158,7 +158,7 @@ export function BudgetOverview() {
               </span>
               <div className="flex-1 overflow-hidden" style={{ height: 10, borderRadius: 6, background: hasCTC ? 'var(--exec-bg-hover)' : 'transparent' }}>
                 {hasCTC ? (
-                  <div style={{ width: `${barWidth}%`, height: '100%', borderRadius: 6, background: 'var(--exec-blue-700, #7DB8FC)', transition: 'width 600ms ease-out', minWidth: barWidth > 0 ? 2 : 0 }} />
+                  <div style={{ width: `${barWidth}%`, height: '100%', borderRadius: 6, background: 'var(--exec-blue-700, #1E40AF)', transition: 'width 600ms ease-out', minWidth: barWidth > 0 ? 2 : 0 }} />
                 ) : (
                   <div style={{ width: '100%', height: '100%', borderRadius: 6, border: '1px dashed #D4D4D4', background: 'transparent' }} />
                 )}

@@ -933,3 +933,127 @@
   animation: planner-shimmer 1.5s ease-in-out infinite;
   border-radius: var(--planner-radius-sm);
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   DARK MODE — [data-theme="dark"] overrides
+   Redefines --planner-* variables for Geist Neutral Dark dark mode
+   ═══════════════════════════════════════════════════════════════════════════════ */
+[data-theme="dark"] {
+  /* Neutral Slate Scale — inverted for dark */
+  --planner-slate-50: rgba(255,255,255,0.03);
+  --planner-slate-100: rgba(255,255,255,0.06);
+  --planner-slate-200: rgba(255,255,255,0.10);
+  --planner-slate-300: rgba(255,255,255,0.18);
+  --planner-slate-400: var(--fg-4, rgba(237,237,237,0.30));
+  --planner-slate-500: rgba(255,255,255,0.50);
+  --planner-slate-600: var(--fg-3, #878787);
+  --planner-slate-700: var(--fg-2, #A1A1A1);
+  --planner-slate-800: rgba(255,255,255,0.85);
+  --planner-slate-900: var(--fg-1, #EDEDED);
+
+  /* Primary — lightened */
+  --planner-primary: #3B82F6;
+  --planner-primary-50: rgba(59,130,246,0.06);
+  --planner-primary-100: rgba(59,130,246,0.10);
+  --planner-primary-200: rgba(59,130,246,0.14);
+  --planner-primary-300: #93C5FD;
+  --planner-primary-400: #60A5FA;
+  --planner-primary-500: #3B82F6;
+  --planner-primary-600: #60A5FA;
+  --planner-primary-700: #93C5FD;
+  --planner-primary-800: #BFDBFE;
+  --planner-primary-900: #DBEAFE;
+
+  /* Teal */
+  --planner-teal: #5EEAD4;
+  --planner-teal-50: rgba(94,234,212,0.06);
+  --planner-teal-100: rgba(94,234,212,0.10);
+  --planner-teal-500: #2DD4BF;
+  --planner-teal-600: #5EEAD4;
+  --planner-teal-700: #99F6E4;
+
+  /* Purple (AI) */
+  --planner-purple: #A78BFA;
+  --planner-purple-50: rgba(167,139,250,0.06);
+  --planner-purple-100: rgba(167,139,250,0.10);
+  --planner-purple-500: #A78BFA;
+  --planner-purple-600: #C4B5FD;
+  --planner-purple-700: #DDD6FE;
+
+  /* Semantic */
+  --planner-success: #4ADE80;
+  --planner-success-50: rgba(74,222,128,0.06);
+  --planner-success-100: rgba(74,222,128,0.12);
+  --planner-success-500: #4ADE80;
+  --planner-success-600: #86EFAC;
+  --planner-success-700: #BBF7D0;
+
+  --planner-warning: #FDE68A;
+  --planner-warning-50: rgba(253,230,138,0.06);
+  --planner-warning-100: rgba(253,230,138,0.10);
+  --planner-warning-500: #FBBF24;
+  --planner-warning-600: #FDE68A;
+  --planner-warning-700: #FEF3C7;
+
+  --planner-danger: #FCA5A5;
+  --planner-danger-50: rgba(239,68,68,0.06);
+  --planner-danger-100: rgba(239,68,68,0.10);
+  --planner-danger-500: #FCA5A5;
+  --planner-danger-600: #FECACA;
+  --planner-danger-700: #FEE2E2;
+
+  /* AAA Text — lightened for dark bg */
+  --planner-text-danger: #FCA5A5;
+  --planner-text-warning: #FDE68A;
+  --planner-text-success: #4ADE80;
+  --planner-text-primary-dark: #60A5FA;
+  --planner-text-purple-dark: #A78BFA;
+
+  /* Status Colors */
+  --planner-status-backlog: rgba(255,255,255,0.50);
+  --planner-status-planned: #60A5FA;
+  --planner-status-progress: #FBBF24;
+  --planner-status-review: #A78BFA;
+  --planner-status-done: #4ADE80;
+
+  /* Workstream Colors — lightened */
+  --planner-ws-senaie: #22D3EE;
+  --planner-ws-senaie-bg: rgba(34,211,238,0.10);
+  --planner-ws-senaie-text: #67E8F9;
+  --planner-ws-catalyst: #A78BFA;
+  --planner-ws-catalyst-bg: rgba(167,139,250,0.10);
+  --planner-ws-catalyst-text: #C4B5FD;
+  --planner-ws-tahommona: #818CF8;
+  --planner-ws-tahommona-bg: rgba(129,140,248,0.10);
+  --planner-ws-tahommona-text: #A5B4FC;
+  --planner-ws-delivery: #FB923C;
+  --planner-ws-delivery-bg: rgba(251,146,60,0.10);
+  --planner-ws-delivery-text: #FDBA74;
+  --planner-ws-mim: #F472B6;
+  --planner-ws-mim-bg: rgba(244,114,182,0.10);
+  --planner-ws-mim-text: #F9A8D4;
+  --planner-ws-standalone: #A3E635;
+  --planner-ws-standalone-bg: rgba(163,230,53,0.10);
+  --planner-ws-standalone-text: #BEF264;
+  --planner-ws-dataai: #2DD4BF;
+  --planner-ws-dataai-bg: rgba(45,212,191,0.10);
+  --planner-ws-dataai-text: #5EEAD4;
+
+  /* Priority */
+  --planner-priority-critical: #FCA5A5;
+  --planner-priority-critical-bg: rgba(239,68,68,0.10);
+  --planner-priority-high: #FDBA74;
+  --planner-priority-high-bg: rgba(234,88,12,0.10);
+  --planner-priority-medium: #60A5FA;
+  --planner-priority-medium-bg: rgba(59,130,246,0.10);
+  --planner-priority-low: rgba(255,255,255,0.50);
+  --planner-priority-low-bg: rgba(255,255,255,0.03);
+
+  /* Shadows — suppressed in dark mode */
+  --planner-shadow-sm: none;
+  --planner-shadow-md: none;
+  --planner-shadow-lg: none;
+  --planner-shadow-xl: none;
+  --planner-shadow-card-hover: 0 4px 12px rgba(0,0,0,0.3);
+  --planner-shadow-card-drag: 0 12px 24px rgba(0,0,0,0.4);
+}

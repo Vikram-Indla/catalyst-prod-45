@@ -5,9 +5,9 @@ import { useTheme } from '@/hooks/useTheme';
 
 const CYCLE_STATUS_OPTIONS = [
   { value: 'draft', label: 'DRAFT', bg: '#DFE1E6', text: '#253858' },
-  { value: 'planned', label: 'PLANNED', bg: 'rgba(59,130,246,0.10)', text: '#0747A6' },
-  { value: 'active', label: 'IN PROGRESS', bg: 'rgba(59,130,246,0.10)', text: '#0747A6' },
-  { value: 'completed', label: 'COMPLETED', bg: 'rgba(74,222,128,0.10)', text: '#006644' },
+  { value: 'planned', label: 'PLANNED', bg: '#DEEBFF', text: '#0747A6' },
+  { value: 'active', label: 'IN PROGRESS', bg: '#DEEBFF', text: '#0747A6' },
+  { value: 'completed', label: 'COMPLETED', bg: '#E3FCEF', text: '#006644' },
   { value: 'paused', label: 'PAUSED', bg: '#DFE1E6', text: '#253858' },
   { value: 'archived', label: 'ARCHIVED', bg: '#DFE1E6', text: '#253858' },
 ] as const;
@@ -270,7 +270,7 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
                     width: '100%', height: 40, padding: '8px 12px',
                     border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 6,
                     fontSize: 14, color: isDark ? '#EDEDED' : '#334155', backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF',
-                    fontFamily: 'Geist, -apple-system, sans-serif',
+                    fontFamily: 'Inter, sans-serif',
                     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                     cursor: 'pointer', outline: 'none',
                   }}
@@ -289,7 +289,7 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
                       );
                     })()}
                   </span>
-                  <ChevronDown size={16} style={{ color: 'rgba(237,237,237,0.40)' }} />
+                  <ChevronDown size={16} style={{ color: '#94A3B8' }} />
                 </button>
                 {statusDropdownOpen && (
                   <div style={{
@@ -309,7 +309,7 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
                           backgroundColor: cycleStatus === opt.value ? (isDark ? '#1A1A1A' : '#F1F5F9') : 'transparent',
                           display: 'flex', alignItems: 'center', gap: 8,
                           cursor: 'pointer', fontSize: 14, color: isDark ? '#EDEDED' : '#334155',
-                          fontFamily: 'Geist, -apple-system, sans-serif',
+                          fontFamily: 'Inter, sans-serif',
                         }}
                         onMouseEnter={(e) => { (e.target as HTMLElement).style.backgroundColor = isDark ? '#1A1A1A' : '#F8FAFC'; }}
                         onMouseLeave={(e) => { (e.target as HTMLElement).style.backgroundColor = cycleStatus === opt.value ? (isDark ? '#1A1A1A' : '#F1F5F9') : 'transparent'; }}

@@ -39,10 +39,10 @@ interface TestCycleCardProps {
 const statusConfig: Record<string, { label: string; color: string; bg: string; border: string }> = {
   draft:       { label: 'DRAFT',       color: '#253858', bg: '#DFE1E6', border: '#DFE1E6' },
   planned:     { label: 'PLANNED',     color: '#253858', bg: '#DFE1E6', border: '#DFE1E6' },
-  active:      { label: 'IN PROGRESS', color: '#0747A6', bg: 'rgba(59,130,246,0.10)', border: '#B3D4FF' },
-  in_progress: { label: 'IN PROGRESS', color: '#0747A6', bg: 'rgba(59,130,246,0.10)', border: '#B3D4FF' },
-  completed:   { label: 'COMPLETED',   color: '#006644', bg: 'rgba(74,222,128,0.10)', border: '#ABF5D1' },
-  done:        { label: 'DONE',        color: '#006644', bg: 'rgba(74,222,128,0.10)', border: '#ABF5D1' },
+  active:      { label: 'IN PROGRESS', color: '#0747A6', bg: '#DEEBFF', border: '#B3D4FF' },
+  in_progress: { label: 'IN PROGRESS', color: '#0747A6', bg: '#DEEBFF', border: '#B3D4FF' },
+  completed:   { label: 'COMPLETED',   color: '#006644', bg: '#E3FCEF', border: '#ABF5D1' },
+  done:        { label: 'DONE',        color: '#006644', bg: '#E3FCEF', border: '#ABF5D1' },
   archived:    { label: 'ARCHIVED',    color: '#253858', bg: '#DFE1E6', border: '#DFE1E6' },
   paused:      { label: 'PAUSED',      color: '#253858', bg: '#DFE1E6', border: '#DFE1E6' },
 };
@@ -221,12 +221,12 @@ export function TestCycleCard({
 
       {/* Stats Row */}
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px', backgroundColor: 'rgba(74,222,128,0.06)', borderRadius: 6 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px', backgroundColor: '#ECFDF5', borderRadius: 6 }}>
           <CheckCircle2 size={14} style={{ color: 'var(--sem-success)' }} />
           <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--sem-success)' }}>{cycle.passed_count}</span>
           <span style={{ fontSize: 12, color: 'var(--sem-success)' }}>Passed</span>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px', backgroundColor: 'rgba(248,113,113,0.06)', borderRadius: 6 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px', backgroundColor: '#FEF2F2', borderRadius: 6 }}>
           <XCircle size={14} style={{ color: 'var(--sem-danger)' }} />
           <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--sem-danger)' }}>{cycle.failed_count}</span>
           <span style={{ fontSize: 12, color: 'var(--sem-danger)' }}>Failed</span>

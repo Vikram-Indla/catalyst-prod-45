@@ -198,7 +198,7 @@ export default function FreezeWindowsPage() {
                   <td className="px-3 py-0 max-w-[240px] truncate" style={{ color: isDark ? '#878787' : '#64748B' }} title={fw.reason || ''}>{fw.reason ? (fw.reason.length > 40 ? fw.reason.slice(0, 40) + '…' : fw.reason) : '—'}</td>
                   <td className="px-3 py-0">
                     <button onClick={() => handleDelete(fw.id, fw.name)}
-                      className="opacity-0 group-hover:opacity-100 transition-opacity h-7 w-7 rounded flex items-center justify-center hover:bg-[rgba(248,113,113,0.10)] text-[rgba(237,237,237,0.40)] hover:text-[#DC2626]">
+                      className="opacity-0 group-hover:opacity-100 transition-opacity h-7 w-7 rounded flex items-center justify-center hover:bg-[#FEE2E2] text-[#94A3B8] hover:text-[#DC2626]">
                       <Trash2 size={14} />
                     </button>
                   </td>
@@ -220,31 +220,31 @@ export default function FreezeWindowsPage() {
               <label className="text-[12px] font-semibold text-[#475569] block mb-1">Name *</label>
               <input type="text" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
                 placeholder="e.g. Go-Live Freeze Q2"
-                className="h-9 w-full px-3 rounded border border-[rgba(255,255,255,0.10)] dark:border-[rgba(255,255,255,0.08)] bg-white dark:bg-[#1A1A1A] dark:text-[#EDEDED] text-[13px] placeholder:text-[rgba(237,237,237,0.40)] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" />
+                className="h-9 w-full px-3 rounded border border-[#E2E8F0] dark:border-[rgba(255,255,255,0.08)] bg-white dark:bg-[#1A1A1A] dark:text-[#EDEDED] text-[13px] placeholder:text-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" />
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="text-[12px] font-semibold text-[#475569] block mb-1">Start Date *</label>
                 <input type="date" value={form.start_date} onChange={e => setForm(f => ({ ...f, start_date: e.target.value }))}
-                  className="h-9 w-full px-3 rounded border border-[rgba(255,255,255,0.10)] dark:border-[rgba(255,255,255,0.08)] bg-white dark:bg-[#1A1A1A] dark:text-[#EDEDED] text-[13px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" />
+                  className="h-9 w-full px-3 rounded border border-[#E2E8F0] dark:border-[rgba(255,255,255,0.08)] bg-white dark:bg-[#1A1A1A] dark:text-[#EDEDED] text-[13px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" />
               </div>
               <div>
                 <label className="text-[12px] font-semibold text-[#475569] block mb-1">End Date *</label>
                 <input type="date" value={form.end_date} onChange={e => setForm(f => ({ ...f, end_date: e.target.value }))}
-                  className="h-9 w-full px-3 rounded border border-[rgba(255,255,255,0.10)] dark:border-[rgba(255,255,255,0.08)] bg-white dark:bg-[#1A1A1A] dark:text-[#EDEDED] text-[13px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" />
+                  className="h-9 w-full px-3 rounded border border-[#E2E8F0] dark:border-[rgba(255,255,255,0.08)] bg-white dark:bg-[#1A1A1A] dark:text-[#EDEDED] text-[13px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" />
               </div>
             </div>
             <div>
               <label className="text-[12px] font-semibold text-[#475569] block mb-1">Reason</label>
               <textarea value={form.reason} onChange={e => setForm(f => ({ ...f, reason: e.target.value }))}
                 placeholder="e.g. National holiday / major go-live" rows={3}
-                className="w-full px-3 py-2 rounded border border-[rgba(255,255,255,0.10)] dark:border-[rgba(255,255,255,0.08)] bg-white dark:bg-[#1A1A1A] dark:text-[#EDEDED] text-[13px] placeholder:text-[rgba(237,237,237,0.40)] resize-none focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" />
+                className="w-full px-3 py-2 rounded border border-[#E2E8F0] dark:border-[rgba(255,255,255,0.08)] bg-white dark:bg-[#1A1A1A] dark:text-[#EDEDED] text-[13px] placeholder:text-[#94A3B8] resize-none focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" />
             </div>
             {formError && <p className="text-[12px] text-[#DC2626]">{formError}</p>}
           </div>
           <DialogFooter>
             <button onClick={() => { setShowModal(false); setForm({ name: '', start_date: '', end_date: '', reason: '' }); setFormError(''); }}
-              className="h-9 px-4 rounded-md text-[13px] font-medium text-[#475569] hover:bg-[#1A1A1A] transition-colors">
+              className="h-9 px-4 rounded-md text-[13px] font-medium text-[#475569] hover:bg-[#F1F5F9] transition-colors">
               Cancel
             </button>
             <button onClick={handleCreate} disabled={createMut.isPending}

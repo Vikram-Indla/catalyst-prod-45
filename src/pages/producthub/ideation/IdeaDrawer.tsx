@@ -344,8 +344,8 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
                   <span style={{
                     display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                     height: 20, padding: '0 6px', borderRadius: 4, fontSize: '11px', fontWeight: 700,
-                    background: QUARTER_BADGE[localQuarter]?.bg || 'rgba(255,255,255,0.10)',
-                    color: QUARTER_BADGE[localQuarter]?.text || 'rgba(237,237,237,0.40)',
+                    background: QUARTER_BADGE[localQuarter]?.bg || '#E2E8F0',
+                    color: QUARTER_BADGE[localQuarter]?.text || '#94A3B8',
                   }}>{localQuarter} 2026</span>
                 ) : <span style={{ fontSize: '13px', color: dk.t3 }}>—</span>}
               </FieldBlock>

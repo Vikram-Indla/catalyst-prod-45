@@ -14,15 +14,15 @@ import '@/styles/initiative-detail-panel.css';
 
 /* ── Status color map ── */
 const STATUS_PILL: Record<string, { text: string; bg: string; bdr: string }> = {
-  todo:        { text: 'rgba(237,237,237,0.40)', bg: '#1A1A1A', bdr: 'rgba(100,116,139,0.2)' },
-  backlog:     { text: 'rgba(237,237,237,0.40)', bg: '#1A1A1A', bdr: 'rgba(100,116,139,0.2)' },
-  new:         { text: 'rgba(237,237,237,0.40)', bg: '#1A1A1A', bdr: 'rgba(100,116,139,0.2)' },
-  'in progress': { text: '#2563EB', bg: 'rgba(59,130,246,0.06)', bdr: 'rgba(37,99,235,0.2)' },
-  inprogress:  { text: '#2563EB', bg: 'rgba(59,130,246,0.06)', bdr: 'rgba(37,99,235,0.2)' },
+  todo:        { text: '#64748B', bg: '#F1F5F9', bdr: 'rgba(100,116,139,0.2)' },
+  backlog:     { text: '#64748B', bg: '#F1F5F9', bdr: 'rgba(100,116,139,0.2)' },
+  new:         { text: '#64748B', bg: '#F1F5F9', bdr: 'rgba(100,116,139,0.2)' },
+  'in progress': { text: '#2563EB', bg: '#EFF6FF', bdr: 'rgba(37,99,235,0.2)' },
+  inprogress:  { text: '#2563EB', bg: '#EFF6FF', bdr: 'rgba(37,99,235,0.2)' },
   'in review':   { text: '#7C3AED', bg: '#F5F3FF', bdr: 'rgba(124,58,237,0.2)' },
-  done:        { text: '#0D7331', bg: 'rgba(74,222,128,0.06)', bdr: 'rgba(22,163,74,0.2)' },
-  closed:      { text: '#0D7331', bg: 'rgba(74,222,128,0.06)', bdr: 'rgba(22,163,74,0.2)' },
-  blocked:     { text: '#DC2626', bg: 'rgba(248,113,113,0.06)', bdr: 'rgba(220,38,38,0.2)' },
+  done:        { text: '#0D7331', bg: '#F0FDF4', bdr: 'rgba(22,163,74,0.2)' },
+  closed:      { text: '#0D7331', bg: '#F0FDF4', bdr: 'rgba(22,163,74,0.2)' },
+  blocked:     { text: '#DC2626', bg: '#FEF2F2', bdr: 'rgba(220,38,38,0.2)' },
 };
 
 const PRIORITY_LEVELS: Record<string, number> = { critical: 4, highest: 4, high: 3, medium: 2, low: 1, lowest: 1 };
@@ -303,7 +303,7 @@ function OverviewTab({ issue }: { issue: any }) {
             />
             <button style={{
               padding: '8px 16px', borderRadius: 6, border: 'none',
-              background: 'rgba(237,237,237,0.53)', color: '#FFFFFF', fontSize: 13, fontWeight: 600,
+              background: '#CBD5E1', color: '#FFFFFF', fontSize: 13, fontWeight: 600,
               cursor: 'not-allowed',
             }}>
               Post

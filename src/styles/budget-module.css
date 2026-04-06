@@ -114,31 +114,65 @@
    ============================================ */
 .dark .budget-module,
 [data-theme="dark"] .budget-module {
-  /* Neutrals (token-mapped) */
-  --slate-900: hsl(var(--foreground));
-  --slate-800: hsl(var(--foreground) / 0.92);
-  --slate-700: hsl(var(--foreground) / 0.82);
-  --slate-600: hsl(var(--muted-foreground));
-  --slate-500: hsl(var(--muted-foreground));
-  --slate-400: hsl(var(--muted-foreground) / 0.75);
-  --slate-300: hsl(var(--border) / 0.45);
-  --slate-200: hsl(var(--border) / 0.35);
-  --slate-100: hsl(var(--muted) / 0.55);
-  --slate-50: hsl(var(--muted) / 0.35);
-  --white: hsl(var(--card));
+  /* Neutrals — hex only (no HSL) */
+  --slate-900: var(--fg-1, #EDEDED);
+  --slate-800: rgba(255,255,255,0.85);
+  --slate-700: var(--fg-2, #A1A1A1);
+  --slate-600: var(--fg-3, #878787);
+  --slate-500: rgba(255,255,255,0.50);
+  --slate-400: var(--fg-4, rgba(237,237,237,0.30));
+  --slate-300: rgba(255,255,255,0.18);
+  --slate-200: rgba(255,255,255,0.10);
+  --slate-100: rgba(255,255,255,0.06);
+  --slate-50: rgba(255,255,255,0.03);
+  --white: #1A1A1A;
 
   /* Surfaces + text */
-  --budget-bg-page: hsl(var(--background));
-  --budget-bg-surface: hsl(var(--card));
-  --budget-text-primary: hsl(var(--foreground));
-  --budget-text-secondary: hsl(var(--foreground) / 0.82);
-  --budget-text-muted: hsl(var(--muted-foreground));
-  --budget-border: hsl(var(--border) / 0.35);
-  --budget-border-strong: hsl(var(--border) / 0.5);
+  --budget-bg-page: #0A0A0A;
+  --budget-bg-surface: #1A1A1A;
+  --budget-text-primary: var(--fg-1, #EDEDED);
+  --budget-text-secondary: var(--fg-2, #A1A1A1);
+  --budget-text-muted: var(--fg-3, #878787);
+  --budget-border: rgba(255,255,255,0.10);
+  --budget-border-strong: rgba(255,255,255,0.18);
+
+  /* Legacy aliases */
+  --budget-bg: #0A0A0A;
+  --budget-surface: #1A1A1A;
+  --budget-text: var(--fg-1, #EDEDED);
+  --budget-border-light: rgba(255,255,255,0.10);
 
   /* Primary surfaces used in info/expanded rows */
-  --budget-primary-bg: hsl(var(--primary) / 0.12);
-  --budget-primary-light: hsl(var(--primary) / 0.14);
+  --budget-primary-bg: rgba(59,130,246,0.10);
+  --budget-primary-light: rgba(59,130,246,0.12);
+
+  /* Semantic — darkened for dark bg */
+  --budget-success: #4ADE80;
+  --budget-success-light: rgba(74,222,128,0.12);
+  --budget-warning: #FDE68A;
+  --budget-warning-light: rgba(253,230,138,0.10);
+  --budget-danger: #FCA5A5;
+  --budget-danger-light: rgba(239,68,68,0.10);
+  --budget-info: #60A5FA;
+
+  /* Budget type colors — lightened for dark bg */
+  --budget-insourced: #60A5FA;
+  --budget-insourced-dark: #3B82F6;
+  --budget-insourced-light: rgba(59,130,246,0.10);
+  --budget-cosourced: #5EEAD4;
+  --budget-cosourced-dark: #2DD4BF;
+  --budget-cosourced-light: rgba(13,148,136,0.10);
+  --budget-outsourced: #FDE68A;
+  --budget-outsourced-dark: #FBBF24;
+  --budget-outsourced-light: rgba(217,119,6,0.10);
+  --budget-licenses: #A78BFA;
+  --budget-licenses-dark: #8B5CF6;
+  --budget-licenses-light: rgba(124,58,237,0.10);
+
+  /* Shadows — suppressed */
+  --budget-shadow-sm: none;
+  --budget-shadow-md: none;
+  --budget-shadow-lg: none;
 }
 
 /* ============================================

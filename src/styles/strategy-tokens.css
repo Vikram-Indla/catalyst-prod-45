@@ -138,6 +138,15 @@
   --catalyst-shadow-card: none;
   --catalyst-shadow-dropdown: 0 4px 12px rgba(0,0,0,0.3);
   --catalyst-shadow-modal: 0 12px 40px rgba(0,0,0,0.4);
+
+  /* Workstream colors — lightened for dark bg contrast */
+  --catalyst-ws-senaie: #22D3EE;
+  --catalyst-ws-catalyst: #A78BFA;
+  --catalyst-ws-tahommona: #818CF8;
+  --catalyst-ws-delivery: #FB923C;
+  --catalyst-ws-mim: #F472B6;
+  --catalyst-ws-standalone: #A3E635;
+  --catalyst-ws-dataai: #2DD4BF;
 }
 
 /* ── Density: Compact ── */

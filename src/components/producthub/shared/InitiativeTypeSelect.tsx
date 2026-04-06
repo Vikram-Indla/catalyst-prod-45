@@ -72,7 +72,7 @@ export function InitiativeTypeSelect({ value, onChange, disabled }: InitiativeTy
                 cursor: 'pointer',
               }}
               onMouseEnter={e => {
-                if (value !== option.key) (e.currentTarget as HTMLElement).style.background = 'var(--bg-1, #1A1A1A)';
+                if (value !== option.key) (e.currentTarget as HTMLElement).style.background = 'var(--bg-1, #F8FAFC)';
               }}
               onMouseLeave={e => {
                 if (value !== option.key) (e.currentTarget as HTMLElement).style.background = 'transparent';

@@ -19,7 +19,7 @@ export default function ReactionBar({ reactions = {}, onReact, onReply, onViewTh
       alignItems: 'center',
       gap: 6,
       marginTop: 8,
-      fontFamily: 'Geist, -apple-system, sans-serif',
+      fontFamily: 'Inter, sans-serif',
     }}>
       {REACTIONS.map(emoji => {
         const count = reactions[emoji] || 0;
@@ -62,7 +62,7 @@ export default function ReactionBar({ reactions = {}, onReact, onReply, onViewTh
           background: 'transparent',
           cursor: 'pointer',
           fontSize: 13,
-          color: 'rgba(237,237,237,0.40)',
+          color: '#64748B',
         }}
       >
         +
@@ -73,7 +73,7 @@ export default function ReactionBar({ reactions = {}, onReact, onReply, onViewTh
       {onReply && (
         <button
           onClick={(e) => { e.stopPropagation(); onReply(); }}
-          style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 12, fontWeight: 500, color: 'rgba(237,237,237,0.40)', fontFamily: 'Geist, -apple-system, sans-serif' }}
+          style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 12, fontWeight: 500, color: '#64748B', fontFamily: 'Inter, sans-serif' }}
         >
           Reply
         </button>
@@ -82,7 +82,7 @@ export default function ReactionBar({ reactions = {}, onReact, onReply, onViewTh
       {onViewThread && (
         <button
           onClick={(e) => { e.stopPropagation(); onViewThread(); }}
-          style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 12, fontWeight: 500, color: '#2563EB', fontFamily: 'Geist, -apple-system, sans-serif', textDecoration: 'none' }}
+          style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 12, fontWeight: 500, color: '#2563EB', fontFamily: 'Inter, sans-serif', textDecoration: 'none' }}
           onMouseEnter={(e) => (e.currentTarget.style.textDecoration = 'underline')}
           onMouseLeave={(e) => (e.currentTarget.style.textDecoration = 'none')}
         >

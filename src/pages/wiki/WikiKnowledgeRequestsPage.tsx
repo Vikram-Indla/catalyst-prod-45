@@ -5,10 +5,10 @@ import { ChevronRight, Plus, HelpCircle } from 'lucide-react';
 import { useTheme } from '@/hooks/useTheme';
 
 const PRIORITY_STYLES: Record<string, { bg: string; color: string }> = {
-  critical: { bg: 'rgba(248,113,113,0.10)', color: '#DC2626' },
-  high: { bg: 'rgba(251,191,36,0.10)', color: '#D97706' },
+  critical: { bg: '#FEE2E2', color: '#DC2626' },
+  high: { bg: '#FEF3C7', color: '#D97706' },
   medium: { bg: '#DBEAFE', color: '#2563EB' },
-  low: { bg: '#1A1A1A', color: 'rgba(237,237,237,0.40)' },
+  low: { bg: '#F1F5F9', color: '#64748B' },
 };
 
 const PRIORITY_STYLES_DARK: Record<string, { bg: string; color: string }> = {
@@ -19,10 +19,10 @@ const PRIORITY_STYLES_DARK: Record<string, { bg: string; color: string }> = {
 };
 
 const STATUS_STYLES: Record<string, { bg: string; color: string; label: string }> = {
-  open: { bg: '#DBEAFE', color: '#7DB8FC', label: 'OPEN' },
-  in_progress: { bg: 'rgba(251,191,36,0.10)', color: '#FBBF24', label: 'IN PROGRESS' },
+  open: { bg: '#DBEAFE', color: '#1E40AF', label: 'OPEN' },
+  in_progress: { bg: '#FEF3C7', color: '#92400E', label: 'IN PROGRESS' },
   resolved: { bg: '#DCFCE7', color: '#16A34A', label: 'RESOLVED' },
-  closed: { bg: '#1A1A1A', color: 'rgba(237,237,237,0.40)', label: 'CLOSED' },
+  closed: { bg: '#F1F5F9', color: '#64748B', label: 'CLOSED' },
 };
 
 const STATUS_STYLES_DARK: Record<string, { bg: string; color: string; label: string }> = {

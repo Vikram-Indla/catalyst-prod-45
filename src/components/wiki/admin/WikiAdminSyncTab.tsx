@@ -97,15 +97,15 @@ export function WikiAdminSyncTab() {
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         padding: '12px 16px', borderRadius: 6,
-        background: 'var(--cp-bg-sunken, #1A1A1A)',
+        background: 'var(--cp-bg-sunken, #F8FAFC)',
         border: '1px solid var(--cp-border-default, rgba(15,23,42,0.12))',
       }}>
-        <div style={{ display: 'flex', gap: 24, fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 13 }}>
-          <span style={{ color: 'var(--cp-text-secondary, rgba(237,237,237,0.53))' }}>
+        <div style={{ display: 'flex', gap: 24, fontFamily: 'Inter, sans-serif', fontSize: 13 }}>
+          <span style={{ color: 'var(--cp-text-secondary, #334155)' }}>
             <strong>Last Sync:</strong>{' '}
             {stats?.last_sync ? format(new Date(stats.last_sync), 'MMM d, yyyy HH:mm') : 'Never'}
           </span>
-          <span style={{ color: 'var(--cp-text-tertiary, rgba(237,237,237,0.40))' }}>
+          <span style={{ color: 'var(--cp-text-tertiary, #64748B)' }}>
             Next scheduled: Tonight 23:00 AST
           </span>
         </div>
@@ -118,7 +118,7 @@ export function WikiAdminSyncTab() {
             padding: '6px 14px', borderRadius: 4,
             background: 'var(--cp-primary-60, #2563EB)',
             color: '#fff', border: 'none', cursor: (triggerSync.isPending || isRunning) ? 'not-allowed' : 'pointer',
-            fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 12, fontWeight: 600,
+            fontFamily: 'Inter, sans-serif', fontSize: 12, fontWeight: 600,
             opacity: (triggerSync.isPending || isRunning) ? 0.5 : 1,
             outline: 'none',
           }}
@@ -143,14 +143,14 @@ export function WikiAdminSyncTab() {
           {/* Progress bar */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 10 }}>
             <Activity style={{ width: 16, height: 16, color: 'var(--cp-blue)', flexShrink: 0 }} />
-            <span style={{ fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 13, fontWeight: 600, color: 'var(--cp-text-primary, rgba(237,237,237,0.93))' }}>
+            <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)' }}>
               Sync in progress
             </span>
             <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 12, color: 'var(--cp-blue)', fontWeight: 700 }}>
               {progressPct}%
             </span>
             <div style={{ flex: 1 }} />
-            <div style={{ display: 'flex', alignItems: 'center', gap: 4, color: 'var(--cp-text-tertiary, rgba(237,237,237,0.40))' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4, color: 'var(--cp-text-tertiary, #64748B)' }}>
               <Clock style={{ width: 13, height: 13 }} />
               <ElapsedTimer startedAt={latestRun.started_at} />
             </div>
@@ -165,19 +165,19 @@ export function WikiAdminSyncTab() {
             }} />
           </div>
           {/* Active step info */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 12 }}>
-            <span style={{ color: 'var(--cp-text-tertiary, rgba(237,237,237,0.40))' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, fontFamily: 'Inter, sans-serif', fontSize: 12 }}>
+            <span style={{ color: 'var(--cp-text-tertiary, #64748B)' }}>
               Step {currentStepNumber} of {steps.length}
               {activeStep ? `: ${activeStep.name}` : rawSteps ? '' : ' — Initializing pipeline…'}
             </span>
-            <span style={{ color: 'var(--cp-text-tertiary, rgba(237,237,237,0.40))' }}>·</span>
-            <span style={{ color: 'var(--cp-text-tertiary, rgba(237,237,237,0.40))' }}>
+            <span style={{ color: 'var(--cp-text-tertiary, #64748B)' }}>·</span>
+            <span style={{ color: 'var(--cp-text-tertiary, #64748B)' }}>
               {latestRun.total_items_processed ?? 0} items processed
             </span>
             {(latestRun.new_chunks ?? 0) > 0 && (
               <>
-                <span style={{ color: 'var(--cp-text-tertiary, rgba(237,237,237,0.40))' }}>·</span>
-                <span style={{ color: 'var(--cp-text-tertiary, rgba(237,237,237,0.40))' }}>
+                <span style={{ color: 'var(--cp-text-tertiary, #64748B)' }}>·</span>
+                <span style={{ color: 'var(--cp-text-tertiary, #64748B)' }}>
                   {latestRun.new_chunks} new chunks
                 </span>
               </>
@@ -192,7 +192,7 @@ export function WikiAdminSyncTab() {
           display: 'flex', alignItems: 'center', gap: 10,
           padding: '10px 16px', borderRadius: 6,
           background: 'rgba(220,38,38,0.06)', border: '1px solid rgba(220,38,38,0.2)',
-          fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 13, color: 'var(--sem-danger)',
+          fontFamily: 'Inter, sans-serif', fontSize: 13, color: 'var(--sem-danger)',
         }}>
           <AlertTriangle style={{ width: 16, height: 16, flexShrink: 0 }} />
           <span style={{ flex: 1 }}>
@@ -205,7 +205,7 @@ export function WikiAdminSyncTab() {
               display: 'flex', alignItems: 'center', gap: 4,
               padding: '4px 10px', borderRadius: 4,
               background: 'var(--sem-danger)', color: '#fff', border: 'none', cursor: 'pointer',
-              fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 11, fontWeight: 600,
+              fontFamily: 'Inter, sans-serif', fontSize: 11, fontWeight: 600,
             }}
           >
             <RefreshCw style={{ width: 12, height: 12 }} /> Retry
@@ -216,7 +216,7 @@ export function WikiAdminSyncTab() {
       {/* Empty state */}
       {!latestRun && (
         <EmptyState
-          icon={<RefreshCw style={{ width: 28, height: 28, color: 'var(--cp-text-tertiary, rgba(237,237,237,0.40))' }} />}
+          icon={<RefreshCw style={{ width: 28, height: 28, color: 'var(--cp-text-tertiary, #64748B)' }} />}
           message="No sync runs yet"
           sub="Click 'Run Sync Now' to start the first sync."
         />
@@ -231,11 +231,11 @@ export function WikiAdminSyncTab() {
           {/* Column headers */}
           <div style={{
             display: 'flex', alignItems: 'center', gap: 12, padding: '6px 16px',
-            background: 'var(--cp-bg-sunken, #1A1A1A)',
+            background: 'var(--cp-bg-sunken, #F8FAFC)',
             borderBottom: '0.75px solid var(--cp-border-default, rgba(15,23,42,0.12))',
-            fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 10, fontWeight: 700,
+            fontFamily: 'Inter, sans-serif', fontSize: 10, fontWeight: 700,
             textTransform: 'uppercase', letterSpacing: '0.05em',
-            color: 'var(--cp-text-tertiary, rgba(237,237,237,0.40))',
+            color: 'var(--cp-text-tertiary, #64748B)',
           }}>
             <span style={{ width: 28 }}>#</span>
             <span style={{ flex: 1 }}>Step</span>
@@ -274,20 +274,20 @@ export function WikiAdminSyncTab() {
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <span style={{
-                    fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 13, fontWeight: 500,
-                    color: 'var(--cp-text-primary, rgba(237,237,237,0.93))',
+                    fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 500,
+                    color: 'var(--cp-text-primary, #0F172A)',
                   }}>{step.name}</span>
                   {isActive && stepMeta && (
                     <div style={{
-                      fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 11,
-                      color: 'var(--cp-text-tertiary, rgba(237,237,237,0.40))', marginTop: 1,
+                      fontFamily: 'Inter, sans-serif', fontSize: 11,
+                      color: 'var(--cp-text-tertiary, #64748B)', marginTop: 1,
                     }}>
                       {stepMeta.desc}
                     </div>
                   )}
                 </div>
                 <span style={{
-                  minWidth: 140, fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 11,
+                  minWidth: 140, fontFamily: 'Inter, sans-serif', fontSize: 11,
                 }}>
                   {isActive && (
                     <span style={{
@@ -315,16 +315,16 @@ export function WikiAdminSyncTab() {
                     }}>Failed</span>
                   )}
                   {!isActive && !isDone && !isStepFailed && (
-                    <span style={{ color: 'var(--cp-text-tertiary, rgba(237,237,237,0.40))', fontSize: 11 }}>Waiting</span>
+                    <span style={{ color: 'var(--cp-text-tertiary, #94A3B8)', fontSize: 11 }}>Waiting</span>
                   )}
                 </span>
                 <span style={{
                   fontFamily: 'JetBrains Mono, monospace', fontSize: 11,
-                  color: 'var(--cp-text-tertiary, rgba(237,237,237,0.40))', minWidth: 120,
+                  color: 'var(--cp-text-tertiary, #64748B)', minWidth: 120,
                 }}>{step.result ?? '—'}</span>
                 <span style={{
                   fontFamily: 'JetBrains Mono, monospace', fontSize: 11,
-                  color: 'var(--cp-text-tertiary, rgba(237,237,237,0.40))', minWidth: 60, textAlign: 'end',
+                  color: 'var(--cp-text-tertiary, #64748B)', minWidth: 60, textAlign: 'end',
                 }}>{step.durationMs > 0 ? `${(step.durationMs / 1000).toFixed(1)}s` : '—'}</span>
               </div>
             );
@@ -337,7 +337,7 @@ export function WikiAdminSyncTab() {
         <div style={{
           padding: '10px 16px', borderRadius: 6,
           background: isDark ? 'rgba(27,127,55,0.15)' : '#E3FCEF', border: '1px solid rgba(13,115,49,0.15)',
-          fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 13, fontWeight: 500,
+          fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 500,
           color: isDark ? '#4ADE80' : '#006644',
         }}>
           ✓ Sync completed · {latestRun.total_duration_ms ? `${(latestRun.total_duration_ms / 1000).toFixed(0)}s` : '—'} · {latestRun.total_items_processed ?? 0} items · {latestRun.new_pages ?? 0} new · {latestRun.updated_pages ?? 0} updated
@@ -347,15 +347,15 @@ export function WikiAdminSyncTab() {
       {/* Recent runs table */}
       {runs.length > 1 && (
         <div>
-          <div style={{ fontFamily: 'Sora, sans-serif', fontSize: 14, fontWeight: 600, color: 'var(--cp-text-primary, rgba(237,237,237,0.93))', marginBottom: 8 }}>
+          <div style={{ fontFamily: 'Sora, sans-serif', fontSize: 14, fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)', marginBottom: 8 }}>
             Recent Runs
           </div>
           <div style={{ border: '1px solid var(--cp-border-default, rgba(15,23,42,0.12))', borderRadius: 4, overflow: 'hidden' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 12 }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: 'Inter, sans-serif', fontSize: 12 }}>
               <thead>
-                <tr style={{ background: 'var(--cp-bg-sunken, #1A1A1A)' }}>
+                <tr style={{ background: 'var(--cp-bg-sunken, #F8FAFC)' }}>
                   {['Started', 'Status', 'Duration', 'Items', 'New', 'Updated', 'Trigger'].map(h => (
-                    <th key={h} style={{ padding: '8px 12px', textAlign: 'start', fontWeight: 650, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.03em', color: 'var(--cp-text-tertiary, rgba(237,237,237,0.40))' }}>{h}</th>
+                    <th key={h} style={{ padding: '8px 12px', textAlign: 'start', fontWeight: 650, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.03em', color: 'var(--cp-text-tertiary, #64748B)' }}>{h}</th>
                   ))}
                 </tr>
               </thead>
@@ -388,18 +388,18 @@ export function EmptyState({ icon, message, sub }: { icon: React.ReactNode; mess
       display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
       padding: '48px 24px', gap: 8,
       border: '1px dashed var(--cp-border-default, rgba(15,23,42,0.15))',
-      borderRadius: 6, background: 'var(--cp-bg-sunken, #1A1A1A)',
+      borderRadius: 6, background: 'var(--cp-bg-sunken, #F8FAFC)',
     }}>
       {icon}
-      <span style={{ fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 14, fontWeight: 600, color: 'var(--cp-text-primary, rgba(237,237,237,0.93))' }}>{message}</span>
-      <span style={{ fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 12, color: 'var(--cp-text-tertiary, rgba(237,237,237,0.40))', textAlign: 'center', maxWidth: 320 }}>{sub}</span>
+      <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 14, fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)' }}>{message}</span>
+      <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: 'var(--cp-text-tertiary, #64748B)', textAlign: 'center', maxWidth: 320 }}>{sub}</span>
     </div>
   );
 }
 
 export function StatusLoz({ status }: { status: string }) {
   const map: Record<string, { bg: string; color: string }> = {
-    complete: { bg: 'rgba(74,222,128,0.10)', color: '#006644' },
+    complete: { bg: '#E3FCEF', color: '#006644' },
     running: { bg: '#0C66E4', color: '#FFFFFF' },
     failed: { bg: 'rgba(220,38,38,0.08)', color: '#DC2626' },
     partial: { bg: '#DFE1E6', color: '#44546F' },

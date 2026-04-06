@@ -106,7 +106,7 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               opacity: hover || menuOpen ? 1 : 0, transition: 'opacity 150ms',
             }}>
-              <MoreHorizontal size={15} color="rgba(237,237,237,0.40)" />
+              <MoreHorizontal size={15} color="#64748B" />
             </button>
             {menuOpen && (
               <div style={{
@@ -141,7 +141,7 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
           }}>
             <Star size={15}
               fill={board.isStarred ? '#D97706' : 'none'}
-              color={board.isStarred ? '#D97706' : 'rgba(237,237,237,0.40)'}
+              color={board.isStarred ? '#D97706' : '#94A3B8'}
             />
           </button>
 
@@ -267,7 +267,7 @@ function MenuItem({ children, onClick, danger }: { children: React.ReactNode; on
       color: danger ? 'var(--sem-danger)' : 'var(--fg-2)',
       fontFamily: "'Inter', sans-serif", textAlign: 'left',
     }}
-      onMouseEnter={e => (e.currentTarget.style.background = danger ? (document.documentElement.classList.contains('dark') ? 'rgba(220,38,38,0.10)' : 'rgba(248,113,113,0.06)') : (document.documentElement.classList.contains('dark') ? 'rgba(255,255,255,0.04)' : 'rgba(15,23,42,0.04)'))}
+      onMouseEnter={e => (e.currentTarget.style.background = danger ? (document.documentElement.classList.contains('dark') ? 'rgba(220,38,38,0.10)' : '#FEF2F2') : (document.documentElement.classList.contains('dark') ? 'rgba(255,255,255,0.04)' : 'rgba(15,23,42,0.04)'))}
       onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
     >
       {children}

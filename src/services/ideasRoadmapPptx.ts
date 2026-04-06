@@ -39,11 +39,11 @@ export async function exportRoadmapPptx(ideas: RoadmapIdea[]): Promise<void> {
   // ── COVER SLIDE ──
   const cover = pptx.addSlide();
   cover.background = { color: 'FFFFFF' };
-  cover.addShape(pptx.ShapeType.rect, { x: 0, y: 0, w: 5.5, h: 7.5, fill: { color: '1A1A1A' } });
+  cover.addShape(pptx.ShapeType.rect, { x: 0, y: 0, w: 5.5, h: 7.5, fill: { color: 'F8FAFC' } });
   cover.addShape(pptx.ShapeType.rect, { x: 0, y: 0, w: 0.08, h: 7.5, fill: { color: '0D9488' } });
 
   cover.addText('MINISTRY OF INDUSTRY & MINERAL RESOURCES', {
-    x: 0.4, y: 1.2, w: 5.0, h: 0.3, fontSize: 8, bold: true, color: 'A1A1A1', charSpacing: 2,
+    x: 0.4, y: 1.2, w: 5.0, h: 0.3, fontSize: 8, bold: true, color: '94A3B8', charSpacing: 2,
   });
   cover.addText('MIM Digital\nTransformation', {
     x: 0.4, y: 1.7, w: 5.0, h: 1.4, fontSize: 32, bold: true, color: '0F172A', lineSpacingMultiple: 1.1,
@@ -57,12 +57,12 @@ export async function exportRoadmapPptx(ideas: RoadmapIdea[]): Promise<void> {
   });
 
   // Stats
-  cover.addShape(pptx.ShapeType.rect, { x: 0.4, y: 4.9, w: 2.2, h: 0.9, fill: { color: 'FFFFFF' }, line: { color: '3A3A3A', width: 1 } });
-  cover.addText('COMMITTED', { x: 0.4, y: 4.95, w: 2.2, h: 0.2, fontSize: 7, bold: true, color: 'A1A1A1', align: 'center', charSpacing: 1.5 });
+  cover.addShape(pptx.ShapeType.rect, { x: 0.4, y: 4.9, w: 2.2, h: 0.9, fill: { color: 'FFFFFF' }, line: { color: 'E2E8F0', width: 1 } });
+  cover.addText('COMMITTED', { x: 0.4, y: 4.95, w: 2.2, h: 0.2, fontSize: 7, bold: true, color: '94A3B8', align: 'center', charSpacing: 1.5 });
   cover.addText(String(committed.length), { x: 0.4, y: 5.15, w: 2.2, h: 0.5, fontSize: 28, bold: true, color: '0F172A', align: 'center' });
 
-  cover.addShape(pptx.ShapeType.rect, { x: 2.8, y: 4.9, w: 2.2, h: 0.9, fill: { color: 'FFFFFF' }, line: { color: '3A3A3A', width: 1 } });
-  cover.addText('FISCAL YEAR', { x: 2.8, y: 4.95, w: 2.2, h: 0.2, fontSize: 7, bold: true, color: 'A1A1A1', align: 'center', charSpacing: 1.5 });
+  cover.addShape(pptx.ShapeType.rect, { x: 2.8, y: 4.9, w: 2.2, h: 0.9, fill: { color: 'FFFFFF' }, line: { color: 'E2E8F0', width: 1 } });
+  cover.addText('FISCAL YEAR', { x: 2.8, y: 4.95, w: 2.2, h: 0.2, fontSize: 7, bold: true, color: '94A3B8', align: 'center', charSpacing: 1.5 });
   cover.addText('2026', { x: 2.8, y: 5.15, w: 2.2, h: 0.5, fontSize: 28, bold: true, color: '0F172A', align: 'center' });
 
   // Q breakdown on right
@@ -73,14 +73,14 @@ export async function exportRoadmapPptx(ideas: RoadmapIdea[]): Promise<void> {
     const count = committed.filter(idea => idea.quarter === q).length;
     const x = 6.0 + i * 1.8;
     cover.addShape(pptx.ShapeType.rect, { x, y: 2.0, w: 1.6, h: 0.05, fill: { color: QCOLORS[i] } });
-    cover.addShape(pptx.ShapeType.rect, { x, y: 2.05, w: 1.6, h: 2.0, fill: { color: 'FFFFFF' }, line: { color: '3A3A3A', width: 1 } });
+    cover.addShape(pptx.ShapeType.rect, { x, y: 2.05, w: 1.6, h: 2.0, fill: { color: 'FFFFFF' }, line: { color: 'E2E8F0', width: 1 } });
     cover.addText(q, { x, y: 2.1, w: 1.6, h: 0.3, fontSize: 9, bold: true, color: '64748B', align: 'center' });
     cover.addText(String(count), { x, y: 2.45, w: 1.6, h: 0.8, fontSize: 30, bold: true, color: QCOLORS[i], align: 'center' });
-    cover.addText(QLABELS[i], { x, y: 3.3, w: 1.6, h: 0.25, fontSize: 8, color: 'A1A1A1', align: 'center' });
+    cover.addText(QLABELS[i], { x, y: 3.3, w: 1.6, h: 0.25, fontSize: 8, color: '94A3B8', align: 'center' });
   });
 
   cover.addText(`Prepared by Delivery Management · Catalyst Platform · ${new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}`, {
-    x: 0.4, y: 7.1, w: 12.5, h: 0.25, fontSize: 8, color: 'A1A1A1',
+    x: 0.4, y: 7.1, w: 12.5, h: 0.25, fontSize: 8, color: '94A3B8',
   });
 
   // ── QUARTER SLIDES ──
@@ -97,12 +97,12 @@ export async function exportRoadmapPptx(ideas: RoadmapIdea[]): Promise<void> {
       x: 0.85, y: 0.1, w: 8, h: 0.3, fontSize: 11, bold: true, color: '1E293B',
     });
     slide.addText(`${qIdeas.length} committed ideas`, {
-      x: 11.5, y: 0.1, w: 1.6, h: 0.3, fontSize: 9, color: 'A1A1A1', align: 'right',
+      x: 11.5, y: 0.1, w: 1.6, h: 0.3, fontSize: 9, color: '94A3B8', align: 'right',
     });
 
     if (qIdeas.length === 0) {
       slide.addText(`No committed ideas in ${qCfg.key} 2026`, {
-        x: 2, y: 3.5, w: 9, h: 0.5, fontSize: 14, color: 'A1A1A1', align: 'center',
+        x: 2, y: 3.5, w: 9, h: 0.5, fontSize: 14, color: '94A3B8', align: 'center',
       });
       continue;
     }
@@ -114,14 +114,14 @@ export async function exportRoadmapPptx(ideas: RoadmapIdea[]): Promise<void> {
     slide.addText('IDEA', { x: LABEL_X, y: 0.6, w: LABEL_W, h: 0.25, fontSize: 7, bold: true, color: '64748B', charSpacing: 1 });
     qCfg.months.forEach((m, mi) => {
       const x = TL_X + mi * monthW;
-      slide.addShape(pptx.ShapeType.rect, { x, y: 0.6, w: monthW, h: 0.25, fill: { color: '1A1A1A' } });
+      slide.addShape(pptx.ShapeType.rect, { x, y: 0.6, w: monthW, h: 0.25, fill: { color: 'F8FAFC' } });
       slide.addText(m.toUpperCase(), { x, y: 0.6, w: monthW, h: 0.25, fontSize: 7, bold: true, color: '64748B', align: 'center', charSpacing: 1 });
     });
 
     qCfg.months.forEach((_, mi) => {
       if (mi > 0) {
         const x = TL_X + mi * monthW;
-        slide.addShape(pptx.ShapeType.line, { x, y: 0.6, w: 0, h: 7.5 - 0.6, line: { color: '1A1A1A', width: 0.5 } });
+        slide.addShape(pptx.ShapeType.line, { x, y: 0.6, w: 0, h: 7.5 - 0.6, line: { color: 'F1F5F9', width: 0.5 } });
       }
     });
 
@@ -146,11 +146,11 @@ export async function exportRoadmapPptx(ideas: RoadmapIdea[]): Promise<void> {
       if (y + ROW_H > 7.4) return;
 
       if (ri % 2 === 1) {
-        slide.addShape(pptx.ShapeType.rect, { x: 0, y, w: 13.33, h: ROW_H, fill: { color: '1A1A1A' } });
+        slide.addShape(pptx.ShapeType.rect, { x: 0, y, w: 13.33, h: ROW_H, fill: { color: 'F8FAFC' } });
       }
 
       const title = idea.title.length > 38 ? idea.title.substring(0, 36) + '…' : idea.title;
-      slide.addText(idea.ideaKey, { x: LABEL_X, y: y + 0.01, w: LABEL_W, h: 0.13, fontSize: 6.5, color: 'A1A1A1', fontFace: 'Courier New' });
+      slide.addText(idea.ideaKey, { x: LABEL_X, y: y + 0.01, w: LABEL_W, h: 0.13, fontSize: 6.5, color: '94A3B8', fontFace: 'Courier New' });
       slide.addText(title, { x: LABEL_X, y: y + 0.13, w: LABEL_W, h: 0.15, fontSize: 8, bold: true, color: '1E293B' });
 
       const ms = idea.milestones;
@@ -174,7 +174,7 @@ export async function exportRoadmapPptx(ideas: RoadmapIdea[]): Promise<void> {
         if (cs <= ce) {
           slide.addShape(pptx.ShapeType.rect, {
             x: xPos(cs), y: barY, w: Math.max(0.02, xPos(ce) - xPos(cs)), h: barH,
-            fill: { color: 'A1A1A1' },
+            fill: { color: '94A3B8' },
           } as any);
         }
       }
@@ -205,12 +205,12 @@ export async function exportRoadmapPptx(ideas: RoadmapIdea[]): Promise<void> {
       }
     });
 
-    slide.addShape(pptx.ShapeType.rect, { x: 0, y: 7.3, w: 13.33, h: 0.2, fill: { color: '1A1A1A' } });
+    slide.addShape(pptx.ShapeType.rect, { x: 0, y: 7.3, w: 13.33, h: 0.2, fill: { color: 'F8FAFC' } });
     slide.addText('Ministry of Industry & Mineral Resources — Confidential', {
-      x: 0.2, y: 7.32, w: 8, h: 0.16, fontSize: 7, color: 'A1A1A1',
+      x: 0.2, y: 7.32, w: 8, h: 0.16, fontSize: 7, color: '94A3B8',
     });
     slide.addText(`${qCfg.key} 2026  ·  ${qIdeas.length} ideas`, {
-      x: 10, y: 7.32, w: 3.1, h: 0.16, fontSize: 7, color: 'A1A1A1', align: 'right',
+      x: 10, y: 7.32, w: 3.1, h: 0.16, fontSize: 7, color: '94A3B8', align: 'right',
     });
   }
 

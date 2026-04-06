@@ -68,7 +68,7 @@ export function EpicKanbanCustom({ epics, onEpicClick, onContextMenu }: EpicKanb
   const columns = customColumns.length > 0
     ? customColumns
     : [
-        { id: 'new', column_id: 'new', label: 'New', color: 'rgba(237,237,237,0.40)', wip_limit: null },
+        { id: 'new', column_id: 'new', label: 'New', color: '#94A3B8', wip_limit: null },
         { id: 'in_progress', column_id: 'in_progress', label: 'In Progress', color: '#3B82F6', wip_limit: null },
         { id: 'review', column_id: 'review', label: 'Review', color: '#F59E0B', wip_limit: null },
         { id: 'completed', column_id: 'completed', label: 'Completed', color: '#10B981', wip_limit: null },

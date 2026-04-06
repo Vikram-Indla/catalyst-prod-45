@@ -8,7 +8,7 @@ import type * as D3Type from 'd3';
 
 const DOMAIN_COLORS: Record<string, string> = {
   D1: '#2563EB', D2: '#0D9488', D3: '#D97706', D4: '#16A34A',
-  D5: '#DC2626', D6: '#0891B2', D7: 'rgba(237,237,237,0.40)', D8: '#4F46E5', D9: '#CA8A04',
+  D5: '#DC2626', D6: '#0891B2', D7: '#64748B', D8: '#4F46E5', D9: '#CA8A04',
 };
 
 interface GNode extends D3Type.SimulationNodeDatum {
@@ -105,7 +105,7 @@ export default function WikiKnowledgeGraphPage() {
       .data(nodes)
       .join('circle')
       .attr('r', d => radiusScale(d.view_count ?? 1))
-      .attr('fill', d => DOMAIN_COLORS[d.domain_code] || 'rgba(237,237,237,0.40)')
+      .attr('fill', d => DOMAIN_COLORS[d.domain_code] || '#64748B')
       .attr('stroke', isDark ? '#0A0A0A' : '#FFFFFF')
       .attr('stroke-width', 1.5)
       .attr('cursor', 'pointer')

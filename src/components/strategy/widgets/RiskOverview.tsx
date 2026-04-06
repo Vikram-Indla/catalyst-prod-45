@@ -15,8 +15,8 @@ const SEVERITY_RANK: Record<string, number> = { Critical: 0, High: 1, Medium: 2,
 
 /* ROAM: gray for resolved, blue shades for active, amber for mitigated */
 const ROAM_COLORS: Record<string, string> = {
-  Resolved: 'rgba(237,237,237,0.53)',
-  Owned: '#7DB8FC',
+  Resolved: '#CBD5E1',
+  Owned: '#1E40AF',
   Accepted: '#93C5FD',
   Mitigated: '#D97706',
 };
@@ -48,7 +48,7 @@ export function RiskOverview() {
 
   /* Impact colors: red for critical/high, amber for medium, blue for low */
   const IMPACT_COLORS: Record<string, string> = {
-    Critical: '#DC2626', High: '#DC2626', Medium: '#D97706', Low: '#7DB8FC',
+    Critical: '#DC2626', High: '#DC2626', Medium: '#D97706', Low: '#1E40AF',
   };
 
   const topRisks = useMemo(() => {
@@ -74,7 +74,7 @@ export function RiskOverview() {
     return (
       <div className="flex flex-col items-center justify-center h-full" style={{ color: 'var(--exec-text-tertiary)' }}>
         <p style={{ fontSize: 12 }}>Unable to load risks</p>
-        <button onClick={() => window.location.reload()} style={{ fontSize: 11, color: 'var(--exec-blue-700, #7DB8FC)', background: 'none', border: 'none', cursor: 'pointer', marginTop: 4 }}>
+        <button onClick={() => window.location.reload()} style={{ fontSize: 11, color: 'var(--exec-blue-700, #1E40AF)', background: 'none', border: 'none', cursor: 'pointer', marginTop: 4 }}>
           Retry
         </button>
       </div>
@@ -95,13 +95,13 @@ export function RiskOverview() {
       {/* KPI Strip */}
       <div className="grid grid-cols-2 gap-1.5 mb-3">
         {[
-          { label: 'OPEN', value: openRisks.length, color: 'var(--exec-blue-700, #7DB8FC)', pulse: false },
+          { label: 'OPEN', value: openRisks.length, color: 'var(--exec-blue-700, #1E40AF)', pulse: false },
           { label: 'CRITICAL', value: criticalHighCount, color: 'var(--exec-signal-red, #DC2626)', pulse: false },
           { label: 'MITIGATED', value: mitigatedCount, color: 'var(--exec-signal-amber, #D97706)', pulse: false },
           { label: 'OVERDUE', value: overdueCount, color: 'var(--exec-signal-red, #DC2626)', pulse: overdueCount > 0 },
         ].map(kpi => (
           <div key={kpi.label} className="text-center relative" style={{
-            border: '1px solid var(--exec-border, var(--bd-default, rgba(255,255,255,0.10)))', borderRadius: 6, padding: '6px 10px',
+            border: '1px solid var(--exec-border, var(--bd-default, #E2E8F0))', borderRadius: 6, padding: '6px 10px',
           }}>
             {kpi.pulse && (
               <span style={{
@@ -138,11 +138,11 @@ export function RiskOverview() {
       <div className="flex gap-1 mb-3">
         {(['Critical', 'High', 'Medium', 'Low'] as const).map(level => {
           const count = impactCounts[level];
-          const color = count > 0 ? IMPACT_COLORS[level] : 'var(--exec-text-muted, rgba(237,237,237,0.40))';
+          const color = count > 0 ? IMPACT_COLORS[level] : 'var(--exec-text-muted, #94A3B8)';
           return (
             <div key={level} className="flex-1" style={{
               borderLeft: `3px solid ${IMPACT_COLORS[level]}`, padding: '4px 8px', borderRadius: 4,
-              background: 'var(--exec-bg-subtle, #1A1A1A)',
+              background: 'var(--exec-bg-subtle, #F8FAFC)',
             }}>
               <div style={{ fontSize: 9, color: 'var(--exec-text-tertiary)' }}>{level}</div>
               <div style={{ fontSize: 14, fontWeight: 700, color }}>{count}</div>
@@ -159,9 +159,9 @@ export function RiskOverview() {
           return (
             <div key={risk.id} className="flex items-start gap-2" style={{
               padding: '6px 0',
-              borderBottom: i < topRisks.length - 1 ? '1px solid var(--exec-border, var(--bd-default, rgba(255,255,255,0.10)))' : 'none',
+              borderBottom: i < topRisks.length - 1 ? '1px solid var(--exec-border, var(--bd-default, #E2E8F0))' : 'none',
             }}>
-              <span style={{ width: 8, height: 8, borderRadius: '50%', marginTop: 3, flexShrink: 0, background: IMPACT_COLORS[risk.impact || 'Low'] || 'rgba(237,237,237,0.40)' }} />
+              <span style={{ width: 8, height: 8, borderRadius: '50%', marginTop: 3, flexShrink: 0, background: IMPACT_COLORS[risk.impact || 'Low'] || '#94A3B8' }} />
               <div className="flex-1 min-w-0">
                 <div style={{ fontSize: 11, color: 'var(--exec-text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                   <span style={{ fontFamily: 'monospace', fontSize: 10, marginRight: 4 }}>R-{String(risk.risk_number).padStart(3, '0')}</span>
@@ -183,7 +183,7 @@ export function RiskOverview() {
       {openRisks.length > 3 && (
         <button
           onClick={() => navigate('/strategyhub/risks')}
-          style={{ fontSize: 10, color: 'var(--exec-blue-700, #7DB8FC)', fontWeight: 500, background: 'none', border: 'none', cursor: 'pointer', marginTop: 4, padding: 0 }}
+          style={{ fontSize: 10, color: 'var(--exec-blue-700, #1E40AF)', fontWeight: 500, background: 'none', border: 'none', cursor: 'pointer', marginTop: 4, padding: 0 }}
           onMouseEnter={(e) => { e.currentTarget.style.textDecoration = 'underline'; }}
           onMouseLeave={(e) => { e.currentTarget.style.textDecoration = 'none'; }}
         >

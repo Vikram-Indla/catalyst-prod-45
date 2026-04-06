@@ -17,17 +17,17 @@ const toastConfig = {
   success: {
     icon: CheckCircle,
     iconColor: '#059669',
-    bgColor: 'rgba(74,222,128,0.06)',
+    bgColor: '#ECFDF5',
     borderColor: '#A7F3D0',
-    titleColor: '#4ADE80',
+    titleColor: '#065F46',
     descColor: '#047857',
   },
   error: {
     icon: XCircle,
     iconColor: '#DC2626',
-    bgColor: 'rgba(248,113,113,0.06)',
+    bgColor: '#FEF2F2',
     borderColor: '#FECACA',
-    titleColor: '#F87171',
+    titleColor: '#991B1B',
     descColor: '#B91C1C',
   },
   warning: {
@@ -35,15 +35,15 @@ const toastConfig = {
     iconColor: '#D97706',
     bgColor: '#FFFBEB',
     borderColor: '#FDE68A',
-    titleColor: '#FBBF24',
+    titleColor: '#92400E',
     descColor: '#B45309',
   },
   info: {
     icon: Info,
     iconColor: '#2563EB',
-    bgColor: 'rgba(59,130,246,0.06)',
+    bgColor: '#EFF6FF',
     borderColor: '#BFDBFE',
-    titleColor: '#7DB8FC',
+    titleColor: '#1E40AF',
     descColor: '#1D4ED8',
   },
 };
@@ -70,7 +70,7 @@ export const showCatalystToast = (
           boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
           minWidth: 320,
           maxWidth: 420,
-          fontFamily: 'Geist, -apple-system, sans-serif',
+          fontFamily: 'Inter, sans-serif',
         }}
       >
         <Icon size={20} style={{ color: config.iconColor, flexShrink: 0, marginTop: 1 }} />

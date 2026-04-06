@@ -3,8 +3,8 @@ import { useAiDigest, type DigestItem } from "@/hooks/useAiDigest";
 import { useTheme } from "@/hooks/useTheme";
 
 const PRIORITY_LIGHT: Record<string, { bg: string; text: string }> = {
-  HIGH: { bg: "rgba(248,113,113,0.10)", text: "#F87171" },
-  MED: { bg: "rgba(251,191,36,0.10)", text: "#FBBF24" },
+  HIGH: { bg: "#FEE2E2", text: "#991B1B" },
+  MED: { bg: "#FEF3C7", text: "#92400E" },
   LOW: { bg: "#DCFCE7", text: "#166534" },
 };
 

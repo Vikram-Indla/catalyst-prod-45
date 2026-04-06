@@ -631,7 +631,7 @@ export function TestRepositoryPage() {
                 e.currentTarget.style.borderColor = isDark ? '#2E2E2E' : '#E2E8F0';
               }}
             >
-              <RefreshCw style={{ width: 16, height: 16, color: 'rgba(237,237,237,0.40)' }} />
+              <RefreshCw style={{ width: 16, height: 16, color: '#64748B' }} />
             </button>
 
             {/* Import */}
@@ -668,7 +668,7 @@ export function TestRepositoryPage() {
               style={{
                 height: 40, padding: '0 16px',
                 background: 'linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%)',
-                border: 'none', borderRadius: 8, fontFamily: 'Geist, -apple-system, sans-serif',
+                border: 'none', borderRadius: 8, fontFamily: 'Inter, sans-serif',
                 fontSize: 14, fontWeight: 600, color: '#FFFFFF', cursor: 'pointer',
                 display: 'flex', alignItems: 'center', gap: 8,
                 boxShadow: '0 2px 8px rgba(124, 58, 237, 0.25)', transition: 'all 0.15s',
@@ -687,7 +687,7 @@ export function TestRepositoryPage() {
                 background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
                 border: 'none',
                 borderRadius: 8,
-                fontFamily: 'Geist, -apple-system, sans-serif',
+                fontFamily: 'Inter, sans-serif',
                 fontSize: 14,
                 fontWeight: 600,
                 color: '#FFFFFF',
@@ -753,7 +753,7 @@ export function TestRepositoryPage() {
                 gap: 16,
               }}>
                 <span style={{
-                  fontFamily: 'Geist, -apple-system, sans-serif',
+                  fontFamily: 'Inter, sans-serif',
                   fontSize: 14,
                   fontWeight: 600,
                   color: '#2563EB',
@@ -775,7 +775,7 @@ export function TestRepositoryPage() {
                       backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF',
                       border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0',
                       borderRadius: 6,
-                      fontFamily: 'Geist, -apple-system, sans-serif',
+                      fontFamily: 'Inter, sans-serif',
                       fontSize: 13,
                       fontWeight: 500,
                       color: isDark ? '#A1A1A1' : '#334155',
@@ -801,7 +801,7 @@ export function TestRepositoryPage() {
                       backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF',
                       border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0',
                       borderRadius: 6,
-                      fontFamily: 'Geist, -apple-system, sans-serif',
+                      fontFamily: 'Inter, sans-serif',
                       fontSize: 13,
                       fontWeight: 500,
                       color: isDark ? '#A1A1A1' : '#334155',
@@ -822,7 +822,7 @@ export function TestRepositoryPage() {
                       backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF',
                       border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0',
                       borderRadius: 6,
-                      fontFamily: 'Geist, -apple-system, sans-serif',
+                      fontFamily: 'Inter, sans-serif',
                       fontSize: 13,
                       fontWeight: 500,
                       color: '#DC2626',
@@ -854,10 +854,10 @@ export function TestRepositoryPage() {
                     background: 'transparent',
                     border: 'none',
                     borderRadius: 6,
-                    fontFamily: 'Geist, -apple-system, sans-serif',
+                    fontFamily: 'Inter, sans-serif',
                     fontSize: 13,
                     fontWeight: 500,
-                    color: 'rgba(237,237,237,0.40)',
+                    color: '#64748B',
                     cursor: 'pointer',
                   }}
                   onMouseEnter={(e) => {

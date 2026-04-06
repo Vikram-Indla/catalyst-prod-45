@@ -366,7 +366,7 @@ function ProjectCard({ prj }: { prj: ProjectActivity }) {
             <span className="di-prj-contribs-lbl">Contributors</span>
             {prj.contributors.map((c, ci) => (
               <span className="di-prj-contrib" key={ci}>
-                <span className="di-prj-avatar" style={{ background: c.color || 'rgba(237,237,237,0.40)' }}>
+                <span className="di-prj-avatar" style={{ background: c.color || '#64748B' }}>
                   {c.initials}
                 </span>
                 <span className="di-prj-contrib-name">{c.name}</span>
@@ -398,7 +398,7 @@ function ProjectCard({ prj }: { prj: ProjectActivity }) {
   );
 }
 
-/** Parse inline CSS string like "background:#EDE9FE;color:#A78BFA" to React style */
+/** Parse inline CSS string like "background:#EDE9FE;color:#5B21B6" to React style */
 function parseCssStyle(css: string): React.CSSProperties {
   const style: Record<string, string> = {};
   css.split(';').forEach(pair => {

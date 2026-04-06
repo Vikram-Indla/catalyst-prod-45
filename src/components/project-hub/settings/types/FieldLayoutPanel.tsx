@@ -24,9 +24,9 @@ export function FieldLayoutPanel({ typeId, typeName, onClose }: FieldLayoutPanel
   });
 
   const getTagStyle = (isRequired: boolean, isTypeSpecific: boolean) => {
-    if (isRequired) return { bg: 'rgba(248,113,113,0.06)', text: '#DC2626', label: 'Required' };
+    if (isRequired) return { bg: '#FEF2F2', text: '#DC2626', label: 'Required' };
     if (isTypeSpecific) return { bg: '#FFFBEB', text: '#D97706', label: 'Type-specific' };
-    return { bg: '#1A1A1A', text: 'rgba(237,237,237,0.40)', label: 'Optional' };
+    return { bg: '#F1F5F9', text: '#94A3B8', label: 'Optional' };
   };
 
   return (
@@ -43,7 +43,7 @@ export function FieldLayoutPanel({ typeId, typeName, onClose }: FieldLayoutPanel
         </h4>
         <button
           onClick={onClose}
-          className="flex items-center justify-center rounded-md hover:bg-[#1A1A1A] transition-colors"
+          className="flex items-center justify-center rounded-md hover:bg-[#F1F5F9] transition-colors"
           style={{ width: 28, height: 28, border: 'none', background: 'transparent', cursor: 'pointer' }}
         >
           <X size={14} color="var(--fg-3)" />
@@ -68,7 +68,7 @@ export function FieldLayoutPanel({ typeId, typeName, onClose }: FieldLayoutPanel
             return (
               <div
                 key={field.id}
-                className="flex items-center gap-4 px-2 hover:bg-[#1A1A1A] transition-colors"
+                className="flex items-center gap-4 px-2 hover:bg-[#F8FAFC] transition-colors"
                 style={{ height: 40, borderBottom: '1px solid var(--bg-1)' }}
               >
                 <span className="flex-1 truncate" style={{ fontSize: 14, fontWeight: 500, color: 'var(--fg-1)' }}>

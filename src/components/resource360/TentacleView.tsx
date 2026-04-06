@@ -181,7 +181,7 @@ const TentacleView: React.FC<TentacleViewProps> = ({ resource, items, roleFilter
             const { x, y } = placeOnRing(i, visibleItems.length);
             const cat = getStatusCategory(item.status_category || item.status);
             const statusColor = cat === 'todo' ? T.todo : T.progress;
-            const hubColor = HUB_COLORS[item.hub || item.source_hub] ?? 'rgba(237,237,237,0.40)';
+            const hubColor = HUB_COLORS[item.hub || item.source_hub] ?? '#64748B';
             const hub = item.hub || item.source_hub || 'ProjectHub';
             const key = item.item_key || item.key || '—';
             const title = item.title || '';
@@ -323,7 +323,7 @@ const TentacleView: React.FC<TentacleViewProps> = ({ resource, items, roleFilter
         <div style={{ flex: 1, overflowY: 'auto' }}>
           {doneItems.map((item: any, idx: number) => {
             const hub = item.hub || item.source_hub || 'ProjectHub';
-            const hubColor = HUB_COLORS[hub] ?? 'rgba(237,237,237,0.40)';
+            const hubColor = HUB_COLORS[hub] ?? '#64748B';
             const key = item.item_key || item.key || '—';
             const title = item.title || '';
             return (

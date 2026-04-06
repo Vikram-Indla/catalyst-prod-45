@@ -27,7 +27,7 @@ export default function CommitteeQueuePage() {
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center rounded-md" style={{ width: 32, height: 32, backgroundColor: 'rgba(251,191,36,0.10)' }}>
+            <div className="flex items-center justify-center rounded-md" style={{ width: 32, height: 32, backgroundColor: '#FEF3C7' }}>
               <Users size={18} style={{ color: '#D97706' }} />
             </div>
             <h1 style={{ fontFamily: 'Sora, sans-serif', fontSize: 18, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A' }}>Committee Queue</h1>
@@ -48,7 +48,7 @@ export default function CommitteeQueuePage() {
           }}>
             {['KEY', 'INCIDENT', 'SEV', 'STATUS', 'AGE', 'APPROVAL', 'TYPE', 'ACTIONS'].map(h => (
               <div key={h} className="px-3" style={{
-                fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 11, fontWeight: 700,
+                fontFamily: 'Inter, sans-serif', fontSize: 11, fontWeight: 700,
                 textTransform: 'uppercase' as const, letterSpacing: '0.06em', color: isDark ? '#878787' : '#64748B',
               }}>{h}</div>
             ))}

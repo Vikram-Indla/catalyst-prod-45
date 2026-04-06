@@ -267,7 +267,7 @@ export function Resource360AIPanel({ items, summary, resourceName, isOpen, onClo
                 {a.criticalPath.length > 0 ? a.criticalPath.map(item => (
                   <div key={item.work_item_id} style={{
                     display: 'flex', alignItems: 'center', gap: 6, padding: '5px 8px',
-                    background: 'rgba(248,113,113,0.06)', borderRadius: 6, marginBottom: 3,
+                    background: '#FEF2F2', borderRadius: 6, marginBottom: 3,
                     border: '1px solid #FECACA', fontSize: 10,
                   }}>
                     <span style={{ color: C.todo, fontWeight: 700, fontFamily: C.mono, flexShrink: 0 }}>{item.item_key}</span>
@@ -317,9 +317,9 @@ export function Resource360AIPanel({ items, summary, resourceName, isOpen, onClo
               <div style={{
                 padding: '8px 14px', fontWeight: 800, fontSize: 12,
                 background: a.isAtRisk
-                  ? 'linear-gradient(135deg, rgba(251,191,36,0.10), #FDE68A)'
+                  ? 'linear-gradient(135deg, #FEF3C7, #FDE68A)'
                   : 'linear-gradient(135deg, #D1FAE5, #A7F3D0)',
-                color: a.isAtRisk ? '#FBBF24' : '#4ADE80',
+                color: a.isAtRisk ? '#92400E' : '#065F46',
               }}>
                 {a.isAtRisk ? '⚠ AT RISK' : '✓ ON TRACK'}
               </div>
@@ -364,7 +364,7 @@ export function Resource360AIPanel({ items, summary, resourceName, isOpen, onClo
             <div style={{
               marginTop: 8, padding: '6px 10px', borderRadius: 6,
               background: '#FFFBEB', border: '1px solid #FDE68A',
-              fontSize: 10, color: '#FBBF24', fontStyle: 'italic',
+              fontSize: 10, color: '#92400E', fontStyle: 'italic',
             }}>
               ⓘ Based on system data. Leave, meetings, and external context not captured.
             </div>

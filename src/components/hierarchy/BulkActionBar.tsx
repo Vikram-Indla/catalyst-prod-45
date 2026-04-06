@@ -35,7 +35,7 @@ export function BulkActionBar({
 
   return (
     <div style={{
-      height: 48, background: 'rgba(237,237,237,0.93)', display: 'flex', alignItems: 'center', gap: 8,
+      height: 48, background: '#1E293B', display: 'flex', alignItems: 'center', gap: 8,
       padding: '0 16px', fontFamily: "'Inter', sans-serif", position: 'sticky', top: 0, zIndex: 50,
       borderRadius: '8px 8px 0 0',
     }}>
@@ -45,12 +45,12 @@ export function BulkActionBar({
 
       <button onClick={onClear} style={{
         background: 'none', border: 'none', cursor: 'pointer', padding: '4px 8px',
-        display: 'flex', alignItems: 'center', gap: 4, color: 'rgba(237,237,237,0.40)', fontSize: 12,
+        display: 'flex', alignItems: 'center', gap: 4, color: '#94A3B8', fontSize: 12,
       }}>
         <X size={14} /> Clear
       </button>
 
-      <div style={{ width: 1, height: 20, background: 'rgba(237,237,237,0.53)', margin: '0 4px' }} />
+      <div style={{ width: 1, height: 20, background: '#334155', margin: '0 4px' }} />
 
       {/* Status */}
       <div style={{ position: 'relative' }}>
@@ -105,7 +105,7 @@ export function BulkActionBar({
           }}>Yes, delete</button>
           <button onClick={() => setConfirmDelete(false)} style={{
             fontSize: 11, padding: '4px 10px', borderRadius: 4,
-            background: 'transparent', color: 'rgba(237,237,237,0.40)', border: '1px solid #475569', cursor: 'pointer',
+            background: 'transparent', color: '#94A3B8', border: '1px solid #475569', cursor: 'pointer',
           }}>Cancel</button>
         </div>
       ) : (
@@ -123,11 +123,11 @@ function BulkBtn({ icon: Icon, label, onClick, danger }: {
     <button onClick={onClick} style={{
       height: 30, padding: '0 10px', fontSize: 12, fontWeight: 500,
       fontFamily: "'Inter', sans-serif",
-      color: danger ? '#FCA5A5' : 'var(--bd-default, rgba(255,255,255,0.10))',
+      color: danger ? '#FCA5A5' : 'var(--bd-default, #E2E8F0)',
       background: 'transparent', border: '1px solid #475569', borderRadius: 4,
       cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4,
     }}
-      onMouseEnter={e => (e.currentTarget.style.background = 'rgba(237,237,237,0.53)')}
+      onMouseEnter={e => (e.currentTarget.style.background = '#334155')}
       onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
     >
       <Icon size={13} /> {label}

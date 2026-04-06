@@ -603,7 +603,7 @@ export function CatalystHeader() {
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   background: '#EF4444', color: '#FFFFFF',
                   borderRadius: '8px', padding: '0 4px',
-                  fontFamily: 'Geist, -apple-system, sans-serif', fontSize: '10px', fontWeight: 700,
+                  fontFamily: 'Inter, sans-serif', fontSize: '10px', fontWeight: 700,
                   lineHeight: 1,
                 }}>
                   {debouncedUnreadCount > 99 ? '99+' : String(debouncedUnreadCount)}

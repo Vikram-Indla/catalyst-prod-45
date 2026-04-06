@@ -91,7 +91,7 @@ function filterTree(items: WorkItem[], search: string, filters: Filters): WorkIt
 }
 
 /* ── Avatar color palette ── */
-const FILTER_AVATAR_COLORS = ['#0D9488','#2563EB','#DC2626','#16A34A','rgba(237,237,237,0.40)','#0284C7','#059669','#BE123C','#1D4ED8','#0F766E'];
+const FILTER_AVATAR_COLORS = ['#0D9488','#2563EB','#DC2626','#16A34A','#64748B','#0284C7','#059669','#BE123C','#1D4ED8','#0F766E'];
 function getFilterAvatarColor(name: string): string {
   let hash = 0;
   for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
@@ -131,12 +131,12 @@ function FilterTrigger({ label, values, onClear, onClick, isOpen }: {
           onClick={e => { e.stopPropagation(); onClear(); }}
           style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 14, height: 14, borderRadius: 9999, cursor: 'pointer', color: isDark ? '#878787' : '#94A3B8' }}
           onMouseEnter={e => (e.currentTarget.style.color = '#DC2626')}
-          onMouseLeave={e => (e.currentTarget.style.color = 'rgba(237,237,237,0.40)')}
+          onMouseLeave={e => (e.currentTarget.style.color = '#94A3B8')}
         >
           <X size={10} />
         </span>
       )}
-      <ChevronDown size={11} color={active ? '#2563EB' : 'rgba(237,237,237,0.40)'} style={{ transform: isOpen ? 'rotate(180deg)' : 'none', transition: 'transform 100ms' }} />
+      <ChevronDown size={11} color={active ? '#2563EB' : '#94A3B8'} style={{ transform: isOpen ? 'rotate(180deg)' : 'none', transition: 'transform 100ms' }} />
     </button>
   );
 }
@@ -146,11 +146,11 @@ const STATUS_DOT_COLORS: Record<string, string> = {
   'Done': '#16A34A', 'Closed': '#16A34A', 'Resolved': '#16A34A', 'Released': '#16A34A', 'In Production': '#16A34A',
   'In Development': '#2563EB', 'In Progress': '#2563EB', 'In Beta': '#2563EB', 'In QA': '#2563EB', 'UAT Ready': '#2563EB', 'In Review': '#2563EB',
   'Ready for Production': '#0D9488', 'Ready for QA': '#0D9488',
-  'Backlog': 'rgba(237,237,237,0.40)', 'To Do': 'rgba(237,237,237,0.40)', 'Open': 'rgba(237,237,237,0.40)',
+  'Backlog': '#94A3B8', 'To Do': '#94A3B8', 'Open': '#94A3B8',
   'On Hold': '#D97706', 'Awaiting Info': '#D97706', 'Awaiting Information': '#D97706', 'Blocked': '#DC2626',
 };
 function getStatusDotColor(status: string): string {
-  return STATUS_DOT_COLORS[status] || 'rgba(237,237,237,0.40)';
+  return STATUS_DOT_COLORS[status] || '#94A3B8';
 }
 
 /* ── Priority icon (4 bars) ── */
@@ -162,7 +162,7 @@ function PriorityIcon({ name }: { name: string }) {
   else if (n === 'high' || n === 'highest') level = 3;
   else if (n === 'medium') level = 2;
   else if (n === 'low' || n === 'lowest') level = 1;
-  const color = level >= 3 ? '#DC2626' : level === 2 ? '#D97706' : 'rgba(237,237,237,0.40)';
+  const color = level >= 3 ? '#DC2626' : level === 2 ? '#D97706' : '#64748B';
   return (
     <div style={{ display: 'flex', gap: 1.5, alignItems: 'flex-end', height: 14, width: 14 }}>
       {[1, 2, 3, 4].map(i => (
@@ -208,7 +208,7 @@ function FilterDropdown({ options, selected, onChange, onClose, searchable = fal
               height: 32, background: isDark ? '#0A0A0A' : '#F8FAFC', borderRadius: 6, border: '1px solid transparent',
               transition: 'border-color 80ms',
             }}>
-              <Search size={13} color="rgba(237,237,237,0.40)" />
+              <Search size={13} color="#94A3B8" />
               <input
                 value={q} onChange={e => setQ(e.target.value)}
                 placeholder="Search..."
@@ -245,7 +245,7 @@ function FilterDropdown({ options, selected, onChange, onClose, searchable = fal
                 onMouseLeave={e => (e.currentTarget.style.background = isSelected ? 'rgba(37,99,235,0.04)' : 'transparent')}
               >
                 <div style={{
-                  width: 16, height: 16, borderRadius: 4, border: `1.5px solid ${isSelected ? '#2563EB' : 'rgba(237,237,237,0.53)'}`,
+                  width: 16, height: 16, borderRadius: 4, border: `1.5px solid ${isSelected ? '#2563EB' : '#CBD5E1'}`,
                   background: isSelected ? '#2563EB' : isDark ? '#1A1A1A' : '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center',
                   flexShrink: 0, transition: 'all 80ms',
                 }}>
@@ -397,7 +397,7 @@ export default function HierarchyPage() {
           onFocus={e => { e.currentTarget.style.borderColor = '#2563EB'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.08)'; }}
           onBlur={e => { e.currentTarget.style.borderColor = isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'; e.currentTarget.style.boxShadow = 'none'; }}
         >
-          <Search size={14} color="rgba(237,237,237,0.40)" />
+          <Search size={14} color="#94A3B8" />
           <input
             value={searchInput}
             onChange={e => handleSearchChange(e.target.value)}
@@ -442,7 +442,7 @@ export default function HierarchyPage() {
               background: viewMode === 'table' ? (isDark ? 'rgba(37,99,235,0.10)' : '#EFF6FF') : (isDark ? '#1A1A1A' : '#FFFFFF'), border: 'none', cursor: 'pointer',
               transition: 'background 80ms',
             }}>
-            <TableProperties size={14} color={viewMode === 'table' ? '#2563EB' : 'rgba(237,237,237,0.40)'} />
+            <TableProperties size={14} color={viewMode === 'table' ? '#2563EB' : '#64748B'} />
           </button>
           <button onClick={() => setViewMode('tree')}
             style={{
@@ -450,7 +450,7 @@ export default function HierarchyPage() {
               background: viewMode === 'tree' ? (isDark ? 'rgba(37,99,235,0.10)' : '#EFF6FF') : (isDark ? '#1A1A1A' : '#FFFFFF'), border: 'none', cursor: 'pointer',
               borderLeft: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, transition: 'background 80ms',
             }}>
-            <GitBranch size={14} color={viewMode === 'tree' ? '#2563EB' : 'rgba(237,237,237,0.40)'} />
+            <GitBranch size={14} color={viewMode === 'tree' ? '#2563EB' : '#64748B'} />
           </button>
         </div>
       </div>
@@ -573,7 +573,7 @@ export default function HierarchyPage() {
           ) : filteredItems.length === 0 ? (
             <div style={{ border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 8, background: isDark ? '#1A1A1A' : '#FFFFFF', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 300, gap: 12, textAlign: 'center', padding: 48 }}>
               <div style={{ width: 48, height: 48, borderRadius: 12, background: isDark ? 'rgba(255,255,255,0.04)' : '#F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Search size={20} color="rgba(237,237,237,0.40)" />
+                <Search size={20} color="#94A3B8" />
               </div>
               <p style={{ fontSize: 14, fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A', margin: 0 }}>
                 {search || activeFilterCount > 0 ? 'No items match your filters' : 'No work items found'}

@@ -11,9 +11,9 @@ const SC: Record<string, { dot: string; bg: string; tx: string; label: string }>
   'Re-Open':              { dot: '#D97706', bg: '#FFFBEB', tx: '#78350F', label: 'Re-Open' },
   'In Requirements':      { dot: '#D97706', bg: '#FFFBEB', tx: '#78350F', label: 'Requirements' },
   'Awaiting Info':        { dot: '#D97706', bg: '#FFFBEB', tx: '#78350F', label: 'Awaiting' },
-  'In Progress':          { dot: '#2563EB', bg: 'rgba(59,130,246,0.06)', tx: '#1E3A5F', label: 'In Progress' },
-  'In Development':       { dot: '#2563EB', bg: 'rgba(59,130,246,0.06)', tx: '#1E3A5F', label: 'In Progress' },
-  'Under Implementation': { dot: '#2563EB', bg: 'rgba(59,130,246,0.06)', tx: '#1E3A5F', label: 'In Progress' },
+  'In Progress':          { dot: '#2563EB', bg: '#EFF6FF', tx: '#1E3A5F', label: 'In Progress' },
+  'In Development':       { dot: '#2563EB', bg: '#EFF6FF', tx: '#1E3A5F', label: 'In Progress' },
+  'Under Implementation': { dot: '#2563EB', bg: '#EFF6FF', tx: '#1E3A5F', label: 'In Progress' },
   'In Review':            { dot: '#0D9488', bg: '#F0FDFA', tx: '#134E4A', label: 'In Review' },
   'In QA':                { dot: '#0D9488', bg: '#F0FDFA', tx: '#134E4A', label: 'In QA' },
   'Ready for QA':         { dot: '#0D9488', bg: '#F0FDFA', tx: '#134E4A', label: 'Ready QA' },
@@ -21,15 +21,15 @@ const SC: Record<string, { dot: string; bg: string; tx: string; label: string }>
   'Code Review':          { dot: '#0D9488', bg: '#F0FDFA', tx: '#134E4A', label: 'In Review' },
   'In UAT':               { dot: '#7C3AED', bg: '#F5F3FF', tx: '#4C1D95', label: 'In UAT' },
   'UAT Ready':            { dot: '#7C3AED', bg: '#F5F3FF', tx: '#4C1D95', label: 'UAT Ready' },
-  'Done':                 { dot: '#16A34A', bg: 'rgba(74,222,128,0.06)', tx: '#14532D', label: 'Done' },
-  'Closed':               { dot: '#16A34A', bg: 'rgba(74,222,128,0.06)', tx: '#14532D', label: 'Done' },
-  'Resolved':             { dot: '#16A34A', bg: 'rgba(74,222,128,0.06)', tx: '#14532D', label: 'Done' },
-  'Ready for Production': { dot: '#16A34A', bg: 'rgba(74,222,128,0.06)', tx: '#14532D', label: 'Done' },
-  'Beta Ready':           { dot: '#16A34A', bg: 'rgba(74,222,128,0.06)', tx: '#14532D', label: 'Done' },
-  'Blocked':              { dot: '#EF4444', bg: 'rgba(248,113,113,0.06)', tx: '#7F1D1D', label: 'Blocked' },
-  'Rejected':             { dot: '#EF4444', bg: 'rgba(248,113,113,0.06)', tx: '#7F1D1D', label: 'Rejected' },
+  'Done':                 { dot: '#16A34A', bg: '#F0FDF4', tx: '#14532D', label: 'Done' },
+  'Closed':               { dot: '#16A34A', bg: '#F0FDF4', tx: '#14532D', label: 'Done' },
+  'Resolved':             { dot: '#16A34A', bg: '#F0FDF4', tx: '#14532D', label: 'Done' },
+  'Ready for Production': { dot: '#16A34A', bg: '#F0FDF4', tx: '#14532D', label: 'Done' },
+  'Beta Ready':           { dot: '#16A34A', bg: '#F0FDF4', tx: '#14532D', label: 'Done' },
+  'Blocked':              { dot: '#EF4444', bg: '#FEF2F2', tx: '#7F1D1D', label: 'Blocked' },
+  'Rejected':             { dot: '#EF4444', bg: '#FEF2F2', tx: '#7F1D1D', label: 'Rejected' },
 };
-const SCD = { dot: 'rgba(237,237,237,0.40)', bg: '#1A1A1A', tx: 'rgba(237,237,237,0.53)', label: 'Unknown' };
+const SCD = { dot: '#64748B', bg: '#F1F5F9', tx: '#334155', label: 'Unknown' };
 
 function resolveStatus(item: any) {
   if (item.status_name && SC[item.status_name]) return SC[item.status_name];
@@ -42,12 +42,12 @@ function resolveStatus(item: any) {
   return SCD;
 }
 
-const PC: Record<string, string> = { BAU: '#2563EB', SEN: '#D97706', FAC: '#16A34A', OPS: '#0D9488', SUP: 'rgba(237,237,237,0.40)', LND: '#7C3AED' };
-const pColor = (k: string, fallback?: string) => fallback || PC[k] || 'rgba(237,237,237,0.40)';
+const PC: Record<string, string> = { BAU: '#2563EB', SEN: '#D97706', FAC: '#16A34A', OPS: '#0D9488', SUP: '#64748B', LND: '#7C3AED' };
+const pColor = (k: string, fallback?: string) => fallback || PC[k] || '#64748B';
 const ageCol = (d: number) => d <= 7 ? '#16A34A' : d <= 14 ? '#D97706' : '#EF4444';
 
 const PRI_DOT: Record<string, string> = {
-  critical: '#EF4444', highest: '#EF4444', high: '#D97706', medium: '#D97706', low: 'rgba(237,237,237,0.40)', lowest: 'rgba(237,237,237,0.40)',
+  critical: '#EF4444', highest: '#EF4444', high: '#D97706', medium: '#D97706', low: '#64748B', lowest: '#94A3B8',
 };
 
 const COLS = [
@@ -104,7 +104,7 @@ export const R360BoardView: React.FC<Props> = ({ items, onItemClick, memberName 
             ) : col.items.map(item => {
               const s = resolveStatus(item);
               const projColor = pColor(item.project_key, item.project_color);
-              const priDot = PRI_DOT[(item.priority || '').toLowerCase()] || 'rgba(237,237,237,0.40)';
+              const priDot = PRI_DOT[(item.priority || '').toLowerCase()] || '#64748B';
               return (
                 <div key={item.id} onClick={() => onItemClick(item)} style={{
                   background: 'var(--bg-app)', border: '1px solid var(--divider)', borderRadius: '8px',

@@ -70,14 +70,14 @@ export function InlineSummaryEditor({ value, onSave, onCancel }: {
       onKeyDown={e => { if (e.key === 'Enter') save(); if (e.key === 'Escape') onCancel(); }}
       onBlur={save}
       className="w-full text-[12px] font-medium px-1 py-0.5 rounded outline-none bg-[var(--cp-float)]"
-      style={{ border: '2px solid var(--cp-blue)', fontFamily: 'Geist, -apple-system, sans-serif', color: 'var(--fg-1)' }}
+      style={{ border: '2px solid var(--cp-blue)', fontFamily: 'Inter, sans-serif', color: 'var(--fg-1)' }}
     />
   );
 }
 
 // ─── Inline Status Picker ──────────────────────────────────
 const STATUS_COLORS: Record<string, string> = {
-  todo: 'rgba(237,237,237,0.40)', in_progress: '#2563EB', done: '#16A34A', terminal: '#DC2626',
+  todo: '#64748B', in_progress: '#2563EB', done: '#16A34A', terminal: '#DC2626',
 };
 
 export function InlineStatusPicker({ currentStatusId, statuses, anchorRef, onSelect, onClose }: {
@@ -94,7 +94,7 @@ export function InlineStatusPicker({ currentStatusId, statuses, anchorRef, onSel
           <button
             key={s.id}
             onClick={() => { onSelect(s.id); onClose(); }}
-            className="w-full flex items-center gap-2 px-3 py-1.5 text-[12px] hover:bg-[#1A1A1A] transition-colors text-left"
+            className="w-full flex items-center gap-2 px-3 py-1.5 text-[12px] hover:bg-[#F8FAFC] transition-colors text-left"
             style={{ color: 'var(--fg-1)' }}
           >
             <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: STATUS_COLORS[s.category] || 'var(--fg-4)' }} />
@@ -112,7 +112,7 @@ const PRIORITIES = [
   { value: 'Critical', icon: ChevronsUp, color: '#DC2626' },
   { value: 'High', icon: ArrowUp, color: '#D97706' },
   { value: 'Medium', icon: ArrowRight, color: '#2563EB' },
-  { value: 'Low', icon: ArrowDown, color: 'rgba(237,237,237,0.40)' },
+  { value: 'Low', icon: ArrowDown, color: '#94A3B8' },
 ];
 
 export function InlinePriorityPicker({ current, anchorRef, onSelect, onClose }: {
@@ -130,7 +130,7 @@ export function InlinePriorityPicker({ current, anchorRef, onSelect, onClose }: 
             <button
               key={p.value}
               onClick={() => { onSelect(p.value); onClose(); }}
-              className="w-full flex items-center gap-2 px-3 py-1.5 text-[12px] hover:bg-[#1A1A1A] transition-colors text-left"
+              className="w-full flex items-center gap-2 px-3 py-1.5 text-[12px] hover:bg-[#F8FAFC] transition-colors text-left"
               style={{ color: 'var(--fg-1)' }}
             >
               <Icon size={13} style={{ color: p.color }} />
@@ -159,7 +159,7 @@ export function InlineAssigneePicker({ currentId, profiles, anchorRef, onSelect,
     <FixedDropdown anchorRef={anchorRef} onClose={onClose} width={220}>
       <div className="p-2 border-b" style={{ borderColor: 'var(--cp-bd-zone)' }}>
         <div className="flex items-center gap-1.5 px-2 py-1 rounded" style={{ border: '1px solid var(--divider)' }}>
-          <Search size={12} className="text-[rgba(237,237,237,0.40)]" />
+          <Search size={12} className="text-[#94A3B8]" />
           <input
             autoFocus
             value={search}
@@ -172,7 +172,7 @@ export function InlineAssigneePicker({ currentId, profiles, anchorRef, onSelect,
       <div className="py-1 max-h-[200px] overflow-y-auto">
         <button
           onClick={() => { onSelect(null); onClose(); }}
-          className="w-full flex items-center gap-2 px-3 py-1.5 text-[12px] hover:bg-[#1A1A1A] text-left"
+          className="w-full flex items-center gap-2 px-3 py-1.5 text-[12px] hover:bg-[#F8FAFC] text-left"
           style={{ color: 'var(--fg-4)' }}
         >
           Unassigned
@@ -182,7 +182,7 @@ export function InlineAssigneePicker({ currentId, profiles, anchorRef, onSelect,
           <button
             key={p.id}
             onClick={() => { onSelect(p.id); onClose(); }}
-            className="w-full flex items-center gap-2 px-3 py-1.5 text-[12px] hover:bg-[#1A1A1A] text-left"
+            className="w-full flex items-center gap-2 px-3 py-1.5 text-[12px] hover:bg-[#F8FAFC] text-left"
             style={{ color: 'var(--fg-1)' }}
           >
             <AvatarCircle name={p.name} size={18} />
@@ -220,7 +220,7 @@ export function InlineDatePicker({ current, anchorRef, onSelect, onClose }: {
         {current && (
           <button
             onClick={() => { onSelect(null); onClose(); }}
-            className="w-full text-center text-[11px] py-1 mt-1 rounded hover:bg-[rgba(248,113,113,0.06)]"
+            className="w-full text-center text-[11px] py-1 mt-1 rounded hover:bg-[#FEF2F2]"
             style={{ color: 'var(--sem-danger)' }}
           >
             Clear date

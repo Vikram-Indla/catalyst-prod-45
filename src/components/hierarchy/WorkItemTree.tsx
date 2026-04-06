@@ -75,7 +75,7 @@ function priorityToLevel(name?: string): number {
 
 /* ── Assignee avatar ── */
 /* ── Avatar color palette (no purple/yellow) ── */
-const AVATAR_COLORS = ['#0D9488','#2563EB','#DC2626','#16A34A','rgba(237,237,237,0.40)','#0284C7','#059669','#BE123C','#1D4ED8','#0F766E'];
+const AVATAR_COLORS = ['#0D9488','#2563EB','#DC2626','#16A34A','#64748B','#0284C7','#059669','#BE123C','#1D4ED8','#0F766E'];
 function getAvatarColor(name: string): string {
   let hash = 0;
   for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);

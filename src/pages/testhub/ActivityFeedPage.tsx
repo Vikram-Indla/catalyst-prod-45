@@ -39,7 +39,7 @@ const ACTION_CONFIG: Record<string, { label: string; color: string; icon: any }>
   execute: { label: 'Executed', color: '#7C3AED', icon: Play },
   assign: { label: 'Assigned', color: '#0891B2', icon: UserPlus },
   status_change: { label: 'Status Changed', color: '#D97706', icon: ArrowRight },
-  view: { label: 'Viewed', color: 'rgba(237,237,237,0.40)', icon: Activity },
+  view: { label: 'Viewed', color: '#64748B', icon: Activity },
   export: { label: 'Exported', color: '#EC4899', icon: Activity },
   import: { label: 'Imported', color: '#EC4899', icon: Activity },
 };
@@ -156,15 +156,15 @@ export default function ActivityFeedPage() {
             <p style={{ fontSize: 11, color: isDark ? '#A1A1A1' : '#64748B', margin: 0, textTransform: 'uppercase' }}>Total (30d)</p>
             <p style={{ fontSize: 24, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A', margin: '4px 0 0' }}>{stats.total_events}</p>
           </div>
-          <div style={{ backgroundColor: 'rgba(74,222,128,0.06)', borderRadius: 12, padding: 16, border: '1px solid #A7F3D0' }}>
+          <div style={{ backgroundColor: '#ECFDF5', borderRadius: 12, padding: 16, border: '1px solid #A7F3D0' }}>
             <p style={{ fontSize: 11, color: '#059669', margin: 0, textTransform: 'uppercase' }}>Created</p>
             <p style={{ fontSize: 24, fontWeight: 700, color: '#059669', margin: '4px 0 0' }}>{stats.creates}</p>
           </div>
-          <div style={{ backgroundColor: 'rgba(59,130,246,0.06)', borderRadius: 12, padding: 16, border: '1px solid #BFDBFE' }}>
+          <div style={{ backgroundColor: '#EFF6FF', borderRadius: 12, padding: 16, border: '1px solid #BFDBFE' }}>
             <p style={{ fontSize: 11, color: '#2563EB', margin: 0, textTransform: 'uppercase' }}>Updated</p>
             <p style={{ fontSize: 24, fontWeight: 700, color: '#2563EB', margin: '4px 0 0' }}>{stats.updates}</p>
           </div>
-          <div style={{ backgroundColor: 'rgba(248,113,113,0.06)', borderRadius: 12, padding: 16, border: '1px solid #FECACA' }}>
+          <div style={{ backgroundColor: '#FEF2F2', borderRadius: 12, padding: 16, border: '1px solid #FECACA' }}>
             <p style={{ fontSize: 11, color: '#DC2626', margin: 0, textTransform: 'uppercase' }}>Deleted</p>
             <p style={{ fontSize: 24, fontWeight: 700, color: '#DC2626', margin: '4px 0 0' }}>{stats.deletes}</p>
           </div>
@@ -178,7 +178,7 @@ export default function ActivityFeedPage() {
       {/* Filters */}
       <div style={{ display: 'flex', gap: 12, marginBottom: 24, flexWrap: 'wrap', alignItems: 'center' }}>
         <div style={{ position: 'relative', flex: '1 1 300px', maxWidth: 400 }}>
-          <Search size={18} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: 'rgba(237,237,237,0.40)' }} />
+          <Search size={18} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: '#94A3B8' }} />
           <input type="text" placeholder="Search activity..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}
             style={{ width: '100%', height: 44, padding: '0 14px 0 44px', border: `1.5px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 12, fontSize: 14, backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#EDEDED' : undefined }} />
         </div>
@@ -228,7 +228,7 @@ export default function ActivityFeedPage() {
               <div style={{ backgroundColor: isDark ? '#1A1A1A' : '#FFF', borderRadius: 12, border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, overflow: 'hidden' }}>
                 {items.map((activity, index) => {
                   const action = ACTION_CONFIG[activity.action] || ACTION_CONFIG.view;
-                  const entity = ENTITY_CONFIG[activity.entity_type] || { label: activity.entity_type, color: 'rgba(237,237,237,0.40)', icon: FileText };
+                  const entity = ENTITY_CONFIG[activity.entity_type] || { label: activity.entity_type, color: '#64748B', icon: FileText };
                   const ActionIcon = action.icon;
                   const EntityIcon = entity.icon;
 

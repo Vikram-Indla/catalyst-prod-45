@@ -10,7 +10,7 @@ interface Props {
 export function Resource360ContextLeft({ item, onClose }: Props) {
   const cat = getStatusCategory(item.status, item.status_category);
   const sc = STATUS_COLORS[cat];
-  const hubColor = WH_HUB_COLORS[item.hub] ?? 'rgba(237,237,237,0.40)';
+  const hubColor = WH_HUB_COLORS[item.hub] ?? '#64748B';
 
   const dueStr = item.release_end_date ?? '2026-03-30';
   const dueDate = new Date(dueStr);
@@ -29,10 +29,10 @@ export function Resource360ContextLeft({ item, onClose }: Props) {
     Feature:     { bg: '#CCFBF1', text: '#0D9488' },
     Story:       { bg: '#F3F4F6', text: '#6B7280' },
     Subtask:     { bg: '#F3F4F6', text: '#6B7280' },
-    Bug:         { bg: 'rgba(248,113,113,0.10)', text: '#DC2626' },
-    Incident:    { bg: 'rgba(248,113,113,0.10)', text: '#EF4444' },
-    Task:        { bg: '#F3F4F6', text: 'rgba(237,237,237,0.40)' },
-    'Test Case': { bg: 'rgba(251,191,36,0.10)', text: '#D97706' },
+    Bug:         { bg: '#FEE2E2', text: '#DC2626' },
+    Incident:    { bg: '#FEE2E2', text: '#EF4444' },
+    Task:        { bg: '#F3F4F6', text: '#64748B' },
+    'Test Case': { bg: '#FEF3C7', text: '#D97706' },
   };
   const tc = typeColors[item.item_type] ?? { bg: '#F3F4F6', text: '#6B7280' };
 
@@ -90,13 +90,13 @@ export function Resource360ContextLeft({ item, onClose }: Props) {
 
       {/* Title */}
       <div className="px-6 pb-3">
-        <h2 style={{ fontSize: 18, fontWeight: 700, color: 'var(--fg-1)', lineHeight: 1.35, margin: 0, fontFamily: 'Geist, -apple-system, sans-serif' }}>
+        <h2 style={{ fontSize: 18, fontWeight: 700, color: 'var(--fg-1)', lineHeight: 1.35, margin: 0, fontFamily: 'Inter, sans-serif' }}>
           {item.title}
         </h2>
       </div>
 
       {/* Body — scrollable */}
-      <div className="flex-1 overflow-y-auto px-6 pb-6" style={{ fontFamily: 'Geist, -apple-system, sans-serif' }}>
+      <div className="flex-1 overflow-y-auto px-6 pb-6" style={{ fontFamily: 'Inter, sans-serif' }}>
         {/* Properties */}
         <div style={{ marginBottom: 20 }}>
           <PropertyRow label="Hub">
@@ -146,7 +146,7 @@ export function Resource360ContextLeft({ item, onClose }: Props) {
                       {tr.days}d
                     </span>
                     {i < transitions.length - 1 && (
-                      <span style={{ color: 'rgba(237,237,237,0.53)', fontSize: 10 }}>→</span>
+                      <span style={{ color: '#CBD5E1', fontSize: 10 }}>→</span>
                     )}
                   </div>
                 );

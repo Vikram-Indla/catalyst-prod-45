@@ -16,7 +16,7 @@ interface Props {
 
 const C = {
   primary: '#2563eb', success: '#0d9488', warning: '#d97706', danger: '#ef4444',
-  textPrimary: '#0f172a', textSecondary: 'rgba(237,237,237,0.53)', textTertiary: '#475569',
+  textPrimary: '#0f172a', textSecondary: '#334155', textTertiary: '#475569',
   surface: '#f8fafc', surfaceAlt: '#f1f5f9', border: '#e2e8f0', bg: '#ffffff',
   insightBg: '#eff6ff', insightText: '#1e40af', insightBorder: '#2563eb',
   gapBg: '#fef2f2', gapText: '#991b1b', gapBody: '#7f1d1d', gapBorder: '#ef4444',
@@ -201,7 +201,7 @@ export default function IdeationIntelligenceHub({ open, onClose, onMerge, ideas 
         <ContentCard title="Team Distribution" badge={`${teamStats.length} teams`} badgeColor={C.success}>
           {teamStats.map(([team, count]) => {
             const pct = Math.round((count / total) * 100);
-            const barColor = team.includes('BAU') ? '#2563EB' : team.includes('Integration') ? '#0D9488' : team.includes('Mobile') ? '#7C3AED' : 'rgba(237,237,237,0.40)';
+            const barColor = team.includes('BAU') ? '#2563EB' : team.includes('Integration') ? '#0D9488' : team.includes('Mobile') ? '#7C3AED' : '#64748B';
             return (
               <div key={team} style={{ marginBottom: '14px', paddingBottom: '14px', borderBottom: `1px solid ${C.surfaceAlt}` }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>

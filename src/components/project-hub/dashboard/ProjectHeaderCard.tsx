@@ -59,7 +59,7 @@ export function ProjectHeaderCard({
         <div className="flex items-center gap-2">
           <button
             onClick={onToggleStar}
-            className="flex items-center justify-center rounded-md hover:bg-[#1A1A1A] transition-colors"
+            className="flex items-center justify-center rounded-md hover:bg-[#F8FAFC] transition-colors"
             style={{ width: 32, height: 32, border: 'none', background: 'transparent', cursor: 'pointer' }}
           >
             <Star size={16} color={starred ? 'var(--sem-star)' : 'var(--fg-4)'} fill={starred ? 'var(--sem-star)' : 'none'} strokeWidth={1.75} />

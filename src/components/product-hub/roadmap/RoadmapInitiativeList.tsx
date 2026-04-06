@@ -30,10 +30,10 @@ function OwnerAvatar({ initials, name }: { initials?: string; name?: string }) {
     return (
       <div
         className="flex-shrink-0 flex items-center justify-center rounded-full"
-        style={{ width: 22, height: 22, background: 'rgba(255,255,255,0.10)' }}
+        style={{ width: 22, height: 22, background: '#E2E8F0' }}
         title="Unassigned"
       >
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(237,237,237,0.40)" strokeWidth="2" strokeLinecap="round">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round">
           <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
           <circle cx="12" cy="7" r="4"/>
         </svg>
@@ -87,7 +87,7 @@ export function RoadmapInitiativeList({ groups, selectedId, hoveredId, onSelect,
 
       <div ref={scrollRef as any} onScroll={onScroll} className="flex-1 overflow-y-auto roadmap-scroll">
         {groups.map((group, gi) => {
-          const typeColor = TYPE_COLORS[group.key]?.solid || group.color || 'rgba(237,237,237,0.40)';
+          const typeColor = TYPE_COLORS[group.key]?.solid || group.color || '#64748B';
           const isCollapsed = collapsedGroups.has(group.key);
           return (
             <div key={group.key}>
@@ -175,7 +175,7 @@ function InitiativeRow({
   selectedBg: string;
   hoverBg: string;
 }) {
-  const typeColor = TYPE_COLORS[item.type]?.solid || 'rgba(237,237,237,0.40)';
+  const typeColor = TYPE_COLORS[item.type]?.solid || '#94A3B8';
 
   return (
     <div

@@ -62,7 +62,7 @@ export function RoadmapToolbar({
               padding: '4px 14px', fontSize: 12, fontWeight: 600, border: 'none', cursor: 'pointer',
               fontFamily: "'Inter', sans-serif", outline: 'none', transition: 'all 150ms',
               background: view === v ? 'var(--bg-app)' : 'transparent',
-              color: view === v ? 'rgba(237,237,237,0.93)' : 'var(--fg-3)',
+              color: view === v ? '#1E293B' : 'var(--fg-3)',
               boxShadow: view === v ? '0 1px 2px rgba(0,0,0,.06)' : 'none',
             }}
           >
@@ -84,7 +84,7 @@ export function RoadmapToolbar({
       >
         <span style={{
           width: 28, height: 16, borderRadius: 8, position: 'relative',
-          background: committedOnly ? 'var(--sem-success)' : 'rgba(237,237,237,0.53)',
+          background: committedOnly ? 'var(--sem-success)' : '#CBD5E1',
           display: 'inline-block', transition: 'background 150ms',
         }}>
           <span style={{
@@ -104,18 +104,18 @@ export function RoadmapToolbar({
         background: 'var(--bg-1)', display: 'flex', alignItems: 'center', justifyContent: 'center',
         cursor: 'pointer', transition: 'all 150ms',
       }}>
-        <MonitorPlay size={15} color="rgba(237,237,237,0.40)" />
+        <MonitorPlay size={15} color="#64748B" />
       </button>
       <button onClick={onGantt} title="Gantt view" style={{
         width: 32, height: 32, borderRadius: 6, border: '1px solid var(--divider)',
         background: 'var(--bg-1)', display: 'flex', alignItems: 'center', justifyContent: 'center',
         cursor: 'pointer', transition: 'all 150ms',
       }}>
-        <BarChart3 size={15} color="rgba(237,237,237,0.40)" />
+        <BarChart3 size={15} color="#64748B" />
       </button>
       <button onClick={onExport} style={{
         height: 32, padding: '8px 12px', borderRadius: 6, border: 'none',
-        background: 'rgba(237,237,237,0.93)', color: 'var(--bg-app)', fontSize: 12, fontWeight: 600,
+        background: '#1E293B', color: 'var(--bg-app)', fontSize: 12, fontWeight: 600,
         fontFamily: "'Inter', sans-serif", cursor: 'pointer', transition: 'all 150ms',
       }}>
         Export PPTX

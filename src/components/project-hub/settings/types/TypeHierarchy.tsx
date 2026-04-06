@@ -10,7 +10,7 @@ const TYPE_CONFIG: Record<string, { color: string; icon: string }> = {
   Story: { color: '#0D9488', icon: 'Bookmark' },
   Bug: { color: '#DC2626', icon: 'Bug' },
   Task: { color: '#D97706', icon: 'CheckSquare' },
-  Subtask: { color: 'rgba(237,237,237,0.40)', icon: 'CornerDownRight' },
+  Subtask: { color: '#64748B', icon: 'CornerDownRight' },
 };
 
 interface TypeHierarchyProps {
@@ -18,7 +18,7 @@ interface TypeHierarchyProps {
 }
 
 function Badge({ name }: { name: string }) {
-  const cfg = TYPE_CONFIG[name] || { color: 'rgba(237,237,237,0.40)', icon: 'Zap' };
+  const cfg = TYPE_CONFIG[name] || { color: '#64748B', icon: 'Zap' };
   const IconComp = ICON_MAP[cfg.icon] || Zap;
   return (
     <span

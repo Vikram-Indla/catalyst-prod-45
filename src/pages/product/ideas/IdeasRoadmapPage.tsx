@@ -326,7 +326,7 @@ export default function IdeasRoadmapPage() {
       {toast && (
         <div style={{
           position: 'fixed', bottom: 24, left: '50%', transform: 'translateX(-50%)',
-          background: 'rgba(237,237,237,0.93)', color: '#FFFFFF', padding: '8px 20px',
+          background: '#1E293B', color: '#FFFFFF', padding: '8px 20px',
           borderRadius: 8, fontSize: 13, fontWeight: 600, zIndex: 100,
           boxShadow: '0 4px 12px rgba(0,0,0,.15)',
           animation: 'fadeInUp 250ms ease',

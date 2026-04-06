@@ -18,15 +18,15 @@ const TYPE_COLORS: Record<string, string> = {
   project: '#2563EB',
   enhancement: '#0EA5E9',
   improvement: '#D97706',
-  entity_integration: 'rgba(237,237,237,0.40)',
+  entity_integration: '#64748B',
   business_request: '#2563EB',
 };
 
 const PRIORITY_MAP: Record<string, { icon: React.ElementType; color: string }> = {
   P1: { icon: AlertOctagon, color: '#DC2626' },
   P2: { icon: ArrowUp, color: '#D97706' },
-  P3: { icon: Minus, color: 'rgba(237,237,237,0.40)' },
-  P4: { icon: ArrowDown, color: 'rgba(237,237,237,0.40)' },
+  P3: { icon: Minus, color: '#64748B' },
+  P4: { icon: ArrowDown, color: '#94A3B8' },
 };
 
 function getAge(dateStr: string): string {
@@ -64,7 +64,7 @@ export const KanbanCard: React.FC<KanbanCardProps> = ({
   };
 
   const isCancelled = initiative.status === 'cancelled';
-  const typeColor = initiative.initiative_type_color_hex || TYPE_COLORS[initiative.initiative_type_key ?? ''] || 'rgba(237,237,237,0.40)';
+  const typeColor = initiative.initiative_type_color_hex || TYPE_COLORS[initiative.initiative_type_key ?? ''] || '#64748B';
   const priority = (initiative as any).priority as string | undefined;
   const priorityInfo = priority ? PRIORITY_MAP[priority] : null;
 
@@ -163,7 +163,7 @@ export const KanbanCard: React.FC<KanbanCardProps> = ({
                 flexShrink: 0,
               }}
             >
-              <User size={10} color="rgba(237,237,237,0.40)" />
+              <User size={10} color="#94A3B8" />
             </div>
             <span style={{ fontSize: 12, color: 'var(--fg-4)', fontStyle: 'italic' }}>Unassigned</span>
           </div>

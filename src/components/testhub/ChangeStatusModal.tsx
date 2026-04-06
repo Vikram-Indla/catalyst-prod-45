@@ -19,8 +19,8 @@ interface ChangeStatusModalProps {
 const STATUSES = [
   { value: 'draft', label: 'Draft', icon: Clock, color: 'var(--fg-3)', bg: 'var(--cp-bd-zone)' },
   { value: 'ready', label: 'Ready for Review', icon: FileCheck, color: 'var(--cp-blue)', bg: 'color-mix(in srgb, var(--cp-blue) 8%, transparent)' },
-  { value: 'approved', label: 'Approved', icon: CheckCircle, color: 'var(--sem-success)', bg: 'rgba(74,222,128,0.06)' },
-  { value: 'deprecated', label: 'Deprecated', icon: Archive, color: 'var(--sem-danger)', bg: 'rgba(248,113,113,0.06)' },
+  { value: 'approved', label: 'Approved', icon: CheckCircle, color: 'var(--sem-success)', bg: '#ECFDF5' },
+  { value: 'deprecated', label: 'Deprecated', icon: Archive, color: 'var(--sem-danger)', bg: '#FEF2F2' },
 ];
 
 export function ChangeStatusModal({
@@ -81,8 +81,8 @@ export function ChangeStatusModal({
         {/* Header */}
         <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--divider)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
-            <h2 style={{ fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 18, fontWeight: 700, color: 'var(--fg-1)', margin: 0 }}>Change Status</h2>
-            <p style={{ fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 13, color: 'var(--fg-3)', margin: '4px 0 0 0' }}>
+            <h2 style={{ fontFamily: 'Inter, sans-serif', fontSize: 18, fontWeight: 700, color: 'var(--fg-1)', margin: 0 }}>Change Status</h2>
+            <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, color: 'var(--fg-3)', margin: '4px 0 0 0' }}>
               {testCaseIds.length} test case{testCaseIds.length > 1 ? 's' : ''} selected
             </p>
           </div>
@@ -108,7 +108,7 @@ export function ChangeStatusModal({
                   gap: 12,
                   padding: '12px 16px',
                   borderRadius: 8,
-                  border: isSelected ? `2px solid ${status.color}` : '1.5px solid var(--bd-default, rgba(255,255,255,0.10))',
+                  border: isSelected ? `2px solid ${status.color}` : '1.5px solid var(--bd-default, #E2E8F0)',
                   backgroundColor: isSelected ? status.bg : 'var(--cp-float)',
                   cursor: isCurrent ? 'not-allowed' : 'pointer',
                   opacity: isCurrent ? 0.5 : 1,

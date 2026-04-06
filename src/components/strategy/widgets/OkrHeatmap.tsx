@@ -15,16 +15,16 @@ const QUARTERS = ['Q1', 'Q2', 'Q3', 'Q4'];
 
 function getCellStyle(status: OkrStatus, isOverall = false): { bg: string; text: string; weight: number; borderLeft?: string } {
   switch (status) {
-    case 'on_track': return { bg: isOverall ? 'var(--exec-blue-100, #BFDBFE)' : 'var(--exec-blue-50, #DBEAFE)', text: 'var(--exec-blue-700, #7DB8FC)', weight: 600 };
-    case 'at_risk': return { bg: isOverall ? 'var(--catalyst-bg-surface-3, var(--bd-default, rgba(255,255,255,0.10)))' : 'var(--catalyst-bg-surface-2, #1A1A1A)', text: isOverall ? 'var(--exec-signal-amber, #FBBF24)' : 'var(--exec-signal-amber, #B45309)', weight: 600, borderLeft: '3px solid var(--exec-signal-amber, #D97706)' };
-    case 'off_track': return { bg: isOverall ? 'var(--exec-signal-red-bg, #FECACA)' : 'var(--exec-signal-red-bg, rgba(248,113,113,0.06))', text: 'var(--exec-signal-red, #F87171)', weight: 700, borderLeft: '3px solid var(--exec-signal-red, #DC2626)' };
-    default: return { bg: 'transparent', text: 'var(--exec-text-muted, rgba(237,237,237,0.40))', weight: 400 };
+    case 'on_track': return { bg: isOverall ? 'var(--exec-blue-100, #BFDBFE)' : 'var(--exec-blue-50, #DBEAFE)', text: 'var(--exec-blue-700, #1E40AF)', weight: 600 };
+    case 'at_risk': return { bg: isOverall ? 'var(--catalyst-bg-surface-3, var(--bd-default, #E2E8F0))' : 'var(--catalyst-bg-surface-2, #F1F5F9)', text: isOverall ? 'var(--exec-signal-amber, #92400E)' : 'var(--exec-signal-amber, #B45309)', weight: 600, borderLeft: '3px solid var(--exec-signal-amber, #D97706)' };
+    case 'off_track': return { bg: isOverall ? 'var(--exec-signal-red-bg, #FECACA)' : 'var(--exec-signal-red-bg, #FEF2F2)', text: 'var(--exec-signal-red, #991B1B)', weight: 700, borderLeft: '3px solid var(--exec-signal-red, #DC2626)' };
+    default: return { bg: 'transparent', text: 'var(--exec-text-muted, #94A3B8)', weight: 400 };
   }
 }
 
 function getThemeDotColor(overallPct: number | null): string {
-  if (overallPct === null) return 'rgba(237,237,237,0.40)';
-  if (overallPct >= 70) return '#7DB8FC';
+  if (overallPct === null) return '#94A3B8';
+  if (overallPct >= 70) return '#1E40AF';
   if (overallPct >= 40) return '#D97706';
   return '#DC2626';
 }
@@ -80,7 +80,7 @@ export function OkrHeatmap() {
       return {
         themeId,
         themeName: (first.theme_title as string) || 'Unknown',
-        themeColor: '#7DB8FC', // All theme dots use exec-blue-700
+        themeColor: '#1E40AF', // All theme dots use exec-blue-700
         quarters,
         overall: { pct: overallPct, status: pctToStatus(overallPct) },
       };
@@ -124,7 +124,7 @@ export function OkrHeatmap() {
             <tr>
               <th style={{ ...thCss, textAlign: 'left', width: 120 }} />
               {QUARTERS.map(q => <th key={q} style={thCss}>{q}</th>)}
-              <th style={{ ...thCss, borderLeft: '2px solid var(--exec-border-strong, rgba(237,237,237,0.53))' }}>Overall</th>
+              <th style={{ ...thCss, borderLeft: '2px solid var(--exec-border-strong, #CBD5E1)' }}>Overall</th>
             </tr>
           </thead>
           <tbody>
@@ -165,7 +165,7 @@ export function OkrHeatmap() {
                   background: getCellStyle(row.overall.status, true).bg,
                   color: getCellStyle(row.overall.status, true).text,
                   fontSize: 13, fontWeight: getCellStyle(row.overall.status, true).weight,
-                  borderLeft: getCellStyle(row.overall.status, true).borderLeft || '2px solid var(--exec-border-strong, rgba(237,237,237,0.53))',
+                  borderLeft: getCellStyle(row.overall.status, true).borderLeft || '2px solid var(--exec-border-strong, #CBD5E1)',
                 }}>
                   {row.overall.pct ?? '—'}
                 </td>
@@ -177,7 +177,7 @@ export function OkrHeatmap() {
 
       {/* Legend */}
       <div className="flex items-center gap-4 mt-3" style={{ fontSize: 11, color: 'var(--exec-text-secondary)' }}>
-        <span className="flex items-center gap-1"><span style={{ width: 8, height: 8, borderRadius: '50%', background: '#7DB8FC' }} /> On Track (≥70%)</span>
+        <span className="flex items-center gap-1"><span style={{ width: 8, height: 8, borderRadius: '50%', background: '#1E40AF' }} /> On Track (≥70%)</span>
         <span className="flex items-center gap-1"><span style={{ width: 8, height: 8, borderRadius: '50%', background: '#D97706' }} /> At Risk (40–69%)</span>
         <span className="flex items-center gap-1"><span style={{ width: 8, height: 8, borderRadius: '50%', background: '#DC2626' }} /> Off Track (&lt;40%)</span>
       </div>

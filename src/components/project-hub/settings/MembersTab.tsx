@@ -144,7 +144,7 @@ export function MembersTab({ projectId, currentUserId }: MembersTabProps) {
               <button
                 key={user.id}
                 onClick={() => addMember(user)}
-                className="w-full flex items-center gap-3 px-3 py-2 text-left transition-colors hover:bg-[#1A1A1A]"
+                className="w-full flex items-center gap-3 px-3 py-2 text-left transition-colors hover:bg-[#F8FAFC]"
                 style={{ border: 'none', background: 'transparent', cursor: 'pointer' }}
               >
                 <div className="flex items-center justify-center rounded-full flex-shrink-0"

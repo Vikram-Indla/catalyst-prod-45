@@ -71,14 +71,14 @@ export default function ToastToken({ toast: t, onDismiss, onPause, onResume }: T
           width: 36, height: 50, borderRadius: '50%', flexShrink: 0,
           background: isSystemAssign ? '#6B7280' : getAvatarColor(actorId),
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          color: '#FFFFFF', fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 12, fontWeight: 700,
+          color: '#FFFFFF', fontFamily: 'Inter, sans-serif', fontSize: 12, fontWeight: 700,
         }}>
           {isSystemAssign ? <UserCheck size={18} color="#FFFFFF" /> : getUserInitials(actorName)}
         </div>
 
         {/* Body */}
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 13, fontWeight: 500, color: 'var(--fg-1, rgba(237,237,237,0.93))', lineHeight: '18px' }}>
+          <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 500, color: 'var(--fg-1, #0F172A)', lineHeight: '18px' }}>
             <span style={{ fontWeight: 650 }}>{actorName}</span>{' '}
             {getActionVerb(n.notification_type)}
           </div>
@@ -86,13 +86,13 @@ export default function ToastToken({ toast: t, onDismiss, onPause, onResume }: T
             <WorkItemIcon type={n.entity_icon_type} />
             {/* m-06: entity title truncation increased to 260px */}
             <span style={{
-              fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 13, color: 'var(--fg-1, rgba(237,237,237,0.93))',
+              fontFamily: 'Inter, sans-serif', fontSize: 13, color: 'var(--fg-1, #0F172A)',
               overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
               maxWidth: 260,
             }}>
               {n.entity_title}
             </span>
-            <span style={{ fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 12, color: '#2563EB', fontWeight: 500, flexShrink: 0 }}>
+            <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: '#2563EB', fontWeight: 500, flexShrink: 0 }}>
               {n.entity_key}
             </span>
           </div>
@@ -107,7 +107,7 @@ export default function ToastToken({ toast: t, onDismiss, onPause, onResume }: T
                   style={{
                     padding: '4px 10px', borderRadius: 4,
                     border: '0.5px solid rgba(15,23,42,.12)', background: 'transparent',
-                    cursor: 'pointer', fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 12, fontWeight: 500,
+                    cursor: 'pointer', fontFamily: 'Inter, sans-serif', fontSize: 12, fontWeight: 500,
                     color: '#475569',
                     minHeight: 44, // responsive: min tap target
                   }}
@@ -124,7 +124,7 @@ export default function ToastToken({ toast: t, onDismiss, onPause, onResume }: T
           onClick={(e) => { e.stopPropagation(); onDismiss(t.id); }}
           style={{
             background: 'none', border: 'none', cursor: 'pointer', padding: 2,
-            color: 'rgba(237,237,237,0.40)', flexShrink: 0, borderRadius: 4,
+            color: '#94A3B8', flexShrink: 0, borderRadius: 4,
             minWidth: 44, minHeight: 44, // responsive: min tap target
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}

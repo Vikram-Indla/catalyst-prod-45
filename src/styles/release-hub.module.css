@@ -889,6 +889,41 @@
   font-size: var(--rh-type-body-sm);
 }
 
+/* ═══════════════════════════════════════════════════════════════════
+   DARK MODE — Geist Neutral Dark OVERRIDES (variable-level)
+   ═══════════════════════════════════════════════════════════════════ */
+[data-theme="dark"] .releaseHub {
+  --rh-bg-page: var(--bg-0, #0A0A0A);
+  --rh-bg-card: var(--bg-2, #1A1A1A);
+  --rh-bg-muted: rgba(255,255,255,0.03);
+  --rh-text-primary: var(--fg-1, #EDEDED);
+  --rh-text-secondary: var(--fg-2, #A1A1A1);
+  --rh-text-tertiary: var(--fg-3, #878787);
+  --rh-text-muted: var(--fg-4, rgba(237,237,237,0.30));
+  --rh-border-subtle: rgba(255,255,255,0.05);
+  --rh-border-default: rgba(255,255,255,0.10);
+  --rh-border-strong: rgba(255,255,255,0.18);
+  --rh-success-bg: rgba(74,222,128,0.12);
+  --rh-warning-bg: rgba(253,230,138,0.10);
+  --rh-danger-bg: rgba(239,68,68,0.10);
+  --rh-teal-bg: rgba(20,184,166,0.12);
+  --rh-shadow-xs: none;
+  --rh-shadow-sm: none;
+  --rh-shadow-md: 0 4px 6px -1px rgba(0,0,0,0.3);
+}
+/* Dark health chips */
+[data-theme="dark"] .healthChipHealthy { color: #4ADE80; }
+[data-theme="dark"] .healthChipAtRisk { color: #FDE68A; }
+/* Dark status badges */
+[data-theme="dark"] .statusDevelopment { background: rgba(59,130,246,0.12); color: #60A5FA; }
+[data-theme="dark"] .statusStaging { background: rgba(20,184,166,0.12); color: #5EEAD4; }
+[data-theme="dark"] .statusTesting { background: rgba(253,230,138,0.10); color: #FDE68A; }
+[data-theme="dark"] .statusUat { background: rgba(234,88,12,0.12); color: #FB923C; }
+[data-theme="dark"] .statusReleased { background: rgba(74,222,128,0.12); color: #4ADE80; }
+[data-theme="dark"] .statusPlanned .statusDot { background: var(--fg-4, rgba(237,237,237,0.30)); }
+/* Dark filter chip active */
+[data-theme="dark"] .filterChipActive { background: rgba(59,130,246,0.10); }
+
 @media (max-width: 768px) {
   .releaseHub { padding: 0; }
   .toolbar { flex-direction: column; align-items: stretch; }

@@ -4,10 +4,10 @@
  */
 
 const PRI_STYLES: Record<string, { bg: string; text: string; border: string }> = {
-  P1: { bg: 'rgba(248,113,113,0.10)', text: '#F87171', border: '#FECACA' },
-  P2: { bg: 'rgba(251,191,36,0.10)', text: '#FBBF24', border: '#FDE68A' },
-  P3: { bg: '#DBEAFE', text: '#7DB8FC', border: '#BFDBFE' },
-  P4: { bg: '#1A1A1A', text: '#475569', border: 'var(--bd-default, rgba(255,255,255,0.10))' },
+  P1: { bg: '#FEE2E2', text: '#991B1B', border: '#FECACA' },
+  P2: { bg: '#FEF3C7', text: '#92400E', border: '#FDE68A' },
+  P3: { bg: '#DBEAFE', text: '#1E40AF', border: '#BFDBFE' },
+  P4: { bg: '#F1F5F9', text: '#475569', border: 'var(--bd-default, #E2E8F0)' },
 };
 
 interface PriorityChipProps {

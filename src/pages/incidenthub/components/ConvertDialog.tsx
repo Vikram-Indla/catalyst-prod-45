@@ -50,7 +50,7 @@ export function ConvertDialog({ open, onClose, incidentId }: ConvertDialogProps)
                 style={{
                   borderRadius: 6,
                   border: `1.5px solid ${selected === t.key ? '#2563EB' : 'rgba(15,23,42,0.12)'}`,
-                  backgroundColor: selected === t.key ? 'rgba(59,130,246,0.06)' : '#FFFFFF',
+                  backgroundColor: selected === t.key ? '#EFF6FF' : '#FFFFFF',
                 }}
               >
                 {/* Type icon circle */}
@@ -59,8 +59,8 @@ export function ConvertDialog({ open, onClose, incidentId }: ConvertDialogProps)
                     <rect x="2" y="2" width="12" height="12" rx="2" fill={t.color} opacity="0.8" />
                   </svg>
                 </div>
-                <div style={{ fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 13, fontWeight: 650, color: 'var(--fg-1, rgba(237,237,237,0.93))', marginBottom: 2 }}>{t.label}</div>
-                <div style={{ fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 11, color: 'rgba(237,237,237,0.40)' }}>{t.desc}</div>
+                <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 650, color: 'var(--fg-1, #0F172A)', marginBottom: 2 }}>{t.label}</div>
+                <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: '#64748B' }}>{t.desc}</div>
               </button>
             ))}
           </div>

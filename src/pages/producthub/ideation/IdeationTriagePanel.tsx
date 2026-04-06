@@ -19,12 +19,12 @@ interface Props {
 }
 
 const DOT_COLORS: Record<string, string> = {
-  'Fast-Track': '#16A34A', 'Merge': '#2563EB', 'Investigate': '#D97706', 'Defer': 'rgba(237,237,237,0.40)',
+  'Fast-Track': '#16A34A', 'Merge': '#2563EB', 'Investigate': '#D97706', 'Defer': '#94A3B8',
 };
 
 const CATEGORY_TEXT_COLORS: Record<string, string> = {
   'FAST-TRACK RECOMMENDED': '#16A34A', 'MERGE CANDIDATES': '#2563EB',
-  'NEEDS INVESTIGATION': '#D97706', 'RECOMMENDED TO DEFER': 'rgba(237,237,237,0.40)',
+  'NEEDS INVESTIGATION': '#D97706', 'RECOMMENDED TO DEFER': '#64748B',
 };
 
 type TriageItem = {
@@ -258,7 +258,7 @@ export default function IdeationTriagePanel({ open, onClose, onMerge, ideas = []
 
 function CategoryHeader({ label, sub }: { label: string; sub: string }) {
   const { isDark } = useTheme();
-  const color = CATEGORY_TEXT_COLORS[label] || 'rgba(237,237,237,0.40)';
+  const color = CATEGORY_TEXT_COLORS[label] || '#64748B';
   return (
     <div style={{ marginBottom: '12px', marginTop: '8px' }}>
       <div style={{ borderTop: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, marginBottom: '16px' }} />
@@ -274,7 +274,7 @@ function TriageCard({ badge, ideaKey, title, body, aiSuggestion, primary, second
   secondary: { label: string; icon: React.ReactNode; onClick: () => void };
 }) {
   const { isDark } = useTheme();
-  const dotColor = DOT_COLORS[badge] || 'rgba(237,237,237,0.40)';
+  const dotColor = DOT_COLORS[badge] || '#94A3B8';
   return (
     <div style={{ background: isDark ? 'transparent' : '#FFFFFF', border: `1px solid ${isDark ? 'rgba(255,255,255,0.10)' : '#E2E8F0'}`, borderRadius: '12px', padding: '16px', marginBottom: '10px', boxShadow: isDark ? 'none' : '0 1px 2px rgba(0,0,0,0.04)' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>

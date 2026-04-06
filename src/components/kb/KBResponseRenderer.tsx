@@ -177,7 +177,7 @@ function ScopeBar({ totalShown, totalAvailable, scopeLabel, extendLabel, extendH
     }}>
       {/* Scope label */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'var(--fg-3)' }}>
-        <Clock size={14} strokeWidth={2} color="rgba(237,237,237,0.40)" />
+        <Clock size={14} strokeWidth={2} color="#64748B" />
         <span>Showing {totalShown} of {totalAvailable} · {scopeLabel}</span>
       </div>
 
@@ -194,7 +194,7 @@ function ScopeBar({ totalShown, totalAvailable, scopeLabel, extendLabel, extendH
           }}
           onMouseEnter={e => {
             e.currentTarget.style.borderColor = '#2563EB';
-            e.currentTarget.style.background = 'rgba(59,130,246,0.06)';
+            e.currentTarget.style.background = '#EFF6FF';
             e.currentTarget.style.boxShadow = '0 1px 4px rgba(37,99,235,0.08)';
           }}
           onMouseLeave={e => {
@@ -271,7 +271,7 @@ export const KBResponseRenderer: React.FC<KBResponseRendererProps> = ({
                     style={{
                       height: 50,
                       borderBottom: ri < tableRows.length - 1 ? '0.75px solid rgba(15,23,42,0.06)' : 'none',
-                      background: ri === 0 ? '#1A1A1A' : 'transparent',
+                      background: ri === 0 ? '#F1F5F9' : 'transparent',
                       transition: 'background 80ms',
                       cursor: rowIssueKey && onItemClick ? 'pointer' : undefined,
                     }}
@@ -470,7 +470,7 @@ export const KBResponseRenderer: React.FC<KBResponseRendererProps> = ({
               cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
               transition: 'all 200ms',
             }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(74,222,128,0.06)'; }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = '#F0FDF4'; }}
             onMouseLeave={(e) => { e.currentTarget.style.background = 'none'; }}
           >
             <ThumbsUp size={14} color="#A1A1AA" />
@@ -482,7 +482,7 @@ export const KBResponseRenderer: React.FC<KBResponseRendererProps> = ({
               cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
               transition: 'all 200ms',
             }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(248,113,113,0.06)'; }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = '#FEF2F2'; }}
             onMouseLeave={(e) => { e.currentTarget.style.background = 'none'; }}
           >
             <ThumbsDown size={14} color="#A1A1AA" />

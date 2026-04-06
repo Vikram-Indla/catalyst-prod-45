@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
 import { ChevronDown, Search, X, Check, User } from 'lucide-react';
 
-const AVATAR_COLORS = ['#2563eb', '#0d9488', '#0369a1', '#d97706', '#0891b2', '#1e40af', '#b45309', '#0f766e', '#475569', 'rgba(237,237,237,0.53)'];
+const AVATAR_COLORS = ['#2563eb', '#0d9488', '#0369a1', '#d97706', '#0891b2', '#1e40af', '#b45309', '#0f766e', '#475569', '#334155'];
 
 function hashColor(name: string): string {
   let h = 0;

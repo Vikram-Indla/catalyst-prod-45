@@ -98,7 +98,7 @@ export function LabelsTab({ projectId }: LabelsTabProps) {
               <span style={{ fontSize: 13, color: 'var(--fg-1)', fontWeight: 500 }}>{l.name}</span>
               <button
                 onClick={() => handleDelete(l.id)}
-                className="flex items-center justify-center rounded-full transition-colors hover:bg-[rgba(248,113,113,0.10)]"
+                className="flex items-center justify-center rounded-full transition-colors hover:bg-[#FEE2E2]"
                 style={{ width: 18, height: 18, border: 'none', background: 'transparent', cursor: 'pointer', marginLeft: 2 }}
               >
                 <X size={12} color="var(--fg-4)" />

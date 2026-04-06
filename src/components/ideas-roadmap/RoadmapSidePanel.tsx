@@ -16,9 +16,9 @@ interface RoadmapSidePanelProps {
 const QUARTERS: RoadmapQuarter[] = ['Q1', 'Q2', 'Q3', 'Q4'];
 const QUARTER_STYLES: Record<string, { bg: string; color: string }> = {
   Q1: { bg: '#F3E8FF', color: '#6D28D9' },
-  Q2: { bg: 'rgba(59,130,246,0.06)', color: '#1D4ED8' },
-  Q3: { bg: 'rgba(74,222,128,0.06)', color: '#4ADE80' },
-  Q4: { bg: '#FFF7ED', color: '#FBBF24' },
+  Q2: { bg: '#EFF6FF', color: '#1D4ED8' },
+  Q3: { bg: '#ECFDF5', color: '#065F46' },
+  Q4: { bg: '#FFF7ED', color: '#92400E' },
 };
 const isConverted = (status: string) => status.toLowerCase() === 'converted';
 
@@ -81,13 +81,13 @@ export function RoadmapSidePanel({
   }
 
   const labelStyle: React.CSSProperties = {
-    fontSize: 10, fontWeight: 700, color: 'rgba(237,237,237,0.40)', textTransform: 'uppercase',
+    fontSize: 10, fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase',
     letterSpacing: '0.05em', fontFamily: "'Inter', sans-serif",
   };
 
   const fieldRowStyle: React.CSSProperties = {
     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-    height: 32, fontSize: 13, color: 'rgba(237,237,237,0.93)', fontFamily: "'Inter', sans-serif",
+    height: 32, fontSize: 13, color: '#0F172A', fontFamily: "'Inter', sans-serif",
   };
 
   return (
@@ -119,7 +119,7 @@ export function RoadmapSidePanel({
             background: 'var(--bg-app)', cursor: 'pointer',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
-            <X size={14} color="rgba(237,237,237,0.40)" />
+            <X size={14} color="#64748B" />
           </button>
           <div style={{ flex: 1, minWidth: 0 }}>
             <span style={{ fontSize: 12, fontFamily: "'JetBrains Mono', monospace", color: 'var(--fg-4)' }}>
@@ -140,7 +140,7 @@ export function RoadmapSidePanel({
               onClick={() => onToggleCommitted(idea)}
               style={{
                 width: 32, height: 18, borderRadius: 8, border: 'none', cursor: 'pointer',
-                background: idea.isCommitted ? 'var(--sem-success)' : 'rgba(237,237,237,0.53)', position: 'relative',
+                background: idea.isCommitted ? 'var(--sem-success)' : '#CBD5E1', position: 'relative',
                 transition: 'background 150ms',
               }}
             >
@@ -212,8 +212,8 @@ export function RoadmapSidePanel({
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {MILESTONE_CONFIGS.map(m => {
                 const DOT_COLORS: Record<string, string> = {
-                  req: '#1D4ED8', des: '#A78BFA', dev: '#15803D',
-                  uat: '#FBBF24', beta: '#0F766E', prod: '#4ADE80',
+                  req: '#1D4ED8', des: '#5B21B6', dev: '#15803D',
+                  uat: '#92400E', beta: '#0F766E', prod: '#065F46',
                 };
                 return (
                 <div key={m.key} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -232,7 +232,7 @@ export function RoadmapSidePanel({
                       transition: 'border-color 150ms',
                     }}
                     onFocus={e => (e.currentTarget.style.borderColor = '#2563EB')}
-                    onBlur={e => (e.currentTarget.style.borderColor = 'var(--bd-default, rgba(255,255,255,0.10))')}
+                    onBlur={e => (e.currentTarget.style.borderColor = 'var(--bd-default, #E2E8F0)')}
                   />
                   {milestones[m.key] && (
                     <button

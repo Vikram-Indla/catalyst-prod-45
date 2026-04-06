@@ -49,27 +49,27 @@ interface CycleTestCase {
 const statusConfig: Record<string, { label: string; color: string; bg: string }> = {
   draft:       { label: 'DRAFT',       color: '#253858', bg: '#DFE1E6' },
   planned:     { label: 'PLANNED',     color: '#253858', bg: '#DFE1E6' },
-  active:      { label: 'IN PROGRESS', color: '#0747A6', bg: 'rgba(59,130,246,0.10)' },
-  in_progress: { label: 'IN PROGRESS', color: '#0747A6', bg: 'rgba(59,130,246,0.10)' },
-  completed:   { label: 'COMPLETED',   color: '#006644', bg: 'rgba(74,222,128,0.10)' },
-  done:        { label: 'DONE',        color: '#006644', bg: 'rgba(74,222,128,0.10)' },
+  active:      { label: 'IN PROGRESS', color: '#0747A6', bg: '#DEEBFF' },
+  in_progress: { label: 'IN PROGRESS', color: '#0747A6', bg: '#DEEBFF' },
+  completed:   { label: 'COMPLETED',   color: '#006644', bg: '#E3FCEF' },
+  done:        { label: 'DONE',        color: '#006644', bg: '#E3FCEF' },
   archived:    { label: 'ARCHIVED',    color: '#253858', bg: '#DFE1E6' },
   paused:      { label: 'PAUSED',      color: '#253858', bg: '#DFE1E6' },
 };
 
 const executionStatusConfig: Record<string, { label: string; color: string; bg: string; Icon: any }> = {
-  not_run: { label: 'Not Run', color: 'rgba(237,237,237,0.40)', bg: '#1A1A1A', Icon: Clock },
-  passed: { label: 'Passed', color: '#059669', bg: 'rgba(74,222,128,0.06)', Icon: CheckCircle2 },
-  failed: { label: 'Failed', color: '#DC2626', bg: 'rgba(248,113,113,0.06)', Icon: XCircle },
+  not_run: { label: 'Not Run', color: '#64748B', bg: '#F1F5F9', Icon: Clock },
+  passed: { label: 'Passed', color: '#059669', bg: '#ECFDF5', Icon: CheckCircle2 },
+  failed: { label: 'Failed', color: '#DC2626', bg: '#FEF2F2', Icon: XCircle },
   blocked: { label: 'Blocked', color: '#D97706', bg: '#FFFBEB', Icon: AlertTriangle },
-  skipped: { label: 'Skipped', color: 'rgba(237,237,237,0.40)', bg: '#1A1A1A', Icon: Clock },
+  skipped: { label: 'Skipped', color: '#94A3B8', bg: '#F8FAFC', Icon: Clock },
 };
 
 const priorityConfig: Record<string, { color: string; bg: string }> = {
-  critical: { color: '#DC2626', bg: 'rgba(248,113,113,0.06)' },
+  critical: { color: '#DC2626', bg: '#FEF2F2' },
   high: { color: '#EA580C', bg: '#FFF7ED' },
   medium: { color: '#D97706', bg: '#FFFBEB' },
-  low: { color: '#059669', bg: 'rgba(74,222,128,0.06)' },
+  low: { color: '#059669', bg: '#ECFDF5' },
 };
 
 export default function TestCycleDetailPage() {
@@ -231,7 +231,7 @@ export default function TestCycleDetailPage() {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
-              <span style={{ fontSize: 12, fontWeight: 600, color: '#2563EB', backgroundColor: 'rgba(59,130,246,0.06)', padding: '4px 10px', borderRadius: 6 }}>{cycle.cycle_key}</span>
+              <span style={{ fontSize: 12, fontWeight: 600, color: '#2563EB', backgroundColor: '#EFF6FF', padding: '4px 10px', borderRadius: 6 }}>{cycle.cycle_key}</span>
               <span style={{ fontSize: 12, fontWeight: 500, color: status.color, backgroundColor: status.bg, padding: '4px 10px', borderRadius: 6, display: 'inline-flex', alignItems: 'center', gap: 6 }}>
                 <span style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: status.color }} />{status.label}
               </span>
@@ -243,7 +243,7 @@ export default function TestCycleDetailPage() {
               {cycle.environment_id && (
                 <span
                   onClick={() => navigate(`/testhub/environments/${cycle.environment_id}`)}
-                  style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', padding: '2px 8px', backgroundColor: 'rgba(59,130,246,0.06)', borderRadius: 6, color: '#2563EB', fontWeight: 500 }}
+                  style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', padding: '2px 8px', backgroundColor: '#EFF6FF', borderRadius: 6, color: '#2563EB', fontWeight: 500 }}
                 >
                   <Server size={14} />
                   Environment
@@ -408,7 +408,7 @@ export default function TestCycleDetailPage() {
         <div style={{ padding: '0 32px 16px' }}>
           <div style={{ padding: '14px 20px', backgroundColor: isDark ? 'rgba(217,119,6,0.1)' : '#FFFBEB', border: `1px solid ${isDark ? 'rgba(217,119,6,0.2)' : '#FDE68A'}`, borderRadius: 12, display: 'flex', alignItems: 'center', gap: 12 }}>
             <AlertTriangle size={18} style={{ color: '#D97706', flexShrink: 0 }} />
-            <span style={{ fontSize: 14, fontWeight: 500, color: '#FBBF24' }}>
+            <span style={{ fontSize: 14, fontWeight: 500, color: '#92400E' }}>
               {blockedTestCases.length} blocked test case{blockedTestCases.length !== 1 ? 's' : ''} require attention
             </span>
             <button onClick={() => setStatusFilter('blocked')} style={{ marginLeft: 'auto', padding: '4px 12px', border: `1px solid ${isDark ? 'rgba(217,119,6,0.3)' : '#FDE68A'}`, borderRadius: 6, backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', color: '#D97706', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
@@ -467,7 +467,7 @@ export default function TestCycleDetailPage() {
                 onClick={() => setIsRemoveConfirmOpen(true)}
                 style={{
                   height: 50, padding: '0 14px', border: '1.5px solid #FECACA', borderRadius: 8,
-                  backgroundColor: 'rgba(248,113,113,0.06)', color: '#DC2626', fontSize: 13, fontWeight: 600,
+                  backgroundColor: '#FEF2F2', color: '#DC2626', fontSize: 13, fontWeight: 600,
                   cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
                 }}
               >
@@ -549,7 +549,7 @@ export default function TestCycleDetailPage() {
                         )}
                         <td style={{ padding: '14px 16px' }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                            <span style={{ fontSize: 12, fontWeight: 600, color: '#2563EB', backgroundColor: 'rgba(59,130,246,0.06)', padding: '3px 8px', borderRadius: 4 }}>{ctc.test_case?.case_key || '—'}</span>
+                            <span style={{ fontSize: 12, fontWeight: 600, color: '#2563EB', backgroundColor: '#EFF6FF', padding: '3px 8px', borderRadius: 4 }}>{ctc.test_case?.case_key || '—'}</span>
                             <span style={{ fontSize: 14, color: isDark ? '#EDEDED' : '#334155' }}>{ctc.test_case?.title || 'Unknown'}</span>
                           </div>
                         </td>
@@ -656,7 +656,7 @@ export default function TestCycleDetailPage() {
               display: 'flex', alignItems: 'center', gap: 12,
             }}>
               <div style={{
-                width: 40, height: 40, borderRadius: 12, backgroundColor: 'rgba(248,113,113,0.06)',
+                width: 40, height: 40, borderRadius: 12, backgroundColor: '#FEF2F2',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
                 <Trash2 size={20} style={{ color: '#DC2626' }} />

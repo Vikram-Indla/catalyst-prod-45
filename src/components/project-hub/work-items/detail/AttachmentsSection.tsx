@@ -131,7 +131,7 @@ export function AttachmentsSection({ workItemId, projectId }: Props) {
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <FileText size={28} className="text-[rgba(237,237,237,0.40)]" />
+                  <FileText size={28} className="text-[#94A3B8]" />
                 )}
               </div>
               {/* Delete button */}

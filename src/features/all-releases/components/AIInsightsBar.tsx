@@ -26,7 +26,7 @@ export function AIInsightsBar({ insights, onActionClick }: AIInsightsBarProps) {
   const getIcon = (type: AIReleaseInsight['type']) => {
     switch (type) {
       case 'critical': return <AlertCircle className="w-4 h-4 text-red-500" />;
-      case 'warning': return <AlertTriangle className="w-4 h-4 text-[rgba(237,237,237,0.40)]" />;
+      case 'warning': return <AlertTriangle className="w-4 h-4 text-[#64748B]" />;
       case 'positive': return <CheckCircle2 className="w-4 h-4 text-green-500" />;
     }
   };
@@ -34,13 +34,13 @@ export function AIInsightsBar({ insights, onActionClick }: AIInsightsBarProps) {
   const getBgColor = (type: AIReleaseInsight['type']) => {
     switch (type) {
       case 'critical': return 'bg-red-50 border-red-100';
-      case 'warning': return 'bg-[#1A1A1A] border-[rgba(15,23,42,0.12)]';
+      case 'warning': return 'bg-[#F1F5F9] border-[rgba(15,23,42,0.12)]';
       case 'positive': return 'bg-green-50 border-green-100';
     }
   };
 
   return (
-    <div className="border rounded-xl p-4 mb-6" style={{ background: 'rgba(59,130,246,0.06)', borderColor: '#DBEAFE' }}>
+    <div className="border rounded-xl p-4 mb-6" style={{ background: '#EFF6FF', borderColor: '#DBEAFE' }}>
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <div className="p-1.5 rounded-lg" style={{ background: '#DBEAFE' }}>

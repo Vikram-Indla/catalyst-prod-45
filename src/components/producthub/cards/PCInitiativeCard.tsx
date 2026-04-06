@@ -15,9 +15,9 @@ interface PCInitiativeCardProps {
 }
 
 const STATUS_PILL_STYLES: Record<string, { color: string; bg: string; border: string }> = {
-  new: { color: '#2563EB', bg: 'rgba(59,130,246,0.06)', border: 'rgba(37,99,235,0.2)' },
-  new_demand: { color: '#2563EB', bg: 'rgba(59,130,246,0.06)', border: 'rgba(37,99,235,0.2)' },
-  portfolio_review: { color: '#16A34A', bg: 'rgba(74,222,128,0.06)', border: 'rgba(22,163,74,0.2)' },
+  new: { color: '#2563EB', bg: '#EFF6FF', border: 'rgba(37,99,235,0.2)' },
+  new_demand: { color: '#2563EB', bg: '#EFF6FF', border: 'rgba(37,99,235,0.2)' },
+  portfolio_review: { color: '#16A34A', bg: '#F0FDF4', border: 'rgba(22,163,74,0.2)' },
   under_review: { color: '#8B5CF6', bg: '#F5F3FF', border: 'rgba(139,92,246,0.2)' },
   technical_validation: { color: '#A855F7', bg: '#FAF5FF', border: 'rgba(168,85,247,0.2)' },
   estimate: { color: '#6366F1', bg: '#EEF2FF', border: 'rgba(99,102,241,0.2)' },
@@ -27,9 +27,9 @@ const STATUS_PILL_STYLES: Record<string, { color: string; bg: string; border: st
   under_implementation: { color: '#D97706', bg: '#FFFBEB', border: 'rgba(217,119,6,0.2)' },
   on_hold: { color: '#6B7280', bg: '#F9FAFB', border: 'rgba(107,114,128,0.2)' },
   implementation_review: { color: '#F97316', bg: '#FFF7ED', border: 'rgba(249,115,22,0.2)' },
-  in_support: { color: '#10B981', bg: 'rgba(74,222,128,0.06)', border: 'rgba(16,185,129,0.2)' },
-  done: { color: '#16A34A', bg: 'rgba(74,222,128,0.06)', border: 'rgba(22,163,74,0.2)' },
-  cancelled: { color: '#DC2626', bg: 'rgba(248,113,113,0.06)', border: 'rgba(220,38,38,0.2)' },
+  in_support: { color: '#10B981', bg: '#ECFDF5', border: 'rgba(16,185,129,0.2)' },
+  done: { color: '#16A34A', bg: '#F0FDF4', border: 'rgba(22,163,74,0.2)' },
+  cancelled: { color: '#DC2626', bg: '#FEF2F2', border: 'rgba(220,38,38,0.2)' },
 };
 
 const DEFAULT_STATUS_PILL = { color: '#71717A', bg: '#F4F4F5', border: 'rgba(113,113,122,0.2)' };

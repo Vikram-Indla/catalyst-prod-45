@@ -4,8 +4,8 @@ import { X } from 'lucide-react';
 const AVATAR_COLORS = ['#7C3AED', '#2563EB', '#0D9488', '#D97706', '#DC2626', '#EA580C', '#0284C7'];
 
 const ROLE_STYLES: Record<string, { bg: string; text: string }> = {
-  admin: { bg: 'rgba(59,130,246,0.06)', text: '#2563EB' },
-  member: { bg: '#1A1A1A', text: 'rgba(237,237,237,0.53)' },
+  admin: { bg: '#EFF6FF', text: '#2563EB' },
+  member: { bg: '#F1F5F9', text: '#334155' },
   viewer: { bg: '#FFFBEB', text: '#D97706' },
 };
 
@@ -44,7 +44,7 @@ export function MemberRow({ id, name, email, role, isCurrentUser, onRoleChange, 
 
   return (
     <div
-      className="flex items-center gap-3 rounded-md px-3 hover:bg-[#1A1A1A] transition-colors"
+      className="flex items-center gap-3 rounded-md px-3 hover:bg-[#F8FAFC] transition-colors"
       style={{ height: 52 }}
     >
       {/* Avatar */}
@@ -93,7 +93,7 @@ export function MemberRow({ id, name, email, role, isCurrentUser, onRoleChange, 
               <button
                 key={r}
                 onClick={() => { onRoleChange(id, r); setDropdownOpen(false); }}
-                className="w-full text-left px-3 py-2 hover:bg-[#1A1A1A] transition-colors"
+                className="w-full text-left px-3 py-2 hover:bg-[#F8FAFC] transition-colors"
                 style={{
                   fontSize: 12, fontWeight: r === role ? 600 : 400,
                   color: r === role ? 'var(--cp-blue)' : 'var(--fg-2)',
@@ -112,7 +112,7 @@ export function MemberRow({ id, name, email, role, isCurrentUser, onRoleChange, 
       {!isCurrentUser ? (
         <button
           onClick={() => onRemove(id)}
-          className="flex items-center justify-center rounded transition-colors hover:bg-[rgba(248,113,113,0.10)]"
+          className="flex items-center justify-center rounded transition-colors hover:bg-[#FEE2E2]"
           style={{ width: 28, height: 28, border: 'none', background: 'transparent', cursor: 'pointer' }}
         >
           <X size={14} color="var(--fg-4)" />

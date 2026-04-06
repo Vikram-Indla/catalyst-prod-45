@@ -55,9 +55,9 @@ function groupBySwimlane(items: Initiative[], swimlane: SwimlaneField): Record<s
 }
 
 function getCountStyle(count: number) {
-  if (count > 50) return { color: '#DC2626', background: 'rgba(248,113,113,0.06)' };
+  if (count > 50) return { color: '#DC2626', background: '#FEF2F2' };
   if (count > 10) return { color: '#D97706', background: '#FFFBEB' };
-  return { color: 'rgba(237,237,237,0.40)', background: '#1A1A1A' };
+  return { color: '#64748B', background: '#F1F5F9' };
 }
 
 export const KanbanColumn: React.FC<KanbanColumnProps> = ({

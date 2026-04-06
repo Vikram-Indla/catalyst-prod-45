@@ -18,18 +18,18 @@ const DK = {
 };
 
 const AVATAR_COLORS: Record<string, { bg: string; text: string }> = {
-  'Nada Alfassam':      { bg: '#DBEAFE', text: '#7DB8FC' },
+  'Nada Alfassam':      { bg: '#DBEAFE', text: '#1E40AF' },
   'Sitah Alqahtani':    { bg: '#E0E7FF', text: '#3730A3' },
-  'Sulaiman Alessa':    { bg: '#D1FAE5', text: '#4ADE80' },
-  'ibrahim alqusiyer':  { bg: 'rgba(251,191,36,0.10)', text: '#FBBF24' },
+  'Sulaiman Alessa':    { bg: '#D1FAE5', text: '#065F46' },
+  'ibrahim alqusiyer':  { bg: '#FEF3C7', text: '#92400E' },
   'Khaled Alghithy':    { bg: '#CFFAFE', text: '#155E75' },
-  'Izza Ali':           { bg: '#EDE9FE', text: '#A78BFA' },
+  'Izza Ali':           { bg: '#EDE9FE', text: '#5B21B6' },
 };
 function getAvatarColors(name: string) {
   if (AVATAR_COLORS[name]) return AVATAR_COLORS[name];
   let hash = 0;
   for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
-  const palettes = [{ bg: '#DBEAFE', text: '#7DB8FC' }, { bg: '#D1FAE5', text: '#4ADE80' }, { bg: '#E0E7FF', text: '#3730A3' }, { bg: 'rgba(251,191,36,0.10)', text: '#FBBF24' }, { bg: '#CFFAFE', text: '#155E75' }, { bg: '#EDE9FE', text: '#A78BFA' }];
+  const palettes = [{ bg: '#DBEAFE', text: '#1E40AF' }, { bg: '#D1FAE5', text: '#065F46' }, { bg: '#E0E7FF', text: '#3730A3' }, { bg: '#FEF3C7', text: '#92400E' }, { bg: '#CFFAFE', text: '#155E75' }, { bg: '#EDE9FE', text: '#5B21B6' }];
   return palettes[Math.abs(hash) % palettes.length];
 }
 
@@ -40,9 +40,9 @@ function statusBadge(status: string, isDark = false) {
     completed:   { dot: '#4F46E5', bg: 'rgba(79,70,229,0.08)',  text: '#4338CA', bgDk: '#1A2030', txtDk: '#93C5FD', label: 'Completed' },
     at_risk:     { dot: '#D97706', bg: 'rgba(217,119,6,0.08)',  text: '#B45309', bgDk: '#2A2418', txtDk: '#FBBF24', label: 'At Risk' },
     off_track:   { dot: '#EF4444', bg: 'rgba(239,68,68,0.08)',  text: '#DC2626', bgDk: '#2A1C1E', txtDk: '#FCA5A5', label: 'Off Track' },
-    draft:       { dot: 'rgba(237,237,237,0.40)', bg: '#1A1A1A',               text: 'rgba(237,237,237,0.40)', bgDk: '#1A1A1A', txtDk: '#A1A1A1', label: 'Draft' },
-    not_started: { dot: 'rgba(237,237,237,0.40)', bg: '#1A1A1A',               text: 'rgba(237,237,237,0.40)', bgDk: '#1A1A1A', txtDk: '#A1A1A1', label: 'Not Started' },
-    cancelled:   { dot: 'rgba(237,237,237,0.40)', bg: '#1A1A1A',               text: 'rgba(237,237,237,0.40)', bgDk: '#1A1A1A', txtDk: '#A1A1A1', label: 'Cancelled' },
+    draft:       { dot: '#94A3B8', bg: '#F1F5F9',               text: '#64748B', bgDk: '#1A1A1A', txtDk: '#A1A1A1', label: 'Draft' },
+    not_started: { dot: '#94A3B8', bg: '#F1F5F9',               text: '#64748B', bgDk: '#1A1A1A', txtDk: '#A1A1A1', label: 'Not Started' },
+    cancelled:   { dot: '#94A3B8', bg: '#F1F5F9',               text: '#64748B', bgDk: '#1A1A1A', txtDk: '#A1A1A1', label: 'Cancelled' },
   };
   const s = map[status] || map.draft;
   return (

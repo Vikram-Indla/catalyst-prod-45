@@ -135,7 +135,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem }: Props
                 <div className="flex items-start gap-2">
                   <JiraIssueTypeIcon type={item.issue_type} size={14} style={{ marginTop: 2 }} />
                   <div className="flex-1 min-w-0">
-                    <p className="text-[13px] leading-[18px] truncate" style={{ color: 'var(--fg-1)', fontWeight: 500, fontFamily: 'Geist, -apple-system, sans-serif' }}>
+                    <p className="text-[13px] leading-[18px] truncate" style={{ color: 'var(--fg-1)', fontWeight: 500, fontFamily: 'Inter, sans-serif' }}>
                       {item.summary}
                     </p>
                     <div className="flex items-center gap-2 mt-1">
@@ -175,7 +175,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem }: Props
                 <button
                   onClick={handleBack}
                   className="flex items-center gap-1 px-2 py-1 rounded-md transition-colors duration-[80ms] hover:bg-[var(--hover, rgba(255,255,255,0.04))] focus-visible:outline-2 focus-visible:outline-[#2563EB]"
-                  style={{ color: 'var(--fg-2)', fontSize: 13, fontWeight: 500, fontFamily: 'Geist, -apple-system, sans-serif', border: 'none', background: 'none', cursor: 'pointer' }}
+                  style={{ color: 'var(--fg-2)', fontSize: 13, fontWeight: 500, fontFamily: 'Inter, sans-serif', border: 'none', background: 'none', cursor: 'pointer' }}
                   aria-label="Go back"
                 >
                   <ArrowLeft className="w-3.5 h-3.5" />
@@ -252,7 +252,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem }: Props
                     fontSize: 12, fontWeight: isActive ? 600 : 400,
                     color: isActive ? '#1558bc' : isDark ? '#878787' : '#6b6e76',
                     borderBottom: isActive ? '2px solid #1558bc' : '2px solid transparent',
-                    marginBottom: -1, fontFamily: 'Geist, -apple-system, sans-serif',
+                    marginBottom: -1, fontFamily: 'Inter, sans-serif',
                     background: 'none', border: 'none', borderBottomStyle: 'solid',
                     borderBottomWidth: 2, borderBottomColor: isActive ? '#1558bc' : 'transparent',
                     cursor: 'pointer',
@@ -286,7 +286,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem }: Props
               {/* ─── DETAILS TAB ─── */}
               {activeTab === 'details' && (
                 <>
-                  <h2 className="text-[20px] font-semibold mb-4" style={{ color: 'var(--fg-1)', lineHeight: '28px', fontFamily: 'Geist, -apple-system, sans-serif' }}>
+                  <h2 className="text-[20px] font-semibold mb-4" style={{ color: 'var(--fg-1)', lineHeight: '28px', fontFamily: 'Inter, sans-serif' }}>
                     {currentItem.summary}
                   </h2>
 
@@ -336,7 +336,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem }: Props
                             color: activityTab === tab ? '#1558bc' : isDark ? '#878787' : '#6b6e76',
                             fontWeight: activityTab === tab ? 600 : 400,
                             borderBottom: activityTab === tab ? '2px solid #1558bc' : '2px solid transparent',
-                            fontFamily: 'Geist, -apple-system, sans-serif',
+                            fontFamily: 'Inter, sans-serif',
                             background: 'none', border: 'none', borderBottomStyle: 'solid',
                             borderBottomWidth: 2, borderBottomColor: activityTab === tab ? '#1558bc' : 'transparent',
                             cursor: 'pointer',
@@ -372,7 +372,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem }: Props
                           type="text"
                           placeholder="Add a comment..."
                           className="w-full text-[13px] border-none outline-none shadow-none bg-transparent"
-                          style={{ color: 'var(--fg-1)', fontFamily: 'Geist, -apple-system, sans-serif' }}
+                          style={{ color: 'var(--fg-1)', fontFamily: 'Inter, sans-serif' }}
                           aria-label="Add a comment"
                         />
                         <div className="flex items-center gap-2 mt-2">

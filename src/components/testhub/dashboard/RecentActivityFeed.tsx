@@ -23,11 +23,11 @@ interface Props {
 }
 
 const STATUS_CFG: Record<string, { icon: typeof CheckCircle2; color: string; bg: string }> = {
-  passed:  { icon: CheckCircle2,  color: '#10B981', bg: 'rgba(74,222,128,0.06)' },
-  failed:  { icon: XCircle,       color: 'var(--sem-danger)', bg: 'rgba(248,113,113,0.06)' },
+  passed:  { icon: CheckCircle2,  color: '#10B981', bg: '#ECFDF5' },
+  failed:  { icon: XCircle,       color: 'var(--sem-danger)', bg: '#FEF2F2' },
   blocked: { icon: AlertTriangle, color: '#F59E0B', bg: '#FFFBEB' },
-  skipped: { icon: SkipForward,   color: 'var(--fg-3)', bg: '#1A1A1A' },
-  not_run: { icon: Clock,         color: 'var(--fg-4)', bg: 'var(--bg-1, #1A1A1A)' },
+  skipped: { icon: SkipForward,   color: 'var(--fg-3)', bg: '#F1F5F9' },
+  not_run: { icon: Clock,         color: 'var(--fg-4)', bg: 'var(--bg-1, #F8FAFC)' },
 };
 
 export function RecentActivityFeed({ activities }: Props) {

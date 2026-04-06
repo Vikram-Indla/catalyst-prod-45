@@ -158,7 +158,7 @@ export function LinkTestCaseModal({ isOpen, onClose, requirementId, onLinked, al
                   {isSelected ? <CheckSquare size={18} style={{ color: '#2563EB', flexShrink: 0 }} /> : <Square size={18} style={{ color: isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0', flexShrink: 0 }} />}
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2 }}>
-                      <span style={{ fontSize: 12, fontWeight: 600, color: '#2563EB', backgroundColor: 'rgba(59,130,246,0.06)', padding: '2px 8px', borderRadius: 4 }}>{tc.case_key}</span>
+                      <span style={{ fontSize: 12, fontWeight: 600, color: '#2563EB', backgroundColor: '#EFF6FF', padding: '2px 8px', borderRadius: 4 }}>{tc.case_key}</span>
                       <span style={{ fontSize: 11, fontWeight: 500, color: priorityColor }}>{priorityName}</span>
                     </div>
                     <p style={{ fontSize: 13, color: isDark ? '#EDEDED' : '#0F172A', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{tc.title}</p>

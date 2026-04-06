@@ -128,10 +128,10 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
           </h2>
           <button
             onClick={onClose}
-            className="flex items-center justify-center rounded-md transition-colors hover:bg-[#1A1A1A] dark:hover:bg-[rgba(255,255,255,0.03)]"
+            className="flex items-center justify-center rounded-md transition-colors hover:bg-[#F1F5F9] dark:hover:bg-[rgba(255,255,255,0.03)]"
             style={{ width: 32, height: 32, border: 'none', background: 'transparent', cursor: 'pointer' }}
           >
-            <X size={18} className="text-[rgba(237,237,237,0.40)] dark:text-[rgba(255,255,255,0.55)]" />
+            <X size={18} className="text-[#64748B] dark:text-[rgba(255,255,255,0.55)]" />
           </button>
         </div>
 
@@ -144,10 +144,10 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between px-6 py-4 border-t border-[var(--bd-default, rgba(255,255,255,0.10))] dark:border-[rgba(255,255,255,0.08)]">
+        <div className="flex items-center justify-between px-6 py-4 border-t border-[var(--bd-default, #E2E8F0)] dark:border-[rgba(255,255,255,0.08)]">
           <button
             onClick={step === 0 ? onClose : () => setStep(s => s - 1)}
-            className="rounded-md transition-colors hover:bg-[#1A1A1A] dark:hover:bg-[rgba(255,255,255,0.03)] bg-white dark:bg-transparent border border-[var(--bd-default, rgba(255,255,255,0.10))] dark:border-[rgba(255,255,255,0.10)] text-[rgba(237,237,237,0.53)] dark:text-[rgba(255,255,255,0.72)]"
+            className="rounded-md transition-colors hover:bg-[#F8FAFC] dark:hover:bg-[rgba(255,255,255,0.03)] bg-white dark:bg-transparent border border-[var(--bd-default, #E2E8F0)] dark:border-[rgba(255,255,255,0.10)] text-[#334155] dark:text-[rgba(255,255,255,0.72)]"
             style={{
               height: 50, padding: '0 16px', fontSize: 13, fontWeight: 500,
               borderRadius: 6, cursor: 'pointer',

@@ -45,9 +45,9 @@ export function JiraSyncCTA() {
   const webhookActive = conn?.last_test_result?.checks?.every((c: any) => c.pass) ?? false;
 
   // Dot color derived from actual connection state
-  const dotColor = connLoading ? 'rgba(237,237,237,0.40)'
+  const dotColor = connLoading ? '#94A3B8'
     : isConnected ? (webhookActive ? '#16A34A' : '#F59E0B')
-    : 'rgba(237,237,237,0.40)';
+    : '#94A3B8';
 
   const statusLabel = connLoading ? 'Loading...'
     : isAnySyncActive ? 'Syncing…'
@@ -95,9 +95,9 @@ export function JiraSyncCTA() {
           display: 'flex', alignItems: 'center', gap: 6,
           height: 32, padding: '8px 12px',
           fontSize: 13, fontWeight: 500,
-          color: 'var(--catalyst-text-secondary, rgba(237,237,237,0.40))',
+          color: 'var(--catalyst-text-secondary, #64748B)',
           background: 'var(--catalyst-bg-surface, #FFF)',
-          border: '1px solid var(--catalyst-border, rgba(255,255,255,0.10))',
+          border: '1px solid var(--catalyst-border, #E2E8F0)',
           borderRadius: 6, cursor: 'pointer',
           fontFamily: "'Inter', sans-serif",
           opacity: isAnySyncActive ? 1 : 1,
@@ -116,7 +116,7 @@ export function JiraSyncCTA() {
         ↔ Jira Sync
         <span style={{
           fontSize: 11,
-          color: isAnySyncActive ? '#2563EB' : 'rgba(237,237,237,0.40)',
+          color: isAnySyncActive ? '#2563EB' : '#94A3B8',
           marginLeft: 2,
           fontWeight: isAnySyncActive ? 600 : 400,
         }}>
@@ -140,7 +140,7 @@ export function JiraSyncCTA() {
           {/* Loading */}
           {connLoading && (
             <div style={{ padding: 40, textAlign: 'center' }}>
-              <Loader2 size={20} className="animate-spin" style={{ margin: '0 auto', color: 'rgba(237,237,237,0.40)' }} />
+              <Loader2 size={20} className="animate-spin" style={{ margin: '0 auto', color: '#94A3B8' }} />
             </div>
           )}
 
@@ -323,7 +323,7 @@ export function JiraSyncCTA() {
 
               <div style={{
                 padding: 12, background: '#FFFBEB', borderRadius: 8,
-                border: '1px solid #FDE68A', fontSize: 12, color: '#FBBF24',
+                border: '1px solid #FDE68A', fontSize: 12, color: '#92400E',
                 lineHeight: 1.5,
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontWeight: 600, marginBottom: 6 }}>

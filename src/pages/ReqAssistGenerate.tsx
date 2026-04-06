@@ -291,18 +291,18 @@ export default function ReqAssistGenerate() {
 
           {/* Qualify fail */}
           {qualifyResult && !qualifyResult.qualified && (
-            <div style={{ marginTop: 12, padding: '14px 16px', background: 'rgba(248,113,113,0.06)', border: '0.75px solid rgba(220,38,38,0.12)', borderRadius: 6, display: 'flex', gap: 10 }}>
-              <div style={{ width: 20, height: 20, borderRadius: '50%', background: 'rgba(248,113,113,0.10)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><X size={12} color="#DC2626" /></div>
+            <div style={{ marginTop: 12, padding: '14px 16px', background: '#FEF2F2', border: '0.75px solid rgba(220,38,38,0.12)', borderRadius: 6, display: 'flex', gap: 10 }}>
+              <div style={{ width: 20, height: 20, borderRadius: '50%', background: '#FEE2E2', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><X size={12} color="#DC2626" /></div>
               <div>
                 <div style={{ fontSize: 13, fontWeight: 600, color: '#DC2626', fontFamily: "'Inter', sans-serif" }}>✗ Not Qualified</div>
-                {qualifyResult.reasons.map((r, i) => <p key={i} style={{ fontSize: 12, color: '#F87171', margin: '4px 0 0', lineHeight: 1.5, fontFamily: "'Inter', sans-serif" }}>• {r}</p>)}
+                {qualifyResult.reasons.map((r, i) => <p key={i} style={{ fontSize: 12, color: '#991B1B', margin: '4px 0 0', lineHeight: 1.5, fontFamily: "'Inter', sans-serif" }}>• {r}</p>)}
               </div>
             </div>
           )}
 
           {/* Qualify pass */}
           {qualifyResult && qualifyResult.qualified && (
-            <div style={{ marginTop: 12, padding: '14px 16px', background: 'rgba(74,222,128,0.06)', border: '0.75px solid #DCFCE7', borderRadius: 6, display: 'flex', gap: 10 }}>
+            <div style={{ marginTop: 12, padding: '14px 16px', background: '#F0FDF4', border: '0.75px solid #DCFCE7', borderRadius: 6, display: 'flex', gap: 10 }}>
               <div style={{ width: 20, height: 20, borderRadius: '50%', background: '#DCFCE7', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><Check size={12} color="#16A34A" /></div>
               <div>
                 <div style={{ fontSize: 13, fontWeight: 600, color: '#16A34A', fontFamily: "'Inter', sans-serif" }}>✓ Qualified — Score {qualifyResult.score}/100</div>
@@ -316,9 +316,9 @@ export default function ReqAssistGenerate() {
 
           {/* Error */}
           {genError && (
-            <div style={{ marginTop: 12, padding: '14px 16px', background: 'rgba(248,113,113,0.06)', border: '0.75px solid rgba(220,38,38,0.12)', borderRadius: 6 }}>
+            <div style={{ marginTop: 12, padding: '14px 16px', background: '#FEF2F2', border: '0.75px solid rgba(220,38,38,0.12)', borderRadius: 6 }}>
               <div style={{ fontSize: 13, fontWeight: 600, color: '#DC2626', fontFamily: "'Inter', sans-serif" }}>Generation Error</div>
-              <p style={{ fontSize: 12, color: '#F87171', margin: '4px 0 0', fontFamily: "'Inter', sans-serif" }}>{sanitiseError(genError)}</p>
+              <p style={{ fontSize: 12, color: '#991B1B', margin: '4px 0 0', fontFamily: "'Inter', sans-serif" }}>{sanitiseError(genError)}</p>
             </div>
           )}
 
@@ -385,7 +385,7 @@ export default function ReqAssistGenerate() {
 
             {/* STATE BANNERS */}
             {brdState === 'generated' && (
-              <div style={{ margin: '0 16px 12px', padding: '10px 14px', background: 'rgba(248,113,113,0.06)', border: '0.75px solid #FECACA', borderRadius: 6, display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div style={{ margin: '0 16px 12px', padding: '10px 14px', background: '#FEF2F2', border: '0.75px solid #FECACA', borderRadius: 6, display: 'flex', alignItems: 'center', gap: 8 }}>
                 <AlertTriangle size={15} color="#DC2626" style={{ flexShrink: 0 }} />
                 <span style={{ fontSize: 13, color: '#DC2626', fontFamily: "'Inter', sans-serif" }}>
                   This BRD has not been saved yet. Save to Library to enable Epics generation and WikiHub sync.
@@ -393,7 +393,7 @@ export default function ReqAssistGenerate() {
               </div>
             )}
             {showSavedBanner && brdState === 'saved' && (
-              <div style={{ margin: '0 16px 12px', padding: '10px 14px', background: 'rgba(74,222,128,0.06)', border: '0.75px solid #BBF7D0', borderRadius: 6, display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div style={{ margin: '0 16px 12px', padding: '10px 14px', background: '#F0FDF4', border: '0.75px solid #BBF7D0', borderRadius: 6, display: 'flex', alignItems: 'center', gap: 8 }}>
                 <Check size={15} color="#166534" style={{ flexShrink: 0 }} />
                 <span style={{ fontSize: 13, color: '#166534', fontFamily: "'Inter', sans-serif" }}>Saved to Library. Ready to generate Epics.</span>
               </div>
@@ -479,7 +479,7 @@ export default function ReqAssistGenerate() {
         <ModalOverlay>
           <div style={{ width: 480, background: isDark ? '#1A1A1A' : '#FFFFFF', borderRadius: 6, padding: 24, fontFamily: "'Inter', sans-serif" }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-              <AlertTriangle size={20} color="rgba(237,237,237,0.40)" />
+              <AlertTriangle size={20} color="#64748B" />
               <span style={{ fontSize: 16, fontWeight: 650, color: isDark ? '#EDEDED' : '#111827', fontFamily: "'Sora', sans-serif" }}>Document Already Exists</span>
             </div>
             <p style={{ fontSize: 14, color: isDark ? '#A1A1A1' : '#374151', lineHeight: 1.6, margin: '0 0 20px' }}>
@@ -677,7 +677,7 @@ function CatalystTopNav() {
         return (
           <button key={h.label} onClick={() => navigate(h.path)} style={{
             height: 48, padding: '0 14px', fontSize: 13, fontWeight: isActive ? 600 : 400,
-            color: isActive ? '#2563EB' : 'rgba(237,237,237,0.40)', background: 'transparent', border: 'none', cursor: 'pointer',
+            color: isActive ? '#2563EB' : '#64748B', background: 'transparent', border: 'none', cursor: 'pointer',
             borderBottom: isActive ? '3px solid #2563EB' : '3px solid transparent', transition: 'color 120ms', fontFamily: "'Inter', sans-serif",
           }}>{h.label}</button>
         );

@@ -35,26 +35,26 @@ interface EnvironmentSummary {
 }
 
 const TYPE_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
-  development: { label: 'Development', color: '#475569', bg: '#1A1A1A' },
-  testing: { label: 'Testing', color: '#475569', bg: '#1A1A1A' },
-  staging: { label: 'Staging', color: '#475569', bg: '#1A1A1A' },
-  uat: { label: 'UAT', color: '#475569', bg: '#1A1A1A' },
-  production: { label: 'Production', color: '#475569', bg: '#1A1A1A' },
-  other: { label: 'Other', color: '#475569', bg: '#1A1A1A' },
+  development: { label: 'Development', color: '#475569', bg: '#F1F5F9' },
+  testing: { label: 'Testing', color: '#475569', bg: '#F1F5F9' },
+  staging: { label: 'Staging', color: '#475569', bg: '#F1F5F9' },
+  uat: { label: 'UAT', color: '#475569', bg: '#F1F5F9' },
+  production: { label: 'Production', color: '#475569', bg: '#F1F5F9' },
+  other: { label: 'Other', color: '#475569', bg: '#F1F5F9' },
 };
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; icon: any }> = {
-  active: { label: 'Active', color: '#059669', bg: 'rgba(74,222,128,0.06)', icon: Power },
+  active: { label: 'Active', color: '#059669', bg: '#ECFDF5', icon: Power },
   maintenance: { label: 'Maintenance', color: '#D97706', bg: '#FFFBEB', icon: Wrench },
-  inactive: { label: 'Inactive', color: 'rgba(237,237,237,0.40)', bg: '#1A1A1A', icon: Power },
-  deprecated: { label: 'Deprecated', color: 'rgba(237,237,237,0.40)', bg: '#1A1A1A', icon: XCircle },
+  inactive: { label: 'Inactive', color: '#64748B', bg: '#F1F5F9', icon: Power },
+  deprecated: { label: 'Deprecated', color: '#94A3B8', bg: '#F8FAFC', icon: XCircle },
 };
 
 const HEALTH_CONFIG: Record<string, { label: string; color: string; bg: string; icon: any }> = {
-  healthy: { label: 'Healthy', color: '#059669', bg: 'rgba(74,222,128,0.06)', icon: CheckCircle2 },
+  healthy: { label: 'Healthy', color: '#059669', bg: '#ECFDF5', icon: CheckCircle2 },
   degraded: { label: 'Degraded', color: '#D97706', bg: '#FFFBEB', icon: AlertTriangle },
-  down: { label: 'Down', color: '#DC2626', bg: 'rgba(248,113,113,0.06)', icon: XCircle },
-  unknown: { label: 'Unknown', color: 'rgba(237,237,237,0.40)', bg: '#1A1A1A', icon: HelpCircle },
+  down: { label: 'Down', color: '#DC2626', bg: '#FEF2F2', icon: XCircle },
+  unknown: { label: 'Unknown', color: '#64748B', bg: '#F1F5F9', icon: HelpCircle },
 };
 
 export default function EnvironmentsListPage() {
@@ -179,7 +179,7 @@ export default function EnvironmentsListPage() {
               <Server size={24} style={{ color: '#6366F1' }} />
             </div>
           </div>
-          <div style={{ backgroundColor: 'rgba(74,222,128,0.06)', borderRadius: 12, padding: 20, border: '1px solid #A7F3D0' }}>
+          <div style={{ backgroundColor: '#ECFDF5', borderRadius: 12, padding: 20, border: '1px solid #A7F3D0' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div>
                 <p style={{ fontSize: 12, color: '#059669', margin: 0, textTransform: 'uppercase' }}>Healthy</p>
@@ -197,7 +197,7 @@ export default function EnvironmentsListPage() {
               <AlertTriangle size={24} style={{ color: '#D97706' }} />
             </div>
           </div>
-          <div style={{ backgroundColor: 'rgba(248,113,113,0.06)', borderRadius: 12, padding: 20, border: '1px solid #FECACA' }}>
+          <div style={{ backgroundColor: '#FEF2F2', borderRadius: 12, padding: 20, border: '1px solid #FECACA' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div>
                 <p style={{ fontSize: 12, color: '#DC2626', margin: 0, textTransform: 'uppercase' }}>Down</p>
@@ -212,7 +212,7 @@ export default function EnvironmentsListPage() {
       {/* Filters */}
       <div style={{ display: 'flex', gap: 12, marginBottom: 24, flexWrap: 'wrap', alignItems: 'center' }}>
         <div style={{ position: 'relative', flex: '1 1 300px', maxWidth: 400 }}>
-          <Search size={18} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: 'rgba(237,237,237,0.40)' }} />
+          <Search size={18} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: '#94A3B8' }} />
           <input
             type="text"
             placeholder="Search environments..."
@@ -225,7 +225,7 @@ export default function EnvironmentsListPage() {
           />
         </div>
         <Select value={typeFilter} onValueChange={setTypeFilter}>
-          <SelectTrigger className="h-[50px] w-[160px] border-[rgba(255,255,255,0.10)] rounded text-[13px]" style={{ fontFamily: 'Geist, -apple-system, sans-serif' }}>
+          <SelectTrigger className="h-[50px] w-[160px] border-[#E2E8F0] rounded text-[13px]" style={{ fontFamily: 'Inter, sans-serif' }}>
             <SelectValue placeholder="All Types" />
           </SelectTrigger>
           <SelectContent>
@@ -238,7 +238,7 @@ export default function EnvironmentsListPage() {
           </SelectContent>
         </Select>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="h-[50px] w-[160px] border-[rgba(255,255,255,0.10)] rounded text-[13px]" style={{ fontFamily: 'Geist, -apple-system, sans-serif' }}>
+          <SelectTrigger className="h-[50px] w-[160px] border-[#E2E8F0] rounded text-[13px]" style={{ fontFamily: 'Inter, sans-serif' }}>
             <SelectValue placeholder="All Status" />
           </SelectTrigger>
           <SelectContent>
@@ -290,7 +290,7 @@ export default function EnvironmentsListPage() {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     <span style={{ fontSize: 12, fontWeight: 600, color: '#6366F1', backgroundColor: '#EEF2FF', padding: '4px 10px', borderRadius: 6 }}>{env.env_key}</span>
-                    <span style={{ fontSize: 11, fontWeight: 600, color: '#475569', backgroundColor: '#1A1A1A', padding: '0 6px', borderRadius: 4, height: 20, display: 'inline-flex', alignItems: 'center', textTransform: 'uppercase' as const }}>{type.label}</span>
+                    <span style={{ fontSize: 11, fontWeight: 600, color: '#475569', backgroundColor: '#F1F5F9', padding: '0 6px', borderRadius: 4, height: 20, display: 'inline-flex', alignItems: 'center', textTransform: 'uppercase' as const }}>{type.label}</span>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 600, color: health.color, backgroundColor: health.bg, padding: '4px 8px', borderRadius: 6 }}>
                     <HealthIcon size={12} /> {health.label}

@@ -295,7 +295,7 @@ export function FolderPanel({
               paddingLeft: 32,
               paddingRight: 12,
               fontSize: 13,
-              fontFamily: 'Geist, -apple-system, sans-serif',
+              fontFamily: 'Inter, sans-serif',
               color: 'var(--fg-1)',
               backgroundColor: 'var(--bg-1)',
               border: '1px solid var(--divider)',
@@ -447,7 +447,7 @@ export function FolderPanel({
                 cursor: 'pointer',
                 textAlign: 'left',
               }}
-              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(248,113,113,0.06)'}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#FEF2F2'}
               onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
             >
               <Trash2 size={14} color="var(--sem-danger)" />

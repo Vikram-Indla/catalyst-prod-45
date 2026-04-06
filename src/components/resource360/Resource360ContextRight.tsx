@@ -25,7 +25,7 @@ export function Resource360ContextRight({
       style={{
         width: 320, minWidth: 320,
         background: 'var(--bg-1)',
-        fontFamily: 'Geist, -apple-system, sans-serif',
+        fontFamily: 'Inter, sans-serif',
         overflowY: 'auto',
       }}
     >
@@ -125,7 +125,7 @@ function StatusPill({ status }: { status: string }) {
 }
 
 function HubBadge({ hub }: { hub: string }) {
-  const color = WH_HUB_COLORS[hub] ?? 'rgba(237,237,237,0.40)';
+  const color = WH_HUB_COLORS[hub] ?? '#64748B';
   return (
     <span style={{
       fontSize: 9, fontWeight: 700, letterSpacing: '0.04em',
@@ -182,7 +182,7 @@ function SiblingList({ label, items, currentKey, onItemClick }: SiblingListProps
             style={{
               padding: isCurrent ? '10px 18px 10px 15px' : '10px 18px',
               borderBottom: '1px solid #F0F0F3',
-              background: isCurrent ? 'rgba(59,130,246,0.06)' : 'transparent',
+              background: isCurrent ? '#EFF6FF' : 'transparent',
               borderLeft: isCurrent ? '3px solid var(--cp-blue)' : 'none',
             }}
             onMouseEnter={(e) => {

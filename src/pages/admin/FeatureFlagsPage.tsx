@@ -55,11 +55,11 @@ const STATUS_LOZENGE: Record<string, { bg: string; text: string }> = {
 
 // D03: Category badges with distinct colors per MARAM V3.1.1
 const CATEGORY_BADGE: Record<ModuleCategory, { bg: string; text: string; border: string }> = {
-  Strategy:   { bg: 'rgba(59,130,246,0.06)', text: '#2563EB', border: '#BFDBFE' },
+  Strategy:   { bg: '#EFF6FF', text: '#2563EB', border: '#BFDBFE' },
   Product:    { bg: '#F4F4F5', text: '#3F3F46', border: '#D4D4D8' },
-  Delivery:   { bg: 'rgba(59,130,246,0.06)', text: '#2563EB', border: '#BFDBFE' },
+  Delivery:   { bg: '#EFF6FF', text: '#2563EB', border: '#BFDBFE' },
   Quality:    { bg: '#F0FDFA', text: '#0D9488', border: '#99F6E4' },
-  Operations: { bg: 'rgba(248,113,113,0.06)', text: '#DC2626', border: '#FECACA' },
+  Operations: { bg: '#FEF2F2', text: '#DC2626', border: '#FECACA' },
 };
 
 const ENVIRONMENT = 'production' as const;
@@ -427,12 +427,12 @@ export default function FeatureFlagsPage() {
   if (isLoading) {
     return (
       <div className={`flex-1 min-w-0 ${isDark ? "bg-[#0A0A0A]" : "bg-white"}`} style={{ padding: '24px 32px' }}>
-        <div className="h-7 w-48 bg-[#1A1A1A] rounded mb-1 animate-pulse" />
-        <div className="h-4 w-80 bg-[#1A1A1A] rounded mb-6 animate-pulse" />
+        <div className="h-7 w-48 bg-[#F1F5F9] rounded mb-1 animate-pulse" />
+        <div className="h-4 w-80 bg-[#F1F5F9] rounded mb-6 animate-pulse" />
         <div className="h-14 bg-[#F1F5F9] rounded-md mb-4 animate-pulse" style={{ border: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.12)'}`, borderRadius: 6 }} />
         <div className="flex gap-2 mb-3">
-          <div className="h-9 w-64 bg-[#1A1A1A] rounded animate-pulse" />
-          <div className="h-9 w-16 bg-[#1A1A1A] rounded animate-pulse" />
+          <div className="h-9 w-64 bg-[#F1F5F9] rounded animate-pulse" />
+          <div className="h-9 w-16 bg-[#F1F5F9] rounded animate-pulse" />
         </div>
         <div className={`overflow-hidden ${isDark ? "bg-[#0A0A0A]" : "bg-white"}`} style={{ border: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.12)'}`, borderRadius: 6 }}>
           <div style={{ height: 40, background: isDark ? '#1A1A1A' : '#F1F5F9', borderBottom: `0.75px solid ${isDark ? 'rgba(255,255,255,0.05)' : 'rgba(15,23,42,0.06)'}` }} />
@@ -690,7 +690,7 @@ export default function FeatureFlagsPage() {
           transition: 'opacity 200ms ease',
         }}
       >
-        {/* Header — thead on #1A1A1A */}
+        {/* Header — thead on #F1F5F9 */}
         <div
           role="row"
           className="grid items-center gap-0"
@@ -724,7 +724,7 @@ export default function FeatureFlagsPage() {
           <div
             style={{ padding: '8px 12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}
             onClick={() => handleSort('updated_at')}
-            className="select-none hover:text-[rgba(237,237,237,0.93)] transition-colors duration-[120ms]"
+            className="select-none hover:text-[#0F172A] transition-colors duration-[120ms]"
             role="columnheader"
             tabIndex={0}
             onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleSort('updated_at'); } }}
