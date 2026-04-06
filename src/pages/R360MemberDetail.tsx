@@ -616,7 +616,7 @@ export default function R360MemberDetail() {
 
               {/* §3 — Stale warning banner */}
               {allStale && allOpenItems.length > 0 && (
-                <div style={{ margin: '8px 0 0', padding: '8px 12px', background: '#FFFBEB', borderLeft: '3px solid #D97706', borderRadius: '0 4px 4px 0', fontSize: '13px', color: '#92400E' }}>
+                <div style={{ margin: '8px 0 0', padding: '8px 12px', background: isDark ? 'rgba(217,119,6,0.10)' : '#FFFBEB', borderLeft: `3px solid #D97706`, borderRadius: '0 4px 4px 0', fontSize: '13px', color: isDark ? '#FBBF24' : '#92400E' }}>
                   ⚠️ All assigned items are stale. Oldest: {oldestAge} days.
                 </div>
               )}
