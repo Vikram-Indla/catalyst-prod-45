@@ -41,7 +41,7 @@ export function RoadmapListPanel({
         </span>
         <span
           style={{
-            fontSize: 10, fontWeight: 600, color: '#64748B', background: var(--bg-2, '#F1F5F9'),
+            fontSize: 10, fontWeight: 600, color: '#64748B', background: '#F1F5F9',
             borderRadius: 12, padding: '2px 7px', fontFamily: 'JetBrains Mono, monospace',
           }}
         >

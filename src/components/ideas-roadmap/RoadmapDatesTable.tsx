@@ -86,7 +86,7 @@ export function RoadmapDatesTable({ ideas, onSelectIdea, onToggleCommitted, muta
                 <td style={cellStyle}>
                   {idea.team ? (
                     <span style={{
-                      fontSize: 10, fontWeight: 600, background: var(--bg-2, '#F1F5F9'),
+                      fontSize: 10, fontWeight: 600, background: '#F1F5F9',
                       color: 'var(--fg-2)', padding: '2px 6px', borderRadius: 4,
                     }}>{idea.team}</span>
                   ) : <span style={{ color: '#CBD5E1' }}>—</span>}

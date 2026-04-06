@@ -21,7 +21,7 @@ export default function PhasePlaceholderPage({ title, phase, icon: Icon = List, 
           </h1>
           <span
             className="rounded"
-            style={{ fontSize: 11, fontWeight: 600, color: '#64748B', background: var(--bg-2, '#F1F5F9'), padding: '2px 8px' }}
+            style={{ fontSize: 11, fontWeight: 600, color: '#64748B', background: '#F1F5F9', padding: '2px 8px' }}
           >
             {key?.toUpperCase()}
           </span>

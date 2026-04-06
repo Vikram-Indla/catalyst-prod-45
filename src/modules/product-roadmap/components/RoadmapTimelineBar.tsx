@@ -201,7 +201,7 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, onClick, end
             </span>
             {item.progress > 0 && (
               <div className="flex items-center gap-1 ml-auto">
-                <div style={{ width: 60, height: 4, background: var(--bg-2, '#F1F5F9'), borderRadius: 999, overflow: 'hidden' }}>
+                <div style={{ width: 60, height: 4, background: '#F1F5F9', borderRadius: 999, overflow: 'hidden' }}>
                   <div style={{ width: `${item.progress}%`, height: '100%', background: finalColor, borderRadius: 999 }} />
                 </div>
                 <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--fg-1, #0F172A)' }}>{item.progress}%</span>

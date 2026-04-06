@@ -418,7 +418,7 @@ export function SyncLogs() {
       <div style={{ background: 'var(--bg-app, #fff)', border: '1px solid var(--bd-default, #E2E8F0)', borderRadius: '8px', overflow: 'hidden' }}>
         <div style={{ padding: '14px 20px', borderBottom: '1px solid var(--bd-default, #E2E8F0)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <span style={{ fontFamily: 'Sora, sans-serif', fontSize: '13px', fontWeight: 700, color: 'var(--fg-1, #0F172A)' }}>Sync Log</span>
-          <span style={{ fontSize: '11px', color: '#64748B', background: var(--bg-2, '#F1F5F9'), padding: '2px 8px', borderRadius: '4px' }}>Last 10 runs</span>
+          <span style={{ fontSize: '11px', color: '#64748B', background: '#F1F5F9', padding: '2px 8px', borderRadius: '4px' }}>Last 10 runs</span>
         </div>
         <div style={{ maxHeight: '340px', overflowY: 'auto' }}>
           <div style={{ display: 'grid', gridTemplateColumns: '140px 90px 80px 1fr 100px 70px', padding: '8px 20px', background: 'var(--bg-1, #F8FAFC)', borderBottom: '1px solid var(--bd-default, #E2E8F0)', position: 'sticky', top: 0, zIndex: 1 }}>

@@ -170,11 +170,11 @@ export function SchedulingRules() {
                 When a FixVersion has no releaseDate, Catalyst attempts to extract a date from the version name:
               </p>
               <div style={{ marginTop: 8, fontSize: 11, color: '#92400E', lineHeight: 2 }}>
-                <code style={{ fontFamily: 'JetBrains Mono, monospace', background: var(--bg-2, '#F1F5F9'), padding: '1px 5px', borderRadius: 2 }}>2026 02</code>
+                <code style={{ fontFamily: 'JetBrains Mono, monospace', background: '#F1F5F9', padding: '1px 5px', borderRadius: 2 }}>2026 02</code>
                 {' → 2026-02-28  '}
-                <code style={{ fontFamily: 'JetBrains Mono, monospace', background: var(--bg-2, '#F1F5F9'), padding: '1px 5px', borderRadius: 2 }}>2026 Q1</code>
+                <code style={{ fontFamily: 'JetBrains Mono, monospace', background: '#F1F5F9', padding: '1px 5px', borderRadius: 2 }}>2026 Q1</code>
                 {' → 2026-03-31  '}
-                <code style={{ fontFamily: 'JetBrains Mono, monospace', background: var(--bg-2, '#F1F5F9'), padding: '1px 5px', borderRadius: 2 }}>Release 3.0</code>
+                <code style={{ fontFamily: 'JetBrains Mono, monospace', background: '#F1F5F9', padding: '1px 5px', borderRadius: 2 }}>Release 3.0</code>
                 {' → '}
                 <span style={{ color: '#EF4444', fontWeight: 600 }}>Cannot parse</span>
               </div>

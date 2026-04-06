@@ -311,7 +311,7 @@ export const InitiativeDetailPanel: React.FC<InitiativeDetailPanelProps> = ({
             {(initiative as any).source === 'catalyst' && (
               <span style={{
                 fontSize: 10, fontWeight: 500, letterSpacing: '0.04em',
-                color: 'var(--fg-3)', background: var(--bg-2, '#F1F5F9'), border: '1px solid var(--divider)',
+                color: 'var(--fg-3)', background: '#F1F5F9', border: '1px solid var(--divider)',
                 borderRadius: 4, padding: '2px 6px', marginLeft: 8, userSelect: 'none',
               }}>
                 ✦ Catalyst

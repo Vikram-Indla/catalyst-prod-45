@@ -22,7 +22,7 @@ export function InitiativeTypeBadge({ typeKey, className = '' }: Props) {
     return (
       <span
         className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10.5px] font-semibold whitespace-nowrap ${className}`}
-        style={{ background: var(--bg-2, '#F1F5F9'), color: 'var(--fg-4)' }}
+        style={{ background: '#F1F5F9', color: 'var(--fg-4)' }}
       >
         —
       </span>

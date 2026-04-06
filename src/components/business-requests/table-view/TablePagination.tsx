@@ -39,7 +39,7 @@ export function TablePagination({
       style={{
         padding: '8px 12px', /* V12 */
         borderTop: '0.75px solid rgba(15, 23, 42, 0.06)', /* V12 */
-        background: var(--bg-2, '#F1F5F9'), /* V12 */
+        background: '#F1F5F9', /* V12 */
       }}
     >
       {/* Left: Items info */}

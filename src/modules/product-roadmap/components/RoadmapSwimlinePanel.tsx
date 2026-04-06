@@ -145,7 +145,7 @@ export function RoadmapSwimlanePanel({ items, config, selectedItemId, onItemClic
                         fontSize: 10,
                         fontWeight: 600,
                         color: '#64748B',
-                        background: var(--bg-2, '#F1F5F9'),
+                        background: '#F1F5F9',
                         borderRadius: 12,
                         padding: '2px 7px',
                         fontFamily: 'JetBrains Mono, monospace',
