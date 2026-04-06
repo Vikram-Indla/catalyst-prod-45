@@ -534,8 +534,8 @@ serve(async (req) => {
     }
 
     // 11-12. Post-processing RPCs
-    await supabase.rpc('ph_parse_and_update_versions').catch(() => {})
-    await supabase.rpc('ph_recompute_all').catch(() => {})
+    try { await supabase.rpc('ph_parse_and_update_versions') } catch (_) { /* ignore */ }
+    try { await supabase.rpc('ph_recompute_all') } catch (_) { /* ignore */ }
 
     // 13. Update connection totals
     await supabase.from('ph_jira_connection').update({
