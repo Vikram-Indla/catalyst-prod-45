@@ -129,9 +129,9 @@ function FilterTrigger({ label, values, onClear, onClick, isOpen }: {
       {active && (
         <span
           onClick={e => { e.stopPropagation(); onClear(); }}
-          style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 14, height: 14, borderRadius: 9999, cursor: 'pointer', color: isDark ? '#666666' : '#94A3B8' }}
+          style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 14, height: 14, borderRadius: 9999, cursor: 'pointer', color: isDark ? '#878787' : '#94A3B8' }}
           onMouseEnter={e => (e.currentTarget.style.color = '#DC2626')}
-          onMouseLeave={e => (e.currentTarget.style.color = '#94A3B8')}
+          onMouseLeave={e => (e.currentTarget.style.color = isDark ? '#878787' : '#94A3B8')}
         >
           <X size={10} />
         </span>
@@ -196,13 +196,13 @@ function FilterDropdown({ options, selected, onChange, onClose, searchable = fal
       <div style={{ position: 'fixed', inset: 0, zIndex: 99 }} onClick={onClose} />
       <div ref={ref} style={{
         position: 'absolute', top: 'calc(100% + 6px)', left: 0, width: variant === 'assignee' ? 280 : 260,
-        background: isDark ? '#111111' : '#FFFFFF', border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 10,
+        background: isDark ? '#1A1A1A' : '#FFFFFF', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 10,
         boxShadow: isDark ? '0 12px 40px rgba(0,0,0,0.40), 0 2px 8px rgba(0,0,0,0.20)' : '0 12px 40px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.04)', zIndex: 100, maxHeight: 360,
         display: 'flex', flexDirection: 'column', overflow: 'hidden',
       }}>
         {/* Search */}
         {searchable && (
-          <div style={{ padding: '10px 12px', borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.05)' : '#F1F5F9'}` }}>
+          <div style={{ padding: '10px 12px', borderBottom: `1px solid ${isDark ? '#292929' : '#F1F5F9'}` }}>
             <div style={{
               display: 'flex', alignItems: 'center', gap: 6, padding: '0 8px',
               height: 32, background: isDark ? '#0A0A0A' : '#F8FAFC', borderRadius: 6, border: '1px solid transparent',
@@ -223,9 +223,9 @@ function FilterDropdown({ options, selected, onChange, onClose, searchable = fal
         )}
 
         {/* Select all / Clear */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 12px', borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.05)' : '#F1F5F9'}` }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 12px', borderBottom: `1px solid ${isDark ? '#292929' : '#F1F5F9'}` }}>
           <button onClick={selectAll} style={{ fontSize: 11, fontWeight: 500, color: '#2563EB', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>Select all</button>
-          <button onClick={clearAll} style={{ fontSize: 11, fontWeight: 500, color: isDark ? '#666666' : '#94A3B8', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>Clear</button>
+          <button onClick={clearAll} style={{ fontSize: 11, fontWeight: 500, color: isDark ? '#878787' : '#94A3B8', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>Clear</button>
         </div>
 
         {/* Options */}
@@ -241,7 +241,7 @@ function FilterDropdown({ options, selected, onChange, onClose, searchable = fal
                   transition: 'background 80ms', borderRadius: 0,
                   background: isSelected ? 'rgba(37,99,235,0.04)' : 'transparent',
                 }}
-                onMouseEnter={e => (e.currentTarget.style.background = isSelected ? 'rgba(37,99,235,0.08)' : isDark ? 'rgba(255,255,255,0.04)' : 'rgba(15,23,42,0.04)')}
+                onMouseEnter={e => (e.currentTarget.style.background = isSelected ? 'rgba(37,99,235,0.08)' : isDark ? '#1F1F1F' : 'rgba(15,23,42,0.04)')}
                 onMouseLeave={e => (e.currentTarget.style.background = isSelected ? 'rgba(37,99,235,0.04)' : 'transparent')}
               >
                 <div style={{
@@ -304,12 +304,12 @@ function FilterDropdown({ options, selected, onChange, onClose, searchable = fal
             );
           })}
           {filtered.length === 0 && (
-            <div style={{ padding: '16px 12px', fontSize: 12, color: isDark ? '#666666' : '#94A3B8', textAlign: 'center' }}>No results found</div>
+            <div style={{ padding: '16px 12px', fontSize: 12, color: isDark ? '#878787' : '#94A3B8', textAlign: 'center' }}>No results found</div>
           )}
         </div>
 
         {/* Footer: count */}
-        <div style={{ padding: '6px 12px', borderTop: `1px solid ${isDark ? 'rgba(255,255,255,0.05)' : '#F1F5F9'}`, fontSize: 11, color: isDark ? '#666666' : '#94A3B8', textAlign: 'center' }}>
+        <div style={{ padding: '6px 12px', borderTop: `1px solid ${isDark ? '#292929' : '#F1F5F9'}`, fontSize: 11, color: isDark ? '#878787' : '#94A3B8', textAlign: 'center' }}>
           {selected.length} of {options.length} selected
         </div>
       </div>
