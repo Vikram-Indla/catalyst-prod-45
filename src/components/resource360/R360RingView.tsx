@@ -184,7 +184,7 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
             position: 'absolute', left: `${mx}%`, top: `${my}%`,
             transform: 'translate(-50%, -50%)', zIndex: 4, pointerEvents: 'none',
             fontSize: '11px', fontWeight: 600, color: 'var(--fg-2)', background: 'var(--bg-1)',
-            padding: '2px 8px', borderRadius: '10px', border: '1px solid var(--divider)',
+            padding: '2px 8px', borderRadius: '12px', border: '1px solid var(--divider)',
             whiteSpace: 'nowrap', fontFamily: "'Inter', system-ui, sans-serif",
             fontVariantNumeric: 'tabular-nums',
           }}>
@@ -241,7 +241,7 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
             <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '5px' }}>
               <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--cp-blue)', fontFamily: "'JetBrains Mono', 'SF Mono', monospace" }}>{item.item_key}</span>
               {item.project_key && (
-                <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '3px', color: '#FFFFFF', background: projColor }}>{item.project_key}</span>
+                <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', color: '#FFFFFF', background: projColor }}>{item.project_key}</span>
               )}
               <span style={{ marginLeft: 'auto', fontSize: '11px', fontWeight: 600, color: ageCol(item.age_days ?? 0), fontVariantNumeric: 'tabular-nums' }}>{item.age_days ?? 0}d</span>
             </div>
@@ -323,7 +323,7 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
                 </div>
                 <span style={{
                   fontSize: '11px', fontWeight: 700, color: '#14532D',
-                  background: '#F0FDF4', padding: '2px 10px', borderRadius: '10px',
+                  background: '#F0FDF4', padding: '2px 10px', borderRadius: '12px',
                 }}>
                   {doneCount}
                 </span>
@@ -368,7 +368,7 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
                         </span>
                         <span style={{
                           fontSize: '10px', fontWeight: 700, padding: '1px 5px',
-                          borderRadius: '3px', color: '#FFF', background: '#16A34A',
+                          borderRadius: '4px', color: '#FFF', background: '#16A34A',
                         }}>
                           DONE
                         </span>

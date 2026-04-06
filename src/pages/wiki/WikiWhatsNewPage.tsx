@@ -69,7 +69,7 @@ export default function WikiWhatsNewPage() {
                   }}>
                     <span aria-label={`Change type: ${item.badge}`} style={{
                       fontSize: 9, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em',
-                      padding: '2px 6px', borderRadius: 3, whiteSpace: 'nowrap', marginTop: 2,
+                      padding: '2px 6px', borderRadius: 4, whiteSpace: 'nowrap', marginTop: 2,
                       background: bs.bg, color: bs.color,
                     }}>{item.badge}</span>
                     <div style={{ flex: 1, minWidth: 0 }}>

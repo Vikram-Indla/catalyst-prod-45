@@ -212,7 +212,7 @@ export function SubTasksTab({ parentKey, onSubTaskClick }: SubTasksTabProps) {
             ].map(s => (
               <span key={s.label} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                 <span style={{
-                  display: 'inline-block', padding: '1px 6px', borderRadius: 3,
+                  display: 'inline-block', padding: '1px 6px', borderRadius: 4,
                   backgroundColor: s.bg, color: s.color, fontSize: 11, fontWeight: 700,
                 }}>{s.count}</span>
                 <span style={{ fontSize: 11, color: 'var(--fg-3)', fontFamily: 'Inter, sans-serif' }}>{s.label}</span>
@@ -222,7 +222,7 @@ export function SubTasksTab({ parentKey, onSubTaskClick }: SubTasksTabProps) {
         </div>
 
         {/* Progress bar */}
-        <div style={{ display: 'flex', width: 100, height: 5, borderRadius: 3, overflow: 'hidden', backgroundColor: '#DFE1E6' }}>
+        <div style={{ display: 'flex', width: 100, height: 5, borderRadius: 4, overflow: 'hidden', backgroundColor: '#DFE1E6' }}>
           {doneTasks.length > 0 && (
             <div style={{ width: `${(doneTasks.length / total) * 100}%`, backgroundColor: '#00875A', transition: 'width 0.3s ease' }} />
           )}

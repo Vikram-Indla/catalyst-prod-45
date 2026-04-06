@@ -44,7 +44,7 @@ export function Resource360Board({ items, onItemClick }: Props) {
         <input
           type="text" value={searchTerm} onChange={e => setSearchTerm(e.target.value)}
           placeholder="Search key, title, or parent…"
-          style={{ width: 220, fontSize: 11, padding: '5px 10px', borderRadius: 5, border: `1px solid ${T.border}`, background: T.surface, color: T.text1, outline: 'none' }}
+          style={{ width: 220, fontSize: 11, padding: '5px 10px', borderRadius: 6, border: `1px solid ${T.border}`, background: T.surface, color: T.text1, outline: 'none' }}
         />
       </div>
 
@@ -62,7 +62,7 @@ export function Resource360Board({ items, onItemClick }: Props) {
               <span style={{ fontSize: 11, fontWeight: 800, color: T.text1, letterSpacing: '0.06em' }}>{col.label}</span>
               <span style={{
                 fontSize: 10, fontWeight: 800, color: '#fff', marginLeft: 'auto',
-                background: col.color, borderRadius: 10, padding: '1px 7px',
+                background: col.color, borderRadius: 12, padding: '1px 7px',
               }}>{col.items.length}</span>
             </div>
 
@@ -90,7 +90,7 @@ export function Resource360Board({ items, onItemClick }: Props) {
                       <span style={{ fontFamily: T.mono, fontSize: 10, fontWeight: 700, color: T.text1 }}>
                         <HighlightText text={item.item_key} query={searchTerm} />
                       </span>
-                      <span style={{ fontSize: 8, fontWeight: 800, color: '#fff', padding: '1px 5px', borderRadius: 3, background: hubColor }}>{hubShort}</span>
+                      <span style={{ fontSize: 8, fontWeight: 800, color: '#fff', padding: '1px 5px', borderRadius: 4, background: hubColor }}>{hubShort}</span>
                       {stale && <span title={stale.label} style={{ fontSize: 10 }}>{stale.icon}</span>}
                       <span style={{ fontFamily: T.mono, fontSize: 9, fontWeight: 700, color: item.age_days > 14 ? T.todo : T.text4, marginLeft: 'auto' }}>{item.age_days}d</span>
                     </div>

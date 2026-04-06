@@ -326,7 +326,7 @@ export default function TestHubDashboardPage() {
             {execSegments.map(seg => (
               seg.pct > 0 && (
                 <div key={seg.label} style={{
-                  width: `${seg.pct}%`, background: seg.color, borderRadius: 2,
+                  width: `${seg.pct}%`, background: seg.color, borderRadius: 4,
                   transition: 'width 500ms ease-out', minWidth: 3,
                 }} />
               )
@@ -376,8 +376,8 @@ export default function TestHubDashboardPage() {
                          {cycle.name}
                        </span>
                        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                         <div style={{ flex: 1, height: 4, borderRadius: 2, background: isDark ? '#1A1A1A' : '#F1F5F9', overflow: 'hidden' }}>
-                           <div style={{ width: `${pct}%`, height: '100%', background: barColor, borderRadius: 2, transition: 'width 400ms ease-out' }} />
+                         <div style={{ flex: 1, height: 4, borderRadius: 4, background: isDark ? '#1A1A1A' : '#F1F5F9', overflow: 'hidden' }}>
+                           <div style={{ width: `${pct}%`, height: '100%', background: barColor, borderRadius: 4, transition: 'width 400ms ease-out' }} />
                          </div>
                          <span style={{ fontSize: 13, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A', minWidth: 32, textAlign: 'right' }}>{pct}%</span>
                        </div>
@@ -516,7 +516,7 @@ export default function TestHubDashboardPage() {
                 <span style={{ fontSize: 14, fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A' }}>Needs attention</span>
                 <span style={{
                   fontSize: 12, fontWeight: 600, color: '#DC2626', background: isDark ? 'rgba(248,113,113,0.12)' : '#FEF2F2',
-                  padding: '2px 8px', borderRadius: 10,
+                  padding: '2px 8px', borderRadius: 12,
                 }}>
                   {attentionItems.length}
                 </span>

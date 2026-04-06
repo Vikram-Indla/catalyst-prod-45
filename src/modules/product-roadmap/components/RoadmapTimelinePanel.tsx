@@ -130,7 +130,7 @@ export function RoadmapTimelinePanel({ items, groups, config, selectedItemId, on
   // Grouped view
   if (groups && groups.length > 0) {
     return (
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden" style={{ background: '#FFFFFF' }}>
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden" style={{ background: 'var(--bg-app, #FFFFFF)' }}>
         <ScrollArea className="flex-1 w-full">
           <div style={{ minWidth: totalMinWidth }}>
             <RoadmapTimelineHeader periods={periods} zoom={config.zoom} />
@@ -157,7 +157,7 @@ export function RoadmapTimelinePanel({ items, groups, config, selectedItemId, on
 
   // Flat view
   return (
-    <div className="flex-1 flex flex-col min-w-0 overflow-hidden" style={{ background: '#FFFFFF' }}>
+    <div className="flex-1 flex flex-col min-w-0 overflow-hidden" style={{ background: 'var(--bg-app, #FFFFFF)' }}>
       <ScrollArea className="flex-1 w-full">
         <div style={{ minWidth: totalMinWidth }}>
           <RoadmapTimelineHeader periods={periods} zoom={config.zoom} />

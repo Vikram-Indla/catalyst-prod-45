@@ -5,7 +5,7 @@ export const RH = {
   // Backgrounds
   pageBg: '#FFFFFF',
   cardBg: '#FFFFFF',
-  surfaceBg: '#F8FAFC',
+  surfaceBg: 'var(--bg-1, #F8FAFC)',
   sunkenBg: var(--bg-2, '#F1F5F9'),
 
   // Borders
@@ -16,17 +16,17 @@ export const RH = {
   // Colors
   primary: '#2563EB',
   primaryDark: '#1D4ED8',
-  primaryLt: '#EFF6FF',
+  primaryLt: 'var(--tint-blue, #EFF6FF)',
   teal: '#0D9488',
   success: '#16A34A',
   successBg: '#1B7F37',
   warning: '#D97706',
   danger: '#DC2626',
-  dangerBg: '#FEF2F2',
+  dangerBg: 'var(--tint-red, #FEF2F2)',
 
   // AI = Blue, NOT purple
   ai: '#2563EB',
-  aiLt: '#EFF6FF',
+  aiLt: 'var(--tint-blue, #EFF6FF)',
   aiBorder: '#DBEAFE',
 
   // Text
@@ -97,9 +97,9 @@ export const CHG_STATUS_ORDER: string[] = ['new', 'in_uat', 'in_beta', 'in_produ
 export const RISK_BADGE: Record<string, { bg: string; text: string }> = {
   standard: { bg: '#DFE1E6', text: '#42526E' },
   low: { bg: '#DFE1E6', text: '#42526E' },
-  high: { bg: '#FEF2F2', text: '#DC2626' },
-  emergency: { bg: '#FEF2F2', text: '#991B1B' },
-  critical: { bg: '#FEF2F2', text: '#991B1B' },
+  high: { bg: 'var(--tint-red, #FEF2F2)', text: '#DC2626' },
+  emergency: { bg: 'var(--tint-red, #FEF2F2)', text: '#991B1B' },
+  critical: { bg: 'var(--tint-red, #FEF2F2)', text: '#991B1B' },
   medium: { bg: '#DFE1E6', text: '#42526E' },
 };
 
@@ -112,7 +112,7 @@ export const SOURCE_BADGE: Record<string, { bg: string; text: string }> = {
 // Deployment result badges (only shown when status=IN_PRODUCTION)
 export const DEPLOY_RESULT_BADGE: Record<string, { bg: string; text: string }> = {
   success: { bg: '#1B7F37', text: '#FFFFFF' },
-  rolled_back: { bg: '#FEF2F2', text: '#991B1B' },
+  rolled_back: { bg: 'var(--tint-red, #FEF2F2)', text: '#991B1B' },
   monitoring: { bg: '#0C66E4', text: '#FFFFFF' },
 };
 

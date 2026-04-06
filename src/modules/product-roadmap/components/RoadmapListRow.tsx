@@ -74,12 +74,12 @@ export function RoadmapListRow({ item, index, isFocused, isSelected, onClick, is
       )}
       style={{
         height: 44,
-        backgroundColor: isSelected ? '#EFF6FF' : 'transparent',
+        backgroundColor: isSelected ? 'var(--tint-blue, #EFF6FF)' : 'transparent',
         borderBottom: '1px solid #F1F5F9',
         outline: isFocused ? '2px solid #2563EB' : 'none',
         outlineOffset: -2,
       }}
-      onMouseEnter={e => { if (!isSelected) e.currentTarget.style.backgroundColor = '#F8FAFC'; }}
+      onMouseEnter={e => { if (!isSelected) e.currentTarget.style.backgroundColor = 'var(--bg-1, #F8FAFC)'; }}
       onMouseLeave={e => { if (!isSelected) e.currentTarget.style.backgroundColor = 'transparent'; }}
     >
       {/* 4px accent bar */}
@@ -102,7 +102,7 @@ export function RoadmapListRow({ item, index, isFocused, isSelected, onClick, is
           </span>
           {/* P0 badge */}
           {isCritical && (
-            <span style={{ fontSize: 9, fontWeight: 700, color: '#FFFFFF', background: '#EF4444', borderRadius: 3, padding: '1px 4px' }}>P0</span>
+            <span style={{ fontSize: 9, fontWeight: 700, color: '#FFFFFF', background: '#EF4444', borderRadius: 4, padding: '1px 4px' }}>P0</span>
           )}
           {/* Title */}
           <span className="truncate" style={{ fontSize: 13, fontWeight: 600, color: '#0F172A', letterSpacing: '-0.01em' }}>

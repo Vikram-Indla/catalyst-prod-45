@@ -23,7 +23,7 @@ const getAvatarColor = (key: string) => PROJECT_COLORS[key] || '#3F3F46';
 function ProjectTicketCountBadge({ projectKey }: { projectKey: string }) {
   const { data: count } = useProjectTicketCount(projectKey);
   return (
-    <span style={{ background: '#DFE1E6', color: '#374151', fontSize: 11, fontWeight: 600, borderRadius: 3, padding: '2px 6px', fontFamily: "'Inter', sans-serif" }}>
+    <span style={{ background: '#DFE1E6', color: '#374151', fontSize: 11, fontWeight: 600, borderRadius: 4, padding: '2px 6px', fontFamily: "'Inter', sans-serif" }}>
       {count ?? '…'}
     </span>
   );
@@ -51,7 +51,7 @@ function Lozenge({ label, styles }: { label: string; styles: Record<string, { bg
   const s = styles[label] || { bg: '#DFE1E6', color: '#42526E' };
   return (
     <span title={label} style={{
-      display: 'inline-block', padding: '2px 6px', borderRadius: 3,
+      display: 'inline-block', padding: '2px 6px', borderRadius: 4,
       fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
       background: s.bg, color: s.color, lineHeight: '16px', height: 20,
       whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
@@ -225,7 +225,7 @@ export default function ImportJiraDrawer({ open, onOpenChange }: Props) {
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <span style={{ fontSize: 16, fontWeight: 650, color: '#111827', fontFamily: "'Sora', sans-serif" }}>Import from Jira</span>
             <span style={{ flex: 1 }} />
-            <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--cp-blue)', background: 'var(--cp-blue-wash)', borderRadius: 3, padding: '2px 8px' }}>AI-Assisted Import</span>
+            <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--cp-blue)', background: 'var(--cp-blue-wash)', borderRadius: 4, padding: '2px 8px' }}>AI-Assisted Import</span>
             <span style={{ fontSize: 12, color: 'var(--fg-3)', fontFamily: "'Inter', sans-serif" }}>Step {step} of 2</span>
             <button onClick={handleClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, color: 'var(--fg-3)' }}>
               <X size={16} />
@@ -640,10 +640,10 @@ function Step2({
                 </div>
                 <div style={{ width: 100, padding: '4px 8px', display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
                   {reActivated ? (
-                    <span style={{ fontSize: 11, padding: '2px 6px', borderRadius: 3, background: '#0C66E4', color: 'var(--bg-app)', fontFamily: "'Inter', sans-serif" }}>Re-import</span>
+                    <span style={{ fontSize: 11, padding: '2px 6px', borderRadius: 4, background: '#0C66E4', color: 'var(--bg-app)', fontFamily: "'Inter', sans-serif" }}>Re-import</span>
                   ) : imported ? (
                     <>
-                      <span className="group-hover:hidden" style={{ fontSize: 11, padding: '2px 6px', borderRadius: 3, background: '#F3F4F6', color: 'var(--fg-3)', fontFamily: "'Inter', sans-serif" }}>Imported</span>
+                      <span className="group-hover:hidden" style={{ fontSize: 11, padding: '2px 6px', borderRadius: 4, background: '#F3F4F6', color: 'var(--fg-3)', fontFamily: "'Inter', sans-serif" }}>Imported</span>
                       <button
                         className="hidden group-hover:inline-flex"
                         onClick={(e) => { e.stopPropagation(); onReImport(t.ticket_key); }}

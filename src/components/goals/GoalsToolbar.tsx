@@ -103,7 +103,7 @@ function FilterDropdown({
                 <input type="checkbox" checked={isSelected} onChange={() => onToggle(opt.id)} style={{ accentColor: 'var(--cp-blue)' }} />
                 {renderOption ? renderOption(opt) : (
                   <>
-                    {opt.color && <span style={{ width: 8, height: 8, borderRadius: 2, background: opt.color, flexShrink: 0 }} />}
+                    {opt.color && <span style={{ width: 8, height: 8, borderRadius: 4, background: opt.color, flexShrink: 0 }} />}
                     {opt.label}
                   </>
                 )}

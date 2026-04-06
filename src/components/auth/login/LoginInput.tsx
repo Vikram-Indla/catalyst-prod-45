@@ -38,7 +38,7 @@ export const LoginInput = forwardRef<HTMLInputElement, LoginInputProps>(
               paddingRight: isPassword ? '3rem' : '1rem',
               backgroundColor: loginColors.surfaceCard,
               border: `1.5px solid ${error ? '#ef4444' : loginColors.borderMedium}`,
-              borderRadius: 10,
+              borderRadius: 12,
               fontSize: '0.9375rem',
               color: loginColors.textPrimary,
               fontFamily: "'Plus Jakarta Sans', sans-serif",

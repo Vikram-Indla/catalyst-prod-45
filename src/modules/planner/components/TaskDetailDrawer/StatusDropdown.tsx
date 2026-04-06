@@ -104,7 +104,7 @@ export function StatusDropdown({ currentStatusId, currentStatus, onChange }: Sta
             right: 0,
             backgroundColor: COLORS.surfaceCard,
             border: `1px solid ${COLORS.borderDefault}`,
-            borderRadius: '10px',
+            borderRadius: '12px',
             boxShadow: '0 10px 40px rgba(0, 0, 0, 0.2)',
             zIndex: 100001,
             padding: '6px',

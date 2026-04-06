@@ -131,7 +131,7 @@ export default function WorkHubSidePanel({ itemId, projectKey, onClose }: WorkHu
               {tab.badge !== undefined && tab.badge > 0 && (
                 <span style={{
                   fontSize: 10, fontWeight: 700, background: 'var(--bg-1)', color: 'var(--fg-3)',
-                  padding: '1px 6px', borderRadius: 10, minWidth: 18, textAlign: 'center',
+                  padding: '1px 6px', borderRadius: 12, minWidth: 18, textAlign: 'center',
                 }}>{tab.badge}</span>
               )}
             </button>
@@ -142,9 +142,9 @@ export default function WorkHubSidePanel({ itemId, projectKey, onClose }: WorkHu
         <div style={{ flex: 1, overflowY: 'auto', padding: '16px 20px' }}>
           {isLoading ? (
             <div>
-              <div className="wh-skeleton" style={{ height: 20, width: 100, borderRadius: 3, marginBottom: 16 }} />
-              <div className="wh-skeleton" style={{ height: 24, width: '80%', borderRadius: 3, marginBottom: 8 }} />
-              <div className="wh-skeleton" style={{ height: 14, width: '60%', borderRadius: 3, marginBottom: 24 }} />
+              <div className="wh-skeleton" style={{ height: 20, width: 100, borderRadius: 4, marginBottom: 16 }} />
+              <div className="wh-skeleton" style={{ height: 24, width: '80%', borderRadius: 4, marginBottom: 8 }} />
+              <div className="wh-skeleton" style={{ height: 14, width: '60%', borderRadius: 4, marginBottom: 24 }} />
               {Array.from({ length: 6 }).map((_, i) => (
                 <div key={i} style={{ display: 'flex', gap: 12, marginBottom: 8 }}>
                   <div className="wh-skeleton" style={{ width: 100, height: 14, borderRadius: 3 }} />
@@ -290,8 +290,8 @@ export default function WorkHubSidePanel({ itemId, projectKey, onClose }: WorkHu
                       <button style={{ background: 'none', border: 'none', cursor: 'pointer' }}><Plus size={14} color="#64748B" /></button>
                     </div>
                     {item.child_count > 0 ? (
-                      <div style={{ height: 4, background: 'var(--bg-1)', borderRadius: 2, overflow: 'hidden', marginBottom: 4 }}>
-                        <div style={{ height: '100%', width: `${(item.completed_child_count / item.child_count) * 100}%`, background: 'var(--sem-success)', borderRadius: 2, transition: 'width 300ms' }} />
+                      <div style={{ height: 4, background: 'var(--bg-1)', borderRadius: 4, overflow: 'hidden', marginBottom: 4 }}>
+                        <div style={{ height: '100%', width: `${(item.completed_child_count / item.child_count) * 100}%`, background: 'var(--sem-success)', borderRadius: 4, transition: 'width 300ms' }} />
                       </div>
                     ) : (
                       <div style={{ fontSize: 13, color: 'var(--fg-4)', padding: '4px 0' }}>No subtasks yet</div>

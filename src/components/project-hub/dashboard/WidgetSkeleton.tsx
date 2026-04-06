@@ -23,8 +23,8 @@ export function WidgetSkeleton({ rows = 3, type = 'table' }: { rows?: number; ty
             <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <div className="bg-[var(--divider)]" style={{ width: 20, height: 20, borderRadius: '50%' }} />
               <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 4 }}>
-                <div className="bg-[var(--divider)]" style={{ height: 10, borderRadius: 3, width: `${85 - i * 10}%` }} />
-                <div className="bg-[var(--cp-bd-zone)]" style={{ height: 8, borderRadius: 3, width: '40%' }} />
+                <div className="bg-[var(--divider)]" style={{ height: 10, borderRadius: 4, width: `${85 - i * 10}%` }} />
+                <div className="bg-[var(--cp-bd-zone)]" style={{ height: 8, borderRadius: 4, width: '40%' }} />
               </div>
               <div className="bg-[var(--cp-bd-zone)]" style={{ width: 40, height: 10, borderRadius: 4 }} />
             </div>
@@ -35,7 +35,7 @@ export function WidgetSkeleton({ rows = 3, type = 'table' }: { rows?: number; ty
           {/* Table header skeleton */}
           <div style={{ display: 'flex', gap: 8, paddingBottom: 8, borderBottom: '1px solid var(--cp-bd-zone)', marginBottom: 4 }}>
             {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} className="bg-[var(--cp-bd-zone)]" style={{ height: 8, borderRadius: 3, flex: i === 2 ? 2 : 1 }} />
+              <div key={i} className="bg-[var(--cp-bd-zone)]" style={{ height: 8, borderRadius: 4, flex: i === 2 ? 2 : 1 }} />
             ))}
           </div>
           {/* Table rows */}

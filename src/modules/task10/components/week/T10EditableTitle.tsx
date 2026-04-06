@@ -107,7 +107,7 @@ export function T10EditableTitle({
       className={className}
       style={{
         cursor: 'text',
-        borderRadius: '2px',
+        borderRadius: '4px',
         padding: '0px 2px',
         transition: 'background-color 0.15s ease',
         display: 'inline-block',

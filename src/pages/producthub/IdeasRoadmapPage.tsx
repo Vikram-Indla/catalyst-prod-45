@@ -136,16 +136,16 @@ function RoadmapCard({ idea, onClick, isDark, dk }: { idea: IdeaRow; onClick: ()
     >
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
         <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', fontWeight: 600, color: dk.blueKey }}>{idea.idea_key}</span>
-        <span style={{ fontSize: '9px', fontWeight: 800, background: isDark ? 'rgba(255,255,255,0.06)' : '#F1F5F9', color: dk.t2, padding: '1px 5px', borderRadius: '3px', border: `1px solid ${dk.border}`, fontFamily: "'JetBrains Mono', monospace" }}>{idea.priority || 'P2'}</span>
+        <span style={{ fontSize: '9px', fontWeight: 800, background: isDark ? 'rgba(255,255,255,0.06)' : '#F1F5F9', color: dk.t2, padding: '1px 5px', borderRadius: '4px', border: `1px solid ${dk.border}`, fontFamily: "'JetBrains Mono', monospace" }}>{idea.priority || 'P2'}</span>
       </div>
       <div style={{ fontSize: '13px', fontWeight: 500, color: dk.t1, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', marginBottom: '6px', lineHeight: 1.35 }}>{idea.title}</div>
       <div style={{ marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'wrap' }}>
-        {idea.assigned_team && <span style={{ background: isDark ? 'rgba(255,255,255,0.06)' : '#F1F5F9', color: dk.t2, padding: '1px 6px', borderRadius: '3px', fontSize: '11px', fontWeight: 500, border: isDark ? `1px solid ${dk.border}` : 'none' }}>{idea.assigned_team}</span>}
-        {idea.theme && <span style={{ background: isDark ? 'rgba(255,255,255,0.06)' : '#F1F5F9', color: dk.t2, padding: '1px 6px', borderRadius: '3px', fontSize: '11px', fontWeight: 500, maxWidth: '160px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', border: isDark ? `1px solid ${dk.border}` : 'none' }}>{idea.theme}</span>}
+        {idea.assigned_team && <span style={{ background: isDark ? 'rgba(255,255,255,0.06)' : '#F1F5F9', color: dk.t2, padding: '1px 6px', borderRadius: '4px', fontSize: '11px', fontWeight: 500, border: isDark ? `1px solid ${dk.border}` : 'none' }}>{idea.assigned_team}</span>}
+        {idea.theme && <span style={{ background: isDark ? 'rgba(255,255,255,0.06)' : '#F1F5F9', color: dk.t2, padding: '1px 6px', borderRadius: '4px', fontSize: '11px', fontWeight: 500, maxWidth: '160px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', border: isDark ? `1px solid ${dk.border}` : 'none' }}>{idea.theme}</span>}
       </div>
       <div style={{ borderTop: `1px solid ${dk.divider}`, paddingTop: '8px' }}>
         <span style={{ fontSize: '11px', fontWeight: 700, color: idea.impact_total > 0 ? dk.t2 : dk.t3, fontFamily: "'JetBrains Mono', monospace" }}>IMPACT {idea.impact_total.toFixed(2)}</span>
-        {idea.is_committed && <span style={{ marginLeft: '8px', fontSize: '10px', fontWeight: 700, color: '#FFFFFF', background: isDark ? 'rgba(22,163,74,0.12)' : '#1B7F37', padding: '1px 6px', borderRadius: '3px' }}>COMMITTED</span>}
+        {idea.is_committed && <span style={{ marginLeft: '8px', fontSize: '10px', fontWeight: 700, color: '#FFFFFF', background: isDark ? 'rgba(22,163,74,0.12)' : '#1B7F37', padding: '1px 6px', borderRadius: '4px' }}>COMMITTED</span>}
       </div>
       {isConverted && idea.linked_initiative_key && (
         <div style={{ marginTop: '6px', fontSize: '11px', fontWeight: 600, color: dk.greenText, fontFamily: "'JetBrains Mono', monospace" }}>

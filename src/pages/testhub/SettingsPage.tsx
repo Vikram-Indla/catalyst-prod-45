@@ -205,7 +205,7 @@ export default function SettingsPage() {
                         const isSelected = preferences.theme === opt.value;
                         return (
                           <button key={opt.value} onClick={() => updatePreference('theme', opt.value)}
-                            style={{ flex: 1, padding: 16, borderRadius: 10, border: `2px solid ${isSelected ? '#2563EB' : borderColor}`, backgroundColor: isSelected ? (isDark ? '#1e293b' : '#EFF6FF') : surfaceBg, cursor: 'pointer', textAlign: 'center' }}>
+                            style={{ flex: 1, padding: 16, borderRadius: 12, border: `2px solid ${isSelected ? '#2563EB' : borderColor}`, backgroundColor: isSelected ? (isDark ? '#1e293b' : '#EFF6FF') : surfaceBg, cursor: 'pointer', textAlign: 'center' }}>
                             <OptIcon size={24} style={{ color: isSelected ? '#2563EB' : textSecondary, marginBottom: 8 }} />
                             <p style={{ fontSize: 14, fontWeight: 500, color: isSelected ? '#2563EB' : textPrimary, margin: 0 }}>{opt.label}</p>
                           </button>
@@ -254,7 +254,7 @@ export default function SettingsPage() {
                   <div style={{ marginBottom: 28 }}>
                     <label style={{ display: 'block', fontSize: 14, fontWeight: 600, color: textPrimary, marginBottom: 10 }}>Default Landing Page</label>
                     <select value={preferences.default_landing_page} onChange={(e) => updatePreference('default_landing_page', e.target.value)}
-                      style={{ width: '100%', maxWidth: 300, height: 44, padding: '0 14px', border: `1.5px solid ${borderColor}`, borderRadius: 10, fontSize: 14, backgroundColor: surfaceBg, color: textPrimary }}>
+                      style={{ width: '100%', maxWidth: 300, height: 44, padding: '0 14px', border: `1.5px solid ${borderColor}`, borderRadius: 12, fontSize: 14, backgroundColor: surfaceBg, color: textPrimary }}>
                       {LANDING_PAGE_OPTIONS.map((opt) => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
                     </select>
                   </div>
@@ -279,7 +279,7 @@ export default function SettingsPage() {
                   <div style={{ marginBottom: 28 }}>
                     <label style={{ display: 'block', fontSize: 14, fontWeight: 600, color: textPrimary, marginBottom: 10 }}>Default Cycle View</label>
                     <select value={preferences.default_cycle_view} onChange={(e) => updatePreference('default_cycle_view', e.target.value)}
-                      style={{ width: '100%', maxWidth: 300, height: 44, padding: '0 14px', border: `1.5px solid ${borderColor}`, borderRadius: 10, fontSize: 14, backgroundColor: surfaceBg, color: textPrimary }}>
+                      style={{ width: '100%', maxWidth: 300, height: 44, padding: '0 14px', border: `1.5px solid ${borderColor}`, borderRadius: 12, fontSize: 14, backgroundColor: surfaceBg, color: textPrimary }}>
                       {CYCLE_VIEW_OPTIONS.map((opt) => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
                     </select>
                   </div>
@@ -338,7 +338,7 @@ export default function SettingsPage() {
                   <div>
                     <label style={{ display: 'block', fontSize: 14, fontWeight: 600, color: textPrimary, marginBottom: 10 }}>Email Digest</label>
                     <select value={preferences.email_digest_frequency} onChange={(e) => updatePreference('email_digest_frequency', e.target.value)}
-                      style={{ width: '100%', maxWidth: 300, height: 44, padding: '0 14px', border: `1.5px solid ${borderColor}`, borderRadius: 10, fontSize: 14, backgroundColor: surfaceBg, color: textPrimary }}>
+                      style={{ width: '100%', maxWidth: 300, height: 44, padding: '0 14px', border: `1.5px solid ${borderColor}`, borderRadius: 12, fontSize: 14, backgroundColor: surfaceBg, color: textPrimary }}>
                       {DIGEST_OPTIONS.map((opt) => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
                     </select>
                   </div>
@@ -352,7 +352,7 @@ export default function SettingsPage() {
                   <div style={{ marginBottom: 28 }}>
                     <label style={{ display: 'block', fontSize: 14, fontWeight: 600, color: textPrimary, marginBottom: 10 }}>Date Format</label>
                     <select value={preferences.date_format} onChange={(e) => updatePreference('date_format', e.target.value)}
-                      style={{ width: '100%', maxWidth: 300, height: 44, padding: '0 14px', border: `1.5px solid ${borderColor}`, borderRadius: 10, fontSize: 14, backgroundColor: surfaceBg, color: textPrimary }}>
+                      style={{ width: '100%', maxWidth: 300, height: 44, padding: '0 14px', border: `1.5px solid ${borderColor}`, borderRadius: 12, fontSize: 14, backgroundColor: surfaceBg, color: textPrimary }}>
                       {DATE_FORMAT_OPTIONS.map((opt) => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
                     </select>
                   </div>
@@ -373,7 +373,7 @@ export default function SettingsPage() {
                   <div>
                     <label style={{ display: 'block', fontSize: 14, fontWeight: 600, color: textPrimary, marginBottom: 10 }}>Week Starts On</label>
                     <select value={preferences.week_starts_on} onChange={(e) => updatePreference('week_starts_on', parseInt(e.target.value))}
-                      style={{ width: '100%', maxWidth: 300, height: 44, padding: '0 14px', border: `1.5px solid ${borderColor}`, borderRadius: 10, fontSize: 14, backgroundColor: surfaceBg, color: textPrimary }}>
+                      style={{ width: '100%', maxWidth: 300, height: 44, padding: '0 14px', border: `1.5px solid ${borderColor}`, borderRadius: 12, fontSize: 14, backgroundColor: surfaceBg, color: textPrimary }}>
                       <option value={0}>Sunday</option>
                       <option value={1}>Monday</option>
                       <option value={6}>Saturday</option>

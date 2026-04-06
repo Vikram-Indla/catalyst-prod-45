@@ -36,7 +36,7 @@ export const IconButton: React.FC<IconButtonProps> = ({
         minHeight: `${size}px`,
         backgroundColor: isHovered ? COLORS.surfaceHover : 'transparent',
         border: `1px solid ${isHovered ? COLORS.borderDefault : COLORS.borderLight}`,
-        borderRadius: '10px',
+        borderRadius: '12px',
         color: isHovered ? COLORS.textSecondary : COLORS.textMuted,
         cursor: 'pointer',
         transition: 'all 0.15s ease',

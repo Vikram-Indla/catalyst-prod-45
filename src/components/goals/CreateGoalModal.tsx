@@ -162,7 +162,7 @@ export function CreateGoalModal({ isOpen, onClose }: CreateGoalModalProps) {
                   {themes.map(t => (
                     <SelectItem key={t.id} value={t.id}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                        <span style={{ width: 8, height: 8, borderRadius: 2, background: t.color, flexShrink: 0 }} />
+                        <span style={{ width: 8, height: 8, borderRadius: 4, background: t.color, flexShrink: 0 }} />
                         {t.title}
                       </div>
                     </SelectItem>

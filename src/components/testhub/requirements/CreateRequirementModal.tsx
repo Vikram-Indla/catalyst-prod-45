@@ -111,7 +111,7 @@ export function CreateRequirementModal({ isOpen, onClose, onCreated }: CreateReq
   const inputStyle = (hasError?: boolean): React.CSSProperties => ({
     width: '100%', height: 44, padding: '0 14px',
     border: `1.5px solid ${hasError ? '#DC2626' : isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`,
-    borderRadius: 10, fontSize: 14,
+    borderRadius: 12, fontSize: 14,
     backgroundColor: isDark ? '#1A1A1A' : undefined,
     color: isDark ? '#EDEDED' : undefined,
   });
@@ -122,7 +122,7 @@ export function CreateRequirementModal({ isOpen, onClose, onCreated }: CreateReq
         {/* Header */}
         <div style={{ padding: '20px 24px', borderBottom: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <div style={{ width: 44, height: 44, borderRadius: 10, backgroundColor: '#2563EB', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ width: 44, height: 44, borderRadius: 12, backgroundColor: '#2563EB', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <FileCheck size={22} style={{ color: '#FFFFFF' }} />
             </div>
             <h2 style={{ fontSize: 18, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A', margin: 0 }}>Add Requirement</h2>
@@ -199,18 +199,18 @@ export function CreateRequirementModal({ isOpen, onClose, onCreated }: CreateReq
             </label>
             <textarea value={description} onChange={(e) => setDescription(e.target.value)}
               placeholder="Detailed description of the requirement..." rows={4}
-              style={{ width: '100%', padding: 14, border: isDark ? '1.5px solid rgba(255,255,255,0.08)' : '1.5px solid #E2E8F0', borderRadius: 10, fontSize: 14, resize: 'vertical', backgroundColor: isDark ? '#1A1A1A' : undefined, color: isDark ? '#EDEDED' : undefined }} />
+              style={{ width: '100%', padding: 14, border: isDark ? '1.5px solid rgba(255,255,255,0.08)' : '1.5px solid #E2E8F0', borderRadius: 12, fontSize: 14, resize: 'vertical', backgroundColor: isDark ? '#1A1A1A' : undefined, color: isDark ? '#EDEDED' : undefined }} />
           </div>
         </div>
 
         {/* Footer */}
         <div style={{ padding: '16px 24px', borderTop: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0', display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
           <button onClick={onClose} disabled={isSubmitting}
-            style={{ height: 44, padding: '0 20px', backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', border: isDark ? '1.5px solid rgba(255,255,255,0.08)' : '1.5px solid #E2E8F0', borderRadius: 10, fontSize: 14, fontWeight: 500, color: isDark ? '#A1A1A1' : '#64748B', cursor: 'pointer' }}>
+            style={{ height: 44, padding: '0 20px', backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', border: isDark ? '1.5px solid rgba(255,255,255,0.08)' : '1.5px solid #E2E8F0', borderRadius: 12, fontSize: 14, fontWeight: 500, color: isDark ? '#A1A1A1' : '#64748B', cursor: 'pointer' }}>
             Cancel
           </button>
           <button onClick={handleSubmit} disabled={isSubmitting}
-            style={{ height: 44, padding: '0 24px', backgroundColor: '#2563EB', border: 'none', borderRadius: 10, fontSize: 14, fontWeight: 600, color: '#FFFFFF', cursor: isSubmitting ? 'not-allowed' : 'pointer', opacity: isSubmitting ? 0.7 : 1, display: 'flex', alignItems: 'center', gap: 8 }}>
+            style={{ height: 44, padding: '0 24px', backgroundColor: '#2563EB', border: 'none', borderRadius: 12, fontSize: 14, fontWeight: 600, color: '#FFFFFF', cursor: isSubmitting ? 'not-allowed' : 'pointer', opacity: isSubmitting ? 0.7 : 1, display: 'flex', alignItems: 'center', gap: 8 }}>
             <FileCheck size={16} /> {isSubmitting ? 'Creating...' : 'Add Requirement'}
           </button>
         </div>

@@ -154,8 +154,8 @@ export default function WikiLearningPathDetailPage() {
       </div>
 
       {/* Progress bar */}
-      <div style={{ height: 6, borderRadius: 3, background: isDark ? '#292929' : '#E2E8F0', marginBottom: 32 }}>
-        <div style={{ height: '100%', borderRadius: 3, background: pct === 100 ? '#16A34A' : '#2563EB', width: `${pct}%`, transition: 'width 400ms' }} />
+      <div style={{ height: 6, borderRadius: 4, background: isDark ? '#292929' : '#E2E8F0', marginBottom: 32 }}>
+        <div style={{ height: '100%', borderRadius: 4, background: pct === 100 ? '#16A34A' : '#2563EB', width: `${pct}%`, transition: 'width 400ms' }} />
       </div>
 
       {/* Article list */}
@@ -190,7 +190,7 @@ export default function WikiLearningPathDetailPage() {
                   {a.title}
                 </span>
               </div>
-              <span style={{ fontSize: 9, fontWeight: 650, padding: '1px 5px', borderRadius: 3, background: isDark ? '#1A1A1A' : '#F1F5F9', color: isDark ? '#878787' : '#64748B', width: 'fit-content' }}>{a.domain_code}</span>
+              <span style={{ fontSize: 9, fontWeight: 650, padding: '1px 5px', borderRadius: 4, background: isDark ? '#1A1A1A' : '#F1F5F9', color: isDark ? '#878787' : '#64748B', width: 'fit-content' }}>{a.domain_code}</span>
               <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                 <Clock size={11} style={{ color: isDark ? '#878787' : '#94A3B8' }} />
                 <span style={{ fontFamily: F.mono, fontSize: 10, color: isDark ? '#A1A1A1' : '#64748B' }}>{a.read_time_minutes ?? '?'}m</span>

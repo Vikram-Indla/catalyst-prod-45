@@ -503,7 +503,7 @@ function renderMenuItem(
             fontSize: '9px',
             fontWeight: 600,
             padding: '1px 6px',
-            borderRadius: '10px',
+            borderRadius: '12px',
             letterSpacing: '0.3px',
             textTransform: 'uppercase',
             fontFamily: item.textBadge === 'AI' ? "'Sora', sans-serif" : "'Inter', sans-serif",
@@ -539,7 +539,7 @@ function renderMenuItem(
             fontWeight: 600,
             fontFamily: "'JetBrains Mono', monospace",
             padding: '1px 6px',
-            borderRadius: '10px',
+            borderRadius: '12px',
             background: active 
               ? (tk.isDark ? 'rgba(59,130,246,0.15)' : '#DBEAFE')
               : item.badgeVariant === 'danger' 

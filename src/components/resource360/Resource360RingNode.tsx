@@ -23,9 +23,9 @@ export function Resource360RingNode({ item, x, y, onClick }: Props) {
         left: x, top: y,
         transform: 'translate(-50%, -50%)',
         width: 160, minHeight: 72,
-        background: '#FFFFFF',
+        background: 'var(--bg-app, #FFFFFF)',
         border: '1px solid var(--bd-default, #E2E8F0)',
-        borderRadius: 10,
+        borderRadius: 12,
         padding: '8px 10px 8px 13px',
         boxShadow: '0 1px 3px rgba(0,0,0,.04)',
         zIndex: 5,
@@ -57,7 +57,7 @@ export function Resource360RingNode({ item, x, y, onClick }: Props) {
         <span style={{
           fontSize: 9, fontWeight: 700, letterSpacing: '0.04em',
           color: hubColor, background: `${hubColor}12`,
-          padding: '1px 5px', borderRadius: 3,
+          padding: '1px 5px', borderRadius: 4,
         }}>
           {hubShort}
         </span>
@@ -79,7 +79,7 @@ export function Resource360RingNode({ item, x, y, onClick }: Props) {
           display: 'inline-flex', alignItems: 'center', gap: 3,
           fontSize: 9, fontWeight: 600,
           color: sc.text, background: sc.bg,
-          padding: '1px 6px', borderRadius: 3,
+          padding: '1px 6px', borderRadius: 4,
         }}>
           <span style={{ width: 5, height: 5, borderRadius: '50%', background: sc.dot }} />
           {item.status}

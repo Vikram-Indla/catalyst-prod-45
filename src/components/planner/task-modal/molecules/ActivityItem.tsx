@@ -56,7 +56,7 @@ export const ActivityItem: React.FC<ActivityItemProps> = ({
           style={{
             padding: '14px 18px',
             backgroundColor: COLORS.surfacePage,
-            borderRadius: '10px',
+            borderRadius: '12px',
             fontSize: '14px',
             lineHeight: 1.5,
             color: COLORS.textSecondary

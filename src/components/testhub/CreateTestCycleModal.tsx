@@ -284,7 +284,7 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
                           display: 'inline-block', padding: '0 6px', height: 20,
                           lineHeight: '20px', fontSize: 11, fontWeight: 700,
                           textTransform: 'uppercase', letterSpacing: '0.03em',
-                          borderRadius: 3, backgroundColor: opt.bg, color: opt.text,
+                          borderRadius: 4, backgroundColor: opt.bg, color: opt.text,
                         }}>{opt.label}</span>
                       );
                     })()}
@@ -318,7 +318,7 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
                           display: 'inline-block', padding: '0 6px', height: 20,
                           lineHeight: '20px', fontSize: 11, fontWeight: 700,
                           textTransform: 'uppercase', letterSpacing: '0.03em',
-                          borderRadius: 3, backgroundColor: opt.bg, color: opt.text,
+                          borderRadius: 4, backgroundColor: opt.bg, color: opt.text,
                         }}>{opt.label}</span>
                       </button>
                     ))}

@@ -21,7 +21,7 @@ export function IdCell({ requestKey, onClick }: IdCellProps) {
         background: 'none',
         border: 'none',
         padding: '2px 4px',
-        borderRadius: 3,
+        borderRadius: 4,
       }}
       onMouseEnter={e => { e.currentTarget.style.textDecoration = 'underline'; }} /* V12 */
       onMouseLeave={e => { e.currentTarget.style.textDecoration = 'none'; }}

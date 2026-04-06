@@ -312,7 +312,7 @@ html.dark .strategy-room-content {
 .strategy-room-content .sr-kpi-progress-bar {
   height: 6px;
   background: var(--sr-border);
-  border-radius: 3px;
+  border-radius: 4px;
   overflow: hidden;
   margin-top: var(--sr-space-3);
 }
@@ -320,7 +320,7 @@ html.dark .strategy-room-content {
 .strategy-room-content .sr-kpi-progress-fill {
   height: 100%;
   background: var(--sr-accent);
-  border-radius: 3px;
+  border-radius: 4px;
   transition: width var(--sr-transition-slow);
 }
 
@@ -440,13 +440,13 @@ html.dark .strategy-room-content {
   width: 80px;
   height: 6px;
   background: var(--sr-border);
-  border-radius: 3px;
+  border-radius: 4px;
   overflow: hidden;
 }
 
 .strategy-room-content .sr-panel-bar-fill {
   height: 100%;
-  border-radius: 3px;
+  border-radius: 4px;
   transition: width var(--sr-transition-slow);
 }
 
@@ -557,13 +557,13 @@ html.dark .strategy-room-content {
   width: 100px;
   height: 6px;
   background: var(--sr-border);
-  border-radius: 3px;
+  border-radius: 4px;
   overflow: hidden;
 }
 
 .strategy-room-content .sr-coverage-fill {
   height: 100%;
-  border-radius: 3px;
+  border-radius: 4px;
   transition: width var(--sr-transition-slow);
 }
 
@@ -721,13 +721,13 @@ html.dark .strategy-room-content {
   width: 120px;
   height: 6px;
   background: var(--sr-border);
-  border-radius: 3px;
+  border-radius: 4px;
   overflow: hidden;
 }
 
 .strategy-room-content .sr-okr-fill {
   height: 100%;
-  border-radius: 3px;
+  border-radius: 4px;
   transition: width var(--sr-transition-slow);
 }
 

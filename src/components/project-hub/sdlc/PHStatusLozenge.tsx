@@ -19,7 +19,7 @@ export function PHStatusLozenge({ status, compact }: Props) {
         fontSize: compact ? 10 : 11,
         fontWeight: 600,
         padding: compact ? '1px 6px' : '2px 8px',
-        borderRadius: 10,
+        borderRadius: 12,
         background: cfg.bg,
         color: cfg.color,
         height: compact ? 18 : 22,

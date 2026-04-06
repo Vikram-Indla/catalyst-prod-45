@@ -229,7 +229,7 @@ export function AutoSyncCard({ scheduleKeys, lastSyncTable, lastSyncColumn, titl
           {isStale && (
             <span style={{
               fontSize: 10, fontWeight: 700, color: 'var(--wh-warn)',
-              background: 'var(--wh-bg)', padding: '2px 8px', borderRadius: 10,
+              background: 'var(--wh-bg)', padding: '2px 8px', borderRadius: 12,
               textTransform: 'uppercase', letterSpacing: '.4px',
             }}>
               ⚠️ May be stale
@@ -238,7 +238,7 @@ export function AutoSyncCard({ scheduleKeys, lastSyncTable, lastSyncColumn, titl
           {isFresh && (
             <span style={{
               fontSize: 10, fontWeight: 700, color: 'var(--wh-suc)',
-              background: 'var(--wh-bg)', padding: '2px 8px', borderRadius: 10,
+              background: 'var(--wh-bg)', padding: '2px 8px', borderRadius: 12,
               textTransform: 'uppercase', letterSpacing: '.4px',
             }}>
               Up to date

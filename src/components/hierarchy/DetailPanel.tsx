@@ -359,8 +359,8 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
           {item.stats.totalDescendants > 0 && (
             <FieldRow label="Progress">
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <div style={{ flex: 1, height: 6, background: dk ? 'rgba(255,255,255,0.08)' : var(--bg-2, '#F1F5F9'), borderRadius: 3, overflow: 'hidden' }}>
-                  <div style={{ height: '100%', width: `${pct}%`, background: pct === 100 ? 'var(--sem-success)' : 'var(--cp-blue)', borderRadius: 3, transition: 'width 300ms ease' }} />
+                <div style={{ flex: 1, height: 6, background: dk ? 'rgba(255,255,255,0.08)' : var(--bg-2, '#F1F5F9'), borderRadius: 4, overflow: 'hidden' }}>
+                  <div style={{ height: '100%', width: `${pct}%`, background: pct === 100 ? 'var(--sem-success)' : 'var(--cp-blue)', borderRadius: 4, transition: 'width 300ms ease' }} />
                 </div>
                 <span style={{ fontSize: 12, color: 'var(--fg-3)', fontVariantNumeric: 'tabular-nums' }}>
                   {item.stats.completedCount}/{item.stats.totalDescendants}
@@ -383,7 +383,7 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
                     padding: '0 20px', borderBottom: `1px solid ${dk ? 'rgba(255,255,255,0.06)' : var(--bg-2, '#F1F5F9')}`, cursor: 'pointer',
                     fontFamily: "'Inter', sans-serif",
                   }}
-                  onMouseEnter={e => (e.currentTarget.style.background = dk ? 'rgba(255,255,255,0.03)' : '#F8FAFC')}
+                  onMouseEnter={e => (e.currentTarget.style.background = dk ? 'rgba(255,255,255,0.03)' : 'var(--bg-1, #F8FAFC)')}
                   onMouseLeave={e => (e.currentTarget.style.background = '')}
                 >
                   {child.issueType && <JiraIssueTypeIcon type={child.issueType} size={12} />}

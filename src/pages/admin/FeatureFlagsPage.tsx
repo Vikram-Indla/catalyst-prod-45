@@ -164,7 +164,7 @@ const FlagRow = memo(function FlagRow({ flag, isSelected, isPending, onToggle, o
             fontWeight: 600,
             letterSpacing: '0.03em',
             textTransform: 'uppercase',
-            borderRadius: 3,
+            borderRadius: 4,
           }}
           aria-label={`Category: ${flag.category}`}
         >
@@ -186,7 +186,7 @@ const FlagRow = memo(function FlagRow({ flag, isSelected, isPending, onToggle, o
             fontWeight: 700,
             letterSpacing: '0.03em',
             textTransform: 'uppercase',
-            borderRadius: 3,
+            borderRadius: 4,
           }}
           aria-label={`Status: ${flag.status}`}
         >

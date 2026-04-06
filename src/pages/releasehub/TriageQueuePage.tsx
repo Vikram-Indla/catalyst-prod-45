@@ -51,7 +51,7 @@ export default function TriageQueuePage() {
   };
 
   return (
-    <div style={{ background: '#FFFFFF', minHeight: '100%', padding: '24px' }}>
+    <div style={{ background: 'var(--bg-app, #FFFFFF)', minHeight: '100%', padding: '24px' }}>
       <div className="mb-5">
         <h1 className="text-[22px] font-extrabold" style={{ fontFamily: RH.fontDisplay, color: RH.ink1 }}>Triage Queue</h1>
         <p className="text-[13px] text-[#64748B]" style={{ fontFamily: RH.fontBody }}>
@@ -80,7 +80,7 @@ export default function TriageQueuePage() {
               {unlinked.map((c: any) => {
                 const rec = getAIRecommendation(c, releases);
                 return (
-                  <tr key={c.id} className="border-b border-[rgba(15,23,42,0.06)]" style={{ background: '#FFFFFF' }}>
+                  <tr key={c.id} className="border-b border-[rgba(15,23,42,0.06)]" style={{ background: 'var(--bg-app, #FFFFFF)' }}>
                     <td className="px-3 py-2">
                       <span className="text-[13px] font-medium text-[#2563EB]" style={{ fontFamily: RH.fontMono }}>{c.chg_number}</span>
                     </td>
@@ -94,7 +94,7 @@ export default function TriageQueuePage() {
                     </td>
                     <td className="px-3 py-2">
                       {rec ? (
-                        <div className="bg-[#EFF6FF] border border-[#DBEAFE] rounded-md px-2.5 py-2 flex items-start gap-2 max-w-[260px]">
+                        <div className="bg-[var(--tint-blue, #EFF6FF)] border border-[#DBEAFE] rounded-md px-2.5 py-2 flex items-start gap-2 max-w-[260px]">
                           <Sparkles className="w-3.5 h-3.5 text-[#2563EB] flex-shrink-0 mt-0.5" />
                           <div className="text-[12px] leading-relaxed">
                             <span className="font-semibold text-[#2563EB]">Suggested:</span>{' '}

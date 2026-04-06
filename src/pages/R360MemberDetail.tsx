@@ -813,7 +813,7 @@ function LozengeSpan({ bg, color, label }: { bg: string; color: string; label: s
   return (
     <span style={{
       display: 'inline-flex', alignItems: 'center', height: '20px',
-      padding: '0 6px', borderRadius: '3px', fontSize: '11px', fontWeight: 700,
+      padding: '0 6px', borderRadius: '4px', fontSize: '11px', fontWeight: 700,
       textTransform: 'uppercase' as const, letterSpacing: '0.03em', lineHeight: 1,
       background: bg, color,
     }}>{label}</span>
@@ -895,10 +895,10 @@ function PriorityBadge({ priority }: { priority: string }) {
   const { isDark } = useTheme();
   const p = (priority || '').toLowerCase();
   if (p === 'highest' || p === 'critical') {
-    return <span style={{ fontSize: '11px', fontWeight: 700, padding: '2px 6px', borderRadius: '3px', background: '#FEF2F2', color: '#DC2626' }}>{priority}</span>;
+    return <span style={{ fontSize: '11px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', background: '#FEF2F2', color: '#DC2626' }}>{priority}</span>;
   }
   if (p === 'high') {
-    return <span style={{ fontSize: '11px', fontWeight: 700, padding: '2px 6px', borderRadius: '3px', background: '#FEF2F2', color: '#DC2626' }}>{priority}</span>;
+    return <span style={{ fontSize: '11px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', background: '#FEF2F2', color: '#DC2626' }}>{priority}</span>;
   }
   return <span style={{ fontSize: '10.5px', fontWeight: 500, color: isDark ? '#878787' : '#64748B' }}>{priority}</span>;
 }
@@ -1002,7 +1002,7 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected, overview, 
                 <svg width="12" height="12" viewBox="0 0 12 12"><path d="M2.5 6l2.5 2.5 4.5-4.5" stroke="#16A34A" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" /></svg>
               </div>
               <span style={{ fontSize: '14px', fontWeight: 650, color: isDark ? '#EDEDED' : '#0F172A' }}>Completed This Week</span>
-              <span style={{ fontSize: '11px', fontWeight: 700, color: '#FFFFFF', background: '#1B7F37', padding: '2px 8px', borderRadius: '10px' }}>{doneCount}</span>
+              <span style={{ fontSize: '11px', fontWeight: 700, color: '#FFFFFF', background: '#1B7F37', padding: '2px 8px', borderRadius: '12px' }}>{doneCount}</span>
             </div>
             <button onClick={(e) => { e.stopPropagation(); setShowDone(false); }}
               style={{ width: '24px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: '4px', background: isDark ? '#1A1A1A' : '#FFF', cursor: 'pointer', color: isDark ? '#878787' : '#64748B', fontSize: '14px' }}
@@ -1028,7 +1028,7 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected, overview, 
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '3px', flexWrap: 'wrap' }}>
                       <span style={{ fontSize: '11.5px', fontWeight: 600, color: '#2563EB', fontFamily: "'JetBrains Mono', monospace" }}>{item.item_key}</span>
-                      <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '3px', background: isDark ? '#1A1A1A' : '#F1F5F9', color: isDark ? '#878787' : '#64748B' }}>{item.project_key}</span>
+                      <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', background: isDark ? '#1A1A1A' : '#F1F5F9', color: isDark ? '#878787' : '#64748B' }}>{item.project_key}</span>
                       <StatusLozenge status="Done" />
                     </div>
                     <div style={{ fontSize: '12px', fontWeight: 400, color: isDark ? '#EDEDED' : '#0F172A', lineHeight: '1.35', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.title}</div>
@@ -1122,7 +1122,7 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected, overview, 
                     {/* Row 2 */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '5px' }}>
                       <span style={{ fontSize: '12px', fontWeight: 600, color: '#2563EB', fontFamily: "'JetBrains Mono', monospace" }}>{item.item_key}</span>
-                      <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '3px', background: isDark ? '#1A1A1A' : '#F1F5F9', color: isDark ? '#878787' : '#64748B' }}>{item.project_key}</span>
+                      <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', background: isDark ? '#1A1A1A' : '#F1F5F9', color: isDark ? '#878787' : '#64748B' }}>{item.project_key}</span>
                       <span style={{ marginLeft: 'auto', fontSize: '10px', fontWeight: 600, padding: '1px 6px', borderRadius: '4px', background: isDark ? '#0A0A0A' : '#F8FAFC', color: item.age_days > 30 ? '#D97706' : '#64748B', fontFamily: "'JetBrains Mono', monospace" }}>{item.age_days}d</span>
                     </div>
                     {/* Row 3 — full title */}
@@ -1157,7 +1157,7 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected, overview, 
                     <div style={{ flex: 1 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
                         <span style={{ fontSize: '11.5px', fontWeight: 600, color: '#2563EB', fontFamily: "'JetBrains Mono', monospace" }}>{item.item_key}</span>
-                        <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '3px', background: isDark ? '#1A1A1A' : '#F1F5F9', color: isDark ? '#878787' : '#64748B' }}>{item.project_key}</span>
+                        <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', background: isDark ? '#1A1A1A' : '#F1F5F9', color: isDark ? '#878787' : '#64748B' }}>{item.project_key}</span>
                         <StatusLozenge status="Done" />
                       </div>
                       <div style={{ fontSize: '12px', color: isDark ? '#EDEDED' : '#0F172A', marginTop: '2px' }}>{item.title}</div>
@@ -1256,7 +1256,7 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected, overview, 
               {/* Row 2: key + project badge + age — fixed 18px */}
               <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '5px', flexShrink: 0, height: '18px' }}>
                 <span style={{ fontSize: '12px', fontWeight: 600, color: '#2563EB', fontFamily: "'JetBrains Mono', monospace" }}>{item.item_key}</span>
-                <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '3px', background: isDark ? '#1A1A1A' : '#F1F5F9', color: isDark ? '#878787' : '#64748B' }}>{item.project_key}</span>
+                <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', background: isDark ? '#1A1A1A' : '#F1F5F9', color: isDark ? '#878787' : '#64748B' }}>{item.project_key}</span>
                 <span style={{
                   marginLeft: 'auto', fontSize: '10px', fontWeight: 600,
                   padding: '1px 6px', borderRadius: '4px', background: isDark ? '#0A0A0A' : '#F8FAFC',
@@ -1293,7 +1293,7 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected, overview, 
           position: 'absolute', bottom: '8px', left: '50%', transform: 'translateX(-50%)',
           display: 'flex', alignItems: 'center', gap: '8px',
           fontSize: '11px', fontWeight: 600, color: isDark ? '#878787' : '#64748B', background: isDark ? '#0A0A0A' : '#F8FAFC',
-          border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: '10px', padding: '3px 8px',
+          border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: '12px', padding: '3px 8px',
           fontFamily: "'JetBrains Mono', monospace", zIndex: 8,
         }}>
           <button
@@ -1497,7 +1497,7 @@ function ChronologyView({ items, onSelect, weekStart, weekEnd }: { items: R360Wo
                 alignItems: 'center',
                 height: '20px',
                 padding: '0 8px',
-                borderRadius: '3px',
+                borderRadius: '4px',
                 fontSize: '11px',
                 fontWeight: 700,
                 textTransform: 'uppercase',
@@ -1617,7 +1617,7 @@ function ChronologyView({ items, onSelect, weekStart, weekEnd }: { items: R360Wo
             <span style={{ width: '10px', height: '10px', borderRadius: '50%', border: '2px solid #D97706', background: 'transparent', flexShrink: 0 }} />
             <span className="r3-date-label" style={{ fontWeight: 650, fontSize: '13px' }}>Carried Over</span>
             <span className="r3-date-count">{carryoverItems.length} items</span>
-            <span style={{ fontSize: '10px', padding: '2px 6px', borderRadius: '3px', background: isDark ? '#1A1A1A' : '#F1F5F9', color: isDark ? '#878787' : '#64748B' }}>No activity this week</span>
+            <span style={{ fontSize: '10px', padding: '2px 6px', borderRadius: '4px', background: isDark ? '#1A1A1A' : '#F1F5F9', color: isDark ? '#878787' : '#64748B' }}>No activity this week</span>
             <ChevronDown size={16} className={`r3-date-chevron ${collapsed.has('__carryover__') ? 'r3-date-chevron--collapsed' : ''}`} />
           </div>
           {!collapsed.has('__carryover__') && (
@@ -1771,7 +1771,7 @@ function DetailPanel({ item, onClose, onSelectItem }: {
               <div className="r3-meta-label">Days Sitting</div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <span className={`r3-age r3-age--${item.age_class}`} style={{ fontSize: 13, fontWeight: 600 }}>{item.age_days}</span>
-                <div style={{ width: 60, height: 4, borderRadius: 2, background: isDark ? '#1A1A1A' : '#F1F5F9', overflow: 'hidden' }}>
+                <div style={{ width: 60, height: 4, borderRadius: 4, background: isDark ? '#1A1A1A' : '#F1F5F9', overflow: 'hidden' }}>
                   <div style={{ width: `${ageBarPercent(item.age_days)}%`, height: '100%', background: ageBarColor(item.age_days), borderRadius: 2 }} />
                 </div>
               </div>

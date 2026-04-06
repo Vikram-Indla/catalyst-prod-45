@@ -132,7 +132,7 @@ export function TagSelector({ entityType, entityId, onTagsChanged }: TagSelector
 
       {/* Dropdown */}
       {isDropdownOpen && (
-        <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, marginTop: 4, backgroundColor: 'var(--cp-float)', borderRadius: 10, border: '1px solid var(--divider)', boxShadow: '0 10px 40px rgba(0,0,0,0.1)', zIndex: 100, maxHeight: 320, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+        <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, marginTop: 4, backgroundColor: 'var(--cp-float)', borderRadius: 12, border: '1px solid var(--divider)', boxShadow: '0 10px 40px rgba(0,0,0,0.1)', zIndex: 100, maxHeight: 320, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
           <div style={{ padding: 12, borderBottom: '1px solid var(--divider)' }}>
             <div style={{ position: 'relative' }}>
               <Search size={14} style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: 'var(--fg-4)' }} />

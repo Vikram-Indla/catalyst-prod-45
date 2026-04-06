@@ -182,12 +182,12 @@ export const StoryDetailDrawer: React.FC<StoryDetailDrawerProps> = ({ isOpen, on
   return (
     <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <SheetContent
-        style={{ width: 560, maxWidth: '100vw', padding: 0, background: '#FFFFFF' }}
+        style={{ width: 560, maxWidth: '100vw', padding: 0, background: 'var(--bg-app, #FFFFFF)' }}
         className="overflow-y-auto border-l"
       >
         {/* Sticky Header */}
         <div style={{
-          position: 'sticky', top: 0, zIndex: 10, background: '#FFFFFF',
+          position: 'sticky', top: 0, zIndex: 10, background: 'var(--bg-app, #FFFFFF)',
           borderBottom: '0.75px solid rgba(15,23,42,0.06)',
           padding: '16px 20px', display: 'flex', alignItems: 'center', gap: 10,
         }}>
@@ -198,7 +198,7 @@ export const StoryDetailDrawer: React.FC<StoryDetailDrawerProps> = ({ isOpen, on
               <span style={{ fontSize: 13, color: '#64748B' }}>· {story.issue_type || 'Story'}</span>
             </>
           ) : (
-            <div style={{ height: 20, width: 120, borderRadius: 3, background: 'var(--bd-default, #E2E8F0)' }} />
+            <div style={{ height: 20, width: 120, borderRadius: 4, background: 'var(--bd-default, #E2E8F0)' }} />
           )}
           <button onClick={onClose} style={{ marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
             <X size={20} color="#64748B" />
@@ -209,8 +209,8 @@ export const StoryDetailDrawer: React.FC<StoryDetailDrawerProps> = ({ isOpen, on
           <div style={{ padding: '24px 20px' }}>
             {[1,2,3,4,5,6].map(i => (
               <div key={i} style={{ display: 'flex', gap: 12, marginBottom: 8 }}>
-                <div style={{ width: 100, height: 14, borderRadius: 3, background: 'var(--bd-default, #E2E8F0)' }} />
-                <div style={{ width: 140, height: 14, borderRadius: 3, background: 'var(--bd-default, #E2E8F0)' }} />
+                <div style={{ width: 100, height: 14, borderRadius: 4, background: 'var(--bd-default, #E2E8F0)' }} />
+                <div style={{ width: 140, height: 14, borderRadius: 4, background: 'var(--bd-default, #E2E8F0)' }} />
               </div>
             ))}
           </div>
@@ -231,7 +231,7 @@ export const StoryDetailDrawer: React.FC<StoryDetailDrawerProps> = ({ isOpen, on
                       {statusColors && (
                         <span style={{
                           display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px',
-                          borderRadius: 3, fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
+                          borderRadius: 4, fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
                           letterSpacing: '0.03em', background: statusColors.bg, color: statusColors.text,
                         }}>
                           {statusColors.label}
@@ -239,7 +239,7 @@ export const StoryDetailDrawer: React.FC<StoryDetailDrawerProps> = ({ isOpen, on
                       )}
                     </button>
                   </PopoverTrigger>
-                  <PopoverContent align="start" style={{ width: 220, padding: '4px 0', background: '#FFFFFF', border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6, zIndex: 9999, maxHeight: 320, overflowY: 'auto' }}>
+                  <PopoverContent align="start" style={{ width: 220, padding: '4px 0', background: 'var(--bg-app, #FFFFFF)', border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6, zIndex: 9999, maxHeight: 320, overflowY: 'auto' }}>
                     {STATUS_GROUPS.map(group => (
                       <div key={group.label}>
                         <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--fg-3, #94A3B8)', padding: '6px 12px 2px' }}>{group.label}</div>
@@ -251,7 +251,7 @@ export const StoryDetailDrawer: React.FC<StoryDetailDrawerProps> = ({ isOpen, on
                               background: story.status === s ? 'rgba(37,99,235,0.08)' : 'transparent',
                               color: '#0F172A', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
                             }}>
-                              <span style={{ display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px', borderRadius: 3, fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em', background: sc.bg, color: sc.text }}>{sc.label}</span>
+                              <span style={{ display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px', borderRadius: 4, fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em', background: sc.bg, color: sc.text }}>{sc.label}</span>
                             </button>
                           );
                         })}
@@ -327,7 +327,7 @@ export const StoryDetailDrawer: React.FC<StoryDetailDrawerProps> = ({ isOpen, on
                     {/* Status */}
                     <DetailRow label="Status">
                       {statusColors && (
-                        <span style={{ display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px', borderRadius: 3, fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em', background: statusColors.bg, color: statusColors.text }}>{statusColors.label}</span>
+                        <span style={{ display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px', borderRadius: 4, fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em', background: statusColors.bg, color: statusColors.text }}>{statusColors.label}</span>
                       )}
                     </DetailRow>
 
@@ -401,7 +401,7 @@ export const StoryDetailDrawer: React.FC<StoryDetailDrawerProps> = ({ isOpen, on
                           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                             <span style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600, color: '#6B7280' }}>Sync Status</span>
                             <span style={{
-                              display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px', borderRadius: 3,
+                              display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px', borderRadius: 4,
                               fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em',
                               backgroundColor: jiraSyncData.jira_sync_status === 'synced' || jiraSyncData.jira_sync_status === 'pushed' ? '#E3FCEF' : jiraSyncData.jira_sync_status === 'queued' || jiraSyncData.jira_sync_status === 'approval_pending' ? '#DEEBFF' : '#DFE1E6',
                               color: jiraSyncData.jira_sync_status === 'synced' || jiraSyncData.jira_sync_status === 'pushed' ? '#006644' : jiraSyncData.jira_sync_status === 'queued' || jiraSyncData.jira_sync_status === 'approval_pending' ? '#0747A6' : '#253858',
@@ -503,11 +503,11 @@ function HistoryPane({ changelog, isLoading }: { changelog: any[]; isLoading: bo
                     </span>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
-                    <span style={{ display: 'inline-flex', alignItems: 'center', height: 18, padding: '0 5px', borderRadius: 3, fontSize: 10, fontWeight: 700, textTransform: 'uppercase', background: fromColors.bg, color: fromColors.text }}>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', height: 18, padding: '0 5px', borderRadius: 4, fontSize: 10, fontWeight: 700, textTransform: 'uppercase', background: fromColors.bg, color: fromColors.text }}>
                       {fromColors.label}
                     </span>
                     <span style={{ fontSize: 12, color: 'var(--fg-3, #94A3B8)' }}>→</span>
-                    <span style={{ display: 'inline-flex', alignItems: 'center', height: 18, padding: '0 5px', borderRadius: 3, fontSize: 10, fontWeight: 700, textTransform: 'uppercase', background: toColors.bg, color: toColors.text }}>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', height: 18, padding: '0 5px', borderRadius: 4, fontSize: 10, fontWeight: 700, textTransform: 'uppercase', background: toColors.bg, color: toColors.text }}>
                       {toColors.label}
                     </span>
                   </div>
@@ -562,8 +562,8 @@ function SkeletonList({ count }: { count: number }) {
         <div key={i} style={{ display: 'flex', gap: 10, padding: '8px 0' }}>
           <div style={{ width: 24, height: 24, borderRadius: '50%', background: 'var(--bd-default, #E2E8F0)', flexShrink: 0 }} />
           <div style={{ flex: 1 }}>
-            <div style={{ height: 12, width: '60%', borderRadius: 3, background: 'var(--bd-default, #E2E8F0)', marginBottom: 6 }} />
-            <div style={{ height: 10, width: '40%', borderRadius: 3, background: 'var(--bd-default, #E2E8F0)' }} />
+            <div style={{ height: 12, width: '60%', borderRadius: 4, background: 'var(--bd-default, #E2E8F0)', marginBottom: 6 }} />
+            <div style={{ height: 10, width: '40%', borderRadius: 4, background: 'var(--bd-default, #E2E8F0)' }} />
           </div>
         </div>
       ))}

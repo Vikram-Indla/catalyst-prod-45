@@ -11,9 +11,9 @@ const SC: Record<string, { dot: string; bg: string; tx: string; label: string }>
   'Re-Open':              { dot: '#D97706', bg: '#FFFBEB', tx: '#78350F', label: 'Re-Open' },
   'In Requirements':      { dot: '#D97706', bg: '#FFFBEB', tx: '#78350F', label: 'Requirements' },
   'Awaiting Info':        { dot: '#D97706', bg: '#FFFBEB', tx: '#78350F', label: 'Awaiting' },
-  'In Progress':          { dot: '#2563EB', bg: '#EFF6FF', tx: '#1E3A5F', label: 'In Progress' },
-  'In Development':       { dot: '#2563EB', bg: '#EFF6FF', tx: '#1E3A5F', label: 'In Progress' },
-  'Under Implementation': { dot: '#2563EB', bg: '#EFF6FF', tx: '#1E3A5F', label: 'In Progress' },
+  'In Progress':          { dot: '#2563EB', bg: 'var(--tint-blue, #EFF6FF)', tx: '#1E3A5F', label: 'In Progress' },
+  'In Development':       { dot: '#2563EB', bg: 'var(--tint-blue, #EFF6FF)', tx: '#1E3A5F', label: 'In Progress' },
+  'Under Implementation': { dot: '#2563EB', bg: 'var(--tint-blue, #EFF6FF)', tx: '#1E3A5F', label: 'In Progress' },
   'In Review':            { dot: '#0D9488', bg: '#F0FDFA', tx: '#134E4A', label: 'In Review' },
   'In QA':                { dot: '#0D9488', bg: '#F0FDFA', tx: '#134E4A', label: 'In QA' },
   'Ready for QA':         { dot: '#0D9488', bg: '#F0FDFA', tx: '#134E4A', label: 'Ready QA' },
@@ -21,13 +21,13 @@ const SC: Record<string, { dot: string; bg: string; tx: string; label: string }>
   'Code Review':          { dot: '#0D9488', bg: '#F0FDFA', tx: '#134E4A', label: 'In Review' },
   'In UAT':               { dot: '#7C3AED', bg: '#F5F3FF', tx: '#4C1D95', label: 'In UAT' },
   'UAT Ready':            { dot: '#7C3AED', bg: '#F5F3FF', tx: '#4C1D95', label: 'UAT Ready' },
-  'Done':                 { dot: '#16A34A', bg: '#F0FDF4', tx: '#14532D', label: 'Done' },
-  'Closed':               { dot: '#16A34A', bg: '#F0FDF4', tx: '#14532D', label: 'Done' },
-  'Resolved':             { dot: '#16A34A', bg: '#F0FDF4', tx: '#14532D', label: 'Done' },
-  'Ready for Production': { dot: '#16A34A', bg: '#F0FDF4', tx: '#14532D', label: 'Done' },
-  'Beta Ready':           { dot: '#16A34A', bg: '#F0FDF4', tx: '#14532D', label: 'Done' },
-  'Blocked':              { dot: '#EF4444', bg: '#FEF2F2', tx: '#7F1D1D', label: 'Blocked' },
-  'Rejected':             { dot: '#EF4444', bg: '#FEF2F2', tx: '#7F1D1D', label: 'Rejected' },
+  'Done':                 { dot: '#16A34A', bg: 'var(--tint-green, #F0FDF4)', tx: '#14532D', label: 'Done' },
+  'Closed':               { dot: '#16A34A', bg: 'var(--tint-green, #F0FDF4)', tx: '#14532D', label: 'Done' },
+  'Resolved':             { dot: '#16A34A', bg: 'var(--tint-green, #F0FDF4)', tx: '#14532D', label: 'Done' },
+  'Ready for Production': { dot: '#16A34A', bg: 'var(--tint-green, #F0FDF4)', tx: '#14532D', label: 'Done' },
+  'Beta Ready':           { dot: '#16A34A', bg: 'var(--tint-green, #F0FDF4)', tx: '#14532D', label: 'Done' },
+  'Blocked':              { dot: '#EF4444', bg: 'var(--tint-red, #FEF2F2)', tx: '#7F1D1D', label: 'Blocked' },
+  'Rejected':             { dot: '#EF4444', bg: 'var(--tint-red, #FEF2F2)', tx: '#7F1D1D', label: 'Rejected' },
 };
 const SCD = { dot: '#64748B', bg: var(--bg-2, '#F1F5F9'), tx: '#334155', label: 'Unknown' };
 
@@ -121,7 +121,7 @@ export const R360BoardView: React.FC<Props> = ({ items, onItemClick, memberName 
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
                     <span style={{ fontSize: '12.5px', fontWeight: 600, color: 'var(--cp-blue)', fontFamily: "'JetBrains Mono', monospace" }}>{item.item_key}</span>
                     {item.project_key && (
-                      <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '3px', color: '#FFF', background: projColor }}>{item.project_key}</span>
+                      <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', color: '#FFF', background: projColor }}>{item.project_key}</span>
                     )}
                     <span style={{ marginLeft: 'auto', fontSize: '11px', fontWeight: 600, color: ageCol(item.age_days ?? 0) }}>{item.age_days ?? 0}d</span>
                   </div>

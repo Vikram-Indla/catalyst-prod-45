@@ -163,7 +163,7 @@ export function CloneTestCycleModal({
             <div style={{
               width: 40,
               height: 40,
-              borderRadius: 10,
+              borderRadius: 12,
               backgroundColor: 'color-mix(in srgb, var(--cp-blue) 8%, transparent)',
               display: 'flex',
               alignItems: 'center',

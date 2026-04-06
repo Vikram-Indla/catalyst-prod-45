@@ -4,7 +4,7 @@ import { X } from 'lucide-react';
 const AVATAR_COLORS = ['#7C3AED', '#2563EB', '#0D9488', '#D97706', '#DC2626', '#EA580C', '#0284C7'];
 
 const ROLE_STYLES: Record<string, { bg: string; text: string }> = {
-  admin: { bg: '#EFF6FF', text: '#2563EB' },
+  admin: { bg: 'var(--tint-blue, #EFF6FF)', text: '#2563EB' },
   member: { bg: var(--bg-2, '#F1F5F9'), text: '#334155' },
   viewer: { bg: '#FFFBEB', text: '#D97706' },
 };

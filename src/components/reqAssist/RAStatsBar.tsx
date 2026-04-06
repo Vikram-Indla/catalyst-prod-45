@@ -119,7 +119,7 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, loading }: S
         {/* Card 2: BRDs Processed */}
         <div style={cardStyle}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <div style={{ ...iconContainerStyle, background: '#F0FDF4' }}>
+            <div style={{ ...iconContainerStyle, background: 'var(--tint-green, #F0FDF4)' }}>
               <CheckCircle size={16} color="var(--sem-success)" />
             </div>
           </div>
@@ -130,8 +130,8 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, loading }: S
             </div>
           )}
           <span style={labelStyle}>BRDS PROCESSED</span>
-          <div style={{ width: '100%', height: 4, background: '#E5E7EB', borderRadius: 2, marginTop: 8 }}>
-            <div style={{ width: `${brdPct}%`, height: 4, borderRadius: 2, background: 'linear-gradient(90deg, #16A34A, #22C55E)', transition: 'width 400ms ease' }} />
+          <div style={{ width: '100%', height: 4, background: '#E5E7EB', borderRadius: 4, marginTop: 8 }}>
+            <div style={{ width: `${brdPct}%`, height: 4, borderRadius: 4, background: 'linear-gradient(90deg, #16A34A, #22C55E)', transition: 'width 400ms ease' }} />
           </div>
           <span style={{ fontSize: 11, color: 'var(--sem-success)', fontFamily: "'Inter', sans-serif", marginTop: 4 }}>Pipeline stage: Complete</span>
         </div>
@@ -183,7 +183,7 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, loading }: S
             <span style={{
               display: 'inline-flex', alignItems: 'center', gap: 6,
               background: var(--bg-2, '#F1F5F9'), border: '0.75px solid rgba(15,23,42,0.12)',
-              borderRadius: 10, padding: '2px 10px',
+              borderRadius: 12, padding: '2px 10px',
               fontSize: 11, fontWeight: 500, color: 'var(--fg-3)',
               fontFamily: "'Inter', sans-serif",
             }}>
@@ -205,9 +205,9 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, loading }: S
           <span style={{ fontSize: 12, color: 'var(--fg-3)', fontFamily: "'Inter', sans-serif", marginTop: 4 }}>
             Searchable via Knowledge Assistant
           </span>
-          <div style={{ width: '100%', height: 4, background: 'var(--cp-primary-5)', borderRadius: 2, marginTop: 8 }}>
+          <div style={{ width: '100%', height: 4, background: 'var(--cp-primary-5)', borderRadius: 4, marginTop: 8 }}>
             <div style={{
-              width: `${kbPct}%`, height: 4, borderRadius: 2,
+              width: `${kbPct}%`, height: 4, borderRadius: 4,
               background: 'var(--cp-blue)',
               transition: 'width 400ms ease',
             }} />

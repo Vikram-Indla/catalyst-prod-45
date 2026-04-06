@@ -262,7 +262,7 @@ const JiraUserSync: React.FC = () => {
                 className="jira-btn-secondary"
                 style={{
                   display: 'inline-flex', alignItems: 'center', gap: '4px',
-                  padding: '5px 11px', borderRadius: '5px', fontSize: '12px', fontWeight: 500,
+                  padding: '5px 11px', borderRadius: '6px', fontSize: '12px', fontWeight: 500,
                   cursor: 'pointer', lineHeight: 1,
                   background: isDark ? '#1A1A1A' : '#FFFFFF',
                   color: isDark ? '#A1A1A1' : '#334155',
@@ -276,7 +276,7 @@ const JiraUserSync: React.FC = () => {
                 style={{
                   display: 'inline-flex', alignItems: 'center', gap: '5px',
                   background: '#2563EB', color: '#FFFFFF', border: 'none',
-                  padding: '6px 14px', borderRadius: '5px', fontSize: '12px', fontWeight: 600,
+                  padding: '6px 14px', borderRadius: '6px', fontSize: '12px', fontWeight: 600,
                   cursor: isSyncing ? 'not-allowed' : 'pointer', opacity: isSyncing ? 0.7 : 1, lineHeight: 1,
                 }}>
                 <RefreshCw size={11} className={isSyncing ? 'animate-spin' : ''} />
@@ -446,7 +446,7 @@ const JiraUserSync: React.FC = () => {
                         key={lvl}
                         onClick={() => setAssignPermLevel(lvl)}
                         style={{
-                          padding: '2px 8px', borderRadius: '3px', fontSize: '10px', fontWeight: 700,
+                          padding: '2px 8px', borderRadius: '4px', fontSize: '10px', fontWeight: 700,
                           textTransform: 'uppercase', cursor: 'pointer',
                           border: `1px solid ${isDark ? 'rgba(255,255,255,0.10)' : 'rgba(15,23,42,0.10)'}`,
                           background: assignPermLevel === lvl
@@ -491,7 +491,7 @@ const JiraUserSync: React.FC = () => {
                       >
                         <span className="jira-chip"
                           style={{
-                            fontSize: '10px', fontWeight: 700, fontFamily: "'JetBrains Mono', monospace", padding: '1px 5px', borderRadius: '2px',
+                            fontSize: '10px', fontWeight: 700, fontFamily: "'JetBrains Mono', monospace", padding: '1px 5px', borderRadius: '4px',
                             background: isDark ? 'rgba(255,255,255,0.10)' : '#F1F5F9',
                             color: isDark ? '#A1A1A1' : '#374151',
                           }}>
@@ -576,22 +576,22 @@ const JiraUserSync: React.FC = () => {
                 Array.from({ length: 10 }).map((_, i) => (
                   <tr key={`skel-${i}`} className="jira-row"
                     style={{ height: '40px', maxHeight: '40px', borderBottom: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.06)'}` }}>
-                    <td style={{ padding: '0 12px' }}><div className="jira-skeleton animate-pulse" style={{ width: 14, height: 14, borderRadius: 2, background: isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0' }} /></td>
+                    <td style={{ padding: '0 12px' }}><div className="jira-skeleton animate-pulse" style={{ width: 14, height: 14, borderRadius: 4, background: isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0' }} /></td>
                     <td style={{ padding: '0 12px' }}>
                       <div className="flex items-center gap-2">
                         <div className="jira-skeleton animate-pulse" style={{ width: 28, height: 28, borderRadius: '50%', background: isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0' }} />
                         <div>
-                          <div className="jira-skeleton animate-pulse" style={{ width: 120, height: 10, borderRadius: 2, marginBottom: 4, background: isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0' }} />
-                          <div className="jira-skeleton animate-pulse" style={{ width: 160, height: 8, borderRadius: 2, background: isDark ? 'rgba(255,255,255,0.08)' : '#F1F5F9' }} />
+                          <div className="jira-skeleton animate-pulse" style={{ width: 120, height: 10, borderRadius: 4, marginBottom: 4, background: isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0' }} />
+                          <div className="jira-skeleton animate-pulse" style={{ width: 160, height: 8, borderRadius: 4, background: isDark ? 'rgba(255,255,255,0.08)' : '#F1F5F9' }} />
                         </div>
                       </div>
                     </td>
-                    <td style={{ padding: '0 12px' }}><div className="jira-skeleton animate-pulse" style={{ width: 70, height: 16, borderRadius: 3, background: isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0' }} /></td>
-                    <td style={{ padding: '0 12px' }}><div className="jira-skeleton animate-pulse" style={{ width: 100, height: 16, borderRadius: 3, background: isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0' }} /></td>
-                    <td style={{ padding: '0 12px' }}><div className="jira-skeleton animate-pulse" style={{ width: 80, height: 10, borderRadius: 2, background: isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0' }} /></td>
-                    <td style={{ padding: '0 12px' }}><div className="jira-skeleton animate-pulse" style={{ width: 60, height: 10, borderRadius: 2, background: isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0' }} /></td>
-                    <td style={{ padding: '0 12px' }}><div className="jira-skeleton animate-pulse" style={{ width: 60, height: 10, borderRadius: 2, background: isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0' }} /></td>
-                    <td style={{ padding: '0 12px' }}><div className="jira-skeleton animate-pulse" style={{ width: 50, height: 18, borderRadius: 3, background: isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0' }} /></td>
+                    <td style={{ padding: '0 12px' }}><div className="jira-skeleton animate-pulse" style={{ width: 70, height: 16, borderRadius: 4, background: isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0' }} /></td>
+                    <td style={{ padding: '0 12px' }}><div className="jira-skeleton animate-pulse" style={{ width: 100, height: 16, borderRadius: 4, background: isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0' }} /></td>
+                    <td style={{ padding: '0 12px' }}><div className="jira-skeleton animate-pulse" style={{ width: 80, height: 10, borderRadius: 4, background: isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0' }} /></td>
+                    <td style={{ padding: '0 12px' }}><div className="jira-skeleton animate-pulse" style={{ width: 60, height: 10, borderRadius: 4, background: isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0' }} /></td>
+                    <td style={{ padding: '0 12px' }}><div className="jira-skeleton animate-pulse" style={{ width: 60, height: 10, borderRadius: 4, background: isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0' }} /></td>
+                    <td style={{ padding: '0 12px' }}><div className="jira-skeleton animate-pulse" style={{ width: 50, height: 18, borderRadius: 4, background: isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0' }} /></td>
                     <td />
                   </tr>
                 ))
@@ -619,7 +619,7 @@ const JiraUserSync: React.FC = () => {
                         <Users2 size={32} style={{ color: isDark ? '#878787' : '#94A3B8', margin: '0 auto 10px', display: 'block' }} />
                         <div className="jira-text-primary" style={{ fontSize: '14px', fontWeight: 500, color: isDark ? '#EDEDED' : '#334155' }}>No synced users yet</div>
                         <button onClick={handleSync} disabled={isSyncing}
-                          style={{ marginTop: 10, display: 'inline-flex', alignItems: 'center', gap: '5px', background: '#2563EB', color: '#FFFFFF', border: 'none', padding: '6px 14px', borderRadius: '5px', fontSize: '12px', fontWeight: 600, cursor: isSyncing ? 'not-allowed' : 'pointer' }}>
+                          style={{ marginTop: 10, display: 'inline-flex', alignItems: 'center', gap: '5px', background: '#2563EB', color: '#FFFFFF', border: 'none', padding: '6px 14px', borderRadius: '6px', fontSize: '12px', fontWeight: 600, cursor: isSyncing ? 'not-allowed' : 'pointer' }}>
                           <RefreshCw size={11} className={isSyncing ? 'animate-spin' : ''} />
                           Sync Now to pull users from Jira
                         </button>
@@ -682,7 +682,7 @@ const JiraUserSync: React.FC = () => {
                       {user.auth_mode === 'jira_proxy' ? (
                         <span className="jira-badge-jira" style={{
                           display: 'inline-flex', alignItems: 'center', gap: '3px',
-                          padding: '1px 6px', borderRadius: '3px',
+                          padding: '1px 6px', borderRadius: '4px',
                           fontSize: '10px', fontWeight: 700, letterSpacing: '0.03em', textTransform: 'uppercase',
                           background: isDark ? 'rgba(37,99,235,0.18)' : '#EFF6FF',
                           color: isDark ? '#93C5FD' : '#1D4ED8',
@@ -691,7 +691,7 @@ const JiraUserSync: React.FC = () => {
                       ) : (
                         <span className="jira-badge-catalyst" style={{
                           display: 'inline-flex', alignItems: 'center', gap: '3px',
-                          padding: '1px 6px', borderRadius: '3px',
+                          padding: '1px 6px', borderRadius: '4px',
                           fontSize: '10px', fontWeight: 700, letterSpacing: '0.03em', textTransform: 'uppercase',
                           background: isDark ? 'rgba(91,33,182,0.18)' : '#EDE9FE',
                           color: isDark ? '#C4B5FD' : '#5B21B6',
@@ -707,7 +707,7 @@ const JiraUserSync: React.FC = () => {
                           return (
                             <span key={p.id} className="jira-chip"
                               style={{
-                                display: 'inline-flex', alignItems: 'center', gap: '3px', padding: '2px 6px', borderRadius: '3px',
+                                display: 'inline-flex', alignItems: 'center', gap: '3px', padding: '2px 6px', borderRadius: '4px',
                                 fontSize: '11px', fontWeight: 600, whiteSpace: 'nowrap',
                                 background: isDark ? 'rgba(255,255,255,0.10)' : '#F1F5F9',
                                 color: isDark ? '#A1A1A1' : '#374151',
@@ -744,13 +744,13 @@ const JiraUserSync: React.FC = () => {
                     <td style={{ padding: '0 12px' }}>
                       {hasConflicts ? (
                         <span className="jira-lozenge-conflict"
-                          style={{ display: 'inline-block', padding: '0 7px', borderRadius: '3px', fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', height: '20px', lineHeight: '20px', letterSpacing: '0.03em', background: isDark ? '#451A03' : '#FEF3C7', color: isDark ? '#FCD34D' : '#92400E' }}>CONFLICT</span>
+                          style={{ display: 'inline-block', padding: '0 7px', borderRadius: '4px', fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', height: '20px', lineHeight: '20px', letterSpacing: '0.03em', background: isDark ? '#451A03' : '#FEF3C7', color: isDark ? '#FCD34D' : '#92400E' }}>CONFLICT</span>
                       ) : isInactive ? (
                         <span className="jira-lozenge-inactive"
-                          style={{ display: 'inline-block', padding: '0 7px', borderRadius: '3px', fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', height: '20px', lineHeight: '20px', letterSpacing: '0.03em', background: isDark ? '#450A0A' : '#FEE2E2', color: isDark ? '#FCA5A5' : '#991B1B' }}>INACTIVE</span>
+                          style={{ display: 'inline-block', padding: '0 7px', borderRadius: '4px', fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', height: '20px', lineHeight: '20px', letterSpacing: '0.03em', background: isDark ? '#450A0A' : '#FEE2E2', color: isDark ? '#FCA5A5' : '#991B1B' }}>INACTIVE</span>
                       ) : (
                         <span className="jira-lozenge-active"
-                          style={{ display: 'inline-block', padding: '0 7px', borderRadius: '3px', fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', height: '20px', lineHeight: '20px', letterSpacing: '0.03em', background: isDark ? '#064E3B' : '#E3FCEF', color: isDark ? '#6EE7B7' : '#006644' }}>ACTIVE</span>
+                          style={{ display: 'inline-block', padding: '0 7px', borderRadius: '4px', fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', height: '20px', lineHeight: '20px', letterSpacing: '0.03em', background: isDark ? '#064E3B' : '#E3FCEF', color: isDark ? '#6EE7B7' : '#006644' }}>ACTIVE</span>
                       )}
                     </td>
 

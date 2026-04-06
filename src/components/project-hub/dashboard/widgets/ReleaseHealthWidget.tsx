@@ -38,8 +38,8 @@ export default function ReleaseHealthWidget({ projectId, projectKey, collapsed, 
           </div>
           <div style={{ fontSize: 12, color: 'var(--cp-text-tertiary)' }}>{rel.done} of {rel.total} items done</div>
           {/* Progress bar */}
-          <div className="bg-[#F1F5F9] dark:bg-[#1A1A1A]" style={{ height: 6, borderRadius: 3, overflow: 'hidden' }}>
-            <div className="bg-[#2563EB]" style={{ height: '100%', width: `${rel.completionPct}%`, borderRadius: 3, transition: 'width 300ms ease' }} />
+          <div className="bg-[#F1F5F9] dark:bg-[#1A1A1A]" style={{ height: 6, borderRadius: 4, overflow: 'hidden' }}>
+            <div className="bg-[#2563EB]" style={{ height: '100%', width: `${rel.completionPct}%`, borderRadius: 4, transition: 'width 300ms ease' }} />
           </div>
           <div className="flex items-center justify-between" style={{ fontSize: 11 }}>
             <span style={{ color: 'var(--cp-text-tertiary)' }}>{rel.completionPct}% complete</span>

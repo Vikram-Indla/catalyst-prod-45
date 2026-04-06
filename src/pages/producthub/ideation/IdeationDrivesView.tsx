@@ -80,7 +80,7 @@ export default function IdeationDrivesView() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
             <h2 style={{ fontSize: '22px', fontWeight: 800, color: isDark ? '#EDEDED' : '#0F172A', letterSpacing: '-0.5px', margin: 0, fontFamily: "'Sora', 'Inter', sans-serif" }}>Ideas Themes</h2>
             <span style={{
-              background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '10px',
+              background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '12px',
               padding: '1px 7px', fontSize: '11px', fontWeight: 600,
               fontFamily: MONO, color: '#94A3B8',
             }}>{drives.length}</span>
@@ -139,7 +139,7 @@ export default function IdeationDrivesView() {
                 display: 'inline-flex', alignItems: 'center',
                 background: isActive ? '#0C66E4' : '#DFE1E6',
                 color: isActive ? '#FFFFFF' : '#42526E',
-                height: 20, padding: '0 6px', borderRadius: 3, fontSize: '11px', fontWeight: 700,
+                height: 20, padding: '0 6px', borderRadius: 4, fontSize: '11px', fontWeight: 700,
                 textTransform: 'uppercase', letterSpacing: '0.03em',
               }}>
                 {isActive ? 'Active' : 'Draft'}
@@ -159,14 +159,14 @@ export default function IdeationDrivesView() {
             {/* V12 Progress bar — always show structure */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
               <div style={{
-                flex: 1, height: 6, borderRadius: 3,
+                flex: 1, height: 6, borderRadius: 4,
                 background: '#F1F5F9', overflow: 'hidden',
                 border: '1px solid #E2E8F0',
               }}>
                 <div style={{
                   width: `${Math.min(pct, 100)}%`, height: '100%',
                   background: pct >= 100 ? '#16A34A' : '#2563EB',
-                  borderRadius: 3,
+                  borderRadius: 4,
                   transition: 'width 0.3s',
                   minWidth: pct > 0 ? 4 : 0,
                 }} />

@@ -21,7 +21,7 @@ interface UnassignedCycle {
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; icon: any }> = {
   draft: { label: 'Draft', color: 'var(--fg-3)', bg: 'var(--cp-bd-zone)', icon: Clock },
-  active: { label: 'Active', color: 'var(--sem-success)', bg: '#ECFDF5', icon: Play },
+  active: { label: 'Active', color: 'var(--sem-success)', bg: 'var(--tint-green-soft, #ECFDF5)', icon: Play },
   completed: { label: 'Completed', color: 'var(--cp-blue)', bg: 'color-mix(in srgb, var(--cp-blue) 8%, transparent)', icon: CheckCircle2 },
   archived: { label: 'Archived', color: 'var(--fg-4)', bg: 'var(--bg-1)', icon: Archive },
 };
@@ -125,7 +125,7 @@ export function AddCycleToPlanModal({ isOpen, onClose, planId, onAdded }: AddCyc
         <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--divider)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <div style={{
-              width: 44, height: 44, borderRadius: 10,
+              width: 44, height: 44, borderRadius: 12,
               background: 'linear-gradient(135deg, #2563EB 0%, #1E3A8A 100%)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}><Plus size={22} style={{ color: '#FFFFFF' }} /></div>
@@ -147,7 +147,7 @@ export function AddCycleToPlanModal({ isOpen, onClose, planId, onAdded }: AddCyc
             <Search size={18} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: 'var(--fg-4)' }} />
             <input type="text" placeholder="Search cycles..." value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              style={{ width: '100%', height: 44, padding: '0 14px 0 44px', border: '1.5px solid var(--divider)', borderRadius: 10, fontSize: 14 }} />
+              style={{ width: '100%', height: 44, padding: '0 14px 0 44px', border: '1.5px solid var(--divider)', borderRadius: 12, fontSize: 14 }} />
           </div>
           {filteredCycles.length > 0 && (
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 12 }}>
@@ -183,7 +183,7 @@ export function AddCycleToPlanModal({ isOpen, onClose, planId, onAdded }: AddCyc
                 return (
                   <div key={cycle.id} onClick={() => toggleSelect(cycle.id)} style={{
                     display: 'flex', alignItems: 'center', gap: 14, padding: 14,
-                    backgroundColor: isSelected ? '#EFF6FF' : 'var(--bg-1)', borderRadius: 10,
+                    backgroundColor: isSelected ? 'var(--tint-blue, #EFF6FF)' : 'var(--bg-1)', borderRadius: 12,
                     border: `2px solid ${isSelected ? '#2563EB' : 'transparent'}`, cursor: 'pointer', transition: 'all 0.15s',
                   }}>
                     <div style={{
@@ -223,12 +223,12 @@ export function AddCycleToPlanModal({ isOpen, onClose, planId, onAdded }: AddCyc
         <div style={{ padding: '16px 24px', borderTop: '1px solid var(--divider)', display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
           <button onClick={onClose} disabled={isSubmitting} style={{
             height: 44, padding: '0 20px', backgroundColor: 'var(--cp-float)', border: '1.5px solid var(--divider)',
-            borderRadius: 10, fontSize: 14, fontWeight: 500, color: 'var(--fg-2)', cursor: 'pointer',
+            borderRadius: 12, fontSize: 14, fontWeight: 500, color: 'var(--fg-2)', cursor: 'pointer',
           }}>Cancel</button>
           <button onClick={handleSubmit} disabled={isSubmitting || selectedIds.size === 0} style={{
             height: 44, padding: '0 24px',
             background: selectedIds.size === 0 ? 'var(--divider)' : 'linear-gradient(135deg, #2563EB 0%, #1E3A8A 100%)',
-            border: 'none', borderRadius: 10, fontSize: 14, fontWeight: 600, color: '#FFFFFF',
+            border: 'none', borderRadius: 12, fontSize: 14, fontWeight: 600, color: '#FFFFFF',
             cursor: selectedIds.size === 0 || isSubmitting ? 'not-allowed' : 'pointer',
             opacity: isSubmitting ? 0.7 : 1, display: 'flex', alignItems: 'center', gap: 8,
           }}>

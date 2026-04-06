@@ -104,14 +104,14 @@ export function ExecutionAttachments({ cycleTestCaseId, attachments, onAttachmen
       </div>
 
       {attachments.length === 0 ? (
-        <div style={{ padding: 24, backgroundColor: 'var(--bg-1)', borderRadius: 10, textAlign: 'center', color: 'var(--fg-4)' }}>
+        <div style={{ padding: 24, backgroundColor: 'var(--bg-1)', borderRadius: 12, textAlign: 'center', color: 'var(--fg-4)' }}>
           <Paperclip size={24} style={{ marginBottom: 8, opacity: 0.5 }} />
           <p style={{ fontSize: 13, margin: 0 }}>No attachments yet</p>
         </div>
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 12 }}>
           {attachments.map((att) => (
-            <div key={att.id} style={{ backgroundColor: 'var(--cp-float)', border: '1px solid var(--divider)', borderRadius: 10, overflow: 'hidden' }}>
+            <div key={att.id} style={{ backgroundColor: 'var(--cp-float)', border: '1px solid var(--divider)', borderRadius: 12, overflow: 'hidden' }}>
               <div onClick={() => handlePreview(att)} style={{ height: 100, backgroundColor: 'var(--bg-1)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
                 {isImage(att.file_type) ? <Image size={32} style={{ color: 'var(--fg-4)' }} /> : <FileText size={32} style={{ color: 'var(--fg-4)' }} />}
               </div>
@@ -123,7 +123,7 @@ export function ExecutionAttachments({ cycleTestCaseId, attachments, onAttachmen
                     <Download size={14} />
                   </button>
                   {!disabled && (
-                    <button onClick={() => handleDelete(att)} title="Delete" style={{ flex: 1, height: 28, padding: 0, border: '1px solid color-mix(in srgb, var(--sem-danger) 20%, transparent)', borderRadius: 6, backgroundColor: '#FEF2F2', color: 'var(--sem-danger)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <button onClick={() => handleDelete(att)} title="Delete" style={{ flex: 1, height: 28, padding: 0, border: '1px solid color-mix(in srgb, var(--sem-danger) 20%, transparent)', borderRadius: 6, backgroundColor: 'var(--tint-red, #FEF2F2)', color: 'var(--sem-danger)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       <Trash2 size={14} />
                     </button>
                   )}

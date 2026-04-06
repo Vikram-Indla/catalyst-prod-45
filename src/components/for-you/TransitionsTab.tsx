@@ -15,11 +15,11 @@ const T = {
   inkMuted: '#71717A', inkMutedStrong: '#6F6F78',
   surface: '#FFFFFF', surfaceSecondary: '#FAFAFA', surfaceTertiary: '#F4F4F5',
   border: '#E4E4E7', borderStrong: '#D4D4D8',
-  primary: '#2563EB', primaryHover: '#1D4ED8', primaryBg: '#EFF6FF',
+  primary: '#2563EB', primaryHover: '#1D4ED8', primaryBg: 'var(--tint-blue, #EFF6FF)',
   teal: '#0D9488', tealBg: '#F0FDFA',
-  success: '#16A34A', successBg: '#F0FDF4',
+  success: '#16A34A', successBg: 'var(--tint-green, #F0FDF4)',
   warning: '#D97706', warningBg: '#FFFBEB',
-  danger: '#DC2626', dangerBg: '#FEF2F2',
+  danger: '#DC2626', dangerBg: 'var(--tint-red, #FEF2F2)',
 };
 
 // --- Types ---
@@ -331,7 +331,7 @@ function StepCard({ step, index }: { step: TransitionStep; index: number }) {
 
       {/* Card */}
       <div style={{
-        flex: 1, padding: '14px 16px', borderRadius: 10,
+        flex: 1, padding: '14px 16px', borderRadius: 12,
         border: `1px solid ${step.isCurrent ? T.primary : T.border}`,
         background: step.isCurrent ? `linear-gradient(135deg, ${T.primaryBg}, ${T.surface})` : T.surface,
         boxShadow: step.isCurrent ? '0 2px 12px rgba(37,99,235,0.08)' : '0 1px 3px rgba(0,0,0,0.04)',
@@ -428,7 +428,7 @@ function PersonAccountability({ steps }: { steps: TransitionStep[] }) {
   if (people.length <= 1) return null;
 
   return (
-    <div style={{ marginTop: 24, padding: '16px', border: `1px solid ${T.border}`, borderRadius: 10, background: T.surface }}>
+    <div style={{ marginTop: 24, padding: '16px', border: `1px solid ${T.border}`, borderRadius: 12, background: T.surface }}>
       <div style={{ marginBottom: 14 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <Users size={14} color={T.inkTertiary} />
@@ -453,8 +453,8 @@ function PersonAccountability({ steps }: { steps: TransitionStep[] }) {
                   <div style={{ fontSize: 11, fontWeight: 600, color: T.primary }}>{pct}%</div>
                 </div>
               </div>
-              <div style={{ width: '100%', height: 4, borderRadius: 2, background: T.surfaceTertiary, overflow: 'hidden' }}>
-                <div style={{ width: `${pct}%`, height: '100%', borderRadius: 2, background: getAvatarColor(person.name), transition: 'width 0.5s ease' }} />
+              <div style={{ width: '100%', height: 4, borderRadius: 4, background: T.surfaceTertiary, overflow: 'hidden' }}>
+                <div style={{ width: `${pct}%`, height: '100%', borderRadius: 4, background: getAvatarColor(person.name), transition: 'width 0.5s ease' }} />
               </div>
             </div>
           );

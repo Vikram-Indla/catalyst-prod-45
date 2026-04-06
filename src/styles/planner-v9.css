@@ -418,7 +418,7 @@
 .planner-ws-badge .planner-ws-dot {
   width: 6px;
   height: 6px;
-  border-radius: 2px;
+  border-radius: 4px;
 }
 
 /* Due Date Status */
@@ -478,14 +478,14 @@
 .planner-progress-bar {
   height: 6px;
   background: var(--planner-slate-100);
-  border-radius: 3px;
+  border-radius: 4px;
   overflow: hidden;
 }
 
 .planner-progress-fill {
   height: 100%;
   background: linear-gradient(90deg, var(--planner-primary), var(--planner-teal));
-  border-radius: 3px;
+  border-radius: 4px;
   transition: width var(--planner-duration-slow) var(--planner-ease-out);
 }
 
@@ -710,7 +710,7 @@
 .planner-legend-dot {
   width: 10px;
   height: 10px;
-  border-radius: 3px;
+  border-radius: 4px;
   flex-shrink: 0;
 }
 
@@ -766,13 +766,13 @@
   width: 80px;
   height: 6px;
   background: var(--planner-slate-200);
-  border-radius: 3px;
+  border-radius: 4px;
   overflow: hidden;
 }
 
 .planner-ws-health-fill {
   height: 100%;
-  border-radius: 3px;
+  border-radius: 4px;
   transition: width var(--planner-duration-data) var(--planner-ease-out);
 }
 

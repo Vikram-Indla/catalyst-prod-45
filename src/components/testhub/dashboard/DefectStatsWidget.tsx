@@ -132,12 +132,12 @@ export function DefectStatsWidget({ stats }: Props) {
                   {bar.label}
                 </span>
                 <div style={{
-                  flex: 1, height: 6, borderRadius: 3,
+                  flex: 1, height: 6, borderRadius: 4,
                   backgroundColor: 'color-mix(in srgb, var(--bg-2) 40%, transparent)',
                   overflow: 'hidden',
                 }}>
                   <div style={{
-                    width: `${pct}%`, height: '100%', borderRadius: 3,
+                    width: `${pct}%`, height: '100%', borderRadius: 4,
                     backgroundColor: bar.color,
                     transition: 'width .3s ease',
                     minWidth: count > 0 ? 4 : 0,

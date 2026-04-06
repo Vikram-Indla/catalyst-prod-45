@@ -299,7 +299,7 @@ export function QAAssistantWidget({ onClose }: QAAssistantWidgetProps) {
                         style={{
                           padding: '10px 16px',
                           border: '1px solid var(--divider)',
-                          borderRadius: 10,
+                          borderRadius: 12,
                           backgroundColor: 'var(--bg-app)',
                           fontSize: 13,
                           color: 'var(--fg-2)',

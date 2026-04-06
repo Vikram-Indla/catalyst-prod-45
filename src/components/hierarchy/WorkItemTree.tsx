@@ -110,8 +110,8 @@ function ProgressBar({ stats }: { stats: WorkItem['stats'] }) {
   const textColor = isComplete ? '#15803D' : 'var(--cp-blue)';
   return (
     <div style={{ width: 64, display: 'flex', flexDirection: 'column', gap: 2, justifyContent: 'center' }}>
-      <div style={{ height: 4, background: isDark ? '#1A1A1A' : '#F1F5F9', borderRadius: 2, overflow: 'hidden' }}>
-        <div style={{ height: '100%', width: `${pct}%`, background: fillColor, borderRadius: 2, transition: 'width 300ms ease' }} />
+      <div style={{ height: 4, background: isDark ? '#1A1A1A' : '#F1F5F9', borderRadius: 4, overflow: 'hidden' }}>
+        <div style={{ height: '100%', width: `${pct}%`, background: fillColor, borderRadius: 4, transition: 'width 300ms ease' }} />
       </div>
       <span style={{ fontSize: 11, fontWeight: 500, color: textColor, fontFamily: "'Inter', sans-serif", fontVariantNumeric: 'tabular-nums', textAlign: 'right' }}>
         {pct}%

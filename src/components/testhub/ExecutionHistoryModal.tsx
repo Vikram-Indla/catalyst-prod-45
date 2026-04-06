@@ -44,8 +44,8 @@ export function ExecutionHistoryModal({ isOpen, cycleTestCaseId, testCaseKey, te
 
   const statusConfig: Record<string, { icon: any; color: string; bg: string; label: string }> = {
     not_run: { icon: Clock, color: 'var(--fg-3)', bg: 'var(--cp-bd-zone)', label: 'Not Run' },
-    passed: { icon: CheckCircle2, color: 'var(--sem-success)', bg: '#ECFDF5', label: 'Passed' },
-    failed: { icon: XCircle, color: 'var(--sem-danger)', bg: '#FEF2F2', label: 'Failed' },
+    passed: { icon: CheckCircle2, color: 'var(--sem-success)', bg: 'var(--tint-green-soft, #ECFDF5)', label: 'Passed' },
+    failed: { icon: XCircle, color: 'var(--sem-danger)', bg: 'var(--tint-red, #FEF2F2)', label: 'Failed' },
     blocked: { icon: AlertTriangle, color: 'var(--sem-warning)', bg: '#FFFBEB', label: 'Blocked' },
     skipped: { icon: SkipForward, color: 'var(--fg-4)', bg: 'var(--bg-1)', label: 'Skipped' },
   };
@@ -71,7 +71,7 @@ export function ExecutionHistoryModal({ isOpen, cycleTestCaseId, testCaseKey, te
       <div style={{ width: 600, maxHeight: '80vh', backgroundColor: 'var(--cp-float)', borderRadius: 12, boxShadow: '0 20px 60px rgba(0,0,0,0.2)', display: 'flex', flexDirection: 'column' }}>
         <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--divider)', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <div style={{ display: 'flex', gap: 12 }}>
-            <div style={{ width: 44, height: 44, borderRadius: 10, backgroundColor: 'color-mix(in srgb, var(--cp-blue) 8%, transparent)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ width: 44, height: 44, borderRadius: 12, backgroundColor: 'color-mix(in srgb, var(--cp-blue) 8%, transparent)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <History size={24} style={{ color: 'var(--cp-blue)' }} />
             </div>
             <div>
@@ -106,7 +106,7 @@ export function ExecutionHistoryModal({ isOpen, cycleTestCaseId, testCaseKey, te
                     <div style={{ width: 40, height: 40, borderRadius: '50%', backgroundColor: newConfig.bg, border: `3px solid ${newConfig.color}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, zIndex: 1 }}>
                       <NewIcon size={18} style={{ color: newConfig.color }} />
                     </div>
-                    <div style={{ flex: 1, backgroundColor: 'var(--bg-1)', borderRadius: 10, padding: 16 }}>
+                    <div style={{ flex: 1, backgroundColor: 'var(--bg-1)', borderRadius: 12, padding: 16 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
                         {renderStatusBadge(entry.old_status)}
                         <ArrowRight size={16} style={{ color: 'var(--fg-4)' }} />

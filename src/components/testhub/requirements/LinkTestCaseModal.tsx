@@ -114,7 +114,7 @@ export function LinkTestCaseModal({ isOpen, onClose, requirementId, onLinked, al
         {/* Header */}
         <div style={{ padding: '20px 24px', borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <div style={{ width: 44, height: 44, borderRadius: 10, backgroundColor: '#2563EB', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ width: 44, height: 44, borderRadius: 12, backgroundColor: '#2563EB', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Link2 size={22} style={{ color: '#FFFFFF' }} />
             </div>
             <h2 style={{ fontSize: 18, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A', margin: 0 }}>Link Test Cases</h2>
@@ -129,7 +129,7 @@ export function LinkTestCaseModal({ isOpen, onClose, requirementId, onLinked, al
           <div style={{ position: 'relative', marginBottom: 12 }}>
             <Search size={18} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: isDark ? '#878787' : '#94A3B8' }} />
             <input type="text" placeholder="Search test cases..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}
-              style={{ width: '100%', height: 40, padding: '0 14px 0 44px', border: `1.5px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 10, fontSize: 14, backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#EDEDED' : undefined }} />
+              style={{ width: '100%', height: 40, padding: '0 14px 0 44px', border: `1.5px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 12, fontSize: 14, backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#EDEDED' : undefined }} />
           </div>
           <button onClick={toggleAll}
             style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '4px 8px', border: 'none', backgroundColor: 'transparent', color: '#2563EB', fontSize: 13, fontWeight: 500, cursor: 'pointer' }}>
@@ -152,7 +152,7 @@ export function LinkTestCaseModal({ isOpen, onClose, requirementId, onLinked, al
                 <div key={tc.id} onClick={() => toggleSelect(tc.id)}
                   style={{
                     display: 'flex', alignItems: 'center', gap: 12, padding: 12, marginBottom: 6,
-                    borderRadius: 10, border: `1.5px solid ${isSelected ? '#2563EB' : (isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0')}`,
+                    borderRadius: 12, border: `1.5px solid ${isSelected ? '#2563EB' : (isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0')}`,
                     backgroundColor: isSelected ? (isDark ? 'rgba(37,99,235,0.15)' : '#EFF6FF') : (isDark ? '#1A1A1A' : '#FFFFFF'), cursor: 'pointer', transition: 'all 0.15s',
                   }}>
                   {isSelected ? <CheckSquare size={18} style={{ color: '#2563EB', flexShrink: 0 }} /> : <Square size={18} style={{ color: isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0', flexShrink: 0 }} />}
@@ -173,9 +173,9 @@ export function LinkTestCaseModal({ isOpen, onClose, requirementId, onLinked, al
         <div style={{ padding: '16px 24px', borderTop: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <span style={{ fontSize: 13, color: isDark ? '#A1A1A1' : '#64748B' }}>{selectedIds.size} selected</span>
           <div style={{ display: 'flex', gap: 12 }}>
-            <button onClick={onClose} style={{ height: 40, padding: '0 16px', backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', border: `1.5px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 10, fontSize: 14, color: isDark ? '#A1A1A1' : '#64748B', cursor: 'pointer' }}>Cancel</button>
+            <button onClick={onClose} style={{ height: 40, padding: '0 16px', backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', border: `1.5px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 12, fontSize: 14, color: isDark ? '#A1A1A1' : '#64748B', cursor: 'pointer' }}>Cancel</button>
             <button onClick={handleSubmit} disabled={selectedIds.size === 0 || isSubmitting}
-              style={{ height: 40, padding: '0 20px', backgroundColor: selectedIds.size === 0 ? (isDark ? '#1A1A1A' : '#E2E8F0') : '#2563EB', border: 'none', borderRadius: 10, fontSize: 14, fontWeight: 600, color: '#FFFFFF', cursor: selectedIds.size === 0 ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}>
+              style={{ height: 40, padding: '0 20px', backgroundColor: selectedIds.size === 0 ? (isDark ? '#1A1A1A' : '#E2E8F0') : '#2563EB', border: 'none', borderRadius: 12, fontSize: 14, fontWeight: 600, color: '#FFFFFF', cursor: selectedIds.size === 0 ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}>
               <Link2 size={16} /> {isSubmitting ? 'Linking...' : `Link ${selectedIds.size > 0 ? `(${selectedIds.size})` : ''}`}
             </button>
           </div>

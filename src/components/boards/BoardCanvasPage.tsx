@@ -50,7 +50,7 @@ function StatusLozenge({ status }: { status: string }) {
   return (
     <span style={{
       display: 'inline-flex', alignItems: 'center',
-      padding: '0 6px', height: 20, borderRadius: 3,
+      padding: '0 6px', height: 20, borderRadius: 4,
       fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
       letterSpacing: '0.03em', whiteSpace: 'nowrap',
       background: bg, color,
@@ -354,15 +354,15 @@ export default function BoardCanvasPage({ projectIdOverride, basePath }: BoardCa
               }}>{col.name}</span>
               <span style={{
                 fontSize: 10.5, fontWeight: 600, padding: '1px 6px', borderRadius: 8,
-                background: col.isDone ? '#F0FDF4' : 'var(--bg-1)',
+                background: col.isDone ? 'var(--tint-green, #F0FDF4)' : 'var(--bg-1)',
                 color: col.isDone ? 'var(--sem-success)' : 'var(--fg-4)',
                 fontFamily: "'JetBrains Mono', monospace",
               }}>{count}</span>
               {/* WIP limit badge */}
               {maxWip != null && (
                 <span style={{
-                  fontSize: 10.5, padding: '1px 5px', borderRadius: 3,
-                  background: atLimit ? '#FEF2F2' : 'var(--bg-1)',
+                  fontSize: 10.5, padding: '1px 5px', borderRadius: 4,
+                  background: atLimit ? 'var(--tint-red, #FEF2F2)' : 'var(--bg-1)',
                   color: atLimit ? 'var(--sem-danger)' : 'var(--fg-3)',
                   fontFamily: "'Inter', sans-serif",
                 }}>max {maxWip}</span>
@@ -400,7 +400,7 @@ export default function BoardCanvasPage({ projectIdOverride, basePath }: BoardCa
                 {lane.id !== 'default' && (
                   <span style={{
                     display: 'inline-flex', alignItems: 'center', gap: 5,
-                    height: 20, padding: '0 8px', borderRadius: 10,
+                    height: 20, padding: '0 8px', borderRadius: 12,
                     background: 'var(--cp-bd-zone)', border: '0.75px solid rgba(15,23,42,0.10)',
                   }}>
                     <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--sem-success)' }} />
@@ -426,11 +426,11 @@ export default function BoardCanvasPage({ projectIdOverride, basePath }: BoardCa
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginLeft: 'auto' }}>
                     <div style={{
                       width: 64, height: 5, background: 'var(--cp-bd-zone)',
-                      borderRadius: 3, overflow: 'hidden',
+                      borderRadius: 4, overflow: 'hidden',
                     }}>
                       <div style={{
                         width: `${pct}%`, height: '100%',
-                        background: 'var(--sem-success)', borderRadius: 3,
+                        background: 'var(--sem-success)', borderRadius: 4,
                         transition: 'width 300ms ease',
                       }} />
                     </div>
@@ -461,7 +461,7 @@ export default function BoardCanvasPage({ projectIdOverride, basePath }: BoardCa
                           }}>{col.name}</span>
                           <span style={{
                             fontSize: 10, fontWeight: 600, padding: '1px 5px', borderRadius: 6,
-                            background: col.isDone ? '#F0FDF4' : 'var(--bg-1)',
+                            background: col.isDone ? 'var(--tint-green, #F0FDF4)' : 'var(--bg-1)',
                             color: col.isDone ? 'var(--sem-success)' : 'var(--fg-4)',
                             fontFamily: "'JetBrains Mono', monospace",
                           }}>{laneCards.length}</span>

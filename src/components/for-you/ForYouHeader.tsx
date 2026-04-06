@@ -78,7 +78,7 @@ export function ForYouHeader() {
           {showDeptPicker && (
             <div style={{
               position: 'absolute', top: '100%', right: 0, marginTop: 6,
-              background: 'var(--cp-float)', border: '1px solid var(--cp-bd)', borderRadius: 10,
+              background: 'var(--cp-float)', border: '1px solid var(--cp-bd)', borderRadius: 12,
               boxShadow: '0 8px 30px rgba(0,0,0,0.12)', minWidth: 220, padding: 6, zIndex: 50,
             }}>
               <div style={{ padding: '8px 12px 6px', fontSize: 11, fontWeight: 600, color: 'var(--cp-t3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
@@ -91,7 +91,7 @@ export function ForYouHeader() {
                   style={{
                     display: 'flex', alignItems: 'center', gap: 10, width: '100%',
                     padding: '9px 12px', border: 'none', background: 'transparent',
-                    borderRadius: 7, cursor: 'pointer', fontSize: 13, fontWeight: 500,
+                    borderRadius: 8, cursor: 'pointer', fontSize: 13, fontWeight: 500,
                     color: 'var(--cp-t1)', transition: 'background 100ms', textAlign: 'left',
                   }}
                   onMouseEnter={e => { e.currentTarget.style.background = 'var(--cp-hover)'; }}

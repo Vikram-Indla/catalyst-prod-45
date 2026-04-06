@@ -126,7 +126,7 @@ function CoverSlide({ committed, ideas }: { committed: RoadmapIdea[]; ideas: Roa
         <div style={{ fontSize: 48, fontWeight: 800, color: 'var(--sem-success)', fontFamily: "'Sora', sans-serif", lineHeight: 1.1, marginBottom: 24 }}>
           Transformation Roadmap
         </div>
-        <div style={{ width: 40, height: 4, background: 'var(--sem-success)', borderRadius: 2, marginBottom: 24 }} />
+        <div style={{ width: 40, height: 4, background: 'var(--sem-success)', borderRadius: 4, marginBottom: 24 }} />
         <div style={{ display: 'flex', gap: 16 }}>
           {[
             { label: 'COMMITTED IDEAS', value: String(committed.length), sub: `of ${ideas.length} total` },

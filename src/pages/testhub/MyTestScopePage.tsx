@@ -136,7 +136,7 @@ export default function MyTestScopePage() {
           </h1>
           <span style={{
             fontSize: 12, fontWeight: 600, color: '#64748B', backgroundColor: var(--bg-2, '#F1F5F9'),
-            padding: '2px 10px', borderRadius: 10,
+            padding: '2px 10px', borderRadius: 12,
           }}>
             {filteredItems.length} items
           </span>
@@ -207,7 +207,7 @@ export default function MyTestScopePage() {
               }}>
                 {/* Cycle Header */}
                 <div style={{
-                  padding: '12px 16px', backgroundColor: '#F8FAFC',
+                  padding: '12px 16px', backgroundColor: 'var(--bg-1, #F8FAFC)',
                   borderBottom: '1px solid var(--bd-default, #E2E8F0)',
                   display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                 }}>
@@ -223,7 +223,7 @@ export default function MyTestScopePage() {
                     </span>
                     <span style={{
                       fontSize: 11, fontWeight: 700, textTransform: 'uppercase' as const,
-                      letterSpacing: '0.03em', padding: '2px 6px', borderRadius: 3, height: 20,
+                      letterSpacing: '0.03em', padding: '2px 6px', borderRadius: 4, height: 20,
                       display: 'inline-flex', alignItems: 'center',
                       color: '#0747A6', backgroundColor: '#DEEBFF',
                     }}>
@@ -269,7 +269,7 @@ export default function MyTestScopePage() {
                         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                           <span style={{
                             fontSize: 11, fontWeight: 700, textTransform: 'uppercase' as const,
-                            letterSpacing: '0.03em', padding: '2px 6px', borderRadius: 3,
+                            letterSpacing: '0.03em', padding: '2px 6px', borderRadius: 4,
                             color: st.color, backgroundColor: st.bg,
                           }}>
                             {st.label}

@@ -134,7 +134,7 @@ export function DeleteTestCaseModal({
             <div style={{
               width: 40,
               height: 40,
-              borderRadius: 10,
+              borderRadius: 12,
               backgroundColor: '#FEF3C7',
               display: 'flex',
               alignItems: 'center',

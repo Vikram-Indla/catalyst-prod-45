@@ -190,7 +190,7 @@ export function ReleaseDrawer({ release, onClose }: Props) {
             <StatusLozenge status={mapStatus(release.status)} />
             <span className="text-[12px] text-[#64748B]">{release.target_date ? new Date(release.target_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}</span>
             <span className="text-[11px] font-bold text-[#0F172A] bg-[#F1F5F9] px-1.5 py-0.5 rounded">{relChanges.length} CHGs</span>
-            <span className="text-[11px] font-bold text-[#2563EB] bg-[#EFF6FF] px-1.5 py-0.5 rounded">{testCycles.length} cycles</span>
+            <span className="text-[11px] font-bold text-[#2563EB] bg-[var(--tint-blue, #EFF6FF)] px-1.5 py-0.5 rounded">{testCycles.length} cycles</span>
           </div>
         </div>
 
@@ -201,7 +201,7 @@ export function ReleaseDrawer({ release, onClose }: Props) {
               className={`px-3 py-2.5 text-[13px] font-medium border-b-2 transition-colors ${activeTab === tab ? 'border-[#2563EB] text-[#2563EB]' : 'border-transparent text-[#64748B] hover:text-[#475569]'}`}>
               {tab}
               {tab === 'Changes' && <span className="ml-1 text-[10px] font-bold bg-[#F1F5F9] text-[#475569] px-1 rounded">{relChanges.length}</span>}
-              {tab === 'Test Cycles' && <span className="ml-1 text-[10px] font-bold bg-[#EFF6FF] text-[#2563EB] px-1 rounded">{testCycles.length}</span>}
+              {tab === 'Test Cycles' && <span className="ml-1 text-[10px] font-bold bg-[var(--tint-blue, #EFF6FF)] text-[#2563EB] px-1 rounded">{testCycles.length}</span>}
             </button>
           ))}
         </div>
@@ -515,12 +515,12 @@ function TestCyclesTab({ testCycles, release }: { testCycles: any[]; release: an
       {testCycles.length === 0 ? (
         <div className="text-center py-10">
           <p className="text-[var(--fg-3, #94A3B8)] text-[13px] mb-3">No test cycles linked</p>
-          <button onClick={openLinkModal} className="h-9 px-4 rounded-md border border-[#2563EB] text-[#2563EB] text-[13px] font-semibold hover:bg-[#EFF6FF]">Link Test Cycle</button>
+          <button onClick={openLinkModal} className="h-9 px-4 rounded-md border border-[#2563EB] text-[#2563EB] text-[13px] font-semibold hover:bg-[var(--tint-blue, #EFF6FF)]">Link Test Cycle</button>
         </div>
       ) : (
         <div className="space-y-3">
           <div className="flex justify-end mb-2">
-            <button onClick={openLinkModal} className="h-8 px-3 rounded-md border border-[#2563EB] text-[#2563EB] text-[12px] font-semibold hover:bg-[#EFF6FF]">Link Test Cycle</button>
+            <button onClick={openLinkModal} className="h-8 px-3 rounded-md border border-[#2563EB] text-[#2563EB] text-[12px] font-semibold hover:bg-[var(--tint-blue, #EFF6FF)]">Link Test Cycle</button>
           </div>
           {testCycles.map((tc: any) => {
             const cycle = tc.tm_test_cycles;
@@ -533,7 +533,7 @@ function TestCyclesTab({ testCycles, release }: { testCycles: any[]; release: an
               <div key={tc.id} className="border border-[rgba(15,23,42,0.12)] rounded-lg p-4 group relative">
                 <button
                   onClick={() => handleUnlink(tc.test_cycle_id)}
-                  className="absolute top-3 right-3 w-6 h-6 rounded flex items-center justify-center opacity-0 group-hover:opacity-100 text-[var(--fg-3, #94A3B8)] hover:text-[#DC2626] hover:bg-[#FEF2F2] transition-opacity"
+                  className="absolute top-3 right-3 w-6 h-6 rounded flex items-center justify-center opacity-0 group-hover:opacity-100 text-[var(--fg-3, #94A3B8)] hover:text-[#DC2626] hover:bg-[var(--tint-red, #FEF2F2)] transition-opacity"
                   title="Unlink test cycle"
                 >
                   <XIcon size={14} />
@@ -655,7 +655,7 @@ function SignoffsTab({ releaseId, changes }: { releaseId: string; changes: any[]
                 <button onClick={() => approveSignoff.mutate(so.id, { onSuccess: () => toast.success('Approved') })}
                   className="h-7 px-3 rounded bg-[#1B7F37] text-white text-[11px] font-bold hover:bg-[#004D33]">Approve</button>
                 <button onClick={() => rejectSignoff.mutate({ signoffId: so.id, comment: 'Rejected' }, { onSuccess: () => toast.success('Rejected') })}
-                  className="h-7 px-3 rounded border border-[#FCA5A5] text-[#DC2626] text-[11px] font-bold hover:bg-[#FEF2F2]">Reject</button>
+                  className="h-7 px-3 rounded border border-[#FCA5A5] text-[#DC2626] text-[11px] font-bold hover:bg-[var(--tint-red, #FEF2F2)]">Reject</button>
               </div>
             ))}
           </div>
@@ -700,7 +700,7 @@ function ActivityFeed({ entries, loading }: { entries: any[]; loading: boolean }
     <div className="space-y-0">
       {entries.map((entry: any, idx: number) => {
         const isAI = !!entry.is_ai;
-        const avatarBg = isAI ? '#F3E8FF' : '#EFF6FF';
+        const avatarBg = isAI ? '#F3E8FF' : 'var(--tint-blue, #EFF6FF)';
         const avatarColor = isAI ? '#7C3AED' : '#2563EB';
         const initials = isAI ? 'AI' : (entry.actor_initials || '??');
 

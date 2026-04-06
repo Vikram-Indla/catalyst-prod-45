@@ -107,7 +107,7 @@ const TentacleView: React.FC<TentacleViewProps> = ({ resource, items, roleFilter
               <button key={f} onClick={() => setStatusFilter(f)}
                 style={{
                   padding: '4px 12px', fontSize: 10, fontWeight: 700,
-                  borderRadius: 5, cursor: 'pointer', transition: 'all .12s',
+                  borderRadius: 6, cursor: 'pointer', transition: 'all .12s',
                   background: active ? 'var(--cp-blue)' : T.surface,
                   color: active ? '#fff' : T.text3,
                   border: active ? 'none' : `1px solid ${T.borderStrong}`,
@@ -216,7 +216,7 @@ const TentacleView: React.FC<TentacleViewProps> = ({ resource, items, roleFilter
                   </span>
                   <span style={{
                     fontSize: 8, fontWeight: 800, color: '#fff', padding: '1px 5px',
-                    borderRadius: 3, background: hubColor, textTransform: 'uppercase' as const,
+                    borderRadius: 4, background: hubColor, textTransform: 'uppercase' as const,
                   }}>
                     {HUB_SHORT[hub] ?? hub.replace('Hub', '').slice(0, 4).toUpperCase()}
                   </span>
@@ -235,7 +235,7 @@ const TentacleView: React.FC<TentacleViewProps> = ({ resource, items, roleFilter
                 <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 5 }}>
                   <span style={{
                     fontSize: 9, fontWeight: 700, color: '#fff', padding: '1px 6px',
-                    borderRadius: 3, background: statusColor,
+                    borderRadius: 4, background: statusColor,
                   }}>
                     {status.length > 14 ? status.slice(0, 12) + '…' : status}
                   </span>
@@ -313,7 +313,7 @@ const TentacleView: React.FC<TentacleViewProps> = ({ resource, items, roleFilter
           </span>
           <span style={{
             fontSize: 10, fontWeight: 800, color: '#fff',
-            background: T.done, borderRadius: 10, padding: '2px 8px',
+            background: T.done, borderRadius: 12, padding: '2px 8px',
           }}>
             {doneItems.length}
           </span>
@@ -343,7 +343,7 @@ const TentacleView: React.FC<TentacleViewProps> = ({ resource, items, roleFilter
                   </span>
                   <span style={{
                     fontSize: 8, fontWeight: 800, color: '#fff', padding: '1px 5px',
-                    borderRadius: 3, background: hubColor,
+                    borderRadius: 4, background: hubColor,
                   }}>
                     {HUB_SHORT[hub] ?? hub.replace('Hub', '').slice(0, 4).toUpperCase()}
                   </span>

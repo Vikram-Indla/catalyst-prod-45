@@ -159,7 +159,7 @@ export default function EpicBacklogPage({ projectId: propProjectId }: { projectI
                       {/* STATUS */}
                       <div style={{ width: 138, flexShrink: 0 }}>
                         {sc && ls && (
-                          <span style={{ display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px', borderRadius: 3, fontSize: 11, fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.03em', background: ls.bg, color: ls.text }}>
+                          <span style={{ display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px', borderRadius: 4, fontSize: 11, fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.03em', background: ls.bg, color: ls.text }}>
                             {sc.label}
                           </span>
                         )}

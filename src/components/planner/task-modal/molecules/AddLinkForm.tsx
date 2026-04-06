@@ -41,7 +41,7 @@ export const AddLinkForm: React.FC<AddLinkFormProps> = ({ onAdd }) => {
           style={{
             padding: '12px 14px',
             border: `1px solid ${COLORS.borderDefault}`,
-            borderRadius: '10px',
+            borderRadius: '12px',
             fontSize: '14px',
             color: COLORS.textPrimary,
             backgroundColor: COLORS.surfaceCard,
@@ -62,7 +62,7 @@ export const AddLinkForm: React.FC<AddLinkFormProps> = ({ onAdd }) => {
           style={{
             padding: '12px 14px',
             border: `1px solid ${COLORS.borderDefault}`,
-            borderRadius: '10px',
+            borderRadius: '12px',
             fontSize: '14px',
             color: COLORS.textPrimary,
             backgroundColor: COLORS.surfaceCard,
@@ -80,7 +80,7 @@ export const AddLinkForm: React.FC<AddLinkFormProps> = ({ onAdd }) => {
           backgroundColor: COLORS.accent,
           color: '#ffffff',
           border: 'none',
-          borderRadius: '10px',
+          borderRadius: '12px',
           fontSize: '14px',
           fontWeight: 500,
           cursor: 'pointer',

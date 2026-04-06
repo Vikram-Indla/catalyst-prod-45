@@ -81,7 +81,7 @@ export function Resource360Ring({ items, resourceName, resourceAvatar, jobRole, 
           <span style={{ fontSize: 11, fontWeight: 900, color: T.text2, letterSpacing: '.08em', textTransform: 'uppercase' }}>Active Work</span>
           {/* D14: Item count as dark pill */}
           <span style={{
-            background: '#2563EB', color: '#fff', padding: '2px 8px', borderRadius: 10,
+            background: '#2563EB', color: '#fff', padding: '2px 8px', borderRadius: 12,
             fontSize: 10, fontWeight: 700,
           }}>{activeItems.length} Items</span>
           {/* D15: Filter buttons with visible borders when inactive */}
@@ -92,7 +92,7 @@ export function Resource360Ring({ items, resourceName, resourceAvatar, jobRole, 
               return (
                 <button key={f} onClick={() => onStatusFilterChange(f as StatusCategory)}
                   style={{
-                    padding: '4px 12px', fontSize: 10, fontWeight: 700, borderRadius: 5, cursor: 'pointer',
+                    padding: '4px 12px', fontSize: 10, fontWeight: 700, borderRadius: 6, cursor: 'pointer',
                     background: active ? '#2563EB' : T.surface,
                     color: active ? '#fff' : T.text3,
                     border: active ? 'none' : `1.5px solid ${T.borderStrong}`,
@@ -178,11 +178,11 @@ export function Resource360Ring({ items, resourceName, resourceAvatar, jobRole, 
                 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 3 }}>
                   <span style={{ fontFamily: T.mono, fontSize: 10, fontWeight: 700, color: T.text1 }}>{item.item_key}</span>
-                  <span style={{ fontSize: 8, fontWeight: 800, color: '#fff', padding: '1px 5px', borderRadius: 3, background: hc }}>{hs}</span>
+                  <span style={{ fontSize: 8, fontWeight: 800, color: '#fff', padding: '1px 5px', borderRadius: 4, background: hc }}>{hs}</span>
                 </div>
                 <div style={{ fontSize: 11, fontWeight: 600, color: T.text2, lineHeight: 1.3, marginBottom: 4, overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as any }}>{item.title}</div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                  <span style={{ fontSize: 9, fontWeight: 700, color: '#fff', background: sc, padding: '1px 6px', borderRadius: 3, minWidth: 70, textAlign: 'center' }}>
+                  <span style={{ fontSize: 9, fontWeight: 700, color: '#fff', background: sc, padding: '1px 6px', borderRadius: 4, minWidth: 70, textAlign: 'center' }}>
                     {statusLabel}
                   </span>
                   <span style={{ fontFamily: T.mono, fontSize: 9, fontWeight: 700, color: item.age_days > 14 ? T.todo : T.text4 }}>{item.age_days}d</span>
@@ -197,7 +197,7 @@ export function Resource360Ring({ items, resourceName, resourceAvatar, jobRole, 
             <div style={{
               position: 'absolute', bottom: 12, left: '50%', transform: 'translateX(-50%)',
               display: 'flex', alignItems: 'center', gap: 8, zIndex: 20,
-              background: 'rgba(255,255,255,.95)', borderRadius: 10, padding: '6px 16px',
+              background: 'rgba(255,255,255,.95)', borderRadius: 12, padding: '6px 16px',
               boxShadow: '0 4px 16px rgba(0,0,0,.15)', backdropFilter: 'blur(8px)',
             }}>
               <button onClick={() => setPage(p => Math.max(0, p - 1))} disabled={page === 0} style={{
@@ -248,7 +248,7 @@ export function Resource360Ring({ items, resourceName, resourceAvatar, jobRole, 
               onMouseLeave={e => { e.currentTarget.style.background = idx % 2 === 0 ? '#FAF8F5' : T.surface; }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 2 }}>
                 <span style={{ fontFamily: T.mono, fontSize: 10, fontWeight: 700, color: T.text3 }}>{item.item_key}</span>
-                <span style={{ fontSize: 8, fontWeight: 800, color: '#fff', padding: '1px 5px', borderRadius: 3, background: hc }}>{hs}</span>
+                <span style={{ fontSize: 8, fontWeight: 800, color: '#fff', padding: '1px 5px', borderRadius: 4, background: hc }}>{hs}</span>
                 {/* D13: Monospace dates with distinct style */}
                 <span style={{ fontFamily: T.mono, fontSize: 10, fontWeight: 700, color: 'var(--fg-3)', marginLeft: 'auto' }}>{item.assigned_at?.slice(5, 10)}</span>
               </div>

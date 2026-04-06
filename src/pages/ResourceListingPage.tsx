@@ -246,7 +246,7 @@ export default function ResourceListingPage() {
         <h1 style={{ fontSize: '20px', fontWeight: 800, color: t.text1, margin: 0, fontFamily: "'Sora', sans-serif" }}>Resources</h1>
         <span style={{
           fontSize: '12px', fontWeight: 700, color: t.badgeText,
-          background: t.badgeBg, borderRadius: '10px', padding: '3px 10px',
+          background: t.badgeBg, borderRadius: '12px', padding: '3px 10px',
         }}>
           {filtered.length} resource{filtered.length !== 1 ? 's' : ''}
         </span>
@@ -337,7 +337,7 @@ export default function ResourceListingPage() {
                 <span style={{
                   background: isActive ? (isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)') : t.badgeBg,
                   color: isActive ? 'inherit' : t.text3,
-                  borderRadius: 10, padding: '1px 6px',
+                  borderRadius: 12, padding: '1px 6px',
                   fontSize: 11, fontWeight: 600, marginLeft: 4,
                 }}>
                   {count}

@@ -138,7 +138,7 @@ function renderSmartCell(cellText: string, colIndex: number): React.ReactNode {
     return (
       <span style={{
         display: 'inline-flex', alignItems: 'center', height: 20,
-        padding: '0 6px', borderRadius: 3,
+        padding: '0 6px', borderRadius: 4,
         background: status.bg, color: status.color,
         fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
         letterSpacing: '0.03em', fontFamily: F.inter,
@@ -194,7 +194,7 @@ function ScopeBar({ totalShown, totalAvailable, scopeLabel, extendLabel, extendH
           }}
           onMouseEnter={e => {
             e.currentTarget.style.borderColor = '#2563EB';
-            e.currentTarget.style.background = '#EFF6FF';
+            e.currentTarget.style.background = 'var(--tint-blue, #EFF6FF)';
             e.currentTarget.style.boxShadow = '0 1px 4px rgba(37,99,235,0.08)';
           }}
           onMouseLeave={e => {
@@ -470,7 +470,7 @@ export const KBResponseRenderer: React.FC<KBResponseRendererProps> = ({
               cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
               transition: 'all 200ms',
             }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = '#F0FDF4'; }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--tint-green, #F0FDF4)'; }}
             onMouseLeave={(e) => { e.currentTarget.style.background = 'none'; }}
           >
             <ThumbsUp size={14} color="#A1A1AA" />
@@ -482,7 +482,7 @@ export const KBResponseRenderer: React.FC<KBResponseRendererProps> = ({
               cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
               transition: 'all 200ms',
             }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = '#FEF2F2'; }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--tint-red, #FEF2F2)'; }}
             onMouseLeave={(e) => { e.currentTarget.style.background = 'none'; }}
           >
             <ThumbsDown size={14} color="#A1A1AA" />

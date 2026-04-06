@@ -731,7 +731,7 @@
 .t10-module .t10-progress-bar {
   height: 6px !important;
   background: var(--t10-gray-200) !important;
-  border-radius: 3px !important;
+  border-radius: 4px !important;
   overflow: hidden !important;
   margin-bottom: 8px !important;
 }
@@ -739,7 +739,7 @@
 .t10-module .t10-progress-fill {
   height: 100% !important;
   background: var(--t10-blue) !important;
-  border-radius: 3px !important;
+  border-radius: 4px !important;
   transition: width 0.3s !important;
 }
 
@@ -2417,7 +2417,7 @@
   padding: 14px !important;
   background: #ffffff !important;
   border: 1px solid #e5e7eb !important;
-  border-radius: 10px !important;
+  border-radius: 12px !important;
 }
 
 .t10-checkout-item-header {
@@ -2776,7 +2776,7 @@
   align-items: center !important;
   gap: 4px !important;
   padding: 2px 8px !important;
-  border-radius: 10px !important;
+  border-radius: 12px !important;
   font-size: 11px !important;
   font-weight: 600 !important;
 }
@@ -3101,7 +3101,7 @@
 .t10-module .t10-drop-indicator {
   height: 4px !important;
   background: var(--t10-blue) !important;
-  border-radius: 2px !important;
+  border-radius: 4px !important;
   margin: 4px 0 !important;
   animation: t10-pulse 1s infinite !important;
 }
@@ -4115,7 +4115,7 @@
 .t10-module .t10-progress-bar-fill {
   height: 100% !important;
   background-color: var(--t10-blue) !important;
-  border-radius: 3px !important;
+  border-radius: 4px !important;
   transition: width 0.3s !important;
 }
 
@@ -4169,7 +4169,7 @@
   font-weight: 600 !important;
   color: var(--t10-gray-500) !important;
   background-color: var(--t10-gray-100) !important;
-  border-radius: 10px !important;
+  border-radius: 12px !important;
   margin-left: auto !important;
 }
 

@@ -192,7 +192,7 @@ function ResultRow({ item, isSelected, onHover, onClick, avatarMap }: {
         <span>{timeAgo(item.viewed_at)}</span>
         <span style={{
           fontSize: 10, fontWeight: 600, color: "#fff", backgroundColor: hubColor,
-          borderRadius: 3, padding: "1px 6px", letterSpacing: "0.02em",
+          borderRadius: 4, padding: "1px 6px", letterSpacing: "0.02em",
         }}>
           {hubShort}
         </span>
@@ -320,7 +320,7 @@ function Kbd({ children }: { children: string }) {
       height: 20, minWidth: 20, padding: "0 5px",
       fontSize: 11, fontFamily: "JetBrains Mono, monospace",
       color: "var(--gs-kbd-text)", backgroundColor: "var(--gs-kbd-bg)",
-      border: "1px solid var(--gs-kbd-border)", borderRadius: 3,
+      border: "1px solid var(--gs-kbd-border)", borderRadius: 4,
     }}>
       {children}
     </kbd>
@@ -556,7 +556,7 @@ export function GlobalSearch() {
             <kbd style={{
               fontSize: 11, fontFamily: "JetBrains Mono, monospace",
               color: "var(--gs-kbd-text)", backgroundColor: "var(--gs-kbd-bg)",
-              border: "1px solid var(--gs-kbd-border)", borderRadius: 3,
+              border: "1px solid var(--gs-kbd-border)", borderRadius: 4,
               padding: "2px 6px",
             }}>⌘K</kbd>
             <button
@@ -598,9 +598,9 @@ export function GlobalSearch() {
             <div key={i} style={{
               display: "flex", alignItems: "center", height: 44, padding: "0 16px", gap: 10,
             }}>
-              <div style={{ width: 14, height: 14, borderRadius: 3, backgroundColor: "var(--gs-skeleton)" }} />
-              <div style={{ width: 60, height: 12, borderRadius: 3, backgroundColor: "var(--gs-skeleton)" }} />
-              <div style={{ flex: 1, height: 12, borderRadius: 3, backgroundColor: "var(--gs-skeleton)" }} />
+              <div style={{ width: 14, height: 14, borderRadius: 4, backgroundColor: "var(--gs-skeleton)" }} />
+              <div style={{ width: 60, height: 12, borderRadius: 4, backgroundColor: "var(--gs-skeleton)" }} />
+              <div style={{ flex: 1, height: 12, borderRadius: 4, backgroundColor: "var(--gs-skeleton)" }} />
             </div>
           ))}
 
@@ -804,7 +804,7 @@ export function GlobalSearchTrigger() {
             color: dk ? 'rgba(255,255,255,0.30)' : "#97A0AF",
             backgroundColor: dk ? '#0A0A0A' : "#fff",
             border: `1px solid ${dk ? 'rgba(255,255,255,0.10)' : "#DFE1E6"}`,
-            borderRadius: 3, padding: "1px 4px",
+            borderRadius: 4, padding: "1px 4px",
           }}>{k}</kbd>
         ))}
       </span>

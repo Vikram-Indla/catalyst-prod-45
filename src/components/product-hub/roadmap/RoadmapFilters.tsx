@@ -150,7 +150,7 @@ export function RoadmapFilters({
           <span style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em', color: ink[4] }}>Legend</span>
           {LEGEND.map(l => (
             <div key={l.label} className="flex items-center gap-1.5">
-              <div style={{ width: 16, height: 6, borderRadius: 2, background: l.gradient }} />
+              <div style={{ width: 16, height: 6, borderRadius: 4, background: l.gradient }} />
               <span style={{ fontSize: 11, fontWeight: 500, color: ink[2] }}>{l.label}</span>
             </div>
           ))}

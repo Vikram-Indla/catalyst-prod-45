@@ -128,10 +128,10 @@ export default function IdeasThemePage() {
                         {convRate}%
                       </span>
                     </div>
-                    <div style={{ height: 6, borderRadius: 3, background: isDark ? 'rgba(255,255,255,0.08)' : '#F1F5F9', overflow: 'hidden', border: `1px solid ${dk.border}` }}>
+                    <div style={{ height: 6, borderRadius: 4, background: isDark ? 'rgba(255,255,255,0.08)' : '#F1F5F9', overflow: 'hidden', border: `1px solid ${dk.border}` }}>
                       <div style={{
                         width: `${Math.min(progressPct, 100)}%`, height: '100%',
-                        background: barColor, borderRadius: 3, transition: 'width 0.3s',
+                        background: barColor, borderRadius: 4, transition: 'width 0.3s',
                         minWidth: converted > 0 ? 4 : 0,
                       }} />
                     </div>

@@ -11,15 +11,15 @@ interface RoadmapDatesTableProps {
 
 const QUARTER_STYLES: Record<string, { bg: string; color: string }> = {
   Q1: { bg: '#F3E8FF', color: '#6D28D9' },
-  Q2: { bg: '#EFF6FF', color: '#1D4ED8' },
-  Q3: { bg: '#ECFDF5', color: '#065F46' },
-  Q4: { bg: '#FFF7ED', color: '#92400E' },
+  Q2: { bg: 'var(--tint-blue, #EFF6FF)', color: '#1D4ED8' },
+  Q3: { bg: 'var(--tint-green-soft, #ECFDF5)', color: '#065F46' },
+  Q4: { bg: 'var(--tint-amber, #FFF7ED)', color: '#92400E' },
 };
 
 const headerStyle: React.CSSProperties = {
   fontSize: 11, fontWeight: 700, color: '#64748B', fontFamily: "'Inter', sans-serif",
   textTransform: 'uppercase', letterSpacing: '0.07em',
-  background: '#F8FAFC', height: 36, padding: '0 12px',
+  background: 'var(--bg-1, #F8FAFC)', height: 36, padding: '0 12px',
   borderBottom: '2px solid var(--bd-default, #E2E8F0)', position: 'sticky', top: 0, zIndex: 2,
   textAlign: 'left', whiteSpace: 'nowrap',
 };
@@ -66,7 +66,7 @@ export function RoadmapDatesTable({ ideas, onSelectIdea, onToggleCommitted, muta
                   cursor: 'pointer', transition: 'background 100ms, opacity 150ms',
                   opacity: isMutating ? 0.6 : 1,
                 }}
-                onMouseEnter={e => (e.currentTarget.style.background = '#F8FAFC')}
+                onMouseEnter={e => (e.currentTarget.style.background = 'var(--bg-1, #F8FAFC)')}
                 onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
               >
                 <td style={cellStyle}>
@@ -95,7 +95,7 @@ export function RoadmapDatesTable({ ideas, onSelectIdea, onToggleCommitted, muta
                   {qStyle ? (
                     <span style={{
                       fontSize: 10, fontWeight: 700, height: 20, display: 'inline-flex',
-                      alignItems: 'center', padding: '0 8px', borderRadius: 3,
+                      alignItems: 'center', padding: '0 8px', borderRadius: 4,
                       background: qStyle.bg, color: qStyle.color,
                       fontFamily: "'Inter', sans-serif", textTransform: 'uppercase',
                     }}>{idea.quarter}</span>
@@ -115,7 +115,7 @@ export function RoadmapDatesTable({ ideas, onSelectIdea, onToggleCommitted, muta
                     onClick={e => { e.stopPropagation(); onToggleCommitted(idea); }}
                     disabled={isMutating}
                     style={{
-                      width: 32, height: 18, borderRadius: 9, border: 'none', cursor: 'pointer',
+                      width: 32, height: 18, borderRadius: 8, border: 'none', cursor: 'pointer',
                       background: idea.isCommitted ? 'var(--sem-success)' : '#CBD5E1', position: 'relative',
                       transition: 'background 150ms',
                     }}

@@ -289,7 +289,7 @@ export function T10LabelPicker({ currentLabel, onSelect, isReadOnly = false }: T
                   <span style={{
                     width: '12px',
                     height: '12px',
-                    borderRadius: '3px',
+                    borderRadius: '4px',
                     background: labelColors.color,
                   }} />
                   {label}

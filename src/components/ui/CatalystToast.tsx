@@ -17,7 +17,7 @@ const toastConfig = {
   success: {
     icon: CheckCircle,
     iconColor: '#059669',
-    bgColor: '#ECFDF5',
+    bgColor: 'var(--tint-green-soft, #ECFDF5)',
     borderColor: '#A7F3D0',
     titleColor: '#065F46',
     descColor: '#047857',
@@ -25,7 +25,7 @@ const toastConfig = {
   error: {
     icon: XCircle,
     iconColor: '#DC2626',
-    bgColor: '#FEF2F2',
+    bgColor: 'var(--tint-red, #FEF2F2)',
     borderColor: '#FECACA',
     titleColor: '#991B1B',
     descColor: '#B91C1C',
@@ -41,7 +41,7 @@ const toastConfig = {
   info: {
     icon: Info,
     iconColor: '#2563EB',
-    bgColor: '#EFF6FF',
+    bgColor: 'var(--tint-blue, #EFF6FF)',
     borderColor: '#BFDBFE',
     titleColor: '#1E40AF',
     descColor: '#1D4ED8',

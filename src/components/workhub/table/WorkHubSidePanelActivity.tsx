@@ -45,7 +45,7 @@ export default function WorkHubSidePanelActivity({ activities, onAddComment, isL
               <div key={i} style={{ display: 'flex', gap: 10, padding: '8px 0' }}>
                 <div className="wh-skeleton" style={{ width: 24, height: 24, borderRadius: '50%', flexShrink: 0 }} />
                 <div style={{ flex: 1 }}>
-                  <div className="wh-skeleton" style={{ height: 12, width: '60%', borderRadius: 3, marginBottom: 6 }} />
+                  <div className="wh-skeleton" style={{ height: 12, width: '60%', borderRadius: 4, marginBottom: 6 }} />
                   <div className="wh-skeleton" style={{ height: 10, width: '40%', borderRadius: 3 }} />
                 </div>
               </div>

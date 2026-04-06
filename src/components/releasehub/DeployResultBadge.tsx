@@ -12,7 +12,7 @@ export function DeployResultBadge({ result }: { result: string | null | undefine
       style={{
         height: 18,
         padding: '0 6px',
-        borderRadius: 3,
+        borderRadius: 4,
         fontSize: 11,
         fontWeight: 700,
         textTransform: 'uppercase',

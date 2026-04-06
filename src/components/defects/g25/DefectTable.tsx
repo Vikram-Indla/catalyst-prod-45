@@ -35,7 +35,7 @@ export function DefectTable({ defects, selectedIds, onSelectionChange, onDelete 
   return (
     <Table>
       <TableHeader>
-        <TableRow className="h-9" style={{ backgroundColor: '#F8FAFC' }}>
+        <TableRow className="h-9" style={{ backgroundColor: 'var(--bg-1, #F8FAFC)' }}>
           <TableHead className="w-10" style={{ fontSize: '10.5px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em', color: '#64748B' }}><Checkbox checked={defects.length > 0 && selectedIds.size === defects.length} onCheckedChange={toggleAll} /></TableHead>
           <TableHead className="w-28" style={{ fontSize: '10.5px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em', color: '#64748B' }}>Key</TableHead>
           <TableHead style={{ fontSize: '10.5px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em', color: '#64748B' }}>Title</TableHead>

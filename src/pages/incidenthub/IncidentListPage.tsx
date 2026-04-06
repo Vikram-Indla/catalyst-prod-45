@@ -238,7 +238,7 @@ export default function IncidentListPage() {
                 )}
                 <span className="inline-flex items-center px-1" style={{
                   fontFamily: 'JetBrains Mono, monospace', fontSize: 11, fontWeight: 500,
-                  color: isDark ? '#93C5FD' : '#2563EB', backgroundColor: isDark ? 'rgba(37,99,235,0.16)' : '#EFF6FF', borderRadius: 3,
+                  color: isDark ? '#93C5FD' : '#2563EB', backgroundColor: isDark ? 'rgba(37,99,235,0.16)' : '#EFF6FF', borderRadius: 4,
                 }}>
                   {item.incident_key || '\u2014'}
                 </span>

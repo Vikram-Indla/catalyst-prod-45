@@ -34,7 +34,7 @@ function StatusLozenge({ status, statusCategory }: { status: string; statusCateg
   return (
     <span style={{
       display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 8px',
-      borderRadius: 3, fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
+      borderRadius: 4, fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
       letterSpacing: '0.03em', whiteSpace: 'nowrap', background: s.bg, color: s.color,
     }}>
       {s.label}
@@ -130,9 +130,9 @@ export const R360ChronologyView: React.FC<Props> = ({ items, onItemClick, member
             }}>
               <div style={dotStyle} />
               <span style={{ fontSize: 14, fontWeight: 600, color: '#020617' }}>{dateLabel}</span>
-              <span style={{ fontSize: '11.5px', fontWeight: 600, color: 'var(--fg-2)', background: 'var(--bg-3)', padding: '2px 8px', borderRadius: '10px' }}>{total} items</span>
+              <span style={{ fontSize: '11.5px', fontWeight: 600, color: 'var(--fg-2)', background: 'var(--bg-3)', padding: '2px 8px', borderRadius: '12px' }}>{total} items</span>
               {/* Mini bar */}
-              <div style={{ display: 'flex', height: '4px', borderRadius: '2px', overflow: 'hidden', width: '80px', background: 'var(--bg-3)', flexShrink: 0 }}>
+              <div style={{ display: 'flex', height: '4px', borderRadius: '4px', overflow: 'hidden', width: '80px', background: 'var(--bg-3)', flexShrink: 0 }}>
                 {doneC > 0 && <div style={{ width: `${(doneC/total)*100}%`, background: 'var(--sem-success)' }} />}
                 {ipC > 0 && <div style={{ width: `${(ipC/total)*100}%`, background: 'var(--cp-blue)' }} />}
                 {todoC > 0 && <div style={{ width: `${(todoC/total)*100}%`, background: 'var(--sem-warning)' }} />}
@@ -177,7 +177,7 @@ export const R360ChronologyView: React.FC<Props> = ({ items, onItemClick, member
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px', flexWrap: 'wrap' }}>
                           <span style={{ fontSize: '12.5px', fontWeight: 600, color: 'var(--cp-blue)', fontFamily: "'JetBrains Mono', monospace" }}>{item.item_key}</span>
                           {item.project_key && (
-                            <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '3px', color: '#FFF', background: projColor }}>{item.project_key}</span>
+                            <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', color: '#FFF', background: projColor }}>{item.project_key}</span>
                           )}
                         </div>
                         <div style={{

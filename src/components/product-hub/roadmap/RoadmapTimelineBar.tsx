@@ -82,7 +82,7 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, isHovered, o
           display: 'flex',
           alignItems: 'center',
           overflow: 'hidden',
-          borderRadius: 5,
+          borderRadius: 6,
           background: isOverdue ? '#EF4444' : barGradient,
           border: 'none',
           opacity: 1,
@@ -188,7 +188,7 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, isHovered, o
           className="animate-scale-in"
           style={{
             position: 'fixed', left: tooltipPos.x, top: tooltipPos.y, zIndex: 9999,
-            background: tooltipBg, border: `1px solid ${surface.border}`, borderRadius: 10,
+            background: tooltipBg, border: `1px solid ${surface.border}`, borderRadius: 12,
             boxShadow: tooltipShadow, pointerEvents: 'none',
             maxWidth: 320, minWidth: 260, padding: 12,
             fontFamily: FONT.body,

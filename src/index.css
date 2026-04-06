@@ -873,6 +873,13 @@ html:has(body[data-scroll-locked]) {
     --dialog-input-border: #d9d9d9;
     --dialog-label-color: #525252;
     --dialog-label-required: #2563eb;
+
+    /* === TINT SURFACE TOKENS === */
+    --tint-blue: #EFF6FF;
+    --tint-green: #F0FDF4;
+    --tint-green-soft: #ECFDF5;
+    --tint-red: #FEF2F2;
+    --tint-amber: #FFF7ED;
   }
   
   .dark,
@@ -972,7 +979,14 @@ html:has(body[data-scroll-locked]) {
     --row-hover: var(--hover);
     --row-selected: rgba(255,255,255,0.08);
     --row-active: rgba(255,255,255,0.12);
-    
+
+    /* === TINT SURFACE TOKENS (Dark Mode) === */
+    --tint-blue: rgba(59, 130, 246, 0.06);
+    --tint-green: rgba(74, 222, 128, 0.06);
+    --tint-green-soft: rgba(74, 222, 128, 0.06);
+    --tint-red: rgba(248, 113, 113, 0.06);
+    --tint-amber: rgba(251, 191, 36, 0.06);
+
     /* ═══════════════════════════════════════════════════════════════
        CATALYST V5 CANONICAL — Dark Mode Semantic Tokens
        Using official V5 semantic colors: Blue/Teal/Orange/Red

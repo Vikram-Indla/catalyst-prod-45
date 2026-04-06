@@ -40,7 +40,7 @@ export function StatusCell({ status }: StatusCellProps) {
         alignItems: 'center',
         height: 20,
         padding: '0 6px',
-        borderRadius: 3,
+        borderRadius: 4,
         fontFamily: "'Inter', -apple-system, system-ui, sans-serif",
         fontSize: 11,
         fontWeight: 700,

@@ -176,7 +176,7 @@
   justify-content: center;
   color: #64748b !important;
   background: transparent !important;
-  border-radius: 10px;
+  border-radius: 12px;
   transition: all 0.15s ease;
 }
 
@@ -252,7 +252,7 @@
 
 .caty-messages::-webkit-scrollbar { width: 6px; }
 .caty-messages::-webkit-scrollbar-track { background: transparent; }
-.caty-messages::-webkit-scrollbar-thumb { background: var(--caty-border-default); border-radius: 3px; }
+.caty-messages::-webkit-scrollbar-thumb { background: var(--caty-border-default); border-radius: 4px; }
 
 .caty-message {
   display: flex;
@@ -273,7 +273,7 @@
 .caty-avatar {
   width: 40px;
   height: 40px;
-  border-radius: 10px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -412,7 +412,7 @@
   gap: 14px;
   padding: 14px 16px;
   background: var(--caty-bg-muted);
-  border-radius: 10px;
+  border-radius: 12px;
   margin-bottom: 12px;
 }
 
@@ -422,7 +422,7 @@
   width: 44px;
   height: 44px;
   background: var(--caty-text-muted);
-  border-radius: 10px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -520,7 +520,7 @@
   width: 60px;
   height: 6px;
   background: #e2e8f0;
-  border-radius: 3px;
+  border-radius: 4px;
   position: relative;
   overflow: hidden;
 }
@@ -533,7 +533,7 @@
   height: 100%;
   width: var(--percent, 0%);
   background: #059669;
-  border-radius: 3px;
+  border-radius: 4px;
 }
 
 .caty-resource-availability span {
@@ -592,7 +592,7 @@
   gap: 14px;
   padding: 14px 16px;
   background: var(--caty-bg-muted);
-  border-radius: 10px;
+  border-radius: 12px;
   margin-bottom: 12px;
 }
 
@@ -642,7 +642,7 @@
   gap: 8px;
   padding: 12px 16px;
   background: var(--caty-bg-muted);
-  border-radius: 10px;
+  border-radius: 12px;
   margin-top: 12px;
   font-size: 0.875rem;
   color: var(--caty-primary);
@@ -689,7 +689,7 @@
   justify-content: center;
   gap: 10px;
   padding: 14px 20px;
-  border-radius: 10px;
+  border-radius: 12px;
   font-size: 0.875rem;
   font-weight: 600;
   transition: all 0.15s ease;
@@ -728,7 +728,7 @@
 
 .caty-metric {
   background: var(--caty-bg-muted);
-  border-radius: 10px;
+  border-radius: 12px;
   padding: 16px 18px;
   text-align: center;
 }
@@ -775,8 +775,8 @@
 .caty-skeleton-text.medium { width: 75%; }
 .caty-skeleton-text.full { width: 100%; }
 .caty-skeleton-text:last-child { margin-bottom: 0; }
-.caty-skeleton-avatar { width: 44px; height: 44px; border-radius: 10px; }
-.caty-skeleton-btn { height: 48px; border-radius: 10px; }
+.caty-skeleton-avatar { width: 44px; height: 44px; border-radius: 12px; }
+.caty-skeleton-btn { height: 48px; border-radius: 12px; }
 
 /* ERROR */
 .caty-error {
@@ -861,7 +861,7 @@
   padding: 14px 18px !important;
   background: #f1f5f9 !important;
   border: 1px solid #e2e8f0 !important;
-  border-radius: 10px !important;
+  border-radius: 12px !important;
   font-size: 0.875rem !important;
   font-weight: 500 !important;
   color: #475569 !important;
@@ -899,7 +899,7 @@
   padding: 12px 18px !important;
   background: #f1f5f9 !important;
   border: 1px solid #e2e8f0 !important;
-  border-radius: 10px !important;
+  border-radius: 12px !important;
   font-size: 0.8125rem !important;
   font-weight: 500 !important;
   color: #475569 !important;
@@ -966,7 +966,7 @@
   color: #64748b !important;
   background: transparent !important;
   border: none !important;
-  border-radius: 10px !important;
+  border-radius: 12px !important;
   cursor: pointer !important;
   transition: all 0.15s ease;
 }
@@ -1066,7 +1066,7 @@
   align-items: center;
   justify-content: center;
   color: var(--caty-text-muted);
-  border-radius: 10px;
+  border-radius: 12px;
   font-size: 1.5rem;
   transition: all 0.15s ease;
 }
@@ -1098,7 +1098,7 @@
   padding: 14px;
   background: var(--caty-bg-muted);
   border: 1px solid var(--caty-border-light);
-  border-radius: 10px;
+  border-radius: 12px;
   font-size: 0.875rem;
   font-weight: 500;
   color: var(--caty-text-secondary);
@@ -1120,7 +1120,7 @@
   background: var(--caty-text-primary);
   color: var(--caty-bg-panel);
   padding: 14px 24px;
-  border-radius: 10px;
+  border-radius: 12px;
   font-size: 0.875rem;
   font-weight: 500;
   z-index: 200;
@@ -1226,7 +1226,7 @@
 
 .caty-skeleton-card {
   height: 80px !important;
-  border-radius: 10px !important;
+  border-radius: 12px !important;
   margin-top: 6px !important;
 }
 

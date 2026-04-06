@@ -491,7 +491,7 @@ export const WorkItemDetailsDrawer: React.FC<WorkItemDetailsDrawerProps> = ({
                       className="inline-flex items-center justify-center uppercase text-[11px] font-bold px-2"
                       style={{
                         height: 20,
-                        borderRadius: 3,
+                        borderRadius: 4,
                         letterSpacing: '0.05em',
                         backgroundColor:
                           jiraData.jira_sync_status === 'synced' || jiraData.jira_sync_status === 'pushed' ? '#E3FCEF' :

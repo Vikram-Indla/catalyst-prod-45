@@ -700,7 +700,7 @@ export default function TestHubExecutionPage() {
               { count: cycle.failed_count, color: '#DC2626', bg: isDark ? 'rgba(248,113,113,0.12)' : '#FEF2F2', Icon: XCircle },
               { count: cycle.blocked_count, color: '#D97706', bg: isDark ? 'rgba(251,191,36,0.12)' : '#FFFBEB', Icon: AlertTriangle },
             ].map((s, i) => (
-              <span key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: 3, padding: '4px 8px', backgroundColor: s.bg, borderRadius: 5, fontSize: 11, fontWeight: 600, color: s.color }}>
+              <span key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: 3, padding: '4px 8px', backgroundColor: s.bg, borderRadius: 6, fontSize: 11, fontWeight: 600, color: s.color }}>
                 <s.Icon size={12} /> {s.count}
               </span>
             ))}
@@ -719,8 +719,8 @@ export default function TestHubExecutionPage() {
 
           {/* Progress */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <div style={{ width: 100, height: 6, backgroundColor: 'hsl(var(--muted))', borderRadius: 3, overflow: 'hidden' }}>
-              <div style={{ height: '100%', width: `${cycle.progress_percent}%`, background: 'linear-gradient(90deg, #10B981 0%, #059669 100%)', borderRadius: 3, transition: 'width 0.3s' }} />
+            <div style={{ width: 100, height: 6, backgroundColor: 'hsl(var(--muted))', borderRadius: 4, overflow: 'hidden' }}>
+              <div style={{ height: '100%', width: `${cycle.progress_percent}%`, background: 'linear-gradient(90deg, #10B981 0%, #059669 100%)', borderRadius: 4, transition: 'width 0.3s' }} />
             </div>
             <span style={{ fontSize: 13, fontWeight: 700, color: '#059669' }}>{cycle.progress_percent}%</span>
           </div>
@@ -757,7 +757,7 @@ export default function TestHubExecutionPage() {
                 </h3>
                 <div style={{ display: 'flex', gap: 6 }}>
                   <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)}
-                    style={{ flex: 1, height: 30, padding: '0 6px', border: '1px solid hsl(var(--border))', borderRadius: 5, fontSize: 11, color: 'hsl(var(--foreground))', backgroundColor: 'hsl(var(--background))' }}>
+                    style={{ flex: 1, height: 30, padding: '0 6px', border: '1px solid hsl(var(--border))', borderRadius: 6, fontSize: 11, color: 'hsl(var(--foreground))', backgroundColor: 'hsl(var(--background))' }}>
                     <option value="all">All</option>
                     <option value="not_run">Not Run</option>
                     <option value="passed">Passed</option>
@@ -768,7 +768,7 @@ export default function TestHubExecutionPage() {
                   <button onClick={() => setShowMyTestsOnly(!showMyTestsOnly)}
                     style={{
                       height: 30, padding: '0 8px', border: `1px solid ${showMyTestsOnly ? 'hsl(var(--primary))' : 'hsl(var(--border))'}`,
-                      borderRadius: 5, backgroundColor: showMyTestsOnly ? 'hsl(var(--primary) / 0.1)' : 'hsl(var(--background))',
+                      borderRadius: 6, backgroundColor: showMyTestsOnly ? 'hsl(var(--primary) / 0.1)' : 'hsl(var(--background))',
                       color: showMyTestsOnly ? 'hsl(var(--primary))' : 'hsl(var(--muted-foreground))', fontSize: 11, cursor: 'pointer',
                       display: 'flex', alignItems: 'center', gap: 3,
                     }}>
@@ -794,7 +794,7 @@ export default function TestHubExecutionPage() {
                         }}>
                         <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
                           <div style={{
-                            width: 24, height: 24, borderRadius: 5, backgroundColor: st.bg,
+                            width: 24, height: 24, borderRadius: 6, backgroundColor: st.bg,
                             display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1,
                           }}>
                             <StatusIcon size={13} style={{ color: st.color }} />
@@ -832,7 +832,7 @@ export default function TestHubExecutionPage() {
                     {cycle.total_cases - cycle.not_run_count}/{cycle.total_cases}
                   </span>
                 </div>
-                <div style={{ height: 5, backgroundColor: 'hsl(var(--muted))', borderRadius: 3, overflow: 'hidden' }}>
+                <div style={{ height: 5, backgroundColor: 'hsl(var(--muted))', borderRadius: 4, overflow: 'hidden' }}>
                   <div style={{ height: '100%', width: `${cycle.progress_percent}%`, background: 'linear-gradient(90deg, #10B981 0%, #059669 100%)', borderRadius: 3 }} />
                 </div>
               </div>
@@ -855,13 +855,13 @@ export default function TestHubExecutionPage() {
                           {testCase.case_key}
                         </span>
                         <span style={{
-                          fontSize: 11, fontWeight: 600, padding: '3px 8px', borderRadius: 5,
+                          fontSize: 11, fontWeight: 600, padding: '3px 8px', borderRadius: 6,
                           color: statusConfig[currentTestCase.current_status]?.color,
                           backgroundColor: statusConfig[currentTestCase.current_status]?.bg,
                         }}>
                           {statusConfig[currentTestCase.current_status]?.label}
                         </span>
-                        <span style={{ fontSize: 11, color: 'hsl(var(--muted-foreground))', padding: '3px 8px', backgroundColor: 'hsl(var(--muted) / 0.3)', borderRadius: 5, textTransform: 'capitalize' }}>
+                        <span style={{ fontSize: 11, color: 'hsl(var(--muted-foreground))', padding: '3px 8px', backgroundColor: 'hsl(var(--muted) / 0.3)', borderRadius: 6, textTransform: 'capitalize' }}>
                           {testCase.priority?.name || 'Medium'}
                         </span>
                       </div>
@@ -995,17 +995,17 @@ export default function TestHubExecutionPage() {
                       {testCase.case_key}
                     </span>
                     <span style={{
-                      fontSize: 11, fontWeight: 500, padding: '3px 8px', borderRadius: 5,
+                      fontSize: 11, fontWeight: 500, padding: '3px 8px', borderRadius: 6,
                       color: statusConfig[currentTestCase.current_status]?.color,
                       backgroundColor: statusConfig[currentTestCase.current_status]?.bg,
                     }}>
                       {statusConfig[currentTestCase.current_status]?.label}
                     </span>
-                    <span style={{ fontSize: 11, color: 'hsl(var(--muted-foreground))', padding: '3px 8px', backgroundColor: 'hsl(var(--muted) / 0.3)', borderRadius: 5, textTransform: 'capitalize' }}>
+                    <span style={{ fontSize: 11, color: 'hsl(var(--muted-foreground))', padding: '3px 8px', backgroundColor: 'hsl(var(--muted) / 0.3)', borderRadius: 6, textTransform: 'capitalize' }}>
                       {testCase.priority?.name || 'Medium'}
                     </span>
                     {fastTrackMode && (
-                      <span style={{ fontSize: 10, fontWeight: 700, color: '#D97706', backgroundColor: '#FEF3C7', padding: '3px 8px', borderRadius: 5, display: 'flex', alignItems: 'center', gap: 3 }}>
+                      <span style={{ fontSize: 10, fontWeight: 700, color: '#D97706', backgroundColor: '#FEF3C7', padding: '3px 8px', borderRadius: 6, display: 'flex', alignItems: 'center', gap: 3 }}>
                         <Zap size={10} /> FAST TRACK
                       </span>
                     )}
@@ -1079,7 +1079,7 @@ export default function TestHubExecutionPage() {
                       </div>
                      ) : currentStep ? (
                        /* Step-by-step mode: show current step */
-                       <div id={`step-card-${currentStepIndex}`} style={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: 10, overflow: 'hidden', transition: 'background-color 0.2s' }}>
+                       <div id={`step-card-${currentStepIndex}`} style={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: 12, overflow: 'hidden', transition: 'background-color 0.2s' }}>
                          <div style={{ padding: '12px 16px', backgroundColor: 'hsl(var(--muted) / 0.3)', borderBottom: '1px solid hsl(var(--border))', display: 'flex', alignItems: 'center', gap: 10 }}>
                            <span style={{ width: 28, height: 28, borderRadius: '50%', backgroundColor: 'hsl(var(--primary))', color: 'hsl(var(--primary-foreground))', fontSize: 13, fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                              {currentStep.step_number || currentStepIndex + 1}
@@ -1171,7 +1171,7 @@ export default function TestHubExecutionPage() {
                         opacity: isSubmitting ? 0.7 : 1, boxShadow: isActive ? `0 2px 8px ${btn.color}40` : 'none',
                       }}>
                         <Icon size={15} /> {btn.label}
-                        <kbd style={{ fontSize: 10, opacity: 0.7, padding: '1px 5px', backgroundColor: isActive ? 'rgba(255,255,255,0.2)' : `${btn.color}10`, borderRadius: 3, fontFamily: 'monospace' }}>
+                        <kbd style={{ fontSize: 10, opacity: 0.7, padding: '1px 5px', backgroundColor: isActive ? 'rgba(255,255,255,0.2)' : `${btn.color}10`, borderRadius: 4, fontFamily: 'monospace' }}>
                           {btn.shortcut}
                         </kbd>
                       </button>

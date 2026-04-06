@@ -113,7 +113,7 @@ export function ProjectHeaderCard({
           <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1)' }}>{clamped}% complete</span>
         </div>
         <div className="bg-[var(--bg-3)]" style={{ width: '100%', height: 6, borderRadius: 3 }}>
-          <div className="bg-[var(--sem-success)]" style={{ width: `${clamped}%`, height: '100%', borderRadius: 3, transition: 'width 500ms ease' }} />
+          <div className="bg-[var(--sem-success)]" style={{ width: `${clamped}%`, height: '100%', borderRadius: 4, transition: 'width 500ms ease' }} />
         </div>
         <div style={{ fontSize: 12, color: 'var(--fg-3)', marginTop: 6 }}>
           {doneCount} of {totalCount} items done · Est. completion: {estCompletion}

@@ -34,7 +34,7 @@ function Lozenge({ status }: { status: string }) {
       style={{
         height: 20, lineHeight: '20px', fontSize: 11, fontWeight: 700,
         textTransform: 'uppercase', letterSpacing: '0.05em',
-        borderRadius: 3, padding: '0 8px', background: c.bg, color: c.text,
+        borderRadius: 4, padding: '0 8px', background: c.bg, color: c.text,
       }}
     >
       {status}
@@ -240,7 +240,7 @@ export function WriteBackQueueTab() {
                 <tr key={q.id} className="border-b border-[var(--bd-default, #E2E8F0)] dark:border-[#1A1A1A]" style={{ height: 36, maxHeight: 36 }}>
                   <td className={tdClass} style={tdStyle}>{q.ph_work_items?.title || q.ph_work_item_id}</td>
                   <td style={tdStyle}>
-                    <span className="inline-block bg-[#F1F5F9] text-[#334155] dark:bg-[#1A1A1A] dark:text-gray-300" style={{ fontSize: 11, fontWeight: 600, borderRadius: 3, padding: '2px 6px', textTransform: 'uppercase' }}>
+                    <span className="inline-block bg-[#F1F5F9] text-[#334155] dark:bg-[#1A1A1A] dark:text-gray-300" style={{ fontSize: 11, fontWeight: 600, borderRadius: 4, padding: '2px 6px', textTransform: 'uppercase' }}>
                       {q.operation}
                     </span>
                   </td>

@@ -109,10 +109,10 @@ export function WikiAdminPagesTab() {
                     >
                       <td style={{ padding: '8px 12px', fontWeight: 500, maxWidth: 240, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={p.title}>
                         {p.title ?? '—'}
-                        {isStale && <span style={{ marginInlineStart: 6, fontSize: 10, padding: '1px 6px', borderRadius: 3, background: 'rgba(217,119,6,0.1)', color: '#9A5402', fontWeight: 700 }}>⚠ STALE</span>}
+                        {isStale && <span style={{ marginInlineStart: 6, fontSize: 10, padding: '1px 6px', borderRadius: 4, background: 'rgba(217,119,6,0.1)', color: '#9A5402', fontWeight: 700 }}>⚠ STALE</span>}
                       </td>
                       <td style={{ padding: '8px 12px' }}>
-                        <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, padding: '2px 6px', borderRadius: 3, background: 'var(--cp-bg-sunken, #F1F5F9)', color: 'var(--cp-text-secondary, #334155)' }}>{p.domain_code ?? '—'}</span>
+                        <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, padding: '2px 6px', borderRadius: 4, background: 'var(--cp-bg-sunken, #F1F5F9)', color: 'var(--cp-text-secondary, #334155)' }}>{p.domain_code ?? '—'}</span>
                       </td>
                       <td style={{ padding: '8px 12px' }}><PageStatusLoz status={p.status} /></td>
                       <td style={{ padding: '8px 12px', fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: isLowConf ? 'var(--sem-danger)' : 'var(--cp-text-primary, #0F172A)', fontWeight: isLowConf ? 700 : 400 }}>
@@ -132,7 +132,7 @@ export function WikiAdminPagesTab() {
                           onChange={(e) => updateStatus.mutate({ pageId: p.id, status: e.target.value })}
                           aria-label="Change status"
                           style={{
-                            padding: '2px 4px', borderRadius: 3, fontSize: 10,
+                            padding: '2px 4px', borderRadius: 4, fontSize: 10,
                             border: '1px solid var(--cp-border-default, rgba(15,23,42,0.12))',
                             background: 'transparent', cursor: 'pointer',
                             fontFamily: 'Inter, sans-serif', color: 'var(--cp-text-secondary, #334155)',
@@ -169,7 +169,7 @@ export function WikiAdminPagesTab() {
 function ActionBtn({ icon, title, onClick }: { icon: React.ReactNode; title: string; onClick: () => void }) {
   return (
     <button onClick={onClick} title={title} aria-label={title} style={{
-      padding: 4, borderRadius: 3,
+      padding: 4, borderRadius: 4,
       border: '1px solid var(--cp-border-default, rgba(15,23,42,0.12))',
       background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center',
       color: 'var(--cp-text-tertiary, #64748B)', outline: 'none',
@@ -187,7 +187,7 @@ function ActionBtn({ icon, title, onClick }: { icon: React.ReactNode; title: str
 function PagBtn({ disabled, onClick, children }: { disabled: boolean; onClick: () => void; children: React.ReactNode }) {
   return (
     <button disabled={disabled} onClick={onClick} style={{
-      padding: '4px 8px', borderRadius: 3,
+      padding: '4px 8px', borderRadius: 4,
       border: '1px solid var(--cp-border-default, rgba(15,23,42,0.12))',
       background: 'transparent', cursor: disabled ? 'default' : 'pointer',
       opacity: disabled ? 0.4 : 1, display: 'flex', alignItems: 'center',
@@ -209,7 +209,7 @@ function PageStatusLoz({ status }: { status: string }) {
   const s = map[status] ?? map.draft;
   return (
     <span style={{
-      display: 'inline-block', padding: '2px 8px', borderRadius: 3,
+      display: 'inline-block', padding: '2px 8px', borderRadius: 4,
       background: s.bg, color: s.color,
       fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em',
     }}>{status ?? '—'}</span>

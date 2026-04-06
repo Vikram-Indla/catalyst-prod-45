@@ -507,7 +507,7 @@ export function ViewTestCaseModal({
                 style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '12px 16px', border: 'none', backgroundColor: 'transparent', borderBottom: isActive ? '2px solid var(--cp-blue)' : '2px solid transparent', color: isActive ? 'var(--cp-blue)' : 'var(--fg-3)', fontSize: 13, fontWeight: isActive ? 600 : 500, cursor: 'pointer' }}>
                 <Icon style={{ width: 14, height: 14 }} />
                 {tab.label}
-                {tab.count !== undefined && <span style={{ fontSize: 11, backgroundColor: isActive ? 'color-mix(in srgb, var(--cp-blue) 12%, transparent)' : 'var(--bg-1)', padding: '1px 6px', borderRadius: 10, fontWeight: 600 }}>{tab.count}</span>}
+                {tab.count !== undefined && <span style={{ fontSize: 11, backgroundColor: isActive ? 'color-mix(in srgb, var(--cp-blue) 12%, transparent)' : 'var(--bg-1)', padding: '1px 6px', borderRadius: 12, fontWeight: 600 }}>{tab.count}</span>}
               </button>
             );
           })}

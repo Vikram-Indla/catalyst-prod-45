@@ -46,7 +46,7 @@ export const FileItem: React.FC<FileItemProps> = ({
         padding: '16px 18px',
         backgroundColor: COLORS.surfaceCard,
         border: `1px solid ${isHovered ? COLORS.borderDefault : COLORS.borderLight}`,
-        borderRadius: '10px',
+        borderRadius: '12px',
         boxShadow: isHovered ? '0 2px 8px rgba(0, 0, 0, 0.04)' : 'none',
         transition: 'all 0.15s ease'
       }}
@@ -57,7 +57,7 @@ export const FileItem: React.FC<FileItemProps> = ({
           width: '44px',
           height: '44px',
           backgroundColor: styles.bg,
-          borderRadius: '10px',
+          borderRadius: '12px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',

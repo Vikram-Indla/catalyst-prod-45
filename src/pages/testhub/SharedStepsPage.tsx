@@ -612,7 +612,7 @@ export default function SharedStepsPage() {
                           </td>
                           <td style={{ padding: '12px 16px', textAlign: 'center' }}>
                             {variables.length > 0 ? (
-                              <span style={{ padding: '2px 8px', backgroundColor: isDark ? 'rgba(37,99,235,0.15)' : '#EFF6FF', borderRadius: 10, fontSize: 12, fontWeight: 600, color: '#2563EB' }}>
+                              <span style={{ padding: '2px 8px', backgroundColor: isDark ? 'rgba(37,99,235,0.15)' : '#EFF6FF', borderRadius: 12, fontSize: 12, fontWeight: 600, color: '#2563EB' }}>
                                 {variables.length}
                               </span>
                             ) : (
@@ -621,7 +621,7 @@ export default function SharedStepsPage() {
                           </td>
                           <td style={{ padding: '12px 16px', textAlign: 'center' }}>
                             <span style={{
-                              padding: '2px 8px', borderRadius: 10, fontSize: 12, fontWeight: 600,
+                              padding: '2px 8px', borderRadius: 12, fontSize: 12, fontWeight: 600,
                               backgroundColor: step.usage_count > 0 ? (isDark ? 'rgba(5,150,105,0.12)' : '#F0FDF4') : (isDark ? '#1A1A1A' : '#F1F5F9'),
                               color: step.usage_count > 0 ? '#059669' : (isDark ? '#878787' : '#64748B'),
                             }}>
@@ -746,7 +746,7 @@ function CategorySidebarItem({ label, icon, count, isSelected, selectedColor, on
         {label}
       </span>
       <span style={{
-        fontSize: 12, fontWeight: 500, padding: '2px 8px', borderRadius: 10, flexShrink: 0,
+        fontSize: 12, fontWeight: 500, padding: '2px 8px', borderRadius: 12, flexShrink: 0,
         color: isSelected ? selectedColor : (isDark ? '#878787' : '#94A3B8'),
         backgroundColor: isSelected ? `${selectedColor}20` : (isDark ? '#1A1A1A' : '#F1F5F9'),
       }}>

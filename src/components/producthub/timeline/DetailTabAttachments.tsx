@@ -176,9 +176,9 @@ export const DetailTabAttachments: React.FC<DetailTabAttachmentsProps> = ({ init
       {/* A2 — Storage Bar */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
         <span style={{ fontSize: 11, color: 'var(--idp-ink-muted)', whiteSpace: 'nowrap' }}>Used: {formatSize(totalUsed)} / 30 MB</span>
-        <div style={{ flex: 1, height: 4, background: 'var(--idp-surface-tertiary)', borderRadius: 2, overflow: 'hidden' }}>
+        <div style={{ flex: 1, height: 4, background: 'var(--idp-surface-tertiary)', borderRadius: 4, overflow: 'hidden' }}>
           <div style={{
-            width: `${usedPct}%`, height: '100%', borderRadius: 2, transition: 'width 0.3s',
+            width: `${usedPct}%`, height: '100%', borderRadius: 4, transition: 'width 0.3s',
             background: usedPct > 95 ? 'var(--idp-danger)' : usedPct > 80 ? 'var(--idp-warning)' : 'var(--idp-primary)',
           }} />
         </div>

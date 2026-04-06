@@ -250,7 +250,7 @@
   bottom: 12px;
   width: 4px;
   background: var(--budget-primary);
-  border-radius: 2px;
+  border-radius: 4px;
 }
 
 /* INACTIVE NO BUDGET (muted) */

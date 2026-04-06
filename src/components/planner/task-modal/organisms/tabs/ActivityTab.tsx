@@ -36,7 +36,7 @@ export const ActivityTab: React.FC<ActivityTabProps> = ({
         style={{
           display: 'flex',
           backgroundColor: COLORS.surfacePage,
-          borderRadius: '10px',
+          borderRadius: '12px',
           padding: '4px',
           marginBottom: '24px'
         }}

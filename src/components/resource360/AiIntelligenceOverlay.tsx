@@ -223,8 +223,8 @@ const AiIntelligenceOverlay: React.FC<AiIntelligenceOverlayProps> = ({ resourceI
               <br />This may take 15-30 seconds.
             </div>
             <div style={{ marginTop: 20 }}>
-              <div style={{ width: 200, height: 4, background: isDark ? '#1A1A1A' : '#DBEAFE', borderRadius: 2, margin: '0 auto', overflow: 'hidden' }}>
-                <div style={{ width: '60%', height: '100%', background: '#3B82F6', borderRadius: 2, animation: 'indeterminate 1.5s ease-in-out infinite' }} />
+              <div style={{ width: 200, height: 4, background: isDark ? '#1A1A1A' : '#DBEAFE', borderRadius: 4, margin: '0 auto', overflow: 'hidden' }}>
+                <div style={{ width: '60%', height: '100%', background: '#3B82F6', borderRadius: 4, animation: 'indeterminate 1.5s ease-in-out infinite' }} />
               </div>
             </div>
           </div>

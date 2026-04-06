@@ -37,7 +37,7 @@
 .dark .ph-content-wrapper ::-webkit-scrollbar-thumb,
 .dark .ph-inner-content ::-webkit-scrollbar-thumb {
   background: rgba(255,255,255,0.10);
-  border-radius: 3px;
+  border-radius: 4px;
 }
 .dark .ph-content-wrapper ::-webkit-scrollbar-thumb:hover,
 .dark .ph-inner-content ::-webkit-scrollbar-thumb:hover {

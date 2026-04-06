@@ -22,19 +22,19 @@ const SC: Record<string, { dot: string; bg: string; tx: string; label: string }>
   'Ready for Dev':        { dot: '#D97706', bg: '#FFFBEB', tx: '#78350F', label: 'Ready Dev' },
   'Ready for Test':       { dot: '#D97706', bg: '#FFFBEB', tx: '#78350F', label: 'Ready Test' },
   // ── Blue: In Progress ──
-  'In Progress':          { dot: '#2563EB', bg: '#EFF6FF', tx: '#1E3A5F', label: 'In Progress' },
-  'In Development':       { dot: '#2563EB', bg: '#EFF6FF', tx: '#1E3A5F', label: 'In Progress' },
-  'Under Implementation': { dot: '#2563EB', bg: '#EFF6FF', tx: '#1E3A5F', label: 'In Progress' },
-  'In Design':            { dot: '#2563EB', bg: '#EFF6FF', tx: '#1E3A5F', label: 'In Design' },
-  'Ready for Development':{ dot: '#2563EB', bg: '#EFF6FF', tx: '#1E3A5F', label: 'Ready Dev' },
-  'In Entity Integration':{ dot: '#2563EB', bg: '#EFF6FF', tx: '#1E3A5F', label: 'Integration' },
-  'Deferred for Int':     { dot: '#2563EB', bg: '#EFF6FF', tx: '#1E3A5F', label: 'Deferred' },
-  'In Beta':              { dot: '#2563EB', bg: '#EFF6FF', tx: '#1E3A5F', label: 'In Beta' },
-  'In Production':        { dot: '#2563EB', bg: '#EFF6FF', tx: '#1E3A5F', label: 'In Prod' },
-  'In Investigation':     { dot: '#2563EB', bg: '#EFF6FF', tx: '#1E3A5F', label: 'Investigating' },
-  'In Fix':               { dot: '#2563EB', bg: '#EFF6FF', tx: '#1E3A5F', label: 'In Fix' },
-  'In Execution':         { dot: '#2563EB', bg: '#EFF6FF', tx: '#1E3A5F', label: 'In Execution' },
-  'Fix in Progress':      { dot: '#2563EB', bg: '#EFF6FF', tx: '#1E3A5F', label: 'Fixing' },
+  'In Progress':          { dot: '#2563EB', bg: 'var(--tint-blue, #EFF6FF)', tx: '#1E3A5F', label: 'In Progress' },
+  'In Development':       { dot: '#2563EB', bg: 'var(--tint-blue, #EFF6FF)', tx: '#1E3A5F', label: 'In Progress' },
+  'Under Implementation': { dot: '#2563EB', bg: 'var(--tint-blue, #EFF6FF)', tx: '#1E3A5F', label: 'In Progress' },
+  'In Design':            { dot: '#2563EB', bg: 'var(--tint-blue, #EFF6FF)', tx: '#1E3A5F', label: 'In Design' },
+  'Ready for Development':{ dot: '#2563EB', bg: 'var(--tint-blue, #EFF6FF)', tx: '#1E3A5F', label: 'Ready Dev' },
+  'In Entity Integration':{ dot: '#2563EB', bg: 'var(--tint-blue, #EFF6FF)', tx: '#1E3A5F', label: 'Integration' },
+  'Deferred for Int':     { dot: '#2563EB', bg: 'var(--tint-blue, #EFF6FF)', tx: '#1E3A5F', label: 'Deferred' },
+  'In Beta':              { dot: '#2563EB', bg: 'var(--tint-blue, #EFF6FF)', tx: '#1E3A5F', label: 'In Beta' },
+  'In Production':        { dot: '#2563EB', bg: 'var(--tint-blue, #EFF6FF)', tx: '#1E3A5F', label: 'In Prod' },
+  'In Investigation':     { dot: '#2563EB', bg: 'var(--tint-blue, #EFF6FF)', tx: '#1E3A5F', label: 'Investigating' },
+  'In Fix':               { dot: '#2563EB', bg: 'var(--tint-blue, #EFF6FF)', tx: '#1E3A5F', label: 'In Fix' },
+  'In Execution':         { dot: '#2563EB', bg: 'var(--tint-blue, #EFF6FF)', tx: '#1E3A5F', label: 'In Execution' },
+  'Fix in Progress':      { dot: '#2563EB', bg: 'var(--tint-blue, #EFF6FF)', tx: '#1E3A5F', label: 'Fixing' },
   // ── Teal: Review / QA ──
   'In Review':            { dot: '#0D9488', bg: '#F0FDFA', tx: '#134E4A', label: 'In Review' },
   'In QA':                { dot: '#0D9488', bg: '#F0FDFA', tx: '#134E4A', label: 'In QA' },
@@ -50,27 +50,27 @@ const SC: Record<string, { dot: string; bg: string; tx: string; label: string }>
   'In UAT':               { dot: '#7C3AED', bg: '#F5F3FF', tx: '#4C1D95', label: 'In UAT' },
   'UAT Ready':            { dot: '#7C3AED', bg: '#F5F3FF', tx: '#4C1D95', label: 'UAT Ready' },
   // ── Green: Done ──
-  'Done':                 { dot: '#16A34A', bg: '#F0FDF4', tx: '#14532D', label: 'Done' },
-  'Closed':               { dot: '#16A34A', bg: '#F0FDF4', tx: '#14532D', label: 'Done' },
-  'Resolved':             { dot: '#16A34A', bg: '#F0FDF4', tx: '#14532D', label: 'Done' },
-  'Ready for Production': { dot: '#16A34A', bg: '#F0FDF4', tx: '#14532D', label: 'Ready Prod' },
-  'Beta Ready':           { dot: '#16A34A', bg: '#F0FDF4', tx: '#14532D', label: 'Beta Ready' },
-  'Production Ready':     { dot: '#16A34A', bg: '#F0FDF4', tx: '#14532D', label: 'Prod Ready' },
-  'Monitor':              { dot: '#16A34A', bg: '#F0FDF4', tx: '#14532D', label: 'Monitor' },
-  'Released':             { dot: '#16A34A', bg: '#F0FDF4', tx: '#14532D', label: 'Released' },
-  'Verified':             { dot: '#16A34A', bg: '#F0FDF4', tx: '#14532D', label: 'Verified' },
-  'Approved':             { dot: '#16A34A', bg: '#F0FDF4', tx: '#14532D', label: 'Approved' },
-  'Complete':             { dot: '#16A34A', bg: '#F0FDF4', tx: '#14532D', label: 'Complete' },
-  'Completed':            { dot: '#16A34A', bg: '#F0FDF4', tx: '#14532D', label: 'Complete' },
+  'Done':                 { dot: '#16A34A', bg: 'var(--tint-green, #F0FDF4)', tx: '#14532D', label: 'Done' },
+  'Closed':               { dot: '#16A34A', bg: 'var(--tint-green, #F0FDF4)', tx: '#14532D', label: 'Done' },
+  'Resolved':             { dot: '#16A34A', bg: 'var(--tint-green, #F0FDF4)', tx: '#14532D', label: 'Done' },
+  'Ready for Production': { dot: '#16A34A', bg: 'var(--tint-green, #F0FDF4)', tx: '#14532D', label: 'Ready Prod' },
+  'Beta Ready':           { dot: '#16A34A', bg: 'var(--tint-green, #F0FDF4)', tx: '#14532D', label: 'Beta Ready' },
+  'Production Ready':     { dot: '#16A34A', bg: 'var(--tint-green, #F0FDF4)', tx: '#14532D', label: 'Prod Ready' },
+  'Monitor':              { dot: '#16A34A', bg: 'var(--tint-green, #F0FDF4)', tx: '#14532D', label: 'Monitor' },
+  'Released':             { dot: '#16A34A', bg: 'var(--tint-green, #F0FDF4)', tx: '#14532D', label: 'Released' },
+  'Verified':             { dot: '#16A34A', bg: 'var(--tint-green, #F0FDF4)', tx: '#14532D', label: 'Verified' },
+  'Approved':             { dot: '#16A34A', bg: 'var(--tint-green, #F0FDF4)', tx: '#14532D', label: 'Approved' },
+  'Complete':             { dot: '#16A34A', bg: 'var(--tint-green, #F0FDF4)', tx: '#14532D', label: 'Complete' },
+  'Completed':            { dot: '#16A34A', bg: 'var(--tint-green, #F0FDF4)', tx: '#14532D', label: 'Complete' },
   // ── Red: Blocked / Rejected ──
-  'Blocked':              { dot: '#EF4444', bg: '#FEF2F2', tx: '#7F1D1D', label: 'Blocked' },
-  'Rejected':             { dot: '#EF4444', bg: '#FEF2F2', tx: '#7F1D1D', label: 'Rejected' },
-  'Impediment':           { dot: '#EF4444', bg: '#FEF2F2', tx: '#7F1D1D', label: 'Impediment' },
+  'Blocked':              { dot: '#EF4444', bg: 'var(--tint-red, #FEF2F2)', tx: '#7F1D1D', label: 'Blocked' },
+  'Rejected':             { dot: '#EF4444', bg: 'var(--tint-red, #FEF2F2)', tx: '#7F1D1D', label: 'Rejected' },
+  'Impediment':           { dot: '#EF4444', bg: 'var(--tint-red, #FEF2F2)', tx: '#7F1D1D', label: 'Impediment' },
 };
 
 // Category-level fallbacks (Jira always provides these)
-const CAT_DONE       = { dot: '#16A34A', bg: '#F0FDF4', tx: '#14532D', label: 'Done' };
-const CAT_INPROGRESS = { dot: '#2563EB', bg: '#EFF6FF', tx: '#1E3A5F', label: 'In Progress' };
+const CAT_DONE       = { dot: '#16A34A', bg: 'var(--tint-green, #F0FDF4)', tx: '#14532D', label: 'Done' };
+const CAT_INPROGRESS = { dot: '#2563EB', bg: 'var(--tint-blue, #EFF6FF)', tx: '#1E3A5F', label: 'In Progress' };
 const CAT_TODO       = { dot: '#D97706', bg: '#FFFBEB', tx: '#78350F', label: 'To Do' };
 
 function resolveStatus(item: any) {
@@ -87,7 +87,7 @@ function resolveStatus(item: any) {
   const cat5 = resolveStatusCategoryStatic(name, item.status_category);
   if (cat5 === 'Done') return CAT_DONE;
   if (cat5 === 'In Progress' || cat5 === 'In Review') return CAT_INPROGRESS;
-  if (cat5 === 'Blocked') return { dot: '#EF4444', bg: '#FEF2F2', tx: '#7F1D1D', label: name || 'Blocked' };
+  if (cat5 === 'Blocked') return { dot: '#EF4444', bg: 'var(--tint-red, #FEF2F2)', tx: '#7F1D1D', label: name || 'Blocked' };
 
   // 4. Final fallback: To Do (never "Unknown")
   return CAT_TODO;
@@ -168,11 +168,11 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
             <span style={{ fontSize: '10.5px', fontWeight: 600, padding: '2px 8px', borderRadius: '4px', background: 'var(--bg-3)', color: 'var(--fg-2)', textTransform: 'capitalize' }}>
               {item.priority || '—'}
             </span>
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '3px', fontSize: '10.5px', fontWeight: 600, padding: '2px 8px', borderRadius: '4px', background: '#FEF2F2', color: '#7F1D1D' }}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '3px', fontSize: '10.5px', fontWeight: 600, padding: '2px 8px', borderRadius: '4px', background: 'var(--tint-red, #FEF2F2)', color: '#7F1D1D' }}>
               {getJiraIcon(item.item_type)} <span style={{ textTransform: 'uppercase' }}>{item.item_type}</span>
             </span>
             {item.project_key && (
-              <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '3px', color: '#FFF', background: projColor }}>{item.project_key}</span>
+              <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', color: '#FFF', background: projColor }}>{item.project_key}</span>
             )}
           </div>
           <div style={{ fontSize: '16px', fontWeight: 600, color: '#020617', lineHeight: '1.4' }}>{item.title}</div>
@@ -209,9 +209,9 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
                 ) : cell.isBar ? (
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <span style={{ fontSize: '14px', fontWeight: 700, color: ageCol(cell.value as number), fontVariantNumeric: 'tabular-nums' }}>{cell.value}</span>
-                    <div style={{ width: '60px', height: '4px', borderRadius: '2px', background: 'var(--bg-3)', overflow: 'hidden' }}>
+                    <div style={{ width: '60px', height: '4px', borderRadius: '4px', background: 'var(--bg-3)', overflow: 'hidden' }}>
                       <div style={{
-                        height: '100%', borderRadius: '2px',
+                        height: '100%', borderRadius: '4px',
                         width: `${Math.min((cell.value as number) / 21 * 100, 100)}%`,
                         background: ageCol(cell.value as number),
                         minWidth: (cell.value as number) > 0 ? '2px' : '0',
@@ -243,7 +243,7 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
                 {/* Current */}
                 <div style={{
                   display: 'flex', alignItems: 'flex-start', gap: '6px', padding: '6px 8px',
-                  borderRadius: '6px', border: '1.5px solid var(--cp-blue)', background: '#EFF6FF',
+                  borderRadius: '6px', border: '1.5px solid var(--cp-blue)', background: 'var(--tint-blue, #EFF6FF)',
                 }}>
                   {getJiraIcon(item.item_type)}
                   <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', color: 'var(--cp-blue)', whiteSpace: 'nowrap', flexShrink: 0, minWidth: '72px', fontWeight: 600 }}>{item.item_key}</span>
@@ -264,7 +264,7 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
             <div style={{ padding: '16px 20px', flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
                 <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--fg-2)', textTransform: 'uppercase', letterSpacing: '.05em' }}>Siblings</span>
-                <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--fg-2)', background: 'var(--bg-3)', padding: '2px 8px', borderRadius: '10px' }}>{doneSiblings}/{siblings.length} done</span>
+                <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--fg-2)', background: 'var(--bg-3)', padding: '2px 8px', borderRadius: '12px' }}>{doneSiblings}/{siblings.length} done</span>
               </div>
               <div style={{ flex: 1, overflowY: 'auto', scrollbarWidth: 'thin', scrollbarColor: '#CBD5E1 transparent', maxHeight: '320px' }}>
                 {siblings.map(sib => {
@@ -276,7 +276,7 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
                       display: 'flex', alignItems: 'center', gap: '8px', padding: '7px 10px', borderRadius: '6px',
                       cursor: isCurrent ? 'default' : 'pointer', marginBottom: '2px',
                       border: isCurrent ? '1px solid var(--cp-blue)' : '1px solid transparent',
-                      background: isCurrent ? '#EFF6FF' : 'transparent',
+                      background: isCurrent ? 'var(--tint-blue, #EFF6FF)' : 'transparent',
                     }}
                       onMouseEnter={e => { if (!isCurrent) e.currentTarget.style.background = 'var(--bg-3)'; }}
                       onMouseLeave={e => { if (!isCurrent) e.currentTarget.style.background = 'transparent'; }}
@@ -286,7 +286,7 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
                       {/* Status pill — INLINE, small */}
                       <span style={{
                         display: 'inline-flex', alignItems: 'center', gap: '3px',
-                        padding: '2px 6px', borderRadius: '3px', fontSize: '10.5px', fontWeight: 600, lineHeight: '1',
+                        padding: '2px 6px', borderRadius: '4px', fontSize: '10.5px', fontWeight: 600, lineHeight: '1',
                         background: sibS.bg, color: sibS.tx, flexShrink: 0,
                       }}>
                         <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: sibS.dot, flexShrink: 0 }} />

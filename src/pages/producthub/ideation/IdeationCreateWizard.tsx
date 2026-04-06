@@ -272,7 +272,7 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
             margin: '16px 32px 0',
             background: isDark ? 'rgba(124,58,237,0.08)' : '#F5F3FF',
             border: `1px solid ${isDark ? 'rgba(124,58,237,0.15)' : '#EDE9FE'}`,
-            borderRadius: '10px',
+            borderRadius: '12px',
             padding: '12px 16px',
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           }}>

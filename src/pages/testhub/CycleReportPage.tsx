@@ -78,10 +78,10 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 const PRIORITY_CONFIG: Record<string, { color: string; bg: string }> = {
-  critical: { color: '#DC2626', bg: '#FEF2F2' },
-  high: { color: '#EA580C', bg: '#FFF7ED' },
+  critical: { color: '#DC2626', bg: 'var(--tint-red, #FEF2F2)' },
+  high: { color: '#EA580C', bg: 'var(--tint-amber, #FFF7ED)' },
   medium: { color: '#D97706', bg: '#FFFBEB' },
-  low: { color: '#059669', bg: '#ECFDF5' },
+  low: { color: '#059669', bg: 'var(--tint-green-soft, #ECFDF5)' },
 };
 
 const FAILURE_REASON_LABELS: Record<string, string> = {
@@ -203,7 +203,7 @@ export default function CycleReportPage() {
         </button>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
-          <span style={{ fontSize: 12, fontWeight: 600, color: '#2563EB', backgroundColor: '#EFF6FF', padding: '4px 10px', borderRadius: 6 }}>{cycle.cycle_key}</span>
+          <span style={{ fontSize: 12, fontWeight: 600, color: '#2563EB', backgroundColor: 'var(--tint-blue, #EFF6FF)', padding: '4px 10px', borderRadius: 6 }}>{cycle.cycle_key}</span>
           <span style={{ fontSize: 12, fontWeight: 500, color: '#64748B', backgroundColor: var(--bg-2, '#F1F5F9'), padding: '4px 10px', borderRadius: 6, textTransform: 'capitalize' }}>{cycle.status}</span>
         </div>
         <h1 style={{ fontSize: 22, fontWeight: 700, color: 'hsl(var(--foreground))', margin: '0 0 8px' }}>{cycle.name} — Report</h1>
@@ -364,7 +364,7 @@ export default function CycleReportPage() {
             </div>
             <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
               {failureReasons.map((f, i) => (
-                <div key={i} style={{ backgroundColor: '#FEF2F2', border: '1px solid #FECACA', borderRadius: 10, padding: '12px 20px', textAlign: 'center' }}>
+                <div key={i} style={{ backgroundColor: 'var(--tint-red, #FEF2F2)', border: '1px solid #FECACA', borderRadius: 12, padding: '12px 20px', textAlign: 'center' }}>
                   <p style={{ fontSize: 20, fontWeight: 700, color: '#DC2626', margin: '0 0 4px' }}>{f.count}</p>
                   <p style={{ fontSize: 12, color: '#92400E', margin: 0 }}>{FAILURE_REASON_LABELS[f.failure_reason] || f.failure_reason}</p>
                 </div>

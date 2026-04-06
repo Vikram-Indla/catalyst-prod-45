@@ -78,17 +78,17 @@ export function ExecutionTestCaseView({
 
   const statusConfig: Record<string, { color: string; bg: string; label: string }> = {
     not_run: { color: 'var(--fg-3)', bg: 'var(--cp-bd-zone)', label: 'Not Run' },
-    passed: { color: 'var(--sem-success)', bg: '#ECFDF5', label: 'Passed' },
-    failed: { color: 'var(--sem-danger)', bg: '#FEF2F2', label: 'Failed' },
+    passed: { color: 'var(--sem-success)', bg: 'var(--tint-green-soft, #ECFDF5)', label: 'Passed' },
+    failed: { color: 'var(--sem-danger)', bg: 'var(--tint-red, #FEF2F2)', label: 'Failed' },
     blocked: { color: 'var(--sem-warning)', bg: '#FFFBEB', label: 'Blocked' },
     skipped: { color: 'var(--fg-4)', bg: 'var(--bg-1)', label: 'Skipped' },
   };
 
   const priorityConfig: Record<string, { color: string; bg: string }> = {
-    critical: { color: 'var(--sem-danger)', bg: '#FEF2F2' },
-    high: { color: '#EA580C', bg: '#FFF7ED' },
+    critical: { color: 'var(--sem-danger)', bg: 'var(--tint-red, #FEF2F2)' },
+    high: { color: '#EA580C', bg: 'var(--tint-amber, #FFF7ED)' },
     medium: { color: 'var(--sem-warning)', bg: '#FFFBEB' },
-    low: { color: 'var(--sem-success)', bg: '#ECFDF5' },
+    low: { color: 'var(--sem-success)', bg: 'var(--tint-green-soft, #ECFDF5)' },
   };
 
   const formatTime = (seconds: number) => {
@@ -172,7 +172,7 @@ export function ExecutionTestCaseView({
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             {testCase?.steps && testCase.steps.length > 0 ? (
               testCase.steps.map((step, index) => (
-                <div key={index} style={{ backgroundColor: 'var(--cp-float)', border: '1px solid var(--divider)', borderRadius: 10, overflow: 'hidden' }}>
+                <div key={index} style={{ backgroundColor: 'var(--cp-float)', border: '1px solid var(--divider)', borderRadius: 12, overflow: 'hidden' }}>
                   <div style={{ padding: '12px 16px', backgroundColor: 'var(--bg-1)', borderBottom: '1px solid var(--divider)', display: 'flex', alignItems: 'center', gap: 12 }}>
                     <span style={{ width: 28, height: 28, borderRadius: '50%', backgroundColor: 'var(--cp-blue)', color: 'var(--cp-float)', fontSize: 13, fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       {step.step_number || index + 1}
@@ -184,7 +184,7 @@ export function ExecutionTestCaseView({
                       <p style={{ fontSize: 14, color: 'var(--fg-2)', margin: 0, lineHeight: 1.6 }}>{highlightVariables(step.action)}</p>
                     </div>
                     {step.expected_result && (
-                      <div style={{ padding: 12, backgroundColor: '#ECFDF5', borderRadius: 8, borderLeft: '3px solid #10B981' }}>
+                      <div style={{ padding: 12, backgroundColor: 'var(--tint-green-soft, #ECFDF5)', borderRadius: 8, borderLeft: '3px solid #10B981' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
                           <Target size={12} style={{ color: 'var(--sem-success)' }} />
                           <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--sem-success)', textTransform: 'uppercase' }}>Expected</span>
@@ -196,7 +196,7 @@ export function ExecutionTestCaseView({
                 </div>
               ))
             ) : (
-              <div style={{ padding: 24, backgroundColor: 'var(--bg-1)', borderRadius: 10, textAlign: 'center', color: 'var(--fg-4)' }}>
+              <div style={{ padding: 24, backgroundColor: 'var(--bg-1)', borderRadius: 12, textAlign: 'center', color: 'var(--fg-4)' }}>
                 <FileText size={24} style={{ marginBottom: 8, opacity: 0.5 }} />
                 <p style={{ margin: 0 }}>No steps defined for this test case</p>
               </div>
@@ -206,7 +206,7 @@ export function ExecutionTestCaseView({
 
         {/* Overall Expected Result */}
         {testCase?.expected_result && (
-          <div style={{ marginBottom: 24, padding: 16, backgroundColor: '#ECFDF5', border: '1px solid #A7F3D0', borderRadius: 10 }}>
+          <div style={{ marginBottom: 24, padding: 16, backgroundColor: 'var(--tint-green-soft, #ECFDF5)', border: '1px solid #A7F3D0', borderRadius: 10 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
               <Target size={16} style={{ color: 'var(--sem-success)' }} />
               <span style={{ fontSize: 13, fontWeight: 600, color: '#065F46' }}>Expected Result</span>
@@ -225,7 +225,7 @@ export function ExecutionTestCaseView({
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             placeholder="Add notes about this test execution..."
-            style={{ width: '100%', minHeight: 100, padding: 14, border: '1.5px solid var(--divider)', borderRadius: 10, fontSize: 14, color: 'var(--fg-2)', lineHeight: 1.5, resize: 'vertical', fontFamily: 'inherit' }}
+            style={{ width: '100%', minHeight: 100, padding: 14, border: '1.5px solid var(--divider)', borderRadius: 12, fontSize: 14, color: 'var(--fg-2)', lineHeight: 1.5, resize: 'vertical', fontFamily: 'inherit' }}
           />
           <p style={{ fontSize: 12, color: 'var(--fg-4)', margin: '8px 0 0' }}>Notes auto-save as you type</p>
         </div>

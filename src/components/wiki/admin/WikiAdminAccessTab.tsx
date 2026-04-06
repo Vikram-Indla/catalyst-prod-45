@@ -84,7 +84,7 @@ export function WikiAdminAccessTab() {
                         disabled={!entry}
                         aria-label={`${role} ${d.domain_code}: ${hasAccess ? 'has access' : 'no access'}`}
                         style={{
-                          padding: '2px 10px', borderRadius: 3, border: 'none',
+                          padding: '2px 10px', borderRadius: 4, border: 'none',
                           cursor: entry ? 'pointer' : 'default',
                           fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em',
                           background: hasAccess ? '#1B7F37' : '#DFE1E6',

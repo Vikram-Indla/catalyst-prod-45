@@ -178,7 +178,7 @@ export function SyncLogs() {
 
       {/* Error Banner */}
       {syncStatus === 'error' && lastError && (
-        <div style={{ background: '#FEF2F2', border: '1px solid #FCA5A5', borderRadius: '8px', padding: '16px 20px', display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+        <div style={{ background: 'var(--tint-red, #FEF2F2)', border: '1px solid #FCA5A5', borderRadius: '8px', padding: '16px 20px', display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
           <XCircle style={{ width: 20, height: 20, color: '#EF4444', flexShrink: 0, marginTop: 2 }} />
           <div>
             <div style={{ fontFamily: 'Sora, sans-serif', fontWeight: 600, fontSize: '13px', color: '#EF4444' }}>Sync Failed</div>
@@ -188,7 +188,7 @@ export function SyncLogs() {
       )}
 
       {/* Sync Filters Card */}
-      <div style={{ background: '#F8FAFC', border: '1px solid var(--bd-default, #E2E8F0)', borderRadius: '8px', overflow: 'visible' }}>
+      <div style={{ background: 'var(--bg-1, #F8FAFC)', border: '1px solid var(--bd-default, #E2E8F0)', borderRadius: '8px', overflow: 'visible' }}>
         <button
           onClick={() => setFiltersOpen(!filtersOpen)}
           style={{
@@ -202,7 +202,7 @@ export function SyncLogs() {
               Sync Filters
             </span>
             {hasFilters && (
-              <span style={{ fontSize: '10px', padding: '1px 8px', borderRadius: '10px', background: '#DBEAFE', color: '#2563EB', fontWeight: 600, fontFamily: 'Inter, sans-serif' }}>
+              <span style={{ fontSize: '10px', padding: '1px 8px', borderRadius: '12px', background: '#DBEAFE', color: '#2563EB', fontWeight: 600, fontFamily: 'Inter, sans-serif' }}>
                 {activeFilterCount} active
               </span>
             )}
@@ -232,7 +232,7 @@ export function SyncLogs() {
                       padding: '5px 14px', borderRadius: '4px', fontSize: '11px', fontWeight: 600,
                       fontFamily: 'Inter, sans-serif', cursor: 'pointer',
                       border: lookbackMonths === opt.value ? '1px solid #2563EB' : '1px solid var(--bd-default, #E2E8F0)',
-                      background: lookbackMonths === opt.value ? '#EFF6FF' : '#fff',
+                      background: lookbackMonths === opt.value ? 'var(--tint-blue, #EFF6FF)' : '#fff',
                       color: lookbackMonths === opt.value ? '#2563EB' : '#334155',
                     }}
                   >
@@ -287,7 +287,7 @@ export function SyncLogs() {
                 style={{
                   display: 'inline-flex', alignItems: 'center', gap: '6px',
                   padding: '7px 16px', borderRadius: '6px', border: '1px solid var(--bd-default, #E2E8F0)',
-                  background: '#fff', color: '#334155', fontSize: '12px', fontWeight: 600,
+                  background: 'var(--bg-app, #fff)', color: '#334155', fontSize: '12px', fontWeight: 600,
                   cursor: saveFilters.isPending ? 'not-allowed' : 'pointer', fontFamily: 'Inter, sans-serif',
                 }}
               >
@@ -335,7 +335,7 @@ export function SyncLogs() {
                 disabled={isSyncing}
                 style={{
                   padding: '6px 12px', borderRadius: '6px', border: '1px solid #EF4444',
-                  background: '#FEF2F2', color: '#EF4444', fontSize: '11px', fontWeight: 600,
+                  background: 'var(--tint-red, #FEF2F2)', color: '#EF4444', fontSize: '11px', fontWeight: 600,
                   cursor: 'pointer', fontFamily: 'Inter, sans-serif',
                 }}
               >
@@ -345,7 +345,7 @@ export function SyncLogs() {
                 onClick={() => setConfirmFullSync(false)}
                 style={{
                   padding: '6px 12px', borderRadius: '6px', border: '1px solid var(--bd-default, #E2E8F0)',
-                  background: '#fff', color: '#64748B', fontSize: '11px', fontWeight: 600,
+                  background: 'var(--bg-app, #fff)', color: '#64748B', fontSize: '11px', fontWeight: 600,
                   cursor: 'pointer', fontFamily: 'Inter, sans-serif',
                 }}
               >
@@ -358,7 +358,7 @@ export function SyncLogs() {
               disabled={isSyncing}
               style={{
                 padding: '6px 12px', borderRadius: '6px', border: '1px solid var(--bd-default, #E2E8F0)',
-                background: '#fff', color: '#64748B', fontSize: '11px', fontWeight: 600,
+                background: 'var(--bg-app, #fff)', color: '#64748B', fontSize: '11px', fontWeight: 600,
                 cursor: isSyncing ? 'not-allowed' : 'pointer', fontFamily: 'Inter, sans-serif',
               }}
             >
@@ -372,7 +372,7 @@ export function SyncLogs() {
             style={{
               display: 'inline-flex', alignItems: 'center', gap: '6px',
               padding: '8px 16px', borderRadius: '6px', border: '1px solid #FCA5A5',
-              background: '#FEF2F2', color: '#EF4444',
+              background: 'var(--tint-red, #FEF2F2)', color: '#EF4444',
               fontSize: '12px', fontWeight: 600, cursor: 'pointer', fontFamily: 'Inter, sans-serif',
             }}
           >
@@ -383,14 +383,14 @@ export function SyncLogs() {
       </div>
 
       {/* Sync Schedule */}
-      <div style={{ background: '#F8FAFC', border: '1px solid var(--bd-default, #E2E8F0)', borderRadius: '8px', padding: '20px' }}>
+      <div style={{ background: 'var(--bg-1, #F8FAFC)', border: '1px solid var(--bd-default, #E2E8F0)', borderRadius: '8px', padding: '20px' }}>
         <div style={{ fontFamily: 'Sora, sans-serif', fontSize: '13px', fontWeight: 700, color: '#0F172A', marginBottom: '16px' }}>
           Sync Schedule
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <label style={{ width: '180px', fontSize: '12px', fontWeight: 500, color: '#334155', fontFamily: 'Inter, sans-serif' }}>Incremental sync every:</label>
-            <select value={intervalMin} onChange={(e) => setIntervalMin(Number(e.target.value))} style={{ height: '36px', padding: '0 12px', borderRadius: '6px', border: '1px solid var(--bd-default, #E2E8F0)', fontSize: '12px', color: '#334155', fontFamily: 'Inter, sans-serif', background: '#fff' }}>
+            <select value={intervalMin} onChange={(e) => setIntervalMin(Number(e.target.value))} style={{ height: '36px', padding: '0 12px', borderRadius: '6px', border: '1px solid var(--bd-default, #E2E8F0)', fontSize: '12px', color: '#334155', fontFamily: 'Inter, sans-serif', background: 'var(--bg-app, #fff)' }}>
               <option value={15}>15 minutes</option>
               <option value={30}>30 minutes</option>
               <option value={60}>60 minutes</option>
@@ -399,7 +399,7 @@ export function SyncLogs() {
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <label style={{ width: '180px', fontSize: '12px', fontWeight: 500, color: '#334155', fontFamily: 'Inter, sans-serif' }}>Full sync daily at:</label>
-            <select value={fullSyncTime} onChange={(e) => setFullSyncTime(e.target.value)} style={{ height: '36px', padding: '0 12px', borderRadius: '6px', border: '1px solid var(--bd-default, #E2E8F0)', fontSize: '12px', color: '#334155', fontFamily: 'Inter, sans-serif', background: '#fff' }}>
+            <select value={fullSyncTime} onChange={(e) => setFullSyncTime(e.target.value)} style={{ height: '36px', padding: '0 12px', borderRadius: '6px', border: '1px solid var(--bd-default, #E2E8F0)', fontSize: '12px', color: '#334155', fontFamily: 'Inter, sans-serif', background: 'var(--bg-app, #fff)' }}>
               <option value="02:00">02:00 UTC</option>
               <option value="06:00">06:00 UTC</option>
               <option value="12:00">12:00 UTC</option>
@@ -407,7 +407,7 @@ export function SyncLogs() {
             <span style={{ fontSize: '11px', color: 'var(--fg-3, #94A3B8)' }}>Complete re-sync with pruning</span>
           </div>
           <div style={{ marginTop: '8px' }}>
-            <button onClick={handleSaveSchedule} disabled={updateSchedule.isPending} style={{ padding: '7px 16px', borderRadius: '6px', border: '1px solid var(--bd-default, #E2E8F0)', background: '#fff', color: '#334155', fontSize: '12px', fontWeight: 600, cursor: 'pointer', fontFamily: 'Inter, sans-serif' }}>
+            <button onClick={handleSaveSchedule} disabled={updateSchedule.isPending} style={{ padding: '7px 16px', borderRadius: '6px', border: '1px solid var(--bd-default, #E2E8F0)', background: 'var(--bg-app, #fff)', color: '#334155', fontSize: '12px', fontWeight: 600, cursor: 'pointer', fontFamily: 'Inter, sans-serif' }}>
               {updateSchedule.isPending ? 'Saving…' : 'Save Schedule'}
             </button>
           </div>
@@ -415,13 +415,13 @@ export function SyncLogs() {
       </div>
 
       {/* Sync Log */}
-      <div style={{ background: '#fff', border: '1px solid var(--bd-default, #E2E8F0)', borderRadius: '8px', overflow: 'hidden' }}>
+      <div style={{ background: 'var(--bg-app, #fff)', border: '1px solid var(--bd-default, #E2E8F0)', borderRadius: '8px', overflow: 'hidden' }}>
         <div style={{ padding: '14px 20px', borderBottom: '1px solid var(--bd-default, #E2E8F0)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <span style={{ fontFamily: 'Sora, sans-serif', fontSize: '13px', fontWeight: 700, color: '#0F172A' }}>Sync Log</span>
           <span style={{ fontSize: '11px', color: '#64748B', background: var(--bg-2, '#F1F5F9'), padding: '2px 8px', borderRadius: '4px' }}>Last 10 runs</span>
         </div>
         <div style={{ maxHeight: '340px', overflowY: 'auto' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '140px 90px 80px 1fr 100px 70px', padding: '8px 20px', background: '#F8FAFC', borderBottom: '1px solid var(--bd-default, #E2E8F0)', position: 'sticky', top: 0, zIndex: 1 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '140px 90px 80px 1fr 100px 70px', padding: '8px 20px', background: 'var(--bg-1, #F8FAFC)', borderBottom: '1px solid var(--bd-default, #E2E8F0)', position: 'sticky', top: 0, zIndex: 1 }}>
             {['TIMESTAMP', 'TYPE', 'STATUS', 'DETAILS', 'PROJECTS', 'DURATION'].map(h => (
               <span key={h} style={{ fontFamily: 'Sora, sans-serif', fontSize: '10px', fontWeight: 600, color: 'var(--fg-3, #94A3B8)', letterSpacing: '.5px', textTransform: 'uppercase', textAlign: h === 'DURATION' ? 'right' : 'left' }}>{h}</span>
             ))}
@@ -444,7 +444,7 @@ export function SyncLogs() {
 
 function HealthBox({ label, value, valueColor, loading, spinning }: { label: string; value: string; valueColor: string; loading?: boolean; spinning?: boolean }) {
   return (
-    <div style={{ background: '#F8FAFC', border: '1px solid var(--bd-default, #E2E8F0)', borderRadius: '6px', padding: '14px', textAlign: 'center' }}>
+    <div style={{ background: 'var(--bg-1, #F8FAFC)', border: '1px solid var(--bd-default, #E2E8F0)', borderRadius: '6px', padding: '14px', textAlign: 'center' }}>
       {loading ? (
         <Loader2 size={18} className="animate-spin" style={{ color: 'var(--fg-3, #94A3B8)', margin: '0 auto 4px' }} />
       ) : (
@@ -460,13 +460,13 @@ function HealthBox({ label, value, valueColor, loading, spinning }: { label: str
 
 function LogRow({ log, formatDuration }: { log: SyncLogEntry; formatDuration: (ms: number) => string }) {
   const statusColors: Record<string, { bg: string; text: string }> = {
-    success: { bg: '#ECFDF5', text: '#10B981' },
+    success: { bg: 'var(--tint-green-soft, #ECFDF5)', text: '#10B981' },
     warning: { bg: '#FFFBEB', text: '#F59E0B' },
-    error: { bg: '#FEF2F2', text: '#EF4444' },
-    running: { bg: '#EFF6FF', text: '#2563EB' },
+    error: { bg: 'var(--tint-red, #FEF2F2)', text: '#EF4444' },
+    running: { bg: 'var(--tint-blue, #EFF6FF)', text: '#2563EB' },
   }
   const typeColors: Record<string, { bg: string; text: string }> = {
-    incremental: { bg: '#EFF6FF', text: '#2563EB' },
+    incremental: { bg: 'var(--tint-blue, #EFF6FF)', text: '#2563EB' },
     full: { bg: '#F5F3FF', text: '#7C3AED' },
   }
   const sc = statusColors[log.status] || statusColors.running
@@ -486,21 +486,21 @@ function LogRow({ log, formatDuration }: { log: SyncLogEntry; formatDuration: (m
   return (
     <div
       style={{ display: 'grid', gridTemplateColumns: '140px 90px 80px 1fr 100px 70px', padding: '10px 20px', borderBottom: '1px solid #F1F5F9', alignItems: 'center', fontSize: '12px' }}
-      onMouseOver={(e) => (e.currentTarget.style.background = '#F8FAFC')}
+      onMouseOver={(e) => (e.currentTarget.style.background = 'var(--bg-1, #F8FAFC)')}
       onMouseOut={(e) => (e.currentTarget.style.background = 'transparent')}
     >
       <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '11px', color: '#64748B' }}>{timestamp}</span>
-      <span><span style={{ fontSize: '9px', padding: '2px 8px', borderRadius: '3px', background: tc.bg, color: tc.text, fontWeight: 600, textTransform: 'capitalize', fontFamily: 'Inter, sans-serif' }}>{log.sync_type}</span></span>
-      <span><span style={{ fontSize: '10px', padding: '2px 10px', borderRadius: '10px', background: sc.bg, color: sc.text, fontWeight: 600, textTransform: 'capitalize', fontFamily: 'Inter, sans-serif' }}>{log.status}</span></span>
+      <span><span style={{ fontSize: '9px', padding: '2px 8px', borderRadius: '4px', background: tc.bg, color: tc.text, fontWeight: 600, textTransform: 'capitalize', fontFamily: 'Inter, sans-serif' }}>{log.sync_type}</span></span>
+      <span><span style={{ fontSize: '10px', padding: '2px 10px', borderRadius: '12px', background: sc.bg, color: sc.text, fontWeight: 600, textTransform: 'capitalize', fontFamily: 'Inter, sans-serif' }}>{log.status}</span></span>
       <span style={{ color: '#334155', fontSize: '12px', fontFamily: 'Inter, sans-serif', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{details}</span>
       <span style={{ display: 'flex', gap: '3px', flexWrap: 'wrap' }}>
         {projectChips ? (
           projectChips.length <= 3 ? (
             projectChips.map(p => (
-              <span key={p} style={{ fontSize: '9px', padding: '1px 6px', borderRadius: '3px', background: '#E0F2FE', color: '#0369A1', fontWeight: 600, fontFamily: 'Inter, sans-serif' }}>{p}</span>
+              <span key={p} style={{ fontSize: '9px', padding: '1px 6px', borderRadius: '4px', background: '#E0F2FE', color: '#0369A1', fontWeight: 600, fontFamily: 'Inter, sans-serif' }}>{p}</span>
             ))
           ) : (
-            <span style={{ fontSize: '9px', padding: '1px 6px', borderRadius: '3px', background: '#E0F2FE', color: '#0369A1', fontWeight: 600, fontFamily: 'Inter, sans-serif' }}>{projectChips.length} projects</span>
+            <span style={{ fontSize: '9px', padding: '1px 6px', borderRadius: '4px', background: '#E0F2FE', color: '#0369A1', fontWeight: 600, fontFamily: 'Inter, sans-serif' }}>{projectChips.length} projects</span>
           )
         ) : (
           <span style={{ fontSize: '9px', color: '#CBD5E1' }}>All</span>

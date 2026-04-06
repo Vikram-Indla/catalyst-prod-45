@@ -145,7 +145,7 @@ export default function StoryBacklogPage({ projectId: propProjectId }: { project
                       <div style={{ flex: 1, minWidth: 0, fontSize: 13, fontWeight: 400, color: tk.t1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{story.title}</div>
                       {/* STATUS — 3-color guardrail */}
                       <div style={{ width: 138, flexShrink: 0 }}>
-                        {sc && ls && <span style={{ display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px', borderRadius: 3, fontSize: 11, fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.03em', background: ls.bg, color: ls.text }}>{sc.label}</span>}
+                        {sc && ls && <span style={{ display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px', borderRadius: 4, fontSize: 11, fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.03em', background: ls.bg, color: ls.text }}>{sc.label}</span>}
                       </div>
                       {/* PARENT */}
                       <div style={{ width: 240, flexShrink: 0, overflow: 'hidden' }}>

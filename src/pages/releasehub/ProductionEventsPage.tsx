@@ -22,7 +22,7 @@ const RESULT_BADGE: Record<string, { bg: string; color: string; label: string; i
 function Lozenge({ bg, color, label, icon }: { bg: string; color: string; label: string; icon?: boolean }) {
   return (
     <span style={{
-      height: 20, padding: '0 8px', borderRadius: 3,
+      height: 20, padding: '0 8px', borderRadius: 4,
       fontSize: 11, fontWeight: 700, textTransform: 'uppercase' as const,
       letterSpacing: '0.03em', display: 'inline-flex', alignItems: 'center', gap: 4,
       background: bg, color,

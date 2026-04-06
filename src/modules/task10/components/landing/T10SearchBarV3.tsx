@@ -66,7 +66,7 @@ export function T10SearchBarV3({ value, onChange }: T10SearchBarV3Props) {
           color: '#0f172a',
           backgroundColor: '#ffffff',
           border: '1px solid #e2e8f0',
-          borderRadius: '10px',
+          borderRadius: '12px',
           outline: 'none',
           transition: 'border-color 0.15s ease, box-shadow 0.15s ease',
         }}

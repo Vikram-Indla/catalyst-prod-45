@@ -12,11 +12,11 @@ const ICON_MAP: Record<string, React.ComponentType<any>> = {
 
 const LEVEL_STYLES: Record<string, { bg: string; text: string }> = {
   Top: { bg: '#F5F3FF', text: '#7C3AED' },
-  Mid: { bg: '#EFF6FF', text: '#2563EB' },
+  Mid: { bg: 'var(--tint-blue, #EFF6FF)', text: '#2563EB' },
   Work: { bg: var(--bg-2, '#F1F5F9'), text: '#334155' },
   Child: { bg: var(--bg-2, '#F1F5F9'), text: 'var(--fg-3, #94A3B8)' },
   top: { bg: '#F5F3FF', text: '#7C3AED' },
-  mid: { bg: '#EFF6FF', text: '#2563EB' },
+  mid: { bg: 'var(--tint-blue, #EFF6FF)', text: '#2563EB' },
   work: { bg: var(--bg-2, '#F1F5F9'), text: '#334155' },
   child: { bg: var(--bg-2, '#F1F5F9'), text: 'var(--fg-3, #94A3B8)' },
 };

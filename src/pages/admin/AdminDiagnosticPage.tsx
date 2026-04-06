@@ -35,7 +35,7 @@ function StatusLozenge({ status }: { status: 'passed' | 'failed' | 'running' | '
     <span style={{
       background: s.bg, color: s.color,
       fontSize: 10, fontWeight: 700, textTransform: 'uppercase',
-      padding: '2px 8px', borderRadius: 3, letterSpacing: '0.04em',
+      padding: '2px 8px', borderRadius: 4, letterSpacing: '0.04em',
       fontFamily: 'Inter, sans-serif',
     }}>
       {s.label}

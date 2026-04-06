@@ -134,7 +134,7 @@ export function CreateReportModal({ isOpen, onClose, onCreated, preselectedCycle
         {/* Header */}
         <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--divider)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <div style={{ width: 44, height: 44, borderRadius: 10, background: 'linear-gradient(135deg, #F59E0B 0%, var(--sem-warning) 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ width: 44, height: 44, borderRadius: 12, background: 'linear-gradient(135deg, #F59E0B 0%, var(--sem-warning) 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <FileBarChart size={22} style={{ color: '#FFFFFF' }} />
             </div>
             <h2 style={{ fontSize: 18, fontWeight: 700, color: 'var(--fg-1)', margin: 0 }}>Generate Report</h2>
@@ -155,7 +155,7 @@ export function CreateReportModal({ isOpen, onClose, onCreated, preselectedCycle
                 const isSelected = reportType === type.value;
                 return (
                   <div key={type.value} onClick={() => setReportType(type.value)}
-                    style={{ padding: 14, borderRadius: 10, border: `2px solid ${isSelected ? 'var(--sem-warning)' : 'var(--divider)'}`, backgroundColor: isSelected ? '#FFFBEB' : 'var(--cp-float)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 12 }}>
+                    style={{ padding: 14, borderRadius: 12, border: `2px solid ${isSelected ? 'var(--sem-warning)' : 'var(--divider)'}`, backgroundColor: isSelected ? '#FFFBEB' : 'var(--cp-float)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 12 }}>
                     <TypeIcon size={20} style={{ color: isSelected ? 'var(--sem-warning)' : 'var(--fg-3)' }} />
                     <div>
                       <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--fg-1)', margin: 0 }}>{type.label}</p>
@@ -173,7 +173,7 @@ export function CreateReportModal({ isOpen, onClose, onCreated, preselectedCycle
               Report Name <span style={{ color: 'var(--sem-danger)' }}>*</span>
             </label>
             <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g., Release 5 Test Results"
-              style={{ width: '100%', height: 44, padding: '0 14px', border: `1.5px solid ${errors.name ? 'var(--sem-danger)' : 'var(--divider)'}`, borderRadius: 10, fontSize: 14 }} />
+              style={{ width: '100%', height: 44, padding: '0 14px', border: `1.5px solid ${errors.name ? 'var(--sem-danger)' : 'var(--divider)'}`, borderRadius: 12, fontSize: 14 }} />
             {errors.name && <p style={{ fontSize: 12, color: 'var(--sem-danger)', margin: '6px 0 0' }}>{errors.name}</p>}
           </div>
 
@@ -184,7 +184,7 @@ export function CreateReportModal({ isOpen, onClose, onCreated, preselectedCycle
                 Test Cycle <span style={{ color: 'var(--sem-danger)' }}>*</span>
               </label>
               <select value={cycleId} onChange={(e) => setCycleId(e.target.value)}
-                style={{ width: '100%', height: 44, padding: '0 14px', border: `1.5px solid ${errors.cycleId ? 'var(--sem-danger)' : 'var(--divider)'}`, borderRadius: 10, fontSize: 14, backgroundColor: 'var(--cp-float)' }}>
+                style={{ width: '100%', height: 44, padding: '0 14px', border: `1.5px solid ${errors.cycleId ? 'var(--sem-danger)' : 'var(--divider)'}`, borderRadius: 12, fontSize: 14, backgroundColor: 'var(--cp-float)' }}>
                 <option value="">Select a cycle</option>
                 {cycles.map((c) => <option key={c.id} value={c.id}>{c.cycle_key} - {c.name}</option>)}
               </select>
@@ -199,7 +199,7 @@ export function CreateReportModal({ isOpen, onClose, onCreated, preselectedCycle
                 Test Plan <span style={{ color: 'var(--sem-danger)' }}>*</span>
               </label>
               <select value={planId} onChange={(e) => setPlanId(e.target.value)}
-                style={{ width: '100%', height: 44, padding: '0 14px', border: `1.5px solid ${errors.planId ? 'var(--sem-danger)' : 'var(--divider)'}`, borderRadius: 10, fontSize: 14, backgroundColor: 'var(--cp-float)' }}>
+                style={{ width: '100%', height: 44, padding: '0 14px', border: `1.5px solid ${errors.planId ? 'var(--sem-danger)' : 'var(--divider)'}`, borderRadius: 12, fontSize: 14, backgroundColor: 'var(--cp-float)' }}>
                 <option value="">Select a plan</option>
                 {plans.map((p) => <option key={p.id} value={p.id}>{p.plan_key} - {p.name}</option>)}
               </select>
@@ -215,14 +215,14 @@ export function CreateReportModal({ isOpen, onClose, onCreated, preselectedCycle
                   <Calendar size={14} /> From Date
                 </label>
                 <input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)}
-                  style={{ width: '100%', height: 44, padding: '0 14px', border: '1.5px solid var(--divider)', borderRadius: 10, fontSize: 14 }} />
+                  style={{ width: '100%', height: 44, padding: '0 14px', border: '1.5px solid var(--divider)', borderRadius: 12, fontSize: 14 }} />
               </div>
               <div>
                 <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 600, color: 'var(--fg-1)', marginBottom: 6 }}>
                   <Calendar size={14} /> To Date
                 </label>
                 <input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)}
-                  style={{ width: '100%', height: 44, padding: '0 14px', border: '1.5px solid var(--divider)', borderRadius: 10, fontSize: 14 }} />
+                  style={{ width: '100%', height: 44, padding: '0 14px', border: '1.5px solid var(--divider)', borderRadius: 12, fontSize: 14 }} />
               </div>
             </div>
           )}
@@ -231,18 +231,18 @@ export function CreateReportModal({ isOpen, onClose, onCreated, preselectedCycle
           <div>
             <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--fg-1)', marginBottom: 6 }}>Description (Optional)</label>
             <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Additional notes about this report..." rows={3}
-              style={{ width: '100%', padding: 14, border: '1.5px solid var(--divider)', borderRadius: 10, fontSize: 14, resize: 'vertical' }} />
+              style={{ width: '100%', padding: 14, border: '1.5px solid var(--divider)', borderRadius: 12, fontSize: 14, resize: 'vertical' }} />
           </div>
         </div>
 
         {/* Footer */}
         <div style={{ padding: '16px 24px', borderTop: '1px solid var(--divider)', display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
           <button onClick={onClose} disabled={isSubmitting}
-            style={{ height: 44, padding: '0 20px', backgroundColor: 'var(--cp-float)', border: '1.5px solid var(--divider)', borderRadius: 10, fontSize: 14, fontWeight: 500, color: 'var(--fg-2)', cursor: 'pointer' }}>
+            style={{ height: 44, padding: '0 20px', backgroundColor: 'var(--cp-float)', border: '1.5px solid var(--divider)', borderRadius: 12, fontSize: 14, fontWeight: 500, color: 'var(--fg-2)', cursor: 'pointer' }}>
             Cancel
           </button>
           <button onClick={handleSubmit} disabled={isSubmitting}
-            style={{ height: 44, padding: '0 24px', background: 'linear-gradient(135deg, #F59E0B 0%, var(--sem-warning) 100%)', border: 'none', borderRadius: 10, fontSize: 14, fontWeight: 600, color: 'var(--cp-float)', cursor: isSubmitting ? 'not-allowed' : 'pointer', opacity: isSubmitting ? 0.7 : 1, display: 'flex', alignItems: 'center', gap: 8 }}>
+            style={{ height: 44, padding: '0 24px', background: 'linear-gradient(135deg, #F59E0B 0%, var(--sem-warning) 100%)', border: 'none', borderRadius: 12, fontSize: 14, fontWeight: 600, color: 'var(--cp-float)', cursor: isSubmitting ? 'not-allowed' : 'pointer', opacity: isSubmitting ? 0.7 : 1, display: 'flex', alignItems: 'center', gap: 8 }}>
             <FileBarChart size={16} />
             {isSubmitting ? 'Generating...' : 'Generate Report'}
           </button>

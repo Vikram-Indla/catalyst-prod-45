@@ -355,7 +355,7 @@ export function AIGenerateModal({ isOpen, onClose, onSuccess, currentFolderId }:
               <button
                 onClick={(e) => { e.stopPropagation(); toggleFolderExpand(node.id); }}
                 style={{
-                  width: 18, height: 18, padding: 0, border: 'none', borderRadius: 3,
+                  width: 18, height: 18, padding: 0, border: 'none', borderRadius: 4,
                   backgroundColor: 'transparent', cursor: 'pointer', display: 'flex',
                   alignItems: 'center', justifyContent: 'center', color: 'var(--fg-4)',
                 }}

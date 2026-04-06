@@ -348,7 +348,7 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
               onClick={handleToggleUnread}
               aria-label={unreadOnly ? 'Show all notifications' : 'Show only unread'}
               style={{
-                width: 36, height: 20, borderRadius: 10, cursor: 'pointer', border: 'none',
+                width: 36, height: 20, borderRadius: 12, cursor: 'pointer', border: 'none',
                 background: unreadOnly ? '#16A34A' : (isDark ? '#444444' : '#334155'),
                 position: 'relative', transition: 'background 200ms ease',
                 padding: 0,

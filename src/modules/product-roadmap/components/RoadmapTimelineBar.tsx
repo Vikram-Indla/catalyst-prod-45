@@ -155,7 +155,7 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, onClick, end
               fontWeight: 700,
               color: '#FFFFFF',
               background: 'rgba(255,255,255,0.2)',
-              borderRadius: 3,
+              borderRadius: 4,
               padding: '1px 6px',
               zIndex: 2,
             }}
@@ -182,7 +182,7 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, onClick, end
       {showTooltip && createPortal(
         <div style={{
           position: 'fixed', left: tooltipPos.x, top: tooltipPos.y, zIndex: 9999,
-          background: '#FFFFFF', border: '1px solid var(--bd-default, #E2E8F0)', borderRadius: 10,
+          background: 'var(--bg-app, #FFFFFF)', border: '1px solid var(--bd-default, #E2E8F0)', borderRadius: 12,
           boxShadow: '0 20px 60px rgba(0,0,0,0.12)', pointerEvents: 'none',
           maxWidth: 320, minWidth: 260, padding: 12,
         }}>

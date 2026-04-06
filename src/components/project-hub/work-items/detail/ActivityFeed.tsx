@@ -148,7 +148,7 @@ function CommentEntry({ entry, onDelete, onToggleReaction }: {
         </div>
         <button
           onClick={onDelete}
-          className="opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded hover:bg-[#FEF2F2]"
+          className="opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded hover:bg-[var(--tint-red, #FEF2F2)]"
           title="Delete comment"
         >
           <Trash2 size={12} className="text-[#DC2626]" />

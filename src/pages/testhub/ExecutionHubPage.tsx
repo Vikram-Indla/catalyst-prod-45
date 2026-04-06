@@ -186,7 +186,7 @@ export default function ExecutionHubPage() {
                       <span style={{
                         backgroundColor: cfg.bg, color: cfg.text,
                         fontSize: '11px', fontWeight: 700, letterSpacing: '0.03em',
-                        textTransform: 'uppercase', borderRadius: '3px', padding: '2px 6px',
+                        textTransform: 'uppercase', borderRadius: '4px', padding: '2px 6px',
                         height: '20px', display: 'inline-flex', alignItems: 'center',
                       }}>
                         {cfg.label}

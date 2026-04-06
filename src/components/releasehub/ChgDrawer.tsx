@@ -184,7 +184,7 @@ function OverviewTab({ change: c }: { change: any }) {
 
       {/* Pending sign-offs */}
       {c.pending_signoffs > 0 && (
-        <div className="rounded-lg p-3 flex items-center gap-2" style={{ background: '#FEF2F2', border: '1px solid #FCA5A5' }}>
+        <div className="rounded-lg p-3 flex items-center gap-2" style={{ background: 'var(--tint-red, #FEF2F2)', border: '1px solid #FCA5A5' }}>
           <span className="text-[12px] font-bold" style={{ color: 'var(--sem-danger)' }}>
             {c.pending_signoffs} sign-off{c.pending_signoffs > 1 ? 's' : ''} pending
           </span>
@@ -228,7 +228,7 @@ function WorkItemsTab({ workItems, changeId }: { workItems: any[]; changeId: str
           </div>
         </div>
       ) : (
-        <button onClick={() => setShowLink(true)} className="h-8 px-3 rounded-md border border-[#DBEAFE] text-[#2563EB] text-[12px] font-semibold hover:bg-[#EFF6FF]">
+        <button onClick={() => setShowLink(true)} className="h-8 px-3 rounded-md border border-[#DBEAFE] text-[#2563EB] text-[12px] font-semibold hover:bg-[var(--tint-blue, #EFF6FF)]">
           + Link Work Item
         </button>
       )}
@@ -262,7 +262,7 @@ function SignoffsTab({ changeId }: { changeId: string }) {
             <div className={`w-8 h-8 rounded-full flex items-center justify-center text-[12px] font-bold shrink-0 ${
               status === 'approved' ? 'bg-[#1B7F37] text-white' :
               status === 'pending' ? 'bg-[#0C66E4] text-white' :
-              status === 'rejected' ? 'bg-[#FEF2F2] text-[#DC2626]' :
+              status === 'rejected' ? 'bg-[var(--tint-red, #FEF2F2)] text-[#DC2626]' :
               'bg-[#F1F5F9] text-[var(--fg-3, #94A3B8)]'
             }`}>
               {status === 'approved' ? '✓' : status === 'rejected' ? '✕' : status === 'pending' ? i + 1 : '🔒'}
@@ -283,7 +283,7 @@ function SignoffsTab({ changeId }: { changeId: string }) {
                   className="h-7 px-3 rounded bg-[#1B7F37] text-white text-[11px] font-bold hover:bg-[#004D33] disabled:opacity-50">Approve</button>
                 <button onClick={() => rejectSignoff.mutate({ signoffId: signoff.id, comment: 'Rejected' }, { onSuccess: () => toast.success('Rejected') })}
                   disabled={rejectSignoff.isPending}
-                  className="h-7 px-3 rounded border border-[#FCA5A5] text-[#DC2626] text-[11px] font-bold hover:bg-[#FEF2F2] disabled:opacity-50">Reject</button>
+                  className="h-7 px-3 rounded border border-[#FCA5A5] text-[#DC2626] text-[11px] font-bold hover:bg-[var(--tint-red, #FEF2F2)] disabled:opacity-50">Reject</button>
               </div>
             )}
           </div>

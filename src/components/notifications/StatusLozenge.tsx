@@ -28,7 +28,7 @@ export default function StatusLozenge({ label, type }: StatusLozengeProps) {
       alignItems: 'center',
       height: 20,
       padding: '0 6px',
-      borderRadius: 3,
+      borderRadius: 4,
       background: s.bg,
       color: s.text,
       fontSize: 11,

@@ -195,14 +195,14 @@ export default function BoardSettingsDrawer({ board, onClose }: Props) {
                 {!showDelete ? (
                   <button onClick={() => setShowDelete(true)} style={{
                     display: 'flex', alignItems: 'center', gap: 6, height: 30, padding: '0 12px',
-                    background: '#FEF2F2', border: '0.75px solid var(--sem-danger)',
+                    background: 'var(--tint-red, #FEF2F2)', border: '0.75px solid var(--sem-danger)',
                     borderRadius: 6, cursor: 'pointer', fontSize: 11.5, fontWeight: 500,
                     color: 'var(--sem-danger)', fontFamily: "'Inter', sans-serif",
                   }}>
                     <Trash2 size={13} /> Delete Board
                   </button>
                 ) : (
-                  <div style={{ padding: 10, background: '#FEF2F2', borderRadius: 6, border: '0.75px solid var(--sem-danger)' }}>
+                  <div style={{ padding: 10, background: 'var(--tint-red, #FEF2F2)', borderRadius: 6, border: '0.75px solid var(--sem-danger)' }}>
                     <p style={{ fontSize: 11.5, color: 'var(--sem-danger)', margin: '0 0 8px', fontFamily: "'Inter', sans-serif" }}>
                       Type <strong>{board.name}</strong> to confirm:
                     </p>
@@ -210,7 +210,7 @@ export default function BoardSettingsDrawer({ board, onClose }: Props) {
                       placeholder={board.name} style={{ ...inputStyle, marginBottom: 8 }} />
                     <button onClick={handleDelete}
                       disabled={deleteConfirm !== board.name || deleteBoard.isPending} style={{
-                      height: 28, padding: '0 12px', borderRadius: 5, border: 'none',
+                      height: 28, padding: '0 12px', borderRadius: 6, border: 'none',
                       background: deleteConfirm === board.name ? 'var(--sem-danger)' : 'var(--divider)',
                       color: deleteConfirm === board.name ? '#FFFFFF' : 'var(--fg-4)',
                       fontSize: 11.5, fontWeight: 600, cursor: deleteConfirm === board.name ? 'pointer' : 'not-allowed',
@@ -239,7 +239,7 @@ export default function BoardSettingsDrawer({ board, onClose }: Props) {
                       overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                     }}>{col.name}</span>
                     {col.isBacklog && <Badge bg="rgba(37,99,235,0.06)" color="#2563EB">Backlog</Badge>}
-                    {col.isDone && <Badge bg="#F0FDF4" color="var(--sem-success)">Done</Badge>}
+                    {col.isDone && <Badge bg="var(--tint-green, #F0FDF4)" color="var(--sem-success)">Done</Badge>}
                     <button onClick={() => deleteCol.mutate({ columnId: col.id, boardId: board.id })} style={{
                       width: 22, height: 22, borderRadius: 4, border: 'none',
                       background: 'transparent', cursor: 'pointer',
@@ -370,7 +370,7 @@ function RadioCircle({ selected }: { selected: boolean }) {
       background: selected ? 'var(--cp-blue)' : 'var(--bg-app)',
       transition: 'all 100ms',
     }}>
-      {selected && <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#FFFFFF' }} />}
+      {selected && <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--bg-app, #FFFFFF)' }} />}
     </div>
   );
 }
@@ -378,7 +378,7 @@ function RadioCircle({ selected }: { selected: boolean }) {
 function Badge({ children, bg, color }: { children: React.ReactNode; bg: string; color: string }) {
   return (
     <span style={{
-      display: 'inline-flex', height: 16, padding: '0 5px', borderRadius: 3,
+      display: 'inline-flex', height: 16, padding: '0 5px', borderRadius: 4,
       fontSize: 10, fontWeight: 600, background: bg, color,
       fontFamily: "'Inter', sans-serif", alignItems: 'center', flexShrink: 0,
     }}>{children}</span>

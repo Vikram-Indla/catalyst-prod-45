@@ -70,9 +70,9 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
               const closed = incidents.filter((d: any) => d.status_category === 'Done' && !d.resolution).length;
               return (
                 <>
-                  {open > 0 && <span className="bg-[#DEEBFF] dark:bg-[#1a2a3a] text-[#0747A6] dark:text-[#79b8ff]" style={{ fontSize: 10, fontWeight: 700, padding: '1px 6px', borderRadius: 3, textTransform: 'uppercase' }}>{open} OPEN</span>}
-                  {resolved > 0 && <span className="bg-[#E3FCEF] dark:bg-[#1a3a2a] text-[#006644] dark:text-[#85e89d]" style={{ fontSize: 10, fontWeight: 700, padding: '1px 6px', borderRadius: 3, textTransform: 'uppercase' }}>{resolved} RESOLVED</span>}
-                  {closed > 0 && <span className="bg-[#DFE1E6] dark:bg-[#292929] text-[#253858] dark:text-[#A1A1A1]" style={{ fontSize: 10, fontWeight: 700, padding: '1px 6px', borderRadius: 3, textTransform: 'uppercase' }}>{closed} CLOSED</span>}
+                  {open > 0 && <span className="bg-[#DEEBFF] dark:bg-[#1a2a3a] text-[#0747A6] dark:text-[#79b8ff]" style={{ fontSize: 10, fontWeight: 700, padding: '1px 6px', borderRadius: 4, textTransform: 'uppercase' }}>{open} OPEN</span>}
+                  {resolved > 0 && <span className="bg-[#E3FCEF] dark:bg-[#1a3a2a] text-[#006644] dark:text-[#85e89d]" style={{ fontSize: 10, fontWeight: 700, padding: '1px 6px', borderRadius: 4, textTransform: 'uppercase' }}>{resolved} RESOLVED</span>}
+                  {closed > 0 && <span className="bg-[#DFE1E6] dark:bg-[#292929] text-[#253858] dark:text-[#A1A1A1]" style={{ fontSize: 10, fontWeight: 700, padding: '1px 6px', borderRadius: 4, textTransform: 'uppercase' }}>{closed} CLOSED</span>}
                 </>
               );
             })()}
@@ -112,7 +112,7 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
                     </td>
                     <td className={tdClassName} style={{ ...tdStyle, maxWidth: 200 }}>{inc.title}</td>
                     <td className={tdClassName} style={tdStyle}>
-                      <span className={`inline-flex items-center ${statusCls}`} style={{ height: 18, padding: '0 6px', fontSize: 10, fontWeight: 700, borderRadius: 3, textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
+                      <span className={`inline-flex items-center ${statusCls}`} style={{ height: 18, padding: '0 6px', fontSize: 10, fontWeight: 700, borderRadius: 4, textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
                         {statusLabel}
                       </span>
                     </td>

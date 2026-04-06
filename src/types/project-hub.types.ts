@@ -56,14 +56,14 @@ export type ProjectView = 'backlog' | 'board' | 'list' | 'timeline';
 /** Status display config */
 export const STATUS_CONFIG: Record<IssueStatus, { label: string; color: string; bg: string }> = {
   backlog:    { label: 'Backlog',    color: '#64748B', bg: var(--bg-2, '#F1F5F9') },
-  ready:      { label: 'Ready',     color: '#2563EB', bg: '#EFF6FF' },
-  in_dev:     { label: 'In Dev',    color: '#2563EB', bg: '#EFF6FF' },
+  ready:      { label: 'Ready',     color: '#2563EB', bg: 'var(--tint-blue, #EFF6FF)' },
+  in_dev:     { label: 'In Dev',    color: '#2563EB', bg: 'var(--tint-blue, #EFF6FF)' },
   in_qa:      { label: 'In QA',     color: '#D97706', bg: '#FFFBEB' },
   in_uat:     { label: 'In UAT',    color: '#D97706', bg: '#FFFBEB' },
   in_beta:    { label: 'In Beta',   color: '#0D9488', bg: '#F0FDFA' },
   prod_ready: { label: 'Prod Ready',color: '#16A34A', bg: '#DCFCE7' },
   production: { label: 'Production',color: '#16A34A', bg: '#DCFCE7' },
-  on_hold:    { label: 'On Hold',   color: '#EF4444', bg: '#FEF2F2' },
+  on_hold:    { label: 'On Hold',   color: '#EF4444', bg: 'var(--tint-red, #FEF2F2)' },
 };
 
 /** Priority display config */

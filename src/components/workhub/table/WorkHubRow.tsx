@@ -105,7 +105,7 @@ export default memo(function WorkHubRow({ item, columns, selected, onSelect, onO
           return (
             <input ref={inputRef} value={editValue} onChange={e => setEditValue(e.target.value)}
               onBlur={commitEdit} onKeyDown={handleKeyDown}
-              style={{ flex: 1, height: 28, border: '1.5px solid #2563EB', borderRadius: 3, padding: '0 6px', fontSize: 13, outline: 'none', fontFamily: 'Inter, sans-serif', color: 'var(--fg-1)', background: 'var(--bg-app)' }}
+              style={{ flex: 1, height: 28, border: '1.5px solid #2563EB', borderRadius: 4, padding: '0 6px', fontSize: 13, outline: 'none', fontFamily: 'Inter, sans-serif', color: 'var(--fg-1)', background: 'var(--bg-app)' }}
             />
           );
         }
@@ -149,7 +149,7 @@ export default memo(function WorkHubRow({ item, columns, selected, onSelect, onO
         return (
           <span title={`${item.parent_key} · ${item.parent_summary || ''}`} style={{
             display: 'inline-flex', alignItems: 'center', gap: 4, padding: '2px 6px',
-            background: 'var(--bg-1)', borderRadius: 3, maxWidth: 180, overflow: 'hidden',
+            background: 'var(--bg-1)', borderRadius: 4, maxWidth: 180, overflow: 'hidden',
           }}>
             <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: 'var(--cp-blue)', fontWeight: 500, flexShrink: 0 }}>{item.parent_key}</span>
             {item.parent_summary && <span style={{ fontSize: 11, color: 'var(--fg-3)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>· {item.parent_summary}</span>}
@@ -200,7 +200,7 @@ export default memo(function WorkHubRow({ item, columns, selected, onSelect, onO
             <input ref={inputRef} type="number" min={0} max={100} value={editValue}
               onChange={e => setEditValue(e.target.value)} onBlur={commitPoints}
               onKeyDown={e => { if (e.key === 'Enter') commitPoints(); if (e.key === 'Escape') cancelEdit(); }}
-              style={{ width: 50, height: 28, border: '1.5px solid #2563EB', borderRadius: 3, padding: '0 4px', fontSize: 13, outline: 'none', fontFamily: "'JetBrains Mono', monospace", color: 'var(--fg-1)', background: 'var(--bg-app)', textAlign: 'center' }}
+              style={{ width: 50, height: 28, border: '1.5px solid #2563EB', borderRadius: 4, padding: '0 4px', fontSize: 13, outline: 'none', fontFamily: "'JetBrains Mono', monospace", color: 'var(--fg-1)', background: 'var(--bg-app)', textAlign: 'center' }}
             />
           );
         }

@@ -108,7 +108,7 @@ export function RoadmapInitiativeList({ groups, selectedId, hoveredId, onSelect,
                 <div style={{ transition: 'transform 0.15s ease', transform: isCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)' }}>
                   <ChevronDown className="w-3.5 h-3.5" style={{ color: ink[3] }} />
                 </div>
-                <div style={{ width: 10, height: 10, borderRadius: 3, flexShrink: 0, background: typeColor }} />
+                <div style={{ width: 10, height: 10, borderRadius: 4, flexShrink: 0, background: typeColor }} />
                 <span style={{
                   fontSize: 12, fontWeight: 600, color: ink[2],
                   textTransform: 'uppercase', letterSpacing: '0.04em',

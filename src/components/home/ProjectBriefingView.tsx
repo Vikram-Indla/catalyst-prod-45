@@ -64,7 +64,7 @@ function ProjectCard({ project, onItemClick }: { project: ProjectGroup; onItemCl
 
   return (
     <div style={{
-      border: '1px solid var(--divider)', borderRadius: 10, background: 'var(--cp-float)',
+      border: '1px solid var(--divider)', borderRadius: 12, background: 'var(--cp-float)',
       borderLeft: `3px solid ${project.projectColor}`, marginBottom: 10,
       overflow: 'hidden',
     }}>
@@ -82,7 +82,7 @@ function ProjectCard({ project, onItemClick }: { project: ProjectGroup; onItemCl
             <span style={{
               fontSize: 10, fontWeight: 700, color: 'var(--sem-danger)',
               background: 'var(--sem-danger-bg)', border: '1px solid var(--sem-danger-light)',
-              padding: '1px 6px', borderRadius: 3, textTransform: 'uppercase',
+              padding: '1px 6px', borderRadius: 4, textTransform: 'uppercase',
               letterSpacing: '0.04em', fontFamily: F.inter,
             }}>
               INCIDENT
@@ -146,7 +146,7 @@ function IndividualItemRow({ item, isFirst, onClick }: { item: BriefingItem; isF
         {showMovedTag && (
           <span style={{
             fontSize: 9, fontWeight: 700, color: '#FFFFFF',
-            background: 'var(--cp-blue)', padding: '1px 6px', borderRadius: 3,
+            background: 'var(--cp-blue)', padding: '1px 6px', borderRadius: 4,
             textTransform: 'uppercase', letterSpacing: '0.03em', fontFamily: F.inter,
             whiteSpace: 'nowrap',
           }}>
@@ -181,7 +181,7 @@ function IndividualItemRow({ item, isFirst, onClick }: { item: BriefingItem; isF
             <span>·</span>
             <span style={{
               fontSize: 10, fontWeight: 600, textTransform: 'uppercase',
-              padding: '1px 5px', borderRadius: 3,
+              padding: '1px 5px', borderRadius: 4,
               background: 'var(--cp-lz-gy-bg)', color: 'var(--cp-lz-gy-t)',
             }}>
               {item.status}
@@ -216,7 +216,7 @@ function CollapsedGroupRow({ group, onItemClick }: { group: CollapsedGroup; onIt
         </span>
         <span style={{
           fontFamily: F.mono, fontSize: 11, fontWeight: 700, color: 'var(--fg-1)',
-          background: 'var(--bg-2)', padding: '1px 6px', borderRadius: 3, minWidth: 20, textAlign: 'center',
+          background: 'var(--bg-2)', padding: '1px 6px', borderRadius: 4, minWidth: 20, textAlign: 'center',
         }}>
           {group.count}
         </span>
@@ -349,7 +349,7 @@ function BriefingSkeleton() {
       <Skeleton className="h-4 w-40 mb-6 rounded" />
       <Skeleton className="h-4 w-28 mb-3 rounded" />
       {[1, 2, 3].map(i => (
-        <div key={i} style={{ border: '1px solid var(--divider)', borderRadius: 10, padding: 14, marginBottom: 10 }}>
+        <div key={i} style={{ border: '1px solid var(--divider)', borderRadius: 12, padding: 14, marginBottom: 10 }}>
           <Skeleton className="h-4 w-24 mb-3 rounded" />
           <Skeleton className="h-3.5 w-full mb-2 rounded" />
           <Skeleton className="h-3.5 w-3/4 mb-2 rounded" />

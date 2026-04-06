@@ -305,7 +305,7 @@ export function StrategyPyramid() {
                 transition: 'background 120ms cubic-bezier(0.4, 0, 0.2, 1)',
               }}
             >
-              <div style={{ width: 3, height: 28, borderRadius: 2, background: layer.color, flexShrink: 0 }} />
+              <div style={{ width: 3, height: 28, borderRadius: 4, background: layer.color, flexShrink: 0 }} />
               <div className="flex-1 min-w-0">
                 <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--exec-text-primary)' }}>{layer.label}</div>
                 <div style={{ fontSize: 10, color: 'var(--exec-text-secondary)', overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
@@ -314,7 +314,7 @@ export function StrategyPyramid() {
               </div>
               {layer.count !== undefined && layer.count > 0 && (
                 <span style={{
-                  fontSize: 10, fontWeight: 600, background: 'var(--exec-blue-50, #EFF6FF)', color: 'var(--exec-blue-700, #1E40AF)',
+                  fontSize: 10, fontWeight: 600, background: 'var(--exec-blue-50, var(--tint-blue, #EFF6FF))', color: 'var(--exec-blue-700, #1E40AF)',
                   padding: '1px 8px', borderRadius: 9999, flexShrink: 0,
                 }}>
                   {layer.count}

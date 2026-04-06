@@ -824,7 +824,7 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
                       padding: '14px',
                       backgroundColor: 'transparent',
                       border: '2px dashed #e2e8f0',
-                      borderRadius: '10px',
+                      borderRadius: '12px',
                       cursor: 'pointer',
                       color: '#64748b',
                       fontSize: '14px',
@@ -1015,14 +1015,14 @@ const memberCardStyle: React.CSSProperties = {
   padding: '12px 14px',
   backgroundColor: '#f8fafc',
   border: '1px solid #e2e8f0',
-  borderRadius: '10px'
+  borderRadius: '12px'
 };
 
 const statCardStyle: React.CSSProperties = {
   padding: '16px',
   backgroundColor: '#f8fafc',
   border: '1px solid #e2e8f0',
-  borderRadius: '10px',
+  borderRadius: '12px',
   textAlign: 'center'
 };
 
@@ -1034,7 +1034,7 @@ const dropdownStyle: React.CSSProperties = {
   marginTop: '4px',
   backgroundColor: '#ffffff',
   border: '1px solid #e2e8f0',
-  borderRadius: '10px',
+  borderRadius: '12px',
   boxShadow: '0 10px 40px rgba(0,0,0,0.12)',
   zIndex: 9999,
   overflow: 'hidden'

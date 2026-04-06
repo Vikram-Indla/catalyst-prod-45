@@ -31,7 +31,7 @@ export function SeverityChip({ severity }: SeverityChipProps) {
         fontWeight: 700,
         textTransform: 'uppercase',
         letterSpacing: '0.02em',
-        borderRadius: 3,
+        borderRadius: 4,
         backgroundColor: isDark ? s.darkBg : s.bg,
         color: isDark ? s.darkText : s.text,
         border: `1px solid ${isDark ? s.darkBorder : s.border}`,

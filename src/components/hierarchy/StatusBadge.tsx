@@ -119,7 +119,7 @@ export function StatusBadge({ status, onClick, mini = false }: StatusBadgeProps)
       style={{
         height: 20,
         padding: '0 6px',
-        borderRadius: 3,
+        borderRadius: 4,
         background: style.background,
         color: style.color,
         border: 'none',

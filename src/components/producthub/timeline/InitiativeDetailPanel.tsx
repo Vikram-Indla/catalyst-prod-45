@@ -30,14 +30,14 @@ import {
 
 /* ── Status color map (MARAM V3.1 Dual Token) ── */
 const STATUS_PILL_COLORS: Record<string, { text: string; bg: string; bdr: string }> = {
-  new_demand:    { text: '#2563EB', bg: '#EFF6FF', bdr: 'rgba(37,99,235,0.2)' },
+  new_demand:    { text: '#2563EB', bg: 'var(--tint-blue, #EFF6FF)', bdr: 'rgba(37,99,235,0.2)' },
   under_review:  { text: '#9A5402', bg: '#FFFBEB', bdr: 'rgba(217,119,6,0.2)' },
-  approved:      { text: '#0D7331', bg: '#F0FDF4', bdr: 'rgba(22,163,74,0.2)' },
+  approved:      { text: '#0D7331', bg: 'var(--tint-green, #F0FDF4)', bdr: 'rgba(22,163,74,0.2)' },
   in_progress:   { text: '#08736B', bg: '#F0FDFA', bdr: 'rgba(13,148,136,0.2)' },
   on_hold:       { text: '#6F6F78', bg: var(--bg-2, '#F1F5F9'), bdr: 'rgba(113,113,122,0.2)' },
   delivered:     { text: '#7C3AED', bg: '#F5F3FF', bdr: 'rgba(124,58,237,0.2)' },
-  closed:        { text: '#0D7331', bg: '#F0FDF4', bdr: 'rgba(22,163,74,0.2)' },
-  cancelled:     { text: '#D92525', bg: '#FEF2F2', bdr: 'rgba(220,38,38,0.2)' },
+  closed:        { text: '#0D7331', bg: 'var(--tint-green, #F0FDF4)', bdr: 'rgba(22,163,74,0.2)' },
+  cancelled:     { text: '#D92525', bg: 'var(--tint-red, #FEF2F2)', bdr: 'rgba(220,38,38,0.2)' },
 };
 
 /* UI status to DB status mapping */

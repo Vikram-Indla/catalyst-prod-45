@@ -198,7 +198,7 @@ export const LabelsFilter: React.FC<LabelsFilterProps> = ({
                       color: COLORS.textMuted,
                       backgroundColor: COLORS.surfaceHover,
                       padding: '2px 8px',
-                      borderRadius: '10px',
+                      borderRadius: '12px',
                       minWidth: '24px',
                       textAlign: 'center'
                     }}

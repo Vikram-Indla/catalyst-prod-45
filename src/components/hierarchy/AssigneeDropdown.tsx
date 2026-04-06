@@ -95,7 +95,7 @@ export function AssigneeDropdown({ currentAssignee, availableAssignees, onSelect
                 fontFamily: "'Inter', sans-serif",
               }}
               onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--bg-1)')}
-              onMouseLeave={(e) => (e.currentTarget.style.background = isCurrent ? '#F8FAFC' : '')}
+              onMouseLeave={(e) => (e.currentTarget.style.background = isCurrent ? 'var(--bg-1, #F8FAFC)' : '')}
             >
               <div style={{ width: 24, height: 24, borderRadius: '50%', background: 'var(--cp-blue)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                 <span style={{ fontSize: 9, fontWeight: 700, color: '#FFFFFF' }}>{initials}</span>

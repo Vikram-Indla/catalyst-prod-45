@@ -60,8 +60,8 @@ export default function RAGenerationBar({ slots, artifactCounts, isProcessing, e
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 8, maxWidth: 160 }}>
       {/* Progress bar — 80px fixed */}
-      <div style={{ width: 80, height: 4, borderRadius: 2, background: 'var(--bd-default, #E2E8F0)', flexShrink: 0, overflow: 'hidden' }}>
-        <div style={{ width: `${pct}%`, height: '100%', borderRadius: 2, background: barColor, transition: 'width 300ms ease' }} />
+      <div style={{ width: 80, height: 4, borderRadius: 4, background: 'var(--bd-default, #E2E8F0)', flexShrink: 0, overflow: 'hidden' }}>
+        <div style={{ width: `${pct}%`, height: '100%', borderRadius: 4, background: barColor, transition: 'width 300ms ease' }} />
       </div>
       {/* Label */}
       {labelText ? (

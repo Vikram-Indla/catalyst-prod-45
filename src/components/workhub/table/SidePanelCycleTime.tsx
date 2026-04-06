@@ -98,8 +98,8 @@ export default function SidePanelCycleTime({ workItemId }: Props) {
               <span style={{ fontFamily: "'Sora', sans-serif", fontSize: 28, fontWeight: 700, color: seconds > 0 ? phase.labelColor : 'var(--fg-4)' }}>
                 {seconds > 0 ? formatDuration(seconds) : '—'}
               </span>
-              <div style={{ height: 4, borderRadius: 2, background: 'var(--bg-1)', overflow: 'hidden' }}>
-                <div style={{ height: '100%', width: `${pct}%`, background: phase.barColor, borderRadius: 2, transition: 'width 300ms' }} />
+              <div style={{ height: 4, borderRadius: 4, background: 'var(--bg-1)', overflow: 'hidden' }}>
+                <div style={{ height: '100%', width: `${pct}%`, background: phase.barColor, borderRadius: 4, transition: 'width 300ms' }} />
               </div>
             </div>
           );
@@ -115,7 +115,7 @@ export default function SidePanelCycleTime({ workItemId }: Props) {
         {currentStatus && (
           <div>
             <span style={{ fontSize: 12, color: 'var(--fg-3)' }}>Currently in: </span>
-            <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', padding: '1px 6px', borderRadius: 3, background: '#0C66E4', color: 'var(--bg-app)' }}>{currentStatus}</span>
+            <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', padding: '1px 6px', borderRadius: 4, background: '#0C66E4', color: 'var(--bg-app)' }}>{currentStatus}</span>
           </div>
         )}
         {timeInCurrentSec > 0 && (

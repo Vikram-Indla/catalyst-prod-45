@@ -51,7 +51,7 @@ export function SchedulingRules() {
       }}
     >
       <span style={{
-        width: 18, height: 18, borderRadius: '50%', background: '#fff', position: 'absolute',
+        width: 18, height: 18, borderRadius: '50%', background: 'var(--bg-app, #fff)', position: 'absolute',
         top: 2, left: checked ? 18 : 2, transition: 'left .2s',
         boxShadow: '0 1px 3px rgba(0,0,0,.2)',
       }} />
@@ -59,7 +59,7 @@ export function SchedulingRules() {
   )
 
   const cardStyle: React.CSSProperties = {
-    background: '#fff', border: '1px solid var(--bd-default, #E2E8F0)', borderRadius: 8,
+    background: 'var(--bg-app, #fff)', border: '1px solid var(--bd-default, #E2E8F0)', borderRadius: 8,
     padding: 20, marginBottom: 16, boxShadow: '0 1px 2px rgba(0,0,0,.05)',
   }
 
@@ -87,8 +87,8 @@ export function SchedulingRules() {
             Date Precedence
           </h2>
           <span style={{
-            fontSize: 9, background: '#ECFDF5', color: '#10B981', padding: '2px 8px',
-            borderRadius: 3, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.3px',
+            fontSize: 9, background: 'var(--tint-green-soft, #ECFDF5)', color: '#10B981', padding: '2px 8px',
+            borderRadius: 4, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.3px',
           }}>Priority Chain</span>
         </div>
 
@@ -110,7 +110,7 @@ export function SchedulingRules() {
         ))}
 
         <div style={{
-          background: '#EFF6FF', border: '1px solid #BFDBFE', borderRadius: 8,
+          background: 'var(--tint-blue, #EFF6FF)', border: '1px solid #BFDBFE', borderRadius: 8,
           padding: '10px 14px', marginTop: 14, display: 'flex', gap: 8, alignItems: 'flex-start',
         }}>
           <span style={{ fontSize: 14 }}>ℹ️</span>
@@ -134,7 +134,7 @@ export function SchedulingRules() {
             onChange={(e) => setMultiVersionStrategy(e.target.value)}
             style={{
               width: 200, padding: '7px 10px', borderRadius: 6, border: '1px solid var(--bd-default, #E2E8F0)',
-              fontSize: 12, color: '#334155', background: '#fff',
+              fontSize: 12, color: '#334155', background: 'var(--bg-app, #fff)',
             }}
           >
             <option value="earliest">Earliest release date</option>
@@ -152,7 +152,7 @@ export function SchedulingRules() {
           </h2>
           <span style={{
             fontSize: 9, background: '#FFFBEB', color: '#F59E0B', padding: '2px 8px',
-            borderRadius: 3, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.3px',
+            borderRadius: 4, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.3px',
           }}>Fallback</span>
         </div>
 
@@ -205,7 +205,7 @@ export function SchedulingRules() {
             onClick={handleReset}
             style={{
               padding: '8px 20px', borderRadius: 6, fontSize: 12, fontWeight: 500,
-              background: '#F8FAFC', color: '#334155', border: '1px solid var(--bd-default, #E2E8F0)', cursor: 'pointer',
+              background: 'var(--bg-1, #F8FAFC)', color: '#334155', border: '1px solid var(--bd-default, #E2E8F0)', cursor: 'pointer',
             }}
           >
             Reset to Default

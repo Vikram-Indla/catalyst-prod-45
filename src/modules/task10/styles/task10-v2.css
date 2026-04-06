@@ -392,7 +392,7 @@
   font-weight: 600;
   color: var(--t10-text-tertiary);
   background: var(--t10-bg-subtle);
-  border-radius: 10px;
+  border-radius: 12px;
 }
 
 .t10-tab-active .t10-tab-count {
@@ -636,7 +636,7 @@
 .t10-progress-minimal {
   height: 4px;
   background: var(--t10-bg-subtle);
-  border-radius: 2px;
+  border-radius: 4px;
   overflow: hidden;
   margin-bottom: var(--t10-space-3);
 }
@@ -644,7 +644,7 @@
 .t10-progress-fill-minimal {
   height: 100%;
   background: var(--t10-accent);
-  border-radius: 2px;
+  border-radius: 4px;
   transition: width var(--t10-transition-normal);
 }
 
@@ -2698,7 +2698,7 @@
   right: 0;
   height: 2px;
   background: #3b82f6;
-  border-radius: 2px 2px 0 0;
+  border-radius: 4px 2px 0 0;
 }
 
 .t10-tab-badge {
@@ -2812,7 +2812,7 @@
   height: 36px;
   background: rgba(22, 163, 74, 0.1);
   color: #22c55e;
-  border-radius: 10px;
+  border-radius: 12px;
   flex-shrink: 0;
 }
 
@@ -2888,7 +2888,7 @@
   height: 36px;
   background: rgba(245, 158, 11, 0.1);
   color: #f59e0b;
-  border-radius: 10px;
+  border-radius: 12px;
   flex-shrink: 0;
 }
 
@@ -3088,7 +3088,7 @@
   max-width: 320px;
   background-color: #ffffff;
   border: 1px solid #e2e8f0;
-  border-radius: 10px;
+  border-radius: 12px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
   z-index: 100001;
   animation: t10-filterDropIn 150ms ease forwards;

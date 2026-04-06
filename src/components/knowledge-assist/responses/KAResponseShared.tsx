@@ -44,7 +44,7 @@ export function Loz({ status }: { status: string }) {
   return (
     <span style={{
       display: 'inline-flex', alignItems: 'center', height: 20,
-      padding: '0 6px', borderRadius: 3,
+      padding: '0 6px', borderRadius: 4,
       background: s.bg, color: s.color,
       fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
       letterSpacing: '0.03em', fontFamily: F.inter,

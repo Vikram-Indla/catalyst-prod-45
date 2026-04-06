@@ -239,7 +239,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
           <>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, marginBottom: 20 }}>
               <div style={{
-                width: 64, height: 64, borderRadius: '50%', background: '#F0FDF4',
+                width: 64, height: 64, borderRadius: '50%', background: 'var(--tint-green, #F0FDF4)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
                 <CheckCircle2 size={40} color="var(--sem-success)" />
@@ -308,7 +308,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
           <>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, marginBottom: 20 }}>
               <div style={{
-                width: 56, height: 56, borderRadius: '50%', background: '#FEF2F2',
+                width: 56, height: 56, borderRadius: '50%', background: 'var(--tint-red, #FEF2F2)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
                 <XCircle size={32} color="var(--sem-danger)" />
@@ -319,7 +319,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
             </div>
 
             <div style={{
-              background: '#FEF2F2', border: '1.5px solid #DC2626', borderRadius: 6,
+              background: 'var(--tint-red, #FEF2F2)', border: '1.5px solid #DC2626', borderRadius: 6,
               padding: '14px 16px', marginBottom: 16, maxHeight: 120, overflowY: 'auto' as const,
             }}>
               <code style={{

@@ -43,7 +43,7 @@ export function ProjectStatusBadge({ status }: { status: ProjectStatus }) {
       style={{
         display: 'inline-block',
         padding: '2px 8px',
-        borderRadius: 3,
+        borderRadius: 4,
         backgroundColor: isDark ? c.darkBg : c.lightBg,
         color: isDark ? c.darkText : c.lightText,
         fontSize: 11,

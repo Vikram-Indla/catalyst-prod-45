@@ -175,7 +175,7 @@ export default function IncidentDetailPage() {
               <h3 style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A', marginBottom: 8 }}>Labels</h3>
               <div className="flex flex-wrap gap-1">
                 {(incident.labels as string[]).map((label: string) => (
-                  <span key={label} className="px-2 py-0.5" style={{ fontSize: 11, backgroundColor: isDark ? '#1A1A1A' : '#F1F5F9', border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(15,23,42,0.08)', borderRadius: 3, color: isDark ? '#A1A1A1' : '#475569' }}>{label}</span>
+                  <span key={label} className="px-2 py-0.5" style={{ fontSize: 11, backgroundColor: isDark ? '#1A1A1A' : '#F1F5F9', border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(15,23,42,0.08)', borderRadius: 4, color: isDark ? '#A1A1A1' : '#475569' }}>{label}</span>
                 ))}
               </div>
             </div>

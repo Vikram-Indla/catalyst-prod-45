@@ -147,7 +147,7 @@ export default function RABackgroundModal({ type, doc, onClose }: Props) {
     <>
       <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 60 }} />
       <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: 500, background: 'var(--cp-float)', borderRadius: 8, zIndex: 70, padding: 28, border: '0.75px solid var(--divider)' }}>
-        <div style={{ width: 48, height: 48, borderRadius: 12, background: jobStatus === 'failed' ? '#FEF2F2' : jobStatus === 'done' ? '#F0FDF4' : 'var(--cp-primary-5)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
+        <div style={{ width: 48, height: 48, borderRadius: 12, background: jobStatus === 'failed' ? 'var(--tint-red, #FEF2F2)' : jobStatus === 'done' ? 'var(--tint-green, #F0FDF4)' : 'var(--cp-primary-5)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
           {jobStatus === 'failed' ? (
             <AlertTriangle size={22} color="var(--sem-danger)" />
           ) : jobStatus === 'done' ? (
@@ -175,9 +175,9 @@ export default function RABackgroundModal({ type, doc, onClose }: Props) {
               <span style={{ fontSize: 12, color: 'var(--fg-3)', fontFamily: "'Inter', sans-serif" }}>{currentStep || config.steps[activeStep]}</span>
               <span style={{ fontSize: 12, color: 'var(--fg-3)', fontFamily: "'JetBrains Mono', monospace" }}>{jobStatus === 'done' ? '100' : Math.min(progress, 99)}%</span>
             </div>
-            <div style={{ height: 6, background: 'var(--divider)', borderRadius: 3, overflow: 'hidden', marginBottom: 20, position: 'relative' }}>
+            <div style={{ height: 6, background: 'var(--divider)', borderRadius: 4, overflow: 'hidden', marginBottom: 20, position: 'relative' }}>
               <div style={{
-                height: '100%', borderRadius: 3,
+                height: '100%', borderRadius: 4,
                 background: jobStatus === 'done' ? 'var(--sem-success)' : 'var(--cp-blue)',
                 width: `${jobStatus === 'done' ? 100 : Math.min(progress, 99)}%`,
                 transition: 'width 800ms ease', position: 'relative', overflow: 'hidden',

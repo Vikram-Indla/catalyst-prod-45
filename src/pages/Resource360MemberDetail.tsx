@@ -166,7 +166,7 @@ const Resource360MemberDetail: React.FC = () => {
 
         {/* Error state — inline, not full-page */}
         {hasError && (
-          <div style={{ textAlign: 'center', padding: 40, background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: 10, marginBottom: 12 }} role="alert">
+          <div style={{ textAlign: 'center', padding: 40, background: 'var(--tint-red, #FEF2F2)', border: '1px solid #FECACA', borderRadius: 12, marginBottom: 12 }} role="alert">
             <div style={{ fontSize: 14, fontWeight: 600, color: '#991B1B', marginBottom: 4 }}>Failed to load data</div>
             <div style={{ fontSize: 12, color: '#B91C1C', marginBottom: 10 }}>{(memberError || chronoError)?.message}</div>
             <button

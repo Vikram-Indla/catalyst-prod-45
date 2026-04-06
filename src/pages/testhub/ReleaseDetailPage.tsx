@@ -146,7 +146,7 @@ export default function ReleaseDetailPage() {
 
 function StatCard({ label, value, color, isDark }: { label: string; value: string; color: string; isDark: boolean }) {
   return (
-    <div style={{ padding: '14px 16px', background: isDark ? '#1A1A1A' : '#F8FAFC', borderRadius: 10, border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}` }}>
+    <div style={{ padding: '14px 16px', background: isDark ? '#1A1A1A' : '#F8FAFC', borderRadius: 12, border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}` }}>
       <div style={{ fontSize: 22, fontWeight: 700, color, fontVariantNumeric: 'tabular-nums' }}>{value}</div>
       <div style={{ fontSize: 12, color: isDark ? '#A1A1A1' : '#64748B', marginTop: 2 }}>{label}</div>
     </div>
@@ -163,7 +163,7 @@ function OverviewTab({ release, isDark }: { release: any; isDark: boolean }) {
         </p>
 
         <h3 style={{ fontSize: 15, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A', margin: '24px 0 12px' }}>Test Progress</h3>
-        <div style={{ height: 10, backgroundColor: isDark ? '#1A1A1A' : '#F1F5F9', borderRadius: 5, overflow: 'hidden', marginBottom: 8 }}>
+        <div style={{ height: 10, backgroundColor: isDark ? '#1A1A1A' : '#F1F5F9', borderRadius: 6, overflow: 'hidden', marginBottom: 8 }}>
           {release.test_cases_total > 0 && (
             <div style={{
               display: 'flex', height: '100%',
@@ -183,7 +183,7 @@ function OverviewTab({ release, isDark }: { release: any; isDark: boolean }) {
       </div>
 
       {/* Details panel */}
-      <div style={{ background: isDark ? '#1A1A1A' : '#F8FAFC', borderRadius: 10, padding: 20, border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}` }}>
+      <div style={{ background: isDark ? '#1A1A1A' : '#F8FAFC', borderRadius: 12, padding: 20, border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}` }}>
         <h3 style={{ fontSize: 14, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A', marginBottom: 16 }}>Details</h3>
         <dl style={{ margin: 0, display: 'flex', flexDirection: 'column', gap: 14 }}>
           <DetailRow label="Target Date" value={release.target_date ? format(new Date(release.target_date), 'MMMM dd, yyyy') : '—'} />
@@ -223,7 +223,7 @@ function CyclesTab({ cycles, isLoading, navigate, isDark }: { cycles: any[]; isL
   }
 
   return (
-    <div style={{ border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 10, overflow: 'hidden', background: isDark ? '#1A1A1A' : '#fff' }}>
+    <div style={{ border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 12, overflow: 'hidden', background: isDark ? '#1A1A1A' : '#fff' }}>
       <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
         <thead>
           <tr style={{ backgroundColor: isDark ? '#1A1A1A' : '#F8FAFC', borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}` }}>

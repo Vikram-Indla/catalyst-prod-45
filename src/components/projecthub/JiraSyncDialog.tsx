@@ -256,7 +256,7 @@ export function JiraSyncDialog({ open, onClose }: Props) {
           <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
               <div style={{
-                width: 40, height: 40, borderRadius: 10,
+                width: 40, height: 40, borderRadius: 12,
                 background: 'linear-gradient(135deg, #2684FF, #0052CC)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 boxShadow: '0 2px 8px rgba(38,132,255,0.3)',
@@ -295,7 +295,7 @@ export function JiraSyncDialog({ open, onClose }: Props) {
             <div style={{
               display: 'inline-flex', alignItems: 'center', gap: 5,
               padding: '3px 10px', borderRadius: 20,
-              background: '#F0FDF4', border: '1px solid #BBF7D0',
+              background: 'var(--tint-green, #F0FDF4)', border: '1px solid #BBF7D0',
               fontSize: 10, fontWeight: 600, color: 'var(--sem-success)',
               fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.02em',
             }}>
@@ -321,14 +321,14 @@ export function JiraSyncDialog({ open, onClose }: Props) {
               <>
                 <div style={{
                   width: 72, height: 72, borderRadius: 20,
-                  background: 'linear-gradient(135deg, #EFF6FF, #DBEAFE)',
+                  background: 'linear-gradient(135deg, var(--tint-blue, #EFF6FF), #DBEAFE)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   marginBottom: 24, position: 'relative',
                 }}>
                   <JiraIcon size={28} color="#2684FF" />
                   <div style={{
                     position: 'absolute', top: -4, right: -4,
-                    width: 20, height: 20, borderRadius: 10,
+                    width: 20, height: 20, borderRadius: 12,
                     background: 'var(--cp-blue)', display: 'flex', alignItems: 'center', justifyContent: 'center',
                   }}>
                     <Loader2 size={12} color="#FFF" className="animate-spin" />
@@ -373,7 +373,7 @@ export function JiraSyncDialog({ open, onClose }: Props) {
                   ].map((step, i) => (
                     <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
                       <div style={{
-                        width: 18, height: 18, borderRadius: 9,
+                        width: 18, height: 18, borderRadius: 8,
                         background: step.done ? '#16A34A' : (progressPct > (i * 25) ? '#2563EB' : '#E4E4E7'),
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
                       }}>
@@ -391,7 +391,7 @@ export function JiraSyncDialog({ open, onClose }: Props) {
               <>
                 <div style={{
                   width: 72, height: 72, borderRadius: 20,
-                  background: 'linear-gradient(135deg, #F0FDF4, #DCFCE7)',
+                  background: 'linear-gradient(135deg, var(--tint-green, #F0FDF4), #DCFCE7)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 24,
                 }}>
                   <CheckCircle2 size={32} color="#16A34A" />
@@ -405,7 +405,7 @@ export function JiraSyncDialog({ open, onClose }: Props) {
 
                 <div style={{
                   display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1,
-                  background: 'var(--divider)', borderRadius: 10, overflow: 'hidden',
+                  background: 'var(--divider)', borderRadius: 12, overflow: 'hidden',
                   width: '100%', maxWidth: 440, marginBottom: 32,
                 }}>
                   {[
@@ -428,7 +428,7 @@ export function JiraSyncDialog({ open, onClose }: Props) {
                 <button onClick={handleConfirmComplete} style={{
                   height: 40, padding: '0 32px', fontSize: 14, fontWeight: 600,
                   color: '#FFF', background: 'linear-gradient(135deg, #2563EB, #1D4ED8)',
-                  border: 'none', borderRadius: 10, cursor: 'pointer',
+                  border: 'none', borderRadius: 12, cursor: 'pointer',
                   display: 'flex', alignItems: 'center', gap: 8,
                   boxShadow: '0 2px 8px rgba(37,99,235,0.3)',
                 }}>
@@ -441,7 +441,7 @@ export function JiraSyncDialog({ open, onClose }: Props) {
               <>
                 <div style={{
                   width: 72, height: 72, borderRadius: 20,
-                  background: 'linear-gradient(135deg, #FEF2F2, #FEE2E2)',
+                  background: 'linear-gradient(135deg, var(--tint-red, #FEF2F2), #FEE2E2)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 24,
                 }}>
                   <AlertCircle size={32} color="#DC2626" />
@@ -535,13 +535,13 @@ export function JiraSyncDialog({ open, onClose }: Props) {
                 {showModeDropdown && (
                   <div style={{
                     position: 'absolute', top: 44, left: 0, right: 0, zIndex: 10,
-                    background: 'var(--bg-app)', border: '1px solid var(--divider)', borderRadius: 10,
+                    background: 'var(--bg-app)', border: '1px solid var(--divider)', borderRadius: 12,
                     boxShadow: '0 8px 24px rgba(0,0,0,0.12)', overflow: 'hidden',
                   }}>
                     {SYNC_OPTIONS.map(opt => (
                       <button key={opt.value} onClick={() => { setSyncMode(opt.value); setShowModeDropdown(false); }} style={{
                         width: '100%', padding: '10px 14px', textAlign: 'left',
-                        background: syncMode === opt.value ? '#EFF6FF' : 'transparent',
+                        background: syncMode === opt.value ? 'var(--tint-blue, #EFF6FF)' : 'transparent',
                         border: 'none', cursor: 'pointer', fontSize: 13,
                         display: 'flex', alignItems: 'center', gap: 10, borderBottom: '1px solid var(--cp-bd-zone)',
                       }}>
@@ -591,7 +591,7 @@ export function JiraSyncDialog({ open, onClose }: Props) {
                         background: isSelected ? '#F0F4FF' : 'transparent',
                       }}>
                         <div style={{
-                          width: 20, height: 20, borderRadius: 5,
+                          width: 20, height: 20, borderRadius: 6,
                           border: isSelected ? 'none' : '2px solid #D4D4D8',
                           background: isSelected ? '#2563EB' : '#FFF',
                           display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,

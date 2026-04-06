@@ -31,8 +31,8 @@ export function SourceFilterPills({ value, onChange, catalystCount, jiraCount }:
 
   const pills: PillConfig[] = [
     { key: 'all', label: 'All', count: total, activeBg: 'var(--fg-1)', activeText: '#FFFFFF', activeBorder: 'var(--fg-1)' },
-    { key: 'catalyst', label: 'Catalyst', count: catalystCount, activeBg: 'var(--src-catalyst-bg, #EFF6FF)', activeText: 'var(--src-catalyst-text, #2563EB)', activeBorder: 'var(--src-catalyst-border, #BFDBFE)', icon: 'catalyst' },
-    { key: 'jira', label: 'Jira', count: jiraCount, activeBg: 'var(--src-jira-bg, #FFF7ED)', activeText: 'var(--src-jira-text, #9A3412)', activeBorder: 'var(--src-jira-border, #FED7AA)', icon: 'jira' },
+    { key: 'catalyst', label: 'Catalyst', count: catalystCount, activeBg: 'var(--src-catalyst-bg, var(--tint-blue, #EFF6FF))', activeText: 'var(--src-catalyst-text, #2563EB)', activeBorder: 'var(--src-catalyst-border, #BFDBFE)', icon: 'catalyst' },
+    { key: 'jira', label: 'Jira', count: jiraCount, activeBg: 'var(--src-jira-bg, var(--tint-amber, #FFF7ED))', activeText: 'var(--src-jira-text, #9A3412)', activeBorder: 'var(--src-jira-border, #FED7AA)', icon: 'jira' },
   ];
 
   return (

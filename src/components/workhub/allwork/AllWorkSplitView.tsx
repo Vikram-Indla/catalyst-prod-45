@@ -266,7 +266,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem }: Props
                     <span
                       style={{
                         fontSize: 10, fontWeight: 700, minWidth: 18, textAlign: 'center',
-                        padding: '1px 5px', borderRadius: 10,
+                        padding: '1px 5px', borderRadius: 12,
                         backgroundColor: isActive ? 'rgba(21,88,188,0.10)' : isDark ? 'rgba(255,255,255,0.06)' : 'var(--bd-subtle, rgba(255,255,255,0.05))',
                         color: isActive ? '#1558bc' : 'var(--fg-3)',
                         fontFamily: "'JetBrains Mono', monospace",

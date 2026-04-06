@@ -98,7 +98,7 @@ export function RoadmapSwimlanePanel({ items, config, selectedItemId, onItemClic
   );
 
   return (
-    <div className="flex-1 flex flex-col min-w-0 overflow-hidden" style={{ background: '#FFFFFF' }}>
+    <div className="flex-1 flex flex-col min-w-0 overflow-hidden" style={{ background: 'var(--bg-app, #FFFFFF)' }}>
       <ScrollArea className="flex-1 w-full">
         <div style={{ minWidth: totalMinWidth }}>
           <RoadmapTimelineHeader periods={periods} zoom={config.zoom} />
@@ -146,7 +146,7 @@ export function RoadmapSwimlanePanel({ items, config, selectedItemId, onItemClic
                         fontWeight: 600,
                         color: '#64748B',
                         background: var(--bg-2, '#F1F5F9'),
-                        borderRadius: 10,
+                        borderRadius: 12,
                         padding: '2px 7px',
                         fontFamily: 'JetBrains Mono, monospace',
                       }}

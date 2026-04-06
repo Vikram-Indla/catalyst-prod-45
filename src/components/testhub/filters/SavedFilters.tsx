@@ -127,12 +127,12 @@ export function SavedFilters({ entityType, currentFilters, onApplyFilter }: Save
   return (
     <div style={{ position: 'relative' }}>
       <button onClick={() => setIsExpanded(!isExpanded)}
-        style={{ display: 'flex', alignItems: 'center', gap: 6, height: 44, padding: '0 14px', border: '1.5px solid var(--divider)', borderRadius: 10, backgroundColor: filters.length > 0 ? 'var(--bg-1)' : 'var(--cp-float)', color: 'var(--fg-3)', fontSize: 13, cursor: 'pointer' }}>
+        style={{ display: 'flex', alignItems: 'center', gap: 6, height: 44, padding: '0 14px', border: '1.5px solid var(--divider)', borderRadius: 12, backgroundColor: filters.length > 0 ? 'var(--bg-1)' : 'var(--cp-float)', color: 'var(--fg-3)', fontSize: 13, cursor: 'pointer' }}>
         <Filter size={16} /> Saved ({filters.length})
       </button>
 
       {isExpanded && (
-        <div style={{ position: 'absolute', top: '100%', left: 0, marginTop: 4, width: 280, backgroundColor: 'var(--cp-float)', borderRadius: 10, border: '1px solid var(--divider)', boxShadow: '0 10px 40px rgba(0,0,0,0.1)', zIndex: 100, overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', top: '100%', left: 0, marginTop: 4, width: 280, backgroundColor: 'var(--cp-float)', borderRadius: 12, border: '1px solid var(--divider)', boxShadow: '0 10px 40px rgba(0,0,0,0.1)', zIndex: 100, overflow: 'hidden' }}>
           <div style={{ padding: '12px 14px', borderBottom: '1px solid var(--divider)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1)' }}>Saved Filters</span>
             {hasActiveFilters && (
@@ -180,7 +180,7 @@ export function SavedFilters({ entityType, currentFilters, onApplyFilter }: Save
           <div style={{ width: 340, backgroundColor: 'var(--cp-float)', borderRadius: 12, padding: 20, boxShadow: '0 20px 40px rgba(0,0,0,0.2)' }}>
             <h3 style={{ fontSize: 16, fontWeight: 600, color: 'var(--fg-1)', margin: '0 0 16px' }}>Save Current Filter</h3>
             <input type="text" placeholder="Filter name" value={newFilterName} onChange={(e) => setNewFilterName(e.target.value)} autoFocus
-              style={{ width: '100%', height: 44, padding: '0 14px', border: '1.5px solid var(--divider)', borderRadius: 10, fontSize: 14, marginBottom: 16 }} />
+              style={{ width: '100%', height: 44, padding: '0 14px', border: '1.5px solid var(--divider)', borderRadius: 12, fontSize: 14, marginBottom: 16 }} />
             <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
               <button onClick={() => { setShowSaveModal(false); setNewFilterName(''); }}
                 style={{ padding: '10px 16px', backgroundColor: 'var(--cp-float)', border: '1px solid var(--divider)', borderRadius: 8, color: 'var(--fg-3)', fontSize: 13, cursor: 'pointer' }}>

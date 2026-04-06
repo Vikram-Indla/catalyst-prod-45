@@ -25,7 +25,7 @@ export const AddLabelsButton: React.FC<AddLabelsButtonProps> = ({ onClick }) => 
         padding: '12px 18px',
         backgroundColor: isHovered ? COLORS.accentLight : COLORS.surfaceHover,
         border: `2px ${isHovered ? 'solid' : 'dashed'} ${isHovered ? COLORS.accent : COLORS.borderDefault}`,
-        borderRadius: '10px',
+        borderRadius: '12px',
         fontSize: '14px',
         fontWeight: 500,
         color: isHovered ? COLORS.accent : COLORS.textMuted,

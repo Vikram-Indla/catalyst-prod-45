@@ -1246,13 +1246,13 @@
 .ws-capacity-bar {
   height: 4px;
   background: var(--ws-bg-tertiary);
-  border-radius: 2px;
+  border-radius: 4px;
   overflow: hidden;
 }
 
 .ws-capacity-fill {
   height: 100%;
-  border-radius: 2px;
+  border-radius: 4px;
 }
 
 /* ==========================================================================

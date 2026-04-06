@@ -20,7 +20,7 @@ export function ChgStatusBadge({ status }: Props) {
       style={{
         height: 20,
         padding: '0 6px',
-        borderRadius: 3,
+        borderRadius: 4,
         fontSize: 11,
         fontWeight: 700,
         textTransform: 'uppercase',

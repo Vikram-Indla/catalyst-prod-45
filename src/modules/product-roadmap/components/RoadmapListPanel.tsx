@@ -42,7 +42,7 @@ export function RoadmapListPanel({
         <span
           style={{
             fontSize: 10, fontWeight: 600, color: '#64748B', background: var(--bg-2, '#F1F5F9'),
-            borderRadius: 10, padding: '2px 7px', fontFamily: 'JetBrains Mono, monospace',
+            borderRadius: 12, padding: '2px 7px', fontFamily: 'JetBrains Mono, monospace',
           }}
         >
           {items.length}
@@ -65,7 +65,7 @@ export function RoadmapListPanel({
   // Grouped view
   if (groups && groups.length > 0) {
     return (
-      <div className="flex-shrink-0 flex flex-col" style={{ width: listWidth, borderRight: '1px solid var(--bd-default, #E2E8F0)', background: '#FFFFFF' }}>
+      <div className="flex-shrink-0 flex flex-col" style={{ width: listWidth, borderRight: '1px solid var(--bd-default, #E2E8F0)', background: 'var(--bg-app, #FFFFFF)' }}>
         {renderHeader()}
         <ScrollArea className="flex-1">
           <div role="table">
@@ -110,7 +110,7 @@ export function RoadmapListPanel({
 
   // Flat list with DnD
   return (
-    <div className="flex-shrink-0 flex flex-col" style={{ width: listWidth, borderRight: '1px solid var(--bd-default, #E2E8F0)', background: '#FFFFFF' }}>
+    <div className="flex-shrink-0 flex flex-col" style={{ width: listWidth, borderRight: '1px solid var(--bd-default, #E2E8F0)', background: 'var(--bg-app, #FFFFFF)' }}>
       {renderHeader()}
       <ScrollArea className="flex-1">
         <Droppable droppableId="roadmap-list">

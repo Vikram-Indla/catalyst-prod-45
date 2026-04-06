@@ -46,7 +46,7 @@ export default function WikiDomainsListPage() {
                 </div>
                 <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, fontWeight: 700, color: isDark ? '#A1A1A1' : '#64748B', background: isDark ? '#1A1A1A' : '#F1F5F9', padding: '1px 5px', borderRadius: 3 }}>{d.domain_code}</span>
                 <span style={{ fontFamily: 'Sora, sans-serif', fontSize: 13, fontWeight: 600, flex: 1 }}>{d.name}</span>
-                <span style={{ fontSize: 9, fontWeight: 700, textTransform: 'uppercase', padding: '2px 6px', borderRadius: 3, background: tagStyle.bg, color: tagStyle.color }}>{d.tag}</span>
+                <span style={{ fontSize: 9, fontWeight: 700, textTransform: 'uppercase', padding: '2px 6px', borderRadius: 4, background: tagStyle.bg, color: tagStyle.color }}>{d.tag}</span>
               </div>
               <div style={{ display: 'flex', gap: 16, marginBottom: 10, fontSize: 11, color: isDark ? '#A1A1A1' : '#64748B' }}>
                 <span>{d.article_count} articles</span>
@@ -55,8 +55,8 @@ export default function WikiDomainsListPage() {
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <span style={{ fontSize: 10, fontWeight: 600, color: isDark ? '#A1A1A1' : '#64748B' }}>Coverage</span>
-                <div style={{ flex: 1, height: 3, borderRadius: 2, background: isDark ? '#292929' : '#E2E8F0' }}>
-                  <div style={{ height: '100%', borderRadius: 2, background: coverageColor, width: `${d.coverage_percent}%` }} />
+                <div style={{ flex: 1, height: 3, borderRadius: 4, background: isDark ? '#292929' : '#E2E8F0' }}>
+                  <div style={{ height: '100%', borderRadius: 4, background: coverageColor, width: `${d.coverage_percent}%` }} />
                 </div>
                 <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, fontWeight: 600 }}>{d.coverage_percent}%</span>
               </div>

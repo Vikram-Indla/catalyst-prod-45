@@ -32,7 +32,7 @@ function StatusLoz({ status }: { status: string }) {
   const label = status === 'Converted to Initiative' ? 'CONVERTED' : status.toUpperCase();
   return (
     <span style={{
-      display: 'inline-flex', alignItems: 'center', padding: '2px 8px', borderRadius: '3px',
+      display: 'inline-flex', alignItems: 'center', padding: '2px 8px', borderRadius: '4px',
       backgroundColor: s.bg, color: s.text,
       fontSize: '11px', fontWeight: 700, textTransform: 'uppercase',
       lineHeight: '16px', whiteSpace: 'nowrap', height: 20,
@@ -343,7 +343,7 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
                 ) : localQuarter ? (
                   <span style={{
                     display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                    height: 20, padding: '0 6px', borderRadius: 3, fontSize: '11px', fontWeight: 700,
+                    height: 20, padding: '0 6px', borderRadius: 4, fontSize: '11px', fontWeight: 700,
                     background: QUARTER_BADGE[localQuarter]?.bg || '#E2E8F0',
                     color: QUARTER_BADGE[localQuarter]?.text || '#94A3B8',
                   }}>{localQuarter} 2026</span>
@@ -393,7 +393,7 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
               <span style={{ fontSize: '13px', color: dk.t2 }}>out of 5.00</span>
               <span style={{
                 display: 'inline-flex', alignItems: 'center', height: '20px', padding: '0 6px',
-                borderRadius: '3px', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase',
+                borderRadius: '4px', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase',
                 backgroundColor: levelColors.bg, color: levelColors.text,
               }}>{impactLevel}</span>
             </div>
@@ -419,11 +419,11 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
                       className="w-full"
                     />
                   ) : (
-                    <div style={{ height: '4px', borderRadius: '2px', backgroundColor: isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0', overflow: 'hidden' }}>
+                    <div style={{ height: '4px', borderRadius: '4px', backgroundColor: isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0', overflow: 'hidden' }}>
                       <div style={{
                         height: '100%', width: `${(dim.value / 5) * 100}%`,
                         backgroundColor: dim.value > 0 ? '#2563EB' : 'transparent',
-                        borderRadius: '2px', transition: 'width 300ms',
+                        borderRadius: '4px', transition: 'width 300ms',
                       }} />
                     </div>
                   )}

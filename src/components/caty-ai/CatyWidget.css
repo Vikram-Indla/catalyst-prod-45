@@ -287,7 +287,7 @@
 
 .caty-messages::-webkit-scrollbar-thumb {
   background: var(--caty-border-light);
-  border-radius: 3px;
+  border-radius: 4px;
 }
 
 .caty-messages::-webkit-scrollbar-thumb:hover {
@@ -1209,14 +1209,14 @@
   flex: 1;
   height: 6px;
   background: var(--caty-border-light);
-  border-radius: 3px;
+  border-radius: 4px;
   overflow: hidden;
 }
 
 .caty-alloc-bar-fill {
   height: 100%;
   background: var(--caty-primary);
-  border-radius: 3px;
+  border-radius: 4px;
   transition: width 0.3s ease;
 }
 

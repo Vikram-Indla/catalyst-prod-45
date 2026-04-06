@@ -63,7 +63,7 @@ export function StatusLozenge({ status, onClick, className }: StatusLozengeProps
         fontWeight: 700,
         textTransform: 'uppercase',
         letterSpacing: '0.03em',
-        borderRadius: 3,
+        borderRadius: 4,
         backgroundColor: isDark ? colors.darkBg : colors.bg,
         color: isDark ? colors.darkText : colors.text,
         lineHeight: '20px',

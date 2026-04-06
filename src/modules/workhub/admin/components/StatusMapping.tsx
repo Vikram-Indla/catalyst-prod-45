@@ -86,7 +86,7 @@ export function StatusMapping() {
       </div>
 
       <div style={{
-        background: '#fff', border: '1px solid var(--bd-default, #E2E8F0)', borderRadius: 8,
+        background: 'var(--bg-app, #fff)', border: '1px solid var(--bd-default, #E2E8F0)', borderRadius: 8,
         padding: 20, boxShadow: '0 1px 2px rgba(0,0,0,.05)',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>
@@ -95,7 +95,7 @@ export function StatusMapping() {
           </h2>
           <span style={{
             fontSize: 10, background: var(--bg-2, '#F1F5F9'), color: '#64748B', padding: '2px 8px',
-            borderRadius: 3, fontWeight: 500,
+            borderRadius: 4, fontWeight: 500,
           }}>{totalCount} statuses</span>
         </div>
 
@@ -148,7 +148,7 @@ export function StatusMapping() {
                     style={{
                       display: 'inline-flex', alignItems: 'center', gap: 6,
                       padding: '4px 10px', borderRadius: 4,
-                      background: '#F8FAFC', border: '1px solid var(--bd-default, #E2E8F0)',
+                      background: 'var(--bg-1, #F8FAFC)', border: '1px solid var(--bd-default, #E2E8F0)',
                       fontSize: 12, fontFamily: 'JetBrains Mono, monospace',
                       color: '#334155', fontWeight: 500, cursor: 'grab',
                     }}
@@ -192,7 +192,7 @@ export function StatusMapping() {
                   }}>Add</button>
                   <button onClick={() => { setAddingTo(null); setNewStatus('') }} style={{
                     padding: '5px 12px', borderRadius: 4, fontSize: 11,
-                    background: '#F8FAFC', color: '#64748B', border: '1px solid var(--bd-default, #E2E8F0)', cursor: 'pointer',
+                    background: 'var(--bg-1, #F8FAFC)', color: '#64748B', border: '1px solid var(--bd-default, #E2E8F0)', cursor: 'pointer',
                   }}>Cancel</button>
                 </div>
               )}
@@ -216,7 +216,7 @@ export function StatusMapping() {
             onClick={handleReset}
             style={{
               padding: '8px 20px', borderRadius: 6, fontSize: 12, fontWeight: 500,
-              background: '#F8FAFC', color: '#334155', border: '1px solid var(--bd-default, #E2E8F0)', cursor: 'pointer',
+              background: 'var(--bg-1, #F8FAFC)', color: '#334155', border: '1px solid var(--bd-default, #E2E8F0)', cursor: 'pointer',
             }}
           >
             Reset to Default

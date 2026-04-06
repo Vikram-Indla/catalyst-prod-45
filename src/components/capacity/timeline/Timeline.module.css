@@ -112,7 +112,7 @@
   width: 32px;
   height: 3px;
   background: linear-gradient(90deg, #3b82f6, #2563eb); /* primary gradient */
-  border-radius: 3px 3px 0 0;
+  border-radius: 4px 3px 0 0;
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -688,7 +688,7 @@
   font-size: 9px;
   font-weight: 600;
   letter-spacing: 0.03em;
-  border-radius: 10px;
+  border-radius: 12px;
   white-space: nowrap;
   display: inline-flex;
   align-items: center;
@@ -919,7 +919,7 @@
 .legendStripes {
   width: 16px;
   height: 8px;
-  border-radius: 2px;
+  border-radius: 4px;
   background: repeating-linear-gradient(
     135deg,
     rgba(156, 163, 175, 0.3) 0px,
@@ -973,7 +973,7 @@
 .skeletonTextSm {
   height: 10px;
   width: 60%;
-  border-radius: 3px;
+  border-radius: 4px;
   margin-top: 6px;
 }
 

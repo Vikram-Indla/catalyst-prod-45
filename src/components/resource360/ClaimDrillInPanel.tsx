@@ -241,7 +241,7 @@ export default function ClaimDrillInPanel({ resourceName, claimText, weekStart, 
                       </span>
                       <span style={{
                         fontSize: 10, fontWeight: 600,
-                        padding: '2px 8px', borderRadius: 10,
+                        padding: '2px 8px', borderRadius: 12,
                         background: sc.bg, color: sc.text,
                       }}>
                         {t.status}

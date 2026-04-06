@@ -55,7 +55,7 @@ export default function IdeationBoardView({ ideas, onOpenDetail, onConvert }: Pr
               display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px', padding: '0 4px',
               height: 36,
             }}>
-              <span style={{ width: '10px', height: '10px', borderRadius: '3px', background: sc.bg, flexShrink: 0 }} />
+              <span style={{ width: '10px', height: '10px', borderRadius: '4px', background: sc.bg, flexShrink: 0 }} />
               <span style={{ fontSize: '11px', fontWeight: 700, color: dk.t2, textTransform: 'uppercase', letterSpacing: '0.07em' }}>{sc.label}</span>
               <span style={{
                 fontSize: '10px', fontFamily: "'JetBrains Mono', monospace", fontWeight: 700,
@@ -140,7 +140,7 @@ function IdeaBoardCard({ idea, columnStatus, onClick, onConvert, isDark, dk }: {
         <span style={{
           fontFamily: "'JetBrains Mono', monospace", fontSize: '9px', fontWeight: 800,
           background: isDark ? 'rgba(255,255,255,0.06)' : pc.bg, color: isDark ? dk.t2 : pc.text,
-          padding: '1px 5px', borderRadius: '3px',
+          padding: '1px 5px', borderRadius: '4px',
           border: `1px solid ${isDark ? dk.border : pc.border}`,
         }}>
           {idea.priority}

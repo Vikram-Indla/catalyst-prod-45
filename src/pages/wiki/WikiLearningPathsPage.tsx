@@ -41,8 +41,8 @@ export default function WikiLearningPathsPage() {
                 </div>
               </div>
               <div style={{ fontSize: 12, color: '#64748B', marginBottom: 16, lineHeight: 1.5 }}>{p.description}</div>
-              <div style={{ height: 4, borderRadius: 2, background: isDark ? '#292929' : '#E2E8F0', marginBottom: 8 }}>
-                <div style={{ height: '100%', borderRadius: 2, background: '#2563EB', width: `${pct}%` }} />
+              <div style={{ height: 4, borderRadius: 4, background: isDark ? '#292929' : '#E2E8F0', marginBottom: 8 }}>
+                <div style={{ height: '100%', borderRadius: 4, background: '#2563EB', width: `${pct}%` }} />
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: '#64748B' }}>
                 <span>{p.estimated_hours}h · {p.article_count} articles</span>

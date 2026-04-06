@@ -138,7 +138,7 @@ export default function IdeationIntelligenceHub({ open, onClose, onMerge, ideas 
           { value: String(underReview), label: `ideas pending review`, title: 'UNDER REVIEW', valueColor: '#0D9488' },
         ].map(s => (
           <div key={s.title} style={{
-            flex: 1, background: C.bg, border: `1px solid ${C.border}`, borderRadius: '10px', padding: '16px 20px',
+            flex: 1, background: C.bg, border: `1px solid ${C.border}`, borderRadius: '12px', padding: '16px 20px',
           }}>
             <div style={{ fontSize: '11px', fontWeight: 700, color: C.textTertiary, textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '4px' }}>{s.title}</div>
             <div style={{ fontSize: '28px', fontWeight: 800, fontFamily: MONO, color: s.valueColor }}>{s.value}</div>
@@ -208,8 +208,8 @@ export default function IdeationIntelligenceHub({ open, onClose, onMerge, ideas 
                   <span style={{ fontSize: '14px', color: C.textSecondary, fontWeight: 500 }}>{team}</span>
                   <span style={{ fontFamily: MONO, fontSize: '13px', fontWeight: 600, color: C.textSecondary }}>{count} ideas · {pct}%</span>
                 </div>
-                <div style={{ marginTop: '4px', height: '4px', background: '#E4E4E7', borderRadius: '2px', overflow: 'hidden' }}>
-                  <div style={{ height: '100%', width: `${pct}%`, background: barColor, borderRadius: '2px' }} />
+                <div style={{ marginTop: '4px', height: '4px', background: '#E4E4E7', borderRadius: '4px', overflow: 'hidden' }}>
+                  <div style={{ height: '100%', width: `${pct}%`, background: barColor, borderRadius: '4px' }} />
                 </div>
               </div>
             );
@@ -228,8 +228,8 @@ export default function IdeationIntelligenceHub({ open, onClose, onMerge, ideas 
                 background: C.surface, border: `1px solid ${C.border}`,
                 borderRadius: '8px', padding: '14px', textAlign: 'center',
               }}>
-                <div style={{ height: '4px', background: C.border, borderRadius: '2px', marginBottom: '12px', overflow: 'hidden' }}>
-                  <div style={{ height: '100%', width: `${total > 0 ? Math.round((p.count / total) * 100) : 0}%`, background: p.color, borderRadius: '2px' }} />
+                <div style={{ height: '4px', background: C.border, borderRadius: '4px', marginBottom: '12px', overflow: 'hidden' }}>
+                  <div style={{ height: '100%', width: `${total > 0 ? Math.round((p.count / total) * 100) : 0}%`, background: p.color, borderRadius: '4px' }} />
                 </div>
                 <div style={{ fontFamily: MONO, fontSize: '24px', fontWeight: 800, color: C.textPrimary, lineHeight: 1 }}>{p.count}</div>
                 <div style={{ fontSize: '12px', fontWeight: 600, color: C.textSecondary, marginTop: '6px' }}>{p.name}</div>

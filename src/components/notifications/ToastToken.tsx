@@ -40,7 +40,7 @@ export default function ToastToken({ toast: t, onDismiss, onPause, onResume }: T
       tabIndex={-1}
       style={{
         width: TOAST_WIDTH,
-        background: '#FFFFFF',
+        background: 'var(--bg-app, #FFFFFF)',
         border: '0.5px solid rgba(15,23,42,.08)',
         borderRadius: 6,
         borderLeft: `3px solid ${accentColor}`,

@@ -68,7 +68,7 @@ export function R360ItemDetailDrawer({ itemId, isOpen, onClose }: R360ItemDetail
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
         {[1,2,3,4,5,6].map(i => (
           <div key={i}>
-            <div className="animate-pulse" style={{ height: 8, width: '40%', background: 'var(--divider)', borderRadius: 3, marginBottom: 6 }} />
+            <div className="animate-pulse" style={{ height: 8, width: '40%', background: 'var(--divider)', borderRadius: 4, marginBottom: 6 }} />
             <div className="animate-pulse" style={{ height: 14, width: '70%', background: 'var(--bg-3)', borderRadius: 4 }} />
           </div>
         ))}

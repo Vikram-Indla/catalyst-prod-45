@@ -264,7 +264,7 @@
   color: var(--boards-column-count-color);
   background-color: #f1f5f9;
   padding: 2px 8px;
-  border-radius: 10px;
+  border-radius: 12px;
 }
 
 .dark .boards-column__count {

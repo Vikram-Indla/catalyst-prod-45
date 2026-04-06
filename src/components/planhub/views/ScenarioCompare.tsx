@@ -230,14 +230,14 @@ export default function ScenarioCompare() {
                               width: '60px', 
                               height: '6px', 
                               background: 'var(--ph-bg-subtle)', 
-                              borderRadius: '3px',
+                              borderRadius: '4px',
                               overflow: 'hidden'
                             }}>
                               <div style={{ 
                                 width: `${v.snapshot?.progress || 0}%`, 
                                 height: '100%', 
                                 background: 'var(--ph-primary)',
-                                borderRadius: '3px'
+                                borderRadius: '4px'
                               }} />
                             </div>
                             <span>{v.snapshot?.progress ?? 0}%</span>

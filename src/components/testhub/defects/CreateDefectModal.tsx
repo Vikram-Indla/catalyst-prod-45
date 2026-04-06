@@ -134,7 +134,7 @@ export function CreateDefectModal({ isOpen, onClose, onCreated, prefill }: Creat
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <div style={{
-              width: 44, height: 44, borderRadius: 10,
+              width: 44, height: 44, borderRadius: 12,
               background: 'linear-gradient(135deg, #DC2626 0%, #B91C1C 100%)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
@@ -176,7 +176,7 @@ export function CreateDefectModal({ isOpen, onClose, onCreated, prefill }: Creat
               style={{
                 width: '100%', height: 44, padding: '0 14px',
                 border: `1.5px solid ${errors.title ? '#DC2626' : 'var(--divider)'}`,
-                borderRadius: 10, fontSize: 14, backgroundColor: 'var(--bg-app)',
+                borderRadius: 12, fontSize: 14, backgroundColor: 'var(--bg-app)',
                 color: 'var(--fg-1)',
               }}
             />
@@ -237,7 +237,7 @@ export function CreateDefectModal({ isOpen, onClose, onCreated, prefill }: Creat
                 onChange={(e) => setPriority(e.target.value)}
                 style={{
                   width: '100%', height: 44, padding: '0 12px',
-                  border: '1.5px solid var(--divider)', borderRadius: 10, fontSize: 14,
+                  border: '1.5px solid var(--divider)', borderRadius: 12, fontSize: 14,
                   backgroundColor: 'var(--bg-app)', color: 'var(--fg-1)',
                   marginBottom: 12,
                 }}
@@ -255,7 +255,7 @@ export function CreateDefectModal({ isOpen, onClose, onCreated, prefill }: Creat
                 onChange={(e) => setAssignedTo(e.target.value)}
                 style={{
                   width: '100%', height: 44, padding: '0 12px',
-                  border: '1.5px solid var(--divider)', borderRadius: 10, fontSize: 14,
+                  border: '1.5px solid var(--divider)', borderRadius: 12, fontSize: 14,
                   backgroundColor: 'var(--bg-app)', color: 'var(--fg-1)',
                 }}
               >
@@ -279,7 +279,7 @@ export function CreateDefectModal({ isOpen, onClose, onCreated, prefill }: Creat
               rows={3}
               style={{
                 width: '100%', padding: 14, border: '1.5px solid var(--divider)',
-                borderRadius: 10, fontSize: 14, resize: 'vertical',
+                borderRadius: 12, fontSize: 14, resize: 'vertical',
                 backgroundColor: 'var(--bg-app)', color: 'var(--fg-1)',
               }}
             />
@@ -297,7 +297,7 @@ export function CreateDefectModal({ isOpen, onClose, onCreated, prefill }: Creat
               placeholder="e.g., Production, Staging, Development"
               style={{
                 width: '100%', height: 44, padding: '0 14px',
-                border: '1.5px solid var(--divider)', borderRadius: 10, fontSize: 14,
+                border: '1.5px solid var(--divider)', borderRadius: 12, fontSize: 14,
                 backgroundColor: 'var(--bg-app)', color: 'var(--fg-1)',
               }}
             />
@@ -315,7 +315,7 @@ export function CreateDefectModal({ isOpen, onClose, onCreated, prefill }: Creat
               rows={4}
               style={{
                 width: '100%', padding: 14, border: '1.5px solid var(--divider)',
-                borderRadius: 10, fontSize: 14, resize: 'vertical', fontFamily: 'monospace',
+                borderRadius: 12, fontSize: 14, resize: 'vertical', fontFamily: 'monospace',
                 backgroundColor: 'var(--bg-app)', color: 'var(--fg-1)',
               }}
             />
@@ -334,7 +334,7 @@ export function CreateDefectModal({ isOpen, onClose, onCreated, prefill }: Creat
                 rows={3}
                 style={{
                   width: '100%', padding: 14, border: '1.5px solid var(--divider)',
-                  borderRadius: 10, fontSize: 14, resize: 'vertical',
+                  borderRadius: 12, fontSize: 14, resize: 'vertical',
                   backgroundColor: 'var(--bg-app)', color: 'var(--fg-1)',
                 }}
               />
@@ -352,7 +352,7 @@ export function CreateDefectModal({ isOpen, onClose, onCreated, prefill }: Creat
                 rows={3}
                 style={{
                   width: '100%', padding: 14, border: '1.5px solid var(--divider)',
-                  borderRadius: 10, fontSize: 14, resize: 'vertical',
+                  borderRadius: 12, fontSize: 14, resize: 'vertical',
                   backgroundColor: 'var(--bg-app)', color: 'var(--fg-1)',
                 }}
               />
@@ -371,7 +371,7 @@ export function CreateDefectModal({ isOpen, onClose, onCreated, prefill }: Creat
             style={{
               height: 44, padding: '0 20px',
               backgroundColor: 'var(--bg-app)', border: '1.5px solid var(--divider)',
-              borderRadius: 10, fontSize: 14, fontWeight: 500,
+              borderRadius: 12, fontSize: 14, fontWeight: 500,
               color: 'var(--fg-1)', cursor: 'pointer',
             }}
           >
@@ -383,7 +383,7 @@ export function CreateDefectModal({ isOpen, onClose, onCreated, prefill }: Creat
             style={{
               height: 44, padding: '0 24px',
               background: 'linear-gradient(135deg, #DC2626 0%, #B91C1C 100%)',
-              border: 'none', borderRadius: 10, fontSize: 14, fontWeight: 600,
+              border: 'none', borderRadius: 12, fontSize: 14, fontWeight: 600,
               color: '#FFFFFF', cursor: createDefect.isPending ? 'not-allowed' : 'pointer',
               opacity: createDefect.isPending ? 0.7 : 1, display: 'flex', alignItems: 'center', gap: 8,
             }}

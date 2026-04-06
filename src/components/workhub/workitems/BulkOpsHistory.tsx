@@ -8,7 +8,7 @@ import { useBulkOpsLog } from '@/hooks/workhub/useBulkOpsLog';
 const OP_CONFIG: Record<string, { label: string; bg: string; color: string }> = {
   assign_release: { label: 'Assign Release', bg: '#dbeafe', color: '#1d4ed8' },
   assign_theme: { label: 'Assign Theme', bg: '#ccfbf1', color: '#0d9488' },
-  change_status: { label: 'Change Status', bg: '#EFF6FF', color: '#3B82F6' },
+  change_status: { label: 'Change Status', bg: 'var(--tint-blue, #EFF6FF)', color: '#3B82F6' },
   change_release_id: { label: 'Assign Release', bg: '#dbeafe', color: '#1d4ed8' },
   change_theme_id: { label: 'Assign Theme', bg: '#ccfbf1', color: '#0d9488' },
 };

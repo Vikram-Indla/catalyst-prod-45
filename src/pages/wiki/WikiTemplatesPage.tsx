@@ -27,7 +27,7 @@ function DuplicateWarning({ duplicates, onDismiss, isDark }: { duplicates: any[]
           <div key={d.id} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
             <span style={{
               fontFamily: 'JetBrains Mono, monospace', fontSize: 10, fontWeight: 700,
-              padding: '1px 5px', borderRadius: 3,
+              padding: '1px 5px', borderRadius: 4,
               background: isDark ? 'rgba(217,119,6,0.2)' : '#FEF3C7',
               color: '#D97706',
             }}>{Math.round((d.similarity ?? 0.8) * 100)}%</span>
@@ -279,7 +279,7 @@ export default function WikiTemplatesPage() {
               <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 12 }}>
                 {sections.slice(0, 4).map((s: any, i: number) => (
                   <span key={i} style={{
-                    fontSize: 9, padding: '2px 6px', borderRadius: 3,
+                    fontSize: 9, padding: '2px 6px', borderRadius: 4,
                     background: isDark ? '#1A1A1A' : '#F1F5F9',
                     color: isDark ? '#A1A1A1' : '#64748B',
                   }}>{s.title}</span>

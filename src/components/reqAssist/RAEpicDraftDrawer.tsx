@@ -36,7 +36,7 @@ function StatusLozenge({ status }: { status: string | null }) {
   return (
     <span style={{
       display: 'inline-flex', alignItems: 'center',
-      padding: '0 6px', height: 20, borderRadius: 3,
+      padding: '0 6px', height: 20, borderRadius: 4,
       fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
       letterSpacing: '0.03em', whiteSpace: 'nowrap',
       background: m.bg, color: m.color,
@@ -168,7 +168,7 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
             </h2>
             <span style={{
               display: 'inline-flex', alignItems: 'center',
-              padding: '1px 8px', borderRadius: 10,
+              padding: '1px 8px', borderRadius: 12,
               border: '1px solid rgba(15,23,42,0.15)', background: 'var(--bg-app)',
               fontSize: 12, fontWeight: 600, color: 'var(--fg-2)',
               fontFamily: "'Inter', sans-serif", whiteSpace: 'nowrap',
@@ -238,7 +238,7 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
                       display: 'inline-flex', alignItems: 'center',
                       background: isDark ? '#1A1A1A' : '#F1F5F9',
                       border: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid #CBD5E1',
-                      borderRadius: 3,
+                      borderRadius: 4,
                       padding: '2px 8px',
                       fontFamily: "'JetBrains Mono', monospace",
                       fontSize: 11, fontWeight: 600, color: 'var(--fg-2)',
@@ -276,12 +276,12 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
                       />
                       <div style={{ display: 'flex', gap: 6, marginTop: 8, justifyContent: 'flex-end' }}>
                         <button onClick={cancelEdit} style={{
-                          padding: '4px 12px', fontSize: 12, fontWeight: 500, borderRadius: 5,
+                          padding: '4px 12px', fontSize: 12, fontWeight: 500, borderRadius: 6,
                           border: '0.75px solid rgba(15,23,42,0.15)', background: 'var(--bg-app)',
                           color: 'var(--fg-3)', cursor: 'pointer', fontFamily: "'Inter', sans-serif",
                         }}>Cancel</button>
                         <button onClick={saveEdit} disabled={savingEdit} style={{
-                          padding: '4px 12px', fontSize: 12, fontWeight: 600, borderRadius: 5,
+                          padding: '4px 12px', fontSize: 12, fontWeight: 600, borderRadius: 6,
                           border: 'none', background: 'var(--cp-blue)', color: '#FFFFFF',
                           cursor: 'pointer', fontFamily: "'Inter', sans-serif",
                         }}>{savingEdit ? 'Saving…' : 'Save'}</button>
@@ -313,13 +313,13 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
                           <span style={{ color: 'var(--fg-2)', fontFamily: "'Inter', sans-serif" }}>Archive this epic?</span>
                           <button onClick={() => setArchiveConfirmId(null)} style={{
                             height: 28, padding: '0 10px', fontSize: 12, fontWeight: 500,
-                            borderRadius: 5, border: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(15,23,42,0.15)',
+                            borderRadius: 6, border: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(15,23,42,0.15)',
                             background: isDark ? '#1A1A1A' : '#FFFFFF', color: 'var(--fg-2)', cursor: 'pointer',
                             fontFamily: "'Inter', sans-serif",
                           }}>Cancel</button>
                           <button onClick={() => handleArchiveEpic(epic.id)} style={{
                             height: 28, padding: '0 10px', fontSize: 12, fontWeight: 600,
-                            borderRadius: 5, border: '0.75px solid rgba(220,38,38,0.3)',
+                            borderRadius: 6, border: '0.75px solid rgba(220,38,38,0.3)',
                             background: 'rgba(220,38,38,0.04)', color: 'var(--sem-danger)',
                             cursor: 'pointer', fontFamily: "'Inter', sans-serif",
                           }}>Confirm</button>
@@ -332,7 +332,7 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
                               height: 28, padding: '0 10px',
                               display: 'inline-flex', alignItems: 'center', gap: 4,
                               fontSize: 12, fontWeight: 500, color: 'var(--fg-2)',
-                              border: '0.75px solid rgba(15,23,42,0.15)', borderRadius: 5,
+                              border: '0.75px solid rgba(15,23,42,0.15)', borderRadius: 6,
                               background: isDark ? '#1A1A1A' : '#FFFFFF', cursor: 'pointer',
                               fontFamily: "'Inter', sans-serif",
                             }}
@@ -347,7 +347,7 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
                               height: 28, padding: '0 10px',
                               display: 'inline-flex', alignItems: 'center', gap: 4,
                               fontSize: 12, fontWeight: 500, color: 'var(--fg-3)',
-                              border: '0.75px solid rgba(15,23,42,0.15)', borderRadius: 5,
+                              border: '0.75px solid rgba(15,23,42,0.15)', borderRadius: 6,
                               background: 'var(--bg-app)', cursor: 'pointer',
                               fontFamily: "'Inter', sans-serif",
                             }}

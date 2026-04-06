@@ -592,7 +592,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
                   zIndex: 2, pointerEvents: 'none',
                   background: isSelected ? T.accent : 'var(--bg-app)',
                   border: `1px solid ${isSelected ? '#1D4ED8' : 'var(--divider)'}`,
-                  borderRadius: 10, padding: '2px 8px',
+                  borderRadius: 12, padding: '2px 8px',
                   fontSize: 9.5, fontWeight: 600, fontFamily: T.mono,
                   color: isSelected ? '#FFFFFF' : 'var(--fg-2)',
                   opacity: hasSel && !isSelected ? 0.3 : 1,
@@ -676,7 +676,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
                       <span style={{ fontFamily: T.mono, fontSize: 11, fontWeight: 700, color: 'var(--cp-blue)' }}>{item.key}</span>
                       {item.projectKey && (
                         <span style={{
-                          fontSize: 9, fontWeight: 700, padding: '1px 5px', borderRadius: 3,
+                          fontSize: 9, fontWeight: 700, padding: '1px 5px', borderRadius: 4,
                           background: projColor, color: '#FFFFFF', letterSpacing: '0.02em',
                         }}>{item.projectKey}</span>
                       )}
@@ -747,7 +747,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
                 <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--fg-1)' }}>Completed</span>
                 <span style={{
                   display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                  minWidth: 20, height: 18, borderRadius: 9, background: T.done,
+                  minWidth: 20, height: 18, borderRadius: 8, background: T.done,
                   color: '#FFFFFF', fontSize: 9, fontWeight: 800, padding: '0 5px',
                 }}>{doneCount}</span>
                 <div style={{ flex: 1 }} />
@@ -767,7 +767,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
                     onMouseOver={e => (e.currentTarget.style.background = T.hover)}
                     onMouseOut={e => (e.currentTarget.style.background = 'transparent')}
                   >
-                    <div style={{ width: 3, height: 28, borderRadius: 2, background: T.done, flexShrink: 0 }} />
+                    <div style={{ width: 3, height: 28, borderRadius: 4, background: T.done, flexShrink: 0 }} />
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                         <span style={{ fontFamily: T.mono, fontSize: 10, fontWeight: 700, color: 'var(--fg-1)' }}>{item.key}</span>
@@ -865,7 +865,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
                 )}
 
                 {/* Metadata grid */}
-                <div style={{ marginTop: 16, border: `1px solid ${T.border}`, borderRadius: 10, overflow: 'hidden' }}>
+                <div style={{ marginTop: 16, border: `1px solid ${T.border}`, borderRadius: 12, overflow: 'hidden' }}>
                   {[
                     [
                       { label: 'PROJECT', value: selectedItem.projectName || selectedItem.projectKey || '—' },
@@ -911,11 +911,11 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
                               {cell.value}
                               {cell.isAge && (
                                 <div style={{
-                                  marginTop: 6, height: 4, borderRadius: 2, background: 'var(--divider)',
+                                  marginTop: 6, height: 4, borderRadius: 4, background: 'var(--divider)',
                                   overflow: 'hidden',
                                 }}>
                                   <div style={{
-                                    height: '100%', borderRadius: 2,
+                                    height: '100%', borderRadius: 4,
                                     width: `${Math.min(100, (age / 21) * 100)}%`,
                                     background: ageHeatColor(age),
                                     minWidth: age > 0 ? 2 : 0,
@@ -982,8 +982,8 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
                         <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: 'var(--fg-3)', letterSpacing: '0.05em' }}>SIBLINGS</span>
                         <span style={{ fontFamily: T.mono, fontSize: 10, color: 'var(--fg-3)', marginLeft: 'auto' }}>{sibDoneCount}/{sibs.length} done</span>
                       </div>
-                      <div style={{ height: 4, borderRadius: 2, background: 'var(--divider)', overflow: 'hidden', marginBottom: 8 }}>
-                        <div style={{ height: '100%', borderRadius: 2, width: `${(sibDoneCount / sibs.length) * 100}%`, background: 'var(--sem-success)' }} />
+                      <div style={{ height: 4, borderRadius: 4, background: 'var(--divider)', overflow: 'hidden', marginBottom: 8 }}>
+                        <div style={{ height: '100%', borderRadius: 4, width: `${(sibDoneCount / sibs.length) * 100}%`, background: 'var(--sem-success)' }} />
                       </div>
                       {sibs.slice(0, 6).map(s => {
                         return (

@@ -24,7 +24,7 @@ export default function TeamWorkloadWidget({ projectId, projectKey, collapsed, o
             <div key={w.assignee} className="flex items-center gap-3" style={{ height: 'var(--cp-size-table-row)' }}>
               {/* Avatar + Name */}
               <div className="flex items-center gap-2" style={{ minWidth: 140, maxWidth: 140 }}>
-                <div className="flex items-center justify-center shrink-0 bg-[#EFF6FF] dark:bg-[#1a2744] text-[#2563EB]" style={{
+                <div className="flex items-center justify-center shrink-0 bg-[var(--tint-blue, #EFF6FF)] dark:bg-[#1a2744] text-[#2563EB]" style={{
                   width: 24, height: 24, borderRadius: '50%',
                   fontSize: 10, fontWeight: 700,
                 }}>

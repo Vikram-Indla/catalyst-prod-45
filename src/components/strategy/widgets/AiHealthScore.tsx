@@ -113,7 +113,7 @@ export function AiHealthScore() {
 
       <span className="mt-2 mb-3" style={{
         fontSize: 11, fontWeight: 600, color: status.color,
-        background: status.label === 'Critical' ? 'var(--exec-signal-red-bg, #FEF2F2)' : `${status.color}1A`,
+        background: status.label === 'Critical' ? 'var(--exec-signal-red-bg, var(--tint-red, #FEF2F2))' : `${status.color}1A`,
         borderRadius: 9999, padding: '2px 10px',
       }}>
         ● {status.label}
@@ -128,8 +128,8 @@ export function AiHealthScore() {
               <span style={{ width: 70, fontSize: 10, color: 'var(--exec-text-secondary)', textAlign: 'right', flexShrink: 0 }}>
                 {factor.name}
               </span>
-              <div className="flex-1" style={{ height: 4, borderRadius: 2, background: 'var(--exec-bg-hover, #F1F5F9)', overflow: 'hidden' }}>
-                <div style={{ width: `${Math.min(factor.score, 100)}%`, height: '100%', borderRadius: 2, background: color, transition: 'width 600ms ease-out' }} />
+              <div className="flex-1" style={{ height: 4, borderRadius: 4, background: 'var(--exec-bg-hover, #F1F5F9)', overflow: 'hidden' }}>
+                <div style={{ width: `${Math.min(factor.score, 100)}%`, height: '100%', borderRadius: 4, background: color, transition: 'width 600ms ease-out' }} />
               </div>
               <span style={{ width: 28, fontSize: 10, fontWeight: 700, color, textAlign: 'right', flexShrink: 0 }}>
                 {factor.score}%

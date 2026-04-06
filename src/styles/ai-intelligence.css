@@ -321,13 +321,13 @@
   width: 60px;
   height: 4px;
   background: var(--rai-surface-tertiary);
-  border-radius: 2px;
+  border-radius: 4px;
   overflow: hidden;
 }
 
 .rai-minibar-fill {
   height: 100%;
-  border-radius: 2px;
+  border-radius: 4px;
   transition: width 300ms;
 }
 
@@ -385,7 +385,7 @@
 .rai-backlog-progress {
   height: 3px;
   background: var(--rai-surface-tertiary);
-  border-radius: 2px;
+  border-radius: 4px;
   margin-top: 4px;
   overflow: hidden;
 }

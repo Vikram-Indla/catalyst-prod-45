@@ -61,7 +61,7 @@ export function LiveAIInsightsCard({ projectId }: LiveAIInsightsCardProps) {
   const data = insights;
 
   const balanceColors: Record<string, { bg: string; text: string }> = {
-    Balanced: { bg: '#ECFDF5', text: '#059669' },
+    Balanced: { bg: 'var(--tint-green-soft, #ECFDF5)', text: '#059669' },
     Uneven: { bg: '#FEF3C7', text: '#D97706' },
     Overloaded: { bg: '#FEE2E2', text: '#ef4444' },
   };

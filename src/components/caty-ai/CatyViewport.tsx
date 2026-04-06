@@ -294,7 +294,7 @@ function getTagStyle(type: string): React.CSSProperties {
     case 'vendor':
       return { background: '#f0fdfa', color: '#0d9488', borderColor: '#99f6e4' };
     case 'date':
-      return { background: '#fff', color: '#dc2626', borderColor: '#fecaca' };
+      return { background: 'var(--bg-app, #fff)', color: '#dc2626', borderColor: '#fecaca' };
     case 'project':
       return { background: '#faf5ff', color: '#7c3aed', borderColor: '#e9d5ff' };
     case 'count':
@@ -347,7 +347,7 @@ const styles: Record<string, React.CSSProperties> = {
   },
   metricTile: {
     padding: '12px 14px',
-    borderRadius: 10,
+    borderRadius: 12,
     border: '1px solid',
     display: 'flex',
     flexDirection: 'column',
@@ -377,12 +377,12 @@ const styles: Record<string, React.CSSProperties> = {
   progressTrack: {
     height: 3,
     background: 'rgba(0, 0, 0, 0.08)',
-    borderRadius: 2,
+    borderRadius: 4,
     overflow: 'hidden',
   },
   progressBar: {
     height: '100%',
-    borderRadius: 2,
+    borderRadius: 4,
     transition: 'width 0.3s ease',
   },
   
@@ -414,7 +414,7 @@ const styles: Record<string, React.CSSProperties> = {
     color: '#475569',
     background: '#f1f5f9',
     padding: '4px 10px',
-    borderRadius: 10,
+    borderRadius: 12,
   },
   
   // Issue Section
@@ -467,7 +467,7 @@ const styles: Record<string, React.CSSProperties> = {
   tileAccent: {
     width: 3,
     height: 32,
-    borderRadius: 2,
+    borderRadius: 4,
     flexShrink: 0,
   },
   tileContent: {

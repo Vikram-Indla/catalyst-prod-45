@@ -74,7 +74,7 @@ export function Resource360List({ items, onItemClick }: Props) {
       {/* Search */}
       <div style={{ padding: '10px 12px', borderBottom: '1px solid #D9D2C9', background: 'var(--bg-app)' }}>
         <input type="text" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} placeholder="Search key, title, parent…"
-          style={{ width: 220, fontSize: 11, fontWeight: 500, padding: '5px 10px', borderRadius: 5, border: '1px solid var(--divider)', background: 'var(--bg-app)', color: 'var(--fg-1)', outline: 'none' }} />
+          style={{ width: 220, fontSize: 11, fontWeight: 500, padding: '5px 10px', borderRadius: 6, border: '1px solid var(--divider)', background: 'var(--bg-app)', color: 'var(--fg-1)', outline: 'none' }} />
         <span style={{ marginLeft: 12, fontSize: 11, color: 'var(--fg-3)' }}>{filtered.length} / {items.length}</span>
       </div>
 
@@ -128,7 +128,7 @@ export function Resource360List({ items, onItemClick }: Props) {
                       background: rowIdx % 2 === 1 ? '#FAFBFC' : 'transparent', cursor: 'pointer',
                       borderLeft: `3px solid ${sc.dot}`, transition: 'background .1s',
                     }}
-                    onMouseEnter={e => { e.currentTarget.style.background = '#EFF6FF'; }}
+                    onMouseEnter={e => { e.currentTarget.style.background = 'var(--tint-blue, #EFF6FF)'; }}
                     onMouseLeave={e => { e.currentTarget.style.background = rowIdx % 2 === 1 ? '#FAFBFC' : 'transparent'; }}>
                     <ExpandChevron expanded={isExpanded} onClick={e => { e.stopPropagation(); toggleExpand(item.work_item_id); }} />
                     <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--cp-blue)', fontFamily: "'JetBrains Mono', monospace" }}><HighlightText text={item.item_key} query={searchTerm} /></span>

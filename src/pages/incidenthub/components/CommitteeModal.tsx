@@ -87,7 +87,7 @@ export function CommitteeModal({ open, onClose, committee, incidentId }: Committ
                           style={{
                             fontSize: 11,
                             fontWeight: voteStatus === v ? 700 : 400,
-                            borderRadius: 3,
+                            borderRadius: 4,
                             backgroundColor: voteStatus === v
                               ? (v === 'approved' ? '#1B7F37' : v === 'rejected' ? '#FEE2E2' : '#DFE1E6')
                               : 'transparent',

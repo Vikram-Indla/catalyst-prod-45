@@ -46,7 +46,7 @@ export function CalendarReleaseView({ year, month, events, isLoading, onDateClic
                 height: 6,
                 width: '100%',
                 backgroundColor: r.event_color,
-                borderRadius: 3,
+                borderRadius: 4,
               }}
             />
             <span
@@ -104,7 +104,7 @@ export function CalendarReleaseView({ year, month, events, isLoading, onDateClic
       {/* Legend */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '12px 0', fontFamily: 'var(--wh-font-sans)', fontSize: 11, color: 'var(--fg-3)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <div style={{ width: 16, height: 6, borderRadius: 3, backgroundColor: 'var(--cp-blue)' }} />
+          <div style={{ width: 16, height: 6, borderRadius: 4, backgroundColor: 'var(--cp-blue)' }} />
           <span>Releases</span>
         </div>
         <span style={{ color: 'var(--fg-4)' }}>·</span>

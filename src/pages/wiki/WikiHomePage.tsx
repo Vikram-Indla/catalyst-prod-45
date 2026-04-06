@@ -45,7 +45,7 @@ const SectionHeader = React.memo(({ title, count, rightLabel, rightAction, isDar
   title: string; count?: number; rightLabel?: string; rightAction?: () => void; isDark?: boolean;
 }) => (
   <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
-    <div style={{ width: 3, height: 16, borderRadius: 2, background: '#2563EB' }} />
+    <div style={{ width: 3, height: 16, borderRadius: 4, background: '#2563EB' }} />
     <span style={{ fontFamily: 'Sora, sans-serif', fontSize: 14, fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A' }}>{title}</span>
     {count !== undefined && (
       <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, fontWeight: 600, padding: '2px 8px', borderRadius: 4, background: isDark ? '#1A1A1A' : '#F1F5F9', color: isDark ? '#878787' : '#64748B' }}>{count}</span>
@@ -370,7 +370,7 @@ const DomainCard = React.memo(({ d, Icon, navigate, isDark }: { d: any; Icon: Re
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ fontFamily: 'Sora, sans-serif', fontSize: 12.5, fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A' }}>{d.name}</div>
           </div>
-          <span style={{ fontSize: 9, fontWeight: 700, textTransform: 'uppercase', padding: '2px 6px', borderRadius: 3, background: isDark ? 'rgba(55,48,163,0.15)' : tagStyle.bg, color: isDark ? '#A1A1A1' : tagStyle.color, letterSpacing: '0.04em' }}>{d.tag}</span>
+          <span style={{ fontSize: 9, fontWeight: 700, textTransform: 'uppercase', padding: '2px 6px', borderRadius: 4, background: isDark ? 'rgba(55,48,163,0.15)' : tagStyle.bg, color: isDark ? '#A1A1A1' : tagStyle.color, letterSpacing: '0.04em' }}>{d.tag}</span>
         </div>
 
         {/* Stats row */}
@@ -386,8 +386,8 @@ const DomainCard = React.memo(({ d, Icon, navigate, isDark }: { d: any; Icon: Re
         {/* Coverage bar */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <span style={{ fontSize: 10, fontWeight: 600, color: isDark ? '#878787' : '#64748B' }}>Coverage</span>
-          <div style={{ flex: 1, height: 3, borderRadius: 2, background: isDark ? '#1A1A1A' : '#E2E8F0' }}>
-            <div style={{ height: '100%', borderRadius: 2, background: coverageColor, width: `${d.coverage_percent}%`, transition: 'width 600ms' }} />
+          <div style={{ flex: 1, height: 3, borderRadius: 4, background: isDark ? '#1A1A1A' : '#E2E8F0' }}>
+            <div style={{ height: '100%', borderRadius: 4, background: coverageColor, width: `${d.coverage_percent}%`, transition: 'width 600ms' }} />
           </div>
           <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A' }}>{d.coverage_percent}%</span>
         </div>
@@ -416,8 +416,8 @@ const LearningPathCard = React.memo(({ p, navigate, isDark }: { p: any; navigate
         <span style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', color: diffColor }}>{p.difficulty}</span>
       </div>
       <div style={{ fontSize: 11.5, color: isDark ? '#878787' : '#64748B', marginBottom: 12, lineHeight: 1.4 }}>{p.description}</div>
-      <div style={{ height: 4, borderRadius: 2, background: isDark ? '#1A1A1A' : '#E2E8F0', marginBottom: 8 }}>
-        <div style={{ height: '100%', borderRadius: 2, background: '#2563EB', width: `${pct}%`, transition: 'width 600ms' }} />
+      <div style={{ height: 4, borderRadius: 4, background: isDark ? '#1A1A1A' : '#E2E8F0', marginBottom: 8 }}>
+        <div style={{ height: '100%', borderRadius: 4, background: '#2563EB', width: `${pct}%`, transition: 'width 600ms' }} />
       </div>
       <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, color: isDark ? '#878787' : '#64748B' }}>
         <span>{p.estimated_hours}h · {p.article_count} articles</span>
@@ -431,7 +431,7 @@ LearningPathCard.displayName = 'LearningPathCard';
 /* ── Article Row ── */
 const ArticleRow = React.memo(({ a, navigate, bookmarked, onToggleBookmark, isDark }: { a: any; navigate: any; bookmarked: boolean; onToggleBookmark: () => void; isDark?: boolean }) => {
   const formatIcon = a.format === 'pdf'
-    ? <span style={{ fontSize: 9, fontWeight: 700, padding: '1px 4px', borderRadius: 2, background: isDark ? 'rgba(220,38,38,0.15)' : '#FEE2E2', color: '#DC2626' }}>PDF</span>
+    ? <span style={{ fontSize: 9, fontWeight: 700, padding: '1px 4px', borderRadius: 4, background: isDark ? 'rgba(220,38,38,0.15)' : '#FEE2E2', color: '#DC2626' }}>PDF</span>
     : <FileText size={14} style={{ color: isDark ? '#878787' : '#94A3B8' }} />;
 
   const verStatus = a.verification_status || 'unverified';
@@ -466,10 +466,10 @@ const ArticleRow = React.memo(({ a, navigate, bookmarked, onToggleBookmark, isDa
       </div>
 
       {/* Domain */}
-      <span style={{ fontSize: 9, fontWeight: 650, padding: '1px 5px', borderRadius: 3, background: isDark ? '#1A1A1A' : '#F1F5F9', color: isDark ? '#878787' : '#64748B', width: 'fit-content' }}>{a.domain_code}</span>
+      <span style={{ fontSize: 9, fontWeight: 650, padding: '1px 5px', borderRadius: 4, background: isDark ? '#1A1A1A' : '#F1F5F9', color: isDark ? '#878787' : '#64748B', width: 'fit-content' }}>{a.domain_code}</span>
 
       {/* Verification Status */}
-      <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 6px', borderRadius: 3, background: verBadge.bg, color: verBadge.color, width: 'fit-content' }}>{verBadge.label}</span>
+      <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 6px', borderRadius: 4, background: verBadge.bg, color: verBadge.color, width: 'fit-content' }}>{verBadge.label}</span>
 
       {/* Confidence — colored number only */}
       <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, fontWeight: 500, color: confColor }}>{conf}%</span>
@@ -480,7 +480,7 @@ const ArticleRow = React.memo(({ a, navigate, bookmarked, onToggleBookmark, isDa
       {/* Tags — grey pills */}
       <div style={{ display: 'flex', gap: 3, overflow: 'hidden' }}>
         {tags.map((t: string) => (
-          <span key={t} style={{ fontSize: 9.5, fontWeight: 500, padding: '1px 6px', borderRadius: 3, background: isDark ? '#1A1A1A' : '#F1F5F9', color: isDark ? '#878787' : '#64748B', border: isDark ? '0.75px solid rgba(255,255,255,0.05)' : '0.75px solid rgba(0,0,0,0.06)', whiteSpace: 'nowrap' }}>{t}</span>
+          <span key={t} style={{ fontSize: 9.5, fontWeight: 500, padding: '1px 6px', borderRadius: 4, background: isDark ? '#1A1A1A' : '#F1F5F9', color: isDark ? '#878787' : '#64748B', border: isDark ? '0.75px solid rgba(255,255,255,0.05)' : '0.75px solid rgba(0,0,0,0.06)', whiteSpace: 'nowrap' }}>{t}</span>
         ))}
       </div>
 

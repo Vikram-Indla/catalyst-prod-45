@@ -105,7 +105,7 @@ export function CreatePlanModal({ isOpen, onClose, onCreated }: CreatePlanModalP
     height: 44,
     padding: '0 14px',
     border: `1.5px solid ${hasError ? 'var(--sem-danger)' : 'var(--divider)'}`,
-    borderRadius: 10,
+    borderRadius: 12,
     fontSize: 14,
   });
 
@@ -129,7 +129,7 @@ export function CreatePlanModal({ isOpen, onClose, onCreated }: CreatePlanModalP
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <div style={{
-              width: 44, height: 44, borderRadius: 10,
+              width: 44, height: 44, borderRadius: 12,
               background: 'linear-gradient(135deg, #2563EB 0%, #1E3A8A 100%)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
@@ -201,7 +201,7 @@ export function CreatePlanModal({ isOpen, onClose, onCreated }: CreatePlanModalP
             </label>
             <textarea value={description} onChange={(e) => setDescription(e.target.value)}
               placeholder="Brief description of the test plan..." rows={3}
-              style={{ width: '100%', padding: 14, border: '1.5px solid var(--divider)', borderRadius: 10, fontSize: 14, resize: 'vertical' }} />
+              style={{ width: '100%', padding: 14, border: '1.5px solid var(--divider)', borderRadius: 12, fontSize: 14, resize: 'vertical' }} />
           </div>
 
           <div style={{ marginBottom: 20 }}>
@@ -210,14 +210,14 @@ export function CreatePlanModal({ isOpen, onClose, onCreated }: CreatePlanModalP
             </label>
             <textarea value={objectives} onChange={(e) => setObjectives(e.target.value)}
               placeholder="What are the testing objectives?" rows={3}
-              style={{ width: '100%', padding: 14, border: '1.5px solid var(--divider)', borderRadius: 10, fontSize: 14, resize: 'vertical' }} />
+              style={{ width: '100%', padding: 14, border: '1.5px solid var(--divider)', borderRadius: 12, fontSize: 14, resize: 'vertical' }} />
           </div>
 
           <div>
             <label style={labelStyle}>Scope</label>
             <textarea value={scope} onChange={(e) => setScope(e.target.value)}
               placeholder="What is in/out of scope for this plan?" rows={3}
-              style={{ width: '100%', padding: 14, border: '1.5px solid var(--divider)', borderRadius: 10, fontSize: 14, resize: 'vertical' }} />
+              style={{ width: '100%', padding: 14, border: '1.5px solid var(--divider)', borderRadius: 12, fontSize: 14, resize: 'vertical' }} />
           </div>
         </div>
 
@@ -225,12 +225,12 @@ export function CreatePlanModal({ isOpen, onClose, onCreated }: CreatePlanModalP
         <div style={{ padding: '16px 24px', borderTop: '1px solid var(--divider)', display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
           <button onClick={onClose} disabled={isSubmitting} style={{
             height: 44, padding: '0 20px', backgroundColor: 'var(--cp-float)', border: '1.5px solid var(--divider)',
-            borderRadius: 10, fontSize: 14, fontWeight: 500, color: 'var(--fg-2)', cursor: 'pointer',
+            borderRadius: 12, fontSize: 14, fontWeight: 500, color: 'var(--fg-2)', cursor: 'pointer',
           }}>Cancel</button>
           <button onClick={handleSubmit} disabled={isSubmitting} style={{
             height: 44, padding: '0 24px',
             background: 'linear-gradient(135deg, #2563EB 0%, #1E3A8A 100%)',
-            border: 'none', borderRadius: 10, fontSize: 14, fontWeight: 600, color: '#FFFFFF',
+            border: 'none', borderRadius: 12, fontSize: 14, fontWeight: 600, color: '#FFFFFF',
             cursor: isSubmitting ? 'not-allowed' : 'pointer', opacity: isSubmitting ? 0.7 : 1,
             display: 'flex', alignItems: 'center', gap: 8,
           }}>

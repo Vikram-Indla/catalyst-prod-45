@@ -396,7 +396,7 @@ function OverviewTab({ goal, theme, krs, confPct, confColor, daysToDeadline }: {
   const fields = [
     { label: 'Status', value: statusBadge(goal.status) },
     { label: 'Priority', value: <span style={{ fontSize: 14, fontWeight: 500, textTransform: 'capitalize' as const, color: 'var(--fg-1)' }}>{goal.priority}</span> },
-    { label: 'Theme', value: theme ? (<div style={{ display: 'flex', alignItems: 'center', gap: 6 }}><span style={{ width: 8, height: 8, borderRadius: 2, background: theme.color }} /><span style={{ fontSize: 14, color: 'var(--fg-1)' }}>{theme.title}</span></div>) : '—' },
+    { label: 'Theme', value: theme ? (<div style={{ display: 'flex', alignItems: 'center', gap: 6 }}><span style={{ width: 8, height: 8, borderRadius: 4, background: theme.color }} /><span style={{ fontSize: 14, color: 'var(--fg-1)' }}>{theme.title}</span></div>) : '—' },
     { label: 'Owner', value: ownerDisplay },
     { label: 'Start Date', value: <span style={{ fontSize: 14, color: 'var(--fg-1)' }}>{formatDate(goal.start_date)}</span> },
     { label: 'Target Date', value: <span style={{ fontSize: 14, color: 'var(--fg-1)' }}>{formatDate(goal.target_date)}</span> },
@@ -443,7 +443,7 @@ function OverviewTab({ goal, theme, krs, confPct, confColor, daysToDeadline }: {
       )}
 
       {/* AI Health Score — purple branded */}
-      <div style={{ background: '#DBEAFE', border: '1px solid rgba(37,99,235,0.15)', borderRadius: 10, padding: 16 }}>
+      <div style={{ background: '#DBEAFE', border: '1px solid rgba(37,99,235,0.15)', borderRadius: 12, padding: 16 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
           <Sparkles size={14} color="#2563EB" />
           <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--cp-blue)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>AI Health Score</span>
@@ -499,8 +499,8 @@ function KeyResultsTab({ krs, loading, onCheckinClick }: { krs: KeyResult[]; loa
               <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg-1)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{kr.title}</span>
               <span style={{ fontSize: 13, fontWeight: 700, color: pctColor }}>{pct}%</span>
             </div>
-            <div style={{ height: 6, borderRadius: 3, background: 'var(--divider)', overflow: 'hidden', marginBottom: 8 }}>
-              <div style={{ width: `${pct}%`, height: '100%', background: pctColor, borderRadius: 3, transition: 'width 300ms' }} />
+            <div style={{ height: 6, borderRadius: 4, background: 'var(--divider)', overflow: 'hidden', marginBottom: 8 }}>
+              <div style={{ width: `${pct}%`, height: '100%', background: pctColor, borderRadius: 4, transition: 'width 300ms' }} />
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
               {statusBadge(kr.status)}

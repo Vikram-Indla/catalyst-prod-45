@@ -220,7 +220,7 @@ export function InlineDatePicker({ current, anchorRef, onSelect, onClose }: {
         {current && (
           <button
             onClick={() => { onSelect(null); onClose(); }}
-            className="w-full text-center text-[11px] py-1 mt-1 rounded hover:bg-[#FEF2F2]"
+            className="w-full text-center text-[11px] py-1 mt-1 rounded hover:bg-[var(--tint-red, #FEF2F2)]"
             style={{ color: 'var(--sem-danger)' }}
           >
             Clear date

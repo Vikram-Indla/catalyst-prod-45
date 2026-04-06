@@ -128,7 +128,7 @@ export function TestCycleCard({
           <span style={{
             fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em',
             color: status.color, backgroundColor: status.bg,
-            padding: '2px 6px', borderRadius: 3, height: 20,
+            padding: '2px 6px', borderRadius: 4, height: 20,
             display: 'inline-flex', alignItems: 'center',
           }}>
             {STATUS_DISPLAY_LABELS[cycle.status] ?? cycle.status}
@@ -147,7 +147,7 @@ export function TestCycleCard({
           {menuOpen && (
             <div style={{
               position: 'absolute', top: '100%', right: 0, width: 180,
-              backgroundColor: 'var(--cp-float)', border: '1px solid var(--divider)', borderRadius: 10,
+              backgroundColor: 'var(--cp-float)', border: '1px solid var(--divider)', borderRadius: 12,
               boxShadow: '0 10px 40px rgba(0,0,0,0.12)', padding: 6, zIndex: 100,
             }}>
               <button onClick={() => { onView(); setMenuOpen(false); }} style={menuItemStyle}>
@@ -221,12 +221,12 @@ export function TestCycleCard({
 
       {/* Stats Row */}
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px', backgroundColor: '#ECFDF5', borderRadius: 6 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px', backgroundColor: 'var(--tint-green-soft, #ECFDF5)', borderRadius: 6 }}>
           <CheckCircle2 size={14} style={{ color: 'var(--sem-success)' }} />
           <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--sem-success)' }}>{cycle.passed_count}</span>
           <span style={{ fontSize: 12, color: 'var(--sem-success)' }}>Passed</span>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px', backgroundColor: '#FEF2F2', borderRadius: 6 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px', backgroundColor: 'var(--tint-red, #FEF2F2)', borderRadius: 6 }}>
           <XCircle size={14} style={{ color: 'var(--sem-danger)' }} />
           <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--sem-danger)' }}>{cycle.failed_count}</span>
           <span style={{ fontSize: 12, color: 'var(--sem-danger)' }}>Failed</span>

@@ -23,11 +23,11 @@ interface Props {
 }
 
 const STATUS_CFG: Record<string, { icon: typeof CheckCircle2; color: string; bg: string }> = {
-  passed:  { icon: CheckCircle2,  color: '#10B981', bg: '#ECFDF5' },
-  failed:  { icon: XCircle,       color: 'var(--sem-danger)', bg: '#FEF2F2' },
+  passed:  { icon: CheckCircle2,  color: '#10B981', bg: 'var(--tint-green-soft, #ECFDF5)' },
+  failed:  { icon: XCircle,       color: 'var(--sem-danger)', bg: 'var(--tint-red, #FEF2F2)' },
   blocked: { icon: AlertTriangle, color: '#F59E0B', bg: '#FFFBEB' },
   skipped: { icon: SkipForward,   color: 'var(--fg-3)', bg: var(--bg-2, '#F1F5F9') },
-  not_run: { icon: Clock,         color: 'var(--fg-4)', bg: '#F8FAFC' },
+  not_run: { icon: Clock,         color: 'var(--fg-4)', bg: 'var(--bg-1, #F8FAFC)' },
 };
 
 export function RecentActivityFeed({ activities }: Props) {
@@ -37,7 +37,7 @@ export function RecentActivityFeed({ activities }: Props) {
     <div style={{ backgroundColor: 'var(--bg-app)', border: '1px solid var(--divider)', borderRadius: 12, padding: 24, minHeight: 260 }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
-        <div style={{ width: 36, height: 36, borderRadius: 10, backgroundColor: '#DBEAFE', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ width: 36, height: 36, borderRadius: 12, backgroundColor: '#DBEAFE', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <Activity size={18} color="#2563EB" />
         </div>
         <div>

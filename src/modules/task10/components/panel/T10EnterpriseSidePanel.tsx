@@ -335,7 +335,7 @@ export function T10EnterpriseSidePanel({
               style={{
                 width: '40px',
                 height: '40px',
-                borderRadius: '10px',
+                borderRadius: '12px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -491,7 +491,7 @@ export function T10EnterpriseSidePanel({
                     padding: '14px',
                     background: isCompleted ? COLORS.green50 : COLORS.gray50,
                     border: `1px solid ${isCompleted ? '#86efac' : COLORS.gray200}`,
-                    borderRadius: '10px',
+                    borderRadius: '12px',
                     cursor: isReadOnly ? 'default' : 'pointer',
                     transition: 'all 0.15s',
                     textAlign: 'left',
@@ -540,7 +540,7 @@ export function T10EnterpriseSidePanel({
                       padding: '12px 14px',
                       background: COLORS.gray50,
                       border: `1px solid ${assigneeDropdownOpen ? COLORS.blue : COLORS.gray200}`,
-                      borderRadius: '10px',
+                      borderRadius: '12px',
                       cursor: isReadOnly ? 'default' : 'pointer',
                       transition: 'all 0.15s',
                       textAlign: 'left',
@@ -651,7 +651,7 @@ export function T10EnterpriseSidePanel({
                       padding: '12px 14px',
                       background: COLORS.gray50,
                       border: `1px solid ${COLORS.gray200}`,
-                      borderRadius: '10px',
+                      borderRadius: '12px',
                       cursor: isReadOnly ? 'default' : 'pointer',
                       transition: 'all 0.15s',
                       textAlign: 'left',
@@ -780,7 +780,7 @@ export function T10EnterpriseSidePanel({
                                   <span style={{
                                     width: '12px',
                                     height: '12px',
-                                    borderRadius: '3px',
+                                    borderRadius: '4px',
                                     background: label.color,
                                   }} />
                                   <span style={{ flex: 1, fontSize: '14px', fontWeight: 500, color: COLORS.gray800 }}>
@@ -951,7 +951,7 @@ export function T10EnterpriseSidePanel({
                     minHeight: '120px',
                     padding: '14px',
                     border: `1px solid ${COLORS.gray200}`,
-                    borderRadius: '10px',
+                    borderRadius: '12px',
                     fontSize: '14px',
                     lineHeight: 1.6,
                     color: COLORS.gray800,

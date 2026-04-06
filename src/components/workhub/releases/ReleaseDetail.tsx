@@ -98,7 +98,7 @@ export function ReleaseDetail() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
         <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
           <div style={{
-            width: 40, height: 40, borderRadius: 10, background: 'var(--cp-primary-20)',
+            width: 40, height: 40, borderRadius: 12, background: 'var(--cp-primary-20)',
             display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
           }}>
             <Rocket size={20} color="var(--cp-blue)" />

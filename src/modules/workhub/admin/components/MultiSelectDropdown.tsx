@@ -60,7 +60,7 @@ export function MultiSelectDropdown({
     )
   }
 
-  const accentBg = accentColor === '#7C3AED' ? '#F5F3FF' : '#EFF6FF'
+  const accentBg = accentColor === '#7C3AED' ? '#F5F3FF' : 'var(--tint-blue, #EFF6FF)'
 
   return (
     <div>
@@ -85,7 +85,7 @@ export function MultiSelectDropdown({
           style={{
             width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
             padding: '7px 12px', borderRadius: '6px', border: '1px solid var(--bd-default, #E2E8F0)',
-            background: '#fff', cursor: 'pointer', minHeight: '36px', gap: '8px',
+            background: 'var(--bg-app, #fff)', cursor: 'pointer', minHeight: '36px', gap: '8px',
           }}
         >
           <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', flex: 1, alignItems: 'center' }}>
@@ -125,7 +125,7 @@ export function MultiSelectDropdown({
         {open && (
           <div style={{
             position: 'absolute', top: '100%', left: 0, right: 0, marginTop: '4px',
-            background: '#fff', border: '1px solid var(--bd-default, #E2E8F0)', borderRadius: '8px',
+            background: 'var(--bg-app, #fff)', border: '1px solid var(--bd-default, #E2E8F0)', borderRadius: '8px',
             boxShadow: '0 8px 24px rgba(0,0,0,.12)', zIndex: 9999, overflow: 'hidden',
           }}>
             {/* Search */}
@@ -183,11 +183,11 @@ export function MultiSelectDropdown({
                         background: isSelected ? accentBg : 'transparent',
                         transition: 'background .1s',
                       }}
-                      onMouseOver={(e) => { if (!isSelected) e.currentTarget.style.background = '#F8FAFC' }}
+                      onMouseOver={(e) => { if (!isSelected) e.currentTarget.style.background = 'var(--bg-1, #F8FAFC)' }}
                       onMouseOut={(e) => { if (!isSelected) e.currentTarget.style.background = 'transparent' }}
                     >
                       <div style={{
-                        width: 16, height: 16, borderRadius: '3px', flexShrink: 0,
+                        width: 16, height: 16, borderRadius: '4px', flexShrink: 0,
                         border: isSelected ? `2px solid ${accentColor}` : '2px solid #CBD5E1',
                         background: isSelected ? accentColor : '#fff',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',

@@ -11,7 +11,7 @@ function MiniStat({ value, label, color }: { value: string; label: string; color
     <div style={{
       flex: 1, padding: '12px 14px',
       border: '1.5px solid rgba(15,23,42,0.08)', borderRadius: 8,
-      background: '#FFFFFF',
+      background: 'var(--bg-app, #FFFFFF)',
     }}>
       <div style={{ fontFamily: F.mono, fontSize: 18, fontWeight: 600, color, fontVariantNumeric: 'tabular-nums' }}>{value}</div>
       <div style={{ fontSize: 11, fontWeight: 500, color: 'var(--fg-3)', marginTop: 2, fontFamily: F.inter }}>{label}</div>

@@ -56,20 +56,20 @@ const STATUS_OPTIONS = [
 ];
 
 const HEALTH_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
-  on_track: { label: 'On Track', color: '#16A34A', bg: '#F0FDF4' },
+  on_track: { label: 'On Track', color: '#16A34A', bg: 'var(--tint-green, #F0FDF4)' },
   at_risk: { label: 'At Risk', color: '#D97706', bg: '#FFFBEB' },
-  off_track: { label: 'Off Track', color: '#EF4444', bg: '#FEF2F2' },
+  off_track: { label: 'Off Track', color: '#EF4444', bg: 'var(--tint-red, #FEF2F2)' },
 };
 
 const STATUS_PILL: Record<string, { color: string; bg: string }> = {
   Planned: { color: '#1D4ED8', bg: '#DBEAFE' },
   Active: { color: '#0F766E', bg: '#F0FDFA' },
-  Completed: { color: '#16A34A', bg: '#F0FDF4' },
-  Cancelled: { color: '#DC2626', bg: '#FEF2F2' },
+  Completed: { color: '#16A34A', bg: 'var(--tint-green, #F0FDF4)' },
+  Cancelled: { color: '#DC2626', bg: 'var(--tint-red, #FEF2F2)' },
   'On Hold': { color: '#D97706', bg: '#FFFBEB' },
   'Under Review': { color: '#7C3AED', bg: '#F5F3FF' },
   Approved: { color: '#0D9488', bg: '#F0FDFA' },
-  New: { color: '#2563EB', bg: '#EFF6FF' },
+  New: { color: '#2563EB', bg: 'var(--tint-blue, #EFF6FF)' },
 };
 
 // ── Field component (matches backlog) ──

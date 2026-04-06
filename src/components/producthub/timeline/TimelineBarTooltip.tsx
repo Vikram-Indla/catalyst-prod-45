@@ -31,7 +31,7 @@ export const TimelineBarTooltip: React.FC<TimelineBarTooltipProps> = ({ initiati
         zIndex: 9999,
         background: 'var(--bg-app)',
         border: '1px solid #e4e4e7',
-        borderRadius: '10px',
+        borderRadius: '12px',
         boxShadow: '0 20px 60px rgba(0,0,0,0.12), 0 4px 16px rgba(0,0,0,0.06)',
         pointerEvents: 'none',
         opacity: isVisible ? 1 : 0,

@@ -404,7 +404,7 @@
 .pb-type-dot {
   width: 8px;
   height: 8px;
-  border-radius: 2px;
+  border-radius: 4px;
   flex-shrink: 0;
 }
 
@@ -550,7 +550,7 @@
 .pb-priority-bar {
   width: 16px;
   height: 4px;
-  border-radius: 2px;
+  border-radius: 4px;
   background: var(--cp-border-default);
 }
 .pb-priority-bar-filled {
@@ -685,12 +685,12 @@
 .pb-progress-track {
   height: 4px;
   background: var(--cp-bg-sunken);
-  border-radius: 2px;
+  border-radius: 4px;
   overflow: hidden;
 }
 .pb-progress-fill {
   height: 100%;
-  border-radius: 2px;
+  border-radius: 4px;
   background: var(--cp-primary-60);
   transition: width 300ms ease;
 }

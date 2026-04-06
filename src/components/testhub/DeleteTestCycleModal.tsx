@@ -101,8 +101,8 @@ export function DeleteTestCycleModal({
             <div style={{
               width: 40,
               height: 40,
-              borderRadius: 10,
-              backgroundColor: '#FEF2F2',
+              borderRadius: 12,
+              backgroundColor: 'var(--tint-red, #FEF2F2)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -139,7 +139,7 @@ export function DeleteTestCycleModal({
           {/* Warning Box */}
           <div style={{
             padding: 16,
-            backgroundColor: '#FEF2F2',
+            backgroundColor: 'var(--tint-red, #FEF2F2)',
             border: '1px solid color-mix(in srgb, var(--sem-danger) 20%, transparent)',
             borderRadius: 8,
             marginBottom: 16,
@@ -219,7 +219,7 @@ export function DeleteTestCycleModal({
           {hasTestCases && (
             <div style={{
               padding: 12,
-              backgroundColor: '#FEF2F2',
+              backgroundColor: 'var(--tint-red, #FEF2F2)',
               border: '1px solid color-mix(in srgb, var(--sem-danger) 20%, transparent)',
               borderRadius: 8,
               marginBottom: 16,

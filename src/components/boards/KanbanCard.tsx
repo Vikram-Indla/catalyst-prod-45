@@ -81,7 +81,7 @@ export default function KanbanCardComponent({ card, onCardClick }: Props) {
         }}>{card.key || '—'}</span>
         {/* Source badge */}
         <span style={{
-          fontSize: 11, fontWeight: 600, padding: '1px 5px', borderRadius: 3,
+          fontSize: 11, fontWeight: 600, padding: '1px 5px', borderRadius: 4,
           background: source === 'JIRA' ? '#E3F0FF' : 'var(--cp-bd-zone)',
           color: source === 'JIRA' ? '#0052CC' : 'var(--fg-3)',
           fontFamily: "'Inter', sans-serif",
@@ -96,7 +96,7 @@ export default function KanbanCardComponent({ card, onCardClick }: Props) {
           }}>{overdueDays}d overdue</span>
         )}
         <button style={{
-          width: 22, height: 22, borderRadius: 3, border: 'none',
+          width: 22, height: 22, borderRadius: 4, border: 'none',
           background: 'transparent', cursor: 'pointer',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           opacity: hover ? 1 : 0, transition: 'opacity 100ms',
@@ -119,8 +119,8 @@ export default function KanbanCardComponent({ card, onCardClick }: Props) {
       {card.epic && (
         <div style={{
           display: 'inline-flex', alignItems: 'center', gap: 4,
-          height: 18, padding: '0 7px', borderRadius: 3,
-          background: '#EFF6FF', border: '0.75px solid #DBEAFE',
+          height: 18, padding: '0 7px', borderRadius: 4,
+          background: 'var(--tint-blue, #EFF6FF)', border: '0.75px solid #DBEAFE',
           maxWidth: '100%', overflow: 'hidden',
         }}>
           <span style={{
@@ -153,8 +153,8 @@ export default function KanbanCardComponent({ card, onCardClick }: Props) {
           {card.storyPoints !== null && card.storyPoints !== undefined && (
             <span style={{
               display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-              height: 18, minWidth: 22, padding: '0 5px', borderRadius: 3,
-              background: '#F0FDF4', border: '0.75px solid #DCFCE7',
+              height: 18, minWidth: 22, padding: '0 5px', borderRadius: 4,
+              background: 'var(--tint-green, #F0FDF4)', border: '0.75px solid #DCFCE7',
               fontSize: 10.5, fontWeight: 650, color: 'var(--sem-success)',
               fontFamily: "'JetBrains Mono', monospace",
             }}>{card.storyPoints}</span>
@@ -166,7 +166,7 @@ export default function KanbanCardComponent({ card, onCardClick }: Props) {
           {card.release && (
             <span style={{
               display: 'inline-flex', alignItems: 'center', height: 18,
-              padding: '0 6px', borderRadius: 3, maxWidth: 88,
+              padding: '0 6px', borderRadius: 4, maxWidth: 88,
               background: 'var(--cp-bd-zone)', border: '0.75px solid var(--divider)',
               fontSize: 10.5, fontFamily: "'JetBrains Mono', monospace", color: 'var(--fg-3)',
               overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',

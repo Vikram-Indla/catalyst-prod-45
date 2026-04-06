@@ -53,7 +53,7 @@ export default function SidePanelHistory({ workItemId, currentStatus, currentSta
           <div key={i} style={{ display: 'flex', gap: 12, padding: '10px 0' }}>
             <div className="wh-skeleton" style={{ width: 12, height: 12, borderRadius: '50%', flexShrink: 0 }} />
             <div style={{ flex: 1 }}>
-              <div className="wh-skeleton" style={{ height: 14, width: '70%', borderRadius: 3, marginBottom: 6 }} />
+              <div className="wh-skeleton" style={{ height: 14, width: '70%', borderRadius: 4, marginBottom: 6 }} />
               <div className="wh-skeleton" style={{ height: 10, width: '40%', borderRadius: 3 }} />
             </div>
           </div>
@@ -159,9 +159,9 @@ export default function SidePanelHistory({ workItemId, currentStatus, currentSta
                         {formatDuration(t.durationSec)} in {t.to_status.toUpperCase()}
                       </span>
                     </div>
-                    <div style={{ height: 4, borderRadius: 2, background: 'var(--divider)', overflow: 'hidden', marginTop: 6 }}>
+                    <div style={{ height: 4, borderRadius: 4, background: 'var(--divider)', overflow: 'hidden', marginTop: 6 }}>
                       <div style={{
-                        height: '100%', borderRadius: 2, transition: 'width 300ms',
+                        height: '100%', borderRadius: 4, transition: 'width 300ms',
                         width: `${totalSec > 0 ? (t.durationSec / totalSec) * 100 : 0}%`,
                         background: barColor(t.to_status_category),
                       }} />

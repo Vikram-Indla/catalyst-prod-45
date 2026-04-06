@@ -61,7 +61,7 @@ export function Resource360Chronology({ items, onItemClick }: Props) {
       <div style={{ padding: '8px 16px', borderBottom: `1px solid ${T.border}`, background: T.surface }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
           <input type="text" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} placeholder="Search key, title, parent…"
-            style={{ width: 200, fontSize: 11, padding: '5px 10px', borderRadius: 5, border: `1px solid ${T.borderStrong}`, background: T.surface, color: T.text1, fontWeight: 500, outline: 'none' }} />
+            style={{ width: 200, fontSize: 11, padding: '5px 10px', borderRadius: 6, border: `1px solid ${T.borderStrong}`, background: T.surface, color: T.text1, fontWeight: 500, outline: 'none' }} />
           <label style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 10, fontWeight: 600, color: T.text3, cursor: 'pointer' }}>
             <input type="checkbox" checked={showPendingOnly} onChange={e => setShowPendingOnly(e.target.checked)} style={{ accentColor: T.todo, width: 13, height: 13 }} />
             Pending ({pendingCount})
@@ -76,7 +76,7 @@ export function Resource360Chronology({ items, onItemClick }: Props) {
               }}>{(h ?? '').replace('Hub', '')}</button>
             ))}
           </div>
-          <button onClick={() => setFiltersExpanded(!filtersExpanded)} style={{ fontSize: 10, fontWeight: 700, padding: '4px 10px', borderRadius: 5, cursor: 'pointer', background: filtersExpanded ? T.text1 : T.surface, color: filtersExpanded ? '#fff' : T.text3, border: `1px solid ${T.borderStrong}` }}>
+          <button onClick={() => setFiltersExpanded(!filtersExpanded)} style={{ fontSize: 10, fontWeight: 700, padding: '4px 10px', borderRadius: 6, cursor: 'pointer', background: filtersExpanded ? T.text1 : T.surface, color: filtersExpanded ? '#fff' : T.text3, border: `1px solid ${T.borderStrong}` }}>
             {filtersExpanded ? '▲ Less' : '▼ Filters'}
           </button>
           {hasFilters && <button onClick={clearAll} style={{ fontSize: 9, fontWeight: 700, color: T.todo, background: 'transparent', border: 'none', cursor: 'pointer', textDecoration: 'underline' }}>Clear all</button>}
@@ -113,7 +113,7 @@ export function Resource360Chronology({ items, onItemClick }: Props) {
                 <span style={{ fontSize: 11, fontWeight: 700, color: T.text1 }}>{dayLabel}</span>
                 <div style={{ flex: 1, height: 1, background: T.border }} />
                 {/* Mini status bar */}
-                <div style={{ display: 'flex', width: 48, height: 4, borderRadius: 2, overflow: 'hidden', background: T.border }}>
+                <div style={{ display: 'flex', width: 48, height: 4, borderRadius: 4, overflow: 'hidden', background: T.border }}>
                   <div style={{ width: `${dTotal > 0 ? (dDone / dTotal) * 100 : 0}%`, background: T.done }} />
                   <div style={{ width: `${dTotal > 0 ? (dProg / dTotal) * 100 : 0}%`, background: T.progress }} />
                   <div style={{ width: `${dTotal > 0 ? (dTodo / dTotal) * 100 : 0}%`, background: T.todo }} />
@@ -145,7 +145,7 @@ export function Resource360Chronology({ items, onItemClick }: Props) {
                         <span style={{ fontFamily: T.mono, fontSize: 10, fontWeight: 700, color: T.text1 }}>
                           <HighlightText text={item.item_key} query={searchTerm} />
                         </span>
-                        <span style={{ fontSize: 8, fontWeight: 800, color: '#fff', padding: '1px 5px', borderRadius: 3, background: hc }}>{hs}</span>
+                        <span style={{ fontSize: 8, fontWeight: 800, color: '#fff', padding: '1px 5px', borderRadius: 4, background: hc }}>{hs}</span>
                       </div>
                       {/* Title + parent */}
                       <div style={{ flex: 1, minWidth: 0 }}>

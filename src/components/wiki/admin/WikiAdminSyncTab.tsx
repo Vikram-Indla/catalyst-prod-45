@@ -156,9 +156,9 @@ export function WikiAdminSyncTab() {
             </div>
           </div>
           {/* Progress bar visual */}
-          <div style={{ height: 6, borderRadius: 3, background: 'rgba(37,99,235,0.1)', marginBottom: 8, overflow: 'hidden' }}>
+          <div style={{ height: 6, borderRadius: 4, background: 'rgba(37,99,235,0.1)', marginBottom: 8, overflow: 'hidden' }}>
             <div style={{
-              height: '100%', borderRadius: 3,
+              height: '100%', borderRadius: 4,
               background: 'var(--cp-primary-60, #2563EB)',
               width: `${progressPct}%`,
               transition: 'width 300ms ease',
@@ -292,7 +292,7 @@ export function WikiAdminSyncTab() {
                   {isActive && (
                     <span style={{
                       display: 'inline-flex', alignItems: 'center', gap: 4,
-                      padding: '2px 8px', borderRadius: 3,
+                      padding: '2px 8px', borderRadius: 4,
                       background: '#0C66E4', color: '#FFFFFF',
                       fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em',
                     }}>
@@ -302,14 +302,14 @@ export function WikiAdminSyncTab() {
                   )}
                   {isDone && (
                     <span style={{
-                      padding: '2px 8px', borderRadius: 3,
+                      padding: '2px 8px', borderRadius: 4,
                       background: '#1B7F37', color: '#FFFFFF',
                       fontWeight: 700, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.03em',
                     }}>Complete</span>
                   )}
                   {isStepFailed && (
                     <span style={{
-                      padding: '2px 8px', borderRadius: 3,
+                      padding: '2px 8px', borderRadius: 4,
                       background: 'rgba(220,38,38,0.08)', color: '#DC2626',
                       fontWeight: 700, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.03em',
                     }}>Failed</span>
@@ -407,7 +407,7 @@ export function StatusLoz({ status }: { status: string }) {
   const s = map[status] ?? map.failed;
   return (
     <span style={{
-      display: 'inline-block', padding: '2px 8px', borderRadius: 3,
+      display: 'inline-block', padding: '2px 8px', borderRadius: 4,
       background: s.bg, color: s.color,
       fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em',
     }}>

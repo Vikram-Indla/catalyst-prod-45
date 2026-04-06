@@ -305,7 +305,7 @@ export function T10LabelsFieldNew({
                   style={{
                     width: '12px',
                     height: '12px',
-                    borderRadius: '3px',
+                    borderRadius: '4px',
                     backgroundColor: label.color,
                   }}
                 />

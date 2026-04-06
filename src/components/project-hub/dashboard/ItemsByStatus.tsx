@@ -54,8 +54,8 @@ export default function ItemsByStatus({ projectId }: Props = {}) {
           {sorted.map(({ status, count }) => (
             <div key={status} style={{ display: 'flex', alignItems: 'center', gap: 8, height: 24, marginBottom: 4 }}>
               <span style={{ width: 120, textAlign: 'right', fontSize: 11, color: 'var(--fg-2)', fontWeight: 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontFamily: "'Inter', sans-serif" }}>{formatLabel(status)}</span>
-              <div className="bg-[var(--cp-bd-zone)]" style={{ flex: 1, height: 18, borderRadius: 3, overflow: 'hidden' }}>
-                <div style={{ height: '100%', width: count > 0 ? `${(count / maxCount) * 100}%` : '0%', minWidth: count > 0 ? 20 : 0, background: getStatusBarColor(status), borderRadius: 3, transition: 'width 300ms ease' }} />
+              <div className="bg-[var(--cp-bd-zone)]" style={{ flex: 1, height: 18, borderRadius: 4, overflow: 'hidden' }}>
+                <div style={{ height: '100%', width: count > 0 ? `${(count / maxCount) * 100}%` : '0%', minWidth: count > 0 ? 20 : 0, background: getStatusBarColor(status), borderRadius: 4, transition: 'width 300ms ease' }} />
               </div>
               <span style={{ width: 28, textAlign: 'right', fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 800, color: 'var(--fg-1)' }}>{count}</span>
             </div>

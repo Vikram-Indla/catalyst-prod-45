@@ -26,7 +26,7 @@ export function PriorityChip({ priority }: PriorityChipProps) {
         fontWeight: 700,
         textTransform: 'uppercase',
         letterSpacing: '0.02em',
-        borderRadius: 3,
+        borderRadius: 4,
         backgroundColor: s.bg,
         color: s.text,
         border: `1px solid ${s.border}`,

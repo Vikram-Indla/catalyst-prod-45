@@ -63,7 +63,7 @@ const monoSmall: React.CSSProperties = { fontFamily: "'JetBrains Mono', monospac
 const Code: React.FC<{ children: React.ReactNode; isDark?: boolean }> = ({ children, isDark = false }) => (
   <code style={{
     fontFamily: "'JetBrains Mono', monospace", fontSize: '10px',
-    background: isDark ? '#1A1A1A' : '#F1F5F9', padding: '1px 4px', borderRadius: '2px',
+    background: isDark ? '#1A1A1A' : '#F1F5F9', padding: '1px 4px', borderRadius: '4px',
     color: isDark ? '#93C5FD' : '#2563EB',
   }}>{children}</code>
 );
@@ -72,7 +72,7 @@ const InfoCard: React.FC<{ label: string; children: React.ReactNode; isDark?: bo
   <div style={{
     background: isDark ? '#1A1A1A' : '#F8FAFC',
     border: `1px solid ${isDark ? 'rgba(255,255,255,0.10)' : 'rgba(15,23,42,0.10)'}`,
-    borderRadius: '5px', padding: '10px 12px',
+    borderRadius: '6px', padding: '10px 12px',
   }}>
     <div style={{
       fontSize: '9.5px', fontWeight: 700, color: isDark ? '#878787' : '#64748B',
@@ -127,7 +127,7 @@ const ProjectsTab: React.FC<{ perms: any[]; isDark?: boolean }> = ({ perms, isDa
 
   const xsBtn: React.CSSProperties = {
     fontSize: '9px', fontWeight: 700, textTransform: 'uppercase',
-    padding: '3px 7px', borderRadius: '3px', cursor: 'pointer',
+    padding: '3px 7px', borderRadius: '4px', cursor: 'pointer',
     border: `1px solid ${isDark ? 'rgba(255,255,255,0.10)' : 'rgba(15,23,42,0.10)'}`,
     background: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#A1A1A1' : '#64748B',
   };
@@ -199,7 +199,7 @@ const ProjectsTab: React.FC<{ perms: any[]; isDark?: boolean }> = ({ perms, isDa
                       <span className="jus-project-key-chip" style={{
                         fontFamily: "'JetBrains Mono', monospace", fontSize: '9px',
                         color: isDark ? '#A1A1A1' : '#64748B',
-                        background: isDark ? '#1A1A1A' : '#F1F5F9', padding: '1px 4px', borderRadius: '2px',
+                        background: isDark ? '#1A1A1A' : '#F1F5F9', padding: '1px 4px', borderRadius: '4px',
                       }}>{p.project_key}</span>
                     </td>
                     <td style={{ padding: '6px 9px', textAlign: 'right' }}>
@@ -374,7 +374,7 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
               {isJiraProxy ? (
                 <span style={{
                   display: 'inline-flex', alignItems: 'center', gap: '3px',
-                  padding: '1px 6px', borderRadius: '3px', fontSize: '10px', fontWeight: 700,
+                  padding: '1px 6px', borderRadius: '4px', fontSize: '10px', fontWeight: 700,
                   letterSpacing: '0.03em', textTransform: 'uppercase',
                   background: isDark ? 'rgba(37,99,235,0.15)' : '#EFF6FF',
                   color: isDark ? '#93C5FD' : '#2563EB',
@@ -384,7 +384,7 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
                 </span>
               ) : (
                 <span style={{
-                  padding: '1px 6px', borderRadius: '3px', fontSize: '10px', fontWeight: 700,
+                  padding: '1px 6px', borderRadius: '4px', fontSize: '10px', fontWeight: 700,
                   letterSpacing: '0.03em', textTransform: 'uppercase',
                   background: isDark ? 'rgba(124,58,237,0.15)' : '#F5F3FF',
                   color: isDark ? '#C4B5FD' : '#7C3AED',
@@ -395,7 +395,7 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
               )}
               {/* Status lozenge */}
               <span style={{
-                display: 'inline-block', padding: '0 7px', borderRadius: '3px',
+                display: 'inline-block', padding: '0 7px', borderRadius: '4px',
                 fontSize: '10px', fontWeight: 700, textTransform: 'uppercase',
                 height: '20px', lineHeight: '20px',
                 background: isInactive ? (isDark ? '#450A0A' : '#FEE2E2') : (isDark ? '#064E3B' : '#E3FCEF'),
@@ -485,7 +485,7 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
               <div className="jus-field-row" style={{ ...mkFieldRow(isDark), borderBottom: 'none' }}>
                 <span className="jus-field-key" style={mkFieldKey(isDark)}>Status</span>
                 <span style={{
-                  display: 'inline-block', padding: '0 7px', borderRadius: '3px',
+                  display: 'inline-block', padding: '0 7px', borderRadius: '4px',
                   fontSize: '10px', fontWeight: 700, textTransform: 'uppercase',
                   height: '20px', lineHeight: '20px',
                   background: isInactive ? (isDark ? '#450A0A' : '#FEE2E2') : (isDark ? '#064E3B' : '#E3FCEF'),
@@ -512,7 +512,7 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
                 </span>
                 {isJiraProxy ? (
                   <span style={{
-                    padding: '1px 5px', borderRadius: '3px', fontSize: '9.5px', fontWeight: 700,
+                    padding: '1px 5px', borderRadius: '4px', fontSize: '9.5px', fontWeight: 700,
                     background: isDark ? 'rgba(13,148,136,0.15)' : '#F0FDFA',
                     color: isDark ? '#5EEAD4' : '#0D9488',
                     border: `1px solid ${isDark ? 'rgba(13,148,136,0.25)' : '#99F6E4'}`,
@@ -522,7 +522,7 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
                   </span>
                 ) : (
                   <span style={{
-                    padding: '1px 5px', borderRadius: '3px', fontSize: '9.5px', fontWeight: 700,
+                    padding: '1px 5px', borderRadius: '4px', fontSize: '9.5px', fontWeight: 700,
                     background: isDark ? 'rgba(124,58,237,0.15)' : '#F5F3FF',
                     color: isDark ? '#C4B5FD' : '#7C3AED',
                     border: `1px solid rgba(124,58,237,0.25)`,
@@ -543,7 +543,7 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
               </div>
               {/* Info box */}
               <div className="jus-info-box" style={{
-                marginTop: '7px', padding: '9px 11px', borderRadius: '5px',
+                marginTop: '7px', padding: '9px 11px', borderRadius: '6px',
                 display: 'flex', gap: '8px', alignItems: 'flex-start',
                 background: isJiraProxy
                   ? (isDark ? 'rgba(13,148,136,0.10)' : '#F0FDFA')
@@ -693,7 +693,7 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
         <button style={{
           flex: 1, display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
           background: '#2563EB', color: '#FFFFFF', border: 'none',
-          padding: '7px 12px', borderRadius: '5px', fontSize: '12px', fontWeight: 600,
+          padding: '7px 12px', borderRadius: '6px', fontSize: '12px', fontWeight: 600,
           cursor: 'pointer',
         }}>
           Save All Changes
@@ -704,7 +704,7 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
           disabled={toggling}
           style={{
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-            padding: '7px 12px', borderRadius: '5px', fontSize: '12px', fontWeight: 500,
+            padding: '7px 12px', borderRadius: '6px', fontSize: '12px', fontWeight: 500,
             border: '1px solid #DC2626', color: '#DC2626', background: T.surface,
             cursor: toggling ? 'not-allowed' : 'pointer',
           }}

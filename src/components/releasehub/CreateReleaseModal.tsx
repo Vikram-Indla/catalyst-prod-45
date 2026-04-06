@@ -34,7 +34,7 @@ export function CreateReleaseModal({ onClose }: Props) {
           <button onClick={onClose} className="w-7 h-7 rounded flex items-center justify-center text-[var(--fg-3, #94A3B8)] hover:bg-[#F1F5F9]"><X size={14} /></button>
         </div>
         <div className="p-6 space-y-4">
-          {error && <div className="px-3 py-2 rounded-md bg-[#FEF2F2] text-[#DC2626] text-[12px] font-medium">{error}</div>}
+          {error && <div className="px-3 py-2 rounded-md bg-[var(--tint-red, #FEF2F2)] text-[#DC2626] text-[12px] font-medium">{error}</div>}
           <div>
             <label className="block text-[12px] font-semibold text-[#475569] mb-1">Name *</label>
             <input type="text" value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Q2 2026 Release v2.0"

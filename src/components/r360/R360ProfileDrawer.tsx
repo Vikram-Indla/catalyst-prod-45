@@ -205,7 +205,7 @@ function R360StatusLozenge({ status }: { status: string }) {
       backgroundColor: bg, color,
       fontSize: '11px', fontWeight: 700,
       letterSpacing: '0.03em', textTransform: 'uppercase' as const,
-      padding: '0 6px', height: '20px', borderRadius: '3px',
+      padding: '0 6px', height: '20px', borderRadius: '4px',
       lineHeight: '20px', whiteSpace: 'nowrap' as const,
       fontFamily: "'Inter', sans-serif",
     }}>
@@ -278,7 +278,7 @@ function FilteredListPanel({
           <span style={{
             display: 'inline-flex', alignItems: 'center',
             backgroundColor: '#DFE1E6', color: '#42526E',
-            fontSize: '11px', fontWeight: 700, padding: '0 6px', height: '20px', borderRadius: '3px',
+            fontSize: '11px', fontWeight: 700, padding: '0 6px', height: '20px', borderRadius: '4px',
           }}>{items.length} item{items.length !== 1 ? 's' : ''}</span>
         </div>
       </div>
@@ -434,9 +434,9 @@ function ItemDetailPanel({
             {/* Days Sitting Progress */}
             <div>
               <div style={{ fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: INK4, marginBottom: 6 }}>TIME IN ASSIGNMENT</div>
-              <div style={{ height: 6, borderRadius: 3, background: 'var(--divider)', overflow: 'hidden' }}>
+              <div style={{ height: 6, borderRadius: 4, background: 'var(--divider)', overflow: 'hidden' }}>
                 <div style={{
-                  height: '100%', borderRadius: 3,
+                  height: '100%', borderRadius: 4,
                   width: `${Math.min((daysSitting / 30) * 100, 100)}%`,
                   background: daysSitting >= 29 ? DANGER : daysSitting >= 15 ? WARNING : SUCCESS,
                   transition: 'width 300ms',
@@ -750,7 +750,7 @@ const R360ProfileDrawer = memo(function R360ProfileDrawer({ resourceId, onClose 
                 <span>{resourceRole || '—'}</span>
                 {deptName && <><span>·</span><span>{deptName}</span></>}
                 {resourceRid && <><span>·</span><span style={{
-                  background: 'var(--cp-blue-wash)', border: '1px solid #DBEAFE', borderRadius: 3,
+                  background: 'var(--cp-blue-wash)', border: '1px solid #DBEAFE', borderRadius: 4,
                   padding: '2px 7px', fontFamily: "'JetBrains Mono', monospace",
                   fontSize: 11, fontWeight: 700, color: BRAND,
                 }}>{resourceRid}</span></>}
@@ -1198,9 +1198,9 @@ function OverviewTab({
               >
                 <JiraIssueTypeIcon type={row.type} size={16} />
                 <span style={{ fontSize: 12, color: INK2, width: 72, flexShrink: 0 }}>{row.type}</span>
-                <div style={{ flex: 1, height: 18, background: 'var(--divider)', borderRadius: 3, overflow: 'hidden' }}>
+                <div style={{ flex: 1, height: 18, background: 'var(--divider)', borderRadius: 4, overflow: 'hidden' }}>
                   <div style={{
-                    height: '100%', borderRadius: 3,
+                    height: '100%', borderRadius: 4,
                     width: `${row.pct}%`,
                     background: row.pct > 0 ? 'var(--sem-success)' : 'transparent',
                     transition: 'width 300ms ease',
@@ -1428,7 +1428,7 @@ function BehaviouralTab({ workItems, showFilteredList, weekStart, weekEnd, weekL
                 <div key={d} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
                   <span style={{ fontSize: isPeak ? 12 : 12, fontWeight: isPeak ? 600 : 400, fontFamily: "'JetBrains Mono', monospace", color: isPeak ? '#1D4ED8' : '#374151' }}>{val}</span>
                   <div style={{
-                    width: '100%', maxWidth: 40, height: barH, borderRadius: 3,
+                    width: '100%', maxWidth: 40, height: barH, borderRadius: 4,
                     backgroundColor: isPeak ? '#1D4ED8' : 'var(--cp-blue)',
                     transition: 'height 300ms ease, background-color 0ms',
                   }} />

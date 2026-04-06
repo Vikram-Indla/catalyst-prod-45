@@ -35,7 +35,7 @@ export const AddItemInput: React.FC<AddItemInputProps> = ({
         backgroundColor: isFocused ? COLORS.surfaceCard : COLORS.surfacePage,
         // FIX 5: Subtle dashed border that becomes solid blue on focus
         border: `1.5px ${isFocused ? 'solid' : 'dashed'} ${isFocused ? '#3b82f6' : '#cbd5e1'}`,
-        borderRadius: '10px',
+        borderRadius: '12px',
         transition: 'all 0.2s ease',
         // FIX 5: Subtle shadow, not heavy
         boxShadow: isFocused ? '0 0 0 3px rgba(59, 130, 246, 0.1)' : 'none'

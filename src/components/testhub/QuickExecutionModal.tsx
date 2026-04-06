@@ -128,7 +128,7 @@ export function QuickExecutionModal({
     const parts = text.split(/(\{[a-zA-Z_][a-zA-Z0-9_]*\})/g);
     return parts.map((part, i) =>
       part.match(/^\{[a-zA-Z_][a-zA-Z0-9_]*\}$/) ? (
-        <span key={i} style={{ color: 'var(--cp-blue)', fontWeight: 600, backgroundColor: 'color-mix(in srgb, var(--cp-blue) 8%, transparent)', padding: '1px 4px', borderRadius: 3, fontSize: 13 }}>{part}</span>
+        <span key={i} style={{ color: 'var(--cp-blue)', fontWeight: 600, backgroundColor: 'color-mix(in srgb, var(--cp-blue) 8%, transparent)', padding: '1px 4px', borderRadius: 4, fontSize: 13 }}>{part}</span>
       ) : (
         <span key={i}>{part}</span>
       )
@@ -141,10 +141,10 @@ export function QuickExecutionModal({
   if (!tc) return null;
 
   const priorityStyle = {
-    critical: { color: 'var(--sem-danger)', bg: '#FEF2F2' },
-    high:     { color: '#EA580C', bg: '#FFF7ED' },
+    critical: { color: 'var(--sem-danger)', bg: 'var(--tint-red, #FEF2F2)' },
+    high:     { color: '#EA580C', bg: 'var(--tint-amber, #FFF7ED)' },
     medium:   { color: 'var(--sem-warning)', bg: '#FFFBEB' },
-    low:      { color: 'var(--sem-success)', bg: '#ECFDF5' },
+    low:      { color: 'var(--sem-success)', bg: 'var(--tint-green-soft, #ECFDF5)' },
   }[tc.priority?.toLowerCase()] || { color: 'var(--sem-warning)', bg: '#FFFBEB' };
 
   return (
@@ -156,7 +156,7 @@ export function QuickExecutionModal({
         {/* Header */}
         <div style={{ padding: '18px 24px', borderBottom: '1px solid var(--divider)', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14, flex: 1, minWidth: 0 }}>
-            <div style={{ width: 40, height: 40, borderRadius: 10, background: 'linear-gradient(135deg, #10B981 0%, var(--sem-success) 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <div style={{ width: 40, height: 40, borderRadius: 12, background: 'linear-gradient(135deg, #10B981 0%, var(--sem-success) 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
               <Play size={20} style={{ color: '#FFFFFF' }} />
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
@@ -219,7 +219,7 @@ export function QuickExecutionModal({
           {tc.expected_result && (
             <div style={{ marginBottom: 20 }}>
               <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-2)', margin: '0 0 8px' }}>Expected Result</p>
-              <div style={{ padding: 14, backgroundColor: '#ECFDF5', border: '1px solid #A7F3D0', borderRadius: 8 }}>
+              <div style={{ padding: 14, backgroundColor: 'var(--tint-green-soft, #ECFDF5)', border: '1px solid #A7F3D0', borderRadius: 8 }}>
                 <p style={{ fontSize: 14, color: '#065F46', margin: 0, lineHeight: 1.5 }}>{highlightVars(tc.expected_result)}</p>
               </div>
             </div>

@@ -90,7 +90,7 @@ function SkeletonRow({ columns, idx }: { columns: ColumnConfig[]; idx: number })
       {vis.map(col => (
         <div key={col.id} style={{ width: col.width, minWidth: col.minWidth, padding: '8px 12px', flexShrink: 0 }}>
           <div className="wh-skeleton" style={{
-            height: 12, borderRadius: 3,
+            height: 12, borderRadius: 4,
             width: col.id === 'key' ? 80 : col.id === 'summary' ? `${180 + (idx % 3) * 40}px` : col.id === 'status' ? 90 : col.id === 'priority' ? 16 : col.id === 'points' ? 24 : '60%',
           }} />
         </div>
@@ -273,7 +273,7 @@ export default function WorkHubTable({ projectKey, projectId, defaultType = 'Sto
 
         {/* Error state — red banner */}
         {error && !isLoading && (
-          <div style={{ margin: '12px 16px', padding: '12px 16px', background: '#FEF2F2', borderLeft: '4px solid #DC2626', borderRadius: '0 6px 6px 0', display: 'flex', alignItems: 'center', gap: 10 }} role="alert">
+          <div style={{ margin: '12px 16px', padding: '12px 16px', background: 'var(--tint-red, #FEF2F2)', borderLeft: '4px solid #DC2626', borderRadius: '0 6px 6px 0', display: 'flex', alignItems: 'center', gap: 10 }} role="alert">
             <AlertTriangle size={18} color="#DC2626" style={{ flexShrink: 0 }} />
             <div style={{ flex: 1 }}>
               <div style={{ fontSize: 14, fontWeight: 600, color: '#991B1B' }}>Failed to load work items</div>

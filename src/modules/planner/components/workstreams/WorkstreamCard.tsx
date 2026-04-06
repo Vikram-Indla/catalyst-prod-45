@@ -269,7 +269,7 @@ export const WorkstreamCard: React.FC<WorkstreamCardProps> = ({
                 width: '160px',
                 backgroundColor: COLORS.surfaceCard,
                 border: `1px solid ${COLORS.borderDefault}`,
-                borderRadius: '10px',
+                borderRadius: '12px',
                 boxShadow: '0 10px 40px rgba(0, 0, 0, 0.12)',
                 zIndex: 100,
                 padding: '6px',

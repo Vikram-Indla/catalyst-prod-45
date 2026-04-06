@@ -411,7 +411,7 @@ export function SyncConfigPanel() {
                                   key={opt.value}
                                   onClick={() => updateProjectConfig(pk, { lookback_months: opt.value })}
                                   style={{
-                                    padding: '5px 10px', borderRadius: 5,
+                                    padding: '5px 10px', borderRadius: 6,
                                     border: isActive ? '2px solid var(--wh-pri)' : '1px solid var(--wh-bdr)',
                                     background: isActive ? 'var(--wh-pri-bg)' : 'var(--wh-bg)',
                                     color: isActive ? 'var(--wh-pri)' : 'var(--wh-tx2)',
@@ -603,9 +603,9 @@ function SyncProgressPanel({
             <span style={{ fontSize: 11, color: 'var(--wh-tx3)', fontFamily: 'var(--wh-fn)', flex: 1 }}>
               {p.name !== p.key ? p.name : ''}
             </span>
-            <div style={{ flex: 1, maxWidth: 120, height: 4, borderRadius: 2, background: 'var(--wh-sf3)', overflow: 'hidden' }}>
+            <div style={{ flex: 1, maxWidth: 120, height: 4, borderRadius: 4, background: 'var(--wh-sf3)', overflow: 'hidden' }}>
               <div style={{
-                height: '100%', borderRadius: 2, transition: 'width 0.4s ease',
+                height: '100%', borderRadius: 4, transition: 'width 0.4s ease',
                 width: p.status === 'done' || p.status === 'error' ? '100%' : p.status === 'syncing' ? '50%' : '0%',
                 background: p.status === 'done' ? 'var(--wh-suc)' : p.status === 'syncing' ? 'var(--wh-pri)' : p.status === 'error' ? 'var(--wh-dng)' : 'var(--wh-tx4)',
               }} />
@@ -671,7 +671,7 @@ function SyncStatisticsBoard({ syncEntry }: { syncEntry: SyncLogEntry }) {
           <span style={{
             display: 'inline-flex', alignItems: 'center', gap: 4,
             fontSize: 11, fontWeight: 600, color: statusColor,
-            background: statusBackground, padding: '2px 8px', borderRadius: 10,
+            background: statusBackground, padding: '2px 8px', borderRadius: 12,
           }}>
             <span style={{ width: 5, height: 5, borderRadius: '50%', background: statusColor }} />
             {statusLabel}

@@ -734,7 +734,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
     width: 100,
     height: 6,
     background: '#e2e8f0',
-    borderRadius: 3,
+    borderRadius: 4,
     overflow: 'hidden',
   };
 
@@ -742,7 +742,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
     width: `${(completedCount / 10) * 100}%`,
     height: '100%',
     background: '#3b82f6',
-    borderRadius: 3,
+    borderRadius: 4,
     transition: 'width 0.3s ease',
   };
 
@@ -1061,7 +1061,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
                         justifyContent: 'center',
                         fontSize: 13,
                         fontWeight: 700,
-                        borderRadius: 10,
+                        borderRadius: 12,
                         background: i === 0 ? '#2563eb' : i === 1 ? '#3b82f6' : '#60a5fa',
                         color: '#ffffff',
                         flexShrink: 0,

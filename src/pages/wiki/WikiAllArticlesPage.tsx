@@ -200,11 +200,11 @@ export default function WikiAllArticlesPage() {
                     style={{ width: 14, height: 14, cursor: 'pointer', accentColor: '#2563EB' }} />
                 </span>
                 <span onClick={() => navigate(`/wiki/${a.slug}`)}>
-                  {a.format === 'pdf' ? <span style={{ fontSize: 9, fontWeight: 700, padding: '1px 4px', borderRadius: 2, background: isDark ? 'rgba(220,38,38,0.12)' : '#FEE2E2', color: '#DC2626' }}>PDF</span> : <FileText size={14} style={{ color: isDark ? '#878787' : '#94A3B8' }} />}
+                  {a.format === 'pdf' ? <span style={{ fontSize: 9, fontWeight: 700, padding: '1px 4px', borderRadius: 4, background: isDark ? 'rgba(220,38,38,0.12)' : '#FEE2E2', color: '#DC2626' }}>PDF</span> : <FileText size={14} style={{ color: isDark ? '#878787' : '#94A3B8' }} />}
                 </span>
                 <span onClick={() => navigate(`/wiki/${a.slug}`)} style={{ fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.title}</span>
                 <span style={{ fontSize: 10, color: isDark ? '#A1A1A1' : '#64748B' }}>{a.domain_code}</span>
-                <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 6px', borderRadius: 3, background: verBadge.bg, color: verBadge.color, width: 'fit-content' }}>{verBadge.label}</span>
+                <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 6px', borderRadius: 4, background: verBadge.bg, color: verBadge.color, width: 'fit-content' }}>{verBadge.label}</span>
                 <span style={{ fontFamily: F.mono, fontSize: 11, fontWeight: 500, color: confColor }}>{conf}%</span>
                 <span style={{ fontFamily: F.mono, fontSize: 11, color: isDark ? '#A1A1A1' : '#64748B' }}>{a.view_count ?? 0}</span>
                 <span style={{ fontFamily: F.mono, fontSize: 10, color: isDark ? '#A1A1A1' : '#64748B' }}>{new Date(a.updated_at).toLocaleDateString()}</span>

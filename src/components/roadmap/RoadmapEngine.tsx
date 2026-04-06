@@ -540,7 +540,7 @@ export function RoadmapEngine({ config, items, isLoading, className, onItemClick
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="h-9 text-xs bg-white dark:bg-[#1A1A1A] dark:text-[#EDEDED] px-3"
-                  style={{ border: '1px solid hsl(var(--roadmap-sandstone))', borderRadius: '10px' }}
+                  style={{ border: '1px solid hsl(var(--roadmap-sandstone))', borderRadius: '12px' }}
                   onKeyDown={(e) => {
                     if (e.key === 'Escape') {
                       setSearchQuery('');

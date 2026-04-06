@@ -67,7 +67,7 @@ export function Resource360ContextModal({ item, allItems, onClose, onNavigate }:
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10, flexWrap: 'wrap' }}>
                 <span style={{ fontFamily: T.mono, fontSize: 13, fontWeight: 800, color: T.text1 }}>{item.item_key}</span>
                 <span style={{
-                  fontSize: 10, fontWeight: 800, padding: '3px 10px', borderRadius: 5,
+                  fontSize: 10, fontWeight: 800, padding: '3px 10px', borderRadius: 6,
                   textTransform: 'uppercase', letterSpacing: '.04em',
                   background: statusColor, color: '#fff',
                 }}>● {item.status}</span>
@@ -78,13 +78,13 @@ export function Resource360ContextModal({ item, allItems, onClose, onNavigate }:
                 {stale && (
                   <span style={{
                     fontSize: 9, fontWeight: 800, padding: '2px 6px', borderRadius: 4,
-                    background: '#FEF2F2', color: 'var(--sem-danger)', border: '1px solid #FECACA',
+                    background: 'var(--tint-red, #FEF2F2)', color: 'var(--sem-danger)', border: '1px solid #FECACA',
                   }}>🔴 Stale — {item.age_days}d</span>
                 )}
                 <span style={{ flex: 1 }} />
                 <button onClick={onClose} style={{
                   width: 28, height: 28, borderRadius: 6, border: `1px solid ${T.border}`,
-                  background: '#fff', color: T.text4, fontSize: 14, cursor: 'pointer',
+                  background: 'var(--bg-app, #fff)', color: T.text4, fontSize: 14, cursor: 'pointer',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                 }}>✕</button>
               </div>
@@ -129,8 +129,8 @@ export function Resource360ContextModal({ item, allItems, onClose, onNavigate }:
               <div style={{ display: 'grid', gridTemplateColumns: '140px 1fr', gap: 16, alignItems: 'start' }}>
                 {/* Cycle time */}
                 <div style={{
-                  background: '#fff', border: `1px solid ${stale ? '#FECACA' : T.border}`,
-                  borderRadius: 10, padding: '14px 16px', textAlign: 'center',
+                  background: 'var(--bg-app, #fff)', border: `1px solid ${stale ? '#FECACA' : T.border}`,
+                  borderRadius: 12, padding: '14px 16px', textAlign: 'center',
                 }}>
                   <div style={{
                     fontSize: 36, fontWeight: 900, lineHeight: 1, letterSpacing: '-.03em',
@@ -156,9 +156,9 @@ export function Resource360ContextModal({ item, allItems, onClose, onNavigate }:
                   {/* Due bar */}
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 12 }}>
                     <span style={{ fontSize: 9, fontWeight: 700, color: T.text4 }}>DUE</span>
-                    <div style={{ flex: 1, height: 6, background: '#EDE7E0', borderRadius: 3, overflow: 'hidden' }}>
+                    <div style={{ flex: 1, height: 6, background: '#EDE7E0', borderRadius: 4, overflow: 'hidden' }}>
                       <div style={{
-                        height: '100%', borderRadius: 3, width: `${dueProgress}%`,
+                        height: '100%', borderRadius: 4, width: `${dueProgress}%`,
                         background: dueProgress < 60 ? 'linear-gradient(90deg, #10B981, #34D399)' : dueProgress < 85 ? 'linear-gradient(90deg, #F59E0B, #FBBF24)' : 'linear-gradient(90deg, #EF4444, #F87171)',
                       }} />
                     </div>
@@ -189,13 +189,13 @@ export function Resource360ContextModal({ item, allItems, onClose, onNavigate }:
                   onClick={() => onNavigate(parentItem)}
                   style={{
                     display: 'flex', alignItems: 'flex-start', gap: 8, padding: '8px 10px',
-                    background: '#fff', border: `1px solid ${T.border}`, borderRadius: 8, cursor: 'pointer',
+                    background: 'var(--bg-app, #fff)', border: `1px solid ${T.border}`, borderRadius: 8, cursor: 'pointer',
                     transition: 'box-shadow .12s',
                   }}
                   onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,.08)'; }}
                   onMouseLeave={e => { e.currentTarget.style.boxShadow = 'none'; }}
                 >
-                  <div style={{ width: 22, height: 22, borderRadius: 5, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 800, background: '#FFF7ED', color: '#EA580C', flexShrink: 0 }}>E</div>
+                  <div style={{ width: 22, height: 22, borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 800, background: 'var(--tint-amber, #FFF7ED)', color: '#EA580C', flexShrink: 0 }}>E</div>
                   <div style={{ minWidth: 0 }}>
                     <div style={{ fontFamily: T.mono, fontSize: 9, fontWeight: 800, color: T.text1 }}>{parentItem.item_key}</div>
                     <div style={{ fontSize: 10, fontWeight: 500, color: T.text3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{parentItem.title}</div>
@@ -218,7 +218,7 @@ export function Resource360ContextModal({ item, allItems, onClose, onNavigate }:
                         onClick={() => { const t = allItems.find(a => a.item_key === s.item_key); if (t) onNavigate(t); }}
                         style={{
                           padding: '6px 8px', borderRadius: 6, cursor: 'pointer',
-                          background: isCurrent ? '#EFF6FF' : '#fff',
+                          background: isCurrent ? 'var(--tint-blue, #EFF6FF)' : '#fff',
                           border: `1px solid ${isCurrent ? '#BFDBFE' : T.border}`,
                           transition: 'background .1s',
                         }}
@@ -240,25 +240,25 @@ export function Resource360ContextModal({ item, allItems, onClose, onNavigate }:
               <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
                 <button style={{
                   display: 'flex', alignItems: 'center', gap: 8, width: '100%', padding: '8px 12px',
-                  borderRadius: 7, border: 'none', background: T.text2, color: '#fff',
+                  borderRadius: 8, border: 'none', background: T.text2, color: '#fff',
                   fontSize: 11, fontWeight: 700, cursor: 'pointer', transition: 'opacity .12s',
                 }}
                   onMouseEnter={e => { e.currentTarget.style.opacity = '0.9'; }}
                   onMouseLeave={e => { e.currentTarget.style.opacity = '1'; }}
                 >
-                  <span style={{ width: 20, height: 20, borderRadius: 5, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, background: 'rgba(255,255,255,.15)' }}>↗</span>
+                  <span style={{ width: 20, height: 20, borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, background: 'rgba(255,255,255,.15)' }}>↗</span>
                   Open in Hub
                 </button>
                 <button onClick={handleCopyKey} style={{
                   display: 'flex', alignItems: 'center', gap: 8, width: '100%', padding: '8px 12px',
-                  borderRadius: 7, border: `1px solid ${T.border}`, background: '#fff',
+                  borderRadius: 8, border: `1px solid ${T.border}`, background: 'var(--bg-app, #fff)',
                   color: T.text3, fontSize: 11, fontWeight: 700, cursor: 'pointer',
                   transition: 'background .12s',
                 }}
                   onMouseEnter={e => { e.currentTarget.style.background = T.warm; }}
                   onMouseLeave={e => { e.currentTarget.style.background = '#fff'; }}
                 >
-                  <span style={{ width: 20, height: 20, borderRadius: 5, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, background: T.warm }}>📋</span>
+                  <span style={{ width: 20, height: 20, borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, background: T.warm }}>📋</span>
                   Copy Key
                 </button>
               </div>

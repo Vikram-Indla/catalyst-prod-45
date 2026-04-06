@@ -374,13 +374,13 @@ function SubTasksTabContent({ parentKey, onSubTaskClick }: { parentKey: string; 
               { count: doneTasks.length, label: 'Done', bg: '#1B7F37', color: '#FFFFFF' },
             ].map(s => (
               <span key={s.label} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                <span style={{ display: 'inline-block', padding: '1px 6px', borderRadius: 3, backgroundColor: s.bg, color: s.color, fontSize: 11, fontWeight: 700 }}>{s.count}</span>
+                <span style={{ display: 'inline-block', padding: '1px 6px', borderRadius: 4, backgroundColor: s.bg, color: s.color, fontSize: 11, fontWeight: 700 }}>{s.count}</span>
                 <span style={{ fontSize: 11, color: T.inkMuted }}>{s.label}</span>
               </span>
             ))}
           </div>
         </div>
-        <div style={{ display: 'flex', width: 100, height: 5, borderRadius: 3, overflow: 'hidden', backgroundColor: 'var(--divider)' }}>
+        <div style={{ display: 'flex', width: 100, height: 5, borderRadius: 4, overflow: 'hidden', backgroundColor: 'var(--divider)' }}>
           {doneTasks.length > 0 && <div style={{ width: `${(doneTasks.length / total) * 100}%`, backgroundColor: 'var(--sem-success)', transition: 'width 0.3s ease' }} />}
           {progressTasks.length > 0 && <div style={{ width: `${(progressTasks.length / total) * 100}%`, backgroundColor: 'var(--cp-blue)', transition: 'width 0.3s ease' }} />}
         </div>

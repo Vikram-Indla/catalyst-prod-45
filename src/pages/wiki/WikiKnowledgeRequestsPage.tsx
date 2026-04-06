@@ -82,8 +82,8 @@ export default function WikiKnowledgeRequestsPage() {
                   {r.description && <div style={{ fontSize: 10, color: isDark ? '#878787' : '#94A3B8', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.description}</div>}
                 </div>
                 <span style={{ fontSize: 10, color: isDark ? '#A1A1A1' : '#64748B' }}>{r.domain_code || '—'}</span>
-                <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 6px', borderRadius: 3, background: pr.bg, color: pr.color, textTransform: 'uppercase', width: 'fit-content' }}>{r.priority}</span>
-                <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 6px', borderRadius: 3, background: st.bg, color: st.color, width: 'fit-content' }}>{st.label}</span>
+                <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 6px', borderRadius: 4, background: pr.bg, color: pr.color, textTransform: 'uppercase', width: 'fit-content' }}>{r.priority}</span>
+                <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 6px', borderRadius: 4, background: st.bg, color: st.color, width: 'fit-content' }}>{st.label}</span>
                 <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, color: isDark ? '#A1A1A1' : '#64748B' }}>{new Date(r.created_at).toLocaleDateString()}</span>
               </div>
             );

@@ -117,7 +117,7 @@ export function RoadmapCard({ idea, onSelectIdea, onToggleCommitted, onMoveToQua
             onClick={e => { e.stopPropagation(); onToggleCommitted(idea); }}
             title={idea.isCommitted ? 'Uncommit' : 'Commit'}
             style={{
-              width: 32, height: 18, borderRadius: 9, border: 'none', cursor: 'pointer',
+              width: 32, height: 18, borderRadius: 8, border: 'none', cursor: 'pointer',
               background: idea.isCommitted ? 'var(--sem-success)' : (isDark ? 'rgba(255,255,255,0.20)' : '#CBD5E1'),
               position: 'relative', transition: 'background 150ms',
             }}
@@ -177,7 +177,7 @@ export function RoadmapCard({ idea, onSelectIdea, onToggleCommitted, onMoveToQua
           return (
             <span key={m.key} style={{
               height: 18, display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-              padding: '0 6px', borderRadius: 3,
+              padding: '0 6px', borderRadius: 4,
               fontSize: 9, fontWeight: 700, fontFamily: "'Inter', sans-serif",
               textTransform: 'uppercase', letterSpacing: '0.06em',
               background: style.bg, color: style.text, border: `1px solid ${style.border}`,

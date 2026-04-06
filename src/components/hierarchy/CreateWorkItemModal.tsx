@@ -68,7 +68,7 @@ function CustomSelect({
             <div key={opt.value} onClick={() => { onChange(opt.value); setOpen(false); }}
               style={{ padding: '8px 12px', fontSize: 13, cursor: 'pointer', background: opt.value === value ? 'var(--cp-primary-5)' : undefined, fontFamily: "'Inter', sans-serif" }}
               onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--bg-1)')}
-              onMouseLeave={(e) => (e.currentTarget.style.background = opt.value === value ? '#EFF6FF' : '')}>
+              onMouseLeave={(e) => (e.currentTarget.style.background = opt.value === value ? 'var(--tint-blue, #EFF6FF)' : '')}>
               {renderOption ? renderOption(opt) : opt.label}
             </div>
           ))}

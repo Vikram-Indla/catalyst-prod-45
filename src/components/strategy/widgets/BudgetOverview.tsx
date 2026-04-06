@@ -156,11 +156,11 @@ export function BudgetOverview() {
               <span style={{ width: 75, fontSize: 10, textAlign: 'right', color: 'var(--exec-text-secondary)', flexShrink: 0, fontWeight: 500 }}>
                 {dept.name === 'Technical Support' ? 'Tech Support' : dept.name}
               </span>
-              <div className="flex-1 overflow-hidden" style={{ height: 10, borderRadius: 5, background: hasCTC ? 'var(--exec-bg-hover)' : 'transparent' }}>
+              <div className="flex-1 overflow-hidden" style={{ height: 10, borderRadius: 6, background: hasCTC ? 'var(--exec-bg-hover)' : 'transparent' }}>
                 {hasCTC ? (
-                  <div style={{ width: `${barWidth}%`, height: '100%', borderRadius: 5, background: 'var(--exec-blue-700, #1E40AF)', transition: 'width 600ms ease-out', minWidth: barWidth > 0 ? 2 : 0 }} />
+                  <div style={{ width: `${barWidth}%`, height: '100%', borderRadius: 6, background: 'var(--exec-blue-700, #1E40AF)', transition: 'width 600ms ease-out', minWidth: barWidth > 0 ? 2 : 0 }} />
                 ) : (
-                  <div style={{ width: '100%', height: '100%', borderRadius: 5, border: '1px dashed #D4D4D4', background: 'transparent' }} />
+                  <div style={{ width: '100%', height: '100%', borderRadius: 6, border: '1px dashed #D4D4D4', background: 'transparent' }} />
                 )}
               </div>
               <span style={{ width: 30, fontSize: 12, textAlign: 'right', fontWeight: 700, color: 'var(--exec-text-primary)', flexShrink: 0 }}>{dept.headcount}</span>

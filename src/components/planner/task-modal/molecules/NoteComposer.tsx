@@ -77,7 +77,7 @@ export const NoteComposer: React.FC<NoteComposerProps> = ({
             backgroundColor: COLORS.accent,
             color: '#ffffff',
             border: 'none',
-            borderRadius: '10px',
+            borderRadius: '12px',
             fontSize: '14px',
             fontWeight: 500,
             cursor: 'pointer',

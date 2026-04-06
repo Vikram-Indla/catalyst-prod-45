@@ -63,7 +63,7 @@ export const AssigneeDropdown: React.FC<AssigneeDropdownProps> = ({
           padding: '10px 14px',
           backgroundColor: COLORS.surfaceCard,
           border: `1px solid ${isOpen ? COLORS.borderFocus : (isHovered ? COLORS.borderDefault : COLORS.borderLight)}`,
-          borderRadius: '10px',
+          borderRadius: '12px',
           cursor: 'pointer',
           transition: 'all 0.15s ease',
           boxShadow: isOpen ? '0 0 0 3px rgba(59, 130, 246, 0.15)' : 'none'

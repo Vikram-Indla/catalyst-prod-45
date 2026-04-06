@@ -32,7 +32,7 @@ export default function WorkHubGroupHeader({ label, count, collapsed, onToggle, 
       <span style={{ fontSize: 12, fontWeight: 650, textTransform: 'uppercase', color: 'var(--fg-2)', letterSpacing: '0.03em' }}>{label}</span>
       <span style={{
         display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-        height: 16, minWidth: 16, padding: '0 8px', borderRadius: 10,
+        height: 16, minWidth: 16, padding: '0 8px', borderRadius: 12,
         background: 'var(--bg-1)', fontSize: 11, fontWeight: 600, color: 'var(--fg-3)',
       }}>{count}</span>
       <button

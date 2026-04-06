@@ -30,7 +30,7 @@ function StatusLozenge({ status }: { status: string }) {
   return (
     <span style={{
       display: 'inline-flex', alignItems: 'center',
-      padding: '0 6px', height: 18, borderRadius: 3,
+      padding: '0 6px', height: 18, borderRadius: 4,
       fontSize: 10, fontWeight: 700, textTransform: 'uppercase',
       background: m.bg, color: m.color,
     }}>{status}</span>
@@ -198,7 +198,7 @@ export default function RAPublishEpicsModal({ brdId, epics, onClose, onPublished
                 <div key={e.id} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0' }}>
                   <span style={{
                     fontFamily: "'JetBrains Mono', monospace", fontSize: 10,
-                    color: 'var(--fg-2)', background: var(--bg-2, '#F1F5F9'), padding: '1px 6px', borderRadius: 2,
+                    color: 'var(--fg-2)', background: var(--bg-2, '#F1F5F9'), padding: '1px 6px', borderRadius: 4,
                   }}>{e.ra_tag || '—'}</span>
                   <span style={{ fontSize: 12, color: 'var(--fg-1)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {e.title}

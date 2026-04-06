@@ -91,7 +91,7 @@ export function WikiAdminQueryLogTab() {
 function PagBtn({ disabled, onClick, children }: { disabled: boolean; onClick: () => void; children: React.ReactNode }) {
   return (
     <button disabled={disabled} onClick={onClick} style={{
-      padding: '4px 8px', borderRadius: 3,
+      padding: '4px 8px', borderRadius: 4,
       border: '1px solid var(--cp-border-default, rgba(15,23,42,0.12))',
       background: 'transparent', cursor: disabled ? 'default' : 'pointer',
       opacity: disabled ? 0.4 : 1, display: 'flex', alignItems: 'center',

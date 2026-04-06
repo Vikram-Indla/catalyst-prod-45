@@ -163,7 +163,7 @@ export const DateDropdown: React.FC<DateDropdownProps> = ({
           padding: '12px 14px',
           backgroundColor: COLORS.surfaceCard,
           border: `1px solid ${isOpen ? COLORS.borderFocus : (isHovered ? COLORS.borderFocus : COLORS.borderDefault)}`,
-          borderRadius: '10px',
+          borderRadius: '12px',
           cursor: 'pointer',
           transition: 'all 0.15s ease',
           boxShadow: isOpen ? '0 0 0 3px rgba(59, 130, 246, 0.15)' : 'none'

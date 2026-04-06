@@ -744,7 +744,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="h-9 w-[200px] text-xs bg-white dark:bg-[#1A1A1A] dark:text-[#EDEDED] pl-9 pr-3"
-            style={{ border: '1px solid hsl(var(--roadmap-sandstone))', borderRadius: '10px' }}
+            style={{ border: '1px solid hsl(var(--roadmap-sandstone))', borderRadius: '12px' }}
             onKeyDown={(e) => {
               if (e.key === 'Escape') {
                 setSearchQuery('');

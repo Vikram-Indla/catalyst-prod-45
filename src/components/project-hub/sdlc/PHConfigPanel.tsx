@@ -216,12 +216,12 @@ export function PHConfigPanel({ board, open, onClose, onSave }: Props) {
                   <div className="flex items-center gap-1 mb-1">
                     {cardFields.type && <span className="rounded inline-flex items-center justify-center bg-[var(--cp-blue)]" style={{ width: 14, height: 14, fontSize: 8, color: '#fff' }}>✓</span>}
                     {cardFields.key && <span style={{ fontSize: 10, fontFamily: "'JetBrains Mono', monospace", color: 'var(--fg-3)' }}>PROJ-123</span>}
-                    {cardFields.source && <span className="bg-[var(--cp-blue-wash)]" style={{ fontSize: 7, padding: '0 3px', borderRadius: 2, color: 'var(--cp-blue)', fontWeight: 700 }}>JIRA</span>}
+                    {cardFields.source && <span className="bg-[var(--cp-blue-wash)]" style={{ fontSize: 7, padding: '0 3px', borderRadius: 4, color: 'var(--cp-blue)', fontWeight: 700 }}>JIRA</span>}
                   </div>
                   {cardFields.overdue && <div style={{ fontSize: 9, color: 'var(--sem-warning)' }}>⚠ 3d overdue</div>}
                   {cardFields.title && <div style={{ fontSize: 12, fontWeight: 500, color: 'var(--fg-1)', marginBottom: 4 }}>Sample issue title…</div>}
                   <div className="flex items-center justify-between">
-                    {cardFields.priority && <span className="bg-[var(--sem-warning-bg)]" style={{ fontSize: 9, padding: '0 4px', borderRadius: 3, color: 'var(--sem-warning)' }}>high</span>}
+                    {cardFields.priority && <span className="bg-[var(--sem-warning-bg)]" style={{ fontSize: 9, padding: '0 4px', borderRadius: 4, color: 'var(--sem-warning)' }}>high</span>}
                     <div className="flex items-center gap-1">
                       {cardFields.due && <span style={{ fontSize: 9, color: 'var(--fg-4)' }}>Mar 15</span>}
                       {cardFields.assignee && <span className="rounded-full inline-flex items-center justify-center bg-[var(--divider)]" style={{ width: 16, height: 16, fontSize: 7 }}>👤</span>}

@@ -363,7 +363,7 @@
   justify-content: center;
   font-size: 13px;
   font-weight: 700;
-  border-radius: 10px;
+  border-radius: 12px;
   flex-shrink: 0;
   background: #2563eb;
   color: #ffffff;
@@ -1151,7 +1151,7 @@
   font-weight: 500;
   color: #ffffff;
   background: #0f172a;
-  border-radius: 10px;
+  border-radius: 12px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
   z-index: 10000;
   animation: t10-toast-slide-up 0.3s ease-out;

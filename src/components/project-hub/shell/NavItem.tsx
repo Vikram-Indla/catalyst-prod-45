@@ -74,7 +74,7 @@ export function NavItem({ icon: Icon, label, isActive, onClick, collapsed, badge
                 fontWeight: 600,
                 color: isDark ? 'rgba(255,255,255,0.55)' : 'var(--fg-4)',
                 fontFamily: "'JetBrains Mono', monospace",
-                borderRadius: 10,
+                borderRadius: 12,
                 backgroundColor: isDark ? 'rgba(255,255,255,0.06)' : 'var(--cp-bd-zone)',
                 padding: '1px 6px',
               }}

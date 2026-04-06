@@ -175,7 +175,7 @@ export function CalendarGridSkeleton() {
               style={{
                 width: '60%',
                 height: 6,
-                borderRadius: 3,
+                borderRadius: 4,
                 backgroundColor: 'var(--bg-1)',
               }}
             />

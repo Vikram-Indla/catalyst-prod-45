@@ -22,7 +22,7 @@ export const PermissionBanner: React.FC<PermissionBannerProps> = ({
         padding: '14px 18px',
         backgroundColor: COLORS.warningBg,
         border: `1px solid ${COLORS.warningBorder}`,
-        borderRadius: '10px',
+        borderRadius: '12px',
         marginBottom: '24px'
       }}
     >

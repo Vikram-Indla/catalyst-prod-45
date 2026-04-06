@@ -76,7 +76,7 @@ function SourceBadge({ source }: { source?: 'jira' | 'catalyst' }) {
     return (
       <span style={{
         fontSize: 9, fontWeight: 700, letterSpacing: '0.06em',
-        padding: '1px 4px', borderRadius: 2,
+        padding: '1px 4px', borderRadius: 4,
         background: '#CCFBF1', color: '#0F766E',
         textTransform: 'uppercase', flexShrink: 0,
       }}>CATALYST</span>
@@ -85,7 +85,7 @@ function SourceBadge({ source }: { source?: 'jira' | 'catalyst' }) {
   return (
     <span style={{
       fontSize: 9, fontWeight: 700, letterSpacing: '0.06em',
-      padding: '1px 4px', borderRadius: 2,
+      padding: '1px 4px', borderRadius: 4,
       background: '#0C66E4', color: '#FFFFFF',
       textTransform: 'uppercase', flexShrink: 0,
     }}>JIRA</span>
@@ -217,7 +217,7 @@ function ParentCell({ item, itemById, onSelect }: { item: WorkItem; itemById: Ma
           alignItems: 'center',
           height: 20,
           padding: '0 6px',
-          borderRadius: 3,
+          borderRadius: 4,
           fontSize: 11,
           fontWeight: 500,
           maxWidth: 212,
@@ -524,7 +524,7 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
         return (
           <div style={{ padding: '0 8px', minWidth: 0 }}>
             {item.fixVersion ? (
-              <span style={{ fontSize: 11, padding: '2px 8px', borderRadius: 3, background: 'var(--cp-bg-sunken)', color: 'var(--fg-2)', display: 'inline-block', maxWidth: 160, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              <span style={{ fontSize: 11, padding: '2px 8px', borderRadius: 4, background: 'var(--cp-bg-sunken)', color: 'var(--fg-2)', display: 'inline-block', maxWidth: 160, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {item.fixVersion.name}
               </span>
             ) : <span style={{ fontSize: 12, color: 'var(--fg-4)' }}>—</span>}

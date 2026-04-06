@@ -165,16 +165,16 @@ export const EpicDetailDrawer: React.FC<EpicDetailDrawerProps> = ({ isOpen, onCl
 
   return (
     <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <SheetContent style={{ width: 560, maxWidth: '100vw', padding: 0, background: '#FFFFFF' }} className="overflow-y-auto border-l">
+      <SheetContent style={{ width: 560, maxWidth: '100vw', padding: 0, background: 'var(--bg-app, #FFFFFF)' }} className="overflow-y-auto border-l">
         {/* Header */}
-        <div style={{ position: 'sticky', top: 0, zIndex: 10, background: '#FFFFFF', borderBottom: '0.75px solid rgba(15,23,42,0.06)', padding: '16px 20px', display: 'flex', alignItems: 'center', gap: 10 }}>
+        <div style={{ position: 'sticky', top: 0, zIndex: 10, background: 'var(--bg-app, #FFFFFF)', borderBottom: '0.75px solid rgba(15,23,42,0.06)', padding: '16px 20px', display: 'flex', alignItems: 'center', gap: 10 }}>
           {epic ? (
             <>
               <JiraIssueTypeIcon type="epic" size={20} />
               <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, fontWeight: 600, color: '#0F172A' }}>{epic.issue_key}</span>
               <span style={{ fontSize: 13, color: '#64748B' }}>· Epic</span>
             </>
-          ) : <div style={{ height: 20, width: 120, borderRadius: 3, background: 'var(--bd-default, #E2E8F0)' }} />}
+          ) : <div style={{ height: 20, width: 120, borderRadius: 4, background: 'var(--bd-default, #E2E8F0)' }} />}
           <button onClick={onClose} style={{ marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}><X size={20} color="#64748B" /></button>
         </div>
 
@@ -182,8 +182,8 @@ export const EpicDetailDrawer: React.FC<EpicDetailDrawerProps> = ({ isOpen, onCl
           <div style={{ padding: '24px 20px' }}>
             {[1,2,3,4,5].map(i => (
               <div key={i} style={{ display: 'flex', gap: 12, marginBottom: 8 }}>
-                <div style={{ width: 100, height: 14, borderRadius: 3, background: 'var(--bd-default, #E2E8F0)' }} />
-                <div style={{ width: 140, height: 14, borderRadius: 3, background: 'var(--bd-default, #E2E8F0)' }} />
+                <div style={{ width: 100, height: 14, borderRadius: 4, background: 'var(--bd-default, #E2E8F0)' }} />
+                <div style={{ width: 140, height: 14, borderRadius: 4, background: 'var(--bd-default, #E2E8F0)' }} />
               </div>
             ))}
           </div>
@@ -199,10 +199,10 @@ export const EpicDetailDrawer: React.FC<EpicDetailDrawerProps> = ({ isOpen, onCl
                 <Popover>
                   <PopoverTrigger asChild>
                     <button style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
-                      {statusColors && <span style={{ display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px', borderRadius: 3, fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em', background: statusColors.bg, color: statusColors.text }}>{statusColors.label}</span>}
+                      {statusColors && <span style={{ display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px', borderRadius: 4, fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em', background: statusColors.bg, color: statusColors.text }}>{statusColors.label}</span>}
                     </button>
                   </PopoverTrigger>
-                  <PopoverContent align="start" style={{ width: 220, padding: '4px 0', background: '#FFFFFF', border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6, zIndex: 9999 }}>
+                  <PopoverContent align="start" style={{ width: 220, padding: '4px 0', background: 'var(--bg-app, #FFFFFF)', border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6, zIndex: 9999 }}>
                     {STATUS_GROUPS.map(group => (
                       <div key={group.label}>
                         <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--fg-3, #94A3B8)', padding: '6px 12px 2px' }}>{group.label}</div>
@@ -213,7 +213,7 @@ export const EpicDetailDrawer: React.FC<EpicDetailDrawerProps> = ({ isOpen, onCl
                               width: '100%', padding: '5px 12px', fontSize: 13, border: 'none', textAlign: 'left',
                               background: epic.status === s ? 'rgba(37,99,235,0.08)' : 'transparent', color: '#0F172A', cursor: 'pointer',
                             }}>
-                              <span style={{ display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px', borderRadius: 3, fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em', background: sc.bg, color: sc.text }}>{sc.label}</span>
+                              <span style={{ display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px', borderRadius: 4, fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em', background: sc.bg, color: sc.text }}>{sc.label}</span>
                             </button>
                           );
                         })}
@@ -270,7 +270,7 @@ export const EpicDetailDrawer: React.FC<EpicDetailDrawerProps> = ({ isOpen, onCl
                     <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748B', marginBottom: 4 }}>Key Details</div>
 
                     <DetailRow label="Status">
-                      {statusColors && <span style={{ display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px', borderRadius: 3, fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em', background: statusColors.bg, color: statusColors.text }}>{statusColors.label}</span>}
+                      {statusColors && <span style={{ display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px', borderRadius: 4, fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em', background: statusColors.bg, color: statusColors.text }}>{statusColors.label}</span>}
                     </DetailRow>
                     <DetailRow label="Priority"><span style={DETAIL_VALUE}>{epic.priority || '—'}</span></DetailRow>
                     <DetailRow label="Assignee">
@@ -318,7 +318,7 @@ export const EpicDetailDrawer: React.FC<EpicDetailDrawerProps> = ({ isOpen, onCl
                           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                             <span style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600, color: '#6B7280' }}>Sync Status</span>
                             <span style={{
-                              display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px', borderRadius: 3,
+                              display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px', borderRadius: 4,
                               fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em',
                               backgroundColor: jiraSyncData.jira_sync_status === 'synced' || jiraSyncData.jira_sync_status === 'pushed' ? '#E3FCEF' : jiraSyncData.jira_sync_status === 'queued' || jiraSyncData.jira_sync_status === 'approval_pending' ? '#DEEBFF' : '#DFE1E6',
                               color: jiraSyncData.jira_sync_status === 'synced' || jiraSyncData.jira_sync_status === 'pushed' ? '#006644' : jiraSyncData.jira_sync_status === 'queued' || jiraSyncData.jira_sync_status === 'approval_pending' ? '#0747A6' : '#253858',
@@ -399,9 +399,9 @@ function HistoryPane({ changelog, isLoading, getStatusColors }: { changelog: any
                     <span style={{ fontSize: 11, color: 'var(--fg-3, #94A3B8)' }}>{entry.jira_created_at ? formatDistanceToNow(new Date(entry.jira_created_at), { addSuffix: true }) : ''}</span>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
-                    <span style={{ display: 'inline-flex', alignItems: 'center', height: 18, padding: '0 5px', borderRadius: 3, fontSize: 10, fontWeight: 700, textTransform: 'uppercase', background: fromColors.bg, color: fromColors.text }}>{fromColors.label}</span>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', height: 18, padding: '0 5px', borderRadius: 4, fontSize: 10, fontWeight: 700, textTransform: 'uppercase', background: fromColors.bg, color: fromColors.text }}>{fromColors.label}</span>
                     <span style={{ fontSize: 12, color: 'var(--fg-3, #94A3B8)' }}>→</span>
-                    <span style={{ display: 'inline-flex', alignItems: 'center', height: 18, padding: '0 5px', borderRadius: 3, fontSize: 10, fontWeight: 700, textTransform: 'uppercase', background: toColors.bg, color: toColors.text }}>{toColors.label}</span>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', height: 18, padding: '0 5px', borderRadius: 4, fontSize: 10, fontWeight: 700, textTransform: 'uppercase', background: toColors.bg, color: toColors.text }}>{toColors.label}</span>
                   </div>
                   {entry.jira_created_at && <div style={{ fontSize: 11, color: 'var(--fg-3, #94A3B8)', marginTop: 2, fontFamily: "'JetBrains Mono', monospace" }}>{format(new Date(entry.jira_created_at), 'MMM d, yyyy, hh:mm a')}</div>}
                 </div>
@@ -441,8 +441,8 @@ function SkeletonList({ count }: { count: number }) {
       <div key={i} style={{ display: 'flex', gap: 10, padding: '8px 0' }}>
         <div style={{ width: 24, height: 24, borderRadius: '50%', background: 'var(--bd-default, #E2E8F0)', flexShrink: 0 }} />
         <div style={{ flex: 1 }}>
-          <div style={{ height: 12, width: '60%', borderRadius: 3, background: 'var(--bd-default, #E2E8F0)', marginBottom: 6 }} />
-          <div style={{ height: 10, width: '40%', borderRadius: 3, background: 'var(--bd-default, #E2E8F0)' }} />
+          <div style={{ height: 12, width: '60%', borderRadius: 4, background: 'var(--bd-default, #E2E8F0)', marginBottom: 6 }} />
+          <div style={{ height: 10, width: '40%', borderRadius: 4, background: 'var(--bd-default, #E2E8F0)' }} />
         </div>
       </div>
     ))}</div>

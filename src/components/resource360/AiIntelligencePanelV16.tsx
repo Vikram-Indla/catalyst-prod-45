@@ -7,7 +7,7 @@ import React, { useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
 
 const T = {
-  bg: '#F8FAFC', surface: '#FFFFFF', ink1: '#0F172A', ink2: '#334155',
+  bg: 'var(--bg-1, #F8FAFC)', surface: '#FFFFFF', ink1: '#0F172A', ink2: '#334155',
   ink3: '#64748B', ink4: 'var(--fg-3, #94A3B8)', border: 'var(--bd-default, #E2E8F0)', accent: '#2563EB',
   danger: '#EF4444', warning: '#D97706', success: '#0E8A5F',
   mono: "'JetBrains Mono', 'SF Mono', monospace",
@@ -59,8 +59,8 @@ function FactorBar({ label, value, color }: { label: string; value: number; colo
         <span>{label}</span>
         <span style={{ fontFamily: T.mono, color }}>{Math.round(value)}%</span>
       </div>
-      <div style={{ height: 6, borderRadius: 3, background: T.border, overflow: 'hidden' }}>
-        <div style={{ height: '100%', borderRadius: 3, width: `${Math.min(100, value)}%`, background: color, transition: 'width 300ms' }} />
+      <div style={{ height: 6, borderRadius: 4, background: T.border, overflow: 'hidden' }}>
+        <div style={{ height: '100%', borderRadius: 4, width: `${Math.min(100, value)}%`, background: color, transition: 'width 300ms' }} />
       </div>
     </div>
   );
@@ -167,8 +167,8 @@ const AiIntelligencePanelV16: React.FC<Props> = ({ resourceName, onClose }) => {
                   <span>{t.type}</span>
                   <span style={{ fontFamily: T.mono }}>{t.pct}%</span>
                 </div>
-                <div style={{ height: 7, borderRadius: 3, background: T.border, overflow: 'hidden' }}>
-                  <div style={{ height: '100%', borderRadius: 3, width: `${t.pct}%`, background: t.color }} />
+                <div style={{ height: 7, borderRadius: 4, background: T.border, overflow: 'hidden' }}>
+                  <div style={{ height: '100%', borderRadius: 4, width: `${t.pct}%`, background: t.color }} />
                 </div>
               </div>
             ))}

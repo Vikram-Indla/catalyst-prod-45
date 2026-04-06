@@ -176,7 +176,7 @@ export default function RequirementDetailPage() {
             <span style={{
               fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em',
               color: status.color, backgroundColor: status.bg,
-              padding: '2px 6px', borderRadius: 3, height: 20, display: 'inline-flex', alignItems: 'center',
+              padding: '2px 6px', borderRadius: 4, height: 20, display: 'inline-flex', alignItems: 'center',
             }}>{status.label}</span>
             {requirement.external_id && (
               <span style={{ fontSize: 12, fontWeight: 500, color: '#64748B', backgroundColor: '#F1F5F9', padding: '4px 10px', borderRadius: 6, display: 'flex', alignItems: 'center', gap: 4 }}>
@@ -236,7 +236,7 @@ export default function RequirementDetailPage() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {linkedTests.map((test) => (
               <div key={test.link_id}
-                style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 14, backgroundColor: isDark ? '#1A1A1A' : '#F8FAFC', borderRadius: 10, border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0' }}>
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 14, backgroundColor: isDark ? '#1A1A1A' : '#F8FAFC', borderRadius: 12, border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0' }}>
                 <div style={{ flex: 1 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
                     <span style={{ fontSize: 12, fontWeight: 600, color: '#2563EB', backgroundColor: '#EFF6FF', padding: '2px 8px', borderRadius: 4 }}>{test.case_key}</span>

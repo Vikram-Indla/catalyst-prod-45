@@ -209,7 +209,7 @@ export default function IdeationPage() {
                   <span style={{
                     display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                     height: '20px', minWidth: '26px', padding: '0 4px',
-                    borderRadius: '3px', fontSize: '11px', fontWeight: 700,
+                    borderRadius: '4px', fontSize: '11px', fontWeight: 700,
                     background: qb.bg, color: qb.text,
                   }}>{q}</span>
                   <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '16px', fontWeight: 700, color: dk.t1 }}>
@@ -456,7 +456,7 @@ function StatusBadge({ status }: { status: IdeaStatus }) {
   return (
     <span style={{
       display: 'inline-flex', alignItems: 'center', background: c.bg, color: c.text,
-      height: 20, padding: '0 8px', borderRadius: 3,
+      height: 20, padding: '0 8px', borderRadius: 4,
       fontSize: '11px', fontWeight: 700, whiteSpace: 'nowrap',
       textTransform: 'uppercase', letterSpacing: '0',
     }}>
@@ -470,7 +470,7 @@ function TypeBadge({ type }: { type: Idea['type'] }) {
   return (
     <span style={{
       display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px',
-      borderRadius: 3, fontSize: '11px', fontWeight: 500,
+      borderRadius: 4, fontSize: '11px', fontWeight: 500,
       background: c.bg, color: c.text, border: '1px solid #E2E8F0',
     }}>
       {c.label}
@@ -483,7 +483,7 @@ function PriorityBadge({ priority }: { priority: string }) {
   return (
     <span style={{
       display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-      height: 20, minWidth: 26, padding: '0 4px', borderRadius: 3,
+      height: 20, minWidth: 26, padding: '0 4px', borderRadius: 4,
       fontSize: '11px', fontWeight: 650,
       background: c.bg, color: c.text, border: `1px solid ${c.border}`,
     }}>
@@ -513,7 +513,7 @@ function QuarterBadge({ quarter }: { quarter?: string | null }) {
   return (
     <span style={{
       display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-      height: 20, minWidth: 26, padding: '0 4px', borderRadius: 3,
+      height: 20, minWidth: 26, padding: '0 4px', borderRadius: 4,
       fontSize: '11px', fontWeight: 700,
       background: qb.bg, color: qb.text,
     }}>

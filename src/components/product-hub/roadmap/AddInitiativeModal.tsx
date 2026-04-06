@@ -88,7 +88,7 @@ export function AddInitiativeModal({ isOpen, onClose }: AddInitiativeModalProps)
         style={{
           position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
           width: 640, maxWidth: '90vw', maxHeight: '80vh',
-          background: '#FFFFFF', borderRadius: 12, border: `1px solid ${SURFACE.border}`,
+          background: 'var(--bg-app, #FFFFFF)', borderRadius: 12, border: `1px solid ${SURFACE.border}`,
           boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)', zIndex: 301,
           display: 'flex', flexDirection: 'column', overflow: 'hidden',
           fontFamily: FONT.body,
@@ -175,7 +175,7 @@ export function AddInitiativeModal({ isOpen, onClose }: AddInitiativeModalProps)
                 {isOnRoadmap ? (
                   <span
                     className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-md"
-                    style={{ color: '#16A34A', border: '1px solid #BBF7D0', background: '#F0FDF4' }}
+                    style={{ color: '#16A34A', border: '1px solid #BBF7D0', background: 'var(--tint-green, #F0FDF4)' }}
                   >
                     <CheckCircle2 size={12} /> On Roadmap
                   </span>
@@ -184,9 +184,9 @@ export function AddInitiativeModal({ isOpen, onClose }: AddInitiativeModalProps)
                     onClick={() => handleAdd(item.id, item.title)}
                     disabled={addMutation.isPending}
                     className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-md disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-blue-500"
-                    style={{ color: '#2563EB', border: '1px solid #BFDBFE', background: '#EFF6FF', transition: 'background-color 0.15s ease' }}
+                    style={{ color: '#2563EB', border: '1px solid #BFDBFE', background: 'var(--tint-blue, #EFF6FF)', transition: 'background-color 0.15s ease' }}
                     onMouseEnter={e => { if (!addMutation.isPending) e.currentTarget.style.backgroundColor = '#DBEAFE'; }}
-                    onMouseLeave={e => (e.currentTarget.style.backgroundColor = '#EFF6FF')}
+                    onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'var(--tint-blue, #EFF6FF)')}
                   >
                     {addMutation.isPending ? <Loader2 size={12} className="animate-spin" /> : <Plus size={12} />} Add
                   </button>

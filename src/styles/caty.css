@@ -205,7 +205,7 @@
   color: white;
   font-size: 11px;
   font-weight: 700;
-  border-radius: 10px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -741,13 +741,13 @@
   width: 40px;
   height: 6px;
   background: var(--caty-border);
-  border-radius: 3px;
+  border-radius: 4px;
   overflow: hidden;
 }
 
 .caty-capacity-fill {
   height: 100%;
-  border-radius: 3px;
+  border-radius: 4px;
   transition: width 0.3s ease;
 }
 
@@ -1029,7 +1029,7 @@
 .caty-input-hint kbd {
   background: var(--caty-surface-hover);
   padding: 1px 4px;
-  border-radius: 3px;
+  border-radius: 4px;
   font-size: var(--caty-font-size-xs);
   margin: 0 2px;
 }

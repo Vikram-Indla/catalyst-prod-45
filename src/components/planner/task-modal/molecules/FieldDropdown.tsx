@@ -68,7 +68,7 @@ export const FieldDropdown: React.FC<FieldDropdownProps> = ({
           padding: '12px 14px',  // 12px vertical for field dropdowns
           backgroundColor: COLORS.surfaceCard,
           border: `1px solid ${isOpen ? COLORS.borderFocus : (isHovered ? COLORS.borderFocus : COLORS.borderDefault)}`,
-          borderRadius: '10px',
+          borderRadius: '12px',
           cursor: 'pointer',
           transition: 'all 0.15s ease',
           boxShadow: isOpen ? '0 0 0 3px rgba(59, 130, 246, 0.15)' : 'none'

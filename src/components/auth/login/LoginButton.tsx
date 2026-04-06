@@ -32,7 +32,7 @@ export const LoginButton = forwardRef<HTMLButtonElement, LoginButtonProps>(
           padding: '0.9375rem 1.5rem',
           background: getBackgroundStyle(),
           border: isPrimary ? 'none' : `2px solid ${loginColors.primary}`,
-          borderRadius: 10,
+          borderRadius: 12,
           fontSize: '0.9375rem',
           fontWeight: 700,
           color: isPrimary ? '#fff' : loginColors.primaryLighter,

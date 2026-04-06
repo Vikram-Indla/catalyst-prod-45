@@ -131,7 +131,7 @@ export function Resource360AIPanel({ items, summary, resourceName, isOpen, onClo
           <button onClick={() => window.print()} style={{
             marginLeft: 'auto', padding: '5px 14px', fontSize: 11, fontWeight: 700,
             color: '#fff', background: 'rgba(255,255,255,.12)',
-            border: '1px solid rgba(255,255,255,.2)', borderRadius: 5, cursor: 'pointer',
+            border: '1px solid rgba(255,255,255,.2)', borderRadius: 6, cursor: 'pointer',
           }}>📤 Export</button>
           <button onClick={onClose} style={{
             background: 'none', border: 'none', fontSize: 18,
@@ -144,7 +144,7 @@ export function Resource360AIPanel({ items, summary, resourceName, isOpen, onClo
           {/* ═══ PROFILE CARD ═══ */}
           <div style={{
             display: 'flex', alignItems: 'center', gap: 16,
-            background: C.surface, borderRadius: 10, padding: '14px 20px',
+            background: C.surface, borderRadius: 12, padding: '14px 20px',
             border: `1px solid ${C.border}`, boxShadow: C.shadow,
           }}>
             <div style={{
@@ -249,7 +249,7 @@ export function Resource360AIPanel({ items, summary, resourceName, isOpen, onClo
                 <span style={{ fontSize: 11, fontWeight: 700, color: C.text1 }}>Completion Progress</span>
                 <span style={{ fontSize: 13, fontWeight: 900, color: C.text1, fontFamily: C.mono }}>{a.closureRate}%</span>
               </div>
-              <div style={{ height: 14, borderRadius: 7, background: C.border, overflow: 'hidden', display: 'flex' }}>
+              <div style={{ height: 14, borderRadius: 8, background: C.border, overflow: 'hidden', display: 'flex' }}>
                 <div style={{ width: `${a.total > 0 ? Math.round((a.doneItems.length / a.total) * 100) : 0}%`, background: C.done, transition: 'width .3s' }} />
                 <div style={{ width: `${a.total > 0 ? Math.round((a.progressItems.length / a.total) * 100) : 0}%`, background: C.progress, transition: 'width .3s' }} />
               </div>
@@ -267,7 +267,7 @@ export function Resource360AIPanel({ items, summary, resourceName, isOpen, onClo
                 {a.criticalPath.length > 0 ? a.criticalPath.map(item => (
                   <div key={item.work_item_id} style={{
                     display: 'flex', alignItems: 'center', gap: 6, padding: '5px 8px',
-                    background: '#FEF2F2', borderRadius: 5, marginBottom: 3,
+                    background: 'var(--tint-red, #FEF2F2)', borderRadius: 6, marginBottom: 3,
                     border: '1px solid #FECACA', fontSize: 10,
                   }}>
                     <span style={{ color: C.todo, fontWeight: 700, fontFamily: C.mono, flexShrink: 0 }}>{item.item_key}</span>
@@ -294,9 +294,9 @@ export function Resource360AIPanel({ items, summary, resourceName, isOpen, onClo
                         <span>{emoji}</span>
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                        <div style={{ flex: 1, height: 5, borderRadius: 3, background: C.border }}>
+                        <div style={{ flex: 1, height: 5, borderRadius: 4, background: C.border }}>
                           <div style={{
-                            height: '100%', borderRadius: 3, width: `${pct}%`,
+                            height: '100%', borderRadius: 4, width: `${pct}%`,
                             background: pct >= 70 ? C.done : pct >= 40 ? '#CA8A04' : C.todo,
                             transition: 'width .3s',
                           }} />
@@ -362,7 +362,7 @@ export function Resource360AIPanel({ items, summary, resourceName, isOpen, onClo
               Active across <strong>{Object.keys(a.byProject).length}</strong> project{Object.keys(a.byProject).length !== 1 ? 's' : ''} and <strong>{a.hubDist.length}</strong> hub{a.hubDist.length !== 1 ? 's' : ''}.
             </Insight>
             <div style={{
-              marginTop: 8, padding: '6px 10px', borderRadius: 5,
+              marginTop: 8, padding: '6px 10px', borderRadius: 6,
               background: '#FFFBEB', border: '1px solid #FDE68A',
               fontSize: 10, color: '#92400E', fontStyle: 'italic',
             }}>
@@ -391,7 +391,7 @@ export function Resource360AIPanel({ items, summary, resourceName, isOpen, onClo
 function SectionCard({ title, subtitle, children }: { title: string; subtitle?: string; children: React.ReactNode }) {
   return (
     <div style={{
-      background: C.surface, borderRadius: 10, padding: '12px 16px',
+      background: C.surface, borderRadius: 12, padding: '12px 16px',
       border: `1px solid ${C.border}`, boxShadow: C.shadow,
     }}>
       <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 10 }}>

@@ -50,7 +50,7 @@ export function FailureReasonModal({ isOpen, testCaseKey, testCaseTitle, testCas
           {/* Header */}
           <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--divider)', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <div style={{ display: 'flex', gap: 12 }}>
-              <div style={{ width: 44, height: 44, borderRadius: 10, backgroundColor: '#FEF2F2', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <div style={{ width: 44, height: 44, borderRadius: 12, backgroundColor: 'var(--tint-red, #FEF2F2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <XCircle size={24} style={{ color: 'var(--sem-danger)' }} />
               </div>
               <div>
@@ -82,7 +82,7 @@ export function FailureReasonModal({ isOpen, testCaseKey, testCaseTitle, testCas
                   const isSelected = selectedReason === reason.id;
                   return (
                     <button key={reason.id} onClick={() => { setSelectedReason(reason.id); setError(''); }}
-                      style={{ padding: '14px 16px', border: `2px solid ${isSelected ? reason.color : 'var(--divider)'}`, borderRadius: 10, backgroundColor: isSelected ? `${reason.color}10` : 'var(--bg-app)', cursor: 'pointer', textAlign: 'left', transition: 'all 0.15s' }}>
+                      style={{ padding: '14px 16px', border: `2px solid ${isSelected ? reason.color : 'var(--divider)'}`, borderRadius: 12, backgroundColor: isSelected ? `${reason.color}10` : 'var(--bg-app)', cursor: 'pointer', textAlign: 'left', transition: 'all 0.15s' }}>
                       <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
                         <div style={{ width: 36, height: 36, borderRadius: 8, backgroundColor: isSelected ? `${reason.color}20` : 'color-mix(in srgb, var(--bg-2) 40%, transparent)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                           <Icon size={18} style={{ color: isSelected ? reason.color : 'var(--fg-3)' }} />

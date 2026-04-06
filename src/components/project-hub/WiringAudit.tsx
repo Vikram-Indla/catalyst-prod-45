@@ -204,7 +204,7 @@ export function WiringAudit() {
             style={{
               width: 18,
               height: 18,
-              borderRadius: 9,
+              borderRadius: 8,
               display: "inline-flex",
               alignItems: "center",
               justifyContent: "center",

@@ -48,7 +48,7 @@ export default function ScopeChangeWidget({ projectId, projectKey, collapsed, on
               Original scope
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="inline-block bg-[#DC2626]/15" style={{ width: 8, height: 8, borderRadius: 2, border: '1px solid var(--cp-danger-60)' }} />
+              <span className="inline-block bg-[#DC2626]/15" style={{ width: 8, height: 8, borderRadius: 4, border: '1px solid var(--cp-danger-60)' }} />
               Added after start
             </span>
           </div>

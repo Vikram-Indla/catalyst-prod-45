@@ -71,7 +71,7 @@ function PBCheckbox({ checked, indeterminate, onToggle }: { checked: boolean; in
       aria-checked={indeterminate ? 'mixed' : checked}
       onClick={(e) => { e.stopPropagation(); onToggle(); }}
       style={{
-        width: 16, height: 16, borderRadius: 3, display: 'flex', alignItems: 'center', justifyContent: 'center',
+        width: 16, height: 16, borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center',
         border: checked || indeterminate ? '1.5px solid var(--pb-primary)' : '1.5px solid var(--pb-border-strong)',
         background: checked || indeterminate ? 'var(--pb-primary)' : 'transparent',
         cursor: 'pointer', transition: 'all 100ms',
@@ -270,7 +270,7 @@ export function InitiativeTable({
         {Array.from({ length: 8 }).map((_, i) => (
           <div key={i} style={{ height: 36, display: 'flex', alignItems: 'center', gap: 16, padding: '0 12px', borderBottom: '1px solid var(--pb-border)' }}>
             {Array.from({ length: 6 }).map((_, j) => (
-              <div key={j} style={{ height: 12, borderRadius: 3, background: 'var(--pb-surface-tertiary)', width: `${60 + Math.random() * 80}px` }} className="animate-pulse" />
+              <div key={j} style={{ height: 12, borderRadius: 4, background: 'var(--pb-surface-tertiary)', width: `${60 + Math.random() * 80}px` }} className="animate-pulse" />
             ))}
           </div>
         ))}

@@ -163,9 +163,9 @@ export function WikiCommandPalette({ open, onClose }: Props) {
           padding: '8px 16px', borderTop: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid var(--cp-border-default)',
           display: 'flex', gap: 16, fontSize: 11, color: isDark ? '#878787' : 'var(--cp-text-muted)',
         }}>
-          <span><kbd style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 10, padding: '1px 4px', borderRadius: 3, border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid var(--cp-border-default)', background: isDark ? '#0A0A0A' : 'var(--cp-bg-sunken)' }}>↑↓</kbd> Navigate</span>
-          <span><kbd style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 10, padding: '1px 4px', borderRadius: 3, border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid var(--cp-border-default)', background: isDark ? '#0A0A0A' : 'var(--cp-bg-sunken)' }}>↵</kbd> Open</span>
-          <span><kbd style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 10, padding: '1px 4px', borderRadius: 3, border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid var(--cp-border-default)', background: isDark ? '#0A0A0A' : 'var(--cp-bg-sunken)' }}>ESC</kbd> Close</span>
+          <span><kbd style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 10, padding: '1px 4px', borderRadius: 4, border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid var(--cp-border-default)', background: isDark ? '#0A0A0A' : 'var(--cp-bg-sunken)' }}>↑↓</kbd> Navigate</span>
+          <span><kbd style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 10, padding: '1px 4px', borderRadius: 4, border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid var(--cp-border-default)', background: isDark ? '#0A0A0A' : 'var(--cp-bg-sunken)' }}>↵</kbd> Open</span>
+          <span><kbd style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 10, padding: '1px 4px', borderRadius: 4, border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid var(--cp-border-default)', background: isDark ? '#0A0A0A' : 'var(--cp-bg-sunken)' }}>ESC</kbd> Close</span>
         </div>
       </div>
     </div>

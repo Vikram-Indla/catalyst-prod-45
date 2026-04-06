@@ -130,7 +130,7 @@ function HubBadge({ hub }: { hub: string }) {
     <span style={{
       fontSize: 9, fontWeight: 700, letterSpacing: '0.04em',
       color, background: `${color}12`,
-      padding: '2px 6px', borderRadius: 3,
+      padding: '2px 6px', borderRadius: 4,
     }}>
       {hub}
     </span>
@@ -182,7 +182,7 @@ function SiblingList({ label, items, currentKey, onItemClick }: SiblingListProps
             style={{
               padding: isCurrent ? '10px 18px 10px 15px' : '10px 18px',
               borderBottom: '1px solid #F0F0F3',
-              background: isCurrent ? '#EFF6FF' : 'transparent',
+              background: isCurrent ? 'var(--tint-blue, #EFF6FF)' : 'transparent',
               borderLeft: isCurrent ? '3px solid var(--cp-blue)' : 'none',
             }}
             onMouseEnter={(e) => {
@@ -200,7 +200,7 @@ function SiblingList({ label, items, currentKey, onItemClick }: SiblingListProps
                 display: 'inline-flex', alignItems: 'center', gap: 3,
                 fontSize: 9, fontWeight: 600,
                 color: sSc.text, background: sSc.bg,
-                padding: '1px 6px', borderRadius: 3,
+                padding: '1px 6px', borderRadius: 4,
               }}>
                 <span style={{ width: 4, height: 4, borderRadius: '50%', background: sSc.dot }} />
                 {s.status}

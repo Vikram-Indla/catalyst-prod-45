@@ -112,7 +112,7 @@ const ChronologyView: React.FC<ChronologyViewProps> = ({ resourceId, onItemClick
               background: filtersExpanded ? T.text1 : T.surface,
               color: filtersExpanded ? '#fff' : T.text3,
               border: `1px solid ${T.borderStrong}`,
-              padding: '4px 10px', borderRadius: 5, cursor: 'pointer',
+              padding: '4px 10px', borderRadius: 6, cursor: 'pointer',
             }}>
             {filtersExpanded ? '▲ Less' : '▼ Filters'}
           </button>
@@ -225,7 +225,7 @@ const ChronologyView: React.FC<ChronologyViewProps> = ({ resourceId, onItemClick
                       </span>
                       <span style={{
                         fontSize: 8, fontWeight: 800, color: '#fff', padding: '1px 5px',
-                        borderRadius: 3, background: hubColor, width: 'fit-content',
+                        borderRadius: 4, background: hubColor, width: 'fit-content',
                         textTransform: 'uppercase' as const,
                       }}>
                         {HUB_SHORT[hub] ?? hub.replace('Hub', '').slice(0, 4).toUpperCase()}

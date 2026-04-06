@@ -31,7 +31,7 @@ export function ActiveCyclesList({ cycles }: Props) {
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <div style={{ width: 36, height: 36, borderRadius: 10, backgroundColor: '#ECFDF5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ width: 36, height: 36, borderRadius: 12, backgroundColor: 'var(--tint-green-soft, #ECFDF5)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <Play size={18} color="var(--sem-success)" />
           </div>
           <div>
@@ -63,7 +63,7 @@ export function ActiveCyclesList({ cycles }: Props) {
               <div
                 key={cycle.id}
                 onClick={() => navigate(`/testhub/cycles/${cycle.id}`)}
-                style={{ padding: 14, backgroundColor: 'color-mix(in srgb, var(--bg-2) 35%, transparent)', borderRadius: 10, cursor: 'pointer', transition: 'background-color 0.15s', border: '1px solid transparent' }}
+                style={{ padding: 14, backgroundColor: 'color-mix(in srgb, var(--bg-2) 35%, transparent)', borderRadius: 12, cursor: 'pointer', transition: 'background-color 0.15s', border: '1px solid transparent' }}
                 onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#EBF0FF'; e.currentTarget.style.borderColor = 'color-mix(in srgb, var(--cp-blue) 25%, transparent)'; }}
                 onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'color-mix(in srgb, var(--bg-2) 35%, transparent)'; e.currentTarget.style.borderColor = 'transparent'; }}
               >
@@ -77,8 +77,8 @@ export function ActiveCyclesList({ cycles }: Props) {
                 </div>
 
                 {/* Progress bar */}
-                <div style={{ height: 5, backgroundColor: 'var(--bg-2)', borderRadius: 3, overflow: 'hidden', marginBottom: 8 }}>
-                  <div style={{ height: '100%', width: `${pct}%`, background: barGrad, borderRadius: 3, transition: 'width 0.3s ease' }} />
+                <div style={{ height: 5, backgroundColor: 'var(--bg-2)', borderRadius: 4, overflow: 'hidden', marginBottom: 8 }}>
+                  <div style={{ height: '100%', width: `${pct}%`, background: barGrad, borderRadius: 4, transition: 'width 0.3s ease' }} />
                 </div>
 
                 {/* Stats */}

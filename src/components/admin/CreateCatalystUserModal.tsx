@@ -93,7 +93,7 @@ const CreateCatalystUserModal: React.FC<Props> = ({ open, onClose, onSuccess }) 
             style={{
               position: 'absolute', top: '14px', right: '16px',
               width: '26px', height: '26px', borderRadius: '50%',
-              border: '1px solid rgba(15,23,42,0.10)', background: '#FFFFFF',
+              border: '1px solid rgba(15,23,42,0.10)', background: 'var(--bg-app, #FFFFFF)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               cursor: 'pointer', color: '#64748B',
             }}
@@ -107,7 +107,7 @@ const CreateCatalystUserModal: React.FC<Props> = ({ open, onClose, onSuccess }) 
           {/* Purple info banner */}
           <div style={{
             background: '#F5F3FF', border: '1px solid rgba(124,58,237,0.25)',
-            borderRadius: '5px', padding: '9px 11px', display: 'flex', gap: '8px',
+            borderRadius: '6px', padding: '9px 11px', display: 'flex', gap: '8px',
             alignItems: 'flex-start', marginBottom: '16px',
           }}>
             <Share2 size={13} style={{ color: '#7C3AED', flexShrink: 0, marginTop: '1px' }} />
@@ -217,7 +217,7 @@ const CreateCatalystUserModal: React.FC<Props> = ({ open, onClose, onSuccess }) 
         {/* Footer */}
         <div style={{
           padding: '14px 20px', borderTop: '1px solid rgba(15,23,42,0.06)',
-          background: '#F8FAFC', display: 'flex', gap: '8px', borderRadius: '0 0 8px 8px',
+          background: 'var(--bg-1, #F8FAFC)', display: 'flex', gap: '8px', borderRadius: '0 0 8px 8px',
         }}>
           <button
             onClick={handleSubmit}
@@ -236,7 +236,7 @@ const CreateCatalystUserModal: React.FC<Props> = ({ open, onClose, onSuccess }) 
             onClick={onClose}
             style={{
               padding: '8px 16px', borderRadius: '6px', fontSize: '13px', fontWeight: 500,
-              border: '1px solid rgba(15,23,42,0.10)', background: '#FFFFFF', color: '#334155',
+              border: '1px solid rgba(15,23,42,0.10)', background: 'var(--bg-app, #FFFFFF)', color: '#334155',
               cursor: 'pointer',
             }}
           >

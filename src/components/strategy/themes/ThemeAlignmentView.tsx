@@ -28,7 +28,7 @@ import { AIStrategyIntelligencePanel } from '@/components/strategy/intelligence/
 
 // ── Layer colors (NO purple for KRs) ──
 const LAYER = {
-  theme:      { color: '#2563EB', badgeBg: '#EFF6FF', badgeText: '#1E40AF', border: '#2563EB' },
+  theme:      { color: '#2563EB', badgeBg: 'var(--tint-blue, #EFF6FF)', badgeText: '#1E40AF', border: '#2563EB' },
   goal:       { color: '#0D9488', badgeBg: '#F0FDFA', badgeText: '#115E59', border: '#0D9488' },
   kr:         { color: '#2563EB', badgeBg: '#DBEAFE', badgeText: '#1E40AF', border: '#2563EB' },
   initiative: { color: '#D97706', badgeBg: '#FFFBEB', badgeText: '#92400E', border: '#D97706' },
@@ -36,19 +36,19 @@ const LAYER = {
 } as const;
 
 const STATUS_CONFIG: Record<string, { dot: string; bg: string; text: string; label: string }> = {
-  active:       { dot: '#16A34A', bg: '#F0FDF4', text: '#166534', label: 'Active' },
-  on_track:     { dot: '#16A34A', bg: '#F0FDF4', text: '#166534', label: 'On Track' },
+  active:       { dot: '#16A34A', bg: 'var(--tint-green, #F0FDF4)', text: '#166534', label: 'Active' },
+  on_track:     { dot: '#16A34A', bg: 'var(--tint-green, #F0FDF4)', text: '#166534', label: 'On Track' },
   at_risk:      { dot: '#D97706', bg: '#FFFBEB', text: '#92400E', label: 'At Risk' },
-  off_track:    { dot: '#EF4444', bg: '#FEF2F2', text: '#991B1B', label: 'Off Track' },
-  draft:        { dot: 'var(--fg-3, #94A3B8)', bg: '#F8FAFC', text: '#475569', label: 'Draft' },
-  planned:      { dot: 'var(--fg-3, #94A3B8)', bg: '#F8FAFC', text: '#475569', label: 'Planned' },
-  completed:    { dot: '#2563EB', bg: '#EFF6FF', text: '#1E40AF', label: 'Done' },
-  cancelled:    { dot: 'var(--fg-3, #94A3B8)', bg: '#F8FAFC', text: '#475569', label: 'Cancelled' },
-  in_progress:  { dot: '#2563EB', bg: '#EFF6FF', text: '#1E40AF', label: 'In Progress' },
-  not_started:  { dot: 'var(--fg-3, #94A3B8)', bg: '#F8FAFC', text: '#475569', label: 'Not Started' },
+  off_track:    { dot: '#EF4444', bg: 'var(--tint-red, #FEF2F2)', text: '#991B1B', label: 'Off Track' },
+  draft:        { dot: 'var(--fg-3, #94A3B8)', bg: 'var(--bg-1, #F8FAFC)', text: '#475569', label: 'Draft' },
+  planned:      { dot: 'var(--fg-3, #94A3B8)', bg: 'var(--bg-1, #F8FAFC)', text: '#475569', label: 'Planned' },
+  completed:    { dot: '#2563EB', bg: 'var(--tint-blue, #EFF6FF)', text: '#1E40AF', label: 'Done' },
+  cancelled:    { dot: 'var(--fg-3, #94A3B8)', bg: 'var(--bg-1, #F8FAFC)', text: '#475569', label: 'Cancelled' },
+  in_progress:  { dot: '#2563EB', bg: 'var(--tint-blue, #EFF6FF)', text: '#1E40AF', label: 'In Progress' },
+  not_started:  { dot: 'var(--fg-3, #94A3B8)', bg: 'var(--bg-1, #F8FAFC)', text: '#475569', label: 'Not Started' },
   approved:     { dot: '#0D9488', bg: '#F0FDFA', text: '#115E59', label: 'Approved' },
-  proposed:     { dot: 'var(--fg-3, #94A3B8)', bg: '#F8FAFC', text: '#475569', label: 'Proposed' },
-  analyzing:    { dot: 'var(--fg-3, #94A3B8)', bg: '#F8FAFC', text: '#475569', label: 'Analyzing' },
+  proposed:     { dot: 'var(--fg-3, #94A3B8)', bg: 'var(--bg-1, #F8FAFC)', text: '#475569', label: 'Proposed' },
+  analyzing:    { dot: 'var(--fg-3, #94A3B8)', bg: 'var(--bg-1, #F8FAFC)', text: '#475569', label: 'Analyzing' },
 };
 
 function getProgressColor(v: number) {
@@ -810,7 +810,7 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
         <div className="flex items-center gap-2 text-muted-foreground dark:text-gray-300" style={{ fontSize: 12 }}>
           <span className="font-semibold text-foreground">Reading this map:</span>
           <span>Each</span>
-          <Badge variant="outline" className="font-semibold text-[11px] py-0 px-1.5 dark:bg-gray-800 dark:border-gray-700" style={{ color: '#1E40AF', background: '#EFF6FF', borderColor: '#BFDBFE' }}>● Theme</Badge>
+          <Badge variant="outline" className="font-semibold text-[11px] py-0 px-1.5 dark:bg-gray-800 dark:border-gray-700" style={{ color: '#1E40AF', background: 'var(--tint-blue, #EFF6FF)', borderColor: '#BFDBFE' }}>● Theme</Badge>
           <span>breaks down into</span>
           <Badge variant="outline" className="font-semibold text-[11px] py-0 px-1.5 dark:bg-gray-800 dark:border-gray-700" style={{ color: '#115E59', background: '#F0FDFA', borderColor: '#99F6E4' }}>● Goals</Badge>
           <span>measured by</span>
@@ -829,7 +829,7 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
           ref={canvasRef}
           className="overflow-auto select-none transition-all duration-[400ms] ease-out"
           style={{
-            background: '#F8FAFC',
+            background: 'var(--bg-1, #F8FAFC)',
             cursor: isPanning ? 'grabbing' : 'grab',
             width: isIntelOpen ? '50vw' : '100%',
             flexShrink: 0,

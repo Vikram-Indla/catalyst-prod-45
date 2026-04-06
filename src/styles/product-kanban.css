@@ -209,7 +209,7 @@
   color: var(--pk-ink-muted);
   background: var(--pk-surface-tertiary);
   border: 1px solid var(--pk-border);
-  border-radius: 3px;
+  border-radius: 4px;
   padding: 1px 5px;
 }
 
@@ -285,7 +285,7 @@
 }
 .pk-board::-webkit-scrollbar { height: 6px; }
 .pk-board::-webkit-scrollbar-track { background: var(--pk-surface-tertiary); }
-.pk-board::-webkit-scrollbar-thumb { background: var(--pk-border-strong); border-radius: 3px; }
+.pk-board::-webkit-scrollbar-thumb { background: var(--pk-border-strong); border-radius: 4px; }
 
 /* ---- COLUMN ---- */
 .pk-column {
@@ -360,7 +360,7 @@
   gap: 6px;
 }
 .pk-column-body::-webkit-scrollbar { width: 4px; }
-.pk-column-body::-webkit-scrollbar-thumb { background: var(--pk-border-strong); border-radius: 2px; }
+.pk-column-body::-webkit-scrollbar-thumb { background: var(--pk-border-strong); border-radius: 4px; }
 
 .pk-column-footer {
   padding: 8px 10px;
@@ -597,7 +597,7 @@
   font-size: 11px;
   font-weight: 600;
   padding: 2px 6px;
-  border-radius: 3px;
+  border-radius: 4px;
   font-variant-numeric: tabular-nums;
 }
 

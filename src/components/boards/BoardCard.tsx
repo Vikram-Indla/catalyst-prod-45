@@ -83,7 +83,7 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
         <div style={{ padding: '14px 14px 12px', flex: 1 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
             <div style={{
-              width: 34, height: 34, borderRadius: 7,
+              width: 34, height: 34, borderRadius: 8,
               background: board.color + '18',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontSize: 16, flexShrink: 0,
@@ -155,7 +155,7 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
             {hasJiraSync && (
               <span style={{
                 display: 'inline-flex', alignItems: 'center', gap: 4,
-                height: 18, padding: '0 8px', borderRadius: 9,
+                height: 18, padding: '0 8px', borderRadius: 8,
                 background: isDark ? 'rgba(0,82,204,0.15)' : 'rgba(0,82,204,0.06)', border: isDark ? '0.75px solid rgba(0,82,204,0.30)' : '0.75px solid rgba(0,82,204,0.18)',
                 fontSize: 10.5, fontWeight: 600, color: '#0052CC',
                 fontFamily: "'Inter', sans-serif",
@@ -189,14 +189,14 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
           <button onClick={e => { e.stopPropagation(); onSettings(); }} style={{
             display: 'flex', alignItems: 'center', gap: 5, height: 30, padding: '0 10px',
             background: isDark ? '#0A0A0A' : 'var(--bg-app)', border: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(15,23,42,0.12)',
-            borderRadius: 5, cursor: 'pointer', fontSize: 11.5, fontWeight: 500,
+            borderRadius: 6, cursor: 'pointer', fontSize: 11.5, fontWeight: 500,
             color: 'var(--fg-2)', fontFamily: "'Inter', sans-serif",
           }}>
             <Settings size={13} /> Settings
           </button>
           <button onClick={e => { e.stopPropagation(); handleOpen(); }} style={{
             display: 'flex', alignItems: 'center', gap: 5, height: 30, padding: '0 12px',
-            background: 'var(--cp-blue)', border: 'none', borderRadius: 5, cursor: 'pointer',
+            background: 'var(--cp-blue)', border: 'none', borderRadius: 6, cursor: 'pointer',
             fontSize: 11.5, fontWeight: 600, color: '#FFFFFF', fontFamily: "'Inter', sans-serif",
           }}>
             Open Board <ArrowRight size={12} />
@@ -279,7 +279,7 @@ function Chip({ children, bg, color }: { children: React.ReactNode; bg: string; 
   return (
     <span style={{
       display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 8px',
-      borderRadius: 10, fontSize: 11, fontWeight: 500,
+      borderRadius: 12, fontSize: 11, fontWeight: 500,
       background: bg, color, border: document.documentElement.classList.contains('dark') ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(15,23,42,0.08)',
       fontFamily: "'Inter', sans-serif",
     }}>{children}</span>

@@ -95,7 +95,7 @@ export function WikiAdminTrainingTab() {
                     <td style={{ padding: '8px 12px', fontSize: 13 }}>{r.answer ? '✓' : '✕'}</td>
                     <td style={{ padding: '8px 12px' }}>
                       <button onClick={() => deleteQ.mutate(r.id)} title="Delete" aria-label="Delete question" style={{
-                        padding: 4, borderRadius: 3, border: '1px solid var(--cp-border-default, rgba(15,23,42,0.12))',
+                        padding: 4, borderRadius: 4, border: '1px solid var(--cp-border-default, rgba(15,23,42,0.12))',
                         background: 'transparent', cursor: 'pointer', color: 'var(--cp-text-tertiary, #64748B)',
                         display: 'flex', alignItems: 'center', outline: 'none',
                       }}
@@ -182,7 +182,7 @@ function AddQuestionForm({ onClose }: { onClose: () => void }) {
 function PagBtn({ disabled, onClick, children }: { disabled: boolean; onClick: () => void; children: React.ReactNode }) {
   return (
     <button disabled={disabled} onClick={onClick} style={{
-      padding: '4px 8px', borderRadius: 3,
+      padding: '4px 8px', borderRadius: 4,
       border: '1px solid var(--cp-border-default, rgba(15,23,42,0.12))',
       background: 'transparent', cursor: disabled ? 'default' : 'pointer',
       opacity: disabled ? 0.4 : 1, display: 'flex', alignItems: 'center',

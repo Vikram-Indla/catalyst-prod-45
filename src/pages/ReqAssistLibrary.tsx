@@ -491,7 +491,7 @@ export default function ReqAssistLibrary() {
                             ) : (
                               <span style={{
                                 display: 'inline-flex', alignItems: 'center', padding: '1px 6px',
-                                background: isDark ? '#1A1A1A' : '#F1F5F9', borderRadius: 3,
+                                background: isDark ? '#1A1A1A' : '#F1F5F9', borderRadius: 4,
                                 fontSize: 11, color: isDark ? '#878787' : '#94A3B8', fontFamily: "'Inter', sans-serif",
                               }}>Uncategorised</span>
                             );
@@ -812,7 +812,7 @@ function StatusBadge({ status, epicCount, pipelineStage }: { status: string; epi
   return (
     <span style={{
       display: 'inline-flex', alignItems: 'center',
-      padding: '0 6px', height: 20, borderRadius: 3,
+      padding: '0 6px', height: 20, borderRadius: 4,
       fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
       letterSpacing: '0.03em', whiteSpace: 'nowrap',
       background: bg, color: color,
@@ -846,7 +846,7 @@ function ActionsCell({ doc, epicCount, onSyncKb, onSelect, onViewDrafts }: {
           style={{
             display: 'inline-flex', alignItems: 'center', gap: 4,
             height: 28, padding: '0 10px', fontSize: 12, fontWeight: 500,
-            borderRadius: 5, border: '0.75px solid #BFDBFE',
+            borderRadius: 6, border: '0.75px solid #BFDBFE',
             background: isDark ? 'rgba(37,99,235,0.12)' : '#EFF6FF', color: '#1D4ED8', cursor: 'pointer',
             fontFamily: "'Inter', sans-serif", whiteSpace: 'nowrap',
             transition: 'background 80ms ease',
@@ -858,7 +858,7 @@ function ActionsCell({ doc, epicCount, onSyncKb, onSelect, onViewDrafts }: {
         </button>
         <span style={{
           display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-          width: 18, height: 18, borderRadius: 9,
+          width: 18, height: 18, borderRadius: 8,
           background: '#2563EB', color: '#FFFFFF',
           fontSize: 11, fontWeight: 700,
           fontFamily: "'Inter', sans-serif",
@@ -873,7 +873,7 @@ function ActionsCell({ doc, epicCount, onSyncKb, onSelect, onViewDrafts }: {
       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
         <span style={{
           display: 'inline-flex', alignItems: 'center',
-          padding: '0 6px', height: 20, borderRadius: 3,
+          padding: '0 6px', height: 20, borderRadius: 4,
           fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
           letterSpacing: '0.03em', whiteSpace: 'nowrap',
           background: '#1B7F37', color: '#FFFFFF',
@@ -884,7 +884,7 @@ function ActionsCell({ doc, epicCount, onSyncKb, onSelect, onViewDrafts }: {
           style={{
             display: 'inline-flex', alignItems: 'center', gap: 4,
             height: 28, padding: '0 10px', fontSize: 12, fontWeight: 500,
-            borderRadius: 5, border: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.15)'}`,
+            borderRadius: 6, border: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.15)'}`,
             background: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#A1A1A1' : '#374151', cursor: 'pointer',
             fontFamily: "'Inter', sans-serif", whiteSpace: 'nowrap',
           }}
@@ -903,7 +903,7 @@ function ActionsCell({ doc, epicCount, onSyncKb, onSelect, onViewDrafts }: {
         style={{
           display: 'inline-flex', alignItems: 'center', gap: 4,
           height: 28, padding: '0 10px', fontSize: 12, fontWeight: 500,
-          borderRadius: 5, border: 'none', cursor: 'pointer',
+          borderRadius: 6, border: 'none', cursor: 'pointer',
           background: '#2563EB', color: '#FFFFFF',
           fontFamily: "'Inter', sans-serif", whiteSpace: 'nowrap',
         }}
@@ -921,7 +921,7 @@ function ActionsCell({ doc, epicCount, onSyncKb, onSelect, onViewDrafts }: {
         style={{
           display: 'inline-flex', alignItems: 'center', gap: 4,
           height: 28, padding: '0 10px', fontSize: 12, fontWeight: 500,
-          borderRadius: 5, border: '0.75px solid #DC2626',
+          borderRadius: 6, border: '0.75px solid #DC2626',
           background: 'transparent', color: '#DC2626', cursor: 'pointer',
           fontFamily: "'Inter', sans-serif", whiteSpace: 'nowrap',
         }}
@@ -937,7 +937,7 @@ function ActionsCell({ doc, epicCount, onSyncKb, onSelect, onViewDrafts }: {
       <button disabled style={{
         display: 'inline-flex', alignItems: 'center',
         height: 28, padding: '0 10px', fontSize: 12, fontWeight: 500,
-        borderRadius: 5, border: 'none', cursor: 'not-allowed',
+        borderRadius: 6, border: 'none', cursor: 'not-allowed',
         background: isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0', color: isDark ? '#878787' : '#94A3B8',
         fontFamily: "'Inter', sans-serif", whiteSpace: 'nowrap',
       }}>
@@ -953,7 +953,7 @@ function ActionsCell({ doc, epicCount, onSyncKb, onSelect, onViewDrafts }: {
       style={{
         display: 'inline-flex', alignItems: 'center', gap: 4,
         height: 28, padding: '0 10px', fontSize: 12, fontWeight: 500,
-        borderRadius: 5, border: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.15)'}`,
+        borderRadius: 6, border: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.15)'}`,
         background: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#A1A1A1' : '#374151', cursor: 'pointer',
         fontFamily: "'Inter', sans-serif", whiteSpace: 'nowrap',
         transition: 'all 80ms ease',
@@ -988,7 +988,7 @@ function TicketTypeBadge({ type }: { type: string | null | undefined }) {
   return (
     <span style={{
       display: 'inline-flex', alignItems: 'center', marginLeft: 4,
-      padding: '0 5px', height: 18, borderRadius: 3,
+      padding: '0 5px', height: 18, borderRadius: 4,
       fontSize: 10, fontWeight: 700, textTransform: 'uppercase',
       background: s.bg, color: s.color,
       fontFamily: "'Inter', sans-serif",

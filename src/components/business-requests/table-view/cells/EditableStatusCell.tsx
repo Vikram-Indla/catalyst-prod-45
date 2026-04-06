@@ -91,7 +91,7 @@ export function EditableStatusCell({ status, requestId, onSave, disabled = false
         alignItems: 'center',
         height: 20, /* V12 */
         padding: '0 6px', /* V12 */
-        borderRadius: 3, /* V12 */
+        borderRadius: 4, /* V12 */
         fontFamily: "'Inter', -apple-system, system-ui, sans-serif", /* V12 */
         fontSize: 11, /* V12 */
         fontWeight: 700, /* V12 */
@@ -149,7 +149,7 @@ export function EditableStatusCell({ status, requestId, onSave, disabled = false
                     alignItems: 'center',
                     height: 20,
                     padding: '0 6px',
-                    borderRadius: 3,
+                    borderRadius: 4,
                     fontSize: 11,
                     fontWeight: 700,
                     textTransform: 'uppercase' as const,

@@ -57,8 +57,8 @@ function statusBadge(status: string, isDark = false) {
 function progressBar(pct: number, height = 6, isDark = false) {
   const color = pct >= 60 ? '#16A34A' : pct >= 40 ? '#D97706' : '#EF4444';
   return (
-    <div style={{ width: 80, height, background: isDark ? 'rgba(255,255,255,0.08)' : 'var(--divider)', borderRadius: 3, overflow: 'hidden' }}>
-      <div style={{ width: `${Math.min(100, Math.max(0, pct))}%`, height: '100%', background: color, borderRadius: 3, transition: 'width 300ms ease' }} />
+    <div style={{ width: 80, height, background: isDark ? 'rgba(255,255,255,0.08)' : 'var(--divider)', borderRadius: 4, overflow: 'hidden' }}>
+      <div style={{ width: `${Math.min(100, Math.max(0, pct))}%`, height: '100%', background: color, borderRadius: 4, transition: 'width 300ms ease' }} />
     </div>
   );
 }
@@ -157,7 +157,7 @@ const GRID_COLS = 'minmax(340px, 1fr) 96px 150px 90px 50px 100px 60px';
 
 export function GoalsTreeSkeleton({ isDark = false }: { isDark?: boolean }) {
   return (
-    <div style={{ border: `1px solid ${isDark ? DK.border : 'var(--divider)'}`, borderRadius: 10, overflow: 'hidden' }}>
+    <div style={{ border: `1px solid ${isDark ? DK.border : 'var(--divider)'}`, borderRadius: 12, overflow: 'hidden' }}>
       <div style={{ height: 36, background: isDark ? 'transparent' : 'var(--bg-app)', borderBottom: `2px solid ${isDark ? DK.border : 'var(--divider)'}` }} />
       {Array.from({ length: 6 }).map((_, i) => (
         <div key={i} className="ph-shimmer" style={{ height: 44, borderBottom: `1px solid ${isDark ? DK.borderSubtle : 'var(--cp-bd-zone)'}`, background: isDark ? 'rgba(255,255,255,0.02)' : 'var(--bg-1)' }} />
@@ -172,7 +172,7 @@ export function GoalsTreeSkeleton({ isDark = false }: { isDark?: boolean }) {
 
 export function GoalsEmptyState({ onCreateGoal, isDark = false }: { onCreateGoal: () => void; isDark?: boolean }) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '60px 20px', border: `1px solid ${isDark ? DK.border : 'var(--divider)'}`, borderRadius: 10, background: isDark ? 'transparent' : 'var(--bg-app)' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '60px 20px', border: `1px solid ${isDark ? DK.border : 'var(--divider)'}`, borderRadius: 12, background: isDark ? 'transparent' : 'var(--bg-app)' }}>
       <div style={{ width: 52, height: 52, borderRadius: 14, background: isDark ? 'rgba(255,255,255,0.04)' : 'var(--cp-bd-zone)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
         <Target size={24} color="var(--fg-4)" />
       </div>
@@ -187,7 +187,7 @@ export function GoalsEmptyState({ onCreateGoal, isDark = false }: { onCreateGoal
 
 function GoalsNoSearchResults({ query, onClear, isDark = false }: { query: string; onClear: () => void; isDark?: boolean }) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '48px 20px', border: `1px solid ${isDark ? DK.border : 'var(--divider)'}`, borderRadius: 10, background: isDark ? 'transparent' : 'var(--bg-app)' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '48px 20px', border: `1px solid ${isDark ? DK.border : 'var(--divider)'}`, borderRadius: 12, background: isDark ? 'transparent' : 'var(--bg-app)' }}>
       <div style={{ fontSize: 14, fontWeight: 600, color: isDark ? DK.t1 : 'var(--fg-2)', marginBottom: 4 }}>No goals matching "{query}"</div>
       <div style={{ fontSize: 12, color: isDark ? DK.t3 : 'var(--fg-4)', marginBottom: 14 }}>Try a different search term.</div>
       <button onClick={onClear} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '6px 14px', fontSize: 12, fontWeight: 500, color: isDark ? DK.t2 : 'var(--fg-3)', background: isDark ? 'rgba(255,255,255,0.04)' : 'var(--cp-bd-zone)', border: `1px solid ${isDark ? DK.border : 'var(--divider)'}`, borderRadius: 6, cursor: 'pointer' }}>
@@ -266,7 +266,7 @@ export function GoalsTreeView({
   const footerBg = isDark ? 'rgba(255,255,255,0.02)' : 'var(--bg-1)';
 
   return (
-    <div className="goals-tree-container" style={{ border: `1px solid ${tableBorder}`, borderRadius: 10, overflow: 'hidden', background: containerBg }}>
+    <div className="goals-tree-container" style={{ border: `1px solid ${tableBorder}`, borderRadius: 12, overflow: 'hidden', background: containerBg }}>
       {/* Header */}
       <div style={{
         display: 'grid', gridTemplateColumns: GRID_COLS,
@@ -423,7 +423,7 @@ export function GoalsTreeView({
                         <div style={{ position: 'absolute', left: 52, top: '50%', width: 12, height: 1, background: connectorColor }} />
 
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
-                          <span style={{ fontSize: 10, fontWeight: 600, color: isDark ? DK.t3 : 'var(--fg-4)', background: isDark ? 'rgba(255,255,255,0.04)' : 'var(--cp-bd-zone)', padding: '1px 5px', borderRadius: 3, flexShrink: 0, fontFamily: 'ui-monospace, monospace' }}>
+                          <span style={{ fontSize: 10, fontWeight: 600, color: isDark ? DK.t3 : 'var(--fg-4)', background: isDark ? 'rgba(255,255,255,0.04)' : 'var(--cp-bd-zone)', padding: '1px 5px', borderRadius: 4, flexShrink: 0, fontFamily: 'ui-monospace, monospace' }}>
                             {kr.kr_key}
                           </span>
                           <span style={{ fontWeight: 400, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>

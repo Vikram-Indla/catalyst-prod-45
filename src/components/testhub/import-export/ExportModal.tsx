@@ -181,7 +181,7 @@ export function ExportModal({ isOpen, onClose, onExported }: ExportModalProps) {
         <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--divider)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <div style={{
-              width: 44, height: 44, borderRadius: 10,
+              width: 44, height: 44, borderRadius: 12,
               background: 'linear-gradient(135deg, #14B8A6 0%, var(--sem-success) 100%)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
@@ -208,7 +208,7 @@ export function ExportModal({ isOpen, onClose, onExported }: ExportModalProps) {
               value={exportName}
               onChange={(e) => setExportName(e.target.value)}
               placeholder="my_export"
-              style={{ width: '100%', height: 44, padding: '0 14px', border: '1.5px solid var(--divider)', borderRadius: 10, fontSize: 14 }}
+              style={{ width: '100%', height: 44, padding: '0 14px', border: '1.5px solid var(--divider)', borderRadius: 12, fontSize: 14 }}
             />
           </div>
 
@@ -226,7 +226,7 @@ export function ExportModal({ isOpen, onClose, onExported }: ExportModalProps) {
                     style={{
                       display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
                       padding: 12, border: `2px solid ${isSelected ? type.color : 'var(--divider)'}`,
-                      borderRadius: 10, backgroundColor: isSelected ? `${type.color}10` : 'var(--cp-float)',
+                      borderRadius: 12, backgroundColor: isSelected ? `${type.color}10` : 'var(--cp-float)',
                       cursor: 'pointer',
                     }}
                   >
@@ -249,7 +249,7 @@ export function ExportModal({ isOpen, onClose, onExported }: ExportModalProps) {
                   style={{
                     flex: 1, padding: 14,
                     border: `2px solid ${exportFormat === format.value ? '#14B8A6' : 'var(--divider)'}`,
-                    borderRadius: 10, backgroundColor: exportFormat === format.value ? '#F0FDFA' : 'var(--cp-float)',
+                    borderRadius: 12, backgroundColor: exportFormat === format.value ? '#F0FDFA' : 'var(--cp-float)',
                     cursor: 'pointer', textAlign: 'left',
                   }}
                 >
@@ -313,7 +313,7 @@ export function ExportModal({ isOpen, onClose, onExported }: ExportModalProps) {
 
           {/* Preview count */}
           <div style={{
-            padding: 16, backgroundColor: 'var(--bg-1)', borderRadius: 10, border: '1px solid var(--divider)',
+            padding: 16, backgroundColor: 'var(--bg-1)', borderRadius: 12, border: '1px solid var(--divider)',
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           }}>
             <span style={{ fontSize: 13, color: 'var(--fg-3)' }}>Records to export:</span>
@@ -327,7 +327,7 @@ export function ExportModal({ isOpen, onClose, onExported }: ExportModalProps) {
             onClick={onClose}
             style={{
               height: 44, padding: '0 20px', backgroundColor: 'var(--cp-float)', border: '1px solid var(--divider)',
-              borderRadius: 10, fontSize: 14, fontWeight: 500, color: 'var(--fg-2)', cursor: 'pointer',
+              borderRadius: 12, fontSize: 14, fontWeight: 500, color: 'var(--fg-2)', cursor: 'pointer',
             }}
           >
             Cancel
@@ -338,7 +338,7 @@ export function ExportModal({ isOpen, onClose, onExported }: ExportModalProps) {
             style={{
               height: 44, padding: '0 24px', display: 'flex', alignItems: 'center', gap: 8,
               background: itemCount === 0 ? 'var(--divider)' : 'linear-gradient(135deg, #14B8A6 0%, #0D9488 100%)',
-              border: 'none', borderRadius: 10, fontSize: 14, fontWeight: 600, color: '#FFF',
+              border: 'none', borderRadius: 12, fontSize: 14, fontWeight: 600, color: '#FFF',
               cursor: isExporting || itemCount === 0 ? 'not-allowed' : 'pointer',
             }}
           >

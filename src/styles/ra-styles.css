@@ -75,7 +75,7 @@
   font-size: 12px; color: var(--ra-text-ter); }
 
 /* ═══ LOZENGE ═══ */
-.ra-lz { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 3px;
+.ra-lz { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 4px;
   font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.02em;
   height: 20px; white-space: nowrap; }
 .ra-lz-grey { background: var(--ra-lz-grey-bg); color: var(--ra-lz-grey-txt); }
@@ -86,8 +86,8 @@
 .ra-qs { display: flex; align-items: center; gap: 8px; }
 .ra-qn { font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 600;
   min-width: 24px; text-align: right; }
-.ra-qbar { height: 5px; border-radius: 3px; background: var(--ra-neutral-20); width: 44px; overflow: hidden; }
-.ra-qfill { height: 100%; border-radius: 3px; }
+.ra-qbar { height: 5px; border-radius: 4px; background: var(--ra-neutral-20); width: 44px; overflow: hidden; }
+.ra-qfill { height: 100%; border-radius: 4px; }
 
 /* ═══ STAGE PROGRESS BAR (Detail Page) ═══ */
 .ra-spb { display: flex; align-items: center; margin-bottom: 28px; padding: 14px 20px;
@@ -148,8 +148,8 @@
   text-align: center; margin: 8px 0 4px; line-height: 1; }
 .ra-qb-row { display: flex; align-items: center; gap: 8px; margin-bottom: 7px; font-size: 12px; }
 .ra-qb-lbl { width: 90px; color: var(--ra-text-ter); }
-.ra-qb-bar { flex: 1; height: 4px; background: var(--ra-neutral-20); border-radius: 2px; overflow: hidden; }
-.ra-qb-fill { height: 100%; border-radius: 2px; }
+.ra-qb-bar { flex: 1; height: 4px; background: var(--ra-neutral-20); border-radius: 4px; overflow: hidden; }
+.ra-qb-fill { height: 100%; border-radius: 4px; }
 
 /* ═══ DRAWER ═══ */
 .ra-dro { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1300;
@@ -229,7 +229,7 @@
 
 /* ═══ SKELETON ═══ */
 @keyframes ra-skeleton { 0% { opacity: 0.6; } 50% { opacity: 1; } 100% { opacity: 0.6; } }
-.ra-skel { background: var(--ra-sunken); border-radius: 3px; animation: ra-skeleton 1.5s ease-in-out infinite; }
+.ra-skel { background: var(--ra-sunken); border-radius: 4px; animation: ra-skeleton 1.5s ease-in-out infinite; }
 
 /* ═══ DETAIL PAGE BACK LINK ═══ */
 .ra-back { display: inline-flex; align-items: center; gap: 4px; font-size: 13px;

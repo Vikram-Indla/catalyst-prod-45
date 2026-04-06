@@ -212,10 +212,10 @@ export default function ReportDetailPage() {
               )}
             </div>
             <div style={{ display: 'flex', gap: 16, marginTop: 12, fontSize: 12, color: textSecondary }}>
-              <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><span style={{ width: 10, height: 10, backgroundColor: '#10B981', borderRadius: 2, display: 'inline-block' }} /> Passed ({data.summary.passed})</span>
-              <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><span style={{ width: 10, height: 10, backgroundColor: '#EF4444', borderRadius: 2, display: 'inline-block' }} /> Failed ({data.summary.failed})</span>
-              <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><span style={{ width: 10, height: 10, backgroundColor: '#F59E0B', borderRadius: 2, display: 'inline-block' }} /> Blocked ({data.summary.blocked})</span>
-              <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><span style={{ width: 10, height: 10, backgroundColor: '#94A3B8', borderRadius: 2, display: 'inline-block' }} /> Not Run ({data.summary.not_run})</span>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><span style={{ width: 10, height: 10, backgroundColor: '#10B981', borderRadius: 4, display: 'inline-block' }} /> Passed ({data.summary.passed})</span>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><span style={{ width: 10, height: 10, backgroundColor: '#EF4444', borderRadius: 4, display: 'inline-block' }} /> Failed ({data.summary.failed})</span>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><span style={{ width: 10, height: 10, backgroundColor: '#F59E0B', borderRadius: 4, display: 'inline-block' }} /> Blocked ({data.summary.blocked})</span>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><span style={{ width: 10, height: 10, backgroundColor: '#94A3B8', borderRadius: 4, display: 'inline-block' }} /> Not Run ({data.summary.not_run})</span>
             </div>
           </div>
 

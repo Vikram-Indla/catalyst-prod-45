@@ -103,7 +103,7 @@ export function KeyboardShortcutsGuide({ isOpen, onClose }: KeyboardShortcutsGui
                     <kbd style={{
                       fontSize: 11, fontWeight: 600, fontFamily: 'monospace',
                       padding: '3px 8px', backgroundColor: 'var(--bg-2)',
-                      border: '1px solid var(--divider)', borderRadius: 5,
+                      border: '1px solid var(--divider)', borderRadius: 6,
                       color: 'var(--fg-1)', minWidth: 28, textAlign: 'center',
                     }}>
                       {s.key}

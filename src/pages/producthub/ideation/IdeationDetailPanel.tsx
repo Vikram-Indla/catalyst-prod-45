@@ -72,7 +72,7 @@ function StatusLozenge({ status }: { status: string }) {
   const s = STATUS_LOZENGE[status] ?? { bg: '#DFE1E6', text: '#42526E' };
   return (
     <span style={{
-      display: 'inline-block', padding: '2px 8px', borderRadius: '3px',
+      display: 'inline-block', padding: '2px 8px', borderRadius: '4px',
       backgroundColor: s.bg, color: s.text,
       fontSize: '11px', fontWeight: 700, textTransform: 'uppercase',
       lineHeight: '16px', whiteSpace: 'nowrap',
@@ -87,7 +87,7 @@ function PriorityLozenge({ priority }: { priority: string }) {
   return (
     <span style={{
       display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-      height: 20, minWidth: 26, padding: '0 4px', borderRadius: 3,
+      height: 20, minWidth: 26, padding: '0 4px', borderRadius: 4,
       fontSize: '11px', fontWeight: 650,
       background: c.bg, color: c.text, border: `1px solid ${c.border}`,
     }}>
@@ -395,7 +395,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
                   quarter ? (
                     <span style={{
                       display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                      height: 20, padding: '0 6px', borderRadius: 3,
+                      height: 20, padding: '0 6px', borderRadius: 4,
                       fontSize: '11px', fontWeight: 700,
                       background: QUARTER_BADGE[quarter]?.bg || '#E2E8F0',
                       color: QUARTER_BADGE[quarter]?.text || '#94A3B8',
@@ -503,7 +503,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
               <span style={{ fontSize: '13px', color: dk.t2 }}>out of 5.00</span>
               <span style={{
                 display: 'inline-flex', alignItems: 'center', height: '20px', padding: '0 6px',
-                borderRadius: '3px', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase',
+                borderRadius: '4px', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase',
                 ...(impactScore >= 3.5
                   ? { backgroundColor: '#1B7F37', color: '#FFFFFF' }
                   : impactScore >= 2.0
@@ -537,11 +537,11 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
                     <span style={{ fontSize: '13px', fontWeight: 500, color: dk.t1 }}>{dim.name}</span>
                     <span style={{ fontSize: '12px', color: dk.t2 }}>{dim.weight}</span>
                   </div>
-                  <div style={{ height: '4px', borderRadius: '2px', backgroundColor: isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0', overflow: 'hidden' }}>
+                  <div style={{ height: '4px', borderRadius: '4px', backgroundColor: isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0', overflow: 'hidden' }}>
                     <div style={{
                       height: '100%', width: `${(dim.score / 5) * 100}%`,
                       backgroundColor: dim.score > 0 ? '#2563EB' : 'transparent',
-                      borderRadius: '2px', transition: 'width 300ms ease',
+                      borderRadius: '4px', transition: 'width 300ms ease',
                     }} />
                   </div>
                 </div>

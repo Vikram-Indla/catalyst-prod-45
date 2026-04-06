@@ -294,7 +294,7 @@ export default function TestHubVerifyPage() {
         <div style={{ border: '0.75px solid var(--bd-default, #E2E8F0)', borderRadius: 6, overflow: 'hidden' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: 'Inter, sans-serif' }}>
             <thead>
-              <tr style={{ backgroundColor: '#F8FAFC' }}>
+              <tr style={{ backgroundColor: 'var(--bg-1, #F8FAFC)' }}>
                 {['GROUP', 'CHECK', 'EXPECTED', 'ACTUAL', 'STATUS'].map(h => (
                   <th key={h} style={{
                     height: 36,
@@ -353,7 +353,7 @@ export default function TestHubVerifyPage() {
                               fontWeight: 700,
                               textTransform: 'uppercase',
                               letterSpacing: '0.03em',
-                              borderRadius: 3,
+                              borderRadius: 4,
                               padding: '2px 6px',
                               height: 20,
                               lineHeight: 1,
@@ -520,7 +520,7 @@ function ModuleHealthSection({ checks, loadingCount }: { checks: VCheck[]; loadi
           const fill = barColor(s.pct);
           return (
             <div key={mod.key} style={{
-              backgroundColor: '#FFFFFF',
+              backgroundColor: 'var(--bg-app, #FFFFFF)',
               border: '0.75px solid var(--bd-default, #E2E8F0)',
               borderRadius: 8,
               padding: 16,
@@ -533,7 +533,7 @@ function ModuleHealthSection({ checks, loadingCount }: { checks: VCheck[]; loadi
               </div>
               {/* Progress bar */}
               <div style={{ width: '100%', height: 4, backgroundColor: var(--bg-2, '#F1F5F9'), borderRadius: 2 }}>
-                <div style={{ width: `${s.pct}%`, height: 4, backgroundColor: fill, borderRadius: 2, transition: 'width 0.3s' }} />
+                <div style={{ width: `${s.pct}%`, height: 4, backgroundColor: fill, borderRadius: 4, transition: 'width 0.3s' }} />
               </div>
               {/* Sub-lines for Test Assets */}
               {mod.key === 'testAssets' && (

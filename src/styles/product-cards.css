@@ -281,7 +281,7 @@
 .pc-type-dot {
   width: 8px;
   height: 8px;
-  border-radius: 2px;
+  border-radius: 4px;
   flex-shrink: 0;
 }
 
@@ -450,7 +450,7 @@
 .pc-priority-bar {
   width: 16px;
   height: 4px;
-  border-radius: 2px;
+  border-radius: 4px;
 }
 .pc-priority-bar--filled { background: var(--pc-ink-muted); }
 .pc-priority-bar--empty { background: var(--pc-border); }
@@ -466,13 +466,13 @@
   flex: 1;
   height: 4px;
   background: var(--pc-surface-tertiary);
-  border-radius: 2px;
+  border-radius: 4px;
   overflow: hidden;
 }
 .pc-progress-fill {
   height: 100%;
   background: var(--pc-primary);
-  border-radius: 2px;
+  border-radius: 4px;
   transition: width 0.3s;
 }
 .pc-progress-text {

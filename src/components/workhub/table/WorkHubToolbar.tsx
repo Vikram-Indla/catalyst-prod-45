@@ -85,7 +85,7 @@ export default function WorkHubToolbar({
               <X size={12} color="var(--fg-3, #94A3B8)" />
             </button>
           ) : (
-            <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--fg-4)', fontFamily: "'JetBrains Mono', monospace", background: 'var(--divider)', borderRadius: 3, padding: '1px 4px' }}>⌘K</span>
+            <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--fg-4)', fontFamily: "'JetBrains Mono', monospace", background: 'var(--divider)', borderRadius: 4, padding: '1px 4px' }}>⌘K</span>
           )}
         </div>
 
@@ -101,7 +101,7 @@ export default function WorkHubToolbar({
               borderRadius: 4, background: (filters.statuses?.length || 0) > 0 ? 'rgba(37,99,235,0.08)' : 'transparent',
               fontSize: 12, fontWeight: 500, color: (filters.statuses?.length || 0) > 0 ? 'var(--cp-blue)' : 'var(--fg-2)', cursor: 'pointer',
             }}>
-              Status {(filters.statuses?.length || 0) > 0 && <span style={{ fontSize: 10, fontWeight: 700, background: 'var(--cp-blue)', color: 'var(--bg-app)', borderRadius: 10, padding: '0 5px' }}>{filters.statuses?.length}</span>}
+              Status {(filters.statuses?.length || 0) > 0 && <span style={{ fontSize: 10, fontWeight: 700, background: 'var(--cp-blue)', color: 'var(--bg-app)', borderRadius: 12, padding: '0 5px' }}>{filters.statuses?.length}</span>}
               <ChevronDown size={12} />
             </button>
           }
@@ -119,7 +119,7 @@ export default function WorkHubToolbar({
               borderRadius: 4, background: (filters.types?.length || 0) > 0 ? 'rgba(37,99,235,0.08)' : 'transparent',
               fontSize: 12, fontWeight: 500, color: (filters.types?.length || 0) > 0 ? 'var(--cp-blue)' : 'var(--fg-2)', cursor: 'pointer',
             }}>
-              Type {(filters.types?.length || 0) > 0 && <span style={{ fontSize: 10, fontWeight: 700, background: 'var(--cp-blue)', color: 'var(--bg-app)', borderRadius: 10, padding: '0 5px' }}>{filters.types?.length}</span>}
+              Type {(filters.types?.length || 0) > 0 && <span style={{ fontSize: 10, fontWeight: 700, background: 'var(--cp-blue)', color: 'var(--bg-app)', borderRadius: 12, padding: '0 5px' }}>{filters.types?.length}</span>}
               <ChevronDown size={12} />
             </button>
           }
@@ -137,7 +137,7 @@ export default function WorkHubToolbar({
               borderRadius: 4, background: (filters.priorities?.length || 0) > 0 ? 'rgba(37,99,235,0.08)' : 'transparent',
               fontSize: 12, fontWeight: 500, color: (filters.priorities?.length || 0) > 0 ? 'var(--cp-blue)' : 'var(--fg-2)', cursor: 'pointer',
             }}>
-              Priority {(filters.priorities?.length || 0) > 0 && <span style={{ fontSize: 10, fontWeight: 700, background: 'var(--cp-blue)', color: 'var(--bg-app)', borderRadius: 10, padding: '0 5px' }}>{filters.priorities?.length}</span>}
+              Priority {(filters.priorities?.length || 0) > 0 && <span style={{ fontSize: 10, fontWeight: 700, background: 'var(--cp-blue)', color: 'var(--bg-app)', borderRadius: 12, padding: '0 5px' }}>{filters.priorities?.length}</span>}
               <ChevronDown size={12} />
             </button>
           }

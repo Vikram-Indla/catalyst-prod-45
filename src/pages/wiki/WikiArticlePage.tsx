@@ -42,7 +42,7 @@ function StatusLozenge({ status }: { status: string }) {
   const v = map[s] || { bg: '#DFE1E6', color: '#44546F', label: (status || '—').toUpperCase() };
   return (
     <span style={{
-      fontSize: 10, fontWeight: 700, padding: '2px 6px', borderRadius: 3,
+      fontSize: 10, fontWeight: 700, padding: '2px 6px', borderRadius: 4,
       background: v.bg, color: v.color, textTransform: 'uppercase',
     }}>{v.label}</span>
   );
@@ -120,7 +120,7 @@ function VersionHistoryPanel({ versions, onRestore, onClose }: {
                 <span style={{
                   fontFamily: 'JetBrains Mono, monospace', fontSize: 11, fontWeight: 700,
                   color: i === 0 ? '#2563EB' : isDark ? '#A1A1A1' : '#64748B',
-                  padding: '2px 6px', borderRadius: 3,
+                  padding: '2px 6px', borderRadius: 4,
                   background: i === 0 ? (isDark ? 'rgba(37,99,235,0.12)' : '#EFF6FF') : (isDark ? '#1A1A1A' : '#F1F5F9'),
                 }}>v{v.version_number}</span>
                 {i === 0 && (
@@ -221,7 +221,7 @@ function CrossModuleLinks({ links }: { links: any[] }) {
               color: mod.color, cursor: 'default',
             }}>
               <span style={{
-                fontSize: 9, fontWeight: 700, padding: '1px 4px', borderRadius: 2,
+                fontSize: 9, fontWeight: 700, padding: '1px 4px', borderRadius: 4,
                 background: `${mod.color}15`, color: mod.color,
               }}>{mod.label}</span>
               <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, fontWeight: 700 }}>
@@ -391,8 +391,8 @@ export default function WikiArticlePage() {
     { label: 'Stories', value: info.totalStories ? (
       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
         <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11 }}>{info.doneStories ?? 0}/{info.totalStories} done</span>
-        <div style={{ width: 40, height: 3, borderRadius: 2, background: isDark ? '#292929' : '#E2E8F0' }}>
-          <div style={{ height: '100%', borderRadius: 2, background: '#2563EB', width: `${info.donePercent ?? 0}%` }} />
+        <div style={{ width: 40, height: 3, borderRadius: 4, background: isDark ? '#292929' : '#E2E8F0' }}>
+          <div style={{ height: '100%', borderRadius: 4, background: '#2563EB', width: `${info.donePercent ?? 0}%` }} />
         </div>
       </div>
     ) : null, show: !!info.totalStories },
@@ -507,7 +507,7 @@ export default function WikiArticlePage() {
                 <span style={{ fontSize: 12, color: isDark ? '#878787' : '#94A3B8' }}>No author</span>
               )}
               <span style={{
-                fontSize: 10, fontWeight: 700, padding: '2px 6px', borderRadius: 3,
+                fontSize: 10, fontWeight: 700, padding: '2px 6px', borderRadius: 4,
                 background: verBadge.bg, color: verBadge.color, display: 'inline-flex', alignItems: 'center', gap: 3,
               }}>{verBadge.icon} {verBadge.label}</span>
             </div>
@@ -585,7 +585,7 @@ export default function WikiArticlePage() {
                   {s.title}
                   {s.is_live_data && (
                     <span style={{
-                      fontSize: 9, fontWeight: 650, padding: '2px 6px', borderRadius: 3,
+                      fontSize: 9, fontWeight: 650, padding: '2px 6px', borderRadius: 4,
                       background: isDark ? 'rgba(37,99,235,0.12)' : '#EFF6FF', color: '#2563EB',
                     }}>LIVE DATA</span>
                   )}
@@ -652,7 +652,7 @@ export default function WikiArticlePage() {
             {(related ?? []).length > 0 && (
               <div style={{ marginTop: 40 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
-                  <div style={{ width: 3, height: 16, borderRadius: 2, background: '#2563EB' }} />
+                  <div style={{ width: 3, height: 16, borderRadius: 4, background: '#2563EB' }} />
                   <span style={{ fontFamily: 'Sora, sans-serif', fontSize: 16, fontWeight: 650, color: isDark ? '#EDEDED' : '#0F172A' }}>Related Articles</span>
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 12 }}>
@@ -751,7 +751,7 @@ function ReferencesSection({ refs }: { refs: any[] }) {
           {r.source_type === 'jira' ? (
             <span style={{ fontSize: 11, fontWeight: 650, color: '#2563EB', fontFamily: 'JetBrains Mono, monospace' }}>{r.source_key}</span>
           ) : r.source_type === 'document' ? (
-            <span style={{ fontSize: 11, fontWeight: 650, padding: '2px 6px', borderRadius: 3, background: isDark ? 'rgba(124,58,237,0.12)' : '#F5F3FF', color: '#7C3AED' }}>{r.source_key}</span>
+            <span style={{ fontSize: 11, fontWeight: 650, padding: '2px 6px', borderRadius: 4, background: isDark ? 'rgba(124,58,237,0.12)' : '#F5F3FF', color: '#7C3AED' }}>{r.source_key}</span>
           ) : (
             <span style={{ fontSize: 11, fontWeight: 600, color: isDark ? '#A1A1A1' : '#334155' }}>{r.source_key}</span>
           )}

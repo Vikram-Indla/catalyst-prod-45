@@ -317,7 +317,7 @@ export function UserMapping() {
           onChange={e => setDepartmentFilter(e.target.value)}
           style={{
             padding: '5px 10px', borderRadius: 6, fontSize: 12, border: `1px solid ${borderColor}`,
-            background: '#F8FAFC', color: '#334155', minWidth: 160,
+            background: 'var(--bg-1, #F8FAFC)', color: '#334155', minWidth: 160,
           }}
         >
           <option value="all">All Departments</option>
@@ -339,7 +339,7 @@ export function UserMapping() {
               onClick={() => setViewMode(v.mode)}
               style={{
                 padding: '5px 12px', fontSize: 11, fontWeight: 600, border: 'none', cursor: 'pointer',
-                background: viewMode === v.mode ? '#2563EB' : '#F8FAFC',
+                background: viewMode === v.mode ? '#2563EB' : 'var(--bg-1, #F8FAFC)',
                 color: viewMode === v.mode ? '#fff' : '#64748B',
                 transition: 'all .15s',
               }}
@@ -358,20 +358,20 @@ export function UserMapping() {
           onChange={e => setSearchText(e.target.value)}
           style={{
             padding: '5px 10px', borderRadius: 6, fontSize: 12, border: `1px solid ${borderColor}`,
-            background: '#F8FAFC', color: '#334155', width: 200, outline: 'none',
+            background: 'var(--bg-1, #F8FAFC)', color: '#334155', width: 200, outline: 'none',
           }}
         />
 
         <div style={{ marginLeft: 'auto', display: 'flex', gap: 8 }}>
           <button onClick={() => refreshUsers.mutate()} disabled={refreshUsers.isPending} style={{
             padding: '6px 14px', borderRadius: 6, fontSize: 11, fontWeight: 500,
-            background: '#F8FAFC', color: '#334155', border: `1px solid ${borderColor}`, cursor: 'pointer',
+            background: 'var(--bg-1, #F8FAFC)', color: '#334155', border: `1px solid ${borderColor}`, cursor: 'pointer',
           }}>
             {refreshUsers.isPending ? 'Refreshing…' : '↻ Refresh Jira'}
           </button>
           <button onClick={handleAutoMatch} disabled={autoMatch.isPending} style={{
             padding: '6px 14px', borderRadius: 6, fontSize: 11, fontWeight: 500,
-            background: '#F8FAFC', color: '#334155', border: `1px solid ${borderColor}`, cursor: 'pointer',
+            background: 'var(--bg-1, #F8FAFC)', color: '#334155', border: `1px solid ${borderColor}`, cursor: 'pointer',
           }}>
             {autoMatch.isPending ? 'Matching…' : '⚡ Auto-Match Email'}
           </button>
@@ -393,7 +393,7 @@ export function UserMapping() {
         <div style={{ maxHeight: 600, overflowY: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
             <thead>
-              <tr style={{ background: '#F8FAFC', position: 'sticky', top: 0, zIndex: 2 }}>
+              <tr style={{ background: 'var(--bg-1, #F8FAFC)', position: 'sticky', top: 0, zIndex: 2 }}>
                 {['#', 'CATALYST RESOURCE', 'DEPT', 'JIRA ACCOUNT (MAPPED)', 'SUGGESTED MATCH', 'ACTION'].map(h => (
                   <th key={h} style={{
                     fontFamily: 'Sora, sans-serif', fontSize: 9, textTransform: 'uppercase',
@@ -457,7 +457,7 @@ export function UserMapping() {
                       {isMapped && existingJiraMapping ? (
                         <div style={{
                           display: 'flex', alignItems: 'center', gap: 8,
-                          background: '#ECFDF5', padding: '6px 10px', borderRadius: 6,
+                          background: 'var(--tint-green-soft, #ECFDF5)', padding: '6px 10px', borderRadius: 6,
                           border: '1px solid #A7F3D0',
                         }}>
                           <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#10B981', flexShrink: 0 }} />
@@ -512,7 +512,7 @@ export function UserMapping() {
                             </div>
                           </div>
                           <span style={{
-                            fontSize: 8, fontWeight: 700, padding: '2px 5px', borderRadius: 3,
+                            fontSize: 8, fontWeight: 700, padding: '2px 5px', borderRadius: 4,
                             background: suggestedJira.score >= 0.7 ? '#DBEAFE' : '#FEF3C7',
                             color: suggestedJira.score >= 0.7 ? '#1D4ED8' : '#92400E',
                           }}>
@@ -533,7 +533,7 @@ export function UserMapping() {
                           onClick={() => handleClearMapping(existingJiraMapping.id)}
                           style={{
                             padding: '4px 10px', borderRadius: 4, fontSize: 10, fontWeight: 500,
-                            background: '#FEF2F2', color: '#EF4444', border: '1px solid #FECACA',
+                            background: 'var(--tint-red, #FEF2F2)', color: '#EF4444', border: '1px solid #FECACA',
                             cursor: 'pointer',
                           }}
                         >

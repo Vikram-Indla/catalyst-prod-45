@@ -58,9 +58,9 @@ export function ReleaseTable({ releases, onNavigate }: Props) {
               </td>
               <td className={styles.td}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <div style={{ width: 48, height: 4, background: 'var(--rh-bg-muted)', borderRadius: 2, overflow: 'hidden' }}>
+                  <div style={{ width: 48, height: 4, background: 'var(--rh-bg-muted)', borderRadius: 4, overflow: 'hidden' }}>
                     <div style={{
-                      width: `${r.coverage_percent}%`, height: '100%', borderRadius: 2,
+                      width: `${r.coverage_percent}%`, height: '100%', borderRadius: 4,
                       background: r.coverage_percent >= 61 ? 'var(--rh-teal)' : r.coverage_percent >= 31 ? 'var(--rh-warning)' : 'var(--rh-danger)',
                     }} />
                   </div>

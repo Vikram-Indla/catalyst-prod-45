@@ -207,7 +207,7 @@ export const DetailTabRisks: React.FC<DetailTabRisksProps> = ({ initiativeId }) 
                 const cellRisks = risksByCell[`${prob}-${imp}`] || [];
                 return (
                   <div key={`${prob}-${imp}`}
-                    style={{ height: 36, background: cellBg(score), borderRadius: 3, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 2, flexWrap: 'wrap', cursor: cellRisks.length > 0 ? 'pointer' : undefined }}
+                    style={{ height: 36, background: cellBg(score), borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 2, flexWrap: 'wrap', cursor: cellRisks.length > 0 ? 'pointer' : undefined }}
                     onClick={() => { if (cellRisks.length > 0) openEdit(cellRisks[0]); }}>
                     {cellRisks.map((r: any) => (
                       <div key={r.id} title={`${r.risk_key}: ${r.title}`} style={{

@@ -113,19 +113,19 @@ const ListView: React.FC<ListViewProps> = ({ items, roleFilter, onItemClick }) =
                           {it.title}
                         </td>
                         <td style={{ padding: '0 10px' }}>
-                          <span style={{ fontSize: 9.5, fontWeight: 700, padding: '2px 6px', borderRadius: 3, background: witStyle.bg, color: witStyle.color }}>
+                          <span style={{ fontSize: 9.5, fontWeight: 700, padding: '2px 6px', borderRadius: 4, background: witStyle.bg, color: witStyle.color }}>
                             {it.work_item_type}
                           </span>
                         </td>
                         <td style={{ padding: '0 10px' }}>
-                          <span style={{ fontSize: 9, fontWeight: 700, padding: '2px 6px', borderRadius: 3, background: hubColor, color: '#FFFFFF' }}>
+                          <span style={{ fontSize: 9, fontWeight: 700, padding: '2px 6px', borderRadius: 4, background: hubColor, color: '#FFFFFF' }}>
                             {HUB_SHORT[it.source_hub] || it.source_hub}
                           </span>
                         </td>
                         <td style={{ padding: '0 10px' }}>
                           <span style={{
                             display: 'inline-flex', alignItems: 'center', gap: 4,
-                            fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 10,
+                            fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 12,
                             background: sc.bg, color: sc.text,
                           }}>
                             <span style={{ width: 5, height: 5, borderRadius: '50%', background: sc.dot }} />

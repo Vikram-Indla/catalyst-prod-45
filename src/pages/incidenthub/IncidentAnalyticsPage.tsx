@@ -88,7 +88,7 @@ export default function IncidentAnalyticsPage() {
               {analytics.bySeverity.map(([sev, count]) => (
                 <div key={sev} className="flex items-center gap-2">
                   <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: '#64748B', width: 40 }}>{sev}</span>
-                  <div className="flex-1" style={{ height: 16, backgroundColor: '#F1F5F9', borderRadius: 2, overflow: 'hidden' }}>
+                  <div className="flex-1" style={{ height: 16, backgroundColor: '#F1F5F9', borderRadius: 4, overflow: 'hidden' }}>
                     <div style={{ height: '100%', width: `${(count / maxCount(analytics.bySeverity)) * 100}%`, backgroundColor: SEV_BAR_COLORS[sev] || '#2563EB', borderRadius: 2 }} />
                   </div>
                   <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: '#0F172A', width: 24, textAlign: 'right' }}>{count}</span>
@@ -104,7 +104,7 @@ export default function IncidentAnalyticsPage() {
               {analytics.byStatus.map(([status, count]) => (
                 <div key={status} className="flex items-center gap-2">
                   <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: '#64748B', width: 80, textTransform: 'capitalize' }}>{status.replace(/_/g, ' ')}</span>
-                  <div className="flex-1" style={{ height: 16, backgroundColor: '#F1F5F9', borderRadius: 2, overflow: 'hidden' }}>
+                  <div className="flex-1" style={{ height: 16, backgroundColor: '#F1F5F9', borderRadius: 4, overflow: 'hidden' }}>
                     <div style={{ height: '100%', width: `${(count / maxCount(analytics.byStatus)) * 100}%`, backgroundColor: '#2563EB', borderRadius: 2 }} />
                   </div>
                   <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: '#0F172A', width: 24, textAlign: 'right' }}>{count}</span>
@@ -120,7 +120,7 @@ export default function IncidentAnalyticsPage() {
               {analytics.byAssignee.slice(0, 8).map(([name, count]) => (
                 <div key={name} className="flex items-center gap-2">
                   <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: '#64748B', width: 100, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{name}</span>
-                  <div className="flex-1" style={{ height: 16, backgroundColor: '#F1F5F9', borderRadius: 2, overflow: 'hidden' }}>
+                  <div className="flex-1" style={{ height: 16, backgroundColor: '#F1F5F9', borderRadius: 4, overflow: 'hidden' }}>
                     <div style={{ height: '100%', width: `${(count / maxCount(analytics.byAssignee)) * 100}%`, backgroundColor: '#2563EB', borderRadius: 2 }} />
                   </div>
                   <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: '#0F172A', width: 24, textAlign: 'right' }}>{count}</span>

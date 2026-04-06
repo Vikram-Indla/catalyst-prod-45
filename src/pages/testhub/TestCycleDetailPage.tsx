@@ -390,8 +390,8 @@ export default function TestCycleDetailPage() {
                       <span style={{ fontSize: 13, fontWeight: 500, color: isDark ? '#EDEDED' : '#334155' }}>{ts.name}</span>
                       <span style={{ fontSize: 12, color: isDark ? '#878787' : '#64748B' }}>{ts.executed}/{ts.total}</span>
                     </div>
-                    <div style={{ height: 6, backgroundColor: isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0', borderRadius: 3, overflow: 'hidden' }}>
-                      <div style={{ height: '100%', width: `${pct}%`, backgroundColor: pct === 100 ? '#059669' : '#2563EB', borderRadius: 3, transition: 'width 0.3s' }} />
+                    <div style={{ height: 6, backgroundColor: isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0', borderRadius: 4, overflow: 'hidden' }}>
+                      <div style={{ height: '100%', width: `${pct}%`, backgroundColor: pct === 100 ? '#059669' : '#2563EB', borderRadius: 4, transition: 'width 0.3s' }} />
                     </div>
                   </div>
                 );
@@ -406,7 +406,7 @@ export default function TestCycleDetailPage() {
       {/* Blocked Items Banner */}
       {blockedTestCases.length > 0 && (
         <div style={{ padding: '0 32px 16px' }}>
-          <div style={{ padding: '14px 20px', backgroundColor: isDark ? 'rgba(217,119,6,0.1)' : '#FFFBEB', border: `1px solid ${isDark ? 'rgba(217,119,6,0.2)' : '#FDE68A'}`, borderRadius: 10, display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div style={{ padding: '14px 20px', backgroundColor: isDark ? 'rgba(217,119,6,0.1)' : '#FFFBEB', border: `1px solid ${isDark ? 'rgba(217,119,6,0.2)' : '#FDE68A'}`, borderRadius: 12, display: 'flex', alignItems: 'center', gap: 12 }}>
             <AlertTriangle size={18} style={{ color: '#D97706', flexShrink: 0 }} />
             <span style={{ fontSize: 14, fontWeight: 500, color: '#92400E' }}>
               {blockedTestCases.length} blocked test case{blockedTestCases.length !== 1 ? 's' : ''} require attention
@@ -656,7 +656,7 @@ export default function TestCycleDetailPage() {
               display: 'flex', alignItems: 'center', gap: 12,
             }}>
               <div style={{
-                width: 40, height: 40, borderRadius: 10, backgroundColor: '#FEF2F2',
+                width: 40, height: 40, borderRadius: 12, backgroundColor: '#FEF2F2',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
                 <Trash2 size={20} style={{ color: '#DC2626' }} />

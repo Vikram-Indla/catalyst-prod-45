@@ -112,8 +112,8 @@ export function ProgressCell({ value, status }: { value: number; status?: Initia
   const done = status === 'done' || clamped >= 100;
   return (
     <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-      <div style={{ width: 40, height: 4, borderRadius: 2, background: 'var(--pb-surface-tertiary)', overflow: 'hidden', flexShrink: 0 }}>
-        <div style={{ width: `${clamped}%`, height: '100%', borderRadius: 2, background: done ? 'var(--pb-success)' : 'var(--pb-primary)', transition: 'width 300ms ease' }} />
+      <div style={{ width: 40, height: 4, borderRadius: 4, background: 'var(--pb-surface-tertiary)', overflow: 'hidden', flexShrink: 0 }}>
+        <div style={{ width: `${clamped}%`, height: '100%', borderRadius: 4, background: done ? 'var(--pb-success)' : 'var(--pb-primary)', transition: 'width 300ms ease' }} />
       </div>
       <span className="pb-progress-label" style={{ minWidth: 28 }}>{clamped}%</span>
     </div>

@@ -136,7 +136,7 @@ export function FilterDropdown({
         {!singleSelect && selected?.length > 0 && (
           <span style={{
             padding: '2px 6px',
-            borderRadius: '10px',
+            borderRadius: '12px',
             backgroundColor: KANBAN_COLORS.gold,
             color: 'white',
             fontSize: '10px',
@@ -157,7 +157,7 @@ export function FilterDropdown({
           minWidth: '220px',
           backgroundColor: KANBAN_COLORS.bgCard,
           border: `1px solid ${KANBAN_COLORS.borderLight}`,
-          borderRadius: '10px',
+          borderRadius: '12px',
           boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
           zIndex: 100,
           overflow: 'hidden',
@@ -299,7 +299,7 @@ export function GroupByDropdown({ value, onChange, iconOnly }: GroupByDropdownPr
           minWidth: '200px',
           backgroundColor: KANBAN_COLORS.bgCard,
           border: `1px solid ${KANBAN_COLORS.borderLight}`,
-          borderRadius: '10px',
+          borderRadius: '12px',
           boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
           zIndex: 100,
           overflow: 'hidden',

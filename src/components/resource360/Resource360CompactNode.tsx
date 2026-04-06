@@ -21,7 +21,7 @@ export function Resource360CompactNode({ item, x, y, onClick }: Props) {
         left: x, top: y,
         transform: 'translate(-50%, -50%)',
         display: 'inline-flex', alignItems: 'center', gap: 4,
-        background: '#FFFFFF',
+        background: 'var(--bg-app, #FFFFFF)',
         border: '1px solid var(--bd-default, #E2E8F0)',
         borderRadius: 12,
         padding: '3px 8px',

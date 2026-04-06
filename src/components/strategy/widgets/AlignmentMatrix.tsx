@@ -44,9 +44,9 @@ export function AlignmentMatrix() {
             <span style={{ width: 60, fontSize: 10, textAlign: 'right', color: 'var(--exec-text-secondary)', flexShrink: 0, whiteSpace: 'nowrap' }}>
               {name}
             </span>
-            <div className="flex-1" style={{ height: 6, borderRadius: 3, background: 'var(--exec-bg-hover, #F1F5F9)', overflow: 'hidden' }}>
+            <div className="flex-1" style={{ height: 6, borderRadius: 4, background: 'var(--exec-bg-hover, #F1F5F9)', overflow: 'hidden' }}>
               <div style={{
-                width: `${score}%`, height: '100%', borderRadius: 3,
+                width: `${score}%`, height: '100%', borderRadius: 4,
                 background: barColor, opacity: 0.85,
                 transition: 'width 800ms ease-out',
               }} />

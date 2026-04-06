@@ -199,7 +199,7 @@ export function WorkItemTableRow({
               className="inline-block cursor-pointer"
               style={{
                 height: 20, lineHeight: '20px',
-                padding: '0 6px', borderRadius: 3,
+                padding: '0 6px', borderRadius: 4,
                 fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em',
                 backgroundColor: statusStyle.bg, color: statusStyle.color,
                 whiteSpace: 'nowrap',
@@ -220,7 +220,7 @@ export function WorkItemTableRow({
             {releaseLabel ? (
               <span style={{
                 display: 'inline-block', height: 18, lineHeight: '18px',
-                padding: '0 6px', borderRadius: 3,
+                padding: '0 6px', borderRadius: 4,
                 backgroundColor: 'var(--cp-bg-sunken, var(--cp-bd-zone))',
                 border: '0.75px solid var(--cp-border-default, rgba(15,23,42,0.12))',
                 fontSize: 10.5, fontWeight: 500, color: 'var(--cp-text-secondary, var(--fg-2))',

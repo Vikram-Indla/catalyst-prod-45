@@ -147,7 +147,7 @@ export function DetailRightSidebar({ item, statuses, onUpdate, onInvalidate }: S
       {/* AI BUTTON */}
       <button
         onClick={() => toast('AI analyzing...', { icon: '✨' })}
-        className="w-full py-2 rounded-md text-[12px] font-semibold flex items-center justify-center gap-1.5 mb-4 transition-colors hover:bg-[#EFF6FF]"
+        className="w-full py-2 rounded-md text-[12px] font-semibold flex items-center justify-center gap-1.5 mb-4 transition-colors hover:bg-[var(--tint-blue, #EFF6FF)]"
         style={{ border: '1px solid var(--divider)', color: 'var(--cp-purple)' }}
       >
         <Sparkles size={14} /> Improve Story with AI

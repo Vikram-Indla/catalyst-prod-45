@@ -17,13 +17,13 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; 
   planning: { label: 'Planning', color: '#64748B', bg: var(--bg-2, '#F1F5F9'), icon: Clock },
   planned: { label: 'Planned', color: '#64748B', bg: var(--bg-2, '#F1F5F9'), icon: Clock },
   development: { label: 'Development', color: '#8B5CF6', bg: '#F5F3FF', icon: Settings2 },
-  testing: { label: 'Testing', color: '#2563EB', bg: '#EFF6FF', icon: Beaker },
-  uat: { label: 'UAT', color: '#EA580C', bg: '#FFF7ED', icon: Monitor },
+  testing: { label: 'Testing', color: '#2563EB', bg: 'var(--tint-blue, #EFF6FF)', icon: Beaker },
+  uat: { label: 'UAT', color: '#EA580C', bg: 'var(--tint-amber, #FFF7ED)', icon: Monitor },
   staging: { label: 'Staging', color: '#D97706', bg: '#FFFBEB', icon: Rocket },
-  ready: { label: 'Ready', color: '#059669', bg: '#ECFDF5', icon: CheckCircle2 },
-  released: { label: 'Released', color: '#059669', bg: '#ECFDF5', icon: CheckCircle2 },
-  shipped: { label: 'Shipped', color: '#059669', bg: '#ECFDF5', icon: CheckCircle2 },
-  archived: { label: 'Archived', color: 'var(--fg-3, #94A3B8)', bg: '#F8FAFC', icon: Archive },
+  ready: { label: 'Ready', color: '#059669', bg: 'var(--tint-green-soft, #ECFDF5)', icon: CheckCircle2 },
+  released: { label: 'Released', color: '#059669', bg: 'var(--tint-green-soft, #ECFDF5)', icon: CheckCircle2 },
+  shipped: { label: 'Shipped', color: '#059669', bg: 'var(--tint-green-soft, #ECFDF5)', icon: CheckCircle2 },
+  archived: { label: 'Archived', color: 'var(--fg-3, #94A3B8)', bg: 'var(--bg-1, #F8FAFC)', icon: Archive },
 };
 
 const HEALTH_CONFIG: Record<string, { label: string; color: string; dot: string }> = {
@@ -102,7 +102,7 @@ export default function ReleasesListPage() {
         <select
           value={filters.status}
           onChange={e => setFilters(f => ({ ...f, status: e.target.value }))}
-          style={{ height: 38, padding: '0 12px', border: '1px solid var(--bd-default, #E2E8F0)', borderRadius: 8, fontSize: 13, color: '#334155', background: '#fff', cursor: 'pointer' }}
+          style={{ height: 38, padding: '0 12px', border: '1px solid var(--bd-default, #E2E8F0)', borderRadius: 8, fontSize: 13, color: '#334155', background: 'var(--bg-app, #fff)', cursor: 'pointer' }}
         >
           <option value="all">All Statuses</option>
           {Object.entries(STATUS_CONFIG).map(([key, cfg]) => (
@@ -114,7 +114,7 @@ export default function ReleasesListPage() {
         <select
           value={filters.health}
           onChange={e => setFilters(f => ({ ...f, health: e.target.value }))}
-          style={{ height: 38, padding: '0 12px', border: '1px solid var(--bd-default, #E2E8F0)', borderRadius: 8, fontSize: 13, color: '#334155', background: '#fff', cursor: 'pointer' }}
+          style={{ height: 38, padding: '0 12px', border: '1px solid var(--bd-default, #E2E8F0)', borderRadius: 8, fontSize: 13, color: '#334155', background: 'var(--bg-app, #fff)', cursor: 'pointer' }}
         >
           <option value="all">All Health</option>
           <option value="healthy">Healthy</option>
@@ -131,7 +131,7 @@ export default function ReleasesListPage() {
             style={{
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               width: 36, height: 36, border: 'none', cursor: 'pointer',
-              backgroundColor: viewMode === 'table' ? '#EFF6FF' : '#fff',
+              backgroundColor: viewMode === 'table' ? 'var(--tint-blue, #EFF6FF)' : '#fff',
               color: viewMode === 'table' ? '#2563EB' : '#64748B',
             }}
           >
@@ -142,7 +142,7 @@ export default function ReleasesListPage() {
             style={{
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               width: 36, height: 36, border: 'none', cursor: 'pointer',
-              backgroundColor: viewMode === 'card' ? '#EFF6FF' : '#fff',
+              backgroundColor: viewMode === 'card' ? 'var(--tint-blue, #EFF6FF)' : '#fff',
               color: viewMode === 'card' ? '#2563EB' : '#64748B',
               borderLeft: '1px solid var(--bd-default, #E2E8F0)',
             }}
@@ -187,10 +187,10 @@ export default function ReleasesListPage() {
 // ===== Table View =====
 function TableView({ releases, navigate }: { releases: Release[]; navigate: any }) {
   return (
-    <div style={{ border: '1px solid var(--bd-default, #E2E8F0)', borderRadius: 10, overflow: 'hidden', background: '#fff' }}>
+    <div style={{ border: '1px solid var(--bd-default, #E2E8F0)', borderRadius: 12, overflow: 'hidden', background: 'var(--bg-app, #fff)' }}>
       <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
         <thead>
-          <tr style={{ backgroundColor: '#F8FAFC', borderBottom: '1px solid var(--bd-default, #E2E8F0)' }}>
+          <tr style={{ backgroundColor: 'var(--bg-1, #F8FAFC)', borderBottom: '1px solid var(--bd-default, #E2E8F0)' }}>
             <th style={thStyle}>Version</th>
             <th style={thStyle}>Name</th>
             <th style={thStyle}>Status</th>
@@ -211,7 +211,7 @@ function TableView({ releases, navigate }: { releases: Release[]; navigate: any 
                 key={r.id}
                 onClick={() => navigate(`/testhub/releases/${r.id}`)}
                 style={{ borderBottom: '1px solid #F1F5F9', cursor: 'pointer', transition: 'background 0.15s' }}
-                onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#F8FAFC')}
+                onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'var(--bg-1, #F8FAFC)')}
                 onMouseLeave={e => (e.currentTarget.style.backgroundColor = '')}
               >
                 <td style={tdStyle}>
@@ -280,7 +280,7 @@ function CardView({ releases, navigate, getExecPercent, getPassRate }: { release
             key={r.id}
             onClick={() => navigate(`/testhub/releases/${r.id}`)}
             style={{
-              background: '#fff', border: '1px solid var(--bd-default, #E2E8F0)', borderRadius: 12,
+              background: 'var(--bg-app, #fff)', border: '1px solid var(--bd-default, #E2E8F0)', borderRadius: 12,
               padding: 20, cursor: 'pointer', transition: 'all 0.2s',
               boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
             }}
@@ -296,12 +296,12 @@ function CardView({ releases, navigate, getExecPercent, getPassRate }: { release
             </div>
 
             <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '2px 8px', borderRadius: 5, backgroundColor: sc.bg, color: sc.color, fontSize: 11, fontWeight: 600 }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '2px 8px', borderRadius: 6, backgroundColor: sc.bg, color: sc.color, fontSize: 11, fontWeight: 600 }}>
                 <StatusIcon style={{ width: 11, height: 11 }} />
                 {sc.label}
               </span>
               {r.vehicle && (
-                <span style={{ padding: '2px 8px', borderRadius: 5, backgroundColor: var(--bg-2, '#F1F5F9'), color: '#64748B', fontSize: 11, fontWeight: 500 }}>
+                <span style={{ padding: '2px 8px', borderRadius: 6, backgroundColor: var(--bg-2, '#F1F5F9'), color: '#64748B', fontSize: 11, fontWeight: 500 }}>
                   {r.vehicle.name}
                 </span>
               )}
@@ -314,7 +314,7 @@ function CardView({ releases, navigate, getExecPercent, getPassRate }: { release
                 <span style={{ fontWeight: 600, color: '#0F172A' }}>{execPct}%</span>
               </div>
               <div style={{ height: 6, backgroundColor: var(--bg-2, '#F1F5F9'), borderRadius: 3 }}>
-                <div style={{ height: '100%', width: `${execPct}%`, backgroundColor: execPct >= 80 ? '#22C55E' : execPct >= 50 ? '#F59E0B' : '#3B82F6', borderRadius: 3, transition: 'width 0.3s' }} />
+                <div style={{ height: '100%', width: `${execPct}%`, backgroundColor: execPct >= 80 ? '#22C55E' : execPct >= 50 ? '#F59E0B' : '#3B82F6', borderRadius: 4, transition: 'width 0.3s' }} />
               </div>
             </div>
 

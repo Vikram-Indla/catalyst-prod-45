@@ -116,10 +116,10 @@ function ScoreSlider({ label, value, onChange }: { label: string; value: number;
       </div>
       <div style={{ position: 'relative', width: '100%', height: 28, display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
         <div style={{ position: 'absolute', left: 0, right: 0, height: 6, background: 'var(--pb-surface-tertiary)', borderRadius: 3 }} />
-        <div style={{ position: 'absolute', left: 0, height: 6, background: 'var(--pb-primary)', borderRadius: 3, width: `${fillPercent}%`, pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', left: 0, height: 6, background: 'var(--pb-primary)', borderRadius: 4, width: `${fillPercent}%`, pointerEvents: 'none' }} />
         <input type="range" min="1" max="5" step="0.5" value={value} onChange={(e) => onChange(parseFloat(e.target.value))}
           style={{ position: 'absolute', inset: 0, width: '100%', height: 28, opacity: 0, cursor: 'pointer', zIndex: 10 }} />
-        <div style={{ position: 'absolute', width: 18, height: 18, background: '#fff', border: '2.5px solid var(--pb-primary)', borderRadius: '50%', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', pointerEvents: 'none', zIndex: 2, left: `${fillPercent}%`, transform: 'translateX(-50%)' }} />
+        <div style={{ position: 'absolute', width: 18, height: 18, background: 'var(--bg-app, #fff)', border: '2.5px solid var(--pb-primary)', borderRadius: '50%', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', pointerEvents: 'none', zIndex: 2, left: `${fillPercent}%`, transform: 'translateX(-50%)' }} />
       </div>
     </div>
   );

@@ -93,11 +93,11 @@
 }
 .ph-tis-scroll::-webkit-scrollbar-track {
   background: #F1F5F9;
-  border-radius: 3px;
+  border-radius: 4px;
 }
 .ph-tis-scroll::-webkit-scrollbar-thumb {
   background: #CBD5E1;
-  border-radius: 3px;
+  border-radius: 4px;
 }
 .ph-tis-scroll::-webkit-scrollbar-thumb:hover {
   background: #94A3B8;

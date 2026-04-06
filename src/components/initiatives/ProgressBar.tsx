@@ -17,12 +17,12 @@ export function ProgressBar({ value, status, showLabel = true }: ProgressBarProp
 
   return (
     <div className="inline-flex items-center gap-2">
-      <div className="flex-shrink-0 overflow-hidden" style={{ width: 40, height: 4, borderRadius: 2, background: '#e4e4e7' }}>
+      <div className="flex-shrink-0 overflow-hidden" style={{ width: 40, height: 4, borderRadius: 4, background: '#e4e4e7' }}>
         <div
           style={{
             width: `${clamped}%`,
             height: '100%',
-            borderRadius: 2,
+            borderRadius: 4,
             background: getFillColor(clamped, status),
             transition: 'width 300ms ease',
           }}

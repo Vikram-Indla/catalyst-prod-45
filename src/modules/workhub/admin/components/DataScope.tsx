@@ -103,7 +103,7 @@ export function DataScope() {
       }}
     >
       <span style={{
-        width: 18, height: 18, borderRadius: '50%', background: '#fff', position: 'absolute',
+        width: 18, height: 18, borderRadius: '50%', background: 'var(--bg-app, #fff)', position: 'absolute',
         top: 2, left: checked ? 18 : 2, transition: 'left .2s',
         boxShadow: '0 1px 3px rgba(0,0,0,.2)',
       }} />
@@ -111,7 +111,7 @@ export function DataScope() {
   )
 
   const cardStyle: React.CSSProperties = {
-    background: '#fff', border: '1px solid var(--bd-default, #E2E8F0)', borderRadius: 8,
+    background: 'var(--bg-app, #fff)', border: '1px solid var(--bd-default, #E2E8F0)', borderRadius: 8,
     padding: 20, marginBottom: 16, boxShadow: '0 1px 2px rgba(0,0,0,.05)',
   }
 
@@ -136,8 +136,8 @@ export function DataScope() {
             Included Projects
           </h2>
           <span style={{
-            fontSize: 10, background: '#EFF6FF', color: '#2563EB', padding: '2px 8px',
-            borderRadius: 3, fontWeight: 600,
+            fontSize: 10, background: 'var(--tint-blue, #EFF6FF)', color: '#2563EB', padding: '2px 8px',
+            borderRadius: 4, fontWeight: 600,
           }}>
             {activeCount} of {totalCount} active
           </span>
@@ -154,7 +154,7 @@ export function DataScope() {
                 style={{
                   display: 'inline-flex', alignItems: 'center', gap: 8,
                   padding: '10px 16px', borderRadius: 8, border: '1px solid', cursor: 'pointer',
-                  background: isOn ? '#EFF6FF' : '#fff',
+                  background: isOn ? 'var(--tint-blue, #EFF6FF)' : '#fff',
                   borderColor: isOn ? '#BFDBFE' : 'var(--bd-default, #E2E8F0)',
                   opacity: isOn ? 1 : 0.5,
                   transition: 'all .15s',
@@ -214,7 +214,7 @@ export function DataScope() {
         </div>
 
         <div style={{
-          background: '#EFF6FF', border: '1px solid #BFDBFE', borderRadius: 8,
+          background: 'var(--tint-blue, #EFF6FF)', border: '1px solid #BFDBFE', borderRadius: 8,
           padding: '10px 14px', marginBottom: 14, display: 'flex', gap: 8,
         }}>
           <span style={{ fontSize: 14 }}>ℹ️</span>

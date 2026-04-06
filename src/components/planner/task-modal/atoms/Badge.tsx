@@ -25,7 +25,7 @@ export const Badge: React.FC<BadgeProps> = ({
         minWidth: '20px',
         height: '20px',
         padding: '0 6px',
-        borderRadius: '10px',
+        borderRadius: '12px',
         backgroundColor: isActive ? COLORS.accentLight : COLORS.surfaceHover,
         color: isActive ? COLORS.accent : COLORS.textMuted,
         fontSize: '11px',

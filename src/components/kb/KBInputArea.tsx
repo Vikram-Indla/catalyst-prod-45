@@ -69,7 +69,7 @@ export function KBInputArea({
             onMouseEnter={(e) => {
               e.currentTarget.style.borderColor = 'var(--cp-primary-60, #2563EB)';
               e.currentTarget.style.color = 'var(--cp-primary-60, #2563EB)';
-              e.currentTarget.style.background = 'var(--cp-primary-5, #EFF6FF)';
+              e.currentTarget.style.background = 'var(--cp-primary-5, var(--tint-blue, #EFF6FF))';
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.borderColor = 'var(--cp-border-default, rgba(15,23,42,0.12))';

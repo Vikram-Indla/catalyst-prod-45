@@ -14,7 +14,7 @@ export function PriorityBadge({ priority }: { priority: string }) {
         color: '#475569',
         fontSize: 11,
         fontWeight: 600,
-        borderRadius: 3,
+        borderRadius: 4,
         letterSpacing: '0.03em',
         lineHeight: '20px',
       }}

@@ -33,7 +33,7 @@ function highlightText(text: string, query: string, isDark: boolean) {
   const parts = text.split(regex);
   return parts.map((part, i) =>
     regex.test(part) ? (
-      <mark key={i} style={{ background: isDark ? 'rgba(251,191,36,0.2)' : '#FEF9C3', padding: '0 1px', borderRadius: 2, color: isDark ? '#EDEDED' : undefined }}>{part}</mark>
+      <mark key={i} style={{ background: isDark ? 'rgba(251,191,36,0.2)' : '#FEF9C3', padding: '0 1px', borderRadius: 4, color: isDark ? '#EDEDED' : undefined }}>{part}</mark>
     ) : part
   );
 }
@@ -111,7 +111,7 @@ export default function WikiSearchPage() {
         {/* ── Search Input ── */}
         <div style={{
           display: 'flex', alignItems: 'center', gap: 10, padding: '12px 16px',
-          borderRadius: 10, border: `1.5px solid ${borderColor}`,
+          borderRadius: 12, border: `1.5px solid ${borderColor}`,
           background: isDark ? '#1A1A1A' : '#FFFFFF', marginBottom: 16,
           transition: 'border-color 150ms, box-shadow 150ms',
         }}
@@ -256,7 +256,7 @@ export default function WikiSearchPage() {
                           {s.similarity != null && (
                             <span style={{
                               fontFamily: 'JetBrains Mono, monospace', fontSize: 10, fontWeight: 600,
-                              padding: '1px 5px', borderRadius: 3,
+                              padding: '1px 5px', borderRadius: 4,
                               background: confBg(Math.round(s.similarity * 100)),
                               color: confColor(Math.round(s.similarity * 100)),
                             }}>{Math.round(s.similarity * 100)}%</span>
@@ -319,7 +319,7 @@ export default function WikiSearchPage() {
                       {/* Meta row */}
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6, flexWrap: 'wrap' }}>
                         <span style={{
-                          fontSize: 10, fontWeight: 650, padding: '1px 6px', borderRadius: 3,
+                          fontSize: 10, fontWeight: 650, padding: '1px 6px', borderRadius: 4,
                           background: '#0C66E4', color: '#FFFFFF',
                         }}>{r.domain_code || '—'}</span>
                         {r.read_time_minutes && (
@@ -330,13 +330,13 @@ export default function WikiSearchPage() {
                         {conf > 0 && (
                           <span style={{
                             fontFamily: 'JetBrains Mono, monospace', fontSize: 10, fontWeight: 600,
-                            padding: '1px 5px', borderRadius: 3,
+                            padding: '1px 5px', borderRadius: 4,
                             background: confBg(conf), color: confColor(conf),
                           }}>{conf}%</span>
                         )}
                         {verBadge && (
                           <span style={{
-                            fontSize: 10, fontWeight: 700, padding: '1px 6px', borderRadius: 3,
+                            fontSize: 10, fontWeight: 700, padding: '1px 6px', borderRadius: 4,
                             background: verBadge.bg, color: verBadge.color,
                             display: 'inline-flex', alignItems: 'center', gap: 3,
                           }}>{r.verification_status === 'verified' && <ShieldCheck size={9} />} {verBadge.label}</span>
@@ -359,7 +359,7 @@ export default function WikiSearchPage() {
                         <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginTop: 6 }}>
                           {(r.tags as string[]).slice(0, 4).map(t => (
                             <span key={t} style={{
-                              fontSize: 9, padding: '1px 6px', borderRadius: 3,
+                              fontSize: 9, padding: '1px 6px', borderRadius: 4,
                               background: isDark ? '#1A1A1A' : '#F1F5F9', color: isDark ? '#A1A1A1' : '#64748B', fontWeight: 500,
                             }}>{t}</span>
                           ))}

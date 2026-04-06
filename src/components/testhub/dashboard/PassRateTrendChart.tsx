@@ -26,7 +26,7 @@ function CustomTooltip({ active, payload }: any) {
   if (!active || !payload?.length) return null;
   const item = payload[0].payload as CyclePassRate;
   return (
-    <div style={{ backgroundColor: 'var(--bg-app)', border: '1px solid var(--divider)', borderRadius: 10, padding: '12px 16px', boxShadow: '0 4px 16px rgba(0,0,0,0.12)', minWidth: 160 }}>
+    <div style={{ backgroundColor: 'var(--bg-app)', border: '1px solid var(--divider)', borderRadius: 12, padding: '12px 16px', boxShadow: '0 4px 16px rgba(0,0,0,0.12)', minWidth: 160 }}>
       <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--fg-1)', margin: 0 }}>{item.cycle_key}</p>
       <p style={{ fontSize: 12, color: 'var(--fg-3)', margin: '2px 0 8px' }}>{item.cycle_name}</p>
       <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
@@ -46,7 +46,7 @@ export function PassRateTrendChart({ data }: Props) {
   return (
     <div style={{ backgroundColor: 'var(--bg-app)', border: '1px solid var(--divider)', borderRadius: 12, padding: 24, minHeight: 280 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>
-        <div style={{ width: 36, height: 36, borderRadius: 10, backgroundColor: '#EBF0FF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ width: 36, height: 36, borderRadius: 12, backgroundColor: '#EBF0FF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <TrendingUp size={18} color="var(--cp-blue)" />
         </div>
         <div>

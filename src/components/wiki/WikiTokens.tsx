@@ -80,7 +80,7 @@ export const StatusLozenge: React.FC<{ status: string }> = ({ status }) => {
       aria-label={ariaLabel}
       style={{
         display: 'inline-block', fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
-        letterSpacing: '0.03em', padding: '2px 6px', borderRadius: 3, lineHeight: '16px',
+        letterSpacing: '0.03em', padding: '2px 6px', borderRadius: 4, lineHeight: '16px',
         height: 20, boxSizing: 'border-box',
         background: bg, color, whiteSpace: 'nowrap',
       }}
@@ -96,7 +96,7 @@ export const JiraPill: React.FC<{ label: string; onClick?: () => void }> = ({ la
     style={{
       fontFamily: 'var(--cp-font-mono)', fontSize: 11.5, fontWeight: 500,
       background: 'var(--cp-primary-5)', color: 'var(--cp-primary-60)',
-      padding: '2px 7px', borderRadius: 3, cursor: onClick ? 'pointer' : 'default',
+      padding: '2px 7px', borderRadius: 4, cursor: onClick ? 'pointer' : 'default',
       whiteSpace: 'nowrap', unicodeBidi: 'embed',
     }}
   >{label}</span>
@@ -108,7 +108,7 @@ export const AiBadge: React.FC<{ small?: boolean }> = ({ small }) => (
     display: 'inline-flex', alignItems: 'center', gap: 3,
     fontSize: small ? 9 : 10, fontWeight: 700, textTransform: 'uppercase',
     letterSpacing: '0.04em', padding: small ? '1px 5px' : '2px 7px',
-    borderRadius: 3, background: 'var(--cp-purple-5)', color: 'var(--cp-purple-60)',
+    borderRadius: 4, background: 'var(--cp-purple-5)', color: 'var(--cp-purple-60)',
     whiteSpace: 'nowrap',
   }}>✦ AI-Generated</span>
 );
@@ -120,7 +120,7 @@ export const DomainBadge: React.FC<{ code: string; size?: 'sm' | 'md' }> = ({ co
     style={{
       fontFamily: 'var(--cp-font-mono)', fontSize: size === 'sm' ? 10 : 11,
       fontWeight: 600, padding: size === 'sm' ? '1px 5px' : '2px 7px',
-      borderRadius: 3, background: 'var(--cp-bg-sunken)',
+      borderRadius: 4, background: 'var(--cp-bg-sunken)',
       color: 'var(--cp-text-secondary)', letterSpacing: '0.02em',
       whiteSpace: 'nowrap', unicodeBidi: 'embed',
     }}
@@ -138,7 +138,7 @@ export const ConfidenceBadge: React.FC<{ value: number }> = ({ value }) => {
       aria-label={`AI confidence: ${pct}%`}
       style={{
         fontSize: 11, fontWeight: 700, fontFamily: 'var(--cp-font-mono)',
-        padding: '2px 6px', borderRadius: 3, background: bg, color,
+        padding: '2px 6px', borderRadius: 4, background: bg, color,
         letterSpacing: '0.03em', unicodeBidi: 'embed',
       }}
     >{pct}%</span>

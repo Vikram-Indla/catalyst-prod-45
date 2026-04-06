@@ -262,7 +262,7 @@ export function T10ListCardV3({
           </p>
           
           {/* Progress Bar */}
-          <div style={{ height: '6px', backgroundColor: '#e2e8f0', borderRadius: '3px', marginBottom: '8px', overflow: 'hidden' }}>
+          <div style={{ height: '6px', backgroundColor: '#e2e8f0', borderRadius: '4px', marginBottom: '8px', overflow: 'hidden' }}>
             <div
               style={{
                 height: '100%',
@@ -270,7 +270,7 @@ export function T10ListCardV3({
                 background: progressPercent === 100 
                   ? 'linear-gradient(90deg, #22c55e, #4ade80)' 
                   : 'linear-gradient(90deg, #3b82f6, #60a5fa)',
-                borderRadius: '3px',
+                borderRadius: '4px',
                 transition: 'width 0.3s ease',
               }}
             />
@@ -298,7 +298,7 @@ export function T10ListCardV3({
             padding: '10px 14px',
             backgroundColor: 'var(--t10-bg-subtle)',
             border: '1px dashed var(--t10-border-default)',
-            borderRadius: '10px',
+            borderRadius: '12px',
             marginBottom: pastWeeks.length > 0 ? '8px' : '0',
           }}
         >

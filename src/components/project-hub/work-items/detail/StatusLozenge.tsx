@@ -30,7 +30,7 @@ export function StatusLozenge({ name, category, size = 'sm' }: StatusLozengeProp
         alignItems: 'center',
         padding: '0 6px',
         height: 20,
-        borderRadius: 3,
+        borderRadius: 4,
         fontSize: size === 'sm' ? 11 : 11,
         fontWeight: 700,
         textTransform: 'uppercase' as const,

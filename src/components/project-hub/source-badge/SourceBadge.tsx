@@ -21,7 +21,7 @@ export function SourceBadge({ source }: SourceBadgeProps) {
       style={{
         height: 18,
         padding: '0 5px',
-        borderRadius: 3,
+        borderRadius: 4,
         border: `0.75px solid ${isJira ? 'var(--src-jira-border)' : 'var(--src-catalyst-border)'}`,
         backgroundColor: isJira ? 'var(--src-jira-bg)' : 'var(--src-catalyst-bg)',
         color: isJira ? 'var(--src-jira-text)' : 'var(--src-catalyst-text)',
@@ -41,7 +41,7 @@ export function SourceBadge({ source }: SourceBadgeProps) {
           style={{
             width: 10,
             height: 10,
-            borderRadius: 2,
+            borderRadius: 4,
             backgroundColor: 'var(--cp-blue)',
             color: '#FFFFFF',
             fontSize: 7,

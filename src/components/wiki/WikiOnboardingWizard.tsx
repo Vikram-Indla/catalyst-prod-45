@@ -100,7 +100,7 @@ export function WikiOnboardingWizard({ onComplete }: WikiOnboardingWizardProps) 
               cursor: 'pointer', textAlign: 'left', fontSize: 12, transition: 'all 80ms',
               display: 'flex', alignItems: 'center', gap: 8,
             }}>
-              <span style={{ fontSize: 9, fontWeight: 700, padding: '1px 5px', borderRadius: 3, background: active ? 'var(--cp-primary-20)' : (isDark ? '#1A1A1A' : 'var(--cp-bd-zone)'), color: active ? '#1E40AF' : (isDark ? '#878787' : 'var(--fg-3)') }}>{d.code}</span>
+              <span style={{ fontSize: 9, fontWeight: 700, padding: '1px 5px', borderRadius: 4, background: active ? 'var(--cp-primary-20)' : (isDark ? '#1A1A1A' : 'var(--cp-bd-zone)'), color: active ? '#1E40AF' : (isDark ? '#878787' : 'var(--fg-3)') }}>{d.code}</span>
               <span style={{ fontWeight: active ? 600 : 400, color: active ? (isDark ? '#EDEDED' : 'var(--fg-1)') : (isDark ? '#A1A1A1' : 'var(--fg-2)'), flex: 1, fontSize: 11.5 }}>{d.name}</span>
               {active && <Check size={12} style={{ color: 'var(--cp-blue)' }} />}
             </button>

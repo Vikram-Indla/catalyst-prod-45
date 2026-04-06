@@ -141,7 +141,7 @@ export function WikiUploadWizard({ open, onClose }: Props) {
             <span style={{ fontSize: 16, fontWeight: 650, fontFamily: 'var(--cp-font-body)', color: isDark ? '#EDEDED' : 'var(--cp-text-primary)' }}>Upload Documents</span>
             <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: isDark ? '#878787' : 'var(--cp-text-muted)', padding: 4 }}><X size={16} /></button>
           </div>
-          <div style={{ height: 3, background: isDark ? '#0A0A0A' : 'var(--cp-bg-sunken)', borderRadius: 2, overflow: 'hidden' }}>
+          <div style={{ height: 3, background: isDark ? '#0A0A0A' : 'var(--cp-bg-sunken)', borderRadius: 4, overflow: 'hidden' }}>
             <div style={{ height: '100%', width: `${progressPct}%`, background: 'var(--cp-primary-60)', transition: 'width 300ms', borderRadius: 2 }} />
           </div>
           <div style={{ display: 'flex', gap: 4, marginTop: 8, marginBottom: 12 }}>

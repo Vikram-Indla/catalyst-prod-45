@@ -19,7 +19,7 @@ const priorityBarStyle = (filled: boolean): React.CSSProperties => ({
   height: '4px',
   minWidth: '16px',
   minHeight: '4px',
-  borderRadius: '2px',
+  borderRadius: '4px',
   backgroundColor: filled ? '#71717A' : '#E4E4E7',
   display: 'block',
   flexShrink: 0,

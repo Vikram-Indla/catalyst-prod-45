@@ -198,7 +198,7 @@ export function HierarchyContextMenu({
         <div style={{ padding: '6px 12px', display: 'flex', alignItems: 'center', gap: 6 }}>
           <span style={{ fontSize: 11, color: 'var(--sem-danger)' }}>Delete?</span>
           <button onClick={() => { onDelete(); onClose(); }} style={{
-            fontSize: 11, fontWeight: 600, padding: '2px 8px', borderRadius: 3,
+            fontSize: 11, fontWeight: 600, padding: '2px 8px', borderRadius: 4,
             background: 'var(--sem-danger)', color: '#FFFFFF', border: 'none', cursor: 'pointer',
           }}>Yes</button>
           <button onClick={() => setConfirmDelete(false)} style={{
@@ -208,7 +208,7 @@ export function HierarchyContextMenu({
       ) : (
         <button style={{ ...itemStyle, color: 'var(--sem-danger)' }}
           onClick={() => setConfirmDelete(true)}
-          onMouseEnter={e => (e.currentTarget.style.background = '#FEF2F2')}
+          onMouseEnter={e => (e.currentTarget.style.background = 'var(--tint-red, #FEF2F2)')}
           onMouseLeave={e => (e.currentTarget.style.background = '')}>
           <Trash2 size={13} /> Delete
         </button>

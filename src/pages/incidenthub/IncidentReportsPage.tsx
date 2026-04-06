@@ -22,15 +22,15 @@ export default function IncidentReportsPage() {
     : 0;
 
   if (isLoading) {
-    return <div className="flex-1 p-6" style={{ backgroundColor: '#FFFFFF' }}><Skeleton className="h-8 w-48 mb-6" /></div>;
+    return <div className="flex-1 p-6" style={{ backgroundColor: 'var(--bg-app, #FFFFFF)' }}><Skeleton className="h-8 w-48 mb-6" /></div>;
   }
 
   return (
-    <div className="flex-1 overflow-auto" style={{ backgroundColor: '#FFFFFF' }}>
+    <div className="flex-1 overflow-auto" style={{ backgroundColor: 'var(--bg-app, #FFFFFF)' }}>
       <div className="px-6 pt-6 pb-4">
         {/* Header */}
         <div className="flex items-center gap-3 mb-6">
-          <div className="flex items-center justify-center rounded-md" style={{ width: 32, height: 32, backgroundColor: '#EFF6FF' }}>
+          <div className="flex items-center justify-center rounded-md" style={{ width: 32, height: 32, backgroundColor: 'var(--tint-blue, #EFF6FF)' }}>
             <FileText size={18} style={{ color: '#2563EB' }} />
           </div>
           <h1 style={{ fontFamily: 'Sora, sans-serif', fontSize: 18, fontWeight: 700, color: '#0F172A' }}>Incident Reports</h1>

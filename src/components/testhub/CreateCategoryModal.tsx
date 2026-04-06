@@ -113,8 +113,8 @@ export function CreateCategoryModal({ isOpen, onClose, onSuccess, existingCatego
         {/* Body */}
         <div style={{ padding: 24, overflowY: 'auto', flex: 1, display: 'flex', flexDirection: 'column', gap: 20, fontFamily: 'Inter' }}>
           {/* Preview */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 16, backgroundColor: 'var(--bg-1)', borderRadius: 10, border: '1px solid var(--divider)' }}>
-            <div style={{ width: 40, height: 40, borderRadius: 10, backgroundColor: `${color}20`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 16, backgroundColor: 'var(--bg-1)', borderRadius: 12, border: '1px solid var(--divider)' }}>
+            <div style={{ width: 40, height: 40, borderRadius: 12, backgroundColor: `${color}20`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <SelectedIcon size={20} style={{ color }} />
             </div>
             <div>

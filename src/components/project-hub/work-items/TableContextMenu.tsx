@@ -85,7 +85,7 @@ export function TableContextMenu({
         ) : (
           <button
             onClick={() => setDeleteConfirm(true)}
-            className="w-full flex items-center gap-2.5 px-3 py-1.5 text-[13px] hover:bg-[#FEF2F2] text-left transition-colors"
+            className="w-full flex items-center gap-2.5 px-3 py-1.5 text-[13px] hover:bg-[var(--tint-red, #FEF2F2)] text-left transition-colors"
             style={{ color: 'var(--sem-danger)' }}
           >
             <Trash2 size={13} />

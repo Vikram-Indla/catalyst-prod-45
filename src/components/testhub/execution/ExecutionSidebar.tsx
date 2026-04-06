@@ -56,10 +56,10 @@ const SEVERITY_COLORS: Record<string, string> = {
 };
 
 const STEP_COLORS: Record<string, { text: string; bg: string; border: string }> = {
-  passed:  { text: '#16A34A', bg: '#F0FDF4', border: '#BBF7D0' },
-  failed:  { text: '#DC2626', bg: '#FEF2F2', border: '#FECACA' },
+  passed:  { text: '#16A34A', bg: 'var(--tint-green, #F0FDF4)', border: '#BBF7D0' },
+  failed:  { text: '#DC2626', bg: 'var(--tint-red, #FEF2F2)', border: '#FECACA' },
   blocked: { text: '#D97706', bg: '#FFFBEB', border: '#FED7AA' },
-  skipped: { text: '#475569', bg: '#F8FAFC', border: 'var(--bd-default, #E2E8F0)' },
+  skipped: { text: '#475569', bg: 'var(--bg-1, #F8FAFC)', border: 'var(--bd-default, #E2E8F0)' },
   not_run: { text: '#64748B', bg: var(--bg-2, '#F1F5F9'), border: 'var(--bd-default, #E2E8F0)' },
 };
 
@@ -134,7 +134,7 @@ export function ExecutionSidebar({
               <span style={{
                 fontSize: 10, fontWeight: 700, backgroundColor: activeTab === tab.key ? 'var(--cp-blue)' : 'var(--bg-2)',
                 color: activeTab === tab.key ? 'var(--fg-on-blue)' : 'var(--fg-3)',
-                padding: '1px 6px', borderRadius: 10, minWidth: 18, textAlign: 'center',
+                padding: '1px 6px', borderRadius: 12, minWidth: 18, textAlign: 'center',
               }}>
                 {tab.count}
               </span>
@@ -212,7 +212,7 @@ export function ExecutionSidebar({
 
         {activeTab === 'history' && previousRunData && (
           <div>
-            <div style={{ marginBottom: 12, padding: '8px 12px', backgroundColor: '#EFF6FF', borderRadius: 6, border: '1px solid #BFDBFE' }}>
+            <div style={{ marginBottom: 12, padding: '8px 12px', backgroundColor: 'var(--tint-blue, #EFF6FF)', borderRadius: 6, border: '1px solid #BFDBFE' }}>
               <p style={{ fontSize: 11, fontWeight: 600, color: '#1D4ED8', margin: 0 }}>
                 Previous Run #{previousRunData.execution_number}
               </p>
@@ -226,7 +226,7 @@ export function ExecutionSidebar({
                 const colors = STEP_COLORS[step.status] || STEP_COLORS.not_run;
                 return (
                   <div key={i} style={{
-                    padding: '8px 10px', backgroundColor: '#FFFFFF',
+                    padding: '8px 10px', backgroundColor: 'var(--bg-app, #FFFFFF)',
                     border: '0.75px solid var(--bd-default, #E2E8F0)', borderRadius: 6,
                     borderLeft: `3px solid ${colors.border}`,
                   }}>
@@ -235,7 +235,7 @@ export function ExecutionSidebar({
                         Step {step.step_number}
                       </span>
                       <span style={{
-                        fontSize: 9, fontWeight: 600, padding: '1px 6px', borderRadius: 3,
+                        fontSize: 9, fontWeight: 600, padding: '1px 6px', borderRadius: 4,
                         color: colors.text, backgroundColor: colors.bg, textTransform: 'uppercase',
                       }}>
                         {step.status.replace('_', ' ')}

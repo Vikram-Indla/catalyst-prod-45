@@ -124,7 +124,7 @@ export function StatusSelect({ value, onChange, disabled }: StatusSelectProps) {
                     cursor: 'pointer',
                   }}
                   onMouseEnter={e => {
-                    if (value !== option.value) (e.currentTarget as HTMLElement).style.background = '#F8FAFC';
+                    if (value !== option.value) (e.currentTarget as HTMLElement).style.background = 'var(--bg-1, #F8FAFC)';
                   }}
                   onMouseLeave={e => {
                     if (value !== option.value) (e.currentTarget as HTMLElement).style.background = 'transparent';

@@ -61,7 +61,7 @@ export default function BoardManagerPage({ projectIdOverride, basePath }: BoardM
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: 'var(--bg-1)' }}>
       {error && (
-        <div style={{ background: '#FEF2F2', color: 'var(--sem-danger)', padding: '8px 24px', fontSize: 12, fontFamily: "'Inter', sans-serif", borderBottom: '1px solid #FECACA' }}>
+        <div style={{ background: 'var(--tint-red, #FEF2F2)', color: 'var(--sem-danger)', padding: '8px 24px', fontSize: 12, fontFamily: "'Inter', sans-serif", borderBottom: '1px solid #FECACA' }}>
           ⚠ Board query error: {(error as Error).message} | projectId: {projectId}
         </div>
       )}
@@ -136,7 +136,7 @@ export default function BoardManagerPage({ projectIdOverride, basePath }: BoardM
                 }}>
                   {tab.label}
                   <span style={{
-                    fontSize: 11, fontWeight: 600, padding: '1px 7px', borderRadius: 10,
+                    fontSize: 11, fontWeight: 600, padding: '1px 7px', borderRadius: 12,
                     background: active ? 'rgba(37,99,235,0.08)' : 'var(--bg-1)',
                     color: active ? 'var(--cp-blue)' : 'var(--fg-4)',
                   }}>{tabCounts[tab.key]}</span>

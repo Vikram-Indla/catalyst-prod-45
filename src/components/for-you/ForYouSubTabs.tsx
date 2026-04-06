@@ -56,7 +56,7 @@ export function ForYouSubTabs({ activeTab, counts, onTabChange }: ForYouSubTabsP
                 minWidth: 22,
                 height: 18,
                 padding: '0 6px',
-                borderRadius: 10,
+                borderRadius: 12,
                 fontSize: 11,
                 fontWeight: 700,
                 fontVariantNumeric: 'tabular-nums',

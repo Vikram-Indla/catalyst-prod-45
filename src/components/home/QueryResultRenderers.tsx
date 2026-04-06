@@ -35,7 +35,7 @@ function StatusLoz({ status }: { status: string }) {
   return (
     <span style={{
       display: 'inline-flex', alignItems: 'center', height: 18,
-      padding: '0 6px', borderRadius: 3,
+      padding: '0 6px', borderRadius: 4,
       background: s.bg, color: s.color,
       fontSize: 10, fontWeight: 700, textTransform: 'uppercase',
       letterSpacing: '0.03em', fontFamily: F.inter,
@@ -165,7 +165,7 @@ export function QueryResultRenderer({ result, onItemClick, onFollowUp }: {
                   <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1)', fontFamily: F.inter }}>{r.project}</span>
                   <span style={{
                     marginLeft: 'auto', fontSize: 10, fontWeight: 700, textTransform: 'uppercase',
-                    padding: '2px 8px', borderRadius: 3,
+                    padding: '2px 8px', borderRadius: 4,
                     background: r.health === 'on-track' ? 'var(--sem-success)' : 'var(--sem-warning-bg)',
                     color: r.health === 'on-track' ? '#FFFFFF' : 'var(--sem-warning)',
                   }}>
@@ -173,8 +173,8 @@ export function QueryResultRenderer({ result, onItemClick, onFollowUp }: {
                   </span>
                 </div>
                 {/* Progress bar */}
-                <div style={{ height: 6, borderRadius: 3, background: 'var(--bg-3)', overflow: 'hidden', marginBottom: 6 }}>
-                  <div style={{ height: '100%', width: `${pct}%`, borderRadius: 3, background: r.health === 'on-track' ? 'var(--sem-success)' : 'var(--sem-warning)', transition: 'width 300ms' }} />
+                <div style={{ height: 6, borderRadius: 4, background: 'var(--bg-3)', overflow: 'hidden', marginBottom: 6 }}>
+                  <div style={{ height: '100%', width: `${pct}%`, borderRadius: 4, background: r.health === 'on-track' ? 'var(--sem-success)' : 'var(--sem-warning)', transition: 'width 300ms' }} />
                 </div>
                 <div style={{ display: 'flex', gap: 16, fontSize: 11, color: 'var(--fg-3)', fontFamily: F.mono }}>
                   <span>Done: {r.done}</span>

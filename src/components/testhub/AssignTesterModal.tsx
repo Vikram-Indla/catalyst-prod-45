@@ -131,7 +131,7 @@ export function AssignTesterModal({
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <div style={{
-              width: 40, height: 40, borderRadius: 10, backgroundColor: '#E0E7FF',
+              width: 40, height: 40, borderRadius: 12, backgroundColor: '#E0E7FF',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
               <Users size={20} style={{ color: '#4F46E5' }} />
@@ -209,7 +209,7 @@ export function AssignTesterModal({
                 style={{
                   display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px',
                   border: `1.5px solid ${selectedProfileId === null ? '#A5B4FC' : 'var(--divider)'}`,
-                  borderRadius: 10, backgroundColor: selectedProfileId === null ? 'color-mix(in srgb, var(--cp-blue) 8%, transparent)' : 'var(--cp-float)',
+                  borderRadius: 12, backgroundColor: selectedProfileId === null ? 'color-mix(in srgb, var(--cp-blue) 8%, transparent)' : 'var(--cp-float)',
                   cursor: 'pointer', textAlign: 'left', width: '100%',
                 }}
               >
@@ -245,7 +245,7 @@ export function AssignTesterModal({
                     style={{
                       display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px',
                       border: `1.5px solid ${isSelected ? '#A5B4FC' : 'var(--divider)'}`,
-                      borderRadius: 10, backgroundColor: isSelected ? 'color-mix(in srgb, var(--cp-blue) 8%, transparent)' : 'var(--cp-float)',
+                      borderRadius: 12, backgroundColor: isSelected ? 'color-mix(in srgb, var(--cp-blue) 8%, transparent)' : 'var(--cp-float)',
                       cursor: 'pointer', textAlign: 'left', width: '100%', transition: 'all 0.15s',
                     }}
                   >

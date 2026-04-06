@@ -69,7 +69,7 @@ export async function exportRoadmapToPDF(
       themePanelCanvas = await html2canvas(themePanelElement, {
         scale: 2,
         useCORS: true,
-        backgroundColor: '#FFFFFF',
+        backgroundColor: 'var(--bg-app, #FFFFFF)',
         logging: false,
         windowWidth: themePanelElement.scrollWidth,
         windowHeight: themePanelElement.scrollHeight,

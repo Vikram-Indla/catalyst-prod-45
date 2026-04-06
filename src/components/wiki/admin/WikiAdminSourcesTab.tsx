@@ -94,7 +94,7 @@ function DocumentsTable() {
                 onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
               >
                 <td style={{ padding: '8px 12px' }}>
-                  <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, padding: '2px 6px', borderRadius: 3, background: 'var(--cp-bg-sunken, #F1F5F9)' }}>{d.domain_code ?? '—'}</span>
+                  <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, padding: '2px 6px', borderRadius: 4, background: 'var(--cp-bg-sunken, #F1F5F9)' }}>{d.domain_code ?? '—'}</span>
                 </td>
                 <td style={{ padding: '8px 12px', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={d.original_filename || d.filename}>{d.original_filename || d.filename || '—'}</td>
                 <td style={{ padding: '8px 12px', fontSize: 11 }}>{d.doc_type || d.mime_type || '—'}</td>
@@ -162,7 +162,7 @@ function JiraSourcesTable() {
 function SmBtn({ icon, title, onClick }: { icon: React.ReactElement; title: string; onClick: () => void }) {
   return (
     <button onClick={onClick} title={title} aria-label={title} style={{
-      padding: 4, borderRadius: 3, border: '1px solid var(--cp-border-default, rgba(15,23,42,0.12))',
+      padding: 4, borderRadius: 4, border: '1px solid var(--cp-border-default, rgba(15,23,42,0.12))',
       background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center',
       color: 'var(--cp-text-tertiary, #64748B)', outline: 'none',
     }}
@@ -188,5 +188,5 @@ function DocStatusLoz({ status }: { status: string }) {
     deleted: { bg: '#DFE1E6', color: '#44546F' },
   };
   const s = map[status] ?? map.failed;
-  return <span style={{ display: 'inline-block', padding: '2px 8px', borderRadius: 3, background: s.bg, color: s.color, fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em' }}>{status ?? '—'}</span>;
+  return <span style={{ display: 'inline-block', padding: '2px 8px', borderRadius: 4, background: s.bg, color: s.color, fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em' }}>{status ?? '—'}</span>;
 }

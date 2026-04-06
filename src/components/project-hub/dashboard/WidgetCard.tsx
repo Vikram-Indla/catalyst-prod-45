@@ -51,7 +51,7 @@ function WidgetCardInner({ title, subtitle, count, countColor, leftBorder, heade
       className={`ph-widget-card ${dark ? 'bg-[#0A0A0A]' : 'bg-[var(--bg-app)]'}`}
       style={{
         border: dark ? '1px solid rgba(255,255,255,0.08)' : '1px solid var(--divider)',
-        borderRadius: 10,
+        borderRadius: 12,
         borderLeft: leftBorder ? `3px solid ${leftBorder}` : undefined,
         overflow: 'hidden',
         boxShadow: dark ? 'none' : '0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.04)',

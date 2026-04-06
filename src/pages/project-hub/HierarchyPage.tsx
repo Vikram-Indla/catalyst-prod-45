@@ -196,7 +196,7 @@ function FilterDropdown({ options, selected, onChange, onClose, searchable = fal
       <div style={{ position: 'fixed', inset: 0, zIndex: 99 }} onClick={onClose} />
       <div ref={ref} style={{
         position: 'absolute', top: 'calc(100% + 6px)', left: 0, width: variant === 'assignee' ? 280 : 260,
-        background: isDark ? '#1A1A1A' : '#FFFFFF', border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 10,
+        background: isDark ? '#1A1A1A' : '#FFFFFF', border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 12,
         boxShadow: isDark ? '0 12px 40px rgba(0,0,0,0.40), 0 2px 8px rgba(0,0,0,0.20)' : '0 12px 40px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.04)', zIndex: 100, maxHeight: 360,
         display: 'flex', flexDirection: 'column', overflow: 'hidden',
       }}>
@@ -245,7 +245,7 @@ function FilterDropdown({ options, selected, onChange, onClose, searchable = fal
                 onMouseLeave={e => (e.currentTarget.style.background = isSelected ? 'rgba(37,99,235,0.04)' : 'transparent')}
               >
                 <div style={{
-                  width: 16, height: 16, borderRadius: 3, border: `1.5px solid ${isSelected ? '#2563EB' : '#CBD5E1'}`,
+                  width: 16, height: 16, borderRadius: 4, border: `1.5px solid ${isSelected ? '#2563EB' : '#CBD5E1'}`,
                   background: isSelected ? '#2563EB' : isDark ? '#1A1A1A' : '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center',
                   flexShrink: 0, transition: 'all 80ms',
                 }}>
@@ -294,7 +294,7 @@ function FilterDropdown({ options, selected, onChange, onClose, searchable = fal
 
                 {variant === 'release' && (
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1 }}>
-                    <div style={{ width: 6, height: 6, borderRadius: 2, background: '#0D9488', flexShrink: 0 }} />
+                    <div style={{ width: 6, height: 6, borderRadius: 4, background: '#0D9488', flexShrink: 0 }} />
                     <span style={{ fontSize: 12 }}>{opt}</span>
                   </div>
                 )}

@@ -43,7 +43,7 @@ export default function WorkHubColumnFilter({ values, selected, onApply, trigger
         <div style={{ overflowY: 'auto', maxHeight: 200, padding: '4px 0' }}>
           {filtered.map(v => (
             <button key={v} onClick={() => toggleValue(v)} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 8, padding: '5px 12px', border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 12, color: 'var(--fg-1)', textAlign: 'left' }}>
-              <div style={{ width: 16, height: 16, borderRadius: 3, border: localSelected.has(v) ? 'none' : '1.5px solid var(--bd-default, rgba(255,255,255,0.08))', background: localSelected.has(v) ? 'var(--cp-blue)' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <div style={{ width: 16, height: 16, borderRadius: 4, border: localSelected.has(v) ? 'none' : '1.5px solid var(--bd-default, rgba(255,255,255,0.08))', background: localSelected.has(v) ? 'var(--cp-blue)' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                 {localSelected.has(v) && <Check size={11} color="white" strokeWidth={3} />}
               </div>
               <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{v}</span>

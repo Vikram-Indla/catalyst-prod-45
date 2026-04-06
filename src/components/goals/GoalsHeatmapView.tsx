@@ -69,7 +69,7 @@ export function GoalsHeatmapView({ goals, themes, onCellClick, isDark = false }:
   const rowBorder = isDark ? DK.borderSubtle : 'var(--cp-bd-zone)';
 
   return (
-    <div className="heatmap-scroll" style={{ borderRadius: 10, overflow: 'hidden', background: isDark ? 'transparent' : 'var(--bg-app)', border: `1px solid ${tableBorder}` }}>
+    <div className="heatmap-scroll" style={{ borderRadius: 12, overflow: 'hidden', background: isDark ? 'transparent' : 'var(--bg-app)', border: `1px solid ${tableBorder}` }}>
       {/* Header */}
       <div style={{
         display: 'grid', gridTemplateColumns: gridCols,

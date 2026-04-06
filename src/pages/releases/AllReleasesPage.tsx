@@ -549,12 +549,12 @@ export default function AllReleasesPage() {
             <button
               onClick={() => setIsExportDropdownOpen(p => !p)}
               className="flex items-center gap-1.5 transition-colors"
-              style={{ height: '32px', padding: '0 12px', border: '1px solid #e2e8f0', borderRadius: '6px', background: '#fff', fontSize: '13px', fontWeight: 500, color: '#334155' }}
+              style={{ height: '32px', padding: '0 12px', border: '1px solid #e2e8f0', borderRadius: '6px', background: 'var(--bg-app, #fff)', fontSize: '13px', fontWeight: 500, color: '#334155' }}
             >
               <Download className="w-3.5 h-3.5" /> Export
             </button>
             {isExportDropdownOpen && (
-              <div className="absolute right-0 mt-1 z-50" style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: '8px', boxShadow: '0 8px 24px rgba(0,0,0,0.1)', padding: '4px', minWidth: '200px' }}>
+              <div className="absolute right-0 mt-1 z-50" style={{ background: 'var(--bg-app, #fff)', border: '1px solid #e2e8f0', borderRadius: '8px', boxShadow: '0 8px 24px rgba(0,0,0,0.1)', padding: '4px', minWidth: '200px' }}>
                 <DropdownItem icon={<FileText className="w-3.5 h-3.5" />} label="Export as CSV" onClick={handleExportCSV} />
                 <DropdownItem icon={<FileSpreadsheet className="w-3.5 h-3.5" />} label="Export as Excel" onClick={() => { toast.info('Coming soon'); setIsExportDropdownOpen(false); }} />
                 <DropdownItem icon={<FileDown className="w-3.5 h-3.5" />} label="Export as PDF" onClick={() => { toast.info('Coming soon'); setIsExportDropdownOpen(false); }} />
@@ -578,7 +578,7 @@ export default function AllReleasesPage() {
 
       {/* ═══ STAT STRIP (48px) ═══ */}
       <div className="flex items-center px-6" style={{ height: '48px', flexShrink: 0 }}>
-        <div className="flex items-center justify-between w-full" style={{ border: '1px solid #e2e8f0', borderRadius: '8px', background: '#fff', padding: '6px 16px' }}>
+        <div className="flex items-center justify-between w-full" style={{ border: '1px solid #e2e8f0', borderRadius: '8px', background: 'var(--bg-app, #fff)', padding: '6px 16px' }}>
           <div className="flex items-center" style={{ gap: '16px' }}>
             <StatItem number={statCounts.total} label="Total" />
             <StatItem number={statCounts.planning} label="Planning" dotColor="#94a3b8" />
@@ -724,7 +724,7 @@ export default function AllReleasesPage() {
                 Change Status <ChevronDown className="w-3 h-3" />
               </button>
               {bulkStatusDropdown && (
-                <div className="absolute top-full mt-1 left-0 z-50" style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: '6px', boxShadow: '0 8px 24px rgba(0,0,0,0.1)', minWidth: '140px' }}>
+                <div className="absolute top-full mt-1 left-0 z-50" style={{ background: 'var(--bg-app, #fff)', border: '1px solid #e2e8f0', borderRadius: '6px', boxShadow: '0 8px 24px rgba(0,0,0,0.1)', minWidth: '140px' }}>
                   {(['planned', 'active', 'testing', 'uat', 'released'] as const).map(s => (
                     <button key={s} onClick={() => handleBulkStatus(s)} className="block w-full text-left px-3 py-1.5 transition-colors hover:bg-[#f8fafc]" style={{ fontSize: '13px', color: '#334155', border: 'none', background: 'transparent', cursor: 'pointer' }}>
                       {getStatusConfig(s).label}
@@ -827,7 +827,7 @@ export default function AllReleasesPage() {
       </div>
 
       {/* ═══ STATUS BAR (32px) ═══ */}
-      <div className="all-releases-pagination flex items-center px-6" style={{ height: '32px', flexShrink: 0, borderTop: '1px solid #e2e8f0', background: '#fff' }}>
+      <div className="all-releases-pagination flex items-center px-6" style={{ height: '32px', flexShrink: 0, borderTop: '1px solid #e2e8f0', background: 'var(--bg-app, #fff)' }}>
         <span style={{ fontSize: '12px', fontWeight: 500, color: '#64748b' }}>
           {filteredReleases.length} of {releases.length} releases
         </span>
@@ -837,7 +837,7 @@ export default function AllReleasesPage() {
       {detailRelease && (
         <>
           <div className="fixed inset-0 z-[200]" style={{ background: 'rgba(0,0,0,0.3)' }} onClick={() => setDetailRelease(null)} />
-          <div className="fixed right-0 top-0 bottom-0 z-[201] overflow-y-auto" style={{ width: '480px', background: '#fff', boxShadow: '-4px 0 20px rgba(0,0,0,0.1)', animation: 'slideInRight 200ms ease' }}>
+          <div className="fixed right-0 top-0 bottom-0 z-[201] overflow-y-auto" style={{ width: '480px', background: 'var(--bg-app, #fff)', boxShadow: '-4px 0 20px rgba(0,0,0,0.1)', animation: 'slideInRight 200ms ease' }}>
             <div className="flex items-center justify-between px-6 py-4 border-b" style={{ borderColor: '#e2e8f0' }}>
               <h2 style={{ fontSize: '16px', fontWeight: 600, color: '#0f172a' }}>{detailRelease.name}</h2>
               <button onClick={() => setDetailRelease(null)} style={closeBtnStyle}>✕</button>
@@ -885,7 +885,7 @@ export default function AllReleasesPage() {
       {isAIDrawerOpen && (
         <>
           <div className="fixed inset-0 z-[200]" style={{ background: 'rgba(0,0,0,0.2)' }} onClick={() => setIsAIDrawerOpen(false)} />
-          <div className="fixed right-0 top-0 bottom-0 z-[201] overflow-y-auto" style={{ width: '400px', background: '#fff', boxShadow: '-4px 0 20px rgba(0,0,0,0.1)', animation: 'slideInRight 200ms ease' }}>
+          <div className="fixed right-0 top-0 bottom-0 z-[201] overflow-y-auto" style={{ width: '400px', background: 'var(--bg-app, #fff)', boxShadow: '-4px 0 20px rgba(0,0,0,0.1)', animation: 'slideInRight 200ms ease' }}>
             <div className="flex items-center justify-between px-6 py-4 border-b" style={{ borderColor: '#e2e8f0' }}>
               <div className="flex items-center gap-2">
                 <Sparkles className="w-4 h-4" style={{ color: '#8b5cf6' }} />
@@ -932,11 +932,11 @@ export default function AllReleasesPage() {
       {deleteConfirm && (
         <>
           <div className="fixed inset-0 z-50" style={{ background: 'rgba(0,0,0,0.4)' }} onClick={() => setDeleteConfirm(false)} />
-          <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50" style={{ width: '400px', background: '#fff', borderRadius: '12px', boxShadow: '0 20px 60px rgba(0,0,0,0.15)', padding: '24px' }}>
+          <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50" style={{ width: '400px', background: 'var(--bg-app, #fff)', borderRadius: '12px', boxShadow: '0 20px 60px rgba(0,0,0,0.15)', padding: '24px' }}>
             <h3 style={{ fontSize: '16px', fontWeight: 600, color: '#0f172a', marginBottom: '8px' }}>Archive {selectedIds.size} releases?</h3>
             <p style={{ fontSize: '13px', color: '#64748b', marginBottom: '20px' }}>These releases will be archived and hidden from the list. They can be restored later.</p>
             <div className="flex justify-end gap-2">
-              <button onClick={() => setDeleteConfirm(false)} style={{ padding: '6px 16px', borderRadius: '6px', border: '1px solid #e2e8f0', background: '#fff', color: '#334155', fontSize: '13px', cursor: 'pointer' }}>Cancel</button>
+              <button onClick={() => setDeleteConfirm(false)} style={{ padding: '6px 16px', borderRadius: '6px', border: '1px solid #e2e8f0', background: 'var(--bg-app, #fff)', color: '#334155', fontSize: '13px', cursor: 'pointer' }}>Cancel</button>
               <button
                 onClick={handleBulkDelete}
                 disabled={bulkDeleteMutation.isPending}
@@ -1119,15 +1119,15 @@ function ReleaseRow({ release: r, index = 0, selected, onToggle, onClick, onNavi
       <td style={{ ...cellStyle, width: '100px' }}><StatusPill status={r.status} /></td>
       <td style={{ ...cellStyle, width: '130px' }}>
         <div className="flex items-center gap-2">
-          <div style={{ width: '64px', height: '6px', background: '#e2e8f0', borderRadius: '3px', overflow: 'hidden' }}>
-            <div style={{ width: `${r.progress}%`, height: '100%', background: r.progress <= 30 ? '#ef4444' : r.progress <= 60 ? '#d97706' : '#0d9488', borderRadius: '3px' }} />
+          <div style={{ width: '64px', height: '6px', background: '#e2e8f0', borderRadius: '4px', overflow: 'hidden' }}>
+            <div style={{ width: `${r.progress}%`, height: '100%', background: r.progress <= 30 ? '#ef4444' : r.progress <= 60 ? '#d97706' : '#0d9488', borderRadius: '4px' }} />
           </div>
           <span style={{ fontSize: '13px', fontWeight: 500, color: '#64748b', fontFamily: "'JetBrains Mono', monospace" }}>{r.progress}%</span>
         </div>
       </td>
       <td style={cellStyle}>
         <div className="flex items-center gap-2">
-          <div className="flex" style={{ width: '60px', height: '6px', borderRadius: '3px', overflow: 'hidden', background: '#e2e8f0' }}>
+          <div className="flex" style={{ width: '60px', height: '6px', borderRadius: '4px', overflow: 'hidden', background: '#e2e8f0' }}>
             {r.testsTotal > 0 && (
               <>
                 <div style={{ width: `${testRatio * 100}%`, background: testBarColor }} />
@@ -1144,8 +1144,8 @@ function ReleaseRow({ release: r, index = 0, selected, onToggle, onClick, onNavi
       <td style={{ ...cellStyle, width: '100px' }}>
         {r.coverage !== null ? (
           <div className="flex items-center gap-2">
-            <div style={{ width: '48px', height: '4px', background: '#e2e8f0', borderRadius: '2px', overflow: 'hidden' }}>
-              <div style={{ width: `${r.coverage}%`, height: '100%', background: covColor, borderRadius: '2px' }} />
+            <div style={{ width: '48px', height: '4px', background: '#e2e8f0', borderRadius: '4px', overflow: 'hidden' }}>
+              <div style={{ width: `${r.coverage}%`, height: '100%', background: covColor, borderRadius: '4px' }} />
             </div>
             <span style={{ fontSize: '13px', fontWeight: 500, color: covColor, fontFamily: "'JetBrains Mono', monospace" }}>{r.coverage}%</span>
           </div>
@@ -1211,7 +1211,7 @@ function FilterPill({ label, active, count, isOpen, onToggle, children }: {
         {label}{active && count > 0 ? ` (${count})` : ''} <ChevronDown className="w-3 h-3" />
       </button>
       {isOpen && (
-        <div className="absolute top-full mt-1 left-0 z-50" style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: '8px', boxShadow: '0 8px 24px rgba(0,0,0,0.1)', padding: '4px', minWidth: '200px' }}>
+        <div className="absolute top-full mt-1 left-0 z-50" style={{ background: 'var(--bg-app, #fff)', border: '1px solid #e2e8f0', borderRadius: '8px', boxShadow: '0 8px 24px rgba(0,0,0,0.1)', padding: '4px', minWidth: '200px' }}>
           {children}
         </div>
       )}
@@ -1272,7 +1272,7 @@ function NewReleaseModal({ onClose, onCreate, isCreating }: { onClose: () => voi
   return (
     <>
       <div className="fixed inset-0 z-50" style={{ background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(4px)' }} onClick={onClose} />
-      <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50" style={{ width: '500px', background: '#fff', borderRadius: '12px', boxShadow: '0 20px 60px rgba(0,0,0,0.15)', animation: 'scaleIn 200ms ease' }}>
+      <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50" style={{ width: '500px', background: 'var(--bg-app, #fff)', borderRadius: '12px', boxShadow: '0 20px 60px rgba(0,0,0,0.15)', animation: 'scaleIn 200ms ease' }}>
         <div className="flex items-center justify-between px-6 py-4 border-b" style={{ borderColor: '#e2e8f0' }}>
           <h2 style={{ fontSize: '16px', fontWeight: 600, color: '#0f172a' }}>Create New Release</h2>
           <button onClick={onClose} style={closeBtnStyle}>✕</button>
@@ -1307,7 +1307,7 @@ function NewReleaseModal({ onClose, onCreate, isCreating }: { onClose: () => voi
           </div>
         </div>
         <div className="flex justify-end gap-2 px-6 py-4 border-t" style={{ borderColor: '#e2e8f0' }}>
-          <button onClick={onClose} style={{ padding: '6px 16px', borderRadius: '6px', border: '1px solid #e2e8f0', background: '#fff', color: '#334155', fontSize: '13px', cursor: 'pointer' }}>Cancel</button>
+          <button onClick={onClose} style={{ padding: '6px 16px', borderRadius: '6px', border: '1px solid #e2e8f0', background: 'var(--bg-app, #fff)', color: '#334155', fontSize: '13px', cursor: 'pointer' }}>Cancel</button>
           <button
             onClick={handleSubmit}
             disabled={isCreating}
@@ -1373,8 +1373,8 @@ function CardsView({ releases, selectedIds, onToggle, onCardClick }: {
                 </span>
               </div>
               <div className="flex items-center gap-2 mb-2">
-                <div style={{ flex: 1, height: '4px', background: '#e2e8f0', borderRadius: '2px', overflow: 'hidden' }}>
-                  <div style={{ width: `${r.health}%`, height: '100%', background: getHealthColor(r.health), borderRadius: '2px', transition: 'width 400ms ease-out' }} />
+                <div style={{ flex: 1, height: '4px', background: '#e2e8f0', borderRadius: '4px', overflow: 'hidden' }}>
+                  <div style={{ width: `${r.health}%`, height: '100%', background: getHealthColor(r.health), borderRadius: '4px', transition: 'width 400ms ease-out' }} />
                 </div>
                 <span style={{ fontSize: '11px', fontWeight: 600, color: '#64748b' }}>{r.health}</span>
               </div>
@@ -1406,8 +1406,8 @@ function CardsView({ releases, selectedIds, onToggle, onCardClick }: {
                 <span style={{ fontSize: '11px', color: '#64748b' }}>
                   {r.coverage !== null ? (
                     <span className="inline-flex items-center gap-1">
-                      <span style={{ display: 'inline-block', width: '32px', height: '3px', background: '#e2e8f0', borderRadius: '2px', overflow: 'hidden', verticalAlign: 'middle' }}>
-                        <span style={{ display: 'block', width: `${r.coverage}%`, height: '100%', background: r.coverage <= 30 ? '#ef4444' : r.coverage <= 60 ? '#d97706' : '#0d9488', borderRadius: '2px' }} />
+                      <span style={{ display: 'inline-block', width: '32px', height: '3px', background: '#e2e8f0', borderRadius: '4px', overflow: 'hidden', verticalAlign: 'middle' }}>
+                        <span style={{ display: 'block', width: `${r.coverage}%`, height: '100%', background: r.coverage <= 30 ? '#ef4444' : r.coverage <= 60 ? '#d97706' : '#0d9488', borderRadius: '4px' }} />
                       </span>
                       <span style={{ fontWeight: 600, color: '#334155' }}>{r.coverage}%</span>
                     </span>
@@ -1475,7 +1475,7 @@ function TimelineView({ releases, onBarClick }: {
         </div>
       </div>
 
-      <div className="flex flex-1 min-h-0" style={{ border: '1px solid #e2e8f0', borderRadius: '8px', overflow: 'hidden', background: '#fff' }}>
+      <div className="flex flex-1 min-h-0" style={{ border: '1px solid #e2e8f0', borderRadius: '8px', overflow: 'hidden', background: 'var(--bg-app, #fff)' }}>
         <div style={{ width: '260px', flexShrink: 0, borderRight: '1px solid #e2e8f0' }}>
           <div style={{ height: '32px', background: '#f8fafc', display: 'flex', alignItems: 'center', padding: '0 12px', borderBottom: '1px solid #e2e8f0' }}>
             <span style={{ fontSize: '11px', fontWeight: 600, color: '#64748b', textTransform: 'uppercase' as const, letterSpacing: '0.05em' }}>RELEASE</span>
@@ -1553,7 +1553,7 @@ function TimelineView({ releases, onBarClick }: {
           className="fixed z-50 pointer-events-none"
           style={{
             left: tooltipPos.x + 8, top: tooltipPos.y + 8,
-            background: '#fff', border: '1px solid #e2e8f0', borderRadius: '8px',
+            background: 'var(--bg-app, #fff)', border: '1px solid #e2e8f0', borderRadius: '8px',
             boxShadow: '0 8px 24px rgba(0,0,0,0.1)', padding: '12px',
             animation: 'fadeInUp 150ms ease both', minWidth: '200px',
           }}

@@ -14,7 +14,7 @@ export const TYPE_COLORS: Record<string, {
   hover: string;
 }> = {
   project: { 
-    solid: '#475569', light: '#F8FAFC', label: 'Project',
+    solid: '#475569', light: 'var(--bg-1, #F8FAFC)', label: 'Project',
     gradient: 'linear-gradient(135deg, #475569, #334155)',
     hover: '#334155',
   },
@@ -24,7 +24,7 @@ export const TYPE_COLORS: Record<string, {
     hover: '#0F766E',
   },
   improvement: { 
-    solid: '#16A34A', light: '#F0FDF4', label: 'Improvement',
+    solid: '#16A34A', light: 'var(--tint-green, #F0FDF4)', label: 'Improvement',
     gradient: 'linear-gradient(135deg, #16A34A, #15803D)',
     hover: '#15803D',
   },
@@ -37,17 +37,17 @@ export const TYPE_COLORS: Record<string, {
 
 // ── Priority Colors ──
 export const PRIORITY_COLORS: Record<string, { color: string; bg: string; label: string }> = {
-  P0: { color: '#EF4444', bg: '#FEF2F2', label: 'Critical' },
+  P0: { color: '#EF4444', bg: 'var(--tint-red, #FEF2F2)', label: 'Critical' },
   P1: { color: '#D97706', bg: '#FFFBEB', label: 'High' },
-  P2: { color: '#2563EB', bg: '#EFF6FF', label: 'Medium' },
+  P2: { color: '#2563EB', bg: 'var(--tint-blue, #EFF6FF)', label: 'Medium' },
 };
 
 // ── Status Colors ──
 export const STATUS_COLORS: Record<string, { color: string; bg: string; label: string }> = {
-  Active:    { color: '#16A34A', bg: '#F0FDF4', label: 'Active' },
-  Planned:   { color: 'var(--fg-3, #94A3B8)', bg: '#F8FAFC', label: 'Planned' },
+  Active:    { color: '#16A34A', bg: 'var(--tint-green, #F0FDF4)', label: 'Active' },
+  Planned:   { color: 'var(--fg-3, #94A3B8)', bg: 'var(--bg-1, #F8FAFC)', label: 'Planned' },
   Completed: { color: '#0D9488', bg: '#F0FDFA', label: 'Completed' },
-  Cancelled: { color: '#EF4444', bg: '#FEF2F2', label: 'Cancelled' },
+  Cancelled: { color: '#EF4444', bg: 'var(--tint-red, #FEF2F2)', label: 'Cancelled' },
 };
 
 // ── Ink / Surface ──
@@ -59,7 +59,7 @@ export const INK = {
 };
 
 export const SURFACE = {
-  page: '#F8FAFC',
+  page: 'var(--bg-1, #F8FAFC)',
   card: '#FFFFFF',
   border: 'var(--bd-default, #E2E8F0)',
   borderLight: var(--bg-2, '#F1F5F9'),

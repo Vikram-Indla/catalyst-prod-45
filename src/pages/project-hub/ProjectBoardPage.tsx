@@ -116,7 +116,7 @@ export default function ProjectBoardPage() {
         <div
           className="flex items-center justify-center flex-shrink-0"
           style={{
-            width: 36, height: 36, borderRadius: 10,
+            width: 36, height: 36, borderRadius: 12,
             background: 'linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%)',
             color: '#fff', fontSize: 14, fontWeight: 700,
             fontFamily: "'JetBrains Mono', monospace",

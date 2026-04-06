@@ -162,7 +162,7 @@ function StatusBar({ statuses, total }: { statuses: Array<{ status: string; coun
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 10 }}>
         {statuses.map(s => (
           <div key={s.status} style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 12, color: 'var(--wh-tx3)' }}>
-            <span style={{ width: 8, height: 8, borderRadius: 2, background: getStatusColor(s.status) }} />
+            <span style={{ width: 8, height: 8, borderRadius: 4, background: getStatusColor(s.status) }} />
             <span style={{ fontFamily: 'var(--wh-fn)' }}>{s.status}</span>
             <span style={{ fontFamily: 'var(--wh-mo)', fontSize: 11, color: 'var(--wh-tx4)' }}>{s.count}</span>
           </div>
@@ -174,7 +174,7 @@ function StatusBar({ statuses, total }: { statuses: Array<{ status: string; coun
 
 function MiniBar({ items, getColor, total }: { items: Array<{ label: string; count: number }>; getColor: (l: string) => string; total: number }) {
   return (
-    <div style={{ display: 'flex', height: 6, borderRadius: 3, overflow: 'hidden', background: 'var(--wh-sf2)', flex: 1, maxWidth: 200 }}>
+    <div style={{ display: 'flex', height: 6, borderRadius: 4, overflow: 'hidden', background: 'var(--wh-sf2)', flex: 1, maxWidth: 200 }}>
       {items.map(s => (
         <div key={s.label} title={`${s.label}: ${s.count}`} style={{
           width: `${total > 0 ? (s.count / total) * 100 : 0}%`,
@@ -255,7 +255,7 @@ function ProjectCard({ project, total, siteUrl }: { project: ProjectHierarchy; t
               display: 'inline-flex', alignItems: 'center', gap: 4,
               fontSize: 10, fontWeight: 600, fontFamily: 'var(--wh-mo)',
               color: getDefectColor(d.type), background: `${getDefectColor(d.type)}15`,
-              padding: '2px 7px', borderRadius: 10,
+              padding: '2px 7px', borderRadius: 12,
             }}>
               {d.type === 'Production Incident' ? <AlertTriangle style={{ width: 10, height: 10 }} /> : <Bug style={{ width: 10, height: 10 }} />}
               {d.count}
@@ -430,7 +430,7 @@ function StoryRow({ story, projectKey, siteUrl, isLast }: { story: StoryNode; pr
         </span>
         <span style={{
           fontSize: 9, color: 'var(--wh-tx4)', fontFamily: 'var(--wh-mo)',
-          background: 'var(--wh-sf2)', padding: '1px 5px', borderRadius: 3, flexShrink: 0,
+          background: 'var(--wh-sf2)', padding: '1px 5px', borderRadius: 4, flexShrink: 0,
         }}>
           {story.type}
         </span>

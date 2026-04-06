@@ -40,7 +40,7 @@ export default function SidePanelComments({ workItemId }: Props) {
           <div key={i} style={{ display: 'flex', gap: 10, padding: '12px 0' }}>
             <div className="wh-skeleton" style={{ width: 28, height: 28, borderRadius: '50%', flexShrink: 0 }} />
             <div style={{ flex: 1 }}>
-              <div className="wh-skeleton" style={{ height: 12, width: '50%', borderRadius: 3, marginBottom: 8 }} />
+              <div className="wh-skeleton" style={{ height: 12, width: '50%', borderRadius: 4, marginBottom: 8 }} />
               <div className="wh-skeleton" style={{ height: 10, width: '80%', borderRadius: 3 }} />
             </div>
           </div>

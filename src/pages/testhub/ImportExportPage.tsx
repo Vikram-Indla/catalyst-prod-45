@@ -183,7 +183,7 @@ export default function ImportExportPage() {
       )}
 
       {/* Tabs */}
-      <div style={{ display: 'flex', gap: 4, marginBottom: 24, backgroundColor: isDark ? '#1A1A1A' : '#E2E8F0', padding: 4, borderRadius: 10, width: 'fit-content' }}>
+      <div style={{ display: 'flex', gap: 4, marginBottom: 24, backgroundColor: isDark ? '#1A1A1A' : '#E2E8F0', padding: 4, borderRadius: 12, width: 'fit-content' }}>
         <button
           onClick={() => setActiveTab('import')}
           style={{
@@ -241,7 +241,7 @@ export default function ImportExportPage() {
                 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
                     <div style={{
-                      width: 44, height: 44, borderRadius: 10,
+                      width: 44, height: 44, borderRadius: 12,
                       backgroundColor: `${type.color}15`,
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                     }}>
@@ -318,7 +318,7 @@ export default function ImportExportPage() {
                 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
                     <div style={{
-                      width: 44, height: 44, borderRadius: 10,
+                      width: 44, height: 44, borderRadius: 12,
                       backgroundColor: `${type.color}15`,
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                     }}>

@@ -61,7 +61,7 @@ function StatusLozenge({ status }: { status: string }) {
   return (
     <span style={{
       display: 'inline-block', height: 20, lineHeight: '20px',
-      padding: '0 6px', borderRadius: 3,
+      padding: '0 6px', borderRadius: 4,
       fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em',
       background: bg, color: text,
       fontFamily: 'Inter, sans-serif',
@@ -221,7 +221,7 @@ export function JiraSyncDrawer({
                     onClick={() => onApproveWriteBack(item.id)}
                     className="inline-flex items-center gap-1"
                     style={{
-                      height: 24, padding: '0 8px', borderRadius: 3,
+                      height: 24, padding: '0 8px', borderRadius: 4,
                       border: '0.75px solid var(--divider)', background: 'none',
                       fontSize: 10, fontWeight: 600, color: 'var(--fg-2)',
                       fontFamily: 'Inter, sans-serif', cursor: 'pointer',

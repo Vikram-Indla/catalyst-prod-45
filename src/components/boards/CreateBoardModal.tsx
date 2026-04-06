@@ -71,7 +71,7 @@ export default function CreateBoardModal({ projectId, basePath, onClose }: Props
     }} onClick={onClose}>
       <div onClick={e => e.stopPropagation()} style={{
         width: '100%', maxWidth: 640, maxHeight: '90vh',
-        background: 'var(--cp-float)', borderRadius: 10,
+        background: 'var(--cp-float)', borderRadius: 12,
         boxShadow: '0 20px 60px rgba(15,23,42,0.25)',
         display: 'flex', flexDirection: 'column',
         border: '0.75px solid rgba(15,23,42,0.12)',
@@ -252,7 +252,7 @@ function RadioCircle({ selected }: { selected: boolean }) {
       background: selected ? 'var(--cp-blue)' : 'var(--bg-app)',
       transition: 'all 100ms',
     }}>
-      {selected && <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#FFFFFF' }} />}
+      {selected && <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--bg-app, #FFFFFF)' }} />}
     </div>
   );
 }

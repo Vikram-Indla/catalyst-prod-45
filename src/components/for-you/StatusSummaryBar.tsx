@@ -62,7 +62,7 @@ export function StatusSummaryBar({ items }: StatusSummaryBarProps) {
             <span style={{
               display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
               minWidth: 24, height: 22, padding: '0 8px',
-              borderRadius: 3, backgroundColor: cat.bgVar, color: cat.textVar,
+              borderRadius: 4, backgroundColor: cat.bgVar, color: cat.textVar,
               fontSize: 12, fontWeight: 700,
             }}>
               {counts[cat.key]}

@@ -208,9 +208,9 @@ export const DetailTabBudget: React.FC<DetailTabBudgetProps> = ({ initiativeId }
 
       {/* B3 — Utilization Bar */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-        <div style={{ flex: 1, height: 5, background: 'var(--idp-surface-tertiary)', borderRadius: 3, overflow: 'hidden' }}>
+        <div style={{ flex: 1, height: 5, background: 'var(--idp-surface-tertiary)', borderRadius: 4, overflow: 'hidden' }}>
           <div style={{
-            width: `${utilPct}%`, height: '100%', borderRadius: 3, transition: 'width 0.3s',
+            width: `${utilPct}%`, height: '100%', borderRadius: 4, transition: 'width 0.3s',
             background: utilPct > 80 ? 'var(--idp-warning)' : 'var(--idp-primary)',
           }} />
         </div>
@@ -250,7 +250,7 @@ export const DetailTabBudget: React.FC<DetailTabBudgetProps> = ({ initiativeId }
                 {item.description}
               </span>
               <span style={{
-                fontSize: 9, fontWeight: 700, padding: '2px 5px', borderRadius: 3, display: 'inline-block', width: 'fit-content',
+                fontSize: 9, fontWeight: 700, padding: '2px 5px', borderRadius: 4, display: 'inline-block', width: 'fit-content',
                 background: item.expense_type === 'capex' ? 'var(--idp-primary-bg)' : 'var(--idp-teal-bg)',
                 color: item.expense_type === 'capex' ? 'var(--idp-primary)' : 'var(--idp-teal)',
               }}>
