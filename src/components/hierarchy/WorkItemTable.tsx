@@ -276,6 +276,7 @@ interface ContextMenuState {
 }
 
 export const WorkItemTable = memo(function WorkItemTable({ items, search, onSelect, selectedId, projectKey, allStatuses, onCreateClick, onRefresh, onAddChild }: WorkItemTableProps) {
+  const { isDark } = useTheme();
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
   const [sortKey, setSortKey] = useState<SortKey>('work');
   const [sortDir, setSortDir] = useState<SortDir>('asc');
