@@ -1304,31 +1304,30 @@ html:has(body[data-scroll-locked]) {
 @layer base {
   .dark,
   [data-theme="dark"] {
-    /* Global border softening for any border-border usage */
-    /* Cards - no outer border, use shadow for depth */
+    /* Global border softening — solid hex only (Geist) */
     .card,
     [class*="rounded-lg"][class*="border"] {
-      border-color: rgba(255, 255, 255, 0.04);
+      border-color: #2E2E2E;
     }
     
     /* Dividers and separators */
     hr,
     [role="separator"] {
-      border-color: rgba(255, 255, 255, 0.04);
-      background-color: rgba(255, 255, 255, 0.04);
+      border-color: #292929;
+      background-color: #292929;
     }
     
-    /* Table rows - ultra subtle */
+    /* Table rows */
     tr {
-      border-color: rgba(255, 255, 255, 0.035);
+      border-color: #2E2E2E;
     }
     
-    /* Input borders - slightly more visible for usability */
+    /* Input borders */
     input,
     textarea,
     select,
     [role="combobox"] {
-      border-color: rgba(255, 255, 255, 0.06);
+      border-color: #2E2E2E;
     }
     
     /* Focus states use brand color */
