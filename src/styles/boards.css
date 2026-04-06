@@ -125,21 +125,53 @@
   --boards-transition-lift: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Dark mode overrides */
+/* Dark mode overrides — NOCTURNE Warm Charcoal */
 .dark {
-  --boards-card-title-color: #e2e8f0;
-  --boards-card-title-color-done: #94a3b8;
-  --boards-card-id-color: #94a3b8;
-  --boards-column-title-color: #e2e8f0;
-  
-  --boards-bg-page: #0f172a;
-  --boards-bg-card: #1e293b;
-  --boards-bg-card-hover: #1e293b;
-  --boards-bg-empty: #1e293b;
-  
-  --boards-border-card: #334155;
-  --boards-border-card-hover: #475569;
-  --boards-border-empty: #334155;
+  --boards-card-title-color: #F5F3F0;
+  --boards-card-title-color-done: #6B6560;
+  --boards-card-id-color: #A09890;
+  --boards-column-title-color: #F5F3F0;
+  --boards-column-count-color: #A09890;
+
+  --boards-bg-page: #1A1714;
+  --boards-bg-card: #232019;
+  --boards-bg-card-hover: #2C2823;
+  --boards-bg-empty: #232019;
+
+  --boards-border-card: rgba(255,255,255,0.08);
+  --boards-border-card-hover: rgba(255,255,255,0.15);
+  --boards-border-empty: rgba(255,255,255,0.08);
+
+  --boards-shadow-card: 0 1px 3px rgba(0, 0, 0, 0.2);
+  --boards-shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.3);
+  --boards-shadow-card-dragging: 0 8px 24px rgba(0, 0, 0, 0.4);
+
+  --boards-date-color-upcoming: #6B6560;
+}
+
+/* NOCTURNE — Direct property overrides to guarantee dark card backgrounds */
+.dark .boards-card {
+  background-color: #232019;
+  border-color: rgba(255,255,255,0.08);
+}
+
+.dark .boards-card:hover {
+  background-color: #2C2823;
+  border-color: rgba(255,255,255,0.15);
+}
+
+.dark .boards-column__empty {
+  background-color: #232019;
+  border-color: rgba(255,255,255,0.08);
+  color: #6B6560;
+}
+
+.dark .boards-column__header {
+  color: #F5F3F0;
+}
+
+.dark .boards-container {
+  background-color: #1A1714;
 }
 
 
@@ -214,7 +246,8 @@
 }
 
 .dark .boards-column__count {
-  background-color: #334155;
+  background-color: #2C2823;
+  color: #A09890;
 }
 
 .boards-column__add-btn {
@@ -237,8 +270,8 @@
 }
 
 .dark .boards-column__add-btn:hover {
-  background-color: #334155;
-  color: #94a3b8;
+  background-color: #2C2823;
+  color: #A09890;
 }
 
 .boards-column__add-btn svg {
@@ -291,14 +324,14 @@
 }
 
 .dark .boards-add-task {
-  border-color: #475569;
-  color: #94a3b8;
+  border-color: rgba(255,255,255,0.08);
+  color: #6B6560;
 }
 
 .dark .boards-add-task:hover {
-  background-color: #1e293b;
-  border-color: #64748b;
-  color: #e2e8f0;
+  background-color: #2C2823;
+  border-color: rgba(255,255,255,0.15);
+  color: #F5F3F0;
 }
 
 .boards-add-task svg {
@@ -550,9 +583,9 @@
 }
 
 .dark .boards-card__avatar--empty {
-  background-color: #334155;
-  border-color: #475569;
-  color: #64748b;
+  background-color: #2C2823;
+  border-color: rgba(255,255,255,0.08);
+  color: #6B6560;
 }
 
 
@@ -590,8 +623,8 @@
 }
 
 .dark .boards-card__avatar-overflow {
-  background-color: #334155;
-  color: #94a3b8;
+  background-color: #2C2823;
+  color: #A09890;
 }
 
 
@@ -638,6 +671,32 @@
   color: #6b21a8;
 }
 
+/* Dark mode label overrides — NOCTURNE */
+.dark .boards-card__label--blue {
+  background-color: rgba(59, 130, 246, 0.15);
+  color: #93c5fd;
+}
+
+.dark .boards-card__label--green {
+  background-color: rgba(34, 197, 94, 0.15);
+  color: #86efac;
+}
+
+.dark .boards-card__label--yellow {
+  background-color: rgba(234, 179, 8, 0.15);
+  color: #fde047;
+}
+
+.dark .boards-card__label--red {
+  background-color: rgba(239, 68, 68, 0.15);
+  color: #fca5a5;
+}
+
+.dark .boards-card__label--purple {
+  background-color: rgba(139, 92, 246, 0.15);
+  color: #c4b5fd;
+}
+
 
 /* ============================================================================
    DRAGGING STATE (when using dnd-kit or react-beautiful-dnd)
@@ -657,8 +716,8 @@
 }
 
 .dark .boards-card--placeholder {
-  background-color: #1e293b;
-  border-color: #475569;
+  background-color: #232019;
+  border-color: rgba(255,255,255,0.08);
 }
 
 
@@ -729,12 +788,12 @@
 }
 
 .dark .boards-column__drag-handle {
-  color: #64748b;
+  color: #6B6560;
 }
 
 .dark .boards-column__drag-handle:hover {
   color: #60a5fa;
-  background-color: #1e3a5f;
+  background-color: #2C2823;
 }
 
 /* Delete button for custom columns */
@@ -763,7 +822,7 @@
 }
 
 .dark .boards-column__delete-btn:hover {
-  background-color: #450a0a;
+  background-color: #3a1a1a;
   color: #f87171;
 }
 
@@ -817,14 +876,14 @@
 }
 
 .dark .boards-add-column {
-  border-color: #475569;
-  color: #94a3b8;
+  border-color: rgba(255,255,255,0.08);
+  color: #6B6560;
 }
 
 .dark .boards-add-column:hover {
-  background-color: #1e293b;
-  border-color: #64748b;
-  color: #e2e8f0;
+  background-color: #232019;
+  border-color: rgba(255,255,255,0.15);
+  color: #F5F3F0;
 }
 
 .boards-add-column svg {

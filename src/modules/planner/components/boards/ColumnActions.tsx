@@ -114,7 +114,7 @@ export function ColumnActions({ column }: ColumnActionsProps) {
           <>
             <DropdownMenuSeparator />
             <DropdownMenuItem
-              className="text-red-600 focus:text-red-600 focus:bg-red-50"
+              className="text-red-600 focus:text-red-600 focus:bg-red-50 dark:focus:bg-red-950/40"
               onClick={handleDelete}
             >
               <Trash2 className="w-4 h-4 mr-2" />
