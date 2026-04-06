@@ -24,7 +24,7 @@ export function AddLinkModal({ open, onClose, defectId }: Props) {
     queryKey: ['th-test-cases-search', search],
     queryFn: async () => {
       let query = supabase
-        .from('th_test_cases' as any)
+        .from('tm_test_cases' as any)
         .select('id, case_key, title')
         .order('case_key', { ascending: true })
         .limit(20);

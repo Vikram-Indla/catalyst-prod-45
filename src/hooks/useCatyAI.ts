@@ -158,7 +158,7 @@ export function useSaveCatyGeneratedTests() {
       for (const tc of testCases) {
         const { data: testCase, error: tcError } = await (supabase as any)
           .from('tm_test_cases')
-          .insert({ project_id: projectId, folder_id: folderId || null, title: tc.title, description: tc.description, priority: tc.priority, preconditions: tc.preconditions, postconditions: tc.postconditions, status: 'draft', automation: 'manual' })
+          .insert({ project_id: projectId, folder_id: folderId || null, title: tc.title, description: tc.description, preconditions: tc.preconditions, status: 'draft', automation_status: 'manual', case_key: `TC-AI-${Date.now()}` })
           .select()
           .single();
         if (tcError) throw new Error(tcError.message);

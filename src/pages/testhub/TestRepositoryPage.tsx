@@ -181,7 +181,7 @@ export function TestRepositoryPage() {
    const fetchTestCases = async () => {
      setIsLoading(true);
 
-     let query = supabase.from('tm_test_cases').select('*, priority_ref:tm_case_priorities(name), type_ref:tm_case_types(name)');
+     let query = supabase.from('tm_test_cases').select('*');
 
      if (selectedFolderId) {
        query = query.eq('folder_id', selectedFolderId);
@@ -214,8 +214,8 @@ export function TestRepositoryPage() {
        const ownerId = (tc as any).created_by;
        const owner = ownerId ? profilesMap[ownerId] : null;
        const ownerName = owner?.full_name || null;
-       const priorityName = (tc as any).priority_ref?.name || 'medium';
-       const typeName = (tc as any).type_ref?.name || 'functional';
+       const priorityName = (tc as any).priority_ref?.name || (tc as any).priority || 'medium';
+       const typeName = (tc as any).type_ref?.name || (tc as any).type || 'functional';
        return {
         id: tc.id,
         caseKey: tc.case_key,
