@@ -441,7 +441,7 @@
 
 /* ─────────────────────────────────────────────────────────────
    DARK MODE — [data-theme="dark"] overrides
-   Redefines --ra-* tokens for NOCTURNE dark mode
+   Redefines --ra-* tokens for Geist Neutral Dark dark mode
    ───────────────────────────────────────────────────────────── */
 [data-theme="dark"] .ra-enterprise-clean {
   /* NEUTRAL FOUNDATION — dark */
@@ -450,10 +450,10 @@
   --ra-slate-100: rgba(255,255,255,0.06);
   --ra-slate-200: rgba(255,255,255,0.10);
   --ra-slate-300: rgba(255,255,255,0.18);
-  --ra-slate-400: rgba(255,255,255,0.35);
+  --ra-slate-400: var(--fg-4, rgba(237,237,237,0.30));
   --ra-slate-500: rgba(255,255,255,0.50);
-  --ra-slate-600: rgba(255,255,255,0.60);
-  --ra-slate-700: rgba(255,255,255,0.72);
+  --ra-slate-600: var(--fg-3, #878787);
+  --ra-slate-700: var(--fg-2, #A1A1A1);
   --ra-slate-800: rgba(255,255,255,0.85);
 
   /* CELL */
@@ -464,12 +464,12 @@
   --ra-bar-track-bg: rgba(255,255,255,0.10);
 
   /* TEXT */
-  --ra-text-percent: rgba(255,255,255,0.92);
+  --ra-text-percent: var(--fg-1, #EDEDED);
   --ra-text-project: rgba(255,255,255,0.50);
 
   /* AVATAR */
   --ra-avatar-bg: rgba(255,255,255,0.18);
-  --ra-avatar-text: rgba(255,255,255,0.92);
+  --ra-avatar-text: var(--fg-1, #EDEDED);
 
   /* END/EMPTY CELL */
   --ra-end-bg: repeating-linear-gradient(
@@ -479,5 +479,5 @@
     rgba(255,255,255,0.06) 4px,
     rgba(255,255,255,0.06) 8px
   );
-  --ra-end-text: rgba(255,255,255,0.35);
+  --ra-end-text: var(--fg-4, rgba(237,237,237,0.30));
 }

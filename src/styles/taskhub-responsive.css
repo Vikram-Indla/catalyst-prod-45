@@ -911,7 +911,7 @@
 }
 
 [data-theme="dark"] .mobile-menu-toggle {
-  color: rgba(255,255,255,0.72);
+  color: var(--fg-2, #A1A1A1);
 }
 
 [data-theme="dark"] .mobile-menu-toggle:hover {

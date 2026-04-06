@@ -936,7 +936,7 @@
 
 /* ═══════════════════════════════════════════════════════════════════════════════
    DARK MODE — [data-theme="dark"] overrides
-   Redefines --planner-* variables for NOCTURNE dark mode
+   Redefines --planner-* variables for Geist Neutral Dark dark mode
    ═══════════════════════════════════════════════════════════════════════════════ */
 [data-theme="dark"] {
   /* Neutral Slate Scale — inverted for dark */
@@ -944,12 +944,12 @@
   --planner-slate-100: rgba(255,255,255,0.06);
   --planner-slate-200: rgba(255,255,255,0.10);
   --planner-slate-300: rgba(255,255,255,0.18);
-  --planner-slate-400: rgba(255,255,255,0.35);
+  --planner-slate-400: var(--fg-4, rgba(237,237,237,0.30));
   --planner-slate-500: rgba(255,255,255,0.50);
-  --planner-slate-600: rgba(255,255,255,0.60);
-  --planner-slate-700: rgba(255,255,255,0.72);
+  --planner-slate-600: var(--fg-3, #878787);
+  --planner-slate-700: var(--fg-2, #A1A1A1);
   --planner-slate-800: rgba(255,255,255,0.85);
-  --planner-slate-900: rgba(255,255,255,0.92);
+  --planner-slate-900: var(--fg-1, #EDEDED);
 
   /* Primary — lightened */
   --planner-primary: #3B82F6;

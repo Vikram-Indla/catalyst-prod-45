@@ -960,13 +960,13 @@
 
 /* ═══════════════════════════════════════════════════════════
    DARK MODE — [data-theme="dark"] overrides
-   Redefines --rai-* tokens for NOCTURNE dark mode
+   Redefines --rai-* tokens for Geist Neutral Dark dark mode
    ═══════════════════════════════════════════════════════════ */
 [data-theme="dark"] [data-module="ai-intelligence"] {
-  --rai-ink: rgba(255,255,255,0.92);
+  --rai-ink: var(--fg-1, #EDEDED);
   --rai-ink-secondary: rgba(255,255,255,0.85);
-  --rai-ink-tertiary: rgba(255,255,255,0.60);
-  --rai-ink-muted: rgba(255,255,255,0.35);
+  --rai-ink-tertiary: var(--fg-3, #878787);
+  --rai-ink-muted: var(--fg-4, rgba(237,237,237,0.30));
   --rai-surface: #0A0A0A;
   --rai-surface-secondary: #1A1A1A;
   --rai-surface-tertiary: rgba(255,255,255,0.06);

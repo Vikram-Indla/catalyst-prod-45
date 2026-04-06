@@ -1083,7 +1083,7 @@
 
 /* ============================================================
    DARK MODE — [data-theme="dark"] overrides
-   Redefines --ws-* tokens for NOCTURNE dark mode
+   Redefines --ws-* tokens for Geist Neutral Dark dark mode
    ============================================================ */
 [data-theme="dark"] .workstreams-enterprise-clean,
 [data-theme="dark"]:root {
@@ -1098,10 +1098,10 @@
   --ws-border-subtle: rgba(255,255,255,0.05) !important;
 
   /* Text Colors */
-  --ws-text-primary: rgba(255,255,255,0.92) !important;
-  --ws-text-secondary: rgba(255,255,255,0.72) !important;
-  --ws-text-muted: rgba(255,255,255,0.60) !important;
-  --ws-text-light: rgba(255,255,255,0.35) !important;
+  --ws-text-primary: var(--fg-1, #EDEDED) !important;
+  --ws-text-secondary: var(--fg-2, #A1A1A1) !important;
+  --ws-text-muted: var(--fg-3, #878787) !important;
+  --ws-text-light: var(--fg-4, rgba(237,237,237,0.30)) !important;
 
   /* Accent */
   --ws-accent-primary: #60A5FA !important;

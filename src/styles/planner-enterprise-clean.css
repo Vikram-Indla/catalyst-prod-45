@@ -65,10 +65,10 @@
   --pln-v10-border-default: rgba(255,255,255,0.10);
   --pln-v10-border-subtle: rgba(255,255,255,0.05);
 
-  --pln-v10-text-primary: rgba(255,255,255,0.92);
-  --pln-v10-text-secondary: rgba(255,255,255,0.72);
-  --pln-v10-text-muted: rgba(255,255,255,0.60);
-  --pln-v10-text-light: rgba(255,255,255,0.35);
+  --pln-v10-text-primary: var(--fg-1, #EDEDED);
+  --pln-v10-text-secondary: var(--fg-2, #A1A1A1);
+  --pln-v10-text-muted: var(--fg-3, #878787);
+  --pln-v10-text-light: var(--fg-4, rgba(237,237,237,0.30));
 
   /* Status dots */
   --pln-v10-status-backlog: rgba(255,255,255,0.50);
