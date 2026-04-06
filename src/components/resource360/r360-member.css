@@ -1356,6 +1356,48 @@
   background: #1A1A1A !important;
 }
 
+/* ─── RING VIEW — Dark overrides ─── */
+.dark #r360-root .r3-ring-canvas {
+  background: #0A0A0A !important;
+  border-color: #2E2E2E !important;
+}
+.dark #r360-root .r3-ring-card {
+  background: #1A1A1A !important;
+  border-color: #2E2E2E !important;
+  box-shadow: none !important;
+}
+.dark #r360-root .r3-ring-card:hover {
+  background: #1F1F1F !important;
+  box-shadow: none !important;
+}
+.dark #r360-root .r3-ring-card.selected {
+  border-color: #2563EB !important;
+  box-shadow: 0 0 0 2px rgba(37,99,235,0.15) !important;
+}
+.dark #r360-root .r3-ring-card .r3-ring-card-title,
+.dark #r360-root .r3-ring-card .r3-item-title {
+  color: #EDEDED !important;
+}
+.dark #r360-root .r3-ring-card .r3-ring-card-meta,
+.dark #r360-root .r3-ring-card .r3-item-meta {
+  color: #A1A1A1 !important;
+}
+.dark #r360-root .r3-ring-name {
+  color: #EDEDED !important;
+}
+.dark #r360-root .r3-ring-role {
+  color: #A1A1A1 !important;
+}
+.dark #r360-root .r3-spoke-label {
+  background: #1A1A1A !important;
+  border-color: #2E2E2E !important;
+  color: #A1A1A1 !important;
+}
+.dark #r360-root .r3-ring-spokes line,
+.dark #r360-root .r3-ring-spokes path {
+  stroke: #2E2E2E !important;
+}
+
 /* Drawer / side panel */
 .dark #r360-root .item-drawer {
   background: #1A1A1A !important;

@@ -585,13 +585,22 @@
   background: #1A1A1A !important;
 }
 
+/* Ring view canvas */
+.dark #r360-root .r3-ring-canvas,
+.dark .r3-ring-canvas {
+  background: #0A0A0A !important;
+  border-color: #2E2E2E !important;
+}
+
 /* Ring view cards */
 .dark #r360-root .r3-ring-card {
   background: #1A1A1A !important;
   border-color: #2E2E2E !important;
+  box-shadow: none !important;
 }
 .dark #r360-root .r3-ring-card:hover {
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3) !important;
+  background: #1F1F1F !important;
+  box-shadow: none !important;
 }
 
 /* Board columns */
