@@ -282,7 +282,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem }: Props
 
           <div className="flex flex-1 overflow-hidden">
             {/* Main detail content */}
-            <div className="flex-1 overflow-y-auto px-5 py-4">
+            <div className="flex-1 overflow-y-auto px-5 py-4" style={{ backgroundColor: isDark ? '#0A0A0A' : undefined }}>
               {/* ─── DETAILS TAB ─── */}
               {activeTab === 'details' && (
                 <>
@@ -422,7 +422,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem }: Props
             </div>
 
             {/* Right detail sidebar — 260px */}
-            <div className="overflow-y-auto py-4 px-4" style={{ width: 260, borderLeft: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(15,23,42,0.08)' }}>
+            <div className="overflow-y-auto py-4 px-4" style={{ width: 260, borderLeft: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(15,23,42,0.08)', backgroundColor: isDark ? '#111111' : '#FFFFFF' }}>
               <div className="mb-4">
                 <span className="text-[11px] uppercase font-semibold block mb-1.5" style={{ color: isDark ? '#666666' : '#6b6e76', letterSpacing: '0.05em' }}>Status</span>
                 <StatusLozenge status={currentItem.status} />
