@@ -4909,11 +4909,7 @@ input[type="range"]::-moz-range-thumb {
   border-color: #2E2E2E;
 }
 
-/* Force dark bg on any white notification/feed panels */
-.dark .bg-white,
-[data-theme="dark"] .bg-white {
-  background-color: #1A1A1A !important;
-}
+/* (consolidated: .dark .bg-white is handled at line 4331) */
 
 /* Aggressive catch-all: any panel/sheet/drawer with white inline style */
 .dark [style*="background: white"],
