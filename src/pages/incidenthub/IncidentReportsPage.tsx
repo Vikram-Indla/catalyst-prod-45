@@ -76,14 +76,14 @@ export default function IncidentReportsPage() {
                 <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 22, fontWeight: 700, color: '#0F172A' }}>{avgAge}</div>
               </div>
             </div>
-            <div className="p-8 flex items-center justify-center" style={{ border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6, backgroundColor: '#F1F5F9' }}>
+            <div className="p-8 flex items-center justify-center" style={{ border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6, backgroundColor: var(--bg-2, '#F1F5F9') }}>
               <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: '#64748B' }}>[Chart] SLA Breach trend over time</p>
             </div>
           </div>
         )}
 
         {activeTab === 1 && (
-          <div className="p-8 flex items-center justify-center" style={{ border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6, backgroundColor: '#F1F5F9' }}>
+          <div className="p-8 flex items-center justify-center" style={{ border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6, backgroundColor: var(--bg-2, '#F1F5F9') }}>
             <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: '#64748B' }}>[Chart] Incident aging distribution by severity</p>
           </div>
         )}
@@ -108,7 +108,7 @@ export default function IncidentReportsPage() {
         )}
 
         {activeTab === 3 && (
-          <div className="p-8 flex items-center justify-center" style={{ border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6, backgroundColor: '#F1F5F9' }}>
+          <div className="p-8 flex items-center justify-center" style={{ border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6, backgroundColor: var(--bg-2, '#F1F5F9') }}>
             <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: '#64748B' }}>[Chart] Severity vs Priority heatmap</p>
           </div>
         )}

@@ -330,7 +330,7 @@ export default function WorkHubSidePanel({ itemId, projectKey, onClose }: WorkHu
       <style>{`
         @keyframes slideInRight { from{transform:translateX(100%)} to{transform:translateX(0)} }
         @keyframes wh-pulse { 0%,100%{opacity:.4} 50%{opacity:1} }
-        .wh-skeleton { background: #E2E8F0; animation: wh-pulse 1.5s ease-in-out infinite; }
+        .wh-skeleton { background: var(--bd-default, #E2E8F0); animation: wh-pulse 1.5s ease-in-out infinite; }
       `}</style>
     </>
   );

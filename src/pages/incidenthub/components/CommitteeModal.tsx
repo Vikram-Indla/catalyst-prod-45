@@ -55,14 +55,14 @@ export function CommitteeModal({ open, onClose, committee, incidentId }: Committ
           {activeTab === 0 && (
             <div className="space-y-3">
               {members.length === 0 && (
-                <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: '#94A3B8' }}>No committee members assigned.</p>
+                <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: 'var(--fg-3, #94A3B8)' }}>No committee members assigned.</p>
               )}
               {members.map((m: any) => {
                 const vote = m.vote;
                 const voteStatus = vote?.vote || 'pending';
                 return (
                   <div key={m.id} className="flex items-center gap-3 p-2" style={{ border: '1px solid rgba(15,23,42,0.08)', borderRadius: 4 }}>
-                    <div className="rounded-full flex items-center justify-center shrink-0" style={{ width: 32, height: 32, backgroundColor: '#E2E8F0', fontSize: 12, fontWeight: 650, color: '#475569' }}>
+                    <div className="rounded-full flex items-center justify-center shrink-0" style={{ width: 32, height: 32, backgroundColor: 'var(--bd-default, #E2E8F0)', fontSize: 12, fontWeight: 650, color: '#475569' }}>
                       {(m.user?.full_name || 'U').charAt(0).toUpperCase()}
                     </div>
                     <div className="flex-1">
@@ -93,7 +93,7 @@ export function CommitteeModal({ open, onClose, committee, incidentId }: Committ
                               : 'transparent',
                             color: voteStatus === v
                               ? (v === 'approved' ? '#FFFFFF' : v === 'rejected' ? '#991B1B' : '#42526E')
-                              : '#94A3B8',
+                              : 'var(--fg-3, #94A3B8)',
                             border: voteStatus === v ? 'none' : '1px solid rgba(15,23,42,0.08)',
                           }}
                         >
@@ -108,11 +108,11 @@ export function CommitteeModal({ open, onClose, committee, incidentId }: Committ
           )}
 
           {activeTab === 1 && (
-            <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: '#94A3B8' }}>Approver management coming soon.</p>
+            <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: 'var(--fg-3, #94A3B8)' }}>Approver management coming soon.</p>
           )}
 
           {activeTab === 2 && (
-            <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: '#94A3B8' }}>Activity log coming soon.</p>
+            <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: 'var(--fg-3, #94A3B8)' }}>Activity log coming soon.</p>
           )}
         </div>
 

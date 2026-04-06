@@ -58,7 +58,7 @@ function CustomSelect({
   return (
     <div ref={ref} style={{ position: 'relative' }}>
       <button type="button" onClick={() => setOpen((p) => !p)}
-        style={{ width: '100%', height: 36, padding: '0 12px', fontSize: 14, fontFamily: "'Inter', sans-serif", color: selected ? '#0F172A' : '#94A3B8', background: 'var(--cp-float)', border: '1.5px solid var(--divider)', borderRadius: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', textAlign: 'left' }}>
+        style={{ width: '100%', height: 36, padding: '0 12px', fontSize: 14, fontFamily: "'Inter', sans-serif", color: selected ? '#0F172A' : 'var(--fg-3, #94A3B8)', background: 'var(--cp-float)', border: '1.5px solid var(--divider)', borderRadius: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', textAlign: 'left' }}>
         <span>{selected ? (renderOption ? renderOption(selected) : selected.label) : placeholder}</span>
         <ChevronDown size={14} color="var(--fg-3)" />
       </button>

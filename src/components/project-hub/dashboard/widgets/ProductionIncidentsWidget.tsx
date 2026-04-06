@@ -4,7 +4,7 @@ import { useDashboardIncidents } from '@/hooks/useDashboardWidgets';
 import { ExternalLink } from 'lucide-react';
 
 const getAvatarColor = (initials: string): string => {
-  if (!initials) return '#94A3B8';
+  if (!initials) return 'var(--fg-3, #94A3B8)';
   const colors = ['#2563EB', '#0D9488', '#D97706', '#DC2626', '#059669', '#6366F1'];
   return colors[initials.charCodeAt(0) % colors.length];
 };

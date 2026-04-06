@@ -45,7 +45,7 @@ export function BulkActionBar({
 
       <button onClick={onClear} style={{
         background: 'none', border: 'none', cursor: 'pointer', padding: '4px 8px',
-        display: 'flex', alignItems: 'center', gap: 4, color: '#94A3B8', fontSize: 12,
+        display: 'flex', alignItems: 'center', gap: 4, color: 'var(--fg-3, #94A3B8)', fontSize: 12,
       }}>
         <X size={14} /> Clear
       </button>
@@ -105,7 +105,7 @@ export function BulkActionBar({
           }}>Yes, delete</button>
           <button onClick={() => setConfirmDelete(false)} style={{
             fontSize: 11, padding: '4px 10px', borderRadius: 4,
-            background: 'transparent', color: '#94A3B8', border: '1px solid #475569', cursor: 'pointer',
+            background: 'transparent', color: 'var(--fg-3, #94A3B8)', border: '1px solid #475569', cursor: 'pointer',
           }}>Cancel</button>
         </div>
       ) : (
@@ -123,7 +123,7 @@ function BulkBtn({ icon: Icon, label, onClick, danger }: {
     <button onClick={onClick} style={{
       height: 30, padding: '0 10px', fontSize: 12, fontWeight: 500,
       fontFamily: "'Inter', sans-serif",
-      color: danger ? '#FCA5A5' : '#E2E8F0',
+      color: danger ? '#FCA5A5' : 'var(--bd-default, #E2E8F0)',
       background: 'transparent', border: '1px solid #475569', borderRadius: 4,
       cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4,
     }}

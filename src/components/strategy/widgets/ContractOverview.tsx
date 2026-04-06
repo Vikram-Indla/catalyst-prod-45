@@ -128,7 +128,7 @@ export function ContractOverview() {
         <div className="grid grid-cols-4 gap-1.5 mb-3">
           {kpis.map(kpi => (
             <div key={kpi.label} className="text-center relative" style={{
-              border: '1px solid var(--exec-border, #E2E8F0)', borderRadius: 6, padding: '4px 6px',
+              border: '1px solid var(--exec-border, var(--bd-default, #E2E8F0))', borderRadius: 6, padding: '4px 6px',
             }}>
               {kpi.pulse && (
                 <span className="contract-pulse-dot" style={{

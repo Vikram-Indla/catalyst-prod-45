@@ -44,7 +44,7 @@ export function ChgGateModal({ changeId, chgNumber, onResolved }: Props) {
                 Link Work Item
               </button>
               <button onClick={onResolved}
-                className="w-full h-11 rounded-md border border-[#E2E8F0] text-[13px] font-medium text-[#94A3B8] hover:bg-[#F4F7FA]">
+                className="w-full h-11 rounded-md border border-[var(--bd-default, #E2E8F0)] text-[13px] font-medium text-[var(--fg-3, #94A3B8)] hover:bg-[#F4F7FA]">
                 Skip (RM only · logged)
               </button>
             </div>
@@ -53,15 +53,15 @@ export function ChgGateModal({ changeId, chgNumber, onResolved }: Props) {
               <div>
                 <label className="block text-[12px] font-semibold text-[#475569] mb-1">Work Item Key *</label>
                 <input type="text" value={workItemKey} onChange={e => setWorkItemKey(e.target.value)} placeholder="e.g. BAU-4612"
-                  className="w-full h-9 px-3 rounded-md border border-[#E2E8F0] text-[13px] font-mono" />
+                  className="w-full h-9 px-3 rounded-md border border-[var(--bd-default, #E2E8F0)] text-[13px] font-mono" />
               </div>
               <div>
                 <label className="block text-[12px] font-semibold text-[#475569] mb-1">Title *</label>
                 <input type="text" value={workItemTitle} onChange={e => setWorkItemTitle(e.target.value)} placeholder="Describe the work item"
-                  className="w-full h-9 px-3 rounded-md border border-[#E2E8F0] text-[13px]" />
+                  className="w-full h-9 px-3 rounded-md border border-[var(--bd-default, #E2E8F0)] text-[13px]" />
               </div>
               <div className="flex gap-2">
-                <button onClick={() => setMode('choose')} className="flex-1 h-9 rounded-md border border-[#E2E8F0] text-[13px] font-medium text-[#475569]">Back</button>
+                <button onClick={() => setMode('choose')} className="flex-1 h-9 rounded-md border border-[var(--bd-default, #E2E8F0)] text-[13px] font-medium text-[#475569]">Back</button>
                 <button onClick={handleLink} disabled={!workItemKey || !workItemTitle || linkWorkItem.isPending}
                   className="flex-1 h-9 rounded-md bg-[#2563EB] text-white text-[13px] font-semibold disabled:opacity-50">
                   {linkWorkItem.isPending ? 'Linking...' : 'Link & Continue'}

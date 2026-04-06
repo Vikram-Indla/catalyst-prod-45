@@ -14,7 +14,7 @@ const PRIORITY_COLORS: Record<string, string> = {
   critical: '#FF5630',
   high: '#FF7452',
   medium: '#D97706',
-  low: '#94A3B8',
+  low: 'var(--fg-3, #94A3B8)',
 };
 
 function getOverdueDays(dueDate: string | null): number | null {
@@ -101,7 +101,7 @@ export default function KanbanCardComponent({ card, onCardClick }: Props) {
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           opacity: hover ? 1 : 0, transition: 'opacity 100ms',
         }} onClick={e => e.stopPropagation()}>
-          <MoreHorizontal size={14} color="#94A3B8" />
+          <MoreHorizontal size={14} color="var(--fg-3, #94A3B8)" />
         </button>
       </div>
 
@@ -145,7 +145,7 @@ export default function KanbanCardComponent({ card, onCardClick }: Props) {
           {card.priority && (
             <span style={{
               width: 8, height: 8, borderRadius: '50%',
-              background: PRIORITY_COLORS[card.priority.name] ?? '#94A3B8',
+              background: PRIORITY_COLORS[card.priority.name] ?? 'var(--fg-3, #94A3B8)',
               flexShrink: 0,
             }} title={card.priority.name} />
           )}

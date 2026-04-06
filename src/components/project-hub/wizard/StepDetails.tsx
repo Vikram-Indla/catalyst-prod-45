@@ -222,7 +222,7 @@ export function StepDetails({ data, onChange, isValid, onValidChange }: StepDeta
               {selectedLead.avatar_url ? (
                 <img src={selectedLead.avatar_url} alt="" className="rounded-full" style={{ width: 22, height: 22, objectFit: 'cover' }} />
               ) : (
-                <div className="rounded-full flex items-center justify-center shrink-0 bg-[#E2E8F0] dark:bg-[#292929]" style={{ width: 22, height: 22, fontSize: 9, fontWeight: 700, color: '#475569' }}>
+                <div className="rounded-full flex items-center justify-center shrink-0 bg-[var(--bd-default, #E2E8F0)] dark:bg-[#292929]" style={{ width: 22, height: 22, fontSize: 9, fontWeight: 700, color: '#475569' }}>
                   {getInitials(selectedLead.display_name)}
                 </div>
               )}
@@ -236,18 +236,18 @@ export function StepDetails({ data, onChange, isValid, onValidChange }: StepDeta
 
         {showLeadPicker && (
           <div
-            className="absolute left-0 right-0 z-50 bg-white dark:bg-[#1A1A1A] border border-[#E2E8F0] dark:border-[rgba(255,255,255,0.08)] rounded-lg shadow-lg"
+            className="absolute left-0 right-0 z-50 bg-white dark:bg-[#1A1A1A] border border-[var(--bd-default, #E2E8F0)] dark:border-[rgba(255,255,255,0.08)] rounded-lg shadow-lg"
             style={{ top: '100%', marginTop: 4, maxHeight: 260, display: 'flex', flexDirection: 'column' }}
           >
-            <div className="p-2 border-b border-[#E2E8F0] dark:border-[rgba(255,255,255,0.08)]">
+            <div className="p-2 border-b border-[var(--bd-default, #E2E8F0)] dark:border-[rgba(255,255,255,0.08)]">
               <div className="relative">
-                <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[#94A3B8]" />
+                <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[var(--fg-3, #94A3B8)]" />
                 <input
                   autoFocus
                   value={leadFilter}
                   onChange={e => setLeadFilter(e.target.value)}
                   placeholder="Search people..."
-                  className="w-full text-[13px] pl-8 pr-3 py-1.5 rounded border border-[#E2E8F0] dark:border-[rgba(255,255,255,0.08)] bg-transparent outline-none"
+                  className="w-full text-[13px] pl-8 pr-3 py-1.5 rounded border border-[var(--bd-default, #E2E8F0)] dark:border-[rgba(255,255,255,0.08)] bg-transparent outline-none"
                   style={{ height: 32, color: 'var(--fg-1)' }}
                 />
               </div>
@@ -266,7 +266,7 @@ export function StepDetails({ data, onChange, isValid, onValidChange }: StepDeta
                     {p.avatar_url ? (
                       <img src={p.avatar_url} alt="" className="rounded-full" style={{ width: 24, height: 24, objectFit: 'cover' }} />
                     ) : (
-                      <div className="rounded-full flex items-center justify-center shrink-0 bg-[#E2E8F0] dark:bg-[#292929]" style={{ width: 24, height: 24, fontSize: 9, fontWeight: 700, color: '#475569' }}>
+                      <div className="rounded-full flex items-center justify-center shrink-0 bg-[var(--bd-default, #E2E8F0)] dark:bg-[#292929]" style={{ width: 24, height: 24, fontSize: 9, fontWeight: 700, color: '#475569' }}>
                         {getInitials(p.display_name)}
                       </div>
                     )}
@@ -304,7 +304,7 @@ export function StepDetails({ data, onChange, isValid, onValidChange }: StepDeta
       </div>
 
       {/* Jira Link Toggle */}
-      <div className="rounded-lg border border-[#E2E8F0] dark:border-[rgba(255,255,255,0.08)] p-4">
+      <div className="rounded-lg border border-[var(--bd-default, #E2E8F0)] dark:border-[rgba(255,255,255,0.08)] p-4">
         <div className="flex items-center justify-between">
           <div>
             <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1)' }}>Link to Jira project</div>

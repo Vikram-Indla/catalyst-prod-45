@@ -6,7 +6,7 @@ export const RH = {
   pageBg: '#FFFFFF',
   cardBg: '#FFFFFF',
   surfaceBg: '#F8FAFC',
-  sunkenBg: '#F1F5F9',
+  sunkenBg: var(--bg-2, '#F1F5F9'),
 
   // Borders
   borderDefault: 'rgba(15,23,42,0.12)',
@@ -33,7 +33,7 @@ export const RH = {
   ink1: '#0F172A',
   ink2: '#334155',
   ink3: '#64748B',
-  ink4: '#94A3B8',
+  ink4: 'var(--fg-3, #94A3B8)',
 
   // Fonts
   fontDisplay: "'Sora', system-ui, sans-serif",
@@ -126,7 +126,7 @@ export const SIGNOFF_LOZENGE: Record<string, LozengeStyle> = {
 
 // Section accents for change timeline
 export const SECTION_ACCENT: Record<string, string> = {
-  past: '#94A3B8',
+  past: 'var(--fg-3, #94A3B8)',
   today: '#DC2626',
   this_week: '#2563EB',
   upcoming: '#0D9488',

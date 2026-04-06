@@ -169,7 +169,7 @@ export function RoadmapDetailPanel({ item, isOpen, onClose }: RoadmapDetailPanel
 
   if (!item) return null;
 
-  const statusInfo = STATUS_PILL[item.status] || { color: '#334155', bg: '#F1F5F9' };
+  const statusInfo = STATUS_PILL[item.status] || { color: '#334155', bg: var(--bg-2, '#F1F5F9') };
   const ownerProfile = approvedProfiles?.find(p => p.id === item.rawAssigneeId);
 
   return createPortal(
@@ -273,7 +273,7 @@ export function RoadmapDetailPanel({ item, isOpen, onClose }: RoadmapDetailPanel
             <div className="p-5 space-y-5">
               {/* Description */}
               <div>
-                <div className="text-[11px] font-semibold uppercase tracking-[0.05em] mb-1" style={{ color: '#94A3B8' }}>
+                <div className="text-[11px] font-semibold uppercase tracking-[0.05em] mb-1" style={{ color: 'var(--fg-3, #94A3B8)' }}>
                   Description
                 </div>
                 <p className="text-[13px] text-muted-foreground italic leading-relaxed">

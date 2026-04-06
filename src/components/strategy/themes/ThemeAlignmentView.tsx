@@ -40,15 +40,15 @@ const STATUS_CONFIG: Record<string, { dot: string; bg: string; text: string; lab
   on_track:     { dot: '#16A34A', bg: '#F0FDF4', text: '#166534', label: 'On Track' },
   at_risk:      { dot: '#D97706', bg: '#FFFBEB', text: '#92400E', label: 'At Risk' },
   off_track:    { dot: '#EF4444', bg: '#FEF2F2', text: '#991B1B', label: 'Off Track' },
-  draft:        { dot: '#94A3B8', bg: '#F8FAFC', text: '#475569', label: 'Draft' },
-  planned:      { dot: '#94A3B8', bg: '#F8FAFC', text: '#475569', label: 'Planned' },
+  draft:        { dot: 'var(--fg-3, #94A3B8)', bg: '#F8FAFC', text: '#475569', label: 'Draft' },
+  planned:      { dot: 'var(--fg-3, #94A3B8)', bg: '#F8FAFC', text: '#475569', label: 'Planned' },
   completed:    { dot: '#2563EB', bg: '#EFF6FF', text: '#1E40AF', label: 'Done' },
-  cancelled:    { dot: '#94A3B8', bg: '#F8FAFC', text: '#475569', label: 'Cancelled' },
+  cancelled:    { dot: 'var(--fg-3, #94A3B8)', bg: '#F8FAFC', text: '#475569', label: 'Cancelled' },
   in_progress:  { dot: '#2563EB', bg: '#EFF6FF', text: '#1E40AF', label: 'In Progress' },
-  not_started:  { dot: '#94A3B8', bg: '#F8FAFC', text: '#475569', label: 'Not Started' },
+  not_started:  { dot: 'var(--fg-3, #94A3B8)', bg: '#F8FAFC', text: '#475569', label: 'Not Started' },
   approved:     { dot: '#0D9488', bg: '#F0FDFA', text: '#115E59', label: 'Approved' },
-  proposed:     { dot: '#94A3B8', bg: '#F8FAFC', text: '#475569', label: 'Proposed' },
-  analyzing:    { dot: '#94A3B8', bg: '#F8FAFC', text: '#475569', label: 'Analyzing' },
+  proposed:     { dot: 'var(--fg-3, #94A3B8)', bg: '#F8FAFC', text: '#475569', label: 'Proposed' },
+  analyzing:    { dot: 'var(--fg-3, #94A3B8)', bg: '#F8FAFC', text: '#475569', label: 'Analyzing' },
 };
 
 function getProgressColor(v: number) {
@@ -89,8 +89,8 @@ function GhostNode({ label }: { label: string }) {
   return (
     <div className="flex items-center justify-center gap-1.5 border border-dashed rounded-lg"
       style={{ width: 180, padding: 12, borderColor: '#CBD5E1', background: 'rgba(248,250,252,0.5)' }}>
-      <Unlink size={12} style={{ color: '#94A3B8' }} />
-      <span style={{ fontSize: 11, color: '#94A3B8' }}>No linked {label}</span>
+      <Unlink size={12} style={{ color: 'var(--fg-3, #94A3B8)' }} />
+      <span style={{ fontSize: 11, color: 'var(--fg-3, #94A3B8)' }}>No linked {label}</span>
     </div>
   );
 }
@@ -171,7 +171,7 @@ function getChainHealthColor(chain: LockedChainData | null): string {
     case 'Critical': return '#EF4444';
     case 'Broken': return '#EF4444';
     case 'Partial': return '#D97706';
-    default: return '#94A3B8';
+    default: return 'var(--fg-3, #94A3B8)';
   }
 }
 
@@ -678,7 +678,7 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
       if (srcIn && tgtIn) {
         return { stroke: p.layerColor, strokeWidth: 3, opacity: 1, filter: 'drop-shadow(0 0 4px rgba(37, 99, 235, 0.3))' };
       }
-      return { stroke: '#E2E8F0', strokeWidth: 0.5, opacity: 0.05, filter: 'none' };
+      return { stroke: 'var(--bd-default, #E2E8F0)', strokeWidth: 0.5, opacity: 0.05, filter: 'none' };
     }
     // Hover-only
     const isLit = highlightedNodes.has(p.sourceId) && highlightedNodes.has(p.targetId);

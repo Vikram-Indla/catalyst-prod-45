@@ -144,7 +144,7 @@ export function AddInitiativeModal({ isOpen, onClose }: AddInitiativeModalProps)
           )}
 
           {!isLoading && !error && filtered.map((item: any) => {
-            const typeColor = TYPE_COLORS[item.type]?.solid || '#94A3B8';
+            const typeColor = TYPE_COLORS[item.type]?.solid || 'var(--fg-3, #94A3B8)';
             const isOnRoadmap = item.alreadyOnRoadmap;
             return (
               <div

@@ -27,7 +27,7 @@ export function AIIntelligenceButton({
       disabled={disabled}
       style={{
         background: disabled
-          ? '#94A3B8'
+          ? 'var(--fg-3, #94A3B8)'
           : '#2563EB',
         color: '#FFFFFF',
         border: 'none',

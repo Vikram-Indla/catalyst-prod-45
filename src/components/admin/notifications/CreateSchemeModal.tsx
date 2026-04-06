@@ -132,7 +132,7 @@ export function CreateSchemeModal({ scheme, open, onClose, onCreated }: CreateSc
           </div>
 
           {/* Default toggle */}
-          <div className="flex items-center justify-between rounded-md border border-[#E2E8F0] px-3 py-2.5">
+          <div className="flex items-center justify-between rounded-md border border-[var(--bd-default, #E2E8F0)] px-3 py-2.5">
             <div>
               <p className="text-xs font-medium text-[#0F172A]">Set as Default Scheme</p>
               <p className="text-[11px] text-[#475569] mt-0.5">

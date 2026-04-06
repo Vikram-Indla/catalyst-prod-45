@@ -180,9 +180,9 @@ export function ReleaseDrawer({ release, onClose }: Props) {
               <SourceBadge source={release.source || 'catalyst'} />
             </div>
             <div className="flex items-center gap-1.5">
-              <button className="w-7 h-7 rounded flex items-center justify-center text-[#94A3B8] hover:bg-[#F1F5F9]"><Download size={14} /></button>
-              <button className="w-7 h-7 rounded flex items-center justify-center text-[#94A3B8] hover:bg-[#F1F5F9]"><RefreshCw size={14} /></button>
-              <button onClick={onClose} aria-label="Close drawer" className="w-7 h-7 rounded flex items-center justify-center text-[#94A3B8] hover:bg-[#F1F5F9]"><XIcon size={14} /></button>
+              <button className="w-7 h-7 rounded flex items-center justify-center text-[var(--fg-3, #94A3B8)] hover:bg-[#F1F5F9]"><Download size={14} /></button>
+              <button className="w-7 h-7 rounded flex items-center justify-center text-[var(--fg-3, #94A3B8)] hover:bg-[#F1F5F9]"><RefreshCw size={14} /></button>
+              <button onClick={onClose} aria-label="Close drawer" className="w-7 h-7 rounded flex items-center justify-center text-[var(--fg-3, #94A3B8)] hover:bg-[#F1F5F9]"><XIcon size={14} /></button>
             </div>
           </div>
           <h2 className="text-[18px] font-extrabold mb-2" style={{ fontFamily: RH.fontDisplay, color: RH.ink1 }}>{release.name}</h2>
@@ -384,7 +384,7 @@ Do not use jargon. Do not hallucinate features not listed above.`;
       </div>
 
       {/* ── AI Release Notes Panel ── */}
-      <div className="border border-[#E2E8F0] dark:border-[rgba(255,255,255,0.08)] rounded-md p-4 bg-white dark:bg-[#1A1A1A]">
+      <div className="border border-[var(--bd-default, #E2E8F0)] dark:border-[rgba(255,255,255,0.08)] rounded-md p-4 bg-white dark:bg-[#1A1A1A]">
         <div className="flex justify-between items-center mb-3">
           <span className="inline-flex items-center gap-1 text-[11px] font-bold rounded-full px-2 py-0.5 bg-[#F5F3FF] text-[#7C3AED] border border-[#DDD6FE]">
             ✦ Catalyst AI
@@ -400,7 +400,7 @@ Do not use jargon. Do not hallucinate features not listed above.`;
         </div>
 
         {notesState === 'idle' && (
-          <div className="flex items-center gap-2 py-6 justify-center text-[#94A3B8] text-[13px]">
+          <div className="flex items-center gap-2 py-6 justify-center text-[var(--fg-3, #94A3B8)] text-[13px]">
             <FileText size={16} />
             <span>Click Generate to create AI release notes.</span>
           </div>
@@ -421,7 +421,7 @@ Do not use jargon. Do not hallucinate features not listed above.`;
             <div className="flex items-center gap-3 mt-3 pt-3 border-t border-[#F1F5F9]">
               <button
                 onClick={handleCopy}
-                className="inline-flex items-center gap-1 h-7 px-2.5 rounded border border-[#E2E8F0] text-[12px] font-medium text-[#475569] hover:bg-[#F8FAFC] focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2 outline-none"
+                className="inline-flex items-center gap-1 h-7 px-2.5 rounded border border-[var(--bd-default, #E2E8F0)] text-[12px] font-medium text-[#475569] hover:bg-[#F8FAFC] focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2 outline-none"
               >
                 <Copy size={12} />
                 {copied ? 'Copied!' : 'Copy'}
@@ -442,7 +442,7 @@ Do not use jargon. Do not hallucinate features not listed above.`;
             <span className="text-[#475569]">Could not generate notes.</span>
             <button
               onClick={generateReleaseNotes}
-              className="inline-flex items-center gap-1 h-7 px-2.5 rounded border border-[#E2E8F0] text-[12px] font-medium text-[#475569] hover:bg-[#F8FAFC] focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2 outline-none"
+              className="inline-flex items-center gap-1 h-7 px-2.5 rounded border border-[var(--bd-default, #E2E8F0)] text-[12px] font-medium text-[#475569] hover:bg-[#F8FAFC] focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2 outline-none"
             >
               <RefreshCw size={12} /> Try again
             </button>
@@ -455,7 +455,7 @@ Do not use jargon. Do not hallucinate features not listed above.`;
 
 // ── Changes Tab ────────────────────────────────────────
 function ChangesTab({ changes }: { changes: any[] }) {
-  if (changes.length === 0) return <div className="text-center py-10 text-[#94A3B8] text-[13px]">No changes linked to this release</div>;
+  if (changes.length === 0) return <div className="text-center py-10 text-[var(--fg-3, #94A3B8)] text-[13px]">No changes linked to this release</div>;
   return (
     <table className="w-full text-[13px]" style={{ fontFamily: RH.fontBody }}>
       <thead>
@@ -514,7 +514,7 @@ function TestCyclesTab({ testCycles, release }: { testCycles: any[]; release: an
     <div>
       {testCycles.length === 0 ? (
         <div className="text-center py-10">
-          <p className="text-[#94A3B8] text-[13px] mb-3">No test cycles linked</p>
+          <p className="text-[var(--fg-3, #94A3B8)] text-[13px] mb-3">No test cycles linked</p>
           <button onClick={openLinkModal} className="h-9 px-4 rounded-md border border-[#2563EB] text-[#2563EB] text-[13px] font-semibold hover:bg-[#EFF6FF]">Link Test Cycle</button>
         </div>
       ) : (
@@ -533,7 +533,7 @@ function TestCyclesTab({ testCycles, release }: { testCycles: any[]; release: an
               <div key={tc.id} className="border border-[rgba(15,23,42,0.12)] rounded-lg p-4 group relative">
                 <button
                   onClick={() => handleUnlink(tc.test_cycle_id)}
-                  className="absolute top-3 right-3 w-6 h-6 rounded flex items-center justify-center opacity-0 group-hover:opacity-100 text-[#94A3B8] hover:text-[#DC2626] hover:bg-[#FEF2F2] transition-opacity"
+                  className="absolute top-3 right-3 w-6 h-6 rounded flex items-center justify-center opacity-0 group-hover:opacity-100 text-[var(--fg-3, #94A3B8)] hover:text-[#DC2626] hover:bg-[#FEF2F2] transition-opacity"
                   title="Unlink test cycle"
                 >
                   <XIcon size={14} />
@@ -565,7 +565,7 @@ function TestCyclesTab({ testCycles, release }: { testCycles: any[]; release: an
           </DialogHeader>
           <div className="max-h-[320px] overflow-y-auto space-y-0">
             {availableCycles.length === 0 && (
-              <p className="text-center py-6 text-[#94A3B8] text-[13px]">No test cycles found for this project</p>
+              <p className="text-center py-6 text-[var(--fg-3, #94A3B8)] text-[13px]">No test cycles found for this project</p>
             )}
             {availableCycles.map((cycle: any) => {
               const alreadyLinked = linkedCycleIds.has(cycle.id);
@@ -583,7 +583,7 @@ function TestCyclesTab({ testCycles, release }: { testCycles: any[]; release: an
                     <span className="text-[11px] text-[#64748B]">{cycle.total_cases ?? 0} cases</span>
                   </div>
                   <StatusLozenge status={cycle.status || 'not_started'} />
-                  {alreadyLinked && <span className="text-[11px] text-[#94A3B8] font-medium">Linked</span>}
+                  {alreadyLinked && <span className="text-[11px] text-[var(--fg-3, #94A3B8)] font-medium">Linked</span>}
                 </button>
               );
             })}
@@ -613,7 +613,7 @@ function SignoffsTab({ releaseId, changes }: { releaseId: string; changes: any[]
   const approveSignoff = useApproveSignoff();
   const rejectSignoff = useRejectSignoff();
 
-  if (isLoading) return <div className="text-center py-6 text-[#94A3B8] text-[13px]">Loading...</div>;
+  if (isLoading) return <div className="text-center py-6 text-[var(--fg-3, #94A3B8)] text-[13px]">Loading...</div>;
 
   const stages = [
     { stage: 'QA', key: 'in_qa' },
@@ -635,7 +635,7 @@ function SignoffsTab({ releaseId, changes }: { releaseId: string; changes: any[]
             <div className={`w-8 h-8 rounded-full flex items-center justify-center text-[12px] font-bold shrink-0 ${
               status === 'approved' ? 'bg-[#1B7F37] text-white' :
               status === 'pending' ? 'bg-[#0C66E4] text-white' :
-              'bg-[#F1F5F9] text-[#94A3B8]'
+              'bg-[#F1F5F9] text-[var(--fg-3, #94A3B8)]'
             }`}>
               {status === 'approved' ? '✓' : status === 'pending' ? i + 1 : '🔒'}
             </div>
@@ -661,7 +661,7 @@ function SignoffsTab({ releaseId, changes }: { releaseId: string; changes: any[]
           </div>
         );
       })}
-      {signoffs.length === 0 && <div className="text-center py-6 text-[#94A3B8] text-[13px]">No sign-offs configured</div>}
+      {signoffs.length === 0 && <div className="text-center py-6 text-[var(--fg-3, #94A3B8)] text-[13px]">No sign-offs configured</div>}
     </div>
   );
 }

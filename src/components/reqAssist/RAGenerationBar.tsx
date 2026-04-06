@@ -60,7 +60,7 @@ export default function RAGenerationBar({ slots, artifactCounts, isProcessing, e
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 8, maxWidth: 160 }}>
       {/* Progress bar — 80px fixed */}
-      <div style={{ width: 80, height: 4, borderRadius: 2, background: '#E2E8F0', flexShrink: 0, overflow: 'hidden' }}>
+      <div style={{ width: 80, height: 4, borderRadius: 2, background: 'var(--bd-default, #E2E8F0)', flexShrink: 0, overflow: 'hidden' }}>
         <div style={{ width: `${pct}%`, height: '100%', borderRadius: 2, background: barColor, transition: 'width 300ms ease' }} />
       </div>
       {/* Label */}
@@ -69,7 +69,7 @@ export default function RAGenerationBar({ slots, artifactCounts, isProcessing, e
           {labelText}
         </span>
       ) : (
-        <span style={{ color: '#94A3B8', fontSize: 13 }}>—</span>
+        <span style={{ color: 'var(--fg-3, #94A3B8)', fontSize: 13 }}>—</span>
       )}
     </div>
   );

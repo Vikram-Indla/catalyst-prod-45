@@ -148,7 +148,7 @@ export const TriggerRow = memo(function TriggerRow({
         {isSilent && (
           <Badge
             variant="outline"
-            className="text-[8px] h-3.5 px-1 border-[#CBD5E1] text-[#94A3B8] leading-none"
+            className="text-[8px] h-3.5 px-1 border-[#CBD5E1] text-[var(--fg-3, #94A3B8)] leading-none"
           >
             SILENT
           </Badge>
@@ -174,7 +174,7 @@ export const TriggerRow = memo(function TriggerRow({
           className="opacity-0 group-hover:opacity-100 transition-opacity duration-150 ml-auto flex-shrink-0"
           title="Edit recipients"
         >
-          <Users className="h-3 w-3 text-[#94A3B8] hover:text-[#2563EB]" />
+          <Users className="h-3 w-3 text-[var(--fg-3, #94A3B8)] hover:text-[#2563EB]" />
         </button>
       </div>
 
@@ -182,7 +182,7 @@ export const TriggerRow = memo(function TriggerRow({
       <div>
         <Badge
           variant="outline"
-          className="text-[9px] h-5 px-1.5 font-medium border-[#E2E8F0] text-[#475569] whitespace-nowrap"
+          className="text-[9px] h-5 px-1.5 font-medium border-[var(--bd-default, #E2E8F0)] text-[#475569] whitespace-nowrap"
         >
           {HUB_LABELS[hubSource] || hubSource}
         </Badge>

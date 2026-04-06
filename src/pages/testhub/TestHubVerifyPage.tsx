@@ -232,7 +232,7 @@ export default function TestHubVerifyPage() {
         subtitle="20 automated integrity checks — runs on page load"
       >
         {lastRun && (
-          <span style={{ fontSize: 13, color: '#94A3B8', fontFamily: 'Inter, sans-serif' }}>
+          <span style={{ fontSize: 13, color: 'var(--fg-3, #94A3B8)', fontFamily: 'Inter, sans-serif' }}>
             Last run: {lastRun}
           </span>
         )}
@@ -265,7 +265,7 @@ export default function TestHubVerifyPage() {
             { label: 'PASSED', value: passCount, bg: '#E3FCEF', color: '#006644' },
             { label: 'WARNINGS', value: warnCount, bg: '#FFFBEB', color: '#D97706' },
             { label: 'FAILED', value: failCount, bg: '#FFEBE6', color: '#BF2600' },
-            { label: 'TOTAL', value: checks.length, bg: '#F1F5F9', color: '#374151' },
+            { label: 'TOTAL', value: checks.length, bg: var(--bg-2, '#F1F5F9'), color: '#374151' },
           ].map(chip => (
             <div key={chip.label} style={{
               backgroundColor: chip.bg,
@@ -291,7 +291,7 @@ export default function TestHubVerifyPage() {
         </div>
 
         {/* Results table */}
-        <div style={{ border: '0.75px solid #E2E8F0', borderRadius: 6, overflow: 'hidden' }}>
+        <div style={{ border: '0.75px solid var(--bd-default, #E2E8F0)', borderRadius: 6, overflow: 'hidden' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: 'Inter, sans-serif' }}>
             <thead>
               <tr style={{ backgroundColor: '#F8FAFC' }}>
@@ -305,7 +305,7 @@ export default function TestHubVerifyPage() {
                     letterSpacing: '0.04em',
                     color: '#64748B',
                     textAlign: 'left',
-                    borderBottom: '0.75px solid #E2E8F0',
+                    borderBottom: '0.75px solid var(--bd-default, #E2E8F0)',
                   }}>
                     {h}
                   </th>
@@ -330,7 +330,7 @@ export default function TestHubVerifyPage() {
                         {ci === 0 ? group : ''}
                       </td>
                       <td style={{ padding: '0 12px', fontSize: 13, color: '#1E293B' }}>
-                        <span style={{ color: '#94A3B8', fontFamily: 'JetBrains Mono, monospace', fontSize: 11, marginRight: 8 }}>{check.id}</span>
+                        <span style={{ color: 'var(--fg-3, #94A3B8)', fontFamily: 'JetBrains Mono, monospace', fontSize: 11, marginRight: 8 }}>{check.id}</span>
                         {check.label}
                       </td>
                       <td style={{ padding: '0 12px', fontSize: 12, color: '#64748B', fontFamily: 'JetBrains Mono, monospace' }}>
@@ -373,7 +373,7 @@ export default function TestHubVerifyPage() {
                           padding: '2px 12px 6px',
                           fontSize: 12,
                           fontStyle: 'italic',
-                          color: '#94A3B8',
+                          color: 'var(--fg-3, #94A3B8)',
                         }}>
                           {check.note}
                         </td>
@@ -487,7 +487,7 @@ function ModuleHealthSection({ checks, loadingCount }: { checks: VCheck[]; loadi
   return (
     <>
       {/* Divider + header */}
-      <div style={{ borderTop: '0.75px solid #E2E8F0', marginTop: 32, paddingTop: 20, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <div style={{ borderTop: '0.75px solid var(--bd-default, #E2E8F0)', marginTop: 32, paddingTop: 20, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <span style={{ fontSize: 16, fontWeight: 600, color: '#1E293B', fontFamily: 'Inter, sans-serif' }}>
           Module health scores
         </span>
@@ -497,7 +497,7 @@ function ModuleHealthSection({ checks, loadingCount }: { checks: VCheck[]; loadi
             height: 32,
             padding: '0 12px',
             backgroundColor: 'transparent',
-            border: '1px solid #E2E8F0',
+            border: '1px solid var(--bd-default, #E2E8F0)',
             borderRadius: 6,
             fontSize: 13,
             fontWeight: 500,
@@ -521,18 +521,18 @@ function ModuleHealthSection({ checks, loadingCount }: { checks: VCheck[]; loadi
           return (
             <div key={mod.key} style={{
               backgroundColor: '#FFFFFF',
-              border: '0.75px solid #E2E8F0',
+              border: '0.75px solid var(--bd-default, #E2E8F0)',
               borderRadius: 8,
               padding: 16,
             }}>
               <div style={{ fontSize: 14, fontWeight: 600, color: '#1E293B', marginBottom: 4 }}>
                 {mod.name}
               </div>
-              <div style={{ fontSize: 12, color: '#94A3B8', marginBottom: 8 }}>
+              <div style={{ fontSize: 12, color: 'var(--fg-3, #94A3B8)', marginBottom: 8 }}>
                 {s.passed}/{s.total} checks · {s.pct}%
               </div>
               {/* Progress bar */}
-              <div style={{ width: '100%', height: 4, backgroundColor: '#F1F5F9', borderRadius: 2 }}>
+              <div style={{ width: '100%', height: 4, backgroundColor: var(--bg-2, '#F1F5F9'), borderRadius: 2 }}>
                 <div style={{ width: `${s.pct}%`, height: 4, backgroundColor: fill, borderRadius: 2, transition: 'width 0.3s' }} />
               </div>
               {/* Sub-lines for Test Assets */}
@@ -549,7 +549,7 @@ function ModuleHealthSection({ checks, loadingCount }: { checks: VCheck[]; loadi
                 </div>
               )}
               {mod.note && s.pct < 100 && (
-                <div style={{ marginTop: 6, fontSize: 11, fontStyle: 'italic', color: '#94A3B8' }}>
+                <div style={{ marginTop: 6, fontSize: 11, fontStyle: 'italic', color: 'var(--fg-3, #94A3B8)' }}>
                   {mod.note}
                 </div>
               )}
@@ -574,8 +574,8 @@ function ModuleHealthSection({ checks, loadingCount }: { checks: VCheck[]; loadi
             {overallPct}%
           </span>
         </div>
-        <span style={{ fontSize: 12, color: '#94A3B8', marginTop: 8 }}>Overall score</span>
-        <span style={{ fontSize: 11, color: '#94A3B8' }}>{overallPassed}/20 checks passed</span>
+        <span style={{ fontSize: 12, color: 'var(--fg-3, #94A3B8)', marginTop: 8 }}>Overall score</span>
+        <span style={{ fontSize: 11, color: 'var(--fg-3, #94A3B8)' }}>{overallPassed}/20 checks passed</span>
       </div>
     </>
   );

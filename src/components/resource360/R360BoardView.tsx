@@ -29,7 +29,7 @@ const SC: Record<string, { dot: string; bg: string; tx: string; label: string }>
   'Blocked':              { dot: '#EF4444', bg: '#FEF2F2', tx: '#7F1D1D', label: 'Blocked' },
   'Rejected':             { dot: '#EF4444', bg: '#FEF2F2', tx: '#7F1D1D', label: 'Rejected' },
 };
-const SCD = { dot: '#64748B', bg: '#F1F5F9', tx: '#334155', label: 'Unknown' };
+const SCD = { dot: '#64748B', bg: var(--bg-2, '#F1F5F9'), tx: '#334155', label: 'Unknown' };
 
 function resolveStatus(item: any) {
   if (item.status_name && SC[item.status_name]) return SC[item.status_name];
@@ -47,7 +47,7 @@ const pColor = (k: string, fallback?: string) => fallback || PC[k] || '#64748B';
 const ageCol = (d: number) => d <= 7 ? '#16A34A' : d <= 14 ? '#D97706' : '#EF4444';
 
 const PRI_DOT: Record<string, string> = {
-  critical: '#EF4444', highest: '#EF4444', high: '#D97706', medium: '#D97706', low: '#64748B', lowest: '#94A3B8',
+  critical: '#EF4444', highest: '#EF4444', high: '#D97706', medium: '#D97706', low: '#64748B', lowest: 'var(--fg-3, #94A3B8)',
 };
 
 const COLS = [

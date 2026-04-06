@@ -88,7 +88,7 @@ function getStatusStyleFallback(statusName: string, statusCategory?: string): St
   }
 
   // Default — gray for truly unknown statuses
-  return { dot: '#64748B', bg: '#F1F5F9', text: '#334155', category: 'unstarted' };
+  return { dot: '#64748B', bg: var(--bg-2, '#F1F5F9'), text: '#334155', category: 'unstarted' };
 }
 
 /** @deprecated Use resolveStatusStyle instead */

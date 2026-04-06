@@ -13,7 +13,7 @@ export function SidebarModuleNav({ collapsed, onToggle }: SidebarModuleNavProps)
 
   return (
     <div
-      className="flex flex-col h-full flex-shrink-0 bg-white dark:bg-[#0A0A0A] border-r border-[#E2E8F0] dark:border-[rgba(255,255,255,0.10)]"
+      className="flex flex-col h-full flex-shrink-0 bg-white dark:bg-[#0A0A0A] border-r border-[var(--bd-default, #E2E8F0)] dark:border-[rgba(255,255,255,0.10)]"
       style={{
         width: collapsed ? 56 : 192,
         transition: 'width 200ms ease',
@@ -23,7 +23,7 @@ export function SidebarModuleNav({ collapsed, onToggle }: SidebarModuleNavProps)
     >
       {/* Header */}
       <div
-        className="flex items-center gap-2 flex-shrink-0 border-b border-[#E2E8F0] dark:border-[rgba(255,255,255,0.10)]"
+        className="flex items-center gap-2 flex-shrink-0 border-b border-[var(--bd-default, #E2E8F0)] dark:border-[rgba(255,255,255,0.10)]"
         style={{ padding: collapsed ? '12px 10px' : '12px 10px' }}
       >
         <div

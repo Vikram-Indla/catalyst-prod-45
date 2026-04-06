@@ -60,7 +60,7 @@ export function TableContextMenu({
               className="w-full flex items-center gap-2.5 px-3 py-1.5 text-[13px] hover:bg-[#F8FAFC] text-left transition-colors"
               style={{ color: 'var(--fg-2)' }}
             >
-              <Icon size={13} className="text-[#94A3B8]" />
+              <Icon size={13} className="text-[var(--fg-3, #94A3B8)]" />
               {item.label}
             </button>
           );

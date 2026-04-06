@@ -75,7 +75,7 @@ function ChipButton({ label, active, color, onClick }: {
         fontFamily: "'Inter', sans-serif",
         color: active ? color : '#64748B',
         background: active ? `${color}10` : '#FFFFFF',
-        border: `1px solid ${active ? color : '#E2E8F0'}`,
+        border: `1px solid ${active ? color : 'var(--bd-default, #E2E8F0)'}`,
         borderRadius: 9999, cursor: 'pointer',
         display: 'flex', alignItems: 'center', gap: 4,
         transition: 'all 120ms ease',

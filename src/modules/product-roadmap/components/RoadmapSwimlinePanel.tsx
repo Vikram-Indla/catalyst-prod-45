@@ -75,7 +75,7 @@ export function RoadmapSwimlanePanel({ items, config, selectedItemId, onItemClic
   }, [items]);
 
   const hc = highContrast;
-  const borderColor = hc ? '#09090B' : '#E2E8F0';
+  const borderColor = hc ? '#09090B' : 'var(--bd-default, #E2E8F0)';
 
   const renderGridlines = () => (
     <div className="absolute inset-0 pointer-events-none flex">
@@ -88,7 +88,7 @@ export function RoadmapSwimlanePanel({ items, config, selectedItemId, onItemClic
             style={{
               minWidth: periodMinWidth,
               width: `${100 / periods.length}%`,
-              borderRight: `1px solid ${isQuarterBoundary ? borderColor : '#F1F5F9'}`,
+              borderRight: `1px solid ${isQuarterBoundary ? borderColor : var(--bg-2, '#F1F5F9')}`,
               background: period.isCurrent ? 'rgba(37,99,235,0.03)' : 'transparent',
             }}
           />
@@ -109,7 +109,7 @@ export function RoadmapSwimlanePanel({ items, config, selectedItemId, onItemClic
             {lanes.map(([key, lane]) => {
               const isUnassigned = lane.name === 'Unassigned';
               const initials = isUnassigned ? '?' : getInitials(lane.name);
-              const avatarColor = isUnassigned ? '#94A3B8' : hashColor(lane.name);
+              const avatarColor = isUnassigned ? 'var(--fg-3, #94A3B8)' : hashColor(lane.name);
               
               return (
                 <div key={key}>
@@ -145,7 +145,7 @@ export function RoadmapSwimlanePanel({ items, config, selectedItemId, onItemClic
                         fontSize: 10,
                         fontWeight: 600,
                         color: '#64748B',
-                        background: '#F1F5F9',
+                        background: var(--bg-2, '#F1F5F9'),
                         borderRadius: 10,
                         padding: '2px 7px',
                         fontFamily: 'JetBrains Mono, monospace',

@@ -47,7 +47,7 @@ export const WIT_STYLES: Record<string, { bg: string; color: string }> = {
   Story: { bg: '#DBEAFE', color: '#1D4ED8' },
   Subtask: { bg: '#E0E7FF', color: '#3730A3' },
   Bug: { bg: '#FEE2E2', color: '#B91C1C' },
-  Task: { bg: '#F1F5F9', color: '#334155' },
+  Task: { bg: var(--bg-2, '#F1F5F9'), color: '#334155' },
   'Test Case': { bg: '#FEF3C7', color: '#92400E' },
   'Test Plan': { bg: '#FEF3C7', color: '#92400E' },
   Incident: { bg: '#FEE2E2', color: '#991B1B' },
@@ -89,8 +89,8 @@ export const R360_TOKENS = {
   ink4: '#64748B',
   surface: '#F8FAFC',
   card: '#FFFFFF',
-  border: '#E2E8F0',
-  borderLt: '#F1F5F9',
+  border: 'var(--bd-default, #E2E8F0)',
+  borderLt: var(--bg-2, '#F1F5F9'),
 } as const;
 
 // Status mental model — CG-05 enforced

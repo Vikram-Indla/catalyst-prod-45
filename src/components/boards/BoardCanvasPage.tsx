@@ -280,7 +280,7 @@ export default function BoardCanvasPage({ projectIdOverride, basePath }: BoardCa
                   transition: 'color 150ms, border-color 150ms',
                 }}
               >
-                {isPersonal && <User size={12} color={active ? '#D97706' : '#94A3B8'} />}
+                {isPersonal && <User size={12} color={active ? '#D97706' : 'var(--fg-3, #94A3B8)'} />}
                 {tab.name}
               </button>
             );
@@ -394,7 +394,7 @@ export default function BoardCanvasPage({ projectIdOverride, basePath }: BoardCa
                   onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                 >
                   <span style={{ transition: 'transform 0.2s', transform: collapsed ? 'rotate(-90deg)' : 'rotate(0deg)', display: 'flex' }}>
-                    <ChevronDown size={14} color="#94A3B8" />
+                    <ChevronDown size={14} color="var(--fg-3, #94A3B8)" />
                   </span>
                 {/* Release pill in swimlane header */}
                 {lane.id !== 'default' && (

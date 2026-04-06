@@ -6,7 +6,7 @@ export const R360 = {
   teal: '#0D9488', tealLight: '#F0FDFA', tealText: '#134E4A',
   purple: '#7C3AED', purpleLight: '#F5F3FF', purpleText: '#4C1D95',
   ink1: '#020617', ink2: '#0F172A', ink3: '#334155', ink4: '#64748B',
-  surface: '#F8FAFC', card: '#FFFFFF', border: '#E2E8F0', borderLt: '#F1F5F9',
+  surface: '#F8FAFC', card: '#FFFFFF', border: 'var(--bd-default, #E2E8F0)', borderLt: var(--bg-2, '#F1F5F9'),
 } as const;
 
 export interface StatusDisplay { category: string; label: string; color: string; bg: string; dot: string; }
@@ -33,7 +33,7 @@ export const R360_STATUS_MAP: Record<string, StatusDisplay> = {
   'Hold':           { category:'blocked',     label:'On Hold',     color:'#7F1D1D', bg:'#FEF2F2', dot:'#EF4444' },
   'On Hold':        { category:'blocked',     label:'On Hold',     color:'#7F1D1D', bg:'#FEF2F2', dot:'#EF4444' },
 };
-export const R360_STATUS_DEFAULT: StatusDisplay = { category:'to_do', label:'Unknown', color:'#334155', bg:'#F1F5F9', dot:'#64748B' };
+export const R360_STATUS_DEFAULT: StatusDisplay = { category:'to_do', label:'Unknown', color:'#334155', bg:var(--bg-2, '#F1F5F9'), dot:'#64748B' };
 
 export const R360_DEPT_COLORS: Record<string, string> = {
   Delivery:'#2563EB', Governance:'#0D9488', Operations:'#D97706',

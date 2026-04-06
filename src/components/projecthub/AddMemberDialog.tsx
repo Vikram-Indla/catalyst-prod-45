@@ -101,25 +101,25 @@ export function AddMemberDialog({ open, onClose, projectId, existingMemberIds }:
           </p>
 
           <div className="flex items-center gap-2 rounded-lg bg-white dark:bg-transparent border border-[#CBD5E1] dark:border-[rgba(255,255,255,0.10)]" style={{ height: 40, padding: '0 14px' }}>
-            <Search size={15} className="text-[#94A3B8] dark:text-[rgba(255,255,255,0.40)]" />
+            <Search size={15} className="text-[var(--fg-3, #94A3B8)] dark:text-[rgba(255,255,255,0.40)]" />
             <input
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder="Search by name, role, or email..."
-              className="flex-1 bg-transparent outline-none text-[#0F172A] dark:text-[rgba(255,255,255,0.92)] placeholder:text-[#94A3B8] dark:placeholder:text-[rgba(255,255,255,0.40)]"
+              className="flex-1 bg-transparent outline-none text-[#0F172A] dark:text-[rgba(255,255,255,0.92)] placeholder:text-[var(--fg-3, #94A3B8)] dark:placeholder:text-[rgba(255,255,255,0.40)]"
               style={{ fontSize: 13 }}
               autoFocus
             />
           </div>
         </div>
 
-        <div className="border-t border-[#E2E8F0] dark:border-[rgba(255,255,255,0.08)]" style={{ maxHeight: 380, overflowY: 'auto' }}>
+        <div className="border-t border-[var(--bd-default, #E2E8F0)] dark:border-[rgba(255,255,255,0.08)]" style={{ maxHeight: 380, overflowY: 'auto' }}>
           {isLoading ? (
             <div className="flex items-center justify-center py-12">
               <Loader2 size={20} className="animate-spin text-slate-400 dark:text-[rgba(255,255,255,0.40)]" />
             </div>
           ) : available.length === 0 ? (
-            <div className="text-center py-10 text-[#94A3B8] dark:text-[rgba(255,255,255,0.40)]" style={{ fontSize: 13 }}>
+            <div className="text-center py-10 text-[var(--fg-3, #94A3B8)] dark:text-[rgba(255,255,255,0.40)]" style={{ fontSize: 13 }}>
               {search ? `No users match "${search}"` : 'All users are already members'}
             </div>
           ) : (
@@ -143,12 +143,12 @@ export function AddMemberDialog({ open, onClose, projectId, existingMemberIds }:
                     <div className="text-[#64748B] dark:text-[rgba(255,255,255,0.55)]" style={{ fontSize: 11, lineHeight: '16px' }}>
                       {u.role_name || 'No role'}
                       {u.department_name && <span className="text-[#CBD5E1] dark:text-[rgba(255,255,255,0.20)]"> · </span>}
-                      {u.department_name && <span className="text-[#94A3B8] dark:text-[rgba(255,255,255,0.40)]">{u.department_name}</span>}
+                      {u.department_name && <span className="text-[var(--fg-3, #94A3B8)] dark:text-[rgba(255,255,255,0.40)]">{u.department_name}</span>}
                     </div>
                   </div>
 
                   {u.email && (
-                    <span className="flex-shrink-0 text-[#94A3B8] dark:text-[rgba(255,255,255,0.40)]" style={{ fontSize: 11 }}>{u.email.split('@')[0]}</span>
+                    <span className="flex-shrink-0 text-[var(--fg-3, #94A3B8)] dark:text-[rgba(255,255,255,0.40)]" style={{ fontSize: 11 }}>{u.email.split('@')[0]}</span>
                   )}
 
                   <button
@@ -164,13 +164,13 @@ export function AddMemberDialog({ open, onClose, projectId, existingMemberIds }:
           )}
         </div>
 
-        <div className="px-5 py-3 flex items-center justify-between border-t border-[#E2E8F0] dark:border-[rgba(255,255,255,0.08)]">
-          <span className="text-[#94A3B8] dark:text-[rgba(255,255,255,0.40)]" style={{ fontSize: 11 }}>
+        <div className="px-5 py-3 flex items-center justify-between border-t border-[var(--bd-default, #E2E8F0)] dark:border-[rgba(255,255,255,0.08)]">
+          <span className="text-[var(--fg-3, #94A3B8)] dark:text-[rgba(255,255,255,0.40)]" style={{ fontSize: 11 }}>
             {available.length} user{available.length !== 1 ? 's' : ''} available
           </span>
           <button
             onClick={onClose}
-            className="rounded-md bg-white dark:bg-transparent border border-[#E2E8F0] dark:border-[rgba(255,255,255,0.10)] text-[#475569] dark:text-[rgba(255,255,255,0.72)]"
+            className="rounded-md bg-white dark:bg-transparent border border-[var(--bd-default, #E2E8F0)] dark:border-[rgba(255,255,255,0.10)] text-[#475569] dark:text-[rgba(255,255,255,0.72)]"
             style={{ height: 32, padding: '0 16px', fontSize: 12, fontWeight: 500, cursor: 'pointer' }}
           >
             Done

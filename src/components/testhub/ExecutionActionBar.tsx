@@ -84,7 +84,7 @@ export function ExecutionActionBar({
           return (
             <button key={btn.key} onClick={btn.onClick} disabled={isSubmitting} title={`${btn.label} (${btn.shortcut})`}
               style={{
-                height: 44, padding: '0 24px', border: isActive || btn.key !== 'skipped' ? 'none' : '1.5px solid #E2E8F0', borderRadius: 8,
+                height: 44, padding: '0 24px', border: isActive || btn.key !== 'skipped' ? 'none' : '1.5px solid var(--bd-default, #E2E8F0)', borderRadius: 8,
                 background: isActive ? btn.activeGradient : btn.inactiveBg,
                 color: isActive ? btn.activeColor : btn.inactiveColor,
                 fontSize: 14, fontWeight: 600, cursor: isSubmitting ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: 8,

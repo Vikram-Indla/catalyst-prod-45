@@ -4,10 +4,10 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
 const CATEGORY_PILL: Record<string, { bg: string; text: string; label: string }> = {
-  todo: { bg: '#F1F5F9', text: '#64748B', label: 'To Do' },
+  todo: { bg: var(--bg-2, '#F1F5F9'), text: '#64748B', label: 'To Do' },
   in_progress: { bg: '#EFF6FF', text: '#2563EB', label: 'In Progress' },
   done: { bg: '#F0FDFA', text: '#0D9488', label: 'Done' },
-  terminal: { bg: '#F1F5F9', text: '#64748B', label: 'Terminal' },
+  terminal: { bg: var(--bg-2, '#F1F5F9'), text: '#64748B', label: 'Terminal' },
 };
 
 interface StatusRowProps {
@@ -95,7 +95,7 @@ export function StatusRow({ id, name, color, category, isDefault, itemCount, onE
       <div className="relative" ref={menuRef}>
         <button
           onClick={() => setMenuOpen(!menuOpen)}
-          className="flex items-center justify-center rounded transition-colors hover:bg-[#E2E8F0]"
+          className="flex items-center justify-center rounded transition-colors hover:bg-[var(--bd-default, #E2E8F0)]"
           style={{ width: 28, height: 28, border: 'none', background: 'transparent', cursor: 'pointer' }}
         >
           <MoreHorizontal size={16} color="var(--fg-3)" />

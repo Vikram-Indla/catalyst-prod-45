@@ -101,7 +101,7 @@ export function RiskOverview() {
           { label: 'OVERDUE', value: overdueCount, color: 'var(--exec-signal-red, #DC2626)', pulse: overdueCount > 0 },
         ].map(kpi => (
           <div key={kpi.label} className="text-center relative" style={{
-            border: '1px solid var(--exec-border, #E2E8F0)', borderRadius: 6, padding: '6px 10px',
+            border: '1px solid var(--exec-border, var(--bd-default, #E2E8F0))', borderRadius: 6, padding: '6px 10px',
           }}>
             {kpi.pulse && (
               <span style={{
@@ -138,7 +138,7 @@ export function RiskOverview() {
       <div className="flex gap-1 mb-3">
         {(['Critical', 'High', 'Medium', 'Low'] as const).map(level => {
           const count = impactCounts[level];
-          const color = count > 0 ? IMPACT_COLORS[level] : 'var(--exec-text-muted, #94A3B8)';
+          const color = count > 0 ? IMPACT_COLORS[level] : 'var(--exec-text-muted, var(--fg-3, #94A3B8))';
           return (
             <div key={level} className="flex-1" style={{
               borderLeft: `3px solid ${IMPACT_COLORS[level]}`, padding: '4px 8px', borderRadius: 4,
@@ -159,9 +159,9 @@ export function RiskOverview() {
           return (
             <div key={risk.id} className="flex items-start gap-2" style={{
               padding: '6px 0',
-              borderBottom: i < topRisks.length - 1 ? '1px solid var(--exec-border, #E2E8F0)' : 'none',
+              borderBottom: i < topRisks.length - 1 ? '1px solid var(--exec-border, var(--bd-default, #E2E8F0))' : 'none',
             }}>
-              <span style={{ width: 8, height: 8, borderRadius: '50%', marginTop: 3, flexShrink: 0, background: IMPACT_COLORS[risk.impact || 'Low'] || '#94A3B8' }} />
+              <span style={{ width: 8, height: 8, borderRadius: '50%', marginTop: 3, flexShrink: 0, background: IMPACT_COLORS[risk.impact || 'Low'] || 'var(--fg-3, #94A3B8)' }} />
               <div className="flex-1 min-w-0">
                 <div style={{ fontSize: 11, color: 'var(--exec-text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                   <span style={{ fontFamily: 'monospace', fontSize: 10, marginRight: 4 }}>R-{String(risk.risk_number).padStart(3, '0')}</span>

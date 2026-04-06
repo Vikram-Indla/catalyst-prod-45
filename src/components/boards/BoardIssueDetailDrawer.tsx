@@ -14,9 +14,9 @@ import '@/styles/initiative-detail-panel.css';
 
 /* ── Status color map ── */
 const STATUS_PILL: Record<string, { text: string; bg: string; bdr: string }> = {
-  todo:        { text: '#64748B', bg: '#F1F5F9', bdr: 'rgba(100,116,139,0.2)' },
-  backlog:     { text: '#64748B', bg: '#F1F5F9', bdr: 'rgba(100,116,139,0.2)' },
-  new:         { text: '#64748B', bg: '#F1F5F9', bdr: 'rgba(100,116,139,0.2)' },
+  todo:        { text: '#64748B', bg: var(--bg-2, '#F1F5F9'), bdr: 'rgba(100,116,139,0.2)' },
+  backlog:     { text: '#64748B', bg: var(--bg-2, '#F1F5F9'), bdr: 'rgba(100,116,139,0.2)' },
+  new:         { text: '#64748B', bg: var(--bg-2, '#F1F5F9'), bdr: 'rgba(100,116,139,0.2)' },
   'in progress': { text: '#2563EB', bg: '#EFF6FF', bdr: 'rgba(37,99,235,0.2)' },
   inprogress:  { text: '#2563EB', bg: '#EFF6FF', bdr: 'rgba(37,99,235,0.2)' },
   'in review':   { text: '#7C3AED', bg: '#F5F3FF', bdr: 'rgba(124,58,237,0.2)' },

@@ -470,8 +470,8 @@ export default function ExportWorkItems({ deptFilter }: { deptFilter: string }) 
           cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px',
           transition: 'border-color 150ms',
         }}
-        onMouseEnter={e => { e.currentTarget.style.borderColor = dk ? '#878787' : '#94A3B8'; }}
-        onMouseLeave={e => { e.currentTarget.style.borderColor = dk ? 'rgba(255,255,255,0.10)' : '#E2E8F0'; }}
+        onMouseEnter={e => { e.currentTarget.style.borderColor = dk ? '#878787' : 'var(--fg-3, #94A3B8)'; }}
+        onMouseLeave={e => { e.currentTarget.style.borderColor = dk ? 'rgba(255,255,255,0.10)' : 'var(--bd-default, #E2E8F0)'; }}
       >
         <Download size={14} strokeWidth={2} />
         Export

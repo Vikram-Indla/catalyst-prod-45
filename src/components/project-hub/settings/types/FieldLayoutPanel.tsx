@@ -26,7 +26,7 @@ export function FieldLayoutPanel({ typeId, typeName, onClose }: FieldLayoutPanel
   const getTagStyle = (isRequired: boolean, isTypeSpecific: boolean) => {
     if (isRequired) return { bg: '#FEF2F2', text: '#DC2626', label: 'Required' };
     if (isTypeSpecific) return { bg: '#FFFBEB', text: '#D97706', label: 'Type-specific' };
-    return { bg: '#F1F5F9', text: '#94A3B8', label: 'Optional' };
+    return { bg: var(--bg-2, '#F1F5F9'), text: 'var(--fg-3, #94A3B8)', label: 'Optional' };
   };
 
   return (

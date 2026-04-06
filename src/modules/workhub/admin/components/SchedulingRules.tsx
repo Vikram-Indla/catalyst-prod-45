@@ -59,7 +59,7 @@ export function SchedulingRules() {
   )
 
   const cardStyle: React.CSSProperties = {
-    background: '#fff', border: '1px solid #E2E8F0', borderRadius: 8,
+    background: '#fff', border: '1px solid var(--bd-default, #E2E8F0)', borderRadius: 8,
     padding: 20, marginBottom: 16, boxShadow: '0 1px 2px rgba(0,0,0,.05)',
   }
 
@@ -133,7 +133,7 @@ export function SchedulingRules() {
             value={multiVersionStrategy}
             onChange={(e) => setMultiVersionStrategy(e.target.value)}
             style={{
-              width: 200, padding: '7px 10px', borderRadius: 6, border: '1px solid #E2E8F0',
+              width: 200, padding: '7px 10px', borderRadius: 6, border: '1px solid var(--bd-default, #E2E8F0)',
               fontSize: 12, color: '#334155', background: '#fff',
             }}
           >
@@ -170,11 +170,11 @@ export function SchedulingRules() {
                 When a FixVersion has no releaseDate, Catalyst attempts to extract a date from the version name:
               </p>
               <div style={{ marginTop: 8, fontSize: 11, color: '#92400E', lineHeight: 2 }}>
-                <code style={{ fontFamily: 'JetBrains Mono, monospace', background: '#F1F5F9', padding: '1px 5px', borderRadius: 2 }}>2026 02</code>
+                <code style={{ fontFamily: 'JetBrains Mono, monospace', background: var(--bg-2, '#F1F5F9'), padding: '1px 5px', borderRadius: 2 }}>2026 02</code>
                 {' → 2026-02-28  '}
-                <code style={{ fontFamily: 'JetBrains Mono, monospace', background: '#F1F5F9', padding: '1px 5px', borderRadius: 2 }}>2026 Q1</code>
+                <code style={{ fontFamily: 'JetBrains Mono, monospace', background: var(--bg-2, '#F1F5F9'), padding: '1px 5px', borderRadius: 2 }}>2026 Q1</code>
                 {' → 2026-03-31  '}
-                <code style={{ fontFamily: 'JetBrains Mono, monospace', background: '#F1F5F9', padding: '1px 5px', borderRadius: 2 }}>Release 3.0</code>
+                <code style={{ fontFamily: 'JetBrains Mono, monospace', background: var(--bg-2, '#F1F5F9'), padding: '1px 5px', borderRadius: 2 }}>Release 3.0</code>
                 {' → '}
                 <span style={{ color: '#EF4444', fontWeight: 600 }}>Cannot parse</span>
               </div>
@@ -205,7 +205,7 @@ export function SchedulingRules() {
             onClick={handleReset}
             style={{
               padding: '8px 20px', borderRadius: 6, fontSize: 12, fontWeight: 500,
-              background: '#F8FAFC', color: '#334155', border: '1px solid #E2E8F0', cursor: 'pointer',
+              background: '#F8FAFC', color: '#334155', border: '1px solid var(--bd-default, #E2E8F0)', cursor: 'pointer',
             }}
           >
             Reset to Default

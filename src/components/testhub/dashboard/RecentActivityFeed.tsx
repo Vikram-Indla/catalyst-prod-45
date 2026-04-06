@@ -26,7 +26,7 @@ const STATUS_CFG: Record<string, { icon: typeof CheckCircle2; color: string; bg:
   passed:  { icon: CheckCircle2,  color: '#10B981', bg: '#ECFDF5' },
   failed:  { icon: XCircle,       color: 'var(--sem-danger)', bg: '#FEF2F2' },
   blocked: { icon: AlertTriangle, color: '#F59E0B', bg: '#FFFBEB' },
-  skipped: { icon: SkipForward,   color: 'var(--fg-3)', bg: '#F1F5F9' },
+  skipped: { icon: SkipForward,   color: 'var(--fg-3)', bg: var(--bg-2, '#F1F5F9') },
   not_run: { icon: Clock,         color: 'var(--fg-4)', bg: '#F8FAFC' },
 };
 

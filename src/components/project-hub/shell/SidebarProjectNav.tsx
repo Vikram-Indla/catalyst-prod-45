@@ -68,7 +68,7 @@ export function SidebarProjectNav({
 
   return (
     <div
-      className="flex flex-col h-full flex-shrink-0 bg-white dark:bg-[#0A0A0A] border-r border-[#E2E8F0] dark:border-[rgba(255,255,255,0.10)]"
+      className="flex flex-col h-full flex-shrink-0 bg-white dark:bg-[#0A0A0A] border-r border-[var(--bd-default, #E2E8F0)] dark:border-[rgba(255,255,255,0.10)]"
       style={{
         width: collapsed ? 56 : 200,
         transition: 'width 200ms ease',
@@ -77,7 +77,7 @@ export function SidebarProjectNav({
       }}
     >
       {/* Header with project switcher */}
-      <div className="relative flex-shrink-0 border-b border-[#E2E8F0] dark:border-[rgba(255,255,255,0.10)]">
+      <div className="relative flex-shrink-0 border-b border-[var(--bd-default, #E2E8F0)] dark:border-[rgba(255,255,255,0.10)]">
         <div
           className="flex items-center gap-2"
           style={{ padding: collapsed ? '12px 10px' : '12px 10px' }}
@@ -115,7 +115,7 @@ export function SidebarProjectNav({
                     {projectName}
                   </div>
                 </div>
-                <ChevronDown size={14} className="flex-shrink-0 text-[#94A3B8] dark:text-[rgba(255,255,255,0.40)]" />
+                <ChevronDown size={14} className="flex-shrink-0 text-[var(--fg-3, #94A3B8)] dark:text-[rgba(255,255,255,0.40)]" />
               </button>
               <button
                 onClick={onToggle}

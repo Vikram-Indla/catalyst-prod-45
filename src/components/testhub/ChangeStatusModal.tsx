@@ -108,7 +108,7 @@ export function ChangeStatusModal({
                   gap: 12,
                   padding: '12px 16px',
                   borderRadius: 8,
-                  border: isSelected ? `2px solid ${status.color}` : '1.5px solid #E2E8F0',
+                  border: isSelected ? `2px solid ${status.color}` : '1.5px solid var(--bd-default, #E2E8F0)',
                   backgroundColor: isSelected ? status.bg : 'var(--cp-float)',
                   cursor: isCurrent ? 'not-allowed' : 'pointer',
                   opacity: isCurrent ? 0.5 : 1,

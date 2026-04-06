@@ -31,7 +31,7 @@ function DataTable({ data }: { data: any[] }) {
       <thead>
         <tr>
           {keys.map((k) => (
-            <th key={k} style={{ textAlign: "left", padding: "4px 8px", borderBottom: "1px solid #E2E8F0", color: "#64748B", fontWeight: 600 }}>{k}</th>
+            <th key={k} style={{ textAlign: "left", padding: "4px 8px", borderBottom: "1px solid var(--bd-default, #E2E8F0)", color: "#64748B", fontWeight: 600 }}>{k}</th>
           ))}
         </tr>
       </thead>
@@ -59,7 +59,7 @@ function StatusBadge({ status }: { status: CheckStatus }) {
 
 function CheckCard({ result }: { result: CheckResult }) {
   return (
-    <div style={{ border: "0.75px solid #E2E8F0", borderRadius: 6, background: "#FFFFFF", padding: 16, marginBottom: 12 }}>
+    <div style={{ border: "0.75px solid var(--bd-default, #E2E8F0)", borderRadius: 6, background: "#FFFFFF", padding: 16, marginBottom: 12 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
         <span style={{ fontWeight: 600, fontSize: 13 }}>{result.id} · {result.title}</span>
         <StatusBadge status={result.status} />

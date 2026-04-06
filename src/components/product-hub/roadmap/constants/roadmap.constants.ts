@@ -45,7 +45,7 @@ export const PRIORITY_COLORS: Record<string, { color: string; bg: string; label:
 // ── Status Colors ──
 export const STATUS_COLORS: Record<string, { color: string; bg: string; label: string }> = {
   Active:    { color: '#16A34A', bg: '#F0FDF4', label: 'Active' },
-  Planned:   { color: '#94A3B8', bg: '#F8FAFC', label: 'Planned' },
+  Planned:   { color: 'var(--fg-3, #94A3B8)', bg: '#F8FAFC', label: 'Planned' },
   Completed: { color: '#0D9488', bg: '#F0FDFA', label: 'Completed' },
   Cancelled: { color: '#EF4444', bg: '#FEF2F2', label: 'Cancelled' },
 };
@@ -55,14 +55,14 @@ export const INK = {
   1: '#0F172A',  // primary text
   2: '#334155',  // secondary text (AUDIT #17: not muted)
   3: '#64748B',  // tertiary
-  4: '#94A3B8',  // muted
+  4: 'var(--fg-3, #94A3B8)',  // muted
 };
 
 export const SURFACE = {
   page: '#F8FAFC',
   card: '#FFFFFF',
-  border: '#E2E8F0',
-  borderLight: '#F1F5F9',
+  border: 'var(--bd-default, #E2E8F0)',
+  borderLight: var(--bg-2, '#F1F5F9'),
 };
 
 // ── Dark Mode Variants (Nocturne One Surface Model) ──
@@ -103,6 +103,6 @@ export const OWNER_COLORS = ['#2563EB'];
 export const SCROLLBAR_CSS = `
   .roadmap-scroll::-webkit-scrollbar { width: 5px; height: 5px; }
   .roadmap-scroll::-webkit-scrollbar-track { background: transparent; }
-  .roadmap-scroll::-webkit-scrollbar-thumb { background: #E2E8F0; border-radius: 3px; }
+  .roadmap-scroll::-webkit-scrollbar-thumb { background: var(--bd-default, #E2E8F0); border-radius: 3px; }
   .roadmap-scroll::-webkit-scrollbar-thumb:hover { background: #CBD5E1; }
 `;

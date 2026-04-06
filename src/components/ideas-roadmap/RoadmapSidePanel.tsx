@@ -81,7 +81,7 @@ export function RoadmapSidePanel({
   }
 
   const labelStyle: React.CSSProperties = {
-    fontSize: 10, fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase',
+    fontSize: 10, fontWeight: 700, color: 'var(--fg-3, #94A3B8)', textTransform: 'uppercase',
     letterSpacing: '0.05em', fontFamily: "'Inter', sans-serif",
   };
 
@@ -232,7 +232,7 @@ export function RoadmapSidePanel({
                       transition: 'border-color 150ms',
                     }}
                     onFocus={e => (e.currentTarget.style.borderColor = '#2563EB')}
-                    onBlur={e => (e.currentTarget.style.borderColor = '#E2E8F0')}
+                    onBlur={e => (e.currentTarget.style.borderColor = 'var(--bd-default, #E2E8F0)')}
                   />
                   {milestones[m.key] && (
                     <button

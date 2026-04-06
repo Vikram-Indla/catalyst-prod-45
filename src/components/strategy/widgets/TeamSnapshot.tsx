@@ -68,7 +68,7 @@ export function TeamSnapshot() {
           className="flex items-center justify-between"
           style={{
             padding: '8px 0',
-            borderBottom: i < stats.length - 1 ? '1px solid var(--catalyst-border-default, #E2E8F0)' : 'none',
+            borderBottom: i < stats.length - 1 ? '1px solid var(--catalyst-border-default, var(--bd-default, #E2E8F0))' : 'none',
           }}
         >
           <span style={{ fontSize: 11, color: 'var(--catalyst-text-secondary)' }}>{stat.label}</span>

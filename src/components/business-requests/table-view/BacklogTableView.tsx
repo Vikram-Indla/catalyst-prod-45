@@ -349,7 +349,7 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
     if (!column.sortable) return null;
     const isActive = sortConfig.column === column.key;
     return (
-      <span className={cn("inline-flex ml-1", isActive ? "text-[#2563EB]" : "text-[#94A3B8]")}>
+      <span className={cn("inline-flex ml-1", isActive ? "text-[#2563EB]" : "text-[var(--fg-3, #94A3B8)]")}>
         {isActive && sortConfig.direction === 'asc' ? (
           <ChevronUp className="h-3 w-3" />
         ) : (
@@ -455,7 +455,7 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
         <div
           className="flex items-center justify-between px-3"
           style={{
-            background: '#F1F5F9', /* V12 */
+            background: var(--bg-2, '#F1F5F9'), /* V12 */
             borderBottom: '1.5px solid rgba(15, 23, 42, 0.12)', /* V12 */
             padding: '8px 12px', /* V12 */
           }}
@@ -499,7 +499,7 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
                   position: 'sticky',
                   top: 0,
                   zIndex: 10,
-                  background: '#F1F5F9', /* V12 */
+                  background: var(--bg-2, '#F1F5F9'), /* V12 */
                 }}
               >
                 <tr style={{ borderBottom: '1.5px solid rgba(15, 23, 42, 0.12)' /* V12 */ }}>

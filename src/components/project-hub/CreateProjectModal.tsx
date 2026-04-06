@@ -144,10 +144,10 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between px-6 py-4 border-t border-[#E2E8F0] dark:border-[rgba(255,255,255,0.08)]">
+        <div className="flex items-center justify-between px-6 py-4 border-t border-[var(--bd-default, #E2E8F0)] dark:border-[rgba(255,255,255,0.08)]">
           <button
             onClick={step === 0 ? onClose : () => setStep(s => s - 1)}
-            className="rounded-md transition-colors hover:bg-[#F8FAFC] dark:hover:bg-[rgba(255,255,255,0.03)] bg-white dark:bg-transparent border border-[#E2E8F0] dark:border-[rgba(255,255,255,0.10)] text-[#334155] dark:text-[rgba(255,255,255,0.72)]"
+            className="rounded-md transition-colors hover:bg-[#F8FAFC] dark:hover:bg-[rgba(255,255,255,0.03)] bg-white dark:bg-transparent border border-[var(--bd-default, #E2E8F0)] dark:border-[rgba(255,255,255,0.10)] text-[#334155] dark:text-[rgba(255,255,255,0.72)]"
             style={{
               height: 36, padding: '0 16px', fontSize: 13, fontWeight: 500,
               borderRadius: 6, cursor: 'pointer',

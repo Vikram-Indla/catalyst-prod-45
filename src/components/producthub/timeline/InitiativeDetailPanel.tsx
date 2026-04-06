@@ -34,7 +34,7 @@ const STATUS_PILL_COLORS: Record<string, { text: string; bg: string; bdr: string
   under_review:  { text: '#9A5402', bg: '#FFFBEB', bdr: 'rgba(217,119,6,0.2)' },
   approved:      { text: '#0D7331', bg: '#F0FDF4', bdr: 'rgba(22,163,74,0.2)' },
   in_progress:   { text: '#08736B', bg: '#F0FDFA', bdr: 'rgba(13,148,136,0.2)' },
-  on_hold:       { text: '#6F6F78', bg: '#F1F5F9', bdr: 'rgba(113,113,122,0.2)' },
+  on_hold:       { text: '#6F6F78', bg: var(--bg-2, '#F1F5F9'), bdr: 'rgba(113,113,122,0.2)' },
   delivered:     { text: '#7C3AED', bg: '#F5F3FF', bdr: 'rgba(124,58,237,0.2)' },
   closed:        { text: '#0D7331', bg: '#F0FDF4', bdr: 'rgba(22,163,74,0.2)' },
   cancelled:     { text: '#D92525', bg: '#FEF2F2', bdr: 'rgba(220,38,38,0.2)' },
@@ -311,7 +311,7 @@ export const InitiativeDetailPanel: React.FC<InitiativeDetailPanelProps> = ({
             {(initiative as any).source === 'catalyst' && (
               <span style={{
                 fontSize: 10, fontWeight: 500, letterSpacing: '0.04em',
-                color: 'var(--fg-3)', background: '#F1F5F9', border: '1px solid var(--divider)',
+                color: 'var(--fg-3)', background: var(--bg-2, '#F1F5F9'), border: '1px solid var(--divider)',
                 borderRadius: 4, padding: '2px 6px', marginLeft: 8, userSelect: 'none',
               }}>
                 ✦ Catalyst

@@ -182,7 +182,7 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, loading }: S
             </div>
             <span style={{
               display: 'inline-flex', alignItems: 'center', gap: 6,
-              background: '#F1F5F9', border: '0.75px solid rgba(15,23,42,0.12)',
+              background: var(--bg-2, '#F1F5F9'), border: '0.75px solid rgba(15,23,42,0.12)',
               borderRadius: 10, padding: '2px 10px',
               fontSize: 11, fontWeight: 500, color: 'var(--fg-3)',
               fontFamily: "'Inter', sans-serif",
@@ -278,7 +278,7 @@ function activityDotColor(eventType: string): string {
   if (eventType === 'import') return '#2563EB';
   if (eventType === 'epic_generated' || eventType === 'published') return '#16A34A';
   if (eventType === 'uat_generated') return '#0D9488';
-  return '#94A3B8';
+  return 'var(--fg-3, #94A3B8)';
 }
 
 const cardStyle: React.CSSProperties = {

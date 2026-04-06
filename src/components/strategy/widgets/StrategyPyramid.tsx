@@ -168,7 +168,7 @@ export function StrategyPyramid() {
                 ? Math.round(themeGoals.reduce((s, g) => s + (Number(g.progress_pct) || 0), 0) / themeGoals.length)
                 : 0;
               return (
-                <div key={t.id} style={{ padding: '12px 0', borderBottom: '1px solid var(--exec-border, #E2E8F0)' }}>
+                <div key={t.id} style={{ padding: '12px 0', borderBottom: '1px solid var(--exec-border, var(--bd-default, #E2E8F0))' }}>
                   <div className="flex items-center gap-2 mb-1">
                     <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#1E40AF', flexShrink: 0 }} />
                     <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--exec-text-primary)' }}>{t.title}</span>

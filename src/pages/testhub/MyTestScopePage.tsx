@@ -135,7 +135,7 @@ export default function MyTestScopePage() {
             My Test Scope
           </h1>
           <span style={{
-            fontSize: 12, fontWeight: 600, color: '#64748B', backgroundColor: '#F1F5F9',
+            fontSize: 12, fontWeight: 600, color: '#64748B', backgroundColor: var(--bg-2, '#F1F5F9'),
             padding: '2px 10px', borderRadius: 10,
           }}>
             {filteredItems.length} items
@@ -145,7 +145,7 @@ export default function MyTestScopePage() {
           onClick={fetchMyScope}
           style={{
             display: 'flex', alignItems: 'center', gap: 6, height: 36,
-            padding: '0 14px', border: '1px solid #E2E8F0', borderRadius: 8,
+            padding: '0 14px', border: '1px solid var(--bd-default, #E2E8F0)', borderRadius: 8,
             backgroundColor: '#FFF', color: '#334155', fontSize: 13, cursor: 'pointer',
           }}
         >
@@ -162,7 +162,7 @@ export default function MyTestScopePage() {
             style={{
               height: 32, padding: '0 14px', border: 'none', borderRadius: 6,
               fontSize: 13, fontWeight: 500, cursor: 'pointer',
-              backgroundColor: statusFilter === tab.key ? '#2563EB' : '#F1F5F9',
+              backgroundColor: statusFilter === tab.key ? '#2563EB' : var(--bg-2, '#F1F5F9'),
               color: statusFilter === tab.key ? '#FFF' : '#475569',
               transition: 'all 0.15s',
             }}
@@ -176,23 +176,23 @@ export default function MyTestScopePage() {
       {items.length === 0 ? (
         <div style={{
           textAlign: 'center', padding: 60, backgroundColor: '#FFF',
-          borderRadius: 12, border: '1px solid #E2E8F0',
+          borderRadius: 12, border: '1px solid var(--bd-default, #E2E8F0)',
         }}>
-          <UserCheck size={48} style={{ marginBottom: 16, opacity: 0.3, color: '#94A3B8' }} />
+          <UserCheck size={48} style={{ marginBottom: 16, opacity: 0.3, color: 'var(--fg-3, #94A3B8)' }} />
           <h3 style={{ fontSize: 16, fontWeight: 600, color: '#334155', margin: '0 0 8px' }}>
             No active assignments
           </h3>
-          <p style={{ fontSize: 14, color: '#94A3B8', margin: 0 }}>
+          <p style={{ fontSize: 14, color: 'var(--fg-3, #94A3B8)', margin: 0 }}>
             Contact your Test Manager to get test cases assigned.
           </p>
         </div>
       ) : filteredItems.length === 0 ? (
         <div style={{
           textAlign: 'center', padding: 40, backgroundColor: '#FFF',
-          borderRadius: 12, border: '1px solid #E2E8F0',
+          borderRadius: 12, border: '1px solid var(--bd-default, #E2E8F0)',
         }}>
-          <Filter size={32} style={{ marginBottom: 12, opacity: 0.3, color: '#94A3B8' }} />
-          <p style={{ fontSize: 14, color: '#94A3B8', margin: 0 }}>
+          <Filter size={32} style={{ marginBottom: 12, opacity: 0.3, color: 'var(--fg-3, #94A3B8)' }} />
+          <p style={{ fontSize: 14, color: 'var(--fg-3, #94A3B8)', margin: 0 }}>
             No items match the current filter.
           </p>
         </div>
@@ -202,13 +202,13 @@ export default function MyTestScopePage() {
             const first = cycleItems[0];
             return (
               <div key={cycleId} style={{
-                backgroundColor: '#FFF', borderRadius: 12, border: '1px solid #E2E8F0',
+                backgroundColor: '#FFF', borderRadius: 12, border: '1px solid var(--bd-default, #E2E8F0)',
                 overflow: 'hidden',
               }}>
                 {/* Cycle Header */}
                 <div style={{
                   padding: '12px 16px', backgroundColor: '#F8FAFC',
-                  borderBottom: '1px solid #E2E8F0',
+                  borderBottom: '1px solid var(--bd-default, #E2E8F0)',
                   display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -249,7 +249,7 @@ export default function MyTestScopePage() {
                         style={{
                           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                           padding: '10px 16px', height: 44,
-                          borderBottom: idx < cycleItems.length - 1 ? '0.75px solid #E2E8F0' : 'none',
+                          borderBottom: idx < cycleItems.length - 1 ? '0.75px solid var(--bd-default, #E2E8F0)' : 'none',
                           transition: 'background-color 0.1s',
                         }}
                         onMouseEnter={e => e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.02)'}

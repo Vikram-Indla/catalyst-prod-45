@@ -111,7 +111,7 @@ export function DataScope() {
   )
 
   const cardStyle: React.CSSProperties = {
-    background: '#fff', border: '1px solid #E2E8F0', borderRadius: 8,
+    background: '#fff', border: '1px solid var(--bd-default, #E2E8F0)', borderRadius: 8,
     padding: 20, marginBottom: 16, boxShadow: '0 1px 2px rgba(0,0,0,.05)',
   }
 
@@ -155,7 +155,7 @@ export function DataScope() {
                   display: 'inline-flex', alignItems: 'center', gap: 8,
                   padding: '10px 16px', borderRadius: 8, border: '1px solid', cursor: 'pointer',
                   background: isOn ? '#EFF6FF' : '#fff',
-                  borderColor: isOn ? '#BFDBFE' : '#E2E8F0',
+                  borderColor: isOn ? '#BFDBFE' : 'var(--bd-default, #E2E8F0)',
                   opacity: isOn ? 1 : 0.5,
                   transition: 'all .15s',
                 }}
@@ -163,7 +163,7 @@ export function DataScope() {
                 <span style={{
                   width: 12, height: 12, borderRadius: '50%', background: color, flexShrink: 0,
                 }} />
-                <span style={{ fontSize: 12, fontWeight: 600, color: isOn ? '#0F172A' : '#94A3B8' }}>
+                <span style={{ fontSize: 12, fontWeight: 600, color: isOn ? '#0F172A' : 'var(--fg-3, #94A3B8)' }}>
                   {p.name}
                 </span>
                 <span style={{
@@ -175,7 +175,7 @@ export function DataScope() {
             )
           })}
           {accessibleProjects.length === 0 && (
-            <span style={{ fontSize: 12, color: '#94A3B8' }}>No projects discovered. Test your Jira connection first.</span>
+            <span style={{ fontSize: 12, color: 'var(--fg-3, #94A3B8)' }}>No projects discovered. Test your Jira connection first.</span>
           )}
         </div>
 
@@ -197,7 +197,7 @@ export function DataScope() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 10 }}>
           <label style={{ fontSize: 13, color: '#334155', width: 260 }}>Default lookback period:</label>
           <select value={lookbackMonths} onChange={(e) => setLookbackMonths(Number(e.target.value))}
-            style={{ padding: '7px 10px', borderRadius: 6, border: '1px solid #E2E8F0', fontSize: 12, width: 150 }}>
+            style={{ padding: '7px 10px', borderRadius: 6, border: '1px solid var(--bd-default, #E2E8F0)', fontSize: 12, width: 150 }}>
             <option value={1}>1 month</option>
             <option value={2}>2 months</option>
             <option value={3}>3 months</option>
@@ -207,7 +207,7 @@ export function DataScope() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 14 }}>
           <label style={{ fontSize: 13, color: '#334155', width: 260 }}>Maximum lookback (hard limit):</label>
           <select value={maxMonths} onChange={(e) => setMaxMonths(Number(e.target.value))}
-            style={{ padding: '7px 10px', borderRadius: 6, border: '1px solid #E2E8F0', fontSize: 12, width: 150 }}>
+            style={{ padding: '7px 10px', borderRadius: 6, border: '1px solid var(--bd-default, #E2E8F0)', fontSize: 12, width: 150 }}>
             <option value={3}>3 months</option>
             <option value={6}>6 months</option>
           </select>
@@ -240,7 +240,7 @@ export function DataScope() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 10 }}>
           <label style={{ fontSize: 13, color: '#334155', width: 260 }}>Mark items stale after:</label>
           <select value={staleThreshold} onChange={(e) => setStaleThreshold(Number(e.target.value))}
-            style={{ padding: '7px 10px', borderRadius: 6, border: '1px solid #E2E8F0', fontSize: 12, width: 150 }}>
+            style={{ padding: '7px 10px', borderRadius: 6, border: '1px solid var(--bd-default, #E2E8F0)', fontSize: 12, width: 150 }}>
             <option value={7}>7 days</option>
             <option value={14}>14 days</option>
             <option value={30}>30 days</option>
@@ -250,7 +250,7 @@ export function DataScope() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 14 }}>
           <label style={{ fontSize: 13, color: '#334155', width: 260 }}>Mark items critical after:</label>
           <select value={criticalThreshold} onChange={(e) => setCriticalThreshold(Number(e.target.value))}
-            style={{ padding: '7px 10px', borderRadius: 6, border: '1px solid #E2E8F0', fontSize: 12, width: 150 }}>
+            style={{ padding: '7px 10px', borderRadius: 6, border: '1px solid var(--bd-default, #E2E8F0)', fontSize: 12, width: 150 }}>
             <option value={14}>14 days</option>
             <option value={30}>30 days</option>
             <option value={60}>60 days</option>

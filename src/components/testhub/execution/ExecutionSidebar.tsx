@@ -59,8 +59,8 @@ const STEP_COLORS: Record<string, { text: string; bg: string; border: string }> 
   passed:  { text: '#16A34A', bg: '#F0FDF4', border: '#BBF7D0' },
   failed:  { text: '#DC2626', bg: '#FEF2F2', border: '#FECACA' },
   blocked: { text: '#D97706', bg: '#FFFBEB', border: '#FED7AA' },
-  skipped: { text: '#475569', bg: '#F8FAFC', border: '#E2E8F0' },
-  not_run: { text: '#64748B', bg: '#F1F5F9', border: '#E2E8F0' },
+  skipped: { text: '#475569', bg: '#F8FAFC', border: 'var(--bd-default, #E2E8F0)' },
+  not_run: { text: '#64748B', bg: var(--bg-2, '#F1F5F9'), border: 'var(--bd-default, #E2E8F0)' },
 };
 
 export function ExecutionSidebar({
@@ -227,7 +227,7 @@ export function ExecutionSidebar({
                 return (
                   <div key={i} style={{
                     padding: '8px 10px', backgroundColor: '#FFFFFF',
-                    border: '0.75px solid #E2E8F0', borderRadius: 6,
+                    border: '0.75px solid var(--bd-default, #E2E8F0)', borderRadius: 6,
                     borderLeft: `3px solid ${colors.border}`,
                   }}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>

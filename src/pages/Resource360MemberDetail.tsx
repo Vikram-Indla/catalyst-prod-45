@@ -38,7 +38,7 @@ const ProfileSkeleton = () => (
 const CardsSkeleton = () => (
   <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
     {[1, 2, 3, 4].map(i => (
-      <div key={i} style={{ background: '#FFF', border: '1px solid #E2E8F0', borderRadius: 8, padding: '14px 16px', height: 64 }}>
+      <div key={i} style={{ background: '#FFF', border: '1px solid var(--bd-default, #E2E8F0)', borderRadius: 8, padding: '14px 16px', height: 64 }}>
         <div className="r3-skeleton" style={{ width: '60%', height: 12, marginBottom: 8 }} />
         <div className="r3-skeleton" style={{ width: '40%', height: 10 }} />
       </div>
@@ -53,7 +53,7 @@ const BoardSkeleton = () => (
       <div key={col}>
         <div className="r3-skeleton" style={{ width: '100%', height: 24, marginBottom: 12 }} />
         {[1, 2].map(card => (
-          <div key={card} style={{ background: '#FFF', border: '1px solid #E2E8F0', borderRadius: 8, padding: 12, marginBottom: 8 }}>
+          <div key={card} style={{ background: '#FFF', border: '1px solid var(--bd-default, #E2E8F0)', borderRadius: 8, padding: 12, marginBottom: 8 }}>
             <div className="r3-skeleton" style={{ width: '50%', height: 10, marginBottom: 8 }} />
             <div className="r3-skeleton" style={{ width: '80%', height: 12 }} />
           </div>
@@ -65,7 +65,7 @@ const BoardSkeleton = () => (
 
 /** Ring skeleton */
 const RingSkeleton = () => (
-  <div style={{ position: 'relative', minHeight: 640, background: 'radial-gradient(circle, #FFF, #F1F5F9)', borderRadius: 12, border: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+  <div style={{ position: 'relative', minHeight: 640, background: 'radial-gradient(circle, #FFF, #F1F5F9)', borderRadius: 12, border: '1px solid var(--bd-default, #E2E8F0)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
     <div className="r3-skeleton" style={{ width: 96, height: 96, borderRadius: '50%' }} />
   </div>
 );
@@ -152,7 +152,7 @@ const Resource360MemberDetail: React.FC = () => {
                 to={`/resource360/members/${m.id}`}
                 style={{
                   fontSize: 11, padding: '3px 10px', borderRadius: 6, textDecoration: 'none',
-                  background: m.id === memberId ? '#2563EB' : '#F1F5F9',
+                  background: m.id === memberId ? '#2563EB' : var(--bg-2, '#F1F5F9'),
                   color: m.id === memberId ? '#FFFFFF' : '#334155',
                   fontWeight: m.id === memberId ? 600 : 400,
                 }}

@@ -33,7 +33,7 @@ export function RoadmapListPanel({
   const renderHeader = () => (
     <div
       className="flex items-center justify-between px-4"
-      style={{ height: 44, borderBottom: '1px solid #E2E8F0', background: '#FAFBFC' }}
+      style={{ height: 44, borderBottom: '1px solid var(--bd-default, #E2E8F0)', background: '#FAFBFC' }}
     >
       <div className="flex items-center gap-2">
         <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748B' }}>
@@ -41,14 +41,14 @@ export function RoadmapListPanel({
         </span>
         <span
           style={{
-            fontSize: 10, fontWeight: 600, color: '#64748B', background: '#F1F5F9',
+            fontSize: 10, fontWeight: 600, color: '#64748B', background: var(--bg-2, '#F1F5F9'),
             borderRadius: 10, padding: '2px 7px', fontFamily: 'JetBrains Mono, monospace',
           }}
         >
           {items.length}
         </span>
       </div>
-      <ArrowUpDown className="w-3.5 h-3.5" style={{ color: '#94A3B8' }} />
+      <ArrowUpDown className="w-3.5 h-3.5" style={{ color: 'var(--fg-3, #94A3B8)' }} />
     </div>
   );
 
@@ -65,13 +65,13 @@ export function RoadmapListPanel({
   // Grouped view
   if (groups && groups.length > 0) {
     return (
-      <div className="flex-shrink-0 flex flex-col" style={{ width: listWidth, borderRight: '1px solid #E2E8F0', background: '#FFFFFF' }}>
+      <div className="flex-shrink-0 flex flex-col" style={{ width: listWidth, borderRight: '1px solid var(--bd-default, #E2E8F0)', background: '#FFFFFF' }}>
         {renderHeader()}
         <ScrollArea className="flex-1">
           <div role="table">
             {groups.map(group => {
               const typeKey = group.key;
-              const color = TYPE_COLORS[typeKey] || group.color || '#94A3B8';
+              const color = TYPE_COLORS[typeKey] || group.color || 'var(--fg-3, #94A3B8)';
               return (
                 <div key={group.key} style={{ borderBottom: '1px solid #F1F5F9' }}>
                   <button
@@ -79,10 +79,10 @@ export function RoadmapListPanel({
                     className="w-full flex items-center gap-2 px-4 py-2 transition-colors hover:bg-gray-50"
                     style={{ background: '#FAFBFC', height: 36 }}
                   >
-                    {group.isExpanded ? <ChevronDown className="w-3.5 h-3.5" style={{ color: '#94A3B8' }} /> : <ChevronRight className="w-3.5 h-3.5" style={{ color: '#94A3B8' }} />}
+                    {group.isExpanded ? <ChevronDown className="w-3.5 h-3.5" style={{ color: 'var(--fg-3, #94A3B8)' }} /> : <ChevronRight className="w-3.5 h-3.5" style={{ color: 'var(--fg-3, #94A3B8)' }} />}
                     <div className="w-3 h-3 rounded-sm flex-shrink-0" style={{ background: color }} />
                     <span style={{ fontSize: 12, fontWeight: 600, color: '#334155' }}>{group.label}</span>
-                    <span style={{ fontSize: 11, fontWeight: 500, color: '#94A3B8', marginLeft: 'auto' }}>{group.items.length}</span>
+                    <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--fg-3, #94A3B8)', marginLeft: 'auto' }}>{group.items.length}</span>
                   </button>
                   {group.isExpanded && group.items.map(item => {
                     const gi = items.findIndex(i => i.id === item.id);
@@ -110,7 +110,7 @@ export function RoadmapListPanel({
 
   // Flat list with DnD
   return (
-    <div className="flex-shrink-0 flex flex-col" style={{ width: listWidth, borderRight: '1px solid #E2E8F0', background: '#FFFFFF' }}>
+    <div className="flex-shrink-0 flex flex-col" style={{ width: listWidth, borderRight: '1px solid var(--bd-default, #E2E8F0)', background: '#FFFFFF' }}>
       {renderHeader()}
       <ScrollArea className="flex-1">
         <Droppable droppableId="roadmap-list">

@@ -55,7 +55,7 @@ export type ProjectView = 'backlog' | 'board' | 'list' | 'timeline';
 
 /** Status display config */
 export const STATUS_CONFIG: Record<IssueStatus, { label: string; color: string; bg: string }> = {
-  backlog:    { label: 'Backlog',    color: '#64748B', bg: '#F1F5F9' },
+  backlog:    { label: 'Backlog',    color: '#64748B', bg: var(--bg-2, '#F1F5F9') },
   ready:      { label: 'Ready',     color: '#2563EB', bg: '#EFF6FF' },
   in_dev:     { label: 'In Dev',    color: '#2563EB', bg: '#EFF6FF' },
   in_qa:      { label: 'In QA',     color: '#D97706', bg: '#FFFBEB' },
@@ -81,7 +81,7 @@ export const ISSUE_TYPE_CONFIG: Record<IssueType, { icon: string; color: string;
   story:   { icon: '●', color: '#0D9488', label: 'Story' },
   bug:     { icon: '⬡', color: '#DC2626', label: 'Bug' },
   task:    { icon: '■', color: '#D97706', label: 'Task' },
-  subtask: { icon: '○', color: '#94A3B8', label: 'Subtask' },
+  subtask: { icon: '○', color: 'var(--fg-3, #94A3B8)', label: 'Subtask' },
 };
 
 /** Default board columns */

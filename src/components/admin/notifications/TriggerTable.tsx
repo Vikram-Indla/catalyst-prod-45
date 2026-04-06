@@ -105,7 +105,7 @@ function CategoryAccordion({
   );
 
   return (
-    <Card className="overflow-hidden border-[#E2E8F0]">
+    <Card className="overflow-hidden border-[var(--bd-default, #E2E8F0)]">
       {/* ── Category Header ──────────────────────────────────────── */}
       <button
         onClick={onToggle}
@@ -140,7 +140,7 @@ function CategoryAccordion({
 
           {/* Silent indicator */}
           {silentCount > 0 && (
-            <span className="text-[10px] text-[#94A3B8]">
+            <span className="text-[10px] text-[var(--fg-3, #94A3B8)]">
               {silentCount} silent
             </span>
           )}
@@ -154,7 +154,7 @@ function CategoryAccordion({
               style={{ width: `${group.totalCount > 0 ? (group.enabledCount / group.totalCount) * 100 : 0}%` }}
             />
           </div>
-          <span className="text-[10px] text-[#94A3B8] w-8 text-right font-['JetBrains_Mono']">
+          <span className="text-[10px] text-[var(--fg-3, #94A3B8)] w-8 text-right font-['JetBrains_Mono']">
             {group.totalCount > 0 ? Math.round((group.enabledCount / group.totalCount) * 100) : 0}%
           </span>
         </div>
@@ -162,9 +162,9 @@ function CategoryAccordion({
 
       {/* ── Expanded Content ─────────────────────────────────────── */}
       {isExpanded && (
-        <div className="border-t border-[#E2E8F0]">
+        <div className="border-t border-[var(--bd-default, #E2E8F0)]">
           {/* Column Headers */}
-          <div className="grid grid-cols-[32px_1fr_90px_80px_52px_52px_52px_52px_48px] gap-2 px-4 py-2 bg-[#F8FAFC] border-b border-[#E2E8F0]">
+          <div className="grid grid-cols-[32px_1fr_90px_80px_52px_52px_52px_52px_48px] gap-2 px-4 py-2 bg-[#F8FAFC] border-b border-[var(--bd-default, #E2E8F0)]">
             <div className="flex items-center justify-center">
               <input
                 type="checkbox"

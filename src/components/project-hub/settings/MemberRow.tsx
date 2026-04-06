@@ -5,7 +5,7 @@ const AVATAR_COLORS = ['#7C3AED', '#2563EB', '#0D9488', '#D97706', '#DC2626', '#
 
 const ROLE_STYLES: Record<string, { bg: string; text: string }> = {
   admin: { bg: '#EFF6FF', text: '#2563EB' },
-  member: { bg: '#F1F5F9', text: '#334155' },
+  member: { bg: var(--bg-2, '#F1F5F9'), text: '#334155' },
   viewer: { bg: '#FFFBEB', text: '#D97706' },
 };
 
