@@ -751,9 +751,8 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
 
       <style>{`
         .hi-table-row { border-left: 3px solid transparent; transition: all 80ms ease; }
-        .hi-table-row:hover { background: #F8FAFC !important; border-left-color: #2563EB; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
-        .hi-table-row.checked { background: #EFF6FF !important; }
-        .hi-table-row:nth-child(even):not(.checked):not(:hover) { background: #FAFAFA; }
+        .hi-table-row:hover { background: ${isDark ? 'rgba(255,255,255,0.04)' : '#F8FAFC'} !important; border-left-color: #2563EB; box-shadow: ${isDark ? 'none' : '0 1px 3px rgba(0,0,0,0.06)'}; }
+        .hi-table-row.checked { background: ${isDark ? 'rgba(37,99,235,0.12)' : '#EFF6FF'} !important; }
         .hi-table-row .hi-row-action { opacity: 0; transition: opacity 100ms ease; }
         .hi-table-row:hover .hi-row-action { opacity: 1; }
         .hi-parent-cell:hover .hi-parent-key { text-decoration: underline; text-underline-offset: 2px; }
