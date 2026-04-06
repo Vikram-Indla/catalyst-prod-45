@@ -251,13 +251,17 @@ export function CatalystHeader() {
               }
 
               const isActive = item.label === activeNavItem;
-              const activeColor = 'var(--cp-blue-text)';
+              const activeColor = isDark ? '#FFFFFF' : 'var(--cp-blue-text)';
+              const inactiveColor = isDark ? '#8B949E' : 'var(--cp-t3)';
+              const hoverColor = isDark ? '#FFFFFF' : 'var(--cp-t1)';
+              const activeUnderline = isDark ? '#FFFFFF' : 'var(--cp-blue-text)';
+              const hoverUnderline = isDark ? '#484F58' : 'var(--cp-bd)';
               const navButtonStyle: React.CSSProperties = {
                 height: '100%',
                 padding: '0 14px',
                 fontSize: '13px',
                 fontWeight: isActive ? 600 : 500,
-                color: isActive ? activeColor : 'var(--cp-t3)',
+                color: isActive ? activeColor : inactiveColor,
                 display: 'flex',
                 alignItems: 'center',
                 gap: '1px',
@@ -270,13 +274,13 @@ export function CatalystHeader() {
                 outline: 'none',
                 letterSpacing: '-0.1px',
                 borderRadius: '0',
-                borderBottom: isActive ? `2px solid var(--cp-blue-text)` : '2px solid transparent',
+                borderBottom: isActive ? `2px solid ${activeUnderline}` : '2px solid transparent',
               };
               
               const handleHover = (e: React.MouseEvent<HTMLButtonElement>, isEnter: boolean) => {
                 if (!isActive) {
-                  e.currentTarget.style.color = isEnter ? 'var(--cp-t1)' : 'var(--cp-t3)';
-                  e.currentTarget.style.borderBottom = isEnter ? '2px solid var(--cp-bd)' : '2px solid transparent';
+                  e.currentTarget.style.color = isEnter ? hoverColor : inactiveColor;
+                  e.currentTarget.style.borderBottom = isEnter ? `2px solid ${hoverUnderline}` : '2px solid transparent';
                 }
               };
               
