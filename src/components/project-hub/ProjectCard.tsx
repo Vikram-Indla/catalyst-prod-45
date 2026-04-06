@@ -29,10 +29,13 @@ export function ProjectCard({ project, isStarred, onToggleStar }: ProjectCardPro
       {/* Icon + Name + Key */}
       <div className="flex items-center gap-3 mb-3">
         <div
-          className="flex items-center justify-center rounded flex-shrink-0 w-8 h-8 text-white text-[11px] font-bold font-['Sora',sans-serif]"
+          className="flex items-center justify-center rounded flex-shrink-0 h-8 text-white font-bold font-['Sora',sans-serif]"
           style={{
+            width: 36,
             backgroundColor: project.color || 'var(--cp-blue)',
             borderRadius: 6,
+            fontSize: project.key.length > 2 ? 10 : 11,
+            letterSpacing: project.key.length > 2 ? '-0.02em' : undefined,
           }}
         >
           {project.key}

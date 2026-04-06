@@ -68,14 +68,15 @@ export function ProjectTableRow({ project, isStarred, onToggleStar, onContextMen
           <div
             className="flex items-center justify-center rounded flex-shrink-0"
             style={{
-              width: 28,
+              width: 32,
               height: 28,
               backgroundColor: project.color || 'var(--cp-blue)',
               color: '#FFFFFF',
-              fontSize: 10,
+              fontSize: project.key.length > 2 ? 9 : 10,
               fontWeight: 700,
               borderRadius: 6,
               fontFamily: "'Sora', sans-serif",
+              letterSpacing: project.key.length > 2 ? '-0.02em' : undefined,
             }}
           >
             {project.key}
