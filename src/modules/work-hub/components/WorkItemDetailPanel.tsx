@@ -5,6 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
+import { useTheme } from '@/hooks/useTheme';
 
 interface WorkItem {
   id: string;
@@ -46,6 +47,7 @@ const statusStyles: Record<string, { bg: string; text: string; label: string }> 
 };
 
 export function WorkItemDetailPanel({ item, onClose }: WorkItemDetailPanelProps) {
+  const { isDark } = useTheme();
   if (!item) return null;
 
   // typeInfo no longer needed — using JiraIssueTypeIcon directly
@@ -59,31 +61,44 @@ export function WorkItemDetailPanel({ item, onClose }: WorkItemDetailPanelProps)
   };
 
   return (
-    <div className="w-[440px] border-l border-border bg-card h-full flex flex-col" style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" }}>
+    <div
+      className="w-[440px] border-l h-full flex flex-col"
+      style={{
+        fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+        backgroundColor: isDark ? '#111111' : '#FFFFFF',
+        borderColor: isDark ? 'rgba(255,255,255,0.08)' : undefined,
+      }}
+    >
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+      <div
+        className="flex items-center justify-between px-4 py-3"
+        style={{ borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}` }}
+      >
         <div className="flex items-center gap-2">
           <JiraIssueTypeIcon type={item.type} size={16} />
-          <span className="text-sm font-medium text-foreground">Jira work item</span>
+          <span className="text-sm font-medium" style={{ color: isDark ? '#EDEDED' : '#172B4D' }}>Jira work item</span>
         </div>
         <div className="flex items-center gap-1">
-          <Button variant="ghost" size="icon" className="h-7 w-7 hover:bg-muted">
-            <ExternalLink className="h-4 w-4 text-muted-foreground" />
+          <Button variant="ghost" size="icon" className={cn("h-7 w-7", isDark ? "hover:bg-[#1A1A1A]" : "hover:bg-muted")}>
+            <ExternalLink className="h-4 w-4" style={{ color: isDark ? '#666666' : '#6B778C' }} />
           </Button>
-          <Button variant="ghost" size="icon" className="h-7 w-7 hover:bg-muted">
-            <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
+          <Button variant="ghost" size="icon" className={cn("h-7 w-7", isDark ? "hover:bg-[#1A1A1A]" : "hover:bg-muted")}>
+            <MoreHorizontal className="h-4 w-4" style={{ color: isDark ? '#666666' : '#6B778C' }} />
           </Button>
-          <Button variant="ghost" size="icon" className="h-7 w-7 hover:bg-muted" onClick={onClose}>
-            <X className="h-4 w-4 text-muted-foreground" />
+          <Button variant="ghost" size="icon" className={cn("h-7 w-7", isDark ? "hover:bg-[#1A1A1A]" : "hover:bg-muted")} onClick={onClose}>
+            <X className="h-4 w-4" style={{ color: isDark ? '#666666' : '#6B778C' }} />
           </Button>
         </div>
       </div>
 
       {/* Breadcrumb */}
       {item.parentKey && (
-        <div className="px-4 py-2 border-b border-border text-xs">
-          <span className="text-muted-foreground">{item.parentKey}</span>
-          <span className="text-muted-foreground mx-1">/</span>
+        <div
+          className="px-4 py-2 text-xs"
+          style={{ borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}` }}
+        >
+          <span style={{ color: isDark ? '#666666' : '#6B778C' }}>{item.parentKey}</span>
+          <span style={{ color: isDark ? '#666666' : '#6B778C' }} className="mx-1">/</span>
           <span className="text-[#2563eb] hover:underline cursor-pointer">{item.key}</span>
         </div>
       )}
@@ -93,11 +108,11 @@ export function WorkItemDetailPanel({ item, onClose }: WorkItemDetailPanelProps)
         {/* Title & Status */}
         <div className="mb-4">
           <div className="flex items-start gap-2 mb-2">
-            <span className="text-[11px] text-[#6B778C]">{item.key}</span>
-            <span className="text-[11px] text-[#6B778C]">•</span>
-            <span className="text-[11px] text-[#6B778C]">{item.comments} comments</span>
+            <span className="text-[11px]" style={{ color: isDark ? '#666666' : '#6B778C' }}>{item.key}</span>
+            <span className="text-[11px]" style={{ color: isDark ? '#666666' : '#6B778C' }}>•</span>
+            <span className="text-[11px]" style={{ color: isDark ? '#666666' : '#6B778C' }}>{item.comments} comments</span>
           </div>
-          <h2 className="text-[20px] font-medium text-[#172B4D] leading-tight mb-3">
+          <h2 className="text-[20px] font-medium leading-tight mb-3" style={{ color: isDark ? '#EDEDED' : '#172B4D' }}>
             {item.summary}
           </h2>
           <div className="flex items-center gap-2">
@@ -107,7 +122,7 @@ export function WorkItemDetailPanel({ item, onClose }: WorkItemDetailPanelProps)
             )}>
               {statusStyle.label}
             </span>
-            <Button variant="ghost" size="sm" className="h-7 text-[12px] text-[#6B778C] hover:bg-[#F4F5F7]">
+            <Button variant="ghost" size="sm" className={cn("h-7 text-[12px]", isDark ? "text-[#666666] hover:bg-[#1A1A1A]" : "text-[#6B778C] hover:bg-[#F4F5F7]")}>
               + Add
             </Button>
           </div>
@@ -116,8 +131,14 @@ export function WorkItemDetailPanel({ item, onClose }: WorkItemDetailPanelProps)
         {/* Parent */}
         {item.parentKey && item.parentSummary && (
           <div className="mb-4">
-            <div className="text-xs font-semibold text-muted-foreground uppercase mb-1">Parent</div>
-            <div className="flex items-center gap-2 p-2 bg-muted rounded-md">
+            <div className="text-xs font-semibold uppercase mb-1" style={{ color: isDark ? '#666666' : '#6B778C' }}>Parent</div>
+            <div
+              className="flex items-center gap-2 p-2 rounded-md"
+              style={{
+                backgroundColor: isDark ? '#1A1A1A' : '#F1F5F9',
+                border: isDark ? '1px solid rgba(255,255,255,0.08)' : 'none',
+              }}
+            >
               <JiraIssueTypeIcon type="Epic" size={16} />
               <span className="text-sm text-[#2563eb] hover:underline cursor-pointer">
                 {item.parentKey} {item.parentSummary}
@@ -128,22 +149,22 @@ export function WorkItemDetailPanel({ item, onClose }: WorkItemDetailPanelProps)
 
         {/* Description */}
         <div className="mb-4">
-          <div className="text-[11px] font-semibold text-[#6B778C] uppercase mb-2">Description</div>
-          <div className="text-[14px] text-[#172B4D] leading-relaxed">
+          <div className="text-[11px] font-semibold uppercase mb-2" style={{ color: isDark ? '#666666' : '#6B778C' }}>Description</div>
+          <div className="text-[14px] leading-relaxed" style={{ color: isDark ? '#EDEDED' : '#172B4D' }}>
             {item.description || (
-              <span className="text-[#6B778C] italic">No description provided.</span>
+              <span style={{ color: isDark ? '#666666' : '#6B778C', fontStyle: 'italic' }}>No description provided.</span>
             )}
           </div>
         </div>
 
         {/* Details Section */}
-        <div className="border-t border-[#DFE1E6] pt-4">
-          <div className="text-[11px] font-semibold text-[#6B778C] uppercase mb-3">Details</div>
-          
+        <div className="pt-4" style={{ borderTop: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#DFE1E6'}` }}>
+          <div className="text-[11px] font-semibold uppercase mb-3" style={{ color: isDark ? '#666666' : '#6B778C' }}>Details</div>
+
           <div className="space-y-3">
             {/* Assignee */}
             <div className="flex items-center justify-between">
-              <span className="text-[13px] text-[#6B778C]">Assignee</span>
+              <span className="text-[13px]" style={{ color: isDark ? '#666666' : '#6B778C' }}>Assignee</span>
               <div className="flex items-center gap-2">
                 {item.assignee ? (
                   <>
@@ -153,24 +174,24 @@ export function WorkItemDetailPanel({ item, onClose }: WorkItemDetailPanelProps)
                         {getInitials(item.assignee.name)}
                       </AvatarFallback>
                     </Avatar>
-                    <span className="text-[13px] text-[#172B4D]">{item.assignee.name}</span>
+                    <span className="text-[13px]" style={{ color: isDark ? '#EDEDED' : '#172B4D' }}>{item.assignee.name}</span>
                   </>
                 ) : (
-                  <span className="text-[13px] text-[#6B778C]">Unassigned</span>
+                  <span className="text-[13px]" style={{ color: isDark ? '#666666' : '#6B778C' }}>Unassigned</span>
                 )}
               </div>
             </div>
 
             {/* Priority */}
             <div className="flex items-center justify-between">
-              <span className="text-[13px] text-[#6B778C]">Priority</span>
-              <span className="text-[13px] text-[#172B4D]">{item.priority}</span>
+              <span className="text-[13px]" style={{ color: isDark ? '#666666' : '#6B778C' }}>Priority</span>
+              <span className="text-[13px]" style={{ color: isDark ? '#EDEDED' : '#172B4D' }}>{item.priority}</span>
             </div>
 
             {/* Due Date */}
             <div className="flex items-center justify-between">
-              <span className="text-[13px] text-[#6B778C]">Due date</span>
-              <span className="text-[13px] text-[#172B4D]">
+              <span className="text-[13px]" style={{ color: isDark ? '#666666' : '#6B778C' }}>Due date</span>
+              <span className="text-[13px]" style={{ color: isDark ? '#EDEDED' : '#172B4D' }}>
                 {item.dueDate ? new Date(item.dueDate).toLocaleDateString() : '-'}
               </span>
             </div>
@@ -178,10 +199,18 @@ export function WorkItemDetailPanel({ item, onClose }: WorkItemDetailPanelProps)
             {/* Labels */}
             {item.labels.length > 0 && (
               <div className="flex items-start justify-between">
-                <span className="text-[13px] text-[#6B778C]">Labels</span>
+                <span className="text-[13px]" style={{ color: isDark ? '#666666' : '#6B778C' }}>Labels</span>
                 <div className="flex gap-1 flex-wrap justify-end">
                   {item.labels.map((label) => (
-                    <Badge key={label} variant="secondary" className="text-[11px] bg-[#DFE1E6] text-[#42526E]">
+                    <Badge
+                      key={label}
+                      variant="secondary"
+                      className="text-[11px]"
+                      style={{
+                        backgroundColor: isDark ? 'rgba(255,255,255,0.06)' : '#DFE1E6',
+                        color: isDark ? '#888888' : '#42526E',
+                      }}
+                    >
                       {label}
                     </Badge>
                   ))}
