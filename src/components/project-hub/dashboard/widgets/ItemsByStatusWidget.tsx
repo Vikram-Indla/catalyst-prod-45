@@ -20,7 +20,7 @@ export default function ItemsByStatusWidget({ projectId, projectKey, collapsed, 
           {/* Stacked bar */}
           <div className="flex" style={{ height: 28, borderRadius: 'var(--cp-radius-sm)', overflow: 'hidden' }}>
             {todo > 0 && (
-              <div className="flex items-center justify-center bg-[#DFE1E6] dark:bg-[#222222] text-[#253858] dark:text-[#888888]" style={{
+              <div className="flex items-center justify-center bg-[#DFE1E6] dark:bg-[#292929] text-[#253858] dark:text-[#A1A1A1]" style={{
                 width: `${(todo / total) * 100}%`, minWidth: todo > 0 ? 28 : 0,
                 fontSize: 11, fontWeight: 700,
               }}>{todo}</div>
@@ -41,7 +41,7 @@ export default function ItemsByStatusWidget({ projectId, projectKey, collapsed, 
           {/* Legend */}
           <div className="flex items-center gap-4" style={{ fontSize: 11, color: 'var(--cp-text-tertiary)' }}>
             <span className="flex items-center gap-1.5">
-              <span className="inline-block bg-[#DFE1E6] dark:bg-[#222222]" style={{ width: 8, height: 8, borderRadius: 2 }} />
+              <span className="inline-block bg-[#DFE1E6] dark:bg-[#292929]" style={{ width: 8, height: 8, borderRadius: 2 }} />
               To Do {todo}
             </span>
             <span className="flex items-center gap-1.5">
