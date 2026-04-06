@@ -29,7 +29,7 @@ const DK = {
   t3: 'var(--cp-t3)',
   border: 'rgba(255,255,255,0.10)',
   hover: 'rgba(255,255,255,0.03)',
-  float: '#111111',
+  float: '#1A1A1A',
 };
 
 const viewButtons: { key: 'tree' | 'list' | 'heatmap'; label: string; icon: typeof List }[] = [

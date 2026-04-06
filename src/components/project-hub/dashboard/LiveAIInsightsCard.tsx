@@ -11,7 +11,7 @@ export function LiveAIInsightsCard({ projectId }: LiveAIInsightsCardProps) {
   // LOADING STATE
   if (loading && !insights) {
     return (
-      <div className="bg-[var(--cp-float)] dark:bg-[#111111]" style={{ gridColumn: '1 / -1', border: '1px solid var(--divider)', borderRadius: 8, padding: 20, boxShadow: '0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px -1px rgba(0,0,0,0.1)' }}>
+      <div className="bg-[var(--cp-float)] dark:bg-[#1A1A1A]" style={{ gridColumn: '1 / -1', border: '1px solid var(--divider)', borderRadius: 8, padding: 20, boxShadow: '0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px -1px rgba(0,0,0,0.1)' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: 12, marginBottom: 16, borderBottom: '1px solid var(--cp-bd-zone)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <Sparkles size={16} color="var(--cp-blue)" />
@@ -35,7 +35,7 @@ export function LiveAIInsightsCard({ projectId }: LiveAIInsightsCardProps) {
   // ERROR STATE
   if (error && !insights) {
     return (
-      <div className="bg-[var(--cp-float)] dark:bg-[#111111]" style={{ gridColumn: '1 / -1', border: '1px solid var(--divider)', borderRadius: 8, padding: 20, boxShadow: '0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px -1px rgba(0,0,0,0.1)' }}>
+      <div className="bg-[var(--cp-float)] dark:bg-[#1A1A1A]" style={{ gridColumn: '1 / -1', border: '1px solid var(--divider)', borderRadius: 8, padding: 20, boxShadow: '0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px -1px rgba(0,0,0,0.1)' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: 12, marginBottom: 16, borderBottom: '1px solid var(--cp-bd-zone)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <Sparkles size={16} color="var(--cp-blue)" />
@@ -68,7 +68,7 @@ export function LiveAIInsightsCard({ projectId }: LiveAIInsightsCardProps) {
   const balance = balanceColors[data.teamWorkload?.balance] || balanceColors.Balanced;
 
   return (
-    <div className="bg-[var(--cp-float)] dark:bg-[#111111]" style={{ gridColumn: '1 / -1', border: '1px solid var(--divider)', borderRadius: 8, padding: 20, boxShadow: '0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px -1px rgba(0,0,0,0.1)' }}>
+    <div className="bg-[var(--cp-float)] dark:bg-[#1A1A1A]" style={{ gridColumn: '1 / -1', border: '1px solid var(--divider)', borderRadius: 8, padding: 20, boxShadow: '0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px -1px rgba(0,0,0,0.1)' }}>
       {/* HEADER */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: 12, marginBottom: 16, borderBottom: '1px solid var(--cp-bd-zone)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>

@@ -65,7 +65,7 @@ export function WorkItemDetailPanel({ item, onClose }: WorkItemDetailPanelProps)
       className="w-[440px] border-l h-full flex flex-col"
       style={{
         fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-        backgroundColor: isDark ? '#111111' : '#FFFFFF',
+        backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF',
         borderColor: isDark ? 'rgba(255,255,255,0.08)' : undefined,
       }}
     >
@@ -80,13 +80,13 @@ export function WorkItemDetailPanel({ item, onClose }: WorkItemDetailPanelProps)
         </div>
         <div className="flex items-center gap-1">
           <Button variant="ghost" size="icon" className={cn("h-7 w-7", isDark ? "hover:bg-[#1A1A1A]" : "hover:bg-muted")}>
-            <ExternalLink className="h-4 w-4" style={{ color: isDark ? '#666666' : '#6B778C' }} />
+            <ExternalLink className="h-4 w-4" style={{ color: isDark ? '#878787' : '#6B778C' }} />
           </Button>
           <Button variant="ghost" size="icon" className={cn("h-7 w-7", isDark ? "hover:bg-[#1A1A1A]" : "hover:bg-muted")}>
-            <MoreHorizontal className="h-4 w-4" style={{ color: isDark ? '#666666' : '#6B778C' }} />
+            <MoreHorizontal className="h-4 w-4" style={{ color: isDark ? '#878787' : '#6B778C' }} />
           </Button>
           <Button variant="ghost" size="icon" className={cn("h-7 w-7", isDark ? "hover:bg-[#1A1A1A]" : "hover:bg-muted")} onClick={onClose}>
-            <X className="h-4 w-4" style={{ color: isDark ? '#666666' : '#6B778C' }} />
+            <X className="h-4 w-4" style={{ color: isDark ? '#878787' : '#6B778C' }} />
           </Button>
         </div>
       </div>
@@ -97,8 +97,8 @@ export function WorkItemDetailPanel({ item, onClose }: WorkItemDetailPanelProps)
           className="px-4 py-2 text-xs"
           style={{ borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}` }}
         >
-          <span style={{ color: isDark ? '#666666' : '#6B778C' }}>{item.parentKey}</span>
-          <span style={{ color: isDark ? '#666666' : '#6B778C' }} className="mx-1">/</span>
+          <span style={{ color: isDark ? '#878787' : '#6B778C' }}>{item.parentKey}</span>
+          <span style={{ color: isDark ? '#878787' : '#6B778C' }} className="mx-1">/</span>
           <span className="text-[#2563eb] hover:underline cursor-pointer">{item.key}</span>
         </div>
       )}
@@ -108,9 +108,9 @@ export function WorkItemDetailPanel({ item, onClose }: WorkItemDetailPanelProps)
         {/* Title & Status */}
         <div className="mb-4">
           <div className="flex items-start gap-2 mb-2">
-            <span className="text-[11px]" style={{ color: isDark ? '#666666' : '#6B778C' }}>{item.key}</span>
-            <span className="text-[11px]" style={{ color: isDark ? '#666666' : '#6B778C' }}>•</span>
-            <span className="text-[11px]" style={{ color: isDark ? '#666666' : '#6B778C' }}>{item.comments} comments</span>
+            <span className="text-[11px]" style={{ color: isDark ? '#878787' : '#6B778C' }}>{item.key}</span>
+            <span className="text-[11px]" style={{ color: isDark ? '#878787' : '#6B778C' }}>•</span>
+            <span className="text-[11px]" style={{ color: isDark ? '#878787' : '#6B778C' }}>{item.comments} comments</span>
           </div>
           <h2 className="text-[20px] font-medium leading-tight mb-3" style={{ color: isDark ? '#EDEDED' : '#172B4D' }}>
             {item.summary}
@@ -122,7 +122,7 @@ export function WorkItemDetailPanel({ item, onClose }: WorkItemDetailPanelProps)
             )}>
               {statusStyle.label}
             </span>
-            <Button variant="ghost" size="sm" className={cn("h-7 text-[12px]", isDark ? "text-[#666666] hover:bg-[#1A1A1A]" : "text-[#6B778C] hover:bg-[#F4F5F7]")}>
+            <Button variant="ghost" size="sm" className={cn("h-7 text-[12px]", isDark ? "text-[#878787] hover:bg-[#1A1A1A]" : "text-[#6B778C] hover:bg-[#F4F5F7]")}>
               + Add
             </Button>
           </div>
@@ -131,7 +131,7 @@ export function WorkItemDetailPanel({ item, onClose }: WorkItemDetailPanelProps)
         {/* Parent */}
         {item.parentKey && item.parentSummary && (
           <div className="mb-4">
-            <div className="text-xs font-semibold uppercase mb-1" style={{ color: isDark ? '#666666' : '#6B778C' }}>Parent</div>
+            <div className="text-xs font-semibold uppercase mb-1" style={{ color: isDark ? '#878787' : '#6B778C' }}>Parent</div>
             <div
               className="flex items-center gap-2 p-2 rounded-md"
               style={{
@@ -149,22 +149,22 @@ export function WorkItemDetailPanel({ item, onClose }: WorkItemDetailPanelProps)
 
         {/* Description */}
         <div className="mb-4">
-          <div className="text-[11px] font-semibold uppercase mb-2" style={{ color: isDark ? '#666666' : '#6B778C' }}>Description</div>
+          <div className="text-[11px] font-semibold uppercase mb-2" style={{ color: isDark ? '#878787' : '#6B778C' }}>Description</div>
           <div className="text-[14px] leading-relaxed" style={{ color: isDark ? '#EDEDED' : '#172B4D' }}>
             {item.description || (
-              <span style={{ color: isDark ? '#666666' : '#6B778C', fontStyle: 'italic' }}>No description provided.</span>
+              <span style={{ color: isDark ? '#878787' : '#6B778C', fontStyle: 'italic' }}>No description provided.</span>
             )}
           </div>
         </div>
 
         {/* Details Section */}
         <div className="pt-4" style={{ borderTop: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#DFE1E6'}` }}>
-          <div className="text-[11px] font-semibold uppercase mb-3" style={{ color: isDark ? '#666666' : '#6B778C' }}>Details</div>
+          <div className="text-[11px] font-semibold uppercase mb-3" style={{ color: isDark ? '#878787' : '#6B778C' }}>Details</div>
 
           <div className="space-y-3">
             {/* Assignee */}
             <div className="flex items-center justify-between">
-              <span className="text-[13px]" style={{ color: isDark ? '#666666' : '#6B778C' }}>Assignee</span>
+              <span className="text-[13px]" style={{ color: isDark ? '#878787' : '#6B778C' }}>Assignee</span>
               <div className="flex items-center gap-2">
                 {item.assignee ? (
                   <>
@@ -177,20 +177,20 @@ export function WorkItemDetailPanel({ item, onClose }: WorkItemDetailPanelProps)
                     <span className="text-[13px]" style={{ color: isDark ? '#EDEDED' : '#172B4D' }}>{item.assignee.name}</span>
                   </>
                 ) : (
-                  <span className="text-[13px]" style={{ color: isDark ? '#666666' : '#6B778C' }}>Unassigned</span>
+                  <span className="text-[13px]" style={{ color: isDark ? '#878787' : '#6B778C' }}>Unassigned</span>
                 )}
               </div>
             </div>
 
             {/* Priority */}
             <div className="flex items-center justify-between">
-              <span className="text-[13px]" style={{ color: isDark ? '#666666' : '#6B778C' }}>Priority</span>
+              <span className="text-[13px]" style={{ color: isDark ? '#878787' : '#6B778C' }}>Priority</span>
               <span className="text-[13px]" style={{ color: isDark ? '#EDEDED' : '#172B4D' }}>{item.priority}</span>
             </div>
 
             {/* Due Date */}
             <div className="flex items-center justify-between">
-              <span className="text-[13px]" style={{ color: isDark ? '#666666' : '#6B778C' }}>Due date</span>
+              <span className="text-[13px]" style={{ color: isDark ? '#878787' : '#6B778C' }}>Due date</span>
               <span className="text-[13px]" style={{ color: isDark ? '#EDEDED' : '#172B4D' }}>
                 {item.dueDate ? new Date(item.dueDate).toLocaleDateString() : '-'}
               </span>
@@ -199,7 +199,7 @@ export function WorkItemDetailPanel({ item, onClose }: WorkItemDetailPanelProps)
             {/* Labels */}
             {item.labels.length > 0 && (
               <div className="flex items-start justify-between">
-                <span className="text-[13px]" style={{ color: isDark ? '#666666' : '#6B778C' }}>Labels</span>
+                <span className="text-[13px]" style={{ color: isDark ? '#878787' : '#6B778C' }}>Labels</span>
                 <div className="flex gap-1 flex-wrap justify-end">
                   {item.labels.map((label) => (
                     <Badge
@@ -208,7 +208,7 @@ export function WorkItemDetailPanel({ item, onClose }: WorkItemDetailPanelProps)
                       className="text-[11px]"
                       style={{
                         backgroundColor: isDark ? 'rgba(255,255,255,0.06)' : '#DFE1E6',
-                        color: isDark ? '#888888' : '#42526E',
+                        color: isDark ? '#A1A1A1' : '#42526E',
                       }}
                     >
                       {label}

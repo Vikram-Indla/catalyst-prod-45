@@ -306,13 +306,13 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
                         onClick={() => { setCycleStatus(opt.value); setStatusDropdownOpen(false); }}
                         style={{
                           width: '100%', padding: '8px 12px', border: 'none',
-                          backgroundColor: cycleStatus === opt.value ? (isDark ? '#111111' : '#F1F5F9') : 'transparent',
+                          backgroundColor: cycleStatus === opt.value ? (isDark ? '#1A1A1A' : '#F1F5F9') : 'transparent',
                           display: 'flex', alignItems: 'center', gap: 8,
                           cursor: 'pointer', fontSize: 14, color: isDark ? '#EDEDED' : '#334155',
                           fontFamily: 'Inter, sans-serif',
                         }}
-                        onMouseEnter={(e) => { (e.target as HTMLElement).style.backgroundColor = isDark ? '#111111' : '#F8FAFC'; }}
-                        onMouseLeave={(e) => { (e.target as HTMLElement).style.backgroundColor = cycleStatus === opt.value ? (isDark ? '#111111' : '#F1F5F9') : 'transparent'; }}
+                        onMouseEnter={(e) => { (e.target as HTMLElement).style.backgroundColor = isDark ? '#1A1A1A' : '#F8FAFC'; }}
+                        onMouseLeave={(e) => { (e.target as HTMLElement).style.backgroundColor = cycleStatus === opt.value ? (isDark ? '#1A1A1A' : '#F1F5F9') : 'transparent'; }}
                       >
                         <span style={{
                           display: 'inline-block', padding: '0 6px', height: 20,

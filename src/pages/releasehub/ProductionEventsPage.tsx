@@ -87,13 +87,13 @@ export default function ProductionEventsPage() {
           }}>
             Production Events
           </h1>
-          <p style={{ fontSize: 13, color: isDark ? '#666666' : '#64748B', marginTop: 2 }}>
+          <p style={{ fontSize: 13, color: isDark ? '#878787' : '#64748B', marginTop: 2 }}>
             Post-deployment monitoring & event log
           </p>
         </div>
         <button
           className="h-9 px-4 rounded-md text-[13px] font-semibold flex items-center gap-1.5"
-          style={{ border: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(15,23,42,0.12)', background: isDark ? '#111111' : '#FFFFFF', color: isDark ? '#888888' : '#475569' }}
+          style={{ border: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(15,23,42,0.12)', background: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#A1A1A1' : '#475569' }}
           onClick={() => {
             const next = resultFilter === 'all' ? 'SUCCESS' : 'all';
             setResultFilter(next);
@@ -112,8 +112,8 @@ export default function ProductionEventsPage() {
             style={{
               fontWeight: 600,
               border: `0.75px solid ${resultFilter === chip.key ? '#2563EB' : isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.12)'}`,
-              background: resultFilter === chip.key ? (isDark ? 'rgba(37,99,235,0.15)' : '#EFF6FF') : (isDark ? '#111111' : '#FFFFFF'),
-              color: resultFilter === chip.key ? '#2563EB' : (isDark ? '#888888' : '#64748B'),
+              background: resultFilter === chip.key ? (isDark ? 'rgba(37,99,235,0.15)' : '#EFF6FF') : (isDark ? '#1A1A1A' : '#FFFFFF'),
+              color: resultFilter === chip.key ? '#2563EB' : (isDark ? '#A1A1A1' : '#64748B'),
             }}
           >
             {chip.label}
@@ -161,7 +161,7 @@ export default function ProductionEventsPage() {
                 {/* Event card */}
                 <div
                   style={{
-                    background: isDark ? '#111111' : '#FFFFFF',
+                    background: isDark ? '#1A1A1A' : '#FFFFFF',
                     borderRadius: 4,
                     padding: '14px 16px',
                     border: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(15,23,42,0.12)',
@@ -175,7 +175,7 @@ export default function ProductionEventsPage() {
                   </div>
 
                   {/* Meta row */}
-                  <div className="flex flex-wrap" style={{ gap: 16, fontSize: 12, color: isDark ? '#666666' : '#64748B' }}>
+                  <div className="flex flex-wrap" style={{ gap: 16, fontSize: 12, color: isDark ? '#878787' : '#64748B' }}>
                     {ev.change_key && <span style={{ fontFamily: RH.fontMono }}>{ev.change_key}</span>}
                     {ev.release_key && <span style={{ fontFamily: RH.fontMono }}>{ev.release_key}</span>}
                     {ev.deployed_at && <span>{formatDateTime(ev.deployed_at)}</span>}

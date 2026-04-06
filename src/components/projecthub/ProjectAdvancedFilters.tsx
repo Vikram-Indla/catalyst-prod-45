@@ -52,7 +52,7 @@ function FilterDropdown({ label, placeholder, options, selected, onToggle }: {
         <ChevronDown size={14} className="text-[#94A3B8] dark:text-[rgba(255,255,255,0.40)]" style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 150ms', flexShrink: 0 }} />
       </button>
       {open && (
-        <div className="bg-white dark:bg-[#111111] border border-[#E2E8F0] dark:border-[rgba(255,255,255,0.10)]" style={{
+        <div className="bg-white dark:bg-[#1A1A1A] border border-[#E2E8F0] dark:border-[rgba(255,255,255,0.10)]" style={{
           position: 'absolute', top: 'calc(100% + 4px)', left: 0, right: 0,
           borderRadius: 8, boxShadow: isDark ? '0 8px 24px rgba(0,0,0,0.60)' : '0 10px 15px -3px rgba(0,0,0,0.1)',
           maxHeight: 220, overflowY: 'auto', padding: 4, zIndex: 50,
@@ -108,7 +108,7 @@ export function ProjectAdvancedFilters({ filters, onChange, departments, onClose
   const hasFilters = filters.departments.length + filters.healths.length + filters.categories.length > 0;
 
   return (
-    <div className="bg-white dark:bg-[#111111] border border-[#E2E8F0] dark:border-[rgba(255,255,255,0.10)]" style={{ borderRadius: 8, padding: 16, marginBottom: 12 }}>
+    <div className="bg-white dark:bg-[#1A1A1A] border border-[#E2E8F0] dark:border-[rgba(255,255,255,0.10)]" style={{ borderRadius: 8, padding: 16, marginBottom: 12 }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
         <span className="text-[#0F172A] dark:text-[rgba(255,255,255,0.92)]" style={{ fontSize: 13, fontWeight: 600 }}>Advanced Filters</span>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>

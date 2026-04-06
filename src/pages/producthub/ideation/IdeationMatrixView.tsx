@@ -87,7 +87,7 @@ export default function IdeationMatrixView({ onOpenDetail }: Props) {
       {/* Chart — V12: border-only, NO box-shadow */}
       <div style={{ maxWidth: '900px', margin: '0 auto' }}>
         <div style={{
-          width: '100%', height: '520px', background: isDark ? '#111111' : '#FFFFFF', border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0',
+          width: '100%', height: '520px', background: isDark ? '#1A1A1A' : '#FFFFFF', border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0',
           borderRadius: '6px', position: 'relative', overflow: 'hidden',
         }}>
           {/* Grid area */}
@@ -191,7 +191,7 @@ export default function IdeationMatrixView({ onOpenDetail }: Props) {
         ].map(l => (
           <div key={l.label} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
             <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: l.color, flexShrink: 0 }} />
-            <span style={{ fontSize: '12px', color: isDark ? '#888888' : '#334155', fontWeight: 600 }}>{l.label}</span>
+            <span style={{ fontSize: '12px', color: isDark ? '#A1A1A1' : '#334155', fontWeight: 600 }}>{l.label}</span>
           </div>
         ))}
         <span style={{ fontSize: '11px', color: '#94A3B8' }}>Dot size = Vote count</span>

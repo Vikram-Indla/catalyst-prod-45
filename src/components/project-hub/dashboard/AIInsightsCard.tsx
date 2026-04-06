@@ -3,7 +3,7 @@ import { Sparkles, Target, AlertTriangle, TrendingUp, Lightbulb } from 'lucide-r
 export function AIInsightsCard() {
   return (
     <div
-      className="bg-[var(--cp-float)] dark:bg-[#111111]"
+      className="bg-[var(--cp-float)] dark:bg-[#1A1A1A]"
       style={{
         gridColumn: '1 / -1',
         border: '1px solid var(--divider)',

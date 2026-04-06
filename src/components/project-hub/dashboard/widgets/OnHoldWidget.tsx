@@ -7,7 +7,7 @@ export default function OnHoldWidget({ projectId, projectKey, collapsed, onToggl
   const count = items?.length ?? 0;
 
   const badge = (
-    <span className="bg-[#DFE1E6] dark:bg-[#222222] text-[#253858] dark:text-[#888888]" style={{
+    <span className="bg-[#DFE1E6] dark:bg-[#292929] text-[#253858] dark:text-[#A1A1A1]" style={{
       display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 8px',
       fontSize: 11, fontWeight: 700, borderRadius: 'var(--cp-radius-sm)',
     }}>{count}</span>
@@ -33,7 +33,7 @@ export default function OnHoldWidget({ projectId, projectKey, collapsed, onToggl
             }}>
               <span style={{ color: 'var(--cp-primary-60)', fontWeight: 500, fontFamily: 'var(--cp-font-mono)', fontSize: 11, flexShrink: 0 }}>{item.issue_key}</span>
               <span className="truncate flex-1" style={{ color: 'var(--cp-text-secondary)' }}>{item.summary}</span>
-              <span className="bg-[#DFE1E6] dark:bg-[#222222] text-[#253858] dark:text-[#888888]" style={{
+              <span className="bg-[#DFE1E6] dark:bg-[#292929] text-[#253858] dark:text-[#A1A1A1]" style={{
                 display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 8px',
                 fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em',
                 borderRadius: 'var(--cp-radius-sm)',

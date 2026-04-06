@@ -1251,8 +1251,8 @@
   border-color: rgba(255,255,255,0.08) !important;
 }
 .dark #r360-root .r3-period-toggle button {
-  background: #111111 !important;
-  color: #888888 !important;
+  background: #1A1A1A !important;
+  color: #A1A1A1 !important;
 }
 .dark #r360-root .r3-period-toggle button.active {
   background: #2563EB !important;
@@ -1283,14 +1283,14 @@
 .dark #r360-root .r3-item-meta,
 .dark #r360-root .r3-period-toggle button:not(.active),
 .dark #r360-root .r3-filter-label {
-  color: #888888 !important;
+  color: #A1A1A1 !important;
 }
 
 /* Text overrides — muted */
 .dark #r360-root .r3-label-muted,
 .dark #r360-root .r3-count,
 .dark #r360-root .r3-empty {
-  color: #666666 !important;
+  color: #878787 !important;
 }
 
 /* Borders and dividers */
@@ -1327,16 +1327,16 @@
 .dark #r360-root .r3-stat-card,
 .dark #r360-root .r3-detail-card,
 .dark #r360-root .r3-card-surface {
-  background: #111111 !important;
+  background: #1A1A1A !important;
   border-color: rgba(255,255,255,0.08) !important;
 }
 
 /* Filter chips & status buttons */
 .dark #r360-root .r3-filter-chip,
 .dark #r360-root .r3-status-filter {
-  background: #111111 !important;
+  background: #1A1A1A !important;
   border-color: rgba(255,255,255,0.08) !important;
-  color: #888888 !important;
+  color: #A1A1A1 !important;
 }
 .dark #r360-root .r3-filter-chip.active,
 .dark #r360-root .r3-status-filter.active {
@@ -1358,7 +1358,7 @@
 
 /* Drawer / side panel */
 .dark #r360-root .item-drawer {
-  background: #111111 !important;
+  background: #1A1A1A !important;
   border-color: rgba(255,255,255,0.08) !important;
 }
 .dark #r360-root .item-drawer .drawer-header {
@@ -1381,7 +1381,7 @@
 
 /* Select / dropdown overrides */
 .dark #r360-root select {
-  background: #111111 !important;
+  background: #1A1A1A !important;
   color: #EDEDED !important;
   border-color: rgba(255,255,255,0.08) !important;
 }

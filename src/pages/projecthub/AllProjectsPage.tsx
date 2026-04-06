@@ -160,11 +160,11 @@ export default function AllProjectsPage() {
             {/* Jira Sync CTA */}
             <Popover open={syncPanelOpen} onOpenChange={setSyncPanelOpen}>
               <PopoverTrigger asChild>
-                <button className="h-10 px-4 bg-white dark:!bg-[#111111] border border-slate-200 dark:border-slate-700 rounded-md text-[13px] font-semibold flex items-center gap-2.5 hover:border-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950 hover:text-blue-600 transition-all text-slate-700 dark:text-slate-300 focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 outline-none">
+                <button className="h-10 px-4 bg-white dark:!bg-[#1A1A1A] border border-slate-200 dark:border-slate-700 rounded-md text-[13px] font-semibold flex items-center gap-2.5 hover:border-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950 hover:text-blue-600 transition-all text-slate-700 dark:text-slate-300 focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 outline-none">
                   <SyncCTALabel />
                 </button>
               </PopoverTrigger>
-              <PopoverContent className="w-[360px] p-5 bg-white dark:!bg-[#111111] dark:border-slate-700" align="end">
+              <PopoverContent className="w-[360px] p-5 bg-white dark:!bg-[#1A1A1A] dark:border-slate-700" align="end">
                 <JiraSyncPanel />
               </PopoverContent>
             </Popover>

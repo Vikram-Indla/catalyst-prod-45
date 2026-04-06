@@ -113,7 +113,7 @@ function FieldPair({ label, value }: { label: string; value: React.ReactNode }) 
     <div>
       <div style={{
         fontSize: '11px', fontWeight: 700, textTransform: 'uppercase' as const,
-        letterSpacing: '0.06em', color: isDark ? '#666666' : '#64748B', marginBottom: '6px',
+        letterSpacing: '0.06em', color: isDark ? '#878787' : '#64748B', marginBottom: '6px',
       }}>
         {label}
       </div>
@@ -231,7 +231,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
   if (isLoading) return (
     <>
       <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.25)', zIndex: 200 }} />
-      <div style={{ position: 'fixed', top: 0, right: 0, bottom: 0, width: '480px', background: isDark ? '#111111' : '#FFFFFF', zIndex: 201, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ position: 'fixed', top: 0, right: 0, bottom: 0, width: '480px', background: isDark ? '#1A1A1A' : '#FFFFFF', zIndex: 201, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <span style={{ color: dk.t3, fontSize: '14px' }}>Loading...</span>
       </div>
     </>
@@ -249,7 +249,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
       <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.40)', zIndex: 200 }} />
       <div style={{
         position: 'fixed', top: 0, right: 0, bottom: 0, width: '480px',
-        background: isDark ? '#111111' : '#FFFFFF', zIndex: 201, boxShadow: isDark ? 'none' : '-8px 0 32px rgba(0,0,0,0.12)',
+        background: isDark ? '#1A1A1A' : '#FFFFFF', zIndex: 201, boxShadow: isDark ? 'none' : '-8px 0 32px rgba(0,0,0,0.12)',
         display: 'flex', flexDirection: 'column',
         animation: 'slideInRight 0.25s ease forwards',
       }}>
@@ -569,7 +569,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
         {isEditing && (
           <div style={{
             padding: '12px 24px', borderTop: `1px solid ${dk.border}`,
-            backgroundColor: isDark ? '#111111' : '#FFFFFF', display: 'flex', justifyContent: 'flex-end', gap: '8px', flexShrink: 0,
+            backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', display: 'flex', justifyContent: 'flex-end', gap: '8px', flexShrink: 0,
           }}>
             <button onClick={() => { resetLocalState(); setIsEditing(false); }} style={{
               height: '36px', padding: '0 16px', borderRadius: '6px',

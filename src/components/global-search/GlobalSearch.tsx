@@ -376,11 +376,11 @@ export function GlobalSearch() {
   ));
   const portalTheme = (isDark ? {
     "--gs-backdrop": "rgba(10,10,10,0.58)",
-    "--gs-bg": "#111111",
+    "--gs-bg": "#1A1A1A",
     "--gs-bar-bg": "#0A0A0A",
     "--gs-footer-bg": "rgba(255,255,255,0.03)",
     "--gs-section-bg": "rgba(255,255,255,0.03)",
-    "--gs-dropdown-bg": "#111111",
+    "--gs-dropdown-bg": "#1A1A1A",
     "--gs-shadow": "0 20px 60px rgba(0,0,0,0.5)",
     "--gs-dropdown-shadow": "0 12px 32px rgba(0,0,0,0.4)",
     "--gs-border": "rgba(255,255,255,0.10)",

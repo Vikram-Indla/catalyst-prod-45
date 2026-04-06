@@ -420,7 +420,7 @@ export default function TestHubDocsPage() {
       {/* Header */}
       <div style={{
         padding: '24px 32px',
-        backgroundColor: isDark ? '#111111' : '#FFFFFF',
+        backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF',
         borderBottom: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0',
         display: 'flex',
         alignItems: 'center',
@@ -430,7 +430,7 @@ export default function TestHubDocsPage() {
           <h1 style={{ fontSize: 22, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A', margin: 0, fontFamily: 'Inter, sans-serif' }}>
             📘 TestHub Functional Flow Guide
           </h1>
-          <p style={{ fontSize: 14, color: isDark ? '#666666' : '#64748B', margin: '4px 0 0', fontFamily: 'Inter, sans-serif' }}>
+          <p style={{ fontSize: 14, color: isDark ? '#878787' : '#64748B', margin: '4px 0 0', fontFamily: 'Inter, sans-serif' }}>
             Complete dependency map, step-by-step testing flow, database schema, and business rules
           </p>
         </div>
@@ -460,7 +460,7 @@ export default function TestHubDocsPage() {
       <div style={{ flex: 1, overflow: 'auto', padding: '24px 32px' }}>
         {/* Dependency Flow Visual */}
         <div style={{
-          backgroundColor: isDark ? '#111111' : '#FFFFFF',
+          backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF',
           borderRadius: 12,
           border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0',
           padding: 24,
@@ -508,7 +508,7 @@ export default function TestHubDocsPage() {
               <div
                 key={section.id}
                 style={{
-                  backgroundColor: isDark ? '#111111' : '#FFFFFF',
+                  backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF',
                   borderRadius: 12,
                   border: `1px solid ${isOpen ? section.color + '40' : isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`,
                   overflow: 'hidden',
@@ -545,7 +545,7 @@ export default function TestHubDocsPage() {
                     <div style={{ fontSize: 15, fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A', fontFamily: 'Inter, sans-serif' }}>
                       {section.title}
                     </div>
-                    <div style={{ fontSize: 13, color: isDark ? '#666666' : '#64748B', fontFamily: 'Inter, sans-serif', marginTop: 2 }}>
+                    <div style={{ fontSize: 13, color: isDark ? '#878787' : '#64748B', fontFamily: 'Inter, sans-serif', marginTop: 2 }}>
                       {section.summary}
                     </div>
                   </div>
@@ -555,7 +555,7 @@ export default function TestHubDocsPage() {
                   <div style={{
                     padding: '0 20px 20px',
                     fontSize: 14,
-                    color: isDark ? '#888888' : '#334155',
+                    color: isDark ? '#A1A1A1' : '#334155',
                     fontFamily: 'Inter, sans-serif',
                     lineHeight: 1.7,
                   }}>
@@ -569,7 +569,7 @@ export default function TestHubDocsPage() {
                       lineHeight: 1.6,
                       overflowX: 'auto',
                       border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0',
-                      color: isDark ? '#888888' : undefined,
+                      color: isDark ? '#A1A1A1' : undefined,
                     }}>
                       {getMarkdownSection(section.id)}
                     </div>
@@ -605,7 +605,7 @@ export default function TestHubDocsPage() {
               alignItems: 'center',
               gap: 8,
               padding: '10px 20px',
-              backgroundColor: isDark ? '#111111' : '#FFFFFF',
+              backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF',
               color: isDark ? '#EDEDED' : '#0F172A',
               border: 'none',
               borderRadius: 8,

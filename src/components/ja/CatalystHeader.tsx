@@ -552,7 +552,7 @@ export function CatalystHeader() {
                 minWidth: '200px',
                 height: '32px',
                 padding: '0 10px',
-                background: isDark ? '#111111' : '#F8FAFC',
+                background: isDark ? '#1A1A1A' : '#F8FAFC',
                 border: `1px solid ${isDark ? 'rgba(248,244,240,0.10)' : '#E2E8F0'}`,
                 borderRadius: '6px',
                 cursor: 'pointer',

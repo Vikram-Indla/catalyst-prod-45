@@ -314,7 +314,7 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
                           <button onClick={() => setArchiveConfirmId(null)} style={{
                             height: 28, padding: '0 10px', fontSize: 12, fontWeight: 500,
                             borderRadius: 5, border: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(15,23,42,0.15)',
-                            background: isDark ? '#111111' : '#FFFFFF', color: 'var(--fg-2)', cursor: 'pointer',
+                            background: isDark ? '#1A1A1A' : '#FFFFFF', color: 'var(--fg-2)', cursor: 'pointer',
                             fontFamily: "'Inter', sans-serif",
                           }}>Cancel</button>
                           <button onClick={() => handleArchiveEpic(epic.id)} style={{
@@ -333,11 +333,11 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
                               display: 'inline-flex', alignItems: 'center', gap: 4,
                               fontSize: 12, fontWeight: 500, color: 'var(--fg-2)',
                               border: '0.75px solid rgba(15,23,42,0.15)', borderRadius: 5,
-                              background: isDark ? '#111111' : '#FFFFFF', cursor: 'pointer',
+                              background: isDark ? '#1A1A1A' : '#FFFFFF', cursor: 'pointer',
                               fontFamily: "'Inter', sans-serif",
                             }}
                             onMouseEnter={e => (e.currentTarget.style.background = isDark ? '#1A1A1A' : 'rgba(37,99,235,0.04)')}
-                            onMouseLeave={e => (e.currentTarget.style.background = isDark ? '#111111' : 'var(--bg-app)')}
+                            onMouseLeave={e => (e.currentTarget.style.background = isDark ? '#1A1A1A' : 'var(--bg-app)')}
                           >
                             <Pencil size={13} /> Edit
                           </button>

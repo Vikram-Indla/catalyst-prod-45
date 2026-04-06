@@ -29,7 +29,7 @@ export function PlannerViewHeader({
         <h1 className="text-xl font-bold text-slate-900 dark:text-[#EDEDED]">
           {title}
         </h1>
-        <p className="text-sm text-slate-500 dark:text-[#888888]">
+        <p className="text-sm text-slate-500 dark:text-[#A1A1A1]">
           {subtitle}
         </p>
       </div>

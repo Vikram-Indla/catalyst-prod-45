@@ -69,7 +69,7 @@
 }
 .dark .pk-dropdown,
 [data-theme="dark"] .pk-dropdown {
-  background: #111111;
+  background: #1A1A1A;
   border-color: rgba(255,255,255,0.12);
   box-shadow: 0 8px 24px rgba(0,0,0,0.4);
 }
@@ -79,7 +79,7 @@
 }
 .dark .pk-context-menu,
 [data-theme="dark"] .pk-context-menu {
-  background: #111111;
+  background: #1A1A1A;
   border-color: rgba(255,255,255,0.12);
   box-shadow: 0 8px 24px rgba(0,0,0,0.5);
 }

@@ -15,10 +15,10 @@ export default function IncidentInsightsPage() {
 
   // NOCTURNE tokens
   const pageBg = isDark ? '#0A0A0A' : '#FFFFFF';
-  const surfaceBg = isDark ? '#111111' : '#FFFFFF';
+  const surfaceBg = isDark ? '#1A1A1A' : '#FFFFFF';
   const textPrimary = isDark ? '#EDEDED' : '#0F172A';
-  const textSecondary = isDark ? '#888888' : '#64748B';
-  const textBody = isDark ? '#888888' : '#334155';
+  const textSecondary = isDark ? '#A1A1A1' : '#64748B';
+  const textBody = isDark ? '#A1A1A1' : '#334155';
   const borderColor = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.12)';
 
   return (

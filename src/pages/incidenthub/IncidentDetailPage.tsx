@@ -82,7 +82,7 @@ export default function IncidentDetailPage() {
   if (!incident) {
     return (
       <div className="flex-1 flex items-center justify-center" style={{ backgroundColor: isDark ? '#0A0A0A' : '#FFFFFF' }}>
-        <p style={{ fontFamily: 'Inter, sans-serif', color: isDark ? '#666666' : '#94A3B8' }}>Incident not found</p>
+        <p style={{ fontFamily: 'Inter, sans-serif', color: isDark ? '#878787' : '#94A3B8' }}>Incident not found</p>
       </div>
     );
   }
@@ -98,7 +98,7 @@ export default function IncidentDetailPage() {
         height: 36,
         borderBottom: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(15,23,42,0.06)',
       }}>
-        <div className="flex items-center gap-1" style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: isDark ? '#666666' : '#64748B' }}>
+        <div className="flex items-center gap-1" style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: isDark ? '#878787' : '#64748B' }}>
           <span className="cursor-pointer hover:underline" onClick={() => navigate('/incident-hub')}>Incident List</span>
           <ChevronRight size={12} />
           <span style={{ color: isDark ? '#EDEDED' : '#0F172A', fontWeight: 650 }}>{incident.incident_key || incident.jira_key || 'INC'}</span>
@@ -128,12 +128,12 @@ export default function IncidentDetailPage() {
             <StatusLozenge status={incident.status} />
             <SeverityChip severity={incident.severity} />
             <PriorityChip priority={incident.priority || 'P4'} />
-            <span style={{ color: isDark ? '#666666' : '#CBD5E1' }}>&middot;</span>
+            <span style={{ color: isDark ? '#878787' : '#CBD5E1' }}>&middot;</span>
             <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 12, color: '#2563EB' }}>
               {incident.incident_key || incident.jira_key}
             </span>
-            <span style={{ color: isDark ? '#666666' : '#CBD5E1' }}>&middot;</span>
-            <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: isDark ? '#666666' : '#64748B' }}>
+            <span style={{ color: isDark ? '#878787' : '#CBD5E1' }}>&middot;</span>
+            <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: isDark ? '#878787' : '#64748B' }}>
               Opened {incident.created_at ? formatDistanceToNow(new Date(incident.created_at), { addSuffix: true }) : ''}
             </span>
           </div>
@@ -164,7 +164,7 @@ export default function IncidentDetailPage() {
           {/* Description */}
           <div className="mb-6">
             <h3 style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A', marginBottom: 8 }}>Description</h3>
-            <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 14, lineHeight: 1.75, color: isDark ? '#888888' : '#334155' }}>
+            <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 14, lineHeight: 1.75, color: isDark ? '#A1A1A1' : '#334155' }}>
               {incident.description || 'No description provided.'}
             </p>
           </div>
@@ -175,7 +175,7 @@ export default function IncidentDetailPage() {
               <h3 style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A', marginBottom: 8 }}>Labels</h3>
               <div className="flex flex-wrap gap-1">
                 {(incident.labels as string[]).map((label: string) => (
-                  <span key={label} className="px-2 py-0.5" style={{ fontSize: 11, backgroundColor: isDark ? '#111111' : '#F1F5F9', border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(15,23,42,0.08)', borderRadius: 3, color: isDark ? '#888888' : '#475569' }}>{label}</span>
+                  <span key={label} className="px-2 py-0.5" style={{ fontSize: 11, backgroundColor: isDark ? '#1A1A1A' : '#F1F5F9', border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(15,23,42,0.08)', borderRadius: 3, color: isDark ? '#A1A1A1' : '#475569' }}>{label}</span>
                 ))}
               </div>
             </div>
@@ -194,7 +194,7 @@ export default function IncidentDetailPage() {
                   style={{
                     fontFamily: 'Inter, sans-serif',
                     fontWeight: activeTab === tab ? 650 : 400,
-                    color: activeTab === tab ? '#2563EB' : (isDark ? '#666666' : '#64748B'),
+                    color: activeTab === tab ? '#2563EB' : (isDark ? '#878787' : '#64748B'),
                     borderBottom: activeTab === tab ? '2px solid #2563EB' : '2px solid transparent',
                     borderRadius: 0,
                   }}
@@ -223,22 +223,22 @@ export default function IncidentDetailPage() {
                 </div>
                 {/* Comments List */}
                 {(!incident.comments || incident.comments.length === 0) && (
-                  <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: isDark ? '#666666' : '#94A3B8' }}>No comments yet. Be the first to comment.</p>
+                  <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: isDark ? '#878787' : '#94A3B8' }}>No comments yet. Be the first to comment.</p>
                 )}
                 {incident.comments?.map((c: any) => (
                   <div key={c.id} className="mb-3 pb-3" style={{ borderBottom: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(15,23,42,0.06)' }}>
                     <div className="flex items-center gap-2 mb-1">
-                      <div className="rounded-full flex items-center justify-center" style={{ width: 24, height: 24, backgroundColor: isDark ? '#1A1A1A' : '#E2E8F0', fontSize: 10, fontWeight: 650, color: isDark ? '#888888' : '#475569' }}>
+                      <div className="rounded-full flex items-center justify-center" style={{ width: 24, height: 24, backgroundColor: isDark ? '#1A1A1A' : '#E2E8F0', fontSize: 10, fontWeight: 650, color: isDark ? '#A1A1A1' : '#475569' }}>
                         {(c.author?.full_name || c.author_name || 'U').charAt(0).toUpperCase()}
                       </div>
                       <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, fontWeight: 650, color: isDark ? '#EDEDED' : '#0F172A' }}>
                         {c.author?.full_name || c.author_name || 'User'}
                       </span>
-                      <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: isDark ? '#666666' : '#94A3B8' }}>
+                      <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: isDark ? '#878787' : '#94A3B8' }}>
                         {c.created_at ? formatDistanceToNow(new Date(c.created_at), { addSuffix: true }) : ''}
                       </span>
                     </div>
-                    <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, color: isDark ? '#888888' : '#334155', lineHeight: 1.6 }}>{c.content}</p>
+                    <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, color: isDark ? '#A1A1A1' : '#334155', lineHeight: 1.6 }}>{c.content}</p>
                   </div>
                 ))}
               </div>
@@ -247,7 +247,7 @@ export default function IncidentDetailPage() {
             {activeTab === 'history' && (
               <div>
                 {(!incident.history || incident.history.length === 0) && (
-                  <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: isDark ? '#666666' : '#94A3B8' }}>No history entries.</p>
+                  <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: isDark ? '#878787' : '#94A3B8' }}>No history entries.</p>
                 )}
                 {incident.history?.map((h: any) => (
                   <div key={h.id} className="flex items-start gap-3 mb-3 pb-3" style={{ borderBottom: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(15,23,42,0.06)' }}>
@@ -257,11 +257,11 @@ export default function IncidentDetailPage() {
                         {h.field_name} changed
                       </div>
                       <div className="flex items-center gap-1 mt-0.5">
-                        {h.old_value && (h.field_name === 'status' ? <StatusLozenge status={h.old_value} /> : <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: isDark ? '#666666' : '#94A3B8' }}>{h.old_value}</span>)}
-                        <span style={{ color: isDark ? '#666666' : '#94A3B8', fontSize: 11 }}>&rarr;</span>
+                        {h.old_value && (h.field_name === 'status' ? <StatusLozenge status={h.old_value} /> : <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: isDark ? '#878787' : '#94A3B8' }}>{h.old_value}</span>)}
+                        <span style={{ color: isDark ? '#878787' : '#94A3B8', fontSize: 11 }}>&rarr;</span>
                         {h.new_value && (h.field_name === 'status' ? <StatusLozenge status={h.new_value} /> : <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: isDark ? '#EDEDED' : '#0F172A' }}>{h.new_value}</span>)}
                       </div>
-                      <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: isDark ? '#666666' : '#94A3B8' }}>
+                      <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: isDark ? '#878787' : '#94A3B8' }}>
                         {h.changed_at ? formatDistanceToNow(new Date(h.changed_at), { addSuffix: true }) : ''}
                       </span>
                     </div>
@@ -277,7 +277,7 @@ export default function IncidentDetailPage() {
           width: 300,
           borderLeft: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(15,23,42,0.06)',
           padding: 16,
-          backgroundColor: isDark ? '#111111' : '#FFFFFF',
+          backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF',
         }}>
           {/* Metadata Grid */}
           <div className="space-y-3">
@@ -292,7 +292,7 @@ export default function IncidentDetailPage() {
               { label: 'Resolution', value: incident.resolution || '\u2014' },
             ].map(row => (
               <div key={row.label} className="flex items-center gap-2">
-                <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: isDark ? '#666666' : '#64748B', width: 80, flexShrink: 0 }}>{row.label}</span>
+                <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: isDark ? '#878787' : '#64748B', width: 80, flexShrink: 0 }}>{row.label}</span>
                 <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: isDark ? '#EDEDED' : '#0F172A' }}>
                   {typeof row.value === 'string' ? row.value : row.value}
                 </div>
@@ -303,14 +303,14 @@ export default function IncidentDetailPage() {
           {/* Custom Fields */}
           <div className="mt-4 pt-4" style={{ borderTop: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(15,23,42,0.06)' }}>
             <div className="flex items-center gap-2 mb-2">
-              <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: isDark ? '#666666' : '#64748B', width: 80 }}>Created</span>
-              <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 12, color: isDark ? '#888888' : '#64748B' }}>
+              <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: isDark ? '#878787' : '#64748B', width: 80 }}>Created</span>
+              <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 12, color: isDark ? '#A1A1A1' : '#64748B' }}>
                 {incident.created_at ? new Date(incident.created_at).toLocaleString() : '\u2014'}
               </span>
             </div>
             <div className="flex items-center gap-2 mb-2">
-              <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: isDark ? '#666666' : '#64748B', width: 80 }}>Updated</span>
-              <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 12, color: isDark ? '#888888' : '#64748B' }}>
+              <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: isDark ? '#878787' : '#64748B', width: 80 }}>Updated</span>
+              <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 12, color: isDark ? '#A1A1A1' : '#64748B' }}>
                 {incident.updated_at ? new Date(incident.updated_at).toLocaleString() : '\u2014'}
               </span>
             </div>

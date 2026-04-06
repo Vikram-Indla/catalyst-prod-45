@@ -137,7 +137,7 @@ function MultiSelectDropdown({
         <button
           type="button"
           className={cn(
-            "flex items-center justify-between w-full h-10 px-3 border rounded-md text-sm bg-white dark:bg-[#111111] transition-colors",
+            "flex items-center justify-between w-full h-10 px-3 border rounded-md text-sm bg-white dark:bg-[#1A1A1A] transition-colors",
             selected.length > 0 ? "border-border text-foreground" : "border-border text-muted-foreground",
             "hover:border-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-brand-primary"
           )}
@@ -237,7 +237,7 @@ function DateInput({
         <button
           type="button"
           className={cn(
-            "flex items-center justify-between w-full h-10 px-3 border rounded-md text-sm bg-white dark:bg-[#111111] transition-colors",
+            "flex items-center justify-between w-full h-10 px-3 border rounded-md text-sm bg-white dark:bg-[#1A1A1A] transition-colors",
             value ? "border-border text-foreground" : "border-border text-muted-foreground",
             "hover:border-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-brand-primary"
           )}
@@ -388,7 +388,7 @@ export function FilterDemandsDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleCancel}>
-      <DialogContent className="max-w-[480px] w-[95vw] p-0 bg-white dark:bg-[#111111] border dark:border-[rgba(255,255,255,0.08)] shadow-xl rounded-lg overflow-hidden gap-0 [&>button.absolute]:hidden">
+      <DialogContent className="max-w-[480px] w-[95vw] p-0 bg-white dark:bg-[#1A1A1A] border dark:border-[rgba(255,255,255,0.08)] shadow-xl rounded-lg overflow-hidden gap-0 [&>button.absolute]:hidden">
         {/* Header */}
         <div className="flex items-center justify-between px-4 sm:px-5 py-4 border-b border-border">
           <h2 className="text-base font-semibold text-foreground">Filters</h2>
@@ -415,7 +415,7 @@ export function FilterDemandsDialog({
                         "px-3 py-1.5 border rounded-md text-sm cursor-pointer transition-all whitespace-nowrap font-medium",
                         localFilters.activeSmartFilter === sf.id
                           ? "bg-brand-primary border-brand-primary text-white"
-                          : "bg-white dark:bg-[#111111] border-border text-foreground hover:border-brand-primary hover:bg-brand-primary/5"
+                          : "bg-white dark:bg-[#1A1A1A] border-border text-foreground hover:border-brand-primary hover:bg-brand-primary/5"
                       )}
                       onClick={() => handleSmartFilterClick(sf.id)}
                     >
@@ -507,7 +507,7 @@ export function FilterDemandsDialog({
                   value={(localFilters.ageing && localFilters.ageing[0]) || 'all'}
                   onValueChange={(value) => updateFilter('ageing', value === 'all' ? undefined : [value])}
                 >
-                  <SelectTrigger className="h-10 bg-white dark:bg-[#111111] border-border">
+                  <SelectTrigger className="h-10 bg-white dark:bg-[#1A1A1A] border-border">
                     <SelectValue placeholder="All" />
                   </SelectTrigger>
                   <SelectContent className="bg-white dark:bg-[#1A1A1A] z-[100]">
@@ -612,7 +612,7 @@ export function FilterDemandsDialog({
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between px-4 sm:px-5 py-3.5 border-t border-border bg-white dark:bg-[#111111]">
+        <div className="flex items-center justify-between px-4 sm:px-5 py-3.5 border-t border-border bg-white dark:bg-[#1A1A1A]">
           <span className="text-sm">
             <span className="text-brand-primary font-medium">{activeFilterCount}</span>
             <span className="text-muted-foreground ml-1">filters applied</span>

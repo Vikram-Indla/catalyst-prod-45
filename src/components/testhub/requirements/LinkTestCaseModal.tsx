@@ -110,7 +110,7 @@ export function LinkTestCaseModal({ isOpen, onClose, requirementId, onLinked, al
 
   return (
     <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1100, padding: 24 }}>
-      <div style={{ width: '100%', maxWidth: 600, maxHeight: '80vh', backgroundColor: isDark ? '#111111' : '#FFFFFF', borderRadius: 16, boxShadow: '0 25px 50px rgba(0,0,0,0.25)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      <div style={{ width: '100%', maxWidth: 600, maxHeight: '80vh', backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', borderRadius: 16, boxShadow: '0 25px 50px rgba(0,0,0,0.25)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
         {/* Header */}
         <div style={{ padding: '20px 24px', borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -119,7 +119,7 @@ export function LinkTestCaseModal({ isOpen, onClose, requirementId, onLinked, al
             </div>
             <h2 style={{ fontSize: 18, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A', margin: 0 }}>Link Test Cases</h2>
           </div>
-          <button onClick={onClose} style={{ width: 36, height: 36, border: 'none', borderRadius: 8, backgroundColor: 'transparent', color: isDark ? '#888888' : '#64748B', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <button onClick={onClose} style={{ width: 36, height: 36, border: 'none', borderRadius: 8, backgroundColor: 'transparent', color: isDark ? '#A1A1A1' : '#64748B', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <X size={20} />
           </button>
         </div>
@@ -127,7 +127,7 @@ export function LinkTestCaseModal({ isOpen, onClose, requirementId, onLinked, al
         {/* Search */}
         <div style={{ padding: '16px 24px', borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}` }}>
           <div style={{ position: 'relative', marginBottom: 12 }}>
-            <Search size={18} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: isDark ? '#666666' : '#94A3B8' }} />
+            <Search size={18} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: isDark ? '#878787' : '#94A3B8' }} />
             <input type="text" placeholder="Search test cases..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}
               style={{ width: '100%', height: 40, padding: '0 14px 0 44px', border: `1.5px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 10, fontSize: 14, backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#EDEDED' : undefined }} />
           </div>
@@ -140,9 +140,9 @@ export function LinkTestCaseModal({ isOpen, onClose, requirementId, onLinked, al
         {/* List */}
         <div style={{ flex: 1, overflowY: 'auto', padding: '8px 24px' }}>
           {isLoading ? (
-            <div style={{ textAlign: 'center', padding: 40, color: isDark ? '#666666' : '#94A3B8' }}>Loading test cases...</div>
+            <div style={{ textAlign: 'center', padding: 40, color: isDark ? '#878787' : '#94A3B8' }}>Loading test cases...</div>
           ) : filtered.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: 40, color: isDark ? '#666666' : '#94A3B8' }}>No test cases available</div>
+            <div style={{ textAlign: 'center', padding: 40, color: isDark ? '#878787' : '#94A3B8' }}>No test cases available</div>
           ) : (
             filtered.map(tc => {
               const isSelected = selectedIds.has(tc.id);
@@ -171,9 +171,9 @@ export function LinkTestCaseModal({ isOpen, onClose, requirementId, onLinked, al
 
         {/* Footer */}
         <div style={{ padding: '16px 24px', borderTop: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{ fontSize: 13, color: isDark ? '#888888' : '#64748B' }}>{selectedIds.size} selected</span>
+          <span style={{ fontSize: 13, color: isDark ? '#A1A1A1' : '#64748B' }}>{selectedIds.size} selected</span>
           <div style={{ display: 'flex', gap: 12 }}>
-            <button onClick={onClose} style={{ height: 40, padding: '0 16px', backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', border: `1.5px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 10, fontSize: 14, color: isDark ? '#888888' : '#64748B', cursor: 'pointer' }}>Cancel</button>
+            <button onClick={onClose} style={{ height: 40, padding: '0 16px', backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', border: `1.5px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 10, fontSize: 14, color: isDark ? '#A1A1A1' : '#64748B', cursor: 'pointer' }}>Cancel</button>
             <button onClick={handleSubmit} disabled={selectedIds.size === 0 || isSubmitting}
               style={{ height: 40, padding: '0 20px', backgroundColor: selectedIds.size === 0 ? (isDark ? '#1A1A1A' : '#E2E8F0') : '#2563EB', border: 'none', borderRadius: 10, fontSize: 14, fontWeight: 600, color: '#FFFFFF', cursor: selectedIds.size === 0 ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}>
               <Link2 size={16} /> {isSubmitting ? 'Linking...' : `Link ${selectedIds.size > 0 ? `(${selectedIds.size})` : ''}`}

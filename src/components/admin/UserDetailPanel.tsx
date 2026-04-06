@@ -48,7 +48,7 @@ interface Props {
 }
 
 const mkSectionLabel = (isDark: boolean): React.CSSProperties => ({
-  fontSize: '10px', fontWeight: 700, color: isDark ? '#666666' : '#64748B',
+  fontSize: '10px', fontWeight: 700, color: isDark ? '#878787' : '#64748B',
   textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '6px',
 });
 
@@ -57,30 +57,30 @@ const mkFieldRow = (isDark: boolean): React.CSSProperties => ({
   padding: '5px 0', borderBottom: `0.5px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.06)'}`,
 });
 
-const mkFieldKey = (isDark: boolean): React.CSSProperties => ({ fontSize: '11px', color: isDark ? '#888888' : '#64748B' });
+const mkFieldKey = (isDark: boolean): React.CSSProperties => ({ fontSize: '11px', color: isDark ? '#A1A1A1' : '#64748B' });
 const mkFieldVal = (isDark: boolean): React.CSSProperties => ({ fontSize: '12px', fontWeight: 500, color: isDark ? '#EDEDED' : '#0F172A', textAlign: 'right' as const });
 const monoSmall: React.CSSProperties = { fontFamily: "'JetBrains Mono', monospace", fontSize: '10px' };
 const Code: React.FC<{ children: React.ReactNode; isDark?: boolean }> = ({ children, isDark = false }) => (
   <code style={{
     fontFamily: "'JetBrains Mono', monospace", fontSize: '10px',
-    background: isDark ? '#111111' : '#F1F5F9', padding: '1px 4px', borderRadius: '2px',
+    background: isDark ? '#1A1A1A' : '#F1F5F9', padding: '1px 4px', borderRadius: '2px',
     color: isDark ? '#93C5FD' : '#2563EB',
   }}>{children}</code>
 );
 
 const InfoCard: React.FC<{ label: string; children: React.ReactNode; isDark?: boolean }> = ({ label, children, isDark = false }) => (
   <div style={{
-    background: isDark ? '#111111' : '#F8FAFC',
+    background: isDark ? '#1A1A1A' : '#F8FAFC',
     border: `1px solid ${isDark ? 'rgba(255,255,255,0.10)' : 'rgba(15,23,42,0.10)'}`,
     borderRadius: '5px', padding: '10px 12px',
   }}>
     <div style={{
-      fontSize: '9.5px', fontWeight: 700, color: isDark ? '#666666' : '#64748B',
+      fontSize: '9.5px', fontWeight: 700, color: isDark ? '#878787' : '#64748B',
       textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '5px',
     }}>
       {label}
     </div>
-    <div style={{ fontSize: '11px', color: isDark ? '#888888' : '#334155', lineHeight: 1.55 }}>{children}</div>
+    <div style={{ fontSize: '11px', color: isDark ? '#A1A1A1' : '#334155', lineHeight: 1.55 }}>{children}</div>
   </div>
 );
 const PERM_LEVELS = ['view', 'edit', 'full', 'none'] as const;
@@ -88,7 +88,7 @@ const PERM_COLORS: Record<string, { bg: string; color: string; bgDark: string; c
   view: { bg: '#EFF6FF', color: '#0747A6', bgDark: 'rgba(37,99,235,0.12)', colorDark: '#93C5FD' },
   edit: { bg: '#FEF3C7', color: '#92400E', bgDark: 'rgba(251,191,36,0.12)', colorDark: '#FCD34D' },
   full: { bg: '#DCFCE7', color: '#006644', bgDark: 'rgba(34,197,94,0.12)', colorDark: '#86EFAC' },
-  none: { bg: '#F1F5F9', color: '#64748B', bgDark: '#111111', colorDark: '#666666' },
+  none: { bg: '#F1F5F9', color: '#64748B', bgDark: '#1A1A1A', colorDark: '#878787' },
 };
 
 function getEventDotColor(ev: any): string {
@@ -129,7 +129,7 @@ const ProjectsTab: React.FC<{ perms: any[]; isDark?: boolean }> = ({ perms, isDa
     fontSize: '9px', fontWeight: 700, textTransform: 'uppercase',
     padding: '3px 7px', borderRadius: '3px', cursor: 'pointer',
     border: `1px solid ${isDark ? 'rgba(255,255,255,0.10)' : 'rgba(15,23,42,0.10)'}`,
-    background: isDark ? '#111111' : '#FFFFFF', color: isDark ? '#888888' : '#64748B',
+    background: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#A1A1A1' : '#64748B',
   };
   const xsBtnClass = 'jus-action-btn';
 
@@ -152,7 +152,7 @@ const ProjectsTab: React.FC<{ perms: any[]; isDark?: boolean }> = ({ perms, isDa
 
       {perms.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '32px 16px' }}>
-          <div style={{ fontSize: '12px', color: isDark ? '#666666' : '#94A3B8', marginBottom: '10px' }}>No projects assigned yet</div>
+          <div style={{ fontSize: '12px', color: isDark ? '#878787' : '#94A3B8', marginBottom: '10px' }}>No projects assigned yet</div>
           <button
             style={{ fontSize: '11px', fontWeight: 600, background: '#2563EB', color: '#FFFFFF', border: 'none', borderRadius: '4px', padding: '5px 12px', cursor: 'pointer' }}
             onClick={() => toast.info('Project picker — Phase 2')}
@@ -163,7 +163,7 @@ const ProjectsTab: React.FC<{ perms: any[]; isDark?: boolean }> = ({ perms, isDa
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '11px', marginTop: '6px' }}>
             <thead>
               <tr style={{ background: isDark ? '#0A0A0A' : '#F1F5F9' }} className="jus-table-head">
-                <th style={{ padding: '6px 9px', fontSize: '9px', fontWeight: 700, color: isDark ? '#666666' : '#64748B', textTransform: 'uppercase', textAlign: 'left', width: '28px' }}>
+                <th style={{ padding: '6px 9px', fontSize: '9px', fontWeight: 700, color: isDark ? '#878787' : '#64748B', textTransform: 'uppercase', textAlign: 'left', width: '28px' }}>
                   <input
                     type="checkbox"
                     checked={checkedPerms.size === perms.length && perms.length > 0}
@@ -171,9 +171,9 @@ const ProjectsTab: React.FC<{ perms: any[]; isDark?: boolean }> = ({ perms, isDa
                     style={{ width: '12px', height: '12px', accentColor: '#2563EB' }}
                   />
                 </th>
-                <th style={{ padding: '6px 9px', fontSize: '9px', fontWeight: 700, color: isDark ? '#666666' : '#64748B', textTransform: 'uppercase', textAlign: 'left' }}>Project</th>
-                <th style={{ padding: '6px 9px', fontSize: '9px', fontWeight: 700, color: isDark ? '#666666' : '#64748B', textTransform: 'uppercase', textAlign: 'left' }}>Key</th>
-                <th style={{ padding: '6px 9px', fontSize: '9px', fontWeight: 700, color: isDark ? '#666666' : '#64748B', textTransform: 'uppercase', textAlign: 'right' }}>Permission</th>
+                <th style={{ padding: '6px 9px', fontSize: '9px', fontWeight: 700, color: isDark ? '#878787' : '#64748B', textTransform: 'uppercase', textAlign: 'left' }}>Project</th>
+                <th style={{ padding: '6px 9px', fontSize: '9px', fontWeight: 700, color: isDark ? '#878787' : '#64748B', textTransform: 'uppercase', textAlign: 'left' }}>Key</th>
+                <th style={{ padding: '6px 9px', fontSize: '9px', fontWeight: 700, color: isDark ? '#878787' : '#64748B', textTransform: 'uppercase', textAlign: 'right' }}>Permission</th>
               </tr>
             </thead>
             <tbody>
@@ -198,8 +198,8 @@ const ProjectsTab: React.FC<{ perms: any[]; isDark?: boolean }> = ({ perms, isDa
                     <td style={{ padding: '6px 9px' }}>
                       <span className="jus-project-key-chip" style={{
                         fontFamily: "'JetBrains Mono', monospace", fontSize: '9px',
-                        color: isDark ? '#888888' : '#64748B',
-                        background: isDark ? '#111111' : '#F1F5F9', padding: '1px 4px', borderRadius: '2px',
+                        color: isDark ? '#A1A1A1' : '#64748B',
+                        background: isDark ? '#1A1A1A' : '#F1F5F9', padding: '1px 4px', borderRadius: '2px',
                       }}>{p.project_key}</span>
                     </td>
                     <td style={{ padding: '6px 9px', textAlign: 'right' }}>
@@ -220,7 +220,7 @@ const ProjectsTab: React.FC<{ perms: any[]; isDark?: boolean }> = ({ perms, isDa
                                 padding: '3px 7px', fontSize: '9px', fontWeight: 700,
                                 textTransform: 'uppercase', cursor: active ? 'default' : 'pointer',
                                 background: active ? (isDark ? colors.bgDark : colors.bg) : 'transparent',
-                                color: active ? (isDark ? colors.colorDark : colors.color) : (isDark ? '#666666' : '#94A3B8'),
+                                color: active ? (isDark ? colors.colorDark : colors.color) : (isDark ? '#878787' : '#94A3B8'),
                                 border: 'none',
                                 borderRight: i < 3 ? `1px solid ${isDark ? 'rgba(255,255,255,0.10)' : 'rgba(15,23,42,0.10)'}` : 'none',
                               }}
@@ -261,9 +261,9 @@ const ActivityTab: React.FC<{ events: any[]; isDark?: boolean }> = ({ events, is
       <div style={mkSectionLabel(isDark)}>SYNC ACTIVITY</div>
       {sorted.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '32px 16px' }}>
-          <Activity size={24} color={isDark ? '#666666' : '#94A3B8'} style={{ margin: '0 auto 8px' }} />
-          <div style={{ fontSize: '12px', color: isDark ? '#888888' : '#94A3B8', fontWeight: 500 }}>No activity recorded yet</div>
-          <div style={{ fontSize: '11px', color: isDark ? '#666666' : '#CBD5E1', marginTop: '4px' }}>Events will appear here after the first sync</div>
+          <Activity size={24} color={isDark ? '#878787' : '#94A3B8'} style={{ margin: '0 auto 8px' }} />
+          <div style={{ fontSize: '12px', color: isDark ? '#A1A1A1' : '#94A3B8', fontWeight: 500 }}>No activity recorded yet</div>
+          <div style={{ fontSize: '11px', color: isDark ? '#878787' : '#CBD5E1', marginTop: '4px' }}>Events will appear here after the first sync</div>
         </div>
       ) : (
         sorted.slice(0, 30).map((ev: any) => (
@@ -277,7 +277,7 @@ const ActivityTab: React.FC<{ events: any[]; isDark?: boolean }> = ({ events, is
             }} />
             <div style={{ flex: 1 }}>
               <div className="jus-event-text" style={{ fontSize: '11px', color: isDark ? '#EDEDED' : '#334155' }}>{getEventText(ev)}</div>
-              <div className="jus-event-time" style={{ fontSize: '10px', color: isDark ? '#666666' : '#94A3B8', marginTop: '1px' }}>{formatDate(ev.created_at)}</div>
+              <div className="jus-event-time" style={{ fontSize: '10px', color: isDark ? '#878787' : '#94A3B8', marginTop: '1px' }}>{formatDate(ev.created_at)}</div>
             </div>
           </div>
         ))
@@ -296,8 +296,8 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
 
   const T = isDark ? {
     surface: '#0A0A0A', border: 'rgba(255,255,255,0.10)', text1: '#EDEDED',
-    text2: '#888888', text3: '#666666', sunken: '#0A0A0A',
-    elevated: '#111111', inputBg: '#111111',
+    text2: '#A1A1A1', text3: '#878787', sunken: '#0A0A0A',
+    elevated: '#1A1A1A', inputBg: '#1A1A1A',
   } : {
     surface: '#FFFFFF', border: 'rgba(15,23,42,0.10)', text1: '#0F172A',
     text2: '#64748B', text3: '#94A3B8', sunken: '#F1F5F9',

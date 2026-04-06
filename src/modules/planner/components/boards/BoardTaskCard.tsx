@@ -100,7 +100,7 @@ export function BoardTaskCard({ task, onClick, isDragging }: BoardTaskCardProps)
       {...listeners}
       onClick={onClick}
       className={cn(
-        'boards-card dark:bg-[#111111] dark:border-[rgba(255,255,255,0.08)] dark:hover:bg-[#1A1A1A] dark:hover:border-[rgba(255,255,255,0.15)]',
+        'boards-card dark:bg-[#1A1A1A] dark:border-[rgba(255,255,255,0.08)] dark:hover:bg-[#1A1A1A] dark:hover:border-[rgba(255,255,255,0.15)]',
         // Priority left border (NOT floating icon)
         task.priority === 'critical' && 'boards-card--priority-critical',
         task.priority === 'high' && 'boards-card--priority-high',
@@ -126,7 +126,7 @@ export function BoardTaskCard({ task, onClick, isDragging }: BoardTaskCardProps)
           NO mysterious blue dot
           ======================================== */}
       <div className="boards-card__header">
-        <span className="boards-card__id dark:text-[#888888]">{task.key}</span>
+        <span className="boards-card__id dark:text-[#A1A1A1]">{task.key}</span>
         {/* NO blue dot — it was unclear what it meant */}
       </div>
 

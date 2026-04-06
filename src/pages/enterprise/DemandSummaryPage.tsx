@@ -189,7 +189,7 @@ function SleekGadget({ title, subtitle, icon: Icon, collapsedContent, expandedCo
   const { isDark } = useTheme();
 
   return (
-    <div className={cn("bg-brand-dark rounded-xl sm:rounded-2xl overflow-hidden shadow-lg border border-brand-primary/20", isDark && "bg-[#111111] border-[rgba(255,255,255,0.08)]")}>
+    <div className={cn("bg-brand-dark rounded-xl sm:rounded-2xl overflow-hidden shadow-lg border border-brand-primary/20", isDark && "bg-[#1A1A1A] border-[rgba(255,255,255,0.08)]")}>
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="w-full px-3 sm:px-5 py-3 sm:py-4 flex items-center justify-between hover:bg-white/5 transition-colors"
@@ -335,7 +335,7 @@ export default function DemandSummaryPage() {
   return (
     <div className={cn("min-h-screen bg-background", isArabic && "rtl", isDark && "bg-[#0A0A0A]")} style={{ fontFamily: "'Inter', sans-serif" }} dir={isArabic ? 'rtl' : 'ltr'}>
       {/* Header */}
-      <header className={cn("h-[72px] bg-card border-b border-border sticky top-0 z-50 flex-shrink-0", isDark && "bg-[#111111] border-[rgba(255,255,255,0.08)]")}>
+      <header className={cn("h-[72px] bg-card border-b border-border sticky top-0 z-50 flex-shrink-0", isDark && "bg-[#1A1A1A] border-[rgba(255,255,255,0.08)]")}>
         <div className="h-full px-4 sm:px-6 flex items-center">
           <div className="max-w-[1400px] mx-auto flex justify-between items-center flex-wrap gap-3 sm:gap-4 w-full">
             <div className="min-w-0">
@@ -352,7 +352,7 @@ export default function DemandSummaryPage() {
             </button>
             <div className={cn("flex bg-muted rounded-lg p-0.5", isDark && "bg-[#1A1A1A]")}>
               {periodOptions.map((p) => (
-                <button key={p.key} onClick={() => setActivePeriod(p.key)} className={cn('px-2 sm:px-3 py-1.5 rounded-md text-xs font-medium transition-all', activePeriod === p.key ? (isDark ? 'bg-[#0A0A0A] text-[#EDEDED]' : 'bg-brand-dark text-white') : (isDark ? 'text-[#888888] hover:bg-[#222222]' : 'text-muted-foreground hover:bg-border'))}>{p.label}</button>
+                <button key={p.key} onClick={() => setActivePeriod(p.key)} className={cn('px-2 sm:px-3 py-1.5 rounded-md text-xs font-medium transition-all', activePeriod === p.key ? (isDark ? 'bg-[#0A0A0A] text-[#EDEDED]' : 'bg-brand-dark text-white') : (isDark ? 'text-[#A1A1A1] hover:bg-[#292929]' : 'text-muted-foreground hover:bg-border'))}>{p.label}</button>
               ))}
             </div>
           </div>
@@ -780,7 +780,7 @@ export default function DemandSummaryPage() {
       {chatOpen && (
         <div className={cn(
           "fixed inset-y-0 w-full sm:w-[400px] bg-brand-dark shadow-2xl z-50 flex flex-col",
-          isDark && "bg-[#111111]",
+          isDark && "bg-[#1A1A1A]",
           isArabic ? "left-0 border-e border-brand-primary/20" : "right-0 border-s border-brand-primary/20"
         )}>
           <div className="flex items-center justify-between px-4 sm:px-5 py-3 sm:py-4 border-b border-white/10">

@@ -93,7 +93,7 @@ export function IndustryFiltersDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg bg-white dark:bg-[#111111] p-0 gap-0 max-h-[85vh] flex flex-col">
+      <DialogContent className="max-w-lg bg-white dark:bg-[#1A1A1A] p-0 gap-0 max-h-[85vh] flex flex-col">
         <DialogHeader className="px-6 py-4 border-b border-border flex-shrink-0">
           <DialogTitle className="text-foreground text-lg font-semibold">Filters</DialogTitle>
         </DialogHeader>
@@ -276,7 +276,7 @@ export function IndustryFiltersDialog({
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 border-t border-border flex items-center justify-between flex-shrink-0 bg-white dark:bg-[#111111]">
+        <div className="px-6 py-4 border-t border-border flex items-center justify-between flex-shrink-0 bg-white dark:bg-[#1A1A1A]">
           <span className="text-sm text-muted-foreground">
             <span className="text-brand-primary font-medium">{activeFilterCount}</span> filters applied
           </span>

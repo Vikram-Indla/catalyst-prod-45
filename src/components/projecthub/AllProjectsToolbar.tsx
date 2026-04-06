@@ -68,7 +68,7 @@ export function AllProjectsToolbar({ view, onViewChange, filters, onFilterChange
                 "px-3.5 py-1.5 rounded-full text-[13px] font-medium border transition-colors flex items-center gap-1.5",
                 isActive
                   ? "bg-blue-50 text-blue-700 border-blue-600 dark:bg-[rgba(37,99,235,0.12)] dark:text-[#93C5FD] dark:border-[rgba(37,99,235,0.25)]"
-                  : "bg-transparent text-slate-600 border-slate-200 hover:bg-slate-50 dark:text-[#888888] dark:border-[rgba(255,255,255,0.08)] dark:hover:bg-[rgba(255,255,255,0.08)]"
+                  : "bg-transparent text-slate-600 border-slate-200 hover:bg-slate-50 dark:text-[#A1A1A1] dark:border-[rgba(255,255,255,0.08)] dark:hover:bg-[rgba(255,255,255,0.08)]"
               )}
             >
               {tab === 'Starred' && '★ '}{tab}
@@ -78,7 +78,7 @@ export function AllProjectsToolbar({ view, onViewChange, filters, onFilterChange
                   "text-[11px] font-semibold px-1.5 py-px rounded-full font-['JetBrains_Mono',monospace]",
                   isActive
                     ? "bg-blue-100 text-blue-700 dark:bg-[rgba(37,99,235,0.15)] dark:text-[#93C5FD]"
-                    : "bg-slate-100 text-slate-500 dark:bg-[rgba(255,255,255,0.08)] dark:text-[#888888]"
+                    : "bg-slate-100 text-slate-500 dark:bg-[rgba(255,255,255,0.08)] dark:text-[#A1A1A1]"
                 )}>
                   {getCount(tab)}
                 </span>
@@ -91,16 +91,16 @@ export function AllProjectsToolbar({ view, onViewChange, filters, onFilterChange
       {/* Status dropdown */}
       <Popover open={statusOpen} onOpenChange={setStatusOpen}>
         <PopoverTrigger asChild>
-          <button className="h-8 px-3 border border-slate-200 dark:border-[rgba(255,255,255,0.08)] rounded-md text-xs font-medium text-slate-600 dark:text-[#888888] hover:border-blue-600 hover:text-blue-600 dark:hover:border-blue-500 dark:hover:text-blue-400 flex items-center gap-1.5 bg-transparent transition-colors">
+          <button className="h-8 px-3 border border-slate-200 dark:border-[rgba(255,255,255,0.08)] rounded-md text-xs font-medium text-slate-600 dark:text-[#A1A1A1] hover:border-blue-600 hover:text-blue-600 dark:hover:border-blue-500 dark:hover:text-blue-400 flex items-center gap-1.5 bg-transparent transition-colors">
             Status: {statusFilter} <ChevronDown className="w-3.5 h-3.5" />
           </button>
         </PopoverTrigger>
-        <PopoverContent className="w-44 p-1 bg-white dark:bg-[#111111]" align="start">
+        <PopoverContent className="w-44 p-1 bg-white dark:bg-[#1A1A1A]" align="start">
           {STATUS_OPTIONS.map(s => (
             <button
               key={s}
               onClick={() => handleStatusChange(s)}
-              className="w-full text-left px-3 py-2 text-sm rounded hover:bg-slate-50 dark:hover:bg-[rgba(255,255,255,0.08)] text-slate-700 dark:text-[#888888]"
+              className="w-full text-left px-3 py-2 text-sm rounded hover:bg-slate-50 dark:hover:bg-[rgba(255,255,255,0.08)] text-slate-700 dark:text-[#A1A1A1]"
               style={{ border: 'none', background: 'transparent', cursor: 'pointer' }}
             >
               {s}
@@ -112,12 +112,12 @@ export function AllProjectsToolbar({ view, onViewChange, filters, onFilterChange
       {/* Right side: search + view toggle */}
       <div className="ml-auto flex items-center gap-2">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 dark:text-[#666666]" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 dark:text-[#878787]" />
           <input
             value={localSearch}
             onChange={e => setLocalSearch(e.target.value)}
             placeholder="Search projects..."
-            className="h-9 w-[220px] pl-9 pr-8 border border-slate-200 dark:border-[rgba(255,255,255,0.08)] rounded text-[13px] bg-transparent text-slate-900 dark:text-[#EDEDED] placeholder:text-slate-400 dark:placeholder:text-[#666666] outline-none focus:border-blue-500"
+            className="h-9 w-[220px] pl-9 pr-8 border border-slate-200 dark:border-[rgba(255,255,255,0.08)] rounded text-[13px] bg-transparent text-slate-900 dark:text-[#EDEDED] placeholder:text-slate-400 dark:placeholder:text-[#878787] outline-none focus:border-blue-500"
           />
           {localSearch && (
             <button
@@ -125,7 +125,7 @@ export function AllProjectsToolbar({ view, onViewChange, filters, onFilterChange
               className="absolute right-2.5 top-1/2 -translate-y-1/2"
               style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
             >
-              <X size={12} className="text-slate-400 dark:text-[#666666]" />
+              <X size={12} className="text-slate-400 dark:text-[#878787]" />
             </button>
           )}
         </div>
@@ -138,7 +138,7 @@ export function AllProjectsToolbar({ view, onViewChange, filters, onFilterChange
               "w-8 h-8 flex items-center justify-center border-r border-slate-200 dark:border-[rgba(255,255,255,0.08)] transition-colors",
               view === 'list'
                 ? "bg-blue-50 text-blue-600 dark:bg-[rgba(37,99,235,0.12)] dark:text-blue-400"
-                : "bg-transparent text-slate-400 dark:text-[#666666] hover:text-slate-600"
+                : "bg-transparent text-slate-400 dark:text-[#878787] hover:text-slate-600"
             )}
           >
             <List size={14} />
@@ -149,7 +149,7 @@ export function AllProjectsToolbar({ view, onViewChange, filters, onFilterChange
               "w-8 h-8 flex items-center justify-center transition-colors",
               view === 'cards' || view === 'card'
                 ? "bg-blue-50 text-blue-600 dark:bg-[rgba(37,99,235,0.12)] dark:text-blue-400"
-                : "bg-transparent text-slate-400 dark:text-[#666666] hover:text-slate-600"
+                : "bg-transparent text-slate-400 dark:text-[#878787] hover:text-slate-600"
             )}
           >
             <LayoutGrid size={14} />

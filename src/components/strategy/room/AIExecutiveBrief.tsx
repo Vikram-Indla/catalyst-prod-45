@@ -40,7 +40,7 @@ const TOKENS = `
   --sri-ink-2: rgba(255,255,255,0.82);
   --sri-ink-3: rgba(255,255,255,0.75);
   --sri-ink-m: rgba(255,255,255,0.70);
-  --sri-bg: #111111;
+  --sri-bg: #1A1A1A;
   --sri-bg-2: rgba(255,255,255,0.04);
   --sri-bg-3: rgba(255,255,255,0.07);
   --sri-bdr: rgba(255,255,255,0.10);

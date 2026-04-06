@@ -142,7 +142,7 @@ export function SyncEventsTab() {
 
   return (
     <TooltipProvider>
-      <div className="bg-white dark:bg-[#111111] border border-[#E2E8F0] dark:border-[#1A1A1A] rounded-md overflow-hidden">
+      <div className="bg-white dark:bg-[#1A1A1A] border border-[#E2E8F0] dark:border-[#1A1A1A] rounded-md overflow-hidden">
         <div className="flex items-center gap-3 p-3 border-b border-[#E2E8F0] dark:border-[#1A1A1A]">
           <Select value={statusFilter} onValueChange={setStatusFilter}>
             <SelectTrigger className="w-[140px] h-9 text-xs">
@@ -225,7 +225,7 @@ export function WriteBackQueueTab() {
 
   return (
     <TooltipProvider>
-      <div className="bg-white dark:bg-[#111111] border border-[#E2E8F0] dark:border-[#1A1A1A] rounded-md overflow-hidden">
+      <div className="bg-white dark:bg-[#1A1A1A] border border-[#E2E8F0] dark:border-[#1A1A1A] rounded-md overflow-hidden">
         <table className="w-full border-collapse">
           <thead>
             <tr className="border-b border-[#E2E8F0] dark:border-[#1A1A1A]">
@@ -288,7 +288,7 @@ export function DeletedItemsTab() {
 
   return (
     <TooltipProvider>
-      <div className="bg-white dark:bg-[#111111] border border-[#E2E8F0] dark:border-[#1A1A1A] rounded-md overflow-hidden">
+      <div className="bg-white dark:bg-[#1A1A1A] border border-[#E2E8F0] dark:border-[#1A1A1A] rounded-md overflow-hidden">
         {!isLoading && !isError && (!deletedItems || deletedItems.length === 0) ? (
           <div className="flex flex-col items-center justify-center py-10 gap-2">
             <Trash2 size={32} className="text-gray-300 dark:text-gray-600" />

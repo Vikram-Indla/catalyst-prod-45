@@ -829,7 +829,7 @@ html:has(body[data-scroll-locked]) {
     --industry-border-subtle: #ebebeb;
     --industry-text-primary: #0f0f0f;
     --industry-text-secondary: #404040;
-    --industry-text-muted: #666666;
+    --industry-text-muted: #878787;
     --industry-text-disabled: #999999;
     
     /* Industry Status Colors (HEX) */
@@ -884,38 +884,38 @@ html:has(body[data-scroll-locked]) {
        ═══════════════════════════════════════════════════════════════ */
     
     /* === BRAND TOKENS (V5 Compliant) === */
-    --brand-dark: #111111;  /* NOCTURNE Warm Charcoal elevated surface */
+    --brand-dark: #1A1A1A;  /* NOCTURNE Warm Charcoal elevated surface */
     --brand-gold: #0d9488;
     --brand-gold-hover: #0f766e;
     --brand-teal: #0d9488;
     
-    /* === A) SURFACE LADDER (Vercel Geist — Pure Neutral) === */
-    --bg-0: #0A0A0A;                     /* background-100: Page background */
+    /* === A) SURFACE LADDER (Neutral Dark — Vercel/Linear style) === */
+    --bg-0: #0A0A0A;                     /* App background — Pure dark */
     --bg-1: #0A0A0A;                     /* Page canvas */
-    --bg-2: #1A1A1A;                     /* gray-100: Elevated surface, cards */
-    --bg-3: #1A1A1A;                     /* gray-100: Cards */
-    --bg-4: #1F1F1F;                     /* gray-200: Hover surface */
-    --bg-5: #292929;                     /* gray-300: Active/pressed surface */
+    --bg-2: #1A1A1A;                     /* Panels / elevated float */
+    --bg-3: #1A1A1A;                     /* Cards — same as panels for flush */
+    --bg-4: #1A1A1A;                     /* Raised/hover */
+    --bg-5: #292929;                     /* Active/selected surface */
     --bg-app: var(--bg-0);
 
-    /* Shadcn surface mappings — Vercel Geist */
-    --background: 0 0% 4%;               /* #0A0A0A */
-    --foreground: 0 0% 93%;              /* #EDEDED */
+    /* Shadcn surface mappings — Neutral Dark */
+    --background: 0 0% 4%;               /* #0A0A0A Pure dark */
+    --foreground: 0 0% 93%;              /* #EDEDED Neutral white */
 
-    --card: 0 0% 10%;                    /* #1A1A1A — cards lift from page */
+    --card: 0 0% 4%;                     /* Same as --background — flush cards */
     --card-foreground: 0 0% 93%;
 
-    --popover: 0 0% 10%;                 /* #1A1A1A */
+    --popover: 0 0% 10%;                  /* #1A1A1A - Neutral float */
     --popover-foreground: 0 0% 93%;
 
     --primary: 217 91% 60%;              /* #3b82f6 blue */
     --primary-foreground: 0 0% 100%;     /* pure white on buttons only */
 
-    --secondary: 0 0% 10%;              /* #1A1A1A */
+    --secondary: 0 0% 10%;               /* Neutral card */
     --secondary-foreground: 0 0% 93%;
 
     --muted: 0 0% 10%;                  /* #1A1A1A */
-    --muted-foreground: 0 0% 56%;       /* #8F8F8F gray-700 */
+    --muted-foreground: 0 0% 63%;       /* #A1A1A1 */
     
     --accent: 217 91% 60%;
     --accent-foreground: 0 0% 100%;
@@ -923,10 +923,10 @@ html:has(body[data-scroll-locked]) {
     --destructive: 0 65% 55%;
     --destructive-foreground: 0 0% 98%;
     
-    /* === B) TEXT LADDER (Vercel Geist — Pure Neutral) === */
-    --fg-1: #EDEDED;                     /* gray-1000: Primary text */
-    --fg-2: #A1A1A1;                     /* gray-900: Secondary text */
-    --fg-3: #878787;                     /* gray-600: Muted/hints */
+    /* === B) TEXT LADDER (Neutral Dark text) === */
+    --fg-1: #EDEDED;                     /* Primary text — Neutral white */
+    --fg-2: #A1A1A1;                     /* Secondary text */
+    --fg-3: #878787;                     /* Muted/hints */
     --fg-4: rgba(237,237,237,0.30);      /* Disabled */
 
     --text-1: var(--fg-1);
@@ -942,31 +942,32 @@ html:has(body[data-scroll-locked]) {
     --text-muted: 0 0% 53%;
     
     /* ═══════════════════════════════════════════════════════════════
-       V9.5 NAVIGATION SHELL — Vercel Geist tokens
+       V9.5 NAVIGATION SHELL — AAA Contrast (Dark Mode)
+       NOCTURNE Warm Charcoal palette
        ═══════════════════════════════════════════════════════════════ */
     --nav-text-primary: #EDEDED;
     --nav-text-secondary: #A1A1A1;
     --nav-text-tertiary: #878787;
-    --nav-module-badge: #292929;            /* gray-300 */
+    --nav-module-badge: #292929;           /* Neutral badge */
     --nav-section-label: #878787;
     --nav-accent-bar: #3b82f6;             /* Left accent bar */
     
-    /* === C) DIVIDER + BORDER GRAMMAR (Vercel Geist — Solid hex) === */
-    --divider: #292929;                    /* gray-300: Border subtle */
-    --border-subtle: #2E2E2E;             /* gray-400: Border default */
-    --border-strong: #454545;             /* gray-500: Border strong */
+    /* === C) DIVIDER + BORDER GRAMMAR (Warm Charcoal borders) === */
+    --divider: rgba(255,255,255,0.05);
+    --border-subtle: rgba(255,255,255,0.08);
+    --border-strong: rgba(255,255,255,0.12);
     --stroke-1: var(--divider);
     --stroke-2: var(--border-subtle);
     
-    --border: 0 0% 18%;                   /* #2E2E2E as HSL */
-    --input: 0 0% 18%;                    /* #2E2E2E */
+    --border: 30 10% 50% / 0.06;
+    --input: 30 10% 50% / 0.08;
     --ring: 217 91% 60%;
     
     /* === D) INTERACTION TOKENS === */
     --focus-ring: rgba(59,130,246,0.55);   /* Blue focus */
-    --hover: #1F1F1F;                      /* gray-200: Solid hover */
-    --active: #292929;                     /* gray-300: Solid active */
-    --selected: rgba(59,130,246,0.10);     /* Blue tint selected */
+    --hover: rgba(255,255,255,0.04);
+    --active: rgba(255,255,255,0.07);
+    --selected: rgba(255,255,255,0.08);    /* Neutral selected */
     
     --row-hover: var(--hover);
     --row-selected: rgba(255,255,255,0.08);
@@ -1077,8 +1078,8 @@ html:has(body[data-scroll-locked]) {
     /* === SURFACE TOKEN ALIASES (Neutral dark) === */
     --surface-0: 0 0% 4%;
     --surface-1: 0 0% 4%;
-    --surface-2: 0 0% 7%;
-    --surface-3: 0 0% 7%;
+    --surface-2: 0 0% 10%;
+    --surface-3: 0 0% 10%;
     --surface-elevated: 0 0% 10%;
     --surface-overlay: 0 0% 0%;
     
@@ -2843,7 +2844,7 @@ input[type="range"]::-moz-range-thumb {
    ECLIPSE — NOCTURNE DARK MODE OVERRIDES v2.0
    Consolidated: April 2026
    DO NOT ADD BLOCKS BELOW THIS — CONSOLIDATE ONLY
-   NOCTURNE: #0A0A0A page / #111111 surface / #111111 elevated
+   NOCTURNE: #0A0A0A page / #1A1A1A surface / #1A1A1A elevated
    ═══════════════════════════════════════════════════ */
 
 .dark .c-section,
@@ -2884,8 +2885,8 @@ input[type="range"]::-moz-range-thumb {
 [data-theme="dark"] {
   --bg-0: #0A0A0A;
   --bg-1: #0A0A0A;
-  --bg-2: #111111;
-  --bg-3: #111111;
+  --bg-2: #1A1A1A;
+  --bg-3: #1A1A1A;
   --bg-4: #1A1A1A;
   --border: rgba(255,255,255,0.08);
   --cp-bd: rgba(255,255,255,0.10);
@@ -2894,8 +2895,8 @@ input[type="range"]::-moz-range-thumb {
   --cp-bg: #0A0A0A;
   --cp-bg-elevated: #1A1A1A;
   --cp-bg-page: #0A0A0A;
-  --cp-bg-sunken: #111111;
-  --cp-bg-surface: #111111;
+  --cp-bg-sunken: #1A1A1A;
+  --cp-bg-surface: #1A1A1A;
   --cp-blue: #3B82F6;
   --cp-blue-link: #7DB8FC;
   --cp-blue-text: #7DB8FC;
@@ -2915,7 +2916,7 @@ input[type="range"]::-moz-range-thumb {
   --cp-lozenge-blue-text: #FFFFFF;
   --cp-lozenge-green-bg: #1B7F37;
   --cp-lozenge-green-text: #FFFFFF;
-  --cp-lozenge-grey-bg: #222222;
+  --cp-lozenge-grey-bg: #292929;
   --cp-lozenge-grey-text: #D4D4D4;
   --cp-lz-bl-bg: #1A2540;
   --cp-lz-bl-t: #93C5FD;
@@ -2928,9 +2929,9 @@ input[type="range"]::-moz-range-thumb {
   --cp-prg-bg: rgba(59,130,246,0.10);
   --cp-shadow-overlay: 0px 8px 12px rgba(0,0,0,0.5), 0px 0px 1px rgba(0,0,0,0.6);
   --cp-shadow-xs: 0 1px 2px 0 rgba(0,0,0,0.3);
-  --cp-t1: #EDEDED;
-  --cp-t2: #A1A1A1;
-  --cp-t3: #878787;
+  --cp-t1: rgba(237,237,237,0.93);
+  --cp-t2: rgba(237,237,237,0.53);
+  --cp-t3: rgba(237,237,237,0.40);
   --cp-t4: rgba(237,237,237,0.25);
   --cp-text-link: #60A5FA;
   --cp-text-muted: #878787;
@@ -3347,16 +3348,16 @@ input[type="range"]::-moz-range-thumb {
 .dark {
   --bg-0: #0A0A0A;
   --bg-1: #0A0A0A;
-  --bg-2: #111111;
-  --bg-3: #111111;
+  --bg-2: #1A1A1A;
+  --bg-3: #1A1A1A;
   --bg-4: #1A1A1A;
   --border: rgba(255,255,255,0.08);
   --divider: rgba(255,255,255,0.05);
   --ring: rgba(59,130,246,0.7);
   --shadow: 0 4px 12px rgba(0,0,0,0.4);
   --text-1: #EDEDED;
-  --text-2: #888888;
-  --text-3: #666666;
+  --text-2: #A1A1A1;
+  --text-3: #878787;
   --tw-border-opacity: 0.08 !important;
 }
 
@@ -3599,7 +3600,7 @@ input[type="range"]::-moz-range-thumb {
 
 .dark .global-search-portal input::placeholder,
 [data-theme="dark"] .global-search-portal input::placeholder {
-  color: #666666 !important;
+  color: #878787 !important;
 }
 
 .dark .text-red-300,
@@ -4300,7 +4301,7 @@ input[type="range"]::-moz-range-thumb {
 .dark [class*="SidePanel"],
 .dark [class*="detail-panel"],
 .dark [class*="DetailPanel"] {
-  background-color: #111111 !important;
+  background-color: #1A1A1A !important;
   border-color: rgba(255,255,255,0.08) !important;
   color: #EDEDED !important;
 }
@@ -4754,23 +4755,23 @@ input[type="range"]::-moz-range-thumb {
 /* Dark overrides — Vercel Neutral */
 .dark .jus-page { background-color: #0A0A0A !important; }
 .dark .jus-surface,
-.dark .admin-content-area { background-color: #111111 !important; border-color: rgba(255,255,255,0.08); }
+.dark .admin-content-area { background-color: #1A1A1A !important; border-color: rgba(255,255,255,0.08); }
 .dark .jus-surface-sunken { background-color: #0A0A0A !important; border-color: rgba(255,255,255,0.05); }
 .dark .jus-surface-elevated { background-color: #1A1A1A !important; border-color: rgba(255,255,255,0.08); box-shadow: 0 1px 3px rgba(0,0,0,0.4); }
 .dark .jus-table-row { border-bottom: 0.75px solid rgba(255,255,255,0.05); }
 .dark .jus-table-row:hover { background-color: rgba(255,255,255,0.04) !important; }
 .dark .jus-table-row.selected { background-color: rgba(37, 99, 235, 0.12) !important; }
-.dark .jus-table-header { background-color: #111111 !important; border-bottom: 0.75px solid rgba(255,255,255,0.08); color: #666666; }
+.dark .jus-table-header { background-color: #1A1A1A !important; border-bottom: 0.75px solid rgba(255,255,255,0.08); color: #878787; }
 .dark .jus-text-primary { color: #EDEDED !important; }
-.dark .jus-text-secondary { color: #888888 !important; }
-.dark .jus-text-muted { color: #666666 !important; }
-.dark .jus-stat-card { background-color: #111111 !important; border: 0.75px solid rgba(255,255,255,0.08); border-radius: 6px; }
+.dark .jus-text-secondary { color: #A1A1A1 !important; }
+.dark .jus-text-muted { color: #878787 !important; }
+.dark .jus-stat-card { background-color: #1A1A1A !important; border: 0.75px solid rgba(255,255,255,0.08); border-radius: 6px; }
 .dark .jus-stat-value { color: #EDEDED !important; font-weight: 650; }
-.dark .jus-stat-label { color: #666666 !important; font-size: 11px; }
+.dark .jus-stat-label { color: #878787 !important; font-size: 11px; }
 .dark .jus-toolbar { background-color: #0A0A0A !important; border-bottom: 0.75px solid rgba(255,255,255,0.08); }
-.dark .jus-search-input { background-color: #111111 !important; border: 0.75px solid rgba(255,255,255,0.08); color: #EDEDED !important; }
-.dark .jus-search-input::placeholder { color: #666666; }
-.dark .jus-filter-tab { color: #888888; }
+.dark .jus-search-input { background-color: #1A1A1A !important; border: 0.75px solid rgba(255,255,255,0.08); color: #EDEDED !important; }
+.dark .jus-search-input::placeholder { color: #878787; }
+.dark .jus-filter-tab { color: #A1A1A1; }
 .dark .jus-filter-tab.active { color: #EDEDED; border-bottom: 2px solid #2563EB; }
 .dark .lozenge-active { background: #064E3B !important; color: #6EE7B7 !important; }
 .dark .lozenge-inactive { background: #450A0A !important; color: #FCA5A5 !important; }
@@ -4781,7 +4782,7 @@ input[type="range"]::-moz-range-thumb {
 .dark .jus-scroll::-webkit-scrollbar-track { background: #0A0A0A; }
 .dark .jus-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; }
 .dark .jus-pagination { background-color: #0A0A0A !important; border-top: 0.75px solid rgba(255,255,255,0.08); }
-.dark .jus-pagination-btn { background-color: #111111 !important; border-color: rgba(255,255,255,0.08); color: #888888; }
+.dark .jus-pagination-btn { background-color: #1A1A1A !important; border-color: rgba(255,255,255,0.08); color: #A1A1A1; }
 .dark .jus-pagination-btn.active { background-color: #2563EB !important; color: #FFFFFF !important; }
 .dark .jus-selection-bar { background-color: rgba(37, 99, 235, 0.12) !important; border-bottom-color: rgba(37, 99, 235, 0.25); }
 
@@ -4793,17 +4794,17 @@ input[type="range"]::-moz-range-thumb {
 [data-theme="dark"] .jus-table-row { border-bottom: 0.75px solid rgba(255,255,255,0.05); }
 [data-theme="dark"] .jus-table-row:hover { background-color: rgba(255,255,255,0.04) !important; }
 [data-theme="dark"] .jus-table-row.selected { background-color: rgba(37, 99, 235, 0.12) !important; }
-[data-theme="dark"] .jus-table-header { background-color: #111111 !important; border-bottom: 0.75px solid rgba(255,255,255,0.08); color: #666666; }
+[data-theme="dark"] .jus-table-header { background-color: #1A1A1A !important; border-bottom: 0.75px solid rgba(255,255,255,0.08); color: #878787; }
 [data-theme="dark"] .jus-text-primary { color: #EDEDED !important; }
-[data-theme="dark"] .jus-text-secondary { color: #888888 !important; }
-[data-theme="dark"] .jus-text-muted { color: #666666 !important; }
-[data-theme="dark"] .jus-stat-card { background-color: #111111 !important; border: 0.75px solid rgba(255,255,255,0.08); border-radius: 6px; }
+[data-theme="dark"] .jus-text-secondary { color: #A1A1A1 !important; }
+[data-theme="dark"] .jus-text-muted { color: #878787 !important; }
+[data-theme="dark"] .jus-stat-card { background-color: #1A1A1A !important; border: 0.75px solid rgba(255,255,255,0.08); border-radius: 6px; }
 [data-theme="dark"] .jus-stat-value { color: #EDEDED !important; font-weight: 650; }
-[data-theme="dark"] .jus-stat-label { color: #666666 !important; font-size: 11px; }
+[data-theme="dark"] .jus-stat-label { color: #878787 !important; font-size: 11px; }
 [data-theme="dark"] .jus-toolbar { background-color: #0A0A0A !important; border-bottom: 0.75px solid rgba(255,255,255,0.08); }
-[data-theme="dark"] .jus-search-input { background-color: #111111 !important; border: 0.75px solid rgba(255,255,255,0.08); color: #EDEDED !important; }
-[data-theme="dark"] .jus-search-input::placeholder { color: #666666; }
-[data-theme="dark"] .jus-filter-tab { color: #888888; }
+[data-theme="dark"] .jus-search-input { background-color: #1A1A1A !important; border: 0.75px solid rgba(255,255,255,0.08); color: #EDEDED !important; }
+[data-theme="dark"] .jus-search-input::placeholder { color: #878787; }
+[data-theme="dark"] .jus-filter-tab { color: #A1A1A1; }
 [data-theme="dark"] .jus-filter-tab.active { color: #EDEDED; border-bottom: 2px solid #2563EB; }
 [data-theme="dark"] .lozenge-active { background: #064E3B !important; color: #6EE7B7 !important; }
 [data-theme="dark"] .lozenge-inactive { background: #450A0A !important; color: #FCA5A5 !important; }
@@ -4811,10 +4812,10 @@ input[type="range"]::-moz-range-thumb {
 [data-theme="dark"] .badge-jira-proxy { background: rgba(37,99,235,0.18) !important; color: #93C5FD !important; border: 0.75px solid rgba(37,99,235,0.3) !important; }
 [data-theme="dark"] .badge-local-auth { background: rgba(124,58,237,0.18) !important; color: #C4B5FD !important; border: 0.75px solid rgba(124,58,237,0.3) !important; }
 [data-theme="dark"] .jus-pagination { background-color: #0A0A0A !important; border-top: 0.75px solid rgba(255,255,255,0.08); }
-[data-theme="dark"] .jus-pagination-btn { background-color: #111111 !important; border-color: rgba(255,255,255,0.08); color: #888888; }
+[data-theme="dark"] .jus-pagination-btn { background-color: #1A1A1A !important; border-color: rgba(255,255,255,0.08); color: #A1A1A1; }
 [data-theme="dark"] .jus-pagination-btn.active { background-color: #2563EB !important; color: #FFFFFF !important; }
 [data-theme="dark"] .jus-selection-bar { background-color: rgba(37, 99, 235, 0.12) !important; border-bottom-color: rgba(37, 99, 235, 0.25); }
-[data-theme="dark"] .jus-detail-panel { background-color: #111111 !important; border-color: rgba(255,255,255,0.08) !important; }
+[data-theme="dark"] .jus-detail-panel { background-color: #1A1A1A !important; border-color: rgba(255,255,255,0.08) !important; }
 
 /* ═══════════════════════════════════════════════════
    NEUTRAL DARK — GLOBAL CATCH-ALL
@@ -4824,7 +4825,7 @@ input[type="range"]::-moz-range-thumb {
 /* NOTIFICATION PANEL — inline style="background: rgb(255,255,255)" override */
 .dark [role="dialog"][aria-label="Notifications"],
 [data-theme="dark"] [role="dialog"][aria-label="Notifications"] {
-  background: #111111 !important;
+  background: #1A1A1A !important;
   color: #EDEDED !important;
   border-color: rgba(255,255,255,0.08) !important;
 }
@@ -4859,7 +4860,7 @@ input[type="range"]::-moz-range-thumb {
 [data-theme="dark"] [data-radix-popper-content-wrapper] > div,
 [data-theme="dark"] [data-radix-popover-content],
 [data-theme="dark"] [role="dialog"] {
-  background: #111111 !important;
+  background: #1A1A1A !important;
   color: #EDEDED !important;
   border-color: rgba(255,255,255,0.08) !important;
 }
@@ -4872,7 +4873,7 @@ input[type="range"]::-moz-range-thumb {
 /* Force dark bg on any white notification/feed panels */
 .dark .bg-white,
 [data-theme="dark"] .bg-white {
-  background-color: #111111 !important;
+  background-color: #1A1A1A !important;
 }
 
 /* Aggressive catch-all: any panel/sheet/drawer with white inline style */
@@ -4894,7 +4895,7 @@ input[type="range"]::-moz-range-thumb {
 [data-theme="dark"] [style*="background-color: #FFF"],
 [data-theme="dark"] [style*="background: rgb(255"],
 [data-theme="dark"] [style*="background-color: rgb(255"] {
-  background: #111111 !important;
+  background: #1A1A1A !important;
   color: #EDEDED !important;
   border-color: rgba(255,255,255,0.08) !important;
 }

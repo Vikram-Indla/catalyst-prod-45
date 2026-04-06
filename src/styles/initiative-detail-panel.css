@@ -64,7 +64,7 @@
   --idp-ink-tertiary: rgba(255,255,255,0.72);
   --idp-ink-muted: rgba(255,255,255,0.50);
   --idp-ink-muted-strong: rgba(255,255,255,0.55);
-  --idp-surface: #111111;
+  --idp-surface: #1A1A1A;
   --idp-surface-secondary: rgba(255,255,255,0.03);
   --idp-surface-tertiary: rgba(255,255,255,0.05);
   --idp-border: rgba(255,255,255,0.10);
@@ -117,11 +117,11 @@
 }
 .dark .idp-dd-panel,
 [data-theme="dark"] .idp-dd-panel {
-  background: #111111;
+  background: #1A1A1A;
 }
 .dark .idp-ps-panel,
 [data-theme="dark"] .idp-ps-panel {
-  background: #111111;
+  background: #1A1A1A;
 }
 .dark .idp-ps-name,
 [data-theme="dark"] .idp-ps-name {

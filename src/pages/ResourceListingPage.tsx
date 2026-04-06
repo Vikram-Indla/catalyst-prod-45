@@ -72,31 +72,31 @@ function useTokens(dk: boolean) {
   return useMemo(() => ({
     pageBg:       dk ? '#0A0A0A' : '#F8FAFC',
     surfaceBg:    dk ? '#0A0A0A' : '#FFFFFF',
-    elevatedBg:   dk ? '#111111' : '#FFFFFF',
-    headerBg:     dk ? '#111111' : '#FAFAFA',
+    elevatedBg:   dk ? '#1A1A1A' : '#FFFFFF',
+    headerBg:     dk ? '#1A1A1A' : '#FAFAFA',
     hoverBg:      dk ? 'rgba(255,255,255,0.04)' : '#F8FAFC',
     border:       dk ? 'rgba(255,255,255,0.08)' : '#E2E8F0',
     borderSubtle: dk ? 'rgba(255,255,255,0.05)' : '#f3f4f6',
     borderInput:  dk ? 'rgba(255,255,255,0.12)' : '#B0B8C4',
     borderFocus:  '#2563EB',
     text1:        dk ? '#EDEDED' : '#0F172A',
-    text2:        dk ? '#888888' : '#475569',
-    text3:        dk ? '#666666' : '#94A3B8',
-    textMuted:    dk ? '#666666' : '#9ca3af',
-    textDim:      dk ? '#666666' : '#d1d5db',
-    inputBg:      dk ? '#111111' : '#FFFFFF',
+    text2:        dk ? '#A1A1A1' : '#475569',
+    text3:        dk ? '#878787' : '#94A3B8',
+    textMuted:    dk ? '#878787' : '#9ca3af',
+    textDim:      dk ? '#878787' : '#d1d5db',
+    inputBg:      dk ? '#1A1A1A' : '#FFFFFF',
     badgeBg:      dk ? '#1A1A1A' : '#F1F5F9',
-    badgeText:    dk ? '#888888' : '#475569',
-    pillBg:       dk ? '#111111' : '#FFFFFF',
+    badgeText:    dk ? '#A1A1A1' : '#475569',
+    pillBg:       dk ? '#1A1A1A' : '#FFFFFF',
     pillBorder:   dk ? 'rgba(255,255,255,0.12)' : '#e5e7eb',
     pillActiveBorder: dk ? '#EDEDED' : '#111',
     pillActiveText:   dk ? '#EDEDED' : '#111',
-    pillInactiveText: dk ? '#888888' : '#6b7280',
+    pillInactiveText: dk ? '#A1A1A1' : '#6b7280',
     pillHoverBg:  dk ? '#1A1A1A' : '#E2E8F0',
     pillHoverText: dk ? '#EDEDED' : '#1E293B',
     typePillBg:       dk ? '#1A1A1A' : '#F1F5F9',
-    typePillActiveBg: dk ? '#111111' : '#FFFFFF',
-    shimmerFrom:  dk ? '#111111' : '#F1F5F9',
+    typePillActiveBg: dk ? '#1A1A1A' : '#FFFFFF',
+    shimmerFrom:  dk ? '#1A1A1A' : '#F1F5F9',
     shimmerMid:   dk ? '#1A1A1A' : '#E2E8F0',
     tooltipBg:    dk ? '#1A1A1A' : '#1e293b',
     tooltipText:  dk ? '#EDEDED' : '#f1f5f9',
@@ -300,7 +300,7 @@ export default function ResourceListingPage() {
           { key: 'all' as const, label: 'All', accentColor: isDark ? '#EDEDED' : '#1E293B', tooltip: 'Show all resource types' },
           { key: 'core' as const, label: 'Core', accentColor: '#0D9488', tooltip: 'Variable + Permanent (org headcount)' },
           { key: 'project' as const, label: 'Project', accentColor: '#2563EB', tooltip: 'Fixed-term project resources' },
-          { key: 'temporary' as const, label: 'Temporary', accentColor: isDark ? '#888888' : '#64748B', tooltip: 'Freelance / time-bounded engagements' },
+          { key: 'temporary' as const, label: 'Temporary', accentColor: isDark ? '#A1A1A1' : '#64748B', tooltip: 'Freelance / time-bounded engagements' },
         ] as const).map(pill => {
           const isActive = resourceTypeFilter === pill.key;
           const count = resourceTypeCounts[pill.key];
@@ -488,7 +488,7 @@ export default function ResourceListingPage() {
                       />
                       <ActionBtn
                         tooltip="Resource 360°"
-                        bg={isDark ? '#888888' : '#1e293b'} bgHover={isDark ? '#EDEDED' : '#0f172a'}
+                        bg={isDark ? '#A1A1A1' : '#1e293b'} bgHover={isDark ? '#EDEDED' : '#0f172a'}
                         icon={<RotateCw size={14} strokeWidth={1.9} />}
                         onClick={(e) => { e.stopPropagation(); navTo(r.id, 'ring'); }}
                       />

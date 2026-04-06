@@ -118,7 +118,7 @@ export function CreateRequirementModal({ isOpen, onClose, onCreated }: CreateReq
 
   return (
     <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: 24 }}>
-      <div style={{ width: '100%', maxWidth: 600, maxHeight: '90vh', backgroundColor: isDark ? '#111111' : '#FFFFFF', borderRadius: 16, boxShadow: '0 25px 50px rgba(0,0,0,0.25)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      <div style={{ width: '100%', maxWidth: 600, maxHeight: '90vh', backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', borderRadius: 16, boxShadow: '0 25px 50px rgba(0,0,0,0.25)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
         {/* Header */}
         <div style={{ padding: '20px 24px', borderBottom: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -206,7 +206,7 @@ export function CreateRequirementModal({ isOpen, onClose, onCreated }: CreateReq
         {/* Footer */}
         <div style={{ padding: '16px 24px', borderTop: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0', display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
           <button onClick={onClose} disabled={isSubmitting}
-            style={{ height: 44, padding: '0 20px', backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', border: isDark ? '1.5px solid rgba(255,255,255,0.08)' : '1.5px solid #E2E8F0', borderRadius: 10, fontSize: 14, fontWeight: 500, color: isDark ? '#888888' : '#64748B', cursor: 'pointer' }}>
+            style={{ height: 44, padding: '0 20px', backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', border: isDark ? '1.5px solid rgba(255,255,255,0.08)' : '1.5px solid #E2E8F0', borderRadius: 10, fontSize: 14, fontWeight: 500, color: isDark ? '#A1A1A1' : '#64748B', cursor: 'pointer' }}>
             Cancel
           </button>
           <button onClick={handleSubmit} disabled={isSubmitting}

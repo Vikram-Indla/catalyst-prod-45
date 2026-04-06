@@ -1366,20 +1366,20 @@
 .dark .planhub-module {
   /* Surfaces */
   --ph-bg: #0A0A0A;
-  --ph-surface: #111111;
+  --ph-surface: #1A1A1A;
   --ph-surface-hover: #1A1A1A;
   --ph-border: rgba(255, 255, 255, 0.08);
   --ph-border-dark: rgba(255, 255, 255, 0.12);
 
   /* Gray Scale (inverted for dark) */
   --ph-white: #0A0A0A;
-  --ph-gray-50: #111111;
+  --ph-gray-50: #1A1A1A;
   --ph-gray-100: #1A1A1A;
-  --ph-gray-200: #222222;
-  --ph-gray-300: #666666;
-  --ph-gray-400: #666666;
-  --ph-gray-500: #888888;
-  --ph-gray-600: #888888;
+  --ph-gray-200: #292929;
+  --ph-gray-300: #878787;
+  --ph-gray-400: #878787;
+  --ph-gray-500: #A1A1A1;
+  --ph-gray-600: #A1A1A1;
   --ph-gray-700: #EDEDED;
   --ph-gray-800: #EDEDED;
   --ph-gray-900: #EDEDED;

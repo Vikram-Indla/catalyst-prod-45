@@ -76,14 +76,14 @@ export default function IncidentListPage() {
 
   // NOCTURNE color helpers
   const pageBg = isDark ? '#0A0A0A' : '#FFFFFF';
-  const surfaceBg = isDark ? '#111111' : '#FFFFFF';
+  const surfaceBg = isDark ? '#1A1A1A' : '#FFFFFF';
   const elevatedBg = isDark ? '#1A1A1A' : '#F1F5F9';
   const borderColor = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.12)';
   const borderSubtle = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(15,23,42,0.06)';
   const textPrimary = isDark ? '#EDEDED' : '#0F172A';
-  const textSecondary = isDark ? '#888888' : '#64748B';
-  const textMuted = isDark ? '#666666' : '#94A3B8';
-  const textBody = isDark ? '#888888' : '#334155';
+  const textSecondary = isDark ? '#A1A1A1' : '#64748B';
+  const textMuted = isDark ? '#878787' : '#94A3B8';
+  const textBody = isDark ? '#A1A1A1' : '#334155';
   const rowBg = isDark ? '#0A0A0A' : '#FFFFFF';
   const rowHoverBg = isDark ? 'rgba(255,255,255,0.04)' : 'rgba(15,23,42,0.04)';
 

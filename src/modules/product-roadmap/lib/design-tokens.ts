@@ -87,12 +87,12 @@ export const catalystTokens = {
   dark: {
     text: {
       primary: '#EDEDED',
-      secondary: '#888888',
-      muted: '#666666',
+      secondary: '#A1A1A1',
+      muted: '#878787',
     },
     surface: {
       bg: '#0A0A0A',
-      card: '#111111',
+      card: '#1A1A1A',
       hover: '#1A1A1A',
       active: 'rgba(59, 130, 246, 0.2)',
     },

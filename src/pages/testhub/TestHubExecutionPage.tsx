@@ -106,11 +106,11 @@ const statusConfigLight: Record<string, { icon: any; color: string; bg: string; 
   skipped: { icon: SkipForward, color: '#94A3B8', bg: '#F8FAFC', label: 'Skipped' },
 };
 const statusConfigDark: Record<string, { icon: any; color: string; bg: string; label: string }> = {
-  not_run: { icon: Clock, color: '#666666', bg: '#111111', label: 'Not Run' },
+  not_run: { icon: Clock, color: '#878787', bg: '#1A1A1A', label: 'Not Run' },
   passed: { icon: CheckCircle2, color: '#059669', bg: 'rgba(34,197,94,0.12)', label: 'Passed' },
   failed: { icon: XCircle, color: '#DC2626', bg: 'rgba(248,113,113,0.12)', label: 'Failed' },
   blocked: { icon: AlertTriangle, color: '#D97706', bg: 'rgba(251,191,36,0.12)', label: 'Blocked' },
-  skipped: { icon: SkipForward, color: '#666666', bg: '#1A1A1A', label: 'Skipped' },
+  skipped: { icon: SkipForward, color: '#878787', bg: '#1A1A1A', label: 'Skipped' },
 };
 // Default reference for static usage; components should use getStatusConfig(isDark) instead
 const statusConfig = statusConfigLight;
@@ -915,8 +915,8 @@ export default function TestHubExecutionPage() {
                             passed:  { text: '#16A34A', bg: 'rgba(34,197,94,0.12)', border: 'rgba(34,197,94,0.3)' },
                             failed:  { text: '#DC2626', bg: 'rgba(248,113,113,0.12)', border: 'rgba(248,113,113,0.3)' },
                             blocked: { text: '#D97706', bg: 'rgba(251,191,36,0.12)', border: 'rgba(251,191,36,0.3)' },
-                            skipped: { text: '#666666', bg: '#1A1A1A', border: 'rgba(255,255,255,0.08)' },
-                            not_run: { text: '#666666', bg: '#111111', border: 'rgba(255,255,255,0.08)' },
+                            skipped: { text: '#878787', bg: '#1A1A1A', border: 'rgba(255,255,255,0.08)' },
+                            not_run: { text: '#878787', bg: '#1A1A1A', border: 'rgba(255,255,255,0.08)' },
                           } : {
                             passed:  { text: '#16A34A', bg: '#F0FDF4', border: '#BBF7D0' },
                             failed:  { text: '#DC2626', bg: '#FEF2F2', border: '#FECACA' },
@@ -927,7 +927,7 @@ export default function TestHubExecutionPage() {
                           const colors = stepColors[step.status] || stepColors.not_run;
                           return (
                             <div key={i} style={{
-                              padding: '12px 16px', backgroundColor: isDark ? '#111111' : '#FFFFFF',
+                              padding: '12px 16px', backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF',
                               border: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 6,
                               borderLeft: `3px solid ${colors.border}`,
                             }}>
@@ -1108,7 +1108,7 @@ export default function TestHubExecutionPage() {
                            {currentStep.expected_result && (
                              <div style={{ marginTop: 16, padding: 14, backgroundColor: isDark ? 'rgba(34,197,94,0.12)' : '#ECFDF5', borderRadius: 8, borderLeft: '3px solid #10B981' }}>
                                <span style={{ fontSize: 10, fontWeight: 700, color: '#059669', textTransform: 'uppercase', letterSpacing: '0.06em' }}>EXPECTED</span>
-                               <p style={{ fontSize: 14, color: isDark ? '#888888' : '#065F46', margin: '4px 0 0', lineHeight: 1.5 }}>
+                               <p style={{ fontSize: 14, color: isDark ? '#A1A1A1' : '#065F46', margin: '4px 0 0', lineHeight: 1.5 }}>
                                  {highlightVariables(currentStep.expected_result)}
                                </p>
                              </div>
@@ -1158,7 +1158,7 @@ export default function TestHubExecutionPage() {
                     { key: 'passed', label: 'Pass', shortcut: 'P', icon: CheckCircle2, onClick: handlePass, color: '#059669', bg: isDark ? 'rgba(34,197,94,0.12)' : '#ECFDF5', activeBg: 'linear-gradient(135deg, #10B981, #059669)' },
                     { key: 'failed', label: 'Fail', shortcut: 'F', icon: XCircle, onClick: handleFail, color: '#DC2626', bg: isDark ? 'rgba(248,113,113,0.12)' : '#FEF2F2', activeBg: 'linear-gradient(135deg, #EF4444, #DC2626)' },
                     { key: 'blocked', label: 'Block', shortcut: 'B', icon: AlertTriangle, onClick: handleBlocked, color: '#D97706', bg: isDark ? 'rgba(251,191,36,0.12)' : '#FFFBEB', activeBg: 'linear-gradient(135deg, #F59E0B, #D97706)' },
-                    { key: 'skipped', label: 'Skip', shortcut: 'S', icon: SkipForward, onClick: handleSkip, color: isDark ? '#666666' : '#64748B', bg: 'hsl(var(--muted) / 0.3)', activeBg: 'linear-gradient(135deg, #64748B, #475569)' },
+                    { key: 'skipped', label: 'Skip', shortcut: 'S', icon: SkipForward, onClick: handleSkip, color: isDark ? '#878787' : '#64748B', bg: 'hsl(var(--muted) / 0.3)', activeBg: 'linear-gradient(135deg, #64748B, #475569)' },
                   ].map(btn => {
                     const Icon = btn.icon;
                     const isActive = currentTestCase.current_status === btn.key;
@@ -1205,7 +1205,7 @@ export default function TestHubExecutionPage() {
                         failed:  { bg: '#DC2626', text: '#FFFFFF' },
                         blocked: { bg: '#D97706', text: '#FFFFFF' },
                         skipped: { bg: '#475569', text: '#FFFFFF' },
-                        not_run: { bg: isDark ? '#1A1A1A' : '#E2E8F0', text: isDark ? '#666666' : '#64748B' },
+                        not_run: { bg: isDark ? '#1A1A1A' : '#E2E8F0', text: isDark ? '#878787' : '#64748B' },
                       };
                       const colors = statusColors[derivedStatus] || statusColors.not_run;
                       const label = derivedStatus !== 'not_run'
@@ -1219,7 +1219,7 @@ export default function TestHubExecutionPage() {
                           style={{
                             height: 34, padding: '0 14px', border: isDisabled ? `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}` : 'none',
                             borderRadius: 6, backgroundColor: isDisabled ? (isDark ? '#1A1A1A' : '#F8FAFC') : colors.bg,
-                            color: isDisabled ? (isDark ? '#666666' : '#94A3B8') : colors.text, fontSize: 12, fontWeight: 700,
+                            color: isDisabled ? (isDark ? '#878787' : '#94A3B8') : colors.text, fontSize: 12, fontWeight: 700,
                             cursor: isDisabled ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: 5,
                             opacity: isDisabled ? 0.7 : 1, transition: 'all 150ms ease',
                             boxShadow: isDisabled ? 'none' : `0 2px 8px ${colors.bg}40`,

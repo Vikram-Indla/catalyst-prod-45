@@ -40,8 +40,8 @@ export function CreateChgModal({ onClose }: Props) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center" onClick={onClose}>
       <div className="absolute inset-0 bg-[#080E1D]/38 backdrop-blur-[1px]" />
-      <div className="relative bg-white dark:bg-[#111111] rounded-xl shadow-2xl w-[520px] max-h-[85vh] overflow-y-auto" style={{ borderRadius: 8 }} onClick={e => e.stopPropagation()}>
-        <div className="sticky top-0 bg-white dark:bg-[#111111] z-10 flex items-center justify-between px-6 py-4 border-b border-[rgba(15,23,42,0.12)] dark:border-[rgba(255,255,255,0.08)]">
+      <div className="relative bg-white dark:bg-[#1A1A1A] rounded-xl shadow-2xl w-[520px] max-h-[85vh] overflow-y-auto" style={{ borderRadius: 8 }} onClick={e => e.stopPropagation()}>
+        <div className="sticky top-0 bg-white dark:bg-[#1A1A1A] z-10 flex items-center justify-between px-6 py-4 border-b border-[rgba(15,23,42,0.12)] dark:border-[rgba(255,255,255,0.08)]">
           <h2 className="text-[16px] font-extrabold" style={{ fontFamily: RH.fontDisplay, color: RH.ink1 }}>New Change</h2>
           <button onClick={onClose} className="w-7 h-7 rounded flex items-center justify-center text-[#94A3B8] hover:bg-[#F1F5F9]"><X size={14} /></button>
         </div>
@@ -50,7 +50,7 @@ export function CreateChgModal({ onClose }: Props) {
           <div>
             <label className="block text-[12px] font-semibold text-[#475569] mb-1">Category</label>
             <div className="relative">
-              <button onClick={() => setCatOpen(!catOpen)} className="w-full h-9 px-3 rounded-md border border-[rgba(15,23,42,0.12)] dark:border-[rgba(255,255,255,0.08)] bg-white dark:bg-[#111111] text-[13px] text-left flex items-center justify-between hover:bg-[#F8FAFC] dark:hover:bg-[#1A1A1A]">
+              <button onClick={() => setCatOpen(!catOpen)} className="w-full h-9 px-3 rounded-md border border-[rgba(15,23,42,0.12)] dark:border-[rgba(255,255,255,0.08)] bg-white dark:bg-[#1A1A1A] text-[13px] text-left flex items-center justify-between hover:bg-[#F8FAFC] dark:hover:bg-[#1A1A1A]">
                 <span className={category ? 'text-[#1E293B]' : 'text-[#94A3B8]'}>{category || 'Select category...'}</span>
                 <ChevronDown size={12} className="text-[#94A3B8]" />
               </button>
@@ -86,7 +86,7 @@ export function CreateChgModal({ onClose }: Props) {
           <div>
             <label className="block text-[12px] font-semibold text-[#475569] mb-1">Linked Release</label>
             <div className="relative">
-              <button onClick={() => setRelOpen(!relOpen)} className="w-full h-9 px-3 rounded-md border border-[rgba(15,23,42,0.12)] dark:border-[rgba(255,255,255,0.08)] bg-white dark:bg-[#111111] text-[13px] text-left flex items-center justify-between hover:bg-[#F8FAFC] dark:hover:bg-[#1A1A1A]">
+              <button onClick={() => setRelOpen(!relOpen)} className="w-full h-9 px-3 rounded-md border border-[rgba(15,23,42,0.12)] dark:border-[rgba(255,255,255,0.08)] bg-white dark:bg-[#1A1A1A] text-[13px] text-left flex items-center justify-between hover:bg-[#F8FAFC] dark:hover:bg-[#1A1A1A]">
                 <span className={releaseId ? 'text-[#1E293B]' : 'text-[#94A3B8]'}>{releases.find((r: any) => r.id === releaseId)?.name || 'Select release...'}</span>
                 <ChevronDown size={12} className="text-[#94A3B8]" />
               </button>
@@ -102,7 +102,7 @@ export function CreateChgModal({ onClose }: Props) {
             </div>
           </div>
         </div>
-        <div className="sticky bottom-0 bg-white dark:bg-[#111111] border-t border-[rgba(15,23,42,0.12)] dark:border-[rgba(255,255,255,0.08)] px-6 py-3 flex justify-end gap-2">
+        <div className="sticky bottom-0 bg-white dark:bg-[#1A1A1A] border-t border-[rgba(15,23,42,0.12)] dark:border-[rgba(255,255,255,0.08)] px-6 py-3 flex justify-end gap-2">
           <button onClick={onClose} className="h-9 px-4 rounded-md border border-[rgba(15,23,42,0.12)] text-[13px] font-medium text-[#475569] hover:bg-[#F8FAFC]">Cancel</button>
           <button onClick={handleSubmit} disabled={!title || !deployDate || createChange.isPending}
             className="h-9 px-4 rounded-md bg-[#2563EB] text-white text-[13px] font-semibold hover:bg-[#1D4ED8] disabled:opacity-50">

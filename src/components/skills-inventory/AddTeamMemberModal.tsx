@@ -140,7 +140,7 @@ export function AddTeamMemberModal({ open, onClose, onSave, projects }: AddTeamM
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="max-w-2xl bg-white dark:bg-[#111111] max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-2xl bg-white dark:bg-[#1A1A1A] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-foreground">Add Team Member</DialogTitle>
         </DialogHeader>
@@ -219,7 +219,7 @@ export function AddTeamMemberModal({ open, onClose, onSave, projects }: AddTeamM
                   className={`px-2 py-0.5 text-xs rounded border transition-colors ${
                     skills.some(s => s.skill === skill)
                       ? 'bg-brand-primary/20 border-brand-primary text-brand-primary'
-                      : 'bg-white dark:bg-[#111111] border-neutral-300 dark:border-[rgba(255,255,255,0.08)] text-neutral-600 dark:text-[#888888] hover:border-brand-primary hover:text-brand-primary'
+                      : 'bg-white dark:bg-[#1A1A1A] border-neutral-300 dark:border-[rgba(255,255,255,0.08)] text-neutral-600 dark:text-[#A1A1A1] hover:border-brand-primary hover:text-brand-primary'
                   }`}
                 >
                   {skill}

@@ -137,7 +137,7 @@ export function MembersTab({ projectId, currentUserId }: MembersTabProps) {
 
         {searchResults.length > 0 && (
           <div
-            className="absolute top-full left-0 right-0 mt-1 z-10 max-h-[200px] overflow-y-auto bg-[var(--cp-float)] dark:bg-[#111111]"
+            className="absolute top-full left-0 right-0 mt-1 z-10 max-h-[200px] overflow-y-auto bg-[var(--cp-float)] dark:bg-[#1A1A1A]"
             style={{ border: '1px solid var(--divider)', borderRadius: 8, boxShadow: '0 4px 6px -1px rgba(0,0,0,.07)' }}
           >
             {searchResults.map(user => (

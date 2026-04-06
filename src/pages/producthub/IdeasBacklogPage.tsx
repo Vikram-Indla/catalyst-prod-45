@@ -391,11 +391,11 @@ function CreateIdeaDialog({ open, onClose }: { open: boolean; onClose: () => voi
   };
 
   const selectBg = isDark ? 'bg-transparent' : 'bg-white';
-  const selectDropdown = isDark ? 'bg-[#111111] border-gray-700 text-white' : 'bg-white';
+  const selectDropdown = isDark ? 'bg-[#1A1A1A] border-gray-700 text-white' : 'bg-white';
 
   return (
     <Dialog open={open} onOpenChange={v => { if (!v) onClose(); }}>
-      <DialogContent className="bg-white dark:bg-[#111111] sm:max-w-[480px]">
+      <DialogContent className="bg-white dark:bg-[#1A1A1A] sm:max-w-[480px]">
         <DialogHeader>
           <DialogTitle style={{ fontFamily: "'Sora', sans-serif", fontWeight: 650, fontSize: '18px', color: dk.t1 }}>New Idea</DialogTitle>
         </DialogHeader>

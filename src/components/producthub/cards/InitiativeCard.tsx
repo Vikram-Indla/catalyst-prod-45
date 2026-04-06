@@ -112,7 +112,7 @@ export const InitiativeCard: React.FC<InitiativeCardProps> = ({ initiative, grid
 
       {/* Description (large only) */}
       {gridSize === 'large' && initiative.description && (
-        <p className="px-4 pb-2 text-xs text-zinc-500 dark:text-[#888888] leading-relaxed line-clamp-3">
+        <p className="px-4 pb-2 text-xs text-zinc-500 dark:text-[#A1A1A1] leading-relaxed line-clamp-3">
           {initiative.description}
         </p>
       )}
@@ -143,7 +143,7 @@ export const InitiativeCard: React.FC<InitiativeCardProps> = ({ initiative, grid
                   style={{ width: `${initiative.progress}%` }}
                 />
               </div>
-              <span className="text-[10px] text-zinc-500 dark:text-[#666666]">{initiative.progress}%</span>
+              <span className="text-[10px] text-zinc-500 dark:text-[#878787]">{initiative.progress}%</span>
             </div>
           </div>
         ) : (
@@ -152,7 +152,7 @@ export const InitiativeCard: React.FC<InitiativeCardProps> = ({ initiative, grid
             <CardScoreRing score={initiative.computed_score} size={ringSize} />
             <div className="flex-1 min-w-0 space-y-1.5">
               <div className="flex items-baseline gap-2">
-              <span className="text-xs font-semibold text-zinc-700 dark:text-[#888888]">
+              <span className="text-xs font-semibold text-zinc-700 dark:text-[#A1A1A1]">
                   Score: {initiative.computed_score?.toFixed(1) ?? '—'} / 5.0
                 </span>
                 <span
@@ -176,7 +176,7 @@ export const InitiativeCard: React.FC<InitiativeCardProps> = ({ initiative, grid
                     { label: 'Risk Score', value: initiative.score_time_urgency },
                   ].map(s => (
                     <div key={s.label} className="flex items-center gap-2">
-              <span className="text-[10px] text-zinc-500 dark:text-[#888888] w-16 truncate">{s.label}</span>
+              <span className="text-[10px] text-zinc-500 dark:text-[#A1A1A1] w-16 truncate">{s.label}</span>
                       <div className="flex-1 h-1.5 bg-zinc-100 dark:bg-[#1A1A1A] rounded-full overflow-hidden">
                         <div
                           className="h-full rounded-full bg-blue-500"
@@ -194,8 +194,8 @@ export const InitiativeCard: React.FC<InitiativeCardProps> = ({ initiative, grid
               {/* Progress */}
               <div>
                 <div className="flex items-center justify-between mb-0.5">
-                  <span className="text-[10px] text-zinc-500 dark:text-[#888888]">Progress</span>
-                  <span className="text-[10px] font-medium text-zinc-700 dark:text-[#666666]">{initiative.progress}%</span>
+                  <span className="text-[10px] text-zinc-500 dark:text-[#A1A1A1]">Progress</span>
+                  <span className="text-[10px] font-medium text-zinc-700 dark:text-[#878787]">{initiative.progress}%</span>
                 </div>
                 <div className="w-full h-1.5 bg-zinc-100 dark:bg-[#1A1A1A] rounded-full overflow-hidden">
                   <div
@@ -211,7 +211,7 @@ export const InitiativeCard: React.FC<InitiativeCardProps> = ({ initiative, grid
 
       {/* Meta row */}
       <div className="px-4 pb-2">
-        <div className="flex items-center gap-1.5 text-xs text-zinc-500 dark:text-[#888888] flex-wrap">
+        <div className="flex items-center gap-1.5 text-xs text-zinc-500 dark:text-[#A1A1A1] flex-wrap">
           {initiative.department_name && (
             <span className="truncate max-w-[100px]">
               {gridSize === 'small' ? initiative.department_name.split(' ')[0] : initiative.department_name}
@@ -281,7 +281,7 @@ export const InitiativeCard: React.FC<InitiativeCardProps> = ({ initiative, grid
             { label: 'Business Owner', value: initiative.business_owner_name },
           ].filter(r => r.value).map(r => (
             <div key={r.label} className="flex items-center text-xs">
-              <span className="text-zinc-400 dark:text-[#888888] w-28">{r.label}</span>
+              <span className="text-zinc-400 dark:text-[#A1A1A1] w-28">{r.label}</span>
               <span className="text-zinc-700 dark:text-white">{r.value}</span>
             </div>
           ))}
@@ -290,7 +290,7 @@ export const InitiativeCard: React.FC<InitiativeCardProps> = ({ initiative, grid
 
       {/* Footer */}
       <div className="border-t border-zinc-100 dark:border-[rgba(255,255,255,0.08)] px-4 py-2">
-        <span className="text-[10px] text-zinc-400 dark:text-[#666666]">
+        <span className="text-[10px] text-zinc-400 dark:text-[#878787]">
           {gridSize === 'large'
             ? `Created ${format(new Date(initiative.created_at), 'MMM dd')} · Updated ${relativeTime(initiative.updated_at)}`
             : `Updated ${relativeTime(initiative.updated_at)}`

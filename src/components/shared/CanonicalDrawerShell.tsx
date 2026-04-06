@@ -219,11 +219,11 @@ export function CanonicalDrawerShell({
         <SheetContent
           side="right"
           hideClose
-          className={`executive-drawer ${drawerWidthClass} p-0 flex flex-col overflow-hidden bg-white dark:bg-[#111111] border-l border-[#E1E4E8] dark:border-[rgba(255,255,255,0.08)]`}
+          className={`executive-drawer ${drawerWidthClass} p-0 flex flex-col overflow-hidden bg-white dark:bg-[#1A1A1A] border-l border-[#E1E4E8] dark:border-[rgba(255,255,255,0.08)]`}
         >
-          <SheetHeader className="executive-drawer-header flex-col space-y-0 shrink-0 p-0 bg-white dark:bg-[#111111]">
+          <SheetHeader className="executive-drawer-header flex-col space-y-0 shrink-0 p-0 bg-white dark:bg-[#1A1A1A]">
             {/* Primary Header Row */}
-            <div className="flex items-center justify-between px-4 md:px-5 pt-4 pb-3 border-b border-brand-primary/50 bg-white dark:bg-[#111111]">
+            <div className="flex items-center justify-between px-4 md:px-5 pt-4 pb-3 border-b border-brand-primary/50 bg-white dark:bg-[#1A1A1A]">
               {/* Left side: Entity ID + Title */}
               <div className="flex items-center gap-2.5 flex-1 min-w-0">
                 <div className="flex items-center gap-1 shrink-0">
@@ -352,7 +352,7 @@ export function CanonicalDrawerShell({
 
           {/* Status Row */}
           {statusRow && (
-            <div className="px-4 md:px-5 py-2 flex items-center bg-white dark:bg-[#111111] shrink-0">
+            <div className="px-4 md:px-5 py-2 flex items-center bg-white dark:bg-[#1A1A1A] shrink-0">
               {statusRow}
             </div>
           )}
@@ -367,7 +367,7 @@ export function CanonicalDrawerShell({
               ))}
             </TabsList>
 
-            <div className="executive-drawer-content flex-1 flex flex-col min-h-0 overflow-y-auto bg-white dark:bg-[#111111]">
+            <div className="executive-drawer-content flex-1 flex flex-col min-h-0 overflow-y-auto bg-white dark:bg-[#1A1A1A]">
               {tabs.map((tab) => (
                 <TabsContent
                   key={tab.value}

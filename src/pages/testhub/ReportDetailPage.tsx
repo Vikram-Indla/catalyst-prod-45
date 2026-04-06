@@ -46,13 +46,13 @@ export default function ReportDetailPage() {
 
   // NOCTURNE tokens
   const pageBg = isDark ? '#0A0A0A' : '#F8FAFC';
-  const surfaceBg = isDark ? '#111111' : '#FFF';
+  const surfaceBg = isDark ? '#1A1A1A' : '#FFF';
   const borderColor = isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0';
   const borderSubtle = isDark ? 'rgba(255,255,255,0.05)' : '#F1F5F9';
   const textPrimary = isDark ? '#EDEDED' : '#0F172A';
-  const textSecondary = isDark ? '#888888' : '#64748B';
-  const textMuted = isDark ? '#666666' : '#94A3B8';
-  const textBody = isDark ? '#888888' : '#334155';
+  const textSecondary = isDark ? '#A1A1A1' : '#64748B';
+  const textMuted = isDark ? '#878787' : '#94A3B8';
+  const textBody = isDark ? '#A1A1A1' : '#334155';
 
   const fetchReport = async () => {
     if (!reportId) return;
@@ -201,7 +201,7 @@ export default function ReportDetailPage() {
               <span style={{ fontSize: 14, fontWeight: 600, color: textPrimary }}>Execution Progress</span>
               <span style={{ fontSize: 14, fontWeight: 700, color: '#2563EB' }}>{data.summary.progress_percent}%</span>
             </div>
-            <div style={{ height: 16, backgroundColor: isDark ? '#222222' : '#E2E8F0', borderRadius: 8, overflow: 'hidden', display: 'flex' }}>
+            <div style={{ height: 16, backgroundColor: isDark ? '#292929' : '#E2E8F0', borderRadius: 8, overflow: 'hidden', display: 'flex' }}>
               {data.summary.total_cases > 0 && (
                 <>
                   <div style={{ width: `${(data.summary.passed / data.summary.total_cases) * 100}%`, backgroundColor: '#10B981' }} />
@@ -329,7 +329,7 @@ export default function ReportDetailPage() {
       {/* Generic placeholder for other types */}
       {!['cycle_summary', 'defect'].includes(report.type) && (
         <div style={{ backgroundColor: surfaceBg, borderRadius: 12, padding: 40, border: `1px solid ${borderColor}`, textAlign: 'center' }}>
-          <FileBarChart size={48} style={{ color: isDark ? '#666666' : '#CBD5E1', marginBottom: 16 }} />
+          <FileBarChart size={48} style={{ color: isDark ? '#878787' : '#CBD5E1', marginBottom: 16 }} />
           <p style={{ fontSize: 16, color: textSecondary, margin: 0 }}>Report data visualization coming soon</p>
           <p style={{ fontSize: 13, color: textMuted, margin: '8px 0 0' }}>Raw data has been captured and stored</p>
         </div>

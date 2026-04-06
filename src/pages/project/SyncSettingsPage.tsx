@@ -103,10 +103,10 @@ function StatusMappingTable({ projectId }: { projectId: string }) {
           <Table>
             <TableHeader>
               <TableRow className="h-9 border-b border-[#E2E8F0] dark:border-[rgba(255,255,255,0.08)]">
-                <TableHead className="text-[11px] font-bold uppercase tracking-[0.06em] text-muted-foreground bg-[#F8FAFC] dark:bg-[#111111]">
+                <TableHead className="text-[11px] font-bold uppercase tracking-[0.06em] text-muted-foreground bg-[#F8FAFC] dark:bg-[#1A1A1A]">
                   Jira Status
                 </TableHead>
-                <TableHead className="text-[11px] font-bold uppercase tracking-[0.06em] text-muted-foreground bg-[#F8FAFC] dark:bg-[#111111]">
+                <TableHead className="text-[11px] font-bold uppercase tracking-[0.06em] text-muted-foreground bg-[#F8FAFC] dark:bg-[#1A1A1A]">
                   Catalyst Status
                 </TableHead>
               </TableRow>
@@ -339,7 +339,7 @@ function RecentEventsTable({ projectId }: { projectId: string }) {
                 {['Time', 'Event', 'Entity', 'Status'].map((h) => (
                   <TableHead
                     key={h}
-                    className="text-[11px] font-bold uppercase tracking-[0.06em] text-muted-foreground bg-[#F8FAFC] dark:bg-[#111111] px-3 py-2.5"
+                    className="text-[11px] font-bold uppercase tracking-[0.06em] text-muted-foreground bg-[#F8FAFC] dark:bg-[#1A1A1A] px-3 py-2.5"
                   >
                     {h}
                   </TableHead>

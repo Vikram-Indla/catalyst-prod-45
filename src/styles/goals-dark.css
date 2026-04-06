@@ -134,7 +134,7 @@
 
 /* Filter dropdown panels (float layer) */
 [data-theme="dark"] [data-goals-page] div[style*="background: rgb(255, 255, 255)"][style*="boxShadow"][style*="position: absolute"] {
-  background: #111111 !important;
+  background: #1A1A1A !important;
   border-color: rgba(255,255,255,0.10) !important;
   box-shadow: 0 4px 16px rgba(0,0,0,0.4) !important;
 }
@@ -276,7 +276,7 @@
 [data-theme="dark"] [data-goals-page] div[style*="background: rgb(255, 255, 255)"][style*="width: 520px"],
 [data-theme="dark"] [data-goals-page] div[style*="background: #FFFFFF"][style*="width: 520px"],
 [data-theme="dark"] [data-goals-page] div[style*="background: rgb(255, 255, 255)"][style*="position: fixed"] {
-  background: #111111 !important;
+  background: #1A1A1A !important;
   border-color: rgba(255,255,255,0.10) !important;
 }
 

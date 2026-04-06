@@ -79,8 +79,8 @@ export default function WikiAllArticlesPage() {
     <div style={{ fontFamily: 'Inter, sans-serif', color: isDark ? '#EDEDED' : '#0F172A', background: isDark ? '#0A0A0A' : '#F8FAFC', minHeight: '100%', padding: '24px 40px 48px' }}>
       <nav style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 24 }}>
         <span onClick={() => navigate('/wiki')} style={{ fontSize: 13, color: '#2563EB', cursor: 'pointer' }}>Wiki</span>
-        <ChevronRight size={12} style={{ color: isDark ? '#666666' : '#94A3B8' }} />
-        <span style={{ fontSize: 13, color: isDark ? '#888888' : '#64748B', fontWeight: 600 }}>All Articles</span>
+        <ChevronRight size={12} style={{ color: isDark ? '#878787' : '#94A3B8' }} />
+        <span style={{ fontSize: 13, color: isDark ? '#A1A1A1' : '#64748B', fontWeight: 600 }}>All Articles</span>
       </nav>
 
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
@@ -96,8 +96,8 @@ export default function WikiAllArticlesPage() {
             ].map(a => (
               <button key={a.key} onClick={() => { setBulkAction(a.key); if (a.key === 'archive') setShowConfirm(true); }} style={{
                 fontSize: 10, fontWeight: 650, padding: '4px 10px', borderRadius: 4,
-                border: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(0,0,0,0.12)', background: isDark ? '#111111' : '#FFFFFF',
-                color: a.key === 'archive' ? '#DC2626' : (isDark ? '#888888' : '#334155'), cursor: 'pointer',
+                border: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(0,0,0,0.12)', background: isDark ? '#1A1A1A' : '#FFFFFF',
+                color: a.key === 'archive' ? '#DC2626' : (isDark ? '#A1A1A1' : '#334155'), cursor: 'pointer',
                 display: 'flex', alignItems: 'center', gap: 4,
               }}>{a.icon} {a.label}</button>
             ))}
@@ -134,7 +134,7 @@ export default function WikiAllArticlesPage() {
           }}>Apply to {selected.size}</button>
           <button onClick={() => { setBulkAction(null); setBulkValue(''); }} style={{
             fontSize: 11, padding: '4px 8px', borderRadius: 4, border: 'none',
-            background: 'transparent', color: isDark ? '#666666' : '#64748B', cursor: 'pointer',
+            background: 'transparent', color: isDark ? '#878787' : '#64748B', cursor: 'pointer',
           }}><X size={14} /></button>
         </div>
       )}
@@ -145,13 +145,13 @@ export default function WikiAllArticlesPage() {
           <div onClick={() => setShowConfirm(false)} style={{ position: 'absolute', inset: 0, background: isDark ? 'rgba(0,0,0,0.5)' : 'rgba(15,23,42,0.3)' }} />
           <div style={{ position: 'relative', background: isDark ? '#1A1A1A' : '#FFFFFF', borderRadius: 12, padding: 24, width: 400, boxShadow: '0 12px 40px rgba(0,0,0,0.15)' }}>
             <h3 style={{ fontFamily: F.sora, fontSize: 16, fontWeight: 700, marginBottom: 8 }}>Confirm Bulk Action</h3>
-            <p style={{ fontSize: 13, color: isDark ? '#888888' : '#64748B', marginBottom: 20 }}>
+            <p style={{ fontSize: 13, color: isDark ? '#A1A1A1' : '#64748B', marginBottom: 20 }}>
               This will {bulkAction === 'archive' ? 'archive' : `update ${bulkAction} for`} <strong>{selected.size} articles</strong>. This cannot be undone easily.
             </p>
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
               <button onClick={() => setShowConfirm(false)} style={{
                 fontSize: 12, fontWeight: 600, padding: '8px 16px', borderRadius: 6,
-                border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0', background: isDark ? '#111111' : '#FFFFFF', color: isDark ? '#888888' : '#334155', cursor: 'pointer',
+                border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0', background: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#A1A1A1' : '#334155', cursor: 'pointer',
               }}>Cancel</button>
               <button onClick={executeBulk} style={{
                 fontSize: 12, fontWeight: 600, padding: '8px 16px', borderRadius: 6, border: 'none',
@@ -163,12 +163,12 @@ export default function WikiAllArticlesPage() {
       )}
 
       {/* Table */}
-      <div style={{ borderRadius: 8, border: `0.75px solid ${borderColor}`, background: isDark ? '#111111' : '#FFFFFF', overflow: 'hidden' }}>
+      <div style={{ borderRadius: 8, border: `0.75px solid ${borderColor}`, background: isDark ? '#1A1A1A' : '#FFFFFF', overflow: 'hidden' }}>
         <div style={{
           display: 'grid', gridTemplateColumns: '32px 3% 1fr 80px 100px 80px 80px 100px 50px',
           background: isDark ? '#1A1A1A' : '#F1F5F9', padding: '0 12px', height: 36, alignItems: 'center',
           fontFamily: F.sora, fontSize: 10, fontWeight: 600, textTransform: 'uppercase' as const,
-          color: isDark ? '#666666' : '#64748B', letterSpacing: '0.05em', borderBottom: `0.75px solid ${borderColor}`,
+          color: isDark ? '#878787' : '#64748B', letterSpacing: '0.05em', borderBottom: `0.75px solid ${borderColor}`,
         }}>
           <span>
             <input type="checkbox" checked={articles?.length ? selected.size === articles.length : false} onChange={toggleAll}
@@ -176,15 +176,15 @@ export default function WikiAllArticlesPage() {
           </span>
           <span></span><span>Article</span><span>Domain</span><span>Verification</span><span>Conf.</span><span>Views</span><span>Updated</span><span>Ver.</span>
         </div>
-        {isLoading ? <div style={{ padding: 32, textAlign: 'center', color: isDark ? '#666666' : '#64748B', fontSize: 12 }}>Loading...</div> :
-          (articles ?? []).length === 0 ? <div style={{ padding: 32, textAlign: 'center', color: isDark ? '#666666' : '#64748B', fontSize: 12 }}>No articles found.</div> :
+        {isLoading ? <div style={{ padding: 32, textAlign: 'center', color: isDark ? '#878787' : '#64748B', fontSize: 12 }}>Loading...</div> :
+          (articles ?? []).length === 0 ? <div style={{ padding: 32, textAlign: 'center', color: isDark ? '#878787' : '#64748B', fontSize: 12 }}>No articles found.</div> :
           (articles ?? []).map((a: any) => {
             const conf = Math.round((a.ai_confidence ?? 0) * 100);
             const confColor = conf >= 90 ? '#16A34A' : conf >= 70 ? '#2563EB' : '#D97706';
             const verStatus = a.verification_status || 'unverified';
             const verBadge = verStatus === 'verified' ? { bg: 'rgba(22,163,74,0.08)', color: '#16A34A', label: 'Verified' }
               : verStatus === 'needs_review' ? { bg: 'rgba(217,119,6,0.08)', color: '#D97706', label: 'Review' }
-              : { bg: 'rgba(100,116,139,0.08)', color: isDark ? '#666666' : '#64748B', label: 'Unverified' };
+              : { bg: 'rgba(100,116,139,0.08)', color: isDark ? '#878787' : '#64748B', label: 'Unverified' };
             const isSelected = selected.has(a.id);
             return (
               <div key={a.id} style={{
@@ -200,15 +200,15 @@ export default function WikiAllArticlesPage() {
                     style={{ width: 14, height: 14, cursor: 'pointer', accentColor: '#2563EB' }} />
                 </span>
                 <span onClick={() => navigate(`/wiki/${a.slug}`)}>
-                  {a.format === 'pdf' ? <span style={{ fontSize: 9, fontWeight: 700, padding: '1px 4px', borderRadius: 2, background: isDark ? 'rgba(220,38,38,0.12)' : '#FEE2E2', color: '#DC2626' }}>PDF</span> : <FileText size={14} style={{ color: isDark ? '#666666' : '#94A3B8' }} />}
+                  {a.format === 'pdf' ? <span style={{ fontSize: 9, fontWeight: 700, padding: '1px 4px', borderRadius: 2, background: isDark ? 'rgba(220,38,38,0.12)' : '#FEE2E2', color: '#DC2626' }}>PDF</span> : <FileText size={14} style={{ color: isDark ? '#878787' : '#94A3B8' }} />}
                 </span>
                 <span onClick={() => navigate(`/wiki/${a.slug}`)} style={{ fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.title}</span>
-                <span style={{ fontSize: 10, color: isDark ? '#888888' : '#64748B' }}>{a.domain_code}</span>
+                <span style={{ fontSize: 10, color: isDark ? '#A1A1A1' : '#64748B' }}>{a.domain_code}</span>
                 <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 6px', borderRadius: 3, background: verBadge.bg, color: verBadge.color, width: 'fit-content' }}>{verBadge.label}</span>
                 <span style={{ fontFamily: F.mono, fontSize: 11, fontWeight: 500, color: confColor }}>{conf}%</span>
-                <span style={{ fontFamily: F.mono, fontSize: 11, color: isDark ? '#888888' : '#64748B' }}>{a.view_count ?? 0}</span>
-                <span style={{ fontFamily: F.mono, fontSize: 10, color: isDark ? '#888888' : '#64748B' }}>{new Date(a.updated_at).toLocaleDateString()}</span>
-                <span style={{ fontFamily: F.mono, fontSize: 10, color: isDark ? '#888888' : '#64748B' }}>v{a.version ?? 1}</span>
+                <span style={{ fontFamily: F.mono, fontSize: 11, color: isDark ? '#A1A1A1' : '#64748B' }}>{a.view_count ?? 0}</span>
+                <span style={{ fontFamily: F.mono, fontSize: 10, color: isDark ? '#A1A1A1' : '#64748B' }}>{new Date(a.updated_at).toLocaleDateString()}</span>
+                <span style={{ fontFamily: F.mono, fontSize: 10, color: isDark ? '#A1A1A1' : '#64748B' }}>v{a.version ?? 1}</span>
               </div>
             );
           })}

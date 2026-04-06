@@ -83,7 +83,7 @@ export function ColumnsPanel({
       ref={panelRef}
       className="absolute top-full right-0 mt-2 w-64 rounded-lg shadow-lg z-[500] overflow-hidden"
       style={{
-        backgroundColor: isDark ? '#111111' : 'var(--surface-1)',
+        backgroundColor: isDark ? '#1A1A1A' : 'var(--surface-1)',
         border: isDark ? '1px solid rgba(255,255,255,0.10)' : '1px solid var(--border-color)',
       }}
     >

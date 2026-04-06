@@ -32,7 +32,7 @@ export default function ProjectWorkspace() {
       <div className="h-screen flex items-center justify-center bg-white dark:bg-[#0A0A0A]">
         <div className="text-center">
           <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#2563eb] mx-auto mb-4" />
-          <p className="text-neutral-500 dark:text-[#888888]">Loading project...</p>
+          <p className="text-neutral-500 dark:text-[#A1A1A1]">Loading project...</p>
         </div>
       </div>
     );
@@ -43,7 +43,7 @@ export default function ProjectWorkspace() {
       <div className="h-screen flex items-center justify-center bg-white dark:bg-[#0A0A0A]">
         <div className="text-center">
           <h2 className="text-xl font-semibold mb-2 dark:text-[#EDEDED]">Project Not Found</h2>
-          <p className="text-neutral-500 dark:text-[#888888] mb-4">
+          <p className="text-neutral-500 dark:text-[#A1A1A1] mb-4">
             The project you're looking for doesn't exist or you don't have access.
           </p>
           <Button onClick={() => navigate('/projects')}>

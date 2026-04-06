@@ -60,7 +60,7 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, isHovered, o
     if (tooltipTimer.current) clearTimeout(tooltipTimer.current);
   }, []);
 
-  const tooltipBg = isDark ? '#111111' : '#FFFFFF';
+  const tooltipBg = isDark ? '#1A1A1A' : '#FFFFFF';
   const tooltipShadow = isDark ? '0 20px 60px rgba(0,0,0,0.4)' : '0 20px 60px rgba(0,0,0,0.12)';
   const progressTrackBg = isDark ? 'rgba(255,255,255,0.10)' : surface.borderLight;
 

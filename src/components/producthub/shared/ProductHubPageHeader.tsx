@@ -45,7 +45,7 @@ export function ProductHubPageHeader({ title, subtitle, actions }: ProductHubPag
         <p
           style={{
             fontSize: 13,
-            color: isDark ? '#888888' : '#71717A',
+            color: isDark ? '#A1A1A1' : '#71717A',
             marginTop: 2,
             margin: 0,
             marginBlockStart: 2,

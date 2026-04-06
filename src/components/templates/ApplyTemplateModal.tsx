@@ -90,7 +90,7 @@ export function ApplyTemplateModal({
   
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-[540px] bg-white dark:bg-[#111111]">
+      <DialogContent className="sm:max-w-[540px] bg-white dark:bg-[#1A1A1A]">
         <DialogHeader>
           <DialogTitle className="text-xl">Apply Template</DialogTitle>
           <DialogDescription>

@@ -11,11 +11,11 @@ import { cn } from '@/lib/utils';
 import { useTheme } from '@/hooks/useTheme';
 
 const LOZENGE_MAP: Record<string, { bg: string; text: string; darkBg: string; darkText: string }> = {
-  open:         { bg: '#DFE1E6', text: '#42526E', darkBg: 'rgba(223,225,230,0.16)', darkText: '#888888' },
-  triage:       { bg: '#DFE1E6', text: '#42526E', darkBg: 'rgba(223,225,230,0.16)', darkText: '#888888' },
-  on_hold:      { bg: '#DFE1E6', text: '#42526E', darkBg: 'rgba(223,225,230,0.16)', darkText: '#888888' },
-  closed:       { bg: '#DFE1E6', text: '#42526E', darkBg: 'rgba(223,225,230,0.16)', darkText: '#888888' },
-  converted:    { bg: '#DFE1E6', text: '#42526E', darkBg: 'rgba(223,225,230,0.16)', darkText: '#888888' },
+  open:         { bg: '#DFE1E6', text: '#42526E', darkBg: 'rgba(223,225,230,0.16)', darkText: '#A1A1A1' },
+  triage:       { bg: '#DFE1E6', text: '#42526E', darkBg: 'rgba(223,225,230,0.16)', darkText: '#A1A1A1' },
+  on_hold:      { bg: '#DFE1E6', text: '#42526E', darkBg: 'rgba(223,225,230,0.16)', darkText: '#A1A1A1' },
+  closed:       { bg: '#DFE1E6', text: '#42526E', darkBg: 'rgba(223,225,230,0.16)', darkText: '#A1A1A1' },
+  converted:    { bg: '#DFE1E6', text: '#42526E', darkBg: 'rgba(223,225,230,0.16)', darkText: '#A1A1A1' },
   in_progress:  { bg: '#0C66E4', text: '#FFFFFF', darkBg: 'rgba(12,102,228,0.24)', darkText: '#93C5FD' },
   in_review:    { bg: '#0C66E4', text: '#FFFFFF', darkBg: 'rgba(12,102,228,0.24)', darkText: '#93C5FD' },
   to_committee: { bg: '#0C66E4', text: '#FFFFFF', darkBg: 'rgba(12,102,228,0.24)', darkText: '#93C5FD' },

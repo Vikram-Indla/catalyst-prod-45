@@ -128,7 +128,7 @@ export function CreateProjectDialog({ open, onClose }: Props) {
 
   if (!open) return null;
 
-  const surface = dk ? '#111111' : 'var(--bg-app)';
+  const surface = dk ? '#1A1A1A' : 'var(--bg-app)';
   const textPrimary = dk ? 'rgba(255,255,255,0.92)' : 'var(--fg-1)';
   const textSecondary = dk ? 'rgba(255,255,255,0.72)' : 'var(--fg-2)';
   const textMuted = dk ? 'rgba(255,255,255,0.55)' : 'var(--fg-4)';
@@ -138,7 +138,7 @@ export function CreateProjectDialog({ open, onClose }: Props) {
   const closeHoverBg = dk ? 'rgba(255,255,255,0.06)' : 'var(--cp-bd-zone)';
   const cancelBg = dk ? 'transparent' : 'var(--bg-app)';
   const cancelHoverBg = dk ? 'rgba(255,255,255,0.06)' : 'var(--bg-1)';
-  const dropdownBg = dk ? '#111111' : 'var(--cp-float)';
+  const dropdownBg = dk ? '#1A1A1A' : 'var(--cp-float)';
 
   const inputStyle: React.CSSProperties = {
     width: '100%', height: 36, padding: '0 12px',
@@ -300,7 +300,7 @@ export function CreateProjectDialog({ open, onClose }: Props) {
               </PopoverTrigger>
               <PopoverContent
                 className="w-[calc(100%-48px)] p-2"
-                style={{ background: dk ? '#111111' : '#FFF', border: `1px solid ${border}`, borderRadius: 6, zIndex: 9999, minWidth: 260 }}
+                style={{ background: dk ? '#1A1A1A' : '#FFF', border: `1px solid ${border}`, borderRadius: 6, zIndex: 9999, minWidth: 260 }}
                 align="start"
               >
                 <div className="relative mb-2">

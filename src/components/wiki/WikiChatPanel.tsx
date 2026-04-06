@@ -66,7 +66,7 @@ export function WikiChatPanel({ open, onClose }: { open: boolean; onClose: () =>
   return (
     <div style={{
       position: 'fixed', bottom: 80, right: 24, width: 380, height: 520,
-      background: isDark ? '#111111' : 'var(--cp-float)', borderRadius: 12, zIndex: 51,
+      background: isDark ? '#1A1A1A' : 'var(--cp-float)', borderRadius: 12, zIndex: 51,
       border: `0.75px solid ${border}`,
       boxShadow: isDark ? '0 8px 32px rgba(0,0,0,0.4)' : '0 8px 32px rgba(0,0,0,0.12)',
       display: 'flex', flexDirection: 'column', overflow: 'hidden',

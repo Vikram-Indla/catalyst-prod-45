@@ -756,7 +756,7 @@ const drawerCSS = `
 
 /* ═══ ECLIPSE NOCTURNE — DARK MODE ═══ */
 .dark .um-drawer {
-  background: #111111 !important;
+  background: #1A1A1A !important;
   box-shadow: -12px 0 40px rgba(0,0,0,0.5) !important;
 }
 .dark .um-drawer .um-drawer-header {
@@ -766,7 +766,7 @@ const drawerCSS = `
   color: #EDEDED !important;
 }
 .dark .um-form-group label {
-  color: #888888 !important;
+  color: #A1A1A1 !important;
 }
 .dark .um-form-group input,
 .dark .um-form-group select {
@@ -781,11 +781,11 @@ const drawerCSS = `
 }
 .dark .um-form-group input:disabled {
   background: #1A1A1A !important;
-  color: #666666 !important;
+  color: #878787 !important;
 }
 .dark .um-drawer .um-btn {
   background: #0A0A0A !important;
-  color: #888888 !important;
+  color: #A1A1A1 !important;
   border-color: rgba(255,255,255,0.08) !important;
 }
 .dark .um-drawer .um-btn:hover {

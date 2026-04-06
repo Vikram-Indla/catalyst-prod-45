@@ -160,8 +160,8 @@ export default function RequirementsListPage() {
         const noneCount = requirements.filter(r => r.linked_test_count === 0).length;
         return (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 24 }}>
-            <div style={{ backgroundColor: isDark ? '#111111' : '#FFF', borderRadius: 12, padding: 20, border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0' }}>
-              <p style={{ fontSize: 12, color: isDark ? '#666666' : '#64748B', margin: 0, textTransform: 'uppercase', fontWeight: 600 }}>Total Requirements</p>
+            <div style={{ backgroundColor: isDark ? '#1A1A1A' : '#FFF', borderRadius: 12, padding: 20, border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0' }}>
+              <p style={{ fontSize: 12, color: isDark ? '#878787' : '#64748B', margin: 0, textTransform: 'uppercase', fontWeight: 600 }}>Total Requirements</p>
               <p style={{ fontSize: 28, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A', margin: '8px 0 0' }}>{requirements.length}</p>
             </div>
             <div style={{ backgroundColor: '#F0FDF4', borderRadius: 12, padding: 20, border: '1px solid #BBF7D0' }}>
@@ -191,7 +191,7 @@ export default function RequirementsListPage() {
             onChange={(e) => setSearchTerm(e.target.value)}
             style={{
               width: '100%', height: 44, padding: '0 14px 0 44px',
-              border: isDark ? '1.5px solid rgba(255,255,255,0.08)' : '1.5px solid #E2E8F0', borderRadius: 10, fontSize: 14, backgroundColor: isDark ? '#111111' : '#FFFFFF', color: isDark ? '#EDEDED' : undefined,
+              border: isDark ? '1.5px solid rgba(255,255,255,0.08)' : '1.5px solid #E2E8F0', borderRadius: 10, fontSize: 14, backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#EDEDED' : undefined,
             }}
           />
         </div>
@@ -221,7 +221,7 @@ export default function RequirementsListPage() {
         </Select>
         {hasActiveFilters && (
           <button onClick={clearFilters}
-            style={{ display: 'flex', alignItems: 'center', gap: 6, height: 44, padding: '0 16px', border: isDark ? '1.5px solid rgba(255,255,255,0.08)' : '1.5px solid #E2E8F0', borderRadius: 10, backgroundColor: isDark ? '#111111' : '#FFF', color: isDark ? '#888888' : '#64748B', fontSize: 14, cursor: 'pointer' }}>
+            style={{ display: 'flex', alignItems: 'center', gap: 6, height: 44, padding: '0 16px', border: isDark ? '1.5px solid rgba(255,255,255,0.08)' : '1.5px solid #E2E8F0', borderRadius: 10, backgroundColor: isDark ? '#1A1A1A' : '#FFF', color: isDark ? '#A1A1A1' : '#64748B', fontSize: 14, cursor: 'pointer' }}>
             <X size={16} /> Clear
           </button>
         )}
@@ -237,20 +237,20 @@ export default function RequirementsListPage() {
           <RefreshCw size={32} style={{ animation: 'spin 1s linear infinite', color: '#2563EB' }} />
         </div>
       ) : filteredRequirements.length === 0 ? (
-        <div style={{ backgroundColor: isDark ? '#111111' : '#FFFFFF', borderRadius: 12, padding: 60, textAlign: 'center', border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0' }}>
-          <FileCheck size={48} style={{ color: isDark ? '#666666' : '#CBD5E1', marginBottom: 16 }} />
-          <p style={{ fontSize: 16, color: isDark ? '#888888' : '#64748B', margin: 0 }}>No requirements found</p>
-          <p style={{ fontSize: 14, color: isDark ? '#666666' : '#94A3B8', margin: '8px 0 0' }}>Add requirements to track test coverage</p>
+        <div style={{ backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', borderRadius: 12, padding: 60, textAlign: 'center', border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0' }}>
+          <FileCheck size={48} style={{ color: isDark ? '#878787' : '#CBD5E1', marginBottom: 16 }} />
+          <p style={{ fontSize: 16, color: isDark ? '#A1A1A1' : '#64748B', margin: 0 }}>No requirements found</p>
+          <p style={{ fontSize: 14, color: isDark ? '#878787' : '#94A3B8', margin: '8px 0 0' }}>Add requirements to track test coverage</p>
         </div>
       ) : (
-        <div style={{ backgroundColor: isDark ? '#111111' : '#FFFFFF', borderRadius: 8, border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0', overflow: 'hidden' }}>
+        <div style={{ backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', borderRadius: 8, border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0', overflow: 'hidden' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr>
                 {['KEY', 'TITLE', 'TYPE', 'PRIORITY', 'STATUS', 'LINKED TESTS'].map(h => (
                   <th key={h} style={{
                     height: 36, padding: '0 12px', textAlign: 'left',
-                    fontSize: 10.5, fontWeight: 600, color: isDark ? '#666666' : '#64748B', textTransform: 'uppercase',
+                    fontSize: 10.5, fontWeight: 600, color: isDark ? '#878787' : '#64748B', textTransform: 'uppercase',
                     borderBottom: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid #E2E8F0', backgroundColor: isDark ? '#1A1A1A' : '#F8FAFC',
                   }}>{h}</th>
                 ))}

@@ -20,7 +20,7 @@ export function WikiQuickRefDrawer({ open, onClose, qr }: Props) {
       {/* Drawer */}
       <div style={{
         position: 'fixed', top: 0, right: 0, bottom: 0, width: 420, maxWidth: '90vw',
-        background: isDark ? '#111111' : 'var(--cp-float)', zIndex: 61, boxShadow: isDark ? '-4px 0 24px rgba(0,0,0,0.3)' : '-4px 0 24px rgba(0,0,0,0.08)',
+        background: isDark ? '#1A1A1A' : 'var(--cp-float)', zIndex: 61, boxShadow: isDark ? '-4px 0 24px rgba(0,0,0,0.3)' : '-4px 0 24px rgba(0,0,0,0.08)',
         display: 'flex', flexDirection: 'column', animation: 'slideInRight 200ms ease-out',
       }}>
         {/* Header */}
@@ -35,23 +35,23 @@ export function WikiQuickRefDrawer({ open, onClose, qr }: Props) {
             <h2 style={{ fontFamily: 'Sora, sans-serif', fontSize: 14, fontWeight: 700, margin: 0, color: isDark ? '#EDEDED' : 'var(--fg-1)' }}>{qr.title}</h2>
             <div style={{ display: 'flex', gap: 12, marginTop: 4, fontSize: 10 }}>
               <span style={{ fontFamily: 'JetBrains Mono, monospace', color: 'var(--cp-blue)', fontWeight: 500 }}>{qr.domain_code}</span>
-              <span style={{ fontFamily: 'JetBrains Mono, monospace', color: isDark ? '#666666' : 'var(--fg-3)' }}>{qr.steps} steps</span>
-              <span style={{ fontFamily: 'JetBrains Mono, monospace', color: isDark ? '#666666' : 'var(--fg-3)', display: 'flex', alignItems: 'center', gap: 3 }}>
+              <span style={{ fontFamily: 'JetBrains Mono, monospace', color: isDark ? '#878787' : 'var(--fg-3)' }}>{qr.steps} steps</span>
+              <span style={{ fontFamily: 'JetBrains Mono, monospace', color: isDark ? '#878787' : 'var(--fg-3)', display: 'flex', alignItems: 'center', gap: 3 }}>
                 <Eye size={10} /> {qr.view_count ?? qr.views ?? 0}
               </span>
             </div>
           </div>
           <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, borderRadius: 4 }}>
-            <X size={16} style={{ color: isDark ? '#666666' : 'var(--fg-3)' }} />
+            <X size={16} style={{ color: isDark ? '#878787' : 'var(--fg-3)' }} />
           </button>
         </div>
 
         {/* Content */}
         <div style={{ flex: 1, overflowY: 'auto', padding: '24px' }}>
           {qr.description ? (
-            <p style={{ fontSize: 12, color: isDark ? '#888888' : 'var(--fg-2)', lineHeight: 1.6, marginBottom: 24 }}>{qr.description}</p>
+            <p style={{ fontSize: 12, color: isDark ? '#A1A1A1' : 'var(--fg-2)', lineHeight: 1.6, marginBottom: 24 }}>{qr.description}</p>
           ) : (
-            <p style={{ fontSize: 12, color: isDark ? '#666666' : 'var(--fg-4)', fontStyle: 'italic', marginBottom: 24 }}>No detailed description available yet.</p>
+            <p style={{ fontSize: 12, color: isDark ? '#878787' : 'var(--fg-4)', fontStyle: 'italic', marginBottom: 24 }}>No detailed description available yet.</p>
           )}
 
           <div style={{ fontFamily: 'Sora, sans-serif', fontSize: 12, fontWeight: 600, color: isDark ? '#EDEDED' : 'var(--fg-1)', marginBottom: 16 }}>Steps</div>
@@ -63,7 +63,7 @@ export function WikiQuickRefDrawer({ open, onClose, qr }: Props) {
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   fontFamily: 'JetBrains Mono, monospace', fontSize: 11, fontWeight: 700, color: 'var(--cp-blue)',
                 }}>{i + 1}</div>
-                <div style={{ fontSize: 12, color: isDark ? '#888888' : 'var(--fg-2)', lineHeight: 1.5, paddingTop: 3 }}>
+                <div style={{ fontSize: 12, color: isDark ? '#A1A1A1' : 'var(--fg-2)', lineHeight: 1.5, paddingTop: 3 }}>
                   Step {i + 1} — Complete this action to proceed.
                 </div>
               </div>

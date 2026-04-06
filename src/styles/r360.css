@@ -489,7 +489,7 @@
   color: #EDEDED;
 }
 .dark #r360-root .r3-res-rid {
-  color: #666666;
+  color: #878787;
 }
 .dark #r360-root .r3-dept {
   background: rgba(255,255,255,0.04) !important;
@@ -501,14 +501,14 @@
 
 /* Profile card */
 .dark #r360-root .r3-profile {
-  background: #111111 !important;
+  background: #1A1A1A !important;
   border-color: rgba(255,255,255,0.08) !important;
 }
 
 /* KPI cards */
 .dark #r360-root .r3-kpi--stale,
 .dark #r360-root .r3-kpi {
-  background: #111111 !important;
+  background: #1A1A1A !important;
   border-color: rgba(255,255,255,0.08) !important;
 }
 
@@ -518,7 +518,7 @@
   border-color: rgba(255,255,255,0.06) !important;
 }
 .dark #r360-root .r3-tab {
-  color: #888888 !important;
+  color: #A1A1A1 !important;
 }
 .dark #r360-root .r3-tab:hover {
   background: rgba(255,255,255,0.04) !important;
@@ -530,8 +530,8 @@
 
 /* Period toggle (Weekly/Monthly) */
 .dark #r360-root .r3-toggle button {
-  background: #111111 !important;
-  color: #888888 !important;
+  background: #1A1A1A !important;
+  color: #A1A1A1 !important;
   border-color: rgba(255,255,255,0.08) !important;
 }
 .dark #r360-root .r3-toggle button.active {
@@ -551,7 +551,7 @@
 
 /* Calendar day cells */
 .dark #r360-root .r3-date-cell {
-  background: #111111 !important;
+  background: #1A1A1A !important;
   border-color: rgba(255,255,255,0.06) !important;
 }
 .dark #r360-root .r3-date-cell.current {
@@ -559,14 +559,14 @@
   border-color: rgba(37,99,235,0.3) !important;
 }
 .dark #r360-root .r3-date-dot--other {
-  background: #111111 !important;
-  border-color: #666666 !important;
+  background: #1A1A1A !important;
+  border-color: #878787 !important;
 }
 
 /* Status filter chips */
 .dark #r360-root .r3-status-chip {
-  background: #111111 !important;
-  color: #888888 !important;
+  background: #1A1A1A !important;
+  color: #A1A1A1 !important;
   border-color: rgba(255,255,255,0.08) !important;
 }
 .dark #r360-root .r3-status-chip.active {
@@ -577,7 +577,7 @@
 
 /* Summary bar ("0 open · 0 stale · 0 done") */
 .dark #r360-root .r3-summary-strip {
-  color: #888888 !important;
+  color: #A1A1A1 !important;
 }
 
 /* Progress bar */
@@ -587,7 +587,7 @@
 
 /* Ring view cards */
 .dark #r360-root .r3-ring-card {
-  background: #111111 !important;
+  background: #1A1A1A !important;
   border-color: rgba(255,255,255,0.08) !important;
 }
 .dark #r360-root .r3-ring-card:hover {
@@ -599,7 +599,7 @@
   background: #0A0A0A !important;
 }
 .dark #r360-root .r3-board-item {
-  background: #111111 !important;
+  background: #1A1A1A !important;
   border-color: rgba(255,255,255,0.08) !important;
 }
 .dark #r360-root .r3-board-item:hover {
@@ -611,22 +611,22 @@
   border-color: rgba(255,255,255,0.06) !important;
 }
 .dark #r360-root .r3-day-label {
-  color: #888888 !important;
+  color: #A1A1A1 !important;
 }
 .dark #r360-root .r3-chrono-item {
-  background: #111111 !important;
+  background: #1A1A1A !important;
   border-color: rgba(255,255,255,0.08) !important;
 }
 
 /* Detail panel / drawer */
 .dark #r360-root .r3-detail-panel {
-  background: #111111 !important;
+  background: #1A1A1A !important;
   border-color: rgba(255,255,255,0.08) !important;
 }
 
 /* Search input */
 .dark #r360-root .r3-search {
-  background: #111111 !important;
+  background: #1A1A1A !important;
   border-color: rgba(255,255,255,0.08) !important;
   color: #EDEDED !important;
 }
@@ -634,14 +634,14 @@
 /* Quarter select + nav buttons */
 .dark #r360-root .r3-quarter-picker,
 .dark #r360-root .r3-nav-btn {
-  background: #111111 !important;
+  background: #1A1A1A !important;
   border-color: rgba(255,255,255,0.08) !important;
-  color: #888888 !important;
+  color: #A1A1A1 !important;
 }
 
 /* Empty state */
 .dark #r360-root .r3-empty-state {
-  color: #666666 !important;
+  color: #878787 !important;
 }
 
 /* Generic fallbacks */
@@ -664,9 +664,9 @@
 }
 .dark #r360-root [style*="color: #334155"],
 .dark #r360-root [style*="color:#334155"] {
-  color: #888888 !important;
+  color: #A1A1A1 !important;
 }
 .dark #r360-root [style*="color: #64748B"],
 .dark #r360-root [style*="color:#64748B"] {
-  color: #666666 !important;
+  color: #878787 !important;
 }

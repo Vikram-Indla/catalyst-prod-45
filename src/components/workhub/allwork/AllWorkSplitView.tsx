@@ -109,7 +109,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem }: Props
       {/* Left card list — 320px */}
       <div className="flex flex-col" style={{ width: 320, borderRight: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid var(--bd-subtle, rgba(255,255,255,0.05))', backgroundColor: isDark ? '#0A0A0A' : 'var(--bg-app)' }}>
         <div className="flex items-center justify-between px-3 py-2" style={{ borderBottom: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid var(--bd-subtle, rgba(255,255,255,0.05))' }}>
-          <button className="flex items-center gap-1 text-[12px]" style={{ color: isDark ? '#888888' : '#6b6e76', fontFamily: 'Inter, sans-serif' }}>
+          <button className="flex items-center gap-1 text-[12px]" style={{ color: isDark ? '#A1A1A1' : '#6b6e76', fontFamily: 'Inter, sans-serif' }}>
             {sortBy} <ChevronDown className="w-3 h-3" />
           </button>
           <span className="text-[11px]" style={{ color: 'var(--fg-3)', fontFamily: "'JetBrains Mono', monospace" }}>
@@ -197,11 +197,11 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem }: Props
               {!canGoBack && (
                 <>
                   <button onClick={goPrev} disabled={selectedIdx <= 0} className="p-1 rounded hover:bg-[var(--hover, rgba(255,255,255,0.04))] disabled:opacity-30 focus-visible:outline-2 focus-visible:outline-[#2563EB]" aria-label="Previous item">
-                    <ChevronLeft className="w-4 h-4" style={{ color: isDark ? '#666666' : '#6b6e76' }} />
+                    <ChevronLeft className="w-4 h-4" style={{ color: isDark ? '#878787' : '#6b6e76' }} />
                   </button>
                   <span className="text-[11px]" style={{ color: 'var(--fg-3)', fontFamily: "'JetBrains Mono', monospace" }}>{selectedIdx + 1}/{items.length}</span>
                   <button onClick={goNext} disabled={selectedIdx >= items.length - 1} className="p-1 rounded hover:bg-[var(--hover, rgba(255,255,255,0.04))] disabled:opacity-30 focus-visible:outline-2 focus-visible:outline-[#2563EB]" aria-label="Next item">
-                    <ChevronRight className="w-4 h-4" style={{ color: isDark ? '#666666' : '#6b6e76' }} />
+                    <ChevronRight className="w-4 h-4" style={{ color: isDark ? '#878787' : '#6b6e76' }} />
                   </button>
                 </>
               )}
@@ -212,7 +212,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem }: Props
           {panelStack.length > 1 && (
             <div
               className="flex items-center gap-1.5 px-5 py-2"
-              style={{ fontSize: 12, color: 'var(--fg-3)', borderBottom: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid var(--bd-subtle, rgba(255,255,255,0.05))', backgroundColor: isDark ? '#111111' : 'var(--bg-1)' }}
+              style={{ fontSize: 12, color: 'var(--fg-3)', borderBottom: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid var(--bd-subtle, rgba(255,255,255,0.05))', backgroundColor: isDark ? '#1A1A1A' : 'var(--bg-1)' }}
             >
               {panelStack.slice(0, -1).map((item, i) => (
                 <Fragment key={item.issue_key}>
@@ -250,7 +250,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem }: Props
                   className="flex items-center gap-1.5 px-3 py-2.5 transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[#2563EB]"
                   style={{
                     fontSize: 12, fontWeight: isActive ? 600 : 400,
-                    color: isActive ? '#1558bc' : isDark ? '#666666' : '#6b6e76',
+                    color: isActive ? '#1558bc' : isDark ? '#878787' : '#6b6e76',
                     borderBottom: isActive ? '2px solid #1558bc' : '2px solid transparent',
                     marginBottom: -1, fontFamily: 'Inter, sans-serif',
                     background: 'none', border: 'none', borderBottomStyle: 'solid',
@@ -292,7 +292,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem }: Props
 
                   {/* Key details */}
                   <div className="mb-6">
-                    <h3 className="text-[11px] uppercase font-semibold mb-2" style={{ color: isDark ? '#666666' : '#6b6e76', letterSpacing: '0.05em', fontFamily: 'Inter, sans-serif' }}>
+                    <h3 className="text-[11px] uppercase font-semibold mb-2" style={{ color: isDark ? '#878787' : '#6b6e76', letterSpacing: '0.05em', fontFamily: 'Inter, sans-serif' }}>
                       Key Details
                     </h3>
                     <div className="grid grid-cols-2 gap-3">
@@ -312,11 +312,11 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem }: Props
 
                   {/* Description */}
                   <div className="mb-6">
-                    <h3 className="text-[11px] uppercase font-semibold mb-2" style={{ color: isDark ? '#666666' : '#6b6e76', letterSpacing: '0.05em' }}>
+                    <h3 className="text-[11px] uppercase font-semibold mb-2" style={{ color: isDark ? '#878787' : '#6b6e76', letterSpacing: '0.05em' }}>
                       Description
                     </h3>
                     {currentItem.description_text ? (
-                      <p className="text-[13px] leading-[20px]" style={{ color: isDark ? '#888888' : '#44546f', fontFamily: 'Inter, sans-serif' }}>
+                      <p className="text-[13px] leading-[20px]" style={{ color: isDark ? '#A1A1A1' : '#44546f', fontFamily: 'Inter, sans-serif' }}>
                         {currentItem.description_text}
                       </p>
                     ) : (
@@ -333,7 +333,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem }: Props
                           onClick={() => setActivityTab(tab)}
                           className="text-[12px] pb-1 capitalize transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[#2563EB]"
                           style={{
-                            color: activityTab === tab ? '#1558bc' : isDark ? '#666666' : '#6b6e76',
+                            color: activityTab === tab ? '#1558bc' : isDark ? '#878787' : '#6b6e76',
                             fontWeight: activityTab === tab ? 600 : 400,
                             borderBottom: activityTab === tab ? '2px solid #1558bc' : '2px solid transparent',
                             fontFamily: 'Inter, sans-serif',
@@ -358,7 +358,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem }: Props
                     ) : (
                       <div className="text-center py-8">
                         <MessageSquare className="w-8 h-8 mx-auto mb-2" style={{ color: 'var(--fg-3)' }} />
-                        <p className="text-[13px]" style={{ color: isDark ? '#666666' : '#6b6e76' }}>No activity yet</p>
+                        <p className="text-[13px]" style={{ color: isDark ? '#878787' : '#6b6e76' }}>No activity yet</p>
                       </div>
                     )}
 
@@ -376,10 +376,10 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem }: Props
                           aria-label="Add a comment"
                         />
                         <div className="flex items-center gap-2 mt-2">
-                          <span className="text-[10px] px-2 py-0.5 rounded-full cursor-pointer hover:bg-[var(--bd-subtle, rgba(255,255,255,0.05))] transition-colors duration-[80ms]" style={{ backgroundColor: isDark ? 'rgba(255,255,255,0.06)' : 'var(--hover, rgba(255,255,255,0.04))', color: isDark ? '#666666' : '#6b6e76' }}>
+                          <span className="text-[10px] px-2 py-0.5 rounded-full cursor-pointer hover:bg-[var(--bd-subtle, rgba(255,255,255,0.05))] transition-colors duration-[80ms]" style={{ backgroundColor: isDark ? 'rgba(255,255,255,0.06)' : 'var(--hover, rgba(255,255,255,0.04))', color: isDark ? '#878787' : '#6b6e76' }}>
                             Status update...
                           </span>
-                          <span className="text-[10px] px-2 py-0.5 rounded-full cursor-pointer hover:bg-[var(--bd-subtle, rgba(255,255,255,0.05))] transition-colors duration-[80ms]" style={{ backgroundColor: isDark ? 'rgba(255,255,255,0.06)' : 'var(--hover, rgba(255,255,255,0.04))', color: isDark ? '#666666' : '#6b6e76' }}>
+                          <span className="text-[10px] px-2 py-0.5 rounded-full cursor-pointer hover:bg-[var(--bd-subtle, rgba(255,255,255,0.05))] transition-colors duration-[80ms]" style={{ backgroundColor: isDark ? 'rgba(255,255,255,0.06)' : 'var(--hover, rgba(255,255,255,0.04))', color: isDark ? '#878787' : '#6b6e76' }}>
                             Thanks!
                           </span>
                         </div>
@@ -422,14 +422,14 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem }: Props
             </div>
 
             {/* Right detail sidebar — 260px */}
-            <div className="overflow-y-auto py-4 px-4" style={{ width: 260, borderLeft: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid var(--bd-subtle, rgba(255,255,255,0.05))', backgroundColor: isDark ? '#111111' : '#FFFFFF' }}>
+            <div className="overflow-y-auto py-4 px-4" style={{ width: 260, borderLeft: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid var(--bd-subtle, rgba(255,255,255,0.05))', backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF' }}>
               <div className="mb-4">
-                <span className="text-[11px] uppercase font-semibold block mb-1.5" style={{ color: isDark ? '#666666' : '#6b6e76', letterSpacing: '0.05em' }}>Status</span>
+                <span className="text-[11px] uppercase font-semibold block mb-1.5" style={{ color: isDark ? '#878787' : '#6b6e76', letterSpacing: '0.05em' }}>Status</span>
                 <StatusLozenge status={currentItem.status} />
               </div>
 
               <div className="mb-4">
-                <span className="text-[11px] uppercase font-semibold block mb-1.5" style={{ color: isDark ? '#666666' : '#6b6e76', letterSpacing: '0.05em' }}>Assignee</span>
+                <span className="text-[11px] uppercase font-semibold block mb-1.5" style={{ color: isDark ? '#878787' : '#6b6e76', letterSpacing: '0.05em' }}>Assignee</span>
                 {currentItem.assignee_display_name ? (
                   <div className="flex items-center gap-2">
                     <div className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold text-white" style={{ backgroundColor: '#4C6EF5' }}>
@@ -444,7 +444,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem }: Props
               </div>
 
               <div className="mb-4">
-                <span className="text-[11px] uppercase font-semibold block mb-1.5" style={{ color: isDark ? '#666666' : '#6b6e76', letterSpacing: '0.05em' }}>Priority</span>
+                <span className="text-[11px] uppercase font-semibold block mb-1.5" style={{ color: isDark ? '#878787' : '#6b6e76', letterSpacing: '0.05em' }}>Priority</span>
                 <div className="flex items-center gap-2">
                   <span className="w-2 h-2 rounded-full" style={{ backgroundColor: PRIORITY_COLORS[currentItem.priority] || 'var(--cp-blue)' }} />
                   <span className="text-[13px]" style={{ color: 'var(--fg-1)' }}>{currentItem.priority}</span>
@@ -452,25 +452,25 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem }: Props
               </div>
 
               <div className="mb-4">
-                <span className="text-[11px] uppercase font-semibold block mb-1.5" style={{ color: isDark ? '#666666' : '#6b6e76', letterSpacing: '0.05em' }}>Fix Version</span>
+                <span className="text-[11px] uppercase font-semibold block mb-1.5" style={{ color: isDark ? '#878787' : '#6b6e76', letterSpacing: '0.05em' }}>Fix Version</span>
                 <span className="text-[13px]" style={{ color: currentItem.fix_version_name ? 'var(--fg-1)' : 'var(--fg-3)' }}>
                   {currentItem.fix_version_name || '—'}
                 </span>
               </div>
 
               <div className="mb-4">
-                <span className="text-[11px] uppercase font-semibold block mb-1.5" style={{ color: isDark ? '#666666' : '#6b6e76', letterSpacing: '0.05em' }}>Reporter</span>
+                <span className="text-[11px] uppercase font-semibold block mb-1.5" style={{ color: isDark ? '#878787' : '#6b6e76', letterSpacing: '0.05em' }}>Reporter</span>
                 <span className="text-[13px]" style={{ color: currentItem.reporter_name ? 'var(--fg-1)' : 'var(--fg-3)' }}>
                   {currentItem.reporter_name || '—'}
                 </span>
               </div>
 
               <div className="mb-4">
-                <span className="text-[11px] uppercase font-semibold block mb-1.5" style={{ color: isDark ? '#666666' : '#6b6e76', letterSpacing: '0.05em' }}>Labels</span>
+                <span className="text-[11px] uppercase font-semibold block mb-1.5" style={{ color: isDark ? '#878787' : '#6b6e76', letterSpacing: '0.05em' }}>Labels</span>
                 {currentItem.labels?.length ? (
                   <div className="flex flex-wrap gap-1">
                     {currentItem.labels.map(l => (
-                      <span key={l} className="text-[11px] px-2 py-0.5 rounded" style={{ backgroundColor: isDark ? 'rgba(255,255,255,0.06)' : 'var(--hover, rgba(255,255,255,0.04))', color: isDark ? '#888888' : '#44546f' }}>{l}</span>
+                      <span key={l} className="text-[11px] px-2 py-0.5 rounded" style={{ backgroundColor: isDark ? 'rgba(255,255,255,0.06)' : 'var(--hover, rgba(255,255,255,0.04))', color: isDark ? '#A1A1A1' : '#44546f' }}>{l}</span>
                     ))}
                   </div>
                 ) : (
@@ -480,14 +480,14 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem }: Props
 
               <div className="mt-6 pt-4" style={{ borderTop: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid var(--bd-subtle, rgba(255,255,255,0.05))' }}>
                 <div className="mb-2">
-                  <span className="text-[11px] uppercase font-semibold block mb-0.5" style={{ color: isDark ? '#666666' : '#6b6e76', letterSpacing: '0.05em' }}>Created</span>
-                  <span className="text-[12px]" style={{ color: isDark ? '#888888' : '#44546f', fontFamily: "'JetBrains Mono', monospace" }} title={currentItem.jira_created_at || ''}>
+                  <span className="text-[11px] uppercase font-semibold block mb-0.5" style={{ color: isDark ? '#878787' : '#6b6e76', letterSpacing: '0.05em' }}>Created</span>
+                  <span className="text-[12px]" style={{ color: isDark ? '#A1A1A1' : '#44546f', fontFamily: "'JetBrains Mono', monospace" }} title={currentItem.jira_created_at || ''}>
                     {formatRel(currentItem.jira_created_at)}
                   </span>
                 </div>
                 <div>
-                  <span className="text-[11px] uppercase font-semibold block mb-0.5" style={{ color: isDark ? '#666666' : '#6b6e76', letterSpacing: '0.05em' }}>Updated</span>
-                  <span className="text-[12px]" style={{ color: isDark ? '#888888' : '#44546f', fontFamily: "'JetBrains Mono', monospace" }} title={currentItem.jira_updated_at || ''}>
+                  <span className="text-[11px] uppercase font-semibold block mb-0.5" style={{ color: isDark ? '#878787' : '#6b6e76', letterSpacing: '0.05em' }}>Updated</span>
+                  <span className="text-[12px]" style={{ color: isDark ? '#A1A1A1' : '#44546f', fontFamily: "'JetBrains Mono', monospace" }} title={currentItem.jira_updated_at || ''}>
                     {formatRel(currentItem.jira_updated_at)}
                   </span>
                 </div>

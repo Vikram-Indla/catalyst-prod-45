@@ -112,7 +112,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
   if (!open) return null;
 
   const labelStyle: React.CSSProperties = {
-    fontSize: '11px', fontWeight: 600, color: isDark ? '#888888' : '#475569',
+    fontSize: '11px', fontWeight: 600, color: isDark ? '#A1A1A1' : '#475569',
     textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '6px', display: 'block',
     fontFamily: 'Inter, sans-serif',
   };
@@ -135,7 +135,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
       <div style={{
-        width: '640px', maxHeight: '90vh', background: isDark ? '#111111' : '#FFFFFF',
+        width: '640px', maxHeight: '90vh', background: isDark ? '#1A1A1A' : '#FFFFFF',
         borderRadius: '16px', display: 'flex', flexDirection: 'column',
         boxShadow: isDark ? 'none' : '0 25px 50px -12px rgba(0,0,0,0.25)',
         padding: '28px',
@@ -148,7 +148,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
           <button
             onClick={onClose}
             style={{
-              background: 'none', border: 'none', cursor: 'pointer', color: isDark ? '#666666' : '#64748B',
+              background: 'none', border: 'none', cursor: 'pointer', color: isDark ? '#878787' : '#64748B',
               padding: '4px', borderRadius: '6px', display: 'flex',
             }}
           >
@@ -213,7 +213,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
                     onMouseEnter={(e) => { if (!isSelected) { e.currentTarget.style.borderColor = isDark ? 'rgba(255,255,255,0.20)' : '#CBD5E1'; e.currentTarget.style.background = isDark ? 'rgba(255,255,255,0.03)' : '#F8FAFC'; } }}
                     onMouseLeave={(e) => { if (!isSelected) { e.currentTarget.style.borderColor = isDark ? 'rgba(255,255,255,0.12)' : '#E2E8F0'; e.currentTarget.style.background = isDark ? 'transparent' : '#FFFFFF'; } }}
                   >
-                    <Icon size={20} strokeWidth={1.75} color={isSelected ? '#2563EB' : (isDark ? '#888888' : '#334155')} />
+                    <Icon size={20} strokeWidth={1.75} color={isSelected ? '#2563EB' : (isDark ? '#A1A1A1' : '#334155')} />
                   </button>
                 );
               })}
@@ -243,8 +243,8 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
                         ? (isActive ? (isDark ? 'rgba(22,163,74,0.12)' : '#F0FDF4') : (isDark ? 'rgba(255,255,255,0.06)' : '#F8FAFC'))
                         : (isDark ? 'transparent' : '#FFFFFF'),
                       color: isSelected
-                        ? (isActive ? (isDark ? '#86EFAC' : '#15803D') : (isDark ? '#888888' : '#64748B'))
-                        : (isDark ? '#666666' : '#94A3B8'),
+                        ? (isActive ? (isDark ? '#86EFAC' : '#15803D') : (isDark ? '#A1A1A1' : '#64748B'))
+                        : (isDark ? '#878787' : '#94A3B8'),
                       transition: 'all 150ms ease',
                       fontFamily: 'Inter, sans-serif',
                     }}
@@ -276,7 +276,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
                     ...(touched.deadline && errors.deadline ? { borderColor: '#EF4444' } : {}),
                   }}
                 >
-                  <CalendarIcon size={16} style={{ color: isDark ? '#666666' : '#64748B', flexShrink: 0 }} />
+                  <CalendarIcon size={16} style={{ color: isDark ? '#878787' : '#64748B', flexShrink: 0 }} />
                   <span style={{ fontWeight: 500, color: isDark ? '#EDEDED' : '#0F172A' }}>{format(deadline, 'MMM d, yyyy')}</span>
                 </button>
               </PopoverTrigger>
@@ -308,7 +308,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
                   width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center',
                   border: 'none', background: isDark ? 'transparent' : '#FFFFFF',
                   cursor: targetCount <= 1 ? 'not-allowed' : 'pointer',
-                  color: targetCount <= 1 ? (isDark ? '#666666' : '#CBD5E1') : (isDark ? '#888888' : '#334155'),
+                  color: targetCount <= 1 ? (isDark ? '#878787' : '#CBD5E1') : (isDark ? '#A1A1A1' : '#334155'),
                   fontSize: '18px', fontWeight: 500,
                 }}
                 disabled={targetCount <= 1}
@@ -340,7 +340,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
                   width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center',
                   border: 'none', background: isDark ? 'transparent' : '#FFFFFF',
                   cursor: targetCount >= 50 ? 'not-allowed' : 'pointer',
-                  color: targetCount >= 50 ? (isDark ? '#666666' : '#CBD5E1') : (isDark ? '#888888' : '#334155'),
+                  color: targetCount >= 50 ? (isDark ? '#878787' : '#CBD5E1') : (isDark ? '#A1A1A1' : '#334155'),
                   fontSize: '18px', fontWeight: 500,
                 }}
                 disabled={targetCount >= 50}
@@ -362,11 +362,11 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
             onClick={onClose}
             style={{
               padding: '10px 20px', fontSize: '14px', fontWeight: 500,
-              color: isDark ? '#888888' : '#475569', background: 'transparent', border: 'none',
+              color: isDark ? '#A1A1A1' : '#475569', background: 'transparent', border: 'none',
               borderRadius: '8px', cursor: 'pointer', fontFamily: 'Inter, sans-serif',
             }}
             onMouseEnter={(e) => { e.currentTarget.style.color = isDark ? '#EDEDED' : '#0F172A'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.color = isDark ? '#888888' : '#475569'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.color = isDark ? '#A1A1A1' : '#475569'; }}
           >
             Cancel
           </button>

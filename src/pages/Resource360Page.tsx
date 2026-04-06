@@ -29,7 +29,7 @@ const ErrorBanner = ({ message, onRetry }: { message: string; onRetry: () => voi
       <span style={{ fontSize: 13, color: '#DC2626', flex: 1 }}>Failed to load data: {message}</span>
       <button onClick={onRetry} style={{
         fontSize: 12, fontWeight: 600, padding: '5px 14px', borderRadius: 6,
-        background: isDark ? '#111111' : '#FFFFFF', border: '1px solid #FCA5A5', color: '#DC2626',
+        background: isDark ? '#1A1A1A' : '#FFFFFF', border: '1px solid #FCA5A5', color: '#DC2626',
         cursor: 'pointer',
       }}>Retry</button>
     </div>
@@ -241,7 +241,7 @@ const skeletonCSS = `
     animation: r360shimmer 1.5s infinite;
   }
   .dark .r360-skeleton {
-    background: linear-gradient(90deg, #111111 25%, #1A1A1A 50%, #111111 75%);
+    background: linear-gradient(90deg, #1A1A1A 25%, #1A1A1A 50%, #1A1A1A 75%);
     background-size: 200% 100%;
   }
   @keyframes r360shimmer {
