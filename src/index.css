@@ -889,33 +889,33 @@ html:has(body[data-scroll-locked]) {
     --brand-gold-hover: #0f766e;
     --brand-teal: #0d9488;
     
-    /* === A) SURFACE LADDER (Neutral Dark — Vercel/Linear style) === */
-    --bg-0: #0A0A0A;                     /* App background — Pure dark */
+    /* === A) SURFACE LADDER (Vercel Geist — Pure Neutral) === */
+    --bg-0: #0A0A0A;                     /* background-100: Page background */
     --bg-1: #0A0A0A;                     /* Page canvas */
-    --bg-2: #111111;                     /* Panels / elevated float */
-    --bg-3: #111111;                     /* Cards — same as panels for flush */
-    --bg-4: #1A1A1A;                     /* Raised/hover */
-    --bg-5: #222222;                     /* Active/selected surface */
+    --bg-2: #1A1A1A;                     /* gray-100: Elevated surface, cards */
+    --bg-3: #1A1A1A;                     /* gray-100: Cards */
+    --bg-4: #1F1F1F;                     /* gray-200: Hover surface */
+    --bg-5: #292929;                     /* gray-300: Active/pressed surface */
     --bg-app: var(--bg-0);
 
-    /* Shadcn surface mappings — Neutral Dark */
-    --background: 0 0% 4%;               /* #0A0A0A Pure dark */
-    --foreground: 0 0% 93%;              /* #EDEDED Neutral white */
+    /* Shadcn surface mappings — Vercel Geist */
+    --background: 0 0% 4%;               /* #0A0A0A */
+    --foreground: 0 0% 93%;              /* #EDEDED */
 
-    --card: 0 0% 4%;                     /* Same as --background — flush cards */
+    --card: 0 0% 10%;                    /* #1A1A1A — cards lift from page */
     --card-foreground: 0 0% 93%;
 
-    --popover: 0 0% 7%;                  /* #111111 - Neutral float */
+    --popover: 0 0% 10%;                 /* #1A1A1A */
     --popover-foreground: 0 0% 93%;
 
     --primary: 217 91% 60%;              /* #3b82f6 blue */
     --primary-foreground: 0 0% 100%;     /* pure white on buttons only */
 
-    --secondary: 0 0% 7%;               /* Neutral card */
+    --secondary: 0 0% 10%;              /* #1A1A1A */
     --secondary-foreground: 0 0% 93%;
 
     --muted: 0 0% 10%;                  /* #1A1A1A */
-    --muted-foreground: 0 0% 53%;       /* #888888 */
+    --muted-foreground: 0 0% 56%;       /* #8F8F8F gray-700 */
     
     --accent: 217 91% 60%;
     --accent-foreground: 0 0% 100%;
@@ -923,10 +923,10 @@ html:has(body[data-scroll-locked]) {
     --destructive: 0 65% 55%;
     --destructive-foreground: 0 0% 98%;
     
-    /* === B) TEXT LADDER (Neutral Dark text) === */
-    --fg-1: #EDEDED;                     /* Primary text — Neutral white */
-    --fg-2: #888888;                     /* Secondary text */
-    --fg-3: #666666;                     /* Muted/hints */
+    /* === B) TEXT LADDER (Vercel Geist — Pure Neutral) === */
+    --fg-1: #EDEDED;                     /* gray-1000: Primary text */
+    --fg-2: #A1A1A1;                     /* gray-900: Secondary text */
+    --fg-3: #878787;                     /* gray-600: Muted/hints */
     --fg-4: rgba(237,237,237,0.30);      /* Disabled */
 
     --text-1: var(--fg-1);
@@ -937,37 +937,36 @@ html:has(body[data-scroll-locked]) {
 
     /* HSL versions for Tailwind */
     --text-primary: 0 0% 93%;
-    --text-secondary: 0 0% 53%;
-    --text-tertiary: 0 0% 40%;
-    --text-muted: 0 0% 40%;
+    --text-secondary: 0 0% 63%;
+    --text-tertiary: 0 0% 53%;
+    --text-muted: 0 0% 53%;
     
     /* ═══════════════════════════════════════════════════════════════
-       V9.5 NAVIGATION SHELL — AAA Contrast (Dark Mode)
-       NOCTURNE Warm Charcoal palette
+       V9.5 NAVIGATION SHELL — Vercel Geist tokens
        ═══════════════════════════════════════════════════════════════ */
     --nav-text-primary: #EDEDED;
-    --nav-text-secondary: #888888;
-    --nav-text-tertiary: #666666;
-    --nav-module-badge: #222222;           /* Neutral badge */
-    --nav-section-label: #666666;
+    --nav-text-secondary: #A1A1A1;
+    --nav-text-tertiary: #878787;
+    --nav-module-badge: #292929;            /* gray-300 */
+    --nav-section-label: #878787;
     --nav-accent-bar: #3b82f6;             /* Left accent bar */
     
-    /* === C) DIVIDER + BORDER GRAMMAR (Warm Charcoal borders) === */
-    --divider: rgba(255,255,255,0.05);
-    --border-subtle: rgba(255,255,255,0.08);
-    --border-strong: rgba(255,255,255,0.12);
+    /* === C) DIVIDER + BORDER GRAMMAR (Vercel Geist — Solid hex) === */
+    --divider: #292929;                    /* gray-300: Border subtle */
+    --border-subtle: #2E2E2E;             /* gray-400: Border default */
+    --border-strong: #454545;             /* gray-500: Border strong */
     --stroke-1: var(--divider);
     --stroke-2: var(--border-subtle);
     
-    --border: 30 10% 50% / 0.06;
-    --input: 30 10% 50% / 0.08;
+    --border: 0 0% 18%;                   /* #2E2E2E as HSL */
+    --input: 0 0% 18%;                    /* #2E2E2E */
     --ring: 217 91% 60%;
     
     /* === D) INTERACTION TOKENS === */
     --focus-ring: rgba(59,130,246,0.55);   /* Blue focus */
-    --hover: rgba(255,255,255,0.04);
-    --active: rgba(255,255,255,0.07);
-    --selected: rgba(255,255,255,0.08);    /* Neutral selected */
+    --hover: #1F1F1F;                      /* gray-200: Solid hover */
+    --active: #292929;                     /* gray-300: Solid active */
+    --selected: rgba(59,130,246,0.10);     /* Blue tint selected */
     
     --row-hover: var(--hover);
     --row-selected: rgba(255,255,255,0.08);

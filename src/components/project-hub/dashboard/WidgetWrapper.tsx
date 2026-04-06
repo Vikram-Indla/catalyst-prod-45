@@ -69,10 +69,10 @@ export default function WidgetWrapper({
     <div
       role="region"
       aria-label={title}
-      className={`overflow-hidden flex flex-col ${dark ? 'bg-[#0A0A0A]' : 'bg-[var(--cp-bg-page)]'}`}
+      className={`overflow-hidden flex flex-col ${dark ? 'bg-[#1A1A1A]' : 'bg-[var(--cp-bg-page)]'}`}
       style={{
         gridColumn: `span ${span}`,
-        border: dark ? '1px solid rgba(255,255,255,0.08)' : '0.75px solid var(--cp-border-default)',
+        border: dark ? '1px solid #2E2E2E' : '0.75px solid var(--cp-border-default)',
         borderRadius: 'var(--cp-radius-default)',
         boxShadow: dark ? 'none' : undefined,
       }}
@@ -80,10 +80,10 @@ export default function WidgetWrapper({
       {/* Header */}
       <button
         onClick={onToggleCollapse}
-        className={`w-full flex items-center justify-between gap-2 cursor-pointer border-0 text-left ${dark ? 'bg-white/[0.03]' : 'bg-[var(--cp-bg-sunken)]'}`}
+        className={`w-full flex items-center justify-between gap-2 cursor-pointer border-0 text-left ${dark ? 'bg-[#1F1F1F]' : 'bg-[var(--cp-bg-sunken)]'}`}
         style={{
           padding: '10px 14px',
-          borderBottom: collapsed ? 'none' : dark ? '1px solid rgba(255,255,255,0.08)' : '0.75px solid var(--cp-border-default)',
+          borderBottom: collapsed ? 'none' : dark ? '1px solid #2E2E2E' : '0.75px solid var(--cp-border-default)',
           minHeight: 38,
         }}
       >
@@ -103,7 +103,7 @@ export default function WidgetWrapper({
           {subtitle && (
             <span
               className="hidden sm:inline truncate"
-              style={{ fontSize: 12, color: dark ? '#666666' : 'var(--cp-text-tertiary)', fontFamily: 'var(--cp-font-body)' }}
+              style={{ fontSize: 12, color: dark ? '#878787' : 'var(--cp-text-tertiary)', fontFamily: 'var(--cp-font-body)' }}
             >
               · {subtitle}
             </span>
@@ -114,7 +114,7 @@ export default function WidgetWrapper({
           <ChevronDown
             size={14}
             style={{
-              color: dark ? '#666666' : 'var(--cp-text-tertiary)',
+              color: dark ? '#878787' : 'var(--cp-text-tertiary)',
               transition: 'transform 200ms ease',
               transform: collapsed ? 'rotate(-90deg)' : 'rotate(0deg)',
             }}
@@ -124,7 +124,7 @@ export default function WidgetWrapper({
 
       {/* Body */}
       {!collapsed && (
-        <div className={`flex-1 ${dark ? 'bg-[#0A0A0A]' : 'bg-[var(--cp-bg-page)]'}`} style={{ padding: flushBody ? 0 : 14 }}>
+        <div className={`flex-1 ${dark ? 'bg-[#1A1A1A]' : 'bg-[var(--cp-bg-page)]'}`} style={{ padding: flushBody ? 0 : 14 }}>
           <WidgetErrorBoundary title={title}>
             {children}
           </WidgetErrorBoundary>
@@ -134,9 +134,9 @@ export default function WidgetWrapper({
       {/* Footer */}
       {!collapsed && footer && (
         <div
-          className={dark ? 'bg-[#0A0A0A]' : 'bg-[var(--cp-bg-page)]'}
+          className={dark ? 'bg-[#1A1A1A]' : 'bg-[var(--cp-bg-page)]'}
           style={{
-            borderTop: dark ? '1px solid rgba(255,255,255,0.08)' : '0.75px solid var(--cp-border-subtle)',
+            borderTop: dark ? '1px solid #2E2E2E' : '0.75px solid var(--cp-border-subtle)',
             padding: '8px 14px',
           }}
         >
