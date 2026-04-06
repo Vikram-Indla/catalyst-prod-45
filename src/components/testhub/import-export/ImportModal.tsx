@@ -170,10 +170,23 @@ export function ImportModal({ isOpen, onClose, onImported }: ImportModalProps) {
         for (let i = 0; i < transformedData.length; i++) {
           const row = transformedData[i];
           try {
-            const { error } = await (supabase as any).from('th_test_cases').insert({
+            const priorityMap: Record<string, string> = {
+              'high': '00000000-0000-0000-0001-000000000002',
+              'medium': '00000000-0000-0000-0001-000000000003',
+              'low': '00000000-0000-0000-0001-000000000004',
+            };
+            const typeMap: Record<string, string> = {
+              'functional': '00000000-0000-0000-0002-000000000001',
+              'regression': '00000000-0000-0000-0002-000000000002',
+              'smoke': '00000000-0000-0000-0002-000000000003',
+            };
+            const priorityVal = (row.priority || 'medium').toLowerCase();
+            const typeVal = (row.type || 'functional').toLowerCase();
+            const { error } = await (supabase as any).from('tm_test_cases').insert({
               title: row.title,
               description: row.description || null,
-              priority: row.priority || 'medium',
+              priority_id: priorityMap[priorityVal] || priorityMap['medium'],
+              case_type_id: typeMap[typeVal] || typeMap['functional'],
               status: row.status || 'draft',
               preconditions: row.preconditions || null,
               expected_result: row.expected_result || null,
@@ -189,7 +202,7 @@ export function ImportModal({ isOpen, onClose, onImported }: ImportModalProps) {
         for (let i = 0; i < transformedData.length; i++) {
           const row = transformedData[i];
           try {
-            const { error } = await (supabase as any).from('th_defects').insert({
+            const { error } = await (supabase as any).from('tm_defects').insert({
               title: row.title,
               description: row.description || null,
               severity: row.severity || 'medium',
