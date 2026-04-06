@@ -231,7 +231,7 @@ export default function IdeationPage() {
 
       {/* Filtered context indicator */}
       {activeFilter !== 'all' && (
-        <div style={{ padding: '6px 28px', background: isDark ? 'rgba(37,99,235,0.08)' : 'rgba(59,130,246,0.06)', borderBottom: `1px solid ${isDark ? 'rgba(37,99,235,0.15)' : '#DBEAFE'}`, display: 'flex', alignItems: 'center', gap: '6px' }}>
+        <div style={{ padding: '6px 28px', background: isDark ? 'rgba(37,99,235,0.08)' : '#EFF6FF', borderBottom: `1px solid ${isDark ? 'rgba(37,99,235,0.15)' : '#DBEAFE'}`, display: 'flex', alignItems: 'center', gap: '6px' }}>
           <span style={{ fontSize: '11px', fontWeight: 500, color: isDark ? '#60A5FA' : '#2563EB' }}>
             Showing {activeFilter.replace('_', ' ')} ideas only
           </span>
@@ -255,7 +255,7 @@ export default function IdeationPage() {
             placeholder="Search ideas..."
             style={{
               width: '100%', height: '32px', paddingLeft: '32px', paddingRight: '10px',
-              background: isDark ? 'transparent' : '#1A1A1A', border: `1px solid ${dk.border}`, borderRadius: '6px',
+              background: isDark ? 'transparent' : '#F8FAFC', border: `1px solid ${dk.border}`, borderRadius: '6px',
               fontSize: '13px', color: dk.t1, outline: 'none',
             }}
             onFocus={e => { e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.08)'; e.currentTarget.style.borderColor = '#2563EB'; }}
@@ -358,7 +358,7 @@ function IdeationListView({ ideas, selectedRows, toggleRow, toggleAll, onOpenDet
     }}>
       <table style={{ width: '100%', borderCollapse: 'collapse' }}>
         <thead>
-          <tr style={{ height: '50px', background: isDark ? 'rgba(255,255,255,0.03)' : '#1A1A1A' }}>
+          <tr style={{ height: '50px', background: isDark ? 'rgba(255,255,255,0.03)' : '#F8FAFC' }}>
             <th style={{ width: '40px', padding: '0 8px', textAlign: 'center' }}>
               <input type="checkbox" checked={selectedRows.size === ideas.length && ideas.length > 0} onChange={toggleAll} style={{ cursor: 'pointer', accentColor: '#2563EB' }} />
             </th>

@@ -126,7 +126,7 @@ export function RoadmapFilters({
                 className="inline-flex items-center gap-1.5 h-8 px-3 text-xs font-medium focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-blue-500"
                 style={{
                   borderRadius: 6,
-                  background: isActive ? (isDark ? 'rgba(255,255,255,0.05)' : '#1A1A1A') : 'transparent',
+                  background: isActive ? (isDark ? 'rgba(255,255,255,0.05)' : '#F8FAFC') : 'transparent',
                   color: isActive ? ink[1] : ink[2],
                   borderBottom: isActive ? '2px solid #2563EB' : '2px solid transparent',
                   transition: 'all 0.15s ease',

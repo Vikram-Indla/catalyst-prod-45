@@ -144,7 +144,7 @@ export function GoalsListView({ goals, themes, onGoalClick, isDark = false }: Go
                   <span style={{ fontSize: 13, fontWeight: 500, color: isDark ? DK.t1 : 'var(--fg-1)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{goal.owner_name}</span>
                 </>
               ) : (
-                <span style={{ fontSize: 11, color: isDark ? DK.t4 : 'rgba(237,237,237,0.53)' }}>—</span>
+                <span style={{ fontSize: 11, color: isDark ? DK.t4 : '#CBD5E1' }}>—</span>
               )}
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>

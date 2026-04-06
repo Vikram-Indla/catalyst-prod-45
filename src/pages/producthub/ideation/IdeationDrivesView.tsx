@@ -78,7 +78,7 @@ export default function IdeationDrivesView() {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
-            <h2 style={{ fontSize: '22px', fontWeight: 800, color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)', letterSpacing: '-0.5px', margin: 0, fontFamily: "'Sora', 'Inter', sans-serif" }}>Ideas Themes</h2>
+            <h2 style={{ fontSize: '22px', fontWeight: 800, color: isDark ? '#EDEDED' : '#0F172A', letterSpacing: '-0.5px', margin: 0, fontFamily: "'Sora', 'Inter', sans-serif" }}>Ideas Themes</h2>
             <span style={{
               background: '#1A1A1A', border: '1px solid rgba(255,255,255,0.10)', borderRadius: '12px',
               padding: '1px 7px', fontSize: '11px', fontWeight: 600,
@@ -119,7 +119,7 @@ export default function IdeationDrivesView() {
         const IconComponent = getDriveIcon(drive.title);
         return (
           <div key={drive.id} style={{
-            background: isDark ? '#1A1A1A' : '#FFFFFF', border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(255,255,255,0.10)', borderRadius: '6px',
+            background: isDark ? '#1A1A1A' : '#FFFFFF', border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0', borderRadius: '6px',
             padding: '20px', marginBottom: '16px',
           }}>
             {/* Title + Icon + Status */}
@@ -127,13 +127,13 @@ export default function IdeationDrivesView() {
               {/* V12: Lucide icon container */}
               <div style={{
                 width: 36, height: 50, borderRadius: 8,
-                background: isDark ? '#1A1A1A' : '#1A1A1A', border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(255,255,255,0.10)',
+                background: isDark ? '#1A1A1A' : '#F1F5F9', border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 flexShrink: 0, color: isDark ? '#A1A1A1' : '#475569',
               }}>
                 <IconComponent size={18} strokeWidth={2} />
               </div>
-              <span style={{ fontSize: '16px', fontWeight: 700, color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)', flex: 1 }}>{drive.title}</span>
+              <span style={{ fontSize: '16px', fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A', flex: 1 }}>{drive.title}</span>
               {/* V12 3-color lozenge for status */}
               <span style={{
                 display: 'inline-flex', alignItems: 'center',

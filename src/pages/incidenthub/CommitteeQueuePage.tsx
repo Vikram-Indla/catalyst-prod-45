@@ -30,7 +30,7 @@ export default function CommitteeQueuePage() {
             <div className="flex items-center justify-center rounded-md" style={{ width: 32, height: 32, backgroundColor: 'rgba(251,191,36,0.10)' }}>
               <Users size={18} style={{ color: '#D97706' }} />
             </div>
-            <h1 style={{ fontFamily: 'Sora, sans-serif', fontSize: 18, fontWeight: 700, color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)' }}>Committee Queue</h1>
+            <h1 style={{ fontFamily: 'Sora, sans-serif', fontSize: 18, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A' }}>Committee Queue</h1>
           </div>
           <Button size="sm" className="gap-1.5" style={{ backgroundColor: '#2563EB', borderRadius: 6 }}>
             <Plus size={14} /> New Committee
@@ -42,14 +42,14 @@ export default function CommitteeQueuePage() {
           {/* Header */}
           <div className="grid items-center" style={{
             gridTemplateColumns: '120px 1fr 70px 100px 80px 160px 80px 100px',
-            backgroundColor: isDark ? '#1A1A1A' : '#1A1A1A',
+            backgroundColor: isDark ? '#1A1A1A' : '#F1F5F9',
             height: 50,
             borderBottom: isDark ? '0.75px solid rgba(255,255,255,0.05)' : '0.75px solid rgba(15,23,42,0.06)',
           }}>
             {['KEY', 'INCIDENT', 'SEV', 'STATUS', 'AGE', 'APPROVAL', 'TYPE', 'ACTIONS'].map(h => (
               <div key={h} className="px-3" style={{
                 fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 11, fontWeight: 700,
-                textTransform: 'uppercase' as const, letterSpacing: '0.06em', color: isDark ? '#878787' : 'rgba(237,237,237,0.40)',
+                textTransform: 'uppercase' as const, letterSpacing: '0.06em', color: isDark ? '#878787' : '#64748B',
               }}>{h}</div>
             ))}
           </div>
@@ -57,7 +57,7 @@ export default function CommitteeQueuePage() {
           {/* Empty */}
           {(!queue || queue.length === 0) && (
             <div className="flex items-center justify-center py-12">
-              <p style={{ fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 12, color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>No committee members assigned.</p>
+              <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: isDark ? '#878787' : '#94A3B8' }}>No committee members assigned.</p>
             </div>
           )}
 
@@ -83,20 +83,20 @@ export default function CommitteeQueuePage() {
                 onClick={() => navigate(`/incident-hub/view/${item.incident_id}`)}
               >
                 <div className="px-3">
-                  <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 12, color: '#2563EB', backgroundColor: isDark ? 'rgba(37,99,235,0.12)' : 'rgba(59,130,246,0.06)', padding: '0 4px', borderRadius: 3 }}>
+                  <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 12, color: '#2563EB', backgroundColor: isDark ? 'rgba(37,99,235,0.12)' : '#EFF6FF', padding: '0 4px', borderRadius: 3 }}>
                     {item.incident_key}
                   </span>
                 </div>
-                <div className="px-3 truncate" style={{ fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 12, fontWeight: 650, color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)' }}>
+                <div className="px-3 truncate" style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, fontWeight: 650, color: isDark ? '#EDEDED' : '#0F172A' }}>
                   {item.title}
                 </div>
                 <div className="px-3"><SeverityChip severity={item.severity || 'SEV4'} /></div>
                 <div className="px-3"><StatusLozenge status={item.committee_status || 'pending'} /></div>
-                <div className="px-3" style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>
+                <div className="px-3" style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: isDark ? '#878787' : '#64748B' }}>
                   {item.age_hours ? `${Math.round(item.age_hours)}h` : '\u2014'}
                 </div>
                 <div className="px-3 flex items-center gap-2">
-                  <div style={{ flex: 1, height: 6, borderRadius: 4, backgroundColor: isDark ? '#292929' : 'rgba(255,255,255,0.10)', overflow: 'hidden' }}>
+                  <div style={{ flex: 1, height: 6, borderRadius: 4, backgroundColor: isDark ? '#292929' : '#E2E8F0', overflow: 'hidden' }}>
                     <div style={{
                       height: '100%',
                       width: `${progress * 100}%`,
@@ -105,7 +105,7 @@ export default function CommitteeQueuePage() {
                       transition: 'width 400ms ease',
                     }} />
                   </div>
-                  <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, color: isDark ? '#878787' : 'rgba(237,237,237,0.40)', whiteSpace: 'nowrap' }}>
+                  <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, color: isDark ? '#878787' : '#64748B', whiteSpace: 'nowrap' }}>
                     {approved}/{total}
                   </span>
                 </div>

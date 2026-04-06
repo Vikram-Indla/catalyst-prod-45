@@ -696,8 +696,8 @@ export default function TestHubExecutionPage() {
           {/* Stats badges */}
           <div style={{ display: 'flex', gap: 6 }}>
             {[
-              { count: cycle.passed_count, color: '#059669', bg: isDark ? 'rgba(34,197,94,0.12)' : 'rgba(74,222,128,0.06)', Icon: CheckCircle2 },
-              { count: cycle.failed_count, color: '#DC2626', bg: isDark ? 'rgba(248,113,113,0.12)' : 'rgba(248,113,113,0.06)', Icon: XCircle },
+              { count: cycle.passed_count, color: '#059669', bg: isDark ? 'rgba(34,197,94,0.12)' : '#ECFDF5', Icon: CheckCircle2 },
+              { count: cycle.failed_count, color: '#DC2626', bg: isDark ? 'rgba(248,113,113,0.12)' : '#FEF2F2', Icon: XCircle },
               { count: cycle.blocked_count, color: '#D97706', bg: isDark ? 'rgba(251,191,36,0.12)' : '#FFFBEB', Icon: AlertTriangle },
             ].map((s, i) => (
               <span key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: 3, padding: '4px 8px', backgroundColor: s.bg, borderRadius: 6, fontSize: 11, fontWeight: 600, color: s.color }}>
@@ -928,7 +928,7 @@ export default function TestHubExecutionPage() {
                           return (
                             <div key={i} style={{
                               padding: '12px 16px', backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF',
-                              border: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.10)'}`, borderRadius: 6,
+                              border: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 6,
                               borderLeft: `3px solid ${colors.border}`,
                             }}>
                               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
@@ -948,7 +948,7 @@ export default function TestHubExecutionPage() {
                                 <p style={{ fontSize: 13, color: 'hsl(var(--foreground))', margin: '4px 0 0', lineHeight: 1.5 }}>{step.title}</p>
                               </div>
                               {step.notes ? (
-                                <div style={{ marginTop: 8, padding: '6px 10px', backgroundColor: isDark ? '#1A1A1A' : '#1A1A1A', borderRadius: 4 }}>
+                                <div style={{ marginTop: 8, padding: '6px 10px', backgroundColor: isDark ? '#1A1A1A' : '#F8FAFC', borderRadius: 4 }}>
                                   <span style={{ fontSize: 10, fontWeight: 700, color: 'hsl(var(--muted-foreground))', textTransform: 'uppercase', letterSpacing: '0.06em' }}>NOTES</span>
                                   <p style={{ fontSize: 12, color: 'hsl(var(--foreground))', margin: '2px 0 0' }}>{step.notes}</p>
                                 </div>
@@ -1106,9 +1106,9 @@ export default function TestHubExecutionPage() {
                            </p>
 
                            {currentStep.expected_result && (
-                             <div style={{ marginTop: 16, padding: 14, backgroundColor: isDark ? 'rgba(34,197,94,0.12)' : 'rgba(74,222,128,0.06)', borderRadius: 8, borderLeft: '3px solid #10B981' }}>
+                             <div style={{ marginTop: 16, padding: 14, backgroundColor: isDark ? 'rgba(34,197,94,0.12)' : '#ECFDF5', borderRadius: 8, borderLeft: '3px solid #10B981' }}>
                                <span style={{ fontSize: 10, fontWeight: 700, color: '#059669', textTransform: 'uppercase', letterSpacing: '0.06em' }}>EXPECTED</span>
-                               <p style={{ fontSize: 14, color: isDark ? '#A1A1A1' : '#4ADE80', margin: '4px 0 0', lineHeight: 1.5 }}>
+                               <p style={{ fontSize: 14, color: isDark ? '#A1A1A1' : '#065F46', margin: '4px 0 0', lineHeight: 1.5 }}>
                                  {highlightVariables(currentStep.expected_result)}
                                </p>
                              </div>
@@ -1155,10 +1155,10 @@ export default function TestHubExecutionPage() {
 
                   {/* Status buttons */}
                   {[
-                    { key: 'passed', label: 'Pass', shortcut: 'P', icon: CheckCircle2, onClick: handlePass, color: '#059669', bg: isDark ? 'rgba(34,197,94,0.12)' : 'rgba(74,222,128,0.06)', activeBg: 'linear-gradient(135deg, #10B981, #059669)' },
-                    { key: 'failed', label: 'Fail', shortcut: 'F', icon: XCircle, onClick: handleFail, color: '#DC2626', bg: isDark ? 'rgba(248,113,113,0.12)' : 'rgba(248,113,113,0.06)', activeBg: 'linear-gradient(135deg, #EF4444, #DC2626)' },
+                    { key: 'passed', label: 'Pass', shortcut: 'P', icon: CheckCircle2, onClick: handlePass, color: '#059669', bg: isDark ? 'rgba(34,197,94,0.12)' : '#ECFDF5', activeBg: 'linear-gradient(135deg, #10B981, #059669)' },
+                    { key: 'failed', label: 'Fail', shortcut: 'F', icon: XCircle, onClick: handleFail, color: '#DC2626', bg: isDark ? 'rgba(248,113,113,0.12)' : '#FEF2F2', activeBg: 'linear-gradient(135deg, #EF4444, #DC2626)' },
                     { key: 'blocked', label: 'Block', shortcut: 'B', icon: AlertTriangle, onClick: handleBlocked, color: '#D97706', bg: isDark ? 'rgba(251,191,36,0.12)' : '#FFFBEB', activeBg: 'linear-gradient(135deg, #F59E0B, #D97706)' },
-                    { key: 'skipped', label: 'Skip', shortcut: 'S', icon: SkipForward, onClick: handleSkip, color: isDark ? '#878787' : 'rgba(237,237,237,0.40)', bg: 'hsl(var(--muted) / 0.3)', activeBg: 'linear-gradient(135deg, rgba(237,237,237,0.40), #475569)' },
+                    { key: 'skipped', label: 'Skip', shortcut: 'S', icon: SkipForward, onClick: handleSkip, color: isDark ? '#878787' : '#64748B', bg: 'hsl(var(--muted) / 0.3)', activeBg: 'linear-gradient(135deg, #64748B, #475569)' },
                   ].map(btn => {
                     const Icon = btn.icon;
                     const isActive = currentTestCase.current_status === btn.key;
@@ -1205,7 +1205,7 @@ export default function TestHubExecutionPage() {
                         failed:  { bg: '#DC2626', text: '#FFFFFF' },
                         blocked: { bg: '#D97706', text: '#FFFFFF' },
                         skipped: { bg: '#475569', text: '#FFFFFF' },
-                        not_run: { bg: isDark ? '#1A1A1A' : 'rgba(255,255,255,0.10)', text: isDark ? '#878787' : 'rgba(237,237,237,0.40)' },
+                        not_run: { bg: isDark ? '#1A1A1A' : '#E2E8F0', text: isDark ? '#878787' : '#64748B' },
                       };
                       const colors = statusColors[derivedStatus] || statusColors.not_run;
                       const label = derivedStatus !== 'not_run'
@@ -1217,9 +1217,9 @@ export default function TestHubExecutionPage() {
                           disabled={isDisabled}
                           title={!anyStepMarked ? 'Mark all steps before completing' : `Complete with status: ${derivedStatus}`}
                           style={{
-                            height: 34, padding: '0 14px', border: isDisabled ? `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.10)'}` : 'none',
-                            borderRadius: 6, backgroundColor: isDisabled ? (isDark ? '#1A1A1A' : '#1A1A1A') : colors.bg,
-                            color: isDisabled ? (isDark ? '#878787' : 'rgba(237,237,237,0.40)') : colors.text, fontSize: 12, fontWeight: 700,
+                            height: 34, padding: '0 14px', border: isDisabled ? `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}` : 'none',
+                            borderRadius: 6, backgroundColor: isDisabled ? (isDark ? '#1A1A1A' : '#F8FAFC') : colors.bg,
+                            color: isDisabled ? (isDark ? '#878787' : '#94A3B8') : colors.text, fontSize: 12, fontWeight: 700,
                             cursor: isDisabled ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: 5,
                             opacity: isDisabled ? 0.7 : 1, transition: 'all 150ms ease',
                             boxShadow: isDisabled ? 'none' : `0 2px 8px ${colors.bg}40`,

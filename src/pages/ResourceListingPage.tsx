@@ -297,10 +297,10 @@ export default function ResourceListingPage() {
           Resource Type
         </span>
         {([
-          { key: 'all' as const, label: 'All', accentColor: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)', tooltip: 'Show all resource types' },
+          { key: 'all' as const, label: 'All', accentColor: isDark ? '#EDEDED' : '#1E293B', tooltip: 'Show all resource types' },
           { key: 'core' as const, label: 'Core', accentColor: '#0D9488', tooltip: 'Variable + Permanent (org headcount)' },
           { key: 'project' as const, label: 'Project', accentColor: '#2563EB', tooltip: 'Fixed-term project resources' },
-          { key: 'temporary' as const, label: 'Temporary', accentColor: isDark ? '#A1A1A1' : 'rgba(237,237,237,0.40)', tooltip: 'Freelance / time-bounded engagements' },
+          { key: 'temporary' as const, label: 'Temporary', accentColor: isDark ? '#A1A1A1' : '#64748B', tooltip: 'Freelance / time-bounded engagements' },
         ] as const).map(pill => {
           const isActive = resourceTypeFilter === pill.key;
           const count = resourceTypeCounts[pill.key];

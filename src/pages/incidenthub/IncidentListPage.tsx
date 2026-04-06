@@ -77,13 +77,13 @@ export default function IncidentListPage() {
   // NOCTURNE color helpers
   const pageBg = isDark ? '#0A0A0A' : '#FFFFFF';
   const surfaceBg = isDark ? '#1A1A1A' : '#FFFFFF';
-  const elevatedBg = isDark ? '#1A1A1A' : '#1A1A1A';
+  const elevatedBg = isDark ? '#1A1A1A' : '#F1F5F9';
   const borderColor = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.12)';
   const borderSubtle = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(15,23,42,0.06)';
-  const textPrimary = isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)';
-  const textSecondary = isDark ? '#A1A1A1' : 'rgba(237,237,237,0.40)';
-  const textMuted = isDark ? '#878787' : 'rgba(237,237,237,0.40)';
-  const textBody = isDark ? '#A1A1A1' : 'rgba(237,237,237,0.53)';
+  const textPrimary = isDark ? '#EDEDED' : '#0F172A';
+  const textSecondary = isDark ? '#A1A1A1' : '#64748B';
+  const textMuted = isDark ? '#878787' : '#94A3B8';
+  const textBody = isDark ? '#A1A1A1' : '#334155';
   const rowBg = isDark ? '#0A0A0A' : '#FFFFFF';
   const rowHoverBg = isDark ? 'rgba(255,255,255,0.04)' : 'rgba(15,23,42,0.04)';
 
@@ -93,7 +93,7 @@ export default function IncidentListPage() {
       <div className="px-6 pt-6 pb-4">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center rounded-md" style={{ width: 32, height: 32, backgroundColor: isDark ? 'rgba(248,113,113,0.12)' : 'rgba(248,113,113,0.10)' }}>
+            <div className="flex items-center justify-center rounded-md" style={{ width: 32, height: 32, backgroundColor: isDark ? 'rgba(248,113,113,0.12)' : '#FEE2E2' }}>
               <AlertTriangle size={18} style={{ color: '#DC2626' }} />
             </div>
             <div>
@@ -151,7 +151,7 @@ export default function IncidentListPage() {
                   borderRadius: 4,
                   fontFamily: 'Geist, -apple-system, sans-serif',
                   fontWeight: statusFilter === c.key ? 650 : 400,
-                  backgroundColor: statusFilter === c.key ? (isDark ? 'rgba(37,99,235,0.16)' : 'rgba(59,130,246,0.06)') : 'transparent',
+                  backgroundColor: statusFilter === c.key ? (isDark ? 'rgba(37,99,235,0.16)' : '#EFF6FF') : 'transparent',
                   color: statusFilter === c.key ? (isDark ? '#93C5FD' : '#2563EB') : textSecondary,
                   border: statusFilter === c.key ? `1px solid ${isDark ? 'rgba(37,99,235,0.3)' : '#BFDBFE'}` : '1px solid transparent',
                 }}
@@ -238,7 +238,7 @@ export default function IncidentListPage() {
                 )}
                 <span className="inline-flex items-center px-1" style={{
                   fontFamily: 'JetBrains Mono, monospace', fontSize: 11, fontWeight: 500,
-                  color: isDark ? '#93C5FD' : '#2563EB', backgroundColor: isDark ? 'rgba(37,99,235,0.16)' : 'rgba(59,130,246,0.06)', borderRadius: 4,
+                  color: isDark ? '#93C5FD' : '#2563EB', backgroundColor: isDark ? 'rgba(37,99,235,0.16)' : '#EFF6FF', borderRadius: 4,
                 }}>
                   {item.incident_key || '\u2014'}
                 </span>

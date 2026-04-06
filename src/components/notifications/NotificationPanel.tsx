@@ -69,9 +69,9 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
   const T = {
     panelBg: isDark ? '#1A1714' : '#FFFFFF',
     surfaceBg: isDark ? '#232019' : '#FFFFFF',
-    text1: isDark ? '#F5F3F0' : 'rgba(237,237,237,0.93)',
-    text2: isDark ? '#A09890' : 'rgba(237,237,237,0.40)',
-    text3: isDark ? '#6B6560' : 'rgba(237,237,237,0.40)',
+    text1: isDark ? '#F5F3F0' : '#0F172A',
+    text2: isDark ? '#A09890' : '#64748B',
+    text3: isDark ? '#6B6560' : '#94A3B8',
     border: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.08)',
     borderStrong: isDark ? 'rgba(255,255,255,0.12)' : 'rgba(15,23,42,0.12)',
     hover: isDark ? 'rgba(255,255,255,0.04)' : 'rgba(15,23,42,0.04)',
@@ -349,7 +349,7 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
               aria-label={unreadOnly ? 'Show all notifications' : 'Show only unread'}
               style={{
                 width: 36, height: 20, borderRadius: 12, cursor: 'pointer', border: 'none',
-                background: unreadOnly ? '#16A34A' : (isDark ? '#444444' : 'rgba(237,237,237,0.53)'),
+                background: unreadOnly ? '#16A34A' : (isDark ? '#444444' : '#334155'),
                 position: 'relative', transition: 'background 200ms ease',
                 padding: 0,
               }}

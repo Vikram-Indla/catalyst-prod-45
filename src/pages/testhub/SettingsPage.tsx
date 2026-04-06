@@ -141,13 +141,13 @@ export default function SettingsPage() {
   };
 
   // NOCTURNE tokens
-  const pageBg = isDark ? '#0A0A0A' : '#1A1A1A';
+  const pageBg = isDark ? '#0A0A0A' : '#F8FAFC';
   const surfaceBg = isDark ? '#1A1A1A' : '#FFF';
-  const elevatedBg = isDark ? '#1A1A1A' : '#1A1A1A';
-  const borderColor = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.10)';
-  const textPrimary = isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)';
-  const textSecondary = isDark ? '#A1A1A1' : 'rgba(237,237,237,0.40)';
-  const textMuted = isDark ? '#878787' : 'rgba(237,237,237,0.40)';
+  const elevatedBg = isDark ? '#1A1A1A' : '#F1F5F9';
+  const borderColor = isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0';
+  const textPrimary = isDark ? '#EDEDED' : '#0F172A';
+  const textSecondary = isDark ? '#A1A1A1' : '#64748B';
+  const textMuted = isDark ? '#878787' : '#94A3B8';
 
   if (isLoading) {
     return (
@@ -205,7 +205,7 @@ export default function SettingsPage() {
                         const isSelected = preferences.theme === opt.value;
                         return (
                           <button key={opt.value} onClick={() => updatePreference('theme', opt.value)}
-                            style={{ flex: 1, padding: 16, borderRadius: 12, border: `2px solid ${isSelected ? '#2563EB' : borderColor}`, backgroundColor: isSelected ? (isDark ? '#1e293b' : 'rgba(59,130,246,0.06)') : surfaceBg, cursor: 'pointer', textAlign: 'center' }}>
+                            style={{ flex: 1, padding: 16, borderRadius: 12, border: `2px solid ${isSelected ? '#2563EB' : borderColor}`, backgroundColor: isSelected ? (isDark ? '#1e293b' : '#EFF6FF') : surfaceBg, cursor: 'pointer', textAlign: 'center' }}>
                             <OptIcon size={24} style={{ color: isSelected ? '#2563EB' : textSecondary, marginBottom: 8 }} />
                             <p style={{ fontSize: 14, fontWeight: 500, color: isSelected ? '#2563EB' : textPrimary, margin: 0 }}>{opt.label}</p>
                           </button>
@@ -222,7 +222,7 @@ export default function SettingsPage() {
                         const isSelected = preferences.density === opt.value;
                         return (
                           <button key={opt.value} onClick={() => updatePreference('density', opt.value)}
-                            style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 14, borderRadius: 8, border: `1.5px solid ${isSelected ? '#2563EB' : borderColor}`, backgroundColor: isSelected ? (isDark ? '#1e293b' : 'rgba(59,130,246,0.06)') : surfaceBg, cursor: 'pointer', textAlign: 'left' }}>
+                            style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 14, borderRadius: 8, border: `1.5px solid ${isSelected ? '#2563EB' : borderColor}`, backgroundColor: isSelected ? (isDark ? '#1e293b' : '#EFF6FF') : surfaceBg, cursor: 'pointer', textAlign: 'left' }}>
                             <div>
                               <p style={{ fontSize: 14, fontWeight: 500, color: textPrimary, margin: 0 }}>{opt.label}</p>
                               <p style={{ fontSize: 12, color: textSecondary, margin: '2px 0 0' }}>{opt.description}</p>

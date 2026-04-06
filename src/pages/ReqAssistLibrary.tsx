@@ -236,14 +236,14 @@ export default function ReqAssistLibrary() {
   const hasDocuments = documents && documents.length > 0;
 
   return (
-    <div style={{ background: isDark ? '#0A0A0A' : '#1A1A1A', minHeight: '100%' }}>
+    <div style={{ background: isDark ? '#0A0A0A' : '#F8FAFC', minHeight: '100%' }}>
       {/* ── ZONE 1: PAGE HEADER ── */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', padding: '24px 28px 0' }}>
         <div>
-          <h1 style={{ fontFamily: "'Sora', sans-serif", fontSize: 22, fontWeight: 700, color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)', margin: 0 }}>
+          <h1 style={{ fontFamily: "'Sora', sans-serif", fontSize: 22, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A', margin: 0 }}>
             Req Assist™
           </h1>
-          <p style={{ fontSize: 13, fontWeight: 400, color: isDark ? '#878787' : 'rgba(237,237,237,0.40)', margin: '2px 0 0', fontFamily: "'Inter', sans-serif" }}>
+          <p style={{ fontSize: 13, fontWeight: 400, color: isDark ? '#878787' : '#64748B', margin: '2px 0 0', fontFamily: "'Inter', sans-serif" }}>
             BRD library — sourced from Jira, enriched by AI, indexed for AI-powered search
           </p>
         </div>
@@ -304,8 +304,8 @@ export default function ReqAssistLibrary() {
             border: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.10)'}`, borderRadius: 8,
           }}>
             <FileText size={32} color="rgba(237,237,237,0.40)" style={{ marginBottom: 12 }} />
-            <p style={{ fontSize: 16, fontWeight: 600, color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)', margin: '0 0 6px', fontFamily: "'Sora', sans-serif" }}>No documents yet</p>
-            <p style={{ fontSize: 14, color: isDark ? '#878787' : 'rgba(237,237,237,0.40)', margin: '0 0 20px', fontFamily: "'Inter', sans-serif" }}>Import from Jira or generate a BRD from text to get started.</p>
+            <p style={{ fontSize: 16, fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A', margin: '0 0 6px', fontFamily: "'Sora', sans-serif" }}>No documents yet</p>
+            <p style={{ fontSize: 14, color: isDark ? '#878787' : '#64748B', margin: '0 0 20px', fontFamily: "'Inter', sans-serif" }}>Import from Jira or generate a BRD from text to get started.</p>
             <div style={{ display: 'flex', gap: 8 }}>
               <button onClick={() => setImportOpen(true)} style={{
                 display: 'inline-flex', alignItems: 'center', gap: 6, padding: '0 14px', height: 50,
@@ -341,13 +341,13 @@ export default function ReqAssistLibrary() {
             {isFiltering && (
               <div style={{
                 display: 'flex', alignItems: 'center', gap: 8,
-                padding: '8px 28px', fontSize: 12, color: isDark ? '#878787' : 'rgba(237,237,237,0.40)',
+                padding: '8px 28px', fontSize: 12, color: isDark ? '#878787' : '#64748B',
                 background: isDark ? '#1A1A1A' : '#FFFFFF', borderBottom: `0.75px solid ${isDark ? 'rgba(255,255,255,0.06)' : 'rgba(15,23,42,0.08)'}`,
                 fontFamily: "'Inter', sans-serif",
               }}>
                 Showing {documents?.length ?? 0} of {totalCount} documents
-                <span style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>·</span>
-                Filtered by: <strong style={{ color: isDark ? '#A1A1A1' : 'rgba(237,237,237,0.53)', fontWeight: 600 }}>{tab !== 'all' ? tab.charAt(0).toUpperCase() + tab.slice(1) : search}</strong>
+                <span style={{ color: isDark ? '#878787' : '#94A3B8' }}>·</span>
+                Filtered by: <strong style={{ color: isDark ? '#A1A1A1' : '#334155', fontWeight: 600 }}>{tab !== 'all' ? tab.charAt(0).toUpperCase() + tab.slice(1) : search}</strong>
                 <button
                   onClick={() => { setSearch(''); setTab('all'); }}
                   style={{
@@ -377,10 +377,10 @@ export default function ReqAssistLibrary() {
                   ].map((col, i) => (
                     <th key={i} style={{
                       padding: '10px 12px', height: 50,
-                      fontSize: 11, fontWeight: 600, color: isDark ? '#878787' : 'rgba(237,237,237,0.40)',
+                      fontSize: 11, fontWeight: 600, color: isDark ? '#878787' : '#64748B',
                       textTransform: 'uppercase', letterSpacing: '0.06em',
                       textAlign: 'left', width: col.w || undefined,
-                      background: isDark ? '#0A0A0A' : '#1A1A1A',
+                      background: isDark ? '#0A0A0A' : '#F8FAFC',
                       fontFamily: "'Inter', sans-serif",
                     }}>
                       {col.label}
@@ -394,7 +394,7 @@ export default function ReqAssistLibrary() {
                     <tr key={i} style={{ height: 50 }}>
                       {Array.from({ length: 8 }).map((_, j) => (
                         <td key={j} style={{ padding: '8px 12px' }}>
-                          <div style={{ width: j === 1 ? '80%' : '60%', height: 12, background: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.10)', borderRadius: 4, animation: 'ra-pulse 1.5s ease-in-out infinite' }} />
+                          <div style={{ width: j === 1 ? '80%' : '60%', height: 12, background: isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0', borderRadius: 4, animation: 'ra-pulse 1.5s ease-in-out infinite' }} />
                         </td>
                       ))}
                     </tr>
@@ -424,7 +424,7 @@ export default function ReqAssistLibrary() {
                               {/* Parent line */}
                               <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                                 <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M3.5 2L6.5 5L3.5 8" stroke="rgba(237,237,237,0.53)" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                                <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 500, color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>
+                                <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 500, color: isDark ? '#878787' : '#94A3B8' }}>
                                   {parentKeys[doc.id]}
                                 </span>
                               </div>
@@ -468,7 +468,7 @@ export default function ReqAssistLibrary() {
                         {/* Title */}
                         <td style={{ padding: '8px 12px', overflow: 'hidden', maxWidth: 0 }}>
                           <span title={doc.title} style={{
-                            display: 'block', fontSize: 13, fontWeight: 400, color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)',
+                            display: 'block', fontSize: 13, fontWeight: 400, color: isDark ? '#EDEDED' : '#0F172A',
                             fontFamily: "'Inter', sans-serif",
                             overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                             maxWidth: 320,
@@ -491,8 +491,8 @@ export default function ReqAssistLibrary() {
                             ) : (
                               <span style={{
                                 display: 'inline-flex', alignItems: 'center', padding: '1px 6px',
-                                background: isDark ? '#1A1A1A' : '#1A1A1A', borderRadius: 4,
-                                fontSize: 11, color: isDark ? '#878787' : 'rgba(237,237,237,0.40)', fontFamily: "'Inter', sans-serif",
+                                background: isDark ? '#1A1A1A' : '#F1F5F9', borderRadius: 4,
+                                fontSize: 11, color: isDark ? '#878787' : '#94A3B8', fontFamily: "'Inter', sans-serif",
                               }}>Uncategorised</span>
                             );
                           })()}
@@ -544,7 +544,7 @@ export default function ReqAssistLibrary() {
                         </td>
                         {/* Imported */}
                         <td style={{ padding: '8px 12px', overflow: 'hidden' }}>
-                          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>
+                          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: isDark ? '#878787' : '#64748B' }}>
                             {doc.pulled_at ? formatImported(doc.pulled_at) : '—'}
                           </span>
                         </td>
@@ -565,7 +565,7 @@ export default function ReqAssistLibrary() {
                   <tr>
                     <td colSpan={8} style={{ padding: '48px 0', textAlign: 'center' }}>
                       <FileSearch size={24} color="rgba(237,237,237,0.40)" style={{ margin: '0 auto 8px', display: 'block' }} />
-                      <p style={{ fontSize: 14, color: isDark ? '#878787' : 'rgba(237,237,237,0.40)', margin: '0 0 8px', fontFamily: "'Inter', sans-serif" }}>
+                      <p style={{ fontSize: 14, color: isDark ? '#878787' : '#64748B', margin: '0 0 8px', fontFamily: "'Inter', sans-serif" }}>
                         No documents match "{search || 'your search term'}"
                       </p>
                       <button onClick={() => { setSearch(''); setTab('all'); }}
@@ -586,7 +586,7 @@ export default function ReqAssistLibrary() {
                 background: isDark ? '#0A0A0A' : '#FAFAFA',
                 borderTop: `0.75px solid ${isDark ? 'rgba(255,255,255,0.06)' : 'rgba(15,23,42,0.08)'}`,
               }}>
-                <span style={{ fontSize: 12, fontWeight: 400, color: isDark ? '#878787' : 'rgba(237,237,237,0.40)', fontFamily: "'Inter', sans-serif" }}>
+                <span style={{ fontSize: 12, fontWeight: 400, color: isDark ? '#878787' : '#64748B', fontFamily: "'Inter', sans-serif" }}>
                   Showing {documents.length} of {totalCount} documents
                 </span>
                 <button
@@ -640,10 +640,10 @@ export default function ReqAssistLibrary() {
             padding: 24, border: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.10)'}`,
             fontFamily: "'Inter', sans-serif",
           }}>
-            <h3 style={{ fontSize: 16, fontWeight: 650, color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)', margin: '0 0 8px', fontFamily: "'Sora', sans-serif" }}>
+            <h3 style={{ fontSize: 16, fontWeight: 650, color: isDark ? '#EDEDED' : '#0F172A', margin: '0 0 8px', fontFamily: "'Sora', sans-serif" }}>
               Epics Already Exist
             </h3>
-            <p style={{ fontSize: 14, color: isDark ? '#878787' : 'rgba(237,237,237,0.40)', margin: '0 0 20px', lineHeight: 1.5 }}>
+            <p style={{ fontSize: 14, color: isDark ? '#878787' : '#64748B', margin: '0 0 20px', lineHeight: 1.5 }}>
               This document already has {regenConfirm.count} epic{regenConfirm.count !== 1 ? 's' : ''} generated
               {regenConfirm.generatedAt ? (() => {
                 const days = Math.floor((Date.now() - new Date(regenConfirm.generatedAt!).getTime()) / 86400000);
@@ -662,7 +662,7 @@ export default function ReqAssistLibrary() {
                 setDraftDrawer({ brdId, docTitle: doc.title, jiraKey: (doc as any).jira_ticket_key || null });
               }} style={{
                 padding: '8px 16px', fontSize: 13, fontWeight: 500, borderRadius: 6,
-                border: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.15)'}`, background: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#A1A1A1' : 'rgba(237,237,237,0.53)', cursor: 'pointer',
+                border: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.15)'}`, background: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#A1A1A1' : '#334155', cursor: 'pointer',
               }}>View Drafts</button>
               <button onClick={() => { const d = regenConfirm.doc; setRegenConfirm(null); setBgModal({ type: 'epics', doc: d }); }} style={{
                 padding: '8px 16px', fontSize: 13, fontWeight: 600, borderRadius: 6,
@@ -847,7 +847,7 @@ function ActionsCell({ doc, epicCount, onSyncKb, onSelect, onViewDrafts }: {
             display: 'inline-flex', alignItems: 'center', gap: 4,
             height: 28, padding: '0 10px', fontSize: 12, fontWeight: 500,
             borderRadius: 6, border: '0.75px solid #BFDBFE',
-            background: isDark ? 'rgba(37,99,235,0.12)' : 'rgba(59,130,246,0.06)', color: '#1D4ED8', cursor: 'pointer',
+            background: isDark ? 'rgba(37,99,235,0.12)' : '#EFF6FF', color: '#1D4ED8', cursor: 'pointer',
             fontFamily: "'Inter', sans-serif", whiteSpace: 'nowrap',
             transition: 'background 80ms ease',
           }}
@@ -938,7 +938,7 @@ function ActionsCell({ doc, epicCount, onSyncKb, onSelect, onViewDrafts }: {
         display: 'inline-flex', alignItems: 'center',
         height: 28, padding: '0 10px', fontSize: 12, fontWeight: 500,
         borderRadius: 6, border: 'none', cursor: 'not-allowed',
-        background: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.10)', color: isDark ? '#878787' : 'rgba(237,237,237,0.40)',
+        background: isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0', color: isDark ? '#878787' : '#94A3B8',
         fontFamily: "'Inter', sans-serif", whiteSpace: 'nowrap',
       }}>
         Generate

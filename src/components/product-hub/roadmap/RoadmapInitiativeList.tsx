@@ -59,9 +59,9 @@ export function RoadmapInitiativeList({ groups, selectedId, hoveredId, onSelect,
   const totalCount = groups.reduce((sum, g) => sum + g.items.length, 0);
 
   const headerBg = isDark ? 'rgba(255,255,255,0.03)' : '#FAFBFC';
-  const selectedBg = isDark ? 'rgba(59,130,246,0.10)' : 'rgba(59,130,246,0.06)';
+  const selectedBg = isDark ? 'rgba(59,130,246,0.10)' : '#EFF6FF';
   const hoverBg = isDark ? 'rgba(255,255,255,0.04)' : 'rgba(37,99,235,0.04)';
-  const addHoverBg = isDark ? 'rgba(59,130,246,0.10)' : 'rgba(59,130,246,0.06)';
+  const addHoverBg = isDark ? 'rgba(59,130,246,0.10)' : '#EFF6FF';
 
   return (
     <div className="flex-shrink-0 flex flex-col roadmap-scroll" style={{ width: width || LIST_PANEL_WIDTH, borderRight: `1px solid ${surface.border}`, background: surface.card }}>

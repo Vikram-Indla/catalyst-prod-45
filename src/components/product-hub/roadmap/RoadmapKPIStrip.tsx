@@ -26,7 +26,7 @@ export function RoadmapKPIStrip({ stats }: RoadmapKPIStripProps) {
 
   const cardStyle: React.CSSProperties = {
     background: isDark ? 'transparent' : '#FFFFFF',
-    border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.10)'}`,
+    border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`,
     borderRadius: 12,
     padding: '14px 18px',
     boxShadow: isDark ? 'none' : '0 1px 3px rgba(0,0,0,0.06)',

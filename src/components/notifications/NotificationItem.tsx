@@ -87,14 +87,14 @@ function NotificationItemInner({ notification, actorProfile, onMarkRead, onClick
 
   // Dark mode tokens
   const T = {
-    text1: isDark ? '#F5F3F0' : 'rgba(237,237,237,0.93)',
-    text2: isDark ? '#A09890' : 'rgba(237,237,237,0.40)',
-    text3: isDark ? '#6B6560' : 'rgba(237,237,237,0.40)',
+    text1: isDark ? '#F5F3F0' : '#0F172A',
+    text2: isDark ? '#A09890' : '#64748B',
+    text3: isDark ? '#6B6560' : '#94A3B8',
     hover: isDark ? 'rgba(255,255,255,0.04)' : 'rgba(15,23,42,0.04)',
     press: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.08)',
     borderStrong: isDark ? 'rgba(255,255,255,0.20)' : 'rgba(15,23,42,0.2)',
     entityKey: isDark ? '#60A5FA' : '#2563EB',
-    checkStroke: isDark ? '#A09890' : 'rgba(237,237,237,0.40)',
+    checkStroke: isDark ? '#A09890' : '#64748B',
   };
 
   // Determine if this is a system-generated assignment (no actor at all)
@@ -223,7 +223,7 @@ function NotificationItemInner({ notification, actorProfile, onMarkRead, onClick
               background: 'rgba(217,119,6,.08)', borderRadius: 4, padding: '6px 10px',
             }}>
               <Clock size={14} color="#D97706" />
-              <span style={{ fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 12, color: isDark ? '#FCD34D' : '#FBBF24' }}>
+              <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: isDark ? '#FCD34D' : '#92400E' }}>
                 Due in {daysUntilDue} day{daysUntilDue !== 1 ? 's' : ''} — {notification.metadata.due_date}
               </span>
             </div>

@@ -96,7 +96,7 @@ export default function WikiKnowledgeGraphPage() {
       .selectAll('line')
       .data(links)
       .join('line')
-      .attr('stroke', isDark ? 'rgba(255,255,255,0.15)' : 'rgba(237,237,237,0.53)')
+      .attr('stroke', isDark ? 'rgba(255,255,255,0.15)' : '#CBD5E1')
       .attr('stroke-width', 1)
       .attr('stroke-opacity', 0.5);
 
@@ -134,7 +134,7 @@ export default function WikiKnowledgeGraphPage() {
       .text(d => d.title.length > 20 ? d.title.slice(0, 18) + '…' : d.title)
       .attr('font-size', 9)
       .attr('font-family', 'Inter, sans-serif')
-      .attr('fill', isDark ? '#A1A1A1' : 'rgba(237,237,237,0.53)')
+      .attr('fill', isDark ? '#A1A1A1' : '#334155')
       .attr('text-anchor', 'middle')
       .attr('dy', d => radiusScale(d.view_count ?? 1) + 12)
       .attr('pointer-events', 'none');
@@ -156,15 +156,15 @@ export default function WikiKnowledgeGraphPage() {
   }, [articles, relations, navigate]);
 
   return (
-    <div style={{ fontFamily: 'Geist, -apple-system, sans-serif', color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)', background: isDark ? '#0A0A0A' : '#1A1A1A', height: '100%', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ fontFamily: 'Inter, sans-serif', color: isDark ? '#EDEDED' : '#0F172A', background: isDark ? '#0A0A0A' : '#F8FAFC', height: '100%', display: 'flex', flexDirection: 'column' }}>
       <div style={{ padding: '20px 40px 0' }}>
         <nav style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 16 }}>
           <span onClick={() => navigate('/wiki')} style={{ fontSize: 13, color: '#2563EB', cursor: 'pointer' }}>Wiki</span>
-          <ChevronRight size={12} style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }} />
-          <span style={{ fontSize: 13, color: isDark ? '#A1A1A1' : 'rgba(237,237,237,0.40)', fontWeight: 600 }}>Knowledge Graph</span>
+          <ChevronRight size={12} style={{ color: isDark ? '#878787' : '#94A3B8' }} />
+          <span style={{ fontSize: 13, color: isDark ? '#A1A1A1' : '#64748B', fontWeight: 600 }}>Knowledge Graph</span>
         </nav>
         <h1 style={{ fontFamily: "'Sora', sans-serif", fontSize: 18, fontWeight: 700, margin: '0 0 8px' }}>Knowledge Graph</h1>
-        <p style={{ fontSize: 12, color: isDark ? '#A1A1A1' : 'rgba(237,237,237,0.40)', marginBottom: 12 }}>
+        <p style={{ fontSize: 12, color: isDark ? '#A1A1A1' : '#64748B', marginBottom: 12 }}>
           Visualize article relationships. Node size = view count. Click to open article.
         </p>
         {/* Legend */}
@@ -172,7 +172,7 @@ export default function WikiKnowledgeGraphPage() {
           {Object.entries(DOMAIN_COLORS).map(([code, color]) => (
             <div key={code} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
               <span style={{ width: 8, height: 8, borderRadius: '50%', background: color }} />
-              <span style={{ fontSize: 10, color: isDark ? '#A1A1A1' : 'rgba(237,237,237,0.40)', fontWeight: 500 }}>{code}</span>
+              <span style={{ fontSize: 10, color: isDark ? '#A1A1A1' : '#64748B', fontWeight: 500 }}>{code}</span>
             </div>
           ))}
         </div>
@@ -183,12 +183,12 @@ export default function WikiKnowledgeGraphPage() {
         {tooltip && (
           <div style={{
             position: 'absolute', left: tooltip.x + 12, top: tooltip.y - 8,
-            background: isDark ? '#1A1A1A' : '#FFFFFF', border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(255,255,255,0.10)', borderRadius: 6,
+            background: isDark ? '#1A1A1A' : '#FFFFFF', border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0', borderRadius: 6,
             padding: '8px 12px', boxShadow: isDark ? '0 4px 12px rgba(0,0,0,0.3)' : '0 4px 12px rgba(0,0,0,0.1)',
             pointerEvents: 'none', zIndex: 10, fontSize: 12, maxWidth: 200,
           }}>
             <div style={{ fontWeight: 600, marginBottom: 2, color: isDark ? '#EDEDED' : undefined }}>{tooltip.title}</div>
-            <div style={{ fontSize: 10, color: isDark ? '#A1A1A1' : 'rgba(237,237,237,0.40)' }}>{tooltip.domain} · {tooltip.views} views</div>
+            <div style={{ fontSize: 10, color: isDark ? '#A1A1A1' : '#64748B' }}>{tooltip.domain} · {tooltip.views} views</div>
           </div>
         )}
       </div>

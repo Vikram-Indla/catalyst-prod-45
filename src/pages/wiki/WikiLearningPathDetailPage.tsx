@@ -106,15 +106,15 @@ export default function WikiLearningPathDetailPage() {
   if (pathLoading) {
     return (
       <div style={{ fontFamily: F.inter, padding: '24px 40px', background: isDark ? '#0A0A0A' : undefined, minHeight: '100%' }}>
-        <div style={{ height: 20, width: 200, background: isDark ? '#1A1A1A' : '#1A1A1A', borderRadius: 4, marginBottom: 16 }} />
-        <div style={{ height: 12, width: 300, background: isDark ? '#1A1A1A' : '#1A1A1A', borderRadius: 4 }} />
+        <div style={{ height: 20, width: 200, background: isDark ? '#1A1A1A' : '#F1F5F9', borderRadius: 4, marginBottom: 16 }} />
+        <div style={{ height: 12, width: 300, background: isDark ? '#1A1A1A' : '#F1F5F9', borderRadius: 4 }} />
       </div>
     );
   }
 
   if (!path) {
     return (
-      <div style={{ fontFamily: F.inter, padding: '60px 40px', textAlign: 'center', color: isDark ? '#878787' : 'rgba(237,237,237,0.40)', background: isDark ? '#0A0A0A' : undefined, minHeight: '100%' }}>
+      <div style={{ fontFamily: F.inter, padding: '60px 40px', textAlign: 'center', color: isDark ? '#878787' : '#64748B', background: isDark ? '#0A0A0A' : undefined, minHeight: '100%' }}>
         Learning path not found.
       </div>
     );
@@ -123,14 +123,14 @@ export default function WikiLearningPathDetailPage() {
   const diffColor = DIFF_COLORS[path.difficulty] || 'rgba(237,237,237,0.40)';
 
   return (
-    <div style={{ fontFamily: F.inter, color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)', background: isDark ? '#0A0A0A' : '#1A1A1A', minHeight: '100%', padding: '24px 40px 60px' }}>
+    <div style={{ fontFamily: F.inter, color: isDark ? '#EDEDED' : '#0F172A', background: isDark ? '#0A0A0A' : '#F8FAFC', minHeight: '100%', padding: '24px 40px 60px' }}>
       {/* Breadcrumb */}
       <nav style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 24 }}>
         <span onClick={() => navigate('/wiki')} style={{ fontSize: 13, color: '#2563EB', cursor: 'pointer' }}>Wiki</span>
-        <ChevronRight size={12} style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }} />
+        <ChevronRight size={12} style={{ color: isDark ? '#878787' : '#94A3B8' }} />
         <span onClick={() => navigate('/wiki/learning-paths')} style={{ fontSize: 13, color: '#2563EB', cursor: 'pointer' }}>Learning Paths</span>
-        <ChevronRight size={12} style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }} />
-        <span style={{ fontSize: 13, color: isDark ? '#A1A1A1' : 'rgba(237,237,237,0.40)', fontWeight: 600 }}>{path.title}</span>
+        <ChevronRight size={12} style={{ color: isDark ? '#878787' : '#94A3B8' }} />
+        <span style={{ fontSize: 13, color: isDark ? '#A1A1A1' : '#64748B', fontWeight: 600 }}>{path.title}</span>
       </nav>
 
       {/* Header */}
@@ -142,19 +142,19 @@ export default function WikiLearningPathDetailPage() {
           <h1 style={{ fontFamily: F.sora, fontSize: 20, fontWeight: 700, marginBottom: 4 }}>{path.title}</h1>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
             <span style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', color: diffColor }}>{path.difficulty}</span>
-            <span style={{ fontSize: 11, color: isDark ? '#A1A1A1' : 'rgba(237,237,237,0.40)' }}>{path.estimated_hours}h estimated</span>
-            <span style={{ fontSize: 11, color: isDark ? '#A1A1A1' : 'rgba(237,237,237,0.40)' }}>{totalCount} articles</span>
+            <span style={{ fontSize: 11, color: isDark ? '#A1A1A1' : '#64748B' }}>{path.estimated_hours}h estimated</span>
+            <span style={{ fontSize: 11, color: isDark ? '#A1A1A1' : '#64748B' }}>{totalCount} articles</span>
           </div>
-          <p style={{ fontSize: 13, color: isDark ? '#A1A1A1' : 'rgba(237,237,237,0.40)', lineHeight: 1.5, maxWidth: 600 }}>{path.description}</p>
+          <p style={{ fontSize: 13, color: isDark ? '#A1A1A1' : '#64748B', lineHeight: 1.5, maxWidth: 600 }}>{path.description}</p>
         </div>
         <div style={{ textAlign: 'right', flexShrink: 0 }}>
-          <div style={{ fontFamily: F.mono, fontSize: 24, fontWeight: 700, color: pct === 100 ? '#16A34A' : (isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)') }}>{pct}%</div>
-          <div style={{ fontSize: 10, color: isDark ? '#A1A1A1' : 'rgba(237,237,237,0.40)' }}>Complete</div>
+          <div style={{ fontFamily: F.mono, fontSize: 24, fontWeight: 700, color: pct === 100 ? '#16A34A' : (isDark ? '#EDEDED' : '#0F172A') }}>{pct}%</div>
+          <div style={{ fontSize: 10, color: isDark ? '#A1A1A1' : '#64748B' }}>Complete</div>
         </div>
       </div>
 
       {/* Progress bar */}
-      <div style={{ height: 6, borderRadius: 4, background: isDark ? '#292929' : 'rgba(255,255,255,0.10)', marginBottom: 32 }}>
+      <div style={{ height: 6, borderRadius: 4, background: isDark ? '#292929' : '#E2E8F0', marginBottom: 32 }}>
         <div style={{ height: '100%', borderRadius: 4, background: pct === 100 ? '#16A34A' : '#2563EB', width: `${pct}%`, transition: 'width 400ms' }} />
       </div>
 
@@ -163,8 +163,8 @@ export default function WikiLearningPathDetailPage() {
         {/* Header */}
         <div style={{
           display: 'grid', gridTemplateColumns: '40px 1fr 80px 80px 48px',
-          background: isDark ? '#1A1A1A' : '#1A1A1A', padding: '0 16px', height: 50, alignItems: 'center',
-          fontFamily: F.sora, fontSize: 10, fontWeight: 600, textTransform: 'uppercase', color: isDark ? '#878787' : 'rgba(237,237,237,0.40)', letterSpacing: '0.05em',
+          background: isDark ? '#1A1A1A' : '#F1F5F9', padding: '0 16px', height: 50, alignItems: 'center',
+          fontFamily: F.sora, fontSize: 10, fontWeight: 600, textTransform: 'uppercase', color: isDark ? '#878787' : '#64748B', letterSpacing: '0.05em',
           borderBottom: `0.75px solid ${border}`,
         }}>
           <span>#</span><span>Article</span><span>Domain</span><span>Time</span><span></span>
@@ -183,17 +183,17 @@ export default function WikiLearningPathDetailPage() {
               onMouseEnter={e => e.currentTarget.style.background = 'rgba(37,99,235,0.04)'}
               onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
             >
-              <span style={{ fontFamily: F.mono, fontSize: 11, color: isDark ? '#878787' : 'rgba(237,237,237,0.40)', fontWeight: 500 }}>{idx + 1}</span>
+              <span style={{ fontFamily: F.mono, fontSize: 11, color: isDark ? '#878787' : '#94A3B8', fontWeight: 500 }}>{idx + 1}</span>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }} onClick={() => navigate(`/wiki/${a.slug}`)}>
-                <FileText size={14} style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)', flexShrink: 0 }} />
-                <span style={{ fontSize: 13, fontWeight: 500, color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textDecoration: isComplete ? 'line-through' : 'none' }}>
+                <FileText size={14} style={{ color: isDark ? '#878787' : '#94A3B8', flexShrink: 0 }} />
+                <span style={{ fontSize: 13, fontWeight: 500, color: isDark ? '#EDEDED' : '#0F172A', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textDecoration: isComplete ? 'line-through' : 'none' }}>
                   {a.title}
                 </span>
               </div>
-              <span style={{ fontSize: 9, fontWeight: 650, padding: '1px 5px', borderRadius: 4, background: isDark ? '#1A1A1A' : '#1A1A1A', color: isDark ? '#878787' : 'rgba(237,237,237,0.40)', width: 'fit-content' }}>{a.domain_code}</span>
+              <span style={{ fontSize: 9, fontWeight: 650, padding: '1px 5px', borderRadius: 4, background: isDark ? '#1A1A1A' : '#F1F5F9', color: isDark ? '#878787' : '#64748B', width: 'fit-content' }}>{a.domain_code}</span>
               <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                <Clock size={11} style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }} />
-                <span style={{ fontFamily: F.mono, fontSize: 10, color: isDark ? '#A1A1A1' : 'rgba(237,237,237,0.40)' }}>{a.read_time_minutes ?? '?'}m</span>
+                <Clock size={11} style={{ color: isDark ? '#878787' : '#94A3B8' }} />
+                <span style={{ fontFamily: F.mono, fontSize: 10, color: isDark ? '#A1A1A1' : '#64748B' }}>{a.read_time_minutes ?? '?'}m</span>
               </div>
               <button
                 onClick={e => { e.stopPropagation(); toggleComplete.mutate({ pageId: a.id, completed: !isComplete }); }}
@@ -209,7 +209,7 @@ export default function WikiLearningPathDetailPage() {
         })}
 
         {articles.length === 0 && !pathLoading && (
-          <div style={{ padding: 40, textAlign: 'center', color: isDark ? '#878787' : 'rgba(237,237,237,0.40)', fontSize: 12 }}>
+          <div style={{ padding: 40, textAlign: 'center', color: isDark ? '#878787' : '#64748B', fontSize: 12 }}>
             No articles assigned to this path yet.
           </div>
         )}

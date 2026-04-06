@@ -616,7 +616,7 @@ function InitiativesTab({ goalId }: { goalId: string }) {
                   key={init.id}
                   onClick={() => { linkMutation.mutate({ goalId, initiativeId: init.id }); setShowSearch(false); setSearchQuery(''); }}
                   style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 8px', borderRadius: 6, cursor: 'pointer', transition: 'background 100ms' }}
-                  onMouseEnter={e => (e.currentTarget.style.background = isDark ? 'rgba(37,99,235,0.12)' : 'rgba(59,130,246,0.06)')}
+                  onMouseEnter={e => (e.currentTarget.style.background = isDark ? 'rgba(37,99,235,0.12)' : '#EFF6FF')}
                   onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                 >
                   <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--fg-4)', fontFamily: 'ui-monospace, monospace' }}>{init.initiative_key}</span>

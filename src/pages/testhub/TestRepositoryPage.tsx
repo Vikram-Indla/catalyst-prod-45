@@ -614,7 +614,7 @@ export function TestRepositoryPage() {
                 height: 40,
                 padding: 0,
                 backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF',
-                border: isDark ? '1.5px solid rgba(255,255,255,0.08)' : '1.5px solid rgba(255,255,255,0.10)',
+                border: isDark ? '1.5px solid rgba(255,255,255,0.08)' : '1.5px solid #E2E8F0',
                 borderRadius: 8,
                 cursor: 'pointer',
                 display: 'flex',
@@ -623,12 +623,12 @@ export function TestRepositoryPage() {
                 transition: 'all 0.15s',
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = isDark ? '#1A1A1A' : '#1A1A1A';
-                e.currentTarget.style.borderColor = isDark ? 'rgba(255,255,255,0.15)' : 'rgba(237,237,237,0.53)';
+                e.currentTarget.style.backgroundColor = isDark ? '#1A1A1A' : '#F8FAFC';
+                e.currentTarget.style.borderColor = isDark ? 'rgba(255,255,255,0.15)' : '#CBD5E1';
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.backgroundColor = isDark ? '#1A1A1A' : '#FFFFFF';
-                e.currentTarget.style.borderColor = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.10)';
+                e.currentTarget.style.borderColor = isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0';
               }}
             >
               <RefreshCw style={{ width: 16, height: 16, color: 'rgba(237,237,237,0.40)' }} />
@@ -639,12 +639,12 @@ export function TestRepositoryPage() {
               onClick={() => setIsImportModalOpen(true)}
               style={{
                 height: 40, padding: '0 16px', backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF',
-                border: isDark ? '1.5px solid rgba(255,255,255,0.08)' : '1.5px solid rgba(255,255,255,0.10)', borderRadius: 8, fontFamily: 'Geist, -apple-system, sans-serif',
-                fontSize: 14, fontWeight: 500, color: isDark ? '#A1A1A1' : 'rgba(237,237,237,0.53)', cursor: 'pointer',
+                border: isDark ? '1.5px solid rgba(255,255,255,0.08)' : '1.5px solid #E2E8F0', borderRadius: 8, fontFamily: 'Inter, sans-serif',
+                fontSize: 14, fontWeight: 500, color: isDark ? '#A1A1A1' : '#334155', cursor: 'pointer',
                 display: 'flex', alignItems: 'center', gap: 8, transition: 'all 0.15s',
               }}
             >
-              <Download style={{ width: 16, height: 16, color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }} />
+              <Download style={{ width: 16, height: 16, color: isDark ? '#878787' : '#64748B' }} />
               Import
             </button>
 
@@ -653,12 +653,12 @@ export function TestRepositoryPage() {
               onClick={() => setIsExportModalOpen(true)}
               style={{
                 height: 40, padding: '0 16px', backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF',
-                border: isDark ? '1.5px solid rgba(255,255,255,0.08)' : '1.5px solid rgba(255,255,255,0.10)', borderRadius: 8, fontFamily: 'Geist, -apple-system, sans-serif',
-                fontSize: 14, fontWeight: 500, color: isDark ? '#A1A1A1' : 'rgba(237,237,237,0.53)', cursor: 'pointer',
+                border: isDark ? '1.5px solid rgba(255,255,255,0.08)' : '1.5px solid #E2E8F0', borderRadius: 8, fontFamily: 'Inter, sans-serif',
+                fontSize: 14, fontWeight: 500, color: isDark ? '#A1A1A1' : '#334155', cursor: 'pointer',
                 display: 'flex', alignItems: 'center', gap: 8, transition: 'all 0.15s',
               }}
             >
-              <Upload style={{ width: 16, height: 16, color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }} />
+              <Upload style={{ width: 16, height: 16, color: isDark ? '#878787' : '#64748B' }} />
               Export
             </button>
 
@@ -746,7 +746,7 @@ export function TestRepositoryPage() {
               <div style={{
                 height: 48,
                 padding: '0 20px',
-                backgroundColor: isDark ? 'rgba(37,99,235,0.1)' : 'rgba(59,130,246,0.06)',
+                backgroundColor: isDark ? 'rgba(37,99,235,0.1)' : '#EFF6FF',
                 borderBottom: isDark ? '1px solid rgba(37,99,235,0.2)' : '1px solid #BFDBFE',
                 display: 'flex',
                 alignItems: 'center',
@@ -773,12 +773,12 @@ export function TestRepositoryPage() {
                       height: 32,
                       padding: '8px 12px',
                       backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF',
-                      border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(255,255,255,0.10)',
+                      border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0',
                       borderRadius: 6,
                       fontFamily: 'Geist, -apple-system, sans-serif',
                       fontSize: 13,
                       fontWeight: 500,
-                      color: isDark ? '#A1A1A1' : 'rgba(237,237,237,0.53)',
+                      color: isDark ? '#A1A1A1' : '#334155',
                       cursor: 'pointer',
                       display: 'flex',
                       alignItems: 'center',
@@ -799,12 +799,12 @@ export function TestRepositoryPage() {
                       height: 32,
                       padding: '8px 12px',
                       backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF',
-                      border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(255,255,255,0.10)',
+                      border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0',
                       borderRadius: 6,
                       fontFamily: 'Geist, -apple-system, sans-serif',
                       fontSize: 13,
                       fontWeight: 500,
-                      color: isDark ? '#A1A1A1' : 'rgba(237,237,237,0.53)',
+                      color: isDark ? '#A1A1A1' : '#334155',
                       cursor: 'pointer',
                       display: 'flex',
                       alignItems: 'center',
@@ -820,7 +820,7 @@ export function TestRepositoryPage() {
                       height: 32,
                       padding: '8px 12px',
                       backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF',
-                      border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(255,255,255,0.10)',
+                      border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0',
                       borderRadius: 6,
                       fontFamily: 'Geist, -apple-system, sans-serif',
                       fontSize: 13,
@@ -832,12 +832,12 @@ export function TestRepositoryPage() {
                       gap: 6,
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = isDark ? '#1A1A1A' : 'rgba(248,113,113,0.06)';
+                      e.currentTarget.style.backgroundColor = isDark ? '#1A1A1A' : '#FEF2F2';
                       e.currentTarget.style.borderColor = '#FECACA';
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.backgroundColor = isDark ? '#1A1A1A' : '#FFFFFF';
-                      e.currentTarget.style.borderColor = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.10)';
+                      e.currentTarget.style.borderColor = isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0';
                     }}
                   >
                     <Trash2 style={{ width: 14, height: 14 }} />

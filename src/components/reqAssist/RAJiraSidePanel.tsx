@@ -362,7 +362,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
           <div style={{
             margin: '0 20px', marginTop: 12, padding: '8px 12px', borderRadius: 6,
             background: isDark ? 'rgba(217,119,6,0.10)' : '#FFFBEB', border: isDark ? '0.75px solid rgba(217,119,6,0.25)' : '0.75px solid #FDE68A',
-            fontSize: 12, color: isDark ? '#FBBF24' : '#FBBF24', fontFamily: "'Inter', sans-serif",
+            fontSize: 12, color: isDark ? '#FBBF24' : '#92400E', fontFamily: "'Inter', sans-serif",
             display: 'flex', alignItems: 'center', gap: 6,
           }}>
             ⚠ No BRD content found — attach PDF for accurate epic generation
@@ -435,7 +435,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                       <div style={{
                         width: 24, height: 24, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
                         background: step.state === 'complete' ? 'var(--sem-success)' : step.state === 'active' ? 'var(--cp-blue)' : 'var(--bg-app)',
-                        border: step.state === 'pending' ? (isDark ? '1.5px solid #292929' : '1.5px solid rgba(237,237,237,0.53)') : 'none',
+                        border: step.state === 'pending' ? (isDark ? '1.5px solid #292929' : '1.5px solid #CBD5E1') : 'none',
                       }}>
                         {step.state === 'complete' && (
                           <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6L5 8.5L9.5 3.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
@@ -456,7 +456,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                         borderTop: step.state === 'complete' && stepsRaw[i + 1].state === 'complete'
                           ? '2px solid #16A34A'
                           : step.state === 'complete'
-                            ? (isDark ? '2px dashed #292929' : '2px dashed rgba(237,237,237,0.53)')
+                            ? (isDark ? '2px dashed #292929' : '2px dashed #CBD5E1')
                             : (isDark ? '2px dashed #1A1A1A' : '2px dashed #E5E7EB'),
                         marginInline: 4,
                       }} />
@@ -526,7 +526,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                   {domain || (
                     <span style={{
                       display: 'inline-flex', alignItems: 'center', padding: '1px 6px',
-                      background: isDark ? '#1A1A1A' : '#1A1A1A', borderRadius: 4, fontSize: 11, color: 'var(--fg-4)',
+                      background: isDark ? '#1A1A1A' : '#F1F5F9', borderRadius: 4, fontSize: 11, color: 'var(--fg-4)',
                       fontFamily: "'Inter', sans-serif",
                     }}>Uncategorised</span>
                   )}
@@ -563,7 +563,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                   <>
                     <button onClick={() => fileInputRef.current?.click()} disabled={uploadingPdf} style={{
                       fontSize: 12, fontWeight: 500, color: 'var(--fg-2)', background: 'transparent',
-                      border: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(237,237,237,0.53)', borderRadius: 6, cursor: 'pointer', padding: '4px 10px',
+                      border: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid #CBD5E1', borderRadius: 6, cursor: 'pointer', padding: '4px 10px',
                       fontFamily: "'Inter', sans-serif",
                       display: 'inline-flex', alignItems: 'center', gap: 4,
                     }}>
@@ -614,9 +614,9 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                 </div>
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '16px 0', gap: 4 }}>
-                  <Paperclip size={18} color={isDark ? '#292929' : 'rgba(237,237,237,0.53)'} />
+                  <Paperclip size={18} color={isDark ? '#292929' : '#CBD5E1'} />
                   <span style={{ fontSize: 13, color: 'var(--fg-4)', fontFamily: "'Inter', sans-serif" }}>No attachments found</span>
-                  <span style={{ fontSize: 11, color: isDark ? '#878787' : 'rgba(237,237,237,0.53)', fontFamily: "'Inter', sans-serif" }}>Attachments are imported automatically from Jira</span>
+                  <span style={{ fontSize: 11, color: isDark ? '#878787' : '#CBD5E1', fontFamily: "'Inter', sans-serif" }}>Attachments are imported automatically from Jira</span>
                 </div>
               )}
             </div>
@@ -654,9 +654,9 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                 </>
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '20px 0', gap: 6 }}>
-                  <FileText size={20} color={isDark ? '#292929' : 'rgba(237,237,237,0.53)'} />
+                  <FileText size={20} color={isDark ? '#292929' : '#CBD5E1'} />
                   <span style={{ fontSize: 13, color: 'var(--fg-4)', fontFamily: "'Inter', sans-serif" }}>Content not yet extracted</span>
-                  <span style={{ fontSize: 12, color: isDark ? '#878787' : 'rgba(237,237,237,0.53)', fontFamily: "'Inter', sans-serif" }}>Upload a PDF or extract from Jira attachments</span>
+                  <span style={{ fontSize: 12, color: isDark ? '#878787' : '#CBD5E1', fontFamily: "'Inter', sans-serif" }}>Upload a PDF or extract from Jira attachments</span>
                 </div>
               )}
             </div>
@@ -683,7 +683,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                 ) : (
                   <span style={{
                     display: 'inline-flex', alignItems: 'center', padding: '2px 10px', borderRadius: 12,
-                    background: isDark ? '#1A1A1A' : '#1A1A1A', color: 'var(--fg-4)', border: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(15,23,42,0.12)',
+                    background: isDark ? '#1A1A1A' : '#F1F5F9', color: 'var(--fg-4)', border: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(15,23,42,0.12)',
                     fontSize: 11, fontWeight: 500, fontFamily: "'Inter', sans-serif",
                   }}>None yet</span>
                 )}
@@ -722,7 +722,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                 ) : (
                   <span style={{
                     display: 'inline-flex', alignItems: 'center', padding: '2px 10px', borderRadius: 12,
-                    background: isDark ? '#1A1A1A' : '#1A1A1A', color: 'var(--fg-4)', border: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(15,23,42,0.12)',
+                    background: isDark ? '#1A1A1A' : '#F1F5F9', color: 'var(--fg-4)', border: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(15,23,42,0.12)',
                     fontSize: 11, fontWeight: 500, fontFamily: "'Inter', sans-serif",
                   }}>Not indexed</span>
                 )}
@@ -759,21 +759,21 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                 display: 'flex', alignItems: 'center', gap: 12, padding: '10px 0',
                 minHeight: 40, flexWrap: 'nowrap',
               }}>
-                <div style={{ width: 28, height: 28, borderRadius: 6, background: isDark ? '#1A1A1A' : '#1A1A1A', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <div style={{ width: 28, height: 28, borderRadius: 6, background: isDark ? '#1A1A1A' : '#F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                   <FlaskConical size={15} color="var(--fg-3)" />
                 </div>
                 <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg-1)', fontFamily: "'Inter', sans-serif", whiteSpace: 'nowrap', flexShrink: 0, minWidth: 70 }}>UAT Scenarios</span>
                 {uatCount > 0 ? (
                   <span style={{
                     display: 'inline-flex', alignItems: 'center', padding: '2px 10px', borderRadius: 12,
-                    background: isDark ? 'rgba(22,163,74,0.12)' : 'rgba(74,222,128,0.06)', border: isDark ? '0.75px solid rgba(22,163,74,0.25)' : '0.75px solid #BBF7D0',
+                    background: isDark ? 'rgba(22,163,74,0.12)' : '#F0FDF4', border: isDark ? '0.75px solid rgba(22,163,74,0.25)' : '0.75px solid #BBF7D0',
                     fontSize: 11, fontWeight: 700, color: 'var(--sem-success)',
                     fontFamily: "'Inter', sans-serif",
                   }}>{pluralise(uatCount, 'scenario', 'scenarios')}</span>
                 ) : (
                   <span style={{
                     display: 'inline-flex', alignItems: 'center', padding: '2px 10px', borderRadius: 12,
-                    background: isDark ? '#1A1A1A' : '#1A1A1A', color: 'var(--fg-4)', border: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(15,23,42,0.12)',
+                    background: isDark ? '#1A1A1A' : '#F1F5F9', color: 'var(--fg-4)', border: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(15,23,42,0.12)',
                     fontSize: 11, fontWeight: 500, fontFamily: "'Inter', sans-serif", whiteSpace: 'nowrap', flexShrink: 0,
                   }}>Not generated</span>
                 )}
@@ -840,7 +840,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                             fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: 'var(--fg-4)', flexShrink: 0,
                           }}>{s.scenario_key}</span>
                           <span style={{
-                            fontSize: 13, color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)', fontFamily: "'Inter', sans-serif",
+                            fontSize: 13, color: isDark ? '#EDEDED' : '#1E293B', fontFamily: "'Inter', sans-serif",
                             flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                           }}>{s.title}</span>
                           <span style={{

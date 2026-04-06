@@ -36,7 +36,7 @@ export function StatusDropdown({ currentStatus, availableStatuses, onSelect, onC
         marginTop: 4,
         width: 200,
         background: isDark ? '#1A1A1A' : '#FFFFFF',
-        border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(255,255,255,0.10)',
+        border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0',
         borderRadius: 6,
         boxShadow: isDark ? '0 4px 16px rgba(0,0,0,0.30)' : '0 4px 16px rgba(0,0,0,0.10)',
         maxHeight: 300,
@@ -58,14 +58,14 @@ export function StatusDropdown({ currentStatus, availableStatuses, onSelect, onC
               alignItems: 'center',
               gap: 8,
               cursor: 'pointer',
-              background: isCurrent ? (isDark ? '#1A1A1A' : '#1A1A1A') : undefined,
+              background: isCurrent ? (isDark ? '#1A1A1A' : '#F8FAFC') : undefined,
               fontFamily: "'Inter', sans-serif",
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.background = isDark ? '#1A1A1A' : '#1A1A1A')}
-            onMouseLeave={(e) => (e.currentTarget.style.background = isCurrent ? (isDark ? '#1A1A1A' : '#1A1A1A') : '')}
+            onMouseEnter={(e) => (e.currentTarget.style.background = isDark ? '#1A1A1A' : '#F8FAFC')}
+            onMouseLeave={(e) => (e.currentTarget.style.background = isCurrent ? (isDark ? '#1A1A1A' : '#F8FAFC') : '')}
           >
             <span style={{ width: 8, height: 8, borderRadius: '50%', background: style.color, flexShrink: 0 }} />
-            <span style={{ fontSize: 12, color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)', flex: 1 }}>{status}</span>
+            <span style={{ fontSize: 12, color: isDark ? '#EDEDED' : '#0F172A', flex: 1 }}>{status}</span>
             {isCurrent && <Check size={14} color="#2563EB" />}
           </div>
         );

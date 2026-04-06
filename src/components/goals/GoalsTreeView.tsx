@@ -137,7 +137,7 @@ function getAvatarColors(name: string, isDark = false) {
 }
 
 function OwnerAvatar({ name, size = 28, isDark = false }: { name?: string; size?: number; isDark?: boolean }) {
-  if (!name) return <span style={{ fontSize: 11, color: isDark ? DK.t4 : 'rgba(237,237,237,0.53)' }}>—</span>;
+  if (!name) return <span style={{ fontSize: 11, color: isDark ? DK.t4 : '#CBD5E1' }}>—</span>;
   const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
   const colors = getAvatarColors(name, isDark);
   return (
@@ -257,7 +257,7 @@ export function GoalsTreeView({
   const headerText = isDark ? DK.t3 : 'var(--fg-3)';
   const containerBg = isDark ? 'transparent' : 'var(--bg-app)';
   const themeRowBg = isDark ? 'rgba(255,255,255,0.03)' : 'var(--cp-bd-zone)';
-  const themeRowHover = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.10)';
+  const themeRowHover = isDark ? 'rgba(255,255,255,0.05)' : '#E2E8F0';
   const goalRowBg = isDark ? 'transparent' : 'var(--bg-app)';
   const goalRowHover = isDark ? 'rgba(255,255,255,0.03)' : 'var(--bg-1)';
   const krRowBg = isDark ? 'rgba(255,255,255,0.01)' : 'var(--bg-1)';
@@ -315,7 +315,7 @@ export function GoalsTreeView({
               onMouseLeave={e => (e.currentTarget.style.background = themeRowBg)}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <ChevronRight size={14} color={isDark ? 'rgba(255,255,255,0.35)' : 'rgba(237,237,237,0.40)'} style={{ transform: themeExpanded ? 'rotate(90deg)' : 'rotate(0deg)', transition: 'transform 200ms', flexShrink: 0 }} />
+                <ChevronRight size={14} color={isDark ? 'rgba(255,255,255,0.35)' : '#64748B'} style={{ transform: themeExpanded ? 'rotate(90deg)' : 'rotate(0deg)', transition: 'transform 200ms', flexShrink: 0 }} />
                 <span style={{ fontSize: 14, fontWeight: 600, color: isDark ? DK.t1 : 'var(--fg-1)' }}>{theme.title}</span>
                 <span style={{ fontSize: 11, color: isDark ? DK.t3 : 'var(--fg-3)' }}>({themeGoals.length} goal{themeGoals.length !== 1 ? 's' : ''})</span>
               </div>
@@ -361,7 +361,7 @@ export function GoalsTreeView({
 
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
                       <ChevronRight
-                        size={13} color={isDark ? 'rgba(255,255,255,0.35)' : 'rgba(237,237,237,0.40)'}
+                        size={13} color={isDark ? 'rgba(255,255,255,0.35)' : '#94A3B8'}
                         onClick={e => { e.stopPropagation(); onToggleGoal(goal.id); }}
                         style={{ transform: goalExpanded ? 'rotate(90deg)' : 'rotate(0deg)', transition: 'transform 200ms', flexShrink: 0, cursor: 'pointer' }}
                       />
@@ -387,7 +387,7 @@ export function GoalsTreeView({
                           {goal.ai_health_score}
                         </span>
                       ) : (
-                        <span style={{ fontSize: 11, color: isDark ? DK.t4 : 'rgba(237,237,237,0.53)' }}>—</span>
+                        <span style={{ fontSize: 11, color: isDark ? DK.t4 : '#CBD5E1' }}>—</span>
                       )}
                     </div>
                   </div>
@@ -413,7 +413,7 @@ export function GoalsTreeView({
                           background: krRowBg,
                           borderBottom: `1px solid ${isDark ? DK.borderSubtle : 'var(--bg-1)'}`, fontSize: 13, position: 'relative',
                           transition: 'background 150ms',
-                          color: isDark ? DK.t2 : 'rgba(237,237,237,0.53)',
+                          color: isDark ? DK.t2 : '#334155',
                         }}
                         onMouseEnter={e => (e.currentTarget.style.background = krRowHover)}
                         onMouseLeave={e => (e.currentTarget.style.background = krRowBg)}

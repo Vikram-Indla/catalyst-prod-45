@@ -101,8 +101,8 @@ export function ThemeDetailDrawer({ theme, open, onClose, onEdit, onDelete, isDa
 
         {/* Delete Confirmation */}
         {confirmDelete && (
-          <div style={{ padding: '12px 20px', background: isDark ? 'rgba(220,38,38,0.12)' : 'rgba(248,113,113,0.06)', borderBottom: `1px solid ${isDark ? 'rgba(220,38,38,0.25)' : '#FECACA'}` }}>
-            <p style={{ fontSize: 12, color: isDark ? '#FCA5A5' : '#F87171', marginBottom: 8 }}>Delete "<strong>{theme.title}</strong>"? This will also remove all milestones and links.</p>
+          <div style={{ padding: '12px 20px', background: isDark ? 'rgba(220,38,38,0.12)' : '#FEF2F2', borderBottom: `1px solid ${isDark ? 'rgba(220,38,38,0.25)' : '#FECACA'}` }}>
+            <p style={{ fontSize: 12, color: isDark ? '#FCA5A5' : '#991B1B', marginBottom: 8 }}>Delete "<strong>{theme.title}</strong>"? This will also remove all milestones and links.</p>
             <div className="flex gap-2">
               <button onClick={() => { onDelete(theme); setConfirmDelete(false); }} style={{ fontSize: 11, fontWeight: 600, padding: '4px 12px', borderRadius: 4, border: 'none', background: 'var(--sem-danger)', color: '#FFF', cursor: 'pointer' }}>Delete</button>
               <button onClick={() => setConfirmDelete(false)} style={{ fontSize: 11, padding: '4px 12px', borderRadius: 4, border: `1px solid ${border}`, background: isDark ? 'transparent' : 'var(--bg-app)', color: isDark ? DK.t1 : 'var(--fg-2)', cursor: 'pointer' }}>Cancel</button>
@@ -180,7 +180,7 @@ function EmptyState({ icon: Icon, title, description, cta, isDark = false }: { i
   const d = dk(isDark);
   return (
     <div className="flex flex-col items-center justify-center text-center" style={{ padding: '48px 24px' }}>
-      <div className="rounded-xl flex items-center justify-center mb-4" style={{ width: 48, height: 48, background: isDark ? 'rgba(255,255,255,0.06)' : '#1A1A1A' }}>
+      <div className="rounded-xl flex items-center justify-center mb-4" style={{ width: 48, height: 48, background: isDark ? 'rgba(255,255,255,0.06)' : '#F1F5F9' }}>
         <Icon size={22} color={d.t3} strokeWidth={1.5} />
       </div>
       <p style={{ fontSize: 13, fontWeight: 600, color: d.t1, marginBottom: 4 }}>{title}</p>
@@ -235,7 +235,7 @@ function OverviewTab({ theme, sc, bsc, pri, isDark = false }: { theme: Strategic
                 border: isDark ? '1px solid rgba(255,255,255,0.08)' : 'none',
                 padding: '6px 0',
               }}>
-                <p style={{ fontSize: 13, fontWeight: 700, color: isDark ? DK.t1 : '#7DB8FC' }}>{f.value}</p>
+                <p style={{ fontSize: 13, fontWeight: 700, color: isDark ? DK.t1 : '#1E40AF' }}>{f.value}</p>
                 <p style={{ fontSize: 10, color: isDark ? DK.t3 : '#2563EB' }}>{f.label}</p>
               </div>
             ))}
@@ -293,7 +293,7 @@ function GoalsTab({ theme, isDark = false }: { theme: StrategicTheme; isDark?: b
                     <div className="h-full rounded-full" style={{ width: `${g.progress_pct}%`, background: statusColor }} />
                   </div>
                   <span style={{ fontSize: 10, fontWeight: 600, color: d.t2 }}>{g.progress_pct}%</span>
-                  <span className="rounded px-1.5 py-0.5" style={{ fontSize: 9, fontWeight: 500, background: isDark ? 'rgba(255,255,255,0.06)' : '#1A1A1A', color: d.t2 }}>{g.kr_count} KRs</span>
+                  <span className="rounded px-1.5 py-0.5" style={{ fontSize: 9, fontWeight: 500, background: isDark ? 'rgba(255,255,255,0.06)' : '#F1F5F9', color: d.t2 }}>{g.kr_count} KRs</span>
                 </div>
               </div>
             );
@@ -324,7 +324,7 @@ function InitiativesTab({ theme, isDark = false }: { theme: StrategicTheme; isDa
             <div key={ini.id} className="rounded-lg border p-3" style={{ borderColor: d.border, background: isDark ? 'transparent' : undefined }}>
               <div className="flex items-start justify-between mb-1">
                 <span style={{ fontSize: 12, fontWeight: 600, color: d.t1 }}>{ini.title}</span>
-                <span className="inline-flex rounded-full px-2 py-0.5 shrink-0 ml-2" style={{ fontSize: 10, fontWeight: 500, background: isDark ? 'rgba(255,255,255,0.06)' : '#1A1A1A', color: d.t2 }}>{ini.status}</span>
+                <span className="inline-flex rounded-full px-2 py-0.5 shrink-0 ml-2" style={{ fontSize: 10, fontWeight: 500, background: isDark ? 'rgba(255,255,255,0.06)' : '#F1F5F9', color: d.t2 }}>{ini.status}</span>
               </div>
               <div className="flex items-center gap-3" style={{ fontSize: 10, color: d.t2 }}>
                 <span>Budget: {formatBudget(ini.budget_allocated)}</span>
@@ -463,7 +463,7 @@ function MilestonesTab({ theme, isDark = false }: { theme: StrategicTheme; isDar
             >
               <div className="shrink-0 rounded-full" style={{ width: 8, height: 8, background: STATE_COLORS[m.state] || d.t3 }} />
               <span className="flex-1 truncate" style={{ fontSize: 12, fontWeight: 500, color: d.t1 }}>{m.name}</span>
-              <span className="shrink-0 rounded px-1.5 py-0.5" style={{ fontSize: 9, background: isDark ? 'rgba(255,255,255,0.06)' : '#1A1A1A', color: d.t2 }}>{m.category}</span>
+              <span className="shrink-0 rounded px-1.5 py-0.5" style={{ fontSize: 9, background: isDark ? 'rgba(255,255,255,0.06)' : '#F1F5F9', color: d.t2 }}>{m.category}</span>
               <span className="shrink-0" style={{ fontSize: 10, color: d.t3 }}>{m.state.replace(/_/g, ' ')}</span>
               <button onClick={() => startEdit(m)} className="opacity-0 group-hover:opacity-100 p-0.5" style={{ border: 'none', background: 'none', cursor: 'pointer' }}><Pencil size={12} color={d.t2} /></button>
               <button onClick={() => deleteMilestone.mutate({ id: m.id, themeId: theme.id })} className="opacity-0 group-hover:opacity-100 p-0.5" style={{ border: 'none', background: 'none', cursor: 'pointer' }}><Trash2 size={12} color="#DC2626" /></button>
