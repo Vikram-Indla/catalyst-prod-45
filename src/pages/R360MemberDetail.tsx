@@ -233,7 +233,7 @@ function WeekStripCollapsible({
               padding: '5px 14px', fontSize: '12.5px', fontWeight: isActive ? 600 : 500,
               borderRadius: '6px', cursor: 'pointer', transition: 'all var(--cp-duration-fast, 0.15s) ease',
               background: isActive ? 'rgba(37,99,235,0.10)' : 'transparent',
-              color: isActive ? '#2563EB' : '#64748B',
+              color: isActive ? '#2563EB' : (isDark ? '#A1A1A1' : '#64748B'),
               border: 'none',
             }}
             onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = isDark ? '#1F1F1F' : 'rgba(15,23,42,0.04)'; }}
