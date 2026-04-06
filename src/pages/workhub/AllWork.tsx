@@ -207,7 +207,7 @@ const TableSkeleton = memo(function TableSkeleton() {
     <div className="rounded-lg border overflow-hidden" style={{ borderColor: 'rgba(15,23,42,0.12)' }}>
       <div
         className="flex items-center gap-4 px-4"
-        style={{ height: 44, backgroundColor: '#f8fafc', borderBottom: '1px solid rgba(15,23,42,0.08)' }}
+        style={{ height: 44, backgroundColor: 'var(--bg-1)', borderBottom: '1px solid rgba(15,23,42,0.08)' }}
       >
         {Array.from({ length: 8 }).map((_, i) => (
           <Skeleton key={i} className="h-3 rounded" style={{ width: `${40 + i * 14}px` }} />

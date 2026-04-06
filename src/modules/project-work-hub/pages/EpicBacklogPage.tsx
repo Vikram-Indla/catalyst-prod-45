@@ -14,9 +14,9 @@ import { EditEpicDialog } from '@/modules/program-epics';
 import { Button } from '@/components/ui/button';
 import { ChevronDown, ChevronRight, Plus, Pencil, Trash2, Box } from 'lucide-react';
 import { toast } from 'sonner';
+import { useTheme } from '@/hooks/useTheme';
+import { DK, LK } from '@/utils/dark-mode-styles';
 import type { BacklogEpic } from '../types/backlog.types';
-
-const COL_HEADER: React.CSSProperties = { fontSize: 11, fontWeight: 650, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#64748B' };
 
 export default function EpicBacklogPage({ projectId: propProjectId }: { projectId?: string }) {
   const params = useParams<{ projectId: string }>();
@@ -25,6 +25,9 @@ export default function EpicBacklogPage({ projectId: propProjectId }: { projectI
   const { data: project } = useProject(projectId || '');
   const { data: epics, isLoading, error } = useEpicBacklog(projectId || '');
   const avatarsByName = useProfileAvatarsByName();
+  const { isDark } = useTheme();
+  const tk = isDark ? DK : LK;
+  const COL_HEADER: React.CSSProperties = { fontSize: 11, fontWeight: 650, textTransform: 'uppercase', letterSpacing: '0.06em', color: tk.t2 };
 
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
   const [showCreate, setShowCreate] = useState(false);
@@ -51,38 +54,38 @@ export default function EpicBacklogPage({ projectId: propProjectId }: { projectI
 
   if (!project?.program_id) {
     return (
-      <div className="h-full flex flex-col items-center justify-center" style={{ background: '#FFFFFF' }}>
-        <Box className="h-12 w-12 mb-4" style={{ color: '#9CA3AF' }} />
-        <p className="text-base font-medium" style={{ color: '#334155' }}>This project is not linked to a program</p>
-        <p className="text-sm mt-1" style={{ color: '#9CA3AF' }}>Epics require a program. Contact your administrator.</p>
+      <div className="h-full flex flex-col items-center justify-center" style={{ background: tk.pageBg }}>
+        <Box className="h-12 w-12 mb-4" style={{ color: tk.t3 }} />
+        <p className="text-base font-medium" style={{ color: tk.t1 }}>This project is not linked to a program</p>
+        <p className="text-sm mt-1" style={{ color: tk.t3 }}>Epics require a program. Contact your administrator.</p>
       </div>
     );
   }
 
   if (isLoading) {
     return (
-      <div className="h-full" style={{ background: '#FFFFFF' }}>
-        <div className="px-6 py-4"><div className="h-8 w-48 rounded" style={{ background: '#F1F5F9' }} /></div>
+      <div className="h-full" style={{ background: tk.pageBg }}>
+        <div className="px-6 py-4"><div className="h-8 w-48 rounded" style={{ background: tk.chipBg }} /></div>
         {[1, 2, 3].map(i => (
           <div key={i} className="px-6 py-2 flex gap-3 animate-pulse">
-            <div className="h-[36px] flex-1 rounded" style={{ background: '#F1F5F9' }} />
+            <div className="h-[36px] flex-1 rounded" style={{ background: tk.chipBg }} />
           </div>
         ))}
       </div>
     );
   }
 
-  if (error) return <div className="h-full flex items-center justify-center" style={{ background: '#FFFFFF', color: '#DC2626' }}>Error loading epics</div>;
+  if (error) return <div className="h-full flex items-center justify-center" style={{ background: tk.pageBg, color: '#DC2626' }}>Error loading epics</div>;
 
   const totalEpics = epics?.length || 0;
 
   return (
-    <div className="h-full flex flex-col" style={{ background: '#FFFFFF' }}>
-      <div className="flex items-center justify-between px-6 py-3 border-b" style={{ borderColor: '#E2E8F0' }}>
+    <div className="h-full flex flex-col" style={{ background: tk.pageBg }}>
+      <div className="flex items-center justify-between px-6 py-3 border-b" style={{ borderColor: tk.border }}>
         <div className="flex items-center gap-3">
           <JiraIssueTypeIcon type="epic" size={20} />
-          <h1 className="text-base font-semibold" style={{ color: '#0F172A', fontWeight: 650 }}>Epic Backlog</h1>
-          <span className="text-xs" style={{ color: '#64748B' }}>{totalEpics} epics across {groups.length} groups</span>
+          <h1 className="text-base font-semibold" style={{ color: tk.t1, fontWeight: 650 }}>Epic Backlog</h1>
+          <span className="text-xs" style={{ color: tk.t2 }}>{totalEpics} epics across {groups.length} groups</span>
         </div>
         <Button onClick={() => setShowCreate(true)} size="sm" style={{ backgroundColor: '#2563EB', color: '#FFFFFF', borderRadius: 6 }}>
           <Plus className="h-3.5 w-3.5 mr-1" /> Create Epic
@@ -92,9 +95,9 @@ export default function EpicBacklogPage({ projectId: propProjectId }: { projectI
       <div className="flex-1 overflow-auto">
         {totalEpics === 0 ? (
           <div className="h-full flex flex-col items-center justify-center">
-            <Box className="h-12 w-12 mb-4" style={{ color: '#9CA3AF' }} />
-            <p className="text-base font-medium" style={{ color: '#334155' }}>No epics yet</p>
-            <p className="text-sm mt-1 mb-4" style={{ color: '#9CA3AF' }}>Create the first epic to get started</p>
+            <Box className="h-12 w-12 mb-4" style={{ color: tk.t3 }} />
+            <p className="text-base font-medium" style={{ color: tk.t1 }}>No epics yet</p>
+            <p className="text-sm mt-1 mb-4" style={{ color: tk.t3 }}>Create the first epic to get started</p>
             <Button onClick={() => setShowCreate(true)} size="sm" style={{ backgroundColor: '#2563EB', color: '#FFFFFF', borderRadius: 6 }}>
               <Plus className="h-3.5 w-3.5 mr-1" /> Create Epic
             </Button>
@@ -102,7 +105,7 @@ export default function EpicBacklogPage({ projectId: propProjectId }: { projectI
         ) : (
           <div style={{ minWidth: 1440 }}>
             {/* Column headers — SRC column REMOVED */}
-            <div className="flex items-center h-[32px] px-2 border-b" style={{ borderColor: '#E2E8F0', background: '#F8FAFC' }}>
+            <div className="flex items-center h-[32px] px-2 border-b" style={{ borderColor: tk.border, background: tk.tableHeaderBg }}>
               <div style={{ width: 38, flexShrink: 0 }} />
               <div style={{ width: 26, flexShrink: 0 }} />
               <div style={{ width: 38, flexShrink: 0 }} />
@@ -117,10 +120,10 @@ export default function EpicBacklogPage({ projectId: propProjectId }: { projectI
 
             {groups.map(group => (
               <div key={group.status}>
-                <div className="flex items-center h-[32px] px-2 cursor-pointer select-none" style={{ background: '#F8FAFC', borderBottom: '0.75px solid #E2E8F0' }} onClick={() => toggleGroup(group.status)}>
-                  {collapsed[group.status] ? <ChevronRight className="h-3.5 w-3.5 mr-2" style={{ color: '#64748B' }} /> : <ChevronDown className="h-3.5 w-3.5 mr-2" style={{ color: '#64748B' }} />}
-                  <span style={{ fontSize: 11, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.03em' }}>{group.label}</span>
-                  <span className="ml-2 inline-flex items-center justify-center rounded-full" style={{ fontSize: 10, fontWeight: 600, color: '#64748B', background: '#E2E8F0', minWidth: 20, height: 18, padding: '0 6px' }}>{group.items.length}</span>
+                <div className="flex items-center h-[32px] px-2 cursor-pointer select-none" style={{ background: tk.tableHeaderBg, borderBottom: `0.75px solid ${tk.border}` }} onClick={() => toggleGroup(group.status)}>
+                  {collapsed[group.status] ? <ChevronRight className="h-3.5 w-3.5 mr-2" style={{ color: tk.t2 }} /> : <ChevronDown className="h-3.5 w-3.5 mr-2" style={{ color: tk.t2 }} />}
+                  <span style={{ fontSize: 11, fontWeight: 600, color: tk.t2, textTransform: 'uppercase', letterSpacing: '0.03em' }}>{group.label}</span>
+                  <span className="ml-2 inline-flex items-center justify-center rounded-full" style={{ fontSize: 10, fontWeight: 600, color: tk.t2, background: tk.chipBg, minWidth: 20, height: 18, padding: '0 6px' }}>{group.items.length}</span>
                 </div>
 
                 {!collapsed[group.status] && group.items.map((epic) => {
@@ -130,8 +133,8 @@ export default function EpicBacklogPage({ projectId: propProjectId }: { projectI
                   const avatarUrl = epic.assignee_name ? avatarsByName.get(epic.assignee_name.toLowerCase()) : null;
                   return (
                     <div key={epic.id} className="group flex items-center h-[36px] px-2 border-b cursor-pointer"
-                      style={{ borderColor: '#F1F5F9', maxHeight: 36, transition: 'background 120ms' }}
-                      onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(15,23,42,0.04)')}
+                      style={{ borderColor: tk.divider, maxHeight: 36, transition: 'background 120ms' }}
+                      onMouseEnter={(e) => (e.currentTarget.style.background = tk.hoverBg)}
                       onMouseLeave={(e) => (e.currentTarget.style.background = '')}
                       onClick={() => setDrawerEpicId(epic.id)}>
                       <div style={{ width: 38, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -139,18 +142,18 @@ export default function EpicBacklogPage({ projectId: propProjectId }: { projectI
                       </div>
                       <div style={{ width: 26, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <button onClick={(e) => { e.stopPropagation(); setDrawerEpicId(epic.id); }} className="opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
-                          <ChevronRight className="h-3.5 w-3.5" style={{ color: '#94A3B8' }} />
+                          <ChevronRight className="h-3.5 w-3.5" style={{ color: tk.t3 }} />
                         </button>
                       </div>
                       <div style={{ width: 38, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <JiraIssueTypeIcon type="epic" />
                       </div>
                       {/* KEY */}
-                      <div style={{ width: 110, flexShrink: 0, fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 500, color: epic.epic_key ? '#2563EB' : '#94A3B8' }}>
+                      <div style={{ width: 110, flexShrink: 0, fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 500, color: epic.epic_key ? tk.blueKey : tk.t3 }}>
                         {epic.epic_key || '—'}
                       </div>
                       {/* SUMMARY */}
-                      <div style={{ flex: 1, minWidth: 0, fontSize: 13, fontWeight: 400, color: '#0F172A', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <div style={{ flex: 1, minWidth: 0, fontSize: 13, fontWeight: 400, color: tk.t1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {epic.name}
                       </div>
                       {/* STATUS */}
@@ -162,30 +165,30 @@ export default function EpicBacklogPage({ projectId: propProjectId }: { projectI
                         )}
                       </div>
                       {/* ASSIGNEE */}
-                      <div style={{ width: 158, flexShrink: 0, fontSize: 13, color: epic.assignee_name ? '#0F172A' : '#94A3B8', fontStyle: epic.assignee_name ? 'normal' : 'italic', display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <div style={{ width: 158, flexShrink: 0, fontSize: 13, color: epic.assignee_name ? tk.t1 : tk.t3, fontStyle: epic.assignee_name ? 'normal' : 'italic', display: 'flex', alignItems: 'center', gap: 6 }}>
                         {avatarUrl ? (
                           <img src={avatarUrl} style={{ width: 20, height: 20, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} alt="" />
                         ) : (
-                          <div style={{ width: 20, height: 20, borderRadius: '50%', background: '#E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 8, fontWeight: 700, color: '#64748B', flexShrink: 0 }}>
+                          <div style={{ width: 20, height: 20, borderRadius: '50%', background: tk.chipBg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 8, fontWeight: 700, color: tk.t2, flexShrink: 0 }}>
                             {getInitials(epic.assignee_name || null)}
                           </div>
                         )}
                         <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{epic.assignee_name || 'Unassigned'}</span>
                       </div>
                       {/* CREATED */}
-                      <div style={{ width: 90, flexShrink: 0, fontSize: 12, color: '#334155', fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: 'tabular-nums' }}>
+                      <div style={{ width: 90, flexShrink: 0, fontSize: 12, color: tk.t2, fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: 'tabular-nums' }}>
                         {formatDueDate(epic.jira_created_at ?? null)}
                       </div>
                       {/* UPDATED */}
-                      <div style={{ width: 90, flexShrink: 0, fontSize: 12, color: '#334155', fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: 'tabular-nums' }}>
+                      <div style={{ width: 90, flexShrink: 0, fontSize: 12, color: tk.t2, fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: 'tabular-nums' }}>
                         {formatDueDate(epic.jira_updated_at ?? null)}
                       </div>
                       {/* DUE DATE */}
-                      <div style={{ width: 90, flexShrink: 0, fontSize: 12, color: overdue ? '#DC2626' : '#334155', fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: 'tabular-nums', position: 'relative' }}>
+                      <div style={{ width: 90, flexShrink: 0, fontSize: 12, color: overdue ? '#DC2626' : tk.t2, fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: 'tabular-nums', position: 'relative' }}>
                         <span>{formatDueDate(epic.end_date)}</span>
-                        <div className="absolute right-0 top-1/2 -translate-y-1/2 hidden group-hover:flex items-center gap-1" style={{ background: 'rgba(255,255,255,0.95)' }}>
-                          <button onClick={(e) => { e.stopPropagation(); setEditEpicId(epic.id); }} className="p-1 rounded hover:bg-gray-100" title="Edit"><Pencil className="h-3.5 w-3.5" style={{ color: '#64748B' }} /></button>
-                          <button onClick={(e) => { e.stopPropagation(); setDeleteTarget(epic); }} className="p-1 rounded hover:bg-gray-100" title="Delete"><Trash2 className="h-3.5 w-3.5" style={{ color: '#DC2626' }} /></button>
+                        <div className="absolute right-0 top-1/2 -translate-y-1/2 hidden group-hover:flex items-center gap-1" style={{ background: isDark ? 'rgba(10,10,10,0.95)' : 'rgba(255,255,255,0.95)' }}>
+                          <button onClick={(e) => { e.stopPropagation(); setEditEpicId(epic.id); }} className="p-1 rounded" onMouseEnter={(e) => (e.currentTarget.style.background = tk.hoverBg)} onMouseLeave={(e) => (e.currentTarget.style.background = '')} title="Edit"><Pencil className="h-3.5 w-3.5" style={{ color: tk.t2 }} /></button>
+                          <button onClick={(e) => { e.stopPropagation(); setDeleteTarget(epic); }} className="p-1 rounded" onMouseEnter={(e) => (e.currentTarget.style.background = tk.hoverBg)} onMouseLeave={(e) => (e.currentTarget.style.background = '')} title="Delete"><Trash2 className="h-3.5 w-3.5" style={{ color: '#DC2626' }} /></button>
                         </div>
                       </div>
                     </div>
