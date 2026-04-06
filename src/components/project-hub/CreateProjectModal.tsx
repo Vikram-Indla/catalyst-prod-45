@@ -149,7 +149,7 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
             onClick={step === 0 ? onClose : () => setStep(s => s - 1)}
             className="rounded-md transition-colors hover:bg-[#F8FAFC] dark:hover:bg-[rgba(255,255,255,0.03)] bg-white dark:bg-transparent border border-[var(--bd-default, #E2E8F0)] dark:border-[rgba(255,255,255,0.10)] text-[#334155] dark:text-[rgba(255,255,255,0.72)]"
             style={{
-              height: 36, padding: '0 16px', fontSize: 13, fontWeight: 500,
+              height: 50, padding: '0 16px', fontSize: 13, fontWeight: 500,
               borderRadius: 6, cursor: 'pointer',
             }}
           >
@@ -161,7 +161,7 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
             disabled={!canNext || submitting}
             className="rounded-md transition-opacity hover:opacity-90 disabled:opacity-40 bg-[var(--cp-blue)]"
             style={{
-              height: 36, padding: '0 20px', fontSize: 13, fontWeight: 600,
+              height: 50, padding: '0 20px', fontSize: 13, fontWeight: 600,
               color: '#FFFFFF', border: 'none',
               borderRadius: 6, cursor: canNext && !submitting ? 'pointer' : 'default',
             }}

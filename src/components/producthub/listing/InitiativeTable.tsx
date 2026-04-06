@@ -268,7 +268,7 @@ export function InitiativeTable({
     return (
       <div style={{ flex: 1, overflow: 'hidden' }}>
         {Array.from({ length: 8 }).map((_, i) => (
-          <div key={i} style={{ height: 36, display: 'flex', alignItems: 'center', gap: 16, padding: '0 12px', borderBottom: '1px solid var(--pb-border)' }}>
+          <div key={i} style={{ height: 50, display: 'flex', alignItems: 'center', gap: 16, padding: '8px 12px', borderBottom: '1px solid var(--pb-border)' }}>
             {Array.from({ length: 6 }).map((_, j) => (
               <div key={j} style={{ height: 12, borderRadius: 4, background: 'var(--pb-surface-tertiary)', width: `${60 + Math.random() * 80}px` }} className="animate-pulse" />
             ))}
@@ -460,14 +460,14 @@ export function InitiativeTable({
                               {/* BRD Sub-rows */}
                               {expandedRows.has(row.original.id) && (brdTasksMap[row.original.id] || []).map((task) => (
                                 <tr key={task.issue_key} style={{ height: 32, background: 'var(--pb-surface-secondary)', borderBottom: '1px solid var(--pb-surface-tertiary)' }}>
-                                  <td style={{ padding: '0 12px' }} />
+                                  <td style={{ padding: '8px 12px' }} />
                                   <td style={{ padding: '0 12px 0 40px', fontFamily: 'var(--pb-font-mono)', fontSize: 12, fontWeight: 500, color: 'var(--pb-primary)' }}>
                                     {task.issue_key}
                                   </td>
-                                  <td colSpan={2} style={{ padding: '0 12px', fontSize: 12, color: 'var(--pb-ink-secondary)', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                  <td colSpan={2} style={{ padding: '8px 12px', fontSize: 12, color: 'var(--pb-ink-secondary)', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                                     {task.summary.replace(/^BRD\s+of\s+/i, '')}
                                   </td>
-                                  <td style={{ padding: '0 12px' }}>
+                                  <td style={{ padding: '8px 12px' }}>
                                     <span style={{
                                       display: 'inline-flex', alignItems: 'center', padding: '2px 8px', borderRadius: 'var(--pb-r-full)',
                                       fontSize: 10, fontWeight: 500,
@@ -477,7 +477,7 @@ export function InitiativeTable({
                                       {task.status}
                                     </span>
                                   </td>
-                                  <td colSpan={visibleColCount - 5} style={{ padding: '0 12px', fontSize: 12, color: 'var(--pb-ink-muted)' }}>
+                                  <td colSpan={visibleColCount - 5} style={{ padding: '8px 12px', fontSize: 12, color: 'var(--pb-ink-muted)' }}>
                                     {task.assignee_display_name || '—'}
                                   </td>
                                 </tr>

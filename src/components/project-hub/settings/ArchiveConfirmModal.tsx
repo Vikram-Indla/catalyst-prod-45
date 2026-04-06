@@ -57,7 +57,7 @@ export function ArchiveConfirmModal({ open, projectName, onClose, onConfirm, loa
             onClick={onClose}
             className="bg-[var(--cp-float)] dark:bg-[#1A1A1A]"
             style={{
-              height: 36, padding: '0 16px', fontSize: 13, fontWeight: 500,
+              height: 50, padding: '0 16px', fontSize: 13, fontWeight: 500,
               color: 'var(--fg-2)', border: '1px solid var(--divider)', borderRadius: 6,
               cursor: 'pointer',
             }}
@@ -69,7 +69,7 @@ export function ArchiveConfirmModal({ open, projectName, onClose, onConfirm, loa
             disabled={loading}
             className="hover:opacity-90 transition-opacity disabled:opacity-50 bg-[var(--sem-danger)]"
             style={{
-              height: 36, padding: '0 16px', fontSize: 13, fontWeight: 600,
+              height: 50, padding: '0 16px', fontSize: 13, fontWeight: 600,
               color: '#FFFFFF', border: 'none', borderRadius: 6,
               cursor: loading ? 'default' : 'pointer',
             }}

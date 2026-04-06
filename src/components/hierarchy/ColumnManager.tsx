@@ -78,7 +78,7 @@ export function ColumnManagerDropdown({ visibleColumns, onChange }: ColumnManage
       <button
         onClick={() => setOpen(o => !o)}
         style={{
-          width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center',
+          width: 36, height: 50, display: 'flex', alignItems: 'center', justifyContent: 'center',
           background: 'none', border: 'none', cursor: 'pointer', borderRadius: 4,
         }}
         title="Manage columns"

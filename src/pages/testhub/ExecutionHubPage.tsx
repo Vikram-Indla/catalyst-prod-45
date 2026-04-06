@@ -35,9 +35,9 @@ const CYCLE_STATUS_MAP: Record<string, { bg: string; text: string; label: string
   planned:      { bg: '#DFE1E6', text: '#253858', label: 'PLANNED' },
   draft:        { bg: '#DFE1E6', text: '#253858', label: 'DRAFT' },
   on_hold:      { bg: '#DFE1E6', text: '#253858', label: 'ON HOLD' },
-  completed:    { bg: '#E3FCEF', text: '#006644', label: 'COMPLETED' },
-  closed:       { bg: '#E3FCEF', text: '#006644', label: 'CLOSED' },
-  done:         { bg: '#E3FCEF', text: '#006644', label: 'DONE' },
+  completed:    { bg: 'var(--status-ok-bg, #E3FCEF)', text: '#006644', label: 'COMPLETED' },
+  closed:       { bg: 'var(--status-ok-bg, #E3FCEF)', text: '#006644', label: 'CLOSED' },
+  done:         { bg: 'var(--status-ok-bg, #E3FCEF)', text: '#006644', label: 'DONE' },
   archived:     { bg: '#DFE1E6', text: '#253858', label: 'ARCHIVED' },
 };
 

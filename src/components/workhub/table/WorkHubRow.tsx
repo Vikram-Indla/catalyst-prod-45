@@ -233,7 +233,7 @@ export default memo(function WorkHubRow({ item, columns, selected, onSelect, onO
         onKeyDown={e => { if (e.key === 'Enter' && !editField) onOpenPanel(item.id); if (e.key === ' ' && !editField) { e.preventDefault(); onSelect(!selected); } }}
         style={{
           display: 'flex', alignItems: 'center',
-          height: 36, maxHeight: 36, minHeight: 36,
+          height: 50, maxHeight: 50, minHeight: 50,
           borderBottom: '0.75px solid var(--bd-subtle, rgba(255,255,255,0.05))',
           background: selected ? 'rgba(37,99,235,0.08)' : hovered ? 'var(--hover, rgba(255,255,255,0.04))' : 'transparent',
           transition: 'background 150ms ease',

@@ -276,7 +276,7 @@ export default function WorkItemsListPage() {
         {/* Page header */}
         <div className="flex items-center justify-between mb-1">
           <div className="flex items-center gap-2.5">
-            <h1 style={{ fontSize: 18, fontWeight: 700, letterSpacing: '-0.01em', fontFamily: 'Sora, sans-serif', color: '#0F172A', margin: 0 }}>
+            <h1 style={{ fontSize: 18, fontWeight: 700, letterSpacing: '-0.01em', fontFamily: 'Sora, sans-serif', color: 'var(--fg-1, #0F172A)', margin: 0 }}>
               Work Items
             </h1>
             <span style={{ fontSize: 11, fontWeight: 500, padding: '1px 8px', borderRadius: 99, background: var(--bg-2, '#F1F5F9'), color: '#64748B' }}>

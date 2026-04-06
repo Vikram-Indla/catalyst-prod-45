@@ -230,7 +230,7 @@ export default function ProjectListPage() {
               <button
                 onClick={onNewProject}
                 className="flex items-center gap-1.5 mt-6 rounded-md transition-all"
-                style={{ height: 36, padding: '0 16px', background: '#2563EB', color: '#FFFFFF', border: 'none', borderRadius: 6, fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
+                style={{ height: 50, padding: '0 16px', background: '#2563EB', color: '#FFFFFF', border: 'none', borderRadius: 6, fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
                 onMouseEnter={e => { e.currentTarget.style.background = '#1D4ED8'; }}
                 onMouseLeave={e => { e.currentTarget.style.background = '#2563EB'; }}
               >
@@ -296,7 +296,7 @@ export default function ProjectListPage() {
           >
             <button onClick={() => { navigate(`/project-hub/${ctxMenu.project.key}/dashboard`); setCtxMenu(null); }}
               className="w-full flex items-center gap-2.5 px-3 transition-colors"
-              style={{ height: 36, fontSize: 13, color: T.t1, background: 'transparent', border: 'none', cursor: 'pointer' }}
+              style={{ height: 50, fontSize: 13, color: T.t1, background: 'transparent', border: 'none', cursor: 'pointer' }}
               onMouseEnter={e => { e.currentTarget.style.background = T.hoverBg; }}
               onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
             >
@@ -304,7 +304,7 @@ export default function ProjectListPage() {
             </button>
             <button onClick={() => { window.open(`/project-hub/${ctxMenu.project.key}/dashboard`, '_blank'); setCtxMenu(null); }}
               className="w-full flex items-center gap-2.5 px-3 transition-colors"
-              style={{ height: 36, fontSize: 13, color: T.t1, background: 'transparent', border: 'none', cursor: 'pointer' }}
+              style={{ height: 50, fontSize: 13, color: T.t1, background: 'transparent', border: 'none', cursor: 'pointer' }}
               onMouseEnter={e => { e.currentTarget.style.background = T.hoverBg; }}
               onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
             >
@@ -312,7 +312,7 @@ export default function ProjectListPage() {
             </button>
             <button onClick={() => { navigator.clipboard.writeText(ctxMenu.project.key); toast.success('Copied'); setCtxMenu(null); }}
               className="w-full flex items-center gap-2.5 px-3 transition-colors"
-              style={{ height: 36, fontSize: 13, color: T.t1, background: 'transparent', border: 'none', cursor: 'pointer' }}
+              style={{ height: 50, fontSize: 13, color: T.t1, background: 'transparent', border: 'none', cursor: 'pointer' }}
               onMouseEnter={e => { e.currentTarget.style.background = T.hoverBg; }}
               onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
             >
@@ -321,7 +321,7 @@ export default function ProjectListPage() {
             <div style={{ height: 1, background: T.border, margin: '4px 0' }} />
             <button onClick={() => { toggleStar(ctxMenu.project.id); setCtxMenu(null); }}
               className="w-full flex items-center gap-2.5 px-3 transition-colors"
-              style={{ height: 36, fontSize: 13, color: T.t1, background: 'transparent', border: 'none', cursor: 'pointer' }}
+              style={{ height: 50, fontSize: 13, color: T.t1, background: 'transparent', border: 'none', cursor: 'pointer' }}
               onMouseEnter={e => { e.currentTarget.style.background = T.hoverBg; }}
               onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
             >
@@ -331,7 +331,7 @@ export default function ProjectListPage() {
             <div style={{ height: 1, background: T.border, margin: '4px 0' }} />
             <button onClick={() => { archiveProject(ctxMenu.project.id, ctxMenu.project.name); setCtxMenu(null); }}
               className="w-full flex items-center gap-2.5 px-3 transition-colors"
-              style={{ height: 36, fontSize: 13, color: '#DC2626', background: 'transparent', border: 'none', cursor: 'pointer' }}
+              style={{ height: 50, fontSize: 13, color: '#DC2626', background: 'transparent', border: 'none', cursor: 'pointer' }}
               onMouseEnter={e => { e.currentTarget.style.background = isDark ? 'rgba(220,38,38,0.1)' : '#FEF2F2'; }}
               onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
             >

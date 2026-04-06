@@ -319,7 +319,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
               <button
                 onClick={e => { e.stopPropagation(); closeDropdowns(); setPriorityOpen(!priorityOpen); }}
                 className="w-full flex items-center justify-between rounded-md border px-2.5 text-[12px] font-medium hover:border-[var(--fg-3, #94A3B8)] transition-colors"
-                style={{ height: 36, borderColor: 'var(--divider)', color: 'var(--fg-2)' }}
+                style={{ height: 50, borderColor: 'var(--divider)', color: 'var(--fg-2)' }}
               >
                 <span className="flex items-center gap-1.5">
                   <span style={{ color: pri?.color }}>{pri?.icon}</span>
@@ -350,7 +350,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
               <button
                 onClick={e => { e.stopPropagation(); closeDropdowns(); setAssigneeOpen(!assigneeOpen); }}
                 className="w-full flex items-center justify-between rounded-md border px-2.5 text-[12px] font-medium hover:border-[var(--fg-3, #94A3B8)] transition-colors"
-                style={{ height: 36, borderColor: 'var(--divider)', color: selectedAssignee ? 'var(--fg-2)' : 'var(--fg-4)' }}
+                style={{ height: 50, borderColor: 'var(--divider)', color: selectedAssignee ? 'var(--fg-2)' : 'var(--fg-4)' }}
               >
                 <span className="truncate">{selectedAssignee ? selectedAssignee.full_name : 'Unassigned'}</span>
                 <ChevronDown size={14} className="text-[var(--fg-3, #94A3B8)] shrink-0" />
@@ -400,7 +400,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
             <label className="text-[10px] font-semibold uppercase tracking-wider mb-1.5 block" style={{ color: 'var(--fg-4)' }}>Labels</label>
             <button
               onClick={e => { e.stopPropagation(); closeDropdowns(); setLabelsOpen(!labelsOpen); }}
-              className="w-full flex items-center gap-1.5 flex-wrap min-h-[36px] rounded-md border px-2.5 py-1.5 text-[12px] hover:border-[var(--fg-3, #94A3B8)] transition-colors"
+              className="w-full flex items-center gap-1.5 flex-wrap min-h-[50px] rounded-md border px-2.5 py-1.5 text-[12px] hover:border-[var(--fg-3, #94A3B8)] transition-colors"
               style={{ borderColor: 'var(--divider)' }}
             >
               {selectedLabels.length === 0 && <span style={{ color: 'var(--fg-4)' }}>Select labels...</span>}
@@ -463,7 +463,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
                   value={dueDate}
                   onChange={e => setDueDate(e.target.value)}
                   className="w-full rounded-md border pl-8 pr-2.5 text-[12px] font-medium focus:outline-none focus:ring-2 focus:ring-[#2563EB] transition-shadow"
-                  style={{ height: 36, borderColor: 'var(--divider)', color: 'var(--fg-2)', fontFamily: 'JetBrains Mono, monospace' }}
+                  style={{ height: 50, borderColor: 'var(--divider)', color: 'var(--fg-2)', fontFamily: 'JetBrains Mono, monospace' }}
                 />
               </div>
             </div>
@@ -474,7 +474,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
               <button
                 onClick={e => { e.stopPropagation(); closeDropdowns(); setReleaseOpen(!releaseOpen); }}
                 className="w-full flex items-center justify-between rounded-md border px-2.5 text-[12px] font-medium hover:border-[var(--fg-3, #94A3B8)] transition-colors"
-                style={{ height: 36, borderColor: 'var(--divider)', color: selectedRelease ? 'var(--fg-2)' : 'var(--fg-4)' }}
+                style={{ height: 50, borderColor: 'var(--divider)', color: selectedRelease ? 'var(--fg-2)' : 'var(--fg-4)' }}
               >
                 <span className="truncate">
                   {selectedRelease ? selectedRelease.name : 'None'}
@@ -514,7 +514,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
             <button
               onClick={e => { e.stopPropagation(); closeDropdowns(); setParentOpen(!parentOpen); }}
               className="w-full flex items-center justify-between rounded-md border px-2.5 text-[12px] font-medium hover:border-[var(--fg-3, #94A3B8)] transition-colors"
-              style={{ height: 36, borderColor: 'var(--divider)', color: selectedParent ? 'var(--fg-2)' : 'var(--fg-4)' }}
+              style={{ height: 50, borderColor: 'var(--divider)', color: selectedParent ? 'var(--fg-2)' : 'var(--fg-4)' }}
             >
               <span className="truncate">
                 {selectedParent ? `${selectedParent.item_key} — ${selectedParent.title || selectedParent.summary}` : 'None'}

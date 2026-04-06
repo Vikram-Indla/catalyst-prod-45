@@ -177,7 +177,7 @@ export default function WikiAnalyticsPage() {
               return (
                 <div key={a.id} onClick={() => navigate(`/wiki/${a.slug}`)} style={{
                   display: 'grid', gridTemplateColumns: '1fr 60px 60px 60px',
-                  padding: '0 14px', height: 36, alignItems: 'center', borderBottom: `0.75px solid ${border}`,
+                  padding: '0 14px', height: 50, alignItems: 'center', borderBottom: `0.75px solid ${border}`,
                   fontSize: 12, cursor: 'pointer', transition: 'background 80ms',
                 }} onMouseEnter={e => e.currentTarget.style.background = 'rgba(37,99,235,0.04)'}
                    onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
@@ -208,7 +208,7 @@ export default function WikiAnalyticsPage() {
             ) : (leastHelpful ?? []).map((a: any) => (
               <div key={a.id} onClick={() => navigate(`/wiki/${a.slug}`)} style={{
                 display: 'grid', gridTemplateColumns: '1fr 60px 60px',
-                padding: '0 14px', height: 36, alignItems: 'center', borderBottom: `0.75px solid ${border}`,
+                padding: '0 14px', height: 50, alignItems: 'center', borderBottom: `0.75px solid ${border}`,
                 fontSize: 12, cursor: 'pointer', transition: 'background 80ms',
               }} onMouseEnter={e => e.currentTarget.style.background = 'rgba(37,99,235,0.04)'}
                  onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>

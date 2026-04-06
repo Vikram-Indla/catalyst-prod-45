@@ -35,7 +35,7 @@ const HUB_LABELS: Record<string, string> = {
 const PRIORITY_STYLES: Record<string, string> = {
   P1: 'bg-[#FFEBE6] text-[#BF2600] border-transparent',
   P2: 'bg-[#FFF0B3] text-[#974F0C] border-transparent',
-  P3: 'bg-[#DEEBFF] text-[#0747A6] border-transparent',
+  P3: 'bg-[var(--status-info-bg, #DEEBFF)] text-[#0747A6] border-transparent',
   P4: 'bg-[#DFE1E6] text-[#253858] border-transparent',
 };
 
@@ -86,7 +86,7 @@ export const TriggerRow = memo(function TriggerRow({
           ? 'bg-[rgba(37,99,235,0.04)]'
           : 'hover:bg-[rgba(0,0,0,0.02)]'
       }`}
-      style={{ height: 36, maxHeight: 36 }}
+      style={{ height: 50, maxHeight: 50 }}
     >
       {/* ── Checkbox ─────────────────────────────────────────────── */}
       <div className="flex items-center justify-center">

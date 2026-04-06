@@ -37,7 +37,7 @@ export function RecentActivityFeed({ activities }: Props) {
     <div style={{ backgroundColor: 'var(--bg-app)', border: '1px solid var(--divider)', borderRadius: 12, padding: 24, minHeight: 260 }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
-        <div style={{ width: 36, height: 36, borderRadius: 12, backgroundColor: '#DBEAFE', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ width: 36, height: 50, borderRadius: 12, backgroundColor: '#DBEAFE', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <Activity size={18} color="#2563EB" />
         </div>
         <div>

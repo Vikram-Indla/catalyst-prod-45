@@ -395,7 +395,7 @@ function renderMenuItem(
       onClick={() => handleNavigation(item.path)}
       className="group w-full flex items-center border-none cursor-pointer transition-all relative"
       style={{
-        height: '36px',
+        height: '50px',
         padding: expanded ? '0 10px' : '0',
         gap: '10px',
         marginBottom: '2px',

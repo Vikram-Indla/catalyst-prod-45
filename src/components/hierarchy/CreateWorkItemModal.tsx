@@ -58,7 +58,7 @@ function CustomSelect({
   return (
     <div ref={ref} style={{ position: 'relative' }}>
       <button type="button" onClick={() => setOpen((p) => !p)}
-        style={{ width: '100%', height: 36, padding: '0 12px', fontSize: 14, fontFamily: "'Inter', sans-serif", color: selected ? '#0F172A' : 'var(--fg-3, #94A3B8)', background: 'var(--cp-float)', border: '1.5px solid var(--divider)', borderRadius: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', textAlign: 'left' }}>
+        style={{ width: '100%', height: 50, padding: '8px 12px', fontSize: 14, fontFamily: "'Inter', sans-serif", color: selected ? '#0F172A' : 'var(--fg-3, #94A3B8)', background: 'var(--cp-float)', border: '1.5px solid var(--divider)', borderRadius: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', textAlign: 'left' }}>
         <span>{selected ? (renderOption ? renderOption(selected) : selected.label) : placeholder}</span>
         <ChevronDown size={14} color="var(--fg-3)" />
       </button>
@@ -195,7 +195,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, parentItem }: Cr
               {parentItem && (
                 <div>
                   <label style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', color: 'var(--fg-3)', letterSpacing: '0.06em', display: 'block', marginBottom: 6 }}>Parent</label>
-                  <div style={{ height: 36, padding: '0 12px', background: '#FAFAFA', border: '1.5px solid var(--divider)', borderRadius: 6, display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: 'var(--fg-1)' }}>
+                  <div style={{ height: 50, padding: '8px 12px', background: '#FAFAFA', border: '1.5px solid var(--divider)', borderRadius: 6, display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: 'var(--fg-1)' }}>
                     <div style={{ width: 6, height: 6, borderRadius: '50%', background: parentItem.hierarchyColor }} />
                     <span style={{ fontWeight: 500, color: 'var(--cp-blue)', fontSize: 12 }}>{parentItem.key}</span>
                     <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{parentItem.title}</span>
@@ -208,7 +208,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, parentItem }: Cr
                   Title <span style={{ color: 'var(--sem-danger)' }}>*</span>
                 </label>
                 <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder={placeholder} autoFocus
-                  style={{ width: '100%', height: 36, padding: '0 12px', fontSize: 14, fontFamily: "'Inter', sans-serif", border: '1.5px solid var(--divider)', borderRadius: 6, outline: 'none', boxSizing: 'border-box', transition: 'border-color 150ms, box-shadow 150ms' }}
+                  style={{ width: '100%', height: 50, padding: '8px 12px', fontSize: 14, fontFamily: "'Inter', sans-serif", border: '1.5px solid var(--divider)', borderRadius: 6, outline: 'none', boxSizing: 'border-box', transition: 'border-color 150ms, box-shadow 150ms' }}
                   onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--cp-blue)'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.12)'; }}
                   onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--divider)'; e.currentTarget.style.boxShadow = 'none'; }} />
               </div>

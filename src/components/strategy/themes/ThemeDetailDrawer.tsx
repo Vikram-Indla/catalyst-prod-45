@@ -457,7 +457,7 @@ function MilestonesTab({ theme, isDark = false }: { theme: StrategicTheme; isDar
       ) : (
         <div className="space-y-1">
           {milestones.map(m => (
-            <div key={m.id} className="flex items-center gap-2 rounded-md px-2 group" style={{ height: 36, borderBottom: `1px solid ${d.borderSubtle}` }}
+            <div key={m.id} className="flex items-center gap-2 rounded-md px-2 group" style={{ height: 50, borderBottom: `1px solid ${d.borderSubtle}` }}
               onMouseEnter={e => (e.currentTarget.style.background = d.hoverBg)}
               onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
             >

@@ -53,7 +53,7 @@ export default function IdeationBoardView({ ideas, onOpenDetail, onConvert }: Pr
             {/* Column Header */}
             <div style={{
               display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px', padding: '0 4px',
-              height: 36,
+              height: 50,
             }}>
               <span style={{ width: '10px', height: '10px', borderRadius: '4px', background: sc.bg, flexShrink: 0 }} />
               <span style={{ fontSize: '11px', fontWeight: 700, color: dk.t2, textTransform: 'uppercase', letterSpacing: '0.07em' }}>{sc.label}</span>

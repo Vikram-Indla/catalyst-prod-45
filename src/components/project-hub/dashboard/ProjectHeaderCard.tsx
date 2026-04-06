@@ -46,7 +46,7 @@ export function ProjectHeaderCard({
         <div className="flex items-center gap-3">
           <div
             className="flex items-center justify-center rounded-full flex-shrink-0"
-            style={{ width: 36, height: 36, background: color }}
+            style={{ width: 36, height: 50, background: color }}
           >
             <span style={{ color: 'var(--bg-app)', fontSize: 14, fontWeight: 700 }}>
               {projectKey.slice(0, 2)}

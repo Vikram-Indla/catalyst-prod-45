@@ -7,7 +7,7 @@ export default function OverdueWidget({ projectId, projectKey, collapsed, onTogg
   const count = items?.length ?? 0;
 
   const badge = (
-    <span className={count === 0 ? 'bg-[#E3FCEF] dark:bg-[#1a3a2a] text-[#006644] dark:text-[#57d9a3]' : 'bg-[#FFEBE6] dark:bg-[#3a1a1a] text-[#BF2600] dark:text-[#ff8f73]'} style={{
+    <span className={count === 0 ? 'bg-[var(--status-ok-bg, #E3FCEF)] dark:bg-[#1a3a2a] text-[#006644] dark:text-[#57d9a3]' : 'bg-[#FFEBE6] dark:bg-[#3a1a1a] text-[#BF2600] dark:text-[#ff8f73]'} style={{
       display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 8px',
       fontSize: 11, fontWeight: 700, borderRadius: 'var(--cp-radius-sm)',
     }}>{count}</span>

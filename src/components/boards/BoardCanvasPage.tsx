@@ -270,7 +270,7 @@ export default function BoardCanvasPage({ projectIdOverride, basePath }: BoardCa
                 onClick={() => navigate(`${boardBasePath}/${tab.id}`)}
                 style={{
                   display: 'flex', alignItems: 'center', gap: 5,
-                  height: 30, padding: '0 12px', borderRadius: 4,
+                  height: 30, padding: '8px 12px', borderRadius: 4,
                   border: 'none', background: 'transparent', cursor: 'pointer',
                   fontSize: 12.5, fontWeight: active ? 600 : 500,
                   color: active ? 'var(--fg-1)' : 'var(--fg-3)',
@@ -311,7 +311,7 @@ export default function BoardCanvasPage({ projectIdOverride, basePath }: BoardCa
               <ChevronDown size={12} color="#64748B" />
             </button>
             <button onClick={() => setSettingsOpen(true)} style={{
-              display: 'flex', alignItems: 'center', gap: 5, height: 32, padding: '0 12px',
+              display: 'flex', alignItems: 'center', gap: 5, height: 32, padding: '8px 12px',
               background: 'transparent', border: '0.75px solid rgba(15,23,42,0.12)',
               borderRadius: 6, cursor: 'pointer', fontSize: 12, fontWeight: 500,
               color: 'var(--fg-2)', fontFamily: "'Inter', sans-serif",

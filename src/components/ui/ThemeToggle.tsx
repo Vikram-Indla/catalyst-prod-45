@@ -46,7 +46,7 @@ export function ThemeToggle() {
           className="relative flex items-center justify-center rounded-lg transition-all"
           style={{
             width: '36px',
-            height: '36px',
+            height: '50px',
             color: 'var(--cp-t2)',
             background: 'transparent',
             border: '1px solid var(--cp-bd)',

@@ -158,7 +158,7 @@ export function FolderPanel({
           title="Expand folders"
           style={{
             width: 36,
-            height: 36,
+            height: 50,
             padding: 0,
             border: 'none',
             borderRadius: 8,
@@ -291,7 +291,7 @@ export function FolderPanel({
             onChange={(e) => setSearchQuery(e.target.value)}
             style={{
               width: '100%',
-              height: 36,
+              height: 50,
               paddingLeft: 32,
               paddingRight: 12,
               fontSize: 13,
@@ -323,8 +323,8 @@ export function FolderPanel({
         <div
           onClick={() => onSelectFolder(null)}
           style={{
-            height: 36,
-            padding: '0 12px',
+            height: 50,
+            padding: '8px 12px',
             margin: '1px 8px',
             borderRadius: 8,
             display: 'flex',
@@ -408,8 +408,8 @@ export function FolderPanel({
               }}
               style={{
                 width: '100%',
-                height: 36,
-                padding: '0 12px',
+                height: 50,
+                padding: '8px 12px',
                 display: 'flex',
                 alignItems: 'center',
                 gap: 8,
@@ -435,8 +435,8 @@ export function FolderPanel({
               }}
               style={{
                 width: '100%',
-                height: 36,
-                padding: '0 12px',
+                height: 50,
+                padding: '8px 12px',
                 display: 'flex',
                 alignItems: 'center',
                 gap: 8,
@@ -496,8 +496,8 @@ function FolderTreeItem({
         onClick={() => onSelect(folder.id)}
         onContextMenu={(e) => onContextMenu(e, folder)}
         style={{
-          height: 36,
-          padding: '0 12px',
+          height: 50,
+          padding: '8px 12px',
           paddingLeft: 12 + depth * 20,
           margin: '1px 8px',
           borderRadius: 8,

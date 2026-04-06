@@ -101,7 +101,7 @@ export function ExecutionActionBar({
 
       {isExecuted && (
         <button onClick={onReset} disabled={isSubmitting} title="Reset to Not Run (Ctrl+R)"
-          style={{ height: 44, padding: '0 12px', border: '1.5px solid var(--divider)', borderRadius: 8, backgroundColor: 'var(--cp-float)', color: 'var(--fg-3)', cursor: isSubmitting ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
+          style={{ height: 44, padding: '8px 12px', border: '1.5px solid var(--divider)', borderRadius: 8, backgroundColor: 'var(--cp-float)', color: 'var(--fg-3)', cursor: isSubmitting ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
           <RotateCcw size={16} />
         </button>
       )}

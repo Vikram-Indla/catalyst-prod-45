@@ -190,7 +190,7 @@ export function ExportModal({ isOpen, onClose, onExported }: ExportModalProps) {
             <h2 style={{ fontSize: 18, fontWeight: 700, color: 'var(--fg-1)', margin: 0 }}>Export Data</h2>
           </div>
           <button onClick={onClose} style={{
-            width: 36, height: 36, border: 'none', borderRadius: 8,
+            width: 36, height: 50, border: 'none', borderRadius: 8,
             backgroundColor: 'transparent', color: 'var(--fg-3)', cursor: 'pointer',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
@@ -283,7 +283,7 @@ export function ExportModal({ isOpen, onClose, onExported }: ExportModalProps) {
                   <select
                     value={statusFilter}
                     onChange={(e) => setStatusFilter(e.target.value)}
-                    style={{ width: '100%', height: 36, padding: '0 10px', border: '1px solid var(--divider)', borderRadius: 6, fontSize: 13 }}
+                    style={{ width: '100%', height: 50, padding: '0 10px', border: '1px solid var(--divider)', borderRadius: 6, fontSize: 13 }}
                   >
                     <option value="all">All</option>
                     <option value="draft">Draft</option>
@@ -298,7 +298,7 @@ export function ExportModal({ isOpen, onClose, onExported }: ExportModalProps) {
                   <select
                     value={priorityFilter}
                     onChange={(e) => setPriorityFilter(e.target.value)}
-                    style={{ width: '100%', height: 36, padding: '0 10px', border: '1px solid var(--divider)', borderRadius: 6, fontSize: 13 }}
+                    style={{ width: '100%', height: 50, padding: '0 10px', border: '1px solid var(--divider)', borderRadius: 6, fontSize: 13 }}
                   >
                     <option value="all">All</option>
                     <option value="critical">Critical</option>

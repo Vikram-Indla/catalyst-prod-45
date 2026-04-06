@@ -273,7 +273,7 @@ export default function TestHubDashboardPage() {
           </span>
           <button onClick={fetchDashboardData} style={{
             display: 'inline-flex', alignItems: 'center', gap: 4,
-            height: 32, padding: '0 12px', fontSize: 13, fontWeight: 500,
+            height: 32, padding: '8px 12px', fontSize: 13, fontWeight: 500,
             color: isDark ? '#EDEDED' : '#0F172A', background: isDark ? '#1A1A1A' : '#FFFFFF', border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`,
             borderRadius: 6, cursor: 'pointer',
           }}>
@@ -281,7 +281,7 @@ export default function TestHubDashboardPage() {
           </button>
           <button style={{
             display: 'inline-flex', alignItems: 'center', gap: 4,
-            height: 32, padding: '0 12px', fontSize: 13, fontWeight: 500,
+            height: 32, padding: '8px 12px', fontSize: 13, fontWeight: 500,
             color: isDark ? '#EDEDED' : '#0F172A', background: isDark ? '#1A1A1A' : '#FFFFFF', border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`,
             borderRadius: 6, cursor: 'pointer',
           }}>
@@ -366,7 +366,7 @@ export default function TestHubDashboardPage() {
                        className="c10-row"
                        style={{
                          display: 'grid', gridTemplateColumns: '90px 1fr 100px 130px',
-                         alignItems: 'center', height: 36, padding: '0 16px',
+                         alignItems: 'center', height: 50, padding: '0 16px',
                          cursor: 'pointer', borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.05)' : '#F1F5F9'}`,
                        }}>
                        <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 12, fontWeight: 600, color: '#2563EB' }}>
@@ -441,7 +441,7 @@ export default function TestHubDashboardPage() {
                          className="c10-row-danger"
                          style={{
                            display: 'grid', gridTemplateColumns: '72px 1fr 60px 64px',
-                           alignItems: 'center', height: 36, padding: '0 16px',
+                           alignItems: 'center', height: 50, padding: '0 16px',
                            cursor: 'pointer', borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.05)' : '#F1F5F9'}`,
                          }}>
                          <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 12, fontWeight: 600, color: '#2563EB' }}>

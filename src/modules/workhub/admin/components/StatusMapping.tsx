@@ -77,7 +77,7 @@ export function StatusMapping() {
   return (
     <div style={{ maxWidth: 900, fontFamily: 'Inter, sans-serif' }}>
       <div style={{ marginBottom: 24 }}>
-        <h1 style={{ fontFamily: 'Sora, sans-serif', fontSize: 18, fontWeight: 700, color: '#0F172A', margin: 0 }}>
+        <h1 style={{ fontFamily: 'Sora, sans-serif', fontSize: 18, fontWeight: 700, color: 'var(--fg-1, #0F172A)', margin: 0 }}>
           Status Mapping
         </h1>
         <p style={{ fontSize: 13, color: '#64748B', marginTop: 4 }}>
@@ -90,7 +90,7 @@ export function StatusMapping() {
         padding: 20, boxShadow: '0 1px 2px rgba(0,0,0,.05)',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>
-          <h2 style={{ fontFamily: 'Sora, sans-serif', fontSize: 14, fontWeight: 600, color: '#0F172A', margin: 0 }}>
+          <h2 style={{ fontFamily: 'Sora, sans-serif', fontSize: 14, fontWeight: 600, color: 'var(--fg-1, #0F172A)', margin: 0 }}>
             Category Mapping
           </h2>
           <span style={{

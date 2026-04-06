@@ -19,13 +19,13 @@ const QUARTER_STYLES: Record<string, { bg: string; color: string }> = {
 const headerStyle: React.CSSProperties = {
   fontSize: 11, fontWeight: 700, color: '#64748B', fontFamily: "'Inter', sans-serif",
   textTransform: 'uppercase', letterSpacing: '0.07em',
-  background: 'var(--bg-1, #F8FAFC)', height: 36, padding: '0 12px',
+  background: 'var(--bg-1, #F8FAFC)', height: 50, padding: '8px 12px',
   borderBottom: '2px solid var(--bd-default, #E2E8F0)', position: 'sticky', top: 0, zIndex: 2,
   textAlign: 'left', whiteSpace: 'nowrap',
 };
 
 const cellStyle: React.CSSProperties = {
-  height: 36, padding: '0 12px', borderBottom: '1px solid #F1F5F9',
+  height: 50, padding: '8px 12px', borderBottom: '1px solid #F1F5F9',
   verticalAlign: 'middle', whiteSpace: 'nowrap',
 };
 

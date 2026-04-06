@@ -135,7 +135,7 @@ export function AddCycleToPlanModal({ isOpen, onClose, planId, onAdded }: AddCyc
             </div>
           </div>
           <button onClick={onClose} style={{
-            width: 36, height: 36, border: 'none', borderRadius: 8,
+            width: 36, height: 50, border: 'none', borderRadius: 8,
             backgroundColor: 'transparent', color: 'var(--fg-3)', cursor: 'pointer',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}><X size={20} /></button>

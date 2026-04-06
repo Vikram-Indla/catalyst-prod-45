@@ -36,7 +36,7 @@ export function TopFailingTests({ tests }: Props) {
     <div style={{ backgroundColor: 'var(--bg-app)', border: '1px solid var(--divider)', borderRadius: 12, padding: 24 }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
-        <div style={{ width: 36, height: 36, borderRadius: 12, backgroundColor: 'var(--tint-red, #FEF2F2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ width: 36, height: 50, borderRadius: 12, backgroundColor: 'var(--tint-red, #FEF2F2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <TrendingDown size={18} color="var(--sem-danger)" />
         </div>
         <div>

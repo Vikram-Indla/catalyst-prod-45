@@ -494,7 +494,7 @@ export const WorkItemDetailsDrawer: React.FC<WorkItemDetailsDrawerProps> = ({
                         borderRadius: 4,
                         letterSpacing: '0.05em',
                         backgroundColor:
-                          jiraData.jira_sync_status === 'synced' || jiraData.jira_sync_status === 'pushed' ? '#E3FCEF' :
+                          jiraData.jira_sync_status === 'synced' || jiraData.jira_sync_status === 'pushed' ? 'var(--status-ok-bg, #E3FCEF)' :
                           jiraData.jira_sync_status === 'queued' || jiraData.jira_sync_status === 'approval_pending' ? '#DEEBFF' :
                           '#DFE1E6',
                         color:

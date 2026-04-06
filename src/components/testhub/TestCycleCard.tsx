@@ -41,8 +41,8 @@ const statusConfig: Record<string, { label: string; color: string; bg: string; b
   planned:     { label: 'PLANNED',     color: '#253858', bg: '#DFE1E6', border: '#DFE1E6' },
   active:      { label: 'IN PROGRESS', color: '#0747A6', bg: '#DEEBFF', border: '#B3D4FF' },
   in_progress: { label: 'IN PROGRESS', color: '#0747A6', bg: '#DEEBFF', border: '#B3D4FF' },
-  completed:   { label: 'COMPLETED',   color: '#006644', bg: '#E3FCEF', border: '#ABF5D1' },
-  done:        { label: 'DONE',        color: '#006644', bg: '#E3FCEF', border: '#ABF5D1' },
+  completed:   { label: 'COMPLETED',   color: '#006644', bg: 'var(--status-ok-bg, #E3FCEF)', border: '#ABF5D1' },
+  done:        { label: 'DONE',        color: '#006644', bg: 'var(--status-ok-bg, #E3FCEF)', border: '#ABF5D1' },
   archived:    { label: 'ARCHIVED',    color: '#253858', bg: '#DFE1E6', border: '#DFE1E6' },
   paused:      { label: 'PAUSED',      color: '#253858', bg: '#DFE1E6', border: '#DFE1E6' },
 };
@@ -58,8 +58,8 @@ const STATUS_DISPLAY_LABELS: Record<string, string> = {
 
 const menuItemStyle: React.CSSProperties = {
   width: '100%',
-  height: 36,
-  padding: '0 12px',
+  height: 50,
+  padding: '8px 12px',
   border: 'none',
   borderRadius: 6,
   backgroundColor: 'transparent',

@@ -148,14 +148,14 @@ function AddLinkModal({
               Item Key *
             </label>
             <input type="text" value={itemKey} onChange={(e) => setItemKey(e.target.value)} placeholder={prefixMap[linkType]}
-              style={{ width: '100%', height: 40, padding: '0 12px', fontSize: 14, fontFamily: 'Inter, sans-serif', border: '1.5px solid var(--divider)', borderRadius: 8, outline: 'none' }} />
+              style={{ width: '100%', height: 40, padding: '8px 12px', fontSize: 14, fontFamily: 'Inter, sans-serif', border: '1.5px solid var(--divider)', borderRadius: 8, outline: 'none' }} />
           </div>
           <div>
             <label style={{ display: 'block', fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--fg-3)', marginBottom: 6 }}>
               Title
             </label>
             <input type="text" value={itemTitle} onChange={(e) => setItemTitle(e.target.value)} placeholder="Enter title..."
-              style={{ width: '100%', height: 40, padding: '0 12px', fontSize: 14, fontFamily: 'Inter, sans-serif', border: '1.5px solid var(--divider)', borderRadius: 8, outline: 'none' }} />
+              style={{ width: '100%', height: 40, padding: '8px 12px', fontSize: 14, fontFamily: 'Inter, sans-serif', border: '1.5px solid var(--divider)', borderRadius: 8, outline: 'none' }} />
           </div>
         </div>
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, padding: '16px 20px', borderTop: '1px solid var(--divider)' }}>
@@ -372,7 +372,7 @@ export function ViewTestCaseModal({
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
               <button onClick={() => fileInputRef.current?.click()}
-                style={{ height: 36, padding: '0 16px', backgroundColor: 'transparent', border: 'none', fontSize: 13, fontWeight: 600, color: 'var(--cp-blue)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
+                style={{ height: 50, padding: '0 16px', backgroundColor: 'transparent', border: 'none', fontSize: 13, fontWeight: 600, color: 'var(--cp-blue)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
                 <Plus style={{ width: 14, height: 14 }} /> Upload
               </button>
             </div>
@@ -418,7 +418,7 @@ export function ViewTestCaseModal({
             <div style={{ display: 'flex', gap: 8 }}>
               {(['requirement', 'defect', 'story'] as const).map(lt => (
                 <button key={lt} onClick={() => { setAddLinkType(lt); setAddLinkOpen(true); }}
-                  style={{ height: 32, padding: '0 12px', backgroundColor: 'var(--cp-float)', border: '1px solid var(--divider)', borderRadius: 6, fontSize: 12, fontWeight: 500, color: 'var(--fg-2)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}>
+                  style={{ height: 32, padding: '8px 12px', backgroundColor: 'var(--cp-float)', border: '1px solid var(--divider)', borderRadius: 6, fontSize: 12, fontWeight: 500, color: 'var(--fg-2)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}>
                   <Plus style={{ width: 12, height: 12 }} /> {lt === 'requirement' ? 'Requirement' : lt === 'defect' ? 'Defect' : 'Story'}
                 </button>
               ))}
@@ -490,9 +490,9 @@ export function ViewTestCaseModal({
               <h2 style={{ fontSize: 18, fontWeight: 700, color: 'var(--fg-1)', margin: 0, lineHeight: 1.3 }}>{testCase.title}</h2>
             </div>
             <div style={{ display: 'flex', gap: 8, marginLeft: 16 }}>
-              <button onClick={onEdit} title="Edit" style={{ width: 36, height: 36, border: '1px solid var(--divider)', borderRadius: 8, backgroundColor: 'var(--cp-float)', color: 'var(--fg-3)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Edit2 style={{ width: 16, height: 16 }} /></button>
-              <button onClick={onClone} title="Clone" style={{ width: 36, height: 36, border: '1px solid var(--divider)', borderRadius: 8, backgroundColor: 'var(--cp-float)', color: 'var(--fg-3)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Copy style={{ width: 16, height: 16 }} /></button>
-              <button onClick={onClose} title="Close" style={{ width: 36, height: 36, border: '1px solid var(--divider)', borderRadius: 8, backgroundColor: 'var(--cp-float)', color: 'var(--fg-3)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><X style={{ width: 16, height: 16 }} /></button>
+              <button onClick={onEdit} title="Edit" style={{ width: 36, height: 50, border: '1px solid var(--divider)', borderRadius: 8, backgroundColor: 'var(--cp-float)', color: 'var(--fg-3)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Edit2 style={{ width: 16, height: 16 }} /></button>
+              <button onClick={onClone} title="Clone" style={{ width: 36, height: 50, border: '1px solid var(--divider)', borderRadius: 8, backgroundColor: 'var(--cp-float)', color: 'var(--fg-3)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Copy style={{ width: 16, height: 16 }} /></button>
+              <button onClick={onClose} title="Close" style={{ width: 36, height: 50, border: '1px solid var(--divider)', borderRadius: 8, backgroundColor: 'var(--cp-float)', color: 'var(--fg-3)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><X style={{ width: 16, height: 16 }} /></button>
             </div>
           </div>
         </div>

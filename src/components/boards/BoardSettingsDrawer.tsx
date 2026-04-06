@@ -128,7 +128,7 @@ export default function BoardSettingsDrawer({ board, onClose }: Props) {
         </div>
 
         {/* Tabs */}
-        <div style={{ display: 'flex', flexWrap: 'wrap', borderBottom: '0.75px solid rgba(15,23,42,0.08)', padding: '0 12px' }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', borderBottom: '0.75px solid rgba(15,23,42,0.08)', padding: '8px 12px' }}>
           {TABS.map(t => {
             const active = tab === t.key;
             return (
@@ -194,7 +194,7 @@ export default function BoardSettingsDrawer({ board, onClose }: Props) {
               <Section label="Danger Zone">
                 {!showDelete ? (
                   <button onClick={() => setShowDelete(true)} style={{
-                    display: 'flex', alignItems: 'center', gap: 6, height: 30, padding: '0 12px',
+                    display: 'flex', alignItems: 'center', gap: 6, height: 30, padding: '8px 12px',
                     background: 'var(--tint-red, #FEF2F2)', border: '0.75px solid var(--sem-danger)',
                     borderRadius: 6, cursor: 'pointer', fontSize: 11.5, fontWeight: 500,
                     color: 'var(--sem-danger)', fontFamily: "'Inter', sans-serif",
@@ -210,7 +210,7 @@ export default function BoardSettingsDrawer({ board, onClose }: Props) {
                       placeholder={board.name} style={{ ...inputStyle, marginBottom: 8 }} />
                     <button onClick={handleDelete}
                       disabled={deleteConfirm !== board.name || deleteBoard.isPending} style={{
-                      height: 28, padding: '0 12px', borderRadius: 6, border: 'none',
+                      height: 28, padding: '8px 12px', borderRadius: 6, border: 'none',
                       background: deleteConfirm === board.name ? 'var(--sem-danger)' : 'var(--divider)',
                       color: deleteConfirm === board.name ? '#FFFFFF' : 'var(--fg-4)',
                       fontSize: 11.5, fontWeight: 600, cursor: deleteConfirm === board.name ? 'pointer' : 'not-allowed',
@@ -256,7 +256,7 @@ export default function BoardSettingsDrawer({ board, onClose }: Props) {
                   onKeyDown={e => e.key === 'Enter' && handleAddColumn()}
                   style={{ ...inputStyle, flex: 1 }} />
                 <button onClick={handleAddColumn} disabled={!newColName.trim()} style={{
-                  display: 'flex', alignItems: 'center', gap: 4, height: 36, padding: '0 10px',
+                  display: 'flex', alignItems: 'center', gap: 4, height: 50, padding: '0 10px',
                   border: '0.75px dashed rgba(15,23,42,0.12)',
                   borderRadius: 6, background: 'transparent', cursor: newColName.trim() ? 'pointer' : 'not-allowed',
                   fontSize: 11.5, color: 'var(--fg-3, #94A3B8)', fontFamily: "'Inter', sans-serif",
@@ -295,7 +295,7 @@ export default function BoardSettingsDrawer({ board, onClose }: Props) {
                 Manage who has access to this board and their roles.
               </div>
               <button style={{
-                display: 'flex', alignItems: 'center', gap: 5, height: 30, padding: '0 12px',
+                display: 'flex', alignItems: 'center', gap: 5, height: 30, padding: '8px 12px',
                 background: 'var(--cp-blue)', border: 'none', borderRadius: 6,
                 cursor: 'pointer', fontSize: 11.5, fontWeight: 600, color: '#FFFFFF',
                 fontFamily: "'Inter', sans-serif",
@@ -312,7 +312,7 @@ export default function BoardSettingsDrawer({ board, onClose }: Props) {
           padding: '10px 16px', borderTop: '0.75px solid rgba(15,23,42,0.08)',
         }}>
           <button onClick={onClose} style={{
-            height: 30, padding: '0 12px', borderRadius: 6,
+            height: 30, padding: '8px 12px', borderRadius: 6,
             border: '0.75px solid rgba(15,23,42,0.12)', background: 'var(--bg-app)',
             fontSize: 11.5, fontWeight: 500, color: '#334155',
             fontFamily: "'Inter', sans-serif", cursor: 'pointer',
@@ -332,7 +332,7 @@ export default function BoardSettingsDrawer({ board, onClose }: Props) {
 }
 
 const inputStyle: React.CSSProperties = {
-  width: '100%', height: 36, padding: '0 12px', boxSizing: 'border-box',
+  width: '100%', height: 50, padding: '8px 12px', boxSizing: 'border-box',
   border: '0.75px solid rgba(15,23,42,0.12)', borderRadius: 6,
   fontSize: 13, fontFamily: "'Inter', sans-serif", color: 'var(--fg-1)',
   outline: 'none', background: 'var(--bg-app)',

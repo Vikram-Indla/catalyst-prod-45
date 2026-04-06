@@ -58,7 +58,7 @@ export const LK: DarkTokens = {
   progressTrack: var(--bg-2, '#F1F5F9'),
   iconBg: var(--bg-2, '#F1F5F9'),
   
-  t1: '#0F172A',
+  t1: 'var(--fg-1, #0F172A)',
   t2: '#64748B',
   t3: 'var(--fg-3, #94A3B8)',
   t4: '#CBD5E1',

@@ -311,7 +311,7 @@ export default function ResourceListingPage() {
               title={pill.tooltip}
               onClick={() => { setResourceTypeFilter(pill.key); setPage(1); }}
               style={{
-                height: 28, padding: '0 12px', borderRadius: 14,
+                height: 28, padding: '8px 12px', borderRadius: 14,
                 fontSize: 13, fontWeight: isActive ? 600 : 500, cursor: 'pointer',
                 transition: 'all 150ms ease',
                 display: 'inline-flex', alignItems: 'center', gap: 6,
@@ -390,7 +390,7 @@ export default function ResourceListingPage() {
                 Array.from({ length: 6 }).map((_, i) => (
                   <tr key={i}>
                     {COLUMNS.map(col => (
-                      <td key={col.key} style={{ padding: '8px 12px', height: '36px', maxHeight: '36px' }}>
+                      <td key={col.key} style={{ padding: '8px 12px', height: '50px', maxHeight: '50px' }}>
                         <div style={{
                           height: '14px', borderRadius: '4px',
                           background: `linear-gradient(90deg, ${t.shimmerFrom} 25%, ${t.shimmerMid} 50%, ${t.shimmerFrom} 75%)`,

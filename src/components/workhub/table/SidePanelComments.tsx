@@ -97,7 +97,7 @@ export default function SidePanelComments({ workItemId }: Props) {
           style={{
             width: '100%', border: '1px solid var(--bd-default, rgba(255,255,255,0.08))', borderRadius: 6,
             padding: '8px 12px', fontSize: 14, color: 'var(--fg-1)', fontFamily: 'Inter, sans-serif',
-            resize: 'vertical', outline: 'none', minHeight: 36, maxHeight: 120, background: 'var(--bg-app)',
+            resize: 'vertical', outline: 'none', minHeight: 50, maxHeight: 120, background: 'var(--bg-app)',
             transition: 'border-color 150ms',
           }}
           onFocus={e => (e.currentTarget.style.borderColor = 'var(--cp-blue)')}

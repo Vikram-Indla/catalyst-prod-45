@@ -53,7 +53,7 @@ export function Sidebar() {
               onClick={() => navigate(item.path)}
               style={{
                 display: 'flex', alignItems: 'center',
-                height: 36, padding: '0 10px',
+                height: 50, padding: '0 10px',
                 borderRadius: 6, fontSize: 13,
                 fontWeight: active ? 600 : 500,
                 color: active ? 'var(--cp-blue)' : 'var(--fg-3)',
@@ -67,7 +67,7 @@ export function Sidebar() {
               onMouseEnter={e => {
                 if (!active) {
                   e.currentTarget.style.background = var(--bg-2, '#F1F5F9');
-                  e.currentTarget.style.color = '#0F172A';
+                  e.currentTarget.style.color = 'var(--fg-1, #0F172A)';
                 }
               }}
               onMouseLeave={e => {

@@ -135,7 +135,7 @@ export default function RAPublishEpicsModal({ brdId, epics, onClose, onPublished
             <div style={{
               display: 'flex', alignItems: 'center', gap: 8,
               border: '0.75px solid var(--divider)', borderRadius: 6,
-              padding: '0 10px', height: 36, marginBottom: 12, background: 'var(--bg-app)',
+              padding: '0 10px', height: 50, marginBottom: 12, background: 'var(--bg-app)',
             }}>
               <Search size={14} color="var(--fg-4)" />
               <input

@@ -264,7 +264,7 @@ export function DeleteTestCycleModal({
                 style={{
                   width: '100%',
                   height: 40,
-                  padding: '0 12px',
+                  padding: '8px 12px',
                   border: '1.5px solid var(--divider)',
                   borderRadius: 8,
                   fontSize: 14,

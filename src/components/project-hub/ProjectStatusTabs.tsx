@@ -37,7 +37,7 @@ export function ProjectStatusTabs({ activeTab, onTabChange, counts, isDark = fal
             className="flex items-center gap-1.5 rounded-full transition-all"
             style={{
               height: 32,
-              padding: '0 12px',
+              padding: '8px 12px',
               fontSize: 13,
               fontWeight: isActive ? 600 : 500,
               color: isActive ? (isDark ? 'var(--cp-blue-light)' : 'var(--cp-blue)') : (isDark ? 'rgba(255,255,255,0.60)' : 'var(--fg-3)'),

@@ -67,7 +67,7 @@ export const BulkActionsBar = memo(function BulkActionsBar({
   };
 
   return (
-    <div className="sticky top-0 z-10 flex items-center gap-3 bg-[#DEEBFF] rounded-md px-4 py-2.5 border border-[#B3D4FF] shadow-sm">
+    <div className="sticky top-0 z-10 flex items-center gap-3 bg-[var(--status-info-bg, #DEEBFF)] rounded-md px-4 py-2.5 border border-[#B3D4FF] shadow-sm">
       {/* Selection count */}
       <span className="text-sm font-medium text-[#0747A6]">
         {selectedCount} trigger{selectedCount !== 1 ? 's' : ''} selected

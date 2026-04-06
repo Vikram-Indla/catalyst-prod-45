@@ -32,7 +32,7 @@ export default function ItemsByStatusWidget({ projectId, projectKey, collapsed, 
               }}>{inProgress}</div>
             )}
             {done > 0 && (
-              <div className="flex items-center justify-center bg-[#E3FCEF] dark:bg-[#1a3a2a] text-[#006644] dark:text-[#57d9a3]" style={{
+              <div className="flex items-center justify-center bg-[var(--status-ok-bg, #E3FCEF)] dark:bg-[#1a3a2a] text-[#006644] dark:text-[#57d9a3]" style={{
                 width: `${(done / total) * 100}%`, minWidth: done > 0 ? 28 : 0,
                 fontSize: 11, fontWeight: 700,
               }}>{done}</div>
@@ -49,7 +49,7 @@ export default function ItemsByStatusWidget({ projectId, projectKey, collapsed, 
               In Progress {inProgress}
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="inline-block bg-[#E3FCEF] dark:bg-[#1a3a2a]" style={{ width: 8, height: 8, borderRadius: 2 }} />
+              <span className="inline-block bg-[var(--status-ok-bg, #E3FCEF)] dark:bg-[#1a3a2a]" style={{ width: 8, height: 8, borderRadius: 2 }} />
               Done {done}
             </span>
           </div>

@@ -52,8 +52,8 @@ export function StatusDropdown({ currentStatus, availableStatuses, onSelect, onC
             key={status}
             onClick={() => { onSelect(status); onClose(); }}
             style={{
-              height: 36,
-              padding: '0 12px',
+              height: 50,
+              padding: '8px 12px',
               display: 'flex',
               alignItems: 'center',
               gap: 8,

@@ -867,7 +867,7 @@ export default function TestHubExecutionPage() {
                       </div>
                       <div style={{ display: 'flex', gap: 8 }}>
                         <button onClick={() => { setViewMode(false); setExecutionHistory(null); }} style={{
-                          height: 34, padding: '0 12px', border: '1px solid hsl(var(--border))', borderRadius: 6,
+                          height: 34, padding: '8px 12px', border: '1px solid hsl(var(--border))', borderRadius: 6,
                           backgroundColor: 'hsl(var(--card))', color: 'hsl(var(--foreground))',
                           fontSize: 12, fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4,
                         }}>
@@ -969,14 +969,14 @@ export default function TestHubExecutionPage() {
                     alignItems: 'center', justifyContent: 'space-between',
                   }}>
                     <button onClick={() => { setViewMode(false); setExecutionHistory(null); }} style={{
-                      height: 36, padding: '0 14px', border: '1px solid hsl(var(--border))', borderRadius: 6,
+                      height: 50, padding: '0 14px', border: '1px solid hsl(var(--border))', borderRadius: 6,
                       backgroundColor: 'hsl(var(--card))', color: 'hsl(var(--foreground))',
                       fontSize: 12, fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4,
                     }}>
                       <ArrowLeft size={14} /> Back to Queue
                     </button>
                     <button onClick={handleRerun} style={{
-                      height: 36, padding: '0 16px', border: 'none', borderRadius: 6,
+                      height: 50, padding: '0 16px', border: 'none', borderRadius: 6,
                       background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
                       color: '#FFFFFF', fontSize: 13, fontWeight: 600, cursor: 'pointer',
                       display: 'flex', alignItems: 'center', gap: 6,
@@ -1146,7 +1146,7 @@ export default function TestHubExecutionPage() {
 
                   {/* Navigation */}
                   <button onClick={handlePrevious} disabled={!canGoPrev || isSubmitting} style={{
-                    height: 38, padding: '0 12px', border: '1px solid hsl(var(--border))', borderRadius: 6,
+                    height: 38, padding: '8px 12px', border: '1px solid hsl(var(--border))', borderRadius: 6,
                     backgroundColor: 'hsl(var(--card))', color: canGoPrev ? 'hsl(var(--foreground))' : 'hsl(var(--muted-foreground))',
                     fontSize: 12, fontWeight: 500, cursor: canGoPrev ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center', gap: 4, opacity: canGoPrev ? 1 : 0.5,
                   }}>
@@ -1190,7 +1190,7 @@ export default function TestHubExecutionPage() {
                   )}
 
                   <button onClick={handleNext} disabled={!canGoNext || isSubmitting} style={{
-                    height: 38, padding: '0 12px', border: '1px solid hsl(var(--border))', borderRadius: 6,
+                    height: 38, padding: '8px 12px', border: '1px solid hsl(var(--border))', borderRadius: 6,
                     backgroundColor: 'hsl(var(--card))', color: canGoNext ? 'hsl(var(--foreground))' : 'hsl(var(--muted-foreground))',
                     fontSize: 12, fontWeight: 500, cursor: canGoNext ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center', gap: 4, opacity: canGoNext ? 1 : 0.5,
                   }}>

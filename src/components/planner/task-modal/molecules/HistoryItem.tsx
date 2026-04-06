@@ -33,7 +33,7 @@ export const HistoryItem: React.FC<HistoryItemProps> = ({
       <div
         style={{
           width: '36px',
-          height: '36px',
+          height: '50px',
           backgroundColor: COLORS.surfacePage,
           borderRadius: '50%',
           display: 'flex',

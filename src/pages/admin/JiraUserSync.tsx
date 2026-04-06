@@ -575,9 +575,9 @@ const JiraUserSync: React.FC = () => {
               {usersLoading ? (
                 Array.from({ length: 10 }).map((_, i) => (
                   <tr key={`skel-${i}`} className="jira-row"
-                    style={{ height: '40px', maxHeight: '40px', borderBottom: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.06)'}` }}>
-                    <td style={{ padding: '0 12px' }}><div className="jira-skeleton animate-pulse" style={{ width: 14, height: 14, borderRadius: 4, background: isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0' }} /></td>
-                    <td style={{ padding: '0 12px' }}>
+                    style={{ height: '50px', maxHeight: '50px', borderBottom: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.06)'}` }}>
+                    <td style={{ padding: '8px 12px' }}><div className="jira-skeleton animate-pulse" style={{ width: 14, height: 14, borderRadius: 4, background: isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0' }} /></td>
+                    <td style={{ padding: '8px 12px' }}>
                       <div className="flex items-center gap-2">
                         <div className="jira-skeleton animate-pulse" style={{ width: 28, height: 28, borderRadius: '50%', background: isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0' }} />
                         <div>
@@ -586,12 +586,12 @@ const JiraUserSync: React.FC = () => {
                         </div>
                       </div>
                     </td>
-                    <td style={{ padding: '0 12px' }}><div className="jira-skeleton animate-pulse" style={{ width: 70, height: 16, borderRadius: 4, background: isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0' }} /></td>
-                    <td style={{ padding: '0 12px' }}><div className="jira-skeleton animate-pulse" style={{ width: 100, height: 16, borderRadius: 4, background: isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0' }} /></td>
-                    <td style={{ padding: '0 12px' }}><div className="jira-skeleton animate-pulse" style={{ width: 80, height: 10, borderRadius: 4, background: isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0' }} /></td>
-                    <td style={{ padding: '0 12px' }}><div className="jira-skeleton animate-pulse" style={{ width: 60, height: 10, borderRadius: 4, background: isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0' }} /></td>
-                    <td style={{ padding: '0 12px' }}><div className="jira-skeleton animate-pulse" style={{ width: 60, height: 10, borderRadius: 4, background: isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0' }} /></td>
-                    <td style={{ padding: '0 12px' }}><div className="jira-skeleton animate-pulse" style={{ width: 50, height: 18, borderRadius: 4, background: isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0' }} /></td>
+                    <td style={{ padding: '8px 12px' }}><div className="jira-skeleton animate-pulse" style={{ width: 70, height: 16, borderRadius: 4, background: isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0' }} /></td>
+                    <td style={{ padding: '8px 12px' }}><div className="jira-skeleton animate-pulse" style={{ width: 100, height: 16, borderRadius: 4, background: isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0' }} /></td>
+                    <td style={{ padding: '8px 12px' }}><div className="jira-skeleton animate-pulse" style={{ width: 80, height: 10, borderRadius: 4, background: isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0' }} /></td>
+                    <td style={{ padding: '8px 12px' }}><div className="jira-skeleton animate-pulse" style={{ width: 60, height: 10, borderRadius: 4, background: isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0' }} /></td>
+                    <td style={{ padding: '8px 12px' }}><div className="jira-skeleton animate-pulse" style={{ width: 60, height: 10, borderRadius: 4, background: isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0' }} /></td>
+                    <td style={{ padding: '8px 12px' }}><div className="jira-skeleton animate-pulse" style={{ width: 50, height: 18, borderRadius: 4, background: isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0' }} /></td>
                     <td />
                   </tr>
                 ))
@@ -647,7 +647,7 @@ const JiraUserSync: React.FC = () => {
                     className={`group jira-row ${isActiveRow || isSelected ? 'jira-row-selected' : ''} ${hasConflicts ? 'jira-row-conflict' : ''}`}
                     onClick={() => setActiveUserId(user.id === activeUserId ? null : user.id)}
                     style={{
-                      height: '40px', maxHeight: '40px',
+                      height: '50px', maxHeight: '50px',
                       borderBottom: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.06)'}`,
                       borderLeft: isCatalystOnly ? '2px solid #7C3AED' : 'none',
                       cursor: 'pointer', opacity: isInactive ? 0.5 : 1,
@@ -655,12 +655,12 @@ const JiraUserSync: React.FC = () => {
                       background: rowBg,
                     }}>
 
-                    <td style={{ padding: '0 12px', textAlign: 'center' }} onClick={e => e.stopPropagation()}>
+                    <td style={{ padding: '8px 12px', textAlign: 'center' }} onClick={e => e.stopPropagation()}>
                       <input type="checkbox" checked={isSelected} onChange={() => toggleSelectRow(user.id)} style={{ cursor: 'pointer', accentColor: '#2563EB' }} />
                     </td>
 
                     {/* User / Jira Identity */}
-                    <td style={{ padding: '0 12px' }}>
+                    <td style={{ padding: '8px 12px' }}>
                       <div className="flex items-center gap-2">
                         <div style={{ width: '28px', height: '28px', borderRadius: '50%', flexShrink: 0, background: user.avatar_url ? 'transparent' : avatarColor.bg, color: avatarColor.text, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', fontWeight: 700, overflow: 'hidden' }}>
                           {user.avatar_url ? <img src={user.avatar_url} alt="" style={{ width: '28px', height: '28px', borderRadius: '50%' }} /> : getInitials(user.display_name || '?')}
@@ -678,7 +678,7 @@ const JiraUserSync: React.FC = () => {
                     </td>
 
                     {/* Auth Mode */}
-                    <td style={{ padding: '0 12px' }}>
+                    <td style={{ padding: '8px 12px' }}>
                       {user.auth_mode === 'jira_proxy' ? (
                         <span className="jira-badge-jira" style={{
                           display: 'inline-flex', alignItems: 'center', gap: '3px',
@@ -700,7 +700,7 @@ const JiraUserSync: React.FC = () => {
                     </td>
 
                     {/* Projects & Permissions */}
-                    <td style={{ padding: '0 12px', maxWidth: '200px' }}>
+                    <td style={{ padding: '8px 12px', maxWidth: '200px' }}>
                       <div className="flex gap-1 flex-nowrap overflow-hidden items-center">
                         {perms.slice(0, 2).map((p: any) => {
                           const dotColor = PERM_DOT[p.permission_level];
@@ -723,7 +723,7 @@ const JiraUserSync: React.FC = () => {
                     </td>
 
                     {/* Synced At */}
-                    <td style={{ padding: '0 12px' }}>
+                    <td style={{ padding: '8px 12px' }}>
                       {isCatalystOnly ? (
                         <span style={{ fontSize: '11px', fontStyle: 'italic', color: isDark ? '#878787' : '#94A3B8' }}>Not synced</span>
                       ) : (
@@ -735,13 +735,13 @@ const JiraUserSync: React.FC = () => {
                     </td>
 
                     {/* Last Jira Login */}
-                    <td style={{ padding: '0 12px', fontSize: '11px', fontFamily: "'JetBrains Mono', monospace", color: isDark ? '#A1A1A1' : '#64748B' }}>{relativeTime(user.last_jira_login_at)}</td>
+                    <td style={{ padding: '8px 12px', fontSize: '11px', fontFamily: "'JetBrains Mono', monospace", color: isDark ? '#A1A1A1' : '#64748B' }}>{relativeTime(user.last_jira_login_at)}</td>
 
                     {/* Last in Catalyst */}
-                    <td style={{ padding: '0 12px', fontSize: '11px', fontFamily: "'JetBrains Mono', monospace", color: isDark ? '#A1A1A1' : '#64748B' }}>{relativeTime(user.last_catalyst_login_at)}</td>
+                    <td style={{ padding: '8px 12px', fontSize: '11px', fontFamily: "'JetBrains Mono', monospace", color: isDark ? '#A1A1A1' : '#64748B' }}>{relativeTime(user.last_catalyst_login_at)}</td>
 
                     {/* Status lozenge */}
-                    <td style={{ padding: '0 12px' }}>
+                    <td style={{ padding: '8px 12px' }}>
                       {hasConflicts ? (
                         <span className="jira-lozenge-conflict"
                           style={{ display: 'inline-block', padding: '0 7px', borderRadius: '4px', fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', height: '20px', lineHeight: '20px', letterSpacing: '0.03em', background: isDark ? '#451A03' : '#FEF3C7', color: isDark ? '#FCD34D' : '#92400E' }}>CONFLICT</span>
@@ -755,7 +755,7 @@ const JiraUserSync: React.FC = () => {
                     </td>
 
                     {/* Action */}
-                    <td style={{ padding: '0 12px', textAlign: 'right' }} onClick={e => e.stopPropagation()}>
+                    <td style={{ padding: '8px 12px', textAlign: 'right' }} onClick={e => e.stopPropagation()}>
                       <button className="jira-action-btn opacity-0 group-hover:opacity-100 transition-opacity"
                         onClick={(e) => handleToggleStatus(e, user)} disabled={togglingId === user.id}
                         style={{

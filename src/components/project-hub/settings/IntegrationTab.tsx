@@ -6,11 +6,11 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 function StatusLozenge({ status }: { status: string }) {
   const map: Record<string, { bg: string; text: string }> = {
-    success: { bg: '#E3FCEF', text: '#006644' },
+    success: { bg: 'var(--status-ok-bg, #E3FCEF)', text: '#006644' },
     error: { bg: '#DFE1E6', text: '#253858' },
     skipped: { bg: '#DFE1E6', text: '#253858' },
     processing: { bg: '#DEEBFF', text: '#0747A6' },
-    Connected: { bg: '#E3FCEF', text: '#006644' },
+    Connected: { bg: 'var(--status-ok-bg, #E3FCEF)', text: '#006644' },
     'Not Connected': { bg: '#DFE1E6', text: '#253858' },
   };
   const colors = map[status] || map.skipped;
@@ -172,7 +172,7 @@ export function IntegrationTab() {
         ) : logsLoading ? (
           <div className="p-4 space-y-0">
             {[1, 2, 3].map((i) => (
-              <Skeleton key={i} className="h-[36px] w-full" />
+              <Skeleton key={i} className="h-[50px] w-full" />
             ))}
           </div>
         ) : !syncLogs || syncLogs.length === 0 ? (
@@ -188,7 +188,7 @@ export function IntegrationTab() {
                   <th
                     key={h}
                     className="text-left px-4 text-[#64748B] dark:text-gray-400"
-                    style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', height: 36, maxHeight: 36 }}
+                    style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', height: 50, maxHeight: 50 }}
                   >
                     {h}
                   </th>
@@ -202,7 +202,7 @@ export function IntegrationTab() {
                   <tr
                     key={log.id}
                     className="border-b border-[var(--bd-default, #E2E8F0)] dark:border-[#292929]"
-                    style={{ height: 36, maxHeight: 36 }}
+                    style={{ height: 50, maxHeight: 50 }}
                   >
                     <td className="px-4 text-[var(--fg-1)] dark:text-white" style={{ fontSize: 12 }}>
                       {formatDistanceToNow(new Date(log.created_at), { addSuffix: true })}

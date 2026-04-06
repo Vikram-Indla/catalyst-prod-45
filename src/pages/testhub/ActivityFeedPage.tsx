@@ -235,7 +235,7 @@ export default function ActivityFeedPage() {
                   return (
                     <div key={activity.id}
                       style={{ display: 'flex', alignItems: 'center', gap: 16, padding: 16, borderBottom: index < items.length - 1 ? `1px solid ${isDark ? 'rgba(255,255,255,0.05)' : '#F1F5F9'}` : 'none' }}>
-                      <div style={{ width: 36, height: 36, borderRadius: 8, backgroundColor: `${action.color}15`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <div style={{ width: 36, height: 50, borderRadius: 8, backgroundColor: `${action.color}15`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                         <ActionIcon size={18} style={{ color: action.color }} />
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>

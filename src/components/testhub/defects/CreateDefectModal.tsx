@@ -152,7 +152,7 @@ export function CreateDefectModal({ isOpen, onClose, onCreated, prefill }: Creat
           <button
             onClick={onClose}
             style={{
-              width: 36, height: 36, border: 'none', borderRadius: 8,
+              width: 36, height: 50, border: 'none', borderRadius: 8,
               backgroundColor: 'var(--bg-2)', color: 'var(--fg-3)',
               cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}
@@ -236,7 +236,7 @@ export function CreateDefectModal({ isOpen, onClose, onCreated, prefill }: Creat
                 value={priority}
                 onChange={(e) => setPriority(e.target.value)}
                 style={{
-                  width: '100%', height: 44, padding: '0 12px',
+                  width: '100%', height: 44, padding: '8px 12px',
                   border: '1.5px solid var(--divider)', borderRadius: 12, fontSize: 14,
                   backgroundColor: 'var(--bg-app)', color: 'var(--fg-1)',
                   marginBottom: 12,
@@ -254,7 +254,7 @@ export function CreateDefectModal({ isOpen, onClose, onCreated, prefill }: Creat
                 value={assignedTo}
                 onChange={(e) => setAssignedTo(e.target.value)}
                 style={{
-                  width: '100%', height: 44, padding: '0 12px',
+                  width: '100%', height: 44, padding: '8px 12px',
                   border: '1.5px solid var(--divider)', borderRadius: 12, fontSize: 14,
                   backgroundColor: 'var(--bg-app)', color: 'var(--fg-1)',
                 }}

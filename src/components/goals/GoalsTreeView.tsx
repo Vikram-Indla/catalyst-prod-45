@@ -158,7 +158,7 @@ const GRID_COLS = 'minmax(340px, 1fr) 96px 150px 90px 50px 100px 60px';
 export function GoalsTreeSkeleton({ isDark = false }: { isDark?: boolean }) {
   return (
     <div style={{ border: `1px solid ${isDark ? DK.border : 'var(--divider)'}`, borderRadius: 12, overflow: 'hidden' }}>
-      <div style={{ height: 36, background: isDark ? 'transparent' : 'var(--bg-app)', borderBottom: `2px solid ${isDark ? DK.border : 'var(--divider)'}` }} />
+      <div style={{ height: 50, background: isDark ? 'transparent' : 'var(--bg-app)', borderBottom: `2px solid ${isDark ? DK.border : 'var(--divider)'}` }} />
       {Array.from({ length: 6 }).map((_, i) => (
         <div key={i} className="ph-shimmer" style={{ height: 44, borderBottom: `1px solid ${isDark ? DK.borderSubtle : 'var(--cp-bd-zone)'}`, background: isDark ? 'rgba(255,255,255,0.02)' : 'var(--bg-1)' }} />
       ))}
@@ -270,7 +270,7 @@ export function GoalsTreeView({
       {/* Header */}
       <div style={{
         display: 'grid', gridTemplateColumns: GRID_COLS,
-        height: 36, alignItems: 'center',
+        height: 50, alignItems: 'center',
         background: headerBg, borderBottom: `2px solid ${tableBorder}`,
         padding: '0 16px',
         fontSize: 11, fontWeight: 600, textTransform: 'uppercase',
@@ -469,7 +469,7 @@ export function GoalsTreeView({
       {/* Footer */}
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        height: 36, background: footerBg, borderTop: `1px solid ${tableBorder}`,
+        height: 50, background: footerBg, borderTop: `1px solid ${tableBorder}`,
       }}>
         <span style={{ fontSize: 12, fontWeight: 500, color: isDark ? DK.t3 : 'var(--fg-3)' }}>
           Showing {totalFilteredGoals} goals, {totalFilteredKRs} key results across {filteredThemes.length} themes

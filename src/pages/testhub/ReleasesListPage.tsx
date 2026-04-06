@@ -57,7 +57,7 @@ export default function ReleasesListPage() {
       {/* Page Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
         <div>
-          <h1 style={{ fontSize: 22, fontWeight: 700, color: '#0F172A', margin: 0, display: 'flex', alignItems: 'center', gap: 10 }}>
+          <h1 style={{ fontSize: 22, fontWeight: 700, color: 'var(--fg-1, #0F172A)', margin: 0, display: 'flex', alignItems: 'center', gap: 10 }}>
             <Package style={{ width: 24, height: 24, color: '#2563EB' }} />
             Releases
           </h1>
@@ -102,7 +102,7 @@ export default function ReleasesListPage() {
         <select
           value={filters.status}
           onChange={e => setFilters(f => ({ ...f, status: e.target.value }))}
-          style={{ height: 38, padding: '0 12px', border: '1px solid var(--bd-default, #E2E8F0)', borderRadius: 8, fontSize: 13, color: '#334155', background: 'var(--bg-app, #fff)', cursor: 'pointer' }}
+          style={{ height: 38, padding: '8px 12px', border: '1px solid var(--bd-default, #E2E8F0)', borderRadius: 8, fontSize: 13, color: '#334155', background: 'var(--bg-app, #fff)', cursor: 'pointer' }}
         >
           <option value="all">All Statuses</option>
           {Object.entries(STATUS_CONFIG).map(([key, cfg]) => (
@@ -114,7 +114,7 @@ export default function ReleasesListPage() {
         <select
           value={filters.health}
           onChange={e => setFilters(f => ({ ...f, health: e.target.value }))}
-          style={{ height: 38, padding: '0 12px', border: '1px solid var(--bd-default, #E2E8F0)', borderRadius: 8, fontSize: 13, color: '#334155', background: 'var(--bg-app, #fff)', cursor: 'pointer' }}
+          style={{ height: 38, padding: '8px 12px', border: '1px solid var(--bd-default, #E2E8F0)', borderRadius: 8, fontSize: 13, color: '#334155', background: 'var(--bg-app, #fff)', cursor: 'pointer' }}
         >
           <option value="all">All Health</option>
           <option value="healthy">Healthy</option>
@@ -130,7 +130,7 @@ export default function ReleasesListPage() {
             onClick={() => setViewMode('table')}
             style={{
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              width: 36, height: 36, border: 'none', cursor: 'pointer',
+              width: 36, height: 50, border: 'none', cursor: 'pointer',
               backgroundColor: viewMode === 'table' ? 'var(--tint-blue, #EFF6FF)' : '#fff',
               color: viewMode === 'table' ? '#2563EB' : '#64748B',
             }}
@@ -141,7 +141,7 @@ export default function ReleasesListPage() {
             onClick={() => setViewMode('card')}
             style={{
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              width: 36, height: 36, border: 'none', cursor: 'pointer',
+              width: 36, height: 50, border: 'none', cursor: 'pointer',
               backgroundColor: viewMode === 'card' ? 'var(--tint-blue, #EFF6FF)' : '#fff',
               color: viewMode === 'card' ? '#2563EB' : '#64748B',
               borderLeft: '1px solid var(--bd-default, #E2E8F0)',
@@ -218,7 +218,7 @@ function TableView({ releases, navigate }: { releases: Release[]; navigate: any 
                   <span style={{ fontFamily: 'monospace', fontSize: 12, color: '#64748B', fontWeight: 600 }}>{r.version}</span>
                 </td>
                 <td style={tdStyle}>
-                  <div style={{ fontWeight: 600, color: '#0F172A' }}>{r.name}</div>
+                  <div style={{ fontWeight: 600, color: 'var(--fg-1, #0F172A)' }}>{r.name}</div>
                   {r.vehicle && (
                     <span style={{ fontSize: 11, color: '#64748B' }}>{r.vehicle.name}</span>
                   )}
@@ -290,7 +290,7 @@ function CardView({ releases, navigate, getExecPercent, getPassRate }: { release
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
               <div>
                 <span style={{ fontFamily: 'monospace', fontSize: 11, color: 'var(--fg-3, #94A3B8)', fontWeight: 600 }}>{r.version}</span>
-                <h3 style={{ fontSize: 15, fontWeight: 700, color: '#0F172A', margin: '2px 0 0' }}>{r.name}</h3>
+                <h3 style={{ fontSize: 15, fontWeight: 700, color: 'var(--fg-1, #0F172A)', margin: '2px 0 0' }}>{r.name}</h3>
               </div>
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, width: 8, height: 8, borderRadius: '50%', backgroundColor: hc.dot }} />
             </div>
@@ -311,7 +311,7 @@ function CardView({ releases, navigate, getExecPercent, getPassRate }: { release
             <div style={{ marginBottom: 12 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, marginBottom: 4 }}>
                 <span style={{ color: '#64748B' }}>Test Progress</span>
-                <span style={{ fontWeight: 600, color: '#0F172A' }}>{execPct}%</span>
+                <span style={{ fontWeight: 600, color: 'var(--fg-1, #0F172A)' }}>{execPct}%</span>
               </div>
               <div style={{ height: 6, backgroundColor: var(--bg-2, '#F1F5F9'), borderRadius: 3 }}>
                 <div style={{ height: '100%', width: `${execPct}%`, backgroundColor: execPct >= 80 ? '#22C55E' : execPct >= 50 ? '#F59E0B' : '#3B82F6', borderRadius: 4, transition: 'width 0.3s' }} />

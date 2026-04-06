@@ -166,7 +166,7 @@ export default function WikiAllArticlesPage() {
       <div style={{ borderRadius: 8, border: `0.75px solid ${borderColor}`, background: isDark ? '#1A1A1A' : '#FFFFFF', overflow: 'hidden' }}>
         <div style={{
           display: 'grid', gridTemplateColumns: '32px 3% 1fr 80px 100px 80px 80px 100px 50px',
-          background: isDark ? '#1A1A1A' : '#F1F5F9', padding: '0 12px', height: 36, alignItems: 'center',
+          background: isDark ? '#1A1A1A' : '#F1F5F9', padding: '8px 12px', height: 50, alignItems: 'center',
           fontFamily: F.sora, fontSize: 10, fontWeight: 600, textTransform: 'uppercase' as const,
           color: isDark ? '#878787' : '#64748B', letterSpacing: '0.05em', borderBottom: `0.75px solid ${borderColor}`,
         }}>
@@ -189,7 +189,7 @@ export default function WikiAllArticlesPage() {
             return (
               <div key={a.id} style={{
                 display: 'grid', gridTemplateColumns: '32px 3% 1fr 80px 100px 80px 80px 100px 50px',
-                padding: '0 12px', height: 42, alignItems: 'center', cursor: 'pointer',
+                padding: '8px 12px', height: 42, alignItems: 'center', cursor: 'pointer',
                 borderBottom: `0.75px solid ${borderColor}`, fontSize: 12,
                 background: isSelected ? 'rgba(37,99,235,0.06)' : 'transparent',
                 transition: 'background 80ms',

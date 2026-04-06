@@ -249,7 +249,7 @@ export default function RequirementsListPage() {
               <tr>
                 {['KEY', 'TITLE', 'TYPE', 'PRIORITY', 'STATUS', 'LINKED TESTS'].map(h => (
                   <th key={h} style={{
-                    height: 36, padding: '0 12px', textAlign: 'left',
+                    height: 50, padding: '8px 12px', textAlign: 'left',
                     fontSize: 10.5, fontWeight: 600, color: isDark ? '#878787' : '#64748B', textTransform: 'uppercase',
                     borderBottom: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid #E2E8F0', backgroundColor: isDark ? '#1A1A1A' : '#F8FAFC',
                   }}>{h}</th>
@@ -265,25 +265,25 @@ export default function RequirementsListPage() {
 
                 return (
                   <tr key={req.id} onClick={() => navigate(`/testhub/requirements/${req.id}`)}
-                    style={{ cursor: 'pointer', height: 36, maxHeight: 36, borderBottom: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid #E2E8F0' }}
+                    style={{ cursor: 'pointer', height: 50, maxHeight: 50, borderBottom: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid #E2E8F0' }}
                     onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.backgroundColor = isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)'; }}
                     onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent'; }}>
-                    <td style={{ padding: '0 12px', fontSize: 13, fontWeight: 600, color: '#2563EB' }}>{req.req_key}</td>
-                    <td style={{ padding: '0 12px', fontSize: 13, color: isDark ? '#EDEDED' : '#0F172A', maxWidth: 400, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{req.title}</td>
-                    <td style={{ padding: '0 12px' }}>
+                    <td style={{ padding: '8px 12px', fontSize: 13, fontWeight: 600, color: '#2563EB' }}>{req.req_key}</td>
+                    <td style={{ padding: '8px 12px', fontSize: 13, color: isDark ? '#EDEDED' : '#0F172A', maxWidth: 400, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{req.title}</td>
+                    <td style={{ padding: '8px 12px' }}>
                       <span style={{ fontSize: 11, fontWeight: 500, color: type.color, backgroundColor: type.bg, padding: '2px 8px', borderRadius: 4 }}>{type.label}</span>
                     </td>
-                    <td style={{ padding: '0 12px' }}>
+                    <td style={{ padding: '8px 12px' }}>
                       <span style={{ fontSize: 11, fontWeight: 600, color: '#374151', backgroundColor: '#F1F5F9', padding: '2px 8px', borderRadius: 4 }}>{priority.label}</span>
                     </td>
-                    <td style={{ padding: '0 12px' }}>
+                    <td style={{ padding: '8px 12px' }}>
                       <span style={{
                         fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em',
                         color: status.color, backgroundColor: status.bg,
                         padding: '2px 6px', borderRadius: 4, height: 20, display: 'inline-flex', alignItems: 'center',
                       }}>{status.label}</span>
                     </td>
-                    <td style={{ padding: '0 12px' }}>
+                    <td style={{ padding: '8px 12px' }}>
                       <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, color: '#64748B' }}>
                         <Link2 size={14} /> {req.linked_test_count}
                       </span>

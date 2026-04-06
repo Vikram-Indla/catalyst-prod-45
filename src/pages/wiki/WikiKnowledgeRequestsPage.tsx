@@ -61,7 +61,7 @@ export default function WikiKnowledgeRequestsPage() {
       <div style={{ borderRadius: 8, border: `0.75px solid ${border}`, background: isDark ? '#1A1A1A' : '#FFFFFF', overflow: 'hidden' }}>
         <div style={{
           display: 'grid', gridTemplateColumns: '1fr 100px 80px 100px 120px',
-          background: isDark ? '#1A1A1A' : '#F1F5F9', padding: '0 16px', height: 36, alignItems: 'center',
+          background: isDark ? '#1A1A1A' : '#F1F5F9', padding: '0 16px', height: 50, alignItems: 'center',
           fontFamily: 'Sora, sans-serif', fontSize: 10, fontWeight: 600, textTransform: 'uppercase' as const, color: isDark ? '#878787' : '#64748B', letterSpacing: '0.05em',
           borderBottom: `0.75px solid ${border}`,
         }}>

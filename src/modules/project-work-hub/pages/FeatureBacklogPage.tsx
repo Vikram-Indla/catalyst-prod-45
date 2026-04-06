@@ -51,7 +51,7 @@ export default function FeatureBacklogPage({ projectId: propProjectId }: { proje
         <div className="px-6 py-4"><div className="h-8 w-48 rounded" style={{ background: tk.chipBg }} /></div>
         {[1, 2, 3].map(i => (
           <div key={i} className="px-6 py-2 flex gap-3 animate-pulse">
-            <div className="h-[36px] flex-1 rounded" style={{ background: tk.chipBg }} />
+            <div className="h-[50px] flex-1 rounded" style={{ background: tk.chipBg }} />
           </div>
         ))}
       </div>
@@ -112,7 +112,7 @@ export default function FeatureBacklogPage({ projectId: propProjectId }: { proje
                   const ls = sc ? getLozengeStyle(sc.color) : null;
                   const overdue = isDueDateOverdue(feat.planned_end_date, feat.status);
                   return (
-                    <div key={feat.id} className="group flex items-center h-[36px] px-2 border-b" style={{ borderColor: tk.divider, maxHeight: 36, transition: 'background 120ms' }}
+                    <div key={feat.id} className="group flex items-center h-[50px] px-2 border-b" style={{ borderColor: tk.divider, maxHeight: 50, transition: 'background 120ms' }}
                       onMouseEnter={(e) => (e.currentTarget.style.background = tk.hoverBg)}
                       onMouseLeave={(e) => (e.currentTarget.style.background = '')}>
                       <div style={{ width: 38, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>

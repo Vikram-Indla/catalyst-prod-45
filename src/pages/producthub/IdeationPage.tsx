@@ -358,7 +358,7 @@ function IdeationListView({ ideas, selectedRows, toggleRow, toggleAll, onOpenDet
     }}>
       <table style={{ width: '100%', borderCollapse: 'collapse' }}>
         <thead>
-          <tr style={{ height: '36px', background: isDark ? 'rgba(255,255,255,0.03)' : '#F8FAFC' }}>
+          <tr style={{ height: '50px', background: isDark ? 'rgba(255,255,255,0.03)' : '#F8FAFC' }}>
             <th style={{ width: '40px', padding: '0 8px', textAlign: 'center' }}>
               <input type="checkbox" checked={selectedRows.size === ideas.length && ideas.length > 0} onChange={toggleAll} style={{ cursor: 'pointer', accentColor: '#2563EB' }} />
             </th>
@@ -391,7 +391,7 @@ function IdeationListView({ ideas, selectedRows, toggleRow, toggleAll, onOpenDet
               key={idea.key}
               onClick={() => onOpenDetail(idea.key)}
               style={{
-                height: '36px', maxHeight: '36px', cursor: 'pointer',
+                height: '50px', maxHeight: '50px', cursor: 'pointer',
                 borderBottom: `0.75px solid ${dk.divider}`,
                 background: selectedRows.has(idea.key) ? dk.selectedBg : 'transparent',
                 transition: 'background 150ms ease',

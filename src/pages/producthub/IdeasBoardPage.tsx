@@ -99,7 +99,7 @@ export default function IdeasBoardPage() {
             const isConvertedCol = col.status === 'Converted to Initiative';
             return (
               <div key={col.status} style={{ minWidth: '260px', flex: 1 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px', padding: '0 4px', height: 36 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px', padding: '0 4px', height: 50 }}>
                   <span style={{ fontSize: '11px', fontWeight: 700, color: isDark ? dk.t3 : col.headerColor, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{col.label}</span>
                   <span style={{ fontSize: '10px', fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, background: isDark ? 'rgba(255,255,255,0.06)' : col.countBg, borderRadius: '12px', padding: '0 6px', height: 18, display: 'inline-flex', alignItems: 'center', color: isDark ? dk.t3 : col.countText }}>{colIdeas.length}</span>
                 </div>

@@ -1083,7 +1083,7 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
       />
 
       {/* ═══ LEGEND BAR ═══ */}
-      <div className="flex items-center justify-center gap-6 shrink-0 border-t border-border bg-card dark:bg-transparent" style={{ height: 36 }}>
+      <div className="flex items-center justify-center gap-6 shrink-0 border-t border-border bg-card dark:bg-transparent" style={{ height: 50 }}>
         {[
           { label: 'Strategic Theme', color: LAYER.theme.color },
           { label: 'Goal', color: LAYER.goal.color },

@@ -68,7 +68,7 @@ export default function ToastToken({ toast: t, onDismiss, onPause, onResume }: T
       <div style={{ padding: '12px 14px', display: 'flex', gap: 10, alignItems: 'flex-start' }}>
         {/* Avatar */}
         <div style={{
-          width: 36, height: 36, borderRadius: '50%', flexShrink: 0,
+          width: 36, height: 50, borderRadius: '50%', flexShrink: 0,
           background: isSystemAssign ? '#6B7280' : getAvatarColor(actorId),
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           color: '#FFFFFF', fontFamily: 'Inter, sans-serif', fontSize: 12, fontWeight: 700,
@@ -78,7 +78,7 @@ export default function ToastToken({ toast: t, onDismiss, onPause, onResume }: T
 
         {/* Body */}
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 500, color: '#0F172A', lineHeight: '18px' }}>
+          <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 500, color: 'var(--fg-1, #0F172A)', lineHeight: '18px' }}>
             <span style={{ fontWeight: 650 }}>{actorName}</span>{' '}
             {getActionVerb(n.notification_type)}
           </div>
@@ -86,7 +86,7 @@ export default function ToastToken({ toast: t, onDismiss, onPause, onResume }: T
             <WorkItemIcon type={n.entity_icon_type} />
             {/* m-06: entity title truncation increased to 260px */}
             <span style={{
-              fontFamily: 'Inter, sans-serif', fontSize: 13, color: '#0F172A',
+              fontFamily: 'Inter, sans-serif', fontSize: 13, color: 'var(--fg-1, #0F172A)',
               overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
               maxWidth: 260,
             }}>

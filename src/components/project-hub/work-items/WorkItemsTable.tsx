@@ -372,7 +372,7 @@ export function WorkItemsTable({
                   <button
                     onClick={onCreateClick}
                     className="w-full flex items-center gap-2 px-4 py-2 text-[11px] font-medium hover:bg-[#F8FAFC] transition-colors cursor-pointer"
-                    style={{ color: 'var(--fg-4)', height: 36, border: 'none', background: 'transparent' }}
+                    style={{ color: 'var(--fg-4)', height: 50, border: 'none', background: 'transparent' }}
                   >
                     <Plus size={14} />
                     Create work item

@@ -77,7 +77,7 @@ export function RoadmapListPanel({
                   <button
                     onClick={() => onToggleGroup?.(group.key)}
                     className="w-full flex items-center gap-2 px-4 py-2 transition-colors hover:bg-gray-50"
-                    style={{ background: '#FAFBFC', height: 36 }}
+                    style={{ background: '#FAFBFC', height: 50 }}
                   >
                     {group.isExpanded ? <ChevronDown className="w-3.5 h-3.5" style={{ color: 'var(--fg-3, #94A3B8)' }} /> : <ChevronRight className="w-3.5 h-3.5" style={{ color: 'var(--fg-3, #94A3B8)' }} />}
                     <div className="w-3 h-3 rounded-sm flex-shrink-0" style={{ background: color }} />

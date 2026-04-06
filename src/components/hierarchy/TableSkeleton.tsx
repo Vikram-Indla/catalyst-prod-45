@@ -18,7 +18,7 @@ export function TableSkeleton({ rows = 10 }: { rows?: number }) {
   return (
     <div style={{ border: `1px solid ${borderColor}`, borderRadius: 8, overflow: 'hidden', background: containerBg }}>
       {/* Header */}
-      <div style={{ height: 36, background: headerBg, borderBottom: `1px solid ${borderColor}`, display: 'flex', alignItems: 'center', gap: 16, padding: '0 16px' }}>
+      <div style={{ height: 50, background: headerBg, borderBottom: `1px solid ${borderColor}`, display: 'flex', alignItems: 'center', gap: 16, padding: '0 16px' }}>
         <div style={{ width: 16, height: 16, borderRadius: 4, background: shimmerStrong }} />
         <div style={{ width: 200, height: 10, borderRadius: 4, background: shimmerStrong }} className="tbl-shimmer" />
         <div style={{ flex: 1 }} />

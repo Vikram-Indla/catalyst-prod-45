@@ -118,7 +118,7 @@ export default function Resource360PageNew() {
               key={tab.key}
               onClick={() => setActiveView(tab.key)}
               style={{
-                padding: '0 12px', height: 40, fontSize: 13,
+                padding: '8px 12px', height: 40, fontSize: 13,
                 fontWeight: active ? 700 : 500,
                 color: active ? 'var(--cp-blue)' : 'var(--fg-3)',
                 background: 'transparent', border: 'none',

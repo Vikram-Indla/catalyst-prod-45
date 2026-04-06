@@ -72,7 +72,7 @@ export default function TriageQueuePage() {
             <thead>
               <tr style={{ background: var(--bg-2, '#F1F5F9') }}>
                 {['KEY', 'TITLE', 'RISK', 'SOURCE', 'DATE', 'AI RECOMMENDATION', 'ACTIONS'].map(h => (
-                  <th key={h} className="px-3 py-0 h-[36px] text-left text-[11px] font-semibold uppercase tracking-[0.06em] text-[#64748B]">{h}</th>
+                  <th key={h} className="px-3 py-0 h-[50px] text-left text-[11px] font-semibold uppercase tracking-[0.06em] text-[#64748B]">{h}</th>
                 ))}
               </tr>
             </thead>

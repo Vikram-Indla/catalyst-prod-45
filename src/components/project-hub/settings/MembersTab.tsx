@@ -121,7 +121,7 @@ export function MembersTab({ projectId, currentUserId }: MembersTabProps) {
       <div className="relative mb-4">
         <div
           className="flex items-center gap-2 rounded-md bg-[var(--bg-app)] dark:bg-[#0A0A0A]"
-          style={{ height: 40, padding: '0 12px', border: '1px solid var(--divider)', borderRadius: 6, transition: 'border-color 150ms, box-shadow 150ms' }}
+          style={{ height: 40, padding: '8px 12px', border: '1px solid var(--divider)', borderRadius: 6, transition: 'border-color 150ms, box-shadow 150ms' }}
           onFocus={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--cp-blue)'; (e.currentTarget as HTMLElement).style.boxShadow = '0 0 0 3px rgba(37,99,235,0.1)'; }}
           onBlur={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--divider)'; (e.currentTarget as HTMLElement).style.boxShadow = 'none'; }}
         >

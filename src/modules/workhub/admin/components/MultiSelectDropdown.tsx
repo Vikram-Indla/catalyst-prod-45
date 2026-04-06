@@ -85,7 +85,7 @@ export function MultiSelectDropdown({
           style={{
             width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
             padding: '7px 12px', borderRadius: '6px', border: '1px solid var(--bd-default, #E2E8F0)',
-            background: 'var(--bg-app, #fff)', cursor: 'pointer', minHeight: '36px', gap: '8px',
+            background: 'var(--bg-app, #fff)', cursor: 'pointer', minHeight: '50px', gap: '8px',
           }}
         >
           <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', flex: 1, alignItems: 'center' }}>

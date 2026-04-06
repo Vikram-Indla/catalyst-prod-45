@@ -33,7 +33,7 @@ export default function IncidentReportsPage() {
           <div className="flex items-center justify-center rounded-md" style={{ width: 32, height: 32, backgroundColor: 'var(--tint-blue, #EFF6FF)' }}>
             <FileText size={18} style={{ color: '#2563EB' }} />
           </div>
-          <h1 style={{ fontFamily: 'Sora, sans-serif', fontSize: 18, fontWeight: 700, color: '#0F172A' }}>Incident Reports</h1>
+          <h1 style={{ fontFamily: 'Sora, sans-serif', fontSize: 18, fontWeight: 700, color: 'var(--fg-1, #0F172A)' }}>Incident Reports</h1>
         </div>
 
         {/* Tab Bar */}
@@ -73,7 +73,7 @@ export default function IncidentReportsPage() {
               </div>
               <div className="p-3" style={{ border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6 }}>
                 <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: '#64748B', marginBottom: 4 }}>Avg Age (days)</div>
-                <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 22, fontWeight: 700, color: '#0F172A' }}>{avgAge}</div>
+                <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 22, fontWeight: 700, color: 'var(--fg-1, #0F172A)' }}>{avgAge}</div>
               </div>
             </div>
             <div className="p-8 flex items-center justify-center" style={{ border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6, backgroundColor: var(--bg-2, '#F1F5F9') }}>

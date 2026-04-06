@@ -33,7 +33,7 @@ export function ProjectTableRow({ project, isStarred, onToggleStar, onContextMen
   return (
     <tr
       className="group cursor-pointer transition-colors"
-      style={{ height: 36 }}
+      style={{ height: 50 }}
       onClick={() => navigate(`/project-hub/${project.key}/dashboard`)}
       onContextMenu={e => onContextMenu(e, project)}
       onMouseEnter={e => (e.currentTarget.style.backgroundColor = T.hoverBg)}

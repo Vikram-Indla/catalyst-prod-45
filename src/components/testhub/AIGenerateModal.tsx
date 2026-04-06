@@ -409,7 +409,7 @@ export function AIGenerateModal({ isOpen, onClose, onSuccess, currentFolderId }:
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <div style={{
-              width: 36, height: 36, borderRadius: 8,
+              width: 36, height: 50, borderRadius: 8,
               background: step === 'folder'
                 ? 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)'
                 : 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
@@ -562,7 +562,7 @@ export function AIGenerateModal({ isOpen, onClose, onSuccess, currentFolderId }:
                   value={count}
                   onChange={(e) => setCount(Math.min(20, Math.max(3, parseInt(e.target.value) || 3)))}
                   style={{
-                    width: 100, height: 40, padding: '0 12px',
+                    width: 100, height: 40, padding: '8px 12px',
                     border: '1.5px solid var(--divider)', borderRadius: 8, fontSize: 14,
                   }}
                 />

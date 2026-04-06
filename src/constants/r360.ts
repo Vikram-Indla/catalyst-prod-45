@@ -5,7 +5,7 @@ export const R360 = {
   danger: '#EF4444', dangerLight: 'var(--tint-red, #FEF2F2)', dangerText: '#7F1D1D',
   teal: '#0D9488', tealLight: '#F0FDFA', tealText: '#134E4A',
   purple: '#7C3AED', purpleLight: '#F5F3FF', purpleText: '#4C1D95',
-  ink1: '#020617', ink2: '#0F172A', ink3: '#334155', ink4: '#64748B',
+  ink1: '#020617', ink2: 'var(--fg-1, #0F172A)', ink3: '#334155', ink4: '#64748B',
   surface: 'var(--bg-1, #F8FAFC)', card: '#FFFFFF', border: 'var(--bd-default, #E2E8F0)', borderLt: var(--bg-2, '#F1F5F9'),
 } as const;
 

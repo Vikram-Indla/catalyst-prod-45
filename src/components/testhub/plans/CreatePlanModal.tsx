@@ -138,7 +138,7 @@ export function CreatePlanModal({ isOpen, onClose, onCreated }: CreatePlanModalP
             <h2 style={{ fontSize: 18, fontWeight: 700, color: 'var(--fg-1)', margin: 0 }}>Create Test Plan</h2>
           </div>
           <button onClick={onClose} style={{
-            width: 36, height: 36, border: 'none', borderRadius: 8,
+            width: 36, height: 50, border: 'none', borderRadius: 8,
             backgroundColor: 'transparent', color: 'var(--fg-3)', cursor: 'pointer',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}><X size={20} /></button>

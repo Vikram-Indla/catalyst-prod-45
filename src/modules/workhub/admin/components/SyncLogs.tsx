@@ -159,7 +159,7 @@ export function SyncLogs() {
     <div className="wh-module space-y-6">
       {/* Page Header */}
       <div>
-        <h1 style={{ fontFamily: 'Sora, sans-serif', fontSize: '18px', fontWeight: 700, color: '#0F172A' }}>
+        <h1 style={{ fontFamily: 'Sora, sans-serif', fontSize: '18px', fontWeight: 700, color: 'var(--fg-1, #0F172A)' }}>
           Sync & Logs
         </h1>
         <p style={{ fontSize: '13px', color: '#64748B', marginTop: '4px' }}>
@@ -198,7 +198,7 @@ export function SyncLogs() {
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <Filter size={14} style={{ color: '#64748B' }} />
-            <span style={{ fontFamily: 'Sora, sans-serif', fontSize: '13px', fontWeight: 700, color: '#0F172A' }}>
+            <span style={{ fontFamily: 'Sora, sans-serif', fontSize: '13px', fontWeight: 700, color: 'var(--fg-1, #0F172A)' }}>
               Sync Filters
             </span>
             {hasFilters && (
@@ -384,13 +384,13 @@ export function SyncLogs() {
 
       {/* Sync Schedule */}
       <div style={{ background: 'var(--bg-1, #F8FAFC)', border: '1px solid var(--bd-default, #E2E8F0)', borderRadius: '8px', padding: '20px' }}>
-        <div style={{ fontFamily: 'Sora, sans-serif', fontSize: '13px', fontWeight: 700, color: '#0F172A', marginBottom: '16px' }}>
+        <div style={{ fontFamily: 'Sora, sans-serif', fontSize: '13px', fontWeight: 700, color: 'var(--fg-1, #0F172A)', marginBottom: '16px' }}>
           Sync Schedule
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <label style={{ width: '180px', fontSize: '12px', fontWeight: 500, color: '#334155', fontFamily: 'Inter, sans-serif' }}>Incremental sync every:</label>
-            <select value={intervalMin} onChange={(e) => setIntervalMin(Number(e.target.value))} style={{ height: '36px', padding: '0 12px', borderRadius: '6px', border: '1px solid var(--bd-default, #E2E8F0)', fontSize: '12px', color: '#334155', fontFamily: 'Inter, sans-serif', background: 'var(--bg-app, #fff)' }}>
+            <select value={intervalMin} onChange={(e) => setIntervalMin(Number(e.target.value))} style={{ height: '50px', padding: '8px 12px', borderRadius: '6px', border: '1px solid var(--bd-default, #E2E8F0)', fontSize: '12px', color: '#334155', fontFamily: 'Inter, sans-serif', background: 'var(--bg-app, #fff)' }}>
               <option value={15}>15 minutes</option>
               <option value={30}>30 minutes</option>
               <option value={60}>60 minutes</option>
@@ -399,7 +399,7 @@ export function SyncLogs() {
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <label style={{ width: '180px', fontSize: '12px', fontWeight: 500, color: '#334155', fontFamily: 'Inter, sans-serif' }}>Full sync daily at:</label>
-            <select value={fullSyncTime} onChange={(e) => setFullSyncTime(e.target.value)} style={{ height: '36px', padding: '0 12px', borderRadius: '6px', border: '1px solid var(--bd-default, #E2E8F0)', fontSize: '12px', color: '#334155', fontFamily: 'Inter, sans-serif', background: 'var(--bg-app, #fff)' }}>
+            <select value={fullSyncTime} onChange={(e) => setFullSyncTime(e.target.value)} style={{ height: '50px', padding: '8px 12px', borderRadius: '6px', border: '1px solid var(--bd-default, #E2E8F0)', fontSize: '12px', color: '#334155', fontFamily: 'Inter, sans-serif', background: 'var(--bg-app, #fff)' }}>
               <option value="02:00">02:00 UTC</option>
               <option value="06:00">06:00 UTC</option>
               <option value="12:00">12:00 UTC</option>
@@ -417,7 +417,7 @@ export function SyncLogs() {
       {/* Sync Log */}
       <div style={{ background: 'var(--bg-app, #fff)', border: '1px solid var(--bd-default, #E2E8F0)', borderRadius: '8px', overflow: 'hidden' }}>
         <div style={{ padding: '14px 20px', borderBottom: '1px solid var(--bd-default, #E2E8F0)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <span style={{ fontFamily: 'Sora, sans-serif', fontSize: '13px', fontWeight: 700, color: '#0F172A' }}>Sync Log</span>
+          <span style={{ fontFamily: 'Sora, sans-serif', fontSize: '13px', fontWeight: 700, color: 'var(--fg-1, #0F172A)' }}>Sync Log</span>
           <span style={{ fontSize: '11px', color: '#64748B', background: var(--bg-2, '#F1F5F9'), padding: '2px 8px', borderRadius: '4px' }}>Last 10 runs</span>
         </div>
         <div style={{ maxHeight: '340px', overflowY: 'auto' }}>

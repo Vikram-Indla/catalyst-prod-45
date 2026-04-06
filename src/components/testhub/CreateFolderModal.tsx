@@ -149,7 +149,7 @@ export function CreateFolderModal({
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <div style={{
               width: 36,
-              height: 36,
+              height: 50,
               borderRadius: 8,
               background: 'linear-gradient(135deg, var(--cp-blue) 0%, var(--cp-primary-70) 100%)',
               display: 'flex',

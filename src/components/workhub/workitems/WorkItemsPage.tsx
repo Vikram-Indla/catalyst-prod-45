@@ -189,7 +189,7 @@ export function WorkItemsPage() {
               borderColor: showAdvanced || advancedConditions.length > 0 ? 'var(--cp-blue)' : 'var(--divider)',
               color: showAdvanced || advancedConditions.length > 0 ? 'var(--cp-blue)' : 'var(--fg-3)',
               backgroundColor: showAdvanced ? 'var(--cp-primary-5)' : 'transparent',
-              height: 36,
+              height: 50,
             }}
           >
             <SlidersHorizontal className="w-3.5 h-3.5" />

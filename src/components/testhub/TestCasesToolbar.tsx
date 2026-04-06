@@ -180,7 +180,7 @@ export function TestCasesToolbar({
                 <div style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--fg-3)', marginBottom: 8 }}>Type</div>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16 }}>{TYPE_OPTIONS.map(t => renderCheckbox('types', t, t.charAt(0).toUpperCase() + t.slice(1)))}</div>
               </div>
-              <button onClick={applyFilters} style={{ width: '100%', height: 36, background: 'linear-gradient(135deg, var(--cp-blue) 0%, var(--cp-primary-70) 100%)', border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 600, color: 'var(--cp-float)', cursor: 'pointer' }}>Apply Filters</button>
+              <button onClick={applyFilters} style={{ width: '100%', height: 50, background: 'linear-gradient(135deg, var(--cp-blue) 0%, var(--cp-primary-70) 100%)', border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 600, color: 'var(--cp-float)', cursor: 'pointer' }}>Apply Filters</button>
             </div>
           )}
         </div>
@@ -213,7 +213,7 @@ export function TestCasesToolbar({
                   key={opt.value}
                   onClick={() => onSortChange({ ...sort, column: opt.value })}
                   style={{
-                    height: 40, padding: '0 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                    height: 40, padding: '8px 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                     borderRadius: 8, backgroundColor: sort.column === opt.value ? 'color-mix(in srgb, var(--cp-blue) 8%, transparent)' : 'transparent', cursor: 'pointer',
                   }}
                 >

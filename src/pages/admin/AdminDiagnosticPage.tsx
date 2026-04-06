@@ -165,7 +165,7 @@ export default function AdminDiagnosticPage() {
     <div style={{ padding: '24px 32px', maxWidth: 1200, background: isDark ? '#0A0A0A' : undefined }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 24 }}>
-        <div style={{ width: 36, height: 36, borderRadius: 8, background: isDark ? 'rgba(124,58,237,0.12)' : '#F5F3FF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ width: 36, height: 50, borderRadius: 8, background: isDark ? 'rgba(124,58,237,0.12)' : '#F5F3FF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <Zap style={{ width: 18, height: 18, color: '#7C3AED' }} />
         </div>
         <div>
@@ -261,7 +261,7 @@ export default function AdminDiagnosticPage() {
                 return (
                   <div key={g.label} style={{
                     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                    height: 36, padding: '0 12px', borderRadius: 4,
+                    height: 50, padding: '8px 12px', borderRadius: 4,
                     border: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid #E2E8F0', background: isDark ? '#1A1A1A' : '#FFFFFF',
                   }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -313,7 +313,7 @@ export default function AdminDiagnosticPage() {
                   <thead>
                     <tr style={{ background: isDark ? '#1A1A1A' : '#F8FAFC' }}>
                       {Object.keys(tableData[0]).map(col => (
-                        <th key={col} style={{ height: 36, padding: '0 10px', textAlign: 'left', fontWeight: 650, fontSize: 10, textTransform: 'uppercase', color: isDark ? '#878787' : '#64748B', borderBottom: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid #E2E8F0', whiteSpace: 'nowrap' }}>
+                        <th key={col} style={{ height: 50, padding: '0 10px', textAlign: 'left', fontWeight: 650, fontSize: 10, textTransform: 'uppercase', color: isDark ? '#878787' : '#64748B', borderBottom: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid #E2E8F0', whiteSpace: 'nowrap' }}>
                           {col}
                         </th>
                       ))}
@@ -323,7 +323,7 @@ export default function AdminDiagnosticPage() {
                     {tableData.map((row, i) => (
                       <tr key={i} style={{ borderBottom: isDark ? '0.75px solid rgba(255,255,255,0.05)' : '0.75px solid #E2E8F0' }}>
                         {Object.values(row).map((val, j) => (
-                          <td key={j} style={{ height: 36, padding: '0 10px', color: isDark ? '#A1A1A1' : '#334155', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          <td key={j} style={{ height: 50, padding: '0 10px', color: isDark ? '#A1A1A1' : '#334155', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                             {val === null ? <span style={{ color: isDark ? '#878787' : '#94A3B8' }}>null</span> : typeof val === 'object' ? JSON.stringify(val).slice(0, 50) : String(val).slice(0, 80)}
                           </td>
                         ))}

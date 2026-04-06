@@ -195,7 +195,7 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
             <Settings size={13} /> Settings
           </button>
           <button onClick={e => { e.stopPropagation(); handleOpen(); }} style={{
-            display: 'flex', alignItems: 'center', gap: 5, height: 30, padding: '0 12px',
+            display: 'flex', alignItems: 'center', gap: 5, height: 30, padding: '8px 12px',
             background: 'var(--cp-blue)', border: 'none', borderRadius: 6, cursor: 'pointer',
             fontSize: 11.5, fontWeight: 600, color: '#FFFFFF', fontFamily: "'Inter', sans-serif",
           }}>
@@ -226,7 +226,7 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
               onChange={e => setDeleteConfirm(e.target.value)}
               placeholder={board.name}
               style={{
-                width: '100%', height: 36, padding: '0 12px', boxSizing: 'border-box',
+                width: '100%', height: 50, padding: '8px 12px', boxSizing: 'border-box',
                 border: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(15,23,42,0.15)', borderRadius: 6,
                 fontSize: 13, fontFamily: "'Inter', sans-serif", color: 'var(--fg-1)',
                 outline: 'none', background: isDark ? '#0A0A0A' : 'var(--bg-app)', marginBottom: 16,

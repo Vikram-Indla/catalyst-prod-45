@@ -108,7 +108,7 @@ export function StrategyRoomHeader({ density, onDensityChange }: StrategyRoomHea
           className="flex items-center gap-1.5 rounded-md focus-visible:outline-2 focus-visible:outline-offset-2"
           style={{
             height: '32px',
-            padding: '0 12px',
+            padding: '8px 12px',
             fontSize: '13px',
             fontWeight: 500,
             color: 'var(--catalyst-text-secondary)',
@@ -134,7 +134,7 @@ export function StrategyRoomHeader({ density, onDensityChange }: StrategyRoomHea
           className="flex items-center gap-1.5 rounded-md focus-visible:outline-2 focus-visible:outline-offset-2"
           style={{
             height: '32px',
-            padding: '0 12px',
+            padding: '8px 12px',
             fontSize: '13px',
             fontWeight: 500,
             color: 'var(--catalyst-text-on-primary)',

@@ -166,7 +166,7 @@ export default function WikiSubscriptionsPage() {
           onKeyDown={e => e.key === 'Enter' && addTag()}
           placeholder="Add a tag..."
           style={{
-            height: 32, padding: '0 12px', fontSize: 12, borderRadius: 6,
+            height: 32, padding: '8px 12px', fontSize: 12, borderRadius: 6,
             border: `0.75px solid ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'}`, background: isDark ? '#1A1A1A' : '#FFFFFF',
             outline: 'none', width: 180, color: isDark ? '#EDEDED' : undefined,
           }}

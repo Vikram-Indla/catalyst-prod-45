@@ -504,7 +504,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
 
       {/* §6 WEEK RIBBON — 36px (DEF-10: Calendar icon, not pin) */}
       <div style={{
-        height: 36, display: 'flex', alignItems: 'center', gap: 10, padding: '0 20px',
+        height: 50, display: 'flex', alignItems: 'center', gap: 10, padding: '0 20px',
         borderBottom: `1px solid ${T.border}`, flexShrink: 0,
         background: 'linear-gradient(90deg, rgba(37,99,235,0.06), transparent 60%)',
       }}>

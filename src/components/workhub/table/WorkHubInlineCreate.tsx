@@ -43,7 +43,7 @@ export default function WorkHubInlineCreate({ defaultType, groupCategory, onSubm
       <div
         onClick={() => setActive(true)}
         style={{
-          display: 'flex', alignItems: 'center', height: 36, maxHeight: 36,
+          display: 'flex', alignItems: 'center', height: 50, maxHeight: 50,
           padding: '0 12px 0 56px', gap: 6, cursor: 'pointer',
           borderBottom: '0.75px solid var(--bd-subtle, rgba(255,255,255,0.05))',
         }}
@@ -56,7 +56,7 @@ export default function WorkHubInlineCreate({ defaultType, groupCategory, onSubm
 
   return (
     <div style={{
-      display: 'flex', alignItems: 'center', height: 36, maxHeight: 36,
+      display: 'flex', alignItems: 'center', height: 50, maxHeight: 50,
       padding: '0 12px 0 56px', gap: 8,
       borderBottom: '0.75px solid var(--bd-subtle, rgba(255,255,255,0.05))',
       background: 'rgba(37,99,235,0.04)',

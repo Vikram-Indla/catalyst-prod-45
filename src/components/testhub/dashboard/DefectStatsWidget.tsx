@@ -56,7 +56,7 @@ export function DefectStatsWidget({ stats }: Props) {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <div style={{
-            width: 36, height: 36, borderRadius: 8,
+            width: 36, height: 50, borderRadius: 8,
             background: 'linear-gradient(135deg, var(--sem-danger) 0%, #B91C1C 100%)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>

@@ -181,7 +181,7 @@ export const TimelineGrid: React.FC<TimelineGridProps> = ({
                   <div
                     key={`grp-${row.name}`}
                     className="absolute left-0 right-0 bg-muted/70 border-b border-border/30"
-                    style={{ top: currentY, height: 36 }}
+                    style={{ top: currentY, height: 50 }}
                   />
                 );
               }

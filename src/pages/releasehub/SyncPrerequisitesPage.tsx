@@ -12,7 +12,7 @@ interface CheckResult {
 }
 
 const STATUS_STYLES: Record<Exclude<CheckStatus, 'checking'>, { bg: string; text: string; label: string }> = {
-  pass: { bg: '#E3FCEF', text: '#006644', label: 'PASS' },
+  pass: { bg: 'var(--status-ok-bg, #E3FCEF)', text: '#006644', label: 'PASS' },
   fail: { bg: '#FFEBE6', text: '#BF2600', label: 'FAIL' },
   warn: { bg: '#FFF3E0', text: '#B45309', label: 'WARN' },
 };

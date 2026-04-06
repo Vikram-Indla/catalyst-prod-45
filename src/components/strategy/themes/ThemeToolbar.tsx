@@ -215,7 +215,7 @@ export function ThemeToolbar(props: Props) {
         className="flex items-center gap-1.5 rounded-md"
         style={{
           fontSize: 12, fontWeight: 500, height: 32,
-          padding: '0 12px',
+          padding: '8px 12px',
           border: `1px solid ${borderColor}`,
           background: isDark ? 'transparent' : 'var(--bg-app)',
           color: isDark ? DK.t1 : 'var(--fg-2)',

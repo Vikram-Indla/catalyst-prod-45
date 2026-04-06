@@ -31,7 +31,7 @@ export function EditStatusModal({ open, status, onClose, onSubmit, loading }: Ed
   if (!open || !status) return null;
 
   const inputStyle: React.CSSProperties = {
-    width: '100%', height: 40, padding: '0 12px', fontSize: 13,
+    width: '100%', height: 40, padding: '8px 12px', fontSize: 13,
     color: 'var(--fg-1)', border: '1px solid var(--divider)',
     borderRadius: 6, outline: 'none', fontFamily: "'Inter', sans-serif",
   };
@@ -82,12 +82,12 @@ export function EditStatusModal({ open, status, onClose, onSubmit, loading }: Ed
         </div>
 
         <div className="flex justify-end gap-2 mt-6">
-          <button onClick={onClose} className="bg-[var(--cp-float)] dark:bg-[#1A1A1A]" style={{ height: 36, padding: '0 16px', fontSize: 13, fontWeight: 500, color: 'var(--fg-2)', border: '1px solid var(--divider)', borderRadius: 6, cursor: 'pointer' }}>Cancel</button>
+          <button onClick={onClose} className="bg-[var(--cp-float)] dark:bg-[#1A1A1A]" style={{ height: 50, padding: '0 16px', fontSize: 13, fontWeight: 500, color: 'var(--fg-2)', border: '1px solid var(--divider)', borderRadius: 6, cursor: 'pointer' }}>Cancel</button>
           <button
             onClick={() => name.trim() && onSubmit({ id: status.id, name: name.trim(), category, color })}
             disabled={!name.trim() || loading}
             className="hover:opacity-90 transition-opacity disabled:opacity-40 bg-[var(--cp-blue)]"
-            style={{ height: 36, padding: '0 16px', fontSize: 13, fontWeight: 600, color: '#FFFFFF', border: 'none', borderRadius: 6, cursor: name.trim() && !loading ? 'pointer' : 'default' }}
+            style={{ height: 50, padding: '0 16px', fontSize: 13, fontWeight: 600, color: '#FFFFFF', border: 'none', borderRadius: 6, cursor: name.trim() && !loading ? 'pointer' : 'default' }}
           >
             {loading ? 'Saving...' : 'Save Changes'}
           </button>

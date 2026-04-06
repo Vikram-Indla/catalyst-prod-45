@@ -91,7 +91,7 @@ export const DateDropdown: React.FC<DateDropdownProps> = ({
     
     // Empty cells for days before first of month
     for (let i = 0; i < firstDay; i++) {
-      days.push(<div key={`empty-${i}`} style={{ width: '36px', height: '36px' }} />);
+      days.push(<div key={`empty-${i}`} style={{ width: '36px', height: '50px' }} />);
     }
     
     // Days of month
@@ -110,7 +110,7 @@ export const DateDropdown: React.FC<DateDropdownProps> = ({
           onClick={() => handleSelectDate(day)}
           style={{
             width: '36px',
-            height: '36px',
+            height: '50px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',

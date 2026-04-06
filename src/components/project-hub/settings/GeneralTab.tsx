@@ -99,7 +99,7 @@ export function GeneralTab({ project, onSaved }: GeneralTabProps) {
   };
 
   const inputStyle: React.CSSProperties = {
-    width: '100%', height: 40, padding: '0 12px', fontSize: 13,
+    width: '100%', height: 40, padding: '8px 12px', fontSize: 13,
     color: 'var(--fg-1)', border: '1px solid var(--divider)',
     borderRadius: 6, outline: 'none', fontFamily: "'Inter', sans-serif",
     transition: 'border-color 150ms ease, box-shadow 150ms ease',
@@ -224,7 +224,7 @@ export function GeneralTab({ project, onSaved }: GeneralTabProps) {
             disabled={!isDirty || saving}
             className={`transition-all disabled:opacity-40 ${isDirty && !saving ? 'bg-[var(--cp-blue)]' : 'bg-[var(--cp-blue-muted)]'}`}
             style={{
-              height: 36, padding: '0 20px', fontSize: 13, fontWeight: 600,
+              height: 50, padding: '0 20px', fontSize: 13, fontWeight: 600,
               color: '#FFFFFF', border: 'none', borderRadius: 6,
               cursor: isDirty && !saving ? 'pointer' : 'default',
             }}

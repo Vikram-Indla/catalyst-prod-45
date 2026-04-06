@@ -121,7 +121,7 @@ export function DataScope() {
   return (
     <div style={{ maxWidth: 900, fontFamily: 'Inter, sans-serif' }}>
       <div style={{ marginBottom: 24 }}>
-        <h1 style={{ fontFamily: 'Sora, sans-serif', fontSize: 18, fontWeight: 700, color: '#0F172A', margin: 0 }}>
+        <h1 style={{ fontFamily: 'Sora, sans-serif', fontSize: 18, fontWeight: 700, color: 'var(--fg-1, #0F172A)', margin: 0 }}>
           Data Scope
         </h1>
         <p style={{ fontSize: 13, color: '#64748B', marginTop: 4 }}>
@@ -132,7 +132,7 @@ export function DataScope() {
       {/* Card 1: Included Projects */}
       <div style={cardStyle}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
-          <h2 style={{ fontFamily: 'Sora, sans-serif', fontSize: 14, fontWeight: 600, color: '#0F172A', margin: 0 }}>
+          <h2 style={{ fontFamily: 'Sora, sans-serif', fontSize: 14, fontWeight: 600, color: 'var(--fg-1, #0F172A)', margin: 0 }}>
             Included Projects
           </h2>
           <span style={{
@@ -163,7 +163,7 @@ export function DataScope() {
                 <span style={{
                   width: 12, height: 12, borderRadius: '50%', background: color, flexShrink: 0,
                 }} />
-                <span style={{ fontSize: 12, fontWeight: 600, color: isOn ? '#0F172A' : 'var(--fg-3, #94A3B8)' }}>
+                <span style={{ fontSize: 12, fontWeight: 600, color: isOn ? 'var(--fg-1, #0F172A)' : 'var(--fg-3, #94A3B8)' }}>
                   {p.name}
                 </span>
                 <span style={{
@@ -190,7 +190,7 @@ export function DataScope() {
 
       {/* Card 2: Sync Window */}
       <div style={cardStyle}>
-        <h2 style={{ fontFamily: 'Sora, sans-serif', fontSize: 14, fontWeight: 600, color: '#0F172A', margin: '0 0 14px' }}>
+        <h2 style={{ fontFamily: 'Sora, sans-serif', fontSize: 14, fontWeight: 600, color: 'var(--fg-1, #0F172A)', margin: '0 0 14px' }}>
           Sync Window
         </h2>
 
@@ -233,7 +233,7 @@ export function DataScope() {
 
       {/* Card 3: Data Quality Flags */}
       <div style={cardStyle}>
-        <h2 style={{ fontFamily: 'Sora, sans-serif', fontSize: 14, fontWeight: 600, color: '#0F172A', margin: '0 0 14px' }}>
+        <h2 style={{ fontFamily: 'Sora, sans-serif', fontSize: 14, fontWeight: 600, color: 'var(--fg-1, #0F172A)', margin: '0 0 14px' }}>
           Data Quality Flags
         </h2>
 

@@ -549,7 +549,7 @@ export default function AllReleasesPage() {
             <button
               onClick={() => setIsExportDropdownOpen(p => !p)}
               className="flex items-center gap-1.5 transition-colors"
-              style={{ height: '32px', padding: '0 12px', border: '1px solid #e2e8f0', borderRadius: '6px', background: 'var(--bg-app, #fff)', fontSize: '13px', fontWeight: 500, color: '#334155' }}
+              style={{ height: '32px', padding: '8px 12px', border: '1px solid #e2e8f0', borderRadius: '6px', background: 'var(--bg-app, #fff)', fontSize: '13px', fontWeight: 500, color: '#334155' }}
             >
               <Download className="w-3.5 h-3.5" /> Export
             </button>
@@ -776,8 +776,8 @@ export default function AllReleasesPage() {
           ) : activeView === 'table' ? (
             <table className="all-releases-table w-full" style={{ borderCollapse: 'collapse' }}>
               <thead>
-                <tr style={{ height: '36px', maxHeight: '36px', background: '#f8fafc', position: 'sticky', top: 0, zIndex: 2 }}>
-                  <th style={{ width: '40px', textAlign: 'center', padding: '0 4px', height: '36px', lineHeight: '36px' }}>
+                <tr style={{ height: '50px', maxHeight: '50px', background: '#f8fafc', position: 'sticky', top: 0, zIndex: 2 }}>
+                  <th style={{ width: '40px', textAlign: 'center', padding: '0 4px', height: '50px', lineHeight: '36px' }}>
                     <input
                       type="checkbox"
                       checked={selectAllState === 'all'}
@@ -1019,7 +1019,7 @@ function generateDynamicInsights(releases: ViewRelease[]) {
 
 const colHeaderStyle: React.CSSProperties = {
   fontSize: '11px', fontWeight: 600, color: '#64748b', textTransform: 'uppercase',
-  letterSpacing: '0.05em', textAlign: 'left', padding: '0 12px', whiteSpace: 'nowrap',
+  letterSpacing: '0.05em', textAlign: 'left', padding: '8px 12px', whiteSpace: 'nowrap',
   height: '32px', lineHeight: '32px', borderBottom: '1px solid #e2e8f0', background: '#f8fafc',
 };
 
@@ -1081,7 +1081,7 @@ function SortableHeader({ label, field, current, direction, onClick, style }: {
 function ReleaseRow({ release: r, index = 0, selected, onToggle, onClick, onNavigate }: {
   release: ViewRelease; index?: number; selected: boolean; onToggle: () => void; onClick: () => void; onNavigate?: () => void;
 }) {
-  const cellStyle: React.CSSProperties = { padding: '0 16px', height: '36px', maxHeight: '36px', lineHeight: '36px', verticalAlign: 'middle', whiteSpace: 'nowrap' as const };
+  const cellStyle: React.CSSProperties = { padding: '0 16px', height: '50px', maxHeight: '50px', lineHeight: '36px', verticalAlign: 'middle', whiteSpace: 'nowrap' as const };
   // Test bar color based on pass ratio
   const testRatio = r.testsTotal > 0 ? r.testsPass / r.testsTotal : 0;
   const testBarColor = testRatio <= 0.3 ? '#ef4444' : testRatio <= 0.6 ? '#d97706' : '#0d9488';
@@ -1093,7 +1093,7 @@ function ReleaseRow({ release: r, index = 0, selected, onToggle, onClick, onNavi
       onClick={onClick}
       className="group cursor-pointer transition-colors hover:bg-muted/50"
       style={{
-        height: '36px', maxHeight: '36px', borderBottom: '1px solid #f1f5f9',
+        height: '50px', maxHeight: '50px', borderBottom: '1px solid #f1f5f9',
         background: selected ? '#eff6ff' : undefined,
         animation: `fadeInUp 0.3s ease both`,
         animationDelay: `${index * 25}ms`,
@@ -1101,7 +1101,7 @@ function ReleaseRow({ release: r, index = 0, selected, onToggle, onClick, onNavi
       onMouseEnter={e => { if (!selected) (e.currentTarget.style.background = '#f8fafc'); }}
       onMouseLeave={e => { if (!selected) (e.currentTarget.style.background = ''); }}
     >
-      <td style={{ textAlign: 'center', padding: '0 4px', position: 'relative', width: '40px', height: '36px', verticalAlign: 'middle' }}>
+      <td style={{ textAlign: 'center', padding: '0 4px', position: 'relative', width: '40px', height: '50px', verticalAlign: 'middle' }}>
         <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '3px', background: '#2563eb', opacity: 0, transition: 'opacity 100ms' }} className="group-hover:!opacity-100" />
         <input
           type="checkbox"
@@ -1202,7 +1202,7 @@ function FilterPill({ label, active, count, isOpen, onToggle, children }: {
         onClick={onToggle}
         className="flex items-center gap-1 transition-colors"
         style={{
-          height: '32px', padding: '0 12px', borderRadius: '6px', fontSize: '13px', fontWeight: 500, cursor: 'pointer',
+          height: '32px', padding: '8px 12px', borderRadius: '6px', fontSize: '13px', fontWeight: 500, cursor: 'pointer',
           border: `1px solid ${active ? '#2563eb' : '#e2e8f0'}`,
           background: active ? '#dbeafe' : '#fff',
           color: active ? '#2563eb' : '#334155',
@@ -1477,7 +1477,7 @@ function TimelineView({ releases, onBarClick }: {
 
       <div className="flex flex-1 min-h-0" style={{ border: '1px solid #e2e8f0', borderRadius: '8px', overflow: 'hidden', background: 'var(--bg-app, #fff)' }}>
         <div style={{ width: '260px', flexShrink: 0, borderRight: '1px solid #e2e8f0' }}>
-          <div style={{ height: '32px', background: '#f8fafc', display: 'flex', alignItems: 'center', padding: '0 12px', borderBottom: '1px solid #e2e8f0' }}>
+          <div style={{ height: '32px', background: '#f8fafc', display: 'flex', alignItems: 'center', padding: '8px 12px', borderBottom: '1px solid #e2e8f0' }}>
             <span style={{ fontSize: '11px', fontWeight: 600, color: '#64748b', textTransform: 'uppercase' as const, letterSpacing: '0.05em' }}>RELEASE</span>
           </div>
           {releases.map(r => (
@@ -1485,7 +1485,7 @@ function TimelineView({ releases, onBarClick }: {
               key={r.id}
               onClick={() => onBarClick(r)}
               className="flex items-center gap-2 cursor-pointer transition-colors hover:bg-[#f8fafc]"
-              style={{ height: '36px', padding: '0 12px', borderBottom: '1px solid #f1f5f9' }}
+              style={{ height: '50px', padding: '8px 12px', borderBottom: '1px solid #f1f5f9' }}
             >
               <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: getHealthColor(r.health), flexShrink: 0 }} />
               <div className="min-w-0 flex-1">
@@ -1513,7 +1513,7 @@ function TimelineView({ releases, onBarClick }: {
             const isPlanned = r.progress === 0 && r.status !== 'released';
             const barColor = getTimelineBarColor(r);
             return (
-              <div key={r.id} className="relative" style={{ height: '36px', borderBottom: '1px solid #f1f5f9' }}>
+              <div key={r.id} className="relative" style={{ height: '50px', borderBottom: '1px solid #f1f5f9' }}>
                 <div
                   onClick={() => onBarClick(r)}
                   onMouseMove={e => handleBarHover(e, r)}

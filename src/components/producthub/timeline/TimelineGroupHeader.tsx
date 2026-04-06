@@ -20,7 +20,7 @@ export const TimelineGroupHeader: React.FC<TimelineGroupHeaderProps> = ({ name, 
     <button
       onClick={() => toggleGroup(name)}
       className="w-full flex items-center gap-2 px-4 bg-muted/70 border-b border-border/30 text-left transition-colors hover:bg-muted shrink-0 overflow-hidden"
-      style={{ height: 36, minHeight: 36, maxHeight: 36 }}
+      style={{ height: 50, minHeight: 50, maxHeight: 36 }}
     >
       <ChevronRight
         className={cn(

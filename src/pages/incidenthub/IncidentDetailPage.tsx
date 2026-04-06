@@ -95,7 +95,7 @@ export default function IncidentDetailPage() {
     <div className="flex-1 flex flex-col overflow-hidden" style={{ backgroundColor: isDark ? '#0A0A0A' : '#FFFFFF' }}>
       {/* Breadcrumb */}
       <div className="flex items-center justify-between px-6 shrink-0" style={{
-        height: 36,
+        height: 50,
         borderBottom: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(15,23,42,0.06)',
       }}>
         <div className="flex items-center gap-1" style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: isDark ? '#878787' : '#64748B' }}>

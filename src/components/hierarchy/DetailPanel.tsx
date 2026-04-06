@@ -379,7 +379,7 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
                   key={child.id}
                   onClick={() => onSelectItem?.(child)}
                   style={{
-                    height: 36, display: 'flex', alignItems: 'center', gap: 6,
+                    height: 50, display: 'flex', alignItems: 'center', gap: 6,
                     padding: '0 20px', borderBottom: `1px solid ${dk ? 'rgba(255,255,255,0.06)' : var(--bg-2, '#F1F5F9')}`, cursor: 'pointer',
                     fontFamily: "'Inter', sans-serif",
                   }}

@@ -69,7 +69,7 @@ export function SortDropdown({ sort, onSortChange, onClose }: SortDropdownProps)
           onClick={() => onSortChange({ ...sort, column: opt.value })}
           style={{
             height: 40,
-            padding: '0 12px',
+            padding: '8px 12px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',

@@ -420,7 +420,7 @@ export function AdminSidebarV2({ expanded, onToggle, className }: AdminSidebarV2
                             ? 'bg-blue-500/12 text-blue-600' 
                             : 'text-muted-foreground hover:bg-blue-500/6 hover:text-foreground'
                         )}
-                        style={{ width: '36px', height: '36px', marginBottom: '1px' }}
+                        style={{ width: '36px', height: '50px', marginBottom: '1px' }}
                       >
                         {active && (
                           <span 
@@ -457,7 +457,7 @@ export function AdminSidebarV2({ expanded, onToggle, className }: AdminSidebarV2
                         ? 'bg-blue-500/12 text-blue-600 font-medium' 
                         : 'text-foreground hover:bg-blue-500/6 font-normal'
                     )}
-                    style={{ height: '36px', marginBottom: '1px' }}
+                    style={{ height: '50px', marginBottom: '1px' }}
                   >
                     {active && (
                       <span 
@@ -501,7 +501,7 @@ export function AdminSidebarV2({ expanded, onToggle, className }: AdminSidebarV2
                           ? 'bg-blue-500/12 text-blue-600 font-medium' 
                           : 'text-foreground hover:bg-blue-500/6 font-normal'
                       )}
-                      style={{ height: '36px', marginBottom: '1px' }}
+                      style={{ height: '50px', marginBottom: '1px' }}
                     >
                       {active && (
                         <span 

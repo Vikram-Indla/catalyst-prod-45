@@ -17,7 +17,7 @@ interface InlineEditTitleProps {
 
 export { type InlineEditTitleProps };
 
-export function InlineEditTitle({ value, onSave, fontSize = 13, fontWeight = 500, color = '#0F172A', style, forceEdit, onCancelForceEdit }: InlineEditTitleProps) {
+export function InlineEditTitle({ value, onSave, fontSize = 13, fontWeight = 500, color = 'var(--fg-1, #0F172A)', style, forceEdit, onCancelForceEdit }: InlineEditTitleProps) {
   const [editing, setEditing] = useState(false);
   const isEditing = editing || forceEdit;
   const [draft, setDraft] = useState(value);

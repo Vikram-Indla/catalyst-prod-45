@@ -38,7 +38,7 @@ export default function RecentActivityWidget({ projectId, projectKey, collapsed,
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-1.5">
                   <span style={{ color: 'var(--cp-primary-60)', fontWeight: 500, fontFamily: 'var(--cp-font-mono)', fontSize: 11 }}>{item.issue_key}</span>
-                  <span className={`inline-flex items-center ${item.status_category === 'Done' ? 'bg-[#E3FCEF] dark:bg-[#1a3a2a] text-[#006644] dark:text-[#57d9a3]' : item.status_category === 'In Progress' ? 'bg-[#DEEBFF] dark:bg-[#1a3a5c] text-[#0747A6] dark:text-[#7bb0ff]' : 'bg-[#DFE1E6] dark:bg-[#292929] text-[#253858] dark:text-[#A1A1A1]'}`} style={{
+                  <span className={`inline-flex items-center ${item.status_category === 'Done' ? 'bg-[var(--status-ok-bg, #E3FCEF)] dark:bg-[#1a3a2a] text-[#006644] dark:text-[#57d9a3]' : item.status_category === 'In Progress' ? 'bg-[#DEEBFF] dark:bg-[#1a3a5c] text-[#0747A6] dark:text-[#7bb0ff]' : 'bg-[#DFE1E6] dark:bg-[#292929] text-[#253858] dark:text-[#A1A1A1]'}`} style={{
                     height: 18, padding: '0 6px',
                     fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em',
                     borderRadius: 'var(--cp-radius-sm)',

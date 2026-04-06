@@ -174,7 +174,7 @@ export function FilterDropdown({ filters, onChange, onClose }: FilterDropdownPro
         onClick={applyFilters}
         style={{
           width: '100%',
-          height: 36,
+          height: 50,
           background: 'linear-gradient(135deg, var(--cp-blue) 0%, var(--cp-primary-70) 100%)',
           border: 'none',
           borderRadius: 8,

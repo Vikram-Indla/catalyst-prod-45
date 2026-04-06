@@ -137,7 +137,7 @@ export function TagSelector({ entityType, entityId, onTagsChanged }: TagSelector
             <div style={{ position: 'relative' }}>
               <Search size={14} style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: 'var(--fg-4)' }} />
               <input type="text" placeholder="Search tags..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} autoFocus
-                style={{ width: '100%', height: 36, padding: '0 10px 0 32px', border: '1px solid var(--divider)', borderRadius: 6, fontSize: 13 }} />
+                style={{ width: '100%', height: 50, padding: '0 10px 0 32px', border: '1px solid var(--divider)', borderRadius: 6, fontSize: 13 }} />
             </div>
           </div>
           <div style={{ flex: 1, overflowY: 'auto', padding: 8 }}>

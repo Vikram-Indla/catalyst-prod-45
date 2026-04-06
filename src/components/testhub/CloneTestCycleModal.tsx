@@ -234,7 +234,7 @@ export function CloneTestCycleModal({
               onChange={(e) => setNewName(e.target.value)}
               placeholder="Enter name for the cloned cycle"
               style={{
-                width: '100%', height: 40, padding: '0 12px',
+                width: '100%', height: 40, padding: '8px 12px',
                 border: '1.5px solid var(--divider)', borderRadius: 8, fontSize: 14, color: 'var(--fg-1)',
               }}
             />

@@ -111,7 +111,7 @@ export default function IdeationIntelligenceHub({ open, onClose, onMerge, ideas 
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <div style={{
-            width: '36px', height: '36px', borderRadius: '50%', background: '#7C3AED',
+            width: '36px', height: '50px', borderRadius: '50%', background: '#7C3AED',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             fontSize: '16px', color: '#FFFFFF',
           }}>✦</div>

@@ -450,11 +450,11 @@ export function JiraSyncDialog({ open, onClose }: Props) {
                 <div style={{ fontSize: 13, color: 'var(--fg-3)', marginBottom: 8, textAlign: 'center', maxWidth: 340 }}>{progressLabel}</div>
                 <div style={{ display: 'flex', gap: 10, marginTop: 20 }}>
                   <button onClick={() => { setPhase('idle'); setProgressPct(0); }} style={{
-                    height: 36, padding: '0 20px', fontSize: 13, fontWeight: 500,
+                    height: 50, padding: '0 20px', fontSize: 13, fontWeight: 500,
                     color: 'var(--fg-2)', background: 'var(--bg-app)', border: '1px solid var(--divider)', borderRadius: 8, cursor: 'pointer',
                   }}>Try Again</button>
                   <button onClick={onClose} style={{
-                    height: 36, padding: '0 20px', fontSize: 13, fontWeight: 600,
+                    height: 50, padding: '0 20px', fontSize: 13, fontWeight: 600,
                     color: '#FFF', background: 'var(--sem-danger)', border: 'none', borderRadius: 8, cursor: 'pointer',
                   }}>Close</button>
                 </div>
@@ -629,11 +629,11 @@ export function JiraSyncDialog({ open, onClose }: Props) {
               </span>
               <div style={{ display: 'flex', gap: 8 }}>
                 <button onClick={onClose} style={{
-                  height: 36, padding: '0 18px', fontSize: 13, fontWeight: 500,
+                  height: 50, padding: '0 18px', fontSize: 13, fontWeight: 500,
                   color: 'var(--fg-2)', background: 'var(--bg-app)', border: '1px solid var(--divider)', borderRadius: 8, cursor: 'pointer',
                 }}>Cancel</button>
                 <button onClick={handleSync} disabled={selected.size === 0} style={{
-                  height: 36, padding: '0 20px', fontSize: 13, fontWeight: 600,
+                  height: 50, padding: '0 20px', fontSize: 13, fontWeight: 600,
                   color: '#FFF',
                   background: selected.size === 0 ? '#A1A1AA' : 'linear-gradient(135deg, #2684FF, #0052CC)',
                   border: 'none', borderRadius: 8,

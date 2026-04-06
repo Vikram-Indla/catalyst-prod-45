@@ -45,7 +45,7 @@ export default function WorkHubBulkBar({ selectedCount, onSetStatus, onSetPriori
       <Popover>
         <PopoverTrigger asChild>
           <button style={{
-            display: 'inline-flex', alignItems: 'center', gap: 4, padding: '0 12px', height: 32,
+            display: 'inline-flex', alignItems: 'center', gap: 4, padding: '8px 12px', height: 32,
             background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)',
             borderRadius: 4, color: 'var(--bg-app)', fontSize: 12, fontWeight: 500, cursor: 'pointer',
           }}>
@@ -73,7 +73,7 @@ export default function WorkHubBulkBar({ selectedCount, onSetStatus, onSetPriori
       <Popover>
         <PopoverTrigger asChild>
           <button style={{
-            display: 'inline-flex', alignItems: 'center', gap: 4, padding: '0 12px', height: 32,
+            display: 'inline-flex', alignItems: 'center', gap: 4, padding: '8px 12px', height: 32,
             background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)',
             borderRadius: 4, color: 'var(--bg-app)', fontSize: 12, fontWeight: 500, cursor: 'pointer',
           }}>
@@ -93,7 +93,7 @@ export default function WorkHubBulkBar({ selectedCount, onSetStatus, onSetPriori
       </Popover>
 
       <button onClick={onDelete} style={{
-        display: 'inline-flex', alignItems: 'center', gap: 4, padding: '0 12px', height: 32,
+        display: 'inline-flex', alignItems: 'center', gap: 4, padding: '8px 12px', height: 32,
         background: 'transparent', border: 'none', color: '#F87171', fontSize: 12, fontWeight: 500, cursor: 'pointer',
       }}>
         <Trash2 size={14} /> Delete

@@ -651,7 +651,7 @@ function CommentsSection({ initiativeId }: { initiativeId: string }) {
           className="pb-comment-input" style={{ flex: 1 }} disabled={submitting}
           onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSubmit(); } }} />
         <button type="button" onClick={handleSubmit} disabled={submitting || !newComment.trim()}
-          style={{ height: 36, padding: '0 16px', fontSize: 13, fontWeight: 500, background: 'var(--pb-primary)', color: '#fff', border: 'none', borderRadius: 'var(--pb-r-md)', cursor: 'pointer', opacity: submitting || !newComment.trim() ? 0.5 : 1 }}>
+          style={{ height: 50, padding: '0 16px', fontSize: 13, fontWeight: 500, background: 'var(--pb-primary)', color: '#fff', border: 'none', borderRadius: 'var(--pb-r-md)', cursor: 'pointer', opacity: submitting || !newComment.trim() ? 0.5 : 1 }}>
           {submitting ? 'Sending…' : 'Send'}
         </button>
       </div>

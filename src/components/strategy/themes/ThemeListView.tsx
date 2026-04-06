@@ -77,10 +77,10 @@ export function ThemeListView({ themes, onSelect, isDark = false }: Props) {
         className="grid items-center gap-0"
         style={{
           gridTemplateColumns: '36px 2.4fr 100px 100px 80px 80px 110px 120px 100px',
-          height: 36,
+          height: 50,
           background: isDark ? DK.hover : 'var(--bg-1)',
           borderBottom: `1px solid ${borderColor}`,
-          padding: '0 12px',
+          padding: '8px 12px',
         }}
       >
         <div><input type="checkbox" checked={selected.size === paged.length && paged.length > 0} onChange={toggleAll} style={{ width: 14, height: 14, accentColor: '#2563EB' }} /></div>
@@ -110,7 +110,7 @@ export function ThemeListView({ themes, onSelect, isDark = false }: Props) {
               gridTemplateColumns: '36px 2.4fr 100px 100px 80px 80px 110px 120px 100px',
               height: 44,
               borderBottom: `1px solid ${borderSubtle}`,
-              padding: '0 12px',
+              padding: '8px 12px',
             }}
             onMouseEnter={e => (e.currentTarget.style.background = isDark ? DK.hover : 'var(--bg-1)')}
             onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}

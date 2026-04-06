@@ -201,14 +201,14 @@ export function Resource360Ring({ items, resourceName, resourceAvatar, jobRole, 
               boxShadow: '0 4px 16px rgba(0,0,0,.15)', backdropFilter: 'blur(8px)',
             }}>
               <button onClick={() => setPage(p => Math.max(0, p - 1))} disabled={page === 0} style={{
-                width: 36, height: 36, borderRadius: 6,
+                width: 36, height: 50, borderRadius: 6,
                 background: page === 0 ? T.bg : '#2563EB', color: page === 0 ? T.text4 : '#fff',
                 border: 'none', cursor: page === 0 ? 'default' : 'pointer', fontWeight: 700, fontSize: 14,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>‹</button>
               <span style={{ fontSize: 11, fontWeight: 700, color: T.text3 }}>{page + 1}/{totalPages}</span>
               <button onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))} disabled={page === totalPages - 1} style={{
-                width: 36, height: 36, borderRadius: 6,
+                width: 36, height: 50, borderRadius: 6,
                 background: page === totalPages - 1 ? T.bg : '#2563EB', color: page === totalPages - 1 ? T.text4 : '#fff',
                 border: 'none', cursor: page === totalPages - 1 ? 'default' : 'pointer', fontWeight: 700, fontSize: 14,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',

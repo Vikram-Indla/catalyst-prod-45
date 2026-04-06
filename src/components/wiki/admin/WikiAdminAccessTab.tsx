@@ -70,7 +70,7 @@ export function WikiAdminAccessTab() {
           </thead>
           <tbody>
             {ROLES.map(role => (
-              <tr key={role} style={{ borderTop: '0.75px solid var(--cp-border-default, rgba(15,23,42,0.08))', height: 36 }}>
+              <tr key={role} style={{ borderTop: '0.75px solid var(--cp-border-default, rgba(15,23,42,0.08))', height: 50 }}>
                 <td style={{ padding: '8px 12px', fontWeight: 500, position: 'sticky', insetInlineStart: 0, background: 'var(--cp-bg-page, #fff)', zIndex: 1, whiteSpace: 'nowrap' }}>
                   {role.replace(/_/g, ' ')}
                 </td>

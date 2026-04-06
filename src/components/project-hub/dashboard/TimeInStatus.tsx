@@ -198,7 +198,7 @@ export default function TimeInStatus({ projectId, releaseMap }: Props) {
                     })}
                     {/* Total */}
                     <td className={idx % 2 === 1 ? 'bg-[var(--cp-bd-zone)] dark:bg-[#1A1A1A]' : 'bg-[var(--bg-1)] dark:bg-[#1A1A1A]'} style={{
-                      padding: '0 12px', textAlign: 'right',
+                      padding: '8px 12px', textAlign: 'right',
                       fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 800, color: 'var(--fg-1)',
                       borderLeft: '2px solid var(--divider)',
                       position: 'sticky', right: 0, zIndex: 2,

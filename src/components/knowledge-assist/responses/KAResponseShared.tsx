@@ -86,7 +86,7 @@ export function V12Table({ headers, widths, children }: {
           {widths.map((w, i) => <col key={i} style={{ width: w }} />)}
         </colgroup>
         <thead>
-          <tr style={{ height: 36, background: 'var(--cp-bd-zone)' }}>
+          <tr style={{ height: 50, background: 'var(--cp-bd-zone)' }}>
             {headers.map((h, i) => (
               <th key={i} style={{
                 padding: '8px 12px', fontSize: 11, fontWeight: 650,
@@ -107,7 +107,7 @@ export function V12Table({ headers, widths, children }: {
 export function Row({ children, onClick }: { children: React.ReactNode; onClick?: () => void }) {
   return (
     <tr
-      style={{ height: 36, borderBottom: '0.75px solid rgba(15,23,42,0.06)', cursor: onClick ? 'pointer' : undefined, transition: 'background 80ms' }}
+      style={{ height: 50, borderBottom: '0.75px solid rgba(15,23,42,0.06)', cursor: onClick ? 'pointer' : undefined, transition: 'background 80ms' }}
       onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(15,23,42,0.04)'; }}
       onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
       onClick={onClick}

@@ -92,7 +92,7 @@ export function TestCasesTable({
   // Header cell styles
   const headerCellStyle: React.CSSProperties = {
     height: 44,
-    padding: '0 12px',
+    padding: '8px 12px',
     backgroundColor: 'var(--bg-1)',
     borderBottom: '1px solid var(--divider)',
     fontSize: 11,
@@ -105,8 +105,8 @@ export function TestCasesTable({
 
   // Body cell base styles
   const bodyCellStyle: React.CSSProperties = {
-    height: 36,
-    padding: '0 12px',
+    height: 50,
+    padding: '8px 12px',
     borderBottom: '1px solid var(--divider)',
     verticalAlign: 'middle',
   };
@@ -211,7 +211,7 @@ export function TestCasesTable({
                 onMouseEnter={() => setHoveredRowId(tc.id)}
                 onMouseLeave={() => setHoveredRowId(null)}
                 style={{
-                  height: 36,
+                  height: 50,
                   backgroundColor: isSelected ? 'rgba(37, 99, 235, 0.06)' : isHovered ? 'var(--cp-bd-zone)' : 'var(--cp-float)',
                   cursor: 'pointer',
                   transition: 'background-color 0.1s',

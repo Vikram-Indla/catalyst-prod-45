@@ -33,13 +33,13 @@ export function ThemeTimelineView({ themes, onSelect }: Props) {
     <div className="rounded-xl border overflow-hidden bg-white dark:bg-[#0A0A0A] border-slate-200 dark:border-[rgba(255,255,255,0.08)]">
       {/* Header */}
       <div className="flex border-b border-slate-200 dark:border-[rgba(255,255,255,0.08)]">
-        <div className="shrink-0 flex items-center bg-slate-50 dark:bg-[rgba(255,255,255,0.03)]" style={{ width: 220, height: 36, padding: '0 12px' }}>
+        <div className="shrink-0 flex items-center bg-slate-50 dark:bg-[rgba(255,255,255,0.03)]" style={{ width: 220, height: 50, padding: '8px 12px' }}>
           <span className="text-[10.5px] font-semibold text-slate-400 dark:text-[#878787] uppercase tracking-wide">Theme</span>
         </div>
         <div className="flex-1 grid bg-slate-50 dark:bg-[rgba(255,255,255,0.03)]" style={{ gridTemplateColumns: `repeat(12, 1fr)` }}>
           {MONTHS.map((m, i) => (
             <div key={m} className="flex items-center justify-center text-[10.5px] font-medium text-slate-400 dark:text-[#878787] border-l border-slate-100 dark:border-[rgba(255,255,255,0.04)]" style={{
-              height: 36,
+              height: 50,
               background: i % 2 === 0 ? 'rgba(248,250,252,0.5)' : 'transparent',
             }}>
               {m}
@@ -65,7 +65,7 @@ export function ThemeTimelineView({ themes, onSelect }: Props) {
             style={{ height: 48 }}
           >
             {/* Label */}
-            <div className="shrink-0 flex items-center gap-2 min-w-0" style={{ width: 220, padding: '0 12px' }}>
+            <div className="shrink-0 flex items-center gap-2 min-w-0" style={{ width: 220, padding: '8px 12px' }}>
               <div className="shrink-0 rounded-full" style={{ width: 8, height: 8, background: theme.color }} />
               <span className="truncate text-xs font-medium text-slate-900 dark:text-[#EDEDED]" title={theme.title}>{theme.title}</span>
               <span className="shrink-0 inline-flex items-center gap-1 rounded-full px-1.5 py-0.5" style={{ fontSize: 9, fontWeight: 500, background: sc.bg, color: sc.text }}>
@@ -122,7 +122,7 @@ export function ThemeTimelineView({ themes, onSelect }: Props) {
           className="flex cursor-pointer transition-colors border-b border-slate-100 dark:border-[rgba(255,255,255,0.04)] hover:bg-slate-50 dark:hover:bg-[rgba(255,255,255,0.03)]"
           style={{ height: 48 }}
         >
-          <div className="shrink-0 flex items-center gap-2 min-w-0" style={{ width: 220, padding: '0 12px' }}>
+          <div className="shrink-0 flex items-center gap-2 min-w-0" style={{ width: 220, padding: '8px 12px' }}>
             <div className="shrink-0 rounded-full" style={{ width: 8, height: 8, background: theme.color }} />
             <span className="truncate text-xs font-medium text-slate-900 dark:text-[#EDEDED]">{theme.title}</span>
           </div>

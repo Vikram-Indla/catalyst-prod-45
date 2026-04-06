@@ -224,7 +224,7 @@ export function CatalystHeader() {
                       <button
                         className="flex items-center cursor-not-allowed opacity-40"
                         style={{
-                          height: '36px',
+                          height: '50px',
                           padding: '0 14px',
                           fontSize: '14px',
                           fontWeight: 500,
@@ -460,7 +460,7 @@ export function CatalystHeader() {
                   ) : (item as any).isLabel ? (
                     <span
                       style={{
-                        height: '36px',
+                        height: '50px',
                         padding: '0 14px',
                         fontSize: '0.84rem',
                         fontWeight: 500,
@@ -513,7 +513,7 @@ export function CatalystHeader() {
                     className="relative flex items-center justify-center rounded-lg transition-all"
                     style={{
                       width: '36px',
-                      height: '36px',
+                      height: '50px',
                       color: location.pathname.startsWith('/admin') ? 'var(--cp-blue-text)' : 'var(--cp-t3)',
                       background: location.pathname.startsWith('/admin') ? 'var(--cp-hover)' : 'transparent',
                       border: 'none',
@@ -573,7 +573,7 @@ export function CatalystHeader() {
             <button
               onClick={() => window.dispatchEvent(new CustomEvent('open-global-search'))}
               className="sm:hidden flex items-center justify-center rounded-lg transition-colors focus:outline-none"
-              style={{ width: '36px', height: '36px', color: isDark ? 'rgba(255,255,255,0.55)' : '#94A3B8', background: 'transparent', borderRadius: '8px', border: 'none', cursor: 'pointer' }}
+              style={{ width: '36px', height: '50px', color: isDark ? 'rgba(255,255,255,0.55)' : '#94A3B8', background: 'transparent', borderRadius: '8px', border: 'none', cursor: 'pointer' }}
             >
               <Search style={{ width: '18px', height: '18px' }} />
             </button>
@@ -585,7 +585,7 @@ export function CatalystHeader() {
               aria-label={`Notifications${debouncedUnreadCount > 0 ? `, ${debouncedUnreadCount} unread` : ''}`}
               style={{
                 position: 'relative',
-                width: '36px', height: '36px',
+                width: '36px', height: '50px',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 background: 'transparent', border: 'none', borderRadius: '8px',
                 cursor: 'pointer',

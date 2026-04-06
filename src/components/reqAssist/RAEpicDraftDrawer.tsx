@@ -390,7 +390,7 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
                 onClick={handleMarkReviewed}
                 disabled={markingReviewed}
                 style={{
-                  flex: 1, height: 36, fontSize: 13, fontWeight: 600,
+                  flex: 1, height: 50, fontSize: 13, fontWeight: 600,
                   borderRadius: 6, border: '0.75px solid rgba(15,23,42,0.15)',
                   background: 'var(--bg-app)', color: 'var(--fg-2)',
                   cursor: 'pointer', fontFamily: "'Inter', sans-serif",
@@ -404,7 +404,7 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
             <button
               onClick={() => setShowPublish(true)}
               style={{
-                flex: 1, height: 36, fontSize: 13, fontWeight: 600,
+                flex: 1, height: 50, fontSize: 13, fontWeight: 600,
                 borderRadius: 6, border: 'none',
                 background: 'var(--cp-blue)', color: '#FFFFFF',
                 cursor: 'pointer', fontFamily: "'Inter', sans-serif",

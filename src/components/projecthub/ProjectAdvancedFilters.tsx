@@ -43,7 +43,7 @@ function FilterDropdown({ label, placeholder, options, selected, onToggle }: {
         className="bg-white dark:bg-transparent border-[1.5px] border-[#E2E8F0] dark:border-[rgba(255,255,255,0.10)]"
         style={{
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          width: '100%', height: 36, padding: '0 12px',
+          width: '100%', height: 50, padding: '8px 12px',
           fontSize: 13, color: selected.length > 0 ? (isDark ? 'rgba(255,255,255,0.92)' : 'var(--fg-1)') : (isDark ? 'rgba(255,255,255,0.40)' : 'var(--fg-4)'),
           borderRadius: 6, cursor: 'pointer', fontFamily: "'Inter', sans-serif",
         }}

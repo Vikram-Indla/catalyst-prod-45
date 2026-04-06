@@ -269,7 +269,7 @@ export const KBResponseRenderer: React.FC<KBResponseRendererProps> = ({
                   <tr
                     key={ri}
                     style={{
-                      height: 36,
+                      height: 50,
                       borderBottom: ri < tableRows.length - 1 ? '0.75px solid rgba(15,23,42,0.06)' : 'none',
                       background: ri === 0 ? var(--bg-2, '#F1F5F9') : 'transparent',
                       transition: 'background 80ms',

@@ -170,7 +170,7 @@ export default function IncidentListPage() {
           <div className="grid items-center" style={{
             gridTemplateColumns: GRID_COLS,
             backgroundColor: elevatedBg,
-            height: 36,
+            height: 50,
             borderBottom: `0.75px solid ${borderSubtle}`,
           }}>
             <div className="flex justify-center"><Checkbox className="h-3.5 w-3.5" /></div>
@@ -185,7 +185,7 @@ export default function IncidentListPage() {
           {/* Loading */}
           {isLoading && Array.from({ length: 5 }).map((_, i) => (
             <div key={i} className="grid items-center" style={{
-              gridTemplateColumns: GRID_COLS, height: 36,
+              gridTemplateColumns: GRID_COLS, height: 50,
               borderBottom: `0.75px solid ${borderSubtle}`,
             }}>
               {Array.from({ length: 12 }).map((_, j) => (
@@ -216,7 +216,7 @@ export default function IncidentListPage() {
               className="grid items-center cursor-pointer transition-colors"
               style={{
                 gridTemplateColumns: GRID_COLS,
-                height: 36, maxHeight: 36,
+                height: 50, maxHeight: 50,
                 borderBottom: `0.75px solid ${borderSubtle}`,
                 backgroundColor: rowBg,
               }}

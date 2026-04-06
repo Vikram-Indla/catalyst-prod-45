@@ -46,7 +46,7 @@ export function PassRateTrendChart({ data }: Props) {
   return (
     <div style={{ backgroundColor: 'var(--bg-app)', border: '1px solid var(--divider)', borderRadius: 12, padding: 24, minHeight: 280 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>
-        <div style={{ width: 36, height: 36, borderRadius: 12, backgroundColor: '#EBF0FF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ width: 36, height: 50, borderRadius: 12, backgroundColor: '#EBF0FF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <TrendingUp size={18} color="var(--cp-blue)" />
         </div>
         <div>

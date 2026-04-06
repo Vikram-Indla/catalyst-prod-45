@@ -84,7 +84,7 @@ export function FailureReasonModal({ isOpen, testCaseKey, testCaseTitle, testCas
                     <button key={reason.id} onClick={() => { setSelectedReason(reason.id); setError(''); }}
                       style={{ padding: '14px 16px', border: `2px solid ${isSelected ? reason.color : 'var(--divider)'}`, borderRadius: 12, backgroundColor: isSelected ? `${reason.color}10` : 'var(--bg-app)', cursor: 'pointer', textAlign: 'left', transition: 'all 0.15s' }}>
                       <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
-                        <div style={{ width: 36, height: 36, borderRadius: 8, backgroundColor: isSelected ? `${reason.color}20` : 'color-mix(in srgb, var(--bg-2) 40%, transparent)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                        <div style={{ width: 36, height: 50, borderRadius: 8, backgroundColor: isSelected ? `${reason.color}20` : 'color-mix(in srgb, var(--bg-2) 40%, transparent)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                           <Icon size={18} style={{ color: isSelected ? reason.color : 'var(--fg-3)' }} />
                         </div>
                         <div>
@@ -107,7 +107,7 @@ export function FailureReasonModal({ isOpen, testCaseKey, testCaseTitle, testCas
               </label>
               <div style={{ display: 'flex', gap: 8 }}>
                 <input type="text" value={defectId} onChange={(e) => setDefectId(e.target.value)} placeholder="e.g., DEF-001"
-                  style={{ flex: 1, height: 40, padding: '0 12px', border: '1.5px solid var(--divider)', borderRadius: 8, fontSize: 14, color: 'var(--fg-1)', backgroundColor: 'var(--bg-app)' }} />
+                  style={{ flex: 1, height: 40, padding: '8px 12px', border: '1.5px solid var(--divider)', borderRadius: 8, fontSize: 14, color: 'var(--fg-1)', backgroundColor: 'var(--bg-app)' }} />
                 <button
                   onClick={() => setShowCreateDefect(true)}
                   style={{

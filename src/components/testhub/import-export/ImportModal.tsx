@@ -334,7 +334,7 @@ export function ImportModal({ isOpen, onClose, onImported }: ImportModalProps) {
             </div>
           </div>
           <button onClick={() => { onClose(); resetModal(); }} style={{
-            width: 36, height: 36, border: 'none', borderRadius: 8,
+            width: 36, height: 50, border: 'none', borderRadius: 8,
             backgroundColor: 'transparent', color: 'var(--fg-3)', cursor: 'pointer',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
@@ -422,7 +422,7 @@ export function ImportModal({ isOpen, onClose, onImported }: ImportModalProps) {
                   value={importName}
                   onChange={(e) => setImportName(e.target.value)}
                   placeholder="My Import"
-                  style={{ width: '100%', height: 40, padding: '0 12px', border: '1px solid var(--divider)', borderRadius: 8, fontSize: 14 }}
+                  style={{ width: '100%', height: 40, padding: '8px 12px', border: '1px solid var(--divider)', borderRadius: 8, fontSize: 14 }}
                 />
               </div>
               <h3 style={{ fontSize: 14, fontWeight: 600, color: 'var(--fg-1)', marginBottom: 12 }}>Map your fields</h3>
@@ -436,7 +436,7 @@ export function ImportModal({ isOpen, onClose, onImported }: ImportModalProps) {
                     <select
                       value={fieldMapping[header] || ''}
                       onChange={(e) => setFieldMapping({ ...fieldMapping, [header]: e.target.value })}
-                      style={{ flex: 1, height: 36, padding: '0 10px', border: '1px solid var(--divider)', borderRadius: 6, fontSize: 13 }}
+                      style={{ flex: 1, height: 50, padding: '0 10px', border: '1px solid var(--divider)', borderRadius: 6, fontSize: 13 }}
                     >
                       <option value="">(Skip)</option>
                       {[...REQUIRED_FIELDS[importType], ...OPTIONAL_FIELDS[importType]].map((field) => (

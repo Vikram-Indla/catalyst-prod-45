@@ -65,7 +65,7 @@ export function Resource360RingNode({ item, x, y, onClick }: Props) {
 
       {/* Row 2: Title (2-line clamp) */}
       <div style={{
-        fontSize: 12, fontWeight: 600, color: '#0F172A',
+        fontSize: 12, fontWeight: 600, color: 'var(--fg-1, #0F172A)',
         lineHeight: 1.35,
         display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
         overflow: 'hidden', marginBottom: 4,

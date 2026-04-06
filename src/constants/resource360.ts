@@ -84,7 +84,7 @@ export const R360_TOKENS = {
   purpleLight: '#F5F3FF',
   purpleText: '#4C1D95',
   ink1: '#020617',
-  ink2: '#0F172A',
+  ink2: 'var(--fg-1, #0F172A)',
   ink3: '#334155',
   ink4: '#64748B',
   surface: 'var(--bg-1, #F8FAFC)',

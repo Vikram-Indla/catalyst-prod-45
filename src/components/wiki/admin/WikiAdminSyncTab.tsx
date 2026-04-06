@@ -361,7 +361,7 @@ export function WikiAdminSyncTab() {
               </thead>
               <tbody>
                 {runs.slice(1).map(r => (
-                  <tr key={r.id} style={{ borderTop: '0.75px solid var(--cp-border-default, rgba(15,23,42,0.08))', height: 36 }}>
+                  <tr key={r.id} style={{ borderTop: '0.75px solid var(--cp-border-default, rgba(15,23,42,0.08))', height: 50 }}>
                     <td style={{ padding: '8px 12px', fontFamily: 'JetBrains Mono, monospace', fontSize: 11 }}>{format(new Date(r.started_at), 'MMM d HH:mm')}</td>
                     <td style={{ padding: '8px 12px' }}><StatusLoz status={r.status} /></td>
                     <td style={{ padding: '8px 12px', fontFamily: 'JetBrains Mono, monospace', fontSize: 11 }}>{r.total_duration_ms ? `${(r.total_duration_ms / 1000).toFixed(0)}s` : '—'}</td>

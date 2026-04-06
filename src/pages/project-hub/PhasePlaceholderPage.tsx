@@ -16,7 +16,7 @@ export default function PhasePlaceholderPage({ title, phase, icon: Icon = List, 
       <div className="ph-inner-content">
         <div className="flex items-center gap-3 mb-6">
           <Icon size={22} color="#2563EB" strokeWidth={1.75} />
-          <h1 style={{ fontSize: 20, fontWeight: 700, color: '#0F172A', fontFamily: "'Sora', sans-serif", letterSpacing: '-0.3px' }}>
+          <h1 style={{ fontSize: 20, fontWeight: 700, color: 'var(--fg-1, #0F172A)', fontFamily: "'Sora', sans-serif", letterSpacing: '-0.3px' }}>
             {title}
           </h1>
           <span
@@ -32,7 +32,7 @@ export default function PhasePlaceholderPage({ title, phase, icon: Icon = List, 
           style={{ padding: '80px 40px' }}
         >
           <Icon size={48} color="#CBD5E1" strokeWidth={1.25} />
-          <h3 style={{ fontSize: 18, fontWeight: 600, color: '#0F172A', marginTop: 16, fontFamily: "'Sora', sans-serif" }}>
+          <h3 style={{ fontSize: 18, fontWeight: 600, color: 'var(--fg-1, #0F172A)', marginTop: 16, fontFamily: "'Sora', sans-serif" }}>
             {title}
           </h3>
           <p style={{ fontSize: 14, color: '#64748B', marginTop: 4, textAlign: 'center', maxWidth: 400 }}>

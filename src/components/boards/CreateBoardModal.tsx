@@ -100,7 +100,7 @@ export default function CreateBoardModal({ projectId, basePath, onClose }: Props
           <input value={name} onChange={e => setName(e.target.value)}
             placeholder="e.g. Design Board, QA Workflow…"
             style={{
-              width: '100%', height: 36, padding: '0 12px',
+              width: '100%', height: 50, padding: '8px 12px',
               border: '0.75px solid rgba(15,23,42,0.15)', borderRadius: 6,
               fontSize: 13, fontFamily: "'Inter', sans-serif", color: 'var(--fg-1)',
               outline: 'none', background: 'var(--bg-app)', marginBottom: 20, boxSizing: 'border-box',

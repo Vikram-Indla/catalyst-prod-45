@@ -12,7 +12,7 @@ interface AvatarProps {
 
 const SIZES = {
   sm: { width: 26, height: 26, fontSize: 11 },
-  md: { width: 36, height: 36, fontSize: 12 },
+  md: { width: 36, height: 50, fontSize: 12 },
   lg: { width: 40, height: 40, fontSize: 14 }
 };
 

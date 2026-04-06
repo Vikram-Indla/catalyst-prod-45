@@ -54,7 +54,7 @@ export function WikiAdminHealthTab() {
               </thead>
               <tbody>
                 {items.map(c => (
-                  <tr key={c.id} style={{ borderTop: '0.75px solid var(--cp-border-default, rgba(15,23,42,0.08))', height: 36 }}
+                  <tr key={c.id} style={{ borderTop: '0.75px solid var(--cp-border-default, rgba(15,23,42,0.08))', height: 50 }}
                     onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(15,23,42,0.04)'; }}
                     onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
                   >

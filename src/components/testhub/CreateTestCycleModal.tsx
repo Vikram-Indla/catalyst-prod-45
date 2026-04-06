@@ -251,7 +251,7 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
             </label>
             <input type="text" value={name} onChange={(e) => setName(e.target.value)}
               placeholder="e.g., Release 24 - User Authentication"
-              style={{ width: '100%', height: 40, padding: '0 12px', border: `1.5px solid ${errors.name ? 'var(--sem-danger)' : 'var(--divider)'}`, borderRadius: 8, fontSize: 14, color: 'var(--fg-1)' }}
+              style={{ width: '100%', height: 40, padding: '8px 12px', border: `1.5px solid ${errors.name ? 'var(--sem-danger)' : 'var(--divider)'}`, borderRadius: 8, fontSize: 14, color: 'var(--fg-1)' }}
             />
             {errors.name && <p style={{ fontSize: 12, color: 'var(--sem-danger)', margin: '6px 0 0', display: 'flex', alignItems: 'center', gap: 4 }}><AlertCircle size={12} />{errors.name}</p>}
           </div>
@@ -267,7 +267,7 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
                   type="button"
                   onClick={() => setStatusDropdownOpen(!statusDropdownOpen)}
                   style={{
-                    width: '100%', height: 40, padding: '0 12px',
+                    width: '100%', height: 40, padding: '8px 12px',
                     border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 6,
                     fontSize: 14, color: isDark ? '#EDEDED' : '#334155', backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF',
                     fontFamily: 'Inter, sans-serif',
@@ -349,7 +349,7 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
                 onChange={(e) => setStartDate(e.target.value)}
                 onFocus={(e) => { (e.target as HTMLInputElement).type = 'date'; }}
                 onBlur={(e) => { if (!(e.target as HTMLInputElement).value) { (e.target as HTMLInputElement).type = 'text'; } }}
-                style={{ width: '100%', height: 40, padding: '0 12px', border: `1.5px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 4, fontSize: 14, color: isDark ? '#EDEDED' : '#1E293B', backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', fontFamily: 'Inter, sans-serif', outline: 'none', boxSizing: 'border-box' } as React.CSSProperties}
+                style={{ width: '100%', height: 40, padding: '8px 12px', border: `1.5px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 4, fontSize: 14, color: isDark ? '#EDEDED' : '#1E293B', backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', fontFamily: 'Inter, sans-serif', outline: 'none', boxSizing: 'border-box' } as React.CSSProperties}
               />
             </div>
             <div style={{ flex: 1 }}>
@@ -363,7 +363,7 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
                 onChange={(e) => setEndDate(e.target.value)}
                 onFocus={(e) => { (e.target as HTMLInputElement).type = 'date'; (e.target as HTMLInputElement).min = startDate; }}
                 onBlur={(e) => { if (!(e.target as HTMLInputElement).value) { (e.target as HTMLInputElement).type = 'text'; } }}
-                style={{ width: '100%', height: 40, padding: '0 12px', border: `1.5px solid ${errors.endDate ? '#EF4444' : (isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0')}`, borderRadius: 4, fontSize: 14, color: isDark ? '#EDEDED' : '#1E293B', backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', fontFamily: 'Inter, sans-serif', outline: 'none', boxSizing: 'border-box' } as React.CSSProperties}
+                style={{ width: '100%', height: 40, padding: '8px 12px', border: `1.5px solid ${errors.endDate ? '#EF4444' : (isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0')}`, borderRadius: 4, fontSize: 14, color: isDark ? '#EDEDED' : '#1E293B', backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', fontFamily: 'Inter, sans-serif', outline: 'none', boxSizing: 'border-box' } as React.CSSProperties}
               />
               {errors.endDate && <p style={{ fontSize: 12, color: 'var(--sem-danger)', margin: '6px 0 0', display: 'flex', alignItems: 'center', gap: 4 }}><AlertCircle size={12} />{errors.endDate}</p>}
             </div>
@@ -375,7 +375,7 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
               <Server size={14} style={{ color: 'var(--fg-3)' }} /> Environment
             </label>
             <select value={environmentId} onChange={(e) => setEnvironmentId(e.target.value)}
-              style={{ width: '100%', height: 40, padding: '0 12px', border: '1.5px solid var(--divider)', borderRadius: 4, fontSize: 14, color: 'var(--fg-1)', backgroundColor: 'var(--cp-float)', appearance: 'none', WebkitAppearance: 'none' }}
+              style={{ width: '100%', height: 40, padding: '8px 12px', border: '1.5px solid var(--divider)', borderRadius: 4, fontSize: 14, color: 'var(--fg-1)', backgroundColor: 'var(--cp-float)', appearance: 'none', WebkitAppearance: 'none' }}
             >
               <option value="">Select environment (optional)</option>
               {environments.map(env => (
@@ -392,7 +392,7 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
               <User size={14} style={{ color: 'var(--fg-3)' }} /> Owner
             </label>
             <select value={ownerId} onChange={(e) => setOwnerId(e.target.value)}
-              style={{ width: '100%', height: 40, padding: '0 12px', border: '1.5px solid var(--divider)', borderRadius: 4, fontSize: 14, color: 'var(--fg-1)', backgroundColor: 'var(--cp-float)', appearance: 'none', WebkitAppearance: 'none' }}
+              style={{ width: '100%', height: 40, padding: '8px 12px', border: '1.5px solid var(--divider)', borderRadius: 4, fontSize: 14, color: 'var(--fg-1)', backgroundColor: 'var(--cp-float)', appearance: 'none', WebkitAppearance: 'none' }}
             >
               <option value="">Select owner (optional)</option>
               {profiles.map(p => <option key={p.id} value={p.id}>{p.full_name}</option>)}

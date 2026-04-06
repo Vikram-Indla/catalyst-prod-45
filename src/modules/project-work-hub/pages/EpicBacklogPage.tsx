@@ -68,7 +68,7 @@ export default function EpicBacklogPage({ projectId: propProjectId }: { projectI
         <div className="px-6 py-4"><div className="h-8 w-48 rounded" style={{ background: tk.chipBg }} /></div>
         {[1, 2, 3].map(i => (
           <div key={i} className="px-6 py-2 flex gap-3 animate-pulse">
-            <div className="h-[36px] flex-1 rounded" style={{ background: tk.chipBg }} />
+            <div className="h-[50px] flex-1 rounded" style={{ background: tk.chipBg }} />
           </div>
         ))}
       </div>
@@ -132,8 +132,8 @@ export default function EpicBacklogPage({ projectId: propProjectId }: { projectI
                   const overdue = isDueDateOverdue(epic.end_date, epic.status);
                   const avatarUrl = epic.assignee_name ? avatarsByName.get(epic.assignee_name.toLowerCase()) : null;
                   return (
-                    <div key={epic.id} className="group flex items-center h-[36px] px-2 border-b cursor-pointer"
-                      style={{ borderColor: tk.divider, maxHeight: 36, transition: 'background 120ms' }}
+                    <div key={epic.id} className="group flex items-center h-[50px] px-2 border-b cursor-pointer"
+                      style={{ borderColor: tk.divider, maxHeight: 50, transition: 'background 120ms' }}
                       onMouseEnter={(e) => (e.currentTarget.style.background = tk.hoverBg)}
                       onMouseLeave={(e) => (e.currentTarget.style.background = '')}
                       onClick={() => setDrawerEpicId(epic.id)}>

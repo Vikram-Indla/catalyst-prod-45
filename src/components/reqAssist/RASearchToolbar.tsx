@@ -42,10 +42,10 @@ export default function RASearchToolbar({ tab, onTabChange, search, onSearchChan
       {/* Search Input */}
       <div style={{
         display: 'flex', alignItems: 'center', gap: 8,
-        width: 280, height: 36, borderRadius: 6,
+        width: 280, height: 50, borderRadius: 6,
         border: `0.75px solid ${focused ? 'var(--cp-blue)' : 'rgba(15,23,42,0.15)'}`,
         boxShadow: focused ? '0 0 0 3px rgba(37,99,235,0.12)' : 'none',
-        padding: '0 12px', background: 'var(--bg-app)',
+        padding: '8px 12px', background: 'var(--bg-app)',
         transition: 'border-color 150ms, box-shadow 150ms',
       }}
         onFocus={() => setFocused(true)}
@@ -76,7 +76,7 @@ export default function RASearchToolbar({ tab, onTabChange, search, onSearchChan
               onClick={() => onTabChange(t.key)}
               style={{
                 display: 'inline-flex', alignItems: 'center', gap: 4,
-                height: 28, padding: '0 12px', borderRadius: 6,
+                height: 28, padding: '8px 12px', borderRadius: 6,
                 fontSize: 12, fontWeight: active ? 600 : 500,
                 border: 'none', cursor: 'pointer',
                 background: active ? 'var(--bg-app)' : 'transparent',
@@ -108,7 +108,7 @@ export default function RASearchToolbar({ tab, onTabChange, search, onSearchChan
           disabled={syncingAll}
           style={{
             display: 'inline-flex', alignItems: 'center', gap: 6,
-            padding: '0 14px', height: 36, fontSize: 13, fontWeight: 600,
+            padding: '0 14px', height: 50, fontSize: 13, fontWeight: 600,
             border: 'none', borderRadius: 6,
             background: syncingAll
               ? 'var(--fg-4)'

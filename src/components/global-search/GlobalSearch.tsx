@@ -252,7 +252,7 @@ function FilterChip({ label, items, selected, onSelect, avatarMap }: {
             <div
               onClick={() => { onSelect(null); setOpen(false); }}
               style={{
-                padding: "0 12px", height: 36, display: "flex", alignItems: "center",
+                padding: "0 12px", height: 50, display: "flex", alignItems: "center",
                 fontSize: 12, color: "var(--gs-danger)", cursor: "pointer",
                 borderBottom: "0.75px solid var(--gs-border-subtle)",
               }}
@@ -267,7 +267,7 @@ function FilterChip({ label, items, selected, onSelect, avatarMap }: {
               key={item.value}
               onClick={() => { onSelect(item.value); setOpen(false); }}
               style={{
-                padding: "0 12px", height: 36, display: "flex", alignItems: "center", gap: 8,
+                padding: "0 12px", height: 50, display: "flex", alignItems: "center", gap: 8,
                 fontSize: 13, color: selected === item.value ? "var(--gs-chip-active-text)" : "var(--gs-text)",
                 fontFamily: "Inter, sans-serif", cursor: "pointer",
                 backgroundColor: selected === item.value ? "var(--gs-chip-active-bg)" : "transparent",
@@ -736,7 +736,7 @@ export function GlobalSearch() {
 
         {/* ── FOOTER (36px) ── */}
         <div style={{
-          display: "flex", alignItems: "center", height: 36,
+          display: "flex", alignItems: "center", height: 50,
           padding: "0 16px", gap: 16,
           borderTop: "1px solid var(--gs-border)",
           backgroundColor: "var(--gs-footer-bg)",

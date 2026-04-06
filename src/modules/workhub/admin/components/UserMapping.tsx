@@ -221,7 +221,7 @@ export function UserMapping() {
     <div style={{ maxWidth: 1200, fontFamily: 'Inter, sans-serif' }}>
       {/* Header */}
       <div style={{ marginBottom: 20 }}>
-        <h1 style={{ fontFamily: 'Sora, sans-serif', fontSize: 18, fontWeight: 700, color: '#0F172A', margin: 0 }}>
+        <h1 style={{ fontFamily: 'Sora, sans-serif', fontSize: 18, fontWeight: 700, color: 'var(--fg-1, #0F172A)', margin: 0 }}>
           User Mapping
         </h1>
         <p style={{ fontSize: 13, color: '#64748B', marginTop: 4 }}>
@@ -251,7 +251,7 @@ export function UserMapping() {
           >
             <span style={{ width: 8, height: 8, borderRadius: '50%', background: s.color, flexShrink: 0 }} />
             <div>
-              <div style={{ fontSize: 18, fontWeight: 700, color: '#0F172A' }}>{s.value}</div>
+              <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--fg-1, #0F172A)' }}>{s.value}</div>
               <div style={{ fontSize: 10, color: 'var(--fg-3, #94A3B8)', textTransform: 'uppercase', letterSpacing: '.3px' }}>{s.label}</div>
             </div>
           </div>
@@ -424,7 +424,7 @@ export function UserMapping() {
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                         <Avatar name={profile.full_name || 'U'} url={existingJiraMapping?.jira_avatar_url || profile.avatar_url} size={28} />
                         <div>
-                          <div style={{ fontWeight: 600, color: '#0F172A', fontSize: 12 }}>
+                          <div style={{ fontWeight: 600, color: 'var(--fg-1, #0F172A)', fontSize: 12 }}>
                             {profile.full_name || 'Unnamed'}
                           </div>
                           <div style={{ fontSize: 10, color: 'var(--fg-3, #94A3B8)' }}>
@@ -463,7 +463,7 @@ export function UserMapping() {
                           <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#10B981', flexShrink: 0 }} />
                           <Avatar name={existingJiraMapping.jira_display_name} url={existingJiraMapping.jira_avatar_url} size={22} />
                           <div>
-                            <div style={{ fontWeight: 600, color: '#0F172A', fontSize: 11 }}>
+                            <div style={{ fontWeight: 600, color: 'var(--fg-1, #0F172A)', fontSize: 11 }}>
                               {existingJiraMapping.jira_display_name}
                             </div>
                             <div style={{ fontSize: 9, color: '#64748B', fontFamily: 'JetBrains Mono, monospace' }}>
@@ -504,7 +504,7 @@ export function UserMapping() {
                         }}>
                           <Avatar name={suggestedJira.jiraUser.jira_display_name} url={suggestedJira.jiraUser.jira_avatar_url} size={22} />
                           <div style={{ flex: 1, minWidth: 0 }}>
-                            <div style={{ fontWeight: 600, color: '#0F172A', fontSize: 11 }}>
+                            <div style={{ fontWeight: 600, color: 'var(--fg-1, #0F172A)', fontSize: 11 }}>
                               {suggestedJira.jiraUser.jira_display_name}
                             </div>
                             <div style={{ fontSize: 9, color: '#64748B' }}>

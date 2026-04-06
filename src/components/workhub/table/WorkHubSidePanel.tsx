@@ -34,9 +34,9 @@ type TabKey = 'details' | 'comments' | 'history';
 
 function DetailRow({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'flex-start', height: 36, gap: 12 }}>
+    <div style={{ display: 'flex', alignItems: 'flex-start', height: 50, gap: 12 }}>
       <span style={{ width: 100, flexShrink: 0, fontSize: 12, fontWeight: 600, color: 'var(--fg-3)', textTransform: 'uppercase', letterSpacing: '0.03em', lineHeight: '36px' }}>{label}</span>
-      <div style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', height: 36 }}>{children}</div>
+      <div style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', height: 50 }}>{children}</div>
     </div>
   );
 }

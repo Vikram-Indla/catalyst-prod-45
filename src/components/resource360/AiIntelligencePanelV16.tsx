@@ -7,7 +7,7 @@ import React, { useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
 
 const T = {
-  bg: 'var(--bg-1, #F8FAFC)', surface: '#FFFFFF', ink1: '#0F172A', ink2: '#334155',
+  bg: 'var(--bg-1, #F8FAFC)', surface: '#FFFFFF', ink1: 'var(--fg-1, #0F172A)', ink2: '#334155',
   ink3: '#64748B', ink4: 'var(--fg-3, #94A3B8)', border: 'var(--bd-default, #E2E8F0)', accent: '#2563EB',
   danger: '#EF4444', warning: '#D97706', success: '#0E8A5F',
   mono: "'JetBrains Mono', 'SF Mono', monospace",

@@ -54,7 +54,7 @@ const HUB_LABELS: Record<string, string> = {
 const PRIORITY_COLORS: Record<string, string> = {
   P1: 'bg-[#FFEBE6] text-[#BF2600]',
   P2: 'bg-[#FFF0B3] text-[#FF8B00]',
-  P3: 'bg-[#DEEBFF] text-[#0747A6]',
+  P3: 'bg-[var(--status-info-bg, #DEEBFF)] text-[#0747A6]',
   P4: 'bg-[#DFE1E6] text-[#253858]',
 };
 
@@ -296,7 +296,7 @@ export default function NotificationTriggers() {
 
       {/* ── Bulk Actions Bar (when items selected) ───────────────── */}
       {selection.selectedCount > 0 && (
-        <div className="flex items-center gap-3 bg-[#DEEBFF] rounded-md px-4 py-2.5 border border-[#B3D4FF]">
+        <div className="flex items-center gap-3 bg-[var(--status-info-bg, #DEEBFF)] rounded-md px-4 py-2.5 border border-[#B3D4FF]">
           <span className="text-sm font-medium text-[#0747A6]">
             {selection.selectedCount} trigger{selection.selectedCount > 1 ? 's' : ''} selected
           </span>
@@ -450,7 +450,7 @@ function TriggerRow({
       className={`grid grid-cols-[32px_1fr_90px_80px_52px_52px_52px_52px_48px] gap-2 px-4 py-2 items-center border-b border-[#F1F5F9] hover:bg-[rgba(0,0,0,0.02)] transition-colors duration-150 ${
         isSelected ? 'bg-[rgba(37,99,235,0.04)]' : ''
       }`}
-      style={{ height: 36, maxHeight: 36 }}
+      style={{ height: 50, maxHeight: 50 }}
     >
       {/* Checkbox */}
       <div>

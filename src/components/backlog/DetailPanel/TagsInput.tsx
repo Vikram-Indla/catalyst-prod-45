@@ -9,7 +9,7 @@ interface TagsInputProps {
 
 export function TagsInput({ tags, onRemove, onAdd }: TagsInputProps) {
   return (
-    <div className="flex flex-wrap gap-1.5 p-1.5 border border-border rounded min-h-[36px]">
+    <div className="flex flex-wrap gap-1.5 p-1.5 border border-border rounded min-h-[50px]">
       {tags.map((tag) => (
         <div
           key={tag.id}

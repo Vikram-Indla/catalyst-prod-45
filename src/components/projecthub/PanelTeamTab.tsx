@@ -147,7 +147,7 @@ export function PanelTeamTab({ members, isLoading, projectId }: Props) {
     <div>
       {/* Search + Add button */}
       <div className="flex items-center gap-2 mx-4 mt-3 mb-2">
-        <div className="flex items-center gap-2 flex-1 rounded-lg bg-white dark:bg-transparent border border-[#CBD5E1] dark:border-[rgba(255,255,255,0.10)]" style={{ height: 38, padding: '0 12px' }}>
+        <div className="flex items-center gap-2 flex-1 rounded-lg bg-white dark:bg-transparent border border-[#CBD5E1] dark:border-[rgba(255,255,255,0.10)]" style={{ height: 38, padding: '8px 12px' }}>
           <Search size={14} className="shrink-0 text-[#94A3B8] dark:text-[rgba(255,255,255,0.40)]" />
           <input
             value={search}
@@ -211,7 +211,7 @@ export function PanelTeamTab({ members, isLoading, projectId }: Props) {
           {search ? `No team members match "${search}"` : 'No team members assigned'}
           {!search && (
             <div className="mt-3">
-              <button onClick={() => setShowAddDialog(true)} className="inline-flex items-center gap-1.5 rounded-lg" style={{ height: 36, padding: '0 16px', background: 'var(--cp-blue)', border: 'none', fontSize: 12, fontWeight: 600, color: '#FFF', cursor: 'pointer' }}>
+              <button onClick={() => setShowAddDialog(true)} className="inline-flex items-center gap-1.5 rounded-lg" style={{ height: 50, padding: '0 16px', background: 'var(--cp-blue)', border: 'none', fontSize: 12, fontWeight: 600, color: '#FFF', cursor: 'pointer' }}>
                 <UserPlus size={14} /> Add Member
               </button>
             </div>

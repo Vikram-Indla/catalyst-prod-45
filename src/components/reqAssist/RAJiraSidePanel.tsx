@@ -832,9 +832,9 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                           : { bg: '#DFE1E6', color: '#42526E' };
                       return (
                         <div key={s.id || i} style={{
-                          display: 'flex', alignItems: 'center', gap: 8, height: 36,
+                          display: 'flex', alignItems: 'center', gap: 8, height: 50,
                           borderBottom: i < uatScenarios.length - 1 ? (isDark ? '0.75px solid rgba(255,255,255,0.05)' : '0.75px solid rgba(15,23,42,0.06)') : 'none',
-                          padding: '0 12px',
+                          padding: '8px 12px',
                         }}>
                           <span style={{
                             fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: 'var(--fg-4)', flexShrink: 0,

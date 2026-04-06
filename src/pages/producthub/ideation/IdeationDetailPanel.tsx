@@ -572,7 +572,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
             backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', display: 'flex', justifyContent: 'flex-end', gap: '8px', flexShrink: 0,
           }}>
             <button onClick={() => { resetLocalState(); setIsEditing(false); }} style={{
-              height: '36px', padding: '0 16px', borderRadius: '6px',
+              height: '50px', padding: '0 16px', borderRadius: '6px',
               border: `1px solid ${dk.border}`,
               background: isDark ? 'transparent' : '#FFFFFF', color: dk.t2,
               fontSize: '13px', fontWeight: 600, cursor: 'pointer',
@@ -580,7 +580,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
               Cancel
             </button>
             <button onClick={handleSave} disabled={updateIdea.isPending} style={{
-              height: '36px', padding: '0 16px', borderRadius: '6px',
+              height: '50px', padding: '0 16px', borderRadius: '6px',
               border: 'none', background: '#2563EB', color: '#FFFFFF',
               fontSize: '13px', fontWeight: 600, cursor: 'pointer',
               opacity: updateIdea.isPending ? 0.7 : 1,
@@ -671,7 +671,7 @@ function CommentsSection({ ideaId }: { ideaId: string | null }) {
           onKeyDown={handleKeyDown}
           placeholder="Add a comment... (Ctrl+Enter to send)"
           style={{
-            flex: 1, minHeight: '36px', maxHeight: '120px', resize: 'vertical',
+            flex: 1, minHeight: '50px', maxHeight: '120px', resize: 'vertical',
             border: `1px solid ${dk.border}`, borderRadius: '6px', padding: '8px 12px',
             fontSize: '14px', fontFamily: 'Inter, sans-serif', outline: 'none', color: dk.t1,
             background: isDark ? 'transparent' : '#FFFFFF',
@@ -683,7 +683,7 @@ function CommentsSection({ ideaId }: { ideaId: string | null }) {
             disabled={addComment.isPending}
             style={{
               background: '#2563EB', color: '#FFF', border: 'none', borderRadius: '6px',
-              width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+              width: '36px', height: '50px', display: 'flex', alignItems: 'center', justifyContent: 'center',
               cursor: 'pointer', flexShrink: 0,
             }}
           >

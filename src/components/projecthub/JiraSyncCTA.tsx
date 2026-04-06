@@ -93,7 +93,7 @@ export function JiraSyncCTA() {
         }}
         style={{
           display: 'flex', alignItems: 'center', gap: 6,
-          height: 32, padding: '0 12px',
+          height: 32, padding: '8px 12px',
           fontSize: 13, fontWeight: 500,
           color: 'var(--catalyst-text-secondary, #64748B)',
           background: 'var(--catalyst-bg-surface, #FFF)',
@@ -229,7 +229,7 @@ export function JiraSyncCTA() {
                   onClick={handleSyncNow}
                   disabled={isAnySyncActive}
                   style={{
-                    width: '100%', height: 36, fontSize: 13, fontWeight: 600,
+                    width: '100%', height: 50, fontSize: 13, fontWeight: 600,
                     color: '#FFF', background: isAnySyncActive ? '#93C5FD' : '#2563EB',
                     border: 'none', borderRadius: 8, cursor: isAnySyncActive ? 'wait' : 'pointer',
                     display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,

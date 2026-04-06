@@ -157,11 +157,11 @@ export default function AllChangesPage() {
           <table className="w-full text-[13px]" style={{ fontFamily: RH.fontBody }} role="table">
             <thead>
               <tr style={{ background: isDark ? '#1A1A1A' : '#F1F5F9' }}>
-                <th className="w-[40px] px-3 py-0 h-[36px] text-center">
+                <th className="w-[40px] px-3 py-0 h-[50px] text-center">
                   <input type="checkbox" checked={selectedIds.size === filtered.length && filtered.length > 0} onChange={toggleAll} className="rounded" />
                 </th>
                 {['KEY', 'TITLE', 'STATUS', 'RISK', 'RELEASE', 'SOURCE', 'SIGN-OFFS'].map(h => (
-                  <th key={h} className="px-3 py-0 h-[36px] text-left text-[11px] font-semibold uppercase tracking-[0.06em]" style={{ color: isDark ? '#878787' : '#64748B' }}>{h}</th>
+                  <th key={h} className="px-3 py-0 h-[50px] text-left text-[11px] font-semibold uppercase tracking-[0.06em]" style={{ color: isDark ? '#878787' : '#64748B' }}>{h}</th>
                 ))}
               </tr>
             </thead>
@@ -171,7 +171,7 @@ export default function AllChangesPage() {
                 return (
                   <tr key={c.id} onClick={() => setSelectedChg(c)}
                     className="cursor-pointer"
-                    style={{ height: 36, background: isDark ? '#1A1A1A' : '#FFFFFF', transition: 'background 120ms', borderBottom: `0.75px solid ${isDark ? 'rgba(255,255,255,0.05)' : 'rgba(15,23,42,0.06)'}` }}
+                    style={{ height: 50, background: isDark ? '#1A1A1A' : '#FFFFFF', transition: 'background 120ms', borderBottom: `0.75px solid ${isDark ? 'rgba(255,255,255,0.05)' : 'rgba(15,23,42,0.06)'}` }}
                     onMouseEnter={e => (e.currentTarget.style.background = isDark ? '#1A1A1A' : 'rgba(15,23,42,0.04)')}
                     onMouseLeave={e => (e.currentTarget.style.background = isDark ? '#1A1A1A' : '#FFFFFF')}>
                     <td className="px-3 py-0 text-center" onClick={e => e.stopPropagation()}>

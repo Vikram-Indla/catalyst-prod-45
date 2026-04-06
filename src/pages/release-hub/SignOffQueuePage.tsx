@@ -83,7 +83,7 @@ export default function SignOffQueuePage() {
             <thead>
               <tr style={{ background: isDark ? '#1A1A1A' : '#F1F5F9' }}>
                 {['CHANGE', 'TITLE', 'GATE', 'APPROVER', 'RISK', 'STATUS', 'ACTIONS'].map(h => (
-                  <th key={h} className="text-left text-[11px] uppercase tracking-[0.06em]" style={{ fontWeight: 600, height: 36, padding: '0 12px', color: isDark ? '#878787' : '#64748B' }}>{h}</th>
+                  <th key={h} className="text-left text-[11px] uppercase tracking-[0.06em]" style={{ fontWeight: 600, height: 50, padding: '8px 12px', color: isDark ? '#878787' : '#64748B' }}>{h}</th>
                 ))}
               </tr>
             </thead>
@@ -95,7 +95,7 @@ export default function SignOffQueuePage() {
                   <tr key={so.id}
                     onClick={() => setSelectedChange(so.rh_changes)}
                     className="cursor-pointer group"
-                    style={{ height: 36, maxHeight: 36, borderBottom: isDark ? '0.75px solid rgba(255,255,255,0.05)' : '0.75px solid rgba(15,23,42,0.06)', background: isDark ? '#1A1A1A' : undefined }}
+                    style={{ height: 50, maxHeight: 50, borderBottom: isDark ? '0.75px solid rgba(255,255,255,0.05)' : '0.75px solid rgba(15,23,42,0.06)', background: isDark ? '#1A1A1A' : undefined }}
                     onMouseEnter={e => (e.currentTarget.style.background = isDark ? '#1A1A1A' : 'rgba(15,23,42,0.04)')}
                     onMouseLeave={e => (e.currentTarget.style.background = isDark ? '#1A1A1A' : '')}
                   >

@@ -92,7 +92,7 @@ export default function IdeationDrivesView() {
         <button
           onClick={() => setCreateOpen(true)}
           style={{
-            height: 36, background: '#2563EB', color: '#FFFFFF', border: 'none', borderRadius: '6px',
+            height: 50, background: '#2563EB', color: '#FFFFFF', border: 'none', borderRadius: '6px',
             padding: '0 16px', fontSize: '13px', fontWeight: 650, cursor: 'pointer',
             display: 'inline-flex', alignItems: 'center', gap: '6px',
           }}
@@ -126,7 +126,7 @@ export default function IdeationDrivesView() {
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
               {/* V12: Lucide icon container */}
               <div style={{
-                width: 36, height: 36, borderRadius: 8,
+                width: 36, height: 50, borderRadius: 8,
                 background: isDark ? '#1A1A1A' : '#F1F5F9', border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 flexShrink: 0, color: isDark ? '#A1A1A1' : '#475569',

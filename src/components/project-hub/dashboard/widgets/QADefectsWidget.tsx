@@ -27,13 +27,13 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
 
   const thStyle: React.CSSProperties = {
     fontSize: 11, fontWeight: 650, textTransform: 'uppercase', letterSpacing: '0.04em',
-    color: 'var(--cp-text-tertiary)', padding: '0 12px',
+    color: 'var(--cp-text-tertiary)', padding: '8px 12px',
     height: 'var(--cp-size-table-row)',
     borderBottom: '0.75px solid var(--cp-border-subtle)', textAlign: 'left', whiteSpace: 'nowrap',
   };
   const thClassName = 'bg-[#F1F5F9] dark:bg-[#1A1A1A]';
   const tdStyle: React.CSSProperties = {
-    padding: '0 12px', height: 'var(--cp-size-table-row)', maxHeight: 'var(--cp-size-table-row)',
+    padding: '8px 12px', height: 'var(--cp-size-table-row)', maxHeight: 'var(--cp-size-table-row)',
     fontSize: 12, color: 'var(--cp-text-secondary)',
     borderBottom: '0.75px solid var(--cp-border-subtle)',
     whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
@@ -61,7 +61,7 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
               return (
                 <>
                   {open > 0 && <span className="bg-[#DEEBFF] dark:bg-[#1a2a3a] text-[#0747A6] dark:text-[#79b8ff]" style={{ fontSize: 10, fontWeight: 700, padding: '1px 6px', borderRadius: 4, textTransform: 'uppercase' }}>{open} OPEN</span>}
-                  {resolved > 0 && <span className="bg-[#E3FCEF] dark:bg-[#1a3a2a] text-[#006644] dark:text-[#85e89d]" style={{ fontSize: 10, fontWeight: 700, padding: '1px 6px', borderRadius: 4, textTransform: 'uppercase' }}>{resolved} RESOLVED</span>}
+                  {resolved > 0 && <span className="bg-[var(--status-ok-bg, #E3FCEF)] dark:bg-[#1a3a2a] text-[#006644] dark:text-[#85e89d]" style={{ fontSize: 10, fontWeight: 700, padding: '1px 6px', borderRadius: 4, textTransform: 'uppercase' }}>{resolved} RESOLVED</span>}
                   {closed > 0 && <span className="bg-[#DFE1E6] dark:bg-[#292929] text-[#253858] dark:text-[#A1A1A1]" style={{ fontSize: 10, fontWeight: 700, padding: '1px 6px', borderRadius: 4, textTransform: 'uppercase' }}>{closed} CLOSED</span>}
                 </>
               );
@@ -87,7 +87,7 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
                 const statusCls = isOpen
                   ? 'bg-[#DEEBFF] dark:bg-[#1a2a3a] text-[#0747A6] dark:text-[#79b8ff]'
                   : isResolved
-                  ? 'bg-[#E3FCEF] dark:bg-[#1a3a2a] text-[#006644] dark:text-[#85e89d]'
+                  ? 'bg-[var(--status-ok-bg, #E3FCEF)] dark:bg-[#1a3a2a] text-[#006644] dark:text-[#85e89d]'
                   : 'bg-[#DFE1E6] dark:bg-[#292929] text-[#253858] dark:text-[#A1A1A1]';
                 const assigneeName = d.jira_assignee_name || '';
                 const assigneeFirst = assigneeName ? assigneeName.split(' ')[0] : '—';

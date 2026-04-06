@@ -5,9 +5,9 @@ export function T10LoadingSkeleton() {
     <div className="t10-loading-skeleton">
       {/* Header skeleton */}
       <div className="t10-skeleton-header">
-        <div className="t10-skeleton-line" style={{ width: '120px', height: '36px' }} />
+        <div className="t10-skeleton-line" style={{ width: '120px', height: '50px' }} />
         <div className="t10-skeleton-line" style={{ width: '200px', height: '40px' }} />
-        <div className="t10-skeleton-line" style={{ width: '140px', height: '36px' }} />
+        <div className="t10-skeleton-line" style={{ width: '140px', height: '50px' }} />
       </div>
 
       {/* Quick add skeleton */}

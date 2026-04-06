@@ -40,7 +40,7 @@ export default function IncidentInsightsPage() {
         <div className="p-4 mb-6" style={{ border: `1px solid ${isDark ? 'rgba(124,58,237,0.25)' : '#E9D5FF'}`, borderRadius: 6, backgroundColor: surfaceBg }}>
           <div className="flex items-start gap-3">
             <div className="shrink-0 rounded-full flex items-center justify-center" style={{
-              width: 36, height: 36,
+              width: 36, height: 50,
               background: 'linear-gradient(135deg, #7C3AED, #0D9488)',
             }}>
               <Sparkles size={18} style={{ color: '#FFFFFF' }} />

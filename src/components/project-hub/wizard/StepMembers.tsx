@@ -77,7 +77,7 @@ export function StepMembers({ members, onChange }: StepMembersProps) {
           className="flex items-center gap-2 rounded-md bg-[var(--bg-app)]"
           style={{
             height: 40,
-            padding: '0 12px',
+            padding: '8px 12px',
             border: '1px solid var(--divider)',
             borderRadius: 6,
           }}

@@ -159,7 +159,7 @@ export default function IdeationAnalyticsView({ ideas }: Props) {
           {funnel.map(f => (
             <div key={f.label} style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
               <span style={{ width: '100px', fontSize: '12px', fontWeight: 600, color: dk.t2, flexShrink: 0 }}>{f.label}</span>
-              <div style={{ flex: 1, height: '36px', background: barTrack, borderRadius: '6px', overflow: 'hidden' }}>
+              <div style={{ flex: 1, height: '50px', background: barTrack, borderRadius: '6px', overflow: 'hidden' }}>
                 <div style={{
                   width: `${Math.max(f.pct, f.count > 0 ? 8 : 0)}%`, height: '100%', background: f.color, borderRadius: '6px',
                   display: 'flex', alignItems: 'center', paddingLeft: '12px', color: '#FFFFFF', fontSize: '12px', fontWeight: 700,
@@ -238,7 +238,7 @@ export default function IdeationAnalyticsView({ ideas }: Props) {
             <div style={{ border: `1px solid ${dk.border}`, borderRadius: '8px', overflow: 'hidden' }}>
               {traces.map((t, i) => (
                 <div key={t.idea} style={{
-                  display: 'flex', alignItems: 'center', gap: '10px', height: '44px', padding: '0 12px',
+                  display: 'flex', alignItems: 'center', gap: '10px', height: '44px', padding: '8px 12px',
                   borderBottom: i < traces.length - 1 ? `1px solid ${dk.divider}` : 'none',
                 }}>
                   <span style={{ fontFamily: MONO, fontSize: '12px', fontWeight: 600, color: dk.blueKey }}>{t.idea}</span>

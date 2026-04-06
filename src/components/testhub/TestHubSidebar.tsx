@@ -86,7 +86,7 @@ export function TestHubSidebar({
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                height: 36,
+                height: 50,
                 padding: '0 16px',
                 textDecoration: 'none',
                 backgroundColor: active ? 'rgba(37, 99, 235, 0.1)' : 'transparent',

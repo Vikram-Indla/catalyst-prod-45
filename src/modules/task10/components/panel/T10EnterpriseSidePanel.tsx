@@ -394,7 +394,7 @@ export function T10EnterpriseSidePanel({
             onClick={onClose}
             style={{
               width: '36px',
-              height: '36px',
+              height: '50px',
               border: 'none',
               background: 'transparent',
               color: COLORS.gray500,

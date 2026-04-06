@@ -181,10 +181,10 @@ export default function ClaimDrillInPanel({ resourceName, claimText, weekStart, 
             {(() => {
               const url = avatarMap.get(resourceName.toLowerCase());
               if (url) {
-                return <img src={url} alt={resourceName} style={{ width: 36, height: 36, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />;
+                return <img src={url} alt={resourceName} style={{ width: 36, height: 50, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />;
               }
               return (
-                <div style={{ width: 36, height: 36, borderRadius: '50%', background: hashColor(resourceName), display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 12, fontWeight: 600, flexShrink: 0 }}>
+                <div style={{ width: 36, height: 50, borderRadius: '50%', background: hashColor(resourceName), display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 12, fontWeight: 600, flexShrink: 0 }}>
                   {getInitials(resourceName)}
                 </div>
               );

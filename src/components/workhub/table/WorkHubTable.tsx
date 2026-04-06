@@ -83,7 +83,7 @@ function saveSort(projectKey: string, viewMode: string, sort: SortConfig | null)
 function SkeletonRow({ columns, idx }: { columns: ColumnConfig[]; idx: number }) {
   const vis = columns.filter(c => c.visible);
   return (
-    <div style={{ display: 'flex', alignItems: 'center', height: 36, borderBottom: '0.75px solid var(--bd-subtle, rgba(255,255,255,0.05))' }} aria-hidden>
+    <div style={{ display: 'flex', alignItems: 'center', height: 50, borderBottom: '0.75px solid var(--bd-subtle, rgba(255,255,255,0.05))' }} aria-hidden>
       <div style={{ width: 44, minWidth: 44, display: 'flex', justifyContent: 'center', flexShrink: 0 }}>
         <div className="wh-skeleton" style={{ width: 16, height: 16, borderRadius: 3 }} />
       </div>

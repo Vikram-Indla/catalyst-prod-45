@@ -31,7 +31,7 @@ export function ProjectTable({ projects, starredIds, onToggleStar, onContextMenu
         <thead>
           <tr
             className={isDark ? 'bg-[rgba(255,255,255,0.04)]' : 'bg-[#F8FAFC]'}
-            style={{ height: 36, position: 'sticky', top: 0, zIndex: 1 }}
+            style={{ height: 50, position: 'sticky', top: 0, zIndex: 1 }}
           >
             {COLUMNS.map(col => (
               <th

@@ -20,7 +20,7 @@ export default function BoardQuickFilters() {
             key={f.id}
             onClick={() => setActiveQuickFilter(f.id)}
             style={{
-              height: 26, padding: '0 12px', borderRadius: 13,
+              height: 26, padding: '8px 12px', borderRadius: 13,
               border: 'none',
               background: active ? 'var(--cp-blue)' : 'var(--cp-bd-zone)',
               color: active ? '#FFFFFF' : 'var(--fg-2)',

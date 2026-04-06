@@ -151,7 +151,7 @@ export function CreateSharedStepModal({ isOpen, onClose, onSuccess, categories, 
   if (!isOpen) return null;
 
   const inputStyle = (hasError?: boolean): React.CSSProperties => ({
-    width: '100%', height: 40, padding: '0 12px',
+    width: '100%', height: 40, padding: '8px 12px',
     border: `1.5px solid ${hasError ? 'var(--sem-danger)' : 'var(--divider)'}`, borderRadius: 8,
     fontSize: 14, color: 'var(--fg-1)', fontFamily: 'Inter',
   });
@@ -267,7 +267,7 @@ export function CreateSharedStepModal({ isOpen, onClose, onSuccess, categories, 
                 }}>{variables.length}</span>
               </label>
               <button type="button" onClick={addVariable} style={{
-                height: 32, padding: '0 12px', border: '1px solid var(--divider)', borderRadius: 6,
+                height: 32, padding: '8px 12px', border: '1px solid var(--divider)', borderRadius: 6,
                 backgroundColor: 'var(--cp-float)', color: 'var(--cp-blue)', fontSize: 13, fontWeight: 500,
                 cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, fontFamily: 'Inter',
               }}>
@@ -298,7 +298,7 @@ export function CreateSharedStepModal({ isOpen, onClose, onSuccess, categories, 
                       <input type="text" value={v.name} onChange={(e) => updateVariable(i, 'name', e.target.value)}
                         placeholder="e.g., username"
                         style={{
-                          width: '100%', height: 36, padding: '0 10px',
+                          width: '100%', height: 50, padding: '0 10px',
                           border: '1.5px solid var(--divider)', borderRadius: 6,
                           fontSize: 13, fontFamily: 'monospace',
                         }} />
@@ -310,12 +310,12 @@ export function CreateSharedStepModal({ isOpen, onClose, onSuccess, categories, 
                       <input type="text" value={v.default} onChange={(e) => updateVariable(i, 'default', e.target.value)}
                         placeholder="Optional default"
                         style={{
-                          width: '100%', height: 36, padding: '0 10px',
+                          width: '100%', height: 50, padding: '0 10px',
                           border: '1.5px solid var(--divider)', borderRadius: 6, fontSize: 13, fontFamily: 'Inter',
                         }} />
                     </div>
                     <button type="button" onClick={() => removeVariable(i)} style={{
-                      width: 36, height: 36, padding: 0, border: 'none', borderRadius: 6,
+                      width: 36, height: 50, padding: 0, border: 'none', borderRadius: 6,
                       backgroundColor: 'transparent', color: 'var(--fg-4)', cursor: 'pointer',
                       display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: 18,
                     }}>

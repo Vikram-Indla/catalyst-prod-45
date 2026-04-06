@@ -51,7 +51,7 @@ export function FilterDropdown({ filters, onChange }: FilterDropdownProps) {
         }`}
         style={{
           height: 34,
-          padding: '0 12px',
+          padding: '8px 12px',
           borderWidth: 1,
           borderStyle: 'solid',
           fontSize: 13,
@@ -113,7 +113,7 @@ export function FilterDropdown({ filters, onChange }: FilterDropdownProps) {
               className="rounded-md bg-[var(--cp-blue)]"
               style={{
                 height: 28,
-                padding: '0 12px',
+                padding: '8px 12px',
                 color: '#FFF',
                 border: 'none',
                 borderRadius: 6,

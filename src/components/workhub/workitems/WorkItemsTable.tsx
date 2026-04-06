@@ -209,7 +209,7 @@ export function WorkItemsTable({
           className="grid items-center border-b sticky top-0"
           style={{
             gridTemplateColumns: GRID_COLS,
-            height: '36px',
+            height: '50px',
             backgroundColor: 'var(--bg-1)',
             borderColor: 'var(--divider)',
             zIndex: 10,

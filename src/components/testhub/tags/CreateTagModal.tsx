@@ -103,7 +103,7 @@ export function CreateTagModal({ isOpen, onClose, onSaved, editingTag }: CreateT
             </div>
             <h2 style={{ fontSize: 18, fontWeight: 700, color: 'var(--fg-1)', margin: 0 }}>{editingTag ? 'Edit Tag' : 'Create Tag'}</h2>
           </div>
-          <button onClick={onClose} style={{ width: 36, height: 36, border: 'none', borderRadius: 8, backgroundColor: 'transparent', color: 'var(--fg-3)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <button onClick={onClose} style={{ width: 36, height: 50, border: 'none', borderRadius: 8, backgroundColor: 'transparent', color: 'var(--fg-3)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <X size={20} />
           </button>
         </div>

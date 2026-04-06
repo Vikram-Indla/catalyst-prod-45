@@ -102,7 +102,7 @@ export function KBInputArea({
           onClick={onToggleListening}
           style={{
             width: 36,
-            height: 36,
+            height: 50,
             borderRadius: '50%',
             border: 'none',
             cursor: 'pointer',
@@ -153,7 +153,7 @@ export function KBInputArea({
           disabled={!hasText || isLoading}
           style={{
             width: 36,
-            height: 36,
+            height: 50,
             borderRadius: '50%',
             border: 'none',
             cursor: hasText ? 'pointer' : 'default',

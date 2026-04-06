@@ -131,9 +131,9 @@ export function AddMemberDialog({ open, onClose, projectId, existingMemberIds }:
                   onClick={() => handleAdd(u)}
                 >
                   {u.avatar_url ? (
-                    <img src={u.avatar_url} alt={u.name} className="flex-shrink-0" style={{ width: 36, height: 36, borderRadius: '50%', objectFit: 'cover' }} />
+                    <img src={u.avatar_url} alt={u.name} className="flex-shrink-0" style={{ width: 36, height: 50, borderRadius: '50%', objectFit: 'cover' }} />
                   ) : (
-                    <div className="flex items-center justify-center flex-shrink-0" style={{ width: 36, height: 36, borderRadius: '50%', background: getColor(u.name), color: '#FFF', fontSize: 12, fontWeight: 700 }}>
+                    <div className="flex items-center justify-center flex-shrink-0" style={{ width: 36, height: 50, borderRadius: '50%', background: getColor(u.name), color: '#FFF', fontSize: 12, fontWeight: 700 }}>
                       {getInitials(u.name)}
                     </div>
                   )}

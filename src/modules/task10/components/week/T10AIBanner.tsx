@@ -101,7 +101,7 @@ export function T10AIBanner({
           <div 
             style={{
               width: '36px',
-              height: '36px',
+              height: '50px',
               borderRadius: '12px',
               border: '1.5px solid #8b5cf6',
               display: 'flex',

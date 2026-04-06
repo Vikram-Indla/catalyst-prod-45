@@ -251,12 +251,12 @@ export default function ReportsListPage() {
                   <div style={{ display: 'flex', gap: 8 }}>
                     {report.status === 'ready' && (
                       <button onClick={(e) => { e.stopPropagation(); navigate(`/testhub/reports/${report.id}`); }}
-                        style={{ width: 36, height: 36, border: '1px solid #E2E8F0', borderRadius: 8, backgroundColor: '#FFF', color: '#059669', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        style={{ width: 36, height: 50, border: '1px solid #E2E8F0', borderRadius: 8, backgroundColor: '#FFF', color: '#059669', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <Download size={16} />
                       </button>
                     )}
                     <button onClick={(e) => deleteReport(report.id, e)}
-                      style={{ width: 36, height: 36, border: '1px solid #FECACA', borderRadius: 8, backgroundColor: '#FEF2F2', color: '#DC2626', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      style={{ width: 36, height: 50, border: '1px solid #FECACA', borderRadius: 8, backgroundColor: '#FEF2F2', color: '#DC2626', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       <Trash2 size={16} />
                     </button>
                   </div>

@@ -181,7 +181,7 @@ export function WorkstreamMembersDialog({
                       <div
                         style={{
                           width: '36px',
-                          height: '36px',
+                          height: '50px',
                           borderRadius: '50%',
                           backgroundColor: avatarColor,
                           display: 'flex',

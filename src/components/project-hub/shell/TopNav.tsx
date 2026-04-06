@@ -92,7 +92,7 @@ export function TopNav({ onCreateClick }: TopNavProps) {
           className="flex items-center gap-1.5 rounded-md transition-colors hover:opacity-90 bg-[var(--cp-blue)]"
           style={{
             height: 32,
-            padding: '0 12px',
+            padding: '8px 12px',
             color: '#FFFFFF',
             border: 'none',
             borderRadius: 6,

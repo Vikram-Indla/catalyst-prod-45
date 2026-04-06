@@ -131,7 +131,7 @@ export function T10LabelsFieldNew({
               onClick={() => setShowColorPicker(!showColorPicker)}
               style={{
                 width: '36px',
-                height: '36px',
+                height: '50px',
                 backgroundColor: newLabelColor,
                 border: 'none',
                 borderRadius: '6px',
@@ -203,8 +203,8 @@ export function T10LabelsFieldNew({
             placeholder="New label name..."
             style={{
               flex: 1,
-              height: '36px',
-              padding: '0 12px',
+              height: '50px',
+              padding: '8px 12px',
               fontSize: '14px',
               border: '1px solid #d1d5db',
               borderRadius: '6px',
@@ -217,8 +217,8 @@ export function T10LabelsFieldNew({
             onClick={handleCreateLabel}
             disabled={!newLabelName.trim() || createLabel.isPending}
             style={{
-              height: '36px',
-              padding: '0 12px',
+              height: '50px',
+              padding: '8px 12px',
               fontSize: '13px',
               fontWeight: 500,
               color: '#ffffff',

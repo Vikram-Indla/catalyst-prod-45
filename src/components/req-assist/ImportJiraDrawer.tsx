@@ -280,7 +280,7 @@ export default function ImportJiraDrawer({ open, onOpenChange }: Props) {
                 disabled={!selectedProject}
                 style={{
                   background: selectedProject ? 'var(--cp-blue)' : '#93C5FD', color: 'var(--bg-app)',
-                  border: 'none', borderRadius: 6, padding: '0 16px', height: 36,
+                  border: 'none', borderRadius: 6, padding: '0 16px', height: 50,
                   fontSize: 13, fontWeight: 600, cursor: selectedProject ? 'pointer' : 'not-allowed',
                   fontFamily: "'Inter', sans-serif", opacity: selectedProject ? 1 : 0.6,
                 }}
@@ -294,7 +294,7 @@ export default function ImportJiraDrawer({ open, onOpenChange }: Props) {
                 disabled={selectedTickets.length === 0 || importMutation.isPending}
                 style={{
                   background: selectedTickets.length > 0 ? 'var(--cp-blue)' : '#93C5FD', color: 'var(--bg-app)',
-                  border: 'none', borderRadius: 6, padding: '0 16px', height: 36,
+                  border: 'none', borderRadius: 6, padding: '0 16px', height: 50,
                   fontSize: 13, fontWeight: 600,
                   cursor: selectedTickets.length > 0 ? 'pointer' : 'not-allowed',
                   fontFamily: "'Inter', sans-serif", opacity: selectedTickets.length > 0 ? 1 : 0.6,
@@ -371,7 +371,7 @@ function Step1({
                 style={{
                   height: 48, border: selected ? '1.5px solid var(--cp-blue)' : '0.75px solid #E5E7EB',
                   borderRadius: 6, background: selected ? 'rgba(37,99,235,0.04)' : 'var(--bg-app)',
-                  padding: '0 12px', display: 'flex', alignItems: 'center', gap: 12,
+                  padding: '8px 12px', display: 'flex', alignItems: 'center', gap: 12,
                   cursor: 'pointer', width: '100%', textAlign: 'left',
                   transition: 'background 0.1s',
                 }}
@@ -414,8 +414,8 @@ function Step1({
             onChange={e => onAddInput(e.target.value.toUpperCase())}
             placeholder="Project key (e.g. SEN, MDT)"
             style={{
-              flex: 1, height: 36, border: '0.75px solid #E5E7EB', borderRadius: 4,
-              padding: '0 12px', fontSize: 13, fontFamily: "'JetBrains Mono', monospace",
+              flex: 1, height: 50, border: '0.75px solid #E5E7EB', borderRadius: 4,
+              padding: '8px 12px', fontSize: 13, fontFamily: "'JetBrains Mono', monospace",
               outline: 'none', color: '#111827',
             }}
             onKeyDown={e => { if (e.key === 'Enter') onVerify(); }}
@@ -425,7 +425,7 @@ function Step1({
             disabled={!addInput.trim() || verifyState === 'loading'}
             style={{
               background: addInput.trim() ? 'var(--cp-blue)' : '#93C5FD', color: 'var(--bg-app)',
-              border: 'none', borderRadius: 6, padding: '0 16px', height: 36,
+              border: 'none', borderRadius: 6, padding: '0 16px', height: 50,
               fontSize: 13, fontWeight: 600, cursor: addInput.trim() ? 'pointer' : 'not-allowed',
               fontFamily: "'Inter', sans-serif", display: 'flex', alignItems: 'center', gap: 6,
               opacity: addInput.trim() ? 1 : 0.6,
@@ -522,7 +522,7 @@ function Step2({
             onChange={e => onSearch(e.target.value)}
             placeholder="Search tickets..."
             style={{
-              width: '100%', height: 36, border: '0.75px solid #E5E7EB', borderRadius: 4,
+              width: '100%', height: 50, border: '0.75px solid #E5E7EB', borderRadius: 4,
               padding: '0 12px 0 32px', fontSize: 13, fontFamily: "'Inter', sans-serif",
               outline: 'none', color: '#111827',
             }}
@@ -531,7 +531,7 @@ function Step2({
         <button
           onClick={onPdfToggle}
           style={{
-            height: 36, borderRadius: 6, padding: '0 12px', fontSize: 13, fontWeight: 600,
+            height: 50, borderRadius: 6, padding: '8px 12px', fontSize: 13, fontWeight: 600,
             cursor: 'pointer', fontFamily: "'Inter', sans-serif",
             background: pdfOnly ? '#0C66E4' : '#F3F4F6',
             color: pdfOnly ? 'var(--bg-app)' : '#374151',
@@ -547,7 +547,7 @@ function Step2({
       {loading || syncing ? (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
           {[1, 2, 3].map(i => (
-            <div key={i} className="animate-pulse" style={{ height: 36, background: '#F3F4F6', borderRadius: 4 }} />
+            <div key={i} className="animate-pulse" style={{ height: 50, background: '#F3F4F6', borderRadius: 4 }} />
           ))}
         </div>
       ) : tickets.length === 0 ? (
@@ -574,7 +574,7 @@ function Step2({
       ) : (
         <>
           {/* Table header */}
-          <div style={{ display: 'flex', alignItems: 'center', height: 36, background: '#F9FAFB', borderBottom: '0.75px solid #E5E7EB', position: 'sticky', top: 0, zIndex: 1 }}>
+          <div style={{ display: 'flex', alignItems: 'center', height: 50, background: '#F9FAFB', borderBottom: '0.75px solid #E5E7EB', position: 'sticky', top: 0, zIndex: 1 }}>
             <div style={{ width: 32, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <input
                 type="checkbox"
@@ -610,7 +610,7 @@ function Step2({
                 onClick={() => onToggle(t.ticket_key)}
                 className="group"
                 style={{
-                  display: 'flex', alignItems: 'center', height: 36,
+                  display: 'flex', alignItems: 'center', height: 50,
                   borderBottom: '0.75px solid #F3F4F6',
                   cursor: 'pointer',
                   background: checked ? 'rgba(37,99,235,0.04)' : 'transparent',

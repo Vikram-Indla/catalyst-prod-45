@@ -984,7 +984,7 @@ function DateDropdown({ label, value, placeholder = 'Select date...', onChange, 
     const days: React.ReactNode[] = [];
     
     for (let i = 0; i < firstDay; i++) {
-      days.push(<div key={`empty-${i}`} style={{ width: '36px', height: '36px' }} />);
+      days.push(<div key={`empty-${i}`} style={{ width: '36px', height: '50px' }} />);
     }
     
     for (let day = 1; day <= daysInMonth; day++) {
@@ -997,7 +997,7 @@ function DateDropdown({ label, value, placeholder = 'Select date...', onChange, 
           onClick={() => handleSelectDate(day)}
           style={{
             width: '36px',
-            height: '36px',
+            height: '50px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',

@@ -108,7 +108,7 @@ function FilterTrigger({ label, values, onClear, onClick, isOpen }: {
     <button
       onClick={onClick}
       style={{
-        height: 32, padding: '0 12px', display: 'inline-flex', alignItems: 'center', gap: 6,
+        height: 32, padding: '8px 12px', display: 'inline-flex', alignItems: 'center', gap: 6,
         fontSize: 12, fontWeight: 500, fontFamily: "'Inter', sans-serif",
         color: active ? '#2563EB' : isDark ? '#A1A1A1' : '#334155',
         background: active ? 'rgba(37,99,235,0.06)' : isDark ? '#1A1A1A' : '#FFFFFF',
@@ -390,7 +390,7 @@ export default function HierarchyPage() {
       }}>
         {/* Search */}
         <div style={{
-          width: 240, height: 36, display: 'flex', alignItems: 'center', gap: 6,
+          width: 240, height: 50, display: 'flex', alignItems: 'center', gap: 6,
           padding: '0 10px', background: isDark ? '#0A0A0A' : '#F8FAFC', border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 6,
           transition: 'border-color 80ms, box-shadow 80ms',
         }}
@@ -413,7 +413,7 @@ export default function HierarchyPage() {
         <button
           onClick={handleFilterToggle}
           style={{
-            height: 36, padding: '0 14px', display: 'flex', alignItems: 'center', gap: 6,
+            height: 50, padding: '0 14px', display: 'flex', alignItems: 'center', gap: 6,
             fontSize: 13, fontWeight: 500, fontFamily: "'Inter', sans-serif",
             color: activeFilterCount > 0 ? '#2563EB' : isDark ? '#A1A1A1' : '#334155',
             background: activeFilterCount > 0 ? (isDark ? 'rgba(37,99,235,0.10)' : '#EFF6FF') : isDark ? '#1A1A1A' : '#FFFFFF',

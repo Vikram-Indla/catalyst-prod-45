@@ -27,7 +27,7 @@ interface ScopeItem {
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
   not_run:     { label: 'NOT RUN',     color: '#253858', bg: '#DFE1E6' },
   in_progress: { label: 'IN PROGRESS', color: '#0747A6', bg: '#DEEBFF' },
-  passed:      { label: 'PASSED',      color: '#006644', bg: '#E3FCEF' },
+  passed:      { label: 'PASSED',      color: '#006644', bg: 'var(--status-ok-bg, #E3FCEF)' },
   failed:      { label: 'FAILED',      color: '#253858', bg: '#DFE1E6' },
   blocked:     { label: 'BLOCKED',     color: '#253858', bg: '#DFE1E6' },
   skipped:     { label: 'SKIPPED',     color: '#253858', bg: '#DFE1E6' },
@@ -131,7 +131,7 @@ export default function MyTestScopePage() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <UserCheck size={22} style={{ color: '#2563EB' }} />
-          <h1 style={{ fontSize: 20, fontWeight: 700, color: '#0F172A', margin: 0, fontFamily: 'Sora, sans-serif' }}>
+          <h1 style={{ fontSize: 20, fontWeight: 700, color: 'var(--fg-1, #0F172A)', margin: 0, fontFamily: 'Sora, sans-serif' }}>
             My Test Scope
           </h1>
           <span style={{
@@ -144,7 +144,7 @@ export default function MyTestScopePage() {
         <button
           onClick={fetchMyScope}
           style={{
-            display: 'flex', alignItems: 'center', gap: 6, height: 36,
+            display: 'flex', alignItems: 'center', gap: 6, height: 50,
             padding: '0 14px', border: '1px solid var(--bd-default, #E2E8F0)', borderRadius: 8,
             backgroundColor: '#FFF', color: '#334155', fontSize: 13, cursor: 'pointer',
           }}
@@ -218,7 +218,7 @@ export default function MyTestScopePage() {
                     }}>
                       {first.cycle_key}
                     </span>
-                    <span style={{ fontSize: 14, fontWeight: 600, color: '#0F172A' }}>
+                    <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--fg-1, #0F172A)' }}>
                       {first.cycle_name}
                     </span>
                     <span style={{
@@ -262,7 +262,7 @@ export default function MyTestScopePage() {
                           }}>
                             {item.case_key}
                           </span>
-                          <span style={{ fontSize: 13, color: '#0F172A', fontWeight: 500 }}>
+                          <span style={{ fontSize: 13, color: 'var(--fg-1, #0F172A)', fontWeight: 500 }}>
                             {item.title}
                           </span>
                         </div>

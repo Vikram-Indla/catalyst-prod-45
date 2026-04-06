@@ -181,14 +181,14 @@ export function ReleaseModal({ isOpen, onClose, release }: ReleaseModalProps) {
           {/* Actions */}
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 8, borderTop: '1px solid var(--bg-1)', paddingTop: 16 }}>
             <button onClick={onClose} style={{
-              height: 36, padding: '0 16px', borderRadius: 'var(--wh-radius-md, 6px)',
+              height: 50, padding: '0 16px', borderRadius: 'var(--wh-radius-md, 6px)',
               border: '1px solid var(--divider)', background: 'var(--cp-float)',
               fontSize: 13, fontWeight: 500, color: 'var(--fg-1)', cursor: 'pointer',
             }}>
               Cancel
             </button>
             <button onClick={handleSubmit} disabled={isSubmitting} style={{
-              height: 36, padding: '0 16px', borderRadius: 'var(--wh-radius-md, 6px)',
+              height: 50, padding: '0 16px', borderRadius: 'var(--wh-radius-md, 6px)',
               border: 'none', background: 'var(--cp-blue)', color: 'var(--bg-app)',
               fontSize: 13, fontWeight: 600, cursor: isSubmitting ? 'wait' : 'pointer',
               opacity: isSubmitting ? 0.7 : 1,
@@ -222,7 +222,7 @@ function Field({ label, required, error, children }: {
 
 const inputStyle: React.CSSProperties = {
   width: '100%', height: 40, boxSizing: 'border-box',
-  padding: '0 12px',
+  padding: '8px 12px',
   borderRadius: 'var(--wh-radius-md, 6px)',
   border: '1px solid var(--divider)',
   fontSize: 14, fontFamily: 'Inter, system-ui, sans-serif',

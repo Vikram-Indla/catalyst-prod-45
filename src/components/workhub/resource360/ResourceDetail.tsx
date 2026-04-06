@@ -338,10 +338,10 @@ export function ResourceDetail() {
                         }}
                         className="wh-detail-row"
                       >
-                        <td style={{ padding: '0 12px', fontFamily: 'monospace', fontWeight: 600, color: 'var(--cp-blue)', whiteSpace: 'nowrap' }}>
+                        <td style={{ padding: '8px 12px', fontFamily: 'monospace', fontWeight: 600, color: 'var(--cp-blue)', whiteSpace: 'nowrap' }}>
                           {item.issue_key}
                         </td>
-                        <td style={{ padding: '0 12px' }}>
+                        <td style={{ padding: '8px 12px' }}>
                           <span style={{
                             display: 'inline-block', padding: '2px 8px', borderRadius: 4,
                             fontSize: 11, fontWeight: 600,
@@ -352,13 +352,13 @@ export function ResourceDetail() {
                           </span>
                         </td>
                         <td style={{
-                          padding: '0 12px', maxWidth: 300, overflow: 'hidden',
+                          padding: '8px 12px', maxWidth: 300, overflow: 'hidden',
                           textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                           color: 'var(--fg-1)',
                         }}>
                           {item.summary}
                         </td>
-                        <td style={{ padding: '0 12px' }}>
+                        <td style={{ padding: '8px 12px' }}>
                           <span style={{
                             display: 'inline-block', padding: '2px 8px', borderRadius: 4,
                             fontSize: 11, fontWeight: 600,
@@ -368,10 +368,10 @@ export function ResourceDetail() {
                             {item.status}
                           </span>
                         </td>
-                        <td style={{ padding: '0 12px', fontSize: 12, color: 'var(--fg-3)' }}>
+                        <td style={{ padding: '8px 12px', fontSize: 12, color: 'var(--fg-3)' }}>
                           {item.priority || '—'}
                         </td>
-                        <td style={{ padding: '0 12px', whiteSpace: 'nowrap' }}>
+                        <td style={{ padding: '8px 12px', whiteSpace: 'nowrap' }}>
                           {item.due_date ? (
                             <span style={{
                               display: 'inline-flex', alignItems: 'center', gap: 4,
@@ -385,10 +385,10 @@ export function ResourceDetail() {
                             <span style={{ color: 'var(--fg-4)' }}>—</span>
                           )}
                         </td>
-                        <td style={{ padding: '0 12px', fontFamily: 'monospace', fontSize: 12, color: 'var(--fg-3)' }}>
+                        <td style={{ padding: '8px 12px', fontFamily: 'monospace', fontSize: 12, color: 'var(--fg-3)' }}>
                           {item.project_key || '—'}
                         </td>
-                        <td style={{ padding: '0 12px', fontSize: 12, color: 'var(--fg-3)' }}>
+                        <td style={{ padding: '8px 12px', fontSize: 12, color: 'var(--fg-3)' }}>
                           {item.sprint_name || '—'}
                         </td>
                       </tr>

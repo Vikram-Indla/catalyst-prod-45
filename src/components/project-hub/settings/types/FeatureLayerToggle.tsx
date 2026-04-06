@@ -55,7 +55,7 @@ export function FeatureLayerToggle({ projectId, enabled, onToggled }: FeatureLay
         disabled={loading}
         className="hover:bg-[#F8FAFC] transition-colors disabled:opacity-50"
         style={{
-          height: 32, padding: '0 12px', fontSize: 12, fontWeight: 500,
+          height: 32, padding: '8px 12px', fontSize: 12, fontWeight: 500,
           color: 'var(--fg-2)', border: '1px solid var(--divider)', borderRadius: 6,
           background: 'transparent', cursor: loading ? 'default' : 'pointer',
         }}

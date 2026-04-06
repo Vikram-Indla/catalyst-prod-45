@@ -97,7 +97,7 @@ export function OkrHeatmap() {
     return (
       <div className="animate-pulse space-y-2">
         {[1, 2, 3, 4].map(i => (
-          <div key={i} style={{ height: 36, background: 'var(--catalyst-bg-hover)', borderRadius: 6 }} />
+          <div key={i} style={{ height: 50, background: 'var(--catalyst-bg-hover)', borderRadius: 6 }} />
         ))}
       </div>
     );

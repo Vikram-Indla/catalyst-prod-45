@@ -96,7 +96,7 @@ export function ViewSharedStepModal({ isOpen, sharedStep, onClose, onEdit, onDel
 
   const iconBtn = (onClick: () => void, title: string, children: React.ReactNode, danger = false): React.ReactNode => (
     <button onClick={onClick} title={title} style={{
-      width: 36, height: 36, padding: 0, border: '1px solid var(--divider)', borderRadius: 8,
+      width: 36, height: 50, padding: 0, border: '1px solid var(--divider)', borderRadius: 8,
       backgroundColor: 'var(--cp-float)', color: danger ? 'var(--sem-danger)' : 'var(--fg-3)', cursor: 'pointer',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
     }}>{children}</button>

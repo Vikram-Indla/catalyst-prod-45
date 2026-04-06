@@ -382,7 +382,7 @@ export function WorkItemFilters({ filters, onChange }: WorkItemFiltersProps) {
           onChange={e => handleSearch(e.target.value)}
           className="w-full pl-9 pr-4 rounded-lg border outline-none transition-colors"
           style={{
-            height: '36px',
+            height: '50px',
             fontSize: '13px',
             borderColor: 'var(--wh-border, #e2e8f0)',
             color: 'var(--wh-text-primary, #0f172a)',

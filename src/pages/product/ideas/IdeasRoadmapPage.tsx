@@ -185,7 +185,7 @@ export default function IdeasRoadmapPage() {
         <button
           onClick={() => refetch()}
           style={{
-            height: 36, padding: '0 16px', borderRadius: 6, border: 'none',
+            height: 50, padding: '0 16px', borderRadius: 6, border: 'none',
             background: '#2563EB', color: '#FFFFFF', fontSize: 13, fontWeight: 600,
             cursor: 'pointer', fontFamily: "'Inter', sans-serif",
           }}

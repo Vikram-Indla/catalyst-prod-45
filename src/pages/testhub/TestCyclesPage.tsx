@@ -207,12 +207,12 @@ export default function TestCyclesPage() {
               <div style={{ marginBottom: 12 }}>
                 <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: textBody, marginBottom: 4 }}>From</label>
                 <input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)}
-                  style={{ width: '100%', height: 36, padding: '0 10px', border: `1.5px solid ${borderColor}`, borderRadius: 8, fontSize: 13, color: textPrimary, backgroundColor: surfaceBg }} />
+                  style={{ width: '100%', height: 50, padding: '0 10px', border: `1.5px solid ${borderColor}`, borderRadius: 8, fontSize: 13, color: textPrimary, backgroundColor: surfaceBg }} />
               </div>
               <div style={{ marginBottom: 12 }}>
                 <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: textBody, marginBottom: 4 }}>To</label>
                 <input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} min={dateFrom}
-                  style={{ width: '100%', height: 36, padding: '0 10px', border: `1.5px solid ${borderColor}`, borderRadius: 8, fontSize: 13, color: textPrimary, backgroundColor: surfaceBg }} />
+                  style={{ width: '100%', height: 50, padding: '0 10px', border: `1.5px solid ${borderColor}`, borderRadius: 8, fontSize: 13, color: textPrimary, backgroundColor: surfaceBg }} />
               </div>
               {(dateFrom || dateTo) && (
                 <button onClick={() => { setDateFrom(''); setDateTo(''); }} style={{ width: '100%', padding: '8px 12px', border: 'none', backgroundColor: 'transparent', color: '#2563EB', fontSize: 13, fontWeight: 500, cursor: 'pointer', textAlign: 'center' }}>Clear dates</button>
@@ -240,7 +240,7 @@ export default function TestCyclesPage() {
                     if (isActive) setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc');
                     else { setSortField(option.field); setSortDirection(option.defaultDir); }
                     setIsSortOpen(false);
-                  }} style={{ width: '100%', height: 40, padding: '0 12px', border: 'none', borderRadius: 8, backgroundColor: isActive ? (isDark ? '#1e293b' : '#EFF6FF') : 'transparent', color: isActive ? '#2563EB' : textBody, fontSize: 14, fontWeight: isActive ? 600 : 400, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', textAlign: 'left' }}>
+                  }} style={{ width: '100%', height: 40, padding: '8px 12px', border: 'none', borderRadius: 8, backgroundColor: isActive ? (isDark ? '#1e293b' : '#EFF6FF') : 'transparent', color: isActive ? '#2563EB' : textBody, fontSize: 14, fontWeight: isActive ? 600 : 400, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', textAlign: 'left' }}>
                     <span>{option.label}</span>
                     {isActive && <span style={{ fontSize: 12 }}>{sortDirection === 'asc' ? '↑' : '↓'}</span>}
                   </button>

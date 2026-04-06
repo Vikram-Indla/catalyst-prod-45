@@ -147,7 +147,7 @@ export default function IntelligenceDrawer({ projectId }: Props) {
         </div>
 
         <div style={{ padding: '12px 20px', borderTop: '1px solid var(--cp-bd)' }}>
-          <button onClick={closeDrawer} className="ph-focus-ring bg-[var(--cp-bg)] dark:bg-[#0A0A0A]" style={{ width: '100%', height: 36, borderRadius: 8, border: '1px solid var(--cp-bd)', cursor: 'pointer', fontSize: 12, fontWeight: 600, color: 'var(--cp-t3)' }}>
+          <button onClick={closeDrawer} className="ph-focus-ring bg-[var(--cp-bg)] dark:bg-[#0A0A0A]" style={{ width: '100%', height: 50, borderRadius: 8, border: '1px solid var(--cp-bd)', cursor: 'pointer', fontSize: 12, fontWeight: 600, color: 'var(--cp-t3)' }}>
             Close
           </button>
         </div>

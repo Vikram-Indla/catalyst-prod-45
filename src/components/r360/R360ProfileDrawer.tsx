@@ -298,7 +298,7 @@ function FilteredListPanel({
               key={item.id || idx}
               onClick={() => onItemClick(item)}
               style={{
-                display: 'flex', alignItems: 'center', height: 36, padding: '0 12px', gap: 8,
+                display: 'flex', alignItems: 'center', height: 50, padding: '8px 12px', gap: 8,
                 borderBottom: idx < items.length - 1 ? '0.75px solid var(--divider)' : 'none',
                 background: 'var(--bg-app)', cursor: 'pointer', transition: 'background 120ms',
               }}
@@ -411,7 +411,7 @@ function ItemDetailPanel({
               ].map((row, i, arr) => (
                 <div key={i} style={{
                   display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                  height: 36, padding: '0 14px',
+                  height: 50, padding: '0 14px',
                   borderBottom: i < arr.length - 1 ? '0.75px solid var(--divider)' : 'none',
                 }}>
                   <span style={{ fontSize: 12, color: INK4 }}>{row.label}</span>
@@ -1485,7 +1485,7 @@ function BehaviouralTab({ workItems, showFilteredList, weekStart, weekEnd, weekL
               onClick={row.onClick}
               style={{
                 display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                height: 36, padding: '0 14px',
+                height: 50, padding: '0 14px',
                 borderBottom: i < arr.length - 1 ? '0.75px solid var(--divider)' : 'none',
                 cursor: row.onClick ? 'pointer' : 'default', transition: 'background 150ms',
               }}
@@ -1619,8 +1619,8 @@ function WeeklyStoryTab({ workItems, openCount, showFilteredList, weekStart, wee
           <div style={{ border: '1px solid var(--divider)', borderRadius: 8, overflow: 'hidden' }}>
             {timelineItems.map((item: any, idx: number) => (
               <div key={item.id || idx} style={{
-                display: 'flex', alignItems: 'center', gap: 8, padding: '0 12px',
-                minHeight: 36,
+                display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px',
+                minHeight: 50,
                 borderBottom: idx < timelineItems.length - 1 ? '0.75px solid var(--divider)' : 'none',
               }}>
                 <JiraIssueTypeIcon type={item.work_item_type || 'Task'} size={16} />
@@ -1719,7 +1719,7 @@ function WorkItemsTab({ workItems, weekStart, weekEnd, weekLabel, weekOffset, se
       <div style={{
         height: 40, flexShrink: 0, borderBottom: '0.75px solid var(--divider)',
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '0 12px', gap: 8,
+        padding: '8px 12px', gap: 8,
       }}>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
           <Select value={statusFilter} onValueChange={setStatusFilter}>
@@ -1786,7 +1786,7 @@ function WorkItemsTab({ workItems, weekStart, weekEnd, weekLabel, weekOffset, se
         <div style={{ overflowX: 'auto' }}>
           {/* Header */}
           <div style={{
-            display: 'flex', alignItems: 'center', height: 36, padding: '0 12px',
+            display: 'flex', alignItems: 'center', height: 50, padding: '8px 12px',
             borderBottom: '0.75px solid var(--divider)', background: 'var(--bg-app)',
           }}>
             <span style={{ width: 40, textAlign: 'center' as const, fontSize: 10.5, fontWeight: 500, textTransform: 'uppercase', color: INK4, letterSpacing: '0.04em' }}>TYPE</span>
@@ -1800,7 +1800,7 @@ function WorkItemsTab({ workItems, weekStart, weekEnd, weekLabel, weekOffset, se
             <div
               key={item.id || idx}
               style={{
-                display: 'flex', alignItems: 'center', height: 36, padding: '0 12px',
+                display: 'flex', alignItems: 'center', height: 50, padding: '8px 12px',
                 borderBottom: idx < display.length - 1 ? '0.75px solid var(--divider)' : 'none',
                 background: 'var(--bg-app)', transition: 'background 80ms',
               }}

@@ -175,7 +175,7 @@ export function JiraSyncDrawer({
                 <div
                   key={log.id}
                   className="flex items-center gap-3"
-                  style={{ height: 36, borderBottom: '0.75px solid var(--cp-border-subtle, rgba(15,23,42,0.07))' }}
+                  style={{ height: 50, borderBottom: '0.75px solid var(--cp-border-subtle, rgba(15,23,42,0.07))' }}
                 >
                   {log.status === 'completed' ? <CheckCircle2 size={14} style={{ color: 'var(--sem-success)', flexShrink: 0 }} />
                     : log.status === 'failed' ? <AlertCircle size={14} style={{ color: 'var(--sem-danger)', flexShrink: 0 }} />
@@ -211,7 +211,7 @@ export function JiraSyncDrawer({
                 <div
                   key={item.id}
                   className="flex items-center justify-between"
-                  style={{ height: 36, borderBottom: '0.75px solid var(--cp-border-subtle, rgba(15,23,42,0.07))' }}
+                  style={{ height: 50, borderBottom: '0.75px solid var(--cp-border-subtle, rgba(15,23,42,0.07))' }}
                 >
                   <div>
                     <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--fg-2)' }}>{item.fieldName}</span>

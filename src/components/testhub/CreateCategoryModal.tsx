@@ -129,7 +129,7 @@ export function CreateCategoryModal({ isOpen, onClose, onSuccess, existingCatego
             <input
               value={name} onChange={e => { setName(e.target.value); setError(''); }}
               placeholder="e.g., Authentication" maxLength={50}
-              style={{ width: '100%', height: 40, padding: '0 12px', border: `1.5px solid ${error ? 'var(--sem-danger)' : 'var(--divider)'}`, borderRadius: 8, fontSize: 14, color: 'var(--fg-1)', fontFamily: 'Inter' }}
+              style={{ width: '100%', height: 40, padding: '8px 12px', border: `1.5px solid ${error ? 'var(--sem-danger)' : 'var(--divider)'}`, borderRadius: 8, fontSize: 14, color: 'var(--fg-1)', fontFamily: 'Inter' }}
             />
             {error && <p style={{ fontSize: 12, color: 'var(--sem-danger)', margin: '4px 0 0' }}>{error}</p>}
           </div>
@@ -140,7 +140,7 @@ export function CreateCategoryModal({ isOpen, onClose, onSuccess, existingCatego
             <input
               value={description} onChange={e => setDescription(e.target.value)}
               placeholder="Brief description (optional)" maxLength={100}
-              style={{ width: '100%', height: 40, padding: '0 12px', border: '1.5px solid var(--divider)', borderRadius: 8, fontSize: 14, color: 'var(--fg-1)', fontFamily: 'Inter' }}
+              style={{ width: '100%', height: 40, padding: '8px 12px', border: '1.5px solid var(--divider)', borderRadius: 8, fontSize: 14, color: 'var(--fg-1)', fontFamily: 'Inter' }}
             />
           </div>
 
@@ -150,7 +150,7 @@ export function CreateCategoryModal({ isOpen, onClose, onSuccess, existingCatego
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
               {PRESET_COLORS.map(c => (
                 <button key={c} onClick={() => setColor(c)} style={{
-                  width: 36, height: 36, borderRadius: 8, backgroundColor: c, border: color === c ? '3px solid #0F172A' : '3px solid transparent',
+                  width: 36, height: 50, borderRadius: 8, backgroundColor: c, border: color === c ? '3px solid #0F172A' : '3px solid transparent',
                   cursor: 'pointer', transition: 'transform 0.1s', padding: 0,
                 }} onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.1)'} onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'} />
               ))}

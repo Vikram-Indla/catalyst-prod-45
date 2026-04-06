@@ -252,7 +252,7 @@ function ColHeader({ label, sortKey, currentSort, currentDir, onSort, width, fle
     <div
       onClick={() => onSort(sortKey)}
       style={{
-        width, flex, height: 36, display: 'flex', alignItems: 'center', padding: '0 8px',
+        width, flex, height: 50, display: 'flex', alignItems: 'center', padding: '0 8px',
         fontSize: 11, fontWeight: 600, textTransform: 'uppercase', color: 'var(--fg-3)',
         letterSpacing: '0.06em', cursor: 'pointer', userSelect: 'none', minWidth: 0,
       }}
@@ -616,7 +616,7 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
             display: 'grid',
             gridTemplateColumns,
             alignItems: 'center',
-            height: 36,
+            height: 50,
             minWidth: 1100,
                 background: isDark ? 'rgba(255,255,255,0.03)' : '#F1F5F9',
                 borderBottom: isDark ? '2px solid #2E2E2E' : '2px solid var(--divider)',

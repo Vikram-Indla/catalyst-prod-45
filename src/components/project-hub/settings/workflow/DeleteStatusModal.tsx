@@ -36,7 +36,7 @@ export function DeleteStatusModal({ open, statusName, itemCount, otherStatuses, 
   const hasMigration = itemCount > 0;
 
   const inputStyle: React.CSSProperties = {
-    width: '100%', height: 40, padding: '0 12px', fontSize: 13,
+    width: '100%', height: 40, padding: '8px 12px', fontSize: 13,
     color: 'var(--fg-1)', border: '1px solid var(--divider)',
     borderRadius: 6, outline: 'none', fontFamily: "'Inter', sans-serif",
   };
@@ -84,12 +84,12 @@ export function DeleteStatusModal({ open, statusName, itemCount, otherStatuses, 
         )}
 
         <div className="flex justify-end gap-2">
-          <button onClick={onClose} className="bg-[var(--cp-float)] dark:bg-[#1A1A1A]" style={{ height: 36, padding: '0 16px', fontSize: 13, fontWeight: 500, color: 'var(--fg-2)', border: '1px solid var(--divider)', borderRadius: 6, cursor: 'pointer' }}>Cancel</button>
+          <button onClick={onClose} className="bg-[var(--cp-float)] dark:bg-[#1A1A1A]" style={{ height: 50, padding: '0 16px', fontSize: 13, fontWeight: 500, color: 'var(--fg-2)', border: '1px solid var(--divider)', borderRadius: 6, cursor: 'pointer' }}>Cancel</button>
           <button
             onClick={() => onConfirm(hasMigration ? targetId : undefined)}
             disabled={loading || (hasMigration && !targetId)}
             className="hover:opacity-90 transition-opacity disabled:opacity-50 bg-[var(--sem-danger)]"
-            style={{ height: 36, padding: '0 16px', fontSize: 13, fontWeight: 600, color: '#FFFFFF', border: 'none', borderRadius: 6, cursor: loading ? 'default' : 'pointer' }}
+            style={{ height: 50, padding: '0 16px', fontSize: 13, fontWeight: 600, color: '#FFFFFF', border: 'none', borderRadius: 6, cursor: loading ? 'default' : 'pointer' }}
           >
             {loading ? 'Deleting...' : hasMigration ? 'Move & Delete' : 'Delete'}
           </button>

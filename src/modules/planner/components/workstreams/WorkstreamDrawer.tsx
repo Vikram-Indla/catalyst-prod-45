@@ -937,7 +937,7 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
 
 const iconButtonStyle: React.CSSProperties = {
   width: '36px',
-  height: '36px',
+  height: '50px',
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',

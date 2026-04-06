@@ -305,7 +305,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
                 type="button"
                 onClick={() => setTargetCount(Math.max(1, targetCount - 1))}
                 style={{
-                  width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  width: '36px', height: '50px', display: 'flex', alignItems: 'center', justifyContent: 'center',
                   border: 'none', background: isDark ? 'transparent' : '#FFFFFF',
                   cursor: targetCount <= 1 ? 'not-allowed' : 'pointer',
                   color: targetCount <= 1 ? (isDark ? '#878787' : '#CBD5E1') : (isDark ? '#A1A1A1' : '#334155'),
@@ -326,7 +326,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
                 }}
                 onBlur={() => handleBlur('target_count')}
                 style={{
-                  width: '48px', height: '36px',
+                  width: '48px', height: '50px',
                   borderLeft: `1.5px solid ${isDark ? 'rgba(255,255,255,0.12)' : '#CBD5E1'}`, borderRight: `1.5px solid ${isDark ? 'rgba(255,255,255,0.12)' : '#CBD5E1'}`,
                   borderTop: 'none', borderBottom: 'none',
                   textAlign: 'center', fontSize: '16px', fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A', outline: 'none',
@@ -337,7 +337,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
                 type="button"
                 onClick={() => setTargetCount(Math.min(50, targetCount + 1))}
                 style={{
-                  width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  width: '36px', height: '50px', display: 'flex', alignItems: 'center', justifyContent: 'center',
                   border: 'none', background: isDark ? 'transparent' : '#FFFFFF',
                   cursor: targetCount >= 50 ? 'not-allowed' : 'pointer',
                   color: targetCount >= 50 ? (isDark ? '#878787' : '#CBD5E1') : (isDark ? '#A1A1A1' : '#334155'),

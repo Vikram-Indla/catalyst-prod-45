@@ -439,7 +439,7 @@ export default function SharedStepsPage() {
                   </div>
                   <div style={{ padding: '8px 12px', borderTop: `1px solid ${isDark ? 'rgba(255,255,255,0.05)' : '#F1F5F9'}` }}>
                     <button onClick={() => setIsFilterOpen(false)} style={{
-                      width: '100%', height: 36,
+                      width: '100%', height: 50,
                       background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
                       border: 'none', borderRadius: 8, color: '#FFFFFF', fontSize: 13,
                       fontWeight: 600, cursor: 'pointer', fontFamily: 'Inter',
@@ -494,7 +494,7 @@ export default function SharedStepsPage() {
                           setIsSortOpen(false);
                         }}
                         style={{
-                          width: '100%', height: 40, padding: '0 12px', border: 'none', borderRadius: 8,
+                          width: '100%', height: 40, padding: '8px 12px', border: 'none', borderRadius: 8,
                           backgroundColor: isActive ? (isDark ? 'rgba(37,99,235,0.15)' : '#EFF6FF') : 'transparent',
                           color: isActive ? '#2563EB' : (isDark ? '#A1A1A1' : '#334155'), fontSize: 14,
                           fontWeight: isActive ? 600 : 400, cursor: 'pointer',
@@ -889,7 +889,7 @@ function MenuButton({ icon, label, onClick, danger }: {
 }) {
   return (
     <button onClick={onClick} style={{
-      width: '100%', height: 36, padding: '0 12px', border: 'none', borderRadius: 6,
+      width: '100%', height: 50, padding: '8px 12px', border: 'none', borderRadius: 6,
       backgroundColor: 'transparent', color: danger ? '#DC2626' : 'inherit',
       fontSize: 13, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10,
       textAlign: 'left', fontFamily: 'Inter',

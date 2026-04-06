@@ -650,7 +650,7 @@ export function EnterpriseGrid<T extends Record<string, unknown>>({
           {/* Header */}
           <div
             className="sticky top-0 z-10 flex items-center bg-surface-2 border-b border-border-default"
-            style={{ height: 36 }}
+            style={{ height: 50 }}
           >
             <div className="flex items-center" style={{ display: 'grid', gridTemplateColumns: gridTemplate }}>
               {config.enableBulkSelection && (

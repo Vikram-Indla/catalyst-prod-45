@@ -30,7 +30,7 @@ export const RH = {
   aiBorder: '#DBEAFE',
 
   // Text
-  ink1: '#0F172A',
+  ink1: 'var(--fg-1, #0F172A)',
   ink2: '#334155',
   ink3: '#64748B',
   ink4: 'var(--fg-3, #94A3B8)',
@@ -50,7 +50,7 @@ export const RH = {
 // ── STATUS LOZENGE 3-COLOR GUARDRAIL ──────────────────────────────
 // GREY:  bg=#DFE1E6 text=#253858 → NEW, ARCHIVED, NOT_STARTED
 // BLUE:  bg=#DEEBFF text=#0747A6 → IN_UAT, IN_BETA, IN_PROGRESS, PLANNING, WAITING
-// GREEN: bg=#E3FCEF text=#006644 → IN_PRODUCTION, RELEASED, DONE, APPROVED, PASS
+// GREEN: bg=var(--status-ok-bg, #E3FCEF) text=#006644 → IN_PRODUCTION, RELEASED, DONE, APPROVED, PASS
 
 export const LOZENGE = {
   grey:  { bg: '#DFE1E6', text: '#42526E' },

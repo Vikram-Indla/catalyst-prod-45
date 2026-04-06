@@ -101,7 +101,7 @@ export function WikiAdminPagesTab() {
                   return (
                     <tr key={p.id} style={{
                       borderTop: '0.75px solid var(--cp-border-default, rgba(15,23,42,0.08))',
-                      height: 36,
+                      height: 50,
                       background: isStale ? 'rgba(217,119,6,0.04)' : 'transparent',
                     }}
                       onMouseEnter={(e) => { e.currentTarget.style.background = isStale ? 'rgba(217,119,6,0.06)' : 'rgba(15,23,42,0.04)'; }}

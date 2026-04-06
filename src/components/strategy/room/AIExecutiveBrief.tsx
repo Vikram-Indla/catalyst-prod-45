@@ -372,7 +372,7 @@ export function AIExecutiveBrief({ open, onClose, onDownload }: Props) {
                   {/* FIX #13 — 2-row header */}
                   <div style={{ padding: "14px 18px", borderBottom: "1px solid var(--sri-bdr)" }}>
                     <div style={{ ...F(12) as React.CSSProperties, marginBottom: 6 }}>
-                      <div style={{ ...S(14, 800), width: 36, height: 36, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, background: "var(--sri-ai-bg)", color: "var(--sri-ai-d)", border: `2px solid ${(d.isCritical || d.crit) ? "var(--sri-red)" : "var(--sri-ai)"}` }}>{d.id}</div>
+                      <div style={{ ...S(14, 800), width: 36, height: 50, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, background: "var(--sri-ai-bg)", color: "var(--sri-ai-d)", border: `2px solid ${(d.isCritical || d.crit) ? "var(--sri-red)" : "var(--sri-ai)"}` }}>{d.id}</div>
                       <span style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", color: (d.isCritical || d.crit) ? "var(--sri-red-t)" : "var(--sri-ai-d)" }}>{d.priority || d.pr}</span>
                       <span style={{ ...M(11), color: "var(--sri-ink-m)" }}>{fmtDate(d.date || d.dt)}</span>
                     </div>

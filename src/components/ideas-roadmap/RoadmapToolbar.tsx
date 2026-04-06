@@ -114,7 +114,7 @@ export function RoadmapToolbar({
         <BarChart3 size={15} color="#64748B" />
       </button>
       <button onClick={onExport} style={{
-        height: 32, padding: '0 12px', borderRadius: 6, border: 'none',
+        height: 32, padding: '8px 12px', borderRadius: 6, border: 'none',
         background: '#1E293B', color: 'var(--bg-app)', fontSize: 12, fontWeight: 600,
         fontFamily: "'Inter', sans-serif", cursor: 'pointer', transition: 'all 150ms',
       }}>

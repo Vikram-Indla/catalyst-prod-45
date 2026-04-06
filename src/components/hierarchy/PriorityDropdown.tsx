@@ -60,7 +60,7 @@ export function PriorityDropdown({ currentPriority, onSelect, onClose }: Priorit
             key={p.name}
             onClick={() => { onSelect(p.name); onClose(); }}
             style={{
-              height: 36, padding: '0 12px', display: 'flex', alignItems: 'center', gap: 8,
+              height: 50, padding: '8px 12px', display: 'flex', alignItems: 'center', gap: 8,
               cursor: 'pointer', background: isCurrent ? (isDark ? '#1A1A1A' : '#F8FAFC') : undefined,
               fontFamily: "'Inter', sans-serif",
             }}

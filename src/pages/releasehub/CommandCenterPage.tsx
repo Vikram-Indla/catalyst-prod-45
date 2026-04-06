@@ -299,7 +299,7 @@ export default function CommandCenterPage() {
               <thead>
                 <tr style={{ background: isDark ? '#1A1A1A' : '#F1F5F9' }}>
                   {['RELEASE', 'STATUS', 'CHANGES', 'TARGET', 'PROGRESS'].map(h => (
-                    <th key={h} className="px-3 text-left text-[11px] uppercase tracking-[0.06em]" style={{ fontWeight: 600, height: 36, padding: '0 12px', color: isDark ? '#878787' : '#64748B' }}>{h}</th>
+                    <th key={h} className="px-3 text-left text-[11px] uppercase tracking-[0.06em]" style={{ fontWeight: 600, height: 50, padding: '8px 12px', color: isDark ? '#878787' : '#64748B' }}>{h}</th>
                   ))}
                 </tr>
               </thead>
@@ -307,7 +307,7 @@ export default function CommandCenterPage() {
                 {activeRels.map((r: any) => {
                   const chgCount = changes.filter((c: any) => c.release_id === r.id).length;
                   return (
-                    <tr key={r.id} onClick={() => setSelectedRelease(r)} className="cursor-pointer" style={{ height: 36, borderBottom: `0.75px solid ${isDark ? 'rgba(255,255,255,0.05)' : 'rgba(15,23,42,0.06)'}` }}
+                    <tr key={r.id} onClick={() => setSelectedRelease(r)} className="cursor-pointer" style={{ height: 50, borderBottom: `0.75px solid ${isDark ? 'rgba(255,255,255,0.05)' : 'rgba(15,23,42,0.06)'}` }}
                       onMouseEnter={e => (e.currentTarget.style.background = isDark ? '#1A1A1A' : 'rgba(15,23,42,0.04)')}
                       onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
                       <td className="px-3" style={{ fontWeight: 650, color: isDark ? '#EDEDED' : RH.ink1 }}>{r.name}</td>
@@ -472,13 +472,13 @@ export default function CommandCenterPage() {
               <thead>
                 <tr style={{ background: isDark ? '#1A1A1A' : '#F1F5F9' }}>
                   {['CHANGE', 'GATE', 'APPROVER', 'STATUS'].map(h => (
-                    <th key={h} className="text-left text-[11px] uppercase tracking-[0.06em]" style={{ fontWeight: 600, height: 36, padding: '0 12px', color: isDark ? '#878787' : '#64748B' }}>{h}</th>
+                    <th key={h} className="text-left text-[11px] uppercase tracking-[0.06em]" style={{ fontWeight: 600, height: 50, padding: '8px 12px', color: isDark ? '#878787' : '#64748B' }}>{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
                 {pendingSignoffs.slice(0, 4).map((so: any) => (
-                  <tr key={so.id} className="cursor-pointer" style={{ height: 36, borderBottom: `0.75px solid ${isDark ? 'rgba(255,255,255,0.05)' : 'rgba(15,23,42,0.06)'}` }}
+                  <tr key={so.id} className="cursor-pointer" style={{ height: 50, borderBottom: `0.75px solid ${isDark ? 'rgba(255,255,255,0.05)' : 'rgba(15,23,42,0.06)'}` }}
                     onMouseEnter={e => (e.currentTarget.style.background = isDark ? '#1A1A1A' : 'rgba(15,23,42,0.04)')}
                     onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
                     <td className="px-3" style={{ fontFamily: RH.fontMono, color: '#2563EB', fontWeight: 650 }}>{so.rh_changes?.chg_number || '—'}</td>

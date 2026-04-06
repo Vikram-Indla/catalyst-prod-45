@@ -32,7 +32,7 @@ export function CatyAIInput({ onSend, isLoading, placeholder = "Ask CATY anythin
           <Paperclip className="h-4 w-4" />
         </Button>
         <Textarea ref={textareaRef} value={message} onChange={(e) => setMessage(e.target.value)} onKeyDown={handleKeyDown}
-          placeholder={placeholder} rows={1} className="min-h-[36px] max-h-[200px] resize-none border-0 focus-visible:ring-0 p-2" disabled={isLoading} data-caty-input />
+          placeholder={placeholder} rows={1} className="min-h-[50px] max-h-[200px] resize-none border-0 focus-visible:ring-0 p-2" disabled={isLoading} data-caty-input />
         <Button size="sm" className="h-9 w-9 p-0 flex-shrink-0" onClick={handleSend} disabled={!message.trim() || isLoading}>
           {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
         </Button>

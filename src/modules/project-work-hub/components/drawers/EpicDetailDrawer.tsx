@@ -25,7 +25,7 @@ const DETAIL_LABEL: React.CSSProperties = {
   width: 100, flexShrink: 0, fontSize: 11, fontWeight: 650,
   textTransform: 'uppercase', letterSpacing: '0.06em', color: '#64748B', lineHeight: '36px',
 };
-const DETAIL_VALUE: React.CSSProperties = { fontSize: 14, color: '#0F172A', fontWeight: 400 };
+const DETAIL_VALUE: React.CSSProperties = { fontSize: 14, color: 'var(--fg-1, #0F172A)', fontWeight: 400 };
 
 const STATUS_GROUPS = [
   { label: 'TO DO', statuses: ['Backlog', 'To Do'] },
@@ -49,7 +49,7 @@ const TAB_STYLE: React.CSSProperties = {
   background: 'none', color: '#64748B', borderBottom: '2px solid transparent',
   display: 'inline-flex', alignItems: 'center', gap: 5,
 };
-const TAB_ACTIVE: React.CSSProperties = { ...TAB_STYLE, color: '#0F172A', borderBottomColor: '#2563EB' };
+const TAB_ACTIVE: React.CSSProperties = { ...TAB_STYLE, color: 'var(--fg-1, #0F172A)', borderBottomColor: '#2563EB' };
 
 function formatFixVersions(fv: any): string {
   if (!fv) return '—';
@@ -171,7 +171,7 @@ export const EpicDetailDrawer: React.FC<EpicDetailDrawerProps> = ({ isOpen, onCl
           {epic ? (
             <>
               <JiraIssueTypeIcon type="epic" size={20} />
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, fontWeight: 600, color: '#0F172A' }}>{epic.issue_key}</span>
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, fontWeight: 600, color: 'var(--fg-1, #0F172A)' }}>{epic.issue_key}</span>
               <span style={{ fontSize: 13, color: '#64748B' }}>· Epic</span>
             </>
           ) : <div style={{ height: 20, width: 120, borderRadius: 4, background: 'var(--bd-default, #E2E8F0)' }} />}
@@ -211,7 +211,7 @@ export const EpicDetailDrawer: React.FC<EpicDetailDrawerProps> = ({ isOpen, onCl
                           return (
                             <button key={s} onClick={() => handleUpdate('status', s)} style={{
                               width: '100%', padding: '5px 12px', fontSize: 13, border: 'none', textAlign: 'left',
-                              background: epic.status === s ? 'rgba(37,99,235,0.08)' : 'transparent', color: '#0F172A', cursor: 'pointer',
+                              background: epic.status === s ? 'rgba(37,99,235,0.08)' : 'transparent', color: 'var(--fg-1, #0F172A)', cursor: 'pointer',
                             }}>
                               <span style={{ display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px', borderRadius: 4, fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em', background: sc.bg, color: sc.text }}>{sc.label}</span>
                             </button>
@@ -228,10 +228,10 @@ export const EpicDetailDrawer: React.FC<EpicDetailDrawerProps> = ({ isOpen, onCl
                 <input value={titleValue} onChange={e => setTitleValue(e.target.value)}
                   onBlur={() => { handleUpdate('summary', titleValue); setEditingTitle(false); }}
                   onKeyDown={e => { if (e.key === 'Enter') { handleUpdate('summary', titleValue); setEditingTitle(false); } if (e.key === 'Escape') setEditingTitle(false); }}
-                  autoFocus style={{ width: '100%', fontSize: 20, fontWeight: 650, color: '#0F172A', border: '1.5px solid #2563EB', borderRadius: 4, padding: '4px 8px', outline: 'none', fontFamily: "'Sora', sans-serif", marginBottom: 8 }}
+                  autoFocus style={{ width: '100%', fontSize: 20, fontWeight: 650, color: 'var(--fg-1, #0F172A)', border: '1.5px solid #2563EB', borderRadius: 4, padding: '4px 8px', outline: 'none', fontFamily: "'Sora', sans-serif", marginBottom: 8 }}
                 />
               ) : (
-                <h2 onClick={() => setEditingTitle(true)} style={{ fontSize: 20, fontWeight: 650, color: '#0F172A', margin: '0 0 8px', cursor: 'text', fontFamily: "'Sora', sans-serif", lineHeight: 1.3 }}>
+                <h2 onClick={() => setEditingTitle(true)} style={{ fontSize: 20, fontWeight: 650, color: 'var(--fg-1, #0F172A)', margin: '0 0 8px', cursor: 'text', fontFamily: "'Sora', sans-serif", lineHeight: 1.3 }}>
                   {epic.summary || <span style={{ fontStyle: 'italic', color: 'var(--fg-3, #94A3B8)' }}>Click to add a title...</span>}
                 </h2>
               )}
@@ -254,7 +254,7 @@ export const EpicDetailDrawer: React.FC<EpicDetailDrawerProps> = ({ isOpen, onCl
                       <textarea value={descValue} onChange={e => setDescValue(e.target.value)}
                         onBlur={() => { handleUpdate('description_text', descValue); setEditingDesc(false); }}
                         autoFocus rows={4}
-                        style={{ width: '100%', border: '1.5px solid #2563EB', borderRadius: 4, padding: 8, fontSize: 14, color: '#0F172A', fontFamily: 'Inter, sans-serif', outline: 'none', resize: 'vertical', minHeight: 80 }}
+                        style={{ width: '100%', border: '1.5px solid #2563EB', borderRadius: 4, padding: 8, fontSize: 14, color: 'var(--fg-1, #0F172A)', fontFamily: 'Inter, sans-serif', outline: 'none', resize: 'vertical', minHeight: 80 }}
                       />
                     ) : (
                       <div onClick={() => setEditingDesc(true)} style={{
@@ -285,12 +285,12 @@ export const EpicDetailDrawer: React.FC<EpicDetailDrawerProps> = ({ isOpen, onCl
                       {epic.reporter_display_name ? <span style={DETAIL_VALUE}>{epic.reporter_display_name}</span> : <span style={{ fontSize: 14, color: 'var(--fg-3, #94A3B8)', fontStyle: 'italic' }}>— Set reporter</span>}
                     </DetailRow>
                     <DetailRow label="Due Date">
-                      <span style={{ ...DETAIL_VALUE, fontFamily: "'JetBrains Mono', monospace", fontSize: 13, color: epic.due_date ? '#0F172A' : 'var(--fg-3, #94A3B8)' }}>
+                      <span style={{ ...DETAIL_VALUE, fontFamily: "'JetBrains Mono', monospace", fontSize: 13, color: epic.due_date ? 'var(--fg-1, #0F172A)' : 'var(--fg-3, #94A3B8)' }}>
                         {epic.due_date ? format(new Date(epic.due_date), 'MMM d, yyyy') : '— Set date'}
                       </span>
                     </DetailRow>
                     <DetailRow label="Release">
-                      <span style={{ ...DETAIL_VALUE, color: formatFixVersions(epic.fix_versions) !== '—' ? '#0F172A' : 'var(--fg-3, #94A3B8)' }}>
+                      <span style={{ ...DETAIL_VALUE, color: formatFixVersions(epic.fix_versions) !== '—' ? 'var(--fg-1, #0F172A)' : 'var(--fg-3, #94A3B8)' }}>
                         {formatFixVersions(epic.fix_versions)}
                       </span>
                     </DetailRow>
@@ -320,7 +320,7 @@ export const EpicDetailDrawer: React.FC<EpicDetailDrawerProps> = ({ isOpen, onCl
                             <span style={{
                               display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px', borderRadius: 4,
                               fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em',
-                              backgroundColor: jiraSyncData.jira_sync_status === 'synced' || jiraSyncData.jira_sync_status === 'pushed' ? '#E3FCEF' : jiraSyncData.jira_sync_status === 'queued' || jiraSyncData.jira_sync_status === 'approval_pending' ? '#DEEBFF' : '#DFE1E6',
+                              backgroundColor: jiraSyncData.jira_sync_status === 'synced' || jiraSyncData.jira_sync_status === 'pushed' ? 'var(--status-ok-bg, #E3FCEF)' : jiraSyncData.jira_sync_status === 'queued' || jiraSyncData.jira_sync_status === 'approval_pending' ? '#DEEBFF' : '#DFE1E6',
                               color: jiraSyncData.jira_sync_status === 'synced' || jiraSyncData.jira_sync_status === 'pushed' ? '#006644' : jiraSyncData.jira_sync_status === 'queued' || jiraSyncData.jira_sync_status === 'approval_pending' ? '#0747A6' : '#253858',
                             }}>{jiraSyncData.jira_sync_status}</span>
                           </div>
@@ -349,9 +349,9 @@ export const EpicDetailDrawer: React.FC<EpicDetailDrawerProps> = ({ isOpen, onCl
 
 function DetailRow({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', height: 36, gap: 12 }}>
+    <div style={{ display: 'flex', alignItems: 'center', height: 50, gap: 12 }}>
       <span style={DETAIL_LABEL}>{label}</span>
-      <div style={{ flex: 1, display: 'flex', alignItems: 'center', height: 36 }}>{children}</div>
+      <div style={{ flex: 1, display: 'flex', alignItems: 'center', height: 50 }}>{children}</div>
     </div>
   );
 }
@@ -365,7 +365,7 @@ function CommentsPane({ comments, isLoading }: { comments: any[]; isLoading: boo
         <div key={c.id} style={{ borderBottom: '0.75px solid rgba(15,23,42,0.06)', paddingBottom: 12 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
             <div style={{ width: 24, height: 24, borderRadius: '50%', background: 'var(--bd-default, #E2E8F0)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: '#64748B', flexShrink: 0 }}>{getInitials(c.author_display_name || 'U')}</div>
-            <span style={{ fontSize: 13, fontWeight: 600, color: '#0F172A' }}>{c.author_display_name || 'Unknown'}</span>
+            <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1, #0F172A)' }}>{c.author_display_name || 'Unknown'}</span>
             <span style={{ fontSize: 11, color: 'var(--fg-3, #94A3B8)', marginLeft: 'auto' }}>{c.jira_created_at ? formatDistanceToNow(new Date(c.jira_created_at), { addSuffix: true }) : ''}</span>
           </div>
           <div style={{ fontSize: 13, color: '#334155', lineHeight: 1.6, whiteSpace: 'pre-wrap', paddingLeft: 32 }}>{c.body || ''}</div>
@@ -395,7 +395,7 @@ function HistoryPane({ changelog, isLoading, getStatusColors }: { changelog: any
                 <div style={{ width: 24, height: 24, borderRadius: '50%', background: 'var(--bd-default, #E2E8F0)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: '#64748B', flexShrink: 0, marginTop: 2 }}>{getInitials(entry.author_display_name || 'S')}</div>
                 <div style={{ flex: 1 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap', marginBottom: 4 }}>
-                    <span style={{ fontSize: 13, fontWeight: 600, color: '#0F172A' }}>{entry.author_display_name || 'System'}</span>
+                    <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1, #0F172A)' }}>{entry.author_display_name || 'System'}</span>
                     <span style={{ fontSize: 11, color: 'var(--fg-3, #94A3B8)' }}>{entry.jira_created_at ? formatDistanceToNow(new Date(entry.jira_created_at), { addSuffix: true }) : ''}</span>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
@@ -418,13 +418,13 @@ function HistoryPane({ changelog, isLoading, getStatusColors }: { changelog: any
               <div style={{ width: 24, height: 24, borderRadius: '50%', background: 'var(--bd-default, #E2E8F0)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: '#64748B', flexShrink: 0 }}>{getInitials(entry.author_display_name || 'S')}</div>
               <div style={{ flex: 1 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2 }}>
-                  <span style={{ fontSize: 13, fontWeight: 600, color: '#0F172A' }}>{entry.author_display_name || 'System'}</span>
+                  <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1, #0F172A)' }}>{entry.author_display_name || 'System'}</span>
                   <span style={{ fontSize: 11, color: 'var(--fg-3, #94A3B8)' }}>{entry.jira_created_at ? formatDistanceToNow(new Date(entry.jira_created_at), { addSuffix: true }) : ''}</span>
                 </div>
                 <div style={{ fontSize: 13, color: '#64748B' }}>
-                  Changed <strong style={{ color: '#0F172A', fontWeight: 600 }}>{entry.field_name}</strong>
+                  Changed <strong style={{ color: 'var(--fg-1, #0F172A)', fontWeight: 600 }}>{entry.field_name}</strong>
                   {entry.from_string && <> from <span style={{ color: 'var(--fg-3, #94A3B8)' }}>{entry.from_string}</span></>}
-                  {entry.to_string && <> to <span style={{ color: '#0F172A' }}>{entry.to_string}</span></>}
+                  {entry.to_string && <> to <span style={{ color: 'var(--fg-1, #0F172A)' }}>{entry.to_string}</span></>}
                 </div>
               </div>
             </div>

@@ -117,7 +117,7 @@ export function PHDetailDrawer({ issue, children: childIssues, releases, open, o
                     <div
                       key={child.id}
                       className="flex items-center gap-2 px-3 rounded-md cursor-pointer transition-colors"
-                      style={{ height: 36, border: '1px solid var(--cp-bd-zone)' }}
+                      style={{ height: 50, border: '1px solid var(--cp-bd-zone)' }}
                       onClick={() => onSelectIssue(child as unknown as PHIssue)}
                       onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-1)'; }}
                       onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}

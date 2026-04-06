@@ -113,7 +113,7 @@ export function BulkMoveModal({ items, selectedKeys, onConfirm, onClose }: BulkM
               <div key={item.id}
                 onClick={() => !isDisabled && setSelected(item.key)}
                 style={{
-                  height: 36, display: 'flex', alignItems: 'center', gap: 6,
+                  height: 50, display: 'flex', alignItems: 'center', gap: 6,
                   paddingLeft: (search ? 0 : depth * 20) + 16, paddingRight: 16,
                   cursor: isDisabled ? 'not-allowed' : 'pointer',
                   background: isSelected ? 'var(--cp-primary-5)' : undefined,

@@ -74,7 +74,7 @@ export function CopyWorkflowSection({ projectId, onCopied }: CopyWorkflowSection
   };
 
   const inputStyle: React.CSSProperties = {
-    height: 36, padding: '0 12px', fontSize: 13,
+    height: 50, padding: '8px 12px', fontSize: 13,
     color: 'var(--fg-1)', border: '1px solid var(--divider)',
     borderRadius: 6, outline: 'none', fontFamily: "'Inter', sans-serif",
     flex: 1, minWidth: 0,
@@ -99,7 +99,7 @@ export function CopyWorkflowSection({ projectId, onCopied }: CopyWorkflowSection
             disabled={!sourceProjectId}
             className="flex items-center gap-1.5 hover:bg-[#F8FAFC] transition-colors disabled:opacity-40"
             style={{
-              height: 36, padding: '0 14px', fontSize: 13, fontWeight: 500,
+              height: 50, padding: '0 14px', fontSize: 13, fontWeight: 500,
               color: 'var(--fg-2)', border: '1px solid var(--divider)', borderRadius: 6,
               background: 'transparent', cursor: sourceProjectId ? 'pointer' : 'default',
             }}
@@ -127,12 +127,12 @@ export function CopyWorkflowSection({ projectId, onCopied }: CopyWorkflowSection
               This will replace your current workflow with the workflow from <strong>{selectedProject?.name}</strong>. Continue?
             </p>
             <div className="flex justify-end gap-2 mt-6">
-              <button onClick={() => setConfirmOpen(false)} className="bg-[var(--cp-float)] dark:bg-[#1A1A1A]" style={{ height: 36, padding: '0 16px', fontSize: 13, fontWeight: 500, color: 'var(--fg-2)', border: '1px solid var(--divider)', borderRadius: 6, cursor: 'pointer' }}>Cancel</button>
+              <button onClick={() => setConfirmOpen(false)} className="bg-[var(--cp-float)] dark:bg-[#1A1A1A]" style={{ height: 50, padding: '0 16px', fontSize: 13, fontWeight: 500, color: 'var(--fg-2)', border: '1px solid var(--divider)', borderRadius: 6, cursor: 'pointer' }}>Cancel</button>
               <button
                 onClick={handleCopy}
                 disabled={loading}
                 className="hover:opacity-90 transition-opacity disabled:opacity-50 bg-[var(--cp-blue)]"
-                style={{ height: 36, padding: '0 16px', fontSize: 13, fontWeight: 600, color: '#FFFFFF', border: 'none', borderRadius: 6, cursor: loading ? 'default' : 'pointer' }}
+                style={{ height: 50, padding: '0 16px', fontSize: 13, fontWeight: 600, color: '#FFFFFF', border: 'none', borderRadius: 6, cursor: loading ? 'default' : 'pointer' }}
               >
                 {loading ? 'Copying...' : 'Copy Workflow'}
               </button>

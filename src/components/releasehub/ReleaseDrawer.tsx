@@ -348,7 +348,7 @@ Do not use jargon. Do not hallucinate features not listed above.`;
             let Icon: typeof CheckCircle2;
 
             if (isPass) {
-              bgColor = '#E3FCEF'; borderColor = '#36B37E'; labelColor = '#006644'; detailColor = '#0F7B4D';
+              bgColor = 'var(--status-ok-bg, #E3FCEF)'; borderColor = '#36B37E'; labelColor = '#006644'; detailColor = '#0F7B4D';
               Icon = CheckCircle2;
             } else if (isFail) {
               bgColor = '#FFEBE6'; borderColor = '#FF5630'; labelColor = '#BF2600'; detailColor = '#7A2300';
@@ -467,7 +467,7 @@ function ChangesTab({ changes }: { changes: any[] }) {
       </thead>
       <tbody>
         {changes.map((c: any) => (
-          <tr key={c.id} className="border-b border-[rgba(15,23,42,0.06)]" style={{ height: 36, background: 'var(--bg-app)' }}>
+          <tr key={c.id} className="border-b border-[rgba(15,23,42,0.06)]" style={{ height: 50, background: 'var(--bg-app)' }}>
             <td className="px-3 py-2"><span className="font-medium text-[var(--cp-blue)]" style={{ fontFamily: RH.fontMono }}>{c.chg_number}</span></td>
             <td className="px-3 py-2 truncate max-w-[200px]" title={c.title}>{c.title}</td>
             <td className="px-3 py-2"><StatusLozenge status={c.status} /></td>

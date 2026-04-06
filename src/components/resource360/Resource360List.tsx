@@ -81,7 +81,7 @@ export function Resource360List({ items, onItemClick }: Props) {
       {/* Header — STICKY */}
       <div style={{
         display: 'grid', gridTemplateColumns: gridTemplate, alignItems: 'center',
-        height: 36, padding: '0 12px', background: '#EDE7E0',
+        height: 50, padding: '8px 12px', background: '#EDE7E0',
         borderBottom: '1px solid #D9D2C9', position: 'sticky', top: 0, zIndex: 10,
       }}>
         {headerLabels.map((label, idx) => {
@@ -124,7 +124,7 @@ export function Resource360List({ items, onItemClick }: Props) {
                   <div onClick={() => onItemClick(item)}
                     style={{
                       display: 'grid', gridTemplateColumns: gridTemplate, alignItems: 'center',
-                      height: 36, padding: '0 12px', borderBottom: '1px solid #F0F0F3',
+                      height: 50, padding: '8px 12px', borderBottom: '1px solid #F0F0F3',
                       background: rowIdx % 2 === 1 ? '#FAFBFC' : 'transparent', cursor: 'pointer',
                       borderLeft: `3px solid ${sc.dot}`, transition: 'background .1s',
                     }}

@@ -27,7 +27,7 @@ export function JiraSyncChip({ jiraKey, baseUrl, size = 'sm', className }: JiraS
     <span
       className={cn(
         'inline-flex items-center gap-1 rounded font-mono',
-        'bg-[#DEEBFF] text-[#0747A6] dark:bg-[#0747A6]/20 dark:text-[#4C9AFF]',
+        'bg-[var(--status-info-bg, #DEEBFF)] text-[#0747A6] dark:bg-[#0747A6]/20 dark:text-[#4C9AFF]',
         size === 'sm' ? 'px-1.5 py-0.5 text-[10px]' : 'px-2 py-0.5 text-[11px]',
         'font-semibold tracking-wide whitespace-nowrap',
         className

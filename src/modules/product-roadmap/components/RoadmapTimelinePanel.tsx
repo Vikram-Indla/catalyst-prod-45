@@ -139,7 +139,7 @@ export function RoadmapTimelinePanel({ items, groups, config, selectedItemId, on
               {todayPosition !== null && config.showToday && <RoadmapTodayMarker position={todayPosition} />}
               {groups.map(group => (
                 <div key={group.key}>
-                  <div style={{ height: 36, background: '#FAFBFC', borderBottom: '1px solid var(--bd-default, #E2E8F0)' }}>
+                  <div style={{ height: 50, background: '#FAFBFC', borderBottom: '1px solid var(--bd-default, #E2E8F0)' }}>
                     <span style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748B', paddingLeft: 16, lineHeight: '36px' }}>
                       {group.label}
                     </span>

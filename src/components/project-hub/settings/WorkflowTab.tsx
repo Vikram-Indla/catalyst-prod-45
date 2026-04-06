@@ -228,7 +228,7 @@ export function WorkflowTab({ projectId }: WorkflowTabProps) {
           onClick={() => setAddOpen(true)}
           className="flex items-center gap-1.5 mt-3 hover:bg-[#F8FAFC] transition-colors"
           style={{
-            height: 36, padding: '0 14px', fontSize: 13, fontWeight: 500,
+            height: 50, padding: '0 14px', fontSize: 13, fontWeight: 500,
             color: 'var(--fg-2)', border: '1px solid var(--divider)', borderRadius: 6,
             background: 'transparent', cursor: 'pointer',
           }}

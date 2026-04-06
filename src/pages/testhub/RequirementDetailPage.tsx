@@ -221,7 +221,7 @@ export default function RequirementDetailPage() {
             <Link2 size={18} style={{ color: '#2563EB' }} /> Linked Test Cases ({linkedTests.length})
           </h3>
           <button onClick={() => setShowLinkModal(true)}
-            style={{ display: 'flex', alignItems: 'center', gap: 6, height: 36, padding: '0 14px', border: 'none', borderRadius: 8, backgroundColor: '#2563EB', color: '#FFF', fontSize: 13, fontWeight: 500, cursor: 'pointer' }}>
+            style={{ display: 'flex', alignItems: 'center', gap: 6, height: 50, padding: '0 14px', border: 'none', borderRadius: 8, backgroundColor: '#2563EB', color: '#FFF', fontSize: 13, fontWeight: 500, cursor: 'pointer' }}>
             <Plus size={16} /> Link Test Case
           </button>
         </div>
@@ -246,7 +246,7 @@ export default function RequirementDetailPage() {
                 </div>
                 <div style={{ display: 'flex', gap: 8 }}>
                   <button onClick={() => navigate(`/testhub/repository?view=${test.test_case_id}`)}
-                    style={{ display: 'flex', alignItems: 'center', gap: 4, height: 32, padding: '0 12px', border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0', borderRadius: 6, backgroundColor: isDark ? '#1A1A1A' : '#FFF', color: isDark ? '#A1A1A1' : '#334155', fontSize: 12, cursor: 'pointer' }}>
+                    style={{ display: 'flex', alignItems: 'center', gap: 4, height: 32, padding: '8px 12px', border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0', borderRadius: 6, backgroundColor: isDark ? '#1A1A1A' : '#FFF', color: isDark ? '#A1A1A1' : '#334155', fontSize: 12, cursor: 'pointer' }}>
                     View <ChevronRight size={14} />
                   </button>
                   <button onClick={() => unlinkTest(test.link_id)}

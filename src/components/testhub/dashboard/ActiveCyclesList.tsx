@@ -31,7 +31,7 @@ export function ActiveCyclesList({ cycles }: Props) {
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <div style={{ width: 36, height: 36, borderRadius: 12, backgroundColor: 'var(--tint-green-soft, #ECFDF5)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ width: 36, height: 50, borderRadius: 12, backgroundColor: 'var(--tint-green-soft, #ECFDF5)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <Play size={18} color="var(--sem-success)" />
           </div>
           <div>

@@ -212,7 +212,7 @@ export default function IdeasBacklogPage() {
           <div style={{ background: isDark ? 'transparent' : '#FFFFFF', borderRadius: '6px', border: `1px solid ${dk.border}`, overflow: 'hidden' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
-                <tr style={{ height: '36px', background: isDark ? 'rgba(255,255,255,0.03)' : '#F1F5F9' }}>
+                <tr style={{ height: '50px', background: isDark ? 'rgba(255,255,255,0.03)' : '#F1F5F9' }}>
                   <th style={{ width: '40px', padding: '0 8px', textAlign: 'center' }}>
                     <input type="checkbox" checked={selectedRows.size === ideas.length && ideas.length > 0} onChange={toggleAll} style={{ cursor: 'pointer', accentColor: '#2563EB' }} />
                   </th>
@@ -235,7 +235,7 @@ export default function IdeasBacklogPage() {
                   const isConverted = idea.status === 'Converted to Initiative' || idea.status === 'Converted';
                   return (
                     <tr key={idea.idea_key} onClick={() => setDrawerKey(idea.idea_key)}
-                      style={{ height: '36px', maxHeight: '36px', cursor: 'pointer', borderBottom: `0.75px solid ${dk.divider}`, background: selectedRows.has(idea.idea_key) ? dk.selectedBg : 'transparent', transition: 'background 150ms' }}
+                      style={{ height: '50px', maxHeight: '50px', cursor: 'pointer', borderBottom: `0.75px solid ${dk.divider}`, background: selectedRows.has(idea.idea_key) ? dk.selectedBg : 'transparent', transition: 'background 150ms' }}
                       onMouseEnter={e => { if (!selectedRows.has(idea.idea_key)) e.currentTarget.style.background = dk.hoverBg; }}
                       onMouseLeave={e => { if (!selectedRows.has(idea.idea_key)) e.currentTarget.style.background = 'transparent'; }}
                     >
@@ -403,7 +403,7 @@ function CreateIdeaDialog({ open, onClose }: { open: boolean; onClose: () => voi
           <div>
             <label style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: dk.t2, display: 'block', marginBottom: '6px' }}>TITLE *</label>
             <input value={title} onChange={e => setTitle(e.target.value)} placeholder="Enter idea title..."
-              style={{ width: '100%', height: '36px', border: `1px solid ${dk.border}`, borderRadius: '6px', padding: '0 12px', fontSize: '13px', outline: 'none', color: dk.t1, background: isDark ? 'transparent' : '#FFFFFF' }}
+              style={{ width: '100%', height: '50px', border: `1px solid ${dk.border}`, borderRadius: '6px', padding: '8px 12px', fontSize: '13px', outline: 'none', color: dk.t1, background: isDark ? 'transparent' : '#FFFFFF' }}
             />
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
@@ -443,8 +443,8 @@ function CreateIdeaDialog({ open, onClose }: { open: boolean; onClose: () => voi
             />
           </div>
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginTop: '4px' }}>
-            <button onClick={onClose} style={{ height: '36px', padding: '0 16px', borderRadius: '6px', border: `1px solid ${dk.border}`, background: isDark ? 'transparent' : '#FFFFFF', color: dk.t2, fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}>Cancel</button>
-            <button onClick={handleCreate} disabled={createIdea.isPending} style={{ height: '36px', padding: '0 16px', borderRadius: '6px', border: 'none', background: '#2563EB', color: '#FFFFFF', fontSize: '13px', fontWeight: 600, cursor: 'pointer', opacity: createIdea.isPending ? 0.7 : 1 }}>
+            <button onClick={onClose} style={{ height: '50px', padding: '0 16px', borderRadius: '6px', border: `1px solid ${dk.border}`, background: isDark ? 'transparent' : '#FFFFFF', color: dk.t2, fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}>Cancel</button>
+            <button onClick={handleCreate} disabled={createIdea.isPending} style={{ height: '50px', padding: '0 16px', borderRadius: '6px', border: 'none', background: '#2563EB', color: '#FFFFFF', fontSize: '13px', fontWeight: 600, cursor: 'pointer', opacity: createIdea.isPending ? 0.7 : 1 }}>
               {createIdea.isPending ? 'Creating...' : 'Create Idea'}
             </button>
           </div>

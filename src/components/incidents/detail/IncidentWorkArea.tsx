@@ -645,7 +645,7 @@ export function IncidentWorkArea({
                   value={rootCause || ''}
                   onChange={(e) => onResolutionChange('root_cause', e.target.value)}
                   placeholder="Document root cause..."
-                  className="min-h-[36px] text-sm"
+                  className="min-h-[50px] text-sm"
                   disabled={isConverted || status === 'closed'}
                 />
               </div>

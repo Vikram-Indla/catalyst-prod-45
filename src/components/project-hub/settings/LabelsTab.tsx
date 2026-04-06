@@ -59,7 +59,7 @@ export function LabelsTab({ projectId }: LabelsTabProps) {
   };
 
   const inputStyle: React.CSSProperties = {
-    height: 36, padding: '0 12px', fontSize: 13,
+    height: 50, padding: '8px 12px', fontSize: 13,
     color: 'var(--fg-1)', border: '1px solid var(--divider)',
     borderRadius: 6, outline: 'none', fontFamily: "'Inter', sans-serif",
     flex: 1, minWidth: 0,
@@ -127,7 +127,7 @@ export function LabelsTab({ projectId }: LabelsTabProps) {
             disabled={!newName.trim() || atMax}
             className="flex-shrink-0 transition-all disabled:opacity-40"
             style={{
-              height: 36, padding: '0 14px', fontSize: 13, fontWeight: 500,
+              height: 50, padding: '0 14px', fontSize: 13, fontWeight: 500,
               color: 'var(--fg-2)', border: '1px solid var(--divider)', borderRadius: 6,
               background: 'transparent', cursor: !newName.trim() || atMax ? 'default' : 'pointer',
             }}

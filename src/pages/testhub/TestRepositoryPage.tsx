@@ -771,7 +771,7 @@ export function TestRepositoryPage() {
                     }}
                     style={{
                       height: 32,
-                      padding: '0 12px',
+                      padding: '8px 12px',
                       backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF',
                       border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0',
                       borderRadius: 6,
@@ -797,7 +797,7 @@ export function TestRepositoryPage() {
                     }}
                     style={{
                       height: 32,
-                      padding: '0 12px',
+                      padding: '8px 12px',
                       backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF',
                       border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0',
                       borderRadius: 6,
@@ -818,7 +818,7 @@ export function TestRepositoryPage() {
                     onClick={handleBulkDelete}
                     style={{
                       height: 32,
-                      padding: '0 12px',
+                      padding: '8px 12px',
                       backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF',
                       border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0',
                       borderRadius: 6,
@@ -850,7 +850,7 @@ export function TestRepositoryPage() {
                   style={{
                     marginLeft: 'auto',
                     height: 32,
-                    padding: '0 12px',
+                    padding: '8px 12px',
                     background: 'transparent',
                     border: 'none',
                     borderRadius: 6,

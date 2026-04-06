@@ -98,7 +98,7 @@ export function StepWorkflow({ data, onChange }: StepWorkflowProps) {
               className="mt-2 bg-[var(--bg-app)]"
               style={{
                 width: '100%',
-                height: 36,
+                height: 50,
                 padding: '0 10px',
                 fontSize: 13,
                 border: '1px solid var(--divider)',

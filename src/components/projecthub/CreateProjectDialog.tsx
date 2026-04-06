@@ -141,7 +141,7 @@ export function CreateProjectDialog({ open, onClose }: Props) {
   const dropdownBg = dk ? '#1A1A1A' : 'var(--cp-float)';
 
   const inputStyle: React.CSSProperties = {
-    width: '100%', height: 36, padding: '0 12px',
+    width: '100%', height: 50, padding: '8px 12px',
     border: `1.5px solid ${border}`, borderRadius: 6,
     fontSize: 14, fontFamily: "'Inter', sans-serif",
     color: textPrimary, outline: 'none', background: inputBg,
@@ -398,7 +398,7 @@ export function CreateProjectDialog({ open, onClose }: Props) {
           <button
             onClick={onClose}
             style={{
-              display: 'inline-flex', alignItems: 'center', gap: 6, height: 36, padding: '0 16px',
+              display: 'inline-flex', alignItems: 'center', gap: 6, height: 50, padding: '0 16px',
               background: cancelBg, color: textSecondary, border: `1px solid ${border}`, borderRadius: 6,
               fontSize: 13, fontWeight: 500, cursor: 'pointer',
             }}
@@ -411,7 +411,7 @@ export function CreateProjectDialog({ open, onClose }: Props) {
             onClick={handleSubmit}
             disabled={createProject.isPending}
             style={{
-              display: 'inline-flex', alignItems: 'center', gap: 6, height: 36, padding: '0 18px',
+              display: 'inline-flex', alignItems: 'center', gap: 6, height: 50, padding: '0 18px',
               background: '#2563EB', color: '#FFFFFF',
               border: 'none', borderRadius: 6, fontSize: 13, fontWeight: 600, cursor: 'pointer',
               boxShadow: '0 2px 8px rgba(37,99,235,0.15)',

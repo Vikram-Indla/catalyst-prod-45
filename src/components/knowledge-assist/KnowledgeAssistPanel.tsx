@@ -280,7 +280,7 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
               aria-label={isListening ? 'Stop listening' : 'Voice input'}
               className="ka-icon-btn"
               style={{
-                width: 36, height: 36, borderRadius: 8, flexShrink: 0,
+                width: 36, height: 50, borderRadius: 8, flexShrink: 0,
                 border: 'none', background: isListening ? 'rgba(207,19,34,0.10)' : 'transparent',
                 cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}
@@ -308,7 +308,7 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
               aria-label="Send message"
               className="ka-icon-btn"
               style={{
-                width: 36, height: 36, borderRadius: 8, flexShrink: 0,
+                width: 36, height: 50, borderRadius: 8, flexShrink: 0,
                 border: 'none',
                 background: input.trim() ? 'var(--cp-blue)' : 'rgba(15,23,42,0.06)',
                 cursor: input.trim() ? 'pointer' : 'default',

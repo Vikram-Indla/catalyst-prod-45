@@ -154,7 +154,7 @@ export function EnterpriseTableView({
         className="grid items-center px-4 border-b border-slate-200 bg-slate-50"
         style={{
           gridTemplateColumns: '36px 1.4fr 100px 120px 100px 70px 80px 70px 70px 90px',
-          height: '36px',
+          height: '50px',
         }}
       >
         <div className="flex justify-center">
@@ -204,7 +204,7 @@ export function EnterpriseTableView({
             )}
             style={{
               gridTemplateColumns: '36px 1.4fr 100px 120px 100px 70px 80px 70px 70px 90px',
-              height: '36px',
+              height: '50px',
             }}
           >
             {/* Checkbox */}

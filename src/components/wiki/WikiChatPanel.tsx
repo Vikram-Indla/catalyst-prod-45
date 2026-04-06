@@ -150,7 +150,7 @@ export function WikiChatPanel({ open, onClose }: { open: boolean; onClose: () =>
           onKeyDown={e => { if (e.key === 'Enter') handleSend(); }}
           placeholder="Ask a question..."
           style={{
-            flex: 1, height: 36, padding: '0 12px', borderRadius: 8, fontSize: 12.5,
+            flex: 1, height: 50, padding: '8px 12px', borderRadius: 8, fontSize: 12.5,
             border: `0.75px solid ${border}`, outline: 'none', fontFamily: 'Inter, sans-serif',
             background: isDark ? '#0A0A0A' : 'var(--bg-1)', color: isDark ? '#EDEDED' : undefined,
           }}
@@ -158,7 +158,7 @@ export function WikiChatPanel({ open, onClose }: { open: boolean; onClose: () =>
           onBlur={e => { e.currentTarget.style.borderColor = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'; e.currentTarget.style.boxShadow = 'none'; }}
         />
         <button onClick={handleSend} disabled={sending || !input.trim()} style={{
-          width: 36, height: 36, borderRadius: 8, border: 'none', cursor: 'pointer',
+          width: 36, height: 50, borderRadius: 8, border: 'none', cursor: 'pointer',
           background: 'var(--cp-blue)', color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center',
           opacity: sending || !input.trim() ? 0.5 : 1,
         }}>

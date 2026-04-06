@@ -259,8 +259,8 @@ const GroupHeaderRow = memo(function GroupHeaderRow({ category, count, isCollaps
       className="flex items-center gap-2 cursor-pointer select-none"
       onClick={onToggleCollapse}
       style={{
-        height: 36,
-        padding: '0 12px',
+        height: 50,
+        padding: '8px 12px',
         background: isDark ? '#1A1A1A' : '#F8FAFC',
         borderTop: isFirst ? 'none' : `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.12)'}`,
         borderBottom: `0.75px solid ${isDark ? 'rgba(255,255,255,0.05)' : 'rgba(15,23,42,0.06)'}`,
@@ -553,7 +553,7 @@ export default function FeatureFlagsPage() {
               disabled={allEnabled || bulkMutation.isPending}
               className="inline-flex items-center gap-1.5 text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
               style={{
-                height: 36,
+                height: 50,
                 padding: '0 14px',
                 borderRadius: 6,
                 background: '#16A34A',
@@ -574,7 +574,7 @@ export default function FeatureFlagsPage() {
               disabled={noneEnabled || bulkMutation.isPending}
               className="inline-flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
               style={{
-                height: 36,
+                height: 50,
                 padding: '0 14px',
                 borderRadius: 6,
                 background: 'transparent',
@@ -618,8 +618,8 @@ export default function FeatureFlagsPage() {
               onClick={() => setFilterMode(mode)}
               className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2"
               style={{
-                padding: '0 12px',
-                height: 36,
+                padding: '8px 12px',
+                height: 50,
                 fontFamily: "'Inter', system-ui",
                 fontSize: 12,
                 fontWeight: filterMode === mode ? 650 : 500,
@@ -640,8 +640,8 @@ export default function FeatureFlagsPage() {
           onChange={(e) => setCategoryFilter(e.target.value as ModuleCategory | 'all')}
           className="focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2"
           style={{
-            height: 36,
-            padding: '0 12px',
+            height: 50,
+            padding: '8px 12px',
             fontFamily: "'Inter', system-ui",
             fontSize: 12,
             border: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.14)'}`,
@@ -717,12 +717,12 @@ export default function FeatureFlagsPage() {
               aria-label="Select all modules"
             />
           </div>
-          <div style={{ padding: '0 12px' }}>Module</div>
-          <div style={{ padding: '0 12px' }}>Category</div>
-          <div style={{ padding: '0 12px' }}>Status</div>
-          <div style={{ padding: '0 12px', textAlign: 'center' }}>Enabled</div>
+          <div style={{ padding: '8px 12px' }}>Module</div>
+          <div style={{ padding: '8px 12px' }}>Category</div>
+          <div style={{ padding: '8px 12px' }}>Status</div>
+          <div style={{ padding: '8px 12px', textAlign: 'center' }}>Enabled</div>
           <div
-            style={{ padding: '0 12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}
+            style={{ padding: '8px 12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}
             onClick={() => handleSort('updated_at')}
             className="select-none hover:text-[#0F172A] transition-colors duration-[120ms]"
             role="columnheader"

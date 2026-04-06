@@ -456,7 +456,7 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
                 aria-selected={isActive}
                 style={{
                   display: 'flex', alignItems: 'center', gap: 6,
-                  padding: '0 16px', height: 36,
+                  padding: '0 16px', height: 50,
                   background: 'none', border: 'none', borderBottom: isActive ? '2px solid #2563EB' : '2px solid transparent',
                   cursor: 'pointer',
                   fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 500,

@@ -100,7 +100,7 @@ export function GoalsListView({ goals, themes, onGoalClick, isDark = false }: Go
   return (
     <div style={{ border: `1px solid ${tableBorder}`, borderRadius: 12, overflow: 'hidden', background: isDark ? 'transparent' : 'var(--bg-app)' }}>
       {/* Header */}
-      <div style={{ display: 'grid', gridTemplateColumns: gridCols, height: 36, alignItems: 'center', padding: '0 16px', background: isDark ? 'transparent' : 'var(--bg-app)', borderBottom: `2px solid ${tableBorder}`, fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: isDark ? DK.t3 : 'var(--fg-3)' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: gridCols, height: 50, alignItems: 'center', padding: '0 16px', background: isDark ? 'transparent' : 'var(--bg-app)', borderBottom: `2px solid ${tableBorder}`, fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: isDark ? DK.t3 : 'var(--fg-3)' }}>
         {COLS.map(c => (
           <span
             key={c.key}

@@ -89,7 +89,7 @@ function DocumentsTable() {
           </thead>
           <tbody>
             {docs.map((d: any) => (
-              <tr key={d.id} style={{ borderTop: '0.75px solid var(--cp-border-default, rgba(15,23,42,0.08))', height: 36 }}
+              <tr key={d.id} style={{ borderTop: '0.75px solid var(--cp-border-default, rgba(15,23,42,0.08))', height: 50 }}
                 onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(15,23,42,0.04)'; }}
                 onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
               >
@@ -143,7 +143,7 @@ function JiraSourcesTable() {
         </thead>
         <tbody>
           {sources.map((s: any) => (
-            <tr key={s.id} style={{ borderTop: '0.75px solid var(--cp-border-default, rgba(15,23,42,0.08))', height: 36 }}
+            <tr key={s.id} style={{ borderTop: '0.75px solid var(--cp-border-default, rgba(15,23,42,0.08))', height: 50 }}
               onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(15,23,42,0.04)'; }}
               onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
             >

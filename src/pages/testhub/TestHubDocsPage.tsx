@@ -531,7 +531,7 @@ export default function TestHubDocsPage() {
                 >
                   <div style={{
                     width: 36,
-                    height: 36,
+                    height: 50,
                     borderRadius: 8,
                     backgroundColor: section.color + '15',
                     display: 'flex',

@@ -452,7 +452,7 @@ export default function TestCycleDetailPage() {
               <button
                 onClick={() => setIsAssignModalOpen(true)}
                 style={{
-                  height: 36, padding: '0 14px', border: '1.5px solid #C7D2FE', borderRadius: 8,
+                  height: 50, padding: '0 14px', border: '1.5px solid #C7D2FE', borderRadius: 8,
                   backgroundColor: '#EEF2FF', color: '#4F46E5', fontSize: 13, fontWeight: 600,
                   cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
                 }}
@@ -466,7 +466,7 @@ export default function TestCycleDetailPage() {
               <button
                 onClick={() => setIsRemoveConfirmOpen(true)}
                 style={{
-                  height: 36, padding: '0 14px', border: '1.5px solid #FECACA', borderRadius: 8,
+                  height: 50, padding: '0 14px', border: '1.5px solid #FECACA', borderRadius: 8,
                   backgroundColor: '#FEF2F2', color: '#DC2626', fontSize: 13, fontWeight: 600,
                   cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
                 }}
@@ -477,7 +477,7 @@ export default function TestCycleDetailPage() {
             )}
             {/* Status Filter */}
             <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}
-              style={{ height: 36, padding: '0 12px', border: `1.5px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 8, fontSize: 13, color: isDark ? '#A1A1A1' : '#334155', backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF' }}>
+              style={{ height: 50, padding: '8px 12px', border: `1.5px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 8, fontSize: 13, color: isDark ? '#A1A1A1' : '#334155', backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF' }}>
               <option value="all">All Statuses</option>
               <option value="not_run">Not Run</option>
               <option value="passed">Passed</option>
@@ -486,7 +486,7 @@ export default function TestCycleDetailPage() {
             </select>
             {/* Add Test Cases Button */}
             {canEdit && (
-              <button onClick={() => setIsAddModalOpen(true)} style={{ height: 36, padding: '0 14px', background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)', border: 'none', borderRadius: 8, color: '#FFFFFF', fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
+              <button onClick={() => setIsAddModalOpen(true)} style={{ height: 50, padding: '0 14px', background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)', border: 'none', borderRadius: 8, color: '#FFFFFF', fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
                 <Plus size={16} /> Add Test Cases
               </button>
             )}
@@ -595,7 +595,7 @@ export default function TestCycleDetailPage() {
                         </td>
                         <td style={{ padding: '14px 16px', textAlign: 'center' }}>
                           {cycle.status === 'active' && (
-                            <button onClick={(e) => { e.stopPropagation(); navigate(`/testhub/cycles/${cycleId}/execute?testId=${ctc.id}`); }} style={{ height: 30, padding: '0 12px', background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)', border: 'none', borderRadius: 6, color: '#FFFFFF', fontSize: 12, fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                            <button onClick={(e) => { e.stopPropagation(); navigate(`/testhub/cycles/${cycleId}/execute?testId=${ctc.id}`); }} style={{ height: 30, padding: '8px 12px', background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)', border: 'none', borderRadius: 6, color: '#FFFFFF', fontSize: 12, fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
                               <Play size={12} /> Run
                             </button>
                           )}

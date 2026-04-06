@@ -105,7 +105,7 @@ export default function BoardManagerPage({ projectIdOverride, basePath }: BoardM
               />
             </div>
             <button style={{
-              display: 'flex', alignItems: 'center', gap: 5, height: 30, padding: '0 12px',
+              display: 'flex', alignItems: 'center', gap: 5, height: 30, padding: '8px 12px',
               background: 'transparent', border: '0.75px solid rgba(15,23,42,0.12)',
               borderRadius: 6, cursor: 'pointer', fontSize: 12.5, fontWeight: 500,
               color: 'var(--fg-2)', fontFamily: "'Inter', sans-serif",

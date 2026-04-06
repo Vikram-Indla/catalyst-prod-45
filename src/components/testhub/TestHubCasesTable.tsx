@@ -251,15 +251,15 @@ export function TestHubCasesTable({ cases, projectId, onRefresh }: TestHubCasesT
             {selectedIds.size} selected
           </span>
           <div style={{ display: 'flex', gap: '8px' }}>
-            <button className="th-btn-secondary" style={{ height: '32px', padding: '0 12px' }}>
+            <button className="th-btn-secondary" style={{ height: '32px', padding: '8px 12px' }}>
               Move to Folder
             </button>
-            <button className="th-btn-secondary" style={{ height: '32px', padding: '0 12px' }}>
+            <button className="th-btn-secondary" style={{ height: '32px', padding: '8px 12px' }}>
               Change Status
             </button>
             <button 
               className="th-btn-secondary" 
-              style={{ height: '32px', padding: '0 12px', color: 'var(--th-danger)' }}
+              style={{ height: '32px', padding: '8px 12px', color: 'var(--th-danger)' }}
             >
               Delete
             </button>

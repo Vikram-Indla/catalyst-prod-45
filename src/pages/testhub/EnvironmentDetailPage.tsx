@@ -210,7 +210,7 @@ export default function EnvironmentDetailPage() {
           </div>
         </div>
         <select value={environment.health_status} onChange={(e) => updateHealthStatus(e.target.value)}
-          style={{ height: 36, padding: '0 12px', border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 6, fontSize: 13, backgroundColor: isDark ? '#1A1A1A' : '#FFF', color: isDark ? '#EDEDED' : undefined, cursor: 'pointer' }}>
+          style={{ height: 50, padding: '8px 12px', border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 6, fontSize: 13, backgroundColor: isDark ? '#1A1A1A' : '#FFF', color: isDark ? '#EDEDED' : undefined, cursor: 'pointer' }}>
           <option value="healthy">Healthy</option>
           <option value="degraded">Degraded</option>
           <option value="down">Down</option>

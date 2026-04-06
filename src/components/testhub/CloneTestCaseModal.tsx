@@ -151,7 +151,7 @@ export function CloneTestCaseModal({
   const inputStyle: React.CSSProperties = {
     height: 40,
     width: '100%',
-    padding: '0 12px',
+    padding: '8px 12px',
     border: '1.5px solid var(--divider)',
     borderRadius: 8,
     fontFamily: 'Inter, sans-serif',

@@ -69,7 +69,7 @@ export function AssigneeDropdown({ currentAssignee, availableAssignees, onSelect
       <div
         onClick={() => { onSelect(null); onClose(); }}
         style={{
-          height: 36, padding: '0 12px', display: 'flex', alignItems: 'center', gap: 8,
+          height: 50, padding: '8px 12px', display: 'flex', alignItems: 'center', gap: 8,
           cursor: 'pointer', fontFamily: "'Inter', sans-serif",
         }}
         onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--bg-1)')}
@@ -90,7 +90,7 @@ export function AssigneeDropdown({ currentAssignee, availableAssignees, onSelect
               key={a.displayName + (a.email || '')}
               onClick={() => { onSelect(a); onClose(); }}
               style={{
-                height: 40, padding: '0 12px', display: 'flex', alignItems: 'center', gap: 8,
+                height: 40, padding: '8px 12px', display: 'flex', alignItems: 'center', gap: 8,
                 cursor: 'pointer', background: isCurrent ? 'var(--bg-1)' : undefined,
                 fontFamily: "'Inter', sans-serif",
               }}

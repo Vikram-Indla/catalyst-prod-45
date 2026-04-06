@@ -163,7 +163,7 @@ export default function WikiLearningPathDetailPage() {
         {/* Header */}
         <div style={{
           display: 'grid', gridTemplateColumns: '40px 1fr 80px 80px 48px',
-          background: isDark ? '#1A1A1A' : '#F1F5F9', padding: '0 16px', height: 36, alignItems: 'center',
+          background: isDark ? '#1A1A1A' : '#F1F5F9', padding: '0 16px', height: 50, alignItems: 'center',
           fontFamily: F.sora, fontSize: 10, fontWeight: 600, textTransform: 'uppercase', color: isDark ? '#878787' : '#64748B', letterSpacing: '0.05em',
           borderBottom: `0.75px solid ${border}`,
         }}>

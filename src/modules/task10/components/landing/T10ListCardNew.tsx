@@ -156,7 +156,7 @@ export function T10ListCardNew({ list, onRename, onDelete }: T10ListCardNewProps
               alignItems: 'center',
               justifyContent: 'center',
               gap: '8px',
-              height: '36px',
+              height: '50px',
               padding: '0 16px',
               fontFamily: 'Inter, system-ui, sans-serif',
               fontSize: '14px',

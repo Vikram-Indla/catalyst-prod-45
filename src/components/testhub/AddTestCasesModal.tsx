@@ -163,12 +163,12 @@ export function AddTestCasesModal({ isOpen, cycleId, existingTestCaseIds, onClos
               <div style={{ position: 'relative', flex: 1 }}>
                 <Search size={16} style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: 'var(--fg-4)' }} />
                 <input type="text" placeholder="Search test cases..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
-                  style={{ width: '100%', height: 36, paddingLeft: 36, paddingRight: 12, border: '1.5px solid var(--divider)', borderRadius: 8, fontSize: 13, color: 'var(--fg-1)' }}
+                  style={{ width: '100%', height: 50, paddingLeft: 36, paddingRight: 12, border: '1.5px solid var(--divider)', borderRadius: 8, fontSize: 13, color: 'var(--fg-1)' }}
                 />
               </div>
-              <button onClick={selectAll} style={{ height: 36, padding: '0 12px', border: '1px solid var(--divider)', borderRadius: 6, backgroundColor: 'var(--cp-float)', color: 'var(--cp-blue)', fontSize: 12, fontWeight: 500, cursor: 'pointer' }}>Select All</button>
+              <button onClick={selectAll} style={{ height: 50, padding: '8px 12px', border: '1px solid var(--divider)', borderRadius: 6, backgroundColor: 'var(--cp-float)', color: 'var(--cp-blue)', fontSize: 12, fontWeight: 500, cursor: 'pointer' }}>Select All</button>
               {selectedIds.size > 0 && (
-                <button onClick={() => setSelectedIds(new Set())} style={{ height: 36, padding: '0 12px', border: '1px solid var(--divider)', borderRadius: 6, backgroundColor: 'var(--cp-float)', color: 'var(--fg-3)', fontSize: 12, fontWeight: 500, cursor: 'pointer' }}>Deselect All</button>
+                <button onClick={() => setSelectedIds(new Set())} style={{ height: 50, padding: '8px 12px', border: '1px solid var(--divider)', borderRadius: 6, backgroundColor: 'var(--cp-float)', color: 'var(--fg-3)', fontSize: 12, fontWeight: 500, cursor: 'pointer' }}>Deselect All</button>
               )}
               <span style={{ fontSize: 13, color: 'var(--fg-3)' }}>{filteredTestCases.length} available</span>
             </div>

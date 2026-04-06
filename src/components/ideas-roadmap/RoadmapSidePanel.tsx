@@ -193,7 +193,7 @@ export function RoadmapSidePanel({
               <button
                 onClick={() => onConvertToInitiative(idea)}
                 style={{
-                  width: '100%', height: 36, borderRadius: 6, border: 'none',
+                  width: '100%', height: 50, borderRadius: 6, border: 'none',
                   background: 'var(--sem-success)', color: 'var(--bg-app)', cursor: 'pointer',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
                   fontSize: 13, fontWeight: 650, fontFamily: "'Inter', sans-serif",
@@ -226,7 +226,7 @@ export function RoadmapSidePanel({
                     value={milestones[m.key] ?? ''}
                     onChange={e => setMilestones(prev => ({ ...prev, [m.key]: e.target.value || null }))}
                     style={{
-                      flex: 1, height: 36, border: '1px solid var(--divider)', borderRadius: 4,
+                      flex: 1, height: 50, border: '1px solid var(--divider)', borderRadius: 4,
                       padding: '0 10px', fontSize: 12, fontFamily: "'Inter', sans-serif",
                       color: milestones[m.key] ? 'var(--fg-2)' : 'var(--fg-4)', outline: 'none',
                       transition: 'border-color 150ms',
@@ -293,7 +293,7 @@ export function RoadmapSidePanel({
             onClick={handleSave}
             disabled={isSaving}
             style={{
-              flex: 1, height: 36, borderRadius: 6, border: 'none',
+              flex: 1, height: 50, borderRadius: 6, border: 'none',
               background: isSaving ? 'var(--fg-4)' : 'var(--cp-blue)', color: 'var(--bg-app)',
               cursor: isSaving ? 'default' : 'pointer',
               fontSize: 13, fontWeight: 650, fontFamily: "'Inter', sans-serif",

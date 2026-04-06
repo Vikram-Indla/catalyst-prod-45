@@ -255,13 +255,13 @@ export default function WikiHomePage() {
         <div style={{ borderRadius: 8, border: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(0,0,0,0.06)', background: isDark ? '#1A1A1A' : '#FFFFFF', overflow: 'hidden', marginBottom: 40 }}>
           <div style={{
             display: 'grid', gridTemplateColumns: '3% 34% 8% 12% 8% 8% 14% 5% 3%',
-            background: isDark ? '#1A1A1A' : '#F1F5F9', padding: '0 12px', height: 36, alignItems: 'center', borderBottom: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(0,0,0,0.06)',
+            background: isDark ? '#1A1A1A' : '#F1F5F9', padding: '8px 12px', height: 50, alignItems: 'center', borderBottom: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(0,0,0,0.06)',
             fontFamily: 'Sora, sans-serif', fontSize: 10, fontWeight: 600, textTransform: 'uppercase' as const, color: isDark ? '#878787' : '#64748B', letterSpacing: '0.05em',
           }}>
             <span></span><span>Article</span><span>Domain</span><span>Status</span><span>Confidence</span><span>Helpful</span><span>Tags</span><span>Ver.</span><span></span>
           </div>
           {articlesLoading ? Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} style={{ display: 'grid', gridTemplateColumns: '3% 34% 8% 12% 8% 8% 14% 5% 3%', padding: '0 12px', height: 42, alignItems: 'center', borderBottom: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(0,0,0,0.06)' }}>
+            <div key={i} style={{ display: 'grid', gridTemplateColumns: '3% 34% 8% 12% 8% 8% 14% 5% 3%', padding: '8px 12px', height: 42, alignItems: 'center', borderBottom: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(0,0,0,0.06)' }}>
               <span /><Skeleton w="80%" h={12} isDark={isDark} /><Skeleton w={30} h={12} isDark={isDark} /><Skeleton w={60} h={12} isDark={isDark} /><Skeleton w={40} h={12} isDark={isDark} /><Skeleton w={30} h={12} isDark={isDark} /><Skeleton w={80} h={12} isDark={isDark} /><Skeleton w={20} h={12} isDark={isDark} /><span />
             </div>
           )) : (articles ?? []).length > 0 ? (articles ?? []).map((a: any) => (
@@ -448,7 +448,7 @@ const ArticleRow = React.memo(({ a, navigate, bookmarked, onToggleBookmark, isDa
   return (
     <div onClick={() => navigate(`/wiki/${a.slug}`)} style={{
       display: 'grid', gridTemplateColumns: '3% 34% 8% 12% 8% 8% 14% 5% 3%',
-      padding: '0 12px', height: 42, alignItems: 'center', cursor: 'pointer',
+      padding: '8px 12px', height: 42, alignItems: 'center', cursor: 'pointer',
       borderBottom: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(0,0,0,0.06)', fontSize: 12, transition: 'background 80ms',
     }}
       onMouseEnter={e => e.currentTarget.style.background = 'rgba(37,99,235,0.04)'}

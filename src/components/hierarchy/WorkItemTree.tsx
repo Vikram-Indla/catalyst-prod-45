@@ -29,7 +29,7 @@ export function TreeSkeleton({ rows = 5 }: { rows?: number }) {
   const headerBg = isDark ? 'rgba(255,255,255,0.03)' : '#FAFAFA';
   return (
     <div style={{ border: '1px solid var(--divider)', borderRadius: 8, overflow: 'hidden', background: 'var(--bg-app)' }}>
-      <div style={{ height: 32, background: headerBg, borderBottom: '1px solid var(--divider)', display: 'flex', alignItems: 'center', padding: '0 12px' }}>
+      <div style={{ height: 32, background: headerBg, borderBottom: '1px solid var(--divider)', display: 'flex', alignItems: 'center', padding: '8px 12px' }}>
         <div style={{ width: 100, height: 10, background: 'var(--divider)', borderRadius: 4 }} />
       </div>
       {Array.from({ length: rows }).map((_, i) => (
@@ -180,7 +180,7 @@ function NoChildrenMessage({ parentLevel, depth, onAdd, parent }: { parentLevel:
   if (!childLevel) return null;
   return (
     <div style={{
-      height: 36, display: 'flex', alignItems: 'center', gap: 8,
+      height: 50, display: 'flex', alignItems: 'center', gap: 8,
       paddingLeft: (depth + 1) * 20 + 12, paddingRight: 12,
       borderBottom: '1px solid var(--divider)', fontFamily: "'Inter', sans-serif",
     }}>
@@ -516,8 +516,8 @@ export function WorkItemTree({ items, selectedId, onSelect, onDeselect, onDelete
     <div style={{ border: '1px solid var(--divider)', borderRadius: 8, overflow: 'hidden', background: 'var(--bg-app)' }}>
       {/* Column header row */}
       <div style={{
-        height: 36, background: isDark ? 'rgba(255,255,255,0.03)' : '#FAFAFA', borderBottom: '1px solid var(--divider)',
-        display: 'flex', alignItems: 'center', padding: '0 12px',
+        height: 50, background: isDark ? 'rgba(255,255,255,0.03)' : '#FAFAFA', borderBottom: '1px solid var(--divider)',
+        display: 'flex', alignItems: 'center', padding: '8px 12px',
         fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 600,
         textTransform: 'uppercase', color: 'var(--fg-3)', letterSpacing: '0.06em',
       }}>

@@ -281,7 +281,7 @@ export default function ImportExportPage() {
                     <button
                       onClick={() => deleteImportJob(job.id)}
                       style={{
-                        width: 36, height: 36, border: '1px solid #FECACA', borderRadius: 8,
+                        width: 36, height: 50, border: '1px solid #FECACA', borderRadius: 8,
                         backgroundColor: '#FEF2F2', color: '#DC2626', cursor: 'pointer',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
                       }}
@@ -349,7 +349,7 @@ export default function ImportExportPage() {
                         download
                         style={{
                           display: 'flex', alignItems: 'center', gap: 6,
-                          height: 36, padding: '0 14px', border: '1px solid #A7F3D0', borderRadius: 8,
+                          height: 50, padding: '0 14px', border: '1px solid #A7F3D0', borderRadius: 8,
                           backgroundColor: '#ECFDF5', color: '#059669', fontSize: 13, textDecoration: 'none',
                         }}
                       >
@@ -359,7 +359,7 @@ export default function ImportExportPage() {
                     <button
                       onClick={() => deleteExportJob(job.id)}
                       style={{
-                        width: 36, height: 36, border: '1px solid #FECACA', borderRadius: 8,
+                        width: 36, height: 50, border: '1px solid #FECACA', borderRadius: 8,
                         backgroundColor: '#FEF2F2', color: '#DC2626', cursor: 'pointer',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
                       }}

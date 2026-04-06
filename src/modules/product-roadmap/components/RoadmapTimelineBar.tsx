@@ -186,7 +186,7 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, onClick, end
           boxShadow: '0 20px 60px rgba(0,0,0,0.12)', pointerEvents: 'none',
           maxWidth: 320, minWidth: 260, padding: 12,
         }}>
-          <div style={{ fontWeight: 600, fontSize: 13, color: '#0F172A', marginBottom: 6 }}>
+          <div style={{ fontWeight: 600, fontSize: 13, color: 'var(--fg-1, #0F172A)', marginBottom: 6 }}>
             {item.request_key}: {item.title}
           </div>
           <div className="flex items-center gap-1.5" style={{ fontSize: 12, color: '#64748B', marginBottom: 4 }}>
@@ -204,7 +204,7 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, onClick, end
                 <div style={{ width: 60, height: 4, background: var(--bg-2, '#F1F5F9'), borderRadius: 999, overflow: 'hidden' }}>
                   <div style={{ width: `${item.progress}%`, height: '100%', background: finalColor, borderRadius: 999 }} />
                 </div>
-                <span style={{ fontSize: 11, fontWeight: 600, color: '#0F172A' }}>{item.progress}%</span>
+                <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--fg-1, #0F172A)' }}>{item.progress}%</span>
               </div>
             )}
           </div>

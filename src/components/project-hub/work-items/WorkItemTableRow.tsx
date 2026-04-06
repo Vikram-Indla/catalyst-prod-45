@@ -303,8 +303,8 @@ export function WorkItemTableRow({
     <tr
       className={`group cursor-pointer ${isConflict ? 'bg-[rgba(220,38,38,0.03)]' : isSelected ? 'bg-[rgba(37,99,235,0.08)]' : isHighlighted ? 'bg-[rgba(15,23,42,0.04)]' : ''}`}
       style={{
-        height: 36,
-        maxHeight: 36,
+        height: 50,
+        maxHeight: 50,
         borderBottom: '0.75px solid rgba(15,23,42,0.07)',
         transition: 'background 80ms ease',
       }}

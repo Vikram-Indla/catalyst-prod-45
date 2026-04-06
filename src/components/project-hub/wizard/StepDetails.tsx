@@ -119,7 +119,7 @@ export function StepDetails({ data, onChange, isValid, onValidChange }: StepDeta
   const inputStyle: React.CSSProperties = {
     width: '100%',
     height: 40,
-    padding: '0 12px',
+    padding: '8px 12px',
     fontSize: 13,
     color: 'var(--fg-1)',
     border: '1px solid var(--divider)',

@@ -77,7 +77,7 @@ export function ConfirmDialog({
 
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
           <button onClick={onClose} style={{
-            height: 36, padding: '0 16px', borderRadius: 'var(--wh-radius-md, 6px)',
+            height: 50, padding: '0 16px', borderRadius: 'var(--wh-radius-md, 6px)',
             border: '1px solid var(--divider)', background: 'var(--cp-float)',
             fontSize: 13, fontWeight: 500, color: 'var(--fg-1)',
             cursor: 'pointer',
@@ -85,7 +85,7 @@ export function ConfirmDialog({
             Cancel
           </button>
           <button onClick={onConfirm} disabled={isLoading} style={{
-            height: 36, padding: '0 16px', borderRadius: 'var(--wh-radius-md, 6px)',
+            height: 50, padding: '0 16px', borderRadius: 'var(--wh-radius-md, 6px)',
             border: 'none', background: btnBg, color: 'var(--bg-app)',
             fontSize: 13, fontWeight: 600, cursor: isLoading ? 'wait' : 'pointer',
             opacity: isLoading ? 0.7 : 1,

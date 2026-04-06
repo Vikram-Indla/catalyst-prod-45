@@ -86,7 +86,7 @@ export default function IdeasRoadmapPage() {
                 borderLeft: col.key ? `3px solid ${col.borderColor}` : undefined,
                 paddingLeft: col.key ? '12px' : undefined,
               }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px', height: 36 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px', height: 50 }}>
                   <span style={{ fontSize: '11px', fontWeight: 700, color: isDark ? dk.t3 : col.textColor, textTransform: 'uppercase', letterSpacing: '0.07em' }}>{col.label}</span>
                   <span style={{ fontSize: '10px', fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, background: isDark ? 'rgba(255,255,255,0.06)' : '#F1F5F9', borderRadius: '100px', padding: '0 6px', height: 18, display: 'inline-flex', alignItems: 'center', color: dk.t3 }}>{colIdeas.length}</span>
                 </div>

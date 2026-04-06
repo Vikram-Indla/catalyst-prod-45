@@ -564,7 +564,7 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
                   >
                     {isLoading ? (
                       Array.from({ length: 6 }).map((_, i) => (
-                        <tr key={i} style={{ height: 36, borderBottom: '0.75px solid rgba(15, 23, 42, 0.06)' /* V12 */ }}>
+                        <tr key={i} style={{ height: 50, borderBottom: '0.75px solid rgba(15, 23, 42, 0.06)' /* V12 */ }}>
                           <td style={{ padding: '8px 4px' }} />
                           {displayColumns.map(col => (
                             <td key={col.key} style={{ padding: '8px 12px' }}>
@@ -594,7 +594,7 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
                                 aria-selected={isSelected || undefined} /* V12 WCAG */
                                 style={{
                                   ...provided.draggableProps.style,
-                                  height: 36, /* V12 */
+                                  height: 50, /* V12 */
                                   borderBottom: '0.75px solid rgba(15, 23, 42, 0.06)', /* V12 */
                                   transition: 'background 80ms cubic-bezier(0.4, 0, 0.2, 1)', /* V12 */
                                   background: snapshot.isDragging

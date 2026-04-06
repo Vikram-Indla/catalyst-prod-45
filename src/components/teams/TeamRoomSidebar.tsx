@@ -287,7 +287,7 @@ export function TeamRoomSidebar({ teamId, expanded, onToggle, className }: TeamR
                       ? "bg-blue-500/12 text-blue-600 font-medium" 
                       : "bg-transparent text-foreground hover:bg-blue-500/6 font-normal"
                   )}
-                  style={{ height: '36px', marginBottom: '1px' }}
+                  style={{ height: '50px', marginBottom: '1px' }}
                   title={!expanded ? item.label : undefined}
                 >
                   {/* V10 accent bar */}
@@ -456,7 +456,7 @@ export function TeamRoomSidebar({ teamId, expanded, onToggle, className }: TeamR
           <div className="border-t pt-2" style={{ borderColor: 'var(--divider)', padding: '8px' }}>
             <button 
               className="w-full flex items-center gap-3 px-3 text-[13px] font-normal hover:bg-blue-500/6 transition-colors rounded-md relative"
-              style={{ height: '36px' }}
+              style={{ height: '50px' }}
               onClick={() => toast.info('Team Settings coming soon', { icon: <Lock className="h-4 w-4" /> })}
             >
               <Lock 

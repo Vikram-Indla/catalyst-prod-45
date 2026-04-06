@@ -49,14 +49,14 @@ export function DefectTable({ defects, selectedIds, onSelectionChange, onDelete 
       </TableHeader>
       <TableBody>
         {defects.map(d => (
-          <TableRow key={d.id} className={cn("cursor-pointer hover:bg-muted/50", selectedIds.has(d.id) && "bg-primary/5")} style={{ height: 36, maxHeight: 36, minHeight: 36 }} onClick={() => navigate(`/testhub/defects/${d.id}`)}>
-            <TableCell style={{ padding: '0 12px' }} onClick={e => e.stopPropagation()}><Checkbox checked={selectedIds.has(d.id)} onCheckedChange={() => toggleOne(d.id)} /></TableCell>
-            <TableCell style={{ padding: '0 12px' }} className="font-mono text-sm text-primary">{d.defect_key}</TableCell>
-            <TableCell style={{ padding: '0 12px' }} className="max-w-md truncate font-medium">{d.title}</TableCell>
-            <TableCell style={{ padding: '0 12px' }}><SeverityBadge severity={d.severity} /></TableCell>
-            <TableCell style={{ padding: '0 12px' }}><PriorityBadge priority={d.priority} /></TableCell>
-            <TableCell style={{ padding: '0 12px' }}><StatusBadge status={d.status} /></TableCell>
-            <TableCell style={{ padding: '0 12px' }}>
+          <TableRow key={d.id} className={cn("cursor-pointer hover:bg-muted/50", selectedIds.has(d.id) && "bg-primary/5")} style={{ height: 50, maxHeight: 50, minHeight: 36 }} onClick={() => navigate(`/testhub/defects/${d.id}`)}>
+            <TableCell style={{ padding: '8px 12px' }} onClick={e => e.stopPropagation()}><Checkbox checked={selectedIds.has(d.id)} onCheckedChange={() => toggleOne(d.id)} /></TableCell>
+            <TableCell style={{ padding: '8px 12px' }} className="font-mono text-sm text-primary">{d.defect_key}</TableCell>
+            <TableCell style={{ padding: '8px 12px' }} className="max-w-md truncate font-medium">{d.title}</TableCell>
+            <TableCell style={{ padding: '8px 12px' }}><SeverityBadge severity={d.severity} /></TableCell>
+            <TableCell style={{ padding: '8px 12px' }}><PriorityBadge priority={d.priority} /></TableCell>
+            <TableCell style={{ padding: '8px 12px' }}><StatusBadge status={d.status} /></TableCell>
+            <TableCell style={{ padding: '8px 12px' }}>
               {d.assignee ? (
                 <div className="flex items-center gap-2">
                   <Avatar className="h-6 w-6"><AvatarImage src={d.assignee.avatar_url || undefined} /><AvatarFallback className="text-xs">{initials(d.assignee.full_name)}</AvatarFallback></Avatar>
@@ -64,8 +64,8 @@ export function DefectTable({ defects, selectedIds, onSelectionChange, onDelete 
                 </div>
               ) : <span className="text-sm text-muted-foreground">Unassigned</span>}
             </TableCell>
-            <TableCell style={{ padding: '0 12px' }} className="text-sm text-muted-foreground">{formatDistanceToNow(new Date(d.created_at), { addSuffix: false })}</TableCell>
-            <TableCell style={{ padding: '0 12px' }} onClick={e => e.stopPropagation()}>
+            <TableCell style={{ padding: '8px 12px' }} className="text-sm text-muted-foreground">{formatDistanceToNow(new Date(d.created_at), { addSuffix: false })}</TableCell>
+            <TableCell style={{ padding: '8px 12px' }} onClick={e => e.stopPropagation()}>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild><Button variant="ghost" size="sm" className="h-8 w-8 p-0"><MoreVertical className="h-4 w-4" /></Button></DropdownMenuTrigger>
                 <DropdownMenuContent align="end">

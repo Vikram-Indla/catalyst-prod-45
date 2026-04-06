@@ -62,7 +62,7 @@ export function CapacityPage() {
               }}
             >
               <div style={{
-                width: 36, height: 36, borderRadius: 12,
+                width: 36, height: 50, borderRadius: 12,
                 backgroundColor: 'var(--bg-1)', display: 'flex',
                 alignItems: 'center', justifyContent: 'center',
               }}>

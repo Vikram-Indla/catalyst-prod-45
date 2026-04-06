@@ -264,7 +264,7 @@ export function ImportTestCasesModal({ isOpen, onClose, onSuccess, folders }: Im
                   Import to folder:
                 </label>
                 <select value={selectedFolderId} onChange={(e) => setSelectedFolderId(e.target.value)}
-                  style={{ width: '100%', height: 40, padding: '0 12px', border: '1.5px solid var(--divider)', borderRadius: 8, fontSize: 14 }}>
+                  style={{ width: '100%', height: 40, padding: '8px 12px', border: '1.5px solid var(--divider)', borderRadius: 8, fontSize: 14 }}>
                   <option value="">No folder (root)</option>
                   {folders.map(f => <option key={f.id} value={f.id}>{f.name}</option>)}
                 </select>

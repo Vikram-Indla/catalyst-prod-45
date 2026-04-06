@@ -307,7 +307,7 @@ function RecentEventsTable({ projectId }: { projectId: string }) {
 
   const getStatusBadge = (status: string) => {
     if (status === 'processed' || status === 'completed') {
-      return <Badge className="bg-[#E3FCEF] text-[#006644] text-[11px] font-bold uppercase">{status}</Badge>;
+      return <Badge className="bg-[var(--status-ok-bg, #E3FCEF)] text-[#006644] text-[11px] font-bold uppercase">{status}</Badge>;
     }
     if (status === 'pending') {
       return <Badge className="bg-[#DEEBFF] text-[#0747A6] text-[11px] font-bold uppercase">{status}</Badge>;

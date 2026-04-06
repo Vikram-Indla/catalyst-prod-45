@@ -91,7 +91,7 @@ export function AdvancedFilterPanel({
   };
 
   const selectStyle: React.CSSProperties = {
-    height: 36,
+    height: 50,
     borderRadius: 'var(--wh-radius-md, 8px)',
     border: '1px solid var(--divider)',
     padding: '0 10px',

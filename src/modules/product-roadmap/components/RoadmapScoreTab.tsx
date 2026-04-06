@@ -231,7 +231,7 @@ export function RoadmapScoreTab({ item }: RoadmapScoreTabProps) {
         disabled={saveMutation.isPending}
         style={{
           width: '100%',
-          height: '36px',
+          height: '50px',
           backgroundColor: saveMutation.isPending ? '#93c5fd' : '#2563eb',
           color: '#ffffff',
           fontSize: '14px',

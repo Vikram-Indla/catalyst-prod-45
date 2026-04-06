@@ -190,7 +190,7 @@ async function runCheck(id: string): Promise<Partial<VCheck>> {
 }
 
 const STATUS_PILL: Record<string, { bg: string; color: string; label: string }> = {
-  pass: { bg: '#E3FCEF', color: '#006644', label: 'PASS' },
+  pass: { bg: 'var(--status-ok-bg, #E3FCEF)', color: '#006644', label: 'PASS' },
   warn: { bg: '#FFF8E1', color: '#D97706', label: 'WARN' },
   fail: { bg: '#FFEBE6', color: '#BF2600', label: 'FAIL' },
   loading: { bg: '#DEEBFF', color: '#0747A6', label: 'LOADING' },
@@ -239,7 +239,7 @@ export default function TestHubVerifyPage() {
         <button
           onClick={runAll}
           style={{
-            height: 36,
+            height: 50,
             padding: '0 16px',
             backgroundColor: '#2563EB',
             border: 'none',
@@ -262,7 +262,7 @@ export default function TestHubVerifyPage() {
         {/* Summary chips */}
         <div style={{ display: 'flex', gap: 12, marginBottom: 24 }}>
           {[
-            { label: 'PASSED', value: passCount, bg: '#E3FCEF', color: '#006644' },
+            { label: 'PASSED', value: passCount, bg: 'var(--status-ok-bg, #E3FCEF)', color: '#006644' },
             { label: 'WARNINGS', value: warnCount, bg: '#FFFBEB', color: '#D97706' },
             { label: 'FAILED', value: failCount, bg: '#FFEBE6', color: '#BF2600' },
             { label: 'TOTAL', value: checks.length, bg: var(--bg-2, '#F1F5F9'), color: '#374151' },
@@ -297,8 +297,8 @@ export default function TestHubVerifyPage() {
               <tr style={{ backgroundColor: 'var(--bg-1, #F8FAFC)' }}>
                 {['GROUP', 'CHECK', 'EXPECTED', 'ACTUAL', 'STATUS'].map(h => (
                   <th key={h} style={{
-                    height: 36,
-                    padding: '0 12px',
+                    height: 50,
+                    padding: '8px 12px',
                     fontSize: 10.5,
                     fontWeight: 700,
                     textTransform: 'uppercase',
@@ -320,26 +320,26 @@ export default function TestHubVerifyPage() {
                     <tr
                       key={check.id}
                       style={{
-                        height: 36,
+                        height: 50,
                         borderTop: ci === 0 && gi > 0 ? '1px solid #CBD5E1' : undefined,
                       }}
                       onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.02)')}
                       onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
                     >
-                      <td style={{ padding: '0 12px', fontSize: 13, fontWeight: ci === 0 ? 700 : 400, color: '#374151', whiteSpace: 'nowrap' }}>
+                      <td style={{ padding: '8px 12px', fontSize: 13, fontWeight: ci === 0 ? 700 : 400, color: '#374151', whiteSpace: 'nowrap' }}>
                         {ci === 0 ? group : ''}
                       </td>
-                      <td style={{ padding: '0 12px', fontSize: 13, color: '#1E293B' }}>
+                      <td style={{ padding: '8px 12px', fontSize: 13, color: '#1E293B' }}>
                         <span style={{ color: 'var(--fg-3, #94A3B8)', fontFamily: 'JetBrains Mono, monospace', fontSize: 11, marginRight: 8 }}>{check.id}</span>
                         {check.label}
                       </td>
-                      <td style={{ padding: '0 12px', fontSize: 12, color: '#64748B', fontFamily: 'JetBrains Mono, monospace' }}>
+                      <td style={{ padding: '8px 12px', fontSize: 12, color: '#64748B', fontFamily: 'JetBrains Mono, monospace' }}>
                         {check.expected}
                       </td>
-                      <td style={{ padding: '0 12px', fontSize: 12, color: '#1E293B', fontFamily: 'JetBrains Mono, monospace' }}>
+                      <td style={{ padding: '8px 12px', fontSize: 12, color: '#1E293B', fontFamily: 'JetBrains Mono, monospace' }}>
                         {check.actual ?? '—'}
                       </td>
-                      <td style={{ padding: '0 12px' }}>
+                      <td style={{ padding: '8px 12px' }}>
                         {(() => {
                           const s = STATUS_PILL[check.status];
                           return (
@@ -399,7 +399,7 @@ export default function TestHubVerifyPage() {
               ? { backgroundColor: '#FFEBE6', border: '1px solid #BF2600', color: '#BF2600' }
               : warnCount > 0
                 ? { backgroundColor: '#FFF8E1', border: '1px solid #D97706', color: '#D97706' }
-                : { backgroundColor: '#E3FCEF', border: '1px solid #006644', color: '#006644' }),
+                : { backgroundColor: 'var(--status-ok-bg, #E3FCEF)', border: '1px solid #006644', color: '#006644' }),
           }}>
             {failCount > 0
               ? `✗ ${failCount} check${failCount !== 1 ? 's' : ''} failed — review highlighted rows above`
@@ -495,7 +495,7 @@ function ModuleHealthSection({ checks, loadingCount }: { checks: VCheck[]; loadi
           onClick={handleExport}
           style={{
             height: 32,
-            padding: '0 12px',
+            padding: '8px 12px',
             backgroundColor: 'transparent',
             border: '1px solid var(--bd-default, #E2E8F0)',
             borderRadius: 6,

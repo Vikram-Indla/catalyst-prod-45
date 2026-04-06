@@ -159,7 +159,7 @@ const labelStyle: React.CSSProperties = {
 };
 
 const inputStyle: React.CSSProperties = {
-  width: '100%', height: 38, padding: '0 12px', border: '1px solid var(--divider)',
+  width: '100%', height: 38, padding: '8px 12px', border: '1px solid var(--divider)',
   borderRadius: 8, fontSize: 13, color: 'var(--fg-1)', outline: 'none',
   background: 'var(--cp-float)',
 };

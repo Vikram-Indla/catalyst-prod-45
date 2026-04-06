@@ -587,7 +587,7 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
                 display: 'flex',
                 alignItems: 'center',
                 gap: '12px',
-                padding: '0 12px',
+                padding: '8px 12px',
                 height: '40px',
                 fontSize: '14px',
                 fontWeight: 500,

@@ -78,7 +78,7 @@ export function WorkItemsDashboard({ isConnected, siteUrl }: WorkItemsDashboardP
           className="wh-btn-secondary"
           onClick={() => refetch()}
           disabled={isFetching}
-          style={{ height: 32, padding: '0 12px', fontSize: 12 }}
+          style={{ height: 32, padding: '8px 12px', fontSize: 12 }}
         >
           <RefreshCw style={{
             width: 13, height: 13,

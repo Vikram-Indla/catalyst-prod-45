@@ -273,7 +273,7 @@ export function UnifiedSidebar({
                 style={{
                   width: '100%',
                   // V10: 36px item height (10px vertical padding)
-                  height: '36px',
+                  height: '50px',
                   padding: expanded ? '0 12px' : '0',
                   display: 'flex',
                   alignItems: 'center',
@@ -405,7 +405,7 @@ export function UnifiedSidebar({
               style={{
                 width: '100%',
                 height: '44px',
-                padding: '0 12px',
+                padding: '8px 12px',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '10px',

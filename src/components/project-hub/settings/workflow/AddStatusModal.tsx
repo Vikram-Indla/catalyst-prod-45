@@ -47,7 +47,7 @@ export function AddStatusModal({ open, onClose, onSubmit, loading }: AddStatusMo
             <label className="text-[var(--fg-2)] dark:text-[rgba(255,255,255,0.72)]" style={{ fontSize: 12, fontWeight: 500, display: 'block', marginBottom: 4 }}>Status Name <span style={{ color: 'var(--sem-danger)' }}>*</span></label>
             <input value={name} onChange={e => setName(e.target.value)} placeholder="e.g. In Review"
               className="w-full bg-white dark:bg-transparent border border-[var(--bd-default, #E2E8F0)] dark:border-[rgba(255,255,255,0.10)] text-[#0F172A] dark:text-[rgba(255,255,255,0.92)] placeholder:text-[var(--fg-3, #94A3B8)] dark:placeholder:text-[rgba(255,255,255,0.40)]"
-              style={{ height: 40, padding: '0 12px', fontSize: 13, borderRadius: 6, outline: 'none', fontFamily: "'Inter', sans-serif" }}
+              style={{ height: 40, padding: '8px 12px', fontSize: 13, borderRadius: 6, outline: 'none', fontFamily: "'Inter', sans-serif" }}
             />
           </div>
 
@@ -55,7 +55,7 @@ export function AddStatusModal({ open, onClose, onSubmit, loading }: AddStatusMo
             <label className="text-[var(--fg-2)] dark:text-[rgba(255,255,255,0.72)]" style={{ fontSize: 12, fontWeight: 500, display: 'block', marginBottom: 4 }}>Category <span style={{ color: 'var(--sem-danger)' }}>*</span></label>
             <select value={category} onChange={e => setCategory(e.target.value)}
               className="w-full bg-white dark:bg-transparent border border-[var(--bd-default, #E2E8F0)] dark:border-[rgba(255,255,255,0.10)] text-[#0F172A] dark:text-[rgba(255,255,255,0.92)]"
-              style={{ height: 40, padding: '0 12px', fontSize: 13, borderRadius: 6, outline: 'none', cursor: 'pointer', fontFamily: "'Inter', sans-serif" }}
+              style={{ height: 40, padding: '8px 12px', fontSize: 13, borderRadius: 6, outline: 'none', cursor: 'pointer', fontFamily: "'Inter', sans-serif" }}
             >
               {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
             </select>
@@ -82,13 +82,13 @@ export function AddStatusModal({ open, onClose, onSubmit, loading }: AddStatusMo
         <div className="flex justify-end gap-2 mt-6">
           <button onClick={onClose}
             className="bg-white dark:bg-transparent border border-[var(--bd-default, #E2E8F0)] dark:border-[rgba(255,255,255,0.10)] text-[#334155] dark:text-[rgba(255,255,255,0.72)]"
-            style={{ height: 36, padding: '0 16px', fontSize: 13, fontWeight: 500, borderRadius: 6, cursor: 'pointer' }}
+            style={{ height: 50, padding: '0 16px', fontSize: 13, fontWeight: 500, borderRadius: 6, cursor: 'pointer' }}
           >Cancel</button>
           <button
             onClick={() => name.trim() && onSubmit({ name: name.trim(), category, color })}
             disabled={!name.trim() || loading}
             className="hover:opacity-90 transition-opacity disabled:opacity-40 bg-[var(--cp-blue)]"
-            style={{ height: 36, padding: '0 16px', fontSize: 13, fontWeight: 600, color: '#FFFFFF', border: 'none', borderRadius: 6, cursor: name.trim() && !loading ? 'pointer' : 'default' }}
+            style={{ height: 50, padding: '0 16px', fontSize: 13, fontWeight: 600, color: '#FFFFFF', border: 'none', borderRadius: 6, cursor: name.trim() && !loading ? 'pointer' : 'default' }}
           >
             {loading ? 'Adding...' : 'Add Status'}
           </button>

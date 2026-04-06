@@ -42,7 +42,7 @@ export function IconColorPicker({ icon, color, onIconChange, onColorChange }: Ic
               className="flex items-center justify-center rounded-md transition-all"
               style={{
                 width: 36,
-                height: 36,
+                height: 50,
                 backgroundColor: icon === name ? 'var(--cp-blue-wash)' : 'var(--bg-1)',
                 border: icon === name ? '2px solid var(--cp-blue)' : '1px solid var(--divider)',
                 cursor: 'pointer',

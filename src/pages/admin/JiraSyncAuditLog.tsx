@@ -17,8 +17,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 /* ── StatusLozenge (immutable spec) ─────────────────────── */
 function Lozenge({ status }: { status: string }) {
   const map: Record<string, { bg: string; text: string }> = {
-    success: { bg: '#E3FCEF', text: '#006644' },
-    completed: { bg: '#E3FCEF', text: '#006644' },
+    success: { bg: 'var(--status-ok-bg, #E3FCEF)', text: '#006644' },
+    completed: { bg: 'var(--status-ok-bg, #E3FCEF)', text: '#006644' },
     error: { bg: '#DFE1E6', text: '#253858' },
     failed: { bg: '#DFE1E6', text: '#253858' },
     skipped: { bg: '#DFE1E6', text: '#253858' },
@@ -44,16 +44,16 @@ function Lozenge({ status }: { status: string }) {
 
 /* ── Shared table helpers ───────────────────────────────── */
 const thClass = 'text-left text-[10px] font-semibold uppercase text-[#64748B] dark:text-gray-400';
-const thStyle = { padding: '10px 12px', height: 36, maxHeight: 36 } as const;
+const thStyle = { padding: '10px 12px', height: 50, maxHeight: 50 } as const;
 const tdClass = 'text-[#334155] dark:text-white';
-const tdStyle = { padding: '8px 12px', fontSize: 12, height: 36, maxHeight: 36 } as const;
+const tdStyle = { padding: '8px 12px', fontSize: 12, height: 50, maxHeight: 50 } as const;
 const PAGE_SIZE = 20;
 
 function SkeletonRows({ cols }: { cols: number }) {
   return (
     <tbody>
       {[1, 2, 3, 4, 5].map((i) => (
-        <tr key={i} style={{ height: 36, maxHeight: 36 }}>
+        <tr key={i} style={{ height: 50, maxHeight: 50 }}>
           {Array.from({ length: cols }).map((_, j) => (
             <td key={j} style={tdStyle}><Skeleton className="h-4 w-full" /></td>
           ))}
@@ -176,7 +176,7 @@ export function SyncEventsTab() {
               {filteredLogs.map((log: any) => {
                 const items = (log.items_created ?? 0) + (log.items_updated ?? 0) + (log.items_deleted ?? 0);
                 return (
-                  <tr key={log.id} className="border-b border-[var(--bd-default, #E2E8F0)] dark:border-[#1A1A1A]" style={{ height: 36, maxHeight: 36 }}>
+                  <tr key={log.id} className="border-b border-[var(--bd-default, #E2E8F0)] dark:border-[#1A1A1A]" style={{ height: 50, maxHeight: 50 }}>
                     <td className={tdClass} style={tdStyle}>{formatDistanceToNow(new Date(log.created_at), { addSuffix: true })}</td>
                     <td className={tdClass} style={tdStyle}>{log.event_type}</td>
                     <td className={tdClass} style={tdStyle}>{log.jira_key || '—'}</td>
@@ -237,7 +237,7 @@ export function WriteBackQueueTab() {
           {isLoading ? <SkeletonRows cols={7} /> : isError ? <ErrorRow cols={7} /> : (
             <tbody>
               {(queueItems ?? []).map((q: any) => (
-                <tr key={q.id} className="border-b border-[var(--bd-default, #E2E8F0)] dark:border-[#1A1A1A]" style={{ height: 36, maxHeight: 36 }}>
+                <tr key={q.id} className="border-b border-[var(--bd-default, #E2E8F0)] dark:border-[#1A1A1A]" style={{ height: 50, maxHeight: 50 }}>
                   <td className={tdClass} style={tdStyle}>{q.ph_work_items?.title || q.ph_work_item_id}</td>
                   <td style={tdStyle}>
                     <span className="inline-block bg-[#F1F5F9] text-[#334155] dark:bg-[#1A1A1A] dark:text-gray-300" style={{ fontSize: 11, fontWeight: 600, borderRadius: 4, padding: '2px 6px', textTransform: 'uppercase' }}>
@@ -310,7 +310,7 @@ export function DeletedItemsTab() {
                     const snap = d.item_snapshot ? JSON.stringify(d.item_snapshot) : '';
                     const preview = snap.length > 80 ? snap.substring(0, 80) + '…' : snap;
                     return (
-                      <tr key={d.id} className="border-b border-[var(--bd-default, #E2E8F0)] dark:border-[#1A1A1A]" style={{ height: 36, maxHeight: 36 }}>
+                      <tr key={d.id} className="border-b border-[var(--bd-default, #E2E8F0)] dark:border-[#1A1A1A]" style={{ height: 50, maxHeight: 50 }}>
                         <td className={tdClass} style={tdStyle}>{d.jira_key || '—'}</td>
                         <td className={tdClass} style={tdStyle}>{d.catalyst_item_key || '—'}</td>
                         <td className={tdClass} style={tdStyle}>{formatDistanceToNow(new Date(d.deleted_at), { addSuffix: true })}</td>

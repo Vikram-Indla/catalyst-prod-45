@@ -43,7 +43,7 @@ export default function CommitteeQueuePage() {
           <div className="grid items-center" style={{
             gridTemplateColumns: '120px 1fr 70px 100px 80px 160px 80px 100px',
             backgroundColor: isDark ? '#1A1A1A' : '#F1F5F9',
-            height: 36,
+            height: 50,
             borderBottom: isDark ? '0.75px solid rgba(255,255,255,0.05)' : '0.75px solid rgba(15,23,42,0.06)',
           }}>
             {['KEY', 'INCIDENT', 'SEV', 'STATUS', 'AGE', 'APPROVAL', 'TYPE', 'ACTIONS'].map(h => (
@@ -74,7 +74,7 @@ export default function CommitteeQueuePage() {
                 className="grid items-center cursor-pointer transition-colors"
                 style={{
                   gridTemplateColumns: '120px 1fr 70px 100px 80px 160px 80px 100px',
-                  height: 36,
+                  height: 50,
                   borderBottom: isDark ? '0.75px solid rgba(255,255,255,0.05)' : '0.75px solid rgba(15,23,42,0.06)',
                   backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF',
                 }}

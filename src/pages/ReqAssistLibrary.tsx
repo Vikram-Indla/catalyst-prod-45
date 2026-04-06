@@ -252,7 +252,7 @@ export default function ReqAssistLibrary() {
             onClick={() => setImportOpen(true)}
             style={{
               display: 'inline-flex', alignItems: 'center', gap: 6,
-              padding: '0 14px', height: 36, fontSize: 13, fontWeight: 500,
+              padding: '0 14px', height: 50, fontSize: 13, fontWeight: 500,
               border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.18)'}`, borderRadius: 6,
               background: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#A1A1A1' : '#374151', cursor: 'pointer',
               fontFamily: "'Inter', sans-serif",
@@ -267,7 +267,7 @@ export default function ReqAssistLibrary() {
             onClick={() => navigate('/product/req-assist/generate')}
             style={{
               display: 'inline-flex', alignItems: 'center', gap: 6,
-              padding: '0 14px', height: 36, fontSize: 13, fontWeight: 600,
+              padding: '0 14px', height: 50, fontSize: 13, fontWeight: 600,
               border: 'none', borderRadius: 6,
               background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
               boxShadow: '0 1px 3px rgba(37,99,235,0.35)',
@@ -308,7 +308,7 @@ export default function ReqAssistLibrary() {
             <p style={{ fontSize: 14, color: isDark ? '#878787' : '#64748B', margin: '0 0 20px', fontFamily: "'Inter', sans-serif" }}>Import from Jira or generate a BRD from text to get started.</p>
             <div style={{ display: 'flex', gap: 8 }}>
               <button onClick={() => setImportOpen(true)} style={{
-                display: 'inline-flex', alignItems: 'center', gap: 6, padding: '0 14px', height: 36,
+                display: 'inline-flex', alignItems: 'center', gap: 6, padding: '0 14px', height: 50,
                 fontSize: 13, fontWeight: 500, border: 'none', borderRadius: 6,
                 background: '#2563EB', color: '#FFFFFF', cursor: 'pointer', fontFamily: "'Inter', sans-serif",
               }}>
@@ -376,7 +376,7 @@ export default function ReqAssistLibrary() {
                     { label: 'ACTIONS', w: 220 },
                   ].map((col, i) => (
                     <th key={i} style={{
-                      padding: '10px 12px', height: 36,
+                      padding: '10px 12px', height: 50,
                       fontSize: 11, fontWeight: 600, color: isDark ? '#878787' : '#64748B',
                       textTransform: 'uppercase', letterSpacing: '0.06em',
                       textAlign: 'left', width: col.w || undefined,
@@ -391,7 +391,7 @@ export default function ReqAssistLibrary() {
               <tbody>
                 {isLoading ? (
                   Array.from({ length: 5 }).map((_, i) => (
-                    <tr key={i} style={{ height: 36 }}>
+                    <tr key={i} style={{ height: 50 }}>
                       {Array.from({ length: 8 }).map((_, j) => (
                         <td key={j} style={{ padding: '8px 12px' }}>
                           <div style={{ width: j === 1 ? '80%' : '60%', height: 12, background: isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0', borderRadius: 4, animation: 'ra-pulse 1.5s ease-in-out infinite' }} />
@@ -582,7 +582,7 @@ export default function ReqAssistLibrary() {
             {!isLoading && documents && (
               <div style={{
                 display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                height: 36, padding: '0 12px',
+                height: 50, padding: '8px 12px',
                 background: isDark ? '#0A0A0A' : '#FAFAFA',
                 borderTop: `0.75px solid ${isDark ? 'rgba(255,255,255,0.06)' : 'rgba(15,23,42,0.08)'}`,
               }}>

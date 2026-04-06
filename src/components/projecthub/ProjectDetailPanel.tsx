@@ -48,7 +48,7 @@ export function ProjectDetailPanel({ project, open, onClose, isFav, onToggleFav 
             <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2 }}>
               <ArrowLeft size={18} color="var(--fg-3)" />
             </button>
-            <div className="flex items-center justify-center rounded-md" style={{ width: 36, height: 36, background: bg, color: '#FFF', fontSize: 13, fontWeight: 700, fontFamily: "'JetBrains Mono', monospace", borderRadius: 8 }}>
+            <div className="flex items-center justify-center rounded-md" style={{ width: 36, height: 50, background: bg, color: '#FFF', fontSize: 13, fontWeight: 700, fontFamily: "'JetBrains Mono', monospace", borderRadius: 8 }}>
               {project.project_key}
             </div>
             <div className="flex-1 min-w-0">
@@ -123,13 +123,13 @@ export function ProjectDetailPanel({ project, open, onClose, isFav, onToggleFav 
 
         {/* Footer */}
         <div className="flex items-center gap-3 p-4" style={{ borderTop: '1px solid var(--divider)' }}>
-          <button onClick={onClose} className="flex-1 rounded-md transition-colors" style={{ height: 36, background: '#FFF', border: '1px solid var(--divider)', fontSize: 13, fontWeight: 500, color: 'var(--fg-2)', cursor: 'pointer' }}>
+          <button onClick={onClose} className="flex-1 rounded-md transition-colors" style={{ height: 50, background: '#FFF', border: '1px solid var(--divider)', fontSize: 13, fontWeight: 500, color: 'var(--fg-2)', cursor: 'pointer' }}>
             Close
           </button>
           <button
             onClick={() => window.open(`/project-hub/${project.project_key}/dashboard`, '_blank')}
             className="flex items-center justify-center gap-2 flex-1 rounded-md transition-colors"
-            style={{ height: 36, background: 'var(--cp-blue)', border: 'none', fontSize: 13, fontWeight: 600, color: '#FFF', cursor: 'pointer' }}
+            style={{ height: 50, background: 'var(--cp-blue)', border: 'none', fontSize: 13, fontWeight: 600, color: '#FFF', cursor: 'pointer' }}
           >
             <ExternalLink size={14} /> Open Project
           </button>

@@ -119,7 +119,7 @@ export function LinkTestCaseModal({ isOpen, onClose, requirementId, onLinked, al
             </div>
             <h2 style={{ fontSize: 18, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A', margin: 0 }}>Link Test Cases</h2>
           </div>
-          <button onClick={onClose} style={{ width: 36, height: 36, border: 'none', borderRadius: 8, backgroundColor: 'transparent', color: isDark ? '#A1A1A1' : '#64748B', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <button onClick={onClose} style={{ width: 36, height: 50, border: 'none', borderRadius: 8, backgroundColor: 'transparent', color: isDark ? '#A1A1A1' : '#64748B', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <X size={20} />
           </button>
         </div>
