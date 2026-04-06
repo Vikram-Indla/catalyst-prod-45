@@ -130,8 +130,9 @@
 }
 
 /* ── DARK MODE (Vercel Neutral) ── */
-.dark .workhub-module,
-[data-theme="dark"] .workhub-module {
+/* Must use :root-level selectors, not .workhub-module (CSS module hashes class names) */
+.dark,
+[data-theme="dark"] {
   --wh-bg: #0A0A0A;
   --wh-surface: #111111;
   --wh-surface-elevated: #1A1A1A;
