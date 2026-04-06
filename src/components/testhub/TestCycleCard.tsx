@@ -47,6 +47,15 @@ const statusConfig: Record<string, { label: string; color: string; bg: string; b
   paused:      { label: 'PAUSED',      color: '#253858', bg: '#DFE1E6', border: '#DFE1E6' },
 };
 
+const STATUS_DISPLAY_LABELS: Record<string, string> = {
+  draft:     'Draft',
+  planned:   'Planned',
+  active:    'In Progress',
+  paused:    'Paused',
+  completed: 'Completed',
+  archived:  'Archived',
+};
+
 const menuItemStyle: React.CSSProperties = {
   width: '100%',
   height: 36,
@@ -122,7 +131,7 @@ export function TestCycleCard({
             padding: '2px 6px', borderRadius: 3, height: 20,
             display: 'inline-flex', alignItems: 'center',
           }}>
-            {status.label}
+            {STATUS_DISPLAY_LABELS[cycle.status] ?? cycle.status}
           </span>
         </div>
 

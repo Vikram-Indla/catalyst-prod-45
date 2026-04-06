@@ -1230,3 +1230,172 @@
     width: 100% !important;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════
+   ECLIPSE — NOCTURNE DARK MODE OVERRIDES (R360 Member Detail)
+   Consolidated: April 2026
+   ═══════════════════════════════════════════════════════════ */
+
+/* Root background */
+.dark #r360-root {
+  background: #0A0A0A !important;
+  --cp-interact-hover: rgba(255,255,255,0.04);
+  --cp-interact-press: rgba(255,255,255,0.08);
+  --cp-interact-selected: rgba(37,99,235,0.12);
+  --cp-shadow-xs: 0 1px 3px rgba(0,0,0,0.3);
+  --cp-shadow-overlay: 0 8px 24px rgba(0,0,0,0.5);
+}
+
+/* Period toggle */
+.dark #r360-root .r3-period-toggle {
+  border-color: rgba(255,255,255,0.08) !important;
+}
+.dark #r360-root .r3-period-toggle button {
+  background: #111111 !important;
+  color: #888888 !important;
+}
+.dark #r360-root .r3-period-toggle button.active {
+  background: #2563EB !important;
+  color: #FFFFFF !important;
+}
+
+/* Toolbar, surfaces, cards */
+.dark #r360-root .r3-toolbar,
+.dark #r360-root .r3-summary-bar {
+  background: #0A0A0A !important;
+}
+.dark #r360-root .r3-week-header,
+.dark #r360-root .r3-timeline-header {
+  color: #EDEDED !important;
+}
+
+/* Text overrides — primary */
+.dark #r360-root .r3-label-primary,
+.dark #r360-root .r3-kpi-value,
+.dark #r360-root .r3-section-label,
+.dark #r360-root .r3-item-title,
+.dark #r360-root .r3-board-title {
+  color: #EDEDED !important;
+}
+
+/* Text overrides — secondary */
+.dark #r360-root .r3-label-secondary,
+.dark #r360-root .r3-item-meta,
+.dark #r360-root .r3-period-toggle button:not(.active),
+.dark #r360-root .r3-filter-label {
+  color: #888888 !important;
+}
+
+/* Text overrides — muted */
+.dark #r360-root .r3-label-muted,
+.dark #r360-root .r3-count,
+.dark #r360-root .r3-empty {
+  color: #666666 !important;
+}
+
+/* Borders and dividers */
+.dark #r360-root .r3-period-toggle,
+.dark #r360-root .r3-week-row,
+.dark #r360-root .r3-item-row,
+.dark #r360-root .r3-board-card,
+.dark #r360-root .r3-section-divider,
+.dark #r360-root .r3-timeline-row,
+.dark #r360-root [class*="border"] {
+  border-color: rgba(255,255,255,0.08) !important;
+}
+
+/* Separator bars */
+.dark #r360-root .r3-divider,
+.dark #r360-root .r3-separator {
+  background: rgba(255,255,255,0.06) !important;
+}
+
+/* Table & list backgrounds */
+.dark #r360-root .r3-week-row,
+.dark #r360-root .r3-timeline-row,
+.dark #r360-root .r3-week-row:nth-child(even) {
+  background: #0A0A0A !important;
+}
+.dark #r360-root .r3-week-row:hover,
+.dark #r360-root .r3-timeline-row:hover,
+.dark #r360-root .r3-item-row:hover {
+  background: rgba(255,255,255,0.04) !important;
+}
+
+/* Card surfaces */
+.dark #r360-root .r3-board-card,
+.dark #r360-root .r3-stat-card,
+.dark #r360-root .r3-detail-card,
+.dark #r360-root .r3-card-surface {
+  background: #111111 !important;
+  border-color: rgba(255,255,255,0.08) !important;
+}
+
+/* Filter chips & status buttons */
+.dark #r360-root .r3-filter-chip,
+.dark #r360-root .r3-status-filter {
+  background: #111111 !important;
+  border-color: rgba(255,255,255,0.08) !important;
+  color: #888888 !important;
+}
+.dark #r360-root .r3-filter-chip.active,
+.dark #r360-root .r3-status-filter.active {
+  background: rgba(37,99,235,0.15) !important;
+  color: #60A5FA !important;
+  border-color: rgba(37,99,235,0.3) !important;
+}
+
+/* Stale/warn card */
+.dark #r360-root .r3-stale-card {
+  background: rgba(251,191,36,0.08) !important;
+  border-color: rgba(251,191,36,0.15) !important;
+}
+
+/* Progress bar track */
+.dark #r360-root .r3-progress-track {
+  background: #1A1A1A !important;
+}
+
+/* Drawer / side panel */
+.dark #r360-root .item-drawer {
+  background: #111111 !important;
+  border-color: rgba(255,255,255,0.08) !important;
+}
+.dark #r360-root .item-drawer .drawer-header {
+  border-color: rgba(255,255,255,0.08) !important;
+}
+
+/* Board column backgrounds */
+.dark #r360-root .r3-board-column {
+  background: #0A0A0A !important;
+}
+
+/* Chronology view */
+.dark #r360-root .r3-chrono-cell {
+  background: #0A0A0A !important;
+  border-color: rgba(255,255,255,0.05) !important;
+}
+.dark #r360-root .r3-chrono-cell.current {
+  background: rgba(37,99,235,0.08) !important;
+}
+
+/* Select / dropdown overrides */
+.dark #r360-root select {
+  background: #111111 !important;
+  color: #EDEDED !important;
+  border-color: rgba(255,255,255,0.08) !important;
+}
+
+/* Hover for board cards */
+.dark #r360-root .r3-board-card:hover {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3) !important;
+  border-color: rgba(255,255,255,0.15) !important;
+}
+
+/* Generic white bg overrides */
+.dark #r360-root [style*="background: #FFFFFF"],
+.dark #r360-root [style*="background: #fff"],
+.dark #r360-root [style*="background:#FFFFFF"],
+.dark #r360-root [style*="background:#fff"] {
+  background: #0A0A0A !important;
+}

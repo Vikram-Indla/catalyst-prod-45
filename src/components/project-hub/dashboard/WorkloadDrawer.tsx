@@ -29,7 +29,7 @@ export default function WorkloadDrawer() {
   return (
     <>
       <div onClick={closeDrawer} className="ph-drawer-overlay" style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,.15)', zIndex: 200, backdropFilter: 'blur(2px)' }} />
-      <div role="dialog" aria-label={`${name} assigned items`} className="ph-drawer-panel bg-[var(--cp-float)] dark:bg-[#1A1714]" style={{ position: 'fixed', top: 0, right: 0, bottom: 0, width: 500, zIndex: 201, boxShadow: '-4px 0 24px rgba(0,0,0,.08)', display: 'flex', flexDirection: 'column' }}>
+      <div role="dialog" aria-label={`${name} assigned items`} className="ph-drawer-panel bg-[var(--cp-float)] dark:bg-[#0A0A0A]" style={{ position: 'fixed', top: 0, right: 0, bottom: 0, width: 500, zIndex: 201, boxShadow: '-4px 0 24px rgba(0,0,0,.08)', display: 'flex', flexDirection: 'column' }}>
         <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--divider)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <User size={16} color="var(--cp-blue)" />

@@ -80,6 +80,7 @@ const adminPockets = [
       { label: 'General Settings', path: '/admin/general-settings' },
       { label: 'Announcements', path: '/admin/announcements' },
       { label: 'Notification Settings', path: '/admin/settings/notifications' },
+      { label: 'Notification Triggers', path: '/admin/notification-triggers' },
     ],
   },
   {

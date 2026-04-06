@@ -3,7 +3,7 @@ import { Sparkles, Target, AlertTriangle, TrendingUp, Lightbulb } from 'lucide-r
 export function AIInsightsCard() {
   return (
     <div
-      className="bg-[var(--cp-float)] dark:bg-[#232019]"
+      className="bg-[var(--cp-float)] dark:bg-[#111111]"
       style={{
         gridColumn: '1 / -1',
         border: '1px solid var(--divider)',
@@ -26,7 +26,7 @@ export function AIInsightsCard() {
       {/* 3 Sub-cards */}
       <div style={{ display: 'flex', gap: 16 }}>
         {/* Completion Forecast */}
-        <div className="bg-[var(--bg-1)] dark:bg-[#2C2823]" style={{ flex: 1, borderRadius: 8, padding: 16 }}>
+        <div className="bg-[var(--bg-1)] dark:bg-[#1A1A1A]" style={{ flex: 1, borderRadius: 8, padding: 16 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
             <Target size={15} color="var(--cp-blue)" />
             <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1)' }}>Completion Forecast</span>
@@ -37,7 +37,7 @@ export function AIInsightsCard() {
         </div>
 
         {/* Risk Alert */}
-        <div className="bg-[var(--bg-1)] dark:bg-[#2C2823]" style={{ flex: 1, borderRadius: 8, padding: 16 }}>
+        <div className="bg-[var(--bg-1)] dark:bg-[#1A1A1A]" style={{ flex: 1, borderRadius: 8, padding: 16 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
             <AlertTriangle size={15} color="var(--sem-warning)" />
             <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1)' }}>Risk Alert</span>
@@ -49,7 +49,7 @@ export function AIInsightsCard() {
         </div>
 
         {/* Velocity */}
-        <div className="bg-[var(--bg-1)] dark:bg-[#2C2823]" style={{ flex: 1, borderRadius: 8, padding: 16 }}>
+        <div className="bg-[var(--bg-1)] dark:bg-[#1A1A1A]" style={{ flex: 1, borderRadius: 8, padding: 16 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
             <TrendingUp size={15} color="var(--sem-success)" />
             <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1)' }}>Velocity</span>

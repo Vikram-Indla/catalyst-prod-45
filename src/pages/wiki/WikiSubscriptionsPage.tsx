@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { ChevronRight, Bell, Layers, Tag, FileText, X, Plus } from 'lucide-react';
+import { useTheme } from '@/hooks/useTheme';
 
 const F = {
   sora: "'Sora', sans-serif",
@@ -35,6 +36,9 @@ export default function WikiSubscriptionsPage() {
   const qc = useQueryClient();
   const userId = useUserId();
   const [newTag, setNewTag] = useState('');
+  const { isDark } = useTheme();
+
+  const border = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)';
 
   // Fetch subscriptions
   const { data: subs = [], isLoading } = useQuery({
@@ -95,19 +99,19 @@ export default function WikiSubscriptionsPage() {
   };
 
   return (
-    <div style={{ fontFamily: F.inter, color: '#0F172A', background: '#F8FAFC', minHeight: '100%', padding: '24px 40px 60px' }}>
+    <div style={{ fontFamily: F.inter, color: isDark ? '#EDEDED' : '#0F172A', background: isDark ? '#0A0A0A' : '#F8FAFC', minHeight: '100%', padding: '24px 40px 60px' }}>
       {/* Breadcrumb */}
       <nav style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 24 }}>
         <span onClick={() => navigate('/wiki')} style={{ fontSize: 13, color: '#2563EB', cursor: 'pointer' }}>Wiki</span>
-        <ChevronRight size={12} style={{ color: '#94A3B8' }} />
-        <span style={{ fontSize: 13, color: '#64748B', fontWeight: 600 }}>Subscriptions</span>
+        <ChevronRight size={12} style={{ color: isDark ? '#666666' : '#94A3B8' }} />
+        <span style={{ fontSize: 13, color: isDark ? '#888888' : '#64748B', fontWeight: 600 }}>Subscriptions</span>
       </nav>
 
       <h1 style={{ fontFamily: F.sora, fontSize: 18, fontWeight: 700, marginBottom: 4 }}>Subscriptions</h1>
-      <p style={{ fontSize: 12, color: '#64748B', marginBottom: 32 }}>Get notified when content you follow is updated.</p>
+      <p style={{ fontSize: 12, color: isDark ? '#888888' : '#64748B', marginBottom: 32 }}>Get notified when content you follow is updated.</p>
 
       {/* ═══ DOMAIN SUBSCRIPTIONS ═══ */}
-      <SectionLabel icon={<Layers size={14} style={{ color: '#2563EB' }} />} label="Domain Subscriptions" />
+      <SectionLabel icon={<Layers size={14} style={{ color: '#2563EB' }} />} label="Domain Subscriptions" isDark={isDark} />
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 8, marginBottom: 32 }}>
         {DOMAINS.map(d => {
           const active = domainSubs.has(d.code);
@@ -117,19 +121,19 @@ export default function WikiSubscriptionsPage() {
               onClick={() => toggleSub.mutate({ entityType: 'domain', entityId: d.code })}
               style={{
                 display: 'flex', alignItems: 'center', gap: 10, padding: '12px 16px',
-                borderRadius: 8, background: '#FFFFFF', border: `0.75px solid ${active ? '#2563EB' : 'rgba(0,0,0,0.06)'}`,
+                borderRadius: 8, background: isDark ? '#111111' : '#FFFFFF', border: `0.75px solid ${active ? '#2563EB' : border}`,
                 cursor: 'pointer', transition: 'all 120ms', textAlign: 'left',
               }}
             >
-              <span style={{ fontSize: 9, fontWeight: 700, padding: '2px 6px', borderRadius: 3, background: active ? '#DBEAFE' : '#F1F5F9', color: active ? '#1E40AF' : '#64748B' }}>{d.code}</span>
-              <span style={{ fontSize: 12.5, fontWeight: 500, color: '#0F172A', flex: 1 }}>{d.name}</span>
+              <span style={{ fontSize: 9, fontWeight: 700, padding: '2px 6px', borderRadius: 3, background: active ? (isDark ? 'rgba(37,99,235,0.15)' : '#DBEAFE') : (isDark ? '#1A1A1A' : '#F1F5F9'), color: active ? (isDark ? '#93C5FD' : '#1E40AF') : (isDark ? '#666666' : '#64748B') }}>{d.code}</span>
+              <span style={{ fontSize: 12.5, fontWeight: 500, color: isDark ? '#EDEDED' : '#0F172A', flex: 1 }}>{d.name}</span>
               <div style={{
                 width: 36, height: 20, borderRadius: 10,
-                background: active ? '#2563EB' : '#E2E8F0',
+                background: active ? '#2563EB' : (isDark ? '#222222' : '#E2E8F0'),
                 position: 'relative', transition: 'background 150ms',
               }}>
                 <div style={{
-                  width: 16, height: 16, borderRadius: '50%', background: '#FFFFFF',
+                  width: 16, height: 16, borderRadius: '50%', background: isDark ? '#EDEDED' : '#FFFFFF',
                   position: 'absolute', top: 2,
                   left: active ? 18 : 2, transition: 'left 150ms',
                   boxShadow: '0 1px 3px rgba(0,0,0,0.15)',
@@ -141,19 +145,19 @@ export default function WikiSubscriptionsPage() {
       </div>
 
       {/* ═══ TAG SUBSCRIPTIONS ═══ */}
-      <SectionLabel icon={<Tag size={14} style={{ color: '#2563EB' }} />} label="Tag Subscriptions" />
+      <SectionLabel icon={<Tag size={14} style={{ color: '#2563EB' }} />} label="Tag Subscriptions" isDark={isDark} />
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 12 }}>
         {tagSubs.map((tag: string) => (
           <span key={tag} style={{
             display: 'inline-flex', alignItems: 'center', gap: 4, padding: '4px 10px',
-            borderRadius: 4, background: '#F1F5F9', border: '0.75px solid rgba(0,0,0,0.06)',
-            fontSize: 11, fontWeight: 500, color: '#334155',
+            borderRadius: 4, background: isDark ? '#1A1A1A' : '#F1F5F9', border: `0.75px solid ${border}`,
+            fontSize: 11, fontWeight: 500, color: isDark ? '#888888' : '#334155',
           }}>
             {tag}
-            <X size={11} style={{ color: '#94A3B8', cursor: 'pointer' }} onClick={() => toggleSub.mutate({ entityType: 'tag', entityId: tag })} />
+            <X size={11} style={{ color: isDark ? '#666666' : '#94A3B8', cursor: 'pointer' }} onClick={() => toggleSub.mutate({ entityType: 'tag', entityId: tag })} />
           </span>
         ))}
-        {tagSubs.length === 0 && <span style={{ fontSize: 11, color: '#94A3B8' }}>No tag subscriptions yet.</span>}
+        {tagSubs.length === 0 && <span style={{ fontSize: 11, color: isDark ? '#666666' : '#94A3B8' }}>No tag subscriptions yet.</span>}
       </div>
       <div style={{ display: 'flex', gap: 8, marginBottom: 32 }}>
         <input
@@ -163,8 +167,8 @@ export default function WikiSubscriptionsPage() {
           placeholder="Add a tag..."
           style={{
             height: 32, padding: '0 12px', fontSize: 12, borderRadius: 6,
-            border: '0.75px solid rgba(0,0,0,0.1)', background: '#FFFFFF',
-            outline: 'none', width: 180,
+            border: `0.75px solid ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'}`, background: isDark ? '#111111' : '#FFFFFF',
+            outline: 'none', width: 180, color: isDark ? '#EDEDED' : undefined,
           }}
         />
         <button onClick={addTag} style={{
@@ -177,19 +181,19 @@ export default function WikiSubscriptionsPage() {
       </div>
 
       {/* ═══ ARTICLE SUBSCRIPTIONS ═══ */}
-      <SectionLabel icon={<FileText size={14} style={{ color: '#2563EB' }} />} label="Article Subscriptions" />
-      <div style={{ borderRadius: 8, border: '0.75px solid rgba(0,0,0,0.06)', background: '#FFFFFF', overflow: 'hidden' }}>
+      <SectionLabel icon={<FileText size={14} style={{ color: '#2563EB' }} />} label="Article Subscriptions" isDark={isDark} />
+      <div style={{ borderRadius: 8, border: `0.75px solid ${border}`, background: isDark ? '#111111' : '#FFFFFF', overflow: 'hidden' }}>
         {subArticles.length > 0 ? subArticles.map((a: any) => (
           <div key={a.id} style={{
             display: 'flex', alignItems: 'center', gap: 12, padding: '10px 16px',
-            borderBottom: '0.75px solid rgba(0,0,0,0.06)', transition: 'background 80ms',
+            borderBottom: `0.75px solid ${border}`, transition: 'background 80ms',
           }}
             onMouseEnter={e => e.currentTarget.style.background = 'rgba(37,99,235,0.04)'}
             onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
           >
-            <FileText size={14} style={{ color: '#94A3B8', flexShrink: 0 }} />
-            <span onClick={() => navigate(`/wiki/${a.slug}`)} style={{ fontSize: 12.5, fontWeight: 500, color: '#0F172A', cursor: 'pointer', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.title}</span>
-            <span style={{ fontSize: 9, fontWeight: 650, padding: '1px 5px', borderRadius: 3, background: '#F1F5F9', color: '#64748B' }}>{a.domain_code}</span>
+            <FileText size={14} style={{ color: isDark ? '#666666' : '#94A3B8', flexShrink: 0 }} />
+            <span onClick={() => navigate(`/wiki/${a.slug}`)} style={{ fontSize: 12.5, fontWeight: 500, color: isDark ? '#EDEDED' : '#0F172A', cursor: 'pointer', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.title}</span>
+            <span style={{ fontSize: 9, fontWeight: 650, padding: '1px 5px', borderRadius: 3, background: isDark ? '#1A1A1A' : '#F1F5F9', color: isDark ? '#666666' : '#64748B' }}>{a.domain_code}</span>
             <button
               onClick={() => toggleSub.mutate({ entityType: 'article', entityId: a.id })}
               style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 11, color: '#DC2626', fontWeight: 500 }}
@@ -198,7 +202,7 @@ export default function WikiSubscriptionsPage() {
             </button>
           </div>
         )) : (
-          <div style={{ padding: 32, textAlign: 'center', color: '#64748B', fontSize: 12 }}>
+          <div style={{ padding: 32, textAlign: 'center', color: isDark ? '#666666' : '#64748B', fontSize: 12 }}>
             No article subscriptions. Subscribe to articles from their detail pages.
           </div>
         )}
@@ -207,11 +211,11 @@ export default function WikiSubscriptionsPage() {
   );
 }
 
-function SectionLabel({ icon, label }: { icon: React.ReactNode; label: string }) {
+function SectionLabel({ icon, label, isDark }: { icon: React.ReactNode; label: string; isDark?: boolean }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 12 }}>
       {icon}
-      <span style={{ fontFamily: "'Sora', sans-serif", fontSize: 14, fontWeight: 600, color: '#0F172A' }}>{label}</span>
+      <span style={{ fontFamily: "'Sora', sans-serif", fontSize: 14, fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A' }}>{label}</span>
     </div>
   );
 }

@@ -1356,3 +1356,98 @@
 .planhub-module .ph-text-xs { font-size: var(--ph-text-xs); }
 .planhub-module .ph-text-gray-500 { color: var(--ph-gray-500); }
 .planhub-module .ph-font-semibold { font-weight: var(--ph-font-semibold); }
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   ECLIPSE — NOCTURNE DARK MODE OVERRIDES
+   Last consolidated: 2026-04-05
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+[data-theme="dark"] .planhub-module,
+.dark .planhub-module {
+  /* Surfaces */
+  --ph-bg: #0A0A0A;
+  --ph-surface: #111111;
+  --ph-surface-hover: #1A1A1A;
+  --ph-border: rgba(255, 255, 255, 0.08);
+  --ph-border-dark: rgba(255, 255, 255, 0.12);
+
+  /* Gray Scale (inverted for dark) */
+  --ph-white: #0A0A0A;
+  --ph-gray-50: #111111;
+  --ph-gray-100: #1A1A1A;
+  --ph-gray-200: #222222;
+  --ph-gray-300: #666666;
+  --ph-gray-400: #666666;
+  --ph-gray-500: #888888;
+  --ph-gray-600: #888888;
+  --ph-gray-700: #EDEDED;
+  --ph-gray-800: #EDEDED;
+  --ph-gray-900: #EDEDED;
+
+  /* Shadows (darker for dark mode) */
+  --ph-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --ph-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+  --ph-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+  --ph-shadow-modal: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+
+  /* Semantic colors (slightly adjusted for dark bg contrast) */
+  --ph-success-light: rgba(16, 185, 129, 0.15);
+  --ph-warning-light: rgba(245, 158, 11, 0.15);
+  --ph-danger-light: rgba(239, 68, 68, 0.15);
+  --ph-teal-light: rgba(13, 148, 136, 0.12);
+  --ph-purple-light: rgba(139, 92, 246, 0.15);
+  --ph-primary-light: rgba(37, 99, 235, 0.12);
+  --ph-primary-border: rgba(37, 99, 235, 0.3);
+
+  /* Base text color override */
+  color: #EDEDED !important;
+}
+
+/* Dark mode: modal backdrop darker */
+[data-theme="dark"] .planhub-module .ph-modal-backdrop,
+.dark .planhub-module .ph-modal-backdrop,
+[data-theme="dark"] .planhub-module .ph-modal-overlay,
+.dark .planhub-module .ph-modal-overlay {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+/* Dark mode: AI chat bubble adjustments */
+[data-theme="dark"] .planhub-module .ph-ai-message.assistant .ph-ai-bubble,
+.dark .planhub-module .ph-ai-message.assistant .ph-ai-bubble {
+  background: #1A1A1A;
+  color: #EDEDED;
+}
+
+/* Dark mode: resource warning text */
+[data-theme="dark"] .planhub-module .ph-resource-warning,
+.dark .planhub-module .ph-resource-warning {
+  color: #FCD34D;
+}
+
+[data-theme="dark"] .planhub-module .ph-resource-skeleton-badge,
+.dark .planhub-module .ph-resource-skeleton-badge {
+  color: #FCD34D;
+}
+
+/* Dark mode: AI input field */
+[data-theme="dark"] .planhub-module .ph-ai-input input,
+.dark .planhub-module .ph-ai-input input {
+  background: #1A1A1A;
+  color: #EDEDED;
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+/* Dark mode: form inputs */
+[data-theme="dark"] .planhub-module .ph-form-input,
+.dark .planhub-module .ph-form-input {
+  background: #1A1A1A;
+  color: #EDEDED;
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+[data-theme="dark"] .planhub-module .ph-select,
+.dark .planhub-module .ph-select {
+  background: #1A1A1A;
+  color: #EDEDED;
+  border-color: rgba(255, 255, 255, 0.08);
+}

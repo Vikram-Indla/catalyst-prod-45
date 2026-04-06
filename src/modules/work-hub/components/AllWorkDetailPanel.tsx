@@ -5,6 +5,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
+import { useTheme } from '@/hooks/useTheme';
 
 interface WorkItem {
   id: string;
@@ -40,6 +41,7 @@ const statusStyles: Record<string, { bg: string; text: string; label: string }> 
 };
 
 export function AllWorkDetailPanel({ item, onClose, onNavigateToParent }: AllWorkDetailPanelProps) {
+  const { isDark } = useTheme();
   if (!item) return null;
 
   // typeInfo no longer needed — using JiraIssueTypeIcon directly
@@ -52,37 +54,53 @@ export function AllWorkDetailPanel({ item, onClose, onNavigateToParent }: AllWor
   };
 
   return (
-    <div className="flex flex-col h-full bg-white" style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" }}>
+    <div
+      className="flex flex-col h-full"
+      style={{
+        fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+        backgroundColor: isDark ? '#111111' : '#FFFFFF',
+        color: isDark ? '#EDEDED' : '#172B4D',
+      }}
+    >
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-[#DFE1E6]">
+      <div
+        className="flex items-center justify-between px-4 py-3"
+        style={{ borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#DFE1E6'}` }}
+      >
         <div className="flex items-center gap-2">
           <JiraIssueTypeIcon type={item.type} size={20} />
-          <span className="text-[14px] font-medium text-[#172B4D]">{item.key}</span>
+          <span className="text-[14px] font-medium" style={{ color: isDark ? '#EDEDED' : '#172B4D' }}>{item.key}</span>
         </div>
         <div className="flex items-center gap-1">
-          <Button variant="ghost" size="icon" className="h-7 w-7 hover:bg-[#F4F5F7]">
-            <Eye className="h-4 w-4 text-[#6B778C]" />
+          <Button variant="ghost" size="icon" className={cn("h-7 w-7", isDark ? "hover:bg-[#1A1A1A]" : "hover:bg-[#F4F5F7]")}>
+            <Eye className="h-4 w-4" style={{ color: isDark ? '#666666' : '#6B778C' }} />
           </Button>
-          <Button variant="ghost" size="icon" className="h-7 w-7 hover:bg-[#F4F5F7]">
-            <Share2 className="h-4 w-4 text-[#6B778C]" />
+          <Button variant="ghost" size="icon" className={cn("h-7 w-7", isDark ? "hover:bg-[#1A1A1A]" : "hover:bg-[#F4F5F7]")}>
+            <Share2 className="h-4 w-4" style={{ color: isDark ? '#666666' : '#6B778C' }} />
           </Button>
-          <Button variant="ghost" size="icon" className="h-7 w-7 hover:bg-[#F4F5F7]">
-            <ExternalLink className="h-4 w-4 text-[#6B778C]" />
+          <Button variant="ghost" size="icon" className={cn("h-7 w-7", isDark ? "hover:bg-[#1A1A1A]" : "hover:bg-[#F4F5F7]")}>
+            <ExternalLink className="h-4 w-4" style={{ color: isDark ? '#666666' : '#6B778C' }} />
           </Button>
-          <Button variant="ghost" size="icon" className="h-7 w-7 hover:bg-[#F4F5F7]">
-            <MoreHorizontal className="h-4 w-4 text-[#6B778C]" />
+          <Button variant="ghost" size="icon" className={cn("h-7 w-7", isDark ? "hover:bg-[#1A1A1A]" : "hover:bg-[#F4F5F7]")}>
+            <MoreHorizontal className="h-4 w-4" style={{ color: isDark ? '#666666' : '#6B778C' }} />
           </Button>
-          <Button variant="ghost" size="icon" className="h-7 w-7 hover:bg-[#F4F5F7]" onClick={onClose}>
-            <X className="h-4 w-4 text-[#6B778C]" />
+          <Button variant="ghost" size="icon" className={cn("h-7 w-7", isDark ? "hover:bg-[#1A1A1A]" : "hover:bg-[#F4F5F7]")} onClick={onClose}>
+            <X className="h-4 w-4" style={{ color: isDark ? '#666666' : '#6B778C' }} />
           </Button>
         </div>
       </div>
 
       {/* Parent Breadcrumb */}
       {item.parent && (
-        <div className="px-4 py-2 border-b border-[#DFE1E6] bg-slate-50">
+        <div
+          className="px-4 py-2"
+          style={{
+            borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#DFE1E6'}`,
+            backgroundColor: isDark ? '#1A1A1A' : '#F8FAFC',
+          }}
+        >
           <div className="flex items-center gap-2 text-[12px]">
-            <span className="text-slate-500">Parent:</span>
+            <span style={{ color: isDark ? '#666666' : '#64748B' }}>Parent:</span>
             <button
               onClick={() => onNavigateToParent?.(item.parent!, item.parentType || 'Feature')}
               className="flex items-center gap-1 text-blue-600 hover:underline font-medium"
@@ -98,11 +116,11 @@ export function AllWorkDetailPanel({ item, onClose, onNavigateToParent }: AllWor
       {/* Main Content */}
       <div className="flex-1 overflow-hidden flex flex-col">
         {/* Title Section */}
-        <div className="px-4 py-4 border-b border-slate-100">
-          <h1 className="text-[18px] font-semibold text-[#172B4D] leading-tight mb-3">
+        <div className="px-4 py-4" style={{ borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#F1F5F9'}` }}>
+          <h1 className="text-[18px] font-semibold leading-tight mb-3" style={{ color: isDark ? '#EDEDED' : '#172B4D' }}>
             {item.summary}
           </h1>
-          
+
           {/* Status */}
           <div className="flex items-center gap-2">
             <span className={cn(
@@ -116,29 +134,35 @@ export function AllWorkDetailPanel({ item, onClose, onNavigateToParent }: AllWor
 
         {/* Tabs */}
         <Tabs defaultValue="details" className="flex-1 flex flex-col overflow-hidden">
-          <TabsList className="px-4 border-b border-slate-200 bg-white h-10 rounded-none justify-start gap-0">
-            <TabsTrigger 
-              value="details" 
+          <TabsList
+            className="px-4 h-10 rounded-none justify-start gap-0"
+            style={{
+              borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`,
+              backgroundColor: isDark ? '#111111' : '#FFFFFF',
+            }}
+          >
+            <TabsTrigger
+              value="details"
               className="text-[13px] data-[state=active]:text-blue-600 data-[state=active]:border-b-2 data-[state=active]:border-blue-600 rounded-none px-4"
             >
               Details
             </TabsTrigger>
-            <TabsTrigger 
-              value="comments" 
+            <TabsTrigger
+              value="comments"
               className="text-[13px] data-[state=active]:text-blue-600 data-[state=active]:border-b-2 data-[state=active]:border-blue-600 rounded-none px-4"
             >
               <MessageSquare className="h-3.5 w-3.5 mr-1.5" />
               Comments
             </TabsTrigger>
-            <TabsTrigger 
-              value="attachments" 
+            <TabsTrigger
+              value="attachments"
               className="text-[13px] data-[state=active]:text-blue-600 data-[state=active]:border-b-2 data-[state=active]:border-blue-600 rounded-none px-4"
             >
               <Paperclip className="h-3.5 w-3.5 mr-1.5" />
               Attachments
             </TabsTrigger>
-            <TabsTrigger 
-              value="history" 
+            <TabsTrigger
+              value="history"
               className="text-[13px] data-[state=active]:text-blue-600 data-[state=active]:border-b-2 data-[state=active]:border-blue-600 rounded-none px-4"
             >
               <History className="h-3.5 w-3.5 mr-1.5" />
@@ -149,22 +173,29 @@ export function AllWorkDetailPanel({ item, onClose, onNavigateToParent }: AllWor
           <TabsContent value="details" className="flex-1 overflow-auto mt-0 p-4">
             {/* Description */}
             <div className="mb-6">
-              <div className="text-[11px] font-semibold text-[#6B778C] uppercase mb-2">Description</div>
-              <div className="text-[14px] text-[#172B4D] leading-relaxed bg-slate-50 rounded p-3 min-h-[60px]">
+              <div className="text-[11px] font-semibold uppercase mb-2" style={{ color: isDark ? '#666666' : '#6B778C' }}>Description</div>
+              <div
+                className="text-[14px] leading-relaxed rounded p-3 min-h-[60px]"
+                style={{
+                  backgroundColor: isDark ? '#1A1A1A' : '#F8FAFC',
+                  color: isDark ? '#EDEDED' : '#172B4D',
+                  border: isDark ? '1px solid rgba(255,255,255,0.08)' : 'none',
+                }}
+              >
                 {item.description || (
-                  <span className="text-slate-400 italic">Click to add description...</span>
+                  <span style={{ color: isDark ? '#666666' : '#94A3B8', fontStyle: 'italic' }}>Click to add description...</span>
                 )}
               </div>
             </div>
 
             {/* Details Grid */}
             <div className="space-y-4">
-              <div className="text-[11px] font-semibold text-[#6B778C] uppercase">Details</div>
-              
+              <div className="text-[11px] font-semibold uppercase" style={{ color: isDark ? '#666666' : '#6B778C' }}>Details</div>
+
               <div className="grid grid-cols-2 gap-4">
                 {/* Assignee */}
                 <div>
-                  <div className="text-[11px] text-slate-500 mb-1">Assignee</div>
+                  <div className="text-[11px] mb-1" style={{ color: isDark ? '#666666' : '#64748B' }}>Assignee</div>
                   <div className="flex items-center gap-2">
                     {item.assignee ? (
                       <>
@@ -173,88 +204,94 @@ export function AllWorkDetailPanel({ item, onClose, onNavigateToParent }: AllWor
                             {getInitials(item.assignee)}
                           </AvatarFallback>
                         </Avatar>
-                        <span className="text-[13px] text-[#172B4D]">{item.assignee}</span>
+                        <span className="text-[13px]" style={{ color: isDark ? '#EDEDED' : '#172B4D' }}>{item.assignee}</span>
                       </>
                     ) : (
-                      <span className="text-[13px] text-slate-400">Unassigned</span>
+                      <span className="text-[13px]" style={{ color: isDark ? '#666666' : '#94A3B8' }}>Unassigned</span>
                     )}
                   </div>
                 </div>
 
                 {/* Reporter */}
                 <div>
-                  <div className="text-[11px] text-slate-500 mb-1">Reporter</div>
+                  <div className="text-[11px] mb-1" style={{ color: isDark ? '#666666' : '#64748B' }}>Reporter</div>
                   <div className="flex items-center gap-2">
                     <Avatar className="h-6 w-6">
                       <AvatarFallback className={cn("text-[10px] text-white", getAvatarColor(item.reporter))}>
                         {getInitials(item.reporter)}
                       </AvatarFallback>
                     </Avatar>
-                    <span className="text-[13px] text-[#172B4D]">{item.reporter}</span>
+                    <span className="text-[13px]" style={{ color: isDark ? '#EDEDED' : '#172B4D' }}>{item.reporter}</span>
                   </div>
                 </div>
 
                 {/* Type */}
                 <div>
-                  <div className="text-[11px] text-slate-500 mb-1">Type</div>
+                  <div className="text-[11px] mb-1" style={{ color: isDark ? '#666666' : '#64748B' }}>Type</div>
                   <div className="flex items-center gap-2">
                     <JiraIssueTypeIcon type={item.type} size={16} />
-                    <span className="text-[13px] text-[#172B4D]">{item.type}</span>
+                    <span className="text-[13px]" style={{ color: isDark ? '#EDEDED' : '#172B4D' }}>{item.type}</span>
                   </div>
                 </div>
 
                 {/* Created */}
                 <div>
-                  <div className="text-[11px] text-slate-500 mb-1">Created</div>
-                  <span className="text-[13px] text-[#172B4D]">{item.created}</span>
+                  <div className="text-[11px] mb-1" style={{ color: isDark ? '#666666' : '#64748B' }}>Created</div>
+                  <span className="text-[13px]" style={{ color: isDark ? '#EDEDED' : '#172B4D' }}>{item.created}</span>
                 </div>
               </div>
 
               {/* Links Section */}
-              <div className="pt-4 border-t border-slate-100">
+              <div className="pt-4" style={{ borderTop: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#F1F5F9'}` }}>
                 <div className="flex items-center justify-between mb-2">
-                  <div className="text-[11px] font-semibold text-[#6B778C] uppercase">Links</div>
+                  <div className="text-[11px] font-semibold uppercase" style={{ color: isDark ? '#666666' : '#6B778C' }}>Links</div>
                   <Button variant="ghost" size="sm" className="h-6 text-[11px] text-blue-600">
                     <Link2 className="h-3 w-3 mr-1" />
                     Link issue
                   </Button>
                 </div>
-                
+
                 {item.parent ? (
-                  <div className="bg-slate-50 rounded p-3">
-                    <div className="text-[10px] text-slate-500 uppercase mb-1">is child of</div>
+                  <div
+                    className="rounded p-3"
+                    style={{
+                      backgroundColor: isDark ? '#1A1A1A' : '#F8FAFC',
+                      border: isDark ? '1px solid rgba(255,255,255,0.08)' : 'none',
+                    }}
+                  >
+                    <div className="text-[10px] uppercase mb-1" style={{ color: isDark ? '#666666' : '#64748B' }}>is child of</div>
                     <button
                       onClick={() => onNavigateToParent?.(item.parent!, item.parentType || 'Feature')}
                       className="flex items-center gap-2 text-blue-600 hover:underline"
                     >
                       <JiraIssueTypeIcon type={item.parentType || 'Epic'} size={16} />
                       <span className="text-[13px] font-medium">{item.parent}</span>
-                      <span className="text-[12px] text-slate-500">
+                      <span className="text-[12px]" style={{ color: isDark ? '#666666' : '#64748B' }}>
                         {item.parentType === 'Epic' ? '(Epic)' : '(Feature)'}
                       </span>
                     </button>
                   </div>
                 ) : (
-                  <div className="text-[12px] text-slate-400 italic">No links</div>
+                  <div className="text-[12px] italic" style={{ color: isDark ? '#666666' : '#94A3B8' }}>No links</div>
                 )}
               </div>
             </div>
           </TabsContent>
 
           <TabsContent value="comments" className="flex-1 overflow-auto mt-0 p-4">
-            <div className="text-[13px] text-slate-500 text-center py-8">
+            <div className="text-[13px] text-center py-8" style={{ color: isDark ? '#666666' : '#64748B' }}>
               No comments yet
             </div>
           </TabsContent>
 
           <TabsContent value="attachments" className="flex-1 overflow-auto mt-0 p-4">
-            <div className="text-[13px] text-slate-500 text-center py-8">
+            <div className="text-[13px] text-center py-8" style={{ color: isDark ? '#666666' : '#64748B' }}>
               No attachments
             </div>
           </TabsContent>
 
           <TabsContent value="history" className="flex-1 overflow-auto mt-0 p-4">
-            <div className="text-[13px] text-slate-500 text-center py-8">
+            <div className="text-[13px] text-center py-8" style={{ color: isDark ? '#666666' : '#64748B' }}>
               No history available
             </div>
           </TabsContent>

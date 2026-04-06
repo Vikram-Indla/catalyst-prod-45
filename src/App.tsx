@@ -1,5 +1,6 @@
-import React, { lazy, Suspense } from "react";
+import React, { lazy, Suspense, useEffect } from "react";
 import { ENABLE_FULL_APP } from './lib/featureFlags';
+
 
 // ─── Core infrastructure (always loaded) ────────────────────────────
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -48,6 +49,7 @@ const S = ({ children }: { children: React.ReactNode }) => (
   <Suspense fallback={<div className="p-8">Loading...</div>}>{children}</Suspense>
 );
 
+
 const App = () => (
   <ErrorBoundary>
   <QueryClientProvider client={queryClient}>
@@ -55,6 +57,7 @@ const App = () => (
       <Toaster />
       <Suspense fallback={null}><HotToaster position="bottom-right" /></Suspense>
       <AuthProvider>
+        
         <FeatureFlagProvider>
         <NavigationProvider>
           <ProcessStepsProvider>

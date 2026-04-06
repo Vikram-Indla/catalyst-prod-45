@@ -52,7 +52,7 @@ export default function WorkHubBulkBar({ selectedCount, onSetStatus, onSetPriori
             Set Status <ChevronDown size={12} />
           </button>
         </PopoverTrigger>
-        <PopoverContent align="center" side="top" style={{ width: 220, padding: '4px 0', background: 'var(--bg-app)', border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6, zIndex: 99999, maxHeight: 320, overflowY: 'auto' }}>
+        <PopoverContent align="center" side="top" style={{ width: 220, padding: '4px 0', background: 'var(--bg-app)', border: '1px solid var(--bd-default, rgba(255,255,255,0.08))', borderRadius: 6, zIndex: 99999, maxHeight: 320, overflowY: 'auto' }}>
           {STATUS_GROUPS.map(group => (
             <div key={group.label}>
               <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--fg-4)', padding: '6px 12px 2px' }}>{group.label}</div>
@@ -80,7 +80,7 @@ export default function WorkHubBulkBar({ selectedCount, onSetStatus, onSetPriori
             Priority <ChevronDown size={12} />
           </button>
         </PopoverTrigger>
-        <PopoverContent align="center" side="top" style={{ width: 160, padding: '4px 0', background: 'var(--bg-app)', border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6, zIndex: 99999 }}>
+        <PopoverContent align="center" side="top" style={{ width: 160, padding: '4px 0', background: 'var(--bg-app)', border: '1px solid var(--bd-default, rgba(255,255,255,0.08))', borderRadius: 6, zIndex: 99999 }}>
           {PRIORITY_OPTIONS.map(p => (
             <button key={p} onClick={() => onSetPriority(p)} style={{
               width: '100%', padding: '5px 12px', fontSize: 13, border: 'none', textAlign: 'left',

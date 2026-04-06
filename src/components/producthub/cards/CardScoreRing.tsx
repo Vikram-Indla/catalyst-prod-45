@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTheme } from '@/hooks/useTheme';
 
 interface CardScoreRingProps {
   score: number | null;
@@ -13,6 +14,7 @@ function getScoreColor(score: number | null): string {
 }
 
 export const CardScoreRing: React.FC<CardScoreRingProps> = ({ score, size = 64 }) => {
+  const { isDark } = useTheme();
   const strokeWidth = 4;
   const radius = (size - strokeWidth * 2) / 2;
   const circumference = 2 * Math.PI * radius;
@@ -27,7 +29,7 @@ export const CardScoreRing: React.FC<CardScoreRingProps> = ({ score, size = 64 }
         cy={size / 2}
         r={radius}
         fill="none"
-        stroke="#e4e4e7"
+        stroke={isDark ? '#222222' : '#e4e4e7'}
         strokeWidth={strokeWidth}
       />
       {/* Score arc */}

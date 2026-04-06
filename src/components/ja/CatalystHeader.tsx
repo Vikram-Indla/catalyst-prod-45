@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState, lazy, Suspense } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Search, ChevronDown, LogOut, Settings, Bell, User } from "lucide-react";
+import { useUnreadCount } from "@/hooks/useUnreadCount";
+import { useDebouncedValue } from "@/hooks/useDebouncedValue";
+import { BADGE_DEBOUNCE_MS } from "@/constants/notificationConstants";
 import { useTheme } from "next-themes";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -16,6 +19,8 @@ import { ThemeToggle } from "@/components/ui/ThemeToggle";
 const CreateDropdown = lazy(() => import("./CreateDropdown").then(m => ({ default: m.CreateDropdown })));
 import { useGlobalSearchStore } from "@/store/globalSearchStore";
 const NotificationsPanel = lazy(() => import("./NotificationsPanel").then(m => ({ default: m.NotificationsPanel })));
+const NotificationPanelNew = lazy(() => import("@/components/notifications/NotificationPanel"));
+const ToastContainerNew = lazy(() => import("@/components/notifications/ToastContainer"));
 const ProgramSelectorDropdown = lazy(() => import("./ProgramSelectorDropdown").then(m => ({ default: m.ProgramSelectorDropdown })));
 const ProjectSelectorDropdown = lazy(() => import("./ProjectSelectorDropdown").then(m => ({ default: m.ProjectSelectorDropdown })));
 const ProductSelectorDropdown = lazy(() => import("./ProductSelectorDropdown").then(m => ({ default: m.ProductSelectorDropdown })));
@@ -59,6 +64,9 @@ export function CatalystHeader() {
   }, []);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [notifPanelOpen, setNotifPanelOpen] = useState(false);
+  const { data: rawUnreadCount = 0 } = useUnreadCount();
+  const debouncedUnreadCount = useDebouncedValue(rawUnreadCount, BADGE_DEBOUNCE_MS);
   
   const userMenuRef = useRef<HTMLDivElement | null>(null);
   const headerRef = useRef<HTMLElement | null>(null);
@@ -496,15 +504,6 @@ export function CatalystHeader() {
           <CreateDropdown />
           
           <TooltipProvider>
-            {/* Notifications */}
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <NotificationsPanel />
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Notifications</p>
-              </TooltipContent>
-            </Tooltip>
 
             {/* Settings */}
             {canAccessSettings && (
@@ -515,8 +514,8 @@ export function CatalystHeader() {
                     style={{
                       width: '36px',
                       height: '36px',
-                      color: 'var(--cp-t3)',
-                      background: 'transparent',
+                      color: location.pathname.startsWith('/admin') ? 'var(--cp-blue-text)' : 'var(--cp-t3)',
+                      background: location.pathname.startsWith('/admin') ? 'var(--cp-hover)' : 'transparent',
                       border: 'none',
                       cursor: 'pointer',
                       borderRadius: '8px',
@@ -526,8 +525,9 @@ export function CatalystHeader() {
                       e.currentTarget.style.background = 'var(--cp-hover)';
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.color = 'var(--cp-t3)';
-                      e.currentTarget.style.background = 'transparent';
+                      const isOnAdmin = location.pathname.startsWith('/admin');
+                      e.currentTarget.style.color = isOnAdmin ? 'var(--cp-blue-text)' : 'var(--cp-t3)';
+                      e.currentTarget.style.background = isOnAdmin ? 'var(--cp-hover)' : 'transparent';
                     }}
                     onClick={() => navigate('/admin/users')}
                     title="Settings"
@@ -552,7 +552,7 @@ export function CatalystHeader() {
                 minWidth: '200px',
                 height: '32px',
                 padding: '0 10px',
-                background: isDark ? '#232019' : '#F8FAFC',
+                background: isDark ? '#111111' : '#F8FAFC',
                 border: `1px solid ${isDark ? 'rgba(248,244,240,0.10)' : '#E2E8F0'}`,
                 borderRadius: '6px',
                 cursor: 'pointer',
@@ -566,18 +566,50 @@ export function CatalystHeader() {
               <span style={{ flex: 1, fontSize: '12px', fontFamily: "'Inter', sans-serif", color: isDark ? 'rgba(248,244,240,0.55)' : '#94A3B8', textAlign: 'left' }}>
                 Search...
               </span>
-              <kbd style={{ fontSize: '10px', background: isDark ? '#1A1714' : '#F1F5F9', border: `1px solid ${isDark ? 'rgba(248,244,240,0.10)' : '#E2E8F0'}`, borderRadius: '3px', padding: '1px 4px', fontFamily: 'monospace', color: isDark ? 'rgba(248,244,240,0.55)' : '#64748B' }}>⌘</kbd>
-              <kbd style={{ fontSize: '10px', background: isDark ? '#1A1714' : '#F1F5F9', border: `1px solid ${isDark ? 'rgba(248,244,240,0.10)' : '#E2E8F0'}`, borderRadius: '3px', padding: '1px 4px', fontFamily: 'monospace', color: isDark ? 'rgba(248,244,240,0.55)' : '#64748B' }}>K</kbd>
+              <kbd style={{ fontSize: '10px', background: isDark ? '#0A0A0A' : '#F1F5F9', border: `1px solid ${isDark ? 'rgba(248,244,240,0.10)' : '#E2E8F0'}`, borderRadius: '3px', padding: '1px 4px', fontFamily: 'monospace', color: isDark ? 'rgba(248,244,240,0.55)' : '#64748B' }}>⌘</kbd>
+              <kbd style={{ fontSize: '10px', background: isDark ? '#0A0A0A' : '#F1F5F9', border: `1px solid ${isDark ? 'rgba(248,244,240,0.10)' : '#E2E8F0'}`, borderRadius: '3px', padding: '1px 4px', fontFamily: 'monospace', color: isDark ? 'rgba(248,244,240,0.55)' : '#64748B' }}>K</kbd>
             </button>
             {/* Mobile search icon */}
             <button
               onClick={() => window.dispatchEvent(new CustomEvent('open-global-search'))}
               className="sm:hidden flex items-center justify-center rounded-lg transition-colors focus:outline-none"
-              style={{ width: '36px', height: '36px', color: isDark ? 'rgba(235,238,245,0.55)' : '#94A3B8', background: 'transparent', borderRadius: '8px', border: 'none', cursor: 'pointer' }}
+              style={{ width: '36px', height: '36px', color: isDark ? 'rgba(255,255,255,0.55)' : '#94A3B8', background: 'transparent', borderRadius: '8px', border: 'none', cursor: 'pointer' }}
             >
               <Search style={{ width: '18px', height: '18px' }} />
             </button>
 
+
+            {/* Notification Bell */}
+            <button
+              onClick={() => setNotifPanelOpen(v => !v)}
+              aria-label={`Notifications${debouncedUnreadCount > 0 ? `, ${debouncedUnreadCount} unread` : ''}`}
+              style={{
+                position: 'relative',
+                width: '36px', height: '36px',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                background: 'transparent', border: 'none', borderRadius: '8px',
+                cursor: 'pointer',
+                color: isDark ? 'rgba(248,244,240,0.55)' : '#64748B',
+                transition: 'color 150ms ease',
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.color = isDark ? 'rgba(248,244,240,0.72)' : '#0F172A'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.color = isDark ? 'rgba(248,244,240,0.55)' : '#64748B'; }}
+            >
+              <Bell style={{ width: '18px', height: '18px' }} />
+              {debouncedUnreadCount > 0 && (
+                <span style={{
+                  position: 'absolute', top: '4px', right: '4px',
+                  minWidth: '16px', height: '16px',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  background: '#EF4444', color: '#FFFFFF',
+                  borderRadius: '8px', padding: '0 4px',
+                  fontFamily: 'Inter, sans-serif', fontSize: '10px', fontWeight: 700,
+                  lineHeight: 1,
+                }}>
+                  {debouncedUnreadCount > 99 ? '99+' : String(debouncedUnreadCount)}
+                </span>
+              )}
+            </button>
 
             {/* User Avatar */}
             <div ref={userMenuRef} className="relative">
@@ -665,6 +697,12 @@ export function CatalystHeader() {
       </header>
 
       {/* Global Search is rendered by CatalystShell via zustand store */}
+
+      {/* NotifyHub Stage A — shell panels (render null until Stage C) */}
+      <Suspense fallback={null}>
+        <NotificationPanelNew isOpen={notifPanelOpen} onClose={() => setNotifPanelOpen(false)} />
+        <ToastContainerNew drawerOpen={false} />
+      </Suspense>
 
       {/* Create Entity Dialog */}
       {createDialogType && (

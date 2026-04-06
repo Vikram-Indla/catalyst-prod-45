@@ -376,34 +376,34 @@ export function GlobalSearch() {
   ));
   const portalTheme = (isDark ? {
     "--gs-backdrop": "rgba(10,10,10,0.58)",
-    "--gs-bg": "#232019",
-    "--gs-bar-bg": "#1A1714",
-    "--gs-footer-bg": "rgba(235,238,245,0.03)",
-    "--gs-section-bg": "rgba(235,238,245,0.03)",
-    "--gs-dropdown-bg": "#232019",
+    "--gs-bg": "#111111",
+    "--gs-bar-bg": "#0A0A0A",
+    "--gs-footer-bg": "rgba(255,255,255,0.03)",
+    "--gs-section-bg": "rgba(255,255,255,0.03)",
+    "--gs-dropdown-bg": "#111111",
     "--gs-shadow": "0 20px 60px rgba(0,0,0,0.5)",
     "--gs-dropdown-shadow": "0 12px 32px rgba(0,0,0,0.4)",
-    "--gs-border": "rgba(235,238,245,0.10)",
-    "--gs-border-subtle": "rgba(235,238,245,0.06)",
-    "--gs-text": "rgba(235,238,245,0.92)",
-    "--gs-text-secondary": "rgba(235,238,245,0.55)",
-    "--gs-text-muted": "rgba(235,238,245,0.30)",
-    "--gs-section-text": "rgba(235,238,245,0.30)",
-    "--gs-placeholder": "rgba(235,238,245,0.30)",
-    "--gs-icon": "rgba(235,238,245,0.55)",
+    "--gs-border": "rgba(255,255,255,0.10)",
+    "--gs-border-subtle": "rgba(255,255,255,0.06)",
+    "--gs-text": "rgba(255,255,255,0.92)",
+    "--gs-text-secondary": "rgba(255,255,255,0.55)",
+    "--gs-text-muted": "rgba(255,255,255,0.30)",
+    "--gs-section-text": "rgba(255,255,255,0.30)",
+    "--gs-placeholder": "rgba(255,255,255,0.30)",
+    "--gs-icon": "rgba(255,255,255,0.55)",
     "--gs-key": "#60A5FA",
-    "--gs-hover": "rgba(235,238,245,0.03)",
+    "--gs-hover": "rgba(255,255,255,0.03)",
     "--gs-selected": "rgba(59,130,246,0.10)",
-    "--gs-chip-bg": "rgba(235,238,245,0.06)",
-    "--gs-chip-border": "rgba(235,238,245,0.10)",
-    "--gs-chip-text": "rgba(235,238,245,0.55)",
+    "--gs-chip-bg": "rgba(255,255,255,0.06)",
+    "--gs-chip-border": "rgba(255,255,255,0.10)",
+    "--gs-chip-text": "rgba(255,255,255,0.55)",
     "--gs-chip-active-bg": "rgba(59,130,246,0.10)",
     "--gs-chip-active-border": "rgba(96,165,250,0.25)",
     "--gs-chip-active-text": "#60A5FA",
-    "--gs-kbd-bg": "#1A1714",
-    "--gs-kbd-border": "rgba(235,238,245,0.10)",
-    "--gs-kbd-text": "rgba(235,238,245,0.55)",
-    "--gs-skeleton": "rgba(235,238,245,0.06)",
+    "--gs-kbd-bg": "#0A0A0A",
+    "--gs-kbd-border": "rgba(255,255,255,0.10)",
+    "--gs-kbd-text": "rgba(255,255,255,0.55)",
+    "--gs-skeleton": "rgba(255,255,255,0.06)",
     "--gs-danger": "#F87171",
     "--gs-danger-hover": "rgba(248,113,113,0.12)",
   } : {
@@ -786,14 +786,14 @@ export function GlobalSearchTrigger() {
       style={{
         display: "flex", alignItems: "center", gap: 8,
         height: 32, padding: "0 12px",
-        backgroundColor: dk ? 'rgba(235,238,245,0.06)' : "#F4F5F7",
-        border: `1px solid ${dk ? 'rgba(235,238,245,0.10)' : "#DFE1E6"}`,
+        backgroundColor: dk ? 'rgba(255,255,255,0.06)' : "#F4F5F7",
+        border: `1px solid ${dk ? 'rgba(255,255,255,0.10)' : "#DFE1E6"}`,
         borderRadius: 6, cursor: "pointer",
         fontSize: 13, fontFamily: "Inter, sans-serif",
-        color: dk ? 'rgba(235,238,245,0.55)' : "#6B778C",
+        color: dk ? 'rgba(255,255,255,0.55)' : "#6B778C",
       }}
-      onMouseEnter={e => { e.currentTarget.style.backgroundColor = dk ? 'rgba(235,238,245,0.08)' : "#EBECF0"; }}
-      onMouseLeave={e => { e.currentTarget.style.backgroundColor = dk ? 'rgba(235,238,245,0.06)' : "#F4F5F7"; }}
+      onMouseEnter={e => { e.currentTarget.style.backgroundColor = dk ? 'rgba(255,255,255,0.08)' : "#EBECF0"; }}
+      onMouseLeave={e => { e.currentTarget.style.backgroundColor = dk ? 'rgba(255,255,255,0.06)' : "#F4F5F7"; }}
     >
       <Search size={14} />
       <span>Search...</span>
@@ -801,9 +801,9 @@ export function GlobalSearchTrigger() {
         {["⌘","K"].map(k => (
           <kbd key={k} style={{
             fontSize: 10, fontFamily: "JetBrains Mono, monospace",
-            color: dk ? 'rgba(235,238,245,0.30)' : "#97A0AF",
-            backgroundColor: dk ? '#1A1714' : "#fff",
-            border: `1px solid ${dk ? 'rgba(235,238,245,0.10)' : "#DFE1E6"}`,
+            color: dk ? 'rgba(255,255,255,0.30)' : "#97A0AF",
+            backgroundColor: dk ? '#0A0A0A' : "#fff",
+            border: `1px solid ${dk ? 'rgba(255,255,255,0.10)' : "#DFE1E6"}`,
             borderRadius: 3, padding: "1px 4px",
           }}>{k}</kbd>
         ))}

@@ -4,6 +4,7 @@
  */
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { X, Sparkles, Rocket, Clock, Activity, Trash2, Pencil, BarChart3, Plus, Save, Search, Link2, Unlink } from 'lucide-react';
+import { useTheme } from '@/hooks/useTheme';
 import { useGoals, useKeyResults, useThemes, useDeleteGoal, useUpdateGoal, useGoalInitiatives, useLinkInitiative, useUnlinkInitiative, useSearchInitiatives } from '@/hooks/useGoals';
 import { goalsService } from '@/services/goalsService';
 import { useQuery } from '@tanstack/react-query';
@@ -90,6 +91,7 @@ const TABS = ['Overview', 'Key Results', 'Initiatives', 'Check-ins', 'Activity']
 type Tab = typeof TABS[number];
 
 export function GoalDetailDrawer({ goalId, isOpen, onClose, onCheckinClick }: GoalDetailDrawerProps) {
+  const { isDark } = useTheme();
   const [activeTab, setActiveTab] = useState<Tab>('Overview');
   const [isEditing, setIsEditing] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -165,7 +167,7 @@ export function GoalDetailDrawer({ goalId, isOpen, onClose, onCheckinClick }: Go
         {/* Fix 2: Sticky Header — 56px */}
         <div style={{
           position: 'sticky', top: 0, zIndex: 10,
-          background: '#FFFFFF', borderBottom: '1px solid var(--divider)',
+          background: isDark ? '#111111' : '#FFFFFF', borderBottom: '1px solid var(--divider)',
           padding: '0 20px', height: 56,
           display: 'flex', alignItems: 'center', gap: 10,
         }}>
@@ -217,7 +219,7 @@ export function GoalDetailDrawer({ goalId, isOpen, onClose, onCheckinClick }: Go
         {/* Fix 2: Sticky Tab bar */}
         <div style={{
           position: 'sticky', top: 56, zIndex: 10,
-          background: '#FFFFFF', borderBottom: '1px solid var(--divider)',
+          background: isDark ? '#111111' : '#FFFFFF', borderBottom: '1px solid var(--divider)',
           padding: '0 20px', display: 'flex', gap: 0,
         }}>
           {TABS.map(tab => (
@@ -468,6 +470,7 @@ function OverviewTab({ goal, theme, krs, confPct, confColor, daysToDeadline }: {
 
 // ── Tab: Key Results — Fix 2: modern card layout ──
 function KeyResultsTab({ krs, loading, onCheckinClick }: { krs: KeyResult[]; loading: boolean; onCheckinClick?: (id: string) => void }) {
+  const { isDark } = useTheme();
   if (loading) return <div style={{ textAlign: 'center', color: 'var(--fg-4)', padding: 40 }}>Loading key results...</div>;
   if (krs.length === 0) {
     return (
@@ -488,7 +491,7 @@ function KeyResultsTab({ krs, loading, onCheckinClick }: { krs: KeyResult[]; loa
         const pctColor = pct >= 60 ? '#16A34A' : pct >= 40 ? '#D97706' : 'var(--sem-danger)';
         return (
           <div key={kr.id} className="kr-detail-card" style={{
-            background: '#FFFFFF', border: '1px solid var(--divider)', borderRadius: 8,
+            background: isDark ? '#111111' : '#FFFFFF', border: '1px solid var(--divider)', borderRadius: 8,
             padding: '14px 16px', transition: 'all 150ms',
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
@@ -522,6 +525,7 @@ function KeyResultsTab({ krs, loading, onCheckinClick }: { krs: KeyResult[]; loa
 
 // ── Tab: Initiatives ──
 function InitiativesTab({ goalId }: { goalId: string }) {
+  const { isDark } = useTheme();
   const { data: links = [], isLoading } = useGoalInitiatives(goalId);
   const linkMutation = useLinkInitiative();
   const unlinkMutation = useUnlinkInitiative();
@@ -612,7 +616,7 @@ function InitiativesTab({ goalId }: { goalId: string }) {
                   key={init.id}
                   onClick={() => { linkMutation.mutate({ goalId, initiativeId: init.id }); setShowSearch(false); setSearchQuery(''); }}
                   style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 8px', borderRadius: 6, cursor: 'pointer', transition: 'background 100ms' }}
-                  onMouseEnter={e => (e.currentTarget.style.background = '#EFF6FF')}
+                  onMouseEnter={e => (e.currentTarget.style.background = isDark ? 'rgba(37,99,235,0.12)' : '#EFF6FF')}
                   onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                 >
                   <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--fg-4)', fontFamily: 'ui-monospace, monospace' }}>{init.initiative_key}</span>

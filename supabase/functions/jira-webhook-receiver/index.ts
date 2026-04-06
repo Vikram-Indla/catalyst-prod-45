@@ -164,6 +164,30 @@ async function handleUserEvent(payload: any, webhookEvent: string) {
         .eq('jira_account_id', jiraAccountId);
     }
 
+    // User deactivated in Jira → deactivate in Catalyst immediately
+    if (webhookEvent === 'jira:user_deactivated') {
+      await supabase.from('jira_identity_map')
+        .update({
+          is_active_in_jira: false,
+          is_active_in_catalyst: false,
+          last_synced_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        })
+        .eq('jira_account_id', jiraAccountId);
+    }
+
+    // User reactivated in Jira → reactivate in Catalyst immediately
+    if (webhookEvent === 'jira:user_reactivated') {
+      await supabase.from('jira_identity_map')
+        .update({
+          is_active_in_jira: true,
+          is_active_in_catalyst: true,
+          last_synced_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        })
+        .eq('jira_account_id', jiraAccountId);
+    }
+
     // User updated → sync display_name, email, groups
     if (webhookEvent === 'jira:user_updated' || webhookEvent === 'user_updated') {
       const updates: Record<string, any> = { last_synced_at: new Date().toISOString() };

@@ -36,9 +36,9 @@ export function NotificationBell() {
             )}
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-96 p-0" align="end">
-          <div className="flex items-center justify-between p-4 border-b">
-            <h3 className="font-semibold">Notifications</h3>
+        <PopoverContent className="w-96 p-0 dark:bg-[#111111] dark:border-[rgba(255,255,255,0.08)]" align="end">
+          <div className="flex items-center justify-between p-4 border-b dark:border-[rgba(255,255,255,0.08)]">
+            <h3 className="font-semibold dark:text-[#EDEDED]">Notifications</h3>
             <div className="flex gap-1">
               <Button
                 variant="ghost"
@@ -63,43 +63,43 @@ export function NotificationBell() {
           </div>
 
           <Tabs value={filter} onValueChange={setFilter} className="w-full">
-            <TabsList className="w-full grid grid-cols-4 rounded-none border-b">
-              <TabsTrigger value="all">All</TabsTrigger>
-              <TabsTrigger value="unread">Unread</TabsTrigger>
-              <TabsTrigger value="assignment">Assigned</TabsTrigger>
-              <TabsTrigger value="mention">Mentions</TabsTrigger>
+            <TabsList className="w-full grid grid-cols-4 rounded-none border-b dark:border-[rgba(255,255,255,0.08)] dark:bg-[#0A0A0A]">
+              <TabsTrigger value="all" className="dark:text-[#888888] dark:data-[state=active]:text-[#EDEDED]">All</TabsTrigger>
+              <TabsTrigger value="unread" className="dark:text-[#888888] dark:data-[state=active]:text-[#EDEDED]">Unread</TabsTrigger>
+              <TabsTrigger value="assignment" className="dark:text-[#888888] dark:data-[state=active]:text-[#EDEDED]">Assigned</TabsTrigger>
+              <TabsTrigger value="mention" className="dark:text-[#888888] dark:data-[state=active]:text-[#EDEDED]">Mentions</TabsTrigger>
             </TabsList>
 
             <ScrollArea className="h-[400px]">
               <TabsContent value={filter} className="m-0">
                 {filteredNotifications.length === 0 ? (
-                  <div className="p-8 text-center text-muted-foreground">
+                  <div className="p-8 text-center text-muted-foreground dark:text-[#666666]">
                     <Bell className="h-12 w-12 mx-auto mb-2 opacity-20" />
-                    <p>No notifications</p>
+                    <p className="dark:text-[#888888]">No notifications</p>
                   </div>
                 ) : (
-                  <div className="divide-y">
+                  <div className="divide-y dark:divide-[rgba(255,255,255,0.08)]">
                     {filteredNotifications.map((notification) => (
                       <div
                         key={notification.id}
-                        className={`p-4 hover:bg-accent/50 transition-colors ${
-                          !notification.is_read ? 'bg-accent/20' : ''
+                        className={`p-4 hover:bg-accent/50 dark:hover:bg-[rgba(255,255,255,0.04)] transition-colors ${
+                          !notification.is_read ? 'bg-accent/20 dark:bg-[rgba(255,255,255,0.03)]' : 'dark:bg-[#0A0A0A]'
                         }`}
                       >
                         <div className="flex items-start justify-between gap-2">
                           <div className="flex-1 space-y-1">
                             <div className="flex items-center gap-2">
-                              <h4 className="font-medium text-sm">{notification.title}</h4>
+                              <h4 className="font-medium text-sm dark:text-[#EDEDED]">{notification.title}</h4>
                               {!notification.is_read && (
                                 <div className="h-2 w-2 rounded-full bg-primary" />
                               )}
                             </div>
                             {notification.message && (
-                              <p className="text-sm text-muted-foreground line-clamp-2">
+                              <p className="text-sm text-muted-foreground dark:text-[#888888] line-clamp-2">
                                 {notification.message}
                               </p>
                             )}
-                            <p className="text-xs text-muted-foreground">
+                            <p className="text-xs text-muted-foreground dark:text-[#666666]">
                               {formatDistanceToNow(new Date(notification.created_at), {
                                 addSuffix: true,
                               })}
@@ -110,7 +110,7 @@ export function NotificationBell() {
                               <Button
                                 variant="ghost"
                                 size="icon"
-                                className="h-8 w-8"
+                                className="h-8 w-8 dark:text-[#888888] dark:hover:text-[#EDEDED] dark:hover:bg-[rgba(255,255,255,0.08)]"
                                 onClick={() => markAsRead(notification.id)}
                               >
                                 <Check className="h-4 w-4" />
@@ -119,7 +119,7 @@ export function NotificationBell() {
                             <Button
                               variant="ghost"
                               size="icon"
-                              className="h-8 w-8"
+                              className="h-8 w-8 dark:text-[#666666] dark:hover:text-destructive dark:hover:bg-[rgba(255,255,255,0.08)]"
                               onClick={() => deleteNotification(notification.id)}
                             >
                               <Trash2 className="h-4 w-4" />

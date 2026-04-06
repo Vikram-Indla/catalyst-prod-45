@@ -113,7 +113,7 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
       onClick={e => { if (e.target === e.currentTarget) onClose(); }}
     >
       <div
-        className="relative flex flex-col animate-scale-in bg-white dark:bg-[#232019]"
+        className="relative flex flex-col animate-scale-in bg-white dark:bg-[#111111]"
         style={{
           width: 640,
           maxHeight: '90vh',
@@ -123,15 +123,15 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
       >
         {/* Header */}
         <div className="flex items-center justify-between px-6 pt-5 pb-0">
-          <h2 className="text-[var(--fg-1)] dark:text-[rgba(235,238,245,0.92)]" style={{ fontSize: 18, fontWeight: 700, fontFamily: "'Sora', sans-serif" }}>
+          <h2 className="text-[var(--fg-1)] dark:text-[rgba(255,255,255,0.92)]" style={{ fontSize: 18, fontWeight: 700, fontFamily: "'Sora', sans-serif" }}>
             Create New Project
           </h2>
           <button
             onClick={onClose}
-            className="flex items-center justify-center rounded-md transition-colors hover:bg-[#F1F5F9] dark:hover:bg-[rgba(235,238,245,0.03)]"
+            className="flex items-center justify-center rounded-md transition-colors hover:bg-[#F1F5F9] dark:hover:bg-[rgba(255,255,255,0.03)]"
             style={{ width: 32, height: 32, border: 'none', background: 'transparent', cursor: 'pointer' }}
           >
-            <X size={18} className="text-[#64748B] dark:text-[rgba(235,238,245,0.55)]" />
+            <X size={18} className="text-[#64748B] dark:text-[rgba(255,255,255,0.55)]" />
           </button>
         </div>
 
@@ -144,10 +144,10 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between px-6 py-4 border-t border-[#E2E8F0] dark:border-[rgba(235,238,245,0.08)]">
+        <div className="flex items-center justify-between px-6 py-4 border-t border-[#E2E8F0] dark:border-[rgba(255,255,255,0.08)]">
           <button
             onClick={step === 0 ? onClose : () => setStep(s => s - 1)}
-            className="rounded-md transition-colors hover:bg-[#F8FAFC] dark:hover:bg-[rgba(235,238,245,0.03)] bg-white dark:bg-transparent border border-[#E2E8F0] dark:border-[rgba(235,238,245,0.10)] text-[#334155] dark:text-[rgba(235,238,245,0.72)]"
+            className="rounded-md transition-colors hover:bg-[#F8FAFC] dark:hover:bg-[rgba(255,255,255,0.03)] bg-white dark:bg-transparent border border-[#E2E8F0] dark:border-[rgba(255,255,255,0.10)] text-[#334155] dark:text-[rgba(255,255,255,0.72)]"
             style={{
               height: 36, padding: '0 16px', fontSize: 13, fontWeight: 500,
               borderRadius: 6, cursor: 'pointer',

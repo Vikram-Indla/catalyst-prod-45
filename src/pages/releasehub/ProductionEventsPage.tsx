@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Clock, Filter, Check } from 'lucide-react';
+import { useTheme } from '@/hooks/useTheme';
 import { useProductionEvents } from '@/hooks/useReleaseHub';
 import { RH } from '@/constants/releasehub.design';
 import { SkeletonRows } from '@/components/releasehub/SkeletonRows';
@@ -59,6 +60,7 @@ function formatDateTime(dateStr: string) {
 }
 
 export default function ProductionEventsPage() {
+  const { isDark } = useTheme();
   const { data: events = [], isLoading } = useProductionEvents();
   const [resultFilter, setResultFilter] = useState<string>('all');
 
@@ -75,7 +77,7 @@ export default function ProductionEventsPage() {
   ];
 
   return (
-    <div style={{ background: '#FFFFFF', minHeight: '100%', padding: 24 }}>
+    <div style={{ background: isDark ? '#0A0A0A' : '#FFFFFF', minHeight: '100%', padding: 24 }}>
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
@@ -85,13 +87,13 @@ export default function ProductionEventsPage() {
           }}>
             Production Events
           </h1>
-          <p style={{ fontSize: 13, color: '#64748B', marginTop: 2 }}>
+          <p style={{ fontSize: 13, color: isDark ? '#666666' : '#64748B', marginTop: 2 }}>
             Post-deployment monitoring & event log
           </p>
         </div>
         <button
           className="h-9 px-4 rounded-md text-[13px] font-semibold flex items-center gap-1.5"
-          style={{ border: '0.75px solid rgba(15,23,42,0.12)', background: '#FFFFFF', color: '#475569' }}
+          style={{ border: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(15,23,42,0.12)', background: isDark ? '#111111' : '#FFFFFF', color: isDark ? '#888888' : '#475569' }}
           onClick={() => {
             const next = resultFilter === 'all' ? 'SUCCESS' : 'all';
             setResultFilter(next);
@@ -109,9 +111,9 @@ export default function ProductionEventsPage() {
             className="h-8 px-3 rounded-[6px] text-[12px] transition-colors"
             style={{
               fontWeight: 600,
-              border: `0.75px solid ${resultFilter === chip.key ? '#2563EB' : 'rgba(15,23,42,0.12)'}`,
-              background: resultFilter === chip.key ? '#EFF6FF' : '#FFFFFF',
-              color: resultFilter === chip.key ? '#2563EB' : '#64748B',
+              border: `0.75px solid ${resultFilter === chip.key ? '#2563EB' : isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.12)'}`,
+              background: resultFilter === chip.key ? (isDark ? 'rgba(37,99,235,0.15)' : '#EFF6FF') : (isDark ? '#111111' : '#FFFFFF'),
+              color: resultFilter === chip.key ? '#2563EB' : (isDark ? '#888888' : '#64748B'),
             }}
           >
             {chip.label}
@@ -152,17 +154,17 @@ export default function ProductionEventsPage() {
                     width: size,
                     height: size,
                     border: `2px solid ${borderColor}`,
-                    background: '#FFFFFF',
+                    background: isDark ? '#0A0A0A' : '#FFFFFF',
                   }}
                 />
 
                 {/* Event card */}
                 <div
                   style={{
-                    background: '#FFFFFF',
+                    background: isDark ? '#111111' : '#FFFFFF',
                     borderRadius: 4,
                     padding: '14px 16px',
-                    border: '0.75px solid rgba(15,23,42,0.12)',
+                    border: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(15,23,42,0.12)',
                   }}
                 >
                   {/* Card header */}
@@ -173,7 +175,7 @@ export default function ProductionEventsPage() {
                   </div>
 
                   {/* Meta row */}
-                  <div className="flex flex-wrap" style={{ gap: 16, fontSize: 12, color: '#64748B' }}>
+                  <div className="flex flex-wrap" style={{ gap: 16, fontSize: 12, color: isDark ? '#666666' : '#64748B' }}>
                     {ev.change_key && <span style={{ fontFamily: RH.fontMono }}>{ev.change_key}</span>}
                     {ev.release_key && <span style={{ fontFamily: RH.fontMono }}>{ev.release_key}</span>}
                     {ev.deployed_at && <span>{formatDateTime(ev.deployed_at)}</span>}

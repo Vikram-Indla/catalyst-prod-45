@@ -3,6 +3,7 @@
  */
 
 import { BarChart3, Loader2 } from 'lucide-react';
+import { useTheme } from '@/hooks/useTheme';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useIncidentListView, useIncidentStats } from '@/hooks/useIncidentHub';
@@ -11,6 +12,7 @@ import { useMemo } from 'react';
 export default function IncidentAnalyticsPage() {
   const { data: incidents, isLoading } = useIncidentListView();
   const stats = useIncidentStats();
+  const { isDark } = useTheme();
 
   const analytics = useMemo(() => {
     if (!incidents) return { bySeverity: [], byStatus: [], byProject: [], byAssignee: [] };
@@ -46,11 +48,11 @@ export default function IncidentAnalyticsPage() {
   };
 
   if (isLoading) {
-    return <div className="flex-1 p-6" style={{ backgroundColor: '#FFFFFF' }}><Skeleton className="h-8 w-48 mb-6" /><Skeleton className="h-64 w-full" /></div>;
+    return <div className="flex-1 p-6" style={{ backgroundColor: isDark ? '#0A0A0A' : '#FFFFFF' }}><Skeleton className="h-8 w-48 mb-6" /><Skeleton className="h-64 w-full" /></div>;
   }
 
   return (
-    <div className="flex-1 overflow-auto" style={{ backgroundColor: '#FFFFFF' }}>
+    <div className="flex-1 overflow-auto" style={{ backgroundColor: isDark ? '#0A0A0A' : '#FFFFFF' }}>
       <div className="px-6 pt-6 pb-4">
         <div className="flex items-center gap-3 mb-6">
           <div className="flex items-center justify-center rounded-md" style={{ width: 32, height: 32, backgroundColor: '#EFF6FF' }}>
@@ -70,7 +72,7 @@ export default function IncidentAnalyticsPage() {
             { label: 'Total Incidents', value: stats.total, accent: '#0F172A' },
             { label: 'MTTR', value: '\u2014', accent: '#16A34A' },
           ].map(s => (
-            <div key={s.label} className="p-3" style={{ backgroundColor: '#FFFFFF', border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6 }}>
+            <div key={s.label} className="p-3" style={{ backgroundColor: isDark ? '#111111' : '#FFFFFF', border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(15,23,42,0.12)', borderRadius: 6 }}>
               <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: '#64748B', marginBottom: 4 }}>{s.label}</div>
               <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 22, fontWeight: 700, color: s.accent }}>{s.value}</div>
             </div>

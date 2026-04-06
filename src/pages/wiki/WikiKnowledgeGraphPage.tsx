@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { ChevronRight } from 'lucide-react';
+import { useTheme } from '@/hooks/useTheme';
 import type * as D3Type from 'd3';
 
 const DOMAIN_COLORS: Record<string, string> = {
@@ -19,6 +20,7 @@ interface GLink extends d3.SimulationLinkDatum<GNode> {
 
 export default function WikiKnowledgeGraphPage() {
   const navigate = useNavigate();
+  const { isDark } = useTheme();
   const svgRef = useRef<SVGSVGElement>(null);
   const [tooltip, setTooltip] = useState<{ x: number; y: number; title: string; domain: string; views: number } | null>(null);
 
@@ -94,7 +96,7 @@ export default function WikiKnowledgeGraphPage() {
       .selectAll('line')
       .data(links)
       .join('line')
-      .attr('stroke', '#CBD5E1')
+      .attr('stroke', isDark ? 'rgba(255,255,255,0.15)' : '#CBD5E1')
       .attr('stroke-width', 1)
       .attr('stroke-opacity', 0.5);
 
@@ -104,7 +106,7 @@ export default function WikiKnowledgeGraphPage() {
       .join('circle')
       .attr('r', d => radiusScale(d.view_count ?? 1))
       .attr('fill', d => DOMAIN_COLORS[d.domain_code] || '#64748B')
-      .attr('stroke', '#FFFFFF')
+      .attr('stroke', isDark ? '#0A0A0A' : '#FFFFFF')
       .attr('stroke-width', 1.5)
       .attr('cursor', 'pointer')
       .on('click', (_, d) => navigate(`/wiki/${d.slug}`))
@@ -132,7 +134,7 @@ export default function WikiKnowledgeGraphPage() {
       .text(d => d.title.length > 20 ? d.title.slice(0, 18) + '…' : d.title)
       .attr('font-size', 9)
       .attr('font-family', 'Inter, sans-serif')
-      .attr('fill', '#334155')
+      .attr('fill', isDark ? '#888888' : '#334155')
       .attr('text-anchor', 'middle')
       .attr('dy', d => radiusScale(d.view_count ?? 1) + 12)
       .attr('pointer-events', 'none');
@@ -154,15 +156,15 @@ export default function WikiKnowledgeGraphPage() {
   }, [articles, relations, navigate]);
 
   return (
-    <div style={{ fontFamily: 'Inter, sans-serif', color: '#0F172A', background: '#F8FAFC', height: '100%', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ fontFamily: 'Inter, sans-serif', color: isDark ? '#EDEDED' : '#0F172A', background: isDark ? '#0A0A0A' : '#F8FAFC', height: '100%', display: 'flex', flexDirection: 'column' }}>
       <div style={{ padding: '20px 40px 0' }}>
         <nav style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 16 }}>
           <span onClick={() => navigate('/wiki')} style={{ fontSize: 13, color: '#2563EB', cursor: 'pointer' }}>Wiki</span>
-          <ChevronRight size={12} style={{ color: '#94A3B8' }} />
-          <span style={{ fontSize: 13, color: '#64748B', fontWeight: 600 }}>Knowledge Graph</span>
+          <ChevronRight size={12} style={{ color: isDark ? '#666666' : '#94A3B8' }} />
+          <span style={{ fontSize: 13, color: isDark ? '#888888' : '#64748B', fontWeight: 600 }}>Knowledge Graph</span>
         </nav>
         <h1 style={{ fontFamily: "'Sora', sans-serif", fontSize: 18, fontWeight: 700, margin: '0 0 8px' }}>Knowledge Graph</h1>
-        <p style={{ fontSize: 12, color: '#64748B', marginBottom: 12 }}>
+        <p style={{ fontSize: 12, color: isDark ? '#888888' : '#64748B', marginBottom: 12 }}>
           Visualize article relationships. Node size = view count. Click to open article.
         </p>
         {/* Legend */}
@@ -170,23 +172,23 @@ export default function WikiKnowledgeGraphPage() {
           {Object.entries(DOMAIN_COLORS).map(([code, color]) => (
             <div key={code} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
               <span style={{ width: 8, height: 8, borderRadius: '50%', background: color }} />
-              <span style={{ fontSize: 10, color: '#64748B', fontWeight: 500 }}>{code}</span>
+              <span style={{ fontSize: 10, color: isDark ? '#888888' : '#64748B', fontWeight: 500 }}>{code}</span>
             </div>
           ))}
         </div>
       </div>
 
-      <div style={{ flex: 1, position: 'relative', borderTop: '0.75px solid rgba(0,0,0,0.06)' }}>
-        <svg ref={svgRef} style={{ width: '100%', height: '100%', background: '#FFFFFF' }} />
+      <div style={{ flex: 1, position: 'relative', borderTop: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(0,0,0,0.06)' }}>
+        <svg ref={svgRef} style={{ width: '100%', height: '100%', background: isDark ? '#111111' : '#FFFFFF' }} />
         {tooltip && (
           <div style={{
             position: 'absolute', left: tooltip.x + 12, top: tooltip.y - 8,
-            background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 6,
-            padding: '8px 12px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+            background: isDark ? '#1A1A1A' : '#FFFFFF', border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0', borderRadius: 6,
+            padding: '8px 12px', boxShadow: isDark ? '0 4px 12px rgba(0,0,0,0.3)' : '0 4px 12px rgba(0,0,0,0.1)',
             pointerEvents: 'none', zIndex: 10, fontSize: 12, maxWidth: 200,
           }}>
-            <div style={{ fontWeight: 600, marginBottom: 2 }}>{tooltip.title}</div>
-            <div style={{ fontSize: 10, color: '#64748B' }}>{tooltip.domain} · {tooltip.views} views</div>
+            <div style={{ fontWeight: 600, marginBottom: 2, color: isDark ? '#EDEDED' : undefined }}>{tooltip.title}</div>
+            <div style={{ fontSize: 10, color: isDark ? '#888888' : '#64748B' }}>{tooltip.domain} · {tooltip.views} views</div>
           </div>
         )}
       </div>

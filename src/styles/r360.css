@@ -410,44 +410,44 @@
 
 /* FIX 3: Table header background */
 .dark #r360-root .r3-table th {
-  background: rgba(235,238,245,0.04);
-  color: rgba(235,238,245,0.55);
-  border-bottom-color: rgba(235,238,245,0.10);
+  background: rgba(255,255,255,0.04);
+  color: rgba(255,255,255,0.55);
+  border-bottom-color: rgba(255,255,255,0.10);
 }
 .dark #r360-root .r3-table td {
-  color: rgba(235,238,245,0.92);
-  border-bottom-color: rgba(235,238,245,0.08);
+  color: rgba(255,255,255,0.92);
+  border-bottom-color: rgba(255,255,255,0.08);
 }
 .dark #r360-root .r3-table tbody tr:hover {
-  background: rgba(235,238,245,0.04);
+  background: rgba(255,255,255,0.04);
 }
 
 /* FIX 4: Location labels — neutral text */
 .dark #r360-root .r3-loc-on,
 .dark #r360-root .r3-loc-off {
-  color: rgba(235,238,245,0.72);
+  color: rgba(255,255,255,0.72);
 }
 
 /* FIX 5: Action icons — neutral at rest, brighter on hover */
 .dark #r360-root .r3-btn {
   background: transparent;
-  border-color: rgba(235,238,245,0.10);
-  color: rgba(235,238,245,0.55);
+  border-color: rgba(255,255,255,0.10);
+  color: rgba(255,255,255,0.55);
 }
 .dark #r360-root .r3-btn:hover {
-  color: rgba(235,238,245,0.72);
-  border-color: rgba(235,238,245,0.20);
-  background: rgba(235,238,245,0.04);
+  color: rgba(255,255,255,0.72);
+  border-color: rgba(255,255,255,0.20);
+  background: rgba(255,255,255,0.04);
 }
 
 /* FIX 6: Filter chips dark mode */
 .dark #r360-root .r3-chip {
   background: transparent;
-  border-color: rgba(235,238,245,0.10);
-  color: rgba(235,238,245,0.72);
+  border-color: rgba(255,255,255,0.10);
+  color: rgba(255,255,255,0.72);
 }
 .dark #r360-root .r3-chip:hover {
-  border-color: rgba(235,238,245,0.20);
+  border-color: rgba(255,255,255,0.20);
 }
 .dark #r360-root .r3-chip--active {
   background: #3B82F6;
@@ -457,40 +457,216 @@
 
 /* FIX 7: Resource type tabs dark mode */
 .dark #r360-root .r3-tab {
-  color: rgba(235,238,245,0.55);
+  color: rgba(255,255,255,0.55);
   background: transparent;
 }
 .dark #r360-root .r3-tab:hover {
-  background: rgba(235,238,245,0.04);
+  background: rgba(255,255,255,0.04);
 }
 .dark #r360-root .r3-tab--active {
   background: transparent;
-  color: rgba(235,238,245,0.92);
+  color: rgba(255,255,255,0.92);
   border-bottom-color: #3B82F6;
 }
 
 /* General dark overrides for R360 surfaces */
 .dark #r360-root {
-  color: rgba(235,238,245,0.92);
+  color: rgba(255,255,255,0.92);
 }
 .dark #r360-root .r3-title {
-  color: rgba(235,238,245,0.92);
+  color: rgba(255,255,255,0.92);
 }
 .dark #r360-root .r3-search {
   background-color: transparent;
-  border-color: rgba(235,238,245,0.10);
-  color: rgba(235,238,245,0.92);
+  border-color: rgba(255,255,255,0.10);
+  color: rgba(255,255,255,0.92);
 }
 .dark #r360-root .r3-search:focus {
   border-color: #3B82F6;
   box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
 }
 .dark #r360-root .r3-res-name {
-  color: rgba(235,238,245,0.92);
+  color: #EDEDED;
 }
 .dark #r360-root .r3-res-rid {
-  color: rgba(235,238,245,0.55);
+  color: #666666;
 }
 .dark #r360-root .r3-dept {
-  background: rgba(235,238,245,0.04) !important;
+  background: rgba(255,255,255,0.04) !important;
+}
+
+/* ═══════════════════════════════════════════════════════
+   ECLIPSE — NOCTURNE DARK MODE (R360 Member Detail Page)
+   ═══════════════════════════════════════════════════════ */
+
+/* Profile card */
+.dark #r360-root .r3-profile {
+  background: #111111 !important;
+  border-color: rgba(255,255,255,0.08) !important;
+}
+
+/* KPI cards */
+.dark #r360-root .r3-kpi--stale,
+.dark #r360-root .r3-kpi {
+  background: #111111 !important;
+  border-color: rgba(255,255,255,0.08) !important;
+}
+
+/* Tab bar */
+.dark #r360-root .r3-tab-bar {
+  background: #0A0A0A !important;
+  border-color: rgba(255,255,255,0.06) !important;
+}
+.dark #r360-root .r3-tab {
+  color: #888888 !important;
+}
+.dark #r360-root .r3-tab:hover {
+  background: rgba(255,255,255,0.04) !important;
+}
+.dark #r360-root .r3-tab.active {
+  color: #2563EB !important;
+  border-color: #2563EB !important;
+}
+
+/* Period toggle (Weekly/Monthly) */
+.dark #r360-root .r3-toggle button {
+  background: #111111 !important;
+  color: #888888 !important;
+  border-color: rgba(255,255,255,0.08) !important;
+}
+.dark #r360-root .r3-toggle button.active {
+  background: #2563EB !important;
+  color: #FFFFFF !important;
+  border-color: #2563EB !important;
+}
+
+/* Week header / date strip */
+.dark #r360-root .r3-week-strip {
+  background: #0A0A0A !important;
+  border-color: rgba(255,255,255,0.06) !important;
+}
+.dark #r360-root .r3-week-label {
+  color: #EDEDED !important;
+}
+
+/* Calendar day cells */
+.dark #r360-root .r3-date-cell {
+  background: #111111 !important;
+  border-color: rgba(255,255,255,0.06) !important;
+}
+.dark #r360-root .r3-date-cell.current {
+  background: rgba(37,99,235,0.1) !important;
+  border-color: rgba(37,99,235,0.3) !important;
+}
+.dark #r360-root .r3-date-dot--other {
+  background: #111111 !important;
+  border-color: #666666 !important;
+}
+
+/* Status filter chips */
+.dark #r360-root .r3-status-chip {
+  background: #111111 !important;
+  color: #888888 !important;
+  border-color: rgba(255,255,255,0.08) !important;
+}
+.dark #r360-root .r3-status-chip.active {
+  background: rgba(37,99,235,0.12) !important;
+  color: #60A5FA !important;
+  border-color: rgba(37,99,235,0.3) !important;
+}
+
+/* Summary bar ("0 open · 0 stale · 0 done") */
+.dark #r360-root .r3-summary-strip {
+  color: #888888 !important;
+}
+
+/* Progress bar */
+.dark #r360-root .r3-progress-bg {
+  background: #1A1A1A !important;
+}
+
+/* Ring view cards */
+.dark #r360-root .r3-ring-card {
+  background: #111111 !important;
+  border-color: rgba(255,255,255,0.08) !important;
+}
+.dark #r360-root .r3-ring-card:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3) !important;
+}
+
+/* Board columns */
+.dark #r360-root .r3-board-col {
+  background: #0A0A0A !important;
+}
+.dark #r360-root .r3-board-item {
+  background: #111111 !important;
+  border-color: rgba(255,255,255,0.08) !important;
+}
+.dark #r360-root .r3-board-item:hover {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3) !important;
+}
+
+/* Chronology rows */
+.dark #r360-root .r3-day-group {
+  border-color: rgba(255,255,255,0.06) !important;
+}
+.dark #r360-root .r3-day-label {
+  color: #888888 !important;
+}
+.dark #r360-root .r3-chrono-item {
+  background: #111111 !important;
+  border-color: rgba(255,255,255,0.08) !important;
+}
+
+/* Detail panel / drawer */
+.dark #r360-root .r3-detail-panel {
+  background: #111111 !important;
+  border-color: rgba(255,255,255,0.08) !important;
+}
+
+/* Search input */
+.dark #r360-root .r3-search {
+  background: #111111 !important;
+  border-color: rgba(255,255,255,0.08) !important;
+  color: #EDEDED !important;
+}
+
+/* Quarter select + nav buttons */
+.dark #r360-root .r3-quarter-picker,
+.dark #r360-root .r3-nav-btn {
+  background: #111111 !important;
+  border-color: rgba(255,255,255,0.08) !important;
+  color: #888888 !important;
+}
+
+/* Empty state */
+.dark #r360-root .r3-empty-state {
+  color: #666666 !important;
+}
+
+/* Generic fallbacks */
+.dark #r360-root [style*="background: #FFFFFF"],
+.dark #r360-root [style*="background:#FFFFFF"],
+.dark #r360-root [style*="background: #fff"],
+.dark #r360-root [style*="background: rgb(255"],
+.dark #r360-root [style*="background: #F8FAFC"],
+.dark #r360-root [style*="background:#F8FAFC"] {
+  background: #0A0A0A !important;
+}
+.dark #r360-root [style*="border-color: #E2E8F0"],
+.dark #r360-root [style*="border: 1px solid #E2E8F0"] {
+  border-color: rgba(255,255,255,0.08) !important;
+}
+.dark #r360-root [style*="color: #0F172A"],
+.dark #r360-root [style*="color: #020617"],
+.dark #r360-root [style*="color:#0F172A"] {
+  color: #EDEDED !important;
+}
+.dark #r360-root [style*="color: #334155"],
+.dark #r360-root [style*="color:#334155"] {
+  color: #888888 !important;
+}
+.dark #r360-root [style*="color: #64748B"],
+.dark #r360-root [style*="color:#64748B"] {
+  color: #666666 !important;
 }

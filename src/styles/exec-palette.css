@@ -48,15 +48,15 @@
 
 /* ── DARK MODE — Nocturne overrides ── */
 [data-theme="dark"] .strategy-room {
-  --exec-bg-page: #1A1714;
-  --exec-bg-card: #1A1714;
-  --exec-bg-hover: rgba(235,238,245,0.03);
-  --exec-bg-subtle: rgba(235,238,245,0.03);
+  --exec-bg-page: #0A0A0A;
+  --exec-bg-card: #0A0A0A;
+  --exec-bg-hover: rgba(255,255,255,0.03);
+  --exec-bg-subtle: rgba(255,255,255,0.03);
 
-  --exec-text-primary: rgba(235,238,245,0.92);
-  --exec-text-secondary: rgba(235,238,245,0.72);
-  --exec-text-tertiary: rgba(235,238,245,0.55);
-  --exec-text-muted: rgba(235,238,245,0.45);
+  --exec-text-primary: rgba(255,255,255,0.92);
+  --exec-text-secondary: rgba(255,255,255,0.72);
+  --exec-text-tertiary: rgba(255,255,255,0.55);
+  --exec-text-muted: rgba(255,255,255,0.45);
 
   --exec-blue-900: #93C5FD;
   --exec-blue-700: #60A5FA;
@@ -77,6 +77,6 @@
   --exec-ai-purple: #A78BFA;
   --exec-ai-purple-bg: rgba(167,139,250,0.08);
 
-  --exec-border: rgba(235,238,245,0.10);
-  --exec-border-strong: rgba(235,238,245,0.18);
+  --exec-border: rgba(255,255,255,0.10);
+  --exec-border-strong: rgba(255,255,255,0.18);
 }

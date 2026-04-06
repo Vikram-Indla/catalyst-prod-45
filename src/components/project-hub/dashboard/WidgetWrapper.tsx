@@ -1,6 +1,6 @@
 /**
  * WidgetWrapper — V12 Hybrid Precision widget chrome
- * Dark mode: Nocturne #1A1714 warm charcoal surface
+ * Dark mode: Nocturne #0A0A0A warm charcoal surface
  */
 import { ChevronDown } from 'lucide-react';
 import { Component, type ReactNode, type ErrorInfo } from 'react';
@@ -69,7 +69,7 @@ export default function WidgetWrapper({
     <div
       role="region"
       aria-label={title}
-      className={`overflow-hidden flex flex-col ${dark ? 'bg-[#1A1714]' : 'bg-[var(--cp-bg-page)]'}`}
+      className={`overflow-hidden flex flex-col ${dark ? 'bg-[#0A0A0A]' : 'bg-[var(--cp-bg-page)]'}`}
       style={{
         gridColumn: `span ${span}`,
         border: dark ? '1px solid rgba(255,255,255,0.08)' : '0.75px solid var(--cp-border-default)',
@@ -94,7 +94,7 @@ export default function WidgetWrapper({
             style={{
               fontSize: 13,
               fontWeight: 650,
-              color: dark ? '#F5F3F0' : 'var(--cp-text-primary)',
+              color: dark ? '#EDEDED' : 'var(--cp-text-primary)',
               fontFamily: 'var(--cp-font-heading)',
             }}
           >
@@ -103,7 +103,7 @@ export default function WidgetWrapper({
           {subtitle && (
             <span
               className="hidden sm:inline truncate"
-              style={{ fontSize: 12, color: dark ? '#6B6560' : 'var(--cp-text-tertiary)', fontFamily: 'var(--cp-font-body)' }}
+              style={{ fontSize: 12, color: dark ? '#666666' : 'var(--cp-text-tertiary)', fontFamily: 'var(--cp-font-body)' }}
             >
               · {subtitle}
             </span>
@@ -114,7 +114,7 @@ export default function WidgetWrapper({
           <ChevronDown
             size={14}
             style={{
-              color: dark ? '#6B6560' : 'var(--cp-text-tertiary)',
+              color: dark ? '#666666' : 'var(--cp-text-tertiary)',
               transition: 'transform 200ms ease',
               transform: collapsed ? 'rotate(-90deg)' : 'rotate(0deg)',
             }}
@@ -124,7 +124,7 @@ export default function WidgetWrapper({
 
       {/* Body */}
       {!collapsed && (
-        <div className={`flex-1 ${dark ? 'bg-[#1A1714]' : 'bg-[var(--cp-bg-page)]'}`} style={{ padding: flushBody ? 0 : 14 }}>
+        <div className={`flex-1 ${dark ? 'bg-[#0A0A0A]' : 'bg-[var(--cp-bg-page)]'}`} style={{ padding: flushBody ? 0 : 14 }}>
           <WidgetErrorBoundary title={title}>
             {children}
           </WidgetErrorBoundary>
@@ -134,7 +134,7 @@ export default function WidgetWrapper({
       {/* Footer */}
       {!collapsed && footer && (
         <div
-          className={dark ? 'bg-[#1A1714]' : 'bg-[var(--cp-bg-page)]'}
+          className={dark ? 'bg-[#0A0A0A]' : 'bg-[var(--cp-bg-page)]'}
           style={{
             borderTop: dark ? '1px solid rgba(255,255,255,0.08)' : '0.75px solid var(--cp-border-subtle)',
             padding: '8px 14px',

@@ -27,9 +27,9 @@ const DK = {
   t2: 'var(--cp-t2)',
   t3: 'var(--cp-t3)',
   t4: 'var(--cp-t4)',
-  border: 'rgba(235,238,245,0.10)',
-  borderSubtle: 'rgba(235,238,245,0.08)',
-  hover: 'rgba(235,238,245,0.03)',
+  border: 'rgba(255,255,255,0.10)',
+  borderSubtle: 'rgba(255,255,255,0.08)',
+  hover: 'rgba(255,255,255,0.03)',
 };
 
 // ── Status badge ──
@@ -41,9 +41,9 @@ function statusBadge(status: string, isDark = false) {
     achieved:    { dot: '#4F46E5', bg: 'rgba(79,70,229,0.08)',  text: '#4338CA', bgDark: '#1A2030', textDark: '#93C5FD', label: 'Achieved' },
     at_risk:     { dot: '#D97706', bg: 'rgba(217,119,6,0.08)',  text: '#B45309', bgDark: '#2A2418', textDark: '#FBBF24', label: 'At Risk' },
     off_track:   { dot: '#EF4444', bg: 'rgba(239,68,68,0.08)',  text: '#DC2626', bgDark: '#2A1C1E', textDark: '#FCA5A5', label: 'Off Track' },
-    draft:       { dot: '#94A3B8', bg: '#F1F5F9',               text: '#64748B', bgDark: '#2C2823', textDark: '#A09890', label: 'Draft' },
-    not_started: { dot: '#94A3B8', bg: '#F1F5F9',               text: '#64748B', bgDark: '#2C2823', textDark: '#A09890', label: 'Not Started' },
-    cancelled:   { dot: '#94A3B8', bg: '#F1F5F9',               text: '#64748B', bgDark: '#2C2823', textDark: '#A09890', label: 'Cancelled' },
+    draft:       { dot: '#94A3B8', bg: '#F1F5F9',               text: '#64748B', bgDark: '#1A1A1A', textDark: '#888888', label: 'Draft' },
+    not_started: { dot: '#94A3B8', bg: '#F1F5F9',               text: '#64748B', bgDark: '#1A1A1A', textDark: '#888888', label: 'Not Started' },
+    cancelled:   { dot: '#94A3B8', bg: '#F1F5F9',               text: '#64748B', bgDark: '#1A1A1A', textDark: '#888888', label: 'Cancelled' },
   };
   const s = map[status] || map.draft;
   return (
@@ -57,7 +57,7 @@ function statusBadge(status: string, isDark = false) {
 function progressBar(pct: number, height = 6, isDark = false) {
   const color = pct >= 60 ? '#16A34A' : pct >= 40 ? '#D97706' : '#EF4444';
   return (
-    <div style={{ width: 80, height, background: isDark ? 'rgba(235,238,245,0.08)' : 'var(--divider)', borderRadius: 3, overflow: 'hidden' }}>
+    <div style={{ width: 80, height, background: isDark ? 'rgba(255,255,255,0.08)' : 'var(--divider)', borderRadius: 3, overflow: 'hidden' }}>
       <div style={{ width: `${Math.min(100, Math.max(0, pct))}%`, height: '100%', background: color, borderRadius: 3, transition: 'width 300ms ease' }} />
     </div>
   );
@@ -73,7 +73,7 @@ function ConfidenceDots({ level, isDark = false }: { level: number; isDark?: boo
             width: 5, height: 5, borderRadius: '50%',
             background: i <= level
               ? (level >= 4 ? '#16A34A' : level >= 3 ? '#D97706' : '#EF4444')
-              : (isDark ? 'rgba(235,238,245,0.08)' : 'var(--divider)'),
+              : (isDark ? 'rgba(255,255,255,0.08)' : 'var(--divider)'),
           }}
         />
       ))}
@@ -107,31 +107,39 @@ function computeThemeStatus(goals: Goal[]): string {
   return 'active';
 }
 
-const AVATAR_COLORS: Record<string, { bg: string; text: string }> = {
-  'Nada Alfassam':      { bg: '#DBEAFE', text: '#1E40AF' },
-  'Sitah Alqahtani':    { bg: '#E0E7FF', text: '#3730A3' },
-  'Sulaiman Alessa':    { bg: '#D1FAE5', text: '#065F46' },
-  'ibrahim alqusiyer':  { bg: '#FEF3C7', text: '#92400E' },
-  'Khaled Alghithy':    { bg: '#CFFAFE', text: '#155E75' },
-  'Izza Ali':           { bg: '#EDE9FE', text: '#5B21B6' },
+const AVATAR_COLORS: Record<string, { bg: string; text: string; bgDark: string; textDark: string }> = {
+  'Nada Alfassam':      { bg: '#DBEAFE', text: '#1E40AF', bgDark: 'rgba(59,130,246,0.15)',  textDark: '#93C5FD' },
+  'Sitah Alqahtani':    { bg: '#E0E7FF', text: '#3730A3', bgDark: 'rgba(99,102,241,0.15)',  textDark: '#A5B4FC' },
+  'Sulaiman Alessa':    { bg: '#D1FAE5', text: '#065F46', bgDark: 'rgba(52,211,153,0.15)',  textDark: '#6EE7B7' },
+  'ibrahim alqusiyer':  { bg: '#FEF3C7', text: '#92400E', bgDark: 'rgba(251,191,36,0.15)',  textDark: '#FCD34D' },
+  'Khaled Alghithy':    { bg: '#CFFAFE', text: '#155E75', bgDark: 'rgba(34,211,238,0.15)',  textDark: '#67E8F9' },
+  'Izza Ali':           { bg: '#EDE9FE', text: '#5B21B6', bgDark: 'rgba(139,92,246,0.15)',  textDark: '#C4B5FD' },
 };
 
-function getAvatarColors(name: string) {
-  if (AVATAR_COLORS[name]) return AVATAR_COLORS[name];
-  let hash = 0;
-  for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+function getAvatarColors(name: string, isDark = false) {
   const palettes = [
-    { bg: '#DBEAFE', text: '#1E40AF' }, { bg: '#D1FAE5', text: '#065F46' },
-    { bg: '#E0E7FF', text: '#3730A3' }, { bg: '#FEF3C7', text: '#92400E' },
-    { bg: '#CFFAFE', text: '#155E75' }, { bg: '#EDE9FE', text: '#5B21B6' },
+    { bg: '#DBEAFE', text: '#1E40AF', bgDark: 'rgba(59,130,246,0.15)',  textDark: '#93C5FD' },
+    { bg: '#D1FAE5', text: '#065F46', bgDark: 'rgba(52,211,153,0.15)',  textDark: '#6EE7B7' },
+    { bg: '#E0E7FF', text: '#3730A3', bgDark: 'rgba(99,102,241,0.15)',  textDark: '#A5B4FC' },
+    { bg: '#FEF3C7', text: '#92400E', bgDark: 'rgba(251,191,36,0.15)',  textDark: '#FCD34D' },
+    { bg: '#CFFAFE', text: '#155E75', bgDark: 'rgba(34,211,238,0.15)',  textDark: '#67E8F9' },
+    { bg: '#EDE9FE', text: '#5B21B6', bgDark: 'rgba(139,92,246,0.15)',  textDark: '#C4B5FD' },
   ];
-  return palettes[Math.abs(hash) % palettes.length];
+  let entry;
+  if (AVATAR_COLORS[name]) {
+    entry = AVATAR_COLORS[name];
+  } else {
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    entry = palettes[Math.abs(hash) % palettes.length];
+  }
+  return isDark ? { bg: entry.bgDark, text: entry.textDark } : { bg: entry.bg, text: entry.text };
 }
 
-function OwnerAvatar({ name, size = 28 }: { name?: string; size?: number }) {
-  if (!name) return <span style={{ fontSize: 11, color: '#CBD5E1' }}>—</span>;
+function OwnerAvatar({ name, size = 28, isDark = false }: { name?: string; size?: number; isDark?: boolean }) {
+  if (!name) return <span style={{ fontSize: 11, color: isDark ? DK.t4 : '#CBD5E1' }}>—</span>;
   const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-  const colors = getAvatarColors(name);
+  const colors = getAvatarColors(name, isDark);
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 6 }} title={name}>
       <div style={{
@@ -152,7 +160,7 @@ export function GoalsTreeSkeleton({ isDark = false }: { isDark?: boolean }) {
     <div style={{ border: `1px solid ${isDark ? DK.border : 'var(--divider)'}`, borderRadius: 10, overflow: 'hidden' }}>
       <div style={{ height: 36, background: isDark ? 'transparent' : 'var(--bg-app)', borderBottom: `2px solid ${isDark ? DK.border : 'var(--divider)'}` }} />
       {Array.from({ length: 6 }).map((_, i) => (
-        <div key={i} className="ph-shimmer" style={{ height: 44, borderBottom: `1px solid ${isDark ? DK.borderSubtle : 'var(--cp-bd-zone)'}`, background: isDark ? 'rgba(235,238,245,0.02)' : 'var(--bg-1)' }} />
+        <div key={i} className="ph-shimmer" style={{ height: 44, borderBottom: `1px solid ${isDark ? DK.borderSubtle : 'var(--cp-bd-zone)'}`, background: isDark ? 'rgba(255,255,255,0.02)' : 'var(--bg-1)' }} />
       ))}
       <style>{`
         @keyframes phShimmer { 0% { opacity: 0.6; } 50% { opacity: 1; } 100% { opacity: 0.6; } }
@@ -165,7 +173,7 @@ export function GoalsTreeSkeleton({ isDark = false }: { isDark?: boolean }) {
 export function GoalsEmptyState({ onCreateGoal, isDark = false }: { onCreateGoal: () => void; isDark?: boolean }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '60px 20px', border: `1px solid ${isDark ? DK.border : 'var(--divider)'}`, borderRadius: 10, background: isDark ? 'transparent' : 'var(--bg-app)' }}>
-      <div style={{ width: 52, height: 52, borderRadius: 14, background: isDark ? 'rgba(235,238,245,0.04)' : 'var(--cp-bd-zone)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
+      <div style={{ width: 52, height: 52, borderRadius: 14, background: isDark ? 'rgba(255,255,255,0.04)' : 'var(--cp-bd-zone)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
         <Target size={24} color="var(--fg-4)" />
       </div>
       <div style={{ fontSize: 15, fontWeight: 600, color: isDark ? DK.t1 : 'var(--fg-2)', marginBottom: 4 }}>No goals yet</div>
@@ -182,7 +190,7 @@ function GoalsNoSearchResults({ query, onClear, isDark = false }: { query: strin
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '48px 20px', border: `1px solid ${isDark ? DK.border : 'var(--divider)'}`, borderRadius: 10, background: isDark ? 'transparent' : 'var(--bg-app)' }}>
       <div style={{ fontSize: 14, fontWeight: 600, color: isDark ? DK.t1 : 'var(--fg-2)', marginBottom: 4 }}>No goals matching "{query}"</div>
       <div style={{ fontSize: 12, color: isDark ? DK.t3 : 'var(--fg-4)', marginBottom: 14 }}>Try a different search term.</div>
-      <button onClick={onClear} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '6px 14px', fontSize: 12, fontWeight: 500, color: isDark ? DK.t2 : 'var(--fg-3)', background: isDark ? 'rgba(235,238,245,0.04)' : 'var(--cp-bd-zone)', border: `1px solid ${isDark ? DK.border : 'var(--divider)'}`, borderRadius: 6, cursor: 'pointer' }}>
+      <button onClick={onClear} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '6px 14px', fontSize: 12, fontWeight: 500, color: isDark ? DK.t2 : 'var(--fg-3)', background: isDark ? 'rgba(255,255,255,0.04)' : 'var(--cp-bd-zone)', border: `1px solid ${isDark ? DK.border : 'var(--divider)'}`, borderRadius: 6, cursor: 'pointer' }}>
         <X size={12} /> Clear search
       </button>
     </div>
@@ -248,14 +256,14 @@ export function GoalsTreeView({
   const headerBg = isDark ? 'transparent' : 'var(--bg-app)';
   const headerText = isDark ? DK.t3 : 'var(--fg-3)';
   const containerBg = isDark ? 'transparent' : 'var(--bg-app)';
-  const themeRowBg = isDark ? 'rgba(235,238,245,0.03)' : 'var(--cp-bd-zone)';
-  const themeRowHover = isDark ? 'rgba(235,238,245,0.05)' : '#E2E8F0';
+  const themeRowBg = isDark ? 'rgba(255,255,255,0.03)' : 'var(--cp-bd-zone)';
+  const themeRowHover = isDark ? 'rgba(255,255,255,0.05)' : '#E2E8F0';
   const goalRowBg = isDark ? 'transparent' : 'var(--bg-app)';
-  const goalRowHover = isDark ? 'rgba(235,238,245,0.03)' : 'var(--bg-1)';
-  const krRowBg = isDark ? 'rgba(235,238,245,0.01)' : 'var(--bg-1)';
-  const krRowHover = isDark ? 'rgba(235,238,245,0.03)' : 'var(--cp-bd-zone)';
-  const connectorColor = isDark ? 'rgba(235,238,245,0.08)' : 'var(--divider)';
-  const footerBg = isDark ? 'rgba(235,238,245,0.02)' : 'var(--bg-1)';
+  const goalRowHover = isDark ? 'rgba(255,255,255,0.03)' : 'var(--bg-1)';
+  const krRowBg = isDark ? 'rgba(255,255,255,0.01)' : 'var(--bg-1)';
+  const krRowHover = isDark ? 'rgba(255,255,255,0.03)' : 'var(--cp-bd-zone)';
+  const connectorColor = isDark ? 'rgba(255,255,255,0.08)' : 'var(--divider)';
+  const footerBg = isDark ? 'rgba(255,255,255,0.02)' : 'var(--bg-1)';
 
   return (
     <div className="goals-tree-container" style={{ border: `1px solid ${tableBorder}`, borderRadius: 10, overflow: 'hidden', background: containerBg }}>
@@ -307,7 +315,7 @@ export function GoalsTreeView({
               onMouseLeave={e => (e.currentTarget.style.background = themeRowBg)}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <ChevronRight size={14} color={isDark ? 'rgba(235,238,245,0.35)' : '#64748B'} style={{ transform: themeExpanded ? 'rotate(90deg)' : 'rotate(0deg)', transition: 'transform 200ms', flexShrink: 0 }} />
+                <ChevronRight size={14} color={isDark ? 'rgba(255,255,255,0.35)' : '#64748B'} style={{ transform: themeExpanded ? 'rotate(90deg)' : 'rotate(0deg)', transition: 'transform 200ms', flexShrink: 0 }} />
                 <span style={{ fontSize: 14, fontWeight: 600, color: isDark ? DK.t1 : 'var(--fg-1)' }}>{theme.title}</span>
                 <span style={{ fontSize: 11, color: isDark ? DK.t3 : 'var(--fg-3)' }}>({themeGoals.length} goal{themeGoals.length !== 1 ? 's' : ''})</span>
               </div>
@@ -353,11 +361,11 @@ export function GoalsTreeView({
 
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
                       <ChevronRight
-                        size={13} color={isDark ? 'rgba(235,238,245,0.35)' : '#94A3B8'}
+                        size={13} color={isDark ? 'rgba(255,255,255,0.35)' : '#94A3B8'}
                         onClick={e => { e.stopPropagation(); onToggleGoal(goal.id); }}
                         style={{ transform: goalExpanded ? 'rotate(90deg)' : 'rotate(0deg)', transition: 'transform 200ms', flexShrink: 0, cursor: 'pointer' }}
                       />
-                      <span style={{ fontSize: 12, fontWeight: 600, color: isDark ? DK.t2 : 'var(--fg-2)', background: isDark ? 'rgba(235,238,245,0.04)' : 'var(--cp-bd-zone)', padding: '2px 8px', borderRadius: 4, flexShrink: 0, fontFamily: 'ui-monospace, monospace' }}>
+                      <span style={{ fontSize: 12, fontWeight: 600, color: isDark ? DK.t2 : 'var(--fg-2)', background: isDark ? 'rgba(255,255,255,0.04)' : 'var(--cp-bd-zone)', padding: '2px 8px', borderRadius: 4, flexShrink: 0, fontFamily: 'ui-monospace, monospace' }}>
                         {goal.goal_key}
                       </span>
                       <span onClick={e => { e.stopPropagation(); onGoalClick(goal.id); }} style={{ fontSize: 14, fontWeight: 500, color: isDark ? DK.t1 : 'var(--fg-1)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
@@ -371,7 +379,7 @@ export function GoalsTreeView({
                     </div>
                     <div><ConfidenceDots level={confLevel} isDark={isDark} /></div>
                     <div style={{ fontSize: 12, fontWeight: 600, color: isDark ? DK.t2 : 'var(--fg-2)' }}>{goalKRs.length}</div>
-                    <div><OwnerAvatar name={goal.owner_name} size={28} /></div>
+                    <div><OwnerAvatar name={goal.owner_name} size={28} isDark={isDark} /></div>
                     <div>
                       {goal.ai_health_score != null ? (
                         <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3, fontSize: 10.5, fontWeight: 600, color: isDark ? '#93C5FD' : 'var(--cp-blue)', background: isDark ? 'rgba(59,130,246,0.12)' : 'var(--cp-blue-wash)', padding: '2px 6px', borderRadius: 4 }}>
@@ -415,7 +423,7 @@ export function GoalsTreeView({
                         <div style={{ position: 'absolute', left: 52, top: '50%', width: 12, height: 1, background: connectorColor }} />
 
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
-                          <span style={{ fontSize: 10, fontWeight: 600, color: isDark ? DK.t3 : 'var(--fg-4)', background: isDark ? 'rgba(235,238,245,0.04)' : 'var(--cp-bd-zone)', padding: '1px 5px', borderRadius: 3, flexShrink: 0, fontFamily: 'ui-monospace, monospace' }}>
+                          <span style={{ fontSize: 10, fontWeight: 600, color: isDark ? DK.t3 : 'var(--fg-4)', background: isDark ? 'rgba(255,255,255,0.04)' : 'var(--cp-bd-zone)', padding: '1px 5px', borderRadius: 3, flexShrink: 0, fontFamily: 'ui-monospace, monospace' }}>
                             {kr.kr_key}
                           </span>
                           <span style={{ fontWeight: 400, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>

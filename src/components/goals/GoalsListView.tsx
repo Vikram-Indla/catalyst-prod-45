@@ -13,8 +13,8 @@ const DK = {
   t2: 'var(--cp-t2)',
   t3: 'var(--cp-t3)',
   t4: 'var(--cp-t4)',
-  border: 'rgba(235,238,245,0.10)',
-  borderSubtle: 'rgba(235,238,245,0.08)',
+  border: 'rgba(255,255,255,0.10)',
+  borderSubtle: 'rgba(255,255,255,0.08)',
 };
 
 const AVATAR_COLORS: Record<string, { bg: string; text: string }> = {
@@ -40,9 +40,9 @@ function statusBadge(status: string, isDark = false) {
     completed:   { dot: '#4F46E5', bg: 'rgba(79,70,229,0.08)',  text: '#4338CA', bgDk: '#1A2030', txtDk: '#93C5FD', label: 'Completed' },
     at_risk:     { dot: '#D97706', bg: 'rgba(217,119,6,0.08)',  text: '#B45309', bgDk: '#2A2418', txtDk: '#FBBF24', label: 'At Risk' },
     off_track:   { dot: '#EF4444', bg: 'rgba(239,68,68,0.08)',  text: '#DC2626', bgDk: '#2A1C1E', txtDk: '#FCA5A5', label: 'Off Track' },
-    draft:       { dot: '#94A3B8', bg: '#F1F5F9',               text: '#64748B', bgDk: '#2C2823', txtDk: '#A09890', label: 'Draft' },
-    not_started: { dot: '#94A3B8', bg: '#F1F5F9',               text: '#64748B', bgDk: '#2C2823', txtDk: '#A09890', label: 'Not Started' },
-    cancelled:   { dot: '#94A3B8', bg: '#F1F5F9',               text: '#64748B', bgDk: '#2C2823', txtDk: '#A09890', label: 'Cancelled' },
+    draft:       { dot: '#94A3B8', bg: '#F1F5F9',               text: '#64748B', bgDk: '#1A1A1A', txtDk: '#888888', label: 'Draft' },
+    not_started: { dot: '#94A3B8', bg: '#F1F5F9',               text: '#64748B', bgDk: '#1A1A1A', txtDk: '#888888', label: 'Not Started' },
+    cancelled:   { dot: '#94A3B8', bg: '#F1F5F9',               text: '#64748B', bgDk: '#1A1A1A', txtDk: '#888888', label: 'Cancelled' },
   };
   const s = map[status] || map.draft;
   return (
@@ -95,7 +95,7 @@ export function GoalsListView({ goals, themes, onGoalClick, isDark = false }: Go
   const tableBorder = isDark ? DK.border : 'var(--divider)';
   const rowBorder = isDark ? DK.borderSubtle : 'var(--cp-bd-zone)';
   const rowBg = isDark ? 'transparent' : 'transparent';
-  const rowHover = isDark ? 'rgba(235,238,245,0.03)' : 'var(--bg-1)';
+  const rowHover = isDark ? 'rgba(255,255,255,0.03)' : 'var(--bg-1)';
 
   return (
     <div style={{ border: `1px solid ${tableBorder}`, borderRadius: 10, overflow: 'hidden', background: isDark ? 'transparent' : 'var(--bg-app)' }}>
@@ -129,7 +129,7 @@ export function GoalsListView({ goals, themes, onGoalClick, isDark = false }: Go
             onMouseEnter={e => (e.currentTarget.style.background = rowHover)}
             onMouseLeave={e => (e.currentTarget.style.background = rowBg)}
           >
-            <span style={{ fontSize: 12, fontWeight: 600, color: isDark ? DK.t2 : 'var(--fg-2)', background: isDark ? 'rgba(235,238,245,0.04)' : 'var(--cp-bd-zone)', padding: '2px 8px', borderRadius: 4, justifySelf: 'start', fontFamily: 'ui-monospace, monospace' }}>{goal.goal_key}</span>
+            <span style={{ fontSize: 12, fontWeight: 600, color: isDark ? DK.t2 : 'var(--fg-2)', background: isDark ? 'rgba(255,255,255,0.04)' : 'var(--cp-bd-zone)', padding: '2px 8px', borderRadius: 4, justifySelf: 'start', fontFamily: 'ui-monospace, monospace' }}>{goal.goal_key}</span>
             <span style={{ fontSize: 13, fontWeight: 500, color: isDark ? DK.t1 : 'var(--fg-1)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{goal.title}</span>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
               {theme && (<><span style={{ width: 8, height: 8, borderRadius: 2, background: theme.color, flexShrink: 0 }} /><span style={{ fontSize: 12, color: isDark ? DK.t2 : 'var(--fg-2)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{theme.title}</span></>)}
@@ -148,7 +148,7 @@ export function GoalsListView({ goals, themes, onGoalClick, isDark = false }: Go
               )}
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <div role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100} style={{ width: 60, height: 5, background: isDark ? 'rgba(235,238,245,0.08)' : 'var(--divider)', borderRadius: 3, overflow: 'hidden' }}>
+              <div role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100} style={{ width: 60, height: 5, background: isDark ? 'rgba(255,255,255,0.08)' : 'var(--divider)', borderRadius: 3, overflow: 'hidden' }}>
                 <div style={{ width: `${pct}%`, height: '100%', background: barColor, borderRadius: 3 }} />
               </div>
               <span style={{ fontSize: 13, fontWeight: 600, color: barColor }}>{pct}%</span>

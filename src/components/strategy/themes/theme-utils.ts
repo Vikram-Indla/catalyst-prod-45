@@ -32,9 +32,9 @@ export const STATUS_CONFIG_DARK: Record<HealthStatus, StatusStyle> = {
   on_track:  { label: 'On Track',  bg: '#182820', text: '#86EFAC', dot: '#16A34A' },
   at_risk:   { label: 'At Risk',   bg: '#2A2418', text: '#FBBF24', dot: '#D97706' },
   off_track: { label: 'Off Track', bg: '#2A1C1E', text: '#FCA5A5', dot: '#DC2626' },
-  planned:   { label: 'Planned',   bg: '#2C2823', text: '#B8BCC8', dot: '#94A3B8' },
+  planned:   { label: 'Planned',   bg: '#1A1A1A', text: '#B8BCC8', dot: '#94A3B8' },
   completed: { label: 'Completed', bg: '#1A2030', text: '#93C5FD', dot: '#6366F1' },
-  draft:     { label: 'Planned',   bg: '#2C2823', text: '#B8BCC8', dot: '#94A3B8' },
+  draft:     { label: 'Planned',   bg: '#1A1A1A', text: '#B8BCC8', dot: '#94A3B8' },
 };
 
 export function getStatusConfig(health: HealthStatus, isDark: boolean): StatusStyle {
@@ -161,13 +161,13 @@ export function renderStatusBadge(health: HealthStatus) {
 
 // ═══ DARK MODE TOKEN HELPERS ═══
 export const DK = {
-  bg: '#1A1714',
+  bg: '#0A0A0A',
   t1: 'var(--cp-t1)',
   t2: 'var(--cp-t2)',
   t3: 'var(--cp-t3)',
   t4: 'var(--cp-t4)',
-  border: 'rgba(235,238,245,0.10)',
-  borderSubtle: 'rgba(235,238,245,0.08)',
-  hover: 'rgba(235,238,245,0.03)',
-  iconBgSubtle: 'rgba(235,238,245,0.06)',
+  border: 'rgba(255,255,255,0.08)',
+  borderSubtle: 'rgba(255,255,255,0.05)',
+  hover: 'rgba(255,255,255,0.03)',
+  iconBgSubtle: 'rgba(255,255,255,0.06)',
 };

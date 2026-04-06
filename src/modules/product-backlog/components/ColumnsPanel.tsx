@@ -83,23 +83,23 @@ export function ColumnsPanel({
       ref={panelRef}
       className="absolute top-full right-0 mt-2 w-64 rounded-lg shadow-lg z-[500] overflow-hidden"
       style={{
-        backgroundColor: isDark ? '#232019' : 'var(--surface-1)',
-        border: isDark ? '1px solid rgba(235,238,245,0.10)' : '1px solid var(--border-color)',
+        backgroundColor: isDark ? '#111111' : 'var(--surface-1)',
+        border: isDark ? '1px solid rgba(255,255,255,0.10)' : '1px solid var(--border-color)',
       }}
     >
       <div 
         className="px-4 py-3 border-b flex items-center justify-between"
-        style={{ borderColor: isDark ? 'rgba(235,238,245,0.10)' : 'var(--divider)' }}
+        style={{ borderColor: isDark ? 'rgba(255,255,255,0.10)' : 'var(--divider)' }}
       >
         <span 
           className="text-sm font-semibold"
-          style={{ color: isDark ? 'rgba(235,238,245,0.92)' : 'var(--text-1)' }}
+          style={{ color: isDark ? 'rgba(255,255,255,0.92)' : 'var(--text-1)' }}
         >
           Columns
         </span>
         <span 
           className="text-xs"
-          style={{ color: isDark ? 'rgba(235,238,245,0.60)' : 'var(--text-3)' }}
+          style={{ color: isDark ? 'rgba(255,255,255,0.60)' : 'var(--text-3)' }}
         >
           {visibleColumns.length} of {columns.length}
         </span>
@@ -129,7 +129,7 @@ export function ColumnsPanel({
               />
               <span 
                 className="text-sm"
-                style={{ color: isDark ? 'rgba(235,238,245,0.92)' : 'var(--text-1)' }}
+                style={{ color: isDark ? 'rgba(255,255,255,0.92)' : 'var(--text-1)' }}
               >
                 {col.header}
               </span>
@@ -141,8 +141,8 @@ export function ColumnsPanel({
       <div 
         className="px-4 py-3 border-t flex gap-2"
         style={{ 
-          borderColor: isDark ? 'rgba(235,238,245,0.10)' : 'var(--divider)',
-          backgroundColor: isDark ? '#1A1714' : 'var(--surface-2)',
+          borderColor: isDark ? 'rgba(255,255,255,0.10)' : 'var(--divider)',
+          backgroundColor: isDark ? '#0A0A0A' : 'var(--surface-2)',
         }}
       >
         <Button

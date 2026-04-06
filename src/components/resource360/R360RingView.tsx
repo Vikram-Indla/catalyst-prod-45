@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { slugify, initials as getInitials } from './r360-helpers';
+import { useTheme } from '@/hooks/useTheme';
 
 // ═══════════════════════════════════════════════════
 // STATUS COLORS — Jira status → display colors
@@ -99,6 +100,7 @@ interface Props {
 export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItemClick }) => {
   const [showDone, setShowDone] = useState(false);
   const doneRef = useRef<HTMLDivElement>(null);
+  const { isDark } = useTheme();
 
   const isDone = (cat: string | null | undefined) => {
     const c = (cat || '').toLowerCase();
@@ -151,8 +153,12 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
   return (
     <div style={{
       position: 'relative', width: '100%', height: '720px', overflow: 'visible', boxSizing: 'border-box',
-      background: 'radial-gradient(circle at center, #fff 0%, #F8FAFC 55%, #F1F5F9 100%)',
-      backgroundImage: 'radial-gradient(circle at center, #fff 0%, #F8FAFC 55%, #F1F5F9 100%), radial-gradient(circle, #CBD5E1 1px, transparent 1px)',
+      background: isDark
+        ? 'radial-gradient(circle at center, #111111 0%, #0A0A0A 55%, #0A0A0A 100%)'
+        : 'radial-gradient(circle at center, #fff 0%, #F8FAFC 55%, #F1F5F9 100%)',
+      backgroundImage: isDark
+        ? 'radial-gradient(circle at center, #111111 0%, #0A0A0A 55%, #0A0A0A 100%), radial-gradient(circle, rgba(255,255,255,0.05) 1px, transparent 1px)'
+        : 'radial-gradient(circle at center, #fff 0%, #F8FAFC 55%, #F1F5F9 100%), radial-gradient(circle, #CBD5E1 1px, transparent 1px)',
       backgroundSize: 'cover, 24px 24px',
     }}>
       {/* SVG SPOKES */}
@@ -240,7 +246,7 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
               <span style={{ marginLeft: 'auto', fontSize: '11px', fontWeight: 600, color: ageCol(item.age_days ?? 0), fontVariantNumeric: 'tabular-nums' }}>{item.age_days ?? 0}d</span>
             </div>
             <div style={{
-              fontSize: '12.5px', fontWeight: 500, color: '#020617', lineHeight: '1.35', marginBottom: '5px',
+              fontSize: '12.5px', fontWeight: 500, color: isDark ? '#EDEDED' : '#020617', lineHeight: '1.35', marginBottom: '5px',
               display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
             } as React.CSSProperties}>
               {trunc(item.title, 48)}
@@ -311,7 +317,7 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
                     color: '#FFF', fontSize: '12px', fontWeight: 700,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                   }}>✓</div>
-                  <span style={{ fontSize: '13.5px', fontWeight: 600, color: '#020617' }}>
+                  <span style={{ fontSize: '13.5px', fontWeight: 600, color: isDark ? '#EDEDED' : '#020617' }}>
                     Completed This Week
                   </span>
                 </div>
@@ -368,7 +374,7 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
                         </span>
                       </div>
                       <div style={{
-                        fontSize: '12.5px', fontWeight: 500, color: '#020617', lineHeight: '1.3',
+                        fontSize: '12.5px', fontWeight: 500, color: isDark ? '#EDEDED' : '#020617', lineHeight: '1.3',
                         overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                       }}>
                         {item.title}

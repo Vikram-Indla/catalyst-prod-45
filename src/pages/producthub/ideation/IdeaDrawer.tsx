@@ -7,6 +7,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { X, ArrowLeft, Copy, ArrowUpRight } from 'lucide-react';
 import { toast } from 'sonner';
 import { useTheme } from '@/hooks/useTheme';
+import { DK, LK } from '@/utils/dark-mode-styles';
 import { useIdeaByKey, useUpdateIdea, useProfiles, type IdeaRow } from '@/hooks/useIdeasHub';
 import { QUARTER_BADGE, STATUS_LOZENGE_COLORS } from './ideation-data';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -57,6 +58,7 @@ function getRelativeTime(dateStr: string): string {
 
 export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
   const { isDark } = useTheme();
+  const dk = isDark ? DK : LK;
   const { data: rawIdea, isLoading } = useIdeaByKey(ideaKey);
   const { data: profiles = [] } = useProfiles();
   const updateIdea = useUpdateIdea();
@@ -167,8 +169,8 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
   if (isLoading) return (
     <>
       <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.25)', zIndex: 200 }} />
-      <div style={{ position: 'fixed', top: 0, right: 0, bottom: 0, width: '560px', background: '#FFFFFF', zIndex: 201, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <span style={{ color: '#94A3B8', fontSize: '14px' }}>Loading...</span>
+      <div style={{ position: 'fixed', top: 0, right: 0, bottom: 0, width: '560px', background: isDark ? '#111111' : '#FFFFFF', zIndex: 201, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <span style={{ color: dk.t3, fontSize: '14px' }}>Loading...</span>
       </div>
     </>
   );
@@ -197,45 +199,45 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
       <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.40)', zIndex: 200 }} />
       <div style={{
         position: 'fixed', top: 0, right: 0, bottom: 0, width: '560px',
-        background: isDark ? '#232019' : '#FFFFFF', zIndex: 201, boxShadow: isDark ? 'none' : '-8px 0 32px rgba(0,0,0,0.12)',
+        background: isDark ? '#111111' : '#FFFFFF', zIndex: 201, boxShadow: isDark ? 'none' : '-8px 0 32px rgba(0,0,0,0.12)',
         display: 'flex', flexDirection: 'column',
         animation: 'slideInRight 0.25s ease forwards',
       }}>
         {/* HEADER */}
         <div style={{
-          padding: '12px 20px', borderBottom: '0.75px solid rgba(15,23,42,0.12)',
+          padding: '12px 20px', borderBottom: `0.75px solid ${dk.border}`,
           display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0,
         }}>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', color: '#64748B', display: 'flex' }}>
+          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', color: dk.t2, display: 'flex' }}>
             <ArrowLeft size={18} />
           </button>
-          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '13px', fontWeight: 700, color: '#2563EB' }}>
+          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '13px', fontWeight: 700, color: dk.blueKey }}>
             {rawIdea.idea_key}
           </span>
           <button
             onClick={() => { navigator.clipboard.writeText(rawIdea.idea_key || ''); toast.success('Key copied'); }}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px', color: '#94A3B8', display: 'flex' }}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px', color: dk.t3, display: 'flex' }}
           >
             <Copy size={14} />
           </button>
           <div style={{ flex: 1 }} />
-          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', color: '#94A3B8', display: 'flex' }}>
+          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', color: dk.t3, display: 'flex' }}>
             <X size={18} />
           </button>
         </div>
 
         {/* TITLE + STATUS */}
         <div style={{ padding: '16px 20px 12px', flexShrink: 0 }}>
-          <h2 style={{ fontSize: '18px', fontWeight: 650, color: '#0F172A', margin: 0, lineHeight: 1.3, fontFamily: "'Sora', system-ui, sans-serif" }}>
+          <h2 style={{ fontSize: '18px', fontWeight: 650, color: dk.t1, margin: 0, lineHeight: 1.3, fontFamily: "'Sora', system-ui, sans-serif" }}>
             {rawIdea.title}
           </h2>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '8px', flexWrap: 'wrap' }}>
             <StatusLoz status={localStatus} />
-            {rawIdea.theme && <span style={{ fontSize: '13px', color: '#334155', fontWeight: 500 }}>{rawIdea.theme}</span>}
+            {rawIdea.theme && <span style={{ fontSize: '13px', color: dk.t2, fontWeight: 500 }}>{rawIdea.theme}</span>}
             {updatedAgo && (
               <>
-                <span style={{ color: '#CBD5E1' }}>·</span>
-                <span style={{ fontSize: '12px', color: '#94A3B8' }}>Updated {updatedAgo}</span>
+                <span style={{ color: dk.t4 }}>·</span>
+                <span style={{ fontSize: '12px', color: dk.t3 }}>Updated {updatedAgo}</span>
               </>
             )}
           </div>
@@ -247,9 +249,9 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
           {/* Converted: Linked Initiative Card */}
           {isConverted && rawIdea.linked_initiative_key && (
             <div style={{ padding: '0 20px 16px' }}>
-              <div style={{ background: '#F0FDF4', border: '0.75px solid #BBF7D0', borderRadius: '6px', padding: '14px' }}>
-                <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#11853D', marginBottom: '8px' }}>CONVERTED TO INITIATIVE</div>
-                <div style={{ background: '#FFFFFF', border: '0.75px solid #BBF7D0', borderRadius: '4px', padding: '10px 12px' }}>
+              <div style={{ background: isDark ? 'rgba(22,163,74,0.08)' : '#F0FDF4', border: `0.75px solid ${isDark ? 'rgba(22,163,74,0.20)' : '#BBF7D0'}`, borderRadius: '6px', padding: '14px' }}>
+                <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: isDark ? '#86EFAC' : '#11853D', marginBottom: '8px' }}>CONVERTED TO INITIATIVE</div>
+                <div style={{ background: isDark ? 'rgba(255,255,255,0.03)' : '#FFFFFF', border: `0.75px solid ${isDark ? 'rgba(22,163,74,0.20)' : '#BBF7D0'}`, borderRadius: '4px', padding: '10px 12px' }}>
                   <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '13px', fontWeight: 700, color: '#11853D' }}>
                     {rawIdea.linked_initiative_key}
                   </span>
@@ -262,13 +264,13 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
           )}
 
           {/* FIELDS — 2-column grid, always inline edit */}
-          <div style={{ padding: '0 20px 16px', borderBottom: '0.75px solid rgba(15,23,42,0.06)' }}>
+          <div style={{ padding: '0 20px 16px', borderBottom: `0.75px solid ${dk.divider}` }}>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
               <FieldBlock label="STATUS">
                 {canEdit ? (
                   <Select value={localStatus} onValueChange={setLocalStatus}>
                     <SelectTrigger className="h-8 bg-white dark:bg-transparent dark:border-gray-700 dark:text-white"><SelectValue /></SelectTrigger>
-                    <SelectContent className="bg-white dark:bg-[#232019] dark:border-gray-700 dark:text-white">{STATUSES.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
+                    <SelectContent className="bg-white dark:bg-[#111111] dark:border-gray-700 dark:text-white">{STATUSES.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
                   </Select>
                 ) : <StatusLoz status={localStatus} />}
               </FieldBlock>
@@ -276,64 +278,64 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
                 {canEdit ? (
                   <Select value={localPriority} onValueChange={setLocalPriority}>
                     <SelectTrigger className="h-8 bg-white dark:bg-transparent dark:border-gray-700 dark:text-white"><SelectValue /></SelectTrigger>
-                    <SelectContent className="bg-white dark:bg-[#232019] dark:border-gray-700 dark:text-white">{PRIORITIES.map(p => <SelectItem key={p} value={p}>{p}</SelectItem>)}</SelectContent>
+                    <SelectContent className="bg-white dark:bg-[#111111] dark:border-gray-700 dark:text-white">{PRIORITIES.map(p => <SelectItem key={p} value={p}>{p}</SelectItem>)}</SelectContent>
                   </Select>
-                ) : <span style={{ fontSize: '13px', fontWeight: 650, color: '#334155' }}>{localPriority}</span>}
+                ) : <span style={{ fontSize: '13px', fontWeight: 650, color: dk.t2 }}>{localPriority}</span>}
               </FieldBlock>
               <FieldBlock label="TYPE">
                 {canEdit ? (
                   <Select value={localType} onValueChange={setLocalType}>
                     <SelectTrigger className="h-8 bg-white dark:bg-transparent dark:border-gray-700 dark:text-white"><SelectValue /></SelectTrigger>
-                    <SelectContent className="bg-white dark:bg-[#232019] dark:border-gray-700 dark:text-white">{TYPES.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
+                    <SelectContent className="bg-white dark:bg-[#111111] dark:border-gray-700 dark:text-white">{TYPES.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
                   </Select>
-                ) : <span style={{ fontSize: '13px', color: '#0F172A' }}>{localType || '—'}</span>}
+                ) : <span style={{ fontSize: '13px', color: dk.t1 }}>{localType || '—'}</span>}
               </FieldBlock>
               <FieldBlock label="SOURCE">
                 {canEdit ? (
                   <Select value={localSource} onValueChange={setLocalSource}>
                     <SelectTrigger className="h-8 bg-white dark:bg-transparent dark:border-gray-700 dark:text-white"><SelectValue /></SelectTrigger>
-                    <SelectContent className="bg-white dark:bg-[#232019] dark:border-gray-700 dark:text-white">{SOURCES.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
+                    <SelectContent className="bg-white dark:bg-[#111111] dark:border-gray-700 dark:text-white">{SOURCES.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
                   </Select>
-                ) : <span style={{ fontSize: '13px', color: '#0F172A' }}>{localSource || '—'}</span>}
+                ) : <span style={{ fontSize: '13px', color: dk.t1 }}>{localSource || '—'}</span>}
               </FieldBlock>
               <FieldBlock label="IDEAS THEME">
                 {canEdit ? (
                   <Select value={localTheme || '__none__'} onValueChange={(v: string) => setLocalTheme(v === '__none__' ? '' : v)}>
                     <SelectTrigger className="h-8 bg-white dark:bg-transparent dark:border-gray-700 dark:text-white"><SelectValue placeholder="Select theme" /></SelectTrigger>
-                    <SelectContent className="bg-white dark:bg-[#232019] dark:border-gray-700 dark:text-white">
+                    <SelectContent className="bg-white dark:bg-[#111111] dark:border-gray-700 dark:text-white">
                       <SelectItem value="__none__">— None —</SelectItem>
                       {THEMES.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
                     </SelectContent>
                   </Select>
-                ) : <span style={{ fontSize: '13px', color: localTheme ? '#0F172A' : '#94A3B8' }}>{localTheme || '—'}</span>}
+                ) : <span style={{ fontSize: '13px', color: localTheme ? dk.t1 : dk.t3 }}>{localTheme || '—'}</span>}
               </FieldBlock>
               <FieldBlock label="ASSIGNED TEAM">
                 {canEdit ? (
                   <Select value={localTeam || '__none__'} onValueChange={(v: string) => setLocalTeam(v === '__none__' ? '' : v)}>
                     <SelectTrigger className="h-8 bg-white dark:bg-transparent dark:border-gray-700 dark:text-white"><SelectValue placeholder="Select team" /></SelectTrigger>
-                    <SelectContent className="bg-white dark:bg-[#232019] dark:border-gray-700 dark:text-white">
+                    <SelectContent className="bg-white dark:bg-[#111111] dark:border-gray-700 dark:text-white">
                       <SelectItem value="__none__">— None —</SelectItem>
                       {TEAMS.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
                     </SelectContent>
                   </Select>
-                ) : <span style={{ fontSize: '13px', color: localTeam ? '#0F172A' : '#94A3B8' }}>{localTeam || '—'}</span>}
+                ) : <span style={{ fontSize: '13px', color: localTeam ? dk.t1 : dk.t3 }}>{localTeam || '—'}</span>}
               </FieldBlock>
               <FieldBlock label="TARGET RELEASE">
                 {canEdit ? (
                   <Select value={localRelease || '__none__'} onValueChange={(v: string) => setLocalRelease(v === '__none__' ? '' : v)}>
                     <SelectTrigger className="h-8 bg-white dark:bg-transparent dark:border-gray-700 dark:text-white"><SelectValue placeholder="Select release" /></SelectTrigger>
-                    <SelectContent className="bg-white dark:bg-[#232019] dark:border-gray-700 dark:text-white">
+                    <SelectContent className="bg-white dark:bg-[#111111] dark:border-gray-700 dark:text-white">
                       <SelectItem value="__none__">— None —</SelectItem>
                       {RELEASES.map(r => <SelectItem key={r} value={r}>{r}</SelectItem>)}
                     </SelectContent>
                   </Select>
-                ) : <span style={{ fontSize: '13px', color: localRelease ? '#0F172A' : '#94A3B8' }}>{localRelease || '—'}</span>}
+                ) : <span style={{ fontSize: '13px', color: localRelease ? dk.t1 : dk.t3 }}>{localRelease || '—'}</span>}
               </FieldBlock>
               <FieldBlock label="QUARTER">
                 {canEdit ? (
                   <Select value={localQuarter || '__none__'} onValueChange={(v: string) => setLocalQuarter(v === '__none__' ? '' : v)}>
                     <SelectTrigger className="h-8 bg-white dark:bg-transparent dark:border-gray-700 dark:text-white"><SelectValue placeholder="Unassigned" /></SelectTrigger>
-                    <SelectContent className="bg-white dark:bg-[#232019] dark:border-gray-700 dark:text-white">
+                    <SelectContent className="bg-white dark:bg-[#111111] dark:border-gray-700 dark:text-white">
                       <SelectItem value="__none__">— Unassigned —</SelectItem>
                       {QUARTERS.map(q => <SelectItem key={q} value={q}>{q} 2026</SelectItem>)}
                     </SelectContent>
@@ -345,21 +347,21 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
                     background: QUARTER_BADGE[localQuarter]?.bg || '#E2E8F0',
                     color: QUARTER_BADGE[localQuarter]?.text || '#94A3B8',
                   }}>{localQuarter} 2026</span>
-                ) : <span style={{ fontSize: '13px', color: '#94A3B8' }}>—</span>}
+                ) : <span style={{ fontSize: '13px', color: dk.t3 }}>—</span>}
               </FieldBlock>
               <FieldBlock label="ASSIGNEE">
                 {canEdit ? (
                   <Select value={localAssigneeId || '__none__'} onValueChange={(v: string) => setLocalAssigneeId(v === '__none__' ? '' : v)}>
                     <SelectTrigger className="h-8 bg-white dark:bg-transparent dark:border-gray-700 dark:text-white"><SelectValue placeholder="Select assignee" /></SelectTrigger>
-                    <SelectContent className="bg-white dark:bg-[#232019] dark:border-gray-700 dark:text-white max-h-[200px]">
+                    <SelectContent className="bg-white dark:bg-[#111111] dark:border-gray-700 dark:text-white max-h-[200px]">
                       <SelectItem value="__none__">— Unassigned —</SelectItem>
                       {profiles.map((p) => <SelectItem key={p.id} value={p.id}>{p.full_name}</SelectItem>)}
                     </SelectContent>
                   </Select>
-                ) : <span style={{ fontSize: '13px', color: assigneeName ? '#0F172A' : '#94A3B8' }}>{assigneeName || 'Unassigned'}</span>}
+                ) : <span style={{ fontSize: '13px', color: assigneeName ? dk.t1 : dk.t3 }}>{assigneeName || 'Unassigned'}</span>}
               </FieldBlock>
               <FieldBlock label="CREATED">
-                <span style={{ fontSize: '13px', fontWeight: 500, color: '#0F172A' }}>
+                <span style={{ fontSize: '13px', fontWeight: 500, color: dk.t1 }}>
                   {rawIdea.created_at ? new Date(rawIdea.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}
                 </span>
               </FieldBlock>
@@ -367,28 +369,28 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
           </div>
 
           {/* DESCRIPTION */}
-          <div style={{ padding: '16px 20px', borderBottom: '0.75px solid rgba(15,23,42,0.06)' }}>
-            <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#64748B', marginBottom: '8px' }}>DESCRIPTION</div>
+          <div style={{ padding: '16px 20px', borderBottom: `0.75px solid ${dk.divider}` }}>
+            <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: dk.t2, marginBottom: '8px' }}>DESCRIPTION</div>
             {canEdit ? (
               <textarea value={localDescription} onChange={(e) => setLocalDescription(e.target.value)} rows={4}
                 placeholder="Add a description..."
-                style={{ width: '100%', borderRadius: '4px', border: '0.75px solid rgba(15,23,42,0.14)', padding: '8px 12px', fontSize: '13px', color: '#0F172A', resize: 'vertical', fontFamily: "'Inter', sans-serif", outline: 'none' }}
+                style={{ width: '100%', borderRadius: '4px', border: `0.75px solid ${isDark ? 'rgba(255,255,255,0.12)' : 'rgba(15,23,42,0.14)'}`, padding: '8px 12px', fontSize: '13px', color: dk.t1, resize: 'vertical', fontFamily: "'Inter', sans-serif", outline: 'none', background: isDark ? 'transparent' : '#FFFFFF' }}
               />
             ) : (
-              <p style={{ fontSize: '13px', color: rawIdea.description ? '#0F172A' : '#94A3B8', lineHeight: 1.6, margin: 0 }}>
+              <p style={{ fontSize: '13px', color: rawIdea.description ? dk.t1 : dk.t3, lineHeight: 1.6, margin: 0 }}>
                 {rawIdea.description || 'No description provided'}
               </p>
             )}
           </div>
 
           {/* IMPACT SCORE — 6 dimension bars */}
-          <div style={{ padding: '16px 20px', borderBottom: '0.75px solid rgba(15,23,42,0.06)' }}>
-            <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#64748B', marginBottom: '12px' }}>IMPACT SCORE</div>
+          <div style={{ padding: '16px 20px', borderBottom: `0.75px solid ${dk.divider}` }}>
+            <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: dk.t2, marginBottom: '12px' }}>IMPACT SCORE</div>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px', marginBottom: '16px' }}>
-              <span style={{ fontSize: '28px', fontWeight: 700, fontFamily: "'JetBrains Mono', monospace", color: composite > 0 ? '#0F172A' : '#94A3B8' }}>
+              <span style={{ fontSize: '28px', fontWeight: 700, fontFamily: "'JetBrains Mono', monospace", color: composite > 0 ? dk.t1 : dk.t3 }}>
                 {composite.toFixed(2)}
               </span>
-              <span style={{ fontSize: '13px', color: '#64748B' }}>out of 5.00</span>
+              <span style={{ fontSize: '13px', color: dk.t2 }}>out of 5.00</span>
               <span style={{
                 display: 'inline-flex', alignItems: 'center', height: '20px', padding: '0 6px',
                 borderRadius: '3px', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase',
@@ -400,14 +402,14 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
               <div key={dim.letter} style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '14px' }}>
                 <div style={{
                   width: '28px', height: '28px', borderRadius: '50%',
-                  backgroundColor: '#E2E8F0', color: '#475569',
+                  backgroundColor: isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0', color: dk.t2,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   fontSize: '12px', fontWeight: 700, flexShrink: 0,
                 }}>{dim.letter}</div>
                 <div style={{ flex: 1 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-                    <span style={{ fontSize: '12px', fontWeight: 500, color: '#0F172A' }}>{dim.name}</span>
-                    <span style={{ fontSize: '11px', color: '#64748B' }}>{dim.weight}</span>
+                    <span style={{ fontSize: '12px', fontWeight: 500, color: dk.t1 }}>{dim.name}</span>
+                    <span style={{ fontSize: '11px', color: dk.t2 }}>{dim.weight}</span>
                   </div>
                   {canEdit ? (
                     <Slider
@@ -417,7 +419,7 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
                       className="w-full"
                     />
                   ) : (
-                    <div style={{ height: '4px', borderRadius: '2px', backgroundColor: '#E2E8F0', overflow: 'hidden' }}>
+                    <div style={{ height: '4px', borderRadius: '2px', backgroundColor: isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0', overflow: 'hidden' }}>
                       <div style={{
                         height: '100%', width: `${(dim.value / 5) * 100}%`,
                         backgroundColor: dim.value > 0 ? '#2563EB' : 'transparent',
@@ -428,7 +430,7 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
                 </div>
                 <span style={{
                   fontFamily: "'JetBrains Mono', monospace", fontSize: '13px', fontWeight: 650,
-                  color: dim.value > 0 ? '#0F172A' : '#94A3B8', minWidth: '28px', textAlign: 'right',
+                  color: dim.value > 0 ? dk.t1 : dk.t3, minWidth: '28px', textAlign: 'right',
                 }}>{dim.value.toFixed(1)}</span>
               </div>
             ))}
@@ -437,12 +439,12 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
           {/* CONVERT TO INITIATIVE — green section (only if not Draft and not already converted) */}
           {!isConverted && localStatus !== 'Draft' && onConvert && rawIdea && (
             <div style={{ padding: '16px 20px' }}>
-              <div style={{ background: '#F0FDF4', border: '0.75px solid #BBF7D0', borderRadius: '6px', padding: '14px' }}>
+              <div style={{ background: isDark ? 'rgba(22,163,74,0.08)' : '#F0FDF4', border: `0.75px solid ${isDark ? 'rgba(22,163,74,0.20)' : '#BBF7D0'}`, borderRadius: '6px', padding: '14px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
-                  <ArrowUpRight size={14} style={{ color: '#16A34A' }} />
-                  <span style={{ fontSize: '13px', fontWeight: 650, color: '#0F172A' }}>Ready to promote?</span>
+                  <ArrowUpRight size={14} style={{ color: isDark ? '#86EFAC' : '#16A34A' }} />
+                  <span style={{ fontSize: '13px', fontWeight: 650, color: dk.t1 }}>Ready to promote?</span>
                 </div>
-                <p style={{ fontSize: '12px', color: '#64748B', margin: '0 0 10px', lineHeight: 1.4 }}>
+                <p style={{ fontSize: '12px', color: dk.t2, margin: '0 0 10px', lineHeight: 1.4 }}>
                   Convert this idea into a tracked initiative under ProductHub.
                 </p>
                 <button onClick={() => onConvert(rawIdea)} style={{
@@ -460,12 +462,12 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
         {/* FOOTER — sticky */}
         {canEdit ? (
           <div style={{
-            padding: '12px 20px', borderTop: '0.75px solid rgba(15,23,42,0.12)',
-            backgroundColor: '#FFFFFF', display: 'flex', justifyContent: 'flex-end', gap: '8px', flexShrink: 0,
+            padding: '12px 20px', borderTop: `0.75px solid ${dk.border}`,
+            backgroundColor: isDark ? '#111111' : '#FFFFFF', display: 'flex', justifyContent: 'flex-end', gap: '8px', flexShrink: 0,
           }}>
             <button onClick={() => { resetLocal(); }} style={{
               height: '36px', padding: '0 16px', borderRadius: '6px',
-              border: '0.75px solid rgba(15,23,42,0.12)', background: '#FFFFFF', color: '#334155',
+              border: `0.75px solid ${dk.border}`, background: isDark ? 'transparent' : '#FFFFFF', color: dk.t2,
               fontSize: '13px', fontWeight: 600, cursor: 'pointer',
             }}>Cancel</button>
             <button onClick={handleSave} disabled={updateIdea.isPending} style={{
@@ -477,12 +479,12 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
           </div>
         ) : (
           <div style={{
-            padding: '12px 20px', borderTop: '0.75px solid rgba(15,23,42,0.12)',
-            backgroundColor: '#FFFFFF', display: 'flex', justifyContent: 'flex-end', flexShrink: 0,
+            padding: '12px 20px', borderTop: `0.75px solid ${dk.border}`,
+            backgroundColor: isDark ? '#111111' : '#FFFFFF', display: 'flex', justifyContent: 'flex-end', flexShrink: 0,
           }}>
             <button onClick={onClose} style={{
               height: '36px', padding: '0 16px', borderRadius: '6px',
-              border: '0.75px solid rgba(15,23,42,0.12)', background: '#FFFFFF', color: '#334155',
+              border: `0.75px solid ${dk.border}`, background: isDark ? 'transparent' : '#FFFFFF', color: dk.t2,
               fontSize: '13px', fontWeight: 600, cursor: 'pointer',
             }}>Close</button>
           </div>
@@ -500,9 +502,10 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
 }
 
 function FieldBlock({ label, children }: { label: string; children: React.ReactNode }) {
+  const { isDark } = useTheme();
   return (
     <div>
-      <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#64748B', marginBottom: '6px' }}>{label}</div>
+      <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: isDark ? '#666666' : '#64748B', marginBottom: '6px' }}>{label}</div>
       {children}
     </div>
   );

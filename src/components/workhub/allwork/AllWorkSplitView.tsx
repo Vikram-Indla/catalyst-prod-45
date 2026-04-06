@@ -3,6 +3,7 @@
  * Now includes Sub-Tasks tab with navigation stack for nested drill-down.
  */
 import { useState, useMemo, memo, Fragment } from 'react';
+import { useTheme } from '@/hooks/useTheme';
 import { ChevronLeft, ChevronRight, ChevronDown, MessageSquare, Clock, History, ListTree, Link2, Paperclip, Tag, ArrowLeft } from 'lucide-react';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { StatusLozenge } from '@/components/ui/StatusLozenge';
@@ -35,6 +36,7 @@ function nameToHash(name: string): number {
 }
 
 export function AllWorkSplitView({ items, selectedItemKey, onSelectItem }: Props) {
+  const { isDark } = useTheme();
   const [sortBy, setSortBy] = useState('Created');
   const [activeTab, setActiveTab] = useState<DetailTab>('details');
   const [activityTab, setActivityTab] = useState<'all' | 'comments' | 'history' | 'worklog'>('all');
@@ -103,11 +105,11 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem }: Props
   ];
 
   return (
-    <div className="flex h-full gap-0 rounded border overflow-hidden" style={{ borderColor: 'rgba(15,23,42,0.12)', borderRadius: 4 }}>
+    <div className="flex h-full gap-0 rounded border overflow-hidden" style={{ borderColor: isDark ? 'rgba(255,255,255,0.08)' : 'var(--bd-default, rgba(255,255,255,0.08))', borderRadius: 4 }}>
       {/* Left card list — 320px */}
-      <div className="flex flex-col" style={{ width: 320, borderRight: '1px solid rgba(15,23,42,0.08)', backgroundColor: 'var(--bg-app)' }}>
-        <div className="flex items-center justify-between px-3 py-2" style={{ borderBottom: '1px solid rgba(15,23,42,0.08)' }}>
-          <button className="flex items-center gap-1 text-[12px]" style={{ color: '#6b6e76', fontFamily: 'Inter, sans-serif' }}>
+      <div className="flex flex-col" style={{ width: 320, borderRight: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid var(--bd-subtle, rgba(255,255,255,0.05))', backgroundColor: isDark ? '#0A0A0A' : 'var(--bg-app)' }}>
+        <div className="flex items-center justify-between px-3 py-2" style={{ borderBottom: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid var(--bd-subtle, rgba(255,255,255,0.05))' }}>
+          <button className="flex items-center gap-1 text-[12px]" style={{ color: isDark ? '#888888' : '#6b6e76', fontFamily: 'Inter, sans-serif' }}>
             {sortBy} <ChevronDown className="w-3 h-3" />
           </button>
           <span className="text-[11px]" style={{ color: 'var(--fg-3)', fontFamily: "'JetBrains Mono', monospace" }}>
@@ -125,8 +127,8 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem }: Props
                 onClick={() => handleListSelect(item.issue_key)}
                 className="px-3 py-2.5 cursor-pointer transition-colors duration-[80ms]"
                 style={{
-                  borderBottom: '1px solid rgba(15,23,42,0.06)',
-                  backgroundColor: isActive ? 'rgba(37,99,235,0.08)' : 'var(--bg-app)',
+                  borderBottom: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid var(--bd-subtle, rgba(255,255,255,0.05))',
+                  backgroundColor: isActive ? 'rgba(37,99,235,0.08)' : isDark ? '#0A0A0A' : 'var(--bg-app)',
                   borderLeft: isActive ? '3px solid #2563EB' : '3px solid transparent',
                 }}
               >
@@ -157,22 +159,22 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem }: Props
           })}
         </div>
 
-        <div className="px-3 py-2 text-[11px]" style={{ color: 'var(--fg-3)', borderTop: '1px solid rgba(15,23,42,0.08)', fontFamily: "'JetBrains Mono', monospace" }}>
+        <div className="px-3 py-2 text-[11px]" style={{ color: 'var(--fg-3)', borderTop: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid var(--bd-subtle, rgba(255,255,255,0.05))', fontFamily: "'JetBrains Mono', monospace" }}>
           {items.length} of {items.length}
         </div>
       </div>
 
       {/* Detail panel */}
       {currentItem ? (
-        <div className="flex-1 flex flex-col overflow-hidden" style={{ backgroundColor: 'var(--bg-app)' }}>
+        <div className="flex-1 flex flex-col overflow-hidden" style={{ backgroundColor: isDark ? '#0A0A0A' : 'var(--bg-app)' }}>
           {/* Detail header */}
-          <div className="flex items-center justify-between px-5 py-3" style={{ borderBottom: '1px solid rgba(15,23,42,0.08)' }}>
+          <div className="flex items-center justify-between px-5 py-3" style={{ borderBottom: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid var(--bd-subtle, rgba(255,255,255,0.05))' }}>
             <div className="flex items-center gap-2">
               {/* Back button */}
               {canGoBack && (
                 <button
                   onClick={handleBack}
-                  className="flex items-center gap-1 px-2 py-1 rounded-md transition-colors duration-[80ms] hover:bg-[rgba(15,23,42,0.04)] focus-visible:outline-2 focus-visible:outline-[#2563EB]"
+                  className="flex items-center gap-1 px-2 py-1 rounded-md transition-colors duration-[80ms] hover:bg-[var(--hover, rgba(255,255,255,0.04))] focus-visible:outline-2 focus-visible:outline-[#2563EB]"
                   style={{ color: 'var(--fg-2)', fontSize: 13, fontWeight: 500, fontFamily: 'Inter, sans-serif', border: 'none', background: 'none', cursor: 'pointer' }}
                   aria-label="Go back"
                 >
@@ -194,12 +196,12 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem }: Props
             <div className="flex items-center gap-1">
               {!canGoBack && (
                 <>
-                  <button onClick={goPrev} disabled={selectedIdx <= 0} className="p-1 rounded hover:bg-[rgba(15,23,42,0.04)] disabled:opacity-30 focus-visible:outline-2 focus-visible:outline-[#2563EB]" aria-label="Previous item">
-                    <ChevronLeft className="w-4 h-4" style={{ color: '#6b6e76' }} />
+                  <button onClick={goPrev} disabled={selectedIdx <= 0} className="p-1 rounded hover:bg-[var(--hover, rgba(255,255,255,0.04))] disabled:opacity-30 focus-visible:outline-2 focus-visible:outline-[#2563EB]" aria-label="Previous item">
+                    <ChevronLeft className="w-4 h-4" style={{ color: isDark ? '#666666' : '#6b6e76' }} />
                   </button>
                   <span className="text-[11px]" style={{ color: 'var(--fg-3)', fontFamily: "'JetBrains Mono', monospace" }}>{selectedIdx + 1}/{items.length}</span>
-                  <button onClick={goNext} disabled={selectedIdx >= items.length - 1} className="p-1 rounded hover:bg-[rgba(15,23,42,0.04)] disabled:opacity-30 focus-visible:outline-2 focus-visible:outline-[#2563EB]" aria-label="Next item">
-                    <ChevronRight className="w-4 h-4" style={{ color: '#6b6e76' }} />
+                  <button onClick={goNext} disabled={selectedIdx >= items.length - 1} className="p-1 rounded hover:bg-[var(--hover, rgba(255,255,255,0.04))] disabled:opacity-30 focus-visible:outline-2 focus-visible:outline-[#2563EB]" aria-label="Next item">
+                    <ChevronRight className="w-4 h-4" style={{ color: isDark ? '#666666' : '#6b6e76' }} />
                   </button>
                 </>
               )}
@@ -210,7 +212,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem }: Props
           {panelStack.length > 1 && (
             <div
               className="flex items-center gap-1.5 px-5 py-2"
-              style={{ fontSize: 12, color: 'var(--fg-3)', borderBottom: '1px solid rgba(15,23,42,0.06)', backgroundColor: 'var(--bg-1)' }}
+              style={{ fontSize: 12, color: 'var(--fg-3)', borderBottom: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid var(--bd-subtle, rgba(255,255,255,0.05))', backgroundColor: isDark ? '#111111' : 'var(--bg-1)' }}
             >
               {panelStack.slice(0, -1).map((item, i) => (
                 <Fragment key={item.issue_key}>
@@ -236,7 +238,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem }: Props
           {/* Tabs */}
           <div
             className="flex items-center gap-0 px-5"
-            style={{ borderBottom: '1px solid rgba(15,23,42,0.08)' }}
+            style={{ borderBottom: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid var(--bd-subtle, rgba(255,255,255,0.05))' }}
             role="tablist"
           >
             {TABS.map(tab => {
@@ -248,7 +250,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem }: Props
                   className="flex items-center gap-1.5 px-3 py-2.5 transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[#2563EB]"
                   style={{
                     fontSize: 12, fontWeight: isActive ? 600 : 400,
-                    color: isActive ? '#1558bc' : '#6b6e76',
+                    color: isActive ? '#1558bc' : isDark ? '#666666' : '#6b6e76',
                     borderBottom: isActive ? '2px solid #1558bc' : '2px solid transparent',
                     marginBottom: -1, fontFamily: 'Inter, sans-serif',
                     background: 'none', border: 'none', borderBottomStyle: 'solid',
@@ -265,7 +267,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem }: Props
                       style={{
                         fontSize: 10, fontWeight: 700, minWidth: 18, textAlign: 'center',
                         padding: '1px 5px', borderRadius: 10,
-                        backgroundColor: isActive ? 'rgba(21,88,188,0.10)' : 'rgba(15,23,42,0.06)',
+                        backgroundColor: isActive ? 'rgba(21,88,188,0.10)' : isDark ? 'rgba(255,255,255,0.06)' : 'var(--bd-subtle, rgba(255,255,255,0.05))',
                         color: isActive ? '#1558bc' : 'var(--fg-3)',
                         fontFamily: "'JetBrains Mono', monospace",
                       }}
@@ -280,7 +282,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem }: Props
 
           <div className="flex flex-1 overflow-hidden">
             {/* Main detail content */}
-            <div className="flex-1 overflow-y-auto px-5 py-4">
+            <div className="flex-1 overflow-y-auto px-5 py-4" style={{ backgroundColor: isDark ? '#0A0A0A' : undefined }}>
               {/* ─── DETAILS TAB ─── */}
               {activeTab === 'details' && (
                 <>
@@ -290,7 +292,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem }: Props
 
                   {/* Key details */}
                   <div className="mb-6">
-                    <h3 className="text-[11px] uppercase font-semibold mb-2" style={{ color: '#6b6e76', letterSpacing: '0.05em', fontFamily: 'Inter, sans-serif' }}>
+                    <h3 className="text-[11px] uppercase font-semibold mb-2" style={{ color: isDark ? '#666666' : '#6b6e76', letterSpacing: '0.05em', fontFamily: 'Inter, sans-serif' }}>
                       Key Details
                     </h3>
                     <div className="grid grid-cols-2 gap-3">
@@ -310,11 +312,11 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem }: Props
 
                   {/* Description */}
                   <div className="mb-6">
-                    <h3 className="text-[11px] uppercase font-semibold mb-2" style={{ color: '#6b6e76', letterSpacing: '0.05em' }}>
+                    <h3 className="text-[11px] uppercase font-semibold mb-2" style={{ color: isDark ? '#666666' : '#6b6e76', letterSpacing: '0.05em' }}>
                       Description
                     </h3>
                     {currentItem.description_text ? (
-                      <p className="text-[13px] leading-[20px]" style={{ color: '#44546f', fontFamily: 'Inter, sans-serif' }}>
+                      <p className="text-[13px] leading-[20px]" style={{ color: isDark ? '#888888' : '#44546f', fontFamily: 'Inter, sans-serif' }}>
                         {currentItem.description_text}
                       </p>
                     ) : (
@@ -324,14 +326,14 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem }: Props
 
                   {/* Activity section */}
                   <div>
-                    <div className="flex items-center gap-4 mb-3" style={{ borderBottom: '1px solid rgba(15,23,42,0.08)', paddingBottom: 8 }}>
+                    <div className="flex items-center gap-4 mb-3" style={{ borderBottom: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid var(--bd-subtle, rgba(255,255,255,0.05))', paddingBottom: 8 }}>
                       {(['all', 'comments', 'history', 'worklog'] as const).map(tab => (
                         <button
                           key={tab}
                           onClick={() => setActivityTab(tab)}
                           className="text-[12px] pb-1 capitalize transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[#2563EB]"
                           style={{
-                            color: activityTab === tab ? '#1558bc' : '#6b6e76',
+                            color: activityTab === tab ? '#1558bc' : isDark ? '#666666' : '#6b6e76',
                             fontWeight: activityTab === tab ? 600 : 400,
                             borderBottom: activityTab === tab ? '2px solid #1558bc' : '2px solid transparent',
                             fontFamily: 'Inter, sans-serif',
@@ -356,7 +358,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem }: Props
                     ) : (
                       <div className="text-center py-8">
                         <MessageSquare className="w-8 h-8 mx-auto mb-2" style={{ color: 'var(--fg-3)' }} />
-                        <p className="text-[13px]" style={{ color: '#6b6e76' }}>No activity yet</p>
+                        <p className="text-[13px]" style={{ color: isDark ? '#666666' : '#6b6e76' }}>No activity yet</p>
                       </div>
                     )}
 
@@ -365,7 +367,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem }: Props
                       <div className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold text-white shrink-0" style={{ backgroundColor: '#4C6EF5' }}>
                         U
                       </div>
-                      <div className="flex-1 rounded-lg border px-3 py-2 focus-within:border-[#2563EB] transition-colors duration-[80ms]" style={{ borderColor: 'rgba(15,23,42,0.12)' }}>
+                      <div className="flex-1 rounded-lg border px-3 py-2 focus-within:border-[#2563EB] transition-colors duration-[80ms]" style={{ borderColor: isDark ? 'rgba(255,255,255,0.08)' : 'var(--bd-default, rgba(255,255,255,0.08))' }}>
                         <input
                           type="text"
                           placeholder="Add a comment..."
@@ -374,17 +376,17 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem }: Props
                           aria-label="Add a comment"
                         />
                         <div className="flex items-center gap-2 mt-2">
-                          <span className="text-[10px] px-2 py-0.5 rounded-full cursor-pointer hover:bg-[rgba(15,23,42,0.06)] transition-colors duration-[80ms]" style={{ backgroundColor: 'rgba(15,23,42,0.04)', color: '#6b6e76' }}>
+                          <span className="text-[10px] px-2 py-0.5 rounded-full cursor-pointer hover:bg-[var(--bd-subtle, rgba(255,255,255,0.05))] transition-colors duration-[80ms]" style={{ backgroundColor: isDark ? 'rgba(255,255,255,0.06)' : 'var(--hover, rgba(255,255,255,0.04))', color: isDark ? '#666666' : '#6b6e76' }}>
                             Status update...
                           </span>
-                          <span className="text-[10px] px-2 py-0.5 rounded-full cursor-pointer hover:bg-[rgba(15,23,42,0.06)] transition-colors duration-[80ms]" style={{ backgroundColor: 'rgba(15,23,42,0.04)', color: '#6b6e76' }}>
+                          <span className="text-[10px] px-2 py-0.5 rounded-full cursor-pointer hover:bg-[var(--bd-subtle, rgba(255,255,255,0.05))] transition-colors duration-[80ms]" style={{ backgroundColor: isDark ? 'rgba(255,255,255,0.06)' : 'var(--hover, rgba(255,255,255,0.04))', color: isDark ? '#666666' : '#6b6e76' }}>
                             Thanks!
                           </span>
                         </div>
                       </div>
                     </div>
                     <p className="text-[10px] mt-2 ml-9" style={{ color: 'var(--fg-3)' }}>
-                      <b>Pro tip:</b> press <kbd className="px-1 py-0.5 rounded text-[10px]" style={{ backgroundColor: 'rgba(15,23,42,0.04)', border: '1px solid rgba(15,23,42,0.08)' }}>M</kbd> to comment
+                      <b>Pro tip:</b> press <kbd className="px-1 py-0.5 rounded text-[10px]" style={{ backgroundColor: isDark ? 'rgba(255,255,255,0.06)' : 'var(--hover, rgba(255,255,255,0.04))', border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid var(--bd-subtle, rgba(255,255,255,0.05))' }}>M</kbd> to comment
                     </p>
                   </div>
                 </>
@@ -420,14 +422,14 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem }: Props
             </div>
 
             {/* Right detail sidebar — 260px */}
-            <div className="overflow-y-auto py-4 px-4" style={{ width: 260, borderLeft: '1px solid rgba(15,23,42,0.08)' }}>
+            <div className="overflow-y-auto py-4 px-4" style={{ width: 260, borderLeft: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid var(--bd-subtle, rgba(255,255,255,0.05))', backgroundColor: isDark ? '#111111' : '#FFFFFF' }}>
               <div className="mb-4">
-                <span className="text-[11px] uppercase font-semibold block mb-1.5" style={{ color: '#6b6e76', letterSpacing: '0.05em' }}>Status</span>
+                <span className="text-[11px] uppercase font-semibold block mb-1.5" style={{ color: isDark ? '#666666' : '#6b6e76', letterSpacing: '0.05em' }}>Status</span>
                 <StatusLozenge status={currentItem.status} />
               </div>
 
               <div className="mb-4">
-                <span className="text-[11px] uppercase font-semibold block mb-1.5" style={{ color: '#6b6e76', letterSpacing: '0.05em' }}>Assignee</span>
+                <span className="text-[11px] uppercase font-semibold block mb-1.5" style={{ color: isDark ? '#666666' : '#6b6e76', letterSpacing: '0.05em' }}>Assignee</span>
                 {currentItem.assignee_display_name ? (
                   <div className="flex items-center gap-2">
                     <div className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold text-white" style={{ backgroundColor: '#4C6EF5' }}>
@@ -442,7 +444,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem }: Props
               </div>
 
               <div className="mb-4">
-                <span className="text-[11px] uppercase font-semibold block mb-1.5" style={{ color: '#6b6e76', letterSpacing: '0.05em' }}>Priority</span>
+                <span className="text-[11px] uppercase font-semibold block mb-1.5" style={{ color: isDark ? '#666666' : '#6b6e76', letterSpacing: '0.05em' }}>Priority</span>
                 <div className="flex items-center gap-2">
                   <span className="w-2 h-2 rounded-full" style={{ backgroundColor: PRIORITY_COLORS[currentItem.priority] || 'var(--cp-blue)' }} />
                   <span className="text-[13px]" style={{ color: 'var(--fg-1)' }}>{currentItem.priority}</span>
@@ -450,25 +452,25 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem }: Props
               </div>
 
               <div className="mb-4">
-                <span className="text-[11px] uppercase font-semibold block mb-1.5" style={{ color: '#6b6e76', letterSpacing: '0.05em' }}>Fix Version</span>
+                <span className="text-[11px] uppercase font-semibold block mb-1.5" style={{ color: isDark ? '#666666' : '#6b6e76', letterSpacing: '0.05em' }}>Fix Version</span>
                 <span className="text-[13px]" style={{ color: currentItem.fix_version_name ? 'var(--fg-1)' : 'var(--fg-3)' }}>
                   {currentItem.fix_version_name || '—'}
                 </span>
               </div>
 
               <div className="mb-4">
-                <span className="text-[11px] uppercase font-semibold block mb-1.5" style={{ color: '#6b6e76', letterSpacing: '0.05em' }}>Reporter</span>
+                <span className="text-[11px] uppercase font-semibold block mb-1.5" style={{ color: isDark ? '#666666' : '#6b6e76', letterSpacing: '0.05em' }}>Reporter</span>
                 <span className="text-[13px]" style={{ color: currentItem.reporter_name ? 'var(--fg-1)' : 'var(--fg-3)' }}>
                   {currentItem.reporter_name || '—'}
                 </span>
               </div>
 
               <div className="mb-4">
-                <span className="text-[11px] uppercase font-semibold block mb-1.5" style={{ color: '#6b6e76', letterSpacing: '0.05em' }}>Labels</span>
+                <span className="text-[11px] uppercase font-semibold block mb-1.5" style={{ color: isDark ? '#666666' : '#6b6e76', letterSpacing: '0.05em' }}>Labels</span>
                 {currentItem.labels?.length ? (
                   <div className="flex flex-wrap gap-1">
                     {currentItem.labels.map(l => (
-                      <span key={l} className="text-[11px] px-2 py-0.5 rounded" style={{ backgroundColor: 'rgba(15,23,42,0.04)', color: '#44546f' }}>{l}</span>
+                      <span key={l} className="text-[11px] px-2 py-0.5 rounded" style={{ backgroundColor: isDark ? 'rgba(255,255,255,0.06)' : 'var(--hover, rgba(255,255,255,0.04))', color: isDark ? '#888888' : '#44546f' }}>{l}</span>
                     ))}
                   </div>
                 ) : (
@@ -476,16 +478,16 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem }: Props
                 )}
               </div>
 
-              <div className="mt-6 pt-4" style={{ borderTop: '1px solid rgba(15,23,42,0.08)' }}>
+              <div className="mt-6 pt-4" style={{ borderTop: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid var(--bd-subtle, rgba(255,255,255,0.05))' }}>
                 <div className="mb-2">
-                  <span className="text-[11px] uppercase font-semibold block mb-0.5" style={{ color: '#6b6e76', letterSpacing: '0.05em' }}>Created</span>
-                  <span className="text-[12px]" style={{ color: '#44546f', fontFamily: "'JetBrains Mono', monospace" }} title={currentItem.jira_created_at || ''}>
+                  <span className="text-[11px] uppercase font-semibold block mb-0.5" style={{ color: isDark ? '#666666' : '#6b6e76', letterSpacing: '0.05em' }}>Created</span>
+                  <span className="text-[12px]" style={{ color: isDark ? '#888888' : '#44546f', fontFamily: "'JetBrains Mono', monospace" }} title={currentItem.jira_created_at || ''}>
                     {formatRel(currentItem.jira_created_at)}
                   </span>
                 </div>
                 <div>
-                  <span className="text-[11px] uppercase font-semibold block mb-0.5" style={{ color: '#6b6e76', letterSpacing: '0.05em' }}>Updated</span>
-                  <span className="text-[12px]" style={{ color: '#44546f', fontFamily: "'JetBrains Mono', monospace" }} title={currentItem.jira_updated_at || ''}>
+                  <span className="text-[11px] uppercase font-semibold block mb-0.5" style={{ color: isDark ? '#666666' : '#6b6e76', letterSpacing: '0.05em' }}>Updated</span>
+                  <span className="text-[12px]" style={{ color: isDark ? '#888888' : '#44546f', fontFamily: "'JetBrains Mono', monospace" }} title={currentItem.jira_updated_at || ''}>
                     {formatRel(currentItem.jira_updated_at)}
                   </span>
                 </div>
@@ -494,7 +496,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem }: Props
           </div>
         </div>
       ) : (
-        <div className="flex-1 flex items-center justify-center" style={{ backgroundColor: 'var(--bg-1)' }}>
+        <div className="flex-1 flex items-center justify-center" style={{ backgroundColor: isDark ? '#0A0A0A' : 'var(--bg-1)' }}>
           <p className="text-[13px]" style={{ color: 'var(--fg-3)' }}>Select an item to view details</p>
         </div>
       )}

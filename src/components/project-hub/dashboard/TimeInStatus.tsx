@@ -80,10 +80,10 @@ export default function TimeInStatus({ projectId, releaseMap }: Props) {
       ) : (
         <div className="ph-tis-scroll" style={{ position: 'relative', maxHeight: 440, overflowY: 'auto', overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12, minWidth: 900 }}>
-            <thead className="bg-[var(--bg-app)] dark:bg-[#1A1714]" style={{ position: 'sticky', top: 0, zIndex: 4 }}>
+            <thead className="bg-[var(--bg-app)] dark:bg-[#0A0A0A]" style={{ position: 'sticky', top: 0, zIndex: 4 }}>
               <tr style={{ borderBottom: '2px solid var(--divider)' }}>
                 {['Release', 'Key', 'Type', 'Title', 'Current'].map((h, i) => (
-                  <th key={h} className="bg-[var(--bg-app)] dark:bg-[#1A1714]" style={{
+                  <th key={h} className="bg-[var(--bg-app)] dark:bg-[#0A0A0A]" style={{
                     padding: '8px 8px', textAlign: 'left',
                     fontSize: 10, fontWeight: 700, color: 'var(--fg-2)',
                     textTransform: 'uppercase', letterSpacing: '.08em',
@@ -105,7 +105,7 @@ export default function TimeInStatus({ projectId, releaseMap }: Props) {
                     {TIS_ABBREV[s] || s.replace(/_/g, ' ').slice(0, 6).toUpperCase()}
                   </th>
                 ))}
-                <th className="bg-[var(--bg-1)] dark:bg-[#232019]" style={{
+                <th className="bg-[var(--bg-1)] dark:bg-[#111111]" style={{
                   padding: '8px 12px', textAlign: 'right',
                   fontSize: 10, fontWeight: 700, color: 'var(--fg-2)',
                   textTransform: 'uppercase', fontFamily: "'Inter', sans-serif",
@@ -121,7 +121,7 @@ export default function TimeInStatus({ projectId, releaseMap }: Props) {
                 for (const s of item.statuses ?? []) {
                   statusMap[s.status] = s;
                 }
-                const rowBgClass = idx % 2 === 1 ? 'bg-[var(--bg-1)] dark:bg-[#232019]' : 'bg-[var(--bg-app)] dark:bg-[#1A1714]';
+                const rowBgClass = idx % 2 === 1 ? 'bg-[var(--bg-1)] dark:bg-[#111111]' : 'bg-[var(--bg-app)] dark:bg-[#0A0A0A]';
                 return (
                   <tr key={item.work_item_id} className={`ph-table-row ${rowBgClass}`} style={{ height: 44, borderBottom: '1px solid var(--cp-bd-zone)' }}>
                     {/* Release */}
@@ -197,7 +197,7 @@ export default function TimeInStatus({ projectId, releaseMap }: Props) {
                       );
                     })}
                     {/* Total */}
-                    <td className={idx % 2 === 1 ? 'bg-[var(--cp-bd-zone)] dark:bg-[#2C2823]' : 'bg-[var(--bg-1)] dark:bg-[#232019]'} style={{
+                    <td className={idx % 2 === 1 ? 'bg-[var(--cp-bd-zone)] dark:bg-[#1A1A1A]' : 'bg-[var(--bg-1)] dark:bg-[#111111]'} style={{
                       padding: '0 12px', textAlign: 'right',
                       fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 800, color: 'var(--fg-1)',
                       borderLeft: '2px solid var(--divider)',

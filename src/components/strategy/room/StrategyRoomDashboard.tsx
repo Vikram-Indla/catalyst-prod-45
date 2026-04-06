@@ -79,15 +79,15 @@ const TOKENS = `
 
 /* ── DARK MODE — Nocturne overrides ── */
 [data-theme="dark"] [data-srd] {
-  --srd-ink: rgba(235,238,245,0.92);
-  --srd-ink-2: rgba(235,238,245,0.72);
-  --srd-ink-3: rgba(235,238,245,0.72);
-  --srd-ink-m: rgba(235,238,245,0.60);
-  --srd-bg: #1A1714;
-  --srd-bg-2: #1A1714;
-  --srd-bg-3: rgba(235,238,245,0.05);
-  --srd-bdr: rgba(235,238,245,0.10);
-  --srd-bdr-s: rgba(235,238,245,0.18);
+  --srd-ink: rgba(255,255,255,0.92);
+  --srd-ink-2: rgba(255,255,255,0.72);
+  --srd-ink-3: rgba(255,255,255,0.72);
+  --srd-ink-m: rgba(255,255,255,0.60);
+  --srd-bg: #0A0A0A;
+  --srd-bg-2: #0A0A0A;
+  --srd-bg-3: rgba(255,255,255,0.05);
+  --srd-bdr: rgba(255,255,255,0.10);
+  --srd-bdr-s: rgba(255,255,255,0.18);
   --srd-blue: #3B82F6;
   --srd-blue-h: #60A5FA;
   --srd-blue-bg: rgba(59,130,246,0.08);

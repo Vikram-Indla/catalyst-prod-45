@@ -4,13 +4,14 @@
  */
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { 
+import {
   ArrowLeft, Package, Calendar, Clock, CheckCircle2, XCircle,
-  AlertTriangle, Shield, Users, Milestone as MilestoneIcon, 
+  AlertTriangle, Shield, Users, Milestone as MilestoneIcon,
   RefreshCw, Bug, ChevronRight, Beaker, Archive, Monitor,
   Rocket, Settings2,
 } from 'lucide-react';
 import { useRelease, useReleaseCycles } from '@/hooks/testhub/useReleases';
+import { useTheme } from '@/hooks/useTheme';
 import { format } from 'date-fns';
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; icon: any }> = {
@@ -36,16 +37,17 @@ const HEALTH_CONFIG: Record<string, { label: string; color: string; dot: string 
 export default function ReleaseDetailPage() {
   const { releaseId } = useParams();
   const navigate = useNavigate();
+  const { isDark } = useTheme();
   const { release, isLoading } = useRelease(releaseId);
   const { cycles, isLoading: cyclesLoading } = useReleaseCycles(releaseId);
   const [activeTab, setActiveTab] = useState<'overview' | 'cycles' | 'defects' | 'milestones'>('overview');
 
   if (isLoading) {
-    return <div style={{ padding: 60, textAlign: 'center', color: '#94A3B8' }}>Loading release...</div>;
+    return <div style={{ padding: 60, textAlign: 'center', color: isDark ? '#666666' : '#94A3B8' }}>Loading release...</div>;
   }
 
   if (!release) {
-    return <div style={{ padding: 60, textAlign: 'center', color: '#94A3B8' }}>Release not found</div>;
+    return <div style={{ padding: 60, textAlign: 'center', color: isDark ? '#666666' : '#94A3B8' }}>Release not found</div>;
   }
 
   const sc = STATUS_CONFIG[release.status] || STATUS_CONFIG.planned;
@@ -74,16 +76,16 @@ export default function ReleaseDetailPage() {
   return (
     <div className="th-page-content" style={{ flex: 1, overflow: 'auto' }}>
       {/* Header */}
-      <div style={{ padding: '20px 32px', borderBottom: '1px solid #E2E8F0', background: '#fff' }}>
+      <div style={{ padding: '20px 32px', borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, background: isDark ? '#0A0A0A' : '#fff' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
           <button
             onClick={() => navigate('/testhub/releases')}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#64748B', display: 'flex', alignItems: 'center', gap: 6 }}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', color: isDark ? '#888888' : '#64748B', display: 'flex', alignItems: 'center', gap: 6 }}
           >
             <ArrowLeft style={{ width: 18, height: 18 }} />
           </button>
-          <span style={{ fontFamily: 'monospace', fontSize: 13, color: '#94A3B8', fontWeight: 600 }}>{release.version}</span>
-          <h1 style={{ fontSize: 20, fontWeight: 700, color: '#0F172A', margin: 0, flex: 1 }}>{release.name}</h1>
+          <span style={{ fontFamily: 'monospace', fontSize: 13, color: isDark ? '#666666' : '#94A3B8', fontWeight: 600 }}>{release.version}</span>
+          <h1 style={{ fontSize: 20, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A', margin: 0, flex: 1 }}>{release.name}</h1>
           <span style={{
             display: 'inline-flex', alignItems: 'center', gap: 5,
             padding: '4px 12px', borderRadius: 6, backgroundColor: sc.bg, color: sc.color, fontSize: 13, fontWeight: 600,
@@ -99,17 +101,17 @@ export default function ReleaseDetailPage() {
 
         {/* Stat cards */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 12 }}>
-          <StatCard label="Days Left" value={daysLeft !== null ? String(daysLeft) : '—'} color="#2563EB" />
-          <StatCard label="Total Tests" value={String(release.test_cases_total || 0)} color="#334155" />
-          <StatCard label="Execution" value={`${execRate}%`} color={execRate >= 80 ? '#059669' : '#D97706'} />
-          <StatCard label="Pass Rate" value={`${passRate}%`} color={passRate >= 80 ? '#059669' : '#DC2626'} />
-          <StatCard label="Open Defects" value={String(release.defects_open || 0)} color={release.defects_open > 0 ? '#DC2626' : '#059669'} />
-          <StatCard label="Critical" value={String(release.critical_defects || 0)} color={release.critical_defects > 0 ? '#DC2626' : '#059669'} />
+          <StatCard label="Days Left" value={daysLeft !== null ? String(daysLeft) : '—'} color="#2563EB" isDark={isDark} />
+          <StatCard label="Total Tests" value={String(release.test_cases_total || 0)} color={isDark ? '#888888' : '#334155'} isDark={isDark} />
+          <StatCard label="Execution" value={`${execRate}%`} color={execRate >= 80 ? '#059669' : '#D97706'} isDark={isDark} />
+          <StatCard label="Pass Rate" value={`${passRate}%`} color={passRate >= 80 ? '#059669' : '#DC2626'} isDark={isDark} />
+          <StatCard label="Open Defects" value={String(release.defects_open || 0)} color={release.defects_open > 0 ? '#DC2626' : '#059669'} isDark={isDark} />
+          <StatCard label="Critical" value={String(release.critical_defects || 0)} color={release.critical_defects > 0 ? '#DC2626' : '#059669'} isDark={isDark} />
         </div>
       </div>
 
       {/* Tabs */}
-      <div style={{ display: 'flex', gap: 0, borderBottom: '1px solid #E2E8F0', padding: '0 32px', background: '#fff' }}>
+      <div style={{ display: 'flex', gap: 0, borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, padding: '0 32px', background: isDark ? '#0A0A0A' : '#fff' }}>
         {tabs.map(tab => {
           const active = activeTab === tab.id;
           const TabIcon = tab.icon;
@@ -121,7 +123,7 @@ export default function ReleaseDetailPage() {
                 display: 'flex', alignItems: 'center', gap: 7, padding: '12px 20px',
                 fontSize: 14, fontWeight: active ? 600 : 500, border: 'none',
                 borderBottom: active ? '2px solid #2563EB' : '2px solid transparent',
-                color: active ? '#2563EB' : '#64748B', background: 'none', cursor: 'pointer',
+                color: active ? '#2563EB' : (isDark ? '#888888' : '#64748B'), background: 'none', cursor: 'pointer',
               }}
             >
               <TabIcon style={{ width: 15, height: 15 }} />
@@ -133,35 +135,35 @@ export default function ReleaseDetailPage() {
 
       {/* Tab content */}
       <div style={{ padding: '24px 32px' }}>
-        {activeTab === 'overview' && <OverviewTab release={release} />}
-        {activeTab === 'cycles' && <CyclesTab cycles={cycles} isLoading={cyclesLoading} navigate={navigate} />}
-        {activeTab === 'defects' && <DefectsTab release={release} />}
-        {activeTab === 'milestones' && <MilestonesTab releaseId={release.id} />}
+        {activeTab === 'overview' && <OverviewTab release={release} isDark={isDark} />}
+        {activeTab === 'cycles' && <CyclesTab cycles={cycles} isLoading={cyclesLoading} navigate={navigate} isDark={isDark} />}
+        {activeTab === 'defects' && <DefectsTab release={release} isDark={isDark} />}
+        {activeTab === 'milestones' && <MilestonesTab releaseId={release.id} isDark={isDark} />}
       </div>
     </div>
   );
 }
 
-function StatCard({ label, value, color }: { label: string; value: string; color: string }) {
+function StatCard({ label, value, color, isDark }: { label: string; value: string; color: string; isDark: boolean }) {
   return (
-    <div style={{ padding: '14px 16px', background: '#F8FAFC', borderRadius: 10, border: '1px solid #E2E8F0' }}>
+    <div style={{ padding: '14px 16px', background: isDark ? '#111111' : '#F8FAFC', borderRadius: 10, border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}` }}>
       <div style={{ fontSize: 22, fontWeight: 700, color, fontVariantNumeric: 'tabular-nums' }}>{value}</div>
-      <div style={{ fontSize: 12, color: '#64748B', marginTop: 2 }}>{label}</div>
+      <div style={{ fontSize: 12, color: isDark ? '#888888' : '#64748B', marginTop: 2 }}>{label}</div>
     </div>
   );
 }
 
-function OverviewTab({ release }: { release: any }) {
+function OverviewTab({ release, isDark }: { release: any; isDark: boolean }) {
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: 24 }}>
       <div>
-        <h3 style={{ fontSize: 15, fontWeight: 700, color: '#0F172A', marginBottom: 12 }}>Description</h3>
-        <p style={{ fontSize: 14, color: '#334155', lineHeight: 1.7 }}>
+        <h3 style={{ fontSize: 15, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A', marginBottom: 12 }}>Description</h3>
+        <p style={{ fontSize: 14, color: isDark ? '#888888' : '#334155', lineHeight: 1.7 }}>
           {release.description || 'No description provided.'}
         </p>
 
-        <h3 style={{ fontSize: 15, fontWeight: 700, color: '#0F172A', margin: '24px 0 12px' }}>Test Progress</h3>
-        <div style={{ height: 10, backgroundColor: '#F1F5F9', borderRadius: 5, overflow: 'hidden', marginBottom: 8 }}>
+        <h3 style={{ fontSize: 15, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A', margin: '24px 0 12px' }}>Test Progress</h3>
+        <div style={{ height: 10, backgroundColor: isDark ? '#111111' : '#F1F5F9', borderRadius: 5, overflow: 'hidden', marginBottom: 8 }}>
           {release.test_cases_total > 0 && (
             <div style={{
               display: 'flex', height: '100%',
@@ -172,7 +174,7 @@ function OverviewTab({ release }: { release: any }) {
             </div>
           )}
         </div>
-        <div style={{ display: 'flex', gap: 16, fontSize: 12, color: '#64748B' }}>
+        <div style={{ display: 'flex', gap: 16, fontSize: 12, color: isDark ? '#888888' : '#64748B' }}>
           <span>✓ {release.test_cases_passed} Passed</span>
           <span>✗ {release.test_cases_failed || 0} Failed</span>
           <span>⊘ {release.test_cases_blocked || 0} Blocked</span>
@@ -181,8 +183,8 @@ function OverviewTab({ release }: { release: any }) {
       </div>
 
       {/* Details panel */}
-      <div style={{ background: '#F8FAFC', borderRadius: 10, padding: 20, border: '1px solid #E2E8F0' }}>
-        <h3 style={{ fontSize: 14, fontWeight: 700, color: '#0F172A', marginBottom: 16 }}>Details</h3>
+      <div style={{ background: isDark ? '#111111' : '#F8FAFC', borderRadius: 10, padding: 20, border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}` }}>
+        <h3 style={{ fontSize: 14, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A', marginBottom: 16 }}>Details</h3>
         <dl style={{ margin: 0, display: 'flex', flexDirection: 'column', gap: 14 }}>
           <DetailRow label="Target Date" value={release.target_date ? format(new Date(release.target_date), 'MMMM dd, yyyy') : '—'} />
           <DetailRow label="Start Date" value={release.start_date ? format(new Date(release.start_date), 'MMMM dd, yyyy') : '—'} />
@@ -198,20 +200,21 @@ function OverviewTab({ release }: { release: any }) {
 }
 
 function DetailRow({ label, value }: { label: string; value: string }) {
+  const { isDark } = useTheme();
   return (
     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-      <dt style={{ fontSize: 13, color: '#64748B' }}>{label}</dt>
-      <dd style={{ fontSize: 13, fontWeight: 600, color: '#0F172A', margin: 0 }}>{value}</dd>
+      <dt style={{ fontSize: 13, color: isDark ? '#888888' : '#64748B' }}>{label}</dt>
+      <dd style={{ fontSize: 13, fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A', margin: 0 }}>{value}</dd>
     </div>
   );
 }
 
-function CyclesTab({ cycles, isLoading, navigate }: { cycles: any[]; isLoading: boolean; navigate: any }) {
-  if (isLoading) return <div style={{ padding: 40, textAlign: 'center', color: '#94A3B8' }}>Loading cycles...</div>;
+function CyclesTab({ cycles, isLoading, navigate, isDark }: { cycles: any[]; isLoading: boolean; navigate: any; isDark: boolean }) {
+  if (isLoading) return <div style={{ padding: 40, textAlign: 'center', color: isDark ? '#666666' : '#94A3B8' }}>Loading cycles...</div>;
 
   if (cycles.length === 0) {
     return (
-      <div style={{ textAlign: 'center', padding: 48, color: '#94A3B8' }}>
+      <div style={{ textAlign: 'center', padding: 48, color: isDark ? '#666666' : '#94A3B8' }}>
         <RefreshCw style={{ width: 40, height: 40, margin: '0 auto 12px', opacity: 0.3 }} />
         <p style={{ fontSize: 14, fontWeight: 500 }}>No test cycles linked to this release</p>
         <p style={{ fontSize: 13 }}>Link test cycles from the Test Cycles module</p>
@@ -220,16 +223,16 @@ function CyclesTab({ cycles, isLoading, navigate }: { cycles: any[]; isLoading: 
   }
 
   return (
-    <div style={{ border: '1px solid #E2E8F0', borderRadius: 10, overflow: 'hidden', background: '#fff' }}>
+    <div style={{ border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 10, overflow: 'hidden', background: isDark ? '#111111' : '#fff' }}>
       <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
         <thead>
-          <tr style={{ backgroundColor: '#F8FAFC', borderBottom: '1px solid #E2E8F0' }}>
-            <th style={thStyle}>Cycle</th>
-            <th style={thStyle}>Status</th>
-            <th style={thStyle}>Total</th>
-            <th style={thStyle}>Passed</th>
-            <th style={thStyle}>Failed</th>
-            <th style={{ ...thStyle, width: 30 }}></th>
+          <tr style={{ backgroundColor: isDark ? '#1A1A1A' : '#F8FAFC', borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}` }}>
+            <th style={getThStyle(isDark)}>Cycle</th>
+            <th style={getThStyle(isDark)}>Status</th>
+            <th style={getThStyle(isDark)}>Total</th>
+            <th style={getThStyle(isDark)}>Passed</th>
+            <th style={getThStyle(isDark)}>Failed</th>
+            <th style={{ ...getThStyle(isDark), width: 30 }}></th>
           </tr>
         </thead>
         <tbody>
@@ -240,11 +243,11 @@ function CyclesTab({ cycles, isLoading, navigate }: { cycles: any[]; isLoading: 
               <tr
                 key={c.id}
                 onClick={() => navigate(`/testhub/cycles/${cycle.id}`)}
-                style={{ borderBottom: '1px solid #F1F5F9', cursor: 'pointer' }}
-                onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#F8FAFC')}
+                style={{ borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.05)' : '#F1F5F9'}`, cursor: 'pointer' }}
+                onMouseEnter={e => (e.currentTarget.style.backgroundColor = isDark ? '#1A1A1A' : '#F8FAFC')}
                 onMouseLeave={e => (e.currentTarget.style.backgroundColor = '')}
               >
-                <td style={tdStyle}><span style={{ fontWeight: 600, color: '#0F172A' }}>{cycle.name}</span></td>
+                <td style={tdStyle}><span style={{ fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A' }}>{cycle.name}</span></td>
                 <td style={tdStyle}><span style={{ fontSize: 12, textTransform: 'capitalize' }}>{cycle.status}</span></td>
                 <td style={tdStyle}>{cycle.total_cases || 0}</td>
                 <td style={tdStyle}><span style={{ color: '#059669', fontWeight: 600 }}>{cycle.passed_count || 0}</span></td>
@@ -259,28 +262,28 @@ function CyclesTab({ cycles, isLoading, navigate }: { cycles: any[]; isLoading: 
   );
 }
 
-function DefectsTab({ release }: { release: any }) {
+function DefectsTab({ release, isDark }: { release: any; isDark: boolean }) {
   return (
-    <div style={{ textAlign: 'center', padding: 48, color: '#94A3B8' }}>
+    <div style={{ textAlign: 'center', padding: 48, color: isDark ? '#666666' : '#94A3B8' }}>
       <Bug style={{ width: 40, height: 40, margin: '0 auto 12px', opacity: 0.3 }} />
       <p style={{ fontSize: 14, fontWeight: 500 }}>Defects linked to this release</p>
       <div style={{ display: 'flex', gap: 24, justifyContent: 'center', marginTop: 16 }}>
         <div style={{ textAlign: 'center' }}>
           <div style={{ fontSize: 28, fontWeight: 700, color: '#DC2626' }}>{release.defects_open || 0}</div>
-          <div style={{ fontSize: 12, color: '#64748B' }}>Open</div>
+          <div style={{ fontSize: 12, color: isDark ? '#888888' : '#64748B' }}>Open</div>
         </div>
         <div style={{ textAlign: 'center' }}>
           <div style={{ fontSize: 28, fontWeight: 700, color: '#DC2626' }}>{release.critical_defects || 0}</div>
-          <div style={{ fontSize: 12, color: '#64748B' }}>Critical</div>
+          <div style={{ fontSize: 12, color: isDark ? '#888888' : '#64748B' }}>Critical</div>
         </div>
       </div>
     </div>
   );
 }
 
-function MilestonesTab({ releaseId }: { releaseId: string }) {
+function MilestonesTab({ releaseId, isDark }: { releaseId: string; isDark: boolean }) {
   return (
-    <div style={{ textAlign: 'center', padding: 48, color: '#94A3B8' }}>
+    <div style={{ textAlign: 'center', padding: 48, color: isDark ? '#666666' : '#94A3B8' }}>
       <Calendar style={{ width: 40, height: 40, margin: '0 auto 12px', opacity: 0.3 }} />
       <p style={{ fontSize: 14, fontWeight: 500 }}>Release milestones</p>
       <p style={{ fontSize: 13 }}>Milestone management will be available in the next update</p>
@@ -288,10 +291,10 @@ function MilestonesTab({ releaseId }: { releaseId: string }) {
   );
 }
 
-const thStyle: React.CSSProperties = {
+const getThStyle = (isDark: boolean): React.CSSProperties => ({
   padding: '10px 14px', textAlign: 'left', fontSize: 11, fontWeight: 650,
-  color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.04em',
-};
+  color: isDark ? '#888888' : '#64748B', textTransform: 'uppercase', letterSpacing: '0.04em',
+});
 
 const tdStyle: React.CSSProperties = {
   padding: '12px 14px', verticalAlign: 'middle',

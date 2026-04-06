@@ -676,7 +676,7 @@ export default function UserAccessPage() {
                     </TableCell>
                     <TableCell>
                       {user.is_active ? (
-                        <Badge className="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400">
+                        <Badge className="bg-emerald-100 text-emerald-700 dark:bg-[rgba(34,197,94,0.12)] dark:text-emerald-400">
                           Active
                         </Badge>
                       ) : (
@@ -709,7 +709,7 @@ export default function UserAccessPage() {
                       ) : user.email && user.role_id ? (
                         /* Email + Role = Authorized, just needs account creation for password mgmt */
                         <div className="flex items-center justify-end gap-2">
-                          <Badge className="bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
+                          <Badge className="bg-blue-100 text-blue-700 dark:bg-[rgba(59,130,246,0.12)] dark:text-blue-400">
                             Authorized
                           </Badge>
                           <Button

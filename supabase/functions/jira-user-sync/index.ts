@@ -133,48 +133,49 @@ Deno.serve(async (req) => {
 
     stats.usersDiscovered = jiraUsers.length
 
-    // ─── Step 3b: Resolve real emails ────────────────────────────
-    // Jira's /users/search doesn't return emailAddress (GDPR).
-    // Fetch individually for users missing email, and cross-ref profiles table.
+    // ─── Step 3b: Resolve real emails via individual user fetch ──
+    // Jira bulk search hides emailAddress (GDPR). Fetch individually.
+    const BATCH_SIZE = 5
+    for (let i = 0; i < jiraUsers.length; i += BATCH_SIZE) {
+      const batch = jiraUsers.slice(i, i + BATCH_SIZE)
+      const results = await Promise.allSettled(
+        batch.map(async (u: any) => {
+          if (u.emailAddress) return // already has email
+          try {
+            const r = await fetch(
+              `${baseUrl}/rest/api/3/user?accountId=${u.accountId}`,
+              { headers: { 'Authorization': authHeader, 'Accept': 'application/json' } }
+            )
+            if (r.ok) {
+              const detail = await r.json()
+              if (detail.emailAddress) {
+                u.emailAddress = detail.emailAddress
+              }
+            }
+          } catch (_) { /* best effort */ }
+        })
+      )
+    }
 
-    // Build profiles email lookup by display_name
-    const { data: profileRows } = await supabase
+    // Also cross-reference profiles table for any remaining unresolved emails
+    const { data: profiles } = await supabase
       .from('profiles')
-      .select('full_name, email, jira_account_id')
-    const profileByName = new Map<string, string>()
-    const profileByAccountId = new Map<string, string>()
-    for (const p of profileRows ?? []) {
-      if (p.email && p.full_name) profileByName.set(p.full_name.toLowerCase(), p.email)
-      if (p.email && p.jira_account_id) profileByAccountId.set(p.jira_account_id, p.email)
-    }
+      .select('jira_account_id, email, full_name')
+      .not('email', 'is', null)
 
-    // Try individual Jira user fetch for real emails (batch of 5 concurrent)
-    const resolveEmail = async (u: any): Promise<string | null> => {
-      // Check profiles table first (fastest)
-      const fromProfile = profileByAccountId.get(u.accountId) ??
-        profileByName.get((u.displayName ?? '').toLowerCase())
-      if (fromProfile) return fromProfile
+    const profileByJiraId = new Map(
+      (profiles ?? []).filter((p: any) => p.jira_account_id).map((p: any) => [p.jira_account_id, p])
+    )
+    const profileByName = new Map(
+      (profiles ?? []).filter((p: any) => p.full_name).map((p: any) => [p.full_name, p])
+    )
 
-      // Try Jira individual user endpoint (may return emailAddress)
-      try {
-        const r = await fetch(
-          `${baseUrl}/rest/api/3/user?accountId=${u.accountId}`,
-          { headers: { 'Authorization': authHeader, 'Accept': 'application/json' } }
-        )
-        if (r.ok) {
-          const detail = await r.json()
-          if (detail.emailAddress) return detail.emailAddress
+    for (const u of jiraUsers) {
+      if (!u.emailAddress || u.emailAddress.includes('@jira.placeholder')) {
+        const profileMatch = profileByJiraId.get(u.accountId) ?? profileByName.get(u.displayName)
+        if (profileMatch?.email) {
+          u.emailAddress = profileMatch.email
         }
-      } catch (_) { /* skip */ }
-      return null
-    }
-
-    // Resolve emails in batches of 5
-    for (let i = 0; i < jiraUsers.length; i += 5) {
-      const batch = jiraUsers.slice(i, i + 5)
-      const emails = await Promise.all(batch.map(resolveEmail))
-      for (let j = 0; j < batch.length; j++) {
-        if (emails[j]) batch[j]._resolvedEmail = emails[j]
       }
     }
 
@@ -200,7 +201,7 @@ Deno.serve(async (req) => {
 
           const payload = {
             jira_account_id:     jiraUser.accountId,
-            email:               jiraUser._resolvedEmail ?? jiraUser.emailAddress ?? `${jiraUser.accountId}@jira.placeholder`,
+            email:               jiraUser.emailAddress ?? `${jiraUser.displayName?.replace(/\s+/g, '.').toLowerCase() ?? jiraUser.accountId}@jira.placeholder`,
             display_name:        jiraUser.displayName,
             avatar_url:          jiraUser.avatarUrls?.['48x48'] ?? null,
             is_active_in_jira:   jiraUser.active ?? true,
@@ -264,6 +265,104 @@ Deno.serve(async (req) => {
       } catch (_userErr) {
         stats.usersFailed++
       }
+    }
+
+    // ─── Step 5b: Sync project memberships ──────────────────────
+    try {
+      // Fetch all accessible projects from Jira
+      const projRes = await fetch(
+        `${baseUrl}/rest/api/3/project/search?maxResults=100&expand=lead`,
+        {
+          headers: {
+            'Authorization': authHeader,
+            'Accept': 'application/json',
+          },
+        }
+      )
+      if (projRes.ok) {
+        const projData = await projRes.json()
+        const projects = projData.values ?? projData ?? []
+
+        // For each project, fetch members via project role
+        for (const proj of projects) {
+          try {
+            // Get all roles for this project
+            const rolesRes = await fetch(
+              `${baseUrl}/rest/api/3/project/${proj.key}/role`,
+              {
+                headers: { 'Authorization': authHeader, 'Accept': 'application/json' },
+              }
+            )
+            if (!rolesRes.ok) continue
+            const roles = await rolesRes.json()
+
+            // Fetch actors from each role (Administrators, Developers, etc.)
+            for (const [roleName, roleUrl] of Object.entries(roles)) {
+              try {
+                const roleRes = await fetch(roleUrl as string, {
+                  headers: { 'Authorization': authHeader, 'Accept': 'application/json' },
+                })
+                if (!roleRes.ok) continue
+                const roleData = await roleRes.json()
+                const actors = roleData.actors ?? []
+
+                // Map permission level from Jira role name
+                const permLevel = roleName.toLowerCase().includes('admin')
+                  ? 'full'
+                  : roleName.toLowerCase().includes('developer') || roleName.toLowerCase().includes('member')
+                    ? 'edit'
+                    : 'view'
+
+                for (const actor of actors) {
+                  if (actor.actorUser?.accountId) {
+                    // Find our identity record
+                    const { data: identity } = await supabase
+                      .from('jira_identity_map')
+                      .select('id')
+                      .eq('jira_account_id', actor.actorUser.accountId)
+                      .maybeSingle()
+
+                    if (identity) {
+                      // Jira project id is a numeric string — generate deterministic UUID
+                      const projUuid = crypto.randomUUID()
+                      // Check if a row already exists for this user+project_key
+                      const { data: existingPerm } = await supabase
+                        .from('jira_user_project_perms')
+                        .select('id, project_id')
+                        .eq('identity_map_id', identity.id)
+                        .eq('project_key', proj.key)
+                        .maybeSingle()
+
+                      if (existingPerm) {
+                        await supabase.from('jira_user_project_perms')
+                          .update({
+                            project_name: proj.name,
+                            permission_level: permLevel,
+                            synced_from_jira: true,
+                            updated_at: new Date().toISOString(),
+                          })
+                          .eq('id', existingPerm.id)
+                      } else {
+                        await supabase.from('jira_user_project_perms').insert({
+                          identity_map_id: identity.id,
+                          project_id: projUuid,
+                          project_name: proj.name,
+                          project_key: proj.key,
+                          permission_level: permLevel,
+                          synced_from_jira: true,
+                        })
+                      }
+                    }
+                  }
+                }
+              } catch (_roleErr) { /* skip individual role errors */ }
+            }
+          } catch (_projErr) { /* skip individual project errors */ }
+        }
+      }
+    } catch (_projSyncErr) {
+      // Project sync is best-effort — continue with deactivation
+      console.error('Project sync error:', _projSyncErr)
     }
 
     // ─── Step 6: Deactivate users no longer in Jira ─────────────

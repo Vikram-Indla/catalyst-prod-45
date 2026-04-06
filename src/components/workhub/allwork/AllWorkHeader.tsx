@@ -22,13 +22,13 @@ interface Props {
 
 export function AllWorkHeader({ activeTab, onTabChange }: Props) {
   return (
-    <div className="px-8 pt-5 pb-0" style={{ borderBottom: '1px solid rgba(15,23,42,0.08)' }}>
+    <div className="px-8 pt-5 pb-0" style={{ borderBottom: '1px solid var(--bd-subtle, rgba(255,255,255,0.05))' }}>
       {/* Breadcrumb */}
       <nav className="flex items-center gap-1.5 mb-2" aria-label="Breadcrumb">
         <a href="#" className="text-[12px] hover:underline" style={{ color: 'var(--cp-blue)', fontFamily: 'Inter, sans-serif' }}>Projects</a>
-        <span className="text-[12px]" style={{ color: '#6b6e76' }} aria-hidden="true">/</span>
-        <span className="text-[12px]" style={{ color: '#6b6e76', fontFamily: 'Inter, sans-serif' }}>Senaei BAU</span>
-        <span className="text-[12px]" style={{ color: '#6b6e76' }} aria-hidden="true">/</span>
+        <span className="text-[12px]" style={{ color: 'var(--fg-3)' }} aria-hidden="true">/</span>
+        <span className="text-[12px]" style={{ color: 'var(--fg-3)', fontFamily: 'Inter, sans-serif' }}>Senaei BAU</span>
+        <span className="text-[12px]" style={{ color: 'var(--fg-3)' }} aria-hidden="true">/</span>
         <span className="text-[12px] font-medium" style={{ color: 'var(--fg-1)', fontFamily: 'Inter, sans-serif' }} aria-current="page">All Work</span>
       </nav>
 
@@ -47,14 +47,14 @@ export function AllWorkHeader({ activeTab, onTabChange }: Props) {
           </h1>
         </div>
         <div className="flex items-center gap-2">
-          <button className="p-1.5 rounded hover:bg-[rgba(15,23,42,0.04)] transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[#2563EB]" aria-label="Star project">
-            <Star className="w-4 h-4" style={{ color: '#6b6e76' }} />
+          <button className="p-1.5 rounded hover:bg-[var(--hover, rgba(255,255,255,0.04))] transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[#2563EB]" aria-label="Star project">
+            <Star className="w-4 h-4" style={{ color: 'var(--fg-3)' }} />
           </button>
-          <button className="p-1.5 rounded hover:bg-[rgba(15,23,42,0.04)] transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[#2563EB]" aria-label="Share project">
-            <Share2 className="w-4 h-4" style={{ color: '#6b6e76' }} />
+          <button className="p-1.5 rounded hover:bg-[var(--hover, rgba(255,255,255,0.04))] transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[#2563EB]" aria-label="Share project">
+            <Share2 className="w-4 h-4" style={{ color: 'var(--fg-3)' }} />
           </button>
-          <button className="p-1.5 rounded hover:bg-[rgba(15,23,42,0.04)] transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[#2563EB]" aria-label="More options">
-            <MoreHorizontal className="w-4 h-4" style={{ color: '#6b6e76' }} />
+          <button className="p-1.5 rounded hover:bg-[var(--hover, rgba(255,255,255,0.04))] transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[#2563EB]" aria-label="More options">
+            <MoreHorizontal className="w-4 h-4" style={{ color: 'var(--fg-3)' }} />
           </button>
         </div>
       </div>

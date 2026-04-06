@@ -96,7 +96,7 @@ export function BudgetExecutiveSummaryView({ data, currentDept, onDeptChange, pe
               "px-4 py-2 text-[13px] font-medium rounded-lg border transition-all",
               currentDept === d.id 
                 ? "bg-blue-600 border-blue-600 text-white"
-                : "bg-white border-slate-200 text-slate-600 hover:border-blue-400"
+                : "bg-white dark:bg-[#111111] border-slate-200 dark:border-[rgba(255,255,255,0.08)] text-slate-600 dark:text-[#888888] hover:border-blue-400"
             )}
             onClick={() => onDeptChange(d.id)}
           >
@@ -138,8 +138,8 @@ export function BudgetExecutiveSummaryView({ data, currentDept, onDeptChange, pe
         {/* Insourced */}
         <div 
           className={cn(
-            'bg-white border rounded-xl p-5 cursor-pointer transition-all hover:shadow-md',
-            execTypeFilter === 'insourced' ? 'border-blue-500 ring-2 ring-blue-100' : 'border-slate-200'
+            'bg-white dark:bg-[#111111] border rounded-xl p-5 cursor-pointer transition-all hover:shadow-md',
+            execTypeFilter === 'insourced' ? 'border-blue-500 ring-2 ring-blue-100' : 'border-slate-200 dark:border-[rgba(255,255,255,0.08)]'
           )}
           onClick={() => setExecTypeFilter(execTypeFilter === 'insourced' ? null : 'insourced')}
         >
@@ -154,8 +154,8 @@ export function BudgetExecutiveSummaryView({ data, currentDept, onDeptChange, pe
         {/* Cosourced */}
         <div 
           className={cn(
-            'bg-white border rounded-xl p-5 cursor-pointer transition-all hover:shadow-md',
-            execTypeFilter === 'cosourced' ? 'border-teal-500 ring-2 ring-teal-100' : 'border-slate-200'
+            'bg-white dark:bg-[#111111] border rounded-xl p-5 cursor-pointer transition-all hover:shadow-md',
+            execTypeFilter === 'cosourced' ? 'border-teal-500 ring-2 ring-teal-100' : 'border-slate-200 dark:border-[rgba(255,255,255,0.08)]'
           )}
           onClick={() => setExecTypeFilter(execTypeFilter === 'cosourced' ? null : 'cosourced')}
         >
@@ -178,8 +178,8 @@ export function BudgetExecutiveSummaryView({ data, currentDept, onDeptChange, pe
         {/* Outsourced */}
         <div 
           className={cn(
-            'bg-white border rounded-xl p-5 cursor-pointer transition-all hover:shadow-md',
-            execTypeFilter === 'outsourced' ? 'border-blue-500 ring-2 ring-blue-100' : 'border-slate-200'
+            'bg-white dark:bg-[#111111] border rounded-xl p-5 cursor-pointer transition-all hover:shadow-md',
+            execTypeFilter === 'outsourced' ? 'border-blue-500 ring-2 ring-blue-100' : 'border-slate-200 dark:border-[rgba(255,255,255,0.08)]'
           )}
           onClick={() => setExecTypeFilter(execTypeFilter === 'outsourced' ? null : 'outsourced')}
         >
@@ -206,7 +206,7 @@ export function BudgetExecutiveSummaryView({ data, currentDept, onDeptChange, pe
       </div>
 
       {/* Department Breakdown */}
-      <div className="bg-white border border-slate-200 rounded-xl p-5">
+      <div className="bg-white dark:bg-[#111111] border border-slate-200 dark:border-[rgba(255,255,255,0.08)] rounded-xl p-5">
         <h4 className="text-lg font-bold text-slate-900 mb-4">Department Budget Breakdown</h4>
         <div className="space-y-3">
           {departments.filter(d => d.id !== 'all').map(d => {

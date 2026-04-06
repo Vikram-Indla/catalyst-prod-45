@@ -2,6 +2,7 @@
  * IdeationCreateWizard — Single-page modal for new idea submission
  */
 import React, { useState, useEffect, useCallback } from 'react';
+import { useTheme } from '@/hooks/useTheme';
 import { X, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -52,27 +53,8 @@ const SOURCES = [
   { key: 'Research', label: 'Research' },
 ];
 
-const inputBase: React.CSSProperties = {
-  width: '100%',
-  height: '44px',
-  border: '1px solid #E2E8F0',
-  borderRadius: '8px',
-  padding: '0 14px',
-  fontSize: '14px',
-  color: '#0F172A',
-  background: '#FFFFFF',
-  outline: 'none',
-};
-
-const labelBase: React.CSSProperties = {
-  display: 'block',
-  fontSize: '13px',
-  fontWeight: 600,
-  color: '#0F172A',
-  marginBottom: '6px',
-};
-
-const focusHandlers = {
+// inputBase/labelBase/focusHandlers are now computed inside the component for dark mode support
+const focusHandlersLight = {
   onFocus: (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     e.currentTarget.style.borderColor = '#2563EB';
     e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.08)';
@@ -82,8 +64,33 @@ const focusHandlers = {
     e.currentTarget.style.boxShadow = 'none';
   },
 };
+const focusHandlersDark = {
+  onFocus: (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    e.currentTarget.style.borderColor = '#2563EB';
+    e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.08)';
+  },
+  onBlur: (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)';
+    e.currentTarget.style.boxShadow = 'none';
+  },
+};
 
 export default function IdeationCreateWizard({ open, onClose }: Props) {
+  const { isDark } = useTheme();
+
+  const inputBase: React.CSSProperties = {
+    width: '100%', height: '44px',
+    border: `1px solid ${isDark ? 'rgba(255,255,255,0.12)' : '#E2E8F0'}`,
+    borderRadius: '8px', padding: '0 14px', fontSize: '14px',
+    color: isDark ? '#EDEDED' : '#0F172A',
+    background: isDark ? 'transparent' : '#FFFFFF', outline: 'none',
+  };
+  const labelBase: React.CSSProperties = {
+    display: 'block', fontSize: '13px', fontWeight: 600,
+    color: isDark ? '#EDEDED' : '#0F172A', marginBottom: '6px',
+  };
+  const focusHandlers = isDark ? focusHandlersDark : focusHandlersLight;
+
   const queryClient = useQueryClient();
   const [title, setTitle] = useState('');
   const [desc, setDesc] = useState('');
@@ -228,32 +235,32 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
         <div
           onClick={e => e.stopPropagation()}
           style={{
-            background: '#FFFFFF',
+            background: isDark ? '#111111' : '#FFFFFF',
             borderRadius: '16px',
             width: '720px',
             maxHeight: '90vh',
             overflow: 'hidden',
             display: 'flex',
             flexDirection: 'column',
-            boxShadow: '0 24px 64px rgba(0,0,0,0.18), 0 0 0 1px rgba(0,0,0,0.05)',
+            boxShadow: isDark ? 'none' : '0 24px 64px rgba(0,0,0,0.18), 0 0 0 1px rgba(0,0,0,0.05)',
           }}
         >
           {/* Header */}
           <div style={{
             padding: '24px 32px 16px',
-            borderBottom: '1px solid #E2E8F0',
+            borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`,
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           }}>
-            <span style={{ fontSize: '20px', fontWeight: 700, color: '#0F172A' }}>Submit New Idea</span>
+            <span style={{ fontSize: '20px', fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A' }}>Submit New Idea</span>
             <button
               onClick={onClose}
               style={{
                 width: '32px', height: '32px', borderRadius: '8px',
-                background: 'transparent', border: 'none', color: '#94A3B8',
+                background: 'transparent', border: 'none', color: isDark ? '#666666' : '#94A3B8',
                 fontSize: '16px', cursor: 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}
-              onMouseEnter={e => { e.currentTarget.style.background = '#F4F4F5'; }}
+              onMouseEnter={e => { e.currentTarget.style.background = isDark ? 'rgba(255,255,255,0.06)' : '#F4F4F5'; }}
               onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
             >
               <X size={16} />
@@ -263,8 +270,8 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
           {/* AI Auto-fill Bar */}
           <div style={{
             margin: '16px 32px 0',
-            background: '#F5F3FF',
-            border: '1px solid #EDE9FE',
+            background: isDark ? 'rgba(124,58,237,0.08)' : '#F5F3FF',
+            border: `1px solid ${isDark ? 'rgba(124,58,237,0.15)' : '#EDE9FE'}`,
             borderRadius: '10px',
             padding: '12px 16px',
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
@@ -474,20 +481,20 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
               <label style={labelBase}>Tags</label>
               <div style={{
                 display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '6px',
-                minHeight: '44px', border: '1px solid #E2E8F0', borderRadius: '8px',
-                padding: '6px 10px', background: '#FFFFFF',
+                minHeight: '44px', border: `1px solid ${isDark ? 'rgba(255,255,255,0.12)' : '#E2E8F0'}`, borderRadius: '8px',
+                padding: '6px 10px', background: isDark ? 'transparent' : '#FFFFFF',
               }}>
                 {tags.map(tag => (
                   <span key={tag} style={{
                     display: 'inline-flex', alignItems: 'center', gap: '4px',
-                    padding: '2px 8px', background: '#F1F5F9', border: '1px solid #E2E8F0',
-                    borderRadius: '4px', fontSize: '12px', color: '#334155',
+                    padding: '2px 8px', background: isDark ? 'rgba(255,255,255,0.06)' : '#F1F5F9', border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`,
+                    borderRadius: '4px', fontSize: '12px', color: isDark ? '#888888' : '#334155',
                   }}>
                     {tag}
                     <button
                       onClick={() => removeTag(tag)}
                       style={{
-                        background: 'none', border: 'none', color: '#94A3B8',
+                        background: 'none', border: 'none', color: isDark ? '#666666' : '#94A3B8',
                         cursor: 'pointer', padding: 0, fontSize: '14px', lineHeight: 1,
                       }}
                     >×</button>
@@ -500,7 +507,7 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
                   placeholder={tags.length === 0 ? 'Type a tag and press Enter...' : ''}
                   style={{
                     flex: 1, minWidth: '120px', border: 'none', outline: 'none',
-                    fontSize: '13px', color: '#0F172A', background: 'transparent',
+                    fontSize: '13px', color: isDark ? '#EDEDED' : '#0F172A', background: 'transparent',
                     height: '28px',
                   }}
                 />
@@ -511,19 +518,19 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
           {/* Footer */}
           <div style={{
             padding: '16px 32px',
-            borderTop: '1px solid #E2E8F0',
+            borderTop: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`,
             display: 'flex',
             justifyContent: 'flex-end',
             alignItems: 'center',
             gap: '12px',
-            background: '#FAFAFA',
+            background: isDark ? '#0A0A0A' : '#FAFAFA',
             borderRadius: '0 0 16px 16px',
           }}>
             <button
               onClick={onClose}
               style={{
-                background: 'transparent', color: '#64748B',
-                border: '1px solid #E2E8F0', borderRadius: '8px',
+                background: 'transparent', color: isDark ? '#888888' : '#64748B',
+                border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: '8px',
                 padding: '10px 20px', fontSize: '14px', fontWeight: 600, cursor: 'pointer',
               }}
             >Cancel</button>

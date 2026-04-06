@@ -126,7 +126,7 @@ export default function PlanHubAIConfigPage() {
                 <>
                   <CheckCircle2 className="h-5 w-5 text-green-600 flex-shrink-0" />
                   <div>
-                    <p className="text-sm font-medium text-green-800 dark:text-green-200">Connected</p>
+                    <p className="text-sm font-medium text-green-800 dark:text-[#86EFAC]">Connected</p>
                     <p className="text-sm text-green-700 dark:text-green-300">
                       AI assistant is configured and ready to use
                     </p>

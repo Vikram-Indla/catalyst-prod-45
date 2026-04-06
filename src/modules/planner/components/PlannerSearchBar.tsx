@@ -158,7 +158,7 @@ export function PlannerSearchBar({
         <DropdownMenuContent align="start" className="z-[9999] bg-popover w-56 max-h-80 overflow-y-auto">
           <DropdownMenuItem 
             onClick={() => onTeamChange(null)}
-            className={cn(!selectedTeamId && "bg-blue-50")}
+            className={cn(!selectedTeamId && "bg-blue-50 dark:bg-blue-950/40")}
           >
             <Users className="w-4 h-4 mr-2 text-muted-foreground" />
             All Workstreams
@@ -177,7 +177,7 @@ export function PlannerSearchBar({
             <DropdownMenuItem
               key={team.id}
               onClick={() => onTeamChange(team.id)}
-              className={cn(selectedTeamId === team.id && "bg-blue-50")}
+              className={cn(selectedTeamId === team.id && "bg-blue-50 dark:bg-blue-950/40")}
             >
               <div className="flex items-center gap-2 w-full">
                 <div
@@ -211,7 +211,7 @@ export function PlannerSearchBar({
           )}>
             <span className="text-sm">Status</span>
             {filters.status && (
-              <span className="text-xs px-1.5 py-0.5 rounded bg-blue-100 text-blue-700">
+              <span className="text-xs px-1.5 py-0.5 rounded bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300">
                 {COLUMN_CONFIG.find(c => c.id === filters.status)?.title}
               </span>
             )}
@@ -227,7 +227,7 @@ export function PlannerSearchBar({
             <DropdownMenuItem
               key={col.id}
               onClick={() => onStatusChange(col.id as TaskStatus)}
-              className={cn(filters.status === col.id && "bg-blue-50")}
+              className={cn(filters.status === col.id && "bg-blue-50 dark:bg-blue-950/40")}
             >
               <div className="flex items-center gap-2">
                 <div
@@ -250,7 +250,7 @@ export function PlannerSearchBar({
           )}>
             <span className="text-sm">Priority</span>
             {filters.priority && (
-              <span className="text-xs px-1.5 py-0.5 rounded bg-blue-100 text-blue-700">
+              <span className="text-xs px-1.5 py-0.5 rounded bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300">
                 {PRIORITY_CONFIG[filters.priority].label}
               </span>
             )}
@@ -266,7 +266,7 @@ export function PlannerSearchBar({
             <DropdownMenuItem
               key={key}
               onClick={() => onPriorityChange(key)}
-              className={cn(filters.priority === key && "bg-blue-50")}
+              className={cn(filters.priority === key && "bg-blue-50 dark:bg-blue-950/40")}
             >
               <div className="flex items-center gap-2">
                 <span 
@@ -300,7 +300,7 @@ export function PlannerSearchBar({
               <Layers className="w-4 h-4" />
               <span className="text-sm">Group</span>
               {groupBy !== 'none' && (
-                <span className="text-xs px-1.5 py-0.5 rounded bg-blue-100 text-blue-700">
+                <span className="text-xs px-1.5 py-0.5 rounded bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300">
                   {selectedGroupLabel}
                 </span>
               )}
@@ -312,7 +312,7 @@ export function PlannerSearchBar({
               <DropdownMenuItem
                 key={option.id}
                 onClick={() => onGroupByChange(option.id)}
-                className={cn(groupBy === option.id && "bg-blue-50")}
+                className={cn(groupBy === option.id && "bg-blue-50 dark:bg-blue-950/40")}
               >
                 {option.label}
               </DropdownMenuItem>
@@ -336,13 +336,13 @@ export function PlannerSearchBar({
          <DropdownMenuContent align="start" className="z-[9999] bg-popover w-48">
           <DropdownMenuItem
             onClick={() => onBlockedChange(filters.blocked === true ? null : true)}
-            className={cn(filters.blocked === true && "bg-red-50 text-red-700")}
+            className={cn(filters.blocked === true && "bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-400")}
           >
             🚫 Blocked Only
           </DropdownMenuItem>
           <DropdownMenuItem
             onClick={() => onOverdueChange(filters.overdue ? null : true)}
-            className={cn(filters.overdue && "bg-orange-50 text-orange-700")}
+            className={cn(filters.overdue && "bg-orange-50 dark:bg-orange-950/40 text-orange-700 dark:text-orange-400")}
           >
             ⏰ Overdue Only
           </DropdownMenuItem>
@@ -456,7 +456,7 @@ function AssigneeFilterPopover({
             onClick={() => { onAssigneeChange(null); setOpen(false); setSearch(''); }}
             className={cn(
               "w-full flex items-center gap-2 px-2 py-2 rounded transition-colors text-left",
-              !selectedAssigneeId ? "bg-blue-50" : "hover:bg-muted/50"
+              !selectedAssigneeId ? "bg-blue-50 dark:bg-blue-950/40" : "hover:bg-muted/50"
             )}
           >
             <Users className="w-4 h-4 text-muted-foreground" />
@@ -476,7 +476,7 @@ function AssigneeFilterPopover({
               onClick={() => { onAssigneeChange(user.id); setOpen(false); setSearch(''); }}
               className={cn(
                 "w-full flex items-center gap-2 px-2 py-2 rounded transition-colors text-left",
-                selectedAssigneeId === user.id ? "bg-blue-50" : "hover:bg-muted/50"
+                selectedAssigneeId === user.id ? "bg-blue-50 dark:bg-blue-950/40" : "hover:bg-muted/50"
               )}
             >
               <div className="w-6 h-6 rounded-full bg-muted flex items-center justify-center text-xs font-medium flex-shrink-0">

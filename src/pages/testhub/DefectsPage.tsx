@@ -3,6 +3,8 @@
  * Route: /testhub/defects
  */
 import { useState } from 'react';
+import { useTheme } from '@/hooks/useTheme';
+import { cn } from '@/lib/utils';
 import { Bug, Plus, Download } from 'lucide-react';
 import { TestHubPageHeader } from '@/components/testhub/TestHubPageHeader';
 import { Button } from '@/components/ui/button';
@@ -19,6 +21,7 @@ import { supabase } from '@/integrations/supabase/client';
 const DEFAULT_PROJECT_ID = '00000000-0000-0000-0000-000000000001';
 
 export default function DefectsPage() {
+  const { isDark } = useTheme();
   const [filters, setFilters] = useState<Record<string, any>>({});
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [showCreate, setShowCreate] = useState(false);
@@ -114,14 +117,14 @@ export default function DefectsPage() {
   } : null;
 
   return (
-    <div className="flex flex-col h-full">
+    <div className={cn("flex flex-col h-full", isDark && "bg-[#0A0A0A]")}>
       <TestHubPageHeader title="Defects" subtitle="Track and manage bugs discovered during testing">
         <Button variant="outline" size="sm"><Download className="h-4 w-4 mr-2" />Export</Button>
-        <Button onClick={() => setShowCreate(true)} style={{ backgroundColor: '#2563EB' }} className="text-white hover:opacity-90">
+        <Button onClick={() => setShowCreate(true)} className="bg-[#2563EB] text-white hover:opacity-90">
           <Plus className="h-4 w-4 mr-2" />Create Defect
         </Button>
       </TestHubPageHeader>
-      <div className="p-6 space-y-6 flex-1 overflow-auto">
+      <div className={cn("p-6 space-y-6 flex-1 overflow-auto", isDark && "bg-[#0A0A0A]")}>
 
         {/* Stats Bar */}
         {loadingStats ? <Skeleton className="h-12 w-full" /> : statsBar && (
@@ -148,7 +151,7 @@ export default function DefectsPage() {
             {[1,2,3,4,5].map(i => <Skeleton key={i} className="h-10 w-full" />)}
           </div>
         ) : defects.length === 0 ? (
-          <div className="border rounded-lg p-12 text-center">
+          <div className={cn("border rounded-lg p-12 text-center", isDark && "border-[rgba(255,255,255,0.08)] bg-[#111111]")}>
             <Bug className="h-12 w-12 text-muted-foreground/40 mx-auto mb-4" />
             <p className="font-medium text-foreground mb-1">No defects recorded</p>
             <p className="text-muted-foreground text-sm mb-4">
@@ -161,7 +164,7 @@ export default function DefectsPage() {
             </Button>
           </div>
         ) : (
-          <div className="border rounded-lg">
+          <div className={cn("border rounded-lg", isDark && "border-[rgba(255,255,255,0.08)]")}>
             <DefectTable defects={defects} selectedIds={selectedIds} onSelectionChange={setSelectedIds} onDelete={handleDelete} />
           </div>
         )}

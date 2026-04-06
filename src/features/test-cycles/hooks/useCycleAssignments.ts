@@ -76,6 +76,7 @@ export function useCycleAssignments(cycleId: string | undefined) {
     onSuccess: () => {
       invalidate();
       toast.success('Tester assigned');
+      // Notifications are now handled automatically by database triggers
     },
     onError: (error: Error) => {
       toast.error(`Failed to assign tester: ${error.message}`);

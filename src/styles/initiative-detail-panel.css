@@ -59,12 +59,12 @@
 /* ── DARK MODE ── */
 .dark [data-module="initiative-detail-panel"],
 [data-theme="dark"] [data-module="initiative-detail-panel"] {
-  --idp-ink: rgba(235,238,245,0.92);
-  --idp-ink-secondary: rgba(235,238,245,0.85);
-  --idp-ink-tertiary: rgba(235,238,245,0.72);
-  --idp-ink-muted: rgba(235,238,245,0.50);
-  --idp-ink-muted-strong: rgba(235,238,245,0.55);
-  --idp-surface: #232019;
+  --idp-ink: rgba(255,255,255,0.92);
+  --idp-ink-secondary: rgba(255,255,255,0.85);
+  --idp-ink-tertiary: rgba(255,255,255,0.72);
+  --idp-ink-muted: rgba(255,255,255,0.50);
+  --idp-ink-muted-strong: rgba(255,255,255,0.55);
+  --idp-surface: #111111;
   --idp-surface-secondary: rgba(255,255,255,0.03);
   --idp-surface-tertiary: rgba(255,255,255,0.05);
   --idp-border: rgba(255,255,255,0.10);
@@ -103,29 +103,29 @@
 }
 .dark .idp-field-value,
 [data-theme="dark"] .idp-field-value {
-  color: rgba(235,238,245,0.92);
+  color: rgba(255,255,255,0.92);
 }
 .dark .idp-dd-trigger,
 [data-theme="dark"] .idp-dd-trigger,
 .dark .idp-ps-trigger,
 [data-theme="dark"] .idp-ps-trigger {
-  color: rgba(235,238,245,0.92);
+  color: rgba(255,255,255,0.92);
 }
 .dark .idp-dd-trigger--empty,
 [data-theme="dark"] .idp-dd-trigger--empty {
-  color: rgba(235,238,245,0.40);
+  color: rgba(255,255,255,0.40);
 }
 .dark .idp-dd-panel,
 [data-theme="dark"] .idp-dd-panel {
-  background: #232019;
+  background: #111111;
 }
 .dark .idp-ps-panel,
 [data-theme="dark"] .idp-ps-panel {
-  background: #232019;
+  background: #111111;
 }
 .dark .idp-ps-name,
 [data-theme="dark"] .idp-ps-name {
-  color: rgba(235,238,245,0.92);
+  color: rgba(255,255,255,0.92);
 }
 .dark .idp-form-input,
 [data-theme="dark"] .idp-form-input,
@@ -134,11 +134,11 @@
 .dark .idp-ps-search,
 [data-theme="dark"] .idp-ps-search {
   background: transparent;
-  color: rgba(235,238,245,0.92);
+  color: rgba(255,255,255,0.92);
 }
 .dark .idp-form-label,
 [data-theme="dark"] .idp-form-label {
-  color: rgba(235,238,245,0.50);
+  color: rgba(255,255,255,0.50);
 }
 
 /* ── BACKDROP ── */

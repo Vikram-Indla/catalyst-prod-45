@@ -73,7 +73,7 @@ export default function IntelligenceDrawer({ projectId }: Props) {
   return (
     <>
       <div onClick={closeDrawer} className="ph-drawer-overlay" style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,.15)', zIndex: 200, backdropFilter: 'blur(2px)' }} />
-      <div role="dialog" aria-label="Project Intelligence" className="ph-drawer-panel bg-[var(--cp-bg)] dark:bg-[#1A1714]" style={{ position: 'fixed', top: 0, right: 0, bottom: 0, width: 500, zIndex: 201, boxShadow: '-4px 0 24px rgba(0,0,0,.08)', display: 'flex', flexDirection: 'column', color: 'var(--cp-t1)' }}>
+      <div role="dialog" aria-label="Project Intelligence" className="ph-drawer-panel bg-[var(--cp-bg)] dark:bg-[#0A0A0A]" style={{ position: 'fixed', top: 0, right: 0, bottom: 0, width: 500, zIndex: 201, boxShadow: '-4px 0 24px rgba(0,0,0,.08)', display: 'flex', flexDirection: 'column', color: 'var(--cp-t1)' }}>
         <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--cp-bd)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <div className="bg-[var(--cp-blue)]" style={{ width: 24, height: 24, borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -147,7 +147,7 @@ export default function IntelligenceDrawer({ projectId }: Props) {
         </div>
 
         <div style={{ padding: '12px 20px', borderTop: '1px solid var(--cp-bd)' }}>
-          <button onClick={closeDrawer} className="ph-focus-ring bg-[var(--cp-bg)] dark:bg-[#1A1714]" style={{ width: '100%', height: 36, borderRadius: 8, border: '1px solid var(--cp-bd)', cursor: 'pointer', fontSize: 12, fontWeight: 600, color: 'var(--cp-t3)' }}>
+          <button onClick={closeDrawer} className="ph-focus-ring bg-[var(--cp-bg)] dark:bg-[#0A0A0A]" style={{ width: '100%', height: 36, borderRadius: 8, border: '1px solid var(--cp-bd)', cursor: 'pointer', fontSize: 12, fontWeight: 600, color: 'var(--cp-t3)' }}>
             Close
           </button>
         </div>

@@ -105,7 +105,7 @@ function StatusChangePopover({ project }: { project: ProjectListItem }) {
       </PopoverTrigger>
       <PopoverContent
         align="center"
-        className="w-44 p-1 bg-white dark:!bg-[#232019] border-slate-200 dark:border-slate-700"
+        className="w-44 p-1 bg-white dark:!bg-[#111111] border-slate-200 dark:border-[rgba(255,255,255,0.08)]"
         onClick={e => e.stopPropagation()}
       >
         {STATUS_OPTIONS.map(opt => (
@@ -187,12 +187,12 @@ function LeadReassignPopover({ project }: { project: ProjectListItem }) {
               {getInitials(displayLead.name)}
             </AvatarFallback>
           </Avatar>
-          <span className="text-[13px] font-medium truncate text-slate-600 dark:text-slate-300" title={displayLead.name || ''}>
+          <span className="text-[13px] font-medium truncate text-slate-600 dark:text-[#888888]" title={displayLead.name || ''}>
             {(displayLead.name || '').split(' ').slice(0, 2).join(' ')}
           </span>
         </>
       ) : (
-        <span className="text-[13px] text-slate-400 dark:text-slate-500">—</span>
+        <span className="text-[13px] text-slate-400 dark:text-[#666666]">—</span>
       )}
       <Popover open={open} onOpenChange={o => { setOpen(o); if (!o) setSearch(''); }}>
         <PopoverTrigger asChild>
@@ -205,17 +205,17 @@ function LeadReassignPopover({ project }: { project: ProjectListItem }) {
         </PopoverTrigger>
         <PopoverContent
           align="start"
-          className="w-60 p-3 bg-white dark:!bg-[#232019] border-slate-200 dark:border-slate-700"
+          className="w-60 p-3 bg-white dark:!bg-[#111111] border-slate-200 dark:border-[rgba(255,255,255,0.08)]"
           onClick={e => e.stopPropagation()}
         >
-          <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-2">Reassign lead</p>
+          <p className="text-xs font-semibold text-slate-500 dark:text-[#888888] mb-2">Reassign lead</p>
           <div className="relative mb-2">
             <Search size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
             <input
               placeholder="Search people..."
               value={search}
               onChange={e => setSearch(e.target.value)}
-              className="h-8 w-full pl-8 pr-2 rounded border border-slate-200 dark:border-slate-600 bg-white dark:bg-[#2C2823] text-[13px] text-slate-900 dark:text-slate-200 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="h-8 w-full pl-8 pr-2 rounded border border-slate-200 dark:border-[rgba(255,255,255,0.08)] bg-white dark:bg-[#1A1A1A] text-[13px] text-slate-900 dark:text-[#EDEDED] placeholder:text-slate-400 dark:placeholder:text-[#666666] focus:outline-none focus:ring-1 focus:ring-blue-500"
             />
           </div>
           <div className="max-h-48 overflow-y-auto space-y-0.5">
@@ -233,7 +233,7 @@ function LeadReassignPopover({ project }: { project: ProjectListItem }) {
                 </Avatar>
                 <div className="min-w-0">
                   <div className="text-[13px] font-medium truncate text-slate-900 dark:text-white">{p.display_name}</div>
-                  <div className="text-[11px] truncate text-slate-500 dark:text-slate-400">{formatRole(p.role || 'Team Member')}</div>
+                  <div className="text-[11px] truncate text-slate-500 dark:text-[#888888]">{formatRole(p.role || 'Team Member')}</div>
                 </div>
               </button>
             ))}
@@ -292,16 +292,16 @@ function MemberManagePopover({ project }: { project: ProjectListItem }) {
           {memberIds.length > 0 ? (
             <MemberStack memberIds={memberIds} memberCount={project.member_count} max={3} />
           ) : (
-            <span className="text-[13px] text-slate-400 dark:text-slate-500">—</span>
+            <span className="text-[13px] text-slate-400 dark:text-[#666666]">—</span>
           )}
         </button>
       </PopoverTrigger>
       <PopoverContent
         align="start"
-        className="w-[260px] p-3 bg-white dark:!bg-[#232019] border-slate-200 dark:border-slate-700"
+        className="w-[260px] p-3 bg-white dark:!bg-[#111111] border-slate-200 dark:border-[rgba(255,255,255,0.08)]"
         onClick={e => e.stopPropagation()}
       >
-        <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-2">Manage members</p>
+        <p className="text-xs font-semibold text-slate-500 dark:text-[#888888] mb-2">Manage members</p>
 
         {addMode ? (
           <>
@@ -312,7 +312,7 @@ function MemberManagePopover({ project }: { project: ProjectListItem }) {
                 value={search}
                 onChange={e => setSearch(e.target.value)}
                 autoFocus
-                className="h-8 w-full pl-8 pr-2 rounded border border-slate-200 dark:border-slate-600 bg-white dark:bg-[#2C2823] text-[13px] text-slate-900 dark:text-slate-200 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                className="h-8 w-full pl-8 pr-2 rounded border border-slate-200 dark:border-[rgba(255,255,255,0.08)] bg-white dark:bg-[#1A1A1A] text-[13px] text-slate-900 dark:text-[#EDEDED] placeholder:text-slate-400 dark:placeholder:text-[#666666] focus:outline-none focus:ring-1 focus:ring-blue-500"
               />
             </div>
             <div className="max-h-40 overflow-y-auto space-y-0.5">
@@ -336,7 +336,7 @@ function MemberManagePopover({ project }: { project: ProjectListItem }) {
             </div>
             <button
               onClick={() => { setAddMode(false); setSearch(''); }}
-              className="mt-2 text-[12px] text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 bg-transparent border-none cursor-pointer"
+              className="mt-2 text-[12px] text-slate-500 hover:text-slate-700 dark:hover:text-[#888888] bg-transparent border-none cursor-pointer"
             >← Back</button>
           </>
         ) : (
@@ -353,7 +353,7 @@ function MemberManagePopover({ project }: { project: ProjectListItem }) {
                   </Avatar>
                   <span className="text-[13px] truncate flex-1 text-slate-900 dark:text-white">{m.display_name}</span>
                   {m.id === project.lead_id && (
-                    <span className="text-[10px] font-semibold text-blue-600 bg-blue-50 dark:bg-blue-950 px-1.5 py-0.5 rounded">Lead</span>
+                    <span className="text-[10px] font-semibold text-blue-600 bg-blue-50 dark:bg-[rgba(37,99,235,0.12)] px-1.5 py-0.5 rounded">Lead</span>
                   )}
                   {m.id !== project.lead_id && (
                     <button
@@ -365,10 +365,10 @@ function MemberManagePopover({ project }: { project: ProjectListItem }) {
               ))}
               {members.length === 0 && <p className="text-xs text-slate-400 text-center py-2">No members</p>}
             </div>
-            <div className="border-t border-slate-100 dark:border-slate-700 pt-2">
+            <div className="border-t border-slate-100 dark:border-[rgba(255,255,255,0.08)] pt-2">
               <button
                 onClick={() => setAddMode(true)}
-                className="flex items-center gap-1.5 px-2 py-1.5 text-blue-600 text-[13px] font-medium rounded-md hover:bg-blue-50 dark:hover:bg-blue-950 w-full bg-transparent border-none cursor-pointer text-left"
+                className="flex items-center gap-1.5 px-2 py-1.5 text-blue-600 text-[13px] font-medium rounded-md hover:bg-blue-50 dark:hover:bg-[rgba(37,99,235,0.12)] w-full bg-transparent border-none cursor-pointer text-left"
               >
                 + Add member
               </button>
@@ -399,7 +399,7 @@ function RowActionMenu({ project }: { project: ProjectListItem }) {
       <DropdownMenuTrigger asChild>
         <button
           onClick={e => e.stopPropagation()}
-          className="flex h-7 w-7 items-center justify-center rounded opacity-0 group-hover:opacity-100 transition-opacity text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-slate-700 dark:hover:text-slate-200 bg-transparent border-none cursor-pointer focus-visible:ring-2 focus-visible:ring-blue-600 outline-none"
+          className="flex h-7 w-7 items-center justify-center rounded opacity-0 group-hover:opacity-100 transition-opacity text-slate-400 dark:text-[#666666] hover:bg-slate-100 dark:hover:bg-white/5 hover:text-slate-700 dark:hover:text-[#EDEDED] bg-transparent border-none cursor-pointer focus-visible:ring-2 focus-visible:ring-blue-600 outline-none"
         >
           <MoreHorizontal size={16} />
         </button>
@@ -529,7 +529,7 @@ export function AllProjectsTable({
                   onClick={isSortable ? () => onSort(sortCol_) : undefined}
                   className={cn(
                     "px-2 py-2.5 text-[11px] font-bold uppercase tracking-[0.06em] whitespace-nowrap overflow-hidden text-ellipsis",
-                    "bg-slate-50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 border-b-2 border-slate-200 dark:border-slate-700",
+                    "bg-slate-50 dark:bg-[#111111] text-slate-500 dark:text-[#888888] border-b-2 border-slate-200 dark:border-[rgba(255,255,255,0.08)]",
                     isSortable ? "cursor-pointer select-none" : "",
                     i === 0 ? "text-center" : "text-left"
                   )}
@@ -573,8 +573,8 @@ export function AllProjectsTable({
                 }}
               >
                 {/* Cell 1: # / Checkbox — FIX 5: CSS-only hover */}
-                <td className="px-2 py-3 text-center border-b border-slate-100 dark:border-slate-700/50 overflow-hidden">
-                  <span className="group-hover:hidden text-xs text-slate-400 dark:text-slate-500 tabular-nums">
+                <td className="px-2 py-3 text-center border-b border-slate-100 dark:border-[rgba(255,255,255,0.08)] overflow-hidden">
+                  <span className="group-hover:hidden text-xs text-slate-400 dark:text-[#666666] tabular-nums">
                     {rowNum}
                   </span>
                   <input
@@ -588,7 +588,7 @@ export function AllProjectsTable({
                 </td>
 
                 {/* Cell 2: Project — FIX 7: Mono key badge */}
-                <td className="py-3 px-3 border-b border-slate-100 dark:border-slate-700/50 overflow-hidden">
+                <td className="py-3 px-3 border-b border-slate-100 dark:border-[rgba(255,255,255,0.08)] overflow-hidden">
                   <div className="flex flex-col items-start gap-1">
                     <div className="flex items-center gap-2.5 w-full min-w-0">
                       <button
@@ -596,7 +596,7 @@ export function AllProjectsTable({
                         className="bg-transparent border-none cursor-pointer p-0 focus-visible:ring-2 focus-visible:ring-blue-600 outline-none rounded flex-shrink-0"
                         style={{ pointerEvents: 'auto' }}
                       >
-                        <Star size={14} fill={isFav ? '#F59E0B' : 'none'} className={isFav ? 'text-amber-500' : 'text-slate-300 dark:text-slate-600'} />
+                        <Star size={14} fill={isFav ? '#F59E0B' : 'none'} className={isFav ? 'text-amber-500' : 'text-slate-300 dark:text-[#666666]'} />
                       </button>
                       <div
                         className="flex items-center justify-center rounded-lg flex-shrink-0 text-[11px] font-bold text-white"
@@ -612,12 +612,12 @@ export function AllProjectsTable({
                       >
                         {p.name}
                       </span>
-                      <span className="ml-2 font-mono text-[11px] bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 px-1.5 py-0.5 rounded tracking-wide flex-shrink-0">
+                      <span className="ml-2 font-mono text-[11px] bg-slate-100 dark:bg-[rgba(255,255,255,0.08)] text-slate-500 dark:text-[#888888] px-1.5 py-0.5 rounded tracking-wide flex-shrink-0">
                         {p.project_key}
                       </span>
                     </div>
                     <div className="flex items-center gap-2 pl-[42px]">
-                      <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-[11px] font-medium text-slate-500 dark:text-slate-400">
+                      <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-100 dark:bg-[rgba(255,255,255,0.08)] text-[11px] font-medium text-slate-500 dark:text-[#888888]">
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <span className={cn("w-1.5 h-1.5 rounded-full cursor-help", syncDotColor)} />
@@ -633,7 +633,7 @@ export function AllProjectsTable({
                 </td>
 
                 {/* Cell 3: Status */}
-                <td className="px-2 py-2 text-center border-b border-slate-100 dark:border-slate-700/50 overflow-hidden">
+                <td className="px-2 py-2 text-center border-b border-slate-100 dark:border-[rgba(255,255,255,0.08)] overflow-hidden">
                   {active ? (
                     <StatusChangePopover project={p} />
                   ) : (
@@ -642,12 +642,12 @@ export function AllProjectsTable({
                 </td>
 
                 {/* Cell 4: Lead — FIX 2: Pencil icon only trigger */}
-                <td className="px-2 py-2 border-b border-slate-100 dark:border-slate-700/50 overflow-hidden">
+                <td className="px-2 py-2 border-b border-slate-100 dark:border-[rgba(255,255,255,0.08)] overflow-hidden">
                   <LeadReassignPopover project={p} />
                 </td>
 
                 {/* Cell 5: Issues */}
-                <td className="px-2 py-2 text-center border-b border-slate-100 dark:border-slate-700/50 overflow-hidden">
+                <td className="px-2 py-2 text-center border-b border-slate-100 dark:border-[rgba(255,255,255,0.08)] overflow-hidden">
                   <IssueBreakdownPopover
                     projectKey={p.project_key}
                     projectName={p.name}
@@ -656,23 +656,23 @@ export function AllProjectsTable({
                 </td>
 
                 {/* Cell 6: Members */}
-                <td className="px-2 py-2 border-b border-slate-100 dark:border-slate-700/50 overflow-hidden">
+                <td className="px-2 py-2 border-b border-slate-100 dark:border-[rgba(255,255,255,0.08)] overflow-hidden">
                   <MemberManagePopover project={p} />
                 </td>
 
                 {/* Cell 7: Updated */}
-                <td className="px-2 py-2 text-xs text-slate-500 dark:text-slate-400 border-b border-slate-100 dark:border-slate-700/50 overflow-hidden truncate">
+                <td className="px-2 py-2 text-xs text-slate-500 dark:text-[#888888] border-b border-slate-100 dark:border-[rgba(255,255,255,0.08)] overflow-hidden truncate">
                   {(syncTs || p.updated_at)
                     ? formatDistanceToNowStrict(new Date(syncTs || p.updated_at), { addSuffix: true })
                     : '—'}
                 </td>
 
                 {/* Cell 8: Actions */}
-                <td className="px-1 py-2 text-center border-b border-slate-100 dark:border-slate-700/50" style={{ pointerEvents: 'auto' }}>
+                <td className="px-1 py-2 text-center border-b border-slate-100 dark:border-[rgba(255,255,255,0.08)]" style={{ pointerEvents: 'auto' }}>
                   {active ? (
                     <RowActionMenu project={p} />
                   ) : (
-                    <Lock size={14} className="text-slate-300 dark:text-slate-600" />
+                    <Lock size={14} className="text-slate-300 dark:text-[#666666]" />
                   )}
                 </td>
               </tr>

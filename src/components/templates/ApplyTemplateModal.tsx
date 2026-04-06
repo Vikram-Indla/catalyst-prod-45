@@ -90,7 +90,7 @@ export function ApplyTemplateModal({
   
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-[540px] bg-white">
+      <DialogContent className="sm:max-w-[540px] bg-white dark:bg-[#111111]">
         <DialogHeader>
           <DialogTitle className="text-xl">Apply Template</DialogTitle>
           <DialogDescription>
@@ -129,7 +129,7 @@ export function ApplyTemplateModal({
                     {startDate ? format(startDate, 'MMM dd, yyyy') : 'Pick a date'}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0 bg-white" align="start">
+                <PopoverContent className="w-auto p-0 bg-white dark:bg-[#1A1A1A]" align="start">
                   <Calendar
                     mode="single"
                     selected={startDate}
@@ -156,7 +156,7 @@ export function ApplyTemplateModal({
                     {endDate ? format(endDate, 'MMM dd, yyyy') : 'Pick a date'}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0 bg-white" align="start">
+                <PopoverContent className="w-auto p-0 bg-white dark:bg-[#1A1A1A]" align="start">
                   <Calendar
                     mode="single"
                     selected={endDate}

@@ -52,10 +52,10 @@ export function AllWorkPagination({ currentPage, totalPages, totalCount, pageSiz
   return (
     <div
       className="flex items-center justify-between px-8 py-2.5"
-      style={{ borderTop: '1px solid rgba(15,23,42,0.08)', backgroundColor: 'var(--bg-app)' }}
+      style={{ borderTop: '1px solid var(--bd-subtle, rgba(255,255,255,0.05))', backgroundColor: 'var(--bg-app)' }}
     >
       {/* Left: count */}
-      <span className="text-[12px]" style={{ color: '#6b6e76', fontFamily: 'Inter, sans-serif' }}>
+      <span className="text-[12px]" style={{ color: 'var(--fg-3)', fontFamily: 'Inter, sans-serif' }}>
         Showing <b style={{ color: 'var(--fg-1)' }}>{start}–{end}</b> of <b style={{ color: 'var(--fg-1)' }}>{totalCount.toLocaleString()}</b>
       </span>
 
@@ -64,11 +64,11 @@ export function AllWorkPagination({ currentPage, totalPages, totalCount, pageSiz
         <button
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 0}
-          className="p-1.5 rounded border disabled:opacity-30 hover:bg-[rgba(15,23,42,0.04)] transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[#2563EB]"
-          style={{ borderColor: 'rgba(15,23,42,0.12)' }}
+          className="p-1.5 rounded border disabled:opacity-30 hover:bg-[var(--hover, rgba(255,255,255,0.04))] transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[#2563EB]"
+          style={{ borderColor: 'var(--bd-default, rgba(255,255,255,0.08))' }}
           aria-label="Previous page"
         >
-          <ChevronLeft className="w-3.5 h-3.5" style={{ color: '#6b6e76' }} />
+          <ChevronLeft className="w-3.5 h-3.5" style={{ color: 'var(--fg-3)' }} />
         </button>
 
         {pages.map((p, i) => {
@@ -82,7 +82,7 @@ export function AllWorkPagination({ currentPage, totalPages, totalCount, pageSiz
               className="w-8 h-8 rounded text-[12px] font-medium transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[#2563EB] focus-visible:outline-offset-2"
               style={{
                 backgroundColor: p === currentPage ? 'var(--cp-blue)' : 'transparent',
-                color: p === currentPage ? 'var(--bg-app)' : '#6b6e76',
+                color: p === currentPage ? 'var(--bg-app)' : 'var(--fg-3)',
               }}
               aria-label={`Page ${p + 1}`}
               aria-current={p === currentPage ? 'page' : undefined}
@@ -95,38 +95,38 @@ export function AllWorkPagination({ currentPage, totalPages, totalCount, pageSiz
         <button
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage >= totalPages - 1}
-          className="p-1.5 rounded border disabled:opacity-30 hover:bg-[rgba(15,23,42,0.04)] transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[#2563EB]"
-          style={{ borderColor: 'rgba(15,23,42,0.12)' }}
+          className="p-1.5 rounded border disabled:opacity-30 hover:bg-[var(--hover, rgba(255,255,255,0.04))] transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[#2563EB]"
+          style={{ borderColor: 'var(--bd-default, rgba(255,255,255,0.08))' }}
           aria-label="Next page"
         >
-          <ChevronRight className="w-3.5 h-3.5" style={{ color: '#6b6e76' }} />
+          <ChevronRight className="w-3.5 h-3.5" style={{ color: 'var(--fg-3)' }} />
         </button>
       </div>
 
       {/* Right: per page (custom dropdown, NO native select) */}
       <div className="relative flex items-center gap-2" ref={sizeRef}>
-        <span className="text-[12px]" style={{ color: '#6b6e76' }}>Per page:</span>
+        <span className="text-[12px]" style={{ color: 'var(--fg-3)' }}>Per page:</span>
         <button
           onClick={() => setSizeOpen(!sizeOpen)}
-          className="inline-flex items-center gap-1 px-2.5 h-8 text-[12px] rounded border hover:bg-[rgba(15,23,42,0.04)] transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[#2563EB]"
-          style={{ borderColor: 'rgba(15,23,42,0.12)', color: 'var(--fg-1)', fontFamily: "'JetBrains Mono', monospace" }}
+          className="inline-flex items-center gap-1 px-2.5 h-8 text-[12px] rounded border hover:bg-[var(--hover, rgba(255,255,255,0.04))] transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[#2563EB]"
+          style={{ borderColor: 'var(--bd-default, rgba(255,255,255,0.08))', color: 'var(--fg-1)', fontFamily: "'JetBrains Mono', monospace" }}
           aria-haspopup="listbox"
           aria-expanded={sizeOpen}
         >
           {pageSize}
-          <ChevronDown className="w-3 h-3" style={{ color: '#6b6e76' }} />
+          <ChevronDown className="w-3 h-3" style={{ color: 'var(--fg-3)' }} />
         </button>
         {sizeOpen && (
           <div
-            className="absolute bottom-full right-0 mb-1 w-24 rounded border bg-white shadow-lg z-50 py-1"
-            style={{ borderColor: 'rgba(15,23,42,0.12)' }}
+            className="absolute bottom-full right-0 mb-1 w-24 rounded border shadow-lg z-50 py-1"
+            style={{ borderColor: 'var(--bd-default, rgba(255,255,255,0.08))', backgroundColor: 'var(--bg-app)' }}
             role="listbox"
           >
             {PAGE_SIZES.map(s => (
               <button
                 key={s}
                 onClick={() => { onPageSizeChange(s); setSizeOpen(false); }}
-                className="w-full flex items-center justify-between px-3 py-1.5 text-[12px] hover:bg-[rgba(15,23,42,0.04)] transition-colors duration-[80ms]"
+                className="w-full flex items-center justify-between px-3 py-1.5 text-[12px] hover:bg-[var(--hover, rgba(255,255,255,0.04))] transition-colors duration-[80ms]"
                 style={{ color: 'var(--fg-1)', fontFamily: "'JetBrains Mono', monospace" }}
                 role="option"
                 aria-selected={s === pageSize}

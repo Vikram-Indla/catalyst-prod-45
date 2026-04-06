@@ -753,4 +753,43 @@ const drawerCSS = `
 .um-drawer .um-btn-danger:hover {
   background: #dc2626;
 }
+
+/* ═══ ECLIPSE NOCTURNE — DARK MODE ═══ */
+.dark .um-drawer {
+  background: #111111 !important;
+  box-shadow: -12px 0 40px rgba(0,0,0,0.5) !important;
+}
+.dark .um-drawer .um-drawer-header {
+  border-color: rgba(255,255,255,0.08) !important;
+}
+.dark .um-drawer .um-drawer-header h2 {
+  color: #EDEDED !important;
+}
+.dark .um-form-group label {
+  color: #888888 !important;
+}
+.dark .um-form-group input,
+.dark .um-form-group select {
+  background: #0A0A0A !important;
+  color: #EDEDED !important;
+  border-color: rgba(255,255,255,0.08) !important;
+}
+.dark .um-form-group input:focus,
+.dark .um-form-group select:focus {
+  border-color: #2563eb !important;
+  box-shadow: 0 0 0 3px rgba(37,99,235,0.15) !important;
+}
+.dark .um-form-group input:disabled {
+  background: #1A1A1A !important;
+  color: #666666 !important;
+}
+.dark .um-drawer .um-btn {
+  background: #0A0A0A !important;
+  color: #888888 !important;
+  border-color: rgba(255,255,255,0.08) !important;
+}
+.dark .um-drawer .um-btn:hover {
+  border-color: #2563eb !important;
+  color: #60A5FA !important;
+}
 `;

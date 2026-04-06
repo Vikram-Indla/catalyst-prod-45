@@ -49,7 +49,7 @@ export default function WidgetGalleryModal({
       <div
         ref={panelRef}
         tabIndex={-1}
-        className="relative flex flex-col outline-none bg-[var(--cp-bg-page)] dark:bg-[#1A1714]"
+        className="relative flex flex-col outline-none bg-[var(--cp-bg-page)] dark:bg-[#0A0A0A]"
         style={{
           width: 480,
           maxHeight: '80vh',

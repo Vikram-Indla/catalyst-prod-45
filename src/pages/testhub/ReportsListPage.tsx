@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
+import { useTheme } from '@/hooks/useTheme';
 import { TestHubPageHeader } from '@/components/testhub/TestHubPageHeader';
 import { CreateReportModal } from '@/components/testhub/reports/CreateReportModal';
 
@@ -52,6 +53,7 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }
 };
 
 export default function ReportsListPage() {
+  const { isDark } = useTheme();
   const navigate = useNavigate();
   const [reports, setReports] = useState<Report[]>([]);
   const [stats, setStats] = useState<ReportStats | null>(null);
@@ -129,7 +131,7 @@ export default function ReportsListPage() {
   const hasActiveFilters = typeFilter !== 'all' || statusFilter !== 'all' || searchTerm;
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: '#F8FAFC' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: isDark ? '#0A0A0A' : '#F8FAFC' }}>
       <TestHubPageHeader title="Test Reports" subtitle="Generate and export test execution reports">
         <button onClick={() => setShowCreateModal(true)} style={{ display: 'flex', alignItems: 'center', gap: 8, height: 40, padding: '0 20px', border: 'none', borderRadius: 8, background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)', color: '#FFFFFF', fontSize: 14, fontWeight: 600, cursor: 'pointer', boxShadow: '0 2px 8px rgba(37,99,235,0.25)' }}>
           <Plus size={18} /> New Report
@@ -140,11 +142,11 @@ export default function ReportsListPage() {
       {/* Stats Cards */}
       {stats && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 24 }}>
-          <div style={{ backgroundColor: '#FFF', borderRadius: 12, padding: 20, border: '1px solid #E2E8F0' }}>
+          <div style={{ backgroundColor: isDark ? '#111111' : '#FFF', borderRadius: 12, padding: 20, border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div>
-                <p style={{ fontSize: 12, color: '#64748B', margin: 0, textTransform: 'uppercase' }}>Total Reports</p>
-                <p style={{ fontSize: 28, fontWeight: 700, color: '#0F172A', margin: '8px 0 0' }}>{stats.total_reports}</p>
+                <p style={{ fontSize: 12, color: isDark ? '#666666' : '#64748B', margin: 0, textTransform: 'uppercase' }}>Total Reports</p>
+                <p style={{ fontSize: 28, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A', margin: '8px 0 0' }}>{stats.total_reports}</p>
               </div>
               <FileBarChart size={24} style={{ color: '#F59E0B' }} />
             </div>
@@ -158,11 +160,11 @@ export default function ReportsListPage() {
               <CheckCircle2 size={24} style={{ color: '#059669' }} />
             </div>
           </div>
-          <div style={{ backgroundColor: '#FFF', borderRadius: 12, padding: 20, border: '1px solid #E2E8F0' }}>
+          <div style={{ backgroundColor: isDark ? '#111111' : '#FFF', borderRadius: 12, padding: 20, border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div>
-                <p style={{ fontSize: 12, color: '#64748B', margin: 0, textTransform: 'uppercase' }}>This Month</p>
-                <p style={{ fontSize: 28, fontWeight: 700, color: '#0F172A', margin: '8px 0 0' }}>{stats.this_month}</p>
+                <p style={{ fontSize: 12, color: isDark ? '#666666' : '#64748B', margin: 0, textTransform: 'uppercase' }}>This Month</p>
+                <p style={{ fontSize: 28, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A', margin: '8px 0 0' }}>{stats.this_month}</p>
               </div>
               <Calendar size={24} style={{ color: '#64748B' }} />
             </div>
@@ -175,9 +177,9 @@ export default function ReportsListPage() {
         <div style={{ position: 'relative', flex: '1 1 300px', maxWidth: 400 }}>
           <Search size={18} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: '#94A3B8' }} />
           <input type="text" placeholder="Search reports..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}
-            style={{ width: '100%', height: 44, padding: '0 14px 0 44px', border: '1.5px solid #E2E8F0', borderRadius: 10, fontSize: 14, backgroundColor: '#FFFFFF' }} />
+            style={{ width: '100%', height: 44, padding: '0 14px 0 44px', border: isDark ? '1.5px solid rgba(255,255,255,0.08)' : '1.5px solid #E2E8F0', borderRadius: 10, fontSize: 14, backgroundColor: isDark ? '#111111' : '#FFFFFF', color: isDark ? '#EDEDED' : undefined }} />
         </div>
-        <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} style={{ height: 44, padding: '0 36px 0 14px', border: '1.5px solid #E2E8F0', borderRadius: 10, fontSize: 14, backgroundColor: '#FFF', cursor: 'pointer' }}>
+        <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} style={{ height: 44, padding: '0 36px 0 14px', border: isDark ? '1.5px solid rgba(255,255,255,0.08)' : '1.5px solid #E2E8F0', borderRadius: 10, fontSize: 14, backgroundColor: isDark ? '#111111' : '#FFF', color: isDark ? '#EDEDED' : undefined, cursor: 'pointer' }}>
           <option value="all">All Types</option>
           <option value="cycle_summary">Cycle Summary</option>
           <option value="plan_summary">Plan Summary</option>
@@ -186,7 +188,7 @@ export default function ReportsListPage() {
           <option value="trend">Trend Analysis</option>
           <option value="custom">Custom</option>
         </select>
-        <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} style={{ height: 44, padding: '0 36px 0 14px', border: '1.5px solid #E2E8F0', borderRadius: 10, fontSize: 14, backgroundColor: '#FFF', cursor: 'pointer' }}>
+        <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} style={{ height: 44, padding: '0 36px 0 14px', border: isDark ? '1.5px solid rgba(255,255,255,0.08)' : '1.5px solid #E2E8F0', borderRadius: 10, fontSize: 14, backgroundColor: isDark ? '#111111' : '#FFF', color: isDark ? '#EDEDED' : undefined, cursor: 'pointer' }}>
           <option value="all">All Status</option>
           <option value="draft">Draft</option>
           <option value="generating">Generating</option>
@@ -195,7 +197,7 @@ export default function ReportsListPage() {
           <option value="archived">Archived</option>
         </select>
         {hasActiveFilters && (
-          <button onClick={clearFilters} style={{ display: 'flex', alignItems: 'center', gap: 6, height: 44, padding: '0 16px', border: '1.5px solid #E2E8F0', borderRadius: 10, backgroundColor: '#FFF', color: '#64748B', fontSize: 14, cursor: 'pointer' }}>
+          <button onClick={clearFilters} style={{ display: 'flex', alignItems: 'center', gap: 6, height: 44, padding: '0 16px', border: isDark ? '1.5px solid rgba(255,255,255,0.08)' : '1.5px solid #E2E8F0', borderRadius: 10, backgroundColor: isDark ? '#111111' : '#FFF', color: isDark ? '#888888' : '#64748B', fontSize: 14, cursor: 'pointer' }}>
             <X size={16} /> Clear
           </button>
         )}
@@ -211,10 +213,10 @@ export default function ReportsListPage() {
           <RefreshCw size={32} style={{ animation: 'spin 1s linear infinite', color: '#F59E0B' }} />
         </div>
       ) : filteredReports.length === 0 ? (
-        <div style={{ backgroundColor: '#FFFFFF', borderRadius: 12, padding: 60, textAlign: 'center', border: '1px solid #E2E8F0' }}>
-          <FileBarChart size={48} style={{ color: '#CBD5E1', marginBottom: 16 }} />
-          <p style={{ fontSize: 16, color: '#64748B', margin: 0 }}>No reports found</p>
-          <p style={{ fontSize: 14, color: '#94A3B8', margin: '8px 0 0' }}>Generate a new report to get started</p>
+        <div style={{ backgroundColor: isDark ? '#111111' : '#FFFFFF', borderRadius: 12, padding: 60, textAlign: 'center', border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0' }}>
+          <FileBarChart size={48} style={{ color: isDark ? '#666666' : '#CBD5E1', marginBottom: 16 }} />
+          <p style={{ fontSize: 16, color: isDark ? '#888888' : '#64748B', margin: 0 }}>No reports found</p>
+          <p style={{ fontSize: 14, color: isDark ? '#666666' : '#94A3B8', margin: '8px 0 0' }}>Generate a new report to get started</p>
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -224,9 +226,9 @@ export default function ReportsListPage() {
             const TypeIcon = type.icon;
             return (
               <div key={report.id} onClick={() => navigate(`/testhub/reports/${report.id}`)}
-                style={{ backgroundColor: '#FFFFFF', borderRadius: 12, padding: 20, border: '1px solid #E2E8F0', cursor: 'pointer', transition: 'all 0.15s' }}
-                onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#CBD5E1'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.05)'; }}
-                onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#E2E8F0'; e.currentTarget.style.boxShadow = 'none'; }}>
+                style={{ backgroundColor: isDark ? '#111111' : '#FFFFFF', borderRadius: 12, padding: 20, border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0', cursor: 'pointer', transition: 'all 0.15s' }}
+                onMouseEnter={(e) => { e.currentTarget.style.borderColor = isDark ? 'rgba(255,255,255,0.15)' : '#CBD5E1'; e.currentTarget.style.boxShadow = isDark ? '0 4px 12px rgba(0,0,0,0.2)' : '0 4px 12px rgba(0,0,0,0.05)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.borderColor = isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'; e.currentTarget.style.boxShadow = 'none'; }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                   <div style={{ display: 'flex', gap: 16, flex: 1 }}>
                     <div style={{ width: 44, height: 44, borderRadius: 10, backgroundColor: type.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
@@ -238,8 +240,8 @@ export default function ReportsListPage() {
                         <span style={{ fontSize: 11, fontWeight: 500, color: type.color, backgroundColor: type.bg, padding: '2px 8px', borderRadius: 4 }}>{type.label}</span>
                         <span style={{ fontSize: 11, fontWeight: 500, color: status.color, backgroundColor: status.bg, padding: '2px 8px', borderRadius: 4 }}>{status.label}</span>
                       </div>
-                      <h3 style={{ fontSize: 16, fontWeight: 600, color: '#0F172A', margin: '0 0 4px' }}>{report.name}</h3>
-                      <div style={{ display: 'flex', gap: 12, fontSize: 13, color: '#64748B' }}>
+                      <h3 style={{ fontSize: 16, fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A', margin: '0 0 4px' }}>{report.name}</h3>
+                      <div style={{ display: 'flex', gap: 12, fontSize: 13, color: isDark ? '#666666' : '#64748B' }}>
                         {report.cycle && <span>Cycle: {report.cycle.cycle_key}</span>}
                         {report.plan && <span>Plan: {report.plan.plan_key}</span>}
                         <span>Generated: {formatDate(report.generated_at)}</span>

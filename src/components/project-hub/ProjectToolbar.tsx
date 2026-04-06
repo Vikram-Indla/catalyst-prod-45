@@ -32,9 +32,9 @@ export function ProjectToolbar({
 
   const borderColor = isDark ? 'rgba(255,255,255,0.10)' : 'var(--divider)';
   const surfaceBg = isDark ? 'transparent' : '#FFFFFF';
-  const textColor = isDark ? 'rgba(235,238,245,0.92)' : 'var(--fg-1)';
-  const mutedColor = isDark ? 'rgba(235,238,245,0.40)' : 'var(--fg-4)';
-  const subtleColor = isDark ? 'rgba(235,238,245,0.60)' : 'var(--fg-3)';
+  const textColor = isDark ? 'rgba(255,255,255,0.92)' : 'var(--fg-1)';
+  const mutedColor = isDark ? 'rgba(255,255,255,0.40)' : 'var(--fg-4)';
+  const subtleColor = isDark ? 'rgba(255,255,255,0.60)' : 'var(--fg-3)';
 
   return (
     <div>

@@ -4,6 +4,7 @@
  */
 import React, { useState } from 'react';
 import { useIdeas } from '@/hooks/useIdeation';
+import { useTheme } from '@/hooks/useTheme';
 
 interface Props {
   onOpenDetail: (key: string) => void;
@@ -38,6 +39,7 @@ const QUADRANTS = [
 export default function IdeationMatrixView({ onOpenDetail }: Props) {
   const [hoveredDot, setHoveredDot] = useState<string | null>(null);
   const { data: ideas = [] } = useIdeas();
+  const { isDark } = useTheme();
 
   // Generate dot positions from real data
   const dots: DotData[] = ideas.slice(0, 30).map((idea, i) => {
@@ -73,8 +75,8 @@ export default function IdeationMatrixView({ onOpenDetail }: Props) {
             <span style={{ fontSize: '11px', fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{ctrl.label}:</span>
             <div style={{
               width: '160px', fontSize: '12px', fontWeight: 600, padding: '5px 10px',
-              background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '6px',
-              color: '#334155', cursor: 'pointer',
+              background: isDark ? '#1A1A1A' : '#F8FAFC', border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0', borderRadius: '6px',
+              color: isDark ? '#EDEDED' : '#334155', cursor: 'pointer',
             }}>
               {ctrl.value}
             </div>
@@ -85,7 +87,7 @@ export default function IdeationMatrixView({ onOpenDetail }: Props) {
       {/* Chart — V12: border-only, NO box-shadow */}
       <div style={{ maxWidth: '900px', margin: '0 auto' }}>
         <div style={{
-          width: '100%', height: '520px', background: '#FFFFFF', border: '1px solid #E2E8F0',
+          width: '100%', height: '520px', background: isDark ? '#111111' : '#FFFFFF', border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0',
           borderRadius: '6px', position: 'relative', overflow: 'hidden',
         }}>
           {/* Grid area */}
@@ -189,7 +191,7 @@ export default function IdeationMatrixView({ onOpenDetail }: Props) {
         ].map(l => (
           <div key={l.label} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
             <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: l.color, flexShrink: 0 }} />
-            <span style={{ fontSize: '12px', color: '#334155', fontWeight: 600 }}>{l.label}</span>
+            <span style={{ fontSize: '12px', color: isDark ? '#888888' : '#334155', fontWeight: 600 }}>{l.label}</span>
           </div>
         ))}
         <span style={{ fontSize: '11px', color: '#94A3B8' }}>Dot size = Vote count</span>
