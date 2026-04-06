@@ -164,8 +164,8 @@ export function AllWorkTable({
   return (
     <>
       <div
-        className="rounded border overflow-hidden overflow-x-auto h-full flex flex-col"
-        style={{ borderColor: 'var(--bd-default, rgba(255,255,255,0.08))', backgroundColor: 'var(--bg-app)', borderRadius: 4 }}
+        className="overflow-hidden overflow-x-auto h-full flex flex-col"
+        style={{ backgroundColor: 'var(--bg-app)' }}
         role="table"
         aria-label="Work items table"
       >
@@ -177,8 +177,8 @@ export function AllWorkTable({
             gridTemplateColumns: GRID_TEMPLATE,
             height: 44,
             maxHeight: 44,
-            backgroundColor: 'var(--bg-1)',
-            borderBottom: '1px solid var(--bd-subtle, rgba(255,255,255,0.05))',
+            backgroundColor: 'var(--bg-app)',
+            borderBottom: '1px solid var(--bd-default, rgba(255,255,255,0.08))',
           }}
         >
           <div className="flex justify-center" role="columnheader">
