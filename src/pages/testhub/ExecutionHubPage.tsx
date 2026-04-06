@@ -30,14 +30,14 @@ interface CycleWithStats {
 }
 
 const CYCLE_STATUS_MAP: Record<string, { bg: string; text: string; label: string }> = {
-  in_progress:  { bg: 'rgba(59,130,246,0.10)', text: '#0747A6', label: 'IN PROGRESS' },
-  active:       { bg: 'rgba(59,130,246,0.10)', text: '#0747A6', label: 'ACTIVE' },
+  in_progress:  { bg: '#DEEBFF', text: '#0747A6', label: 'IN PROGRESS' },
+  active:       { bg: '#DEEBFF', text: '#0747A6', label: 'ACTIVE' },
   planned:      { bg: '#DFE1E6', text: '#253858', label: 'PLANNED' },
   draft:        { bg: '#DFE1E6', text: '#253858', label: 'DRAFT' },
   on_hold:      { bg: '#DFE1E6', text: '#253858', label: 'ON HOLD' },
-  completed:    { bg: 'rgba(74,222,128,0.10)', text: '#006644', label: 'COMPLETED' },
-  closed:       { bg: 'rgba(74,222,128,0.10)', text: '#006644', label: 'CLOSED' },
-  done:         { bg: 'rgba(74,222,128,0.10)', text: '#006644', label: 'DONE' },
+  completed:    { bg: '#E3FCEF', text: '#006644', label: 'COMPLETED' },
+  closed:       { bg: '#E3FCEF', text: '#006644', label: 'CLOSED' },
+  done:         { bg: '#E3FCEF', text: '#006644', label: 'DONE' },
   archived:     { bg: '#DFE1E6', text: '#253858', label: 'ARCHIVED' },
 };
 

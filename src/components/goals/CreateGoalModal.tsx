@@ -1,5 +1,5 @@
 /**
- * CreateGoalModal — Fix 3: field labels rgba(237,237,237,0.40), Fix 13: section dividers, slider labels, weight helper
+ * CreateGoalModal — Fix 3: field labels #94A3B8, Fix 13: section dividers, slider labels, weight helper
  */
 import { useState, useEffect, useCallback } from 'react';
 import { X, Plus } from 'lucide-react';
@@ -29,7 +29,7 @@ const PRIORITY_OPTIONS: { value: Priority; label: string }[] = [
 const QUARTER_OPTIONS = ['Q1 2026', 'Q2 2026', 'Q3 2026', 'Q4 2026'];
 const BSC_OPTIONS: BSCPerspective[] = ['Financial', 'Customer', 'Internal Process', 'Learning & Growth'];
 
-// Fix 3: All labels rgba(237,237,237,0.40), 10px, uppercase, 600
+// Fix 3: All labels #94A3B8, 10px, uppercase, 600
 const labelStyle: React.CSSProperties = {
   fontSize: 10, fontWeight: 600, textTransform: 'uppercase',
   letterSpacing: '0.05em', color: 'var(--fg-4)', marginBottom: 4, display: 'block',

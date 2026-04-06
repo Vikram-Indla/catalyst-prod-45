@@ -268,8 +268,8 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
                   onClick={() => setStatusDropdownOpen(!statusDropdownOpen)}
                   style={{
                     width: '100%', height: 40, padding: '8px 12px',
-                    border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 6,
-                    fontSize: 14, color: isDark ? '#EDEDED' : '#334155', backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF',
+                    border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.10)'}`, borderRadius: 6,
+                    fontSize: 14, color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.53)', backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF',
                     fontFamily: 'Geist, -apple-system, sans-serif',
                     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                     cursor: 'pointer', outline: 'none',
@@ -295,7 +295,7 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
                   <div style={{
                     position: 'absolute', top: '100%', left: 0, right: 0,
                     marginTop: 4, backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF',
-                    border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 6,
+                    border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.10)'}`, borderRadius: 6,
                     boxShadow: isDark ? '0 4px 12px rgba(0,0,0,0.3)' : '0 4px 12px rgba(0,0,0,0.1)',
                     zIndex: 50, overflow: 'hidden',
                   }}>
@@ -306,13 +306,13 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
                         onClick={() => { setCycleStatus(opt.value); setStatusDropdownOpen(false); }}
                         style={{
                           width: '100%', padding: '8px 12px', border: 'none',
-                          backgroundColor: cycleStatus === opt.value ? (isDark ? '#1A1A1A' : '#F1F5F9') : 'transparent',
+                          backgroundColor: cycleStatus === opt.value ? (isDark ? '#1A1A1A' : '#1A1A1A') : 'transparent',
                           display: 'flex', alignItems: 'center', gap: 8,
-                          cursor: 'pointer', fontSize: 14, color: isDark ? '#EDEDED' : '#334155',
+                          cursor: 'pointer', fontSize: 14, color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.53)',
                           fontFamily: 'Geist, -apple-system, sans-serif',
                         }}
-                        onMouseEnter={(e) => { (e.target as HTMLElement).style.backgroundColor = isDark ? '#1A1A1A' : '#F8FAFC'; }}
-                        onMouseLeave={(e) => { (e.target as HTMLElement).style.backgroundColor = cycleStatus === opt.value ? (isDark ? '#1A1A1A' : '#F1F5F9') : 'transparent'; }}
+                        onMouseEnter={(e) => { (e.target as HTMLElement).style.backgroundColor = isDark ? '#1A1A1A' : '#1A1A1A'; }}
+                        onMouseLeave={(e) => { (e.target as HTMLElement).style.backgroundColor = cycleStatus === opt.value ? (isDark ? '#1A1A1A' : '#1A1A1A') : 'transparent'; }}
                       >
                         <span style={{
                           display: 'inline-block', padding: '0 6px', height: 20,
@@ -349,7 +349,7 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
                 onChange={(e) => setStartDate(e.target.value)}
                 onFocus={(e) => { (e.target as HTMLInputElement).type = 'date'; }}
                 onBlur={(e) => { if (!(e.target as HTMLInputElement).value) { (e.target as HTMLInputElement).type = 'text'; } }}
-                style={{ width: '100%', height: 40, padding: '8px 12px', border: `1.5px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 4, fontSize: 14, color: isDark ? '#EDEDED' : '#1E293B', backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', fontFamily: 'Inter, sans-serif', outline: 'none', boxSizing: 'border-box' } as React.CSSProperties}
+                style={{ width: '100%', height: 40, padding: '8px 12px', border: `1.5px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.10)'}`, borderRadius: 4, fontSize: 14, color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)', backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', fontFamily: 'Geist, -apple-system, sans-serif', outline: 'none', boxSizing: 'border-box' } as React.CSSProperties}
               />
             </div>
             <div style={{ flex: 1 }}>
@@ -363,7 +363,7 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
                 onChange={(e) => setEndDate(e.target.value)}
                 onFocus={(e) => { (e.target as HTMLInputElement).type = 'date'; (e.target as HTMLInputElement).min = startDate; }}
                 onBlur={(e) => { if (!(e.target as HTMLInputElement).value) { (e.target as HTMLInputElement).type = 'text'; } }}
-                style={{ width: '100%', height: 40, padding: '8px 12px', border: `1.5px solid ${errors.endDate ? '#EF4444' : (isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0')}`, borderRadius: 4, fontSize: 14, color: isDark ? '#EDEDED' : '#1E293B', backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', fontFamily: 'Inter, sans-serif', outline: 'none', boxSizing: 'border-box' } as React.CSSProperties}
+                style={{ width: '100%', height: 40, padding: '8px 12px', border: `1.5px solid ${errors.endDate ? '#EF4444' : (isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.10)')}`, borderRadius: 4, fontSize: 14, color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)', backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', fontFamily: 'Geist, -apple-system, sans-serif', outline: 'none', boxSizing: 'border-box' } as React.CSSProperties}
               />
               {errors.endDate && <p style={{ fontSize: 12, color: 'var(--sem-danger)', margin: '6px 0 0', display: 'flex', alignItems: 'center', gap: 4 }}><AlertCircle size={12} />{errors.endDate}</p>}
             </div>

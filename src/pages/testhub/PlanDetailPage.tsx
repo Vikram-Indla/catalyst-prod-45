@@ -285,8 +285,8 @@ export default function PlanDetailPage() {
                         const executed = (c.passed_count || 0) + (c.failed_count || 0) + (c.blocked_count || 0);
                         const progressPct = total > 0 ? Math.round((executed / total) * 100) : 0;
                         const statusLabel = c.status === 'active' ? 'IN PROGRESS' : c.status?.toUpperCase().replace('_', ' ');
-                        const statusColor = c.status === 'completed' ? 'bg-[rgba(74,222,128,0.10)] text-[#006644]'
-                          : (c.status === 'active' || c.status === 'in_progress') ? 'bg-[rgba(59,130,246,0.10)] text-[#0747A6]'
+                        const statusColor = c.status === 'completed' ? 'bg-[#E3FCEF] text-[#006644]'
+                          : (c.status === 'active' || c.status === 'in_progress') ? 'bg-[#DEEBFF] text-[#0747A6]'
                           : 'bg-[#DFE1E6] text-[#253858]';
 
                         return (

@@ -110,7 +110,7 @@ export function CreateRequirementModal({ isOpen, onClose, onCreated }: CreateReq
 
   const inputStyle = (hasError?: boolean): React.CSSProperties => ({
     width: '100%', height: 44, padding: '0 14px',
-    border: `1.5px solid ${hasError ? '#DC2626' : isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`,
+    border: `1.5px solid ${hasError ? '#DC2626' : isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.10)'}`,
     borderRadius: 12, fontSize: 14,
     backgroundColor: isDark ? '#1A1A1A' : undefined,
     color: isDark ? '#EDEDED' : undefined,
@@ -120,12 +120,12 @@ export function CreateRequirementModal({ isOpen, onClose, onCreated }: CreateReq
     <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: 24 }}>
       <div style={{ width: '100%', maxWidth: 600, maxHeight: '90vh', backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', borderRadius: 16, boxShadow: '0 25px 50px rgba(0,0,0,0.25)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
         {/* Header */}
-        <div style={{ padding: '20px 24px', borderBottom: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ padding: '20px 24px', borderBottom: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(255,255,255,0.10)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <div style={{ width: 44, height: 44, borderRadius: 12, backgroundColor: '#2563EB', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <FileCheck size={22} style={{ color: '#FFFFFF' }} />
             </div>
-            <h2 style={{ fontSize: 18, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A', margin: 0 }}>Add Requirement</h2>
+            <h2 style={{ fontSize: 18, fontWeight: 700, color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)', margin: 0 }}>Add Requirement</h2>
           </div>
           <button onClick={onClose} style={{ width: 36, height: 50, border: 'none', borderRadius: 8, backgroundColor: 'transparent', color: 'rgba(237,237,237,0.40)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <X size={20} />
@@ -135,7 +135,7 @@ export function CreateRequirementModal({ isOpen, onClose, onCreated }: CreateReq
         {/* Body */}
         <div style={{ flex: 1, overflowY: 'auto', padding: 24 }}>
           <div style={{ marginBottom: 20 }}>
-            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A', marginBottom: 6 }}>
+            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)', marginBottom: 6 }}>
               Title <span style={{ color: '#DC2626' }}>*</span>
             </label>
             <input type="text" value={title} onChange={(e) => setTitle(e.target.value)}
@@ -149,13 +149,13 @@ export function CreateRequirementModal({ isOpen, onClose, onCreated }: CreateReq
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 20 }}>
             <div>
-              <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A', marginBottom: 6 }}>Type</label>
+              <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)', marginBottom: 6 }}>Type</label>
               <select value={type} onChange={(e) => setType(e.target.value)} style={{ ...inputStyle(), backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF' }}>
                 {TYPE_OPTIONS.map((opt) => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
               </select>
             </div>
             <div>
-              <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A', marginBottom: 6 }}>Priority</label>
+              <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)', marginBottom: 6 }}>Priority</label>
               <select value={priority} onChange={(e) => setPriority(e.target.value)} style={{ ...inputStyle(), backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF' }}>
                 {PRIORITY_OPTIONS.map((opt) => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
               </select>
@@ -164,26 +164,26 @@ export function CreateRequirementModal({ isOpen, onClose, onCreated }: CreateReq
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 20 }}>
             <div>
-              <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A', marginBottom: 6 }}>
+              <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)', marginBottom: 6 }}>
                 <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><ExternalLink size={14} /> External ID</span>
               </label>
               <input type="text" value={externalId} onChange={(e) => setExternalId(e.target.value)} placeholder="e.g., JIRA-123" style={inputStyle()} />
             </div>
             <div>
-              <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A', marginBottom: 6 }}>Source</label>
+              <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)', marginBottom: 6 }}>Source</label>
               <input type="text" value={source} onChange={(e) => setSource(e.target.value)} placeholder="e.g., Jira, Azure DevOps" style={inputStyle()} />
             </div>
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 20 }}>
             <div>
-              <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A', marginBottom: 6 }}>
+              <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)', marginBottom: 6 }}>
                 <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><Tag size={14} /> Release Version</span>
               </label>
               <input type="text" value={releaseVersion} onChange={(e) => setReleaseVersion(e.target.value)} placeholder="e.g., 2.0.0" style={inputStyle()} />
             </div>
             <div>
-              <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A', marginBottom: 6 }}>
+              <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)', marginBottom: 6 }}>
                 <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><User size={14} /> Owner</span>
               </label>
               <select value={ownerId} onChange={(e) => setOwnerId(e.target.value)} style={{ ...inputStyle(), backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF' }}>
@@ -194,19 +194,19 @@ export function CreateRequirementModal({ isOpen, onClose, onCreated }: CreateReq
           </div>
 
           <div>
-            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A', marginBottom: 6 }}>
+            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)', marginBottom: 6 }}>
               <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><FileText size={14} /> Description</span>
             </label>
             <textarea value={description} onChange={(e) => setDescription(e.target.value)}
               placeholder="Detailed description of the requirement..." rows={4}
-              style={{ width: '100%', padding: 14, border: isDark ? '1.5px solid rgba(255,255,255,0.08)' : '1.5px solid #E2E8F0', borderRadius: 12, fontSize: 14, resize: 'vertical', backgroundColor: isDark ? '#1A1A1A' : undefined, color: isDark ? '#EDEDED' : undefined }} />
+              style={{ width: '100%', padding: 14, border: isDark ? '1.5px solid rgba(255,255,255,0.08)' : '1.5px solid rgba(255,255,255,0.10)', borderRadius: 12, fontSize: 14, resize: 'vertical', backgroundColor: isDark ? '#1A1A1A' : undefined, color: isDark ? '#EDEDED' : undefined }} />
           </div>
         </div>
 
         {/* Footer */}
-        <div style={{ padding: '16px 24px', borderTop: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0', display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
+        <div style={{ padding: '16px 24px', borderTop: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(255,255,255,0.10)', display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
           <button onClick={onClose} disabled={isSubmitting}
-            style={{ height: 44, padding: '0 20px', backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', border: isDark ? '1.5px solid rgba(255,255,255,0.08)' : '1.5px solid #E2E8F0', borderRadius: 12, fontSize: 14, fontWeight: 500, color: isDark ? '#A1A1A1' : '#64748B', cursor: 'pointer' }}>
+            style={{ height: 44, padding: '0 20px', backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', border: isDark ? '1.5px solid rgba(255,255,255,0.08)' : '1.5px solid rgba(255,255,255,0.10)', borderRadius: 12, fontSize: 14, fontWeight: 500, color: isDark ? '#A1A1A1' : 'rgba(237,237,237,0.40)', cursor: 'pointer' }}>
             Cancel
           </button>
           <button onClick={handleSubmit} disabled={isSubmitting}

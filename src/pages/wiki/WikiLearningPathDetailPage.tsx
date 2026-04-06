@@ -120,7 +120,7 @@ export default function WikiLearningPathDetailPage() {
     );
   }
 
-  const diffColor = DIFF_COLORS[path.difficulty] || 'rgba(237,237,237,0.40)';
+  const diffColor = DIFF_COLORS[path.difficulty] || '#64748B';
 
   return (
     <div style={{ fontFamily: F.inter, color: isDark ? '#EDEDED' : '#0F172A', background: isDark ? '#0A0A0A' : '#F8FAFC', minHeight: '100%', padding: '24px 40px 60px' }}>
@@ -201,7 +201,7 @@ export default function WikiLearningPathDetailPage() {
               >
                 {isComplete
                   ? <CheckCircle2 size={18} style={{ color: '#16A34A' }} />
-                  : <Circle size={18} style={{ color: 'rgba(237,237,237,0.53)' }} />
+                  : <Circle size={18} style={{ color: '#CBD5E1' }} />
                 }
               </button>
             </div>

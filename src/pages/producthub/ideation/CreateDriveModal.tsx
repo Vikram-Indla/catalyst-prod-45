@@ -114,7 +114,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
   const labelStyle: React.CSSProperties = {
     fontSize: '11px', fontWeight: 600, color: isDark ? '#A1A1A1' : '#475569',
     textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '6px', display: 'block',
-    fontFamily: 'Geist, -apple-system, sans-serif',
+    fontFamily: 'Inter, sans-serif',
   };
   const inputStyle: React.CSSProperties = {
     width: '100%', border: `1.5px solid ${isDark ? 'rgba(255,255,255,0.12)' : '#CBD5E1'}`, borderRadius: '8px',
@@ -246,14 +246,14 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
                         ? (isActive ? (isDark ? '#86EFAC' : '#15803D') : (isDark ? '#A1A1A1' : '#64748B'))
                         : (isDark ? '#878787' : '#94A3B8'),
                       transition: 'all 150ms ease',
-                      fontFamily: 'Geist, -apple-system, sans-serif',
+                      fontFamily: 'Inter, sans-serif',
                     }}
                   >
                     <span style={{
                       width: '6px', height: '6px', borderRadius: '50%',
                       background: isSelected
-                        ? (isActive ? '#16A34A' : 'rgba(237,237,237,0.40)')
-                        : 'rgba(237,237,237,0.53)',
+                        ? (isActive ? '#16A34A' : '#94A3B8')
+                        : '#CBD5E1',
                     }} />
                     {isActive ? 'Active' : 'Draft'}
                   </button>
@@ -363,7 +363,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
             style={{
               padding: '10px 20px', fontSize: '14px', fontWeight: 500,
               color: isDark ? '#A1A1A1' : '#475569', background: 'transparent', border: 'none',
-              borderRadius: '8px', cursor: 'pointer', fontFamily: 'Geist, -apple-system, sans-serif',
+              borderRadius: '8px', cursor: 'pointer', fontFamily: 'Inter, sans-serif',
             }}
             onMouseEnter={(e) => { e.currentTarget.style.color = isDark ? '#EDEDED' : '#0F172A'; }}
             onMouseLeave={(e) => { e.currentTarget.style.color = isDark ? '#A1A1A1' : '#475569'; }}
@@ -382,7 +382,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
               cursor: (!isValid || createMutation.isPending) ? 'not-allowed' : 'pointer',
               display: 'inline-flex', alignItems: 'center', gap: '6px',
               boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
-              transition: 'background 150ms ease', fontFamily: 'Geist, -apple-system, sans-serif',
+              transition: 'background 150ms ease', fontFamily: 'Inter, sans-serif',
             }}
             onMouseEnter={(e) => { if (isValid && !createMutation.isPending) e.currentTarget.style.background = '#1D4ED8'; }}
             onMouseLeave={(e) => { if (isValid && !createMutation.isPending) e.currentTarget.style.background = '#2563EB'; }}

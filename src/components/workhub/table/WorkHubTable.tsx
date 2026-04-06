@@ -273,10 +273,10 @@ export default function WorkHubTable({ projectKey, projectId, defaultType = 'Sto
 
         {/* Error state — red banner */}
         {error && !isLoading && (
-          <div style={{ margin: '12px 16px', padding: '12px 16px', background: 'rgba(248,113,113,0.06)', borderLeft: '4px solid #DC2626', borderRadius: '0 6px 6px 0', display: 'flex', alignItems: 'center', gap: 10 }} role="alert">
+          <div style={{ margin: '12px 16px', padding: '12px 16px', background: '#FEF2F2', borderLeft: '4px solid #DC2626', borderRadius: '0 6px 6px 0', display: 'flex', alignItems: 'center', gap: 10 }} role="alert">
             <AlertTriangle size={18} color="#DC2626" style={{ flexShrink: 0 }} />
             <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 14, fontWeight: 600, color: '#F87171' }}>Failed to load work items</div>
+              <div style={{ fontSize: 14, fontWeight: 600, color: '#991B1B' }}>Failed to load work items</div>
               <div style={{ fontSize: 13, color: '#7F1D1D', marginTop: 2 }}>{(error as Error).message || 'An unexpected error occurred'}</div>
             </div>
             <button onClick={() => refetch()} style={{ padding: '6px 16px', fontSize: 13, fontWeight: 600, color: 'var(--bg-app)', background: 'var(--sem-danger)', border: 'none', borderRadius: 4, cursor: 'pointer', flexShrink: 0 }}>Retry</button>
@@ -326,7 +326,7 @@ export default function WorkHubTable({ projectKey, projectId, defaultType = 'Sto
         {!isLoading && !error && items.length === 0 && !hasActiveFilters && (
           <div style={{ padding: '60px 0', textAlign: 'center' }}>
             <div style={{ width: 160, height: 120, margin: '0 auto 20px', background: 'var(--bg-1)', borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <svg width="48" height="48" viewBox="0 0 48 48" fill="none"><rect x="8" y="12" width="32" height="24" rx="3" stroke="rgba(237,237,237,0.40)" strokeWidth="1.5" /><path d="M16 22H32M16 28H26" stroke="rgba(237,237,237,0.53)" strokeWidth="1.5" strokeLinecap="round" /></svg>
+              <svg width="48" height="48" viewBox="0 0 48 48" fill="none"><rect x="8" y="12" width="32" height="24" rx="3" stroke="#94A3B8" strokeWidth="1.5" /><path d="M16 22H32M16 28H26" stroke="#CBD5E1" strokeWidth="1.5" strokeLinecap="round" /></svg>
             </div>
             <div style={{ fontSize: 20, fontWeight: 650, color: 'var(--fg-1)', fontFamily: "'Sora', sans-serif", marginBottom: 4 }}>No work items yet</div>
             <div style={{ fontSize: 14, color: 'var(--fg-3)', marginBottom: 20 }}>Create your first work item to get started</div>
@@ -403,7 +403,7 @@ export default function WorkHubTable({ projectKey, projectId, defaultType = 'Sto
 
       <style>{`
         @keyframes wh-pulse { 0%,100%{opacity:.4} 50%{opacity:1} }
-        .wh-skeleton { background: var(--bd-default, rgba(255,255,255,0.10)); animation: wh-pulse 1.5s ease-in-out infinite; }
+        .wh-skeleton { background: var(--bd-default, #E2E8F0); animation: wh-pulse 1.5s ease-in-out infinite; }
         @keyframes slideUp { from{transform:translateX(-50%) translateY(20px);opacity:0} to{transform:translateX(-50%) translateY(0);opacity:1} }
       `}</style>
     </div>

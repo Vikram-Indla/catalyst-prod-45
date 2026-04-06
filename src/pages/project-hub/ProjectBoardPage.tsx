@@ -94,10 +94,10 @@ export default function ProjectBoardPage() {
   const projectName = key?.toUpperCase() ?? 'AI GOVERNANCE';
 
   const statCards = [
-    { label: 'Total Issues', value: stats.total, icon: BarChart3, color: '#2563EB', bg: 'rgba(59,130,246,0.06)', accent: '' },
+    { label: 'Total Issues', value: stats.total, icon: BarChart3, color: '#2563EB', bg: '#EFF6FF', accent: '' },
     { label: 'Completed', value: stats.completed, icon: CheckCircle2, color: '#16A34A', bg: '#DCFCE7', accent: '' },
-    { label: 'In Progress', value: stats.inProgress, icon: Clock, color: '#2563EB', bg: 'rgba(59,130,246,0.06)', accent: '' },
-    { label: 'Overdue', value: stats.overdue, icon: AlertTriangle, color: stats.overdue > 0 ? '#EF4444' : 'rgba(237,237,237,0.40)', bg: stats.overdue > 0 ? 'rgba(248,113,113,0.06)' : '#1A1A1A', accent: '' },
+    { label: 'In Progress', value: stats.inProgress, icon: Clock, color: '#2563EB', bg: '#EFF6FF', accent: '' },
+    { label: 'Overdue', value: stats.overdue, icon: AlertTriangle, color: stats.overdue > 0 ? '#EF4444' : '#94A3B8', bg: stats.overdue > 0 ? '#FEF2F2' : '#F1F5F9', accent: '' },
     { label: 'AI Features', value: '0%', icon: Sparkles, color: '#7C3AED', bg: '#F5F3FF', accent: '#7C3AED' },
   ];
 
@@ -222,7 +222,7 @@ export default function ProjectBoardPage() {
 
         {/* Search */}
         <div className="relative">
-          <Search size={14} color="rgba(237,237,237,0.40)" className="absolute left-2.5 top-1/2 -translate-y-1/2" />
+          <Search size={14} color="#94A3B8" className="absolute left-2.5 top-1/2 -translate-y-1/2" />
           <input
             value={searchText}
             onChange={e => setSearchText(e.target.value)}
@@ -387,7 +387,7 @@ export default function ProjectBoardPage() {
           className="flex flex-col items-center justify-center rounded-xl border"
           style={{ padding: '80px 40px', background: isDark ? '#1A1A1A' : '#FFFFFF', borderColor: isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0' }}
         >
-          <GanttChart size={36} color="rgba(237,237,237,0.40)" strokeWidth={1.5} />
+          <GanttChart size={36} color="#94A3B8" strokeWidth={1.5} />
           <span style={{ fontSize: 14, fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A', marginTop: 12, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
             Timeline View
           </span>
@@ -436,7 +436,7 @@ function FilterDropdown({ label, value, options, isOpen, onToggle, onChange }: {
 
   return (
     <div className="flex flex-col gap-1 relative" data-filter-dropdown>
-      <label style={{ fontSize: 10, fontWeight: 600, color: 'rgba(237,237,237,0.40)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+      <label style={{ fontSize: 10, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
         {label}
       </label>
       <button
@@ -444,17 +444,17 @@ function FilterDropdown({ label, value, options, isOpen, onToggle, onChange }: {
         className="flex items-center justify-between gap-2 rounded-md transition-colors"
         style={{
           fontSize: 12, fontWeight: 500, padding: '4px 8px',
-          border: '1px solid rgba(255,255,255,0.10)', background: '#fff', color: 'rgba(237,237,237,0.93)',
+          border: '1px solid #E2E8F0', background: '#fff', color: '#0F172A',
           cursor: 'pointer', minWidth: 130, textAlign: 'left' as const,
         }}
       >
         <span className="truncate">{selectedLabel}</span>
-        <ChevronDown size={12} color="rgba(237,237,237,0.40)" />
+        <ChevronDown size={12} color="#94A3B8" />
       </button>
       {isOpen && (
         <div
           className="absolute top-full left-0 mt-1 rounded-lg shadow-lg border z-50"
-          style={{ background: '#fff', borderColor: 'rgba(255,255,255,0.10)', minWidth: 160, padding: 4 }}
+          style={{ background: '#fff', borderColor: '#E2E8F0', minWidth: 160, padding: 4 }}
         >
           {options.map(o => (
             <button
@@ -463,11 +463,11 @@ function FilterDropdown({ label, value, options, isOpen, onToggle, onChange }: {
               className="w-full text-left px-3 py-1.5 rounded transition-colors"
               style={{
                 fontSize: 12, fontWeight: value === o.value ? 600 : 400,
-                color: 'rgba(237,237,237,0.53)',
-                background: value === o.value ? '#1A1A1A' : 'transparent',
+                color: '#334155',
+                background: value === o.value ? '#F1F5F9' : 'transparent',
                 border: 'none', cursor: 'pointer',
               }}
-              onMouseEnter={e => { if (value !== o.value) e.currentTarget.style.background = '#1A1A1A'; }}
+              onMouseEnter={e => { if (value !== o.value) e.currentTarget.style.background = '#F8FAFC'; }}
               onMouseLeave={e => { if (value !== o.value) e.currentTarget.style.background = 'transparent'; }}
             >
               {o.label}

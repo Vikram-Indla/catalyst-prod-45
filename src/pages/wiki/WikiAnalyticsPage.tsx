@@ -9,7 +9,7 @@ import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, Cart
 
 const DOMAIN_COLORS: Record<string, string> = {
   D1: '#2563EB', D2: '#0D9488', D3: '#D97706', D4: '#16A34A',
-  D5: '#DC2626', D6: '#0891B2', D7: 'rgba(237,237,237,0.40)', D8: '#4F46E5', D9: '#CA8A04',
+  D5: '#DC2626', D6: '#0891B2', D7: '#64748B', D8: '#4F46E5', D9: '#CA8A04',
 };
 
 export default function WikiAnalyticsPage() {
@@ -78,7 +78,7 @@ export default function WikiAnalyticsPage() {
       return [
         { name: 'Verified', value: counts.verified, fill: '#16A34A' },
         { name: 'Needs Review', value: counts.needs_review, fill: '#D97706' },
-        { name: 'Unverified', value: counts.unverified, fill: 'rgba(237,237,237,0.40)' },
+        { name: 'Unverified', value: counts.unverified, fill: '#94A3B8' },
       ];
     },
   });
@@ -133,7 +133,7 @@ export default function WikiAnalyticsPage() {
               <Tooltip contentStyle={{ fontSize: 12, borderRadius: 6, border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, background: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#EDEDED' : undefined }} />
               <Bar dataKey="count" radius={[4, 4, 0, 0]}>
                 {(domainDistribution ?? []).map((d: any) => (
-                  <Cell key={d.domain} fill={DOMAIN_COLORS[d.domain] || 'rgba(237,237,237,0.40)'} />
+                  <Cell key={d.domain} fill={DOMAIN_COLORS[d.domain] || '#64748B'} />
                 ))}
               </Bar>
             </BarChart>

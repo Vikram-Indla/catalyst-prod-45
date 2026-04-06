@@ -58,10 +58,10 @@ const Sk = ({ w, h, style, isDark }: { w: string | number; h: number; style?: Re
 
 /* ── Module icon map for cross-links ── */
 const MODULE_COLORS: Record<string, { bg: string; color: string; label: string }> = {
-  task: { bg: 'rgba(59,130,246,0.06)', color: '#2563EB', label: 'TaskHub' },
+  task: { bg: '#EFF6FF', color: '#2563EB', label: 'TaskHub' },
   product: { bg: '#F5F3FF', color: '#7C3AED', label: 'ProductHub' },
-  incident: { bg: 'rgba(248,113,113,0.06)', color: '#DC2626', label: 'IncidentHub' },
-  release: { bg: 'rgba(74,222,128,0.06)', color: '#059669', label: 'ReleaseHub' },
+  incident: { bg: '#FEF2F2', color: '#DC2626', label: 'IncidentHub' },
+  release: { bg: '#ECFDF5', color: '#059669', label: 'ReleaseHub' },
   requirement: { bg: '#FFFBEB', color: '#D97706', label: 'Requirements' },
   wiki: { bg: '#F0F9FF', color: '#0284C7', label: 'WikiHub' },
 };
@@ -78,7 +78,7 @@ function VersionHistoryPanel({ versions, onRestore, onClose }: {
       position: 'fixed', top: 0, right: 0, bottom: 0, width: 400, zIndex: 200,
       background: isDark ? '#1A1A1A' : '#FFFFFF', borderLeft: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(15,23,42,0.12)',
       boxShadow: isDark ? '-8px 0 24px rgba(0,0,0,0.3)' : '-8px 0 24px rgba(15,23,42,0.08)',
-      display: 'flex', flexDirection: 'column', fontFamily: 'Geist, -apple-system, sans-serif',
+      display: 'flex', flexDirection: 'column', fontFamily: 'Inter, sans-serif',
     }}>
       {/* Header */}
       <div style={{
@@ -213,7 +213,7 @@ function CrossModuleLinks({ links }: { links: any[] }) {
       </div>
       <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
         {links.map((link: any) => {
-          const mod = MODULE_COLORS[link.target_module] || { bg: '#1A1A1A', color: 'rgba(237,237,237,0.40)', label: link.target_module };
+          const mod = MODULE_COLORS[link.target_module] || { bg: '#F1F5F9', color: '#64748B', label: link.target_module };
           return (
             <span key={link.id} style={{
               display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 10px',

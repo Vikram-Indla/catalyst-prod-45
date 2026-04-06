@@ -126,7 +126,7 @@ export default function WikiSearchPage() {
             aria-label="Search wiki"
             autoFocus
             style={{
-              flex: 1, fontSize: 15, fontFamily: 'Geist, -apple-system, sans-serif',
+              flex: 1, fontSize: 15, fontFamily: 'Inter, sans-serif',
               background: 'transparent', border: 'none', outline: 'none',
               color: isDark ? '#EDEDED' : '#0F172A',
             }}

@@ -15,11 +15,11 @@ import { useTheme } from '@/hooks/useTheme';
 import { DK, LK } from '@/utils/dark-mode-styles';
 
 const BOARD_COLUMNS = [
-  { status: 'Submitted', label: 'SUBMITTED', headerColor: 'rgba(237,237,237,0.40)', countBg: 'rgba(255,255,255,0.10)', countText: 'rgba(237,237,237,0.40)' },
-  { status: 'Under Review', label: 'UNDER REVIEW', headerColor: 'rgba(237,237,237,0.40)', countBg: 'rgba(255,255,255,0.10)', countText: 'rgba(237,237,237,0.40)' },
-  { status: 'Approved', label: 'APPROVED', headerColor: 'rgba(237,237,237,0.40)', countBg: 'rgba(255,255,255,0.10)', countText: 'rgba(237,237,237,0.40)' },
+  { status: 'Submitted', label: 'SUBMITTED', headerColor: '#64748B', countBg: '#E2E8F0', countText: '#64748B' },
+  { status: 'Under Review', label: 'UNDER REVIEW', headerColor: '#64748B', countBg: '#E2E8F0', countText: '#64748B' },
+  { status: 'Approved', label: 'APPROVED', headerColor: '#64748B', countBg: '#E2E8F0', countText: '#64748B' },
   { status: 'Converted to Initiative', label: 'CONVERTED', headerColor: '#16A34A', countBg: '#D1FAE5', countText: '#11853D' },
-  { status: 'Rejected', label: 'REJECTED', headerColor: 'rgba(237,237,237,0.40)', countBg: 'rgba(255,255,255,0.10)', countText: 'rgba(237,237,237,0.40)' },
+  { status: 'Rejected', label: 'REJECTED', headerColor: '#94A3B8', countBg: '#E2E8F0', countText: '#94A3B8' },
 ];
 
 const FILTER_PILLS = [

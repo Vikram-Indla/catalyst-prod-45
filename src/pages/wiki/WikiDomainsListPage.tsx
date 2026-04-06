@@ -8,8 +8,8 @@ const DOMAIN_ICONS: Record<string, React.ComponentType<any>> = {
   D1: Factory, D2: Ship, D3: FlaskConical, D4: Leaf, D5: Landmark, D6: Bot, D7: HardHat, D8: Globe, D9: Pickaxe,
 };
 const TAG_STYLES: Record<string, { bg: string; darkBg: string; color: string; darkColor: string }> = {
-  CORE: { bg: '#DBEAFE', darkBg: 'rgba(59,130,246,0.12)', color: '#7DB8FC', darkColor: '#93C5FD' },
-  REGULATORY: { bg: 'rgba(251,191,36,0.10)', darkBg: 'rgba(251,191,36,0.12)', color: '#FBBF24', darkColor: '#FCD34D' },
+  CORE: { bg: '#DBEAFE', darkBg: 'rgba(59,130,246,0.12)', color: '#1E40AF', darkColor: '#93C5FD' },
+  REGULATORY: { bg: '#FEF3C7', darkBg: 'rgba(251,191,36,0.12)', color: '#92400E', darkColor: '#FCD34D' },
   SUPPORT: { bg: '#E0E7FF', darkBg: 'rgba(99,102,241,0.12)', color: '#3730A3', darkColor: '#A5B4FC' },
 };
 

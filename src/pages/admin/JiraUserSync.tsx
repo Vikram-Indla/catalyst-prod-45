@@ -46,9 +46,9 @@ const PER_PAGE = 10;
 
 const AVATAR_COLORS = [
   { bg: '#DBEAFE', text: '#1D4ED8' }, { bg: '#DCFCE7', text: '#15803D' },
-  { bg: 'rgba(251,191,36,0.10)', text: '#FBBF24' }, { bg: '#EDE9FE', text: '#A78BFA' },
-  { bg: 'rgba(248,113,113,0.10)', text: '#F87171' }, { bg: 'rgba(74,222,128,0.06)', text: '#0F766E' },
-  { bg: 'rgba(59,130,246,0.06)', text: '#1D4ED8' }, { bg: '#E0F2FE', text: '#0369A1' },
+  { bg: '#FEF3C7', text: '#92400E' }, { bg: '#EDE9FE', text: '#5B21B6' },
+  { bg: '#FEE2E2', text: '#991B1B' }, { bg: '#F0FDF4', text: '#0F766E' },
+  { bg: '#EFF6FF', text: '#1D4ED8' }, { bg: '#E0F2FE', text: '#0369A1' },
   { bg: '#F5F3FF', text: '#7C3AED' }, { bg: '#CCFBF1', text: '#0F766E' },
 ];
 
@@ -450,10 +450,10 @@ const JiraUserSync: React.FC = () => {
                           textTransform: 'uppercase', cursor: 'pointer',
                           border: `1px solid ${isDark ? 'rgba(255,255,255,0.10)' : 'rgba(15,23,42,0.10)'}`,
                           background: assignPermLevel === lvl
-                            ? lvl === 'full' ? '#DCFCE7' : lvl === 'edit' ? 'rgba(59,130,246,0.06)' : '#1A1A1A'
+                            ? lvl === 'full' ? '#DCFCE7' : lvl === 'edit' ? '#EFF6FF' : '#F1F5F9'
                             : 'transparent',
                           color: assignPermLevel === lvl
-                            ? lvl === 'full' ? '#006644' : lvl === 'edit' ? '#1D4ED8' : 'rgba(237,237,237,0.40)'
+                            ? lvl === 'full' ? '#006644' : lvl === 'edit' ? '#1D4ED8' : '#64748B'
                             : (isDark ? '#878787' : '#94A3B8'),
                         }}
                       >
@@ -500,7 +500,7 @@ const JiraUserSync: React.FC = () => {
                         <span style={{ fontSize: '11px', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: isDark ? '#A1A1A1' : '#334155' }}>
                           {proj.project_name || proj.project_key}
                         </span>
-                        <Check size={10} style={{ color: 'rgba(237,237,237,0.40)', opacity: 0 }} />
+                        <Check size={10} style={{ color: '#94A3B8', opacity: 0 }} />
                       </button>
                     ))}
                   {(jiraProjects || []).filter(p => !assignSearch || p.project_key.toLowerCase().includes(assignSearch.toLowerCase())).length === 0 && (

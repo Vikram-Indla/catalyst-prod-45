@@ -31,7 +31,7 @@ function DataTable({ data }: { data: any[] }) {
       <thead>
         <tr>
           {keys.map((k) => (
-            <th key={k} style={{ textAlign: "left", padding: "4px 8px", borderBottom: "1px solid var(--bd-default, rgba(255,255,255,0.10))", color: "rgba(237,237,237,0.40)", fontWeight: 600 }}>{k}</th>
+            <th key={k} style={{ textAlign: "left", padding: "4px 8px", borderBottom: "1px solid var(--bd-default, #E2E8F0)", color: "#64748B", fontWeight: 600 }}>{k}</th>
           ))}
         </tr>
       </thead>
@@ -39,7 +39,7 @@ function DataTable({ data }: { data: any[] }) {
         {data.map((row: any, i: number) => (
           <tr key={i} style={{ background: i % 2 === 0 ? "#FAFBFC" : "#FFF" }}>
             {keys.map((k) => (
-              <td key={k} style={{ padding: "4px 8px", borderBottom: "1px solid #1A1A1A" }}>{String(row[k] ?? "—")}</td>
+              <td key={k} style={{ padding: "4px 8px", borderBottom: "1px solid #F1F5F9" }}>{String(row[k] ?? "—")}</td>
             ))}
           </tr>
         ))}
@@ -59,18 +59,18 @@ function StatusBadge({ status }: { status: CheckStatus }) {
 
 function CheckCard({ result }: { result: CheckResult }) {
   return (
-    <div style={{ border: "0.75px solid var(--bd-default, rgba(255,255,255,0.10))", borderRadius: 6, background: "#FFFFFF", padding: 16, marginBottom: 12 }}>
+    <div style={{ border: "0.75px solid var(--bd-default, #E2E8F0)", borderRadius: 6, background: "#FFFFFF", padding: 16, marginBottom: 12 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
         <span style={{ fontWeight: 600, fontSize: 13 }}>{result.id} · {result.title}</span>
         <StatusBadge status={result.status} />
       </div>
-      {result.message && <p style={{ fontSize: 12, color: "rgba(237,237,237,0.40)", marginBottom: 4 }}>{result.message}</p>}
+      {result.message && <p style={{ fontSize: 12, color: "#64748B", marginBottom: 4 }}>{result.message}</p>}
       {result.data && Array.isArray(result.data) && result.data.length > 0 && <DataTable data={result.data} />}
       {result.data && !Array.isArray(result.data) && typeof result.data === "object" && (
         <div style={{ fontSize: 12, marginTop: 4 }}>
           {Object.entries(result.data).map(([k, v]) => (
             <div key={k} style={{ display: "flex", gap: 8, padding: "2px 0" }}>
-              <span style={{ color: "rgba(237,237,237,0.40)", fontWeight: 500, minWidth: 140 }}>{k}:</span>
+              <span style={{ color: "#64748B", fontWeight: 500, minWidth: 140 }}>{k}:</span>
               <span>{String(v ?? "—")}</span>
             </div>
           ))}
@@ -267,7 +267,7 @@ export default function RAGAuditPage() {
   return (
     <div style={{ maxWidth: 900, margin: "0 auto", padding: "32px 24px", fontFamily: "Sora, system-ui, sans-serif" }}>
       <h1 style={{ fontSize: 20, fontWeight: 700, marginBottom: 4 }}>RAG Pipeline Audit — Layers 1–3</h1>
-      <p style={{ fontSize: 13, color: "rgba(237,237,237,0.40)", marginBottom: 24 }}>Req Assist™ · Run by Vikram · {today}</p>
+      <p style={{ fontSize: 13, color: "#64748B", marginBottom: 24 }}>Req Assist™ · Run by Vikram · {today}</p>
 
       <button
         onClick={runAllChecks}

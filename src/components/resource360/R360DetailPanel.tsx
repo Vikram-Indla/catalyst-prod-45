@@ -22,19 +22,19 @@ const SC: Record<string, { dot: string; bg: string; tx: string; label: string }>
   'Ready for Dev':        { dot: '#D97706', bg: '#FFFBEB', tx: '#78350F', label: 'Ready Dev' },
   'Ready for Test':       { dot: '#D97706', bg: '#FFFBEB', tx: '#78350F', label: 'Ready Test' },
   // ── Blue: In Progress ──
-  'In Progress':          { dot: '#2563EB', bg: 'rgba(59,130,246,0.06)', tx: '#1E3A5F', label: 'In Progress' },
-  'In Development':       { dot: '#2563EB', bg: 'rgba(59,130,246,0.06)', tx: '#1E3A5F', label: 'In Progress' },
-  'Under Implementation': { dot: '#2563EB', bg: 'rgba(59,130,246,0.06)', tx: '#1E3A5F', label: 'In Progress' },
-  'In Design':            { dot: '#2563EB', bg: 'rgba(59,130,246,0.06)', tx: '#1E3A5F', label: 'In Design' },
-  'Ready for Development':{ dot: '#2563EB', bg: 'rgba(59,130,246,0.06)', tx: '#1E3A5F', label: 'Ready Dev' },
-  'In Entity Integration':{ dot: '#2563EB', bg: 'rgba(59,130,246,0.06)', tx: '#1E3A5F', label: 'Integration' },
-  'Deferred for Int':     { dot: '#2563EB', bg: 'rgba(59,130,246,0.06)', tx: '#1E3A5F', label: 'Deferred' },
-  'In Beta':              { dot: '#2563EB', bg: 'rgba(59,130,246,0.06)', tx: '#1E3A5F', label: 'In Beta' },
-  'In Production':        { dot: '#2563EB', bg: 'rgba(59,130,246,0.06)', tx: '#1E3A5F', label: 'In Prod' },
-  'In Investigation':     { dot: '#2563EB', bg: 'rgba(59,130,246,0.06)', tx: '#1E3A5F', label: 'Investigating' },
-  'In Fix':               { dot: '#2563EB', bg: 'rgba(59,130,246,0.06)', tx: '#1E3A5F', label: 'In Fix' },
-  'In Execution':         { dot: '#2563EB', bg: 'rgba(59,130,246,0.06)', tx: '#1E3A5F', label: 'In Execution' },
-  'Fix in Progress':      { dot: '#2563EB', bg: 'rgba(59,130,246,0.06)', tx: '#1E3A5F', label: 'Fixing' },
+  'In Progress':          { dot: '#2563EB', bg: '#EFF6FF', tx: '#1E3A5F', label: 'In Progress' },
+  'In Development':       { dot: '#2563EB', bg: '#EFF6FF', tx: '#1E3A5F', label: 'In Progress' },
+  'Under Implementation': { dot: '#2563EB', bg: '#EFF6FF', tx: '#1E3A5F', label: 'In Progress' },
+  'In Design':            { dot: '#2563EB', bg: '#EFF6FF', tx: '#1E3A5F', label: 'In Design' },
+  'Ready for Development':{ dot: '#2563EB', bg: '#EFF6FF', tx: '#1E3A5F', label: 'Ready Dev' },
+  'In Entity Integration':{ dot: '#2563EB', bg: '#EFF6FF', tx: '#1E3A5F', label: 'Integration' },
+  'Deferred for Int':     { dot: '#2563EB', bg: '#EFF6FF', tx: '#1E3A5F', label: 'Deferred' },
+  'In Beta':              { dot: '#2563EB', bg: '#EFF6FF', tx: '#1E3A5F', label: 'In Beta' },
+  'In Production':        { dot: '#2563EB', bg: '#EFF6FF', tx: '#1E3A5F', label: 'In Prod' },
+  'In Investigation':     { dot: '#2563EB', bg: '#EFF6FF', tx: '#1E3A5F', label: 'Investigating' },
+  'In Fix':               { dot: '#2563EB', bg: '#EFF6FF', tx: '#1E3A5F', label: 'In Fix' },
+  'In Execution':         { dot: '#2563EB', bg: '#EFF6FF', tx: '#1E3A5F', label: 'In Execution' },
+  'Fix in Progress':      { dot: '#2563EB', bg: '#EFF6FF', tx: '#1E3A5F', label: 'Fixing' },
   // ── Teal: Review / QA ──
   'In Review':            { dot: '#0D9488', bg: '#F0FDFA', tx: '#134E4A', label: 'In Review' },
   'In QA':                { dot: '#0D9488', bg: '#F0FDFA', tx: '#134E4A', label: 'In QA' },
@@ -50,27 +50,27 @@ const SC: Record<string, { dot: string; bg: string; tx: string; label: string }>
   'In UAT':               { dot: '#7C3AED', bg: '#F5F3FF', tx: '#4C1D95', label: 'In UAT' },
   'UAT Ready':            { dot: '#7C3AED', bg: '#F5F3FF', tx: '#4C1D95', label: 'UAT Ready' },
   // ── Green: Done ──
-  'Done':                 { dot: '#16A34A', bg: 'rgba(74,222,128,0.06)', tx: '#14532D', label: 'Done' },
-  'Closed':               { dot: '#16A34A', bg: 'rgba(74,222,128,0.06)', tx: '#14532D', label: 'Done' },
-  'Resolved':             { dot: '#16A34A', bg: 'rgba(74,222,128,0.06)', tx: '#14532D', label: 'Done' },
-  'Ready for Production': { dot: '#16A34A', bg: 'rgba(74,222,128,0.06)', tx: '#14532D', label: 'Ready Prod' },
-  'Beta Ready':           { dot: '#16A34A', bg: 'rgba(74,222,128,0.06)', tx: '#14532D', label: 'Beta Ready' },
-  'Production Ready':     { dot: '#16A34A', bg: 'rgba(74,222,128,0.06)', tx: '#14532D', label: 'Prod Ready' },
-  'Monitor':              { dot: '#16A34A', bg: 'rgba(74,222,128,0.06)', tx: '#14532D', label: 'Monitor' },
-  'Released':             { dot: '#16A34A', bg: 'rgba(74,222,128,0.06)', tx: '#14532D', label: 'Released' },
-  'Verified':             { dot: '#16A34A', bg: 'rgba(74,222,128,0.06)', tx: '#14532D', label: 'Verified' },
-  'Approved':             { dot: '#16A34A', bg: 'rgba(74,222,128,0.06)', tx: '#14532D', label: 'Approved' },
-  'Complete':             { dot: '#16A34A', bg: 'rgba(74,222,128,0.06)', tx: '#14532D', label: 'Complete' },
-  'Completed':            { dot: '#16A34A', bg: 'rgba(74,222,128,0.06)', tx: '#14532D', label: 'Complete' },
+  'Done':                 { dot: '#16A34A', bg: '#F0FDF4', tx: '#14532D', label: 'Done' },
+  'Closed':               { dot: '#16A34A', bg: '#F0FDF4', tx: '#14532D', label: 'Done' },
+  'Resolved':             { dot: '#16A34A', bg: '#F0FDF4', tx: '#14532D', label: 'Done' },
+  'Ready for Production': { dot: '#16A34A', bg: '#F0FDF4', tx: '#14532D', label: 'Ready Prod' },
+  'Beta Ready':           { dot: '#16A34A', bg: '#F0FDF4', tx: '#14532D', label: 'Beta Ready' },
+  'Production Ready':     { dot: '#16A34A', bg: '#F0FDF4', tx: '#14532D', label: 'Prod Ready' },
+  'Monitor':              { dot: '#16A34A', bg: '#F0FDF4', tx: '#14532D', label: 'Monitor' },
+  'Released':             { dot: '#16A34A', bg: '#F0FDF4', tx: '#14532D', label: 'Released' },
+  'Verified':             { dot: '#16A34A', bg: '#F0FDF4', tx: '#14532D', label: 'Verified' },
+  'Approved':             { dot: '#16A34A', bg: '#F0FDF4', tx: '#14532D', label: 'Approved' },
+  'Complete':             { dot: '#16A34A', bg: '#F0FDF4', tx: '#14532D', label: 'Complete' },
+  'Completed':            { dot: '#16A34A', bg: '#F0FDF4', tx: '#14532D', label: 'Complete' },
   // ── Red: Blocked / Rejected ──
-  'Blocked':              { dot: '#EF4444', bg: 'rgba(248,113,113,0.06)', tx: '#7F1D1D', label: 'Blocked' },
-  'Rejected':             { dot: '#EF4444', bg: 'rgba(248,113,113,0.06)', tx: '#7F1D1D', label: 'Rejected' },
-  'Impediment':           { dot: '#EF4444', bg: 'rgba(248,113,113,0.06)', tx: '#7F1D1D', label: 'Impediment' },
+  'Blocked':              { dot: '#EF4444', bg: '#FEF2F2', tx: '#7F1D1D', label: 'Blocked' },
+  'Rejected':             { dot: '#EF4444', bg: '#FEF2F2', tx: '#7F1D1D', label: 'Rejected' },
+  'Impediment':           { dot: '#EF4444', bg: '#FEF2F2', tx: '#7F1D1D', label: 'Impediment' },
 };
 
 // Category-level fallbacks (Jira always provides these)
-const CAT_DONE       = { dot: '#16A34A', bg: 'rgba(74,222,128,0.06)', tx: '#14532D', label: 'Done' };
-const CAT_INPROGRESS = { dot: '#2563EB', bg: 'rgba(59,130,246,0.06)', tx: '#1E3A5F', label: 'In Progress' };
+const CAT_DONE       = { dot: '#16A34A', bg: '#F0FDF4', tx: '#14532D', label: 'Done' };
+const CAT_INPROGRESS = { dot: '#2563EB', bg: '#EFF6FF', tx: '#1E3A5F', label: 'In Progress' };
 const CAT_TODO       = { dot: '#D97706', bg: '#FFFBEB', tx: '#78350F', label: 'To Do' };
 
 function resolveStatus(item: any) {
@@ -87,14 +87,14 @@ function resolveStatus(item: any) {
   const cat5 = resolveStatusCategoryStatic(name, item.status_category);
   if (cat5 === 'Done') return CAT_DONE;
   if (cat5 === 'In Progress' || cat5 === 'In Review') return CAT_INPROGRESS;
-  if (cat5 === 'Blocked') return { dot: '#EF4444', bg: 'rgba(248,113,113,0.06)', tx: '#7F1D1D', label: name || 'Blocked' };
+  if (cat5 === 'Blocked') return { dot: '#EF4444', bg: '#FEF2F2', tx: '#7F1D1D', label: name || 'Blocked' };
 
   // 4. Final fallback: To Do (never "Unknown")
   return CAT_TODO;
 }
 
-const PC: Record<string, string> = { BAU: '#2563EB', SEN: '#D97706', FAC: '#16A34A', OPS: '#0D9488', SUP: 'rgba(237,237,237,0.40)', LND: '#7C3AED' };
-const pColor = (k: string, fallback?: string) => fallback || PC[k] || 'rgba(237,237,237,0.40)';
+const PC: Record<string, string> = { BAU: '#2563EB', SEN: '#D97706', FAC: '#16A34A', OPS: '#0D9488', SUP: '#64748B', LND: '#7C3AED' };
+const pColor = (k: string, fallback?: string) => fallback || PC[k] || '#64748B';
 const ageCol = (d: number) => d <= 7 ? '#16A34A' : d <= 14 ? '#D97706' : '#EF4444';
 const ageLabel = (d: number) => d === 0 ? 'Today' : d === 1 ? '1d ago' : `${d}d ago`;
 
@@ -168,7 +168,7 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
             <span style={{ fontSize: '10.5px', fontWeight: 600, padding: '2px 8px', borderRadius: '4px', background: 'var(--bg-3)', color: 'var(--fg-2)', textTransform: 'capitalize' }}>
               {item.priority || '—'}
             </span>
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '3px', fontSize: '10.5px', fontWeight: 600, padding: '2px 8px', borderRadius: '4px', background: 'rgba(248,113,113,0.06)', color: '#7F1D1D' }}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '3px', fontSize: '10.5px', fontWeight: 600, padding: '2px 8px', borderRadius: '4px', background: '#FEF2F2', color: '#7F1D1D' }}>
               {getJiraIcon(item.item_type)} <span style={{ textTransform: 'uppercase' }}>{item.item_type}</span>
             </span>
             {item.project_key && (
@@ -229,7 +229,7 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
           </div>
 
           {/* Hierarchy */}
-          <div style={{ padding: '16px 20px', borderBottom: '1px solid #1A1A1A' }}>
+          <div style={{ padding: '16px 20px', borderBottom: '1px solid #F1F5F9' }}>
             <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--fg-2)', textTransform: 'uppercase', letterSpacing: '.05em', marginBottom: '10px' }}>Hierarchy</div>
             {item.parent_key ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
@@ -243,7 +243,7 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
                 {/* Current */}
                 <div style={{
                   display: 'flex', alignItems: 'flex-start', gap: '6px', padding: '6px 8px',
-                  borderRadius: '6px', border: '1.5px solid var(--cp-blue)', background: 'rgba(59,130,246,0.06)',
+                  borderRadius: '6px', border: '1.5px solid var(--cp-blue)', background: '#EFF6FF',
                 }}>
                   {getJiraIcon(item.item_type)}
                   <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', color: 'var(--cp-blue)', whiteSpace: 'nowrap', flexShrink: 0, minWidth: '72px', fontWeight: 600 }}>{item.item_key}</span>
@@ -266,7 +266,7 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
                 <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--fg-2)', textTransform: 'uppercase', letterSpacing: '.05em' }}>Siblings</span>
                 <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--fg-2)', background: 'var(--bg-3)', padding: '2px 8px', borderRadius: '12px' }}>{doneSiblings}/{siblings.length} done</span>
               </div>
-              <div style={{ flex: 1, overflowY: 'auto', scrollbarWidth: 'thin', scrollbarColor: 'rgba(237,237,237,0.53) transparent', maxHeight: '320px' }}>
+              <div style={{ flex: 1, overflowY: 'auto', scrollbarWidth: 'thin', scrollbarColor: '#CBD5E1 transparent', maxHeight: '320px' }}>
                 {siblings.map(sib => {
                   const sibS = resolveStatus(sib);
                   const sibLabel = sib.status_name || sib.status || 'To Do';
@@ -276,7 +276,7 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
                       display: 'flex', alignItems: 'center', gap: '8px', padding: '7px 10px', borderRadius: '6px',
                       cursor: isCurrent ? 'default' : 'pointer', marginBottom: '2px',
                       border: isCurrent ? '1px solid var(--cp-blue)' : '1px solid transparent',
-                      background: isCurrent ? 'rgba(59,130,246,0.06)' : 'transparent',
+                      background: isCurrent ? '#EFF6FF' : 'transparent',
                     }}
                       onMouseEnter={e => { if (!isCurrent) e.currentTarget.style.background = 'var(--bg-3)'; }}
                       onMouseLeave={e => { if (!isCurrent) e.currentTarget.style.background = 'transparent'; }}

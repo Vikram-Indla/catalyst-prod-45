@@ -45,7 +45,7 @@ function highlightMatch(text: string, query: string | undefined): React.ReactNod
   if (!query || !text) return text;
   const idx = text.toLowerCase().indexOf(query.toLowerCase());
   if (idx === -1) return text;
-  return <>{text.slice(0, idx)}<mark style={{ background: 'rgba(251,191,36,0.10)', padding: 0, borderRadius: 1 }}>{text.slice(idx, idx + query.length)}</mark>{text.slice(idx + query.length)}</>;
+  return <>{text.slice(0, idx)}<mark style={{ background: '#FEF3C7', padding: 0, borderRadius: 1 }}>{text.slice(idx, idx + query.length)}</mark>{text.slice(idx + query.length)}</>;
 }
 
 export default memo(function WorkHubRow({ item, columns, selected, onSelect, onOpenPanel, onInlineEdit, onDelete, allStatuses, allPriorities, searchQuery }: WorkHubRowProps) {
@@ -105,7 +105,7 @@ export default memo(function WorkHubRow({ item, columns, selected, onSelect, onO
           return (
             <input ref={inputRef} value={editValue} onChange={e => setEditValue(e.target.value)}
               onBlur={commitEdit} onKeyDown={handleKeyDown}
-              style={{ flex: 1, height: 28, border: '1.5px solid #2563EB', borderRadius: 4, padding: '0 6px', fontSize: 13, outline: 'none', fontFamily: 'Geist, -apple-system, sans-serif', color: 'var(--fg-1)', background: 'var(--bg-app)' }}
+              style={{ flex: 1, height: 28, border: '1.5px solid #2563EB', borderRadius: 4, padding: '0 6px', fontSize: 13, outline: 'none', fontFamily: 'Inter, sans-serif', color: 'var(--fg-1)', background: 'var(--bg-app)' }}
             />
           );
         }
@@ -264,7 +264,7 @@ export default memo(function WorkHubRow({ item, columns, selected, onSelect, onO
         }}>
           <button onClick={e => { e.stopPropagation(); startEdit('summary', item.summary); }} title="Edit" aria-label="Edit summary"
             style={{ width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-app)', border: '1px solid var(--bd-default, rgba(255,255,255,0.08))', borderRadius: 4, cursor: 'pointer' }}>
-            <Pencil size={14} color="rgba(237,237,237,0.40)" />
+            <Pencil size={14} color="#64748B" />
           </button>
           {onDelete && (
             <button onClick={e => { e.stopPropagation(); onDelete(item.id); }} title="Delete" aria-label="Delete item"

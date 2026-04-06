@@ -12,7 +12,7 @@ interface CheckResult {
 }
 
 const STATUS_STYLES: Record<Exclude<CheckStatus, 'checking'>, { bg: string; text: string; label: string }> = {
-  pass: { bg: 'rgba(74,222,128,0.10)', text: '#006644', label: 'PASS' },
+  pass: { bg: '#E3FCEF', text: '#006644', label: 'PASS' },
   fail: { bg: '#FFEBE6', text: '#BF2600', label: 'FAIL' },
   warn: { bg: '#FFF3E0', text: '#B45309', label: 'WARN' },
 };
@@ -176,7 +176,7 @@ export default function SyncPrerequisitesPage() {
             className="flex items-center gap-3 px-4"
             style={{
               height: 48,
-              borderBottom: idx < checks.length - 1 ? '0.5px solid #1A1A1A' : 'none',
+              borderBottom: idx < checks.length - 1 ? '0.5px solid #F1F5F9' : 'none',
             }}
           >
             <div className="w-20 flex-shrink-0">

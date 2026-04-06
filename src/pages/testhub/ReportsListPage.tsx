@@ -36,20 +36,20 @@ interface ReportStats {
 }
 
 const TYPE_CONFIG: Record<string, { label: string; color: string; bg: string; icon: any }> = {
-  cycle_summary: { label: 'Cycle Summary', color: '#2563EB', bg: 'rgba(59,130,246,0.06)', icon: BarChart3 },
+  cycle_summary: { label: 'Cycle Summary', color: '#2563EB', bg: '#EFF6FF', icon: BarChart3 },
   plan_summary: { label: 'Plan Summary', color: '#7C3AED', bg: '#F5F3FF', icon: FileText },
   coverage: { label: 'Coverage', color: '#0891B2', bg: '#ECFEFF', icon: Shield },
-  defect: { label: 'Defect Report', color: '#DC2626', bg: 'rgba(248,113,113,0.06)', icon: AlertCircle },
-  trend: { label: 'Trend Analysis', color: '#059669', bg: 'rgba(74,222,128,0.06)', icon: TrendingUp },
-  custom: { label: 'Custom', color: 'rgba(237,237,237,0.40)', bg: '#1A1A1A', icon: FileBarChart },
+  defect: { label: 'Defect Report', color: '#DC2626', bg: '#FEF2F2', icon: AlertCircle },
+  trend: { label: 'Trend Analysis', color: '#059669', bg: '#ECFDF5', icon: TrendingUp },
+  custom: { label: 'Custom', color: '#64748B', bg: '#F1F5F9', icon: FileBarChart },
 };
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
-  draft: { label: 'Draft', color: 'rgba(237,237,237,0.40)', bg: '#1A1A1A' },
+  draft: { label: 'Draft', color: '#64748B', bg: '#F1F5F9' },
   generating: { label: 'Generating', color: '#D97706', bg: '#FFFBEB' },
-  ready: { label: 'Ready', color: '#059669', bg: 'rgba(74,222,128,0.06)' },
-  failed: { label: 'Failed', color: '#DC2626', bg: 'rgba(248,113,113,0.06)' },
-  archived: { label: 'Archived', color: 'rgba(237,237,237,0.40)', bg: '#1A1A1A' },
+  ready: { label: 'Ready', color: '#059669', bg: '#ECFDF5' },
+  failed: { label: 'Failed', color: '#DC2626', bg: '#FEF2F2' },
+  archived: { label: 'Archived', color: '#94A3B8', bg: '#F8FAFC' },
 };
 
 export default function ReportsListPage() {
@@ -151,7 +151,7 @@ export default function ReportsListPage() {
               <FileBarChart size={24} style={{ color: '#F59E0B' }} />
             </div>
           </div>
-          <div style={{ backgroundColor: 'rgba(74,222,128,0.06)', borderRadius: 12, padding: 20, border: '1px solid #A7F3D0' }}>
+          <div style={{ backgroundColor: '#ECFDF5', borderRadius: 12, padding: 20, border: '1px solid #A7F3D0' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div>
                 <p style={{ fontSize: 12, color: '#059669', margin: 0, textTransform: 'uppercase' }}>Ready</p>
@@ -166,7 +166,7 @@ export default function ReportsListPage() {
                 <p style={{ fontSize: 12, color: isDark ? '#878787' : '#64748B', margin: 0, textTransform: 'uppercase' }}>This Month</p>
                 <p style={{ fontSize: 28, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A', margin: '8px 0 0' }}>{stats.this_month}</p>
               </div>
-              <Calendar size={24} style={{ color: 'rgba(237,237,237,0.40)' }} />
+              <Calendar size={24} style={{ color: '#64748B' }} />
             </div>
           </div>
         </div>
@@ -175,7 +175,7 @@ export default function ReportsListPage() {
       {/* Filters */}
       <div style={{ display: 'flex', gap: 12, marginBottom: 24, flexWrap: 'wrap', alignItems: 'center' }}>
         <div style={{ position: 'relative', flex: '1 1 300px', maxWidth: 400 }}>
-          <Search size={18} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: 'rgba(237,237,237,0.40)' }} />
+          <Search size={18} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: '#94A3B8' }} />
           <input type="text" placeholder="Search reports..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}
             style={{ width: '100%', height: 44, padding: '0 14px 0 44px', border: isDark ? '1.5px solid rgba(255,255,255,0.08)' : '1.5px solid #E2E8F0', borderRadius: 12, fontSize: 14, backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#EDEDED' : undefined }} />
         </div>
@@ -203,7 +203,7 @@ export default function ReportsListPage() {
         )}
       </div>
 
-      <p style={{ fontSize: 13, color: 'rgba(237,237,237,0.40)', marginBottom: 16 }}>
+      <p style={{ fontSize: 13, color: '#64748B', marginBottom: 16 }}>
         Showing {filteredReports.length} report{filteredReports.length !== 1 ? 's' : ''}
       </p>
 
@@ -251,12 +251,12 @@ export default function ReportsListPage() {
                   <div style={{ display: 'flex', gap: 8 }}>
                     {report.status === 'ready' && (
                       <button onClick={(e) => { e.stopPropagation(); navigate(`/testhub/reports/${report.id}`); }}
-                        style={{ width: 36, height: 50, border: '1px solid rgba(255,255,255,0.10)', borderRadius: 8, backgroundColor: '#FFF', color: '#059669', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        style={{ width: 36, height: 50, border: '1px solid #E2E8F0', borderRadius: 8, backgroundColor: '#FFF', color: '#059669', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <Download size={16} />
                       </button>
                     )}
                     <button onClick={(e) => deleteReport(report.id, e)}
-                      style={{ width: 36, height: 50, border: '1px solid #FECACA', borderRadius: 8, backgroundColor: 'rgba(248,113,113,0.06)', color: '#DC2626', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      style={{ width: 36, height: 50, border: '1px solid #FECACA', borderRadius: 8, backgroundColor: '#FEF2F2', color: '#DC2626', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       <Trash2 size={16} />
                     </button>
                   </div>

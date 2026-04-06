@@ -11,21 +11,21 @@ interface RoadmapDatesTableProps {
 
 const QUARTER_STYLES: Record<string, { bg: string; color: string }> = {
   Q1: { bg: '#F3E8FF', color: '#6D28D9' },
-  Q2: { bg: 'rgba(59,130,246,0.06)', color: '#1D4ED8' },
-  Q3: { bg: 'rgba(74,222,128,0.06)', color: '#4ADE80' },
-  Q4: { bg: '#FFF7ED', color: '#FBBF24' },
+  Q2: { bg: '#EFF6FF', color: '#1D4ED8' },
+  Q3: { bg: '#ECFDF5', color: '#065F46' },
+  Q4: { bg: '#FFF7ED', color: '#92400E' },
 };
 
 const headerStyle: React.CSSProperties = {
-  fontSize: 11, fontWeight: 700, color: 'rgba(237,237,237,0.40)', fontFamily: "'Inter', sans-serif",
+  fontSize: 11, fontWeight: 700, color: '#64748B', fontFamily: "'Inter', sans-serif",
   textTransform: 'uppercase', letterSpacing: '0.07em',
-  background: 'var(--bg-1, #1A1A1A)', height: 50, padding: '8px 12px',
-  borderBottom: '2px solid var(--bd-default, rgba(255,255,255,0.10))', position: 'sticky', top: 0, zIndex: 2,
+  background: 'var(--bg-1, #F8FAFC)', height: 50, padding: '8px 12px',
+  borderBottom: '2px solid var(--bd-default, #E2E8F0)', position: 'sticky', top: 0, zIndex: 2,
   textAlign: 'left', whiteSpace: 'nowrap',
 };
 
 const cellStyle: React.CSSProperties = {
-  height: 50, padding: '8px 12px', borderBottom: '1px solid #1A1A1A',
+  height: 50, padding: '8px 12px', borderBottom: '1px solid #F1F5F9',
   verticalAlign: 'middle', whiteSpace: 'nowrap',
 };
 
@@ -66,7 +66,7 @@ export function RoadmapDatesTable({ ideas, onSelectIdea, onToggleCommitted, muta
                   cursor: 'pointer', transition: 'background 100ms, opacity 150ms',
                   opacity: isMutating ? 0.6 : 1,
                 }}
-                onMouseEnter={e => (e.currentTarget.style.background = 'var(--bg-1, #1A1A1A)')}
+                onMouseEnter={e => (e.currentTarget.style.background = 'var(--bg-1, #F8FAFC)')}
                 onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
               >
                 <td style={cellStyle}>
@@ -86,10 +86,10 @@ export function RoadmapDatesTable({ ideas, onSelectIdea, onToggleCommitted, muta
                 <td style={cellStyle}>
                   {idea.team ? (
                     <span style={{
-                      fontSize: 10, fontWeight: 600, background: '#1A1A1A',
+                      fontSize: 10, fontWeight: 600, background: '#F1F5F9',
                       color: 'var(--fg-2)', padding: '2px 6px', borderRadius: 4,
                     }}>{idea.team}</span>
-                  ) : <span style={{ color: 'rgba(237,237,237,0.53)' }}>—</span>}
+                  ) : <span style={{ color: '#CBD5E1' }}>—</span>}
                 </td>
                 <td style={cellStyle}>
                   {qStyle ? (
@@ -99,13 +99,13 @@ export function RoadmapDatesTable({ ideas, onSelectIdea, onToggleCommitted, muta
                       background: qStyle.bg, color: qStyle.color,
                       fontFamily: "'Inter', sans-serif", textTransform: 'uppercase',
                     }}>{idea.quarter}</span>
-                  ) : <span style={{ color: 'rgba(237,237,237,0.53)' }}>—</span>}
+                  ) : <span style={{ color: '#CBD5E1' }}>—</span>}
                 </td>
                 {MILESTONE_CONFIGS.map(m => (
                   <td key={m.key} style={cellStyle}>
                     <span style={{
                       fontSize: 11, fontFamily: "'JetBrains Mono', monospace",
-                      color: idea.milestones[m.key] ? 'var(--fg-2)' : 'rgba(237,237,237,0.53)',
+                      color: idea.milestones[m.key] ? 'var(--fg-2)' : '#CBD5E1',
                       fontVariantNumeric: 'tabular-nums',
                     }}>{formatDate(idea.milestones[m.key])}</span>
                   </td>
@@ -116,7 +116,7 @@ export function RoadmapDatesTable({ ideas, onSelectIdea, onToggleCommitted, muta
                     disabled={isMutating}
                     style={{
                       width: 32, height: 18, borderRadius: 8, border: 'none', cursor: 'pointer',
-                      background: idea.isCommitted ? 'var(--sem-success)' : 'rgba(237,237,237,0.53)', position: 'relative',
+                      background: idea.isCommitted ? 'var(--sem-success)' : '#CBD5E1', position: 'relative',
                       transition: 'background 150ms',
                     }}
                   >

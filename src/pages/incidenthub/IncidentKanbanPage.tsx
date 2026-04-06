@@ -81,7 +81,7 @@ export default function IncidentKanbanPage() {
               {/* Column Header */}
               <div className="flex items-center gap-2 px-3 py-2 mb-2">
                 <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: col.dotColor, display: 'inline-block', border: col.dotColor === '#DFE1E6' ? `1px solid ${isDark ? '#878787' : '#94A3B8'}` : 'none' }} />
-                <span style={{ fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: textSecondary }}>
+                <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: textSecondary }}>
                   {col.label}
                 </span>
                 <span className="ml-auto px-1.5" style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, fontWeight: 700, color: textSecondary, backgroundColor: countBg, borderRadius: 3 }}>
@@ -92,7 +92,7 @@ export default function IncidentKanbanPage() {
               {/* Cards */}
               <div className="flex-1 space-y-2 overflow-y-auto" style={{ backgroundColor: laneBg, borderRadius: 6, padding: 8, minHeight: 200 }}>
                 {grouped[col.key]?.length === 0 && (
-                  <p className="text-center py-8" style={{ fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 11, color: textMuted }}>No incidents</p>
+                  <p className="text-center py-8" style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: textMuted }}>No incidents</p>
                 )}
                 {grouped[col.key]?.map((item: any) => {
                   const isBreached = item.resolution_breached;
@@ -124,14 +124,14 @@ export default function IncidentKanbanPage() {
                         </span>
                         <SeverityChip severity={item.severity || 'SEV4'} />
                       </div>
-                      <p style={{ fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 12, fontWeight: 650, color: textPrimary, lineHeight: 1.4, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                      <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, fontWeight: 650, color: textPrimary, lineHeight: 1.4, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                         {item.title}
                       </p>
                       <div className="flex items-center gap-2 mt-2">
                         <div className="rounded-full flex items-center justify-center shrink-0" style={{ width: 20, height: 20, backgroundColor: avatarBg, fontSize: 9, fontWeight: 650, color: avatarText }}>
                           {(item.assignee_name || 'U').charAt(0).toUpperCase()}
                         </div>
-                        <span style={{ fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 11, color: textSecondary }}>{item.assignee_name || 'Unassigned'}</span>
+                        <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: textSecondary }}>{item.assignee_name || 'Unassigned'}</span>
                       </div>
                     </div>
                   );

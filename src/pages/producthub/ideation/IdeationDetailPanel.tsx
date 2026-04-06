@@ -100,11 +100,11 @@ function PriorityLozenge({ priority }: { priority: string }) {
 // Note: selectStyle/inputStyle are used in edit mode — dark mode applied inline via isDark
 const selectStyle: React.CSSProperties = {
   height: '32px', borderRadius: '4px', border: '1px solid rgba(15,23,42,0.14)',
-  padding: '0 8px', fontSize: '13px', color: 'rgba(237,237,237,0.93)', width: '100%', outline: 'none',
+  padding: '0 8px', fontSize: '13px', color: '#0F172A', width: '100%', outline: 'none',
 };
 const inputStyle: React.CSSProperties = {
   height: '32px', borderRadius: '4px', border: '1px solid rgba(15,23,42,0.14)',
-  padding: '0 8px', fontSize: '13px', color: 'rgba(237,237,237,0.93)', width: '100%', outline: 'none',
+  padding: '0 8px', fontSize: '13px', color: '#0F172A', width: '100%', outline: 'none',
 };
 
 function FieldPair({ label, value }: { label: string; value: React.ReactNode }) {
@@ -397,8 +397,8 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
                       display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                       height: 20, padding: '0 6px', borderRadius: 4,
                       fontSize: '11px', fontWeight: 700,
-                      background: QUARTER_BADGE[quarter]?.bg || 'rgba(255,255,255,0.10)',
-                      color: QUARTER_BADGE[quarter]?.text || 'rgba(237,237,237,0.40)',
+                      background: QUARTER_BADGE[quarter]?.bg || '#E2E8F0',
+                      color: QUARTER_BADGE[quarter]?.text || '#94A3B8',
                     }}>{quarter} 2026</span>
                   ) : <span style={{ fontSize: '13px', color: dk.t3 }}>—</span>
                 )
@@ -673,7 +673,7 @@ function CommentsSection({ ideaId }: { ideaId: string | null }) {
           style={{
             flex: 1, minHeight: '50px', maxHeight: '120px', resize: 'vertical',
             border: `1px solid ${dk.border}`, borderRadius: '6px', padding: '8px 12px',
-            fontSize: '14px', fontFamily: 'Geist, -apple-system, sans-serif', outline: 'none', color: dk.t1,
+            fontSize: '14px', fontFamily: 'Inter, sans-serif', outline: 'none', color: dk.t1,
             background: isDark ? 'transparent' : '#FFFFFF',
           }}
         />

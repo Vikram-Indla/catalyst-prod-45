@@ -169,7 +169,7 @@ export function R360ItemDetailDrawer({ itemId, isOpen, onClose }: R360ItemDetail
                   <span className="days-num" style={{
                     color: ageDays >= 29 ? 'var(--cp-danger, #DC2626)' :
                            ageDays >= 15 ? 'var(--cp-warning, #D97706)' :
-                           'var(--cp-ink, rgba(237,237,237,0.93))'
+                           'var(--cp-ink, #0F172A)'
                   }}>{ageDays}</span>
                   <div className="days-track">
                     <div className={`days-fill ${daysFill}`} style={{ width: `${daysPct}%` }} />
@@ -214,7 +214,7 @@ export function R360ItemDetailDrawer({ itemId, isOpen, onClose }: R360ItemDetail
                   </div>
                 </>
               ) : (
-                <div style={{ fontSize: 12, color: 'var(--cp-ink-muted, rgba(237,237,237,0.40))' }}>— No parent</div>
+                <div style={{ fontSize: 12, color: 'var(--cp-ink-muted, #64748B)' }}>— No parent</div>
               )}
             </div>
           </>

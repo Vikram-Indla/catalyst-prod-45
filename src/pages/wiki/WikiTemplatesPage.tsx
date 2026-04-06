@@ -169,7 +169,7 @@ export default function WikiTemplatesPage() {
 
   return (
     <div style={{
-      fontFamily: 'Geist, -apple-system, sans-serif',
+      fontFamily: 'Inter, sans-serif',
       color: isDark ? '#EDEDED' : '#0F172A',
       background: isDark ? '#0A0A0A' : '#F8FAFC',
       minHeight: '100%', padding: '24px 40px 48px',

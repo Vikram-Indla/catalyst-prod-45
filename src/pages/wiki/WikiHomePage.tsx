@@ -30,8 +30,8 @@ const DOMAIN_ICONS: Record<string, React.ComponentType<any>> = {
 };
 
 const TAG_STYLES: Record<string, { bg: string; color: string }> = {
-  CORE: { bg: '#DBEAFE', color: '#7DB8FC' },
-  REGULATORY: { bg: 'rgba(251,191,36,0.10)', color: '#FBBF24' },
+  CORE: { bg: '#DBEAFE', color: '#1E40AF' },
+  REGULATORY: { bg: '#FEF3C7', color: '#92400E' },
   SUPPORT: { bg: '#E0E7FF', color: '#3730A3' },
 };
 
@@ -313,20 +313,20 @@ StatCard.displayName = 'StatCard';
 
 /* ── Domain color map for quick ref icons ── */
 const DOMAIN_COLORS: Record<string, { bg: string; fg: string }> = {
-  D1: { bg: '#DBEAFE', fg: '#7DB8FC' },   // blue
+  D1: { bg: '#DBEAFE', fg: '#1E40AF' },   // blue
   D2: { bg: '#CFFAFE', fg: '#0E7490' },   // cyan
-  D3: { bg: 'rgba(251,191,36,0.10)', fg: '#FBBF24' },   // amber
+  D3: { bg: '#FEF3C7', fg: '#92400E' },   // amber
   D4: { bg: '#DCFCE7', fg: '#166534' },   // green
-  D5: { bg: '#EDE9FE', fg: '#A78BFA' },   // purple
-  D6: { bg: '#DBEAFE', fg: '#7DB8FC' },   // blue
+  D5: { bg: '#EDE9FE', fg: '#5B21B6' },   // purple
+  D6: { bg: '#DBEAFE', fg: '#1E40AF' },   // blue
   D7: { bg: '#CCFBF1', fg: '#0F766E' },   // teal
-  D8: { bg: '#DBEAFE', fg: '#7DB8FC' },   // blue
-  D9: { bg: 'rgba(251,191,36,0.10)', fg: '#FBBF24' },   // amber
+  D8: { bg: '#DBEAFE', fg: '#1E40AF' },   // blue
+  D9: { bg: '#FEF3C7', fg: '#92400E' },   // amber
 };
 
 /* ── Quick Ref Card ── */
 const QuickRefCard = React.memo(({ qr, onClick, isDark }: { qr: any; onClick: () => void; isDark?: boolean }) => {
-  const dc = DOMAIN_COLORS[qr.domain_code] || { bg: '#1A1A1A', fg: 'rgba(237,237,237,0.40)' };
+  const dc = DOMAIN_COLORS[qr.domain_code] || { bg: '#F1F5F9', fg: '#64748B' };
   const Icon = DOMAIN_ICONS[qr.domain_code] || FileText;
   return (
     <div onClick={onClick} style={{
@@ -353,7 +353,7 @@ QuickRefCard.displayName = 'QuickRefCard';
 const DomainCard = React.memo(({ d, Icon, navigate, isDark }: { d: any; Icon: React.ComponentType<any>; navigate: any; isDark?: boolean }) => {
   const [hovered, setHovered] = useState(false);
   const tagStyle = TAG_STYLES[d.tag] || TAG_STYLES.SUPPORT;
-  const dc = DOMAIN_COLORS[d.domain_code] || { bg: '#1A1A1A', fg: 'rgba(237,237,237,0.40)' };
+  const dc = DOMAIN_COLORS[d.domain_code] || { bg: '#F1F5F9', fg: '#64748B' };
   const coverageColor = d.coverage_percent >= 80 ? '#16A34A' : d.coverage_percent >= 60 ? '#2563EB' : '#D97706';
 
   return (

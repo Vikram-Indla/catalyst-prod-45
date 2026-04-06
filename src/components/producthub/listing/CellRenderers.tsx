@@ -12,7 +12,7 @@ const TYPE_ICON_MAP: Record<string, { Icon: LucideIcon; color: string }> = {
   project: { Icon: FolderKanban, color: '#2563EB' },
   enhancement: { Icon: Zap, color: '#0EA5E9' },
   improvement: { Icon: Wrench, color: '#D97706' },
-  entity_integration: { Icon: Link, color: 'rgba(237,237,237,0.40)' },
+  entity_integration: { Icon: Link, color: '#64748B' },
 };
 /* ── Status Cell ── */
 export function StatusCell({ status }: { status: InitiativeStatus }) {
@@ -140,7 +140,7 @@ export function IDCell({ value }: { value: string }) {
 
 /* ── Type Icon Cell — icon only, no text, transparent bg ── */
 export function TypeIconCell({ typeKey }: { typeKey?: string | null }) {
-  const iconConfig = TYPE_ICON_MAP[typeKey || ''] || { Icon: CircleDashed, color: 'rgba(237,237,237,0.40)' };
+  const iconConfig = TYPE_ICON_MAP[typeKey || ''] || { Icon: CircleDashed, color: '#94A3B8' };
   const { Icon, color } = iconConfig;
   return (
     <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }} title={typeKey?.replace(/_/g, ' ') || 'Unknown'}>

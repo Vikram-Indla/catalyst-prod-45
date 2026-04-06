@@ -504,7 +504,7 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
               <Button variant="ghost" size="sm" className="h-9 px-2 rounded-l-lg" onClick={() => navigateView('prev')}>
                 <ChevronLeft className="w-4 h-4" />
               </Button>
-              <span className="px-4 text-sm font-medium text-[rgba(237,237,237,0.53)] dark:text-slate-300 min-w-[160px] text-center">
+              <span className="px-4 text-sm font-medium text-[#334155] dark:text-slate-300 min-w-[160px] text-center">
                 {format(viewStart, 'MMM d')} - {format(viewEnd, 'MMM d, yyyy')}
               </span>
               <Button variant="ghost" size="sm" className="h-9 px-2 rounded-r-lg" onClick={() => navigateView('next')}>
@@ -522,7 +522,7 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
                     "px-4 py-1.5 text-sm font-medium rounded-md transition-all capitalize",
                     viewMode === mode
                       ? "bg-[#2563eb] text-white shadow-sm"
-                      : "text-[#64748b] dark:text-slate-400 hover:text-[rgba(237,237,237,0.53)] dark:hover:text-slate-300"
+                      : "text-[#64748b] dark:text-slate-400 hover:text-[#334155] dark:hover:text-slate-300"
                   )}
                 >
                   {mode.charAt(0).toUpperCase() + mode.slice(1)}
@@ -999,7 +999,7 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
                                                 "task-title ml-1.5 text-[13px] font-medium truncate flex-1",
                                                 task.status_slug === 'done' && "line-through opacity-70"
                                               )}
-                                              style={{ color: wsColors.textDark || 'rgba(237,237,237,0.53)' }}
+                                              style={{ color: wsColors.textDark || '#334155' }}
                                             >
                                               {task.title}
                                             </span>
@@ -1084,7 +1084,7 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
               <div className="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mx-auto mb-4">
                 <CalendarDays className="w-8 h-8 text-[#94a3b8] dark:text-slate-500" />
               </div>
-              <h3 className="text-lg font-medium text-[rgba(237,237,237,0.53)] dark:text-slate-300 mb-1">
+              <h3 className="text-lg font-medium text-[#334155] dark:text-slate-300 mb-1">
                 No tasks to display on timeline
               </h3>
               <p className="text-sm text-[#64748b] dark:text-slate-400">

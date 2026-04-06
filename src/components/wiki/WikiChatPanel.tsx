@@ -151,7 +151,7 @@ export function WikiChatPanel({ open, onClose }: { open: boolean; onClose: () =>
           placeholder="Ask a question..."
           style={{
             flex: 1, height: 50, padding: '8px 12px', borderRadius: 8, fontSize: 12.5,
-            border: `0.75px solid ${border}`, outline: 'none', fontFamily: 'Geist, -apple-system, sans-serif',
+            border: `0.75px solid ${border}`, outline: 'none', fontFamily: 'Inter, sans-serif',
             background: isDark ? '#0A0A0A' : 'var(--bg-1)', color: isDark ? '#EDEDED' : undefined,
           }}
           onFocus={e => { e.currentTarget.style.borderColor = 'var(--cp-blue)'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.08)'; }}

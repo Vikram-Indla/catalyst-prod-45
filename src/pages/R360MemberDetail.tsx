@@ -81,7 +81,7 @@ function StatusPill({ label, color, bg, dot }: { label: string; color: string; b
 
 // ── Project tag ──
 function ProjTag({ projectKey }: { projectKey: string }) {
-  const bg = R360_PROJECT_COLORS[projectKey] || 'rgba(237,237,237,0.40)';
+  const bg = R360_PROJECT_COLORS[projectKey] || '#64748B';
   return <span className="r3-proj-tag" style={{ background: bg }}>{projectKey}</span>;
 }
 
@@ -96,7 +96,7 @@ function priorityDotColor(p: string) {
   if (l === 'highest' || l === 'critical') return '#EF4444';
   if (l === 'high') return '#F97316';
   if (l === 'medium') return '#D97706';
-  return 'rgba(237,237,237,0.40)';
+  return '#94A3B8';
 }
 
 // ── Priority border color for board/ring cards (D-R7) ──
@@ -104,7 +104,7 @@ function priorityBorderColor(p: string): string {
   const l = (p || '').toLowerCase();
   if (l === 'highest' || l === 'critical' || l === 'high') return '#DC2626';
   if (l === 'medium') return '#D97706';
-  return 'rgba(237,237,237,0.40)';
+  return '#94A3B8';
 }
 
 // ── Mini Avatar for assignee on contributed items ──
@@ -233,7 +233,7 @@ function WeekStripCollapsible({
               padding: '5px 14px', fontSize: '12.5px', fontWeight: isActive ? 600 : 500,
               borderRadius: '6px', cursor: 'pointer', transition: 'all var(--cp-duration-fast, 0.15s) ease',
               background: isActive ? 'rgba(37,99,235,0.10)' : 'transparent',
-              color: isActive ? '#2563EB' : 'rgba(237,237,237,0.40)',
+              color: isActive ? '#2563EB' : '#64748B',
               border: 'none',
             }}
             onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = isDark ? 'rgba(255,255,255,0.04)' : 'rgba(15,23,42,0.04)'; }}
@@ -570,7 +570,7 @@ export default function R360MemberDetail() {
     );
   }
 
-  const deptColor = R360_DEPT_COLORS[overview.department] || 'rgba(237,237,237,0.40)';
+  const deptColor = R360_DEPT_COLORS[overview.department] || '#64748B';
 
   return (
     <>
@@ -597,16 +597,16 @@ export default function R360MemberDetail() {
                     onClick={() => setTicketListMode(bannerOpenCount > 0 ? 'open' : null)}
                     style={{ padding: '12px 16px', borderRadius: '8px', minWidth: '76px', textAlign: 'center' as const, background: isDark ? 'rgba(37,99,235,0.12)' : '#EFF6FF', cursor: bannerOpenCount > 0 ? 'pointer' : 'default', transition: 'all 80ms ease' }}
                     onMouseEnter={e => { if (bannerOpenCount > 0) (e.currentTarget.style.background = 'rgba(37,99,235,0.12)'); }}
-                    onMouseLeave={e => { e.currentTarget.style.background = 'rgba(59,130,246,0.06)'; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = '#EFF6FF'; }}
                   >
                     <div style={{ fontSize: '20px', fontWeight: 700, color: '#2563EB' }}>{bannerOpenCount}</div>
                     <div style={{ fontSize: '11px', fontWeight: 600, color: '#2563EB', textTransform: 'uppercase' as const, letterSpacing: '.03em' }}>OPEN</div>
                   </div>
                   <div
                     onClick={() => setTicketListMode(bannerStaleCount > 0 ? 'stale' : null)}
-                    style={{ padding: '12px 16px', borderRadius: '8px', minWidth: '76px', textAlign: 'center' as const, background: 'rgba(248,113,113,0.06)', cursor: bannerStaleCount > 0 ? 'pointer' : 'default', transition: 'all 80ms ease' }}
+                    style={{ padding: '12px 16px', borderRadius: '8px', minWidth: '76px', textAlign: 'center' as const, background: '#FEF2F2', cursor: bannerStaleCount > 0 ? 'pointer' : 'default', transition: 'all 80ms ease' }}
                     onMouseEnter={e => { if (bannerStaleCount > 0) (e.currentTarget.style.background = 'rgba(220,38,38,0.12)'); }}
-                    onMouseLeave={e => { e.currentTarget.style.background = 'rgba(248,113,113,0.06)'; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = '#FEF2F2'; }}
                   >
                     <div style={{ fontSize: '20px', fontWeight: 700, color: '#DC2626' }}>{bannerStaleCount}</div>
                     <div style={{ fontSize: '11px', fontWeight: 600, color: '#DC2626', textTransform: 'uppercase' as const, letterSpacing: '.03em' }}>STALE</div>
@@ -616,7 +616,7 @@ export default function R360MemberDetail() {
 
               {/* §3 — Stale warning banner */}
               {allStale && allOpenItems.length > 0 && (
-                <div style={{ margin: '8px 0 0', padding: '8px 12px', background: '#FFFBEB', borderLeft: '3px solid #D97706', borderRadius: '0 4px 4px 0', fontSize: '13px', color: '#FBBF24' }}>
+                <div style={{ margin: '8px 0 0', padding: '8px 12px', background: '#FFFBEB', borderLeft: '3px solid #D97706', borderRadius: '0 4px 4px 0', fontSize: '13px', color: '#92400E' }}>
                   ⚠️ All assigned items are stale. Oldest: {oldestAge} days.
                 </div>
               )}
@@ -895,10 +895,10 @@ function PriorityBadge({ priority }: { priority: string }) {
   const { isDark } = useTheme();
   const p = (priority || '').toLowerCase();
   if (p === 'highest' || p === 'critical') {
-    return <span style={{ fontSize: '11px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', background: 'rgba(248,113,113,0.06)', color: '#DC2626' }}>{priority}</span>;
+    return <span style={{ fontSize: '11px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', background: '#FEF2F2', color: '#DC2626' }}>{priority}</span>;
   }
   if (p === 'high') {
-    return <span style={{ fontSize: '11px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', background: 'rgba(248,113,113,0.06)', color: '#DC2626' }}>{priority}</span>;
+    return <span style={{ fontSize: '11px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', background: '#FEF2F2', color: '#DC2626' }}>{priority}</span>;
   }
   return <span style={{ fontSize: '10.5px', fontWeight: 500, color: isDark ? '#878787' : '#64748B' }}>{priority}</span>;
 }
@@ -1020,7 +1020,7 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected, overview, 
               const resolvedLabel = closedDate ? new Date(closedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
               return (
                 <div key={item.id} onClick={(e) => { e.stopPropagation(); onSelect(item); setShowDone(false); }}
-                  style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', padding: '10px 16px', cursor: 'pointer', borderBottom: '1px solid #1A1A1A', transition: 'background 80ms' }}
+                  style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', padding: '10px 16px', cursor: 'pointer', borderBottom: '1px solid #F8FAFC', transition: 'background 80ms' }}
                   onMouseEnter={e => (e.currentTarget.style.background = isDark ? 'rgba(255,255,255,0.04)' : 'rgba(15,23,42,0.04)')}
                   onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                 >
@@ -1084,9 +1084,9 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected, overview, 
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px', fontSize: '13px' }}>
             <span style={{ fontWeight: 650, color: isDark ? '#A1A1A1' : '#334155' }}>{nonDone.length} open</span>
             <span style={{ color: isDark ? '#878787' : '#94A3B8' }}>·</span>
-            <span style={{ fontWeight: 650, color: staleItems.length > 0 ? '#DC2626' : 'rgba(237,237,237,0.53)' }}>{staleItems.length} stale</span>
+            <span style={{ fontWeight: 650, color: staleItems.length > 0 ? '#DC2626' : '#334155' }}>{staleItems.length} stale</span>
             <span style={{ color: isDark ? '#878787' : '#94A3B8' }}>·</span>
-            <span style={{ fontWeight: 650, color: doneCount > 0 ? '#FFFFFF' : 'rgba(237,237,237,0.53)' }}>{doneCount} done</span>
+            <span style={{ fontWeight: 650, color: doneCount > 0 ? '#FFFFFF' : '#334155' }}>{doneCount} done</span>
           </div>
 
           {/* Divider */}
@@ -1099,7 +1099,7 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected, overview, 
               {nonDone.map(item => {
                 const hasHighP = isHighPriority(item.priority);
                 const hasMedP = isMediumPriority(item.priority);
-                const borderColor = hasHighP ? '#DC2626' : hasMedP ? '#D97706' : 'rgba(237,237,237,0.40)';
+                const borderColor = hasHighP ? '#DC2626' : hasMedP ? '#D97706' : '#94A3B8';
                 const fromClass = getFromTagClass(item.age_days);
                 return (
                   <div key={item.id} onClick={() => onSelect(item)} style={{
@@ -1191,11 +1191,11 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected, overview, 
   // ══════════════════════════════════════════
   return (
     <div ref={canvasRef} className="r3-ring-canvas" style={{ marginTop: '8px', overflow: 'visible', position: 'relative' }}>
-      {/* SVG CONNECTORS — 2px solid rgba(237,237,237,0.53), avatar-edge to card-edge */}
+      {/* SVG CONNECTORS — 2px solid #CBD5E1, avatar-edge to card-edge */}
       <svg width={W} height={RING_CANVAS_H} style={{ position: 'absolute', top: 0, left: 0, zIndex: 0, pointerEvents: 'none', overflow: 'visible' }}>
         {spokes.map((s, i) => (
           <line key={i} x1={s.x1} y1={s.y1} x2={s.x2} y2={s.y2}
-            stroke="rgba(237,237,237,0.53)" strokeWidth={2} opacity={1} />
+            stroke="#CBD5E1" strokeWidth={2} opacity={1} />
         ))}
       </svg>
 
@@ -1260,7 +1260,7 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected, overview, 
                 <span style={{
                   marginLeft: 'auto', fontSize: '10px', fontWeight: 600,
                   padding: '1px 6px', borderRadius: '4px', background: isDark ? '#0A0A0A' : '#F8FAFC',
-                  color: item.age_days > 30 ? '#D97706' : 'rgba(237,237,237,0.40)',
+                  color: item.age_days > 30 ? '#D97706' : '#64748B',
                   fontFamily: "'JetBrains Mono', monospace",
                 }}>{item.age_days}d</span>
               </div>
@@ -1301,7 +1301,7 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected, overview, 
             disabled={safePage === 0}
             style={{
               background: 'none', border: 'none', cursor: safePage === 0 ? 'default' : 'pointer',
-              color: safePage === 0 ? 'rgba(237,237,237,0.53)' : '#2563EB', fontSize: '13px', fontWeight: 700,
+              color: safePage === 0 ? '#CBD5E1' : '#2563EB', fontSize: '13px', fontWeight: 700,
               padding: '0 4px', lineHeight: 1,
             }}
             aria-label="Previous page"
@@ -1314,7 +1314,7 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected, overview, 
             disabled={safePage >= totalPages - 1}
             style={{
               background: 'none', border: 'none', cursor: safePage >= totalPages - 1 ? 'default' : 'pointer',
-              color: safePage >= totalPages - 1 ? 'rgba(237,237,237,0.53)' : '#2563EB', fontSize: '13px', fontWeight: 700,
+              color: safePage >= totalPages - 1 ? '#CBD5E1' : '#2563EB', fontSize: '13px', fontWeight: 700,
               padding: '0 4px', lineHeight: 1,
             }}
             aria-label="Next page"
@@ -1870,7 +1870,7 @@ function TicketListDrawer({ mode, items, onClose, onSelectItem }: {
   const title = isStale ? 'Stale Items' : 'Open Items';
   const { isDark } = useTheme();
   const accentColor = isStale ? '#DC2626' : '#2563EB';
-  const accentBg = isStale ? 'rgba(248,113,113,0.06)' : 'rgba(59,130,246,0.06)';
+  const accentBg = isStale ? '#FEF2F2' : '#EFF6FF';
 
   return (
     <>

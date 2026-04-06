@@ -682,7 +682,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
   const listNameStyle: React.CSSProperties = {
     fontSize: 15,
     fontWeight: 500,
-    color: 'rgba(237,237,237,0.53)',
+    color: '#334155',
   };
 
   const weekNavBtnStyle: React.CSSProperties = {

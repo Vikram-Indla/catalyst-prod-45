@@ -131,7 +131,7 @@ export default function TagsListPage() {
       {/* Filters */}
       <div style={{ display: 'flex', gap: 12, marginBottom: 24, flexWrap: 'wrap', alignItems: 'center' }}>
         <div style={{ position: 'relative', flex: '1 1 300px', maxWidth: 400 }}>
-          <Search size={18} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: 'rgba(237,237,237,0.40)' }} />
+          <Search size={18} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: '#94A3B8' }} />
           <input type="text" placeholder="Search tags..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}
             style={{ width: '100%', height: 44, padding: '0 14px 0 44px', border: isDark ? '1.5px solid rgba(255,255,255,0.08)' : '1.5px solid #E2E8F0', borderRadius: 12, fontSize: 14, backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#EDEDED' : undefined }} />
         </div>
@@ -174,7 +174,7 @@ export default function TagsListPage() {
                     <span style={{ fontSize: 11, color: isDark ? '#878787' : '#94A3B8', backgroundColor: isDark ? '#1A1A1A' : '#F1F5F9', padding: '2px 6px', borderRadius: 4 }}>{tag.usage_count}</span>
                     <div style={{ display: 'flex', gap: 4, marginLeft: 4 }}>
                       <button onClick={(e) => { e.stopPropagation(); setEditingTag(tag); setShowCreateModal(true); }}
-                        style={{ width: 24, height: 24, border: 'none', borderRadius: 4, backgroundColor: 'transparent', color: 'rgba(237,237,237,0.40)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        style={{ width: 24, height: 24, border: 'none', borderRadius: 4, backgroundColor: 'transparent', color: '#64748B', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <Edit2 size={12} />
                       </button>
                       <button onClick={(e) => { e.stopPropagation(); deleteTag(tag.id, tag.name); }}

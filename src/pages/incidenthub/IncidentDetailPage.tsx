@@ -143,7 +143,7 @@ export default function IncidentDetailPage() {
             <div className="flex items-center gap-3 p-3 mb-4" style={{
               backgroundColor: isDark
                 ? (slaBreached ? 'rgba(248,113,113,0.12)' : 'rgba(251,191,36,0.12)')
-                : (slaBreached ? 'rgba(248,113,113,0.06)' : '#FFFBEB'),
+                : (slaBreached ? '#FEF2F2' : '#FFFBEB'),
               border: `1px solid ${isDark
                 ? (slaBreached ? 'rgba(248,113,113,0.2)' : 'rgba(251,191,36,0.2)')
                 : (slaBreached ? '#FECACA' : '#FDE68A')}`,
@@ -151,7 +151,7 @@ export default function IncidentDetailPage() {
             }}>
               <Clock size={16} style={{ color: slaBreached ? '#DC2626' : '#D97706' }} />
               <div>
-                <span style={{ fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 12, color: slaBreached ? '#DC2626' : '#D97706', fontWeight: 650 }}>
+                <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: slaBreached ? '#DC2626' : '#D97706', fontWeight: 650 }}>
                   {slaBreached ? 'SLA BREACHED' : 'SLA breach in '}
                 </span>
                 <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 14, fontWeight: 700, color: slaBreached ? '#DC2626' : '#D97706' }}>
@@ -192,7 +192,7 @@ export default function IncidentDetailPage() {
                   onClick={() => setActiveTab(tab)}
                   className="px-3 py-1.5 text-xs capitalize"
                   style={{
-                    fontFamily: 'Geist, -apple-system, sans-serif',
+                    fontFamily: 'Inter, sans-serif',
                     fontWeight: activeTab === tab ? 650 : 400,
                     color: activeTab === tab ? '#2563EB' : (isDark ? '#878787' : '#64748B'),
                     borderBottom: activeTab === tab ? '2px solid #2563EB' : '2px solid transparent',
@@ -212,7 +212,7 @@ export default function IncidentDetailPage() {
                     placeholder="Add a comment..."
                     value={commentText}
                     onChange={e => setCommentText(e.target.value)}
-                    style={{ fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 13, minHeight: 60, borderRadius: 4 }}
+                    style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, minHeight: 60, borderRadius: 4 }}
                   />
                   <div className="flex items-center gap-2 mt-2">
                     <Button size="sm" style={{ backgroundColor: '#2563EB', borderRadius: 6 }} onClick={handleSaveComment} disabled={!commentText.trim()}>

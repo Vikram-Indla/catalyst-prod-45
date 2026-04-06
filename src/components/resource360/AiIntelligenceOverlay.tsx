@@ -317,7 +317,7 @@ const AiIntelligenceOverlay: React.FC<AiIntelligenceOverlayProps> = ({ resourceI
             <Section title="Hub Lifetime Performance" isDark={isDark}>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))', gap: 10 }}>
                 {(hubDist || []).map((h: any) => {
-                  const hubColor = HUB_COLORS[h.source_hub] || 'rgba(237,237,237,0.40)';
+                  const hubColor = HUB_COLORS[h.source_hub] || '#64748B';
                   return (
                     <div key={h.source_hub} style={{
                       padding: '10px 12px', borderRadius: 8,
@@ -382,7 +382,7 @@ const AiIntelligenceOverlay: React.FC<AiIntelligenceOverlayProps> = ({ resourceI
                       </div>
                     ))}
                     {roleExp.anomalies?.length > 0 && (
-                      <div style={{ marginTop: 10, padding: '8px 12px', borderRadius: 6, background: 'rgba(251,191,36,0.10)', fontSize: 11, color: '#FBBF24' }}>
+                      <div style={{ marginTop: 10, padding: '8px 12px', borderRadius: 6, background: '#FEF3C7', fontSize: 11, color: '#92400E' }}>
                         ⚠️ {roleExp.anomalies.join('; ')}
                       </div>
                     )}
@@ -436,7 +436,7 @@ const AiIntelligenceOverlay: React.FC<AiIntelligenceOverlayProps> = ({ resourceI
                     </svg>
                     <div style={{
                       marginTop: 8, fontSize: 12, fontWeight: 700, padding: '4px 12px', borderRadius: 6,
-                      background: standing.verdict === 'on_track' ? '#D1FAE5' : standing.verdict === 'at_risk' ? 'rgba(251,191,36,0.10)' : 'rgba(248,113,113,0.10)',
+                      background: standing.verdict === 'on_track' ? '#D1FAE5' : standing.verdict === 'at_risk' ? '#FEF3C7' : '#FEE2E2',
                       color: standing.verdict === 'on_track' ? '#059669' : standing.verdict === 'at_risk' ? '#D97706' : '#DC2626',
                       textTransform: 'uppercase',
                     }}>
@@ -474,7 +474,7 @@ const AiIntelligenceOverlay: React.FC<AiIntelligenceOverlayProps> = ({ resourceI
                     )}
 
                     {standing.critical_path_items?.length > 0 && (
-                      <div style={{ marginTop: 10, padding: '8px 12px', borderRadius: 6, background: 'rgba(248,113,113,0.10)', fontSize: 11, color: '#DC2626' }}>
+                      <div style={{ marginTop: 10, padding: '8px 12px', borderRadius: 6, background: '#FEE2E2', fontSize: 11, color: '#DC2626' }}>
                         🚨 Critical Path: {standing.critical_path_items.join(', ')}
                       </div>
                     )}

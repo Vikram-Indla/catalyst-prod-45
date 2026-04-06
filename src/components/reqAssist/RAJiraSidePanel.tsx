@@ -340,7 +340,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                   window.open(`https://jira.example.com/browse/${brdData.parentJiraKey}`, '_blank');
                 }}
               >{brdData.parentJiraKey}</span>
-              <ChevronRight size={10} color="rgba(237,237,237,0.53)" />
+              <ChevronRight size={10} color="#CBD5E1" />
               <span style={{ color: 'var(--fg-2)', fontWeight: 600 }}>{doc.jira_ticket_key}</span>
             </div>
           )}
@@ -350,7 +350,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
               lineHeight: '20px', fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
               background: lozenge.bg, color: lozenge.color, fontFamily: "'Inter', sans-serif",
             }}>{lozenge.label}</span>
-            <span style={{ width: 3, height: 3, borderRadius: '50%', background: 'rgba(237,237,237,0.53)', flexShrink: 0 }} />
+            <span style={{ width: 3, height: 3, borderRadius: '50%', background: '#CBD5E1', flexShrink: 0 }} />
             <span style={{ fontSize: 12, color: 'var(--fg-4)', fontFamily: "'Inter', sans-serif" }}>
               Imported {formatTimestamp(doc.created_at)}
             </span>
@@ -923,10 +923,10 @@ function TicketTypeBadgeDrawer({ type }: { type: string | null }) {
   if (!type) return null;
   const dark = document.documentElement.classList.contains('dark');
   const map: Record<string, { bg: string; color: string; label: string }> = {
-    subtask: { bg: dark ? 'rgba(217,119,6,0.15)' : 'rgba(251,191,36,0.10)', color: dark ? '#FBBF24' : '#FBBF24', label: 'SUBTASK' },
-    story: { bg: dark ? 'rgba(37,99,235,0.12)' : 'rgba(59,130,246,0.06)', color: dark ? '#60A5FA' : '#1D4ED8', label: 'STORY' },
+    subtask: { bg: dark ? 'rgba(217,119,6,0.15)' : '#FEF3C7', color: dark ? '#FBBF24' : '#92400E', label: 'SUBTASK' },
+    story: { bg: dark ? 'rgba(37,99,235,0.12)' : '#EFF6FF', color: dark ? '#60A5FA' : '#1D4ED8', label: 'STORY' },
     epic: { bg: dark ? 'rgba(124,58,237,0.15)' : '#F3E8FF', color: dark ? '#A78BFA' : '#6B21A8', label: 'EPIC' },
-    task: { bg: dark ? '#1A1A1A' : '#1A1A1A', color: 'var(--fg-2)', label: 'TASK' },
+    task: { bg: dark ? '#1A1A1A' : '#F1F5F9', color: 'var(--fg-2)', label: 'TASK' },
   };
   const s = map[type] || map['task']!;
   return (

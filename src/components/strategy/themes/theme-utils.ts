@@ -21,20 +21,20 @@ export function deriveHealthStatus(theme: StrategicTheme): HealthStatus {
 type StatusStyle = { label: string; bg: string; text: string; dot: string };
 export const STATUS_CONFIG: Record<HealthStatus, StatusStyle> = {
   on_track:  { label: 'On Track',  bg: 'rgba(220,252,231,0.7)',  text: '#15803d', dot: '#16A34A' },
-  at_risk:   { label: 'At Risk',   bg: 'rgba(254,243,199,0.6)',  text: '#FBBF24', dot: '#D97706' },
-  off_track: { label: 'Off Track', bg: 'rgba(254,226,226,0.6)',  text: '#F87171', dot: '#DC2626' },
-  planned:   { label: 'Planned',   bg: '#1A1A1A', text: '#475569', dot: 'rgba(237,237,237,0.40)' },
+  at_risk:   { label: 'At Risk',   bg: 'rgba(254,243,199,0.6)',  text: '#92400E', dot: '#D97706' },
+  off_track: { label: 'Off Track', bg: 'rgba(254,226,226,0.6)',  text: '#991B1B', dot: '#DC2626' },
+  planned:   { label: 'Planned',   bg: '#F1F5F9', text: '#475569', dot: '#94A3B8' },
   completed: { label: 'Completed', bg: 'rgba(238,242,255,0.7)', text: '#3730A3', dot: '#6366F1' },
-  draft:     { label: 'Planned',   bg: '#1A1A1A', text: '#475569', dot: 'rgba(237,237,237,0.40)' },
+  draft:     { label: 'Planned',   bg: '#F1F5F9', text: '#475569', dot: '#94A3B8' },
 };
 
 export const STATUS_CONFIG_DARK: Record<HealthStatus, StatusStyle> = {
   on_track:  { label: 'On Track',  bg: '#182820', text: '#86EFAC', dot: '#16A34A' },
   at_risk:   { label: 'At Risk',   bg: '#2A2418', text: '#FBBF24', dot: '#D97706' },
   off_track: { label: 'Off Track', bg: '#2A1C1E', text: '#FCA5A5', dot: '#DC2626' },
-  planned:   { label: 'Planned',   bg: '#1A1A1A', text: '#B8BCC8', dot: 'rgba(237,237,237,0.40)' },
+  planned:   { label: 'Planned',   bg: '#1A1A1A', text: '#B8BCC8', dot: '#94A3B8' },
   completed: { label: 'Completed', bg: '#1A2030', text: '#93C5FD', dot: '#6366F1' },
-  draft:     { label: 'Planned',   bg: '#1A1A1A', text: '#B8BCC8', dot: 'rgba(237,237,237,0.40)' },
+  draft:     { label: 'Planned',   bg: '#1A1A1A', text: '#B8BCC8', dot: '#94A3B8' },
 };
 
 export function getStatusConfig(health: HealthStatus, isDark: boolean): StatusStyle {
@@ -44,14 +44,14 @@ export function getStatusConfig(health: HealthStatus, isDark: boolean): StatusSt
 // ═══ BSC PERSPECTIVE — Light / Dark ═══
 type BscStyle = { label: string; bg: string; text: string; border: string };
 export const BSC_CONFIG: Record<string, BscStyle> = {
-  'Financial':        { label: 'Financial',        bg: 'rgba(254,243,199,0.3)', text: '#FBBF24', border: '#FDE68A' },
-  'Customer':         { label: 'Customer',         bg: 'rgba(219,234,254,0.3)', text: '#7DB8FC', border: '#BFDBFE' },
+  'Financial':        { label: 'Financial',        bg: 'rgba(254,243,199,0.3)', text: '#92400E', border: '#FDE68A' },
+  'Customer':         { label: 'Customer',         bg: 'rgba(219,234,254,0.3)', text: '#1E40AF', border: '#BFDBFE' },
   'Internal Process': { label: 'Internal Process', bg: 'rgba(204,251,241,0.3)', text: '#115E59', border: '#99F6E4' },
-  'Learning & Growth':{ label: 'Learning & Growth',bg: 'rgba(237,233,254,0.3)', text: '#A78BFA', border: '#DDD6FE' },
-  financial:        { label: 'Financial',        bg: 'rgba(254,243,199,0.3)', text: '#FBBF24', border: '#FDE68A' },
-  customer:         { label: 'Customer',         bg: 'rgba(219,234,254,0.3)', text: '#7DB8FC', border: '#BFDBFE' },
+  'Learning & Growth':{ label: 'Learning & Growth',bg: 'rgba(237,233,254,0.3)', text: '#5B21B6', border: '#DDD6FE' },
+  financial:        { label: 'Financial',        bg: 'rgba(254,243,199,0.3)', text: '#92400E', border: '#FDE68A' },
+  customer:         { label: 'Customer',         bg: 'rgba(219,234,254,0.3)', text: '#1E40AF', border: '#BFDBFE' },
   internal_process: { label: 'Internal Process', bg: 'rgba(204,251,241,0.3)', text: '#115E59', border: '#99F6E4' },
-  learning_growth:  { label: 'Learning & Growth',bg: 'rgba(237,233,254,0.3)', text: '#A78BFA', border: '#DDD6FE' },
+  learning_growth:  { label: 'Learning & Growth',bg: 'rgba(237,233,254,0.3)', text: '#5B21B6', border: '#DDD6FE' },
 };
 
 export const BSC_CONFIG_DARK: Record<string, BscStyle> = {
@@ -83,7 +83,7 @@ export const PRIORITY_CONFIG: Record<string, { label: string; color: string }> =
   critical: { label: 'Critical', color: '#DC2626' },
   high:     { label: 'High',     color: '#D97706' },
   medium:   { label: 'Medium',   color: '#2563EB' },
-  low:      { label: 'Low',      color: 'rgba(237,237,237,0.40)' },
+  low:      { label: 'Low',      color: '#64748B' },
 };
 
 // ═══ COLOR SWATCHES ═══
@@ -113,7 +113,7 @@ export function getInitials(name: string | null): string {
 }
 
 export function getAvatarColor(name: string | null): string {
-  if (!name) return 'rgba(237,237,237,0.40)';
+  if (!name) return '#94A3B8';
   const colors = ['#2563EB', '#0D9488', '#7C3AED', '#D97706', '#EC4899', '#059669', '#DC2626'];
   let hash = 0;
   for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);

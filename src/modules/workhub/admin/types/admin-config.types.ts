@@ -13,7 +13,7 @@ export interface StatusMapping {
 }
 
 export const CATALYST_CATEGORY_COLORS: Record<CatalystCategory, { bg: string; text: string }> = {
-  'To Do':       { bg: 'rgba(148,163,184,0.12)', text: 'rgba(237,237,237,0.40)' },
+  'To Do':       { bg: 'rgba(148,163,184,0.12)', text: '#64748B' },
   'In Progress': { bg: 'rgba(37,99,235,0.1)',     text: '#2563EB' },
   'Blocked':     { bg: 'rgba(239,68,68,0.1)',     text: '#EF4444' },
   'In Review':   { bg: 'rgba(139,92,246,0.1)',    text: '#8B5CF6' },

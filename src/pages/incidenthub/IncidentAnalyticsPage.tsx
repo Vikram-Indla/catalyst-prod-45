@@ -39,7 +39,7 @@ export default function IncidentAnalyticsPage() {
   const maxCount = (arr: [string, number][]) => Math.max(...arr.map(a => a[1]), 1);
 
   const SEV_BAR_COLORS: Record<string, string> = {
-    SEV1: '#DC2626', SEV2: '#D97706', SEV3: '#2563EB', SEV4: 'rgba(237,237,237,0.40)',
+    SEV1: '#DC2626', SEV2: '#D97706', SEV3: '#2563EB', SEV4: '#94A3B8',
   };
 
   const STATUS_BAR_COLORS: Record<string, string> = {
@@ -55,12 +55,12 @@ export default function IncidentAnalyticsPage() {
     <div className="flex-1 overflow-auto" style={{ backgroundColor: isDark ? '#0A0A0A' : '#FFFFFF' }}>
       <div className="px-6 pt-6 pb-4">
         <div className="flex items-center gap-3 mb-6">
-          <div className="flex items-center justify-center rounded-md" style={{ width: 32, height: 32, backgroundColor: 'rgba(59,130,246,0.06)' }}>
+          <div className="flex items-center justify-center rounded-md" style={{ width: 32, height: 32, backgroundColor: '#EFF6FF' }}>
             <BarChart3 size={18} style={{ color: '#2563EB' }} />
           </div>
           <div>
-            <h1 style={{ fontFamily: 'Sora, sans-serif', fontSize: 18, fontWeight: 700, color: 'rgba(237,237,237,0.93)' }}>Analytics</h1>
-            <p style={{ fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 12, color: 'rgba(237,237,237,0.40)' }}>Incident management metrics and trends</p>
+            <h1 style={{ fontFamily: 'Sora, sans-serif', fontSize: 18, fontWeight: 700, color: '#0F172A' }}>Analytics</h1>
+            <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: '#64748B' }}>Incident management metrics and trends</p>
           </div>
         </div>
 
@@ -69,11 +69,11 @@ export default function IncidentAnalyticsPage() {
           {[
             { label: 'Avg Resolution', value: '\u2014', accent: '#2563EB' },
             { label: 'SLA Breach Rate', value: incidents ? `${Math.round((incidents.filter(i => i.resolution_breached).length / Math.max(incidents.length, 1)) * 100)}%` : '0%', accent: '#DC2626' },
-            { label: 'Total Incidents', value: stats.total, accent: 'rgba(237,237,237,0.93)' },
+            { label: 'Total Incidents', value: stats.total, accent: '#0F172A' },
             { label: 'MTTR', value: '\u2014', accent: '#16A34A' },
           ].map(s => (
             <div key={s.label} className="p-3" style={{ backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(15,23,42,0.12)', borderRadius: 6 }}>
-              <div style={{ fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 11, color: 'rgba(237,237,237,0.40)', marginBottom: 4 }}>{s.label}</div>
+              <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: '#64748B', marginBottom: 4 }}>{s.label}</div>
               <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 22, fontWeight: 700, color: s.accent }}>{s.value}</div>
             </div>
           ))}
@@ -83,15 +83,15 @@ export default function IncidentAnalyticsPage() {
         <div className="grid grid-cols-2 gap-4">
           {/* By Severity */}
           <div className="p-4" style={{ border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6 }}>
-            <h3 style={{ fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 13, fontWeight: 700, color: 'rgba(237,237,237,0.93)', marginBottom: 12 }}>Incidents by Severity</h3>
+            <h3 style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 700, color: '#0F172A', marginBottom: 12 }}>Incidents by Severity</h3>
             <div className="space-y-2">
               {analytics.bySeverity.map(([sev, count]) => (
                 <div key={sev} className="flex items-center gap-2">
-                  <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: 'rgba(237,237,237,0.40)', width: 40 }}>{sev}</span>
-                  <div className="flex-1" style={{ height: 16, backgroundColor: '#1A1A1A', borderRadius: 4, overflow: 'hidden' }}>
+                  <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: '#64748B', width: 40 }}>{sev}</span>
+                  <div className="flex-1" style={{ height: 16, backgroundColor: '#F1F5F9', borderRadius: 4, overflow: 'hidden' }}>
                     <div style={{ height: '100%', width: `${(count / maxCount(analytics.bySeverity)) * 100}%`, backgroundColor: SEV_BAR_COLORS[sev] || '#2563EB', borderRadius: 2 }} />
                   </div>
-                  <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: 'rgba(237,237,237,0.93)', width: 24, textAlign: 'right' }}>{count}</span>
+                  <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: '#0F172A', width: 24, textAlign: 'right' }}>{count}</span>
                 </div>
               ))}
             </div>
@@ -99,15 +99,15 @@ export default function IncidentAnalyticsPage() {
 
           {/* By Status */}
           <div className="p-4" style={{ border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6 }}>
-            <h3 style={{ fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 13, fontWeight: 700, color: 'rgba(237,237,237,0.93)', marginBottom: 12 }}>Status Distribution</h3>
+            <h3 style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 700, color: '#0F172A', marginBottom: 12 }}>Status Distribution</h3>
             <div className="space-y-2">
               {analytics.byStatus.map(([status, count]) => (
                 <div key={status} className="flex items-center gap-2">
-                  <span style={{ fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 11, color: 'rgba(237,237,237,0.40)', width: 80, textTransform: 'capitalize' }}>{status.replace(/_/g, ' ')}</span>
-                  <div className="flex-1" style={{ height: 16, backgroundColor: '#1A1A1A', borderRadius: 4, overflow: 'hidden' }}>
+                  <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: '#64748B', width: 80, textTransform: 'capitalize' }}>{status.replace(/_/g, ' ')}</span>
+                  <div className="flex-1" style={{ height: 16, backgroundColor: '#F1F5F9', borderRadius: 4, overflow: 'hidden' }}>
                     <div style={{ height: '100%', width: `${(count / maxCount(analytics.byStatus)) * 100}%`, backgroundColor: '#2563EB', borderRadius: 2 }} />
                   </div>
-                  <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: 'rgba(237,237,237,0.93)', width: 24, textAlign: 'right' }}>{count}</span>
+                  <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: '#0F172A', width: 24, textAlign: 'right' }}>{count}</span>
                 </div>
               ))}
             </div>
@@ -115,15 +115,15 @@ export default function IncidentAnalyticsPage() {
 
           {/* By Assignee */}
           <div className="p-4" style={{ border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6 }}>
-            <h3 style={{ fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 13, fontWeight: 700, color: 'rgba(237,237,237,0.93)', marginBottom: 12 }}>Assignee Workload</h3>
+            <h3 style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 700, color: '#0F172A', marginBottom: 12 }}>Assignee Workload</h3>
             <div className="space-y-2">
               {analytics.byAssignee.slice(0, 8).map(([name, count]) => (
                 <div key={name} className="flex items-center gap-2">
-                  <span style={{ fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 11, color: 'rgba(237,237,237,0.40)', width: 100, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{name}</span>
-                  <div className="flex-1" style={{ height: 16, backgroundColor: '#1A1A1A', borderRadius: 4, overflow: 'hidden' }}>
+                  <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: '#64748B', width: 100, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{name}</span>
+                  <div className="flex-1" style={{ height: 16, backgroundColor: '#F1F5F9', borderRadius: 4, overflow: 'hidden' }}>
                     <div style={{ height: '100%', width: `${(count / maxCount(analytics.byAssignee)) * 100}%`, backgroundColor: '#2563EB', borderRadius: 2 }} />
                   </div>
-                  <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: 'rgba(237,237,237,0.93)', width: 24, textAlign: 'right' }}>{count}</span>
+                  <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: '#0F172A', width: 24, textAlign: 'right' }}>{count}</span>
                 </div>
               ))}
             </div>
@@ -131,8 +131,8 @@ export default function IncidentAnalyticsPage() {
 
           {/* Resolution Trend Placeholder */}
           <div className="p-4 flex items-center justify-center" style={{ border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6, minHeight: 180 }}>
-            <div className="text-center" style={{ backgroundColor: '#1A1A1A', borderRadius: 6, padding: '24px 32px', border: '1px solid rgba(15,23,42,0.08)' }}>
-              <p style={{ fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 12, color: 'rgba(237,237,237,0.40)' }}>[Chart] Resolution Trend over time</p>
+            <div className="text-center" style={{ backgroundColor: '#F1F5F9', borderRadius: 6, padding: '24px 32px', border: '1px solid rgba(15,23,42,0.08)' }}>
+              <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: '#64748B' }}>[Chart] Resolution Trend over time</p>
             </div>
           </div>
         </div>

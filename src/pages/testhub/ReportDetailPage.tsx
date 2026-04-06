@@ -34,7 +34,7 @@ const TYPE_CONFIG: Record<string, { label: string; color: string }> = {
   coverage: { label: 'Coverage', color: '#0891B2' },
   defect: { label: 'Defect Report', color: '#DC2626' },
   trend: { label: 'Trend Analysis', color: '#059669' },
-  custom: { label: 'Custom', color: 'rgba(237,237,237,0.40)' },
+  custom: { label: 'Custom', color: '#64748B' },
 };
 
 export default function ReportDetailPage() {
@@ -207,7 +207,7 @@ export default function ReportDetailPage() {
                   <div style={{ width: `${(data.summary.passed / data.summary.total_cases) * 100}%`, backgroundColor: '#10B981' }} />
                   <div style={{ width: `${(data.summary.failed / data.summary.total_cases) * 100}%`, backgroundColor: '#EF4444' }} />
                   <div style={{ width: `${(data.summary.blocked / data.summary.total_cases) * 100}%`, backgroundColor: '#F59E0B' }} />
-                  <div style={{ width: `${(data.summary.skipped / data.summary.total_cases) * 100}%`, backgroundColor: 'rgba(237,237,237,0.40)' }} />
+                  <div style={{ width: `${(data.summary.skipped / data.summary.total_cases) * 100}%`, backgroundColor: '#94A3B8' }} />
                 </>
               )}
             </div>
@@ -215,7 +215,7 @@ export default function ReportDetailPage() {
               <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><span style={{ width: 10, height: 10, backgroundColor: '#10B981', borderRadius: 4, display: 'inline-block' }} /> Passed ({data.summary.passed})</span>
               <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><span style={{ width: 10, height: 10, backgroundColor: '#EF4444', borderRadius: 4, display: 'inline-block' }} /> Failed ({data.summary.failed})</span>
               <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><span style={{ width: 10, height: 10, backgroundColor: '#F59E0B', borderRadius: 4, display: 'inline-block' }} /> Blocked ({data.summary.blocked})</span>
-              <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><span style={{ width: 10, height: 10, backgroundColor: 'rgba(237,237,237,0.40)', borderRadius: 4, display: 'inline-block' }} /> Not Run ({data.summary.not_run})</span>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><span style={{ width: 10, height: 10, backgroundColor: '#94A3B8', borderRadius: 4, display: 'inline-block' }} /> Not Run ({data.summary.not_run})</span>
             </div>
           </div>
 

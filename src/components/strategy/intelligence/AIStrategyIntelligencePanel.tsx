@@ -65,11 +65,11 @@ export function AIStrategyIntelligencePanel({
   if (!metrics) return null;
 
   const LEVEL_COLORS = [
-    { bg: '#DBEAFE', text: '#7DB8FC', border: '#93C5FD' },
+    { bg: '#DBEAFE', text: '#1E40AF', border: '#93C5FD' },
     { bg: '#CCFBF1', text: '#115E59', border: '#5EEAD4' },
-    { bg: '#DBEAFE', text: '#7DB8FC', border: '#93C5FD' },
-    { bg: 'rgba(251,191,36,0.10)', text: '#FBBF24', border: '#FDE68A' },
-    { bg: '#EDE9FE', text: '#A78BFA', border: '#C4B5FD' },
+    { bg: '#DBEAFE', text: '#1E40AF', border: '#93C5FD' },
+    { bg: '#FEF3C7', text: '#92400E', border: '#FDE68A' },
+    { bg: '#EDE9FE', text: '#5B21B6', border: '#C4B5FD' },
   ];
 
   const chainSegments = [
@@ -130,7 +130,7 @@ export function AIStrategyIntelligencePanel({
           {!metrics.epicKey && (
             <>
               <span className="text-[10px] font-medium" style={{ color: 'var(--fg-4)' }}>›</span>
-              <span className="text-[10px] font-semibold px-2 py-[3px] rounded-md" style={{ color: '#7DB8FC', background: '#DBEAFE', border: '1px solid #93C5FD' }}>⚠ No Epic</span>
+              <span className="text-[10px] font-semibold px-2 py-[3px] rounded-md" style={{ color: '#1E40AF', background: '#DBEAFE', border: '1px solid #93C5FD' }}>⚠ No Epic</span>
             </>
           )}
         </div>
@@ -231,7 +231,7 @@ function StatusDot({ status }: { status: 'on_track' | 'at_risk' | 'critical' }) 
 
 function SectionLabel({ children }: { children: string }) {
   return (
-    <div className="mb-2.5 mt-1" style={{ fontSize: 12, fontWeight: 700, color: 'rgba(237,237,237,0.93)', letterSpacing: '0.04em', textTransform: 'uppercase' as const }}>
+    <div className="mb-2.5 mt-1" style={{ fontSize: 12, fontWeight: 700, color: '#1E293B', letterSpacing: '0.04em', textTransform: 'uppercase' as const }}>
       {children}
     </div>
   );

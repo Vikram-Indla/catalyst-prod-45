@@ -283,7 +283,7 @@ export default function IdeasBacklogPage() {
                       </td>
                       <td style={{ padding: '8px 12px' }}>
                         {idea.roadmap_quarter ? (
-                          <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', height: 18, padding: '0 4px', borderRadius: 4, fontSize: '11px', fontWeight: 700, background: QUARTER_BADGE[idea.roadmap_quarter]?.bg || 'rgba(255,255,255,0.10)', color: QUARTER_BADGE[idea.roadmap_quarter]?.text || 'rgba(237,237,237,0.40)' }}>{idea.roadmap_quarter}</span>
+                          <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', height: 18, padding: '0 4px', borderRadius: 4, fontSize: '11px', fontWeight: 700, background: QUARTER_BADGE[idea.roadmap_quarter]?.bg || '#E2E8F0', color: QUARTER_BADGE[idea.roadmap_quarter]?.text || '#94A3B8' }}>{idea.roadmap_quarter}</span>
                         ) : <span style={{ fontSize: '11px', color: dk.t3 }}>—</span>}
                       </td>
                       <td style={{ padding: '8px 12px' }}>

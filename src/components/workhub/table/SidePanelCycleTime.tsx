@@ -32,7 +32,7 @@ export default function SidePanelCycleTime({ workItemId }: Props) {
     return (
       <div style={{ border: '1px solid var(--bd-default, rgba(255,255,255,0.08))', borderRadius: 6, padding: 16, marginBottom: 20 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 12 }}>
-          <Clock size={16} color="rgba(237,237,237,0.40)" />
+          <Clock size={16} color="#64748B" />
           <span style={{ fontSize: 11, fontWeight: 650, textTransform: 'uppercase', color: 'var(--fg-3)', letterSpacing: '0.06em' }}>Cycle Time</span>
         </div>
         <div style={{ display: 'flex', gap: 12 }}>
@@ -62,7 +62,7 @@ export default function SidePanelCycleTime({ workItemId }: Props) {
     return (
       <div style={{ border: '1px solid var(--bd-default, rgba(255,255,255,0.08))', borderRadius: 6, padding: 16, marginBottom: 20 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
-          <Clock size={16} color="rgba(237,237,237,0.40)" />
+          <Clock size={16} color="#64748B" />
           <span style={{ fontSize: 11, fontWeight: 650, textTransform: 'uppercase', color: 'var(--fg-3)', letterSpacing: '0.06em' }}>Cycle Time</span>
         </div>
         <p style={{ fontSize: 13, color: 'var(--fg-4)', margin: 0 }}>
@@ -76,7 +76,7 @@ export default function SidePanelCycleTime({ workItemId }: Props) {
     <div style={{ border: '1px solid var(--bd-default, rgba(255,255,255,0.08))', borderRadius: 6, padding: 16, marginBottom: 20 }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 12 }}>
-        <Clock size={16} color="rgba(237,237,237,0.40)" />
+        <Clock size={16} color="#64748B" />
         <span style={{ fontSize: 11, fontWeight: 650, textTransform: 'uppercase', color: 'var(--fg-3)', letterSpacing: '0.06em' }}>Cycle Time</span>
       </div>
 

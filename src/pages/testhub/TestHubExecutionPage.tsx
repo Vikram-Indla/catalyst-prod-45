@@ -99,11 +99,11 @@ interface StepStatus {
 
 // ── Status helpers ─────────────────────────────────────────────────────────
 const statusConfigLight: Record<string, { icon: any; color: string; bg: string; label: string }> = {
-  not_run: { icon: Clock, color: 'rgba(237,237,237,0.40)', bg: '#1A1A1A', label: 'Not Run' },
-  passed: { icon: CheckCircle2, color: '#059669', bg: 'rgba(74,222,128,0.06)', label: 'Passed' },
-  failed: { icon: XCircle, color: '#DC2626', bg: 'rgba(248,113,113,0.06)', label: 'Failed' },
+  not_run: { icon: Clock, color: '#64748B', bg: '#F1F5F9', label: 'Not Run' },
+  passed: { icon: CheckCircle2, color: '#059669', bg: '#ECFDF5', label: 'Passed' },
+  failed: { icon: XCircle, color: '#DC2626', bg: '#FEF2F2', label: 'Failed' },
   blocked: { icon: AlertTriangle, color: '#D97706', bg: '#FFFBEB', label: 'Blocked' },
-  skipped: { icon: SkipForward, color: 'rgba(237,237,237,0.40)', bg: '#1A1A1A', label: 'Skipped' },
+  skipped: { icon: SkipForward, color: '#94A3B8', bg: '#F8FAFC', label: 'Skipped' },
 };
 const statusConfigDark: Record<string, { icon: any; color: string; bg: string; label: string }> = {
   not_run: { icon: Clock, color: '#878787', bg: '#1A1A1A', label: 'Not Run' },
@@ -508,7 +508,7 @@ export default function TestHubExecutionPage() {
     if (element) {
       const colors: Record<string, string> = isDark
         ? { passed: 'rgba(34,197,94,0.12)', failed: 'rgba(248,113,113,0.12)', blocked: 'rgba(251,191,36,0.12)', skipped: '#1A1A1A' }
-        : { passed: 'rgba(74,222,128,0.06)', failed: 'rgba(248,113,113,0.06)', blocked: '#FFFBEB', skipped: '#1A1A1A' };
+        : { passed: '#ECFDF5', failed: '#FEF2F2', blocked: '#FFFBEB', skipped: '#F8FAFC' };
       element.style.backgroundColor = colors[status] || 'hsl(var(--card))';
       setTimeout(() => { element.style.backgroundColor = 'hsl(var(--card))'; }, 200);
     }
@@ -686,7 +686,7 @@ export default function TestHubExecutionPage() {
               display: 'flex', alignItems: 'center', gap: 4, padding: '6px 10px',
               border: fastTrackMode ? 'none' : '1px solid hsl(var(--border))',
               borderRadius: 6, fontSize: 12, fontWeight: 600, cursor: 'pointer',
-              backgroundColor: fastTrackMode ? 'rgba(251,191,36,0.10)' : 'hsl(var(--card))',
+              backgroundColor: fastTrackMode ? '#FEF3C7' : 'hsl(var(--card))',
               color: fastTrackMode ? '#D97706' : 'hsl(var(--muted-foreground))',
             }}
           >
@@ -811,7 +811,7 @@ export default function TestHubExecutionPage() {
                               {tc.test_case?.title}
                             </p>
                             {tc.current_status !== 'not_run' && tc.executed_at && (
-                              <p style={{ fontSize: 10, color: 'rgba(237,237,237,0.40)', margin: '2px 0 0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                              <p style={{ fontSize: 10, color: '#94A3B8', margin: '2px 0 0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                                 {new Date(tc.executed_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                                 {tc.assignee?.full_name ? ` · ${tc.assignee.full_name.split(' ')[0]}` : ''}
                               </p>
@@ -885,7 +885,7 @@ export default function TestHubExecutionPage() {
                     </div>
                     <h2 style={{ fontSize: 18, fontWeight: 700, color: 'hsl(var(--foreground))', margin: 0, lineHeight: 1.3 }}>{testCase.title}</h2>
                     {testCase.description && <p style={{ fontSize: 13, color: 'hsl(var(--muted-foreground))', margin: '6px 0 0', lineHeight: 1.4 }}>{testCase.description}</p>}
-                    <p style={{ fontSize: 11, color: 'rgba(237,237,237,0.40)', margin: '8px 0 0' }}>
+                    <p style={{ fontSize: 11, color: '#94A3B8', margin: '8px 0 0' }}>
                       Run #{executionHistory.execution_number} · Executed {new Date(executionHistory.executed_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                       {executionHistory.executor?.full_name ? ` · ${executionHistory.executor.full_name}` : ''}
                     </p>
@@ -899,9 +899,9 @@ export default function TestHubExecutionPage() {
                         <div style={{ marginBottom: 12, padding: 14, backgroundColor: isDark ? 'rgba(251,191,36,0.12)' : '#FFFBEB', border: `1px solid ${isDark ? 'rgba(251,191,36,0.2)' : '#FDE68A'}`, borderRadius: 8 }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
                             <AlertTriangle size={14} style={{ color: '#D97706' }} />
-                            <span style={{ fontSize: 12, fontWeight: 600, color: '#FBBF24' }}>Preconditions</span>
+                            <span style={{ fontSize: 12, fontWeight: 600, color: '#92400E' }}>Preconditions</span>
                           </div>
-                          <p style={{ fontSize: 13, color: '#FBBF24', margin: 0, lineHeight: 1.4 }}>{testCase.preconditions}</p>
+                          <p style={{ fontSize: 13, color: '#92400E', margin: 0, lineHeight: 1.4 }}>{testCase.preconditions}</p>
                         </div>
                       )}
 
@@ -918,11 +918,11 @@ export default function TestHubExecutionPage() {
                             skipped: { text: '#878787', bg: '#1A1A1A', border: 'rgba(255,255,255,0.08)' },
                             not_run: { text: '#878787', bg: '#1A1A1A', border: 'rgba(255,255,255,0.08)' },
                           } : {
-                            passed:  { text: '#16A34A', bg: 'rgba(74,222,128,0.06)', border: '#BBF7D0' },
-                            failed:  { text: '#DC2626', bg: 'rgba(248,113,113,0.06)', border: '#FECACA' },
+                            passed:  { text: '#16A34A', bg: '#F0FDF4', border: '#BBF7D0' },
+                            failed:  { text: '#DC2626', bg: '#FEF2F2', border: '#FECACA' },
                             blocked: { text: '#D97706', bg: '#FFFBEB', border: '#FED7AA' },
-                            skipped: { text: '#475569', bg: '#1A1A1A', border: 'rgba(255,255,255,0.10)' },
-                            not_run: { text: 'rgba(237,237,237,0.40)', bg: '#1A1A1A', border: 'rgba(255,255,255,0.10)' },
+                            skipped: { text: '#475569', bg: '#F8FAFC', border: '#E2E8F0' },
+                            not_run: { text: '#64748B', bg: '#F1F5F9', border: '#E2E8F0' },
                           };
                           const colors = stepColors[step.status] || stepColors.not_run;
                           return (
@@ -953,7 +953,7 @@ export default function TestHubExecutionPage() {
                                   <p style={{ fontSize: 12, color: 'hsl(var(--foreground))', margin: '2px 0 0' }}>{step.notes}</p>
                                 </div>
                               ) : (
-                                <p style={{ fontSize: 11, color: 'rgba(237,237,237,0.40)', margin: '8px 0 0', fontStyle: 'italic' }}>No notes</p>
+                                <p style={{ fontSize: 11, color: '#94A3B8', margin: '8px 0 0', fontStyle: 'italic' }}>No notes</p>
                               )}
                             </div>
                           );
@@ -1005,12 +1005,12 @@ export default function TestHubExecutionPage() {
                       {testCase.priority?.name || 'Medium'}
                     </span>
                     {fastTrackMode && (
-                      <span style={{ fontSize: 10, fontWeight: 700, color: '#D97706', backgroundColor: 'rgba(251,191,36,0.10)', padding: '3px 8px', borderRadius: 6, display: 'flex', alignItems: 'center', gap: 3 }}>
+                      <span style={{ fontSize: 10, fontWeight: 700, color: '#D97706', backgroundColor: '#FEF3C7', padding: '3px 8px', borderRadius: 6, display: 'flex', alignItems: 'center', gap: 3 }}>
                         <Zap size={10} /> FAST TRACK
                       </span>
                     )}
                     {previousRunData && (
-                      <span style={{ fontSize: 10, fontWeight: 600, color: '#2563EB', backgroundColor: 'rgba(59,130,246,0.06)', padding: '3px 8px', borderRadius: 5 }}>
+                      <span style={{ fontSize: 10, fontWeight: 600, color: '#2563EB', backgroundColor: '#EFF6FF', padding: '3px 8px', borderRadius: 5 }}>
                         RE-RUN (prev: Run #{previousRunData.execution_number})
                       </span>
                     )}
@@ -1043,9 +1043,9 @@ export default function TestHubExecutionPage() {
                       <div style={{ marginBottom: 20, padding: 14, backgroundColor: isDark ? 'rgba(251,191,36,0.12)' : '#FFFBEB', border: `1px solid ${isDark ? 'rgba(251,191,36,0.2)' : '#FDE68A'}`, borderRadius: 8 }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
                           <AlertTriangle size={14} style={{ color: '#D97706' }} />
-                          <span style={{ fontSize: 12, fontWeight: 600, color: '#FBBF24' }}>Preconditions</span>
+                          <span style={{ fontSize: 12, fontWeight: 600, color: '#92400E' }}>Preconditions</span>
                         </div>
-                        <p style={{ fontSize: 13, color: '#FBBF24', margin: 0, lineHeight: 1.4 }}>{highlightVariables(testCase.preconditions)}</p>
+                        <p style={{ fontSize: 13, color: '#92400E', margin: 0, lineHeight: 1.4 }}>{highlightVariables(testCase.preconditions)}</p>
                       </div>
                     )}
 

@@ -236,7 +236,7 @@ const Resource360Page = () => {
 
 const skeletonCSS = `
   .r360-skeleton {
-    background: linear-gradient(90deg, #1A1A1A 25%, rgba(255,255,255,0.10) 50%, #1A1A1A 75%);
+    background: linear-gradient(90deg, #F1F5F9 25%, #E2E8F0 50%, #F1F5F9 75%);
     background-size: 200% 100%;
     animation: r360shimmer 1.5s infinite;
   }

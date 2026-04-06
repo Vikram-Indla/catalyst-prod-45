@@ -98,7 +98,7 @@ export default function IncidentListPage() {
             </div>
             <div>
               <h1 style={{ fontFamily: 'Sora, sans-serif', fontSize: 18, fontWeight: 700, color: textPrimary }}>Incident List</h1>
-              <p style={{ fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 12, color: textSecondary }}>
+              <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: textSecondary }}>
                 Ministry of Industry &middot; {stats.active} open incidents
               </p>
             </div>
@@ -123,7 +123,7 @@ export default function IncidentListPage() {
             { label: 'Resolved (7d)', value: stats.resolvedWeek, accent: '#16A34A' },
           ].map(s => (
             <div key={s.label} className="p-3" style={{ backgroundColor: surfaceBg, border: `1px solid ${borderColor}`, borderRadius: 6 }}>
-              <div style={{ fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 11, color: textSecondary, marginBottom: 4 }}>{s.label}</div>
+              <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: textSecondary, marginBottom: 4 }}>{s.label}</div>
               <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 22, fontWeight: 700, color: s.accent }}>{s.value}</div>
             </div>
           ))}
@@ -138,7 +138,7 @@ export default function IncidentListPage() {
               value={search}
               onChange={e => { setSearch(e.target.value); setPage(1); }}
               className="pl-8 h-8 text-xs"
-              style={{ borderRadius: 4, fontFamily: 'Geist, -apple-system, sans-serif' }}
+              style={{ borderRadius: 4, fontFamily: 'Inter, sans-serif' }}
             />
           </div>
           <div className="flex items-center gap-1">
@@ -149,7 +149,7 @@ export default function IncidentListPage() {
                 className="px-2.5 py-1 text-xs transition-colors"
                 style={{
                   borderRadius: 4,
-                  fontFamily: 'Geist, -apple-system, sans-serif',
+                  fontFamily: 'Inter, sans-serif',
                   fontWeight: statusFilter === c.key ? 650 : 400,
                   backgroundColor: statusFilter === c.key ? (isDark ? 'rgba(37,99,235,0.16)' : '#EFF6FF') : 'transparent',
                   color: statusFilter === c.key ? (isDark ? '#93C5FD' : '#2563EB') : textSecondary,
@@ -176,7 +176,7 @@ export default function IncidentListPage() {
             <div className="flex justify-center"><Checkbox className="h-3.5 w-3.5" /></div>
             {['KEY', 'TITLE', 'SEV', 'PRI', 'STATUS', 'PROJECT', 'ASSIGNEE', 'REPORTER', 'UPDATED', 'PARENT', 'REPORTED'].map(h => (
               <div key={h} className="px-2" style={{
-                fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 11, fontWeight: 700,
+                fontFamily: 'Inter, sans-serif', fontSize: 11, fontWeight: 700,
                 textTransform: 'uppercase' as const, letterSpacing: '0.06em', color: textSecondary,
               }}>{h}</div>
             ))}
@@ -198,7 +198,7 @@ export default function IncidentListPage() {
           {!isLoading && paginated.length === 0 && (
             <div className="flex flex-col items-center justify-center py-12">
               <AlertTriangle size={32} style={{ color: textMuted }} />
-              <p style={{ fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 13, color: textMuted, marginTop: 8 }}>
+              <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, color: textMuted, marginTop: 8 }}>
                 {search ? 'No incidents match your search' : 'No incidents found. Create your first incident.'}
               </p>
               {!search && (
@@ -244,14 +244,14 @@ export default function IncidentListPage() {
                 </span>
               </div>
               {/* Title */}
-              <div className="px-2 truncate" style={{ fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 13, fontWeight: 650, color: textPrimary }}>
+              <div className="px-2 truncate" style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 650, color: textPrimary }}>
                 {item.title || '\u2014'}
               </div>
               <div className="px-2"><SeverityChip severity={item.severity || 'SEV4'} /></div>
               <div className="px-2"><PriorityChip priority={item.priority || 'P4'} /></div>
               <div className="px-2"><StatusLozenge status={item.status || 'open'} /></div>
               {/* Project */}
-              <div className="px-2 truncate" style={{ fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 12, color: textSecondary }}>
+              <div className="px-2 truncate" style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: textSecondary }}>
                 {item.project_name || '\u2014'}
               </div>
               {/* Assignee with Avatar */}
@@ -261,12 +261,12 @@ export default function IncidentListPage() {
                     <Avatar size="xs" className="shrink-0">
                       <AvatarFallback name={item.assignee_name} className="text-[9px]">{getInitials(item.assignee_name)}</AvatarFallback>
                     </Avatar>
-                    <span className="truncate" style={{ fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 12, color: textBody }}>
+                    <span className="truncate" style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: textBody }}>
                       {item.assignee_name}
                     </span>
                   </>
                 ) : (
-                  <span style={{ fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 12, color: textMuted }}>Unassigned</span>
+                  <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: textMuted }}>Unassigned</span>
                 )}
               </div>
               {/* Reporter with Avatar */}
@@ -276,12 +276,12 @@ export default function IncidentListPage() {
                     <Avatar size="xs" className="shrink-0">
                       <AvatarFallback name={item.reporter_name} className="text-[9px]">{getInitials(item.reporter_name)}</AvatarFallback>
                     </Avatar>
-                    <span className="truncate" style={{ fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 12, color: textBody }}>
+                    <span className="truncate" style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: textBody }}>
                       {item.reporter_name}
                     </span>
                   </>
                 ) : (
-                  <span style={{ fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 12, color: textMuted }}>&mdash;</span>
+                  <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: textMuted }}>&mdash;</span>
                 )}
               </div>
               {/* Updated */}
@@ -289,7 +289,7 @@ export default function IncidentListPage() {
                 {formatDate(item.updated_at)}
               </div>
               {/* Parent */}
-              <div className="px-2 truncate" style={{ fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 11 }}>
+              <div className="px-2 truncate" style={{ fontFamily: 'Inter, sans-serif', fontSize: 11 }}>
                 {item.parent_key ? <span style={{ color: isDark ? '#93C5FD' : '#2563EB' }}>{item.parent_key}</span> : '\u2014'}
               </div>
               {/* Reported */}
@@ -303,7 +303,7 @@ export default function IncidentListPage() {
         {/* Pagination */}
         {filtered.length > 0 && (
           <div className="flex items-center justify-between mt-3">
-            <span style={{ fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 12, color: textSecondary }}>
+            <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: textSecondary }}>
               Showing {(page - 1) * perPage + 1}&ndash;{Math.min(page * perPage, filtered.length)} of {filtered.length} incidents
             </span>
             <div className="flex items-center gap-1">
@@ -313,7 +313,7 @@ export default function IncidentListPage() {
                   onClick={() => setPage(p)}
                   style={{
                     width: 28, height: 28, borderRadius: 4, fontSize: 12,
-                    fontFamily: 'Geist, -apple-system, sans-serif',
+                    fontFamily: 'Inter, sans-serif',
                     fontWeight: page === p ? 650 : 400,
                     backgroundColor: page === p ? '#2563EB' : 'transparent',
                     color: page === p ? '#FFFFFF' : textSecondary,

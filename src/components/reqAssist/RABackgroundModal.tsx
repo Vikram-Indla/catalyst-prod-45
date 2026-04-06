@@ -147,7 +147,7 @@ export default function RABackgroundModal({ type, doc, onClose }: Props) {
     <>
       <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 60 }} />
       <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: 500, background: 'var(--cp-float)', borderRadius: 8, zIndex: 70, padding: 28, border: '0.75px solid var(--divider)' }}>
-        <div style={{ width: 48, height: 48, borderRadius: 12, background: jobStatus === 'failed' ? 'rgba(248,113,113,0.06)' : jobStatus === 'done' ? 'rgba(74,222,128,0.06)' : 'var(--cp-primary-5)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
+        <div style={{ width: 48, height: 48, borderRadius: 12, background: jobStatus === 'failed' ? '#FEF2F2' : jobStatus === 'done' ? '#F0FDF4' : 'var(--cp-primary-5)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
           {jobStatus === 'failed' ? (
             <AlertTriangle size={22} color="var(--sem-danger)" />
           ) : jobStatus === 'done' ? (
@@ -212,7 +212,7 @@ export default function RABackgroundModal({ type, doc, onClose }: Props) {
         {jobStatus !== 'done' && jobStatus !== 'failed' && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '14px 14px', background: 'var(--cp-primary-5)', borderRadius: 'var(--ra-radius-card)', marginBottom: 20, borderTop: '1px solid #DBEAFE' }}>
             <Clock size={14} color="var(--cp-blue)" />
-            <span style={{ fontSize: 12, color: '#7DB8FC', fontFamily: "'Inter', sans-serif" }}>Estimated: {etaLabel} · You'll be notified when done</span>
+            <span style={{ fontSize: 12, color: '#1E40AF', fontFamily: "'Inter', sans-serif" }}>Estimated: {etaLabel} · You'll be notified when done</span>
           </div>
         )}
 
@@ -227,7 +227,7 @@ export default function RABackgroundModal({ type, doc, onClose }: Props) {
           ) : (
             <>
               <button onClick={onClose} style={{ padding: '8px 16px', fontSize: 13, fontWeight: 500, border: '1px solid rgba(15,23,42,0.12)', borderRadius: 'var(--ra-radius-btn)', background: 'var(--bg-app)', color: 'var(--fg-2)', cursor: 'pointer', fontFamily: "'Inter', sans-serif" }}>Stay on this page</button>
-              <button onClick={handleLeave} style={{ padding: '8px 16px', fontSize: 13, fontWeight: 500, border: '0.75px solid rgba(237,237,237,0.53)', borderRadius: 'var(--ra-radius-btn)', background: 'var(--bg-app)', color: 'var(--fg-2)', cursor: 'pointer', fontFamily: "'Inter', sans-serif" }} onMouseEnter={e => e.currentTarget.style.background = 'rgba(0,0,0,0.04)'} onMouseLeave={e => e.currentTarget.style.background = 'var(--bg-app)'}>Leave & Notify Me When Done</button>
+              <button onClick={handleLeave} style={{ padding: '8px 16px', fontSize: 13, fontWeight: 500, border: '0.75px solid #CBD5E1', borderRadius: 'var(--ra-radius-btn)', background: 'var(--bg-app)', color: 'var(--fg-2)', cursor: 'pointer', fontFamily: "'Inter', sans-serif" }} onMouseEnter={e => e.currentTarget.style.background = 'rgba(0,0,0,0.04)'} onMouseLeave={e => e.currentTarget.style.background = 'var(--bg-app)'}>Leave & Notify Me When Done</button>
             </>
           )}
         </div>

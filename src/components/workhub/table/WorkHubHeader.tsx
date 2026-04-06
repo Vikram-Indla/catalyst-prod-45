@@ -1,6 +1,6 @@
 /**
  * WorkHubHeader — Sticky column headers (Stage E: polished)
- * 40px height, bg=#1A1A1A, 12px/700/UPPERCASE/0.03em, resize handles, aria-sort
+ * 40px height, bg=#F8FAFC, 12px/700/UPPERCASE/0.03em, resize handles, aria-sort
  */
 import { useCallback } from 'react';
 import { ArrowUp, ArrowDown } from 'lucide-react';
@@ -57,7 +57,7 @@ export default function WorkHubHeader({ columns, sort, onSort, allSelected, onSe
                 display: 'flex', alignItems: 'center', gap: 4, background: 'none', border: 'none',
                 cursor: col.sortable ? 'pointer' : 'default', padding: 0,
                 fontSize: 11, fontWeight: 650, textTransform: 'uppercase', letterSpacing: '0.06em',
-                color: isActive ? 'var(--cp-blue)' : 'var(--fg-3)', fontFamily: 'Geist, -apple-system, sans-serif',
+                color: isActive ? 'var(--cp-blue)' : 'var(--fg-3)', fontFamily: 'Inter, sans-serif',
               }}>
               {col.label}
               {isActive && (sort!.direction === 'asc' ? <ArrowUp size={12} /> : <ArrowDown size={12} />)}

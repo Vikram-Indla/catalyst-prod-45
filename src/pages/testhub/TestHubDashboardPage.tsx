@@ -228,7 +228,7 @@ export default function TestHubDashboardPage() {
       { label: 'Passed', count: totalPassed, pct: (totalPassed / totalAll) * 100, color: '#10B981' },
       { label: 'Failed', count: totalFailed, pct: (totalFailed / totalAll) * 100, color: '#EF4444' },
       { label: 'Blocked', count: totalBlocked, pct: (totalBlocked / totalAll) * 100, color: '#F59E0B' },
-      { label: 'Not run', count: totalNotRun, pct: (totalNotRun / totalAll) * 100, color: 'rgba(237,237,237,0.53)' },
+      { label: 'Not run', count: totalNotRun, pct: (totalNotRun / totalAll) * 100, color: '#CBD5E1' },
     ];
   }, [totalPassed, totalFailed, totalBlocked, totalNotRun, totalAll]);
 
@@ -302,14 +302,14 @@ export default function TestHubDashboardPage() {
             subtitle={`${totalExecuted} of ${totalAll} executed`} sparkData={[80, 72, 65, 58, 52, 48, 46, 47]}
             valueColor={passRateColor} isDanger={passRate < 60} />
           <KPICard label="Active cycles" value={activeCycles.length} accent="#3B82F6"
-            trend={{ direction: 'flat', value: '—', color: 'rgba(237,237,237,0.40)' }}
+            trend={{ direction: 'flat', value: '—', color: '#94A3B8' }}
             subtitle={`${completedCyclesCount} completed`} sparkData={[3, 4, 5, 5, 5, 5, 5, 5]} />
           <KPICard label="Blocked tests" value={totalBlocked} accent="#EF4444"
             trend={{ direction: 'up', value: '+2', color: '#DC2626' }}
             subtitle={`${totalFailed} failed tests`} sparkData={[0, 1, 1, 2, 2, 3, 3, 3]}
             valueColor={totalBlocked > 0 ? '#DC2626' : undefined} />
           <KPICard label="Automation coverage" value="0%" accent="#10B981"
-            trend={{ direction: 'flat', value: '—', color: 'rgba(237,237,237,0.40)' }}
+            trend={{ direction: 'flat', value: '—', color: '#94A3B8' }}
             subtitle="No automation data available" sparkData={[0, 0, 0, 0, 0, 0, 0, 0]} />
         </div>
 
@@ -349,7 +349,7 @@ export default function TestHubDashboardPage() {
           {/* ═ LEFT: Active Cycles ═ */}
           <Card title="Active Cycles" badge={String(activeCycles.length)} onViewAll={() => navigate('/testhub/cycles')}>
              {activeCycles.length === 0 ? (
-               <EmptyMini icon={<Play size={24} color="rgba(237,237,237,0.40)" />} text="No active cycles" />
+               <EmptyMini icon={<Play size={24} color="#94A3B8" />} text="No active cycles" />
              ) : (
                <>
                  {activeCycles.slice(0, 20).map(cycle => {
@@ -360,7 +360,7 @@ export default function TestHubDashboardPage() {
                    const csNotRun = cs?.notRun ?? 0;
                    const csTotal = cs?.total ?? 0;
                    const pct = csTotal > 0 ? Math.min(Math.round(((csPassed + csFailed + csBlocked) / csTotal) * 100), 100) : 0;
-                   const barColor = pct === 0 ? 'rgba(237,237,237,0.53)' : pct <= 30 ? '#EF4444' : pct <= 70 ? '#F59E0B' : '#10B981';
+                   const barColor = pct === 0 ? '#CBD5E1' : pct <= 30 ? '#EF4444' : pct <= 70 ? '#F59E0B' : '#10B981';
                    return (
                      <div key={cycle.id} onClick={() => navigate(`/testhub/cycles/${cycle.id}`)}
                        className="c10-row"
@@ -383,10 +383,10 @@ export default function TestHubDashboardPage() {
                        </div>
                        <div style={{ display: 'flex', gap: 6, fontSize: 12, fontWeight: 600, justifyContent: 'flex-end' }}>
                          <span style={{ color: '#059669' }}>{csPassed}P</span>
-                         <span style={{ color: 'rgba(237,237,237,0.40)' }}>·</span>
+                         <span style={{ color: '#64748B' }}>·</span>
                          <span style={{ color: '#DC2626' }}>{csFailed}F</span>
-                         <span style={{ color: 'rgba(237,237,237,0.40)' }}>·</span>
-                         <span style={{ color: 'rgba(237,237,237,0.40)' }}>{csNotRun}NR</span>
+                         <span style={{ color: '#64748B' }}>·</span>
+                         <span style={{ color: '#64748B' }}>{csNotRun}NR</span>
                        </div>
                      </div>
                    );
@@ -429,7 +429,7 @@ export default function TestHubDashboardPage() {
              {/* Body: Failing Tests rows */}
              <div style={{ flex: 1, minHeight: 0, overflowY: 'auto' }}>
                {failingTests.length === 0 ? (
-                 <EmptyMini icon={<AlertTriangle size={24} color="rgba(237,237,237,0.40)" />} text="No failing tests" />
+                 <EmptyMini icon={<AlertTriangle size={24} color="#94A3B8" />} text="No failing tests" />
                ) : (
                  <>
                    {failingTests.slice(0, 10).map(test => {

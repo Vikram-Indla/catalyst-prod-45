@@ -34,20 +34,20 @@ interface Requirement {
 }
 
 const TYPE_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
-  functional: { label: 'Functional', color: '#2563EB', bg: 'rgba(59,130,246,0.06)' },
-  non_functional: { label: 'Non-Functional', color: 'rgba(237,237,237,0.40)', bg: '#1A1A1A' },
+  functional: { label: 'Functional', color: '#2563EB', bg: '#EFF6FF' },
+  non_functional: { label: 'Non-Functional', color: '#64748B', bg: '#F1F5F9' },
   user_story: { label: 'User Story', color: '#0891B2', bg: '#ECFEFF' },
-  epic: { label: 'Epic', color: 'rgba(237,237,237,0.40)', bg: '#1A1A1A' },
-  feature: { label: 'Feature', color: '#059669', bg: 'rgba(74,222,128,0.06)' },
-  bug_fix: { label: 'Bug Fix', color: '#DC2626', bg: 'rgba(248,113,113,0.06)' },
+  epic: { label: 'Epic', color: '#64748B', bg: '#F1F5F9' },
+  feature: { label: 'Feature', color: '#059669', bg: '#ECFDF5' },
+  bug_fix: { label: 'Bug Fix', color: '#DC2626', bg: '#FEF2F2' },
 };
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
   draft:        { label: 'DRAFT',        color: '#253858', bg: '#DFE1E6' },
-  approved:     { label: 'APPROVED',     color: '#0747A6', bg: 'rgba(59,130,246,0.10)' },
-  in_progress:  { label: 'IN PROGRESS',  color: '#0747A6', bg: 'rgba(59,130,246,0.10)' },
-  implemented:  { label: 'IMPLEMENTED',  color: '#006644', bg: 'rgba(74,222,128,0.10)' },
-  verified:     { label: 'VERIFIED',     color: '#006644', bg: 'rgba(74,222,128,0.10)' },
+  approved:     { label: 'APPROVED',     color: '#0747A6', bg: '#DEEBFF' },
+  in_progress:  { label: 'IN PROGRESS',  color: '#0747A6', bg: '#DEEBFF' },
+  implemented:  { label: 'IMPLEMENTED',  color: '#006644', bg: '#E3FCEF' },
+  verified:     { label: 'VERIFIED',     color: '#006644', bg: '#E3FCEF' },
   deprecated:   { label: 'DEPRECATED',   color: '#253858', bg: '#DFE1E6' },
 };
 
@@ -164,7 +164,7 @@ export default function RequirementsListPage() {
               <p style={{ fontSize: 12, color: isDark ? '#878787' : '#64748B', margin: 0, textTransform: 'uppercase', fontWeight: 600 }}>Total Requirements</p>
               <p style={{ fontSize: 28, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A', margin: '8px 0 0' }}>{requirements.length}</p>
             </div>
-            <div style={{ backgroundColor: 'rgba(74,222,128,0.06)', borderRadius: 12, padding: 20, border: '1px solid #BBF7D0' }}>
+            <div style={{ backgroundColor: '#F0FDF4', borderRadius: 12, padding: 20, border: '1px solid #BBF7D0' }}>
               <p style={{ fontSize: 12, color: '#16A34A', margin: 0, textTransform: 'uppercase', fontWeight: 600 }}>Fully Covered</p>
               <p style={{ fontSize: 28, fontWeight: 700, color: '#16A34A', margin: '8px 0 0' }}>{fullyCount}</p>
             </div>
@@ -172,7 +172,7 @@ export default function RequirementsListPage() {
               <p style={{ fontSize: 12, color: '#D97706', margin: 0, textTransform: 'uppercase', fontWeight: 600 }}>Partially Covered</p>
               <p style={{ fontSize: 28, fontWeight: 700, color: '#D97706', margin: '8px 0 0' }}>{partialCount}</p>
             </div>
-            <div style={{ backgroundColor: 'rgba(248,113,113,0.06)', borderRadius: 12, padding: 20, border: '1px solid #FECACA' }}>
+            <div style={{ backgroundColor: '#FEF2F2', borderRadius: 12, padding: 20, border: '1px solid #FECACA' }}>
               <p style={{ fontSize: 12, color: '#DC2626', margin: 0, textTransform: 'uppercase', fontWeight: 600 }}>No Coverage</p>
               <p style={{ fontSize: 28, fontWeight: 700, color: '#DC2626', margin: '8px 0 0' }}>{noneCount}</p>
             </div>
@@ -183,7 +183,7 @@ export default function RequirementsListPage() {
       {/* Filters */}
       <div style={{ display: 'flex', gap: 12, marginBottom: 24, flexWrap: 'wrap', alignItems: 'center' }}>
         <div style={{ position: 'relative', flex: '1 1 300px', maxWidth: 400 }}>
-          <Search size={18} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: 'rgba(237,237,237,0.40)' }} />
+          <Search size={18} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: '#94A3B8' }} />
           <input
             type="text"
             placeholder="Search requirements..."
@@ -227,7 +227,7 @@ export default function RequirementsListPage() {
         )}
       </div>
 
-      <p style={{ fontSize: 13, color: 'rgba(237,237,237,0.40)', marginBottom: 16 }}>
+      <p style={{ fontSize: 13, color: '#64748B', marginBottom: 16 }}>
         Showing {filteredRequirements.length} requirement{filteredRequirements.length !== 1 ? 's' : ''}
       </p>
 
@@ -274,7 +274,7 @@ export default function RequirementsListPage() {
                       <span style={{ fontSize: 11, fontWeight: 500, color: type.color, backgroundColor: type.bg, padding: '2px 8px', borderRadius: 4 }}>{type.label}</span>
                     </td>
                     <td style={{ padding: '8px 12px' }}>
-                      <span style={{ fontSize: 11, fontWeight: 600, color: '#374151', backgroundColor: '#1A1A1A', padding: '2px 8px', borderRadius: 4 }}>{priority.label}</span>
+                      <span style={{ fontSize: 11, fontWeight: 600, color: '#374151', backgroundColor: '#F1F5F9', padding: '2px 8px', borderRadius: 4 }}>{priority.label}</span>
                     </td>
                     <td style={{ padding: '8px 12px' }}>
                       <span style={{
@@ -284,7 +284,7 @@ export default function RequirementsListPage() {
                       }}>{status.label}</span>
                     </td>
                     <td style={{ padding: '8px 12px' }}>
-                      <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, color: 'rgba(237,237,237,0.40)' }}>
+                      <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, color: '#64748B' }}>
                         <Link2 size={14} /> {req.linked_test_count}
                       </span>
                     </td>

@@ -73,15 +73,15 @@ const STATUS_COLORS: Record<string, string> = {
   passed: '#10B981',
   failed: '#EF4444',
   blocked: '#F59E0B',
-  skipped: 'rgba(237,237,237,0.40)',
-  not_run: 'rgba(237,237,237,0.53)',
+  skipped: '#64748B',
+  not_run: '#CBD5E1',
 };
 
 const PRIORITY_CONFIG: Record<string, { color: string; bg: string }> = {
-  critical: { color: '#DC2626', bg: 'rgba(248,113,113,0.06)' },
+  critical: { color: '#DC2626', bg: '#FEF2F2' },
   high: { color: '#EA580C', bg: '#FFF7ED' },
   medium: { color: '#D97706', bg: '#FFFBEB' },
-  low: { color: '#059669', bg: 'rgba(74,222,128,0.06)' },
+  low: { color: '#059669', bg: '#ECFDF5' },
 };
 
 const FAILURE_REASON_LABELS: Record<string, string> = {
@@ -203,8 +203,8 @@ export default function CycleReportPage() {
         </button>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
-          <span style={{ fontSize: 12, fontWeight: 600, color: '#2563EB', backgroundColor: 'rgba(59,130,246,0.06)', padding: '4px 10px', borderRadius: 6 }}>{cycle.cycle_key}</span>
-          <span style={{ fontSize: 12, fontWeight: 500, color: 'rgba(237,237,237,0.40)', backgroundColor: '#1A1A1A', padding: '4px 10px', borderRadius: 6, textTransform: 'capitalize' }}>{cycle.status}</span>
+          <span style={{ fontSize: 12, fontWeight: 600, color: '#2563EB', backgroundColor: '#EFF6FF', padding: '4px 10px', borderRadius: 6 }}>{cycle.cycle_key}</span>
+          <span style={{ fontSize: 12, fontWeight: 500, color: '#64748B', backgroundColor: '#F1F5F9', padding: '4px 10px', borderRadius: 6, textTransform: 'capitalize' }}>{cycle.status}</span>
         </div>
         <h1 style={{ fontSize: 22, fontWeight: 700, color: 'hsl(var(--foreground))', margin: '0 0 8px' }}>{cycle.name} — Report</h1>
         <div style={{ display: 'flex', alignItems: 'center', gap: 16, fontSize: 13, color: 'hsl(var(--muted-foreground))' }}>
@@ -364,9 +364,9 @@ export default function CycleReportPage() {
             </div>
             <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
               {failureReasons.map((f, i) => (
-                <div key={i} style={{ backgroundColor: 'rgba(248,113,113,0.06)', border: '1px solid #FECACA', borderRadius: 12, padding: '12px 20px', textAlign: 'center' }}>
+                <div key={i} style={{ backgroundColor: '#FEF2F2', border: '1px solid #FECACA', borderRadius: 12, padding: '12px 20px', textAlign: 'center' }}>
                   <p style={{ fontSize: 20, fontWeight: 700, color: '#DC2626', margin: '0 0 4px' }}>{f.count}</p>
-                  <p style={{ fontSize: 12, color: '#FBBF24', margin: 0 }}>{FAILURE_REASON_LABELS[f.failure_reason] || f.failure_reason}</p>
+                  <p style={{ fontSize: 12, color: '#92400E', margin: 0 }}>{FAILURE_REASON_LABELS[f.failure_reason] || f.failure_reason}</p>
                 </div>
               ))}
             </div>

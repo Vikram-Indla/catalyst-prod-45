@@ -4,8 +4,8 @@ import React from "react";
 // AVATAR — initials circle
 // ══════════════════════════════════════════════════
 const AVATAR_PALETTE = [
-  { bg: '#DBEAFE', text: '#7DB8FC' }, { bg: '#D1FAE5', text: '#4ADE80' },
-  { bg: 'rgba(251,191,36,0.10)', text: '#FBBF24' }, { bg: '#EDE9FE', text: '#A78BFA' },
+  { bg: '#DBEAFE', text: '#1E40AF' }, { bg: '#D1FAE5', text: '#065F46' },
+  { bg: '#FEF3C7', text: '#92400E' }, { bg: '#EDE9FE', text: '#5B21B6' },
   { bg: '#CFFAFE', text: '#155E75' }, { bg: '#E0E7FF', text: '#3730A3' },
 ];
 

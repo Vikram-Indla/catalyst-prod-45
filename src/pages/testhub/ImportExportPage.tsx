@@ -57,16 +57,16 @@ const TYPE_CONFIG: Record<string, { label: string; icon: any; color: string }> =
   shared_steps: { label: 'Shared Steps', icon: Layers, color: '#7C3AED' },
   tags: { label: 'Tags', icon: Tags, color: '#EC4899' },
   cycles: { label: 'Test Cycles', icon: RefreshCw, color: '#0891B2' },
-  full_backup: { label: 'Full Backup', icon: Database, color: 'rgba(237,237,237,0.40)' },
+  full_backup: { label: 'Full Backup', icon: Database, color: '#64748B' },
 };
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; icon: any }> = {
-  pending: { label: 'Pending', color: 'rgba(237,237,237,0.40)', bg: '#1A1A1A', icon: Clock },
+  pending: { label: 'Pending', color: '#64748B', bg: '#F1F5F9', icon: Clock },
   validating: { label: 'Validating', color: '#D97706', bg: '#FFFBEB', icon: AlertTriangle },
-  processing: { label: 'Processing', color: '#2563EB', bg: 'rgba(59,130,246,0.06)', icon: RefreshCw },
-  completed: { label: 'Completed', color: '#059669', bg: 'rgba(74,222,128,0.06)', icon: CheckCircle2 },
-  failed: { label: 'Failed', color: '#DC2626', bg: 'rgba(248,113,113,0.06)', icon: XCircle },
-  cancelled: { label: 'Cancelled', color: 'rgba(237,237,237,0.40)', bg: '#1A1A1A', icon: XCircle },
+  processing: { label: 'Processing', color: '#2563EB', bg: '#EFF6FF', icon: RefreshCw },
+  completed: { label: 'Completed', color: '#059669', bg: '#ECFDF5', icon: CheckCircle2 },
+  failed: { label: 'Failed', color: '#DC2626', bg: '#FEF2F2', icon: XCircle },
+  cancelled: { label: 'Cancelled', color: '#94A3B8', bg: '#F8FAFC', icon: XCircle },
 };
 
 export default function ImportExportPage() {
@@ -163,7 +163,7 @@ export default function ImportExportPage() {
               {stats.records_exported.toLocaleString()} records
             </p>
           </div>
-          <div style={{ backgroundColor: 'rgba(74,222,128,0.06)', borderRadius: 12, padding: 20, border: '1px solid #A7F3D0' }}>
+          <div style={{ backgroundColor: '#ECFDF5', borderRadius: 12, padding: 20, border: '1px solid #A7F3D0' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
               <CheckCircle2 size={18} style={{ color: '#059669' }} />
               <span style={{ fontSize: 12, color: '#059669', textTransform: 'uppercase' }}>Successful</span>
@@ -172,7 +172,7 @@ export default function ImportExportPage() {
               {stats.successful_imports + stats.successful_exports}
             </p>
           </div>
-          <div style={{ backgroundColor: 'rgba(248,113,113,0.06)', borderRadius: 12, padding: 20, border: '1px solid #FECACA' }}>
+          <div style={{ backgroundColor: '#FEF2F2', borderRadius: 12, padding: 20, border: '1px solid #FECACA' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
               <XCircle size={18} style={{ color: '#DC2626' }} />
               <span style={{ fontSize: 12, color: '#DC2626', textTransform: 'uppercase' }}>Failed</span>
@@ -282,7 +282,7 @@ export default function ImportExportPage() {
                       onClick={() => deleteImportJob(job.id)}
                       style={{
                         width: 36, height: 50, border: '1px solid #FECACA', borderRadius: 8,
-                        backgroundColor: 'rgba(248,113,113,0.06)', color: '#DC2626', cursor: 'pointer',
+                        backgroundColor: '#FEF2F2', color: '#DC2626', cursor: 'pointer',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
                       }}
                     >
@@ -350,7 +350,7 @@ export default function ImportExportPage() {
                         style={{
                           display: 'flex', alignItems: 'center', gap: 6,
                           height: 50, padding: '0 14px', border: '1px solid #A7F3D0', borderRadius: 8,
-                          backgroundColor: 'rgba(74,222,128,0.06)', color: '#059669', fontSize: 13, textDecoration: 'none',
+                          backgroundColor: '#ECFDF5', color: '#059669', fontSize: 13, textDecoration: 'none',
                         }}
                       >
                         <Download size={14} /> Download
@@ -360,7 +360,7 @@ export default function ImportExportPage() {
                       onClick={() => deleteExportJob(job.id)}
                       style={{
                         width: 36, height: 50, border: '1px solid #FECACA', borderRadius: 8,
-                        backgroundColor: 'rgba(248,113,113,0.06)', color: '#DC2626', cursor: 'pointer',
+                        backgroundColor: '#FEF2F2', color: '#DC2626', cursor: 'pointer',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
                       }}
                     >

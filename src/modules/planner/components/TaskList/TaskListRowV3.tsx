@@ -386,7 +386,7 @@ const PriorityDropdown = memo(function PriorityDropdown({ task, width, onUpdate 
               className="w-2.5 h-2.5 rounded-full flex-shrink-0"
               style={{ backgroundColor: PRIORITY_DOT_COLORS[task.priority] }}
             />
-            <span className="text-sm font-medium" style={{ color: 'rgba(237,237,237,0.53)' }}>{currentConfig.label}</span>
+            <span className="text-sm font-medium" style={{ color: '#334155' }}>{currentConfig.label}</span>
           </button>
         </PopoverTrigger>
         <PopoverContent className="w-44 p-1.5 z-[500] bg-popover border border-border shadow-lg" align="start">
@@ -1123,7 +1123,7 @@ export const TaskListRowV3 = memo(function TaskListRowV3({
               padding: 0,
             }}
             onMouseOver={(e) => {
-              e.currentTarget.style.color = 'rgba(237,237,237,0.53)';
+              e.currentTarget.style.color = '#334155';
               e.currentTarget.style.textDecoration = 'underline';
             }}
             onMouseOut={(e) => {
@@ -1227,7 +1227,7 @@ export const TaskListRowV3 = memo(function TaskListRowV3({
               <button className="tl-date-cell">
                 {task.due_date ? (
                   <>
-                    {/* Normal: rgba(237,237,237,0.53), Overdue: #dc2626 (J1, J2) */}
+                    {/* Normal: #334155, Overdue: #dc2626 (J1, J2) */}
                     <span className={cn(
                       'tl-date-value',
                       daysIndicator?.isOverdue && 'tl-date-overdue'

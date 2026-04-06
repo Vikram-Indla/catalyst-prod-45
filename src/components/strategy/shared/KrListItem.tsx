@@ -26,11 +26,11 @@ export function KrListItem({ status, title, meta, progress, onClick, className =
       onKeyDown={onClick ? (e) => { if (e.key === 'Enter') onClick(); } : undefined}
       style={{
         padding: '10px 0',
-        borderBottom: '1px solid var(--catalyst-border-default, var(--bd-default, rgba(255,255,255,0.10)))',
+        borderBottom: '1px solid var(--catalyst-border-default, var(--bd-default, #E2E8F0))',
         cursor: onClick ? 'pointer' : 'default',
         transition: 'background 150ms',
       }}
-      onMouseEnter={onClick ? (e) => { e.currentTarget.style.background = 'var(--catalyst-bg-hover, #1A1A1A)'; } : undefined}
+      onMouseEnter={onClick ? (e) => { e.currentTarget.style.background = 'var(--catalyst-bg-hover, #F8FAFC)'; } : undefined}
       onMouseLeave={onClick ? (e) => { e.currentTarget.style.background = 'transparent'; } : undefined}
     >
       {/* Status dot */}
@@ -50,7 +50,7 @@ export function KrListItem({ status, title, meta, progress, onClick, className =
           style={{
             fontSize: 13,
             fontWeight: 500,
-            color: 'var(--catalyst-text-primary, rgba(237,237,237,0.93))',
+            color: 'var(--catalyst-text-primary, #0F172A)',
             lineHeight: 1.4,
           }}
         >
@@ -59,7 +59,7 @@ export function KrListItem({ status, title, meta, progress, onClick, className =
         <div
           style={{
             fontSize: 11,
-            color: 'var(--catalyst-text-tertiary, rgba(237,237,237,0.40))',
+            color: 'var(--catalyst-text-tertiary, #94A3B8)',
             lineHeight: 1.4,
           }}
         >

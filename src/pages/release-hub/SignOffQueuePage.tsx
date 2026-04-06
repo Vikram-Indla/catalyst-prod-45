@@ -111,10 +111,10 @@ export default function SignOffQueuePage() {
                           <button onClick={e => { e.stopPropagation(); setActionModal({ signoff: so, action: 'approve' }); }}
                             className="h-7 px-2.5 rounded-[4px] bg-[#16A34A] text-white text-[11px] font-bold hover:bg-[#15803D]">Approve</button>
                           <button onClick={e => { e.stopPropagation(); setActionModal({ signoff: so, action: 'reject' }); }}
-                            className="h-7 px-2.5 rounded-[4px] text-[#DC2626] text-[11px] font-bold hover:bg-[rgba(248,113,113,0.06)]" style={{ border: '0.75px solid #FCA5A5' }}>Reject</button>
+                            className="h-7 px-2.5 rounded-[4px] text-[#DC2626] text-[11px] font-bold hover:bg-[#FEF2F2]" style={{ border: '0.75px solid #FCA5A5' }}>Reject</button>
                         </div>
                       ) : isPending ? (
-                        <span className="text-[11px] text-[rgba(237,237,237,0.40)]" title="Requires previous gate approval">Locked</span>
+                        <span className="text-[11px] text-[#94A3B8]" title="Requires previous gate approval">Locked</span>
                       ) : null}
                     </td>
                   </tr>

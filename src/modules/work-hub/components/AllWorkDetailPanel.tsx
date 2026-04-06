@@ -35,7 +35,7 @@ const statusStyles: Record<string, { bg: string; text: string; label: string }> 
   'Backlog': { bg: 'bg-[#DFE1E6]', text: 'text-[#42526E]', label: 'BACKLOG' },
   'To Do': { bg: 'bg-[#DFE1E6]', text: 'text-[#42526E]', label: 'TO DO' },
   'In Progress': { bg: 'bg-[#0C66E4]', text: 'text-white', label: 'IN PROGRESS' },
-  'Ready for QA': { bg: 'bg-[rgba(139,92,246,0.10)]', text: 'text-[#403294]', label: 'READY FOR QA' },
+  'Ready for QA': { bg: 'bg-[#EAE6FF]', text: 'text-[#403294]', label: 'READY FOR QA' },
   'In Production': { bg: 'bg-[#1B7F37]', text: 'text-white', label: 'IN PRODUCTION' },
   'Done': { bg: 'bg-[#1B7F37]', text: 'text-white', label: 'DONE' },
 };

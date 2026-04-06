@@ -39,11 +39,11 @@ function getCellStyle(avgPct: number, isDark = false) {
   if (avgPct >= 60) return { bg: 'rgba(22, 163, 74, 0.12)', text: '#16A34A', border: 'none' };
   if (avgPct >= 40) return { bg: 'rgba(217, 119, 6, 0.12)', text: '#B45309', border: '3px solid rgba(217,119,6,0.3)' };
   if (avgPct >= 20) return { bg: 'rgba(239, 68, 68, 0.12)', text: '#DC2626', border: '3px solid rgba(239,68,68,0.3)' };
-  return { bg: 'rgba(239, 68, 68, 0.20)', text: '#F87171', border: '3px solid rgba(239,68,68,0.4)' };
+  return { bg: 'rgba(239, 68, 68, 0.20)', text: '#991B1B', border: '3px solid rgba(239,68,68,0.4)' };
 }
 
 function getThemeDotColor(goals: Goal[]): string {
-  if (goals.length === 0) return 'rgba(237,237,237,0.53)';
+  if (goals.length === 0) return '#CBD5E1';
   const avgProgress = goals.reduce((sum, g) => sum + (g.progress_pct || 0), 0) / goals.length;
   const hasOffTrack = goals.some(g => g.status === 'off_track');
   const hasAtRisk = goals.some(g => g.status === 'at_risk');

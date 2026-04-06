@@ -471,7 +471,7 @@ function TypeBadge({ type }: { type: Idea['type'] }) {
     <span style={{
       display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px',
       borderRadius: 4, fontSize: '11px', fontWeight: 500,
-      background: c.bg, color: c.text, border: '1px solid rgba(255,255,255,0.10)',
+      background: c.bg, color: c.text, border: '1px solid #E2E8F0',
     }}>
       {c.label}
     </span>
@@ -493,7 +493,7 @@ function PriorityBadge({ priority }: { priority: string }) {
 }
 
 function ImpactCell({ score }: { score: number }) {
-  const textColor = score >= 4 ? '#16A34A' : score >= 3 ? '#2563EB' : score >= 2 ? 'rgba(237,237,237,0.40)' : 'rgba(237,237,237,0.40)';
+  const textColor = score >= 4 ? '#16A34A' : score >= 3 ? '#2563EB' : score >= 2 ? '#64748B' : '#94A3B8';
   return (
     <span style={{
       fontFamily: "'JetBrains Mono', monospace", fontSize: '13px', fontWeight: 500,
@@ -506,10 +506,10 @@ function ImpactCell({ score }: { score: number }) {
 
 function QuarterBadge({ quarter }: { quarter?: string | null }) {
   if (!quarter) {
-    return <span style={{ fontSize: '11px', color: 'rgba(237,237,237,0.40)' }}>—</span>;
+    return <span style={{ fontSize: '11px', color: '#94A3B8' }}>—</span>;
   }
   const qb = QUARTER_BADGE[quarter];
-  if (!qb) return <span style={{ fontSize: '11px', color: 'rgba(237,237,237,0.40)' }}>{quarter}</span>;
+  if (!qb) return <span style={{ fontSize: '11px', color: '#94A3B8' }}>{quarter}</span>;
   return (
     <span style={{
       display: 'inline-flex', alignItems: 'center', justifyContent: 'center',

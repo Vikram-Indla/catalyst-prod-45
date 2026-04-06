@@ -141,7 +141,7 @@ export default function CommandCenterPage() {
     );
 
     const scoreColor = readinessScore >= 75 ? '#006644' : readinessScore >= 50 ? '#B45309' : '#AE2A19';
-    const scoreBg = readinessScore >= 75 ? 'rgba(74,222,128,0.10)' : readinessScore >= 50 ? '#FFF7ED' : '#FFEBE6';
+    const scoreBg = readinessScore >= 75 ? '#E3FCEF' : readinessScore >= 50 ? '#FFF7ED' : '#FFEBE6';
 
     // Post-deploy summary
     const lastSuccessEvent = [...productionEvents]
@@ -230,8 +230,8 @@ export default function CommandCenterPage() {
 
   const alertBorderColor = computed.alertSeverity === 'destructive' ? '#DC2626'
     : computed.alertSeverity === 'warning' ? '#D97706' : '#16A34A';
-  const alertBgColor = computed.alertSeverity === 'destructive' ? 'rgba(248,113,113,0.06)'
-    : computed.alertSeverity === 'warning' ? '#FFFBEB' : 'rgba(74,222,128,0.06)';
+  const alertBgColor = computed.alertSeverity === 'destructive' ? '#FEF2F2'
+    : computed.alertSeverity === 'warning' ? '#FFFBEB' : '#F0FDF4';
 
   return (
     <div className="p-6" style={{ background: isDark ? '#0A0A0A' : '#FFFFFF' }}>
@@ -270,7 +270,7 @@ export default function CommandCenterPage() {
               </div>
             </div>
           ) : (
-            <p className="text-[13px] text-[rgba(237,237,237,0.40)]">No deployed changes yet</p>
+            <p className="text-[13px] text-[#94A3B8]">No deployed changes yet</p>
           )}
 
           {/* AI Post-Deployment Summary */}
@@ -338,7 +338,7 @@ export default function CommandCenterPage() {
               <React.Fragment key={col.key}>
                 {i > 0 && (
                   <svg width="16" height="24" viewBox="0 0 16 24" className="shrink-0 -mx-1">
-                    <path d="M0 0 L12 12 L0 24" fill="none" stroke="rgba(237,237,237,0.53)" strokeWidth="1.5" />
+                    <path d="M0 0 L12 12 L0 24" fill="none" stroke="#CBD5E1" strokeWidth="1.5" />
                   </svg>
                 )}
                 <button
@@ -423,7 +423,7 @@ export default function CommandCenterPage() {
                   const pass = !gate.noData && Math.round(gate.rate * 100) >= gate.threshold;
                   const borderColor = gate.noData ? '#DFE1E6' : pass ? '#16A34A' : '#DC2626';
                   const GateIcon = gate.noData ? Minus : pass ? CheckCircle2 : XCircle;
-                  const iconColor = gate.noData ? 'rgba(237,237,237,0.40)' : pass ? '#16A34A' : '#DC2626';
+                  const iconColor = gate.noData ? '#94A3B8' : pass ? '#16A34A' : '#DC2626';
 
                   return (
                     <div
@@ -504,7 +504,7 @@ export default function CommandCenterPage() {
               {prodEvents.slice(0, 4).map((ev: any) => (
                 <div key={ev.id} className="flex items-center gap-3">
                   <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{
-                    border: `2px solid ${ev.deployment_result === 'SUCCESS' ? '#16A34A' : ev.deployment_result === 'ROLLED_BACK' ? '#DC2626' : 'rgba(237,237,237,0.40)'}`,
+                    border: `2px solid ${ev.deployment_result === 'SUCCESS' ? '#16A34A' : ev.deployment_result === 'ROLLED_BACK' ? '#DC2626' : '#94A3B8'}`,
                     background: isDark ? '#1A1A1A' : 'white',
                   }} />
                   <div className="flex-1 min-w-0">

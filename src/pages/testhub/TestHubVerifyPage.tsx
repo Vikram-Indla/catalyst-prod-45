@@ -190,10 +190,10 @@ async function runCheck(id: string): Promise<Partial<VCheck>> {
 }
 
 const STATUS_PILL: Record<string, { bg: string; color: string; label: string }> = {
-  pass: { bg: 'rgba(74,222,128,0.10)', color: '#006644', label: 'PASS' },
+  pass: { bg: '#E3FCEF', color: '#006644', label: 'PASS' },
   warn: { bg: '#FFF8E1', color: '#D97706', label: 'WARN' },
   fail: { bg: '#FFEBE6', color: '#BF2600', label: 'FAIL' },
-  loading: { bg: 'rgba(59,130,246,0.10)', color: '#0747A6', label: 'LOADING' },
+  loading: { bg: '#DEEBFF', color: '#0747A6', label: 'LOADING' },
 };
 
 export default function TestHubVerifyPage() {
@@ -232,7 +232,7 @@ export default function TestHubVerifyPage() {
         subtitle="20 automated integrity checks — runs on page load"
       >
         {lastRun && (
-          <span style={{ fontSize: 13, color: 'rgba(237,237,237,0.40)', fontFamily: 'Geist, -apple-system, sans-serif' }}>
+          <span style={{ fontSize: 13, color: '#94A3B8', fontFamily: 'Inter, sans-serif' }}>
             Last run: {lastRun}
           </span>
         )}
@@ -262,10 +262,10 @@ export default function TestHubVerifyPage() {
         {/* Summary chips */}
         <div style={{ display: 'flex', gap: 12, marginBottom: 24 }}>
           {[
-            { label: 'PASSED', value: passCount, bg: 'rgba(74,222,128,0.10)', color: '#006644' },
+            { label: 'PASSED', value: passCount, bg: '#E3FCEF', color: '#006644' },
             { label: 'WARNINGS', value: warnCount, bg: '#FFFBEB', color: '#D97706' },
             { label: 'FAILED', value: failCount, bg: '#FFEBE6', color: '#BF2600' },
-            { label: 'TOTAL', value: checks.length, bg: '#1A1A1A', color: '#374151' },
+            { label: 'TOTAL', value: checks.length, bg: '#F1F5F9', color: '#374151' },
           ].map(chip => (
             <div key={chip.label} style={{
               backgroundColor: chip.bg,
@@ -291,10 +291,10 @@ export default function TestHubVerifyPage() {
         </div>
 
         {/* Results table */}
-        <div style={{ border: '0.75px solid var(--bd-default, rgba(255,255,255,0.10))', borderRadius: 6, overflow: 'hidden' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: 'Geist, -apple-system, sans-serif' }}>
+        <div style={{ border: '0.75px solid var(--bd-default, #E2E8F0)', borderRadius: 6, overflow: 'hidden' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: 'Inter, sans-serif' }}>
             <thead>
-              <tr style={{ backgroundColor: 'var(--bg-1, #1A1A1A)' }}>
+              <tr style={{ backgroundColor: 'var(--bg-1, #F8FAFC)' }}>
                 {['GROUP', 'CHECK', 'EXPECTED', 'ACTUAL', 'STATUS'].map(h => (
                   <th key={h} style={{
                     height: 50,
@@ -303,9 +303,9 @@ export default function TestHubVerifyPage() {
                     fontWeight: 700,
                     textTransform: 'uppercase',
                     letterSpacing: '0.04em',
-                    color: 'rgba(237,237,237,0.40)',
+                    color: '#64748B',
                     textAlign: 'left',
-                    borderBottom: '0.75px solid var(--bd-default, rgba(255,255,255,0.10))',
+                    borderBottom: '0.75px solid var(--bd-default, #E2E8F0)',
                   }}>
                     {h}
                   </th>
@@ -321,7 +321,7 @@ export default function TestHubVerifyPage() {
                       key={check.id}
                       style={{
                         height: 50,
-                        borderTop: ci === 0 && gi > 0 ? '1px solid rgba(237,237,237,0.53)' : undefined,
+                        borderTop: ci === 0 && gi > 0 ? '1px solid #CBD5E1' : undefined,
                       }}
                       onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.02)')}
                       onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
@@ -329,14 +329,14 @@ export default function TestHubVerifyPage() {
                       <td style={{ padding: '8px 12px', fontSize: 13, fontWeight: ci === 0 ? 700 : 400, color: '#374151', whiteSpace: 'nowrap' }}>
                         {ci === 0 ? group : ''}
                       </td>
-                      <td style={{ padding: '8px 12px', fontSize: 13, color: 'rgba(237,237,237,0.93)' }}>
-                        <span style={{ color: 'rgba(237,237,237,0.40)', fontFamily: 'JetBrains Mono, monospace', fontSize: 11, marginRight: 8 }}>{check.id}</span>
+                      <td style={{ padding: '8px 12px', fontSize: 13, color: '#1E293B' }}>
+                        <span style={{ color: '#94A3B8', fontFamily: 'JetBrains Mono, monospace', fontSize: 11, marginRight: 8 }}>{check.id}</span>
                         {check.label}
                       </td>
-                      <td style={{ padding: '8px 12px', fontSize: 12, color: 'rgba(237,237,237,0.40)', fontFamily: 'JetBrains Mono, monospace' }}>
+                      <td style={{ padding: '8px 12px', fontSize: 12, color: '#64748B', fontFamily: 'JetBrains Mono, monospace' }}>
                         {check.expected}
                       </td>
-                      <td style={{ padding: '8px 12px', fontSize: 12, color: 'rgba(237,237,237,0.93)', fontFamily: 'JetBrains Mono, monospace' }}>
+                      <td style={{ padding: '8px 12px', fontSize: 12, color: '#1E293B', fontFamily: 'JetBrains Mono, monospace' }}>
                         {check.actual ?? '—'}
                       </td>
                       <td style={{ padding: '8px 12px' }}>
@@ -373,7 +373,7 @@ export default function TestHubVerifyPage() {
                           padding: '2px 12px 6px',
                           fontSize: 12,
                           fontStyle: 'italic',
-                          color: 'rgba(237,237,237,0.40)',
+                          color: '#94A3B8',
                         }}>
                           {check.note}
                         </td>
@@ -394,12 +394,12 @@ export default function TestHubVerifyPage() {
             borderRadius: 6,
             fontSize: 14,
             fontWeight: 600,
-            fontFamily: 'Geist, -apple-system, sans-serif',
+            fontFamily: 'Inter, sans-serif',
             ...(failCount > 0
               ? { backgroundColor: '#FFEBE6', border: '1px solid #BF2600', color: '#BF2600' }
               : warnCount > 0
                 ? { backgroundColor: '#FFF8E1', border: '1px solid #D97706', color: '#D97706' }
-                : { backgroundColor: 'rgba(74,222,128,0.10)', border: '1px solid #006644', color: '#006644' }),
+                : { backgroundColor: '#E3FCEF', border: '1px solid #006644', color: '#006644' }),
           }}>
             {failCount > 0
               ? `✗ ${failCount} check${failCount !== 1 ? 's' : ''} failed — review highlighted rows above`
@@ -487,8 +487,8 @@ function ModuleHealthSection({ checks, loadingCount }: { checks: VCheck[]; loadi
   return (
     <>
       {/* Divider + header */}
-      <div style={{ borderTop: '0.75px solid var(--bd-default, rgba(255,255,255,0.10))', marginTop: 32, paddingTop: 20, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <span style={{ fontSize: 16, fontWeight: 600, color: 'rgba(237,237,237,0.93)', fontFamily: 'Geist, -apple-system, sans-serif' }}>
+      <div style={{ borderTop: '0.75px solid var(--bd-default, #E2E8F0)', marginTop: 32, paddingTop: 20, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <span style={{ fontSize: 16, fontWeight: 600, color: '#1E293B', fontFamily: 'Inter, sans-serif' }}>
           Module health scores
         </span>
         <button
@@ -497,7 +497,7 @@ function ModuleHealthSection({ checks, loadingCount }: { checks: VCheck[]; loadi
             height: 32,
             padding: '8px 12px',
             backgroundColor: 'transparent',
-            border: '1px solid var(--bd-default, rgba(255,255,255,0.10))',
+            border: '1px solid var(--bd-default, #E2E8F0)',
             borderRadius: 6,
             fontSize: 13,
             fontWeight: 500,
@@ -521,18 +521,18 @@ function ModuleHealthSection({ checks, loadingCount }: { checks: VCheck[]; loadi
           return (
             <div key={mod.key} style={{
               backgroundColor: 'var(--bg-app, #FFFFFF)',
-              border: '0.75px solid var(--bd-default, rgba(255,255,255,0.10))',
+              border: '0.75px solid var(--bd-default, #E2E8F0)',
               borderRadius: 8,
               padding: 16,
             }}>
-              <div style={{ fontSize: 14, fontWeight: 600, color: 'rgba(237,237,237,0.93)', marginBottom: 4 }}>
+              <div style={{ fontSize: 14, fontWeight: 600, color: '#1E293B', marginBottom: 4 }}>
                 {mod.name}
               </div>
-              <div style={{ fontSize: 12, color: 'rgba(237,237,237,0.40)', marginBottom: 8 }}>
+              <div style={{ fontSize: 12, color: '#94A3B8', marginBottom: 8 }}>
                 {s.passed}/{s.total} checks · {s.pct}%
               </div>
               {/* Progress bar */}
-              <div style={{ width: '100%', height: 4, backgroundColor: '#1A1A1A', borderRadius: 2 }}>
+              <div style={{ width: '100%', height: 4, backgroundColor: '#F1F5F9', borderRadius: 2 }}>
                 <div style={{ width: `${s.pct}%`, height: 4, backgroundColor: fill, borderRadius: 4, transition: 'width 0.3s' }} />
               </div>
               {/* Sub-lines for Test Assets */}
@@ -541,7 +541,7 @@ function ModuleHealthSection({ checks, loadingCount }: { checks: VCheck[]; loadi
                   {['A1', 'A2', 'A3'].map(id => {
                     const c = checks.find(x => x.id === id);
                     return (
-                      <div key={id} style={{ fontSize: 11, color: 'rgba(237,237,237,0.40)', fontFamily: 'JetBrains Mono, monospace' }}>
+                      <div key={id} style={{ fontSize: 11, color: '#64748B', fontFamily: 'JetBrains Mono, monospace' }}>
                         {c?.label}: {c?.actual ?? '—'}
                       </div>
                     );
@@ -549,7 +549,7 @@ function ModuleHealthSection({ checks, loadingCount }: { checks: VCheck[]; loadi
                 </div>
               )}
               {mod.note && s.pct < 100 && (
-                <div style={{ marginTop: 6, fontSize: 11, fontStyle: 'italic', color: 'rgba(237,237,237,0.40)' }}>
+                <div style={{ marginTop: 6, fontSize: 11, fontStyle: 'italic', color: '#94A3B8' }}>
                   {mod.note}
                 </div>
               )}
@@ -570,12 +570,12 @@ function ModuleHealthSection({ checks, loadingCount }: { checks: VCheck[]; loadi
           alignItems: 'center',
           justifyContent: 'center',
         }}>
-          <span style={{ fontSize: 32, fontWeight: 700, color: 'rgba(237,237,237,0.93)', lineHeight: 1 }}>
+          <span style={{ fontSize: 32, fontWeight: 700, color: '#1E293B', lineHeight: 1 }}>
             {overallPct}%
           </span>
         </div>
-        <span style={{ fontSize: 12, color: 'rgba(237,237,237,0.40)', marginTop: 8 }}>Overall score</span>
-        <span style={{ fontSize: 11, color: 'rgba(237,237,237,0.40)' }}>{overallPassed}/20 checks passed</span>
+        <span style={{ fontSize: 12, color: '#94A3B8', marginTop: 8 }}>Overall score</span>
+        <span style={{ fontSize: 11, color: '#94A3B8' }}>{overallPassed}/20 checks passed</span>
       </div>
     </>
   );

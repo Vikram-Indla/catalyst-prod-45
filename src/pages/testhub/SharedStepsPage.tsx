@@ -274,7 +274,7 @@ export default function SharedStepsPage() {
               background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
               border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600, color: '#FFFFFF',
               cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8,
-              boxShadow: '0 2px 8px rgba(37,99,235,0.25)', fontFamily: 'Geist, -apple-system, sans-serif',
+              boxShadow: '0 2px 8px rgba(37,99,235,0.25)', fontFamily: 'Inter, sans-serif',
             }}>
               <Plus size={18} />
               Create Shared Step
@@ -295,7 +295,7 @@ export default function SharedStepsPage() {
           }}>
             <h2 style={{
               fontSize: 11, fontWeight: 600, color: isDark ? '#878787' : '#64748B', textTransform: 'uppercase',
-              letterSpacing: '0.05em', margin: 0, fontFamily: 'Geist, -apple-system, sans-serif',
+              letterSpacing: '0.05em', margin: 0, fontFamily: 'Inter, sans-serif',
             }}>Categories</h2>
             <button onClick={() => setIsCreateCategoryModalOpen(true)} title="Add category" style={{
               width: 28, height: 28, padding: 0, border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 6,
@@ -372,7 +372,7 @@ export default function SharedStepsPage() {
                   backgroundColor: activeFilters.length > 0 ? (isDark ? 'rgba(37,99,235,0.15)' : '#EFF6FF') : (isDark ? '#1A1A1A' : '#FFFFFF'),
                   color: activeFilters.length > 0 ? '#2563EB' : (isDark ? '#A1A1A1' : '#334155'),
                   fontSize: 14, fontWeight: 500, cursor: 'pointer',
-                  display: 'inline-flex', alignItems: 'center', gap: 8, fontFamily: 'Geist, -apple-system, sans-serif',
+                  display: 'inline-flex', alignItems: 'center', gap: 8, fontFamily: 'Inter',
                 }}
               >
                 <Filter size={16} />
@@ -406,7 +406,7 @@ export default function SharedStepsPage() {
                     {activeFilters.length > 0 && (
                       <button onClick={() => setActiveFilters([])} style={{
                         background: 'none', border: 'none', color: '#2563EB', fontSize: 12,
-                        fontWeight: 500, cursor: 'pointer', padding: 0, fontFamily: 'Geist, -apple-system, sans-serif',
+                        fontWeight: 500, cursor: 'pointer', padding: 0, fontFamily: 'Inter',
                       }}>
                         Clear all
                       </button>
@@ -442,7 +442,7 @@ export default function SharedStepsPage() {
                       width: '100%', height: 50,
                       background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
                       border: 'none', borderRadius: 8, color: '#FFFFFF', fontSize: 13,
-                      fontWeight: 600, cursor: 'pointer', fontFamily: 'Geist, -apple-system, sans-serif',
+                      fontWeight: 600, cursor: 'pointer', fontFamily: 'Inter',
                     }}>
                       Apply Filter
                     </button>
@@ -458,7 +458,7 @@ export default function SharedStepsPage() {
                 style={{
                   height: 40, padding: '0 14px', border: `1.5px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 8,
                   backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#A1A1A1' : '#334155', fontSize: 14, fontWeight: 500,
-                  cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8, fontFamily: 'Geist, -apple-system, sans-serif',
+                  cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8, fontFamily: 'Inter',
                 }}
               >
                 <ArrowUpDown size={16} />
@@ -499,7 +499,7 @@ export default function SharedStepsPage() {
                           color: isActive ? '#2563EB' : (isDark ? '#A1A1A1' : '#334155'), fontSize: 14,
                           fontWeight: isActive ? 600 : 400, cursor: 'pointer',
                           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                          textAlign: 'left', fontFamily: 'Geist, -apple-system, sans-serif',
+                          textAlign: 'left', fontFamily: 'Inter',
                         }}
                       >
                         {option.label}
@@ -556,16 +556,16 @@ export default function SharedStepsPage() {
                 justifyContent: 'center', height: '100%', color: isDark ? '#878787' : '#94A3B8',
               }}>
                 <Library size={48} style={{ marginBottom: 16, opacity: 0.5 }} />
-                <p style={{ fontSize: 16, fontWeight: 500, margin: '0 0 8px', fontFamily: 'Geist, -apple-system, sans-serif' }}>
+                <p style={{ fontSize: 16, fontWeight: 500, margin: '0 0 8px', fontFamily: 'Inter' }}>
                   {searchQuery || selectedCategoryId || activeFilters.length > 0 ? 'No matching shared steps' : 'No shared steps yet'}
                 </p>
-                <p style={{ fontSize: 14, margin: 0, fontFamily: 'Geist, -apple-system, sans-serif' }}>
+                <p style={{ fontSize: 14, margin: 0, fontFamily: 'Inter' }}>
                   {searchQuery || activeFilters.length > 0 ? 'Try different search or filters' : 'Create your first shared step to get started'}
                 </p>
               </div>
             ) : viewMode === 'list' ? (
               <div style={{ backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 12, overflow: 'hidden' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: 'Geist, -apple-system, sans-serif' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: 'Inter' }}>
                   <thead>
                     <tr style={{ borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, backgroundColor: isDark ? '#1A1A1A' : '#F8FAFC' }}>
                       <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: 11, fontWeight: 600, color: isDark ? '#878787' : '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Name</th>
@@ -800,7 +800,7 @@ function SharedStepCard({ step, onView, onEdit, onDuplicate, onDelete, isDark = 
           )}
           <span style={{
             padding: '3px 10px', backgroundColor: isDark ? 'rgba(37,99,235,0.15)' : '#EFF6FF', borderRadius: 12,
-            fontSize: 11, fontWeight: 600, color: '#2563EB', fontFamily: 'Geist, -apple-system, sans-serif',
+            fontSize: 11, fontWeight: 600, color: '#2563EB', fontFamily: 'Inter',
           }}>
             Used {step.usage_count}x
           </span>
@@ -892,7 +892,7 @@ function MenuButton({ icon, label, onClick, danger }: {
       width: '100%', height: 50, padding: '8px 12px', border: 'none', borderRadius: 6,
       backgroundColor: 'transparent', color: danger ? '#DC2626' : 'inherit',
       fontSize: 13, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10,
-      textAlign: 'left', fontFamily: 'Geist, -apple-system, sans-serif',
+      textAlign: 'left', fontFamily: 'Inter',
     }}>
       {icon}
       {label}

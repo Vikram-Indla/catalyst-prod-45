@@ -10,7 +10,7 @@ import { ProgressBar } from '../shared/ProgressBar';
 import { useStrategicThemes, useGoals } from '@/hooks/strategy/useStrategyData';
 
 function getProgressColor(v: number) {
-  if (v >= 70) return 'var(--exec-blue-700, #7DB8FC)';
+  if (v >= 70) return 'var(--exec-blue-700, #1E40AF)';
   if (v >= 40) return 'var(--exec-signal-amber, #D97706)';
   return 'var(--exec-signal-red, #DC2626)';
 }
@@ -31,7 +31,7 @@ export function OkrTree() {
       return {
         id: theme.id,
         name: theme.title,
-        color: '#7DB8FC', // All theme dots use exec-blue-700
+        color: '#1E40AF', // All theme dots use exec-blue-700
         progress: avgProgress,
         goals: themeGoals.map(g => ({
           id: g.id,
@@ -87,7 +87,7 @@ export function OkrTree() {
       <div className="flex justify-end mb-2">
         <button
           onClick={toggleAll}
-          style={{ fontSize: 10, color: 'var(--exec-blue-700, #7DB8FC)', background: 'none', border: 'none', cursor: 'pointer', padding: '2px 6px' }}
+          style={{ fontSize: 10, color: 'var(--exec-blue-700, #1E40AF)', background: 'none', border: 'none', cursor: 'pointer', padding: '2px 6px' }}
         >
           {Object.values(expanded).every(Boolean) ? 'Collapse All' : 'Expand All'}
         </button>
@@ -108,7 +108,7 @@ export function OkrTree() {
                   padding: '8px 6px', borderRadius: 6, background: 'none', border: 'none', cursor: 'pointer',
                   transition: 'background 120ms',
                 }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--exec-bg-hover, #1A1A1A)'; }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--exec-bg-hover, #F1F5F9)'; }}
                 onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
               >
                 <span style={{ width: 10, height: 10, borderRadius: '50%', background: theme.color, flexShrink: 0 }} />
@@ -133,7 +133,7 @@ export function OkrTree() {
                         borderRadius: 4,
                         transition: 'background-color 120ms ease',
                       }}
-                      onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--exec-bg-hover, #1A1A1A)'; }}
+                      onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--exec-bg-hover, #F1F5F9)'; }}
                       onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
                     >
                       <span style={{ width: 6, height: 6, borderRadius: '50%', background: getProgressColor(goal.progress), flexShrink: 0 }} />

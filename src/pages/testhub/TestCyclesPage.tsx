@@ -42,8 +42,8 @@ interface TestCycle {
 const statusConfig: Record<string, { label: string; color: string; bg: string }> = {
   draft: { label: 'DRAFT', color: '#253858', bg: '#DFE1E6' },
   planned: { label: 'PLANNED', color: '#253858', bg: '#DFE1E6' },
-  active: { label: 'IN PROGRESS', color: '#0747A6', bg: 'rgba(59,130,246,0.10)' },
-  completed: { label: 'COMPLETED', color: '#006644', bg: 'rgba(74,222,128,0.10)' },
+  active: { label: 'IN PROGRESS', color: '#0747A6', bg: '#DEEBFF' },
+  completed: { label: 'COMPLETED', color: '#006644', bg: '#E3FCEF' },
   archived: { label: 'ARCHIVED', color: '#253858', bg: '#DFE1E6' },
   paused: { label: 'PAUSED', color: '#253858', bg: '#DFE1E6' },
 };

@@ -150,7 +150,7 @@ export function RoadmapToolbar({
                 height: 32, padding: '0 10px', border: 'none', cursor: 'pointer',
                 fontSize: 11, fontWeight: viewMode === k ? 600 : 500,
                 color: viewMode === k ? '#2563EB' : (hc ? '#3F3F46' : '#71717A'),
-                background: viewMode === k ? 'rgba(59,130,246,0.06)' : (hc ? '#F0F0F0' : '#fff'),
+                background: viewMode === k ? '#EFF6FF' : (hc ? '#F0F0F0' : '#fff'),
                 borderRight: k === 'gantt' ? `1px solid ${borderColor}` : 'none',
               }}
             >

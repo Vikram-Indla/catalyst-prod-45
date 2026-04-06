@@ -90,7 +90,7 @@ export function DataScope() {
   }
 
   if (configLoading) {
-    return <div style={{ padding: 40, color: 'rgba(237,237,237,0.40)', fontFamily: 'Geist, -apple-system, sans-serif' }}>Loading...</div>
+    return <div style={{ padding: 40, color: '#64748B', fontFamily: 'Inter, sans-serif' }}>Loading...</div>
   }
 
   const Toggle = ({ checked, onChange }: { checked: boolean; onChange: (v: boolean) => void }) => (
@@ -98,7 +98,7 @@ export function DataScope() {
       onClick={() => onChange(!checked)}
       style={{
         width: 38, height: 22, borderRadius: 11, border: 'none', cursor: 'pointer',
-        background: checked ? '#2563EB' : 'rgba(237,237,237,0.53)', position: 'relative', flexShrink: 0,
+        background: checked ? '#2563EB' : '#CBD5E1', position: 'relative', flexShrink: 0,
         transition: 'background .2s',
       }}
     >
@@ -111,7 +111,7 @@ export function DataScope() {
   )
 
   const cardStyle: React.CSSProperties = {
-    background: 'var(--bg-app, #fff)', border: '1px solid var(--bd-default, rgba(255,255,255,0.10))', borderRadius: 8,
+    background: 'var(--bg-app, #fff)', border: '1px solid var(--bd-default, #E2E8F0)', borderRadius: 8,
     padding: 20, marginBottom: 16, boxShadow: '0 1px 2px rgba(0,0,0,.05)',
   }
 
@@ -119,12 +119,12 @@ export function DataScope() {
   const totalCount = accessibleProjects.length
 
   return (
-    <div style={{ maxWidth: 900, fontFamily: 'Geist, -apple-system, sans-serif' }}>
+    <div style={{ maxWidth: 900, fontFamily: 'Inter, sans-serif' }}>
       <div style={{ marginBottom: 24 }}>
-        <h1 style={{ fontFamily: 'Sora, sans-serif', fontSize: 18, fontWeight: 700, color: 'var(--fg-1, rgba(237,237,237,0.93))', margin: 0 }}>
+        <h1 style={{ fontFamily: 'Sora, sans-serif', fontSize: 18, fontWeight: 700, color: 'var(--fg-1, #0F172A)', margin: 0 }}>
           Data Scope
         </h1>
-        <p style={{ fontSize: 13, color: 'rgba(237,237,237,0.40)', marginTop: 4 }}>
+        <p style={{ fontSize: 13, color: '#64748B', marginTop: 4 }}>
           Select projects to sync and configure time window and data quality rules.
         </p>
       </div>
@@ -132,11 +132,11 @@ export function DataScope() {
       {/* Card 1: Included Projects */}
       <div style={cardStyle}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
-          <h2 style={{ fontFamily: 'Sora, sans-serif', fontSize: 14, fontWeight: 600, color: 'var(--fg-1, rgba(237,237,237,0.93))', margin: 0 }}>
+          <h2 style={{ fontFamily: 'Sora, sans-serif', fontSize: 14, fontWeight: 600, color: 'var(--fg-1, #0F172A)', margin: 0 }}>
             Included Projects
           </h2>
           <span style={{
-            fontSize: 10, background: 'rgba(59,130,246,0.06)', color: '#2563EB', padding: '2px 8px',
+            fontSize: 10, background: '#EFF6FF', color: '#2563EB', padding: '2px 8px',
             borderRadius: 4, fontWeight: 600,
           }}>
             {activeCount} of {totalCount} active
@@ -146,7 +146,7 @@ export function DataScope() {
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
           {accessibleProjects.map(p => {
             const isOn = includedProjects.includes(p.key)
-            const color = WORKSTREAM_COLORS[p.key] || 'rgba(237,237,237,0.40)'
+            const color = WORKSTREAM_COLORS[p.key] || '#64748B'
             return (
               <button
                 key={p.key}
@@ -154,8 +154,8 @@ export function DataScope() {
                 style={{
                   display: 'inline-flex', alignItems: 'center', gap: 8,
                   padding: '10px 16px', borderRadius: 8, border: '1px solid', cursor: 'pointer',
-                  background: isOn ? 'rgba(59,130,246,0.06)' : '#fff',
-                  borderColor: isOn ? '#BFDBFE' : 'var(--bd-default, rgba(255,255,255,0.10))',
+                  background: isOn ? '#EFF6FF' : '#fff',
+                  borderColor: isOn ? '#BFDBFE' : 'var(--bd-default, #E2E8F0)',
                   opacity: isOn ? 1 : 0.5,
                   transition: 'all .15s',
                 }}
@@ -163,11 +163,11 @@ export function DataScope() {
                 <span style={{
                   width: 12, height: 12, borderRadius: '50%', background: color, flexShrink: 0,
                 }} />
-                <span style={{ fontSize: 12, fontWeight: 600, color: isOn ? 'var(--fg-1, rgba(237,237,237,0.93))' : 'rgba(237,237,237,0.40)' }}>
+                <span style={{ fontSize: 12, fontWeight: 600, color: isOn ? 'var(--fg-1, #0F172A)' : '#94A3B8' }}>
                   {p.name}
                 </span>
                 <span style={{
-                  fontFamily: 'JetBrains Mono, monospace', fontSize: 10, color: 'rgba(237,237,237,0.40)',
+                  fontFamily: 'JetBrains Mono, monospace', fontSize: 10, color: '#64748B',
                 }}>
                   {p.key}
                 </span>
@@ -175,7 +175,7 @@ export function DataScope() {
             )
           })}
           {accessibleProjects.length === 0 && (
-            <span style={{ fontSize: 12, color: 'rgba(237,237,237,0.40)' }}>No projects discovered. Test your Jira connection first.</span>
+            <span style={{ fontSize: 12, color: '#94A3B8' }}>No projects discovered. Test your Jira connection first.</span>
           )}
         </div>
 
@@ -190,14 +190,14 @@ export function DataScope() {
 
       {/* Card 2: Sync Window */}
       <div style={cardStyle}>
-        <h2 style={{ fontFamily: 'Sora, sans-serif', fontSize: 14, fontWeight: 600, color: 'var(--fg-1, rgba(237,237,237,0.93))', margin: '0 0 14px' }}>
+        <h2 style={{ fontFamily: 'Sora, sans-serif', fontSize: 14, fontWeight: 600, color: 'var(--fg-1, #0F172A)', margin: '0 0 14px' }}>
           Sync Window
         </h2>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 10 }}>
-          <label style={{ fontSize: 13, color: 'rgba(237,237,237,0.53)', width: 260 }}>Default lookback period:</label>
+          <label style={{ fontSize: 13, color: '#334155', width: 260 }}>Default lookback period:</label>
           <select value={lookbackMonths} onChange={(e) => setLookbackMonths(Number(e.target.value))}
-            style={{ padding: '7px 10px', borderRadius: 6, border: '1px solid var(--bd-default, rgba(255,255,255,0.10))', fontSize: 12, width: 150 }}>
+            style={{ padding: '7px 10px', borderRadius: 6, border: '1px solid var(--bd-default, #E2E8F0)', fontSize: 12, width: 150 }}>
             <option value={1}>1 month</option>
             <option value={2}>2 months</option>
             <option value={3}>3 months</option>
@@ -205,16 +205,16 @@ export function DataScope() {
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 14 }}>
-          <label style={{ fontSize: 13, color: 'rgba(237,237,237,0.53)', width: 260 }}>Maximum lookback (hard limit):</label>
+          <label style={{ fontSize: 13, color: '#334155', width: 260 }}>Maximum lookback (hard limit):</label>
           <select value={maxMonths} onChange={(e) => setMaxMonths(Number(e.target.value))}
-            style={{ padding: '7px 10px', borderRadius: 6, border: '1px solid var(--bd-default, rgba(255,255,255,0.10))', fontSize: 12, width: 150 }}>
+            style={{ padding: '7px 10px', borderRadius: 6, border: '1px solid var(--bd-default, #E2E8F0)', fontSize: 12, width: 150 }}>
             <option value={3}>3 months</option>
             <option value={6}>6 months</option>
           </select>
         </div>
 
         <div style={{
-          background: 'rgba(59,130,246,0.06)', border: '1px solid #BFDBFE', borderRadius: 8,
+          background: '#EFF6FF', border: '1px solid #BFDBFE', borderRadius: 8,
           padding: '10px 14px', marginBottom: 14, display: 'flex', gap: 8,
         }}>
           <span style={{ fontSize: 14 }}>ℹ️</span>
@@ -233,14 +233,14 @@ export function DataScope() {
 
       {/* Card 3: Data Quality Flags */}
       <div style={cardStyle}>
-        <h2 style={{ fontFamily: 'Sora, sans-serif', fontSize: 14, fontWeight: 600, color: 'var(--fg-1, rgba(237,237,237,0.93))', margin: '0 0 14px' }}>
+        <h2 style={{ fontFamily: 'Sora, sans-serif', fontSize: 14, fontWeight: 600, color: 'var(--fg-1, #0F172A)', margin: '0 0 14px' }}>
           Data Quality Flags
         </h2>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 10 }}>
-          <label style={{ fontSize: 13, color: 'rgba(237,237,237,0.53)', width: 260 }}>Mark items stale after:</label>
+          <label style={{ fontSize: 13, color: '#334155', width: 260 }}>Mark items stale after:</label>
           <select value={staleThreshold} onChange={(e) => setStaleThreshold(Number(e.target.value))}
-            style={{ padding: '7px 10px', borderRadius: 6, border: '1px solid var(--bd-default, rgba(255,255,255,0.10))', fontSize: 12, width: 150 }}>
+            style={{ padding: '7px 10px', borderRadius: 6, border: '1px solid var(--bd-default, #E2E8F0)', fontSize: 12, width: 150 }}>
             <option value={7}>7 days</option>
             <option value={14}>14 days</option>
             <option value={30}>30 days</option>
@@ -248,9 +248,9 @@ export function DataScope() {
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 14 }}>
-          <label style={{ fontSize: 13, color: 'rgba(237,237,237,0.53)', width: 260 }}>Mark items critical after:</label>
+          <label style={{ fontSize: 13, color: '#334155', width: 260 }}>Mark items critical after:</label>
           <select value={criticalThreshold} onChange={(e) => setCriticalThreshold(Number(e.target.value))}
-            style={{ padding: '7px 10px', borderRadius: 6, border: '1px solid var(--bd-default, rgba(255,255,255,0.10))', fontSize: 12, width: 150 }}>
+            style={{ padding: '7px 10px', borderRadius: 6, border: '1px solid var(--bd-default, #E2E8F0)', fontSize: 12, width: 150 }}>
             <option value={14}>14 days</option>
             <option value={30}>30 days</option>
             <option value={60}>60 days</option>
@@ -266,7 +266,7 @@ export function DataScope() {
           ].map((t, i) => (
             <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
               <Toggle checked={t.checked} onChange={t.onChange} />
-              <span style={{ fontSize: 13, color: 'rgba(237,237,237,0.53)' }}>{t.label}</span>
+              <span style={{ fontSize: 13, color: '#334155' }}>{t.label}</span>
             </div>
           ))}
         </div>

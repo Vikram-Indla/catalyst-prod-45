@@ -668,7 +668,7 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
                       padding: '12px',
                       fontSize: '14px',
                       lineHeight: 1.6,
-                      color: 'rgba(237,237,237,0.53)',
+                      color: '#334155',
                       border: '1px solid #cbd5e1',
                       borderRadius: '8px',
                       resize: 'vertical',
@@ -687,7 +687,7 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
                   </div>
                 </div>
               ) : (
-                <p style={{ fontSize: '14px', lineHeight: 1.7, color: 'rgba(237,237,237,0.53)', margin: 0 }}>
+                <p style={{ fontSize: '14px', lineHeight: 1.7, color: '#334155', margin: 0 }}>
                   {workstream.description || <span style={{ color: '#94a3b8', fontStyle: 'italic' }}>No description added.</span>}
                 </p>
               )}

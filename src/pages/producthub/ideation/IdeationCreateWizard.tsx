@@ -60,7 +60,7 @@ const focusHandlersLight = {
     e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.08)';
   },
   onBlur: (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    e.currentTarget.style.borderColor = 'rgba(255,255,255,0.10)';
+    e.currentTarget.style.borderColor = '#E2E8F0';
     e.currentTarget.style.boxShadow = 'none';
   },
 };
@@ -304,7 +304,7 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
                 value={title}
                 onChange={e => { setTitle(e.target.value); setTitleError(false); }}
                 placeholder="Enter idea title..."
-                style={{ ...inputBase, borderColor: titleError ? '#EF4444' : 'rgba(255,255,255,0.10)' }}
+                style={{ ...inputBase, borderColor: titleError ? '#EF4444' : '#E2E8F0' }}
                 {...focusHandlers}
               />
               {titleError && <span style={{ fontSize: '12px', color: '#EF4444', marginTop: '4px', display: 'block' }}>Required</span>}
@@ -324,7 +324,7 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
                   padding: '12px 14px',
                   lineHeight: '1.6',
                   resize: 'vertical' as const,
-                  borderColor: descError ? '#EF4444' : 'rgba(255,255,255,0.10)',
+                  borderColor: descError ? '#EF4444' : '#E2E8F0',
                 }}
                 {...focusHandlers}
               />
@@ -336,7 +336,7 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
               <div>
                 <label style={labelBase}>Idea Type</label>
                 <Select value={ideaType} onValueChange={setIdeaType}>
-                  <SelectTrigger className="h-[44px] border-[rgba(255,255,255,0.10)] rounded-lg text-sm">
+                  <SelectTrigger className="h-[44px] border-[#E2E8F0] rounded-lg text-sm">
                     <SelectValue placeholder="Select type..." />
                   </SelectTrigger>
                   <SelectContent>
@@ -354,7 +354,7 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
               <div>
                 <label style={labelBase}>Priority</label>
                 <Select value={priority} onValueChange={setPriority}>
-                  <SelectTrigger className="h-[44px] border-[rgba(255,255,255,0.10)] rounded-lg text-sm">
+                  <SelectTrigger className="h-[44px] border-[#E2E8F0] rounded-lg text-sm">
                     <SelectValue placeholder="Select priority..." />
                   </SelectTrigger>
                   <SelectContent>
@@ -371,7 +371,7 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
               <div>
                 <label style={labelBase}>Department</label>
                 <Select value={department} onValueChange={setDepartment}>
-                  <SelectTrigger className="h-[44px] border-[rgba(255,255,255,0.10)] rounded-lg text-sm">
+                  <SelectTrigger className="h-[44px] border-[#E2E8F0] rounded-lg text-sm">
                     <SelectValue placeholder="Select department..." />
                   </SelectTrigger>
                   <SelectContent>
@@ -384,7 +384,7 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
               <div>
                 <label style={labelBase}>Source</label>
                 <Select value={source} onValueChange={setSource}>
-                  <SelectTrigger className="h-[44px] border-[rgba(255,255,255,0.10)] rounded-lg text-sm">
+                  <SelectTrigger className="h-[44px] border-[#E2E8F0] rounded-lg text-sm">
                     <SelectValue placeholder="Select source..." />
                   </SelectTrigger>
                   <SelectContent>
@@ -401,7 +401,7 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
               <div>
                 <label style={labelBase}>Assignee</label>
                 <Select value={assignee} onValueChange={setAssignee}>
-                  <SelectTrigger className="h-[44px] border-[rgba(255,255,255,0.10)] rounded-lg text-sm">
+                  <SelectTrigger className="h-[44px] border-[#E2E8F0] rounded-lg text-sm">
                     <SelectValue placeholder="Select assignee..." />
                   </SelectTrigger>
                   <SelectContent>
@@ -440,7 +440,7 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
               <div>
                 <label style={labelBase}>Assigned Team</label>
                 <Select value={assignedTeam} onValueChange={setAssignedTeam}>
-                  <SelectTrigger className="h-[44px] border-[rgba(255,255,255,0.10)] rounded-lg text-sm">
+                  <SelectTrigger className="h-[44px] border-[#E2E8F0] rounded-lg text-sm">
                     <SelectValue placeholder="Select team..." />
                   </SelectTrigger>
                   <SelectContent>

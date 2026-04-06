@@ -1,6 +1,6 @@
 /**
  * GoalDetailDrawer — Fix 2: Complete redesign 520px, sticky header/tabs, modern cards
- * Fix 3: Field labels rgba(237,237,237,0.40) 10px uppercase, Fix 4: circular avatars
+ * Fix 3: Field labels #94A3B8 10px uppercase, Fix 4: circular avatars
  */
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { X, Sparkles, Rocket, Clock, Activity, Trash2, Pencil, BarChart3, Plus, Save, Search, Link2, Unlink } from 'lucide-react';
@@ -37,9 +37,9 @@ function statusBadge(status: string) {
     achieved:    { dot: '#4F46E5', bg: 'rgba(79,70,229,0.08)',  text: '#4338CA', label: 'Achieved' },
     at_risk:     { dot: '#D97706', bg: 'rgba(217,119,6,0.08)',  text: '#B45309', label: 'At Risk' },
     off_track:   { dot: 'var(--sem-danger)', bg: 'rgba(239,68,68,0.08)',  text: '#DC2626', label: 'Off Track' },
-    draft:       { dot: 'rgba(237,237,237,0.40)', bg: 'var(--cp-bd-zone)',               text: 'var(--fg-3)', label: 'Draft' },
-    not_started: { dot: 'rgba(237,237,237,0.40)', bg: 'var(--cp-bd-zone)',               text: 'var(--fg-3)', label: 'Not Started' },
-    cancelled:   { dot: 'rgba(237,237,237,0.40)', bg: 'var(--cp-bd-zone)',               text: 'var(--fg-3)', label: 'Cancelled' },
+    draft:       { dot: '#94A3B8', bg: 'var(--cp-bd-zone)',               text: 'var(--fg-3)', label: 'Draft' },
+    not_started: { dot: '#94A3B8', bg: 'var(--cp-bd-zone)',               text: 'var(--fg-3)', label: 'Not Started' },
+    cancelled:   { dot: '#94A3B8', bg: 'var(--cp-bd-zone)',               text: 'var(--fg-3)', label: 'Cancelled' },
   };
   const s = map[status] || map.draft;
   return (
@@ -72,18 +72,18 @@ function computeKRProgress(kr: KeyResult) {
 
 // Fix 4: Avatar colors
 const AVATAR_COLORS: Record<string, { bg: string; text: string }> = {
-  'Nada Alfassam':      { bg: '#DBEAFE', text: '#7DB8FC' },
+  'Nada Alfassam':      { bg: '#DBEAFE', text: '#1E40AF' },
   'Sitah Alqahtani':    { bg: '#E0E7FF', text: '#3730A3' },
-  'Sulaiman Alessa':    { bg: '#D1FAE5', text: '#4ADE80' },
-  'ibrahim alqusiyer':  { bg: 'rgba(251,191,36,0.10)', text: '#FBBF24' },
+  'Sulaiman Alessa':    { bg: '#D1FAE5', text: '#065F46' },
+  'ibrahim alqusiyer':  { bg: '#FEF3C7', text: '#92400E' },
   'Khaled Alghithy':    { bg: '#CFFAFE', text: '#155E75' },
-  'Izza Ali':           { bg: '#EDE9FE', text: '#A78BFA' },
+  'Izza Ali':           { bg: '#EDE9FE', text: '#5B21B6' },
 };
 function getAvatarColors(name: string) {
   if (AVATAR_COLORS[name]) return AVATAR_COLORS[name];
   let hash = 0;
   for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
-  const palettes = [{ bg: '#DBEAFE', text: '#7DB8FC' }, { bg: '#D1FAE5', text: '#4ADE80' }, { bg: '#E0E7FF', text: '#3730A3' }, { bg: 'rgba(251,191,36,0.10)', text: '#FBBF24' }, { bg: '#CFFAFE', text: '#155E75' }, { bg: '#EDE9FE', text: '#A78BFA' }];
+  const palettes = [{ bg: '#DBEAFE', text: '#1E40AF' }, { bg: '#D1FAE5', text: '#065F46' }, { bg: '#E0E7FF', text: '#3730A3' }, { bg: '#FEF3C7', text: '#92400E' }, { bg: '#CFFAFE', text: '#155E75' }, { bg: '#EDE9FE', text: '#5B21B6' }];
   return palettes[Math.abs(hash) % palettes.length];
 }
 
@@ -146,8 +146,8 @@ export function GoalDetailDrawer({ goalId, isOpen, onClose, onCheckinClick }: Go
   // Status dot color
   const statusDotColor = goal ? ({
     active: '#16A34A', on_track: '#16A34A', completed: '#4F46E5',
-    at_risk: '#D97706', off_track: 'var(--sem-danger)', draft: 'rgba(237,237,237,0.40)',
-  }[goal.status] || 'rgba(237,237,237,0.40)') : 'rgba(237,237,237,0.40)';
+    at_risk: '#D97706', off_track: 'var(--sem-danger)', draft: '#94A3B8',
+  }[goal.status] || '#94A3B8') : '#94A3B8';
 
   return (
     <>
@@ -198,7 +198,7 @@ export function GoalDetailDrawer({ goalId, isOpen, onClose, onCheckinClick }: Go
             cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
             color: 'var(--sem-danger)', transition: 'background 150ms',
           }}
-          onMouseEnter={e => (e.currentTarget.style.background = 'rgba(248,113,113,0.10)')}
+          onMouseEnter={e => (e.currentTarget.style.background = '#FEE2E2')}
           onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
           >
             <Trash2 size={14} />
@@ -475,7 +475,7 @@ function KeyResultsTab({ krs, loading, onCheckinClick }: { krs: KeyResult[]; loa
   if (krs.length === 0) {
     return (
       <div style={{ textAlign: 'center', padding: '48px 20px' }}>
-        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}><BarChart3 size={36} color="rgba(237,237,237,0.53)" /></div>
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}><BarChart3 size={36} color="#CBD5E1" /></div>
         <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--fg-2)', marginBottom: 4 }}>No Key Results yet</div>
         <div style={{ fontSize: 12, color: 'var(--fg-4)', marginBottom: 16 }}>Add measurable key results to track progress toward this goal.</div>
         <button style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '6px 14px', fontSize: 12, fontWeight: 600, color: 'var(--cp-blue)', background: 'rgba(37,99,235,0.06)', border: '1px solid rgba(37,99,235,0.2)', borderRadius: 6, cursor: 'pointer' }}>
@@ -517,7 +517,7 @@ function KeyResultsTab({ krs, loading, onCheckinClick }: { krs: KeyResult[]; loa
         <Plus size={13} /> Add Key Result
       </button>
       <style>{`
-        .kr-detail-card:hover { border-color: rgba(237,237,237,0.53); box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+        .kr-detail-card:hover { border-color: #CBD5E1; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
       `}</style>
     </div>
   );
@@ -542,7 +542,7 @@ function InitiativesTab({ goalId }: { goalId: string }) {
       {links.length === 0 && !showSearch && (
         <div style={{ textAlign: 'center', padding: '48px 20px' }}>
           <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}>
-            <Rocket size={36} color="rgba(237,237,237,0.53)" />
+            <Rocket size={36} color="#CBD5E1" />
           </div>
           <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--fg-2)', marginBottom: 4 }}>No initiatives linked</div>
           <div style={{ fontSize: 12, color: 'var(--fg-4)', marginBottom: 16 }}>Link initiatives from Product Hub that contribute to this goal.</div>
@@ -562,7 +562,7 @@ function InitiativesTab({ goalId }: { goalId: string }) {
               border: '1px solid var(--divider)', borderRadius: 8, padding: '14px 16px',
               display: 'flex', alignItems: 'center', gap: 10, transition: 'all 150ms',
             }}>
-              <Link2 size={16} color="rgba(237,237,237,0.53)" />
+              <Link2 size={16} color="#CBD5E1" />
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2 }}>
                   <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--fg-2)', background: 'var(--cp-bd-zone)', padding: '2px 6px', borderRadius: 4, fontFamily: 'ui-monospace, monospace' }}>
@@ -597,7 +597,7 @@ function InitiativesTab({ goalId }: { goalId: string }) {
       {showSearch && (
         <div style={{ marginTop: links.length > 0 ? 12 : 0, border: '1px solid var(--divider)', borderRadius: 8, padding: 12, background: 'var(--bg-1)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
-            <Search size={14} color="rgba(237,237,237,0.40)" />
+            <Search size={14} color="#94A3B8" />
             <input
               autoFocus
               value={searchQuery}
@@ -634,9 +634,9 @@ function InitiativesTab({ goalId }: { goalId: string }) {
       )}
 
       <style>{`
-        .init-card:hover { border-color: rgba(237,237,237,0.53); box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+        .init-card:hover { border-color: #CBD5E1; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
         .unlink-btn:hover { color: #EF4444 !important; }
-        .link-init-btn:hover { border-color: rgba(237,237,237,0.40); background: #1A1A1A; }
+        .link-init-btn:hover { border-color: #94A3B8; background: #F8FAFC; }
       `}</style>
     </div>
   );
@@ -648,7 +648,7 @@ function CheckinsTab({ checkins, krs }: { checkins: KRCheckin[]; krs: KeyResult[
   if (checkins.length === 0) {
     return (
       <div style={{ textAlign: 'center', padding: '48px 20px' }}>
-        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}><Clock size={36} color="rgba(237,237,237,0.53)" /></div>
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}><Clock size={36} color="#CBD5E1" /></div>
         <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--fg-2)', marginBottom: 4 }}>No check-ins recorded</div>
         <div style={{ fontSize: 12, color: 'var(--fg-4)' }}>Check-ins will appear here when team members update key results.</div>
       </div>

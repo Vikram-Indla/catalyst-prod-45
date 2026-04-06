@@ -114,7 +114,7 @@ export default function WikiVerificationPage() {
                 <span style={{ fontSize: 11, color: isDark ? '#A1A1A1' : '#64748B' }}>{a.author_name || '—'}</span>
                 <span style={{
                   fontFamily: 'JetBrains Mono, monospace', fontSize: 11, fontWeight: 500,
-                  color: stale ? '#D97706' : fresh >= 80 ? '#16A34A' : 'rgba(237,237,237,0.40)',
+                  color: stale ? '#D97706' : fresh >= 80 ? '#16A34A' : '#64748B',
                 }}>{fresh}%</span>
                 <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, color: isDark ? '#A1A1A1' : '#64748B' }}>
                   {new Date(a.updated_at).toLocaleDateString()}

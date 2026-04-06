@@ -60,7 +60,7 @@ export function NewDefectsResponse({ onItemClick }: { onItemClick?: (key: string
       )}
       {olderLoaded && olderData.length > 0 && (
         <div style={{ marginTop: 12 }}>
-          <CardHeader icon={Bug} iconColor="rgba(237,237,237,0.40)" title="Earlier Defects" subtitle={`${olderData.length} from 2–6 weeks ago`} />
+          <CardHeader icon={Bug} iconColor="#94A3B8" title="Earlier Defects" subtitle={`${olderData.length} from 2–6 weeks ago`} />
           <V12Table
             headers={['KEY', 'TITLE', 'PRIORITY', 'PROJECT', 'REPORTED BY', 'ASSIGNEE', 'LOGGED']}
             widths={['90px', 'auto', '70px', '90px', '110px', '110px', '70px']}

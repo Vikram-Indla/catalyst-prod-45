@@ -77,7 +77,7 @@ export function StrategyDashboardGrid() {
           icon={DollarSign}
           ariaLabel="Budget Overview widget"
           className="h-full"
-          accentGradient="linear-gradient(90deg, rgba(237,237,237,0.53), rgba(237,237,237,0.40))"
+          accentGradient="linear-gradient(90deg, #334155, #64748B)"
           headerLink={{
             label: 'View Full Planner →',
             onClick: () => navigate('/planhub/budget-planner'),

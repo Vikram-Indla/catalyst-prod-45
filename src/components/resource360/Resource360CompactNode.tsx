@@ -22,12 +22,12 @@ export function Resource360CompactNode({ item, x, y, onClick }: Props) {
         transform: 'translate(-50%, -50%)',
         display: 'inline-flex', alignItems: 'center', gap: 4,
         background: 'var(--bg-app, #FFFFFF)',
-        border: '1px solid var(--bd-default, rgba(255,255,255,0.10))',
+        border: '1px solid var(--bd-default, #E2E8F0)',
         borderRadius: 12,
         padding: '3px 8px',
         boxShadow: '0 1px 2px rgba(0,0,0,.03)',
         zIndex: 5,
-        fontFamily: 'Geist, -apple-system, sans-serif',
+        fontFamily: 'Inter, sans-serif',
         whiteSpace: 'nowrap',
       }}
       onClick={onClick}
@@ -43,7 +43,7 @@ export function Resource360CompactNode({ item, x, y, onClick }: Props) {
       }}
     >
       <span style={{ width: 6, height: 6, borderRadius: '50%', background: sc.dot, flexShrink: 0 }} />
-      <span style={{ fontSize: 10, fontWeight: 600, color: 'rgba(237,237,237,0.53)', fontFamily: "'Inter', monospace" }}>
+      <span style={{ fontSize: 10, fontWeight: 600, color: '#334155', fontFamily: "'Inter', monospace" }}>
         {item.item_key}
       </span>
     </div>

@@ -10,12 +10,12 @@ import { format } from 'date-fns';
 const EVENT_TYPE_LOZENGE: Record<string, { bg: string; color: string; label: string }> = {
   DEPLOYMENT: { bg: '#1B7F37', color: '#FFFFFF', label: 'DEPLOYMENT' },
   HOTFIX: { bg: '#DFE1E6', color: '#42526E', label: 'HOTFIX' },
-  ROLLBACK: { bg: 'rgba(248,113,113,0.06)', color: '#F87171', label: 'ROLLBACK' },
+  ROLLBACK: { bg: '#FEF2F2', color: '#991B1B', label: 'ROLLBACK' },
 };
 
 const RESULT_BADGE: Record<string, { bg: string; color: string; label: string; icon?: boolean }> = {
   SUCCESS: { bg: '#1B7F37', color: '#FFFFFF', label: 'SUCCESS', icon: true },
-  ROLLED_BACK: { bg: 'rgba(248,113,113,0.06)', color: '#F87171', label: 'ROLLED BACK' },
+  ROLLED_BACK: { bg: '#FEF2F2', color: '#991B1B', label: 'ROLLED BACK' },
   MONITORING: { bg: '#0C66E4', color: '#FFFFFF', label: 'MONITORING' },
 };
 
@@ -44,7 +44,7 @@ function getDotStyle(event: any) {
     borderColor = '#DC2626';
     size = 14;
   } else if (type === 'HOTFIX') {
-    borderColor = 'rgba(237,237,237,0.40)';
+    borderColor = '#64748B';
     size = 12;
   }
 
@@ -185,7 +185,7 @@ export default function ProductionEventsPage() {
 
                   {/* Notes (if any) */}
                   {ev.notes && (
-                    <p style={{ fontSize: 12, color: 'rgba(237,237,237,0.40)', marginTop: 6 }}>{ev.notes}</p>
+                    <p style={{ fontSize: 12, color: '#94A3B8', marginTop: 6 }}>{ev.notes}</p>
                   )}
                 </div>
               </div>

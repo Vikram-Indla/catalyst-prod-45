@@ -21,11 +21,11 @@ const TL = {
   inkMuted: '#71717A', inkMutedStrong: '#6F6F78',
   surface: '#FFFFFF', surfaceSecondary: '#FAFAFA', surfaceTertiary: '#F4F4F5',
   border: '#E4E4E7', borderStrong: '#D4D4D8',
-  primary: '#2563EB', primaryHover: '#1D4ED8', primaryBg: 'rgba(59,130,246,0.06)',
+  primary: '#2563EB', primaryHover: '#1D4ED8', primaryBg: '#EFF6FF',
   teal: '#0D9488', tealText: '#0A8277', tealBg: '#F0FDFA',
-  success: '#16A34A', successText: '#11853D', successBg: 'rgba(74,222,128,0.06)',
+  success: '#16A34A', successText: '#11853D', successBg: '#F0FDF4',
   warning: '#D97706', warningText: '#AF6003', warningBg: '#FFFBEB',
-  danger: '#DC2626', dangerText: '#D92525', dangerBg: 'rgba(248,113,113,0.06)',
+  danger: '#DC2626', dangerText: '#D92525', dangerBg: '#FEF2F2',
 };
 
 // Design tokens — dark mode (NOCTURNE)

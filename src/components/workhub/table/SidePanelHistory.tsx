@@ -23,7 +23,7 @@ function formatDuration(seconds: number): string {
 function durationColor(seconds: number): string {
   if (seconds > 30 * 86400) return '#DC2626';
   if (seconds > 14 * 86400) return '#D97706';
-  return 'rgba(237,237,237,0.93)';
+  return '#0F172A';
 }
 
 function nodeColor(cat: string | null): { bg: string; border: string } {
@@ -127,13 +127,13 @@ export default function SidePanelHistory({ workItemId, currentStatus, currentSta
                       {t.from_status ? (
                         <>
                           <WorkHubStatusLozenge status={t.from_status} statusCategory={t.from_status_category} />
-                          <ArrowRight size={14} color="rgba(237,237,237,0.40)" />
+                          <ArrowRight size={14} color="#94A3B8" />
                           <WorkHubStatusLozenge status={t.to_status} statusCategory={t.to_status_category} />
                         </>
                       ) : (
                         <>
                           <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg-1)' }}>Created</span>
-                          <ArrowRight size={14} color="rgba(237,237,237,0.40)" />
+                          <ArrowRight size={14} color="#94A3B8" />
                           <WorkHubStatusLozenge status={t.to_status} statusCategory={t.to_status_category} />
                         </>
                       )}
@@ -154,7 +154,7 @@ export default function SidePanelHistory({ workItemId, currentStatus, currentSta
                     padding: '8px 12px', marginBottom: 16,
                   }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <Clock size={12} color="rgba(237,237,237,0.40)" />
+                      <Clock size={12} color="#64748B" />
                       <span style={{ fontSize: 13, fontWeight: 600, color: durationColor(t.durationSec) }}>
                         {formatDuration(t.durationSec)} in {t.to_status.toUpperCase()}
                       </span>
@@ -168,7 +168,7 @@ export default function SidePanelHistory({ workItemId, currentStatus, currentSta
                     </div>
                     <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
                       {i === longestIdx && transWithDuration.length > 1 && (
-                        <span style={{ fontSize: 10, fontWeight: 600, background: 'rgba(251,191,36,0.10)', color: '#FBBF24', padding: '1px 6px', borderRadius: 3 }}>Longest phase</span>
+                        <span style={{ fontSize: 10, fontWeight: 600, background: '#FEF3C7', color: '#92400E', padding: '1px 6px', borderRadius: 3 }}>Longest phase</span>
                       )}
                       {t.durationSec > 30 * 86400 && (
                         <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--sem-danger)', display: 'inline-flex', alignItems: 'center', gap: 2 }}>
@@ -229,7 +229,7 @@ export default function SidePanelHistory({ workItemId, currentStatus, currentSta
                     {cl.field_name === 'status' ? (
                       <>
                         {cl.from_display && <WorkHubStatusLozenge status={cl.from_display} statusCategory={deriveStatusCategory(cl.from_display)} />}
-                        <ArrowRight size={12} color="rgba(237,237,237,0.40)" />
+                        <ArrowRight size={12} color="#94A3B8" />
                         {cl.to_display && <WorkHubStatusLozenge status={cl.to_display} statusCategory={deriveStatusCategory(cl.to_display)} />}
                       </>
                     ) : (

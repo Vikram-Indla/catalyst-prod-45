@@ -15,7 +15,7 @@ interface Props {
 
 // Funnel status order & colors
 const FUNNEL_ORDER: { key: string; label: string; color: string }[] = [
-  { key: 'draft', label: 'Draft', color: 'rgba(237,237,237,0.40)' },
+  { key: 'draft', label: 'Draft', color: '#94A3B8' },
   { key: 'submitted', label: 'Submitted', color: '#2563EB' },
   { key: 'under_review', label: 'Under Review', color: '#D97706' },
   { key: 'approved', label: 'Approved', color: '#16A34A' },
@@ -23,7 +23,7 @@ const FUNNEL_ORDER: { key: string; label: string; color: string }[] = [
   { key: 'rejected', label: 'Rejected', color: '#EF4444' },
 ];
 
-const DEPT_COLORS = ['#2563EB', '#0D9488', '#D97706', '#7C3AED', '#16A34A', '#EF4444', 'rgba(237,237,237,0.40)', '#0F766E', '#6366F1', '#DC2626'];
+const DEPT_COLORS = ['#2563EB', '#0D9488', '#D97706', '#7C3AED', '#16A34A', '#EF4444', '#94A3B8', '#0F766E', '#6366F1', '#DC2626'];
 
 function getInitials(name: string): string {
   return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
