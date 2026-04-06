@@ -3359,20 +3359,32 @@ input[type="range"]::-moz-range-thumb {
   opacity: 0.5 !important;
 }
 
+/* ── GEIST SURFACE TOKENS (consumed by DK object + inline styles) ── */
 .dark {
   --bg-0: #0A0A0A;
   --bg-1: #0A0A0A;
   --bg-2: #1A1A1A;
   --bg-3: #1A1A1A;
   --bg-4: #1A1A1A;
-  --border: rgba(255,255,255,0.08);
-  --divider: rgba(255,255,255,0.05);
-  --ring: rgba(59,130,246,0.7);
+  --border: 0 0% 18%;
+  --divider: #292929;
+  --ring: 217 91% 60%;
   --shadow: 0 4px 12px rgba(0,0,0,0.4);
   --text-1: #EDEDED;
   --text-2: #A1A1A1;
   --text-3: #878787;
-  --tw-border-opacity: 0.08 !important;
+  --surface-page: #0A0A0A;
+  --surface-card: #1A1A1A;
+  --surface-hover: #1F1F1F;
+  --surface-active: #292929;
+  --border-default: #2E2E2E;
+  --border-subtle: #292929;
+  --border-medium: #454545;
+  --text-primary: #EDEDED;
+  --text-secondary: #A1A1A1;
+  --text-muted: #878787;
+  --text-tertiary: #7D7D7D;
+  --placeholder: #878787;
 }
 
 .dark .border,
