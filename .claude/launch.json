@@ -3,7 +3,7 @@
   "configurations": [
     {
       "name": "catalyst-dev",
-      "runtimeExecutable": "/tmp/node-v20.18.0-darwin-arm64/bin/npx",
+      "runtimeExecutable": "npx",
       "runtimeArgs": ["vite", "--host"],
       "port": 8080
     }
