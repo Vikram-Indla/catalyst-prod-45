@@ -395,7 +395,7 @@ export const StoryDetailDrawer: React.FC<StoryDetailDrawerProps> = ({ isOpen, on
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                           <span style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600, color: '#6B7280' }}>Jira Issue</span>
-                          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, padding: '2px 8px', borderRadius: 4, background: var(--bg-2, '#F1F5F9'), color: '#1E293B' }}>{jiraSyncData.jira_key}</span>
+                          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, padding: '2px 8px', borderRadius: 4, background: '#F1F5F9', color: '#1E293B' }}>{jiraSyncData.jira_key}</span>
                         </div>
                         {jiraSyncData.jira_sync_status && (
                           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
