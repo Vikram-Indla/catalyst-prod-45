@@ -111,7 +111,7 @@ export function useForceSync() {
       projects?: string[]
       project_configs?: Record<string, { lookback_months: number; status_categories?: string[]; statuses?: string[]; issue_types?: string[]; fix_versions?: string[] }>
     } = {}) => {
-      const { data, error } = await supabase.functions.invoke('wh-jira-sync', {
+      const { data, error } = await supabase.functions.invoke('wh-jira-bulk-sync', {
         body: {
           sync_type: params.sync_type || 'full',
           lookback_months: params.lookback_months,
