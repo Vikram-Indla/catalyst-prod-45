@@ -233,7 +233,7 @@ function WeekStripCollapsible({
               padding: '5px 14px', fontSize: '12.5px', fontWeight: isActive ? 600 : 500,
               borderRadius: '6px', cursor: 'pointer', transition: 'all var(--cp-duration-fast, 0.15s) ease',
               background: isActive ? 'rgba(37,99,235,0.10)' : 'transparent',
-              color: isActive ? '#2563EB' : '#64748B',
+              color: isActive ? '#2563EB' : (isDark ? '#A1A1A1' : '#64748B'),
               border: 'none',
             }}
             onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = isDark ? '#1F1F1F' : 'rgba(15,23,42,0.04)'; }}
@@ -616,7 +616,7 @@ export default function R360MemberDetail() {
 
               {/* §3 — Stale warning banner */}
               {allStale && allOpenItems.length > 0 && (
-                <div style={{ margin: '8px 0 0', padding: '8px 12px', background: '#FFFBEB', borderLeft: '3px solid #D97706', borderRadius: '0 4px 4px 0', fontSize: '13px', color: '#92400E' }}>
+                <div style={{ margin: '8px 0 0', padding: '8px 12px', background: isDark ? 'rgba(217,119,6,0.10)' : '#FFFBEB', borderLeft: `3px solid #D97706`, borderRadius: '0 4px 4px 0', fontSize: '13px', color: isDark ? '#FBBF24' : '#92400E' }}>
                   ⚠️ All assigned items are stale. Oldest: {oldestAge} days.
                 </div>
               )}
@@ -1739,7 +1739,7 @@ function DetailPanel({ item, onClose, onSelectItem }: {
             <span className="r3-type-badge">{getJiraIcon(item.item_type)} {item.item_type}</span>
             <ProjTag projectKey={item.project_key} />
             {item.role_on_item === 'Contributor' && (
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '10px', fontWeight: 600, padding: '2px 8px', borderRadius: 4, background: '#F5F3FF', color: '#7C3AED', border: '1px solid #DDD6FE' }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '10px', fontWeight: 600, padding: '2px 8px', borderRadius: 4, background: isDark ? 'rgba(124,58,237,0.12)' : '#F5F3FF', color: '#7C3AED', border: `1px solid ${isDark ? 'rgba(124,58,237,0.25)' : '#DDD6FE'}` }}>
                 CONTRIBUTED TO <MiniAvatar name={item.assignee_name} size={16} />
               </span>
             )}
@@ -1807,7 +1807,7 @@ function DetailPanel({ item, onClose, onSelectItem }: {
               <div className="r3-hier-item r3-hier-item--current">
                 {getJiraIcon(item.item_type)}
                 <span className="r3-card-key r3-card-key--sm">{item.item_key}</span>
-                <span style={{ fontSize: 12, color: '#020617', fontWeight: 500 }}>{item.title}</span>
+                <span style={{ fontSize: 12, color: isDark ? '#EDEDED' : '#020617', fontWeight: 500 }}>{item.title}</span>
               </div>
             </div>
           )}
