@@ -326,6 +326,7 @@ const IncidentCAPPolicy = lazy(() => import("../pages/admin/incident").then(m =>
 const IncidentConversionRules = lazy(() => import("../pages/admin/incident").then(m => ({ default: m.IncidentConversionRules })));
 const IncidentAuditCompliance = lazy(() => import("../pages/admin/incident").then(m => ({ default: m.IncidentAuditCompliance })));
 const IncidentOwningTeams = lazy(() => import("../pages/admin/incident").then(m => ({ default: m.IncidentOwningTeams })));
+const NotificationTriggers = lazy(() => import("../pages/admin/NotificationTriggers"));
 
 const ValueStreamView = lazy(() => import("../pages/ValueStreamView"));
 const UserProfile = lazy(() => import("../pages/UserProfile"));
@@ -864,6 +865,7 @@ export default function FullAppRoutes() {
           <Route path="wiki" element={<S><WikiAdminPage /></S>} />
           <Route path="wiki-diagnostic" element={<S><WikiDiagnosticPage /></S>} />
           <Route path="diagnostic" element={<S><AdminDiagnosticPage /></S>} />
+          <Route path="notification-triggers" element={<S><NotificationTriggers /></S>} />
           <Route path="feature-flags" element={<S><FeatureFlagsPage /></S>} />
         </Route>
 
