@@ -2933,10 +2933,10 @@ input[type="range"]::-moz-range-thumb {
   --cp-t3: rgba(237,237,237,0.40);
   --cp-t4: rgba(237,237,237,0.25);
   --cp-text-link: #60A5FA;
-  --cp-text-muted: #666666;
+  --cp-text-muted: #878787;
   --cp-text-primary: #EDEDED;
-  --cp-text-secondary: #888888;
-  --cp-text-tertiary: #666666;
+  --cp-text-secondary: #A1A1A1;
+  --cp-text-tertiary: #878787;
   --cp-warn: #FBBF24;
   --cp-warn-bg: rgba(251,191,36,0.10);
   --divider: rgba(255,255,255,0.05);

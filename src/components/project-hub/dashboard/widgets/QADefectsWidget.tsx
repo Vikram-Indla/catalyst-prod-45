@@ -38,7 +38,7 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
     borderBottom: '0.75px solid var(--cp-border-subtle)',
     whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
   };
-  const tdClassName = 'bg-white dark:bg-[#0A0A0A]';
+  const tdClassName = 'bg-white dark:bg-[#1A1A1A]';
 
   return (
     <WidgetWrapper title="QA Defects" subtitle="Cross-hub from TestHub" collapsed={collapsed} onToggleCollapse={onToggleCollapse} span={1} footer={footer} flushBody>
@@ -95,7 +95,7 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
                 const avatarColor = getAvatarColor(assigneeInitials);
                 const avatarUrl = d.assignee_avatar_url;
                 return (
-                  <tr key={d.id} className="transition-colors duration-[120ms] hover:bg-black/[0.04] dark:hover:bg-white/[0.04] bg-white dark:bg-[#0A0A0A]">
+                  <tr key={d.id} className="transition-colors duration-[120ms] hover:bg-black/[0.04] dark:hover:bg-white/[0.04] bg-white dark:bg-[#1A1A1A]">
                     <td className={tdClassName} style={{ ...tdStyle, color: 'var(--cp-primary-60)', fontWeight: 500, fontFamily: 'var(--cp-font-mono)', fontSize: 11 }}>{displayKey}</td>
                     <td className={tdClassName} style={tdStyle}>
                       <span className={`inline-flex items-center ${svCls}`} style={{ height: 18, padding: '0 6px', fontSize: 10, fontWeight: 700, borderRadius: 'var(--cp-radius-sm)', textTransform: 'uppercase' }}>
