@@ -138,7 +138,7 @@ const EPIC_CHIP_PALETTE = [
   { bg: '#1B7F37', text: '#FFFFFF', border: '#57D9A3' },
   { bg: '#E6FCFF', text: '#006884', border: '#00C7E6' },
   { bg: '#EAE6FF', text: '#403294', border: '#8777D9' },
-  { bg: var(--bg-2, '#F1F5F9'), text: '#334155', border: '#CBD5E1' },
+  { bg: '#F1F5F9', text: '#334155', border: '#CBD5E1' },
 ];
 
 export function getEpicChipColor(epicId: string) {
