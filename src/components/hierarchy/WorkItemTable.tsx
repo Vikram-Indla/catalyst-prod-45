@@ -7,6 +7,7 @@
 
 import React, { useState, useMemo, useCallback, memo } from 'react';
 import { ChevronRight, ChevronDown, MoreHorizontal, ArrowUp, ArrowDown } from 'lucide-react';
+import { useTheme } from '@/hooks/useTheme';
 import type { WorkItem } from '@/types/hierarchy';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { StatusBadge } from './StatusBadge';
@@ -275,6 +276,7 @@ interface ContextMenuState {
 }
 
 export const WorkItemTable = memo(function WorkItemTable({ items, search, onSelect, selectedId, projectKey, allStatuses, onCreateClick, onRefresh, onAddChild }: WorkItemTableProps) {
+  const { isDark } = useTheme();
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
   const [sortKey, setSortKey] = useState<SortKey>('work');
   const [sortDir, setSortDir] = useState<SortDir>('asc');
@@ -616,8 +618,8 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
             alignItems: 'center',
             height: 36,
             minWidth: 1100,
-            background: '#F1F5F9',
-            borderBottom: '2px solid var(--divider)',
+                background: isDark ? 'rgba(255,255,255,0.03)' : '#F1F5F9',
+                borderBottom: isDark ? '2px solid rgba(255,255,255,0.08)' : '2px solid var(--divider)',
           }}
         >
           <div style={{ width: 44, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -663,9 +665,9 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
                 display: 'grid',
                 gridTemplateColumns,
                 alignItems: 'center',
-                borderBottom: '1px solid #F1F5F9',
+                borderBottom: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid #F1F5F9',
                 cursor: 'pointer',
-                background: isChecked ? 'var(--cp-primary-5)' : isSelected ? 'rgba(37, 99, 235, 0.08)' : index % 2 === 1 ? '#FAFAFA' : '#FFFFFF',
+                background: isChecked ? 'var(--cp-primary-5)' : isSelected ? 'rgba(37, 99, 235, 0.08)' : isDark ? (index % 2 === 1 ? 'rgba(255,255,255,0.02)' : 'transparent') : (index % 2 === 1 ? '#FAFAFA' : '#FFFFFF'),
               }}
             >
               <div style={{ width: 44, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -749,9 +751,8 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
 
       <style>{`
         .hi-table-row { border-left: 3px solid transparent; transition: all 80ms ease; }
-        .hi-table-row:hover { background: #F8FAFC !important; border-left-color: #2563EB; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
-        .hi-table-row.checked { background: #EFF6FF !important; }
-        .hi-table-row:nth-child(even):not(.checked):not(:hover) { background: #FAFAFA; }
+        .hi-table-row:hover { background: ${isDark ? 'rgba(255,255,255,0.04)' : '#F8FAFC'} !important; border-left-color: #2563EB; box-shadow: ${isDark ? 'none' : '0 1px 3px rgba(0,0,0,0.06)'}; }
+        .hi-table-row.checked { background: ${isDark ? 'rgba(37,99,235,0.12)' : '#EFF6FF'} !important; }
         .hi-table-row .hi-row-action { opacity: 0; transition: opacity 100ms ease; }
         .hi-table-row:hover .hi-row-action { opacity: 1; }
         .hi-parent-cell:hover .hi-parent-key { text-decoration: underline; text-underline-offset: 2px; }

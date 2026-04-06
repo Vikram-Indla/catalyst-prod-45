@@ -93,7 +93,7 @@ function CategoryAccordion({
 
   // Select all non-mandatory triggers in this group
   const handleSelectAll = useCallback(
-    (e: React.MouseEvent) => {
+    (e: React.ChangeEvent<HTMLInputElement> | React.MouseEvent) => {
       e.stopPropagation();
       for (const t of group.triggers) {
         if (!t.isMandatory && !selectedTriggers.has(t.triggerKey)) {
