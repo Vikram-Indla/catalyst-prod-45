@@ -1398,6 +1398,46 @@
   stroke: #2E2E2E !important;
 }
 
+/* ─── PROFILE HEADER — Dark overrides ─── */
+.dark #r360-root .r3-profile {
+  background: #0A0A0A !important;
+}
+.dark #r360-root .r3-profile-name {
+  color: #EDEDED !important;
+}
+.dark #r360-root .r3-profile-role {
+  color: #A1A1A1 !important;
+}
+.dark #r360-root .r3-profile-avatar {
+  border-color: #2E2E2E !important;
+}
+
+/* Tabs — Dark overrides */
+.dark #r360-root .r3-tabs {
+  border-color: #2E2E2E !important;
+}
+.dark #r360-root .r3-tab {
+  color: #878787 !important;
+}
+.dark #r360-root .r3-tab:hover {
+  color: #EDEDED !important;
+}
+.dark #r360-root .r3-tab.active {
+  color: #EDEDED !important;
+  border-bottom-color: #EDEDED !important;
+}
+
+/* Quarter outline button — dark */
+.dark #r360-root .r3-btn-outline {
+  background: #1A1A1A !important;
+  color: #EDEDED !important;
+  border-color: #2E2E2E !important;
+}
+.dark #r360-root .r3-btn-outline:hover {
+  background: #1F1F1F !important;
+  border-color: #454545 !important;
+}
+
 /* Drawer / side panel */
 .dark #r360-root .item-drawer {
   background: #1A1A1A !important;
