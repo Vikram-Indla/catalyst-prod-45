@@ -252,7 +252,7 @@ export function CatalystHeader() {
 
               const isActive = item.label === activeNavItem;
               const activeColor = isDark ? '#FFFFFF' : 'var(--cp-blue-text)';
-              const inactiveColor = isDark ? '#8B949E' : 'var(--cp-t3)';
+              const inactiveColor = isDark ? '#A1A1A1' : 'var(--cp-t3)';
               const hoverColor = isDark ? '#FFFFFF' : 'var(--cp-t1)';
               const activeUnderline = isDark ? '#FFFFFF' : 'var(--cp-blue-text)';
               const hoverUnderline = isDark ? '#484F58' : 'var(--cp-bd)';

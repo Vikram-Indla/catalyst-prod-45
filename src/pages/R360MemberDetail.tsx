@@ -233,7 +233,7 @@ function WeekStripCollapsible({
               padding: '5px 14px', fontSize: '12.5px', fontWeight: isActive ? 600 : 500,
               borderRadius: '6px', cursor: 'pointer', transition: 'all var(--cp-duration-fast, 0.15s) ease',
               background: isActive ? 'rgba(37,99,235,0.10)' : 'transparent',
-              color: isActive ? '#2563EB' : '#64748B',
+              color: isActive ? '#2563EB' : (isDark ? '#A1A1A1' : '#64748B'),
               border: 'none',
             }}
             onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = isDark ? '#1F1F1F' : 'rgba(15,23,42,0.04)'; }}
@@ -575,9 +575,9 @@ export default function R360MemberDetail() {
   return (
     <>
       <div id="r360-root" data-r360-page-content style={{ position: 'relative', width: '100%', minWidth: 0, overflow: 'hidden' }}>
-        <div className="r3-page" style={{ background: isDark ? '#1A1A1A' : '#FFFFFF', height: '100%', overflow: 'auto' }}>
+        <div className="r3-page" style={{ background: isDark ? '#0A0A0A' : '#FFFFFF', height: '100%', overflow: 'auto', paddingTop: '8px' }}>
           {/* ── Sticky Header: Profile + Week Nav ── */}
-          <div style={{ position: 'sticky', top: 0, zIndex: 10, background: isDark ? '#1A1A1A' : '#FFFFFF' }}>
+          <div style={{ position: 'sticky', top: 0, zIndex: 10, background: isDark ? '#0A0A0A' : '#FFFFFF' }}>
             {/* ── Profile Header ── */}
             <div className="r3-profile">
               <div className="r3-profile-top">
@@ -595,18 +595,18 @@ export default function R360MemberDetail() {
                 <div style={{ display: 'flex', gap: '10px' }}>
                   <div
                     onClick={() => setTicketListMode(bannerOpenCount > 0 ? 'open' : null)}
-                    style={{ padding: '12px 16px', borderRadius: '8px', minWidth: '76px', textAlign: 'center' as const, background: isDark ? 'rgba(37,99,235,0.12)' : '#EFF6FF', cursor: bannerOpenCount > 0 ? 'pointer' : 'default', transition: 'all 80ms ease' }}
-                    onMouseEnter={e => { if (bannerOpenCount > 0) (e.currentTarget.style.background = 'rgba(37,99,235,0.12)'); }}
-                    onMouseLeave={e => { e.currentTarget.style.background = '#EFF6FF'; }}
+                    style={{ padding: '12px 16px', borderRadius: '8px', minWidth: '76px', textAlign: 'center' as const, background: isDark ? '#1A1A1A' : '#EFF6FF', border: isDark ? '1px solid #2E2E2E' : 'none', cursor: bannerOpenCount > 0 ? 'pointer' : 'default', transition: 'all 80ms ease' }}
+                    onMouseEnter={e => { if (bannerOpenCount > 0) (e.currentTarget.style.background = isDark ? '#1F1F1F' : 'rgba(37,99,235,0.12)'); }}
+                    onMouseLeave={e => { e.currentTarget.style.background = isDark ? '#1A1A1A' : '#EFF6FF'; }}
                   >
                     <div style={{ fontSize: '20px', fontWeight: 700, color: '#2563EB' }}>{bannerOpenCount}</div>
                     <div style={{ fontSize: '11px', fontWeight: 600, color: '#2563EB', textTransform: 'uppercase' as const, letterSpacing: '.03em' }}>OPEN</div>
                   </div>
                   <div
                     onClick={() => setTicketListMode(bannerStaleCount > 0 ? 'stale' : null)}
-                    style={{ padding: '12px 16px', borderRadius: '8px', minWidth: '76px', textAlign: 'center' as const, background: '#FEF2F2', cursor: bannerStaleCount > 0 ? 'pointer' : 'default', transition: 'all 80ms ease' }}
-                    onMouseEnter={e => { if (bannerStaleCount > 0) (e.currentTarget.style.background = 'rgba(220,38,38,0.12)'); }}
-                    onMouseLeave={e => { e.currentTarget.style.background = '#FEF2F2'; }}
+                    style={{ padding: '12px 16px', borderRadius: '8px', minWidth: '76px', textAlign: 'center' as const, background: isDark ? '#1A1A1A' : '#FEF2F2', border: isDark ? '1px solid #2E2E2E' : 'none', cursor: bannerStaleCount > 0 ? 'pointer' : 'default', transition: 'all 80ms ease' }}
+                    onMouseEnter={e => { if (bannerStaleCount > 0) (e.currentTarget.style.background = isDark ? '#1F1F1F' : 'rgba(220,38,38,0.12)'); }}
+                    onMouseLeave={e => { e.currentTarget.style.background = isDark ? '#1A1A1A' : '#FEF2F2'; }}
                   >
                     <div style={{ fontSize: '20px', fontWeight: 700, color: '#DC2626' }}>{bannerStaleCount}</div>
                     <div style={{ fontSize: '11px', fontWeight: 600, color: '#DC2626', textTransform: 'uppercase' as const, letterSpacing: '.03em' }}>STALE</div>
@@ -616,7 +616,7 @@ export default function R360MemberDetail() {
 
               {/* §3 — Stale warning banner */}
               {allStale && allOpenItems.length > 0 && (
-                <div style={{ margin: '8px 0 0', padding: '8px 12px', background: '#FFFBEB', borderLeft: '3px solid #D97706', borderRadius: '0 4px 4px 0', fontSize: '13px', color: '#92400E' }}>
+                <div style={{ margin: '8px 0 0', padding: '8px 12px', background: isDark ? 'rgba(217,119,6,0.10)' : '#FFFBEB', borderLeft: `3px solid #D97706`, borderRadius: '0 4px 4px 0', fontSize: '13px', color: isDark ? '#FBBF24' : '#92400E' }}>
                   ⚠️ All assigned items are stale. Oldest: {oldestAge} days.
                 </div>
               )}
@@ -639,7 +639,7 @@ export default function R360MemberDetail() {
                   <ChevronLeft size={14} /> Back
                 </button>
                 {/* Quarter label — computed from current date */}
-                <button style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: 'rgba(15,23,42,0.05)', border: 'none', borderRadius: '6px', color: isDark ? '#EDEDED' : '#0F172A', fontSize: '13px', fontWeight: 500, cursor: 'pointer', padding: '5px 12px' }}>
+                <button style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: isDark ? '#1A1A1A' : 'rgba(15,23,42,0.05)', border: isDark ? '1px solid #2E2E2E' : 'none', borderRadius: '6px', color: isDark ? '#EDEDED' : '#0F172A', fontSize: '13px', fontWeight: 500, cursor: 'pointer', padding: '5px 12px' }}>
                   <Calendar size={13} /> {`Q${Math.ceil((new Date().getMonth() + 1) / 3)}-${new Date().getFullYear()}`}
                 </button>
                 {/* Intelligence — brand blue standard */}
@@ -1739,7 +1739,7 @@ function DetailPanel({ item, onClose, onSelectItem }: {
             <span className="r3-type-badge">{getJiraIcon(item.item_type)} {item.item_type}</span>
             <ProjTag projectKey={item.project_key} />
             {item.role_on_item === 'Contributor' && (
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '10px', fontWeight: 600, padding: '2px 8px', borderRadius: 4, background: '#F5F3FF', color: '#7C3AED', border: '1px solid #DDD6FE' }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '10px', fontWeight: 600, padding: '2px 8px', borderRadius: 4, background: isDark ? 'rgba(124,58,237,0.12)' : '#F5F3FF', color: '#7C3AED', border: `1px solid ${isDark ? 'rgba(124,58,237,0.25)' : '#DDD6FE'}` }}>
                 CONTRIBUTED TO <MiniAvatar name={item.assignee_name} size={16} />
               </span>
             )}
@@ -1807,7 +1807,7 @@ function DetailPanel({ item, onClose, onSelectItem }: {
               <div className="r3-hier-item r3-hier-item--current">
                 {getJiraIcon(item.item_type)}
                 <span className="r3-card-key r3-card-key--sm">{item.item_key}</span>
-                <span style={{ fontSize: 12, color: '#020617', fontWeight: 500 }}>{item.title}</span>
+                <span style={{ fontSize: 12, color: isDark ? '#EDEDED' : '#020617', fontWeight: 500 }}>{item.title}</span>
               </div>
             </div>
           )}
