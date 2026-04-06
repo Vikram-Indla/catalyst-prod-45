@@ -1,0 +1,101 @@
+version: "1"
+product_name: "Catalyst TestHub"
+description: "Enterprise test management module for the Catalyst Portfolio Management platform"
+target_users:
+  - QA Engineers
+  - Test Managers
+  - Project Managers
+features:
+  - id: F001
+    name: Dashboard
+    description: KPI dashboard with stats, active cycles, recent activity, charts
+    priority: high
+    route: /testhub/dashboard
+    acceptance_criteria:
+      - Dashboard loads with stat cards showing total cases, pass rate, active cycles
+      - Active cycles list displays with progress bars
+      - Recent activity feed shows latest actions
+      - Charts render correctly
+  - id: F002
+    name: Test Case Repository
+    description: Full CRUD for test cases with folder organization, search, filtering
+    priority: high
+    route: /testhub/repository
+    acceptance_criteria:
+      - Folder tree navigation works
+      - Test cases table displays with sortable columns
+      - Create test case modal opens and saves successfully
+      - Edit, clone, delete operations work
+      - Search filters by title and case key
+      - Status, priority, type filters work
+  - id: F003
+    name: Test Cycle Management
+    description: Create and manage test cycles with case assignment
+    priority: high
+    route: /testhub/cycles
+    acceptance_criteria:
+      - Cycles list displays as cards
+      - Create cycle modal works
+      - Cycle detail shows assigned test cases
+      - Status transitions work correctly
+  - id: F004
+    name: Test Execution
+    description: 3-pane step-by-step test execution with keyboard shortcuts
+    priority: high
+    route: /testhub/cycles/:cycleId/execute
+    acceptance_criteria:
+      - 3-pane layout renders correctly
+      - Step status can be set via buttons and keyboard
+      - Failure reason modal appears on fail
+      - Execution history is recorded
+  - id: F005
+    name: Defect Management
+    description: Track defects linked to test executions
+    priority: medium
+    route: /testhub/defects
+    acceptance_criteria:
+      - Defects list with filters
+      - Create defect with severity
+      - Status transitions work
+      - Link to test cases works
+  - id: F006
+    name: Reports
+    description: User activity and cycle reports
+    priority: medium
+    route: /testhub/reports
+    acceptance_criteria:
+      - Report generation works
+      - User activity shows correct data
+      - Export functionality works
+  - id: F007
+    name: Shared Steps
+    description: Reusable test steps management
+    priority: low
+    route: /testhub/shared-steps
+    acceptance_criteria:
+      - Create shared step works
+      - Reference in test cases works
+  - id: F008
+    name: Test Plans
+    description: Group multiple cycles into plans
+    priority: medium
+    route: /testhub/test-plans
+    acceptance_criteria:
+      - Create plan works
+      - Add cycles to plan works
+  - id: F009
+    name: Environments
+    description: Test environment management
+    priority: low
+    route: /testhub/environments
+    acceptance_criteria:
+      - Create environment works
+      - Link to cycles works
+  - id: F010
+    name: Tags
+    description: Tag management for test case categorization
+    priority: low
+    route: /testhub/tags
+    acceptance_criteria:
+      - Create and manage tags
+      - Filter test cases by tag
