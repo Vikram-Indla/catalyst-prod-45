@@ -1,21 +1,40 @@
 import { Loader2, BrainCircuit, RefreshCw } from "lucide-react";
 import { useAiDigest, type DigestItem } from "@/hooks/useAiDigest";
+import { useTheme } from "@/hooks/useTheme";
 
-const PRIORITY_STYLES: Record<string, { bg: string; text: string }> = {
+const PRIORITY_LIGHT: Record<string, { bg: string; text: string }> = {
   HIGH: { bg: "#FEE2E2", text: "#991B1B" },
   MED: { bg: "#FEF3C7", text: "#92400E" },
   LOW: { bg: "#DCFCE7", text: "#166534" },
 };
 
+const PRIORITY_DARK: Record<string, { bg: string; text: string }> = {
+  HIGH: { bg: "rgba(239,68,68,0.15)", text: "#FCA5A5" },
+  MED: { bg: "rgba(245,158,11,0.15)", text: "#FCD34D" },
+  LOW: { bg: "rgba(34,197,94,0.15)", text: "#86EFAC" },
+};
+
 export default function AIDigestTab() {
   const { digest, isEmpty, isLoading, isError, refetch } = useAiDigest();
+  const { isDark } = useTheme();
+
+  const T = {
+    text1: isDark ? '#F5F3F0' : '#0F172A',
+    text2: isDark ? '#A09890' : '#475569',
+    text3: isDark ? '#6B6560' : '#94A3B8',
+    cardBg: isDark ? '#232019' : '#F8FAFC',
+    cardBorder: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.08)',
+    btnBorder: isDark ? 'rgba(255,255,255,0.10)' : '#E2E8F0',
+    loaderText: isDark ? '#A09890' : '#64748B',
+  };
+  const PS = isDark ? PRIORITY_DARK : PRIORITY_LIGHT;
 
   // Loading state
   if (isLoading) {
     return (
       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "80px 20px", gap: 12 }}>
         <Loader2 size={28} color="#7C3AED" style={{ animation: "spin 1s linear infinite" }} />
-        <span style={{ fontFamily: "Inter, sans-serif", fontSize: 13, color: "#64748B" }}>Generating your digest...</span>
+        <span style={{ fontFamily: "Inter, sans-serif", fontSize: 13, color: T.loaderText }}>Generating your digest...</span>
         <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
       </div>
     );
@@ -26,14 +45,14 @@ export default function AIDigestTab() {
     return (
       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "80px 20px", gap: 12 }}>
         <BrainCircuit size={32} color="#D8B4FE" />
-        <span style={{ fontFamily: "Inter, sans-serif", fontSize: 14, fontWeight: 600, color: "#475569" }}>Digest unavailable</span>
-        <span style={{ fontFamily: "Inter, sans-serif", fontSize: 12, color: "#94A3B8", textAlign: "center" }}>Unable to generate digest right now. Try again later.</span>
+        <span style={{ fontFamily: "Inter, sans-serif", fontSize: 14, fontWeight: 600, color: T.text1 }}>Digest unavailable</span>
+        <span style={{ fontFamily: "Inter, sans-serif", fontSize: 12, color: T.text3, textAlign: "center" }}>Unable to generate digest right now. Try again later.</span>
         <button
           onClick={() => refetch()}
           style={{
             marginTop: 8, padding: "6px 16px", borderRadius: 6,
-            border: "1px solid #E2E8F0", background: "transparent",
-            fontFamily: "Inter, sans-serif", fontSize: 12, color: "#475569",
+            border: `1px solid ${T.btnBorder}`, background: "transparent",
+            fontFamily: "Inter, sans-serif", fontSize: 12, color: T.text2,
             cursor: "pointer",
           }}
         >
@@ -48,8 +67,8 @@ export default function AIDigestTab() {
     return (
       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "80px 20px", gap: 12 }}>
         <BrainCircuit size={32} color="#D8B4FE" />
-        <span style={{ fontFamily: "Inter, sans-serif", fontSize: 14, fontWeight: 600, color: "#475569" }}>You're all caught up</span>
-        <span style={{ fontFamily: "Inter, sans-serif", fontSize: 12, color: "#94A3B8", textAlign: "center" }}>No activity in the last 48 hours to summarise.</span>
+        <span style={{ fontFamily: "Inter, sans-serif", fontSize: 14, fontWeight: 600, color: T.text1 }}>You're all caught up</span>
+        <span style={{ fontFamily: "Inter, sans-serif", fontSize: 12, color: T.text3, textAlign: "center" }}>No activity in the last 48 hours to summarise.</span>
       </div>
     );
   }
@@ -78,7 +97,7 @@ export default function AIDigestTab() {
       {digest?.summary && (
         <p style={{
           fontFamily: "Inter, sans-serif", fontSize: 13, fontStyle: "italic",
-          color: "#475569", lineHeight: "20px", margin: "0 0 12px",
+          color: T.text2, lineHeight: "20px", margin: "0 0 12px",
         }}>
           {digest.summary}
         </p>
@@ -87,12 +106,12 @@ export default function AIDigestTab() {
       {/* Digest items */}
       <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
         {digest?.items.map((item: DigestItem, idx: number) => {
-          const ps = PRIORITY_STYLES[item.priority] || PRIORITY_STYLES.LOW;
+          const ps = PS[item.priority] || PS.LOW;
           return (
             <div key={idx} style={{
               padding: "12px 16px",
-              background: "#F8FAFC",
-              border: "0.5px solid rgba(15,23,42,.08)",
+              background: T.cardBg,
+              border: `0.5px solid ${T.cardBorder}`,
               borderRadius: 6,
             }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
@@ -105,15 +124,15 @@ export default function AIDigestTab() {
                 }}>
                   {item.priority}
                 </span>
-                <span style={{ fontFamily: "Inter, sans-serif", fontSize: 13, fontWeight: 600, color: "#1E293B" }}>
+                <span style={{ fontFamily: "Inter, sans-serif", fontSize: 13, fontWeight: 600, color: T.text1 }}>
                   {item.title}
                 </span>
               </div>
-              <p style={{ fontFamily: "Inter, sans-serif", fontSize: 12, color: "#64748B", margin: "2px 0 0", lineHeight: "18px" }}>
+              <p style={{ fontFamily: "Inter, sans-serif", fontSize: 12, color: T.text2, margin: "2px 0 0", lineHeight: "18px" }}>
                 {item.detail}
               </p>
               {item.hub && (
-                <span style={{ fontFamily: "Inter, sans-serif", fontSize: 11, color: "#94A3B8", marginTop: 4, display: "inline-block" }}>
+                <span style={{ fontFamily: "Inter, sans-serif", fontSize: 11, color: T.text3, marginTop: 4, display: "inline-block" }}>
                   {item.hub}
                 </span>
               )}
