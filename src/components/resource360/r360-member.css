@@ -1240,10 +1240,19 @@
 .dark #r360-root {
   background: #0A0A0A !important;
   --cp-interact-hover: #1F1F1F;
-  --cp-interact-press: #2E2E2E;
-  --cp-interact-selected: rgba(37,99,235,0.12);
-  --cp-shadow-xs: 0 1px 3px rgba(0,0,0,0.3);
+  --cp-interact-press: #292929;
+  --cp-interact-selected: #1F1F1F;
+  --cp-shadow-xs: none;
   --cp-shadow-overlay: 0 8px 24px rgba(0,0,0,0.5);
+}
+
+/* Core page surfaces */
+.dark #r360-root .r3-page,
+.dark #r360-root .r3-toolbar,
+.dark #r360-root .r3-summary-bar,
+.dark #r360-root .r3-board,
+.dark #r360-root .r3-chrono {
+  background: #0A0A0A !important;
 }
 
 /* Period toggle */
@@ -1259,84 +1268,111 @@
   color: #FFFFFF !important;
 }
 
-/* Toolbar, surfaces, cards */
-.dark #r360-root .r3-toolbar,
-.dark #r360-root .r3-summary-bar {
-  background: #0A0A0A !important;
-}
-.dark #r360-root .r3-week-header,
-.dark #r360-root .r3-timeline-header {
-  color: #EDEDED !important;
-}
-
-/* Text overrides — primary */
-.dark #r360-root .r3-label-primary,
-.dark #r360-root .r3-kpi-value,
-.dark #r360-root .r3-section-label,
-.dark #r360-root .r3-item-title,
-.dark #r360-root .r3-board-title {
-  color: #EDEDED !important;
-}
-
-/* Text overrides — secondary */
-.dark #r360-root .r3-label-secondary,
-.dark #r360-root .r3-item-meta,
-.dark #r360-root .r3-period-toggle button:not(.active),
-.dark #r360-root .r3-filter-label {
-  color: #A1A1A1 !important;
-}
-
-/* Text overrides — muted */
-.dark #r360-root .r3-label-muted,
-.dark #r360-root .r3-count,
-.dark #r360-root .r3-empty {
-  color: #878787 !important;
-}
-
-/* Borders and dividers */
-.dark #r360-root .r3-period-toggle,
-.dark #r360-root .r3-week-row,
-.dark #r360-root .r3-item-row,
+/* Header / strip surfaces */
+.dark #r360-root .r3-profile-card,
+.dark #r360-root .r3-week-strip,
+.dark #r360-root .r3-completed-panel,
+.dark #r360-root .r3-panel,
+.dark #r360-root .r3-panel-header,
+.dark #r360-root .r3-meta,
+.dark #r360-root .r3-meta-cell,
+.dark #r360-root .r3-hierarchy,
+.dark #r360-root .r3-siblings,
+.dark #r360-root .r3-sibling-row,
+.dark #r360-root .r3-day-cell,
 .dark #r360-root .r3-board-card,
-.dark #r360-root .r3-section-divider,
-.dark #r360-root .r3-timeline-row,
-.dark #r360-root [class*="border"] {
+.dark #r360-root .r3-chrono-card {
+  background: #1A1A1A !important;
   border-color: #2E2E2E !important;
 }
 
-/* Separator bars */
+/* Ring canvas + actual ring classes used by this page */
+.dark #r360-root .r3-ring-canvas {
+  background: #0A0A0A !important;
+  border-color: #2E2E2E !important;
+}
+.dark #r360-root .r3-ring-card,
+.dark #r360-root .r3-ring-center,
+.dark #r360-root .r3-spoke-label {
+  border-color: #2E2E2E !important;
+}
+.dark #r360-root .r3-ring-card,
+.dark #r360-root .r3-spoke-label {
+  background: #1A1A1A !important;
+}
+.dark #r360-root .r3-spoke-label {
+  color: #A1A1A1 !important;
+}
+.dark #r360-root .r3-board-col-header,
+.dark #r360-root .r3-chrono-line,
+.dark #r360-root .r3-week-strip-bar-track,
+.dark #r360-root .r3-day-cell-minibar,
 .dark #r360-root .r3-divider,
 .dark #r360-root .r3-separator {
   background: #292929 !important;
 }
 
-/* Table & list backgrounds */
-.dark #r360-root .r3-week-row,
-.dark #r360-root .r3-timeline-row,
-.dark #r360-root .r3-week-row:nth-child(even) {
-  background: #0A0A0A !important;
+/* Text hierarchy */
+.dark #r360-root .r3-name,
+.dark #r360-root .r3-kpi-value,
+.dark #r360-root .r3-card-title,
+.dark #r360-root .r3-panel-title,
+.dark #r360-root .r3-meta-value,
+.dark #r360-root .r3-date-label,
+.dark #r360-root .r3-board-col-title,
+.dark #r360-root .r3-week-strip-left {
+  color: #EDEDED !important;
 }
-.dark #r360-root .r3-week-row:hover,
-.dark #r360-root .r3-timeline-row:hover,
-.dark #r360-root .r3-item-row:hover {
+.dark #r360-root .r3-role,
+.dark #r360-root .r3-count,
+.dark #r360-root .r3-week-strip-label,
+.dark #r360-root .r3-day-cell-name,
+.dark #r360-root .r3-day-cell-count,
+.dark #r360-root .r3-parent-ref,
+.dark #r360-root .r3-siblings-title,
+.dark #r360-root .r3-siblings-count,
+.dark #r360-root .r3-board-col-count,
+.dark #r360-root .r3-card-key--sm {
+  color: #A1A1A1 !important;
+}
+.dark #r360-root .r3-label-muted,
+.dark #r360-root .r3-empty,
+.dark #r360-root .r3-day-cell-date,
+.dark #r360-root .r3-parent-key,
+.dark #r360-root .r3-weeknav-count,
+.dark #r360-root .r3-completed-text.empty {
+  color: #878787 !important;
+}
+
+/* Tabs and controls */
+.dark #r360-root .r3-tab {
+  color: #A1A1A1 !important;
+  background: transparent !important;
+}
+.dark #r360-root .r3-tab:hover {
   background: #1F1F1F !important;
+  color: #EDEDED !important;
 }
-
-/* Card surfaces */
-.dark #r360-root .r3-board-card,
-.dark #r360-root .r3-stat-card,
-.dark #r360-root .r3-detail-card,
-.dark #r360-root .r3-card-surface {
-  background: #1A1A1A !important;
-  border-color: #2E2E2E !important;
+.dark #r360-root .r3-tab.active,
+.dark #r360-root .r3-tab--active {
+  background: transparent !important;
+  color: #EDEDED !important;
+  border-bottom-color: #EDEDED !important;
 }
-
-/* Filter chips & status buttons */
-.dark #r360-root .r3-filter-chip,
-.dark #r360-root .r3-status-filter {
+.dark #r360-root .r3-btn-outline,
+.dark #r360-root .r3-week-nav,
+.dark #r360-root .r3-filter-pill,
+.dark #r360-root select {
   background: #1A1A1A !important;
   border-color: #2E2E2E !important;
   color: #A1A1A1 !important;
+}
+
+.dark #r360-root .r3-filter-pill.active,
+.dark #r360-root .r3-day-cell.selected,
+.dark #r360-root .r3-day-cell.today.selected {
+  background: #1F1F1F !important;
+  border-color: #EDEDED !important;
 }
 .dark #r360-root .r3-filter-chip.active,
 .dark #r360-root .r3-status-filter.active {
@@ -1464,14 +1500,32 @@
 /* Select / dropdown overrides */
 .dark #r360-root select {
   background: #1A1A1A !important;
+
   color: #EDEDED !important;
-  border-color: #2E2E2E !important;
+}
+.dark #r360-root .r3-day-cell.today {
+  background: #1A1A1A !important;
+  border-color: #EDEDED !important;
 }
 
-/* Hover for board cards */
-.dark #r360-root .r3-board-card:hover {
-  box-shadow: 0 2px 8px rgba(0,0,0,0.3) !important;
+/* Hover states */
+.dark #r360-root .r3-day-cell:hover,
+.dark #r360-root .r3-sibling-row:hover,
+.dark #r360-root .r3-board-card:hover,
+.dark #r360-root .r3-chrono-card:hover,
+.dark #r360-root .r3-ring-card:hover {
+  background: #1F1F1F !important;
   border-color: #454545 !important;
+  box-shadow: none !important;
+}
+
+/* Completed rail */
+.dark #r360-root .r3-completed-circle.empty {
+  border-color: #454545 !important;
+  color: #878787 !important;
+}
+.dark #r360-root .r3-completed-text {
+  color: #A1A1A1 !important;
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -1482,8 +1536,36 @@
 
 /* Page-level backgrounds — force #0A0A0A */
 .dark #r360-root [style*="background: #FFFFFF"],
-.dark #r360-root [style*="background: #fff"],
 .dark #r360-root [style*="background:#FFFFFF"],
+
+.dark #r360-root [style*="background: #fff"],
+.dark #r360-root [style*="background:#fff"],
+.dark #r360-root [style*="background: #F8FAFC"],
+.dark #r360-root [style*="background:#F8FAFC"] {
+  background: #1A1A1A !important;
+}
+.dark #r360-root [style*="border: 1px solid #E2E8F0"],
+.dark #r360-root [style*="border-color: #E2E8F0"],
+.dark #r360-root [style*="border-color:#E2E8F0"] {
+  border-color: #2E2E2E !important;
+}
+.dark #r360-root [style*="color: #0F172A"],
+.dark #r360-root [style*="color:#0F172A"],
+.dark #r360-root [style*="color: #020617"],
+.dark #r360-root [style*="color:#020617"] {
+  color: #EDEDED !important;
+}
+.dark #r360-root [style*="color: #334155"],
+.dark #r360-root [style*="color:#334155"] {
+  color: #A1A1A1 !important;
+}
+.dark #r360-root [style*="color: #64748B"],
+.dark #r360-root [style*="color:#64748B"],
+.dark #r360-root [style*="color: #94A3B8"],
+.dark #r360-root [style*="color:#94A3B8"] {
+  color: #878787 !important;
+}
+
 .dark #r360-root [style*="background:#fff"],
 .dark #r360-root [style*="background: white"],
 .dark #r360-root [style*="background: rgb(255"],
@@ -1537,3 +1619,4 @@
 .dark #r360-root [style*="background: #F1F5F9"] {
   background: #2E2E2E !important;
 }
+
