@@ -2928,9 +2928,9 @@ input[type="range"]::-moz-range-thumb {
   --cp-prg-bg: rgba(59,130,246,0.10);
   --cp-shadow-overlay: 0px 8px 12px rgba(0,0,0,0.5), 0px 0px 1px rgba(0,0,0,0.6);
   --cp-shadow-xs: 0 1px 2px 0 rgba(0,0,0,0.3);
-  --cp-t1: rgba(237,237,237,0.93);
-  --cp-t2: rgba(237,237,237,0.53);
-  --cp-t3: rgba(237,237,237,0.40);
+  --cp-t1: #EDEDED;
+  --cp-t2: #A1A1A1;
+  --cp-t3: #878787;
   --cp-t4: rgba(237,237,237,0.25);
   --cp-text-link: #60A5FA;
   --cp-text-muted: #878787;
@@ -2943,8 +2943,8 @@ input[type="range"]::-moz-range-thumb {
   --ring: rgba(59,130,246,0.7);
   --shadow: 0 4px 12px rgba(0,0,0,0.4);
   --text-1: #EDEDED;
-  --text-2: #888888;
-  --text-3: #666666;
+  --text-2: #A1A1A1;
+  --text-3: #878787;
   --tw-border-opacity: 0.08 !important;
 }
 
