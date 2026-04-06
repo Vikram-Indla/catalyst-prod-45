@@ -575,9 +575,9 @@ export default function R360MemberDetail() {
   return (
     <>
       <div id="r360-root" data-r360-page-content style={{ position: 'relative', width: '100%', minWidth: 0, overflow: 'hidden' }}>
-        <div className="r3-page" style={{ background: isDark ? '#1A1A1A' : '#FFFFFF', height: '100%', overflow: 'auto' }}>
+        <div className="r3-page" style={{ background: isDark ? '#0A0A0A' : '#FFFFFF', height: '100%', overflow: 'auto' }}>
           {/* ── Sticky Header: Profile + Week Nav ── */}
-          <div style={{ position: 'sticky', top: 0, zIndex: 10, background: isDark ? '#1A1A1A' : '#FFFFFF' }}>
+          <div style={{ position: 'sticky', top: 0, zIndex: 10, background: isDark ? '#0A0A0A' : '#FFFFFF' }}>
             {/* ── Profile Header ── */}
             <div className="r3-profile">
               <div className="r3-profile-top">
