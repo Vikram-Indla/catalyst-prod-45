@@ -17,8 +17,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 /* ── StatusLozenge (immutable spec) ─────────────────────── */
 function Lozenge({ status }: { status: string }) {
   const map: Record<string, { bg: string; text: string }> = {
-    success: { bg: 'var(--status-ok-bg, #E3FCEF)', text: '#006644' },
-    completed: { bg: 'var(--status-ok-bg, #E3FCEF)', text: '#006644' },
+    success: { bg: '#E3FCEF', text: '#006644' },
+    completed: { bg: '#E3FCEF', text: '#006644' },
     error: { bg: '#DFE1E6', text: '#253858' },
     failed: { bg: '#DFE1E6', text: '#253858' },
     skipped: { bg: '#DFE1E6', text: '#253858' },
@@ -292,7 +292,7 @@ export function DeletedItemsTab() {
         {!isLoading && !isError && (!deletedItems || deletedItems.length === 0) ? (
           <div className="flex flex-col items-center justify-center py-10 gap-2">
             <Trash2 size={32} className="text-gray-300 dark:text-gray-600" />
-            <span style={{ fontSize: 13 }} className="text-[var(--fg-3, #94A3B8)] dark:text-gray-400">No deleted items archived</span>
+            <span style={{ fontSize: 13 }} className="text-[#94A3B8] dark:text-gray-400">No deleted items archived</span>
           </div>
         ) : (
           <>

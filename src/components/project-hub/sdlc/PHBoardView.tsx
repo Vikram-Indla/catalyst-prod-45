@@ -197,7 +197,7 @@ function BoardCard({
   onMarkDone: () => void;
 }) {
   const [hovered, setHovered] = useState(false);
-  const accentColor = TYPE_ACCENT[issue.type as IssueType] ?? 'var(--fg-3, #94A3B8)';
+  const accentColor = TYPE_ACCENT[issue.type as IssueType] ?? '#94A3B8';
 
   return (
     <div

@@ -192,7 +192,7 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, onClick, end
           <div className="flex items-center gap-1.5" style={{ fontSize: 12, color: '#64748B', marginBottom: 4 }}>
             <Calendar className="w-3 h-3" />
             {formatDate(item.start_date)} → {formatDate(item.end_date)}
-            {endDateIsEstimated && <span style={{ fontSize: 10, color: 'var(--fg-3, #94A3B8)', fontStyle: 'italic' }}>(est.)</span>}
+            {endDateIsEstimated && <span style={{ fontSize: 10, color: '#94A3B8', fontStyle: 'italic' }}>(est.)</span>}
           </div>
           <div className="flex items-center gap-2">
             <span style={{ width: 6, height: 6, borderRadius: '50%', background: finalColor }} />

@@ -15,11 +15,11 @@ const T = {
   inkMuted: '#71717A', inkMutedStrong: '#6F6F78',
   surface: '#FFFFFF', surfaceSecondary: '#FAFAFA', surfaceTertiary: '#F4F4F5',
   border: '#E4E4E7', borderStrong: '#D4D4D8',
-  primary: '#2563EB', primaryHover: '#1D4ED8', primaryBg: 'var(--tint-blue, #EFF6FF)',
+  primary: '#2563EB', primaryHover: '#1D4ED8', primaryBg: '#EFF6FF',
   teal: '#0D9488', tealBg: '#F0FDFA',
-  success: '#16A34A', successBg: 'var(--tint-green, #F0FDF4)',
+  success: '#16A34A', successBg: '#F0FDF4',
   warning: '#D97706', warningBg: '#FFFBEB',
-  danger: '#DC2626', dangerBg: 'var(--tint-red, #FEF2F2)',
+  danger: '#DC2626', dangerBg: '#FEF2F2',
 };
 
 // --- Types ---

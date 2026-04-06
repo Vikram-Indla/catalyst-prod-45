@@ -124,7 +124,7 @@ export default function ToastToken({ toast: t, onDismiss, onPause, onResume }: T
           onClick={(e) => { e.stopPropagation(); onDismiss(t.id); }}
           style={{
             background: 'none', border: 'none', cursor: 'pointer', padding: 2,
-            color: 'var(--fg-3, #94A3B8)', flexShrink: 0, borderRadius: 4,
+            color: '#94A3B8', flexShrink: 0, borderRadius: 4,
             minWidth: 44, minHeight: 44, // responsive: min tap target
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}

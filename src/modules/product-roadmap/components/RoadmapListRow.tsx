@@ -55,7 +55,7 @@ interface RoadmapListRowProps {
 
 export function RoadmapListRow({ item, index, isFocused, isSelected, onClick, isDragging, ownerName }: RoadmapListRowProps) {
   const typeKey = (item as any).initiative_type_key || 'project';
-  const typeColor = TYPE_COLORS[typeKey] || 'var(--fg-3, #94A3B8)';
+  const typeColor = TYPE_COLORS[typeKey] || '#94A3B8';
   const isCritical = item.priority_tier === 'P0' || item.priority_tier === 'critical';
 
   const name = ownerName || null;
@@ -74,7 +74,7 @@ export function RoadmapListRow({ item, index, isFocused, isSelected, onClick, is
       )}
       style={{
         height: 44,
-        backgroundColor: isSelected ? 'var(--tint-blue, #EFF6FF)' : 'transparent',
+        backgroundColor: isSelected ? '#EFF6FF' : 'transparent',
         borderBottom: '1px solid #F1F5F9',
         outline: isFocused ? '2px solid #2563EB' : 'none',
         outlineOffset: -2,
@@ -133,7 +133,7 @@ export function RoadmapListRow({ item, index, isFocused, isSelected, onClick, is
           className="flex-shrink-0 flex items-center justify-center rounded-full"
           style={{ width: 28, height: 28, background: 'var(--bd-default, #E2E8F0)' }}
         >
-          <User className="w-3.5 h-3.5" style={{ color: 'var(--fg-3, #94A3B8)' }} />
+          <User className="w-3.5 h-3.5" style={{ color: '#94A3B8' }} />
         </div>
       )}
     </div>

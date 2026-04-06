@@ -49,7 +49,7 @@ export function NewStoriesResponse({ onItemClick }: { onItemClick?: (key: string
 
       {earlierLoaded && earlierData.length > 0 && (
         <div style={{ marginTop: 12 }}>
-          <CardHeader icon={FilePlus} iconColor="var(--fg-3, #94A3B8)" title="Earlier Stories" subtitle={`${earlierData.length} from 2–6 weeks ago`} />
+          <CardHeader icon={FilePlus} iconColor="#94A3B8" title="Earlier Stories" subtitle={`${earlierData.length} from 2–6 weeks ago`} />
           <V12Table
             headers={['KEY', 'TITLE', 'PROJECT', 'ASSIGNEE', 'STATUS', 'CREATED']}
             widths={['100px', 'auto', '100px', '120px', '100px', '80px']}

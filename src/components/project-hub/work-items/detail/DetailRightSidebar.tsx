@@ -147,7 +147,7 @@ export function DetailRightSidebar({ item, statuses, onUpdate, onInvalidate }: S
       {/* AI BUTTON */}
       <button
         onClick={() => toast('AI analyzing...', { icon: '✨' })}
-        className="w-full py-2 rounded-md text-[12px] font-semibold flex items-center justify-center gap-1.5 mb-4 transition-colors hover:bg-[var(--tint-blue, #EFF6FF)]"
+        className="w-full py-2 rounded-md text-[12px] font-semibold flex items-center justify-center gap-1.5 mb-4 transition-colors hover:bg-[#EFF6FF]"
         style={{ border: '1px solid var(--divider)', color: 'var(--cp-purple)' }}
       >
         <Sparkles size={14} /> Improve Story with AI
@@ -181,7 +181,7 @@ export function DetailRightSidebar({ item, statuses, onUpdate, onInvalidate }: S
             <button onClick={e => { e.stopPropagation(); setPriorityOpen(!priorityOpen); setStatusOpen(false); }} className="flex items-center gap-1.5 text-[13px] font-medium" style={{ color: 'var(--fg-2)' }}>
               <span style={{ color: PRIORITIES.find(p => p.value === item.priority)?.color }}>{PRIORITIES.find(p => p.value === item.priority)?.icon}</span>
               {item.priority}
-              <ChevronDown size={12} className="text-[var(--fg-3, #94A3B8)]" />
+              <ChevronDown size={12} className="text-[#94A3B8]" />
             </button>
             {priorityOpen && (
               <div className="absolute left-0 top-full mt-1 rounded-md overflow-hidden bg-[var(--cp-float)]" style={{ width: 160, border: '1px solid var(--divider)', boxShadow: '0 8px 20px rgba(0,0,0,0.18)', zIndex: 9999 }} onClick={e => e.stopPropagation()}>

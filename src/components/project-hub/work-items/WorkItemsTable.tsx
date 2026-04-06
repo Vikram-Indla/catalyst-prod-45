@@ -289,12 +289,12 @@ export function WorkItemsTable({
                     <td colSpan={visibleCols.length}>
                       <button
                         onClick={() => toggleGroup(group.key)}
-                        className="w-full flex items-center gap-2 px-3 text-left transition-colors hover:bg-[var(--tint-blue, #EFF6FF)] bg-[var(--bg-1)]"
+                        className="w-full flex items-center gap-2 px-3 text-left transition-colors hover:bg-[#EFF6FF] bg-[var(--bg-1)]"
                         style={{ height: 32, borderBottom: '1px solid var(--divider)' }}
                       >
                         {collapsedGroups.has(group.key)
-                          ? <ChevronRight size={14} className="text-[var(--fg-3, #94A3B8)]" />
-                          : <ChevronDown size={14} className="text-[var(--fg-3, #94A3B8)]" />
+                          ? <ChevronRight size={14} className="text-[#94A3B8]" />
+                          : <ChevronDown size={14} className="text-[#94A3B8]" />
                         }
                         <span className="text-[12px] font-semibold" style={{ color: 'var(--fg-1)' }}>{group.label}</span>
                         <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-[var(--divider)]" style={{ color: 'var(--fg-3)' }}>

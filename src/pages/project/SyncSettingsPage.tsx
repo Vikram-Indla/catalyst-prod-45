@@ -54,11 +54,11 @@ function ConnectionStatusCard({ projectId }: { projectId: string }) {
       </CardHeader>
       <CardContent className="space-y-3">
         <div className="flex items-center gap-2">
-          <div className={`w-2.5 h-2.5 rounded-full ${isConnected ? 'bg-[#059669]' : 'bg-[var(--fg-3, #94A3B8)]'}`} />
+          <div className={`w-2.5 h-2.5 rounded-full ${isConnected ? 'bg-[#059669]' : 'bg-[#94A3B8]'}`} />
           {isConnected ? (
             <Wifi className="w-4 h-4 text-[#059669]" />
           ) : (
-            <WifiOff className="w-4 h-4 text-[var(--fg-3, #94A3B8)]" />
+            <WifiOff className="w-4 h-4 text-[#94A3B8]" />
           )}
           <span className="text-sm font-medium text-foreground">
             {isConnected ? 'Connected' : 'Not Connected'}
@@ -221,14 +221,14 @@ function SyncHealthCard({ projectId }: { projectId: string }) {
   });
 
   const getHealthColor = (status?: string) => {
-    if (!status) return 'var(--fg-3, #94A3B8)';
+    if (!status) return '#94A3B8';
     if (status === 'healthy') return '#059669';
     if (status === 'degraded') return '#D97706';
     return '#DC2626';
   };
 
   const getHealthIcon = (status?: string) => {
-    if (!status) return <Activity className="w-4 h-4 text-[var(--fg-3, #94A3B8)]" />;
+    if (!status) return <Activity className="w-4 h-4 text-[#94A3B8]" />;
     if (status === 'healthy') return <CheckCircle2 className="w-4 h-4 text-[#059669]" />;
     if (status === 'degraded') return <AlertTriangle className="w-4 h-4 text-[#D97706]" />;
     return <AlertTriangle className="w-4 h-4 text-[#DC2626]" />;
@@ -262,7 +262,7 @@ function SyncHealthCard({ projectId }: { projectId: string }) {
           <div className="animate-pulse h-20 rounded" />
         ) : !health ? (
           <div className="flex items-center gap-2 py-4">
-            <Activity className="w-4 h-4 text-[var(--fg-3, #94A3B8)]" />
+            <Activity className="w-4 h-4 text-[#94A3B8]" />
             <span className="text-xs text-muted-foreground">No health data yet</span>
           </div>
         ) : (
@@ -307,7 +307,7 @@ function RecentEventsTable({ projectId }: { projectId: string }) {
 
   const getStatusBadge = (status: string) => {
     if (status === 'processed' || status === 'completed') {
-      return <Badge className="bg-[var(--status-ok-bg, #E3FCEF)] text-[#006644] text-[11px] font-bold uppercase">{status}</Badge>;
+      return <Badge className="bg-[#E3FCEF] text-[#006644] text-[11px] font-bold uppercase">{status}</Badge>;
     }
     if (status === 'pending') {
       return <Badge className="bg-[#DEEBFF] text-[#0747A6] text-[11px] font-bold uppercase">{status}</Badge>;

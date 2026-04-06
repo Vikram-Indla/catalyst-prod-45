@@ -127,13 +127,13 @@ export default function SidePanelHistory({ workItemId, currentStatus, currentSta
                       {t.from_status ? (
                         <>
                           <WorkHubStatusLozenge status={t.from_status} statusCategory={t.from_status_category} />
-                          <ArrowRight size={14} color="var(--fg-3, #94A3B8)" />
+                          <ArrowRight size={14} color="#94A3B8" />
                           <WorkHubStatusLozenge status={t.to_status} statusCategory={t.to_status_category} />
                         </>
                       ) : (
                         <>
                           <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg-1)' }}>Created</span>
-                          <ArrowRight size={14} color="var(--fg-3, #94A3B8)" />
+                          <ArrowRight size={14} color="#94A3B8" />
                           <WorkHubStatusLozenge status={t.to_status} statusCategory={t.to_status_category} />
                         </>
                       )}
@@ -229,7 +229,7 @@ export default function SidePanelHistory({ workItemId, currentStatus, currentSta
                     {cl.field_name === 'status' ? (
                       <>
                         {cl.from_display && <WorkHubStatusLozenge status={cl.from_display} statusCategory={deriveStatusCategory(cl.from_display)} />}
-                        <ArrowRight size={12} color="var(--fg-3, #94A3B8)" />
+                        <ArrowRight size={12} color="#94A3B8" />
                         {cl.to_display && <WorkHubStatusLozenge status={cl.to_display} statusCategory={deriveStatusCategory(cl.to_display)} />}
                       </>
                     ) : (

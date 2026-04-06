@@ -140,7 +140,7 @@ export function IDCell({ value }: { value: string }) {
 
 /* ── Type Icon Cell — icon only, no text, transparent bg ── */
 export function TypeIconCell({ typeKey }: { typeKey?: string | null }) {
-  const iconConfig = TYPE_ICON_MAP[typeKey || ''] || { Icon: CircleDashed, color: 'var(--fg-3, #94A3B8)' };
+  const iconConfig = TYPE_ICON_MAP[typeKey || ''] || { Icon: CircleDashed, color: '#94A3B8' };
   const { Icon, color } = iconConfig;
   return (
     <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }} title={typeKey?.replace(/_/g, ' ') || 'Unknown'}>

@@ -30,7 +30,7 @@ export default function ReleaseHealthWidget({ projectId, projectKey, collapsed, 
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <span style={{ fontSize: 13, fontWeight: 650, color: 'var(--cp-text-primary)', fontFamily: 'var(--cp-font-heading)' }}>{rel.name}</span>
-            <span className="inline-flex items-center bg-[var(--status-info-bg, #DEEBFF)] dark:bg-[#1a3a5c] text-[#0747A6] dark:text-[#7bb0ff]" style={{
+            <span className="inline-flex items-center bg-[#DEEBFF] dark:bg-[#1a3a5c] text-[#0747A6] dark:text-[#7bb0ff]" style={{
               height: 20, padding: '0 8px',
               fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em',
               borderRadius: 'var(--cp-radius-sm)',

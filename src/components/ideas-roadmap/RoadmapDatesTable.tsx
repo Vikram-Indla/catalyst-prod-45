@@ -11,9 +11,9 @@ interface RoadmapDatesTableProps {
 
 const QUARTER_STYLES: Record<string, { bg: string; color: string }> = {
   Q1: { bg: '#F3E8FF', color: '#6D28D9' },
-  Q2: { bg: 'var(--tint-blue, #EFF6FF)', color: '#1D4ED8' },
-  Q3: { bg: 'var(--tint-green-soft, #ECFDF5)', color: '#065F46' },
-  Q4: { bg: 'var(--tint-amber, #FFF7ED)', color: '#92400E' },
+  Q2: { bg: '#EFF6FF', color: '#1D4ED8' },
+  Q3: { bg: '#ECFDF5', color: '#065F46' },
+  Q4: { bg: '#FFF7ED', color: '#92400E' },
 };
 
 const headerStyle: React.CSSProperties = {

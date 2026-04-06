@@ -71,7 +71,7 @@ export const InlineChannelToggles = memo(function InlineChannelToggles({
           <Tooltip>
             <TooltipTrigger asChild>
               <div className="flex items-center gap-1">
-                <Icon className="h-3 w-3 text-[var(--fg-3, #94A3B8)]" />
+                <Icon className="h-3 w-3 text-[#94A3B8]" />
                 <Switch
                   checked={channels[key]}
                   onCheckedChange={(v) => onChange(key, v)}
@@ -111,7 +111,7 @@ export function ChannelToggleCard({
     <div className="space-y-2">
       <div className="flex items-center justify-between">
         <span className="text-xs font-medium text-[#0F172A]">Delivery Channels</span>
-        <span className="text-[10px] text-[var(--fg-3, #94A3B8)]">
+        <span className="text-[10px] text-[#94A3B8]">
           {enabledCount}/{CHANNEL_DEFS.length} active
         </span>
       </div>
@@ -129,7 +129,7 @@ export function ChannelToggleCard({
           >
             <Icon
               className={`h-4 w-4 flex-shrink-0 ${
-                channels[key] ? 'text-[#2563EB]' : 'text-[var(--fg-3, #94A3B8)]'
+                channels[key] ? 'text-[#2563EB]' : 'text-[#94A3B8]'
               }`}
             />
             <div className="min-w-0 flex-1">
@@ -161,7 +161,7 @@ export function ChannelBadges({ channels }: ChannelBadgesProps) {
   const active = CHANNEL_DEFS.filter((d) => channels[d.key]);
 
   if (active.length === 0) {
-    return <span className="text-[10px] text-[var(--fg-3, #94A3B8)]">No channels</span>;
+    return <span className="text-[10px] text-[#94A3B8]">No channels</span>;
   }
 
   return (

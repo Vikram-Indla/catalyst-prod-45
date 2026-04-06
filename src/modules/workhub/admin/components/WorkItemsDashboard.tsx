@@ -4,8 +4,8 @@ import { useJiraIssueStats, ProjectHierarchy, EpicNode, StoryNode } from '../hoo
 import '../../shared/tokens/workhub-tokens.css';
 
 const STATUS_COLORS: Record<string, string> = {
-  'To Do': 'var(--fg-3, #94A3B8)', 'ToDo': 'var(--fg-3, #94A3B8)', 'Open': 'var(--fg-3, #94A3B8)',
-  'Backlog': 'var(--fg-3, #94A3B8)', 'New': 'var(--fg-3, #94A3B8)',
+  'To Do': '#94A3B8', 'ToDo': '#94A3B8', 'Open': '#94A3B8',
+  'Backlog': '#94A3B8', 'New': '#94A3B8',
   'In Progress': '#2563EB', 'In Review': '#7C3AED',
   'In Development': '#2563EB', 'Development': '#2563EB',
   'In QA': '#8B5CF6', 'Ready for QA': '#A78BFA',
@@ -19,7 +19,7 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 function getStatusColor(status: string): string {
-  return STATUS_COLORS[status] || 'var(--fg-3, #94A3B8)';
+  return STATUS_COLORS[status] || '#94A3B8';
 }
 
 const DEFECT_COLORS: Record<string, string> = {
@@ -30,7 +30,7 @@ const DEFECT_COLORS: Record<string, string> = {
 };
 
 function getDefectColor(type: string): string {
-  return DEFECT_COLORS[type.toLowerCase()] || 'var(--fg-3, #94A3B8)';
+  return DEFECT_COLORS[type.toLowerCase()] || '#94A3B8';
 }
 
 interface WorkItemsDashboardProps {

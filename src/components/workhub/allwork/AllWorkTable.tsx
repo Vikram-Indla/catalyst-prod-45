@@ -60,7 +60,7 @@ const HUB_COLORS: Record<string, { border: string; text: string; bg: string }> =
   project: { border: 'var(--cp-blue)', text: 'var(--cp-blue)', bg: 'var(--cp-primary-5)' },
   product: { border: 'var(--fg-2)', text: 'var(--fg-2)', bg: '#F4F4F5' },
   task: { border: '#D4D4D8', text: 'var(--fg-3)', bg: '#F4F4F5' },
-  incident: { border: 'var(--sem-danger)', text: 'var(--sem-danger)', bg: 'var(--tint-red, #FEF2F2)' },
+  incident: { border: 'var(--sem-danger)', text: 'var(--sem-danger)', bg: '#FEF2F2' },
 };
 
 const AVATAR_COLORS = ['#4C6EF5', '#FA8C16', '#52C41A', '#EB2F96', '#722ED1', '#13C2C2', '#F5222D'];

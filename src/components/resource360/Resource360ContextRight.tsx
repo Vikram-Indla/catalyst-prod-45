@@ -182,7 +182,7 @@ function SiblingList({ label, items, currentKey, onItemClick }: SiblingListProps
             style={{
               padding: isCurrent ? '10px 18px 10px 15px' : '10px 18px',
               borderBottom: '1px solid #F0F0F3',
-              background: isCurrent ? 'var(--tint-blue, #EFF6FF)' : 'transparent',
+              background: isCurrent ? '#EFF6FF' : 'transparent',
               borderLeft: isCurrent ? '3px solid var(--cp-blue)' : 'none',
             }}
             onMouseEnter={(e) => {

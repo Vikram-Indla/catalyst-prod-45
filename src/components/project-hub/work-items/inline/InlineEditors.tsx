@@ -112,7 +112,7 @@ const PRIORITIES = [
   { value: 'Critical', icon: ChevronsUp, color: '#DC2626' },
   { value: 'High', icon: ArrowUp, color: '#D97706' },
   { value: 'Medium', icon: ArrowRight, color: '#2563EB' },
-  { value: 'Low', icon: ArrowDown, color: 'var(--fg-3, #94A3B8)' },
+  { value: 'Low', icon: ArrowDown, color: '#94A3B8' },
 ];
 
 export function InlinePriorityPicker({ current, anchorRef, onSelect, onClose }: {
@@ -159,7 +159,7 @@ export function InlineAssigneePicker({ currentId, profiles, anchorRef, onSelect,
     <FixedDropdown anchorRef={anchorRef} onClose={onClose} width={220}>
       <div className="p-2 border-b" style={{ borderColor: 'var(--cp-bd-zone)' }}>
         <div className="flex items-center gap-1.5 px-2 py-1 rounded" style={{ border: '1px solid var(--divider)' }}>
-          <Search size={12} className="text-[var(--fg-3, #94A3B8)]" />
+          <Search size={12} className="text-[#94A3B8]" />
           <input
             autoFocus
             value={search}
@@ -220,7 +220,7 @@ export function InlineDatePicker({ current, anchorRef, onSelect, onClose }: {
         {current && (
           <button
             onClick={() => { onSelect(null); onClose(); }}
-            className="w-full text-center text-[11px] py-1 mt-1 rounded hover:bg-[var(--tint-red, #FEF2F2)]"
+            className="w-full text-center text-[11px] py-1 mt-1 rounded hover:bg-[#FEF2F2]"
             style={{ color: 'var(--sem-danger)' }}
           >
             Clear date

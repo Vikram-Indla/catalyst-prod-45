@@ -103,7 +103,7 @@ export function ActivityFeed({ workItemId }: Props) {
       {/* Entries */}
       {isLoading ? (
         <div className="flex justify-center py-8">
-          <Loader2 size={20} className="animate-spin text-[var(--fg-3, #94A3B8)]" />
+          <Loader2 size={20} className="animate-spin text-[#94A3B8]" />
         </div>
       ) : filtered.length === 0 ? (
         <div className="text-center py-8 text-[13px]" style={{ color: 'var(--fg-4)' }}>No activity yet</div>
@@ -148,7 +148,7 @@ function CommentEntry({ entry, onDelete, onToggleReaction }: {
         </div>
         <button
           onClick={onDelete}
-          className="opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded hover:bg-[var(--tint-red, #FEF2F2)]"
+          className="opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded hover:bg-[#FEF2F2]"
           title="Delete comment"
         >
           <Trash2 size={12} className="text-[#DC2626]" />

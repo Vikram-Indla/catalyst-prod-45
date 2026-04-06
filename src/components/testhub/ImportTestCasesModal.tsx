@@ -205,7 +205,7 @@ export function ImportTestCasesModal({ isOpen, onClose, onSuccess, folders }: Im
         <div style={{ padding: 24 }}>
           {error && (
             <div style={{
-              padding: '12px 16px', backgroundColor: 'var(--tint-red, #FEF2F2)', border: '1px solid color-mix(in srgb, var(--sem-danger) 20%, transparent)',
+              padding: '12px 16px', backgroundColor: '#FEF2F2', border: '1px solid color-mix(in srgb, var(--sem-danger) 20%, transparent)',
               borderRadius: 8, marginBottom: 16, display: 'flex', alignItems: 'center',
               gap: 8, color: 'var(--sem-danger)', fontSize: 13,
             }}>

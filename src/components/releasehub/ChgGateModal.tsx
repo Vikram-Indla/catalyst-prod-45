@@ -28,7 +28,7 @@ export function ChgGateModal({ changeId, chgNumber, onResolved }: Props) {
     <div className="fixed inset-0 z-[60] flex items-center justify-center">
       <div className="absolute inset-0 bg-[#080E1D]/50 backdrop-blur-[2px]" />
       <div className="relative bg-white rounded-xl shadow-2xl w-[480px] overflow-hidden">
-        <div className="bg-[var(--tint-red, #FEF2F2)] border-b border-[#FCA5A5] px-6 py-4 flex items-center gap-3">
+        <div className="bg-[#FEF2F2] border-b border-[#FCA5A5] px-6 py-4 flex items-center gap-3">
           <AlertTriangle size={20} className="text-[#DC2626]" />
           <div>
             <h2 className="text-[15px] font-extrabold" style={{ fontFamily: RH.fontDisplay, color: 'var(--sem-danger)' }}>CHG Gate — Work Items Required</h2>
@@ -44,7 +44,7 @@ export function ChgGateModal({ changeId, chgNumber, onResolved }: Props) {
                 Link Work Item
               </button>
               <button onClick={onResolved}
-                className="w-full h-11 rounded-md border border-[var(--bd-default, #E2E8F0)] text-[13px] font-medium text-[var(--fg-3, #94A3B8)] hover:bg-[#F4F7FA]">
+                className="w-full h-11 rounded-md border border-[var(--bd-default, #E2E8F0)] text-[13px] font-medium text-[#94A3B8] hover:bg-[#F4F7FA]">
                 Skip (RM only · logged)
               </button>
             </div>

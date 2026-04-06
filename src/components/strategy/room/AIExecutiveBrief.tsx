@@ -24,11 +24,11 @@ const TOKENS = `
   --sri-ink-m:#71717A;
   --sri-bg:#FFFFFF; --sri-bg-2:#FAFAFA; --sri-bg-3:#F4F4F5;
   --sri-bdr:#E4E4E7; --sri-bdr-s:#D4D4D8;
-  --sri-ai:#2563EB; --sri-ai-d:#1E40AF; --sri-ai-bg:var(--tint-blue, #EFF6FF);
+  --sri-ai:#2563EB; --sri-ai-d:#1E40AF; --sri-ai-bg:#EFF6FF;
   --sri-ai-bg2:#DBEAFE; --sri-ai-bdr:#93C5FD; --sri-ai-m:#3B82F6;
-  --sri-green:#16A34A; --sri-green-t:#11853D; --sri-green-bg:var(--tint-green, #F0FDF4);
+  --sri-green:#16A34A; --sri-green-t:#11853D; --sri-green-bg:#F0FDF4;
   --sri-teal-t:#0A8277;
-  --sri-red:#DC2626; --sri-red-t:#D92525; --sri-red-bg:var(--tint-red, #FEF2F2);
+  --sri-red:#DC2626; --sri-red-t:#D92525; --sri-red-bg:#FEF2F2;
   --sri-r:4px; --sri-r2:6px; --sri-r3:8px; --sri-r4:12px; --sri-pill:9999px;
   font-family:'Inter',system-ui,sans-serif; color:var(--sri-ink);
   -webkit-font-smoothing:antialiased; line-height:1.5;

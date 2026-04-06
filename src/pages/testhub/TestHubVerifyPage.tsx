@@ -190,7 +190,7 @@ async function runCheck(id: string): Promise<Partial<VCheck>> {
 }
 
 const STATUS_PILL: Record<string, { bg: string; color: string; label: string }> = {
-  pass: { bg: 'var(--status-ok-bg, #E3FCEF)', color: '#006644', label: 'PASS' },
+  pass: { bg: '#E3FCEF', color: '#006644', label: 'PASS' },
   warn: { bg: '#FFF8E1', color: '#D97706', label: 'WARN' },
   fail: { bg: '#FFEBE6', color: '#BF2600', label: 'FAIL' },
   loading: { bg: '#DEEBFF', color: '#0747A6', label: 'LOADING' },
@@ -232,7 +232,7 @@ export default function TestHubVerifyPage() {
         subtitle="20 automated integrity checks — runs on page load"
       >
         {lastRun && (
-          <span style={{ fontSize: 13, color: 'var(--fg-3, #94A3B8)', fontFamily: 'Inter, sans-serif' }}>
+          <span style={{ fontSize: 13, color: '#94A3B8', fontFamily: 'Inter, sans-serif' }}>
             Last run: {lastRun}
           </span>
         )}
@@ -262,10 +262,10 @@ export default function TestHubVerifyPage() {
         {/* Summary chips */}
         <div style={{ display: 'flex', gap: 12, marginBottom: 24 }}>
           {[
-            { label: 'PASSED', value: passCount, bg: 'var(--status-ok-bg, #E3FCEF)', color: '#006644' },
+            { label: 'PASSED', value: passCount, bg: '#E3FCEF', color: '#006644' },
             { label: 'WARNINGS', value: warnCount, bg: '#FFFBEB', color: '#D97706' },
             { label: 'FAILED', value: failCount, bg: '#FFEBE6', color: '#BF2600' },
-            { label: 'TOTAL', value: checks.length, bg: var(--bg-2, '#F1F5F9'), color: '#374151' },
+            { label: 'TOTAL', value: checks.length, bg: '#F1F5F9', color: '#374151' },
           ].map(chip => (
             <div key={chip.label} style={{
               backgroundColor: chip.bg,
@@ -330,7 +330,7 @@ export default function TestHubVerifyPage() {
                         {ci === 0 ? group : ''}
                       </td>
                       <td style={{ padding: '8px 12px', fontSize: 13, color: '#1E293B' }}>
-                        <span style={{ color: 'var(--fg-3, #94A3B8)', fontFamily: 'JetBrains Mono, monospace', fontSize: 11, marginRight: 8 }}>{check.id}</span>
+                        <span style={{ color: '#94A3B8', fontFamily: 'JetBrains Mono, monospace', fontSize: 11, marginRight: 8 }}>{check.id}</span>
                         {check.label}
                       </td>
                       <td style={{ padding: '8px 12px', fontSize: 12, color: '#64748B', fontFamily: 'JetBrains Mono, monospace' }}>
@@ -373,7 +373,7 @@ export default function TestHubVerifyPage() {
                           padding: '2px 12px 6px',
                           fontSize: 12,
                           fontStyle: 'italic',
-                          color: 'var(--fg-3, #94A3B8)',
+                          color: '#94A3B8',
                         }}>
                           {check.note}
                         </td>
@@ -399,7 +399,7 @@ export default function TestHubVerifyPage() {
               ? { backgroundColor: '#FFEBE6', border: '1px solid #BF2600', color: '#BF2600' }
               : warnCount > 0
                 ? { backgroundColor: '#FFF8E1', border: '1px solid #D97706', color: '#D97706' }
-                : { backgroundColor: 'var(--status-ok-bg, #E3FCEF)', border: '1px solid #006644', color: '#006644' }),
+                : { backgroundColor: '#E3FCEF', border: '1px solid #006644', color: '#006644' }),
           }}>
             {failCount > 0
               ? `✗ ${failCount} check${failCount !== 1 ? 's' : ''} failed — review highlighted rows above`
@@ -528,11 +528,11 @@ function ModuleHealthSection({ checks, loadingCount }: { checks: VCheck[]; loadi
               <div style={{ fontSize: 14, fontWeight: 600, color: '#1E293B', marginBottom: 4 }}>
                 {mod.name}
               </div>
-              <div style={{ fontSize: 12, color: 'var(--fg-3, #94A3B8)', marginBottom: 8 }}>
+              <div style={{ fontSize: 12, color: '#94A3B8', marginBottom: 8 }}>
                 {s.passed}/{s.total} checks · {s.pct}%
               </div>
               {/* Progress bar */}
-              <div style={{ width: '100%', height: 4, backgroundColor: var(--bg-2, '#F1F5F9'), borderRadius: 2 }}>
+              <div style={{ width: '100%', height: 4, backgroundColor: '#F1F5F9', borderRadius: 2 }}>
                 <div style={{ width: `${s.pct}%`, height: 4, backgroundColor: fill, borderRadius: 4, transition: 'width 0.3s' }} />
               </div>
               {/* Sub-lines for Test Assets */}
@@ -549,7 +549,7 @@ function ModuleHealthSection({ checks, loadingCount }: { checks: VCheck[]; loadi
                 </div>
               )}
               {mod.note && s.pct < 100 && (
-                <div style={{ marginTop: 6, fontSize: 11, fontStyle: 'italic', color: 'var(--fg-3, #94A3B8)' }}>
+                <div style={{ marginTop: 6, fontSize: 11, fontStyle: 'italic', color: '#94A3B8' }}>
                   {mod.note}
                 </div>
               )}
@@ -574,8 +574,8 @@ function ModuleHealthSection({ checks, loadingCount }: { checks: VCheck[]; loadi
             {overallPct}%
           </span>
         </div>
-        <span style={{ fontSize: 12, color: 'var(--fg-3, #94A3B8)', marginTop: 8 }}>Overall score</span>
-        <span style={{ fontSize: 11, color: 'var(--fg-3, #94A3B8)' }}>{overallPassed}/20 checks passed</span>
+        <span style={{ fontSize: 12, color: '#94A3B8', marginTop: 8 }}>Overall score</span>
+        <span style={{ fontSize: 11, color: '#94A3B8' }}>{overallPassed}/20 checks passed</span>
       </div>
     </>
   );

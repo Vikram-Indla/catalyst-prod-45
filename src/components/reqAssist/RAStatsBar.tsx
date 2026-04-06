@@ -119,7 +119,7 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, loading }: S
         {/* Card 2: BRDs Processed */}
         <div style={cardStyle}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <div style={{ ...iconContainerStyle, background: 'var(--tint-green, #F0FDF4)' }}>
+            <div style={{ ...iconContainerStyle, background: '#F0FDF4' }}>
               <CheckCircle size={16} color="var(--sem-success)" />
             </div>
           </div>
@@ -278,7 +278,7 @@ function activityDotColor(eventType: string): string {
   if (eventType === 'import') return '#2563EB';
   if (eventType === 'epic_generated' || eventType === 'published') return '#16A34A';
   if (eventType === 'uat_generated') return '#0D9488';
-  return 'var(--fg-3, #94A3B8)';
+  return '#94A3B8';
 }
 
 const cardStyle: React.CSSProperties = {

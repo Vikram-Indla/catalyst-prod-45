@@ -113,7 +113,7 @@ export function AiHealthScore() {
 
       <span className="mt-2 mb-3" style={{
         fontSize: 11, fontWeight: 600, color: status.color,
-        background: status.label === 'Critical' ? 'var(--exec-signal-red-bg, var(--tint-red, #FEF2F2))' : `${status.color}1A`,
+        background: status.label === 'Critical' ? 'var(--exec-signal-red-bg, #FEF2F2)' : `${status.color}1A`,
         borderRadius: 9999, padding: '2px 10px',
       }}>
         ● {status.label}

@@ -56,11 +56,11 @@ const SEVERITY_COLORS: Record<string, string> = {
 };
 
 const STEP_COLORS: Record<string, { text: string; bg: string; border: string }> = {
-  passed:  { text: '#16A34A', bg: 'var(--tint-green, #F0FDF4)', border: '#BBF7D0' },
-  failed:  { text: '#DC2626', bg: 'var(--tint-red, #FEF2F2)', border: '#FECACA' },
+  passed:  { text: '#16A34A', bg: '#F0FDF4', border: '#BBF7D0' },
+  failed:  { text: '#DC2626', bg: '#FEF2F2', border: '#FECACA' },
   blocked: { text: '#D97706', bg: '#FFFBEB', border: '#FED7AA' },
   skipped: { text: '#475569', bg: 'var(--bg-1, #F8FAFC)', border: 'var(--bd-default, #E2E8F0)' },
-  not_run: { text: '#64748B', bg: var(--bg-2, '#F1F5F9'), border: 'var(--bd-default, #E2E8F0)' },
+  not_run: { text: '#64748B', bg: '#F1F5F9', border: 'var(--bd-default, #E2E8F0)' },
 };
 
 export function ExecutionSidebar({
@@ -212,7 +212,7 @@ export function ExecutionSidebar({
 
         {activeTab === 'history' && previousRunData && (
           <div>
-            <div style={{ marginBottom: 12, padding: '8px 12px', backgroundColor: 'var(--tint-blue, #EFF6FF)', borderRadius: 6, border: '1px solid #BFDBFE' }}>
+            <div style={{ marginBottom: 12, padding: '8px 12px', backgroundColor: '#EFF6FF', borderRadius: 6, border: '1px solid #BFDBFE' }}>
               <p style={{ fontSize: 11, fontWeight: 600, color: '#1D4ED8', margin: 0 }}>
                 Previous Run #{previousRunData.execution_number}
               </p>

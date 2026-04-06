@@ -17,7 +17,7 @@ import { toast } from 'sonner';
 
 const TYPE_COLORS: Record<string, string> = {
   Epic: '#7C3AED', Feature: '#2563EB', Story: '#0D9488',
-  Bug: '#DC2626', Task: '#D97706', Subtask: 'var(--fg-3, #94A3B8)',
+  Bug: '#DC2626', Task: '#D97706', Subtask: '#94A3B8',
 };
 const TYPE_ICONS: Record<string, React.ReactNode> = {
   Epic: <Zap size={18} />, Feature: <Layers size={18} />,
@@ -107,7 +107,7 @@ export function WorkItemDetailModal({ open, itemId, projectId, projectKey, onClo
 
   const handleCopyKey = () => { if (item) { navigator.clipboard.writeText(item.item_key); toast.success(`Copied ${item.item_key}`); } };
 
-  const typeColor = item ? (TYPE_COLORS[item.type_name] || item.type_color) : 'var(--fg-3, #94A3B8)';
+  const typeColor = item ? (TYPE_COLORS[item.type_name] || item.type_color) : '#94A3B8';
   const doneCount = item?.children?.filter(c => c.status_category === 'done').length ?? 0;
   const totalChildren = item?.children?.length ?? 0;
   const progressPct = totalChildren > 0 ? Math.round((doneCount / totalChildren) * 100) : 0;
@@ -296,7 +296,7 @@ function SubtaskRow({ child, statuses, onStatusChange, onClick }: { child: Child
     const next = statuses[(idx + 1) % statuses.length];
     if (next) onStatusChange(next.id);
   };
-  const TYPE_COLORS: Record<string, string> = { Epic: '#7C3AED', Feature: '#2563EB', Story: '#0D9488', Bug: '#DC2626', Task: '#D97706', Subtask: 'var(--fg-3, #94A3B8)' };
+  const TYPE_COLORS: Record<string, string> = { Epic: '#7C3AED', Feature: '#2563EB', Story: '#0D9488', Bug: '#DC2626', Task: '#D97706', Subtask: '#94A3B8' };
   return (
     <div className="grid gap-2 px-2 py-2 hover:bg-[var(--bg-1)] rounded cursor-pointer transition-colors" style={{ gridTemplateColumns: '1fr 80px 100px 90px', fontSize: 13 }} onClick={onClick}>
       <div className="flex items-center gap-2 min-w-0">

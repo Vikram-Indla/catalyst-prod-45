@@ -48,7 +48,7 @@ export default function WorkHubInlineCreate({ defaultType, groupCategory, onSubm
           borderBottom: '0.75px solid var(--bd-subtle, rgba(255,255,255,0.05))',
         }}
       >
-        <Plus size={14} color="var(--fg-3, #94A3B8)" />
+        <Plus size={14} color="#94A3B8" />
         <span style={{ fontSize: 12, color: 'var(--fg-4)' }}>Add {defaultType.toLowerCase()}</span>
       </div>
     );

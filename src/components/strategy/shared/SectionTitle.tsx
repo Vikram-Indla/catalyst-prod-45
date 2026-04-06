@@ -15,7 +15,7 @@ export function SectionTitle({ title, action, className = '' }: SectionTitleProp
         style={{
           fontSize: 11,
           fontWeight: 600,
-          color: 'var(--catalyst-text-tertiary, var(--fg-3, #94A3B8))',
+          color: 'var(--catalyst-text-tertiary, #94A3B8)',
           textTransform: 'uppercase',
           letterSpacing: '0.05em',
         }}

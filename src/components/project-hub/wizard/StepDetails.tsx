@@ -241,7 +241,7 @@ export function StepDetails({ data, onChange, isValid, onValidChange }: StepDeta
           >
             <div className="p-2 border-b border-[var(--bd-default, #E2E8F0)] dark:border-[rgba(255,255,255,0.08)]">
               <div className="relative">
-                <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[var(--fg-3, #94A3B8)]" />
+                <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[#94A3B8]" />
                 <input
                   autoFocus
                   value={leadFilter}

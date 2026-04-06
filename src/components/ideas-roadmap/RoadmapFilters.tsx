@@ -20,7 +20,7 @@ export function RoadmapFilters({ teams, activeTeam, onTeamChange, ideaCount }: R
           style={{
             height: 24, padding: '0 10px', borderRadius: 100, border: 'none', cursor: 'pointer',
             fontSize: 12, fontWeight: 600, fontFamily: "'Inter', sans-serif",
-            background: activeTeam === t ? '#1E293B' : var(--bg-2, '#F1F5F9'),
+            background: activeTeam === t ? '#1E293B' : '#F1F5F9',
             color: activeTeam === t ? 'var(--bg-app)' : 'var(--fg-3)',
             transition: 'background 120ms, color 120ms',
           }}
@@ -28,7 +28,7 @@ export function RoadmapFilters({ teams, activeTeam, onTeamChange, ideaCount }: R
             if (activeTeam !== t) e.currentTarget.style.background = 'var(--bd-default, #E2E8F0)';
           }}
           onMouseLeave={e => {
-            if (activeTeam !== t) e.currentTarget.style.background = var(--bg-2, '#F1F5F9');
+            if (activeTeam !== t) e.currentTarget.style.background = '#F1F5F9';
           }}
         >
           {t}

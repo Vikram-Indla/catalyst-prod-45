@@ -736,7 +736,7 @@ export function CreateTestCaseModal({
                   style={{
                     height: 32, padding: '0 14px', border: 'none', borderRadius: 6,
                     fontSize: 13, fontWeight: 500, cursor: 'pointer',
-                    backgroundColor: testFormat === opt.key ? '#2563EB' : var(--bg-2, '#F1F5F9'),
+                    backgroundColor: testFormat === opt.key ? '#2563EB' : '#F1F5F9',
                     color: testFormat === opt.key ? '#FFF' : '#475569',
                     transition: 'all 0.15s',
                   }}

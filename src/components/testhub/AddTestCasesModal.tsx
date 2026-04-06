@@ -27,10 +27,10 @@ interface AddTestCasesModalProps {
 }
 
 const priorityConfig: Record<string, { color: string; bg: string }> = {
-  critical: { color: 'var(--sem-danger)', bg: 'var(--tint-red, #FEF2F2)' },
-  high: { color: '#EA580C', bg: 'var(--tint-amber, #FFF7ED)' },
+  critical: { color: 'var(--sem-danger)', bg: '#FEF2F2' },
+  high: { color: '#EA580C', bg: '#FFF7ED' },
   medium: { color: 'var(--sem-warning)', bg: '#FFFBEB' },
-  low: { color: 'var(--sem-success)', bg: 'var(--tint-green-soft, #ECFDF5)' },
+  low: { color: 'var(--sem-success)', bg: '#ECFDF5' },
 };
 
 export function AddTestCasesModal({ isOpen, cycleId, existingTestCaseIds, onClose, onSuccess }: AddTestCasesModalProps) {

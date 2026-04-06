@@ -26,7 +26,7 @@ const PRIORITY_MAP: Record<string, { icon: React.ElementType; color: string }> =
   P1: { icon: AlertOctagon, color: '#DC2626' },
   P2: { icon: ArrowUp, color: '#D97706' },
   P3: { icon: Minus, color: '#64748B' },
-  P4: { icon: ArrowDown, color: 'var(--fg-3, #94A3B8)' },
+  P4: { icon: ArrowDown, color: '#94A3B8' },
 };
 
 function getAge(dateStr: string): string {
@@ -163,7 +163,7 @@ export const KanbanCard: React.FC<KanbanCardProps> = ({
                 flexShrink: 0,
               }}
             >
-              <User size={10} color="var(--fg-3, #94A3B8)" />
+              <User size={10} color="#94A3B8" />
             </div>
             <span style={{ fontSize: 12, color: 'var(--fg-4)', fontStyle: 'italic' }}>Unassigned</span>
           </div>

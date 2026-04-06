@@ -4,10 +4,10 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
 const CATEGORY_PILL: Record<string, { bg: string; text: string; label: string }> = {
-  todo: { bg: var(--bg-2, '#F1F5F9'), text: '#64748B', label: 'To Do' },
-  in_progress: { bg: 'var(--tint-blue, #EFF6FF)', text: '#2563EB', label: 'In Progress' },
+  todo: { bg: '#F1F5F9', text: '#64748B', label: 'To Do' },
+  in_progress: { bg: '#EFF6FF', text: '#2563EB', label: 'In Progress' },
   done: { bg: '#F0FDFA', text: '#0D9488', label: 'Done' },
-  terminal: { bg: var(--bg-2, '#F1F5F9'), text: '#64748B', label: 'Terminal' },
+  terminal: { bg: '#F1F5F9', text: '#64748B', label: 'Terminal' },
 };
 
 interface StatusRowProps {
@@ -48,7 +48,7 @@ export function StatusRow({ id, name, color, category, isDefault, itemCount, onE
   // Determine pill styling
   const catKey = category.toLowerCase().replace(/\s+/g, '_');
   const pill = isDefault
-    ? { bg: 'var(--tint-blue, #EFF6FF)', text: '#2563EB', label: 'Default' }
+    ? { bg: '#EFF6FF', text: '#2563EB', label: 'Default' }
     : CATEGORY_PILL[catKey] || CATEGORY_PILL.todo;
 
   return (
@@ -120,7 +120,7 @@ export function StatusRow({ id, name, color, category, isDefault, itemCount, onE
             {!isDefault && (
               <button
                 onClick={() => { onDelete(); setMenuOpen(false); }}
-                className="w-full text-left px-3 py-2 hover:bg-[var(--tint-red, #FEF2F2)] transition-colors"
+                className="w-full text-left px-3 py-2 hover:bg-[#FEF2F2] transition-colors"
                 style={{ fontSize: 12, color: 'var(--sem-danger)', border: 'none', background: 'transparent', cursor: 'pointer', display: 'block' }}
               >
                 Delete

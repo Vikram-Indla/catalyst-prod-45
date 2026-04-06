@@ -82,7 +82,7 @@ export default function WorkHubToolbar({
           />
           {searchValue ? (
             <button onClick={() => handleSearch('')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }} aria-label="Clear search">
-              <X size={12} color="var(--fg-3, #94A3B8)" />
+              <X size={12} color="#94A3B8" />
             </button>
           ) : (
             <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--fg-4)', fontFamily: "'JetBrains Mono', monospace", background: 'var(--divider)', borderRadius: 4, padding: '1px 4px' }}>⌘K</span>
@@ -194,7 +194,7 @@ export default function WorkHubToolbar({
                   width: '100%', display: 'flex', alignItems: 'center', gap: 8, padding: '5px 12px',
                   border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 13, color: 'var(--fg-1)', textAlign: 'left',
                 }}>
-                  {col.visible ? <Eye size={14} color="#2563EB" /> : <EyeOff size={14} color="var(--fg-3, #94A3B8)" />}
+                  {col.visible ? <Eye size={14} color="#2563EB" /> : <EyeOff size={14} color="#94A3B8" />}
                   <span style={{ color: col.visible ? 'var(--fg-1)' : 'var(--fg-4)' }}>{col.label}</span>
                 </button>
               ))}

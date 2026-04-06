@@ -23,7 +23,7 @@ export const INITIATIVE_TYPE_COLORS: Record<InitiativeTypeKey, {
 }> = {
   project: {
     hex: '#2563EB',
-    bg: 'var(--tint-blue, #EFF6FF)',
+    bg: '#EFF6FF',
     text: '#1E40AF',
     border: '#1D4ED8',
     gradient: 'linear-gradient(90deg, #2563EB, #3B82F6)',
@@ -63,9 +63,9 @@ export const HEALTH_STATUS_CONFIG: Record<HealthStatus, {
   bg: string;
   label: string;
 }> = {
-  on_track: { hex: '#16A34A', bg: 'var(--tint-green, #F0FDF4)', label: 'On Track' },
+  on_track: { hex: '#16A34A', bg: '#F0FDF4', label: 'On Track' },
   at_risk: { hex: '#D97706', bg: '#FFFBEB', label: 'At Risk' },
-  off_track: { hex: '#EF4444', bg: 'var(--tint-red, #FEF2F2)', label: 'Off Track' },
+  off_track: { hex: '#EF4444', bg: '#FEF2F2', label: 'Off Track' },
 };
 
 export interface RoadmapSummaryStats {

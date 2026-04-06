@@ -123,7 +123,7 @@ export default function BoardSettingsDrawer({ board, onClose }: Props) {
             background: 'transparent', cursor: 'pointer',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
-            <X size={16} color="var(--fg-3, #94A3B8)" />
+            <X size={16} color="#94A3B8" />
           </button>
         </div>
 
@@ -195,14 +195,14 @@ export default function BoardSettingsDrawer({ board, onClose }: Props) {
                 {!showDelete ? (
                   <button onClick={() => setShowDelete(true)} style={{
                     display: 'flex', alignItems: 'center', gap: 6, height: 30, padding: '8px 12px',
-                    background: 'var(--tint-red, #FEF2F2)', border: '0.75px solid var(--sem-danger)',
+                    background: '#FEF2F2', border: '0.75px solid var(--sem-danger)',
                     borderRadius: 6, cursor: 'pointer', fontSize: 11.5, fontWeight: 500,
                     color: 'var(--sem-danger)', fontFamily: "'Inter', sans-serif",
                   }}>
                     <Trash2 size={13} /> Delete Board
                   </button>
                 ) : (
-                  <div style={{ padding: 10, background: 'var(--tint-red, #FEF2F2)', borderRadius: 6, border: '0.75px solid var(--sem-danger)' }}>
+                  <div style={{ padding: 10, background: '#FEF2F2', borderRadius: 6, border: '0.75px solid var(--sem-danger)' }}>
                     <p style={{ fontSize: 11.5, color: 'var(--sem-danger)', margin: '0 0 8px', fontFamily: "'Inter', sans-serif" }}>
                       Type <strong>{board.name}</strong> to confirm:
                     </p>
@@ -232,20 +232,20 @@ export default function BoardSettingsDrawer({ board, onClose }: Props) {
                     borderRadius: 6, background: 'var(--bg-app)',
                     borderLeftWidth: col.statusIds.length === 0 ? 3 : 0.75,
                   }}>
-                    <GripVertical size={13} color="var(--fg-3, #94A3B8)" style={{ cursor: 'grab', flexShrink: 0 }} />
+                    <GripVertical size={13} color="#94A3B8" style={{ cursor: 'grab', flexShrink: 0 }} />
                     <span style={{
                       fontSize: 12, fontWeight: 500, color: 'var(--fg-1)',
                       fontFamily: "'Inter', sans-serif", flex: 1, minWidth: 0,
                       overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                     }}>{col.name}</span>
                     {col.isBacklog && <Badge bg="rgba(37,99,235,0.06)" color="#2563EB">Backlog</Badge>}
-                    {col.isDone && <Badge bg="var(--tint-green, #F0FDF4)" color="var(--sem-success)">Done</Badge>}
+                    {col.isDone && <Badge bg="#F0FDF4" color="var(--sem-success)">Done</Badge>}
                     <button onClick={() => deleteCol.mutate({ columnId: col.id, boardId: board.id })} style={{
                       width: 22, height: 22, borderRadius: 4, border: 'none',
                       background: 'transparent', cursor: 'pointer',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                     }}>
-                      <Trash2 size={12} color="var(--fg-3, #94A3B8)" />
+                      <Trash2 size={12} color="#94A3B8" />
                     </button>
                   </div>
                 ))}
@@ -259,7 +259,7 @@ export default function BoardSettingsDrawer({ board, onClose }: Props) {
                   display: 'flex', alignItems: 'center', gap: 4, height: 50, padding: '0 10px',
                   border: '0.75px dashed rgba(15,23,42,0.12)',
                   borderRadius: 6, background: 'transparent', cursor: newColName.trim() ? 'pointer' : 'not-allowed',
-                  fontSize: 11.5, color: 'var(--fg-3, #94A3B8)', fontFamily: "'Inter', sans-serif",
+                  fontSize: 11.5, color: '#94A3B8', fontFamily: "'Inter', sans-serif",
                 }}>
                   <Plus size={13} /> Add
                 </button>

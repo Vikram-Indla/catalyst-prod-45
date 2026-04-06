@@ -78,17 +78,17 @@ export function ExecutionTestCaseView({
 
   const statusConfig: Record<string, { color: string; bg: string; label: string }> = {
     not_run: { color: 'var(--fg-3)', bg: 'var(--cp-bd-zone)', label: 'Not Run' },
-    passed: { color: 'var(--sem-success)', bg: 'var(--tint-green-soft, #ECFDF5)', label: 'Passed' },
-    failed: { color: 'var(--sem-danger)', bg: 'var(--tint-red, #FEF2F2)', label: 'Failed' },
+    passed: { color: 'var(--sem-success)', bg: '#ECFDF5', label: 'Passed' },
+    failed: { color: 'var(--sem-danger)', bg: '#FEF2F2', label: 'Failed' },
     blocked: { color: 'var(--sem-warning)', bg: '#FFFBEB', label: 'Blocked' },
     skipped: { color: 'var(--fg-4)', bg: 'var(--bg-1)', label: 'Skipped' },
   };
 
   const priorityConfig: Record<string, { color: string; bg: string }> = {
-    critical: { color: 'var(--sem-danger)', bg: 'var(--tint-red, #FEF2F2)' },
-    high: { color: '#EA580C', bg: 'var(--tint-amber, #FFF7ED)' },
+    critical: { color: 'var(--sem-danger)', bg: '#FEF2F2' },
+    high: { color: '#EA580C', bg: '#FFF7ED' },
     medium: { color: 'var(--sem-warning)', bg: '#FFFBEB' },
-    low: { color: 'var(--sem-success)', bg: 'var(--tint-green-soft, #ECFDF5)' },
+    low: { color: 'var(--sem-success)', bg: '#ECFDF5' },
   };
 
   const formatTime = (seconds: number) => {
@@ -184,7 +184,7 @@ export function ExecutionTestCaseView({
                       <p style={{ fontSize: 14, color: 'var(--fg-2)', margin: 0, lineHeight: 1.6 }}>{highlightVariables(step.action)}</p>
                     </div>
                     {step.expected_result && (
-                      <div style={{ padding: 12, backgroundColor: 'var(--tint-green-soft, #ECFDF5)', borderRadius: 8, borderLeft: '3px solid #10B981' }}>
+                      <div style={{ padding: 12, backgroundColor: '#ECFDF5', borderRadius: 8, borderLeft: '3px solid #10B981' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
                           <Target size={12} style={{ color: 'var(--sem-success)' }} />
                           <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--sem-success)', textTransform: 'uppercase' }}>Expected</span>
@@ -206,7 +206,7 @@ export function ExecutionTestCaseView({
 
         {/* Overall Expected Result */}
         {testCase?.expected_result && (
-          <div style={{ marginBottom: 24, padding: 16, backgroundColor: 'var(--tint-green-soft, #ECFDF5)', border: '1px solid #A7F3D0', borderRadius: 10 }}>
+          <div style={{ marginBottom: 24, padding: 16, backgroundColor: '#ECFDF5', border: '1px solid #A7F3D0', borderRadius: 10 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
               <Target size={16} style={{ color: 'var(--sem-success)' }} />
               <span style={{ fontSize: 13, fontWeight: 600, color: '#065F46' }}>Expected Result</span>

@@ -152,7 +152,7 @@ const Resource360MemberDetail: React.FC = () => {
                 to={`/resource360/members/${m.id}`}
                 style={{
                   fontSize: 11, padding: '3px 10px', borderRadius: 6, textDecoration: 'none',
-                  background: m.id === memberId ? '#2563EB' : var(--bg-2, '#F1F5F9'),
+                  background: m.id === memberId ? '#2563EB' : '#F1F5F9',
                   color: m.id === memberId ? '#FFFFFF' : '#334155',
                   fontWeight: m.id === memberId ? 600 : 400,
                 }}
@@ -166,7 +166,7 @@ const Resource360MemberDetail: React.FC = () => {
 
         {/* Error state — inline, not full-page */}
         {hasError && (
-          <div style={{ textAlign: 'center', padding: 40, background: 'var(--tint-red, #FEF2F2)', border: '1px solid #FECACA', borderRadius: 12, marginBottom: 12 }} role="alert">
+          <div style={{ textAlign: 'center', padding: 40, background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: 12, marginBottom: 12 }} role="alert">
             <div style={{ fontSize: 14, fontWeight: 600, color: '#991B1B', marginBottom: 4 }}>Failed to load data</div>
             <div style={{ fontSize: 12, color: '#B91C1C', marginBottom: 10 }}>{(memberError || chronoError)?.message}</div>
             <button

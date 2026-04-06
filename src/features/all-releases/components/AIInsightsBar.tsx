@@ -40,7 +40,7 @@ export function AIInsightsBar({ insights, onActionClick }: AIInsightsBarProps) {
   };
 
   return (
-    <div className="border rounded-xl p-4 mb-6" style={{ background: 'var(--tint-blue, #EFF6FF)', borderColor: '#DBEAFE' }}>
+    <div className="border rounded-xl p-4 mb-6" style={{ background: '#EFF6FF', borderColor: '#DBEAFE' }}>
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <div className="p-1.5 rounded-lg" style={{ background: '#DBEAFE' }}>

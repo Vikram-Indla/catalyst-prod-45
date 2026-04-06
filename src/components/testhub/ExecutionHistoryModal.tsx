@@ -44,8 +44,8 @@ export function ExecutionHistoryModal({ isOpen, cycleTestCaseId, testCaseKey, te
 
   const statusConfig: Record<string, { icon: any; color: string; bg: string; label: string }> = {
     not_run: { icon: Clock, color: 'var(--fg-3)', bg: 'var(--cp-bd-zone)', label: 'Not Run' },
-    passed: { icon: CheckCircle2, color: 'var(--sem-success)', bg: 'var(--tint-green-soft, #ECFDF5)', label: 'Passed' },
-    failed: { icon: XCircle, color: 'var(--sem-danger)', bg: 'var(--tint-red, #FEF2F2)', label: 'Failed' },
+    passed: { icon: CheckCircle2, color: 'var(--sem-success)', bg: '#ECFDF5', label: 'Passed' },
+    failed: { icon: XCircle, color: 'var(--sem-danger)', bg: '#FEF2F2', label: 'Failed' },
     blocked: { icon: AlertTriangle, color: 'var(--sem-warning)', bg: '#FFFBEB', label: 'Blocked' },
     skipped: { icon: SkipForward, color: 'var(--fg-4)', bg: 'var(--bg-1)', label: 'Skipped' },
   };

@@ -31,22 +31,22 @@ export function CreateReleaseModal({ onClose }: Props) {
       <div className="relative bg-white dark:bg-[#1A1A1A] rounded-xl shadow-2xl w-[480px] max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
         <div className="sticky top-0 bg-white dark:bg-[#1A1A1A] z-10 flex items-center justify-between px-6 py-4 border-b border-[var(--bd-default, #E2E8F0)] dark:border-[rgba(255,255,255,0.08)]">
           <h2 className="text-[16px] font-extrabold" style={{ fontFamily: RH.fontDisplay, color: RH.ink1 }}>New Release</h2>
-          <button onClick={onClose} className="w-7 h-7 rounded flex items-center justify-center text-[var(--fg-3, #94A3B8)] hover:bg-[#F1F5F9]"><X size={14} /></button>
+          <button onClick={onClose} className="w-7 h-7 rounded flex items-center justify-center text-[#94A3B8] hover:bg-[#F1F5F9]"><X size={14} /></button>
         </div>
         <div className="p-6 space-y-4">
-          {error && <div className="px-3 py-2 rounded-md bg-[var(--tint-red, #FEF2F2)] text-[#DC2626] text-[12px] font-medium">{error}</div>}
+          {error && <div className="px-3 py-2 rounded-md bg-[#FEF2F2] text-[#DC2626] text-[12px] font-medium">{error}</div>}
           <div>
             <label className="block text-[12px] font-semibold text-[#475569] mb-1">Name *</label>
             <input type="text" value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Q2 2026 Release v2.0"
-              className="w-full h-9 px-3 rounded-md border border-[var(--bd-default, #E2E8F0)] text-[13px] placeholder:text-[var(--fg-3, #94A3B8)] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" />
+              className="w-full h-9 px-3 rounded-md border border-[var(--bd-default, #E2E8F0)] text-[13px] placeholder:text-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" />
           </div>
           <div>
             <label className="block text-[12px] font-semibold text-[#475569] mb-1">Target Date *</label>
             <Popover>
               <PopoverTrigger asChild>
-                <button className={`w-full h-9 px-3 rounded-md border border-[var(--bd-default, #E2E8F0)] text-[13px] text-left flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] ${targetDate ? 'text-[#1E293B]' : 'text-[var(--fg-3, #94A3B8)]'}`}>
+                <button className={`w-full h-9 px-3 rounded-md border border-[var(--bd-default, #E2E8F0)] text-[13px] text-left flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] ${targetDate ? 'text-[#1E293B]' : 'text-[#94A3B8]'}`}>
                   {targetDate ? format(targetDate, 'MMM d, yyyy') : 'Select date...'}
-                  <CalendarIcon size={14} className="text-[var(--fg-3, #94A3B8)]" />
+                  <CalendarIcon size={14} className="text-[#94A3B8]" />
                 </button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start">
@@ -57,7 +57,7 @@ export function CreateReleaseModal({ onClose }: Props) {
           <div>
             <label className="block text-[12px] font-semibold text-[#475569] mb-1">Version</label>
             <input type="text" value={version} onChange={e => setVersion(e.target.value)} placeholder="e.g. v2.0"
-              className="w-full h-9 px-3 rounded-md border border-[var(--bd-default, #E2E8F0)] text-[13px] placeholder:text-[var(--fg-3, #94A3B8)] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" />
+              className="w-full h-9 px-3 rounded-md border border-[var(--bd-default, #E2E8F0)] text-[13px] placeholder:text-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" />
           </div>
         </div>
         <div className="sticky bottom-0 bg-white dark:bg-[#1A1A1A] border-t border-[var(--bd-default, #E2E8F0)] dark:border-[rgba(255,255,255,0.08)] px-6 py-3 flex justify-end gap-2">

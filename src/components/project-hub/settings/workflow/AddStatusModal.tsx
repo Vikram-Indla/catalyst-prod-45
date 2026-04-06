@@ -46,7 +46,7 @@ export function AddStatusModal({ open, onClose, onSubmit, loading }: AddStatusMo
           <div>
             <label className="text-[var(--fg-2)] dark:text-[rgba(255,255,255,0.72)]" style={{ fontSize: 12, fontWeight: 500, display: 'block', marginBottom: 4 }}>Status Name <span style={{ color: 'var(--sem-danger)' }}>*</span></label>
             <input value={name} onChange={e => setName(e.target.value)} placeholder="e.g. In Review"
-              className="w-full bg-white dark:bg-transparent border border-[var(--bd-default, #E2E8F0)] dark:border-[rgba(255,255,255,0.10)] text-[#0F172A] dark:text-[rgba(255,255,255,0.92)] placeholder:text-[var(--fg-3, #94A3B8)] dark:placeholder:text-[rgba(255,255,255,0.40)]"
+              className="w-full bg-white dark:bg-transparent border border-[var(--bd-default, #E2E8F0)] dark:border-[rgba(255,255,255,0.10)] text-[#0F172A] dark:text-[rgba(255,255,255,0.92)] placeholder:text-[#94A3B8] dark:placeholder:text-[rgba(255,255,255,0.40)]"
               style={{ height: 40, padding: '8px 12px', fontSize: 13, borderRadius: 6, outline: 'none', fontFamily: "'Inter', sans-serif" }}
             />
           </div>

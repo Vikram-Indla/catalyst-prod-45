@@ -314,7 +314,7 @@ export function StrategyPyramid() {
               </div>
               {layer.count !== undefined && layer.count > 0 && (
                 <span style={{
-                  fontSize: 10, fontWeight: 600, background: 'var(--exec-blue-50, var(--tint-blue, #EFF6FF))', color: 'var(--exec-blue-700, #1E40AF)',
+                  fontSize: 10, fontWeight: 600, background: 'var(--exec-blue-50, #EFF6FF)', color: 'var(--exec-blue-700, #1E40AF)',
                   padding: '1px 8px', borderRadius: 9999, flexShrink: 0,
                 }}>
                   {layer.count}

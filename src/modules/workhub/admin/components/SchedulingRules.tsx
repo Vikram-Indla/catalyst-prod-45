@@ -87,7 +87,7 @@ export function SchedulingRules() {
             Date Precedence
           </h2>
           <span style={{
-            fontSize: 9, background: 'var(--tint-green-soft, #ECFDF5)', color: '#10B981', padding: '2px 8px',
+            fontSize: 9, background: '#ECFDF5', color: '#10B981', padding: '2px 8px',
             borderRadius: 4, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.3px',
           }}>Priority Chain</span>
         </div>
@@ -110,7 +110,7 @@ export function SchedulingRules() {
         ))}
 
         <div style={{
-          background: 'var(--tint-blue, #EFF6FF)', border: '1px solid #BFDBFE', borderRadius: 8,
+          background: '#EFF6FF', border: '1px solid #BFDBFE', borderRadius: 8,
           padding: '10px 14px', marginTop: 14, display: 'flex', gap: 8, alignItems: 'flex-start',
         }}>
           <span style={{ fontSize: 14 }}>ℹ️</span>

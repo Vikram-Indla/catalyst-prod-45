@@ -27,7 +27,7 @@ interface ScopeItem {
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
   not_run:     { label: 'NOT RUN',     color: '#253858', bg: '#DFE1E6' },
   in_progress: { label: 'IN PROGRESS', color: '#0747A6', bg: '#DEEBFF' },
-  passed:      { label: 'PASSED',      color: '#006644', bg: 'var(--status-ok-bg, #E3FCEF)' },
+  passed:      { label: 'PASSED',      color: '#006644', bg: '#E3FCEF' },
   failed:      { label: 'FAILED',      color: '#253858', bg: '#DFE1E6' },
   blocked:     { label: 'BLOCKED',     color: '#253858', bg: '#DFE1E6' },
   skipped:     { label: 'SKIPPED',     color: '#253858', bg: '#DFE1E6' },
@@ -135,7 +135,7 @@ export default function MyTestScopePage() {
             My Test Scope
           </h1>
           <span style={{
-            fontSize: 12, fontWeight: 600, color: '#64748B', backgroundColor: var(--bg-2, '#F1F5F9'),
+            fontSize: 12, fontWeight: 600, color: '#64748B', backgroundColor: '#F1F5F9',
             padding: '2px 10px', borderRadius: 12,
           }}>
             {filteredItems.length} items
@@ -162,7 +162,7 @@ export default function MyTestScopePage() {
             style={{
               height: 32, padding: '0 14px', border: 'none', borderRadius: 6,
               fontSize: 13, fontWeight: 500, cursor: 'pointer',
-              backgroundColor: statusFilter === tab.key ? '#2563EB' : var(--bg-2, '#F1F5F9'),
+              backgroundColor: statusFilter === tab.key ? '#2563EB' : '#F1F5F9',
               color: statusFilter === tab.key ? '#FFF' : '#475569',
               transition: 'all 0.15s',
             }}
@@ -178,11 +178,11 @@ export default function MyTestScopePage() {
           textAlign: 'center', padding: 60, backgroundColor: '#FFF',
           borderRadius: 12, border: '1px solid var(--bd-default, #E2E8F0)',
         }}>
-          <UserCheck size={48} style={{ marginBottom: 16, opacity: 0.3, color: 'var(--fg-3, #94A3B8)' }} />
+          <UserCheck size={48} style={{ marginBottom: 16, opacity: 0.3, color: '#94A3B8' }} />
           <h3 style={{ fontSize: 16, fontWeight: 600, color: '#334155', margin: '0 0 8px' }}>
             No active assignments
           </h3>
-          <p style={{ fontSize: 14, color: 'var(--fg-3, #94A3B8)', margin: 0 }}>
+          <p style={{ fontSize: 14, color: '#94A3B8', margin: 0 }}>
             Contact your Test Manager to get test cases assigned.
           </p>
         </div>
@@ -191,8 +191,8 @@ export default function MyTestScopePage() {
           textAlign: 'center', padding: 40, backgroundColor: '#FFF',
           borderRadius: 12, border: '1px solid var(--bd-default, #E2E8F0)',
         }}>
-          <Filter size={32} style={{ marginBottom: 12, opacity: 0.3, color: 'var(--fg-3, #94A3B8)' }} />
-          <p style={{ fontSize: 14, color: 'var(--fg-3, #94A3B8)', margin: 0 }}>
+          <Filter size={32} style={{ marginBottom: 12, opacity: 0.3, color: '#94A3B8' }} />
+          <p style={{ fontSize: 14, color: '#94A3B8', margin: 0 }}>
             No items match the current filter.
           </p>
         </div>

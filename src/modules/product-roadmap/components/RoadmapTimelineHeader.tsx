@@ -25,14 +25,14 @@ export function RoadmapTimelineHeader({ periods, zoom }: RoadmapTimelineHeaderPr
               minWidth: periodMinWidth,
               width: `${100 / periods.length}%`,
               background: period.isCurrent ? 'rgba(37,99,235,0.06)' : index % 2 === 0 ? '#FAFBFC' : '#FFFFFF',
-              borderRight: `1px solid ${isQuarterStart ? 'var(--bd-default, #E2E8F0)' : var(--bg-2, '#F1F5F9')}`,
+              borderRight: `1px solid ${isQuarterStart ? 'var(--bd-default, #E2E8F0)' : '#F1F5F9'}`,
             }}
           >
             <div style={{ fontSize: 12, fontWeight: 600, color: period.isCurrent ? '#2563EB' : '#334155' }}>
               {period.label}
             </div>
             {period.sublabel && (
-              <div style={{ fontSize: 10, color: 'var(--fg-3, #94A3B8)' }}>{period.sublabel}</div>
+              <div style={{ fontSize: 10, color: '#94A3B8' }}>{period.sublabel}</div>
             )}
           </div>
         );

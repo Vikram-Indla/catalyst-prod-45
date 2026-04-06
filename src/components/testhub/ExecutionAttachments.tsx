@@ -123,7 +123,7 @@ export function ExecutionAttachments({ cycleTestCaseId, attachments, onAttachmen
                     <Download size={14} />
                   </button>
                   {!disabled && (
-                    <button onClick={() => handleDelete(att)} title="Delete" style={{ flex: 1, height: 28, padding: 0, border: '1px solid color-mix(in srgb, var(--sem-danger) 20%, transparent)', borderRadius: 6, backgroundColor: 'var(--tint-red, #FEF2F2)', color: 'var(--sem-danger)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <button onClick={() => handleDelete(att)} title="Delete" style={{ flex: 1, height: 28, padding: 0, border: '1px solid color-mix(in srgb, var(--sem-danger) 20%, transparent)', borderRadius: 6, backgroundColor: '#FEF2F2', color: 'var(--sem-danger)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       <Trash2 size={14} />
                     </button>
                   )}

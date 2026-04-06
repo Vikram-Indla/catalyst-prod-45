@@ -88,7 +88,7 @@ export function RoadmapSwimlanePanel({ items, config, selectedItemId, onItemClic
             style={{
               minWidth: periodMinWidth,
               width: `${100 / periods.length}%`,
-              borderRight: `1px solid ${isQuarterBoundary ? borderColor : var(--bg-2, '#F1F5F9')}`,
+              borderRight: `1px solid ${isQuarterBoundary ? borderColor : '#F1F5F9'}`,
               background: period.isCurrent ? 'rgba(37,99,235,0.03)' : 'transparent',
             }}
           />
@@ -109,7 +109,7 @@ export function RoadmapSwimlanePanel({ items, config, selectedItemId, onItemClic
             {lanes.map(([key, lane]) => {
               const isUnassigned = lane.name === 'Unassigned';
               const initials = isUnassigned ? '?' : getInitials(lane.name);
-              const avatarColor = isUnassigned ? 'var(--fg-3, #94A3B8)' : hashColor(lane.name);
+              const avatarColor = isUnassigned ? '#94A3B8' : hashColor(lane.name);
               
               return (
                 <div key={key}>

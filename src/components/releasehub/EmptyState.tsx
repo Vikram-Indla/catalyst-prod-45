@@ -20,7 +20,7 @@ export function EmptyState({ icon: Icon = Package, title, subtitle, actions, cla
   return (
     <div className={`flex flex-col items-center justify-center py-12 ${className}`} aria-live="polite">
       <div className="w-12 h-12 rounded-xl bg-[#F1F5F9] flex items-center justify-center mb-4">
-        <Icon size={24} className="text-[var(--fg-3, #94A3B8)]" />
+        <Icon size={24} className="text-[#94A3B8]" />
       </div>
       <h3 className="text-[14px] font-bold mb-1" style={{ fontFamily: RH.fontDisplay, color: RH.ink2 }}>{title}</h3>
       {subtitle && <p className="text-[13px] text-[var(--fg-3)] max-w-sm text-center mb-4" style={{ fontFamily: RH.fontBody }}>{subtitle}</p>}
@@ -41,7 +41,7 @@ export function EmptyState({ icon: Icon = Package, title, subtitle, actions, cla
 export function ErrorState({ message, onRetry }: { message: string; onRetry?: () => void }) {
   return (
     <div className="flex flex-col items-center justify-center py-12" aria-live="assertive">
-      <div className="w-12 h-12 rounded-xl bg-[var(--tint-red, #FEF2F2)] flex items-center justify-center mb-4">
+      <div className="w-12 h-12 rounded-xl bg-[#FEF2F2] flex items-center justify-center mb-4">
         <AlertCircle size={24} className="text-[#DC2626]" />
       </div>
       <h3 className="text-[14px] font-bold mb-1" style={{ fontFamily: RH.fontDisplay, color: 'var(--sem-danger)' }}>Something went wrong</h3>

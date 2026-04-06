@@ -22,7 +22,7 @@ const T = {
   ink: '#09090B', inkSec: '#18181B', inkMuted: '#71717A',
   surface: '#FFFFFF', surfSec: 'var(--bg-1, #F8FAFC)',
   border: 'var(--bd-default, #E2E8F0)', borderStrong: '#CBD5E1',
-  primary: '#2563EB', primaryHover: '#1D4ED8', primaryBg: 'var(--tint-blue, #EFF6FF)',
+  primary: '#2563EB', primaryHover: '#1D4ED8', primaryBg: '#EFF6FF',
   danger: '#DC2626',
 };
 
@@ -297,7 +297,7 @@ export function CreateInitiativeDrawer({ open, onClose, conversionSource, onCrea
 
           {/* Conversion banners */}
           {conversionSource?.type === 'single' && (
-            <div className="p-3 rounded-lg mb-3" style={{ background: 'var(--tint-green, #F0FDF4)', border: '1px solid #BBF7D0' }}>
+            <div className="p-3 rounded-lg mb-3" style={{ background: '#F0FDF4', border: '1px solid #BBF7D0' }}>
               <div className="text-[13px] font-bold flex items-center gap-1.5" style={{ color: T.ink }}>
                 <RefreshCw className="w-3.5 h-3.5" /> Converting idea to initiative
               </div>
@@ -308,7 +308,7 @@ export function CreateInitiativeDrawer({ open, onClose, conversionSource, onCrea
             </div>
           )}
           {conversionSource?.type === 'merge' && conversionSource.mergeIdea && (
-            <div className="p-3 rounded-lg mb-3" style={{ background: 'var(--tint-blue, #EFF6FF)', border: '1px solid #BFDBFE' }}>
+            <div className="p-3 rounded-lg mb-3" style={{ background: '#EFF6FF', border: '1px solid #BFDBFE' }}>
               <div className="text-[13px] font-bold flex items-center gap-1.5" style={{ color: T.ink }}>
                 <GitMerge className="w-3.5 h-3.5" /> Merging 2 ideas into 1 initiative
               </div>

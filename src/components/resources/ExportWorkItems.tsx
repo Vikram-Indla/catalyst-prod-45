@@ -470,7 +470,7 @@ export default function ExportWorkItems({ deptFilter }: { deptFilter: string }) 
           cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px',
           transition: 'border-color 150ms',
         }}
-        onMouseEnter={e => { e.currentTarget.style.borderColor = dk ? '#878787' : 'var(--fg-3, #94A3B8)'; }}
+        onMouseEnter={e => { e.currentTarget.style.borderColor = dk ? '#878787' : '#94A3B8'; }}
         onMouseLeave={e => { e.currentTarget.style.borderColor = dk ? 'rgba(255,255,255,0.10)' : 'var(--bd-default, #E2E8F0)'; }}
       >
         <Download size={14} strokeWidth={2} />
@@ -514,7 +514,7 @@ export default function ExportWorkItems({ deptFilter }: { deptFilter: string }) 
                     display: 'flex', alignItems: 'center', gap: 10,
                     padding: '8px 10px', borderRadius: 8, marginBottom: 4,
                     cursor: 'pointer', transition: 'background 100ms',
-                    background: checked ? (dk ? 'rgba(74, 222, 128, 0.06)' : 'var(--tint-green, #F0FDF4)') : 'transparent',
+                    background: checked ? (dk ? 'rgba(74, 222, 128, 0.06)' : '#F0FDF4') : 'transparent',
                     border: `1.5px solid ${checked ? 'var(--sem-success)' : 'transparent'}`,
                   }}
                   onMouseEnter={e => { if (!checked) e.currentTarget.style.background = dk ? 'rgba(255,255,255,0.03)' : '#f8f9fa'; }}
@@ -545,7 +545,7 @@ export default function ExportWorkItems({ deptFilter }: { deptFilter: string }) 
                   {opt.isFuture && (
                     <span style={{
                       fontSize: 10, fontWeight: 700, color: dk ? '#FB923C' : '#EA580C',
-                      background: dk ? 'rgba(251, 191, 36, 0.10)' : 'var(--tint-amber, #FFF7ED)', borderRadius: 4, padding: '2px 7px',
+                      background: dk ? 'rgba(251, 191, 36, 0.10)' : '#FFF7ED', borderRadius: 4, padding: '2px 7px',
                     }}>UPCOMING</span>
                   )}
                 </label>

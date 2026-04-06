@@ -84,7 +84,7 @@ export function Resource360RingNode({ item, x, y, onClick }: Props) {
           <span style={{ width: 5, height: 5, borderRadius: '50%', background: sc.dot }} />
           {item.status}
         </span>
-        <span style={{ fontSize: 9, color: 'var(--fg-3, #94A3B8)' }}>
+        <span style={{ fontSize: 9, color: '#94A3B8' }}>
           {item.assigned_at?.slice(0, 10)}
         </span>
       </div>

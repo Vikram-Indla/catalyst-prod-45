@@ -171,7 +171,7 @@ export function ViewSharedStepModal({ isOpen, sharedStep, onClose, onEdit, onDel
           {sharedStep.expected_result && (
             <Section title="Expected Result">
               <div style={{
-                padding: 16, backgroundColor: 'var(--tint-green, #F0FDF4)', borderRadius: 8,
+                padding: 16, backgroundColor: '#F0FDF4', borderRadius: 8,
                 border: '1px solid #BBF7D0', fontSize: 14, color: '#166534', lineHeight: 1.7, fontFamily: 'Inter',
               }}>
                 {highlightVariables(sharedStep.expected_result)}

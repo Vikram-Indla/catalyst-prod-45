@@ -104,7 +104,7 @@ export const TriggerSearch = memo(function TriggerSearch({
       <div className="flex items-center gap-3 flex-wrap">
         {/* Search input */}
         <div className="relative flex-1 min-w-[240px]">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--fg-3, #94A3B8)]" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#94A3B8]" />
           <Input
             placeholder="Search triggers by name, key, or description..."
             value={filters.search}
@@ -200,7 +200,7 @@ export const TriggerSearch = memo(function TriggerSearch({
 
       {/* ── Status row ───────────────────────────────────────────── */}
       <div className="flex items-center justify-between">
-        <span className="text-xs text-[var(--fg-3, #94A3B8)]">
+        <span className="text-xs text-[#94A3B8]">
           Showing{' '}
           <span className="font-medium font-['JetBrains_Mono'] text-[#475569]">{filteredCount}</span>{' '}
           of{' '}

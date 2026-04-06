@@ -136,7 +136,7 @@ export function DataScope() {
             Included Projects
           </h2>
           <span style={{
-            fontSize: 10, background: 'var(--tint-blue, #EFF6FF)', color: '#2563EB', padding: '2px 8px',
+            fontSize: 10, background: '#EFF6FF', color: '#2563EB', padding: '2px 8px',
             borderRadius: 4, fontWeight: 600,
           }}>
             {activeCount} of {totalCount} active
@@ -154,7 +154,7 @@ export function DataScope() {
                 style={{
                   display: 'inline-flex', alignItems: 'center', gap: 8,
                   padding: '10px 16px', borderRadius: 8, border: '1px solid', cursor: 'pointer',
-                  background: isOn ? 'var(--tint-blue, #EFF6FF)' : '#fff',
+                  background: isOn ? '#EFF6FF' : '#fff',
                   borderColor: isOn ? '#BFDBFE' : 'var(--bd-default, #E2E8F0)',
                   opacity: isOn ? 1 : 0.5,
                   transition: 'all .15s',
@@ -163,7 +163,7 @@ export function DataScope() {
                 <span style={{
                   width: 12, height: 12, borderRadius: '50%', background: color, flexShrink: 0,
                 }} />
-                <span style={{ fontSize: 12, fontWeight: 600, color: isOn ? 'var(--fg-1, #0F172A)' : 'var(--fg-3, #94A3B8)' }}>
+                <span style={{ fontSize: 12, fontWeight: 600, color: isOn ? 'var(--fg-1, #0F172A)' : '#94A3B8' }}>
                   {p.name}
                 </span>
                 <span style={{
@@ -175,7 +175,7 @@ export function DataScope() {
             )
           })}
           {accessibleProjects.length === 0 && (
-            <span style={{ fontSize: 12, color: 'var(--fg-3, #94A3B8)' }}>No projects discovered. Test your Jira connection first.</span>
+            <span style={{ fontSize: 12, color: '#94A3B8' }}>No projects discovered. Test your Jira connection first.</span>
           )}
         </div>
 
@@ -214,7 +214,7 @@ export function DataScope() {
         </div>
 
         <div style={{
-          background: 'var(--tint-blue, #EFF6FF)', border: '1px solid #BFDBFE', borderRadius: 8,
+          background: '#EFF6FF', border: '1px solid #BFDBFE', borderRadius: 8,
           padding: '10px 14px', marginBottom: 14, display: 'flex', gap: 8,
         }}>
           <span style={{ fontSize: 14 }}>ℹ️</span>

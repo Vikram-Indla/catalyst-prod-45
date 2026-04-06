@@ -59,7 +59,7 @@ export function KrListItem({ status, title, meta, progress, onClick, className =
         <div
           style={{
             fontSize: 11,
-            color: 'var(--catalyst-text-tertiary, var(--fg-3, #94A3B8))',
+            color: 'var(--catalyst-text-tertiary, #94A3B8)',
             lineHeight: 1.4,
           }}
         >

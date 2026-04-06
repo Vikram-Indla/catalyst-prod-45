@@ -31,7 +31,7 @@ export function ActiveCyclesList({ cycles }: Props) {
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <div style={{ width: 36, height: 50, borderRadius: 12, backgroundColor: 'var(--tint-green-soft, #ECFDF5)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ width: 36, height: 50, borderRadius: 12, backgroundColor: '#ECFDF5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <Play size={18} color="var(--sem-success)" />
           </div>
           <div>
@@ -57,7 +57,7 @@ export function ActiveCyclesList({ cycles }: Props) {
               ? 'linear-gradient(90deg, #10B981, #059669)'
               : pct >= 50
               ? 'linear-gradient(90deg, #3B82F6, #2563EB)'
-              : 'linear-gradient(90deg, var(--fg-3, #94A3B8), #64748B)';
+              : 'linear-gradient(90deg, #94A3B8, #64748B)';
 
             return (
               <div

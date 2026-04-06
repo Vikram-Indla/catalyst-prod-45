@@ -242,7 +242,7 @@ export const StoryDetailDrawer: React.FC<StoryDetailDrawerProps> = ({ isOpen, on
                   <PopoverContent align="start" style={{ width: 220, padding: '4px 0', background: 'var(--bg-app, #FFFFFF)', border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6, zIndex: 9999, maxHeight: 320, overflowY: 'auto' }}>
                     {STATUS_GROUPS.map(group => (
                       <div key={group.label}>
-                        <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--fg-3, #94A3B8)', padding: '6px 12px 2px' }}>{group.label}</div>
+                        <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#94A3B8', padding: '6px 12px 2px' }}>{group.label}</div>
                         {group.statuses.map(s => {
                           const sc = getStatusLozengeColors(s);
                           return (
@@ -271,7 +271,7 @@ export const StoryDetailDrawer: React.FC<StoryDetailDrawerProps> = ({ isOpen, on
                 />
               ) : (
                 <h2 onClick={() => setEditingTitle(true)} style={{ fontSize: 20, fontWeight: 650, color: 'var(--fg-1, #0F172A)', margin: '0 0 8px', cursor: 'text', fontFamily: "'Sora', sans-serif", lineHeight: 1.3 }}>
-                  {story.summary || <span style={{ fontStyle: 'italic', color: 'var(--fg-3, #94A3B8)' }}>Click to add a title...</span>}
+                  {story.summary || <span style={{ fontStyle: 'italic', color: '#94A3B8' }}>Click to add a title...</span>}
                 </h2>
               )}
 
@@ -311,7 +311,7 @@ export const StoryDetailDrawer: React.FC<StoryDetailDrawerProps> = ({ isOpen, on
                       />
                     ) : (
                       <div onClick={() => setEditingDesc(true)} style={{
-                        fontSize: 14, color: story.description_text ? '#334155' : 'var(--fg-3, #94A3B8)',
+                        fontSize: 14, color: story.description_text ? '#334155' : '#94A3B8',
                         fontStyle: story.description_text ? 'normal' : 'italic',
                         cursor: 'text', minHeight: 20, lineHeight: 1.6, whiteSpace: 'pre-wrap',
                       }}>
@@ -346,7 +346,7 @@ export const StoryDetailDrawer: React.FC<StoryDetailDrawerProps> = ({ isOpen, on
                           <span style={DETAIL_VALUE}>{story.assignee_display_name}</span>
                         </div>
                       ) : (
-                        <span style={{ fontSize: 14, color: 'var(--fg-3, #94A3B8)', fontStyle: 'italic' }}>— Set assignee</span>
+                        <span style={{ fontSize: 14, color: '#94A3B8', fontStyle: 'italic' }}>— Set assignee</span>
                       )}
                     </DetailRow>
 
@@ -355,20 +355,20 @@ export const StoryDetailDrawer: React.FC<StoryDetailDrawerProps> = ({ isOpen, on
                       {story.reporter_display_name ? (
                         <span style={DETAIL_VALUE}>{story.reporter_display_name}</span>
                       ) : (
-                        <span style={{ fontSize: 14, color: 'var(--fg-3, #94A3B8)', fontStyle: 'italic' }}>— Set reporter</span>
+                        <span style={{ fontSize: 14, color: '#94A3B8', fontStyle: 'italic' }}>— Set reporter</span>
                       )}
                     </DetailRow>
 
                     {/* Due Date */}
                     <DetailRow label="Due Date">
-                      <span style={{ ...DETAIL_VALUE, fontFamily: "'JetBrains Mono', monospace", fontSize: 13, color: story.due_date ? 'var(--fg-1, #0F172A)' : 'var(--fg-3, #94A3B8)' }}>
+                      <span style={{ ...DETAIL_VALUE, fontFamily: "'JetBrains Mono', monospace", fontSize: 13, color: story.due_date ? 'var(--fg-1, #0F172A)' : '#94A3B8' }}>
                         {story.due_date ? format(new Date(story.due_date), 'MMM d, yyyy') : '— Set date'}
                       </span>
                     </DetailRow>
 
                     {/* Release (fix_versions) */}
                     <DetailRow label="Release">
-                      <span style={{ ...DETAIL_VALUE, color: formatFixVersions(story.fix_versions) !== '—' ? 'var(--fg-1, #0F172A)' : 'var(--fg-3, #94A3B8)' }}>
+                      <span style={{ ...DETAIL_VALUE, color: formatFixVersions(story.fix_versions) !== '—' ? 'var(--fg-1, #0F172A)' : '#94A3B8' }}>
                         {formatFixVersions(story.fix_versions)}
                       </span>
                     </DetailRow>
@@ -403,7 +403,7 @@ export const StoryDetailDrawer: React.FC<StoryDetailDrawerProps> = ({ isOpen, on
                             <span style={{
                               display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px', borderRadius: 4,
                               fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em',
-                              backgroundColor: jiraSyncData.jira_sync_status === 'synced' || jiraSyncData.jira_sync_status === 'pushed' ? 'var(--status-ok-bg, #E3FCEF)' : jiraSyncData.jira_sync_status === 'queued' || jiraSyncData.jira_sync_status === 'approval_pending' ? '#DEEBFF' : '#DFE1E6',
+                              backgroundColor: jiraSyncData.jira_sync_status === 'synced' || jiraSyncData.jira_sync_status === 'pushed' ? '#E3FCEF' : jiraSyncData.jira_sync_status === 'queued' || jiraSyncData.jira_sync_status === 'approval_pending' ? '#DEEBFF' : '#DFE1E6',
                               color: jiraSyncData.jira_sync_status === 'synced' || jiraSyncData.jira_sync_status === 'pushed' ? '#006644' : jiraSyncData.jira_sync_status === 'queued' || jiraSyncData.jira_sync_status === 'approval_pending' ? '#0747A6' : '#253858',
                             }}>{jiraSyncData.jira_sync_status}</span>
                           </div>
@@ -457,7 +457,7 @@ function CommentsPane({ comments, isLoading }: { comments: any[]; isLoading: boo
               {getInitials(c.author_display_name || 'U')}
             </div>
             <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1, #0F172A)' }}>{c.author_display_name || 'Unknown'}</span>
-            <span style={{ fontSize: 11, color: 'var(--fg-3, #94A3B8)', marginLeft: 'auto' }}>
+            <span style={{ fontSize: 11, color: '#94A3B8', marginLeft: 'auto' }}>
               {c.jira_created_at ? formatDistanceToNow(new Date(c.jira_created_at), { addSuffix: true }) : ''}
             </span>
           </div>
@@ -498,7 +498,7 @@ function HistoryPane({ changelog, isLoading }: { changelog: any[]; isLoading: bo
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap', marginBottom: 4 }}>
                     <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1, #0F172A)' }}>{entry.author_display_name || 'System'}</span>
-                    <span style={{ fontSize: 11, color: 'var(--fg-3, #94A3B8)' }}>
+                    <span style={{ fontSize: 11, color: '#94A3B8' }}>
                       {entry.jira_created_at ? formatDistanceToNow(new Date(entry.jira_created_at), { addSuffix: true }) : ''}
                     </span>
                   </div>
@@ -506,13 +506,13 @@ function HistoryPane({ changelog, isLoading }: { changelog: any[]; isLoading: bo
                     <span style={{ display: 'inline-flex', alignItems: 'center', height: 18, padding: '0 5px', borderRadius: 4, fontSize: 10, fontWeight: 700, textTransform: 'uppercase', background: fromColors.bg, color: fromColors.text }}>
                       {fromColors.label}
                     </span>
-                    <span style={{ fontSize: 12, color: 'var(--fg-3, #94A3B8)' }}>→</span>
+                    <span style={{ fontSize: 12, color: '#94A3B8' }}>→</span>
                     <span style={{ display: 'inline-flex', alignItems: 'center', height: 18, padding: '0 5px', borderRadius: 4, fontSize: 10, fontWeight: 700, textTransform: 'uppercase', background: toColors.bg, color: toColors.text }}>
                       {toColors.label}
                     </span>
                   </div>
                   {entry.jira_created_at && (
-                    <div style={{ fontSize: 11, color: 'var(--fg-3, #94A3B8)', marginTop: 2, fontFamily: "'JetBrains Mono', monospace" }}>
+                    <div style={{ fontSize: 11, color: '#94A3B8', marginTop: 2, fontFamily: "'JetBrains Mono', monospace" }}>
                       {format(new Date(entry.jira_created_at), 'MMM d, yyyy, hh:mm a')}
                     </div>
                   )}
@@ -537,13 +537,13 @@ function HistoryPane({ changelog, isLoading }: { changelog: any[]; isLoading: bo
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2 }}>
                   <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1, #0F172A)' }}>{entry.author_display_name || 'System'}</span>
-                  <span style={{ fontSize: 11, color: 'var(--fg-3, #94A3B8)' }}>
+                  <span style={{ fontSize: 11, color: '#94A3B8' }}>
                     {entry.jira_created_at ? formatDistanceToNow(new Date(entry.jira_created_at), { addSuffix: true }) : ''}
                   </span>
                 </div>
                 <div style={{ fontSize: 13, color: '#64748B' }}>
                   Changed <strong style={{ color: 'var(--fg-1, #0F172A)', fontWeight: 600 }}>{entry.field_name}</strong>
-                  {entry.from_string && <> from <span style={{ color: 'var(--fg-3, #94A3B8)' }}>{entry.from_string}</span></>}
+                  {entry.from_string && <> from <span style={{ color: '#94A3B8' }}>{entry.from_string}</span></>}
                   {entry.to_string && <> to <span style={{ color: 'var(--fg-1, #0F172A)' }}>{entry.to_string}</span></>}
                 </div>
               </div>
@@ -572,5 +572,5 @@ function SkeletonList({ count }: { count: number }) {
 }
 
 function EmptyState({ text }: { text: string }) {
-  return <div style={{ padding: 24, textAlign: 'center', fontSize: 13, color: 'var(--fg-3, #94A3B8)' }}>{text}</div>;
+  return <div style={{ padding: 24, textAlign: 'center', fontSize: 13, color: '#94A3B8' }}>{text}</div>;
 }

@@ -18,7 +18,7 @@ interface Props {
   onToggleFav: () => void;
 }
 
-const CAT_DOT: Record<string, string> = { todo: 'var(--fg-3, #94A3B8)', in_progress: '#2563EB', done: '#16A34A' };
+const CAT_DOT: Record<string, string> = { todo: '#94A3B8', in_progress: '#2563EB', done: '#16A34A' };
 
 function getAvatarGradient(key: string) {
   const letter = (key[0] || '').toUpperCase();

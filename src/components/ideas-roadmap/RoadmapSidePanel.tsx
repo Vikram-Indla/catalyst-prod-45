@@ -16,9 +16,9 @@ interface RoadmapSidePanelProps {
 const QUARTERS: RoadmapQuarter[] = ['Q1', 'Q2', 'Q3', 'Q4'];
 const QUARTER_STYLES: Record<string, { bg: string; color: string }> = {
   Q1: { bg: '#F3E8FF', color: '#6D28D9' },
-  Q2: { bg: 'var(--tint-blue, #EFF6FF)', color: '#1D4ED8' },
-  Q3: { bg: 'var(--tint-green-soft, #ECFDF5)', color: '#065F46' },
-  Q4: { bg: 'var(--tint-amber, #FFF7ED)', color: '#92400E' },
+  Q2: { bg: '#EFF6FF', color: '#1D4ED8' },
+  Q3: { bg: '#ECFDF5', color: '#065F46' },
+  Q4: { bg: '#FFF7ED', color: '#92400E' },
 };
 const isConverted = (status: string) => status.toLowerCase() === 'converted';
 
@@ -81,7 +81,7 @@ export function RoadmapSidePanel({
   }
 
   const labelStyle: React.CSSProperties = {
-    fontSize: 10, fontWeight: 700, color: 'var(--fg-3, #94A3B8)', textTransform: 'uppercase',
+    fontSize: 10, fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase',
     letterSpacing: '0.05em', fontFamily: "'Inter', sans-serif",
   };
 

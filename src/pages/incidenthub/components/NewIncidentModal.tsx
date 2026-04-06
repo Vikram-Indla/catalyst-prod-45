@@ -24,7 +24,7 @@ const SEV_STYLES: Record<string, { bg: string; border: string; text: string }> =
   SEV1: { bg: '#FEE2E2', border: '#FECACA', text: '#991B1B' },
   SEV2: { bg: '#FEF3C7', border: '#FDE68A', text: '#92400E' },
   SEV3: { bg: '#DBEAFE', border: '#BFDBFE', text: '#1E40AF' },
-  SEV4: { bg: var(--bg-2, '#F1F5F9'), border: 'var(--bd-default, #E2E8F0)', text: '#475569' },
+  SEV4: { bg: '#F1F5F9', border: 'var(--bd-default, #E2E8F0)', text: '#475569' },
 };
 
 export function NewIncidentModal({ open, onClose }: NewIncidentModalProps) {

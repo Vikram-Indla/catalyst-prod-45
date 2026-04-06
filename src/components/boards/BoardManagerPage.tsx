@@ -61,7 +61,7 @@ export default function BoardManagerPage({ projectIdOverride, basePath }: BoardM
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: 'var(--bg-1)' }}>
       {error && (
-        <div style={{ background: 'var(--tint-red, #FEF2F2)', color: 'var(--sem-danger)', padding: '8px 24px', fontSize: 12, fontFamily: "'Inter', sans-serif", borderBottom: '1px solid #FECACA' }}>
+        <div style={{ background: '#FEF2F2', color: 'var(--sem-danger)', padding: '8px 24px', fontSize: 12, fontFamily: "'Inter', sans-serif", borderBottom: '1px solid #FECACA' }}>
           ⚠ Board query error: {(error as Error).message} | projectId: {projectId}
         </div>
       )}
@@ -91,7 +91,7 @@ export default function BoardManagerPage({ projectIdOverride, basePath }: BoardM
               boxShadow: searchFocused ? '0 0 0 2px rgba(37,99,235,0.10)' : 'none',
               transition: 'border-color 150ms, box-shadow 150ms',
             }}>
-              <Search size={13} color="var(--fg-3, #94A3B8)" />
+              <Search size={13} color="#94A3B8" />
               <input
                 value={search} onChange={e => setSearch(e.target.value)}
                 onFocus={() => setSearchFocused(true)}
@@ -261,7 +261,7 @@ function NewBoardCard({ onClick }: { onClick: () => void }) {
         transition: 'all 150ms',
       }}
     >
-      <Plus size={28} color={hover ? '#2563EB' : 'var(--fg-3, #94A3B8)'} strokeWidth={1.5} />
+      <Plus size={28} color={hover ? '#2563EB' : '#94A3B8'} strokeWidth={1.5} />
       <span style={{
         fontSize: 12.5, fontWeight: 500, marginTop: 8,
         color: hover ? 'var(--cp-blue)' : 'var(--fg-4)',

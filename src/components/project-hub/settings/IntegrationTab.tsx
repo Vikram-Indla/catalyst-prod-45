@@ -6,11 +6,11 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 function StatusLozenge({ status }: { status: string }) {
   const map: Record<string, { bg: string; text: string }> = {
-    success: { bg: 'var(--status-ok-bg, #E3FCEF)', text: '#006644' },
+    success: { bg: '#E3FCEF', text: '#006644' },
     error: { bg: '#DFE1E6', text: '#253858' },
     skipped: { bg: '#DFE1E6', text: '#253858' },
     processing: { bg: '#DEEBFF', text: '#0747A6' },
-    Connected: { bg: 'var(--status-ok-bg, #E3FCEF)', text: '#006644' },
+    Connected: { bg: '#E3FCEF', text: '#006644' },
     'Not Connected': { bg: '#DFE1E6', text: '#253858' },
   };
   const colors = map[status] || map.skipped;

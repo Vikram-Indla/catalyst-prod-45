@@ -94,7 +94,7 @@ export default function TriageQueuePage() {
                     </td>
                     <td className="px-3 py-2">
                       {rec ? (
-                        <div className="bg-[var(--tint-blue, #EFF6FF)] border border-[#DBEAFE] rounded-md px-2.5 py-2 flex items-start gap-2 max-w-[260px]">
+                        <div className="bg-[#EFF6FF] border border-[#DBEAFE] rounded-md px-2.5 py-2 flex items-start gap-2 max-w-[260px]">
                           <Sparkles className="w-3.5 h-3.5 text-[#2563EB] flex-shrink-0 mt-0.5" />
                           <div className="text-[12px] leading-relaxed">
                             <span className="font-semibold text-[#2563EB]">Suggested:</span>{' '}
@@ -104,7 +104,7 @@ export default function TriageQueuePage() {
                           </div>
                         </div>
                       ) : (
-                        <span className="text-[var(--fg-3, #94A3B8)] text-[12px]">No suggestion</span>
+                        <span className="text-[#94A3B8] text-[12px]">No suggestion</span>
                       )}
                     </td>
                     <td className="px-3 py-2">
@@ -119,7 +119,7 @@ export default function TriageQueuePage() {
                           <TriageLinkDropdown releases={releases} onLink={(releaseId) => linkChangeToRelease(c.id, releaseId)} />
                         )}
                         <button onClick={() => ignoreTriageItem(c.id)}
-                          className="h-7 px-3 rounded text-[11px] font-medium border border-[rgba(15,23,42,0.12)] dark:border-[rgba(255,255,255,0.08)] bg-white dark:bg-[#1A1A1A] text-[var(--fg-3, #94A3B8)] hover:text-[#475569]">
+                          className="h-7 px-3 rounded text-[11px] font-medium border border-[rgba(15,23,42,0.12)] dark:border-[rgba(255,255,255,0.08)] bg-white dark:bg-[#1A1A1A] text-[#94A3B8] hover:text-[#475569]">
                           Ignore
                         </button>
                       </div>
@@ -148,7 +148,7 @@ function TriageLinkDropdown({ releases, onLink }: { releases: any[]; onLink: (re
           <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
           <div className="absolute top-full right-0 mt-1 w-48 bg-white dark:bg-[#1A1A1A] rounded-md shadow-lg border border-[rgba(15,23,42,0.12)] dark:border-[rgba(255,255,255,0.08)] z-50 py-1 max-h-48 overflow-y-auto">
             {releases.length === 0 ? (
-              <div className="px-3 py-2 text-[12px] text-[var(--fg-3, #94A3B8)]">No releases available</div>
+              <div className="px-3 py-2 text-[12px] text-[#94A3B8]">No releases available</div>
             ) : releases.map((r: any) => (
               <button key={r.id} onClick={() => { onLink(r.id); setOpen(false); }}
                 className="w-full px-3 h-8 text-left text-[12px] font-medium hover:bg-[#F8FAFC] text-[#475569]">{r.name}</button>

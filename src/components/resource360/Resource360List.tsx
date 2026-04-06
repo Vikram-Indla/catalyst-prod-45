@@ -128,7 +128,7 @@ export function Resource360List({ items, onItemClick }: Props) {
                       background: rowIdx % 2 === 1 ? '#FAFBFC' : 'transparent', cursor: 'pointer',
                       borderLeft: `3px solid ${sc.dot}`, transition: 'background .1s',
                     }}
-                    onMouseEnter={e => { e.currentTarget.style.background = 'var(--tint-blue, #EFF6FF)'; }}
+                    onMouseEnter={e => { e.currentTarget.style.background = '#EFF6FF'; }}
                     onMouseLeave={e => { e.currentTarget.style.background = rowIdx % 2 === 1 ? '#FAFBFC' : 'transparent'; }}>
                     <ExpandChevron expanded={isExpanded} onClick={e => { e.stopPropagation(); toggleExpand(item.work_item_id); }} />
                     <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--cp-blue)', fontFamily: "'JetBrains Mono', monospace" }}><HighlightText text={item.item_key} query={searchTerm} /></span>

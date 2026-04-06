@@ -447,7 +447,7 @@ export function FolderPanel({
                 cursor: 'pointer',
                 textAlign: 'left',
               }}
-              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--tint-red, #FEF2F2)'}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#FEF2F2'}
               onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
             >
               <Trash2 size={14} color="var(--sem-danger)" />

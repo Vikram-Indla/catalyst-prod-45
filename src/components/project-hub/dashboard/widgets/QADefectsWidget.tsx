@@ -4,7 +4,7 @@ import { useDashboardDefects } from '@/hooks/useDashboardWidgets';
 import { ExternalLink } from 'lucide-react';
 
 const getAvatarColor = (initials: string): string => {
-  if (!initials) return 'var(--fg-3, #94A3B8)';
+  if (!initials) return '#94A3B8';
   const colors = ['#2563EB', '#0D9488', '#D97706', '#DC2626', '#059669', '#6366F1'];
   return colors[initials.charCodeAt(0) % colors.length];
 };
@@ -61,7 +61,7 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
               return (
                 <>
                   {open > 0 && <span className="bg-[#DEEBFF] dark:bg-[#1a2a3a] text-[#0747A6] dark:text-[#79b8ff]" style={{ fontSize: 10, fontWeight: 700, padding: '1px 6px', borderRadius: 4, textTransform: 'uppercase' }}>{open} OPEN</span>}
-                  {resolved > 0 && <span className="bg-[var(--status-ok-bg, #E3FCEF)] dark:bg-[#1a3a2a] text-[#006644] dark:text-[#85e89d]" style={{ fontSize: 10, fontWeight: 700, padding: '1px 6px', borderRadius: 4, textTransform: 'uppercase' }}>{resolved} RESOLVED</span>}
+                  {resolved > 0 && <span className="bg-[#E3FCEF] dark:bg-[#1a3a2a] text-[#006644] dark:text-[#85e89d]" style={{ fontSize: 10, fontWeight: 700, padding: '1px 6px', borderRadius: 4, textTransform: 'uppercase' }}>{resolved} RESOLVED</span>}
                   {closed > 0 && <span className="bg-[#DFE1E6] dark:bg-[#292929] text-[#253858] dark:text-[#A1A1A1]" style={{ fontSize: 10, fontWeight: 700, padding: '1px 6px', borderRadius: 4, textTransform: 'uppercase' }}>{closed} CLOSED</span>}
                 </>
               );
@@ -87,7 +87,7 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
                 const statusCls = isOpen
                   ? 'bg-[#DEEBFF] dark:bg-[#1a2a3a] text-[#0747A6] dark:text-[#79b8ff]'
                   : isResolved
-                  ? 'bg-[var(--status-ok-bg, #E3FCEF)] dark:bg-[#1a3a2a] text-[#006644] dark:text-[#85e89d]'
+                  ? 'bg-[#E3FCEF] dark:bg-[#1a3a2a] text-[#006644] dark:text-[#85e89d]'
                   : 'bg-[#DFE1E6] dark:bg-[#292929] text-[#253858] dark:text-[#A1A1A1]';
                 const assigneeName = d.jira_assignee_name || '';
                 const assigneeFirst = assigneeName ? assigneeName.split(' ')[0] : '—';

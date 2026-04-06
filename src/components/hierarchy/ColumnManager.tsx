@@ -105,7 +105,7 @@ export function ColumnManagerDropdown({ visibleColumns, onChange }: ColumnManage
                 disabled={col.alwaysVisible}
                 style={{
                   width: '100%', display: 'flex', alignItems: 'center', gap: 8,
-                  padding: '6px 12px', fontSize: 13, color: col.alwaysVisible ? 'var(--fg-3, #94A3B8)' : '#334155',
+                  padding: '6px 12px', fontSize: 13, color: col.alwaysVisible ? '#94A3B8' : '#334155',
                   background: 'none', border: 'none', cursor: col.alwaysVisible ? 'default' : 'pointer',
                   textAlign: 'left', opacity: col.alwaysVisible ? 0.6 : 1,
                 }}

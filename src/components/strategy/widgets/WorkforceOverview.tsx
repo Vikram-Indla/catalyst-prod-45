@@ -15,12 +15,12 @@ import {
 } from '@/components/ui/tooltip';
 
 function getUtilizationColor(pct: number): string {
-  if (pct === 0) return 'var(--exec-text-muted, var(--fg-3, #94A3B8))';
+  if (pct === 0) return 'var(--exec-text-muted, #94A3B8)';
   if (pct > 100) return 'var(--exec-signal-red, #DC2626)';
   if (pct >= 95) return 'var(--exec-blue-700, #1E40AF)';
   if (pct >= 80) return 'var(--exec-blue-500, #3B82F6)';
   if (pct > 0) return 'var(--exec-signal-amber, #D97706)';
-  return 'var(--fg-3, #94A3B8)';
+  return '#94A3B8';
 }
 
 function getUtilizationLabel(pct: number): string {
@@ -67,10 +67,10 @@ export function WorkforceOverview() {
   const totalResources = data.totalHeadcount;
 
   const statusCards = [
-    { label: 'Unassigned', value: unassigned, color: 'var(--exec-text-muted, var(--fg-3, #94A3B8))' },
+    { label: 'Unassigned', value: unassigned, color: 'var(--exec-text-muted, #94A3B8)' },
     { label: 'Under-util.', value: data.healthy, color: 'var(--exec-signal-amber, #D97706)' },
     { label: 'Committed', value: committed, color: 'var(--exec-confirm-green, #16A34A)' },
-    { label: 'Over-alloc.', value: overAllocated, color: overAllocated > 0 ? 'var(--exec-signal-red, #DC2626)' : 'var(--exec-text-muted, var(--fg-3, #94A3B8))' },
+    { label: 'Over-alloc.', value: overAllocated, color: overAllocated > 0 ? 'var(--exec-signal-red, #DC2626)' : 'var(--exec-text-muted, #94A3B8)' },
   ];
 
   const totalForBar = totalResources || 1;

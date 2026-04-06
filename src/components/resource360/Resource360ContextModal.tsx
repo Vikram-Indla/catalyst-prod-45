@@ -78,7 +78,7 @@ export function Resource360ContextModal({ item, allItems, onClose, onNavigate }:
                 {stale && (
                   <span style={{
                     fontSize: 9, fontWeight: 800, padding: '2px 6px', borderRadius: 4,
-                    background: 'var(--tint-red, #FEF2F2)', color: 'var(--sem-danger)', border: '1px solid #FECACA',
+                    background: '#FEF2F2', color: 'var(--sem-danger)', border: '1px solid #FECACA',
                   }}>🔴 Stale — {item.age_days}d</span>
                 )}
                 <span style={{ flex: 1 }} />
@@ -195,7 +195,7 @@ export function Resource360ContextModal({ item, allItems, onClose, onNavigate }:
                   onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,.08)'; }}
                   onMouseLeave={e => { e.currentTarget.style.boxShadow = 'none'; }}
                 >
-                  <div style={{ width: 22, height: 22, borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 800, background: 'var(--tint-amber, #FFF7ED)', color: '#EA580C', flexShrink: 0 }}>E</div>
+                  <div style={{ width: 22, height: 22, borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 800, background: '#FFF7ED', color: '#EA580C', flexShrink: 0 }}>E</div>
                   <div style={{ minWidth: 0 }}>
                     <div style={{ fontFamily: T.mono, fontSize: 9, fontWeight: 800, color: T.text1 }}>{parentItem.item_key}</div>
                     <div style={{ fontSize: 10, fontWeight: 500, color: T.text3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{parentItem.title}</div>
@@ -218,7 +218,7 @@ export function Resource360ContextModal({ item, allItems, onClose, onNavigate }:
                         onClick={() => { const t = allItems.find(a => a.item_key === s.item_key); if (t) onNavigate(t); }}
                         style={{
                           padding: '6px 8px', borderRadius: 6, cursor: 'pointer',
-                          background: isCurrent ? 'var(--tint-blue, #EFF6FF)' : '#fff',
+                          background: isCurrent ? '#EFF6FF' : '#fff',
                           border: `1px solid ${isCurrent ? '#BFDBFE' : T.border}`,
                           transition: 'background .1s',
                         }}
@@ -313,7 +313,7 @@ const PRI_MAP: Record<string, { icon: string; color: string; label: string }> = 
   High:     { icon: '⬆', color: '#EA580C', label: 'High' },
   Medium:   { icon: '●', color: '#CA8A04', label: 'Medium' },
   Low:      { icon: '⬇', color: '#57534E', label: 'Low' },
-  Lowest:   { icon: '⬇⬇', color: 'var(--fg-3, #94A3B8)', label: 'Lowest' },
+  Lowest:   { icon: '⬇⬇', color: '#94A3B8', label: 'Lowest' },
   Critical: { icon: '🔥', color: '#BE123C', label: 'Critical' },
 };
 

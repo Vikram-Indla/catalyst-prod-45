@@ -34,11 +34,11 @@ const DOT_COLORS: Record<SyncStatus, string> = {
   stale: '#D97706',
   conflict: '#DC2626',
   syncing: '#2563EB',
-  pending: 'var(--fg-3, #94A3B8)',
+  pending: '#94A3B8',
 };
 
 export function SyncStatusDot({ status, lastSyncedAt }: SyncStatusDotProps) {
-  const dotColor = DOT_COLORS[status] || 'var(--fg-3, #94A3B8)';
+  const dotColor = DOT_COLORS[status] || '#94A3B8';
 
   let label: string;
   let labelColor: string;
@@ -47,7 +47,7 @@ export function SyncStatusDot({ status, lastSyncedAt }: SyncStatusDotProps) {
   switch (status) {
     case 'synced':
       label = relativeTime(lastSyncedAt);
-      labelColor = 'var(--cp-text-tertiary, var(--fg-3, #94A3B8))';
+      labelColor = 'var(--cp-text-tertiary, #94A3B8)';
       break;
     case 'stale':
       label = relativeTime(lastSyncedAt);
@@ -64,7 +64,7 @@ export function SyncStatusDot({ status, lastSyncedAt }: SyncStatusDotProps) {
       break;
     default:
       label = 'Pending';
-      labelColor = 'var(--cp-text-tertiary, var(--fg-3, #94A3B8))';
+      labelColor = 'var(--cp-text-tertiary, #94A3B8)';
   }
 
   return (

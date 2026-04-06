@@ -18,7 +18,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 export const COLUMNS: ColumnConfig[] = [
-  { key: 'new',                    label: 'New',                    color: 'var(--fg-3, #94A3B8)' },
+  { key: 'new',                    label: 'New',                    color: '#94A3B8' },
   { key: 'portfolio_review',       label: 'Portfolio Review',       color: '#2563EB' },
   { key: 'technical_validation',   label: 'Technical Validation',   color: '#0EA5E9' },
   { key: 'estimate',               label: 'Estimate',               color: '#D97706' },

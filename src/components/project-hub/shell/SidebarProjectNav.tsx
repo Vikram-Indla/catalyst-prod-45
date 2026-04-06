@@ -115,7 +115,7 @@ export function SidebarProjectNav({
                     {projectName}
                   </div>
                 </div>
-                <ChevronDown size={14} className="flex-shrink-0 text-[var(--fg-3, #94A3B8)] dark:text-[rgba(255,255,255,0.40)]" />
+                <ChevronDown size={14} className="flex-shrink-0 text-[#94A3B8] dark:text-[rgba(255,255,255,0.40)]" />
               </button>
               <button
                 onClick={onToggle}

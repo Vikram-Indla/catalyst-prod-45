@@ -161,7 +161,7 @@ export function HierarchyContextMenu({
           <div data-ctx-menu style={{
             ...menuStyle, position: 'absolute', top: -4, left: 218, width: 200, maxHeight: 240, overflowY: 'auto',
           }}>
-            <button style={{ ...itemStyle, fontStyle: 'italic', color: 'var(--fg-3, #94A3B8)' }}
+            <button style={{ ...itemStyle, fontStyle: 'italic', color: '#94A3B8' }}
               onClick={() => { onChangeAssignee(null); onClose(); }}
               onMouseEnter={e => (e.currentTarget.style.background = 'var(--bg-1)')}
               onMouseLeave={e => (e.currentTarget.style.background = '')}>
@@ -208,7 +208,7 @@ export function HierarchyContextMenu({
       ) : (
         <button style={{ ...itemStyle, color: 'var(--sem-danger)' }}
           onClick={() => setConfirmDelete(true)}
-          onMouseEnter={e => (e.currentTarget.style.background = 'var(--tint-red, #FEF2F2)')}
+          onMouseEnter={e => (e.currentTarget.style.background = '#FEF2F2')}
           onMouseLeave={e => (e.currentTarget.style.background = '')}>
           <Trash2 size={13} /> Delete
         </button>

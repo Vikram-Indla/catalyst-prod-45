@@ -95,7 +95,7 @@ function VisionError({ onRetry }: { onRetry: () => void }) {
       className="relative overflow-hidden flex items-center justify-center gap-3"
       style={{
         minHeight: '56px',
-        background: 'linear-gradient(135deg, #64748B 0%, var(--fg-3, #94A3B8) 100%)',
+        background: 'linear-gradient(135deg, #64748B 0%, #94A3B8 100%)',
         borderRadius: 'var(--catalyst-radius-xl, 12px)',
         borderLeft: '3px solid #F59E0B',
         padding: '12px 20px',

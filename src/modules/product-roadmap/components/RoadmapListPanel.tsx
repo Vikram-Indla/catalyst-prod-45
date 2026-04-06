@@ -48,7 +48,7 @@ export function RoadmapListPanel({
           {items.length}
         </span>
       </div>
-      <ArrowUpDown className="w-3.5 h-3.5" style={{ color: 'var(--fg-3, #94A3B8)' }} />
+      <ArrowUpDown className="w-3.5 h-3.5" style={{ color: '#94A3B8' }} />
     </div>
   );
 
@@ -71,7 +71,7 @@ export function RoadmapListPanel({
           <div role="table">
             {groups.map(group => {
               const typeKey = group.key;
-              const color = TYPE_COLORS[typeKey] || group.color || 'var(--fg-3, #94A3B8)';
+              const color = TYPE_COLORS[typeKey] || group.color || '#94A3B8';
               return (
                 <div key={group.key} style={{ borderBottom: '1px solid #F1F5F9' }}>
                   <button
@@ -79,10 +79,10 @@ export function RoadmapListPanel({
                     className="w-full flex items-center gap-2 px-4 py-2 transition-colors hover:bg-gray-50"
                     style={{ background: '#FAFBFC', height: 50 }}
                   >
-                    {group.isExpanded ? <ChevronDown className="w-3.5 h-3.5" style={{ color: 'var(--fg-3, #94A3B8)' }} /> : <ChevronRight className="w-3.5 h-3.5" style={{ color: 'var(--fg-3, #94A3B8)' }} />}
+                    {group.isExpanded ? <ChevronDown className="w-3.5 h-3.5" style={{ color: '#94A3B8' }} /> : <ChevronRight className="w-3.5 h-3.5" style={{ color: '#94A3B8' }} />}
                     <div className="w-3 h-3 rounded-sm flex-shrink-0" style={{ background: color }} />
                     <span style={{ fontSize: 12, fontWeight: 600, color: '#334155' }}>{group.label}</span>
-                    <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--fg-3, #94A3B8)', marginLeft: 'auto' }}>{group.items.length}</span>
+                    <span style={{ fontSize: 11, fontWeight: 500, color: '#94A3B8', marginLeft: 'auto' }}>{group.items.length}</span>
                   </button>
                   {group.isExpanded && group.items.map(item => {
                     const gi = items.findIndex(i => i.id === item.id);

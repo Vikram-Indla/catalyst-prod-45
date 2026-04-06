@@ -50,7 +50,7 @@ export function ConvertDialog({ open, onClose, incidentId }: ConvertDialogProps)
                 style={{
                   borderRadius: 6,
                   border: `1.5px solid ${selected === t.key ? '#2563EB' : 'rgba(15,23,42,0.12)'}`,
-                  backgroundColor: selected === t.key ? 'var(--tint-blue, #EFF6FF)' : '#FFFFFF',
+                  backgroundColor: selected === t.key ? '#EFF6FF' : '#FFFFFF',
                 }}
               >
                 {/* Type icon circle */}

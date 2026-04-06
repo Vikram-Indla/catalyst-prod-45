@@ -88,7 +88,7 @@ export function InlineEditTitle({ value, onSave, fontSize = 13, fontWeight = 500
         size={12}
         className="hi-edit-icon"
         style={{
-          marginLeft: 4, color: 'var(--fg-3, #94A3B8)', flexShrink: 0,
+          marginLeft: 4, color: '#94A3B8', flexShrink: 0,
           opacity: 0, transition: 'opacity 150ms ease',
         }}
       />

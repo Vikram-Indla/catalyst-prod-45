@@ -52,7 +52,7 @@ export function useRoadmapFilters(allItems: RoadmapInitiative[]) {
     return Array.from(map.entries()).map(([key, items]) => ({
       key,
       label: groupBy === 'type' ? (TYPE_COLORS[key]?.label || key) : key,
-      color: groupBy === 'type' ? (TYPE_COLORS[key]?.solid || 'var(--fg-3, #94A3B8)') : '#64748B',
+      color: groupBy === 'type' ? (TYPE_COLORS[key]?.solid || '#94A3B8') : '#64748B',
       items,
       isExpanded: true,
     }));

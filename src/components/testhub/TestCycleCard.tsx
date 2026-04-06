@@ -41,8 +41,8 @@ const statusConfig: Record<string, { label: string; color: string; bg: string; b
   planned:     { label: 'PLANNED',     color: '#253858', bg: '#DFE1E6', border: '#DFE1E6' },
   active:      { label: 'IN PROGRESS', color: '#0747A6', bg: '#DEEBFF', border: '#B3D4FF' },
   in_progress: { label: 'IN PROGRESS', color: '#0747A6', bg: '#DEEBFF', border: '#B3D4FF' },
-  completed:   { label: 'COMPLETED',   color: '#006644', bg: 'var(--status-ok-bg, #E3FCEF)', border: '#ABF5D1' },
-  done:        { label: 'DONE',        color: '#006644', bg: 'var(--status-ok-bg, #E3FCEF)', border: '#ABF5D1' },
+  completed:   { label: 'COMPLETED',   color: '#006644', bg: '#E3FCEF', border: '#ABF5D1' },
+  done:        { label: 'DONE',        color: '#006644', bg: '#E3FCEF', border: '#ABF5D1' },
   archived:    { label: 'ARCHIVED',    color: '#253858', bg: '#DFE1E6', border: '#DFE1E6' },
   paused:      { label: 'PAUSED',      color: '#253858', bg: '#DFE1E6', border: '#DFE1E6' },
 };
@@ -221,12 +221,12 @@ export function TestCycleCard({
 
       {/* Stats Row */}
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px', backgroundColor: 'var(--tint-green-soft, #ECFDF5)', borderRadius: 6 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px', backgroundColor: '#ECFDF5', borderRadius: 6 }}>
           <CheckCircle2 size={14} style={{ color: 'var(--sem-success)' }} />
           <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--sem-success)' }}>{cycle.passed_count}</span>
           <span style={{ fontSize: 12, color: 'var(--sem-success)' }}>Passed</span>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px', backgroundColor: 'var(--tint-red, #FEF2F2)', borderRadius: 6 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px', backgroundColor: '#FEF2F2', borderRadius: 6 }}>
           <XCircle size={14} style={{ color: 'var(--sem-danger)' }} />
           <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--sem-danger)' }}>{cycle.failed_count}</span>
           <span style={{ fontSize: 12, color: 'var(--sem-danger)' }}>Failed</span>

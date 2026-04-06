@@ -76,13 +76,13 @@ export function WorkItemsToolbar(props: WorkItemsToolbarProps) {
         <div className="flex items-center gap-2">
           {/* Search */}
           <div className="relative">
-            <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[var(--fg-3, #94A3B8)]" />
+            <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[#94A3B8]" />
             <input
               type="text"
               placeholder="Search list"
               value={search}
               onChange={e => onSearchChange(e.target.value)}
-              className="h-[30px] w-[160px] pl-8 pr-7 text-[11px] rounded-md border focus:outline-none focus:ring-1 focus:ring-[#2563EB] placeholder:text-[var(--fg-3, #94A3B8)]"
+              className="h-[30px] w-[160px] pl-8 pr-7 text-[11px] rounded-md border focus:outline-none focus:ring-1 focus:ring-[#2563EB] placeholder:text-[#94A3B8]"
               style={{ borderColor: 'var(--divider)', fontFamily: 'Inter, sans-serif' }}
             />
             {search && (
@@ -90,7 +90,7 @@ export function WorkItemsToolbar(props: WorkItemsToolbarProps) {
                 onClick={() => onSearchChange('')}
                 className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 flex items-center justify-center rounded-full hover:bg-[#F1F5F9]"
               >
-                <X size={10} className="text-[var(--fg-3, #94A3B8)]" />
+                <X size={10} className="text-[#94A3B8]" />
               </button>
             )}
           </div>

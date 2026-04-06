@@ -47,7 +47,7 @@ export const WIT_STYLES: Record<string, { bg: string; color: string }> = {
   Story: { bg: '#DBEAFE', color: '#1D4ED8' },
   Subtask: { bg: '#E0E7FF', color: '#3730A3' },
   Bug: { bg: '#FEE2E2', color: '#B91C1C' },
-  Task: { bg: var(--bg-2, '#F1F5F9'), color: '#334155' },
+  Task: { bg: '#F1F5F9', color: '#334155' },
   'Test Case': { bg: '#FEF3C7', color: '#92400E' },
   'Test Plan': { bg: '#FEF3C7', color: '#92400E' },
   Incident: { bg: '#FEE2E2', color: '#991B1B' },
@@ -66,16 +66,16 @@ export const WIT_STYLES: Record<string, { bg: string; color: string }> = {
 export const R360_TOKENS = {
   primary: '#2563EB',
   primaryHover: '#1D4ED8',
-  primaryLight: 'var(--tint-blue, #EFF6FF)',
+  primaryLight: '#EFF6FF',
   primaryDark: '#1E3A5F',
   success: '#16A34A',
-  successLight: 'var(--tint-green, #F0FDF4)',
+  successLight: '#F0FDF4',
   successText: '#14532D',
   warning: '#D97706',
   warningLight: '#FFFBEB',
   warningText: '#78350F',
   danger: '#EF4444',
-  dangerLight: 'var(--tint-red, #FEF2F2)',
+  dangerLight: '#FEF2F2',
   dangerText: '#7F1D1D',
   teal: '#0D9488',
   tealLight: '#F0FDFA',
@@ -90,7 +90,7 @@ export const R360_TOKENS = {
   surface: 'var(--bg-1, #F8FAFC)',
   card: '#FFFFFF',
   border: 'var(--bd-default, #E2E8F0)',
-  borderLt: var(--bg-2, '#F1F5F9'),
+  borderLt: '#F1F5F9',
 } as const;
 
 // Status mental model — CG-05 enforced
@@ -98,10 +98,10 @@ export const R360_STATUS_STYLES: Record<string, {
   color: string; bg: string; dot: string; label: string;
 }> = {
   'ToDo':        { color: '#78350F', bg: '#FFFBEB', dot: '#D97706', label: 'ToDo' },
-  'In Progress': { color: '#1E3A5F', bg: 'var(--tint-blue, #EFF6FF)', dot: '#2563EB', label: 'In Progress' },
+  'In Progress': { color: '#1E3A5F', bg: '#EFF6FF', dot: '#2563EB', label: 'In Progress' },
   'In Review':   { color: '#134E4A', bg: '#F0FDFA', dot: '#0D9488', label: 'In Review' },
-  'Done':        { color: '#14532D', bg: 'var(--tint-green, #F0FDF4)', dot: '#16A34A', label: 'Done' },
-  'Blocked':     { color: '#7F1D1D', bg: 'var(--tint-red, #FEF2F2)', dot: '#EF4444', label: 'Blocked' },
+  'Done':        { color: '#14532D', bg: '#F0FDF4', dot: '#16A34A', label: 'Done' },
+  'Blocked':     { color: '#7F1D1D', bg: '#FEF2F2', dot: '#EF4444', label: 'Blocked' },
   'Re-Open':     { color: '#78350F', bg: '#FFFBEB', dot: '#D97706', label: 'Re-Open' },
 };
 
@@ -117,9 +117,9 @@ export const R360_PROJECT_COLORS: Record<string, string> = {
 
 // Jira issue type icon colors
 export const R360_TYPE_COLORS: Record<string, { bg: string; color: string }> = {
-  bug:     { bg: 'var(--tint-red, #FEF2F2)', color: '#E5493A' },
-  task:    { bg: 'var(--tint-blue, #EFF6FF)', color: '#4BADE8' },
-  story:   { bg: 'var(--tint-green, #F0FDF4)', color: '#63BA3C' },
+  bug:     { bg: '#FEF2F2', color: '#E5493A' },
+  task:    { bg: '#EFF6FF', color: '#4BADE8' },
+  story:   { bg: '#F0FDF4', color: '#63BA3C' },
   epic:    { bg: '#F5F3FF', color: '#904EE2' },
   subtask: { bg: '#F0FDFA', color: '#4BADE8' },
 };

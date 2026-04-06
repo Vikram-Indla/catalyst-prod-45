@@ -124,7 +124,7 @@ export function StatusMapping() {
                 }}>
                   {category}
                 </span>
-                <span style={{ fontSize: 10, color: 'var(--fg-3, #94A3B8)' }}>
+                <span style={{ fontSize: 10, color: '#94A3B8' }}>
                   {statuses.length} Jira statuses
                 </span>
                 <button
@@ -161,7 +161,7 @@ export function StatusMapping() {
                     <button
                       onClick={() => handleRemoveStatus(category, status)}
                       style={{
-                        fontSize: 10, color: 'var(--fg-3, #94A3B8)', background: 'none',
+                        fontSize: 10, color: '#94A3B8', background: 'none',
                         border: 'none', cursor: 'pointer', padding: 0, lineHeight: 1,
                         marginLeft: 2,
                       }}
@@ -221,7 +221,7 @@ export function StatusMapping() {
           >
             Reset to Default
           </button>
-          <span style={{ marginLeft: 'auto', fontSize: 11, color: 'var(--fg-3, #94A3B8)' }}>
+          <span style={{ marginLeft: 'auto', fontSize: 11, color: '#94A3B8' }}>
             Drag statuses between categories to reassign
           </span>
         </div>

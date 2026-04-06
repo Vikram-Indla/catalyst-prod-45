@@ -90,7 +90,7 @@ export default function CreateBoardModal({ projectId, basePath, onClose }: Props
             background: 'transparent', cursor: 'pointer',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
-            <X size={16} color="var(--fg-3, #94A3B8)" />
+            <X size={16} color="#94A3B8" />
           </button>
         </div>
 

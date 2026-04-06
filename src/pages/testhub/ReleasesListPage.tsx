@@ -14,23 +14,23 @@ import { CreateReleaseModal } from '@/components/testhub/releases/CreateReleaseM
 import { format } from 'date-fns';
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; icon: any }> = {
-  planning: { label: 'Planning', color: '#64748B', bg: var(--bg-2, '#F1F5F9'), icon: Clock },
-  planned: { label: 'Planned', color: '#64748B', bg: var(--bg-2, '#F1F5F9'), icon: Clock },
+  planning: { label: 'Planning', color: '#64748B', bg: '#F1F5F9', icon: Clock },
+  planned: { label: 'Planned', color: '#64748B', bg: '#F1F5F9', icon: Clock },
   development: { label: 'Development', color: '#8B5CF6', bg: '#F5F3FF', icon: Settings2 },
-  testing: { label: 'Testing', color: '#2563EB', bg: 'var(--tint-blue, #EFF6FF)', icon: Beaker },
-  uat: { label: 'UAT', color: '#EA580C', bg: 'var(--tint-amber, #FFF7ED)', icon: Monitor },
+  testing: { label: 'Testing', color: '#2563EB', bg: '#EFF6FF', icon: Beaker },
+  uat: { label: 'UAT', color: '#EA580C', bg: '#FFF7ED', icon: Monitor },
   staging: { label: 'Staging', color: '#D97706', bg: '#FFFBEB', icon: Rocket },
-  ready: { label: 'Ready', color: '#059669', bg: 'var(--tint-green-soft, #ECFDF5)', icon: CheckCircle2 },
-  released: { label: 'Released', color: '#059669', bg: 'var(--tint-green-soft, #ECFDF5)', icon: CheckCircle2 },
-  shipped: { label: 'Shipped', color: '#059669', bg: 'var(--tint-green-soft, #ECFDF5)', icon: CheckCircle2 },
-  archived: { label: 'Archived', color: 'var(--fg-3, #94A3B8)', bg: 'var(--bg-1, #F8FAFC)', icon: Archive },
+  ready: { label: 'Ready', color: '#059669', bg: '#ECFDF5', icon: CheckCircle2 },
+  released: { label: 'Released', color: '#059669', bg: '#ECFDF5', icon: CheckCircle2 },
+  shipped: { label: 'Shipped', color: '#059669', bg: '#ECFDF5', icon: CheckCircle2 },
+  archived: { label: 'Archived', color: '#94A3B8', bg: 'var(--bg-1, #F8FAFC)', icon: Archive },
 };
 
 const HEALTH_CONFIG: Record<string, { label: string; color: string; dot: string }> = {
   healthy: { label: 'Healthy', color: '#059669', dot: '#22C55E' },
   at_risk: { label: 'At Risk', color: '#D97706', dot: '#F59E0B' },
   critical: { label: 'Critical', color: '#DC2626', dot: '#EF4444' },
-  none: { label: '—', color: 'var(--fg-3, #94A3B8)', dot: '#CBD5E1' },
+  none: { label: '—', color: '#94A3B8', dot: '#CBD5E1' },
 };
 
 export default function ReleasesListPage() {
@@ -81,7 +81,7 @@ export default function ReleasesListPage() {
       <div style={{ display: 'flex', gap: 12, marginBottom: 20, alignItems: 'center', flexWrap: 'wrap' }}>
         {/* Search */}
         <div style={{ position: 'relative', flex: '0 1 280px' }}>
-          <Search style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', width: 16, height: 16, color: 'var(--fg-3, #94A3B8)' }} />
+          <Search style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', width: 16, height: 16, color: '#94A3B8' }} />
           <input
             value={filters.search}
             onChange={e => setFilters(f => ({ ...f, search: e.target.value }))}
@@ -92,7 +92,7 @@ export default function ReleasesListPage() {
             }}
           />
           {filters.search && (
-            <button onClick={() => setFilters(f => ({ ...f, search: '' }))} style={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--fg-3, #94A3B8)' }}>
+            <button onClick={() => setFilters(f => ({ ...f, search: '' }))} style={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#94A3B8' }}>
               <X style={{ width: 14, height: 14 }} />
             </button>
           )}
@@ -131,7 +131,7 @@ export default function ReleasesListPage() {
             style={{
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               width: 36, height: 50, border: 'none', cursor: 'pointer',
-              backgroundColor: viewMode === 'table' ? 'var(--tint-blue, #EFF6FF)' : '#fff',
+              backgroundColor: viewMode === 'table' ? '#EFF6FF' : '#fff',
               color: viewMode === 'table' ? '#2563EB' : '#64748B',
             }}
           >
@@ -142,7 +142,7 @@ export default function ReleasesListPage() {
             style={{
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               width: 36, height: 50, border: 'none', cursor: 'pointer',
-              backgroundColor: viewMode === 'card' ? 'var(--tint-blue, #EFF6FF)' : '#fff',
+              backgroundColor: viewMode === 'card' ? '#EFF6FF' : '#fff',
               color: viewMode === 'card' ? '#2563EB' : '#64748B',
               borderLeft: '1px solid var(--bd-default, #E2E8F0)',
             }}
@@ -154,11 +154,11 @@ export default function ReleasesListPage() {
 
       {/* Content */}
       {isLoading ? (
-        <div style={{ display: 'flex', justifyContent: 'center', padding: 60, color: 'var(--fg-3, #94A3B8)' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', padding: 60, color: '#94A3B8' }}>
           Loading releases...
         </div>
       ) : releases.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: 60, color: 'var(--fg-3, #94A3B8)' }}>
+        <div style={{ textAlign: 'center', padding: 60, color: '#94A3B8' }}>
           <Package style={{ width: 48, height: 48, margin: '0 auto 12px', opacity: 0.3 }} />
           <p style={{ fontSize: 15, fontWeight: 500 }}>No releases found</p>
           <p style={{ fontSize: 13 }}>Create your first release to get started</p>
@@ -169,7 +169,7 @@ export default function ReleasesListPage() {
         <CardView releases={releases} navigate={navigate} getExecPercent={getExecPercent} getPassRate={getPassRate} />
       )}
 
-      <div style={{ marginTop: 16, fontSize: 13, color: 'var(--fg-3, #94A3B8)' }}>
+      <div style={{ marginTop: 16, fontSize: 13, color: '#94A3B8' }}>
         Showing {releases.length} release{releases.length !== 1 ? 's' : ''}
       </div>
 
@@ -289,7 +289,7 @@ function CardView({ releases, navigate, getExecPercent, getPassRate }: { release
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
               <div>
-                <span style={{ fontFamily: 'monospace', fontSize: 11, color: 'var(--fg-3, #94A3B8)', fontWeight: 600 }}>{r.version}</span>
+                <span style={{ fontFamily: 'monospace', fontSize: 11, color: '#94A3B8', fontWeight: 600 }}>{r.version}</span>
                 <h3 style={{ fontSize: 15, fontWeight: 700, color: 'var(--fg-1, #0F172A)', margin: '2px 0 0' }}>{r.name}</h3>
               </div>
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, width: 8, height: 8, borderRadius: '50%', backgroundColor: hc.dot }} />
@@ -301,7 +301,7 @@ function CardView({ releases, navigate, getExecPercent, getPassRate }: { release
                 {sc.label}
               </span>
               {r.vehicle && (
-                <span style={{ padding: '2px 8px', borderRadius: 6, backgroundColor: var(--bg-2, '#F1F5F9'), color: '#64748B', fontSize: 11, fontWeight: 500 }}>
+                <span style={{ padding: '2px 8px', borderRadius: 6, backgroundColor: '#F1F5F9', color: '#64748B', fontSize: 11, fontWeight: 500 }}>
                   {r.vehicle.name}
                 </span>
               )}
@@ -313,7 +313,7 @@ function CardView({ releases, navigate, getExecPercent, getPassRate }: { release
                 <span style={{ color: '#64748B' }}>Test Progress</span>
                 <span style={{ fontWeight: 600, color: 'var(--fg-1, #0F172A)' }}>{execPct}%</span>
               </div>
-              <div style={{ height: 6, backgroundColor: var(--bg-2, '#F1F5F9'), borderRadius: 3 }}>
+              <div style={{ height: 6, backgroundColor: '#F1F5F9', borderRadius: 3 }}>
                 <div style={{ height: '100%', width: `${execPct}%`, backgroundColor: execPct >= 80 ? '#22C55E' : execPct >= 50 ? '#F59E0B' : '#3B82F6', borderRadius: 4, transition: 'width 0.3s' }} />
               </div>
             </div>
@@ -326,7 +326,7 @@ function CardView({ releases, navigate, getExecPercent, getPassRate }: { release
             </div>
 
             {/* Date */}
-            <div style={{ marginTop: 12, display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'var(--fg-3, #94A3B8)' }}>
+            <div style={{ marginTop: 12, display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: '#94A3B8' }}>
               <Calendar style={{ width: 12, height: 12 }} />
               {r.target_date ? format(new Date(r.target_date), 'MMM dd, yyyy') : 'No target date'}
             </div>

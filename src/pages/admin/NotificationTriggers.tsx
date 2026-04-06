@@ -54,7 +54,7 @@ const HUB_LABELS: Record<string, string> = {
 const PRIORITY_COLORS: Record<string, string> = {
   P1: 'bg-[#FFEBE6] text-[#BF2600]',
   P2: 'bg-[#FFF0B3] text-[#FF8B00]',
-  P3: 'bg-[var(--status-info-bg, #DEEBFF)] text-[#0747A6]',
+  P3: 'bg-[#DEEBFF] text-[#0747A6]',
   P4: 'bg-[#DFE1E6] text-[#253858]',
 };
 
@@ -181,7 +181,7 @@ export default function NotificationTriggers() {
           <div className="flex items-center gap-3 flex-wrap">
             {/* Search */}
             <div className="relative flex-1 min-w-[240px]">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--fg-3, #94A3B8)]" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#94A3B8]" />
               <Input
                 placeholder="Search triggers by name, key, or description..."
                 value={filters.search}
@@ -279,7 +279,7 @@ export default function NotificationTriggers() {
 
           {/* Expand/Collapse + result count */}
           <div className="flex items-center justify-between mt-3 pt-3 border-t border-[var(--bd-default, #E2E8F0)]">
-            <span className="text-xs text-[var(--fg-3, #94A3B8)]">
+            <span className="text-xs text-[#94A3B8]">
               Showing {filtered.length} of {totalCount} triggers across {groups.length} categories
             </span>
             <div className="flex gap-2">
@@ -296,7 +296,7 @@ export default function NotificationTriggers() {
 
       {/* ── Bulk Actions Bar (when items selected) ───────────────── */}
       {selection.selectedCount > 0 && (
-        <div className="flex items-center gap-3 bg-[var(--status-info-bg, #DEEBFF)] rounded-md px-4 py-2.5 border border-[#B3D4FF]">
+        <div className="flex items-center gap-3 bg-[#DEEBFF] rounded-md px-4 py-2.5 border border-[#B3D4FF]">
           <span className="text-sm font-medium text-[#0747A6]">
             {selection.selectedCount} trigger{selection.selectedCount > 1 ? 's' : ''} selected
           </span>
@@ -325,7 +325,7 @@ export default function NotificationTriggers() {
       ) : groups.length === 0 ? (
         <Card>
           <CardContent className="py-12 text-center">
-            <Bell className="h-10 w-10 text-[var(--fg-3, #94A3B8)] mx-auto mb-3" />
+            <Bell className="h-10 w-10 text-[#94A3B8] mx-auto mb-3" />
             <p className="text-sm text-[#475569]">No triggers match your filters.</p>
           </CardContent>
         </Card>
@@ -418,7 +418,7 @@ function StatsCard({
     blue: 'text-[#2563EB]',
     gray: 'text-[#475569]',
     red: 'text-[#DC2626]',
-    muted: 'text-[var(--fg-3, #94A3B8)]',
+    muted: 'text-[#94A3B8]',
     amber: 'text-[#D97706]',
   };
 
@@ -426,7 +426,7 @@ function StatsCard({
     <Card>
       <CardContent className="p-3 text-center">
         <p className={`text-xl font-semibold font-['JetBrains_Mono'] ${colors[variant]}`}>{value}</p>
-        <p className="text-[10px] uppercase tracking-wider text-[var(--fg-3, #94A3B8)] mt-0.5">{label}</p>
+        <p className="text-[10px] uppercase tracking-wider text-[#94A3B8] mt-0.5">{label}</p>
       </CardContent>
     </Card>
   );
@@ -476,7 +476,7 @@ function TriggerRow({
                   <Shield className="h-3 w-3 text-[#DC2626] flex-shrink-0" />
                 )}
                 {trigger.isSilent && (
-                  <Badge variant="outline" className="text-[9px] h-4 px-1 border-[#CBD5E1] text-[var(--fg-3, #94A3B8)]">
+                  <Badge variant="outline" className="text-[9px] h-4 px-1 border-[#CBD5E1] text-[#94A3B8]">
                     Silent
                   </Badge>
                 )}

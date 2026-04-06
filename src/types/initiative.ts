@@ -109,10 +109,10 @@ export const STATUS_DISPLAY: Record<InitiativeStatus, { label: string; lozenge: 
 };
 
 export const PRIORITY_THRESHOLDS: { min: number; max: number; level: PriorityLevel; bg: string; border: string; text: string }[] = [
-  { min: 4.0, max: 5.0, level: 'High',     bg: 'var(--tint-green-soft, #ECFDF5)', border: '#A7F3D0', text: '#065F46' },
-  { min: 3.0, max: 3.99, level: 'Medium',  bg: 'var(--tint-blue, #EFF6FF)', border: '#BFDBFE', text: '#1E40AF' },
+  { min: 4.0, max: 5.0, level: 'High',     bg: '#ECFDF5', border: '#A7F3D0', text: '#065F46' },
+  { min: 3.0, max: 3.99, level: 'Medium',  bg: '#EFF6FF', border: '#BFDBFE', text: '#1E40AF' },
   { min: 2.0, max: 2.99, level: 'Low',     bg: '#FFFBEB', border: '#FDE68A', text: '#92400E' },
-  { min: 1.0, max: 1.99, level: 'Rejected', bg: 'var(--tint-red, #FEF2F2)', border: '#FECACA', text: '#991B1B' },
+  { min: 1.0, max: 1.99, level: 'Rejected', bg: '#FEF2F2', border: '#FECACA', text: '#991B1B' },
 ];
 
 export const UNSCORED_STYLE = { bg: '#F9FAFB', border: '#E5E7EB', text: '#6B7280' };

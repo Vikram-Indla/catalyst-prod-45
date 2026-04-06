@@ -318,14 +318,14 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
               <label className="text-[10px] font-semibold uppercase tracking-wider mb-1.5 block" style={{ color: 'var(--fg-4)' }}>Priority</label>
               <button
                 onClick={e => { e.stopPropagation(); closeDropdowns(); setPriorityOpen(!priorityOpen); }}
-                className="w-full flex items-center justify-between rounded-md border px-2.5 text-[12px] font-medium hover:border-[var(--fg-3, #94A3B8)] transition-colors"
+                className="w-full flex items-center justify-between rounded-md border px-2.5 text-[12px] font-medium hover:border-[#94A3B8] transition-colors"
                 style={{ height: 50, borderColor: 'var(--divider)', color: 'var(--fg-2)' }}
               >
                 <span className="flex items-center gap-1.5">
                   <span style={{ color: pri?.color }}>{pri?.icon}</span>
                   {pri?.label}
                 </span>
-                <ChevronDown size={14} className="text-[var(--fg-3, #94A3B8)]" />
+                <ChevronDown size={14} className="text-[#94A3B8]" />
               </button>
               {priorityOpen && (
                 <FixedDropdown width="100%" onClick={e => e.stopPropagation()}>
@@ -349,17 +349,17 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
               <label className="text-[10px] font-semibold uppercase tracking-wider mb-1.5 block" style={{ color: 'var(--fg-4)' }}>Assignee</label>
               <button
                 onClick={e => { e.stopPropagation(); closeDropdowns(); setAssigneeOpen(!assigneeOpen); }}
-                className="w-full flex items-center justify-between rounded-md border px-2.5 text-[12px] font-medium hover:border-[var(--fg-3, #94A3B8)] transition-colors"
+                className="w-full flex items-center justify-between rounded-md border px-2.5 text-[12px] font-medium hover:border-[#94A3B8] transition-colors"
                 style={{ height: 50, borderColor: 'var(--divider)', color: selectedAssignee ? 'var(--fg-2)' : 'var(--fg-4)' }}
               >
                 <span className="truncate">{selectedAssignee ? selectedAssignee.full_name : 'Unassigned'}</span>
-                <ChevronDown size={14} className="text-[var(--fg-3, #94A3B8)] shrink-0" />
+                <ChevronDown size={14} className="text-[#94A3B8] shrink-0" />
               </button>
               {assigneeOpen && (
                 <FixedDropdown maxHeight={220} onClick={e => e.stopPropagation()}>
                   <div className="px-2 py-1.5" style={{ borderBottom: '1px solid var(--cp-bd-zone)' }}>
                     <div className="relative">
-                      <Search size={12} className="absolute left-2 top-1/2 -translate-y-1/2 text-[var(--fg-3, #94A3B8)]" />
+                      <Search size={12} className="absolute left-2 top-1/2 -translate-y-1/2 text-[#94A3B8]" />
                       <input
                         value={assigneeSearch}
                         onChange={e => setAssigneeSearch(e.target.value)}
@@ -400,7 +400,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
             <label className="text-[10px] font-semibold uppercase tracking-wider mb-1.5 block" style={{ color: 'var(--fg-4)' }}>Labels</label>
             <button
               onClick={e => { e.stopPropagation(); closeDropdowns(); setLabelsOpen(!labelsOpen); }}
-              className="w-full flex items-center gap-1.5 flex-wrap min-h-[50px] rounded-md border px-2.5 py-1.5 text-[12px] hover:border-[var(--fg-3, #94A3B8)] transition-colors"
+              className="w-full flex items-center gap-1.5 flex-wrap min-h-[50px] rounded-md border px-2.5 py-1.5 text-[12px] hover:border-[#94A3B8] transition-colors"
               style={{ borderColor: 'var(--divider)' }}
             >
               {selectedLabels.length === 0 && <span style={{ color: 'var(--fg-4)' }}>Select labels...</span>}
@@ -421,7 +421,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
                   </span>
                 );
               })}
-              <ChevronDown size={14} className="text-[var(--fg-3, #94A3B8)] ml-auto shrink-0" />
+              <ChevronDown size={14} className="text-[#94A3B8] ml-auto shrink-0" />
             </button>
             {labelsOpen && labels.length > 0 && (
               <FixedDropdown maxHeight={200} onClick={e => e.stopPropagation()}>
@@ -457,7 +457,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
             <div>
               <label className="text-[10px] font-semibold uppercase tracking-wider mb-1.5 block" style={{ color: 'var(--fg-4)' }}>Due Date</label>
               <div className="relative">
-                <Calendar size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[var(--fg-3, #94A3B8)]" />
+                <Calendar size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[#94A3B8]" />
                 <input
                   type="date"
                   value={dueDate}
@@ -473,13 +473,13 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
               <label className="text-[10px] font-semibold uppercase tracking-wider mb-1.5 block" style={{ color: 'var(--fg-4)' }}>Release</label>
               <button
                 onClick={e => { e.stopPropagation(); closeDropdowns(); setReleaseOpen(!releaseOpen); }}
-                className="w-full flex items-center justify-between rounded-md border px-2.5 text-[12px] font-medium hover:border-[var(--fg-3, #94A3B8)] transition-colors"
+                className="w-full flex items-center justify-between rounded-md border px-2.5 text-[12px] font-medium hover:border-[#94A3B8] transition-colors"
                 style={{ height: 50, borderColor: 'var(--divider)', color: selectedRelease ? 'var(--fg-2)' : 'var(--fg-4)' }}
               >
                 <span className="truncate">
                   {selectedRelease ? selectedRelease.name : 'None'}
                 </span>
-                <ChevronDown size={14} className="text-[var(--fg-3, #94A3B8)] shrink-0" />
+                <ChevronDown size={14} className="text-[#94A3B8] shrink-0" />
               </button>
               {releaseOpen && (
                 <FixedDropdown maxHeight={200} onClick={e => e.stopPropagation()}>
@@ -513,19 +513,19 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
             <label className="text-[10px] font-semibold uppercase tracking-wider mb-1.5 block" style={{ color: 'var(--fg-4)' }}>Parent</label>
             <button
               onClick={e => { e.stopPropagation(); closeDropdowns(); setParentOpen(!parentOpen); }}
-              className="w-full flex items-center justify-between rounded-md border px-2.5 text-[12px] font-medium hover:border-[var(--fg-3, #94A3B8)] transition-colors"
+              className="w-full flex items-center justify-between rounded-md border px-2.5 text-[12px] font-medium hover:border-[#94A3B8] transition-colors"
               style={{ height: 50, borderColor: 'var(--divider)', color: selectedParent ? 'var(--fg-2)' : 'var(--fg-4)' }}
             >
               <span className="truncate">
                 {selectedParent ? `${selectedParent.item_key} — ${selectedParent.title || selectedParent.summary}` : 'None'}
               </span>
-              <ChevronDown size={14} className="text-[var(--fg-3, #94A3B8)] shrink-0" />
+              <ChevronDown size={14} className="text-[#94A3B8] shrink-0" />
             </button>
             {parentOpen && (
               <FixedDropdown width={280} maxHeight={220} onClick={e => e.stopPropagation()}>
                 <div className="px-2 py-1.5" style={{ borderBottom: '1px solid var(--cp-bd-zone)' }}>
                   <div className="relative">
-                    <Search size={12} className="absolute left-2 top-1/2 -translate-y-1/2 text-[var(--fg-3, #94A3B8)]" />
+                    <Search size={12} className="absolute left-2 top-1/2 -translate-y-1/2 text-[#94A3B8]" />
                     <input
                       value={parentSearch}
                       onChange={e => setParentSearch(e.target.value)}

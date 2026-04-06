@@ -280,7 +280,7 @@ export default function BoardCanvasPage({ projectIdOverride, basePath }: BoardCa
                   transition: 'color 150ms, border-color 150ms',
                 }}
               >
-                {isPersonal && <User size={12} color={active ? '#D97706' : 'var(--fg-3, #94A3B8)'} />}
+                {isPersonal && <User size={12} color={active ? '#D97706' : '#94A3B8'} />}
                 {tab.name}
               </button>
             );
@@ -354,7 +354,7 @@ export default function BoardCanvasPage({ projectIdOverride, basePath }: BoardCa
               }}>{col.name}</span>
               <span style={{
                 fontSize: 10.5, fontWeight: 600, padding: '1px 6px', borderRadius: 8,
-                background: col.isDone ? 'var(--tint-green, #F0FDF4)' : 'var(--bg-1)',
+                background: col.isDone ? '#F0FDF4' : 'var(--bg-1)',
                 color: col.isDone ? 'var(--sem-success)' : 'var(--fg-4)',
                 fontFamily: "'JetBrains Mono', monospace",
               }}>{count}</span>
@@ -362,7 +362,7 @@ export default function BoardCanvasPage({ projectIdOverride, basePath }: BoardCa
               {maxWip != null && (
                 <span style={{
                   fontSize: 10.5, padding: '1px 5px', borderRadius: 4,
-                  background: atLimit ? 'var(--tint-red, #FEF2F2)' : 'var(--bg-1)',
+                  background: atLimit ? '#FEF2F2' : 'var(--bg-1)',
                   color: atLimit ? 'var(--sem-danger)' : 'var(--fg-3)',
                   fontFamily: "'Inter', sans-serif",
                 }}>max {maxWip}</span>
@@ -394,7 +394,7 @@ export default function BoardCanvasPage({ projectIdOverride, basePath }: BoardCa
                   onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                 >
                   <span style={{ transition: 'transform 0.2s', transform: collapsed ? 'rotate(-90deg)' : 'rotate(0deg)', display: 'flex' }}>
-                    <ChevronDown size={14} color="var(--fg-3, #94A3B8)" />
+                    <ChevronDown size={14} color="#94A3B8" />
                   </span>
                 {/* Release pill in swimlane header */}
                 {lane.id !== 'default' && (
@@ -461,7 +461,7 @@ export default function BoardCanvasPage({ projectIdOverride, basePath }: BoardCa
                           }}>{col.name}</span>
                           <span style={{
                             fontSize: 10, fontWeight: 600, padding: '1px 5px', borderRadius: 6,
-                            background: col.isDone ? 'var(--tint-green, #F0FDF4)' : 'var(--bg-1)',
+                            background: col.isDone ? '#F0FDF4' : 'var(--bg-1)',
                             color: col.isDone ? 'var(--sem-success)' : 'var(--fg-4)',
                             fontFamily: "'JetBrains Mono', monospace",
                           }}>{laneCards.length}</span>

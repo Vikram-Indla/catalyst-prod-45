@@ -44,7 +44,7 @@ export const SEV_COLORS: Record<IncidentSeverity, { bg: string; text: string }> 
   SEV1: { bg: '#FEE2E2', text: '#991B1B' },
   SEV2: { bg: '#FEF3C7', text: '#92400E' },
   SEV3: { bg: '#DBEAFE', text: '#1E40AF' },
-  SEV4: { bg: var(--bg-2, '#F1F5F9'), text: '#475569' },
+  SEV4: { bg: '#F1F5F9', text: '#475569' },
 };
 
 export type IncidentPriority = 'P1' | 'P2' | 'P3' | 'P4';
@@ -53,7 +53,7 @@ export const PRIORITY_COLORS: Record<IncidentPriority, { bg: string; text: strin
   P1: { bg: '#FEE2E2', text: '#991B1B' },
   P2: { bg: '#FEF3C7', text: '#92400E' },
   P3: { bg: '#DBEAFE', text: '#1E40AF' },
-  P4: { bg: var(--bg-2, '#F1F5F9'), text: '#475569' },
+  P4: { bg: '#F1F5F9', text: '#475569' },
 };
 
 export type IncidentImpact = 'high' | 'medium' | 'low';

@@ -16,7 +16,7 @@ function getStatusStyle(category: string) {
 }
 
 const PRIORITY_COLORS: Record<string, string> = {
-  Highest: '#DC2626', High: '#EA580C', Medium: '#F59E0B', Low: '#3B82F6', Lowest: 'var(--fg-3, #94A3B8)',
+  Highest: '#DC2626', High: '#EA580C', Medium: '#F59E0B', Low: '#3B82F6', Lowest: '#94A3B8',
 };
 
 interface Props {

@@ -60,8 +60,8 @@ export function ExecutionActionBar({
   const isExecuted = currentStatus !== 'not_run';
 
   const actionButtons = [
-    { key: 'passed', label: 'Pass', shortcut: 'P', icon: CheckCircle2, onClick: onPass, activeGradient: 'linear-gradient(135deg, #10B981 0%, #059669 100%)', inactiveBg: 'var(--tint-green-soft, #ECFDF5)', activeColor: '#FFFFFF', inactiveColor: 'var(--sem-success)', shadow: 'rgba(16,185,129,0.3)' },
-    { key: 'failed', label: 'Fail', shortcut: 'F', icon: XCircle, onClick: onFail, activeGradient: 'linear-gradient(135deg, #EF4444 0%, #DC2626 100%)', inactiveBg: 'var(--tint-red, #FEF2F2)', activeColor: '#FFFFFF', inactiveColor: 'var(--sem-danger)', shadow: 'rgba(220,38,38,0.3)' },
+    { key: 'passed', label: 'Pass', shortcut: 'P', icon: CheckCircle2, onClick: onPass, activeGradient: 'linear-gradient(135deg, #10B981 0%, #059669 100%)', inactiveBg: '#ECFDF5', activeColor: '#FFFFFF', inactiveColor: 'var(--sem-success)', shadow: 'rgba(16,185,129,0.3)' },
+    { key: 'failed', label: 'Fail', shortcut: 'F', icon: XCircle, onClick: onFail, activeGradient: 'linear-gradient(135deg, #EF4444 0%, #DC2626 100%)', inactiveBg: '#FEF2F2', activeColor: '#FFFFFF', inactiveColor: 'var(--sem-danger)', shadow: 'rgba(220,38,38,0.3)' },
     { key: 'blocked', label: 'Blocked', shortcut: 'B', icon: AlertTriangle, onClick: onBlocked, activeGradient: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)', inactiveBg: '#FFFBEB', activeColor: '#FFFFFF', inactiveColor: 'var(--sem-warning)', shadow: 'rgba(217,119,6,0.3)' },
     { key: 'skipped', label: 'Skip', shortcut: 'S', icon: SkipForward, onClick: onSkip, activeGradient: 'linear-gradient(135deg, #64748B 0%, #475569 100%)', inactiveBg: '#FFFFFF', activeColor: '#FFFFFF', inactiveColor: 'var(--fg-3)', shadow: 'rgba(100,116,139,0.3)' },
   ];

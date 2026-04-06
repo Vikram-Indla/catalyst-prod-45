@@ -11,9 +11,9 @@ const SC: Record<string, { dot: string; bg: string; tx: string; label: string }>
   'Re-Open':              { dot: '#D97706', bg: '#FFFBEB', tx: '#78350F', label: 'Re-Open' },
   'In Requirements':      { dot: '#D97706', bg: '#FFFBEB', tx: '#78350F', label: 'Requirements' },
   'Awaiting Info':        { dot: '#D97706', bg: '#FFFBEB', tx: '#78350F', label: 'Awaiting' },
-  'In Progress':          { dot: '#2563EB', bg: 'var(--tint-blue, #EFF6FF)', tx: '#1E3A5F', label: 'In Progress' },
-  'In Development':       { dot: '#2563EB', bg: 'var(--tint-blue, #EFF6FF)', tx: '#1E3A5F', label: 'In Progress' },
-  'Under Implementation': { dot: '#2563EB', bg: 'var(--tint-blue, #EFF6FF)', tx: '#1E3A5F', label: 'In Progress' },
+  'In Progress':          { dot: '#2563EB', bg: '#EFF6FF', tx: '#1E3A5F', label: 'In Progress' },
+  'In Development':       { dot: '#2563EB', bg: '#EFF6FF', tx: '#1E3A5F', label: 'In Progress' },
+  'Under Implementation': { dot: '#2563EB', bg: '#EFF6FF', tx: '#1E3A5F', label: 'In Progress' },
   'In Review':            { dot: '#0D9488', bg: '#F0FDFA', tx: '#134E4A', label: 'In Review' },
   'In QA':                { dot: '#0D9488', bg: '#F0FDFA', tx: '#134E4A', label: 'In QA' },
   'Ready for QA':         { dot: '#0D9488', bg: '#F0FDFA', tx: '#134E4A', label: 'Ready QA' },
@@ -21,15 +21,15 @@ const SC: Record<string, { dot: string; bg: string; tx: string; label: string }>
   'Code Review':          { dot: '#0D9488', bg: '#F0FDFA', tx: '#134E4A', label: 'In Review' },
   'In UAT':               { dot: '#7C3AED', bg: '#F5F3FF', tx: '#4C1D95', label: 'In UAT' },
   'UAT Ready':            { dot: '#7C3AED', bg: '#F5F3FF', tx: '#4C1D95', label: 'UAT Ready' },
-  'Done':                 { dot: '#16A34A', bg: 'var(--tint-green, #F0FDF4)', tx: '#14532D', label: 'Done' },
-  'Closed':               { dot: '#16A34A', bg: 'var(--tint-green, #F0FDF4)', tx: '#14532D', label: 'Done' },
-  'Resolved':             { dot: '#16A34A', bg: 'var(--tint-green, #F0FDF4)', tx: '#14532D', label: 'Done' },
-  'Ready for Production': { dot: '#16A34A', bg: 'var(--tint-green, #F0FDF4)', tx: '#14532D', label: 'Done' },
-  'Beta Ready':           { dot: '#16A34A', bg: 'var(--tint-green, #F0FDF4)', tx: '#14532D', label: 'Done' },
-  'Blocked':              { dot: '#EF4444', bg: 'var(--tint-red, #FEF2F2)', tx: '#7F1D1D', label: 'Blocked' },
-  'Rejected':             { dot: '#EF4444', bg: 'var(--tint-red, #FEF2F2)', tx: '#7F1D1D', label: 'Rejected' },
+  'Done':                 { dot: '#16A34A', bg: '#F0FDF4', tx: '#14532D', label: 'Done' },
+  'Closed':               { dot: '#16A34A', bg: '#F0FDF4', tx: '#14532D', label: 'Done' },
+  'Resolved':             { dot: '#16A34A', bg: '#F0FDF4', tx: '#14532D', label: 'Done' },
+  'Ready for Production': { dot: '#16A34A', bg: '#F0FDF4', tx: '#14532D', label: 'Done' },
+  'Beta Ready':           { dot: '#16A34A', bg: '#F0FDF4', tx: '#14532D', label: 'Done' },
+  'Blocked':              { dot: '#EF4444', bg: '#FEF2F2', tx: '#7F1D1D', label: 'Blocked' },
+  'Rejected':             { dot: '#EF4444', bg: '#FEF2F2', tx: '#7F1D1D', label: 'Rejected' },
 };
-const SCD = { dot: '#64748B', bg: var(--bg-2, '#F1F5F9'), tx: '#334155', label: 'Unknown' };
+const SCD = { dot: '#64748B', bg: '#F1F5F9', tx: '#334155', label: 'Unknown' };
 
 function resolveStatus(item: any) {
   if (item.status_name && SC[item.status_name]) return SC[item.status_name];
@@ -47,7 +47,7 @@ const pColor = (k: string, fallback?: string) => fallback || PC[k] || '#64748B';
 const ageCol = (d: number) => d <= 7 ? '#16A34A' : d <= 14 ? '#D97706' : '#EF4444';
 
 const PRI_DOT: Record<string, string> = {
-  critical: '#EF4444', highest: '#EF4444', high: '#D97706', medium: '#D97706', low: '#64748B', lowest: 'var(--fg-3, #94A3B8)',
+  critical: '#EF4444', highest: '#EF4444', high: '#D97706', medium: '#D97706', low: '#64748B', lowest: '#94A3B8',
 };
 
 const COLS = [

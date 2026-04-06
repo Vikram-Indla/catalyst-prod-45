@@ -140,7 +140,7 @@ function CategoryAccordion({
 
           {/* Silent indicator */}
           {silentCount > 0 && (
-            <span className="text-[10px] text-[var(--fg-3, #94A3B8)]">
+            <span className="text-[10px] text-[#94A3B8]">
               {silentCount} silent
             </span>
           )}
@@ -154,7 +154,7 @@ function CategoryAccordion({
               style={{ width: `${group.totalCount > 0 ? (group.enabledCount / group.totalCount) * 100 : 0}%` }}
             />
           </div>
-          <span className="text-[10px] text-[var(--fg-3, #94A3B8)] w-8 text-right font-['JetBrains_Mono']">
+          <span className="text-[10px] text-[#94A3B8] w-8 text-right font-['JetBrains_Mono']">
             {group.totalCount > 0 ? Math.round((group.enabledCount / group.totalCount) * 100) : 0}%
           </span>
         </div>

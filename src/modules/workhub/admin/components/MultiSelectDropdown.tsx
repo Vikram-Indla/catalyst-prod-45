@@ -60,7 +60,7 @@ export function MultiSelectDropdown({
     )
   }
 
-  const accentBg = accentColor === '#7C3AED' ? '#F5F3FF' : 'var(--tint-blue, #EFF6FF)'
+  const accentBg = accentColor === '#7C3AED' ? '#F5F3FF' : '#EFF6FF'
 
   return (
     <div>
@@ -90,7 +90,7 @@ export function MultiSelectDropdown({
         >
           <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', flex: 1, alignItems: 'center' }}>
             {selected.length === 0 ? (
-              <span style={{ fontSize: '12px', color: 'var(--fg-3, #94A3B8)', fontFamily: 'Inter, sans-serif' }}>{placeholder}</span>
+              <span style={{ fontSize: '12px', color: '#94A3B8', fontFamily: 'Inter, sans-serif' }}>{placeholder}</span>
             ) : selected.length <= 3 ? (
               selected.map(v => {
                 const opt = options.find(o => o.value === v)
@@ -118,7 +118,7 @@ export function MultiSelectDropdown({
               </span>
             )}
           </div>
-          <ChevronDown size={14} style={{ color: 'var(--fg-3, #94A3B8)', flexShrink: 0, transform: open ? 'rotate(180deg)' : 'none', transition: 'transform .15s' }} />
+          <ChevronDown size={14} style={{ color: '#94A3B8', flexShrink: 0, transform: open ? 'rotate(180deg)' : 'none', transition: 'transform .15s' }} />
         </button>
 
         {/* Dropdown */}
@@ -130,7 +130,7 @@ export function MultiSelectDropdown({
           }}>
             {/* Search */}
             <div style={{ padding: '8px 10px', borderBottom: '1px solid #F1F5F9', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <Search size={13} style={{ color: 'var(--fg-3, #94A3B8)', flexShrink: 0 }} />
+              <Search size={13} style={{ color: '#94A3B8', flexShrink: 0 }} />
               <input
                 ref={searchRef}
                 value={search}
@@ -163,11 +163,11 @@ export function MultiSelectDropdown({
             {/* Options */}
             <div style={{ maxHeight: '220px', overflowY: 'auto' }}>
               {options.length === 0 ? (
-                <div style={{ padding: '16px', textAlign: 'center', fontSize: '11px', color: 'var(--fg-3, #94A3B8)', fontStyle: 'italic' }}>
+                <div style={{ padding: '16px', textAlign: 'center', fontSize: '11px', color: '#94A3B8', fontStyle: 'italic' }}>
                   {emptyMessage}
                 </div>
               ) : filtered.length === 0 ? (
-                <div style={{ padding: '16px', textAlign: 'center', fontSize: '11px', color: 'var(--fg-3, #94A3B8)' }}>
+                <div style={{ padding: '16px', textAlign: 'center', fontSize: '11px', color: '#94A3B8' }}>
                   No matches for "{search}"
                 </div>
               ) : (
@@ -203,7 +203,7 @@ export function MultiSelectDropdown({
                           {opt.label}
                         </span>
                         {opt.sublabel && (
-                          <span style={{ fontSize: '10px', color: 'var(--fg-3, #94A3B8)', marginLeft: '6px', fontFamily: 'Inter, sans-serif' }}>
+                          <span style={{ fontSize: '10px', color: '#94A3B8', marginLeft: '6px', fontFamily: 'Inter, sans-serif' }}>
                             {opt.sublabel}
                           </span>
                         )}

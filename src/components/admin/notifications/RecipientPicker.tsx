@@ -199,7 +199,7 @@ export function RecipientPicker({ trigger, open, onClose, onSave }: RecipientPic
         <Separator />
 
         <DialogFooter className="flex items-center justify-between">
-          <span className="text-xs text-[var(--fg-3, #94A3B8)]">
+          <span className="text-xs text-[#94A3B8]">
             {enabledCount} of {RECIPIENT_DEFS.length} recipient types enabled
           </span>
           <div className="flex gap-2">

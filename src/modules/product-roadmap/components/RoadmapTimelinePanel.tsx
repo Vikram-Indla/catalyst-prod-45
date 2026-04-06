@@ -118,7 +118,7 @@ export function RoadmapTimelinePanel({ items, groups, config, selectedItemId, on
             style={{
               minWidth: periodMinWidth,
               width: `${100 / periods.length}%`,
-              borderRight: `1px solid ${isQuarterBoundary ? 'var(--bd-default, #E2E8F0)' : var(--bg-2, '#F1F5F9')}`,
+              borderRight: `1px solid ${isQuarterBoundary ? 'var(--bd-default, #E2E8F0)' : '#F1F5F9'}`,
               background: period.isCurrent ? 'rgba(37,99,235,0.03)' : 'transparent',
             }}
           />

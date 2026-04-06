@@ -60,7 +60,7 @@ export const LK: DarkTokens = {
   
   t1: 'var(--fg-1, #0F172A)',
   t2: '#64748B',
-  t3: 'var(--fg-3, #94A3B8)',
+  t3: '#94A3B8',
   t4: '#CBD5E1',
   
   border: 'rgba(15,23,42,0.12)',

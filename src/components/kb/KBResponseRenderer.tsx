@@ -194,7 +194,7 @@ function ScopeBar({ totalShown, totalAvailable, scopeLabel, extendLabel, extendH
           }}
           onMouseEnter={e => {
             e.currentTarget.style.borderColor = '#2563EB';
-            e.currentTarget.style.background = 'var(--tint-blue, #EFF6FF)';
+            e.currentTarget.style.background = '#EFF6FF';
             e.currentTarget.style.boxShadow = '0 1px 4px rgba(37,99,235,0.08)';
           }}
           onMouseLeave={e => {
@@ -271,7 +271,7 @@ export const KBResponseRenderer: React.FC<KBResponseRendererProps> = ({
                     style={{
                       height: 50,
                       borderBottom: ri < tableRows.length - 1 ? '0.75px solid rgba(15,23,42,0.06)' : 'none',
-                      background: ri === 0 ? var(--bg-2, '#F1F5F9') : 'transparent',
+                      background: ri === 0 ? '#F1F5F9' : 'transparent',
                       transition: 'background 80ms',
                       cursor: rowIssueKey && onItemClick ? 'pointer' : undefined,
                     }}
@@ -470,7 +470,7 @@ export const KBResponseRenderer: React.FC<KBResponseRendererProps> = ({
               cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
               transition: 'all 200ms',
             }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--tint-green, #F0FDF4)'; }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = '#F0FDF4'; }}
             onMouseLeave={(e) => { e.currentTarget.style.background = 'none'; }}
           >
             <ThumbsUp size={14} color="#A1A1AA" />
@@ -482,7 +482,7 @@ export const KBResponseRenderer: React.FC<KBResponseRendererProps> = ({
               cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
               transition: 'all 200ms',
             }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--tint-red, #FEF2F2)'; }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = '#FEF2F2'; }}
             onMouseLeave={(e) => { e.currentTarget.style.background = 'none'; }}
           >
             <ThumbsDown size={14} color="#A1A1AA" />

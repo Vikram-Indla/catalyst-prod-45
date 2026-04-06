@@ -277,7 +277,7 @@ export function KBPanel({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
           {error && (
             <div style={{
               display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', marginTop: 16,
-              background: 'var(--cp-danger-5, var(--tint-red, #FEF2F2))', border: '1px solid var(--cp-danger-20, #FECACA)', borderRadius: 'var(--cp-radius-md, 4px)', fontSize: 'var(--cp-type-caption-md, 12px)', color: 'var(--cp-danger-60, var(--sem-danger))',
+              background: 'var(--cp-danger-5, #FEF2F2)', border: '1px solid var(--cp-danger-20, #FECACA)', borderRadius: 'var(--cp-radius-md, 4px)', fontSize: 'var(--cp-type-caption-md, 12px)', color: 'var(--cp-danger-60, var(--sem-danger))',
             }}>
               <AlertCircle size={14} />
               <span style={{ flex: 1 }}>{error}</span>

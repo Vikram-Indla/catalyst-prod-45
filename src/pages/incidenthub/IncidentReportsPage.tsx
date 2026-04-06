@@ -30,7 +30,7 @@ export default function IncidentReportsPage() {
       <div className="px-6 pt-6 pb-4">
         {/* Header */}
         <div className="flex items-center gap-3 mb-6">
-          <div className="flex items-center justify-center rounded-md" style={{ width: 32, height: 32, backgroundColor: 'var(--tint-blue, #EFF6FF)' }}>
+          <div className="flex items-center justify-center rounded-md" style={{ width: 32, height: 32, backgroundColor: '#EFF6FF' }}>
             <FileText size={18} style={{ color: '#2563EB' }} />
           </div>
           <h1 style={{ fontFamily: 'Sora, sans-serif', fontSize: 18, fontWeight: 700, color: 'var(--fg-1, #0F172A)' }}>Incident Reports</h1>
@@ -76,14 +76,14 @@ export default function IncidentReportsPage() {
                 <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 22, fontWeight: 700, color: 'var(--fg-1, #0F172A)' }}>{avgAge}</div>
               </div>
             </div>
-            <div className="p-8 flex items-center justify-center" style={{ border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6, backgroundColor: var(--bg-2, '#F1F5F9') }}>
+            <div className="p-8 flex items-center justify-center" style={{ border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6, backgroundColor: '#F1F5F9' }}>
               <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: '#64748B' }}>[Chart] SLA Breach trend over time</p>
             </div>
           </div>
         )}
 
         {activeTab === 1 && (
-          <div className="p-8 flex items-center justify-center" style={{ border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6, backgroundColor: var(--bg-2, '#F1F5F9') }}>
+          <div className="p-8 flex items-center justify-center" style={{ border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6, backgroundColor: '#F1F5F9' }}>
             <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: '#64748B' }}>[Chart] Incident aging distribution by severity</p>
           </div>
         )}
@@ -108,7 +108,7 @@ export default function IncidentReportsPage() {
         )}
 
         {activeTab === 3 && (
-          <div className="p-8 flex items-center justify-center" style={{ border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6, backgroundColor: var(--bg-2, '#F1F5F9') }}>
+          <div className="p-8 flex items-center justify-center" style={{ border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6, backgroundColor: '#F1F5F9' }}>
             <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: '#64748B' }}>[Chart] Severity vs Priority heatmap</p>
           </div>
         )}

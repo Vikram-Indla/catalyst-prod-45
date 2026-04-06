@@ -35,7 +35,7 @@ const HUB_LABELS: Record<string, string> = {
 const PRIORITY_STYLES: Record<string, string> = {
   P1: 'bg-[#FFEBE6] text-[#BF2600] border-transparent',
   P2: 'bg-[#FFF0B3] text-[#974F0C] border-transparent',
-  P3: 'bg-[var(--status-info-bg, #DEEBFF)] text-[#0747A6] border-transparent',
+  P3: 'bg-[#DEEBFF] text-[#0747A6] border-transparent',
   P4: 'bg-[#DFE1E6] text-[#253858] border-transparent',
 };
 
@@ -148,7 +148,7 @@ export const TriggerRow = memo(function TriggerRow({
         {isSilent && (
           <Badge
             variant="outline"
-            className="text-[8px] h-3.5 px-1 border-[#CBD5E1] text-[var(--fg-3, #94A3B8)] leading-none"
+            className="text-[8px] h-3.5 px-1 border-[#CBD5E1] text-[#94A3B8] leading-none"
           >
             SILENT
           </Badge>
@@ -174,7 +174,7 @@ export const TriggerRow = memo(function TriggerRow({
           className="opacity-0 group-hover:opacity-100 transition-opacity duration-150 ml-auto flex-shrink-0"
           title="Edit recipients"
         >
-          <Users className="h-3 w-3 text-[var(--fg-3, #94A3B8)] hover:text-[#2563EB]" />
+          <Users className="h-3 w-3 text-[#94A3B8] hover:text-[#2563EB]" />
         </button>
       </div>
 

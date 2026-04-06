@@ -267,7 +267,7 @@ export function Resource360AIPanel({ items, summary, resourceName, isOpen, onClo
                 {a.criticalPath.length > 0 ? a.criticalPath.map(item => (
                   <div key={item.work_item_id} style={{
                     display: 'flex', alignItems: 'center', gap: 6, padding: '5px 8px',
-                    background: 'var(--tint-red, #FEF2F2)', borderRadius: 6, marginBottom: 3,
+                    background: '#FEF2F2', borderRadius: 6, marginBottom: 3,
                     border: '1px solid #FECACA', fontSize: 10,
                   }}>
                     <span style={{ color: C.todo, fontWeight: 700, fontFamily: C.mono, flexShrink: 0 }}>{item.item_key}</span>
