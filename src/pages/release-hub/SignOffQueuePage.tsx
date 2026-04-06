@@ -68,7 +68,7 @@ export default function SignOffQueuePage() {
           <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: isDark ? '#666666' : '#94A3B8' }} />
           <input type="text" placeholder="Search changes or approvers..." value={search} onChange={e => setSearch(e.target.value)}
             className="h-9 w-72 pl-9 pr-3 rounded-[4px] text-[13px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20"
-            style={{ border: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(15,23,42,0.12)', fontFamily: RH.fontBody, background: isDark ? '#111111' : '#FFFFFF', color: isDark ? '#EDEDED' : undefined, placeholder: isDark ? '#666666' : '#64748B' }} />
+            style={{ border: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(15,23,42,0.12)', fontFamily: RH.fontBody, background: isDark ? '#111111' : '#FFFFFF', color: isDark ? '#EDEDED' : undefined }} />
         </div>
       </div>
 
