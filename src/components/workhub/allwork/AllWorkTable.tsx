@@ -203,7 +203,7 @@ export function AllWorkTable({
                 fontWeight: 650,
                 textTransform: 'uppercase',
                 letterSpacing: '0.04em',
-                color: '#6b6e76',
+                color: 'var(--fg-3)',
                 cursor: col.sortable ? 'pointer' : 'default',
                 padding: '0 8px',
                 fontFamily: 'Inter, sans-serif',
@@ -299,17 +299,17 @@ const TableRow = memo(function TableRow({
 
       {/* Key */}
       <div className="flex items-center gap-1.5 px-2 min-w-0" style={{ paddingLeft: `${8 + node.depth * 28}px` }}>
-        <GripVertical className="w-3 h-3 opacity-0 group-hover:opacity-40 shrink-0 transition-opacity duration-[80ms]" style={{ color: '#6b6e76' }} />
+        <GripVertical className="w-3 h-3 opacity-0 group-hover:opacity-40 shrink-0 transition-opacity duration-[80ms]" style={{ color: 'var(--fg-3)' }} />
         {hasChildren ? (
           <button
             onClick={(e) => { e.stopPropagation(); onToggleExpand(item.issue_key); }}
-            className="w-4 h-4 flex items-center justify-center shrink-0 rounded hover:bg-[#e2e8f0] transition-all duration-150 focus-visible:outline-2 focus-visible:outline-[#2563EB]"
+            className="w-4 h-4 flex items-center justify-center shrink-0 rounded hover:bg-[rgba(128,128,128,0.12)] transition-all duration-150 focus-visible:outline-2 focus-visible:outline-[#2563EB]"
             aria-label={isExpanded ? 'Collapse' : 'Expand'}
             aria-expanded={isExpanded}
           >
             <ChevronRight
               className="w-3.5 h-3.5 transition-transform duration-150"
-              style={{ color: '#6b6e76', transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)' }}
+              style={{ color: 'var(--fg-3)', transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)' }}
             />
           </button>
         ) : (
@@ -318,7 +318,7 @@ const TableRow = memo(function TableRow({
         <JiraIssueTypeIcon type={item.issue_type} size={16} />
         <span
           className="text-[13px] truncate"
-          style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 650, color: '#1868db' }}
+          style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 650, color: 'var(--cp-blue)' }}
         >
           {item.issue_key}
         </span>
@@ -330,11 +330,11 @@ const TableRow = memo(function TableRow({
           {item.summary}
         </span>
         <div className="opacity-0 group-hover:opacity-100 flex items-center gap-0.5 shrink-0 ml-auto transition-opacity duration-[80ms]">
-          <button className="p-0.5 rounded hover:bg-[#e2e8f0] focus-visible:outline-2 focus-visible:outline-[#2563EB]" title="Open in new tab" aria-label="Open in new tab" onClick={e => e.stopPropagation()}>
-            <ExternalLink className="w-3.5 h-3.5" style={{ color: '#6b6e76' }} />
+          <button className="p-0.5 rounded hover:bg-[rgba(128,128,128,0.12)] focus-visible:outline-2 focus-visible:outline-[#2563EB]" title="Open in new tab" aria-label="Open in new tab" onClick={e => e.stopPropagation()}>
+            <ExternalLink className="w-3.5 h-3.5" style={{ color: 'var(--fg-3)' }} />
           </button>
-          <button className="p-0.5 rounded hover:bg-[#e2e8f0] focus-visible:outline-2 focus-visible:outline-[#2563EB]" title="Add child" aria-label="Add child item" onClick={e => e.stopPropagation()}>
-            <Plus className="w-3.5 h-3.5" style={{ color: '#6b6e76' }} />
+          <button className="p-0.5 rounded hover:bg-[rgba(128,128,128,0.12)] focus-visible:outline-2 focus-visible:outline-[#2563EB]" title="Add child" aria-label="Add child item" onClick={e => e.stopPropagation()}>
+            <Plus className="w-3.5 h-3.5" style={{ color: 'var(--fg-3)' }} />
           </button>
         </div>
       </div>
@@ -345,7 +345,7 @@ const TableRow = memo(function TableRow({
       </div>
 
       {/* Project */}
-      <div className="px-2 truncate text-[13px]" style={{ color: '#44546f', fontFamily: 'Inter, sans-serif' }}>
+      <div className="px-2 truncate text-[13px]" style={{ color: 'var(--fg-2)', fontFamily: 'Inter, sans-serif' }}>
         {item.project_key || '—'}
       </div>
 
@@ -365,7 +365,7 @@ const TableRow = memo(function TableRow({
       </div>
 
       {/* Updated */}
-      <div className="px-2 text-[12px] truncate" style={{ color: '#6b6e76', fontFamily: "'JetBrains Mono', monospace" }}>
+      <div className="px-2 text-[12px] truncate" style={{ color: 'var(--fg-3)', fontFamily: "'JetBrains Mono', monospace" }}>
         {formatRelative(item.jira_updated_at)}
       </div>
 
@@ -380,7 +380,7 @@ const TableRow = memo(function TableRow({
             >
               {item.assignee_display_name.charAt(0).toUpperCase()}
             </div>
-            <span className="text-[13px] truncate" style={{ color: '#44546f', fontFamily: 'Inter, sans-serif' }}>
+            <span className="text-[13px] truncate" style={{ color: 'var(--fg-2)', fontFamily: 'Inter, sans-serif' }}>
               {item.assignee_display_name}
             </span>
           </>
@@ -388,11 +388,11 @@ const TableRow = memo(function TableRow({
           <span className="text-[12px] italic" style={{ color: 'var(--fg-3)' }}>Unassigned</span>
         )}
         <button
-          className="ml-auto opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-[#e2e8f0] shrink-0 transition-opacity duration-[80ms] focus-visible:outline-2 focus-visible:outline-[#2563EB]"
+          className="ml-auto opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-[rgba(128,128,128,0.12)] shrink-0 transition-opacity duration-[80ms] focus-visible:outline-2 focus-visible:outline-[#2563EB]"
           aria-label={`More actions for ${item.issue_key}`}
           onClick={(e) => { e.stopPropagation(); onContextMenu({ x: e.clientX, y: e.clientY, item }); }}
         >
-          <MoreHorizontal className="w-4 h-4" style={{ color: '#6b6e76' }} />
+          <MoreHorizontal className="w-4 h-4" style={{ color: 'var(--fg-3)' }} />
         </button>
       </div>
     </div>

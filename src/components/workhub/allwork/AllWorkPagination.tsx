@@ -55,7 +55,7 @@ export function AllWorkPagination({ currentPage, totalPages, totalCount, pageSiz
       style={{ borderTop: '1px solid rgba(15,23,42,0.08)', backgroundColor: 'var(--bg-app)' }}
     >
       {/* Left: count */}
-      <span className="text-[12px]" style={{ color: '#6b6e76', fontFamily: 'Inter, sans-serif' }}>
+      <span className="text-[12px]" style={{ color: 'var(--fg-3)', fontFamily: 'Inter, sans-serif' }}>
         Showing <b style={{ color: 'var(--fg-1)' }}>{start}–{end}</b> of <b style={{ color: 'var(--fg-1)' }}>{totalCount.toLocaleString()}</b>
       </span>
 
@@ -68,7 +68,7 @@ export function AllWorkPagination({ currentPage, totalPages, totalCount, pageSiz
           style={{ borderColor: 'rgba(15,23,42,0.12)' }}
           aria-label="Previous page"
         >
-          <ChevronLeft className="w-3.5 h-3.5" style={{ color: '#6b6e76' }} />
+          <ChevronLeft className="w-3.5 h-3.5" style={{ color: 'var(--fg-3)' }} />
         </button>
 
         {pages.map((p, i) => {
@@ -82,7 +82,7 @@ export function AllWorkPagination({ currentPage, totalPages, totalCount, pageSiz
               className="w-8 h-8 rounded text-[12px] font-medium transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[#2563EB] focus-visible:outline-offset-2"
               style={{
                 backgroundColor: p === currentPage ? 'var(--cp-blue)' : 'transparent',
-                color: p === currentPage ? 'var(--bg-app)' : '#6b6e76',
+                color: p === currentPage ? 'var(--bg-app)' : 'var(--fg-3)',
               }}
               aria-label={`Page ${p + 1}`}
               aria-current={p === currentPage ? 'page' : undefined}
@@ -99,13 +99,13 @@ export function AllWorkPagination({ currentPage, totalPages, totalCount, pageSiz
           style={{ borderColor: 'rgba(15,23,42,0.12)' }}
           aria-label="Next page"
         >
-          <ChevronRight className="w-3.5 h-3.5" style={{ color: '#6b6e76' }} />
+          <ChevronRight className="w-3.5 h-3.5" style={{ color: 'var(--fg-3)' }} />
         </button>
       </div>
 
       {/* Right: per page (custom dropdown, NO native select) */}
       <div className="relative flex items-center gap-2" ref={sizeRef}>
-        <span className="text-[12px]" style={{ color: '#6b6e76' }}>Per page:</span>
+        <span className="text-[12px]" style={{ color: 'var(--fg-3)' }}>Per page:</span>
         <button
           onClick={() => setSizeOpen(!sizeOpen)}
           className="inline-flex items-center gap-1 px-2.5 h-8 text-[12px] rounded border hover:bg-[rgba(15,23,42,0.04)] transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[#2563EB]"
@@ -114,12 +114,12 @@ export function AllWorkPagination({ currentPage, totalPages, totalCount, pageSiz
           aria-expanded={sizeOpen}
         >
           {pageSize}
-          <ChevronDown className="w-3 h-3" style={{ color: '#6b6e76' }} />
+          <ChevronDown className="w-3 h-3" style={{ color: 'var(--fg-3)' }} />
         </button>
         {sizeOpen && (
           <div
-            className="absolute bottom-full right-0 mb-1 w-24 rounded border bg-white shadow-lg z-50 py-1"
-            style={{ borderColor: 'rgba(15,23,42,0.12)' }}
+            className="absolute bottom-full right-0 mb-1 w-24 rounded border shadow-lg z-50 py-1"
+            style={{ borderColor: 'rgba(15,23,42,0.12)', backgroundColor: 'var(--bg-app)' }}
             role="listbox"
           >
             {PAGE_SIZES.map(s => (
