@@ -906,35 +906,35 @@ html:has(body[data-scroll-locked]) {
     --bg-app: var(--bg-0);
 
     /* Shadcn surface mappings — Neutral Dark */
-    --background: 0 0% 4%;               /* #0A0A0A Pure dark */
-    --foreground: 0 0% 93%;              /* #EDEDED Neutral white */
+    --background: 0 0% 4%;               /* #0A0A0A */
+    --foreground: 0 0% 93%;              /* #EDEDED */
 
-    --card: 0 0% 4%;                     /* Same as --background — flush cards */
+    --card: 0 0% 10%;                    /* #1A1A1A — elevated surface */
     --card-foreground: 0 0% 93%;
 
-    --popover: 0 0% 10%;                  /* #1A1A1A - Neutral float */
+    --popover: 0 0% 4%;                  /* #0A0A0A */
     --popover-foreground: 0 0% 93%;
 
     --primary: 217 91% 60%;              /* #3b82f6 blue */
     --primary-foreground: 0 0% 100%;     /* pure white on buttons only */
 
-    --secondary: 0 0% 10%;               /* Neutral card */
+    --secondary: 0 0% 12%;               /* #1F1F1F hover */
     --secondary-foreground: 0 0% 93%;
 
     --muted: 0 0% 10%;                  /* #1A1A1A */
     --muted-foreground: 0 0% 63%;       /* #A1A1A1 */
-    
-    --accent: 217 91% 60%;
-    --accent-foreground: 0 0% 100%;
-    
-    --destructive: 0 65% 55%;
+
+    --accent: 0 0% 12%;                 /* #1F1F1F hover surface */
+    --accent-foreground: 0 0% 93%;      /* #EDEDED */
+
+    --destructive: 0 63% 31%;
     --destructive-foreground: 0 0% 98%;
     
     /* === B) TEXT LADDER (Neutral Dark text) === */
     --fg-1: #EDEDED;                     /* Primary text — Neutral white */
     --fg-2: #A1A1A1;                     /* Secondary text */
     --fg-3: #878787;                     /* Muted/hints */
-    --fg-4: rgba(237,237,237,0.30);      /* Disabled */
+    --fg-4: #7D7D7D;                     /* Tertiary */
 
     --text-1: var(--fg-1);
     --text-2: var(--fg-2);
@@ -960,25 +960,25 @@ html:has(body[data-scroll-locked]) {
     --nav-accent-bar: #3b82f6;             /* Left accent bar */
     
     /* === C) DIVIDER + BORDER GRAMMAR (Warm Charcoal borders) === */
-    --divider: rgba(255,255,255,0.05);
-    --border-subtle: rgba(255,255,255,0.08);
-    --border-strong: rgba(255,255,255,0.12);
-    --stroke-1: var(--divider);
-    --stroke-2: var(--border-subtle);
+    --divider: #292929;
+    --border-subtle: #292929;
+    --border-strong: #454545;
+    --stroke-1: #292929;
+    --stroke-2: #2E2E2E;
     
-    --border: 30 10% 50% / 0.06;
-    --input: 30 10% 50% / 0.08;
+    --border: 0 0% 18%;                 /* #2E2E2E */
+    --input: 0 0% 18%;                  /* #2E2E2E */
     --ring: 217 91% 60%;
     
     /* === D) INTERACTION TOKENS === */
-    --focus-ring: rgba(59,130,246,0.55);   /* Blue focus */
-    --hover: rgba(255,255,255,0.04);
-    --active: rgba(255,255,255,0.07);
-    --selected: rgba(255,255,255,0.08);    /* Neutral selected */
+    --focus-ring: rgba(59,130,246,0.55);
+    --hover: #1F1F1F;
+    --active: #292929;
+    --selected: #292929;
     
-    --row-hover: var(--hover);
-    --row-selected: rgba(255,255,255,0.08);
-    --row-active: rgba(255,255,255,0.12);
+    --row-hover: #1F1F1F;
+    --row-selected: #292929;
+    --row-active: #333333;
 
     /* === TINT SURFACE TOKENS (Dark Mode) === */
     --tint-blue: rgba(59, 130, 246, 0.06);
@@ -1010,9 +1010,9 @@ html:has(body[data-scroll-locked]) {
     --danger-bd: rgba(239, 68, 68, 0.25);
     
     /* Neutral fallback (for non-semantic use) */
-    --neutral-fg: rgba(255,255,255,0.72);
-    --neutral-bg: rgba(255,255,255,0.06);
-    --neutral-bd: rgba(255,255,255,0.10);
+    --neutral-fg: #A1A1A1;
+    --neutral-bg: #1A1A1A;
+    --neutral-bd: #2E2E2E;
     
     /* === F) SHADOWS (Modern, soft depth) === */
     --shadow-1: 0 1px 0 rgba(255,255,255,0.03), 0 8px 24px rgba(0,0,0,0.55);
@@ -1068,16 +1068,16 @@ html:has(body[data-scroll-locked]) {
     --accent-border: rgba(37, 99, 235, 0.30);
     
     /* === SIDEBAR (Neutral dark) === */
-    --sidebar-background: 0 0% 4%;
-    --sidebar-foreground: 0 0% 90%;
+    --sidebar-background: 0 0% 7%;        /* #111111 */
+    --sidebar-foreground: 0 0% 63%;      /* #A1A1A1 */
     --sidebar-primary: 217 91% 60%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 217 91% 60%;         /* Blue primary */
-    --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 0 0% 100% / 0.04;
+    --sidebar-accent: 0 0% 12%;            /* #1F1F1F hover */
+    --sidebar-accent-foreground: 0 0% 93%; /* #EDEDED */
+    --sidebar-border: 0 0% 18%;            /* #2E2E2E */
     --sidebar-ring: 217 91% 60%;
-    --sidebar-hover: rgba(37, 99, 235, 0.08);   /* Blue tint hover */
-    --sidebar-active: rgba(37, 99, 235, 0.12);  /* Blue tint active */
+    --sidebar-hover: #1F1F1F;
+    --sidebar-active: #292929;
     
     /* === HSL FALLBACKS (for shadcn) - V5 CANONICAL === */
     --success: 173 58% 39%;                /* #0d9488 teal */
