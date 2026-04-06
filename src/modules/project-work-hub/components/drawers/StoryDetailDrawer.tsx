@@ -24,9 +24,9 @@ interface StoryDetailDrawerProps {
 
 const DETAIL_LABEL: React.CSSProperties = {
   width: 100, flexShrink: 0, fontSize: 11, fontWeight: 650,
-  textTransform: 'uppercase', letterSpacing: '0.06em', color: '#64748B', lineHeight: '36px',
+  textTransform: 'uppercase', letterSpacing: '0.06em', color: 'rgba(237,237,237,0.40)', lineHeight: '36px',
 };
-const DETAIL_VALUE: React.CSSProperties = { fontSize: 14, color: 'var(--fg-1, #0F172A)', fontWeight: 400 };
+const DETAIL_VALUE: React.CSSProperties = { fontSize: 14, color: 'var(--fg-1, rgba(237,237,237,0.93))', fontWeight: 400 };
 
 const STATUS_GROUPS = [
   { label: 'TO DO', statuses: ['Backlog', 'In Requirements', 'In Design', 'Ready for Development', 'To Do'] },
@@ -47,10 +47,10 @@ type TabId = 'details' | 'comments' | 'history';
 
 const TAB_STYLE: React.CSSProperties = {
   fontSize: 12, fontWeight: 600, padding: '8px 12px', border: 'none', cursor: 'pointer',
-  background: 'none', color: '#64748B', borderBottom: '2px solid transparent',
+  background: 'none', color: 'rgba(237,237,237,0.40)', borderBottom: '2px solid transparent',
   display: 'inline-flex', alignItems: 'center', gap: 5,
 };
-const TAB_ACTIVE: React.CSSProperties = { ...TAB_STYLE, color: 'var(--fg-1, #0F172A)', borderBottomColor: '#2563EB' };
+const TAB_ACTIVE: React.CSSProperties = { ...TAB_STYLE, color: 'var(--fg-1, rgba(237,237,237,0.93))', borderBottomColor: '#2563EB' };
 
 function formatFixVersions(fv: any): string {
   if (!fv) return '—';
@@ -194,14 +194,14 @@ export const StoryDetailDrawer: React.FC<StoryDetailDrawerProps> = ({ isOpen, on
           {story ? (
             <>
               <JiraIssueTypeIcon type={story.issue_type || 'story'} size={20} />
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, fontWeight: 600, color: 'var(--fg-1, #0F172A)' }}>{story.issue_key}</span>
-              <span style={{ fontSize: 13, color: '#64748B' }}>· {story.issue_type || 'Story'}</span>
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, fontWeight: 600, color: 'var(--fg-1, rgba(237,237,237,0.93))' }}>{story.issue_key}</span>
+              <span style={{ fontSize: 13, color: 'rgba(237,237,237,0.40)' }}>· {story.issue_type || 'Story'}</span>
             </>
           ) : (
-            <div style={{ height: 20, width: 120, borderRadius: 4, background: 'var(--bd-default, #E2E8F0)' }} />
+            <div style={{ height: 20, width: 120, borderRadius: 4, background: 'var(--bd-default, rgba(255,255,255,0.10))' }} />
           )}
           <button onClick={onClose} style={{ marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
-            <X size={20} color="#64748B" />
+            <X size={20} color="rgba(237,237,237,0.40)" />
           </button>
         </div>
 
@@ -209,8 +209,8 @@ export const StoryDetailDrawer: React.FC<StoryDetailDrawerProps> = ({ isOpen, on
           <div style={{ padding: '24px 20px' }}>
             {[1,2,3,4,5,6].map(i => (
               <div key={i} style={{ display: 'flex', gap: 12, marginBottom: 8 }}>
-                <div style={{ width: 100, height: 14, borderRadius: 4, background: 'var(--bd-default, #E2E8F0)' }} />
-                <div style={{ width: 140, height: 14, borderRadius: 4, background: 'var(--bd-default, #E2E8F0)' }} />
+                <div style={{ width: 100, height: 14, borderRadius: 4, background: 'var(--bd-default, rgba(255,255,255,0.10))' }} />
+                <div style={{ width: 140, height: 14, borderRadius: 4, background: 'var(--bd-default, rgba(255,255,255,0.10))' }} />
               </div>
             ))}
           </div>
@@ -242,14 +242,14 @@ export const StoryDetailDrawer: React.FC<StoryDetailDrawerProps> = ({ isOpen, on
                   <PopoverContent align="start" style={{ width: 220, padding: '4px 0', background: 'var(--bg-app, #FFFFFF)', border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6, zIndex: 9999, maxHeight: 320, overflowY: 'auto' }}>
                     {STATUS_GROUPS.map(group => (
                       <div key={group.label}>
-                        <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#94A3B8', padding: '6px 12px 2px' }}>{group.label}</div>
+                        <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'rgba(237,237,237,0.40)', padding: '6px 12px 2px' }}>{group.label}</div>
                         {group.statuses.map(s => {
                           const sc = getStatusLozengeColors(s);
                           return (
                             <button key={s} onClick={() => handleUpdate('status', s)} style={{
                               width: '100%', padding: '5px 12px', fontSize: 13, border: 'none', textAlign: 'left',
                               background: story.status === s ? 'rgba(37,99,235,0.08)' : 'transparent',
-                              color: 'var(--fg-1, #0F172A)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
+                              color: 'var(--fg-1, rgba(237,237,237,0.93))', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
                             }}>
                               <span style={{ display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px', borderRadius: 4, fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em', background: sc.bg, color: sc.text }}>{sc.label}</span>
                             </button>
@@ -267,11 +267,11 @@ export const StoryDetailDrawer: React.FC<StoryDetailDrawerProps> = ({ isOpen, on
                   onBlur={() => { handleUpdate('summary', titleValue); setEditingTitle(false); }}
                   onKeyDown={e => { if (e.key === 'Enter') { handleUpdate('summary', titleValue); setEditingTitle(false); } if (e.key === 'Escape') setEditingTitle(false); }}
                   autoFocus
-                  style={{ width: '100%', fontSize: 20, fontWeight: 650, color: 'var(--fg-1, #0F172A)', border: '1.5px solid #2563EB', borderRadius: 4, padding: '4px 8px', outline: 'none', fontFamily: "'Sora', sans-serif", marginBottom: 8 }}
+                  style={{ width: '100%', fontSize: 20, fontWeight: 650, color: 'var(--fg-1, rgba(237,237,237,0.93))', border: '1.5px solid #2563EB', borderRadius: 4, padding: '4px 8px', outline: 'none', fontFamily: "'Sora', sans-serif", marginBottom: 8 }}
                 />
               ) : (
-                <h2 onClick={() => setEditingTitle(true)} style={{ fontSize: 20, fontWeight: 650, color: 'var(--fg-1, #0F172A)', margin: '0 0 8px', cursor: 'text', fontFamily: "'Sora', sans-serif", lineHeight: 1.3 }}>
-                  {story.summary || <span style={{ fontStyle: 'italic', color: '#94A3B8' }}>Click to add a title...</span>}
+                <h2 onClick={() => setEditingTitle(true)} style={{ fontSize: 20, fontWeight: 650, color: 'var(--fg-1, rgba(237,237,237,0.93))', margin: '0 0 8px', cursor: 'text', fontFamily: "'Sora', sans-serif", lineHeight: 1.3 }}>
+                  {story.summary || <span style={{ fontStyle: 'italic', color: 'rgba(237,237,237,0.40)' }}>Click to add a title...</span>}
                 </h2>
               )}
 
@@ -302,16 +302,16 @@ export const StoryDetailDrawer: React.FC<StoryDetailDrawerProps> = ({ isOpen, on
                 <>
                   {/* Description */}
                   <div style={{ marginBottom: 16 }}>
-                    <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748B', marginBottom: 6 }}>Description</div>
+                    <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'rgba(237,237,237,0.40)', marginBottom: 6 }}>Description</div>
                     {editingDesc ? (
                       <textarea value={descValue} onChange={e => setDescValue(e.target.value)}
                         onBlur={() => { handleUpdate('description_text', descValue); setEditingDesc(false); }}
                         autoFocus rows={4}
-                        style={{ width: '100%', border: '1.5px solid #2563EB', borderRadius: 4, padding: 8, fontSize: 14, color: 'var(--fg-1, #0F172A)', fontFamily: 'Inter, sans-serif', outline: 'none', resize: 'vertical', minHeight: 80 }}
+                        style={{ width: '100%', border: '1.5px solid #2563EB', borderRadius: 4, padding: 8, fontSize: 14, color: 'var(--fg-1, rgba(237,237,237,0.93))', fontFamily: 'Geist, -apple-system, sans-serif', outline: 'none', resize: 'vertical', minHeight: 80 }}
                       />
                     ) : (
                       <div onClick={() => setEditingDesc(true)} style={{
-                        fontSize: 14, color: story.description_text ? '#334155' : '#94A3B8',
+                        fontSize: 14, color: story.description_text ? 'rgba(237,237,237,0.53)' : 'rgba(237,237,237,0.40)',
                         fontStyle: story.description_text ? 'normal' : 'italic',
                         cursor: 'text', minHeight: 20, lineHeight: 1.6, whiteSpace: 'pre-wrap',
                       }}>
@@ -322,7 +322,7 @@ export const StoryDetailDrawer: React.FC<StoryDetailDrawerProps> = ({ isOpen, on
 
                   {/* Key Details */}
                   <div style={{ border: '0.75px solid rgba(15,23,42,0.06)', borderRadius: 6, padding: '8px 16px' }}>
-                    <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748B', marginBottom: 4 }}>Key Details</div>
+                    <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'rgba(237,237,237,0.40)', marginBottom: 4 }}>Key Details</div>
 
                     {/* Status */}
                     <DetailRow label="Status">
@@ -340,13 +340,13 @@ export const StoryDetailDrawer: React.FC<StoryDetailDrawerProps> = ({ isOpen, on
                     <DetailRow label="Assignee">
                       {story.assignee_display_name ? (
                         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                          <div style={{ width: 24, height: 24, borderRadius: '50%', background: 'var(--bd-default, #E2E8F0)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: '#64748B', flexShrink: 0 }}>
+                          <div style={{ width: 24, height: 24, borderRadius: '50%', background: 'var(--bd-default, rgba(255,255,255,0.10))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: 'rgba(237,237,237,0.40)', flexShrink: 0 }}>
                             {getInitials(story.assignee_display_name)}
                           </div>
                           <span style={DETAIL_VALUE}>{story.assignee_display_name}</span>
                         </div>
                       ) : (
-                        <span style={{ fontSize: 14, color: '#94A3B8', fontStyle: 'italic' }}>— Set assignee</span>
+                        <span style={{ fontSize: 14, color: 'rgba(237,237,237,0.40)', fontStyle: 'italic' }}>— Set assignee</span>
                       )}
                     </DetailRow>
 
@@ -355,34 +355,34 @@ export const StoryDetailDrawer: React.FC<StoryDetailDrawerProps> = ({ isOpen, on
                       {story.reporter_display_name ? (
                         <span style={DETAIL_VALUE}>{story.reporter_display_name}</span>
                       ) : (
-                        <span style={{ fontSize: 14, color: '#94A3B8', fontStyle: 'italic' }}>— Set reporter</span>
+                        <span style={{ fontSize: 14, color: 'rgba(237,237,237,0.40)', fontStyle: 'italic' }}>— Set reporter</span>
                       )}
                     </DetailRow>
 
                     {/* Due Date */}
                     <DetailRow label="Due Date">
-                      <span style={{ ...DETAIL_VALUE, fontFamily: "'JetBrains Mono', monospace", fontSize: 13, color: story.due_date ? 'var(--fg-1, #0F172A)' : '#94A3B8' }}>
+                      <span style={{ ...DETAIL_VALUE, fontFamily: "'JetBrains Mono', monospace", fontSize: 13, color: story.due_date ? 'var(--fg-1, rgba(237,237,237,0.93))' : 'rgba(237,237,237,0.40)' }}>
                         {story.due_date ? format(new Date(story.due_date), 'MMM d, yyyy') : '— Set date'}
                       </span>
                     </DetailRow>
 
                     {/* Release (fix_versions) */}
                     <DetailRow label="Release">
-                      <span style={{ ...DETAIL_VALUE, color: formatFixVersions(story.fix_versions) !== '—' ? 'var(--fg-1, #0F172A)' : '#94A3B8' }}>
+                      <span style={{ ...DETAIL_VALUE, color: formatFixVersions(story.fix_versions) !== '—' ? 'var(--fg-1, rgba(237,237,237,0.93))' : 'rgba(237,237,237,0.40)' }}>
                         {formatFixVersions(story.fix_versions)}
                       </span>
                     </DetailRow>
 
                     {/* Created */}
                     <DetailRow label="Created">
-                      <span style={{ fontSize: 12, color: '#334155', fontFamily: "'JetBrains Mono', monospace" }}>
+                      <span style={{ fontSize: 12, color: 'rgba(237,237,237,0.53)', fontFamily: "'JetBrains Mono', monospace" }}>
                         {story.jira_created_at ? format(new Date(story.jira_created_at), 'MMM d, yyyy, hh:mm a') : '—'}
                       </span>
                     </DetailRow>
 
                     {/* Updated */}
                     <DetailRow label="Updated">
-                      <span style={{ fontSize: 12, color: '#334155', fontFamily: "'JetBrains Mono', monospace" }}>
+                      <span style={{ fontSize: 12, color: 'rgba(237,237,237,0.53)', fontFamily: "'JetBrains Mono', monospace" }}>
                         {story.jira_updated_at ? format(new Date(story.jira_updated_at), 'MMM d, yyyy, hh:mm a') : '—'}
                       </span>
                     </DetailRow>
@@ -390,12 +390,12 @@ export const StoryDetailDrawer: React.FC<StoryDetailDrawerProps> = ({ isOpen, on
 
                   {/* Jira Sync Status */}
                   {jiraSyncData?.jira_key && (
-                    <div style={{ borderTop: '0.75px solid var(--bd-default, #E2E8F0)', paddingTop: 16, marginTop: 16 }} className="dark:!border-[#1A1A1A]">
-                      <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748B', marginBottom: 12 }}>Jira Sync</div>
+                    <div style={{ borderTop: '0.75px solid var(--bd-default, rgba(255,255,255,0.10))', paddingTop: 16, marginTop: 16 }} className="dark:!border-[#1A1A1A]">
+                      <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'rgba(237,237,237,0.40)', marginBottom: 12 }}>Jira Sync</div>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                           <span style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600, color: '#6B7280' }}>Jira Issue</span>
-                          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, padding: '2px 8px', borderRadius: 4, background: '#F1F5F9', color: '#1E293B' }}>{jiraSyncData.jira_key}</span>
+                          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, padding: '2px 8px', borderRadius: 4, background: '#1A1A1A', color: 'rgba(237,237,237,0.93)' }}>{jiraSyncData.jira_key}</span>
                         </div>
                         {jiraSyncData.jira_sync_status && (
                           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -403,14 +403,14 @@ export const StoryDetailDrawer: React.FC<StoryDetailDrawerProps> = ({ isOpen, on
                             <span style={{
                               display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px', borderRadius: 4,
                               fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em',
-                              backgroundColor: jiraSyncData.jira_sync_status === 'synced' || jiraSyncData.jira_sync_status === 'pushed' ? '#E3FCEF' : jiraSyncData.jira_sync_status === 'queued' || jiraSyncData.jira_sync_status === 'approval_pending' ? '#DEEBFF' : '#DFE1E6',
+                              backgroundColor: jiraSyncData.jira_sync_status === 'synced' || jiraSyncData.jira_sync_status === 'pushed' ? 'rgba(74,222,128,0.10)' : jiraSyncData.jira_sync_status === 'queued' || jiraSyncData.jira_sync_status === 'approval_pending' ? 'rgba(59,130,246,0.10)' : '#DFE1E6',
                               color: jiraSyncData.jira_sync_status === 'synced' || jiraSyncData.jira_sync_status === 'pushed' ? '#006644' : jiraSyncData.jira_sync_status === 'queued' || jiraSyncData.jira_sync_status === 'approval_pending' ? '#0747A6' : '#253858',
                             }}>{jiraSyncData.jira_sync_status}</span>
                           </div>
                         )}
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                           <span style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600, color: '#6B7280' }}>Last Synced</span>
-                          <span style={{ fontSize: 12, color: '#334155', fontFamily: "'JetBrains Mono', monospace" }}>
+                          <span style={{ fontSize: 12, color: 'rgba(237,237,237,0.53)', fontFamily: "'JetBrains Mono', monospace" }}>
                             {jiraSyncData.jira_pushed_at ? format(new Date(jiraSyncData.jira_pushed_at), 'MMM d, yyyy, hh:mm a') : '—'}
                           </span>
                         </div>
@@ -453,15 +453,15 @@ function CommentsPane({ comments, isLoading }: { comments: any[]; isLoading: boo
       {comments.map((c: any) => (
         <div key={c.id} style={{ borderBottom: '0.75px solid rgba(15,23,42,0.06)', paddingBottom: 12 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-            <div style={{ width: 24, height: 24, borderRadius: '50%', background: 'var(--bd-default, #E2E8F0)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: '#64748B', flexShrink: 0 }}>
+            <div style={{ width: 24, height: 24, borderRadius: '50%', background: 'var(--bd-default, rgba(255,255,255,0.10))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: 'rgba(237,237,237,0.40)', flexShrink: 0 }}>
               {getInitials(c.author_display_name || 'U')}
             </div>
-            <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1, #0F172A)' }}>{c.author_display_name || 'Unknown'}</span>
-            <span style={{ fontSize: 11, color: '#94A3B8', marginLeft: 'auto' }}>
+            <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1, rgba(237,237,237,0.93))' }}>{c.author_display_name || 'Unknown'}</span>
+            <span style={{ fontSize: 11, color: 'rgba(237,237,237,0.40)', marginLeft: 'auto' }}>
               {c.jira_created_at ? formatDistanceToNow(new Date(c.jira_created_at), { addSuffix: true }) : ''}
             </span>
           </div>
-          <div style={{ fontSize: 13, color: '#334155', lineHeight: 1.6, whiteSpace: 'pre-wrap', paddingLeft: 32 }}>
+          <div style={{ fontSize: 13, color: 'rgba(237,237,237,0.53)', lineHeight: 1.6, whiteSpace: 'pre-wrap', paddingLeft: 32 }}>
             {c.body || ''}
           </div>
         </div>
@@ -484,7 +484,7 @@ function HistoryPane({ changelog, isLoading }: { changelog: any[]; isLoading: bo
       {/* Status Transitions Section */}
       {statusChanges.length > 0 && (
         <div style={{ marginBottom: 20 }}>
-          <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748B', marginBottom: 8 }}>
+          <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'rgba(237,237,237,0.40)', marginBottom: 8 }}>
             Status Transitions ({statusChanges.length})
           </div>
           {statusChanges.map((entry: any) => {
@@ -492,13 +492,13 @@ function HistoryPane({ changelog, isLoading }: { changelog: any[]; isLoading: bo
             const toColors = getStatusLozengeColors(entry.to_string || '');
             return (
               <div key={entry.id} style={{ display: 'flex', gap: 10, padding: '8px 0', borderBottom: '0.75px solid rgba(15,23,42,0.04)' }}>
-                <div style={{ width: 24, height: 24, borderRadius: '50%', background: 'var(--bd-default, #E2E8F0)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: '#64748B', flexShrink: 0, marginTop: 2 }}>
+                <div style={{ width: 24, height: 24, borderRadius: '50%', background: 'var(--bd-default, rgba(255,255,255,0.10))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: 'rgba(237,237,237,0.40)', flexShrink: 0, marginTop: 2 }}>
                   {getInitials(entry.author_display_name || 'S')}
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap', marginBottom: 4 }}>
-                    <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1, #0F172A)' }}>{entry.author_display_name || 'System'}</span>
-                    <span style={{ fontSize: 11, color: '#94A3B8' }}>
+                    <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1, rgba(237,237,237,0.93))' }}>{entry.author_display_name || 'System'}</span>
+                    <span style={{ fontSize: 11, color: 'rgba(237,237,237,0.40)' }}>
                       {entry.jira_created_at ? formatDistanceToNow(new Date(entry.jira_created_at), { addSuffix: true }) : ''}
                     </span>
                   </div>
@@ -506,13 +506,13 @@ function HistoryPane({ changelog, isLoading }: { changelog: any[]; isLoading: bo
                     <span style={{ display: 'inline-flex', alignItems: 'center', height: 18, padding: '0 5px', borderRadius: 4, fontSize: 10, fontWeight: 700, textTransform: 'uppercase', background: fromColors.bg, color: fromColors.text }}>
                       {fromColors.label}
                     </span>
-                    <span style={{ fontSize: 12, color: '#94A3B8' }}>→</span>
+                    <span style={{ fontSize: 12, color: 'rgba(237,237,237,0.40)' }}>→</span>
                     <span style={{ display: 'inline-flex', alignItems: 'center', height: 18, padding: '0 5px', borderRadius: 4, fontSize: 10, fontWeight: 700, textTransform: 'uppercase', background: toColors.bg, color: toColors.text }}>
                       {toColors.label}
                     </span>
                   </div>
                   {entry.jira_created_at && (
-                    <div style={{ fontSize: 11, color: '#94A3B8', marginTop: 2, fontFamily: "'JetBrains Mono', monospace" }}>
+                    <div style={{ fontSize: 11, color: 'rgba(237,237,237,0.40)', marginTop: 2, fontFamily: "'JetBrains Mono', monospace" }}>
                       {format(new Date(entry.jira_created_at), 'MMM d, yyyy, hh:mm a')}
                     </div>
                   )}
@@ -526,25 +526,25 @@ function HistoryPane({ changelog, isLoading }: { changelog: any[]; isLoading: bo
       {/* Other field changes */}
       {otherChanges.length > 0 && (
         <div>
-          <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748B', marginBottom: 8 }}>
+          <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'rgba(237,237,237,0.40)', marginBottom: 8 }}>
             Other Changes ({otherChanges.length})
           </div>
           {otherChanges.map((entry: any) => (
             <div key={entry.id} style={{ display: 'flex', gap: 10, padding: '6px 0', borderBottom: '0.75px solid rgba(15,23,42,0.04)' }}>
-              <div style={{ width: 24, height: 24, borderRadius: '50%', background: 'var(--bd-default, #E2E8F0)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: '#64748B', flexShrink: 0 }}>
+              <div style={{ width: 24, height: 24, borderRadius: '50%', background: 'var(--bd-default, rgba(255,255,255,0.10))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: 'rgba(237,237,237,0.40)', flexShrink: 0 }}>
                 {getInitials(entry.author_display_name || 'S')}
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2 }}>
-                  <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1, #0F172A)' }}>{entry.author_display_name || 'System'}</span>
-                  <span style={{ fontSize: 11, color: '#94A3B8' }}>
+                  <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1, rgba(237,237,237,0.93))' }}>{entry.author_display_name || 'System'}</span>
+                  <span style={{ fontSize: 11, color: 'rgba(237,237,237,0.40)' }}>
                     {entry.jira_created_at ? formatDistanceToNow(new Date(entry.jira_created_at), { addSuffix: true }) : ''}
                   </span>
                 </div>
-                <div style={{ fontSize: 13, color: '#64748B' }}>
-                  Changed <strong style={{ color: 'var(--fg-1, #0F172A)', fontWeight: 600 }}>{entry.field_name}</strong>
-                  {entry.from_string && <> from <span style={{ color: '#94A3B8' }}>{entry.from_string}</span></>}
-                  {entry.to_string && <> to <span style={{ color: 'var(--fg-1, #0F172A)' }}>{entry.to_string}</span></>}
+                <div style={{ fontSize: 13, color: 'rgba(237,237,237,0.40)' }}>
+                  Changed <strong style={{ color: 'var(--fg-1, rgba(237,237,237,0.93))', fontWeight: 600 }}>{entry.field_name}</strong>
+                  {entry.from_string && <> from <span style={{ color: 'rgba(237,237,237,0.40)' }}>{entry.from_string}</span></>}
+                  {entry.to_string && <> to <span style={{ color: 'var(--fg-1, rgba(237,237,237,0.93))' }}>{entry.to_string}</span></>}
                 </div>
               </div>
             </div>
@@ -560,10 +560,10 @@ function SkeletonList({ count }: { count: number }) {
     <div>
       {Array.from({ length: count }).map((_, i) => (
         <div key={i} style={{ display: 'flex', gap: 10, padding: '8px 0' }}>
-          <div style={{ width: 24, height: 24, borderRadius: '50%', background: 'var(--bd-default, #E2E8F0)', flexShrink: 0 }} />
+          <div style={{ width: 24, height: 24, borderRadius: '50%', background: 'var(--bd-default, rgba(255,255,255,0.10))', flexShrink: 0 }} />
           <div style={{ flex: 1 }}>
-            <div style={{ height: 12, width: '60%', borderRadius: 4, background: 'var(--bd-default, #E2E8F0)', marginBottom: 6 }} />
-            <div style={{ height: 10, width: '40%', borderRadius: 4, background: 'var(--bd-default, #E2E8F0)' }} />
+            <div style={{ height: 12, width: '60%', borderRadius: 4, background: 'var(--bd-default, rgba(255,255,255,0.10))', marginBottom: 6 }} />
+            <div style={{ height: 10, width: '40%', borderRadius: 4, background: 'var(--bd-default, rgba(255,255,255,0.10))' }} />
           </div>
         </div>
       ))}
@@ -572,5 +572,5 @@ function SkeletonList({ count }: { count: number }) {
 }
 
 function EmptyState({ text }: { text: string }) {
-  return <div style={{ padding: 24, textAlign: 'center', fontSize: 13, color: '#94A3B8' }}>{text}</div>;
+  return <div style={{ padding: 24, textAlign: 'center', fontSize: 13, color: 'rgba(237,237,237,0.40)' }}>{text}</div>;
 }

@@ -249,7 +249,7 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
           {/* Converted: Linked Initiative Card */}
           {isConverted && rawIdea.linked_initiative_key && (
             <div style={{ padding: '0 20px 16px' }}>
-              <div style={{ background: isDark ? 'rgba(22,163,74,0.08)' : '#F0FDF4', border: `0.75px solid ${isDark ? 'rgba(22,163,74,0.20)' : '#BBF7D0'}`, borderRadius: '6px', padding: '14px' }}>
+              <div style={{ background: isDark ? 'rgba(22,163,74,0.08)' : 'rgba(74,222,128,0.06)', border: `0.75px solid ${isDark ? 'rgba(22,163,74,0.20)' : '#BBF7D0'}`, borderRadius: '6px', padding: '14px' }}>
                 <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: isDark ? '#86EFAC' : '#11853D', marginBottom: '8px' }}>CONVERTED TO INITIATIVE</div>
                 <div style={{ background: isDark ? 'rgba(255,255,255,0.03)' : '#FFFFFF', border: `0.75px solid ${isDark ? 'rgba(22,163,74,0.20)' : '#BBF7D0'}`, borderRadius: '4px', padding: '10px 12px' }}>
                   <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '13px', fontWeight: 700, color: '#11853D' }}>
@@ -344,8 +344,8 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
                   <span style={{
                     display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                     height: 20, padding: '0 6px', borderRadius: 4, fontSize: '11px', fontWeight: 700,
-                    background: QUARTER_BADGE[localQuarter]?.bg || '#E2E8F0',
-                    color: QUARTER_BADGE[localQuarter]?.text || '#94A3B8',
+                    background: QUARTER_BADGE[localQuarter]?.bg || 'rgba(255,255,255,0.10)',
+                    color: QUARTER_BADGE[localQuarter]?.text || 'rgba(237,237,237,0.40)',
                   }}>{localQuarter} 2026</span>
                 ) : <span style={{ fontSize: '13px', color: dk.t3 }}>—</span>}
               </FieldBlock>
@@ -402,7 +402,7 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
               <div key={dim.letter} style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '14px' }}>
                 <div style={{
                   width: '28px', height: '28px', borderRadius: '50%',
-                  backgroundColor: isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0', color: dk.t2,
+                  backgroundColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.10)', color: dk.t2,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   fontSize: '12px', fontWeight: 700, flexShrink: 0,
                 }}>{dim.letter}</div>
@@ -419,7 +419,7 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
                       className="w-full"
                     />
                   ) : (
-                    <div style={{ height: '4px', borderRadius: '4px', backgroundColor: isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0', overflow: 'hidden' }}>
+                    <div style={{ height: '4px', borderRadius: '4px', backgroundColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.10)', overflow: 'hidden' }}>
                       <div style={{
                         height: '100%', width: `${(dim.value / 5) * 100}%`,
                         backgroundColor: dim.value > 0 ? '#2563EB' : 'transparent',
@@ -439,7 +439,7 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
           {/* CONVERT TO INITIATIVE — green section (only if not Draft and not already converted) */}
           {!isConverted && localStatus !== 'Draft' && onConvert && rawIdea && (
             <div style={{ padding: '16px 20px' }}>
-              <div style={{ background: isDark ? 'rgba(22,163,74,0.08)' : '#F0FDF4', border: `0.75px solid ${isDark ? 'rgba(22,163,74,0.20)' : '#BBF7D0'}`, borderRadius: '6px', padding: '14px' }}>
+              <div style={{ background: isDark ? 'rgba(22,163,74,0.08)' : 'rgba(74,222,128,0.06)', border: `0.75px solid ${isDark ? 'rgba(22,163,74,0.20)' : '#BBF7D0'}`, borderRadius: '6px', padding: '14px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
                   <ArrowUpRight size={14} style={{ color: isDark ? '#86EFAC' : '#16A34A' }} />
                   <span style={{ fontSize: '13px', fontWeight: 650, color: dk.t1 }}>Ready to promote?</span>
@@ -505,7 +505,7 @@ function FieldBlock({ label, children }: { label: string; children: React.ReactN
   const { isDark } = useTheme();
   return (
     <div>
-      <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: isDark ? '#878787' : '#64748B', marginBottom: '6px' }}>{label}</div>
+      <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: isDark ? '#878787' : 'rgba(237,237,237,0.40)', marginBottom: '6px' }}>{label}</div>
       {children}
     </div>
   );

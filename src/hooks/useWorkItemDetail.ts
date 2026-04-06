@@ -157,7 +157,7 @@ export function useWorkItemDetail(itemId: string | null) {
         status_category: c.ph_workflow_statuses?.category ?? 'todo',
         assignee_name: profileMap.get(c.assignee_id)?.full_name ?? null,
         type_name: c.ph_work_types?.name ?? 'Task',
-        type_color: c.ph_work_types?.color ?? '#94A3B8',
+        type_color: c.ph_work_types?.color ?? 'rgba(237,237,237,0.40)',
         status_id: c.status_id,
       }));
 
@@ -191,7 +191,7 @@ export function useWorkItemDetail(itemId: string | null) {
             summary: li.summary,
             link_type: link?.link_type ?? 'relates_to',
             type_name: li.ph_work_types?.name ?? 'Task',
-            type_color: li.ph_work_types?.color ?? '#94A3B8',
+            type_color: li.ph_work_types?.color ?? 'rgba(237,237,237,0.40)',
             status_name: li.ph_workflow_statuses?.name ?? 'Backlog',
             status_category: li.ph_workflow_statuses?.category ?? 'todo',
           };
@@ -226,12 +226,12 @@ export function useWorkItemDetail(itemId: string | null) {
         created_at: data.created_at,
         updated_at: data.updated_at,
         type_name: (data as any).ph_work_types?.name ?? data.item_type,
-        type_color: (data as any).ph_work_types?.color ?? '#94A3B8',
+        type_color: (data as any).ph_work_types?.color ?? 'rgba(237,237,237,0.40)',
         type_icon: (data as any).ph_work_types?.icon ?? 'circle',
         type_level: (data as any).ph_work_types?.level ?? 'work',
         status_name: (data as any).ph_workflow_statuses?.name ?? 'Backlog',
         status_category: (data as any).ph_workflow_statuses?.category ?? 'todo',
-        status_color: (data as any).ph_workflow_statuses?.color ?? '#94A3B8',
+        status_color: (data as any).ph_workflow_statuses?.color ?? 'rgba(237,237,237,0.40)',
         assignee_name: assignee?.full_name ?? null,
         assignee_avatar: assignee?.avatar_url ?? null,
         reporter_name: reporter?.full_name ?? null,

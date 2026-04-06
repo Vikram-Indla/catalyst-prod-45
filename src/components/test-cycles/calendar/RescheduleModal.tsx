@@ -176,7 +176,7 @@ export function RescheduleModal({
           {mode === 'shift' && shiftDays !== 0 && (
             <div className="p-3 bg-[#f1f5f9] rounded-lg">
               <div className="text-xs font-medium text-[#64748b] mb-1">Preview</div>
-              <div className="text-sm text-[#334155]">
+              <div className="text-sm text-[rgba(237,237,237,0.53)]">
                 {totalTests} tests will be moved{' '}
                 <strong>{Math.abs(shiftDays)} days {shiftDays > 0 ? 'forward' : 'backward'}</strong>
               </div>

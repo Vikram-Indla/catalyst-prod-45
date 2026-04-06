@@ -98,7 +98,7 @@ export function Resource360List({ items, onItemClick }: Props) {
 
       {/* Hub groups */}
       {Object.entries(hubGroups).map(([hub, hubItems]) => {
-        const hubColor = WH_HUB_COLORS[hub] ?? '#64748B';
+        const hubColor = WH_HUB_COLORS[hub] ?? 'rgba(237,237,237,0.40)';
         const collapsed = collapsedHubs.has(hub);
         return (
           <div key={hub}>
@@ -128,7 +128,7 @@ export function Resource360List({ items, onItemClick }: Props) {
                       background: rowIdx % 2 === 1 ? '#FAFBFC' : 'transparent', cursor: 'pointer',
                       borderLeft: `3px solid ${sc.dot}`, transition: 'background .1s',
                     }}
-                    onMouseEnter={e => { e.currentTarget.style.background = '#EFF6FF'; }}
+                    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(59,130,246,0.06)'; }}
                     onMouseLeave={e => { e.currentTarget.style.background = rowIdx % 2 === 1 ? '#FAFBFC' : 'transparent'; }}>
                     <ExpandChevron expanded={isExpanded} onClick={e => { e.stopPropagation(); toggleExpand(item.work_item_id); }} />
                     <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--cp-blue)', fontFamily: "'JetBrains Mono', monospace" }}><HighlightText text={item.item_key} query={searchTerm} /></span>

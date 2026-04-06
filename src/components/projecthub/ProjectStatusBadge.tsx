@@ -27,8 +27,8 @@ const STATUS_MAP: Record<string, ColorCategory> = {
 };
 
 const COLORS: Record<ColorCategory, { lightBg: string; lightText: string; darkBg: string; darkText: string }> = {
-  green: { lightBg: '#E3FCEF', lightText: '#006644', darkBg: 'rgba(34,197,94,0.12)', darkText: '#86EFAC' },
-  blue:  { lightBg: '#DEEBFF', lightText: '#0747A6', darkBg: 'rgba(37,99,235,0.12)', darkText: '#93C5FD' },
+  green: { lightBg: 'rgba(74,222,128,0.10)', lightText: '#006644', darkBg: 'rgba(34,197,94,0.12)', darkText: '#86EFAC' },
+  blue:  { lightBg: 'rgba(59,130,246,0.10)', lightText: '#0747A6', darkBg: 'rgba(37,99,235,0.12)', darkText: '#93C5FD' },
   grey:  { lightBg: '#DFE1E6', lightText: '#253858', darkBg: 'rgba(255,255,255,0.08)', darkText: '#A1A1A1' },
 };
 

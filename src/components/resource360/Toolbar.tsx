@@ -84,7 +84,7 @@ function FilterDropdown({ label, value, options, onChange }: {
                 display: 'block', width: '100%', textAlign: 'left',
                 padding: '6px 10px', fontSize: 12, fontWeight: value === o.key ? 600 : 400,
                 color: value === o.key ? 'var(--cp-blue)' : 'var(--fg-2)',
-                background: value === o.key ? (isDark ? 'rgba(37,99,235,0.12)' : '#EFF6FF') : 'transparent',
+                background: value === o.key ? (isDark ? 'rgba(37,99,235,0.12)' : 'rgba(59,130,246,0.06)') : 'transparent',
                 border: 'none', borderRadius: 4, cursor: 'pointer',
               }}
             >

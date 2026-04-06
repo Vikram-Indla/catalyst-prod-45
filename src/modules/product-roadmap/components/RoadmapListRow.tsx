@@ -24,7 +24,7 @@ const AVATAR_COLORS = [
   '#16A34A', // green
   '#0891B2', // cyan
   '#DC2626', // red
-  '#334155', // slate
+  'rgba(237,237,237,0.53)', // slate
 ];
 
 function getColorFromName(name: string): string {
@@ -55,12 +55,12 @@ interface RoadmapListRowProps {
 
 export function RoadmapListRow({ item, index, isFocused, isSelected, onClick, isDragging, ownerName }: RoadmapListRowProps) {
   const typeKey = (item as any).initiative_type_key || 'project';
-  const typeColor = TYPE_COLORS[typeKey] || '#94A3B8';
+  const typeColor = TYPE_COLORS[typeKey] || 'rgba(237,237,237,0.40)';
   const isCritical = item.priority_tier === 'P0' || item.priority_tier === 'critical';
 
   const name = ownerName || null;
   const initials = name ? getInitials(name) : null;
-  const avatarColor = name ? getColorFromName(name) : '#CBD5E1';
+  const avatarColor = name ? getColorFromName(name) : 'rgba(237,237,237,0.53)';
 
   return (
     <div
@@ -74,12 +74,12 @@ export function RoadmapListRow({ item, index, isFocused, isSelected, onClick, is
       )}
       style={{
         height: 44,
-        backgroundColor: isSelected ? '#EFF6FF' : 'transparent',
-        borderBottom: '1px solid #F1F5F9',
+        backgroundColor: isSelected ? 'rgba(59,130,246,0.06)' : 'transparent',
+        borderBottom: '1px solid #1A1A1A',
         outline: isFocused ? '2px solid #2563EB' : 'none',
         outlineOffset: -2,
       }}
-      onMouseEnter={e => { if (!isSelected) e.currentTarget.style.backgroundColor = 'var(--bg-1, #F8FAFC)'; }}
+      onMouseEnter={e => { if (!isSelected) e.currentTarget.style.backgroundColor = 'var(--bg-1, #1A1A1A)'; }}
       onMouseLeave={e => { if (!isSelected) e.currentTarget.style.backgroundColor = 'transparent'; }}
     >
       {/* 4px accent bar */}
@@ -90,7 +90,7 @@ export function RoadmapListRow({ item, index, isFocused, isSelected, onClick, is
 
       {/* Drag handle */}
       <div className="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity ml-2">
-        <GripVertical className="w-3.5 h-3.5" style={{ color: '#CBD5E1' }} />
+        <GripVertical className="w-3.5 h-3.5" style={{ color: 'rgba(237,237,237,0.53)' }} />
       </div>
 
       {/* Content */}
@@ -105,7 +105,7 @@ export function RoadmapListRow({ item, index, isFocused, isSelected, onClick, is
             <span style={{ fontSize: 9, fontWeight: 700, color: '#FFFFFF', background: '#EF4444', borderRadius: 4, padding: '1px 4px' }}>P0</span>
           )}
           {/* Title */}
-          <span className="truncate" style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1, #0F172A)', letterSpacing: '-0.01em' }}>
+          <span className="truncate" style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1, rgba(237,237,237,0.93))', letterSpacing: '-0.01em' }}>
             {item.title}
           </span>
         </div>
@@ -131,9 +131,9 @@ export function RoadmapListRow({ item, index, isFocused, isSelected, onClick, is
       ) : (
         <div
           className="flex-shrink-0 flex items-center justify-center rounded-full"
-          style={{ width: 28, height: 28, background: 'var(--bd-default, #E2E8F0)' }}
+          style={{ width: 28, height: 28, background: 'var(--bd-default, rgba(255,255,255,0.10))' }}
         >
-          <User className="w-3.5 h-3.5" style={{ color: '#94A3B8' }} />
+          <User className="w-3.5 h-3.5" style={{ color: 'rgba(237,237,237,0.40)' }} />
         </div>
       )}
     </div>

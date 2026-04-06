@@ -70,7 +70,7 @@ const STATUS_STYLES: Record<string, { bg: string; color: string }> = {
   draft: { bg: 'var(--cp-bd-zone)', color: 'var(--fg-3)' },
   ready: { bg: '#DCFCE7', color: 'var(--sem-success)' },
   approved: { bg: '#DBEAFE', color: 'var(--cp-blue)' },
-  deprecated: { bg: '#FEE2E2', color: 'var(--sem-danger)' },
+  deprecated: { bg: 'rgba(248,113,113,0.10)', color: 'var(--sem-danger)' },
 };
 
 // --- ADD LINK MODAL ---
@@ -135,7 +135,7 @@ function AddLinkModal({
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px', borderBottom: '1px solid var(--divider)' }}>
-          <h3 style={{ fontFamily: 'Inter', fontSize: 16, fontWeight: 600, color: 'var(--fg-1)', margin: 0 }}>
+          <h3 style={{ fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 16, fontWeight: 600, color: 'var(--fg-1)', margin: 0 }}>
             Add {titleMap[linkType]} Link
           </h3>
           <button onClick={onClose} style={{ width: 32, height: 32, border: 'none', backgroundColor: 'transparent', color: 'var(--fg-4)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -148,14 +148,14 @@ function AddLinkModal({
               Item Key *
             </label>
             <input type="text" value={itemKey} onChange={(e) => setItemKey(e.target.value)} placeholder={prefixMap[linkType]}
-              style={{ width: '100%', height: 40, padding: '8px 12px', fontSize: 14, fontFamily: 'Inter, sans-serif', border: '1.5px solid var(--divider)', borderRadius: 8, outline: 'none' }} />
+              style={{ width: '100%', height: 40, padding: '8px 12px', fontSize: 14, fontFamily: 'Geist, -apple-system, sans-serif', border: '1.5px solid var(--divider)', borderRadius: 8, outline: 'none' }} />
           </div>
           <div>
             <label style={{ display: 'block', fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--fg-3)', marginBottom: 6 }}>
               Title
             </label>
             <input type="text" value={itemTitle} onChange={(e) => setItemTitle(e.target.value)} placeholder="Enter title..."
-              style={{ width: '100%', height: 40, padding: '8px 12px', fontSize: 14, fontFamily: 'Inter, sans-serif', border: '1.5px solid var(--divider)', borderRadius: 8, outline: 'none' }} />
+              style={{ width: '100%', height: 40, padding: '8px 12px', fontSize: 14, fontFamily: 'Geist, -apple-system, sans-serif', border: '1.5px solid var(--divider)', borderRadius: 8, outline: 'none' }} />
           </div>
         </div>
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, padding: '16px 20px', borderTop: '1px solid var(--divider)' }}>
@@ -322,19 +322,19 @@ export function ViewTestCaseModal({
         return (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
             <div>
-              <h4 style={{ fontFamily: 'Inter', fontSize: 13, fontWeight: 600, color: 'var(--fg-3)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Description</h4>
+              <h4 style={{ fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 13, fontWeight: 600, color: 'var(--fg-3)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Description</h4>
               {testCase.description ? (
-                <p style={{ fontFamily: 'Inter', fontSize: 14, color: 'var(--fg-1)', lineHeight: 1.6 }}>{testCase.description}</p>
+                <p style={{ fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 14, color: 'var(--fg-1)', lineHeight: 1.6 }}>{testCase.description}</p>
               ) : (
-                <p style={{ fontFamily: 'Inter', fontSize: 14, color: 'var(--fg-4)', fontStyle: 'italic' }}>No description defined</p>
+                <p style={{ fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 14, color: 'var(--fg-4)', fontStyle: 'italic' }}>No description defined</p>
               )}
             </div>
             <div>
-              <h4 style={{ fontFamily: 'Inter', fontSize: 13, fontWeight: 600, color: 'var(--fg-3)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Preconditions</h4>
+              <h4 style={{ fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 13, fontWeight: 600, color: 'var(--fg-3)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Preconditions</h4>
               {testCase.preconditions ? (
-                <p style={{ fontFamily: 'Inter', fontSize: 14, color: 'var(--fg-1)', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>{testCase.preconditions}</p>
+                <p style={{ fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 14, color: 'var(--fg-1)', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>{testCase.preconditions}</p>
               ) : (
-                <p style={{ fontFamily: 'Inter', fontSize: 14, color: 'var(--fg-4)', fontStyle: 'italic' }}>No preconditions defined</p>
+                <p style={{ fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 14, color: 'var(--fg-4)', fontStyle: 'italic' }}>No preconditions defined</p>
               )}
             </div>
           </div>
@@ -347,18 +347,18 @@ export function ViewTestCaseModal({
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             {steps.map((step) => (
               <div key={step.id} style={{ display: 'flex', gap: 16, padding: 16, backgroundColor: 'var(--bg-1)', borderRadius: 8, border: '1px solid var(--divider)' }}>
-                <div style={{ width: 32, height: 32, backgroundColor: 'var(--cp-blue)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--cp-float)', fontFamily: 'Inter', fontSize: 14, fontWeight: 600, flexShrink: 0 }}>
+                <div style={{ width: 32, height: 32, backgroundColor: 'var(--cp-blue)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--cp-float)', fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 14, fontWeight: 600, flexShrink: 0 }}>
                   {step.step_number}
                 </div>
                 <div style={{ flex: 1 }}>
                   <div style={{ marginBottom: 8 }}>
-                    <span style={{ fontFamily: 'Inter', fontSize: 12, fontWeight: 600, color: 'var(--fg-3)', textTransform: 'uppercase' }}>Action</span>
-                    <p style={{ fontFamily: 'Inter', fontSize: 14, color: 'var(--fg-1)', marginTop: 4 }}>{step.action}</p>
+                    <span style={{ fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 12, fontWeight: 600, color: 'var(--fg-3)', textTransform: 'uppercase' }}>Action</span>
+                    <p style={{ fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 14, color: 'var(--fg-1)', marginTop: 4 }}>{step.action}</p>
                   </div>
                   {step.expected_result && (
                     <div>
-                      <span style={{ fontFamily: 'Inter', fontSize: 12, fontWeight: 600, color: 'var(--fg-3)', textTransform: 'uppercase' }}>Expected Result</span>
-                      <p style={{ fontFamily: 'Inter', fontSize: 14, color: 'var(--fg-1)', marginTop: 4 }}>{step.expected_result}</p>
+                      <span style={{ fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 12, fontWeight: 600, color: 'var(--fg-3)', textTransform: 'uppercase' }}>Expected Result</span>
+                      <p style={{ fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 14, color: 'var(--fg-1)', marginTop: 4 }}>{step.expected_result}</p>
                     </div>
                   )}
                 </div>

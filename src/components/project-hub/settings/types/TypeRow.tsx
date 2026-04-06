@@ -12,13 +12,13 @@ const ICON_MAP: Record<string, React.ComponentType<any>> = {
 
 const LEVEL_STYLES: Record<string, { bg: string; text: string }> = {
   Top: { bg: '#F5F3FF', text: '#7C3AED' },
-  Mid: { bg: '#EFF6FF', text: '#2563EB' },
-  Work: { bg: '#F1F5F9', text: '#334155' },
-  Child: { bg: '#F1F5F9', text: '#94A3B8' },
+  Mid: { bg: 'rgba(59,130,246,0.06)', text: '#2563EB' },
+  Work: { bg: '#1A1A1A', text: 'rgba(237,237,237,0.53)' },
+  Child: { bg: '#1A1A1A', text: 'rgba(237,237,237,0.40)' },
   top: { bg: '#F5F3FF', text: '#7C3AED' },
-  mid: { bg: '#EFF6FF', text: '#2563EB' },
-  work: { bg: '#F1F5F9', text: '#334155' },
-  child: { bg: '#F1F5F9', text: '#94A3B8' },
+  mid: { bg: 'rgba(59,130,246,0.06)', text: '#2563EB' },
+  work: { bg: '#1A1A1A', text: 'rgba(237,237,237,0.53)' },
+  child: { bg: '#1A1A1A', text: 'rgba(237,237,237,0.40)' },
 };
 
 interface TypeRowProps {
@@ -41,7 +41,7 @@ export function TypeRow({ name, icon, color, level, isEnabled, isFeatureType, fe
 
   return (
     <div
-      className="flex items-center gap-3 px-3 rounded-lg hover:bg-[#F8FAFC] transition-colors"
+      className="flex items-center gap-3 px-3 rounded-lg hover:bg-[#1A1A1A] transition-colors"
       style={{ height: 48, opacity: isDisabledFeature ? 0.5 : 1 }}
     >
       {/* Icon circle */}
@@ -78,7 +78,7 @@ export function TypeRow({ name, icon, color, level, isEnabled, isFeatureType, fe
       <div className="relative">
         <button
           onClick={onViewFields}
-          className="flex items-center justify-center rounded transition-colors hover:bg-[var(--bd-default, #E2E8F0)]"
+          className="flex items-center justify-center rounded transition-colors hover:bg-[var(--bd-default, rgba(255,255,255,0.10))]"
           style={{ width: 28, height: 28, border: 'none', background: 'transparent', cursor: 'pointer' }}
           title="View Fields"
         >

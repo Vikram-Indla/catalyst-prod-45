@@ -42,14 +42,14 @@ export default function IncidentKanbanPage() {
   // NOCTURNE tokens
   const pageBg = isDark ? '#0A0A0A' : '#FFFFFF';
   const surfaceBg = isDark ? '#1A1A1A' : '#FFFFFF';
-  const laneBg = isDark ? '#1A1A1A' : '#F1F5F9';
+  const laneBg = isDark ? '#1A1A1A' : '#1A1A1A';
   const cardBg = isDark ? '#1A1A1A' : '#FFFFFF';
   const borderColor = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.12)';
-  const textPrimary = isDark ? '#EDEDED' : '#0F172A';
-  const textSecondary = isDark ? '#A1A1A1' : '#64748B';
-  const textMuted = isDark ? '#878787' : '#94A3B8';
-  const countBg = isDark ? '#1A1A1A' : '#F1F5F9';
-  const avatarBg = isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0';
+  const textPrimary = isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)';
+  const textSecondary = isDark ? '#A1A1A1' : 'rgba(237,237,237,0.40)';
+  const textMuted = isDark ? '#878787' : 'rgba(237,237,237,0.40)';
+  const countBg = isDark ? '#1A1A1A' : '#1A1A1A';
+  const avatarBg = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.10)';
   const avatarText = isDark ? '#A1A1A1' : '#475569';
 
   if (isLoading) {
@@ -62,7 +62,7 @@ export default function IncidentKanbanPage() {
       <div className="px-6 pt-6 pb-4 shrink-0">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center rounded-md" style={{ width: 32, height: 32, backgroundColor: isDark ? 'rgba(37,99,235,0.12)' : '#EFF6FF' }}>
+            <div className="flex items-center justify-center rounded-md" style={{ width: 32, height: 32, backgroundColor: isDark ? 'rgba(37,99,235,0.12)' : 'rgba(59,130,246,0.06)' }}>
               <LayoutGrid size={18} style={{ color: '#2563EB' }} />
             </div>
             <h1 style={{ fontFamily: 'Sora, sans-serif', fontSize: 18, fontWeight: 700, color: textPrimary }}>Kanban Board</h1>
@@ -80,8 +80,8 @@ export default function IncidentKanbanPage() {
             <div key={col.key} className="flex flex-col shrink-0" style={{ width: 260 }}>
               {/* Column Header */}
               <div className="flex items-center gap-2 px-3 py-2 mb-2">
-                <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: col.dotColor, display: 'inline-block', border: col.dotColor === '#DFE1E6' ? `1px solid ${isDark ? '#878787' : '#94A3B8'}` : 'none' }} />
-                <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: textSecondary }}>
+                <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: col.dotColor, display: 'inline-block', border: col.dotColor === '#DFE1E6' ? `1px solid ${isDark ? '#878787' : 'rgba(237,237,237,0.40)'}` : 'none' }} />
+                <span style={{ fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: textSecondary }}>
                   {col.label}
                 </span>
                 <span className="ml-auto px-1.5" style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, fontWeight: 700, color: textSecondary, backgroundColor: countBg, borderRadius: 3 }}>
@@ -92,7 +92,7 @@ export default function IncidentKanbanPage() {
               {/* Cards */}
               <div className="flex-1 space-y-2 overflow-y-auto" style={{ backgroundColor: laneBg, borderRadius: 6, padding: 8, minHeight: 200 }}>
                 {grouped[col.key]?.length === 0 && (
-                  <p className="text-center py-8" style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: textMuted }}>No incidents</p>
+                  <p className="text-center py-8" style={{ fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 11, color: textMuted }}>No incidents</p>
                 )}
                 {grouped[col.key]?.map((item: any) => {
                   const isBreached = item.resolution_breached;
@@ -124,14 +124,14 @@ export default function IncidentKanbanPage() {
                         </span>
                         <SeverityChip severity={item.severity || 'SEV4'} />
                       </div>
-                      <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, fontWeight: 650, color: textPrimary, lineHeight: 1.4, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                      <p style={{ fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 12, fontWeight: 650, color: textPrimary, lineHeight: 1.4, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                         {item.title}
                       </p>
                       <div className="flex items-center gap-2 mt-2">
                         <div className="rounded-full flex items-center justify-center shrink-0" style={{ width: 20, height: 20, backgroundColor: avatarBg, fontSize: 9, fontWeight: 650, color: avatarText }}>
                           {(item.assignee_name || 'U').charAt(0).toUpperCase()}
                         </div>
-                        <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: textSecondary }}>{item.assignee_name || 'Unassigned'}</span>
+                        <span style={{ fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 11, color: textSecondary }}>{item.assignee_name || 'Unassigned'}</span>
                       </div>
                     </div>
                   );

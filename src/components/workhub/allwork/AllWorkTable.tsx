@@ -60,7 +60,7 @@ const HUB_COLORS: Record<string, { border: string; text: string; bg: string }> =
   project: { border: 'var(--cp-blue)', text: 'var(--cp-blue)', bg: 'var(--cp-primary-5)' },
   product: { border: 'var(--fg-2)', text: 'var(--fg-2)', bg: '#F4F4F5' },
   task: { border: '#D4D4D8', text: 'var(--fg-3)', bg: '#F4F4F5' },
-  incident: { border: 'var(--sem-danger)', text: 'var(--sem-danger)', bg: '#FEF2F2' },
+  incident: { border: 'var(--sem-danger)', text: 'var(--sem-danger)', bg: 'rgba(248,113,113,0.06)' },
 };
 
 const AVATAR_COLORS = ['#4C6EF5', '#FA8C16', '#52C41A', '#EB2F96', '#722ED1', '#13C2C2', '#F5222D'];
@@ -206,7 +206,7 @@ export function AllWorkTable({
                 color: 'var(--fg-3)',
                 cursor: col.sortable ? 'pointer' : 'default',
                 padding: '0 8px',
-                fontFamily: 'Inter, sans-serif',
+                fontFamily: 'Geist, -apple-system, sans-serif',
               }}
             >
               {col.label}
@@ -326,7 +326,7 @@ const TableRow = memo(function TableRow({
 
       {/* Summary */}
       <div className="flex items-center gap-1 px-2 min-w-0">
-        <span className="text-[14px] truncate" style={{ color: 'var(--fg-1)', fontWeight: 400, fontFamily: 'Inter, sans-serif' }}>
+        <span className="text-[14px] truncate" style={{ color: 'var(--fg-1)', fontWeight: 400, fontFamily: 'Geist, -apple-system, sans-serif' }}>
           {item.summary}
         </span>
         <div className="opacity-0 group-hover:opacity-100 flex items-center gap-0.5 shrink-0 ml-auto transition-opacity duration-[80ms]">
@@ -345,7 +345,7 @@ const TableRow = memo(function TableRow({
       </div>
 
       {/* Project */}
-      <div className="px-2 truncate text-[13px]" style={{ color: 'var(--fg-2)', fontFamily: 'Inter, sans-serif' }}>
+      <div className="px-2 truncate text-[13px]" style={{ color: 'var(--fg-2)', fontFamily: 'Geist, -apple-system, sans-serif' }}>
         {item.project_key || '—'}
       </div>
 
@@ -380,7 +380,7 @@ const TableRow = memo(function TableRow({
             >
               {item.assignee_display_name.charAt(0).toUpperCase()}
             </div>
-            <span className="text-[13px] truncate" style={{ color: 'var(--fg-2)', fontFamily: 'Inter, sans-serif' }}>
+            <span className="text-[13px] truncate" style={{ color: 'var(--fg-2)', fontFamily: 'Geist, -apple-system, sans-serif' }}>
               {item.assignee_display_name}
             </span>
           </>

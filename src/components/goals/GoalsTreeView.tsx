@@ -41,9 +41,9 @@ function statusBadge(status: string, isDark = false) {
     achieved:    { dot: '#4F46E5', bg: 'rgba(79,70,229,0.08)',  text: '#4338CA', bgDark: '#1A2030', textDark: '#93C5FD', label: 'Achieved' },
     at_risk:     { dot: '#D97706', bg: 'rgba(217,119,6,0.08)',  text: '#B45309', bgDark: '#2A2418', textDark: '#FBBF24', label: 'At Risk' },
     off_track:   { dot: '#EF4444', bg: 'rgba(239,68,68,0.08)',  text: '#DC2626', bgDark: '#2A1C1E', textDark: '#FCA5A5', label: 'Off Track' },
-    draft:       { dot: '#94A3B8', bg: '#F1F5F9',               text: '#64748B', bgDark: '#1A1A1A', textDark: '#A1A1A1', label: 'Draft' },
-    not_started: { dot: '#94A3B8', bg: '#F1F5F9',               text: '#64748B', bgDark: '#1A1A1A', textDark: '#A1A1A1', label: 'Not Started' },
-    cancelled:   { dot: '#94A3B8', bg: '#F1F5F9',               text: '#64748B', bgDark: '#1A1A1A', textDark: '#A1A1A1', label: 'Cancelled' },
+    draft:       { dot: 'rgba(237,237,237,0.40)', bg: '#1A1A1A',               text: 'rgba(237,237,237,0.40)', bgDark: '#1A1A1A', textDark: '#A1A1A1', label: 'Draft' },
+    not_started: { dot: 'rgba(237,237,237,0.40)', bg: '#1A1A1A',               text: 'rgba(237,237,237,0.40)', bgDark: '#1A1A1A', textDark: '#A1A1A1', label: 'Not Started' },
+    cancelled:   { dot: 'rgba(237,237,237,0.40)', bg: '#1A1A1A',               text: 'rgba(237,237,237,0.40)', bgDark: '#1A1A1A', textDark: '#A1A1A1', label: 'Cancelled' },
   };
   const s = map[status] || map.draft;
   return (
@@ -108,22 +108,22 @@ function computeThemeStatus(goals: Goal[]): string {
 }
 
 const AVATAR_COLORS: Record<string, { bg: string; text: string; bgDark: string; textDark: string }> = {
-  'Nada Alfassam':      { bg: '#DBEAFE', text: '#1E40AF', bgDark: 'rgba(59,130,246,0.15)',  textDark: '#93C5FD' },
+  'Nada Alfassam':      { bg: '#DBEAFE', text: '#7DB8FC', bgDark: 'rgba(59,130,246,0.15)',  textDark: '#93C5FD' },
   'Sitah Alqahtani':    { bg: '#E0E7FF', text: '#3730A3', bgDark: 'rgba(99,102,241,0.15)',  textDark: '#A5B4FC' },
-  'Sulaiman Alessa':    { bg: '#D1FAE5', text: '#065F46', bgDark: 'rgba(52,211,153,0.15)',  textDark: '#6EE7B7' },
-  'ibrahim alqusiyer':  { bg: '#FEF3C7', text: '#92400E', bgDark: 'rgba(251,191,36,0.15)',  textDark: '#FCD34D' },
+  'Sulaiman Alessa':    { bg: '#D1FAE5', text: '#4ADE80', bgDark: 'rgba(52,211,153,0.15)',  textDark: '#6EE7B7' },
+  'ibrahim alqusiyer':  { bg: 'rgba(251,191,36,0.10)', text: '#FBBF24', bgDark: 'rgba(251,191,36,0.15)',  textDark: '#FCD34D' },
   'Khaled Alghithy':    { bg: '#CFFAFE', text: '#155E75', bgDark: 'rgba(34,211,238,0.15)',  textDark: '#67E8F9' },
-  'Izza Ali':           { bg: '#EDE9FE', text: '#5B21B6', bgDark: 'rgba(139,92,246,0.15)',  textDark: '#C4B5FD' },
+  'Izza Ali':           { bg: '#EDE9FE', text: '#A78BFA', bgDark: 'rgba(139,92,246,0.15)',  textDark: '#C4B5FD' },
 };
 
 function getAvatarColors(name: string, isDark = false) {
   const palettes = [
-    { bg: '#DBEAFE', text: '#1E40AF', bgDark: 'rgba(59,130,246,0.15)',  textDark: '#93C5FD' },
-    { bg: '#D1FAE5', text: '#065F46', bgDark: 'rgba(52,211,153,0.15)',  textDark: '#6EE7B7' },
+    { bg: '#DBEAFE', text: '#7DB8FC', bgDark: 'rgba(59,130,246,0.15)',  textDark: '#93C5FD' },
+    { bg: '#D1FAE5', text: '#4ADE80', bgDark: 'rgba(52,211,153,0.15)',  textDark: '#6EE7B7' },
     { bg: '#E0E7FF', text: '#3730A3', bgDark: 'rgba(99,102,241,0.15)',  textDark: '#A5B4FC' },
-    { bg: '#FEF3C7', text: '#92400E', bgDark: 'rgba(251,191,36,0.15)',  textDark: '#FCD34D' },
+    { bg: 'rgba(251,191,36,0.10)', text: '#FBBF24', bgDark: 'rgba(251,191,36,0.15)',  textDark: '#FCD34D' },
     { bg: '#CFFAFE', text: '#155E75', bgDark: 'rgba(34,211,238,0.15)',  textDark: '#67E8F9' },
-    { bg: '#EDE9FE', text: '#5B21B6', bgDark: 'rgba(139,92,246,0.15)',  textDark: '#C4B5FD' },
+    { bg: '#EDE9FE', text: '#A78BFA', bgDark: 'rgba(139,92,246,0.15)',  textDark: '#C4B5FD' },
   ];
   let entry;
   if (AVATAR_COLORS[name]) {
@@ -137,7 +137,7 @@ function getAvatarColors(name: string, isDark = false) {
 }
 
 function OwnerAvatar({ name, size = 28, isDark = false }: { name?: string; size?: number; isDark?: boolean }) {
-  if (!name) return <span style={{ fontSize: 11, color: isDark ? DK.t4 : '#CBD5E1' }}>—</span>;
+  if (!name) return <span style={{ fontSize: 11, color: isDark ? DK.t4 : 'rgba(237,237,237,0.53)' }}>—</span>;
   const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
   const colors = getAvatarColors(name, isDark);
   return (
@@ -257,7 +257,7 @@ export function GoalsTreeView({
   const headerText = isDark ? DK.t3 : 'var(--fg-3)';
   const containerBg = isDark ? 'transparent' : 'var(--bg-app)';
   const themeRowBg = isDark ? 'rgba(255,255,255,0.03)' : 'var(--cp-bd-zone)';
-  const themeRowHover = isDark ? 'rgba(255,255,255,0.05)' : '#E2E8F0';
+  const themeRowHover = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.10)';
   const goalRowBg = isDark ? 'transparent' : 'var(--bg-app)';
   const goalRowHover = isDark ? 'rgba(255,255,255,0.03)' : 'var(--bg-1)';
   const krRowBg = isDark ? 'rgba(255,255,255,0.01)' : 'var(--bg-1)';
@@ -315,7 +315,7 @@ export function GoalsTreeView({
               onMouseLeave={e => (e.currentTarget.style.background = themeRowBg)}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <ChevronRight size={14} color={isDark ? 'rgba(255,255,255,0.35)' : '#64748B'} style={{ transform: themeExpanded ? 'rotate(90deg)' : 'rotate(0deg)', transition: 'transform 200ms', flexShrink: 0 }} />
+                <ChevronRight size={14} color={isDark ? 'rgba(255,255,255,0.35)' : 'rgba(237,237,237,0.40)'} style={{ transform: themeExpanded ? 'rotate(90deg)' : 'rotate(0deg)', transition: 'transform 200ms', flexShrink: 0 }} />
                 <span style={{ fontSize: 14, fontWeight: 600, color: isDark ? DK.t1 : 'var(--fg-1)' }}>{theme.title}</span>
                 <span style={{ fontSize: 11, color: isDark ? DK.t3 : 'var(--fg-3)' }}>({themeGoals.length} goal{themeGoals.length !== 1 ? 's' : ''})</span>
               </div>
@@ -361,7 +361,7 @@ export function GoalsTreeView({
 
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
                       <ChevronRight
-                        size={13} color={isDark ? 'rgba(255,255,255,0.35)' : '#94A3B8'}
+                        size={13} color={isDark ? 'rgba(255,255,255,0.35)' : 'rgba(237,237,237,0.40)'}
                         onClick={e => { e.stopPropagation(); onToggleGoal(goal.id); }}
                         style={{ transform: goalExpanded ? 'rotate(90deg)' : 'rotate(0deg)', transition: 'transform 200ms', flexShrink: 0, cursor: 'pointer' }}
                       />
@@ -387,7 +387,7 @@ export function GoalsTreeView({
                           {goal.ai_health_score}
                         </span>
                       ) : (
-                        <span style={{ fontSize: 11, color: isDark ? DK.t4 : '#CBD5E1' }}>—</span>
+                        <span style={{ fontSize: 11, color: isDark ? DK.t4 : 'rgba(237,237,237,0.53)' }}>—</span>
                       )}
                     </div>
                   </div>
@@ -413,7 +413,7 @@ export function GoalsTreeView({
                           background: krRowBg,
                           borderBottom: `1px solid ${isDark ? DK.borderSubtle : 'var(--bg-1)'}`, fontSize: 13, position: 'relative',
                           transition: 'background 150ms',
-                          color: isDark ? DK.t2 : '#334155',
+                          color: isDark ? DK.t2 : 'rgba(237,237,237,0.53)',
                         }}
                         onMouseEnter={e => (e.currentTarget.style.background = krRowHover)}
                         onMouseLeave={e => (e.currentTarget.style.background = krRowBg)}

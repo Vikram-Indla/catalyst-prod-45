@@ -16,7 +16,7 @@ export default function OnHoldWidget({ projectId, projectKey, collapsed, onToggl
   return (
     <WidgetWrapper title="On Hold" subtitle="Blocked items" collapsed={collapsed} onToggleCollapse={onToggleCollapse} span={1} headerBadges={badge}>
       {isLoading ? (
-        <div className="animate-pulse"><div className="h-12 rounded bg-[#F1F5F9] dark:bg-[#1A1A1A]" /></div>
+        <div className="animate-pulse"><div className="h-12 rounded bg-[#1A1A1A] dark:bg-[#1A1A1A]" /></div>
       ) : count === 0 ? (
         <div className="flex flex-col items-center py-6 text-center">
           <div style={{ fontSize: 28, color: 'var(--cp-text-muted)', marginBottom: 8 }}>◻</div>

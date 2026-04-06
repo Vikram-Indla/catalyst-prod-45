@@ -141,10 +141,10 @@ export function QuickExecutionModal({
   if (!tc) return null;
 
   const priorityStyle = {
-    critical: { color: 'var(--sem-danger)', bg: '#FEF2F2' },
+    critical: { color: 'var(--sem-danger)', bg: 'rgba(248,113,113,0.06)' },
     high:     { color: '#EA580C', bg: '#FFF7ED' },
     medium:   { color: 'var(--sem-warning)', bg: '#FFFBEB' },
-    low:      { color: 'var(--sem-success)', bg: '#ECFDF5' },
+    low:      { color: 'var(--sem-success)', bg: 'rgba(74,222,128,0.06)' },
   }[tc.priority?.toLowerCase()] || { color: 'var(--sem-warning)', bg: '#FFFBEB' };
 
   return (
@@ -219,8 +219,8 @@ export function QuickExecutionModal({
           {tc.expected_result && (
             <div style={{ marginBottom: 20 }}>
               <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-2)', margin: '0 0 8px' }}>Expected Result</p>
-              <div style={{ padding: 14, backgroundColor: '#ECFDF5', border: '1px solid #A7F3D0', borderRadius: 8 }}>
-                <p style={{ fontSize: 14, color: '#065F46', margin: 0, lineHeight: 1.5 }}>{highlightVars(tc.expected_result)}</p>
+              <div style={{ padding: 14, backgroundColor: 'rgba(74,222,128,0.06)', border: '1px solid #A7F3D0', borderRadius: 8 }}>
+                <p style={{ fontSize: 14, color: '#4ADE80', margin: 0, lineHeight: 1.5 }}>{highlightVars(tc.expected_result)}</p>
               </div>
             </div>
           )}

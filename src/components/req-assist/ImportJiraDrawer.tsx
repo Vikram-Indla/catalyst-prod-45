@@ -30,8 +30,8 @@ function ProjectTicketCountBadge({ projectKey }: { projectKey: string }) {
 }
 
 const PRIORITY_STYLES: Record<string, { bg: string; color: string }> = {
-  HIGH:     { bg: '#FEF3C7', color: '#92400E' },
-  CRITICAL: { bg: '#FEF3C7', color: '#92400E' },
+  HIGH:     { bg: 'rgba(251,191,36,0.10)', color: '#FBBF24' },
+  CRITICAL: { bg: 'rgba(251,191,36,0.10)', color: '#FBBF24' },
   MEDIUM:   { bg: '#DFE1E6', color: '#374151' },
   LOW:      { bg: '#DFE1E6', color: '#374151' },
 };
@@ -456,10 +456,10 @@ function Step1({
             </div>
           )}
           {verifyState === 'not_configured' && (
-            <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start', background: '#FEF3C7', border: '0.75px solid var(--sem-warning)', borderRadius: 6, padding: '10px 12px', marginTop: 4 }}>
+            <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start', background: 'rgba(251,191,36,0.10)', border: '0.75px solid var(--sem-warning)', borderRadius: 6, padding: '10px 12px', marginTop: 4 }}>
               <AlertTriangle size={14} style={{ color: 'var(--sem-warning)', flexShrink: 0, marginTop: 2 }} />
               <div>
-                <span style={{ fontSize: 13, color: '#92400E', fontFamily: "'Inter', sans-serif" }}>Jira integration not configured. Go to Settings → Integrations. </span>
+                <span style={{ fontSize: 13, color: '#FBBF24', fontFamily: "'Inter', sans-serif" }}>Jira integration not configured. Go to Settings → Integrations. </span>
                 <a href="/settings/integrations" style={{ fontSize: 13, color: 'var(--cp-blue)', textDecoration: 'underline', fontFamily: "'Inter', sans-serif" }}>Go to Settings →</a>
               </div>
             </div>

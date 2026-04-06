@@ -106,7 +106,7 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               opacity: hover || menuOpen ? 1 : 0, transition: 'opacity 150ms',
             }}>
-              <MoreHorizontal size={15} color="#64748B" />
+              <MoreHorizontal size={15} color="rgba(237,237,237,0.40)" />
             </button>
             {menuOpen && (
               <div style={{
@@ -141,15 +141,15 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
           }}>
             <Star size={15}
               fill={board.isStarred ? '#D97706' : 'none'}
-              color={board.isStarred ? '#D97706' : '#94A3B8'}
+              color={board.isStarred ? '#D97706' : 'rgba(237,237,237,0.40)'}
             />
           </button>
 
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginBottom: 10 }}>
-            {board.isPersonal && <Chip bg={isDark ? 'rgba(37,99,235,0.12)' : '#EFF6FF'} color="#2563EB">Personal</Chip>}
+            {board.isPersonal && <Chip bg={isDark ? 'rgba(37,99,235,0.12)' : 'rgba(59,130,246,0.06)'} color="#2563EB">Personal</Chip>}
             <Chip bg={vis.bg} color={vis.color}>{vis.label}</Chip>
             {board.swimlaneType !== 'none' && (
-              <Chip bg={isDark ? 'rgba(255,255,255,0.06)' : '#F8FAFC'} color={isDark ? '#A1A1A1' : '#64748B'}>By {board.swimlaneType}</Chip>
+              <Chip bg={isDark ? 'rgba(255,255,255,0.06)' : '#1A1A1A'} color={isDark ? '#A1A1A1' : 'rgba(237,237,237,0.40)'}>By {board.swimlaneType}</Chip>
             )}
             {/* Jira Sync badge */}
             {hasJiraSync && (
@@ -267,7 +267,7 @@ function MenuItem({ children, onClick, danger }: { children: React.ReactNode; on
       color: danger ? 'var(--sem-danger)' : 'var(--fg-2)',
       fontFamily: "'Inter', sans-serif", textAlign: 'left',
     }}
-      onMouseEnter={e => (e.currentTarget.style.background = danger ? (document.documentElement.classList.contains('dark') ? 'rgba(220,38,38,0.10)' : '#FEF2F2') : (document.documentElement.classList.contains('dark') ? 'rgba(255,255,255,0.04)' : 'rgba(15,23,42,0.04)'))}
+      onMouseEnter={e => (e.currentTarget.style.background = danger ? (document.documentElement.classList.contains('dark') ? 'rgba(220,38,38,0.10)' : 'rgba(248,113,113,0.06)') : (document.documentElement.classList.contains('dark') ? 'rgba(255,255,255,0.04)' : 'rgba(15,23,42,0.04)'))}
       onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
     >
       {children}

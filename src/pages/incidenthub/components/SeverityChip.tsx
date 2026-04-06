@@ -7,10 +7,10 @@
 import { useTheme } from '@/hooks/useTheme';
 
 const SEV_STYLES: Record<string, { bg: string; text: string; border: string; darkBg: string; darkText: string; darkBorder: string }> = {
-  SEV1: { bg: '#FEE2E2', text: '#991B1B', border: '#FECACA', darkBg: 'rgba(248,113,113,0.12)', darkText: '#FCA5A5', darkBorder: 'rgba(248,113,113,0.25)' },
-  SEV2: { bg: '#FEF3C7', text: '#92400E', border: '#FDE68A', darkBg: 'rgba(251,191,36,0.12)', darkText: '#FCD34D', darkBorder: 'rgba(251,191,36,0.25)' },
-  SEV3: { bg: '#DBEAFE', text: '#1E40AF', border: '#BFDBFE', darkBg: 'rgba(59,130,246,0.12)', darkText: '#93C5FD', darkBorder: 'rgba(59,130,246,0.25)' },
-  SEV4: { bg: '#F1F5F9', text: '#475569', border: '#E2E8F0', darkBg: 'rgba(255,255,255,0.06)', darkText: '#A1A1A1', darkBorder: 'rgba(255,255,255,0.08)' },
+  SEV1: { bg: 'rgba(248,113,113,0.10)', text: '#F87171', border: '#FECACA', darkBg: 'rgba(248,113,113,0.12)', darkText: '#FCA5A5', darkBorder: 'rgba(248,113,113,0.25)' },
+  SEV2: { bg: 'rgba(251,191,36,0.10)', text: '#FBBF24', border: '#FDE68A', darkBg: 'rgba(251,191,36,0.12)', darkText: '#FCD34D', darkBorder: 'rgba(251,191,36,0.25)' },
+  SEV3: { bg: '#DBEAFE', text: '#7DB8FC', border: '#BFDBFE', darkBg: 'rgba(59,130,246,0.12)', darkText: '#93C5FD', darkBorder: 'rgba(59,130,246,0.25)' },
+  SEV4: { bg: '#1A1A1A', text: '#475569', border: 'rgba(255,255,255,0.10)', darkBg: 'rgba(255,255,255,0.06)', darkText: '#A1A1A1', darkBorder: 'rgba(255,255,255,0.08)' },
 };
 
 interface SeverityChipProps {

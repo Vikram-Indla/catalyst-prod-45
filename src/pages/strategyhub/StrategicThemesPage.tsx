@@ -123,13 +123,13 @@ export default function StrategicThemesPage() {
   return (
     <PageChrome hideHeader>
       <div style={{ padding: '16px 24px 0' }}>
-        <nav style={{ fontSize: 12, color: isDark ? DK.t2 : '#64748B', marginBottom: 4 }}>
+        <nav style={{ fontSize: 12, color: isDark ? DK.t2 : 'rgba(237,237,237,0.40)', marginBottom: 4 }}>
           <span style={{ cursor: 'pointer', color: isDark ? '#7DB8FC' : undefined }} onClick={() => navigate('/strategyhub')}>StrategyHub</span>
-          <span style={{ margin: '0 4px', color: isDark ? DK.t3 : '#94A3B8' }}>›</span>
-          <span style={{ fontWeight: 600, color: isDark ? DK.t1 : '#0F172A' }}>Strategic Themes</span>
+          <span style={{ margin: '0 4px', color: isDark ? DK.t3 : 'rgba(237,237,237,0.40)' }}>›</span>
+          <span style={{ fontWeight: 600, color: isDark ? DK.t1 : 'rgba(237,237,237,0.93)' }}>Strategic Themes</span>
         </nav>
         <div className="flex items-center justify-between" style={{ marginBottom: 0 }}>
-          <h1 style={{ fontSize: 20, fontWeight: 700, color: isDark ? DK.t1 : '#0F172A' }}>Strategic Themes</h1>
+          <h1 style={{ fontSize: 20, fontWeight: 700, color: isDark ? DK.t1 : 'rgba(237,237,237,0.93)' }}>Strategic Themes</h1>
         </div>
       </div>
 

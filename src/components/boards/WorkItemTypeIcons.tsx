@@ -81,7 +81,7 @@ export function WorkItemTypeIcon({ type, size = 16 }: { type: string; size?: num
   // Fallback: grey square
   return (
     <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
-      <rect width="16" height="16" rx="3" fill="#94A3B8" />
+      <rect width="16" height="16" rx="3" fill="rgba(237,237,237,0.40)" />
     </svg>
   );
 }

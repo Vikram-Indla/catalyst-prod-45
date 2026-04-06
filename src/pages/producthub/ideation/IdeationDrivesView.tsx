@@ -78,14 +78,14 @@ export default function IdeationDrivesView() {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
-            <h2 style={{ fontSize: '22px', fontWeight: 800, color: isDark ? '#EDEDED' : '#0F172A', letterSpacing: '-0.5px', margin: 0, fontFamily: "'Sora', 'Inter', sans-serif" }}>Ideas Themes</h2>
+            <h2 style={{ fontSize: '22px', fontWeight: 800, color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)', letterSpacing: '-0.5px', margin: 0, fontFamily: "'Sora', 'Inter', sans-serif" }}>Ideas Themes</h2>
             <span style={{
-              background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '12px',
+              background: '#1A1A1A', border: '1px solid rgba(255,255,255,0.10)', borderRadius: '12px',
               padding: '1px 7px', fontSize: '11px', fontWeight: 600,
-              fontFamily: MONO, color: '#94A3B8',
+              fontFamily: MONO, color: 'rgba(237,237,237,0.40)',
             }}>{drives.length}</span>
           </div>
-          <p style={{ fontSize: '13px', color: '#64748B', margin: 0 }}>
+          <p style={{ fontSize: '13px', color: 'rgba(237,237,237,0.40)', margin: 0 }}>
             Themed innovation campaigns to focus idea generation around strategic priorities
           </p>
         </div>
@@ -104,7 +104,7 @@ export default function IdeationDrivesView() {
       <CreateDriveModal open={createOpen} onClose={() => setCreateOpen(false)} />
 
       {isLoading && (
-        <div style={{ color: '#94A3B8', fontSize: 13, padding: 20 }}>Loading drives...</div>
+        <div style={{ color: 'rgba(237,237,237,0.40)', fontSize: 13, padding: 20 }}>Loading drives...</div>
       )}
 
       {error && (
@@ -119,7 +119,7 @@ export default function IdeationDrivesView() {
         const IconComponent = getDriveIcon(drive.title);
         return (
           <div key={drive.id} style={{
-            background: isDark ? '#1A1A1A' : '#FFFFFF', border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0', borderRadius: '6px',
+            background: isDark ? '#1A1A1A' : '#FFFFFF', border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(255,255,255,0.10)', borderRadius: '6px',
             padding: '20px', marginBottom: '16px',
           }}>
             {/* Title + Icon + Status */}
@@ -127,13 +127,13 @@ export default function IdeationDrivesView() {
               {/* V12: Lucide icon container */}
               <div style={{
                 width: 36, height: 50, borderRadius: 8,
-                background: isDark ? '#1A1A1A' : '#F1F5F9', border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0',
+                background: isDark ? '#1A1A1A' : '#1A1A1A', border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(255,255,255,0.10)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 flexShrink: 0, color: isDark ? '#A1A1A1' : '#475569',
               }}>
                 <IconComponent size={18} strokeWidth={2} />
               </div>
-              <span style={{ fontSize: '16px', fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A', flex: 1 }}>{drive.title}</span>
+              <span style={{ fontSize: '16px', fontWeight: 700, color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)', flex: 1 }}>{drive.title}</span>
               {/* V12 3-color lozenge for status */}
               <span style={{
                 display: 'inline-flex', alignItems: 'center',
@@ -147,10 +147,10 @@ export default function IdeationDrivesView() {
             </div>
 
             {/* Description */}
-            <p style={{ fontSize: '13px', color: '#64748B', margin: '0 0 12px', lineHeight: 1.5 }}>{drive.description}</p>
+            <p style={{ fontSize: '13px', color: 'rgba(237,237,237,0.40)', margin: '0 0 12px', lineHeight: 1.5 }}>{drive.description}</p>
 
             {/* Stats row */}
-            <div style={{ display: 'flex', gap: '24px', fontSize: '12px', color: '#334155', fontWeight: 500, marginBottom: '10px' }}>
+            <div style={{ display: 'flex', gap: '24px', fontSize: '12px', color: 'rgba(237,237,237,0.53)', fontWeight: 500, marginBottom: '10px' }}>
               <span><strong>{submitted}</strong> {submitted === 1 ? 'idea' : 'ideas'} submitted</span>
               <span>Deadline: <strong>{drive.deadline ? new Date(drive.deadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'No deadline'}</strong></span>
               <span>Target: <strong>{drive.target_count}</strong> ideas</span>
@@ -160,8 +160,8 @@ export default function IdeationDrivesView() {
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
               <div style={{
                 flex: 1, height: 6, borderRadius: 4,
-                background: '#F1F5F9', overflow: 'hidden',
-                border: '1px solid #E2E8F0',
+                background: '#1A1A1A', overflow: 'hidden',
+                border: '1px solid rgba(255,255,255,0.10)',
               }}>
                 <div style={{
                   width: `${Math.min(pct, 100)}%`, height: '100%',
@@ -171,21 +171,21 @@ export default function IdeationDrivesView() {
                   minWidth: pct > 0 ? 4 : 0,
                 }} />
               </div>
-              <span style={{ fontFamily: MONO, fontSize: '11px', fontWeight: 600, color: '#64748B', minWidth: 32, textAlign: 'right' }}>
+              <span style={{ fontFamily: MONO, fontSize: '11px', fontWeight: 600, color: 'rgba(237,237,237,0.40)', minWidth: 32, textAlign: 'right' }}>
                 {submitted}/{drive.target_count}
               </span>
             </div>
 
             {/* Linked ideas */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
-              <span style={{ fontSize: '11px', color: '#94A3B8', fontWeight: 600, marginRight: '4px' }}>Ideas:</span>
+              <span style={{ fontSize: '11px', color: 'rgba(237,237,237,0.40)', fontWeight: 600, marginRight: '4px' }}>Ideas:</span>
               {drive.ideas.length === 0 && (
-                <span style={{ fontSize: '11px', color: '#CBD5E1', fontStyle: 'italic' }}>No ideas linked yet</span>
+                <span style={{ fontSize: '11px', color: 'rgba(237,237,237,0.53)', fontStyle: 'italic' }}>No ideas linked yet</span>
               )}
               {drive.ideas.map(idea => (
                 <span key={idea.idea_key} style={{
                   fontFamily: MONO, fontSize: '11px', fontWeight: 600, color: '#2563EB',
-                  background: '#EFF6FF', border: '1px solid #DBEAFE', borderRadius: '4px', padding: '1px 6px',
+                  background: 'rgba(59,130,246,0.06)', border: '1px solid #DBEAFE', borderRadius: '4px', padding: '1px 6px',
                 }}>{idea.idea_key}</span>
               ))}
             </div>

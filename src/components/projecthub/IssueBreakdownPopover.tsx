@@ -29,7 +29,7 @@ const TYPE_BAR_COLORS: Record<string, string> = {
 };
 
 function getBarColor(type: string): string {
-  return TYPE_BAR_COLORS[type.toLowerCase()] || '#94A3B8';
+  return TYPE_BAR_COLORS[type.toLowerCase()] || 'rgba(237,237,237,0.40)';
 }
 
 export function IssueBreakdownPopover({ projectKey, projectName, issueCount }: Props) {

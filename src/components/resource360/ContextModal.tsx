@@ -62,7 +62,7 @@ const ContextModal: React.FC<ContextModalProps> = ({ item, onClose }) => {
   const colors = SC_COLORS[sc];
   const witStyle = WIT_STYLES[item.work_item_type] || { bg: 'var(--bg-3)', color: 'var(--fg-2)' };
   const hub = deriveHub(item);
-  const hubColor = HUB_COLORS[hub] || '#64748B';
+  const hubColor = HUB_COLORS[hub] || 'rgba(237,237,237,0.40)';
   const hubShort = HUB_SHORT[hub] || hub;
 
   const ageDays = item.age_days;

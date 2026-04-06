@@ -259,7 +259,7 @@ export function TestCasesTable({
                   <span style={{
                     fontWeight: 600,
                     fontSize: 13,
-                    color: tc.priority === 'critical' ? '#991B1B' :
+                    color: tc.priority === 'critical' ? '#F87171' :
                            tc.priority === 'high' ? '#C2410C' :
                            tc.priority === 'medium' ? '#A16207' : 'var(--fg-3)',
                   }}>

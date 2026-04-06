@@ -19,8 +19,8 @@ export function formatRelativeTime(dateStr: string | null): string {
 const STATUS_STYLES: Record<string, { bg: string; color: string }> = {
   active: { bg: '#F0FDFA', color: '#0D9488' },
   on_hold: { bg: '#FFFBEB', color: '#D97706' },
-  completed: { bg: '#F0FDF4', color: '#16A34A' },
-  archived: { bg: '#F1F5F9', color: '#64748B' },
+  completed: { bg: 'rgba(74,222,128,0.06)', color: '#16A34A' },
+  archived: { bg: '#1A1A1A', color: 'rgba(237,237,237,0.40)' },
 };
 
 export function StatusBadge({ status }: { status: string }) {
@@ -44,9 +44,9 @@ export function StatusBadge({ status }: { status: string }) {
 }
 
 const HEALTH_STYLES: Record<string, { bg: string; color: string }> = {
-  on_track: { bg: '#F0FDF4', color: '#16A34A' },
+  on_track: { bg: 'rgba(74,222,128,0.06)', color: '#16A34A' },
   at_risk: { bg: '#FFFBEB', color: '#D97706' },
-  off_track: { bg: '#FEF2F2', color: '#EF4444' },
+  off_track: { bg: 'rgba(248,113,113,0.06)', color: '#EF4444' },
 };
 
 export function HealthBadge({ health }: { health: string | null }) {

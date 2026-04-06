@@ -402,7 +402,7 @@ export function ImportModal({ isOpen, onClose, onImported }: ImportModalProps) {
                     </div>
                     <button onClick={() => { setFile(null); setParsedData([]); setHeaders([]); }} style={{
                       width: 32, height: 32, border: 'none', borderRadius: 6,
-                      backgroundColor: '#FEE2E2', color: 'var(--sem-danger)', cursor: 'pointer',
+                      backgroundColor: 'rgba(248,113,113,0.10)', color: 'var(--sem-danger)', cursor: 'pointer',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                     }}>
                       <Trash2 size={14} />

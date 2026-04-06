@@ -219,7 +219,7 @@ export const DetailTabMilestones: React.FC<DetailTabMilestonesProps> = ({ initia
               <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4, flexWrap: 'wrap' }}>
                 <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--idp-ink)' }}>{m.title}</span>
                 {m.is_critical_path && (
-                  <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 16, height: 16, borderRadius: '50%', background: '#FEE2E2' }}>
+                  <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 16, height: 16, borderRadius: '50%', background: 'rgba(248,113,113,0.10)' }}>
                     <Flag size={9} style={{ color: '#D92525' }} />
                   </span>
                 )}

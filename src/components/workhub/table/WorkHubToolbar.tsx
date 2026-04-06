@@ -78,11 +78,11 @@ export default function WorkHubToolbar({
             onChange={e => handleSearch(e.target.value)}
             placeholder="Search work items..."
             aria-label="Search work items"
-            style={{ flex: 1, border: 'none', background: 'transparent', outline: 'none', fontSize: 13, color: 'var(--fg-1)', fontFamily: 'Inter, sans-serif' }}
+            style={{ flex: 1, border: 'none', background: 'transparent', outline: 'none', fontSize: 13, color: 'var(--fg-1)', fontFamily: 'Geist, -apple-system, sans-serif' }}
           />
           {searchValue ? (
             <button onClick={() => handleSearch('')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }} aria-label="Clear search">
-              <X size={12} color="#94A3B8" />
+              <X size={12} color="rgba(237,237,237,0.40)" />
             </button>
           ) : (
             <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--fg-4)', fontFamily: "'JetBrains Mono', monospace", background: 'var(--divider)', borderRadius: 4, padding: '1px 4px' }}>⌘K</span>
@@ -184,7 +184,7 @@ export default function WorkHubToolbar({
           <Popover>
             <PopoverTrigger asChild>
               <button style={{ width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid var(--bd-default, rgba(255,255,255,0.08))', borderRadius: 4, background: 'transparent', cursor: 'pointer' }} aria-label="Toggle columns">
-                <Settings2 size={16} color="#64748B" />
+                <Settings2 size={16} color="rgba(237,237,237,0.40)" />
               </button>
             </PopoverTrigger>
             <PopoverContent align="end" style={{ width: 220, padding: '8px 0', background: 'var(--bg-app)', border: '1px solid var(--bd-default, rgba(255,255,255,0.08))', borderRadius: 6, zIndex: 9999 }}>
@@ -194,7 +194,7 @@ export default function WorkHubToolbar({
                   width: '100%', display: 'flex', alignItems: 'center', gap: 8, padding: '5px 12px',
                   border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 13, color: 'var(--fg-1)', textAlign: 'left',
                 }}>
-                  {col.visible ? <Eye size={14} color="#2563EB" /> : <EyeOff size={14} color="#94A3B8" />}
+                  {col.visible ? <Eye size={14} color="#2563EB" /> : <EyeOff size={14} color="rgba(237,237,237,0.40)" />}
                   <span style={{ color: col.visible ? 'var(--fg-1)' : 'var(--fg-4)' }}>{col.label}</span>
                 </button>
               ))}

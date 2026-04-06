@@ -8,7 +8,7 @@ export default function ScopeChangeWidget({ projectId, projectKey, collapsed, on
   return (
     <WidgetWrapper title="Scope Change" subtitle="Items added after release start" collapsed={collapsed} onToggleCollapse={onToggleCollapse} span={1}>
       {isLoading ? (
-        <div className="animate-pulse"><div className="h-12 rounded bg-[#F1F5F9] dark:bg-[#1A1A1A]" /></div>
+        <div className="animate-pulse"><div className="h-12 rounded bg-[#1A1A1A] dark:bg-[#1A1A1A]" /></div>
       ) : !scopes?.length ? (
         <div className="flex flex-col items-center py-6 text-center">
           <div style={{ fontSize: 28, color: 'var(--cp-text-muted)', marginBottom: 8 }}>📐</div>

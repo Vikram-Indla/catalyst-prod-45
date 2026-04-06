@@ -11,7 +11,7 @@ function issueTypeToLevel(type: string): { level: number; name: string; color: s
     case 'Story':
       return { level: 3, name: 'Story', color: '#16A34A', colorText: '#15803D' };
     case 'Sub-task':
-      return { level: 4, name: 'Sub-task', color: '#64748B', colorText: '#475569' };
+      return { level: 4, name: 'Sub-task', color: 'rgba(237,237,237,0.40)', colorText: '#475569' };
     case 'QA Bug':
       return { level: 3, name: 'QA Bug', color: '#DC2626', colorText: '#B91C1C' };
     case 'Frontend':
@@ -27,7 +27,7 @@ function issueTypeToLevel(type: string): { level: number; name: string; color: s
     case 'Business Gap':
       return { level: 1, name: 'Business Gap', color: '#0D9488', colorText: '#0F766E' };
     default:
-      return { level: 3, name: type, color: '#64748B', colorText: '#475569' };
+      return { level: 3, name: type, color: 'rgba(237,237,237,0.40)', colorText: '#475569' };
   }
 }
 
@@ -39,13 +39,13 @@ function statusCategoryToColors(category: string): { color: string; colorText: s
       return { color: '#2563EB', colorText: '#1D4ED8', isTerminal: false };
     case 'To Do':
     default:
-      return { color: '#64748B', colorText: '#475569', isTerminal: false };
+      return { color: 'rgba(237,237,237,0.40)', colorText: '#475569', isTerminal: false };
   }
 }
 
 function priorityToObj(priority: string | null): WorkItem['priority'] | undefined {
   if (!priority) return undefined;
-  return { name: priority, color: '#64748B', colorText: '#475569' };
+  return { name: priority, color: 'rgba(237,237,237,0.40)', colorText: '#475569' };
 }
 
 function transformJiraIssue(row: any): WorkItem {

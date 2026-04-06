@@ -34,7 +34,7 @@ export function WikiAdminAccessTab() {
   const matrixRows = matrix ?? [];
 
   if (domainList.length === 0) {
-    return <EmptyState icon={<ShieldCheck style={{ width: 28, height: 28, color: 'var(--cp-text-tertiary, #64748B)' }} />} message="No domains configured" sub="Domains will appear after database setup." />;
+    return <EmptyState icon={<ShieldCheck style={{ width: 28, height: 28, color: 'var(--cp-text-tertiary, rgba(237,237,237,0.40))' }} />} message="No domains configured" sub="Domains will appear after database setup." />;
   }
 
   const lookup: Record<string, Record<string, { id: string; has_access: boolean }>> = {};
@@ -52,17 +52,17 @@ export function WikiAdminAccessTab() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-      <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: 'var(--cp-text-tertiary, #64748B)' }}>
+      <div style={{ fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 12, color: 'var(--cp-text-tertiary, rgba(237,237,237,0.40))' }}>
         Click cells to toggle access. Green = Access, Grey = No Access.
       </div>
 
       <div style={{ border: '1px solid var(--cp-border-default, rgba(15,23,42,0.12))', borderRadius: 4, overflow: 'auto' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: 'Inter, sans-serif', fontSize: 12 }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 12 }}>
           <thead>
-            <tr style={{ background: 'var(--cp-bg-sunken, #F8FAFC)' }}>
-              <th style={{ padding: '8px 12px', textAlign: 'start', fontWeight: 650, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.03em', color: 'var(--cp-text-tertiary, #64748B)', position: 'sticky', insetInlineStart: 0, background: 'var(--cp-bg-sunken, #F8FAFC)', zIndex: 1 }}>Role</th>
+            <tr style={{ background: 'var(--cp-bg-sunken, #1A1A1A)' }}>
+              <th style={{ padding: '8px 12px', textAlign: 'start', fontWeight: 650, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.03em', color: 'var(--cp-text-tertiary, rgba(237,237,237,0.40))', position: 'sticky', insetInlineStart: 0, background: 'var(--cp-bg-sunken, #1A1A1A)', zIndex: 1 }}>Role</th>
               {domainList.map(d => (
-                <th key={d.domain_code} style={{ padding: '8px 12px', textAlign: 'center', fontWeight: 650, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.03em', color: 'var(--cp-text-tertiary, #64748B)', whiteSpace: 'nowrap' }} title={d.domain_name}>
+                <th key={d.domain_code} style={{ padding: '8px 12px', textAlign: 'center', fontWeight: 650, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.03em', color: 'var(--cp-text-tertiary, rgba(237,237,237,0.40))', whiteSpace: 'nowrap' }} title={d.domain_name}>
                   {d.domain_code}
                 </th>
               ))}

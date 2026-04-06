@@ -38,7 +38,7 @@ export function SchedulingRules() {
   }
 
   if (isLoading) {
-    return <div style={{ padding: 40, color: '#64748B', fontFamily: 'Inter, sans-serif' }}>Loading...</div>
+    return <div style={{ padding: 40, color: 'rgba(237,237,237,0.40)', fontFamily: 'Geist, -apple-system, sans-serif' }}>Loading...</div>
   }
 
   const Toggle = ({ checked, onChange }: { checked: boolean; onChange: (v: boolean) => void }) => (
@@ -46,7 +46,7 @@ export function SchedulingRules() {
       onClick={() => onChange(!checked)}
       style={{
         width: 38, height: 22, borderRadius: 11, border: 'none', cursor: 'pointer',
-        background: checked ? '#2563EB' : '#CBD5E1', position: 'relative', flexShrink: 0,
+        background: checked ? '#2563EB' : 'rgba(237,237,237,0.53)', position: 'relative', flexShrink: 0,
         transition: 'background .2s',
       }}
     >
@@ -59,7 +59,7 @@ export function SchedulingRules() {
   )
 
   const cardStyle: React.CSSProperties = {
-    background: 'var(--bg-app, #fff)', border: '1px solid var(--bd-default, #E2E8F0)', borderRadius: 8,
+    background: 'var(--bg-app, #fff)', border: '1px solid var(--bd-default, rgba(255,255,255,0.10))', borderRadius: 8,
     padding: 20, marginBottom: 16, boxShadow: '0 1px 2px rgba(0,0,0,.05)',
   }
 
@@ -70,12 +70,12 @@ export function SchedulingRules() {
   ]
 
   return (
-    <div style={{ maxWidth: 900, fontFamily: 'Inter, sans-serif' }}>
+    <div style={{ maxWidth: 900, fontFamily: 'Geist, -apple-system, sans-serif' }}>
       <div style={{ marginBottom: 24 }}>
-        <h1 style={{ fontFamily: 'Sora, sans-serif', fontSize: 18, fontWeight: 700, color: 'var(--fg-1, #0F172A)', margin: 0 }}>
+        <h1 style={{ fontFamily: 'Sora, sans-serif', fontSize: 18, fontWeight: 700, color: 'var(--fg-1, rgba(237,237,237,0.93))', margin: 0 }}>
           Scheduling Rules
         </h1>
-        <p style={{ fontSize: 13, color: '#64748B', marginTop: 4 }}>
+        <p style={{ fontSize: 13, color: 'rgba(237,237,237,0.40)', marginTop: 4 }}>
           Configure how effective due dates are calculated for the hierarchy.
         </p>
       </div>
@@ -83,11 +83,11 @@ export function SchedulingRules() {
       {/* Card 1: Date Precedence */}
       <div style={cardStyle}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
-          <h2 style={{ fontFamily: 'Sora, sans-serif', fontSize: 14, fontWeight: 600, color: 'var(--fg-1, #0F172A)', margin: 0 }}>
+          <h2 style={{ fontFamily: 'Sora, sans-serif', fontSize: 14, fontWeight: 600, color: 'var(--fg-1, rgba(237,237,237,0.93))', margin: 0 }}>
             Date Precedence
           </h2>
           <span style={{
-            fontSize: 9, background: '#ECFDF5', color: '#10B981', padding: '2px 8px',
+            fontSize: 9, background: 'rgba(74,222,128,0.06)', color: '#10B981', padding: '2px 8px',
             borderRadius: 4, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.3px',
           }}>Priority Chain</span>
         </div>
@@ -95,7 +95,7 @@ export function SchedulingRules() {
         {priorities.map((p, i) => (
           <div key={i} style={{
             display: 'flex', alignItems: 'center', gap: 12, padding: '10px 0',
-            borderBottom: i < 2 ? '1px solid #F1F5F9' : 'none',
+            borderBottom: i < 2 ? '1px solid #1A1A1A' : 'none',
           }}>
             <Toggle checked={priorityToggles[i]} onChange={(v) => {
               const copy = [...priorityToggles]
@@ -103,14 +103,14 @@ export function SchedulingRules() {
               setPriorityToggles(copy)
             }} />
             <div>
-              <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1, #0F172A)' }}>{p.label}</span>
-              <span style={{ fontSize: 12, color: '#64748B' }}> — {p.desc}</span>
+              <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1, rgba(237,237,237,0.93))' }}>{p.label}</span>
+              <span style={{ fontSize: 12, color: 'rgba(237,237,237,0.40)' }}> — {p.desc}</span>
             </div>
           </div>
         ))}
 
         <div style={{
-          background: '#EFF6FF', border: '1px solid #BFDBFE', borderRadius: 8,
+          background: 'rgba(59,130,246,0.06)', border: '1px solid #BFDBFE', borderRadius: 8,
           padding: '10px 14px', marginTop: 14, display: 'flex', gap: 8, alignItems: 'flex-start',
         }}>
           <span style={{ fontSize: 14 }}>ℹ️</span>
@@ -122,19 +122,19 @@ export function SchedulingRules() {
 
       {/* Card 2: Multi-FixVersion Strategy */}
       <div style={cardStyle}>
-        <h2 style={{ fontFamily: 'Sora, sans-serif', fontSize: 14, fontWeight: 600, color: 'var(--fg-1, #0F172A)', margin: '0 0 14px' }}>
+        <h2 style={{ fontFamily: 'Sora, sans-serif', fontSize: 14, fontWeight: 600, color: 'var(--fg-1, rgba(237,237,237,0.93))', margin: '0 0 14px' }}>
           Multi-FixVersion Strategy
         </h2>
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-          <label style={{ fontSize: 13, color: '#334155', width: 260 }}>
+          <label style={{ fontSize: 13, color: 'rgba(237,237,237,0.53)', width: 260 }}>
             When an issue has multiple FixVersions, use:
           </label>
           <select
             value={multiVersionStrategy}
             onChange={(e) => setMultiVersionStrategy(e.target.value)}
             style={{
-              width: 200, padding: '7px 10px', borderRadius: 6, border: '1px solid var(--bd-default, #E2E8F0)',
-              fontSize: 12, color: '#334155', background: 'var(--bg-app, #fff)',
+              width: 200, padding: '7px 10px', borderRadius: 6, border: '1px solid var(--bd-default, rgba(255,255,255,0.10))',
+              fontSize: 12, color: 'rgba(237,237,237,0.53)', background: 'var(--bg-app, #fff)',
             }}
           >
             <option value="earliest">Earliest release date</option>
@@ -147,7 +147,7 @@ export function SchedulingRules() {
       {/* Card 3: Version Name Parser */}
       <div style={cardStyle}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
-          <h2 style={{ fontFamily: 'Sora, sans-serif', fontSize: 14, fontWeight: 600, color: 'var(--fg-1, #0F172A)', margin: 0 }}>
+          <h2 style={{ fontFamily: 'Sora, sans-serif', fontSize: 14, fontWeight: 600, color: 'var(--fg-1, rgba(237,237,237,0.93))', margin: 0 }}>
             Version Name Parser
           </h2>
           <span style={{
@@ -163,18 +163,18 @@ export function SchedulingRules() {
           <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
             <span style={{ fontSize: 14 }}>⚠</span>
             <div>
-              <p style={{ fontSize: 12, fontWeight: 600, color: '#92400E', margin: '0 0 6px' }}>
+              <p style={{ fontSize: 12, fontWeight: 600, color: '#FBBF24', margin: '0 0 6px' }}>
                 Version Name Parsing
               </p>
-              <p style={{ fontSize: 11, color: '#92400E', margin: 0, lineHeight: 1.6 }}>
+              <p style={{ fontSize: 11, color: '#FBBF24', margin: 0, lineHeight: 1.6 }}>
                 When a FixVersion has no releaseDate, Catalyst attempts to extract a date from the version name:
               </p>
-              <div style={{ marginTop: 8, fontSize: 11, color: '#92400E', lineHeight: 2 }}>
-                <code style={{ fontFamily: 'JetBrains Mono, monospace', background: '#F1F5F9', padding: '1px 5px', borderRadius: 2 }}>2026 02</code>
+              <div style={{ marginTop: 8, fontSize: 11, color: '#FBBF24', lineHeight: 2 }}>
+                <code style={{ fontFamily: 'JetBrains Mono, monospace', background: '#1A1A1A', padding: '1px 5px', borderRadius: 2 }}>2026 02</code>
                 {' → 2026-02-28  '}
-                <code style={{ fontFamily: 'JetBrains Mono, monospace', background: '#F1F5F9', padding: '1px 5px', borderRadius: 2 }}>2026 Q1</code>
+                <code style={{ fontFamily: 'JetBrains Mono, monospace', background: '#1A1A1A', padding: '1px 5px', borderRadius: 2 }}>2026 Q1</code>
                 {' → 2026-03-31  '}
-                <code style={{ fontFamily: 'JetBrains Mono, monospace', background: '#F1F5F9', padding: '1px 5px', borderRadius: 2 }}>Release 3.0</code>
+                <code style={{ fontFamily: 'JetBrains Mono, monospace', background: '#1A1A1A', padding: '1px 5px', borderRadius: 2 }}>Release 3.0</code>
                 {' → '}
                 <span style={{ color: '#EF4444', fontWeight: 600 }}>Cannot parse</span>
               </div>
@@ -184,7 +184,7 @@ export function SchedulingRules() {
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
           <Toggle checked={versionNameParsing} onChange={setVersionNameParsing} />
-          <span style={{ fontSize: 13, color: '#334155' }}>
+          <span style={{ fontSize: 13, color: 'rgba(237,237,237,0.53)' }}>
             Enable version name date parsing as fallback when no releaseDate exists
           </span>
         </div>
@@ -205,7 +205,7 @@ export function SchedulingRules() {
             onClick={handleReset}
             style={{
               padding: '8px 20px', borderRadius: 6, fontSize: 12, fontWeight: 500,
-              background: 'var(--bg-1, #F8FAFC)', color: '#334155', border: '1px solid var(--bd-default, #E2E8F0)', cursor: 'pointer',
+              background: 'var(--bg-1, #1A1A1A)', color: 'rgba(237,237,237,0.53)', border: '1px solid var(--bd-default, rgba(255,255,255,0.10))', cursor: 'pointer',
             }}
           >
             Reset to Default

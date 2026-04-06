@@ -208,23 +208,23 @@ export function UserMapping() {
   }, [profiles, catalystToJira])
 
   if (isLoading) {
-    return <div style={{ padding: 40, color: '#64748B', fontFamily: 'Inter, sans-serif' }}>Loading...</div>
+    return <div style={{ padding: 40, color: 'rgba(237,237,237,0.40)', fontFamily: 'Geist, -apple-system, sans-serif' }}>Loading...</div>
   }
 
   const cardBg = '#fff'
-  const borderColor = 'var(--bd-default, #E2E8F0)'
+  const borderColor = 'var(--bd-default, rgba(255,255,255,0.10))'
 
   // Available (unmapped) Jira users for manual dropdown
   const availableJiraUsers = jiraUsers.filter(j => !Object.values(localMappings).includes(j.id) || !localMappings[j.id])
 
   return (
-    <div style={{ maxWidth: 1200, fontFamily: 'Inter, sans-serif' }}>
+    <div style={{ maxWidth: 1200, fontFamily: 'Geist, -apple-system, sans-serif' }}>
       {/* Header */}
       <div style={{ marginBottom: 20 }}>
-        <h1 style={{ fontFamily: 'Sora, sans-serif', fontSize: 18, fontWeight: 700, color: 'var(--fg-1, #0F172A)', margin: 0 }}>
+        <h1 style={{ fontFamily: 'Sora, sans-serif', fontSize: 18, fontWeight: 700, color: 'var(--fg-1, rgba(237,237,237,0.93))', margin: 0 }}>
           User Mapping
         </h1>
-        <p style={{ fontSize: 13, color: '#64748B', marginTop: 4 }}>
+        <p style={{ fontSize: 13, color: 'rgba(237,237,237,0.40)', marginTop: 4 }}>
           Link Catalyst resources to Jira accounts. Filter by department and use smart name matching for suggestions.
         </p>
       </div>
@@ -251,8 +251,8 @@ export function UserMapping() {
           >
             <span style={{ width: 8, height: 8, borderRadius: '50%', background: s.color, flexShrink: 0 }} />
             <div>
-              <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--fg-1, #0F172A)' }}>{s.value}</div>
-              <div style={{ fontSize: 10, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '.3px' }}>{s.label}</div>
+              <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--fg-1, rgba(237,237,237,0.93))' }}>{s.value}</div>
+              <div style={{ fontSize: 10, color: 'rgba(237,237,237,0.40)', textTransform: 'uppercase', letterSpacing: '.3px' }}>{s.label}</div>
             </div>
           </div>
         ))}
@@ -267,13 +267,13 @@ export function UserMapping() {
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <span style={{ fontSize: 16 }}>⚠️</span>
-              <span style={{ fontFamily: 'Sora, sans-serif', fontSize: 13, fontWeight: 700, color: '#92400E' }}>
+              <span style={{ fontFamily: 'Sora, sans-serif', fontSize: 13, fontWeight: 700, color: '#FBBF24' }}>
                 {unmappedCount} Unmapped Catalyst Resource{unmappedCount !== 1 ? 's' : ''}
               </span>
               {departmentFilter !== 'all' && (
                 <span style={{
                   fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 4,
-                  background: 'rgba(146,64,14,0.08)', color: '#92400E',
+                  background: 'rgba(146,64,14,0.08)', color: '#FBBF24',
                 }}>
                   {departments.find(d => d.id === departmentFilter)?.name || 'Filtered'}
                 </span>
@@ -283,14 +283,14 @@ export function UserMapping() {
               {totalUnmappedAll} total unmapped across all departments
             </span>
           </div>
-          <p style={{ fontSize: 11, color: '#92400E', margin: '0 0 12px', lineHeight: 1.5 }}>
+          <p style={{ fontSize: 11, color: '#FBBF24', margin: '0 0 12px', lineHeight: 1.5 }}>
             These Catalyst users have no linked Jira account. Map them manually using the dropdown in the table below, or use Auto-Match to link by email.
           </p>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
             {unmappedProfiles.slice(0, 20).map(r => (
               <span key={r.profile.id} style={{
                 display: 'inline-flex', alignItems: 'center', gap: 5,
-                background: '#FEF3C7', border: '1px solid #FDE68A', borderRadius: 6,
+                background: 'rgba(251,191,36,0.10)', border: '1px solid #FDE68A', borderRadius: 6,
                 padding: '4px 10px', fontSize: 11, color: '#78350F', fontWeight: 500,
               }}>
                 <Avatar name={r.profile.full_name || 'U'} url={r.profile.avatar_url} size={18} />
@@ -311,13 +311,13 @@ export function UserMapping() {
         display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16,
         background: cardBg, border: `1px solid ${borderColor}`, borderRadius: 8, padding: '10px 14px',
       }}>
-        <span style={{ fontSize: 11, fontWeight: 600, color: '#64748B' }}>Department</span>
+        <span style={{ fontSize: 11, fontWeight: 600, color: 'rgba(237,237,237,0.40)' }}>Department</span>
         <select
           value={departmentFilter}
           onChange={e => setDepartmentFilter(e.target.value)}
           style={{
             padding: '5px 10px', borderRadius: 6, fontSize: 12, border: `1px solid ${borderColor}`,
-            background: 'var(--bg-1, #F8FAFC)', color: '#334155', minWidth: 160,
+            background: 'var(--bg-1, #1A1A1A)', color: 'rgba(237,237,237,0.53)', minWidth: 160,
           }}
         >
           <option value="all">All Departments</option>
@@ -326,7 +326,7 @@ export function UserMapping() {
           ))}
         </select>
 
-        <div style={{ width: 1, height: 24, background: 'var(--bd-default, #E2E8F0)', margin: '0 4px' }} />
+        <div style={{ width: 1, height: 24, background: 'var(--bd-default, rgba(255,255,255,0.10))', margin: '0 4px' }} />
 
         {/* View mode toggle */}
         <div style={{ display: 'flex', borderRadius: 6, overflow: 'hidden', border: `1px solid ${borderColor}` }}>
@@ -339,8 +339,8 @@ export function UserMapping() {
               onClick={() => setViewMode(v.mode)}
               style={{
                 padding: '5px 12px', fontSize: 11, fontWeight: 600, border: 'none', cursor: 'pointer',
-                background: viewMode === v.mode ? '#2563EB' : 'var(--bg-1, #F8FAFC)',
-                color: viewMode === v.mode ? '#fff' : '#64748B',
+                background: viewMode === v.mode ? '#2563EB' : 'var(--bg-1, #1A1A1A)',
+                color: viewMode === v.mode ? '#fff' : 'rgba(237,237,237,0.40)',
                 transition: 'all .15s',
               }}
             >
@@ -349,7 +349,7 @@ export function UserMapping() {
           ))}
         </div>
 
-        <div style={{ width: 1, height: 24, background: 'var(--bd-default, #E2E8F0)', margin: '0 4px' }} />
+        <div style={{ width: 1, height: 24, background: 'var(--bd-default, rgba(255,255,255,0.10))', margin: '0 4px' }} />
 
         <input
           type="text"
@@ -358,20 +358,20 @@ export function UserMapping() {
           onChange={e => setSearchText(e.target.value)}
           style={{
             padding: '5px 10px', borderRadius: 6, fontSize: 12, border: `1px solid ${borderColor}`,
-            background: 'var(--bg-1, #F8FAFC)', color: '#334155', width: 200, outline: 'none',
+            background: 'var(--bg-1, #1A1A1A)', color: 'rgba(237,237,237,0.53)', width: 200, outline: 'none',
           }}
         />
 
         <div style={{ marginLeft: 'auto', display: 'flex', gap: 8 }}>
           <button onClick={() => refreshUsers.mutate()} disabled={refreshUsers.isPending} style={{
             padding: '6px 14px', borderRadius: 6, fontSize: 11, fontWeight: 500,
-            background: 'var(--bg-1, #F8FAFC)', color: '#334155', border: `1px solid ${borderColor}`, cursor: 'pointer',
+            background: 'var(--bg-1, #1A1A1A)', color: 'rgba(237,237,237,0.53)', border: `1px solid ${borderColor}`, cursor: 'pointer',
           }}>
             {refreshUsers.isPending ? 'Refreshing…' : '↻ Refresh Jira'}
           </button>
           <button onClick={handleAutoMatch} disabled={autoMatch.isPending} style={{
             padding: '6px 14px', borderRadius: 6, fontSize: 11, fontWeight: 500,
-            background: 'var(--bg-1, #F8FAFC)', color: '#334155', border: `1px solid ${borderColor}`, cursor: 'pointer',
+            background: 'var(--bg-1, #1A1A1A)', color: 'rgba(237,237,237,0.53)', border: `1px solid ${borderColor}`, cursor: 'pointer',
           }}>
             {autoMatch.isPending ? 'Matching…' : '⚡ Auto-Match Email'}
           </button>
@@ -393,11 +393,11 @@ export function UserMapping() {
         <div style={{ maxHeight: 600, overflowY: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
             <thead>
-              <tr style={{ background: 'var(--bg-1, #F8FAFC)', position: 'sticky', top: 0, zIndex: 2 }}>
+              <tr style={{ background: 'var(--bg-1, #1A1A1A)', position: 'sticky', top: 0, zIndex: 2 }}>
                 {['#', 'CATALYST RESOURCE', 'DEPT', 'JIRA ACCOUNT (MAPPED)', 'SUGGESTED MATCH', 'ACTION'].map(h => (
                   <th key={h} style={{
                     fontFamily: 'Sora, sans-serif', fontSize: 9, textTransform: 'uppercase',
-                    color: '#94A3B8', padding: '10px 12px', textAlign: 'left', fontWeight: 600,
+                    color: 'rgba(237,237,237,0.40)', padding: '10px 12px', textAlign: 'left', fontWeight: 600,
                     letterSpacing: '.4px', borderBottom: `1px solid ${borderColor}`,
                   }}>
                     {h}
@@ -411,11 +411,11 @@ export function UserMapping() {
 
                 return (
                   <tr key={profile.id} style={{
-                    borderBottom: '1px solid #F1F5F9',
+                    borderBottom: '1px solid #1A1A1A',
                     background: isMapped ? '#fff' : '#FEFCE8',
                   }}>
                     {/* # */}
-                    <td style={{ padding: '10px 12px', color: '#94A3B8', width: 36, fontSize: 11 }}>
+                    <td style={{ padding: '10px 12px', color: 'rgba(237,237,237,0.40)', width: 36, fontSize: 11 }}>
                       {idx + 1}
                     </td>
 
@@ -424,10 +424,10 @@ export function UserMapping() {
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                         <Avatar name={profile.full_name || 'U'} url={existingJiraMapping?.jira_avatar_url || profile.avatar_url} size={28} />
                         <div>
-                          <div style={{ fontWeight: 600, color: 'var(--fg-1, #0F172A)', fontSize: 12 }}>
+                          <div style={{ fontWeight: 600, color: 'var(--fg-1, rgba(237,237,237,0.93))', fontSize: 12 }}>
                             {profile.full_name || 'Unnamed'}
                           </div>
-                          <div style={{ fontSize: 10, color: '#94A3B8' }}>
+                          <div style={{ fontSize: 10, color: 'rgba(237,237,237,0.40)' }}>
                             {profile.email || '—'}
                           </div>
                         </div>
@@ -443,12 +443,12 @@ export function UserMapping() {
                             profile.department_name === 'Product' ? 'rgba(139,92,246,0.08)' :
                               'rgba(148,163,184,0.08)',
                           color: profile.department_name === 'Delivery' ? '#2563EB' :
-                            profile.department_name === 'Product' ? '#8B5CF6' : '#64748B',
+                            profile.department_name === 'Product' ? '#8B5CF6' : 'rgba(237,237,237,0.40)',
                         }}>
                           {profile.department_name}
                         </span>
                       ) : (
-                        <span style={{ fontSize: 10, color: '#CBD5E1' }}>—</span>
+                        <span style={{ fontSize: 10, color: 'rgba(237,237,237,0.53)' }}>—</span>
                       )}
                     </td>
 
@@ -457,16 +457,16 @@ export function UserMapping() {
                       {isMapped && existingJiraMapping ? (
                         <div style={{
                           display: 'flex', alignItems: 'center', gap: 8,
-                          background: '#ECFDF5', padding: '6px 10px', borderRadius: 6,
+                          background: 'rgba(74,222,128,0.06)', padding: '6px 10px', borderRadius: 6,
                           border: '1px solid #A7F3D0',
                         }}>
                           <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#10B981', flexShrink: 0 }} />
                           <Avatar name={existingJiraMapping.jira_display_name} url={existingJiraMapping.jira_avatar_url} size={22} />
                           <div>
-                            <div style={{ fontWeight: 600, color: 'var(--fg-1, #0F172A)', fontSize: 11 }}>
+                            <div style={{ fontWeight: 600, color: 'var(--fg-1, rgba(237,237,237,0.93))', fontSize: 11 }}>
                               {existingJiraMapping.jira_display_name}
                             </div>
-                            <div style={{ fontSize: 9, color: '#64748B', fontFamily: 'JetBrains Mono, monospace' }}>
+                            <div style={{ fontSize: 9, color: 'rgba(237,237,237,0.40)', fontFamily: 'JetBrains Mono, monospace' }}>
                               {existingJiraMapping.jira_account_id.slice(0, 16)}…
                             </div>
                           </div>
@@ -480,7 +480,7 @@ export function UserMapping() {
                           style={{
                             padding: '5px 8px', borderRadius: 6, fontSize: 11, width: '100%',
                             border: '1px solid #FDE68A', background: '#FFFBEB',
-                            color: '#92400E',
+                            color: '#FBBF24',
                           }}
                         >
                           <option value="">— Select Jira User —</option>
@@ -504,25 +504,25 @@ export function UserMapping() {
                         }}>
                           <Avatar name={suggestedJira.jiraUser.jira_display_name} url={suggestedJira.jiraUser.jira_avatar_url} size={22} />
                           <div style={{ flex: 1, minWidth: 0 }}>
-                            <div style={{ fontWeight: 600, color: 'var(--fg-1, #0F172A)', fontSize: 11 }}>
+                            <div style={{ fontWeight: 600, color: 'var(--fg-1, rgba(237,237,237,0.93))', fontSize: 11 }}>
                               {suggestedJira.jiraUser.jira_display_name}
                             </div>
-                            <div style={{ fontSize: 9, color: '#64748B' }}>
+                            <div style={{ fontSize: 9, color: 'rgba(237,237,237,0.40)' }}>
                               {Math.round(suggestedJira.score * 100)}% match
                             </div>
                           </div>
                           <span style={{
                             fontSize: 8, fontWeight: 700, padding: '2px 5px', borderRadius: 4,
-                            background: suggestedJira.score >= 0.7 ? '#DBEAFE' : '#FEF3C7',
-                            color: suggestedJira.score >= 0.7 ? '#1D4ED8' : '#92400E',
+                            background: suggestedJira.score >= 0.7 ? '#DBEAFE' : 'rgba(251,191,36,0.10)',
+                            color: suggestedJira.score >= 0.7 ? '#1D4ED8' : '#FBBF24',
                           }}>
                             {suggestedJira.score >= 0.7 ? 'HIGH' : 'LOW'}
                           </span>
                         </div>
                       ) : isMapped ? (
-                        <span style={{ fontSize: 10, color: '#CBD5E1' }}>—</span>
+                        <span style={{ fontSize: 10, color: 'rgba(237,237,237,0.53)' }}>—</span>
                       ) : (
-                        <span style={{ fontSize: 10, color: '#CBD5E1', fontStyle: 'italic' }}>No match found</span>
+                        <span style={{ fontSize: 10, color: 'rgba(237,237,237,0.53)', fontStyle: 'italic' }}>No match found</span>
                       )}
                     </td>
 
@@ -533,7 +533,7 @@ export function UserMapping() {
                           onClick={() => handleClearMapping(existingJiraMapping.id)}
                           style={{
                             padding: '4px 10px', borderRadius: 4, fontSize: 10, fontWeight: 500,
-                            background: '#FEF2F2', color: '#EF4444', border: '1px solid #FECACA',
+                            background: 'rgba(248,113,113,0.06)', color: '#EF4444', border: '1px solid #FECACA',
                             cursor: 'pointer',
                           }}
                         >
@@ -556,7 +556,7 @@ export function UserMapping() {
               })}
               {visibleRows.length === 0 && (
                 <tr>
-                  <td colSpan={6} style={{ padding: 40, textAlign: 'center', color: '#94A3B8', fontSize: 12 }}>
+                  <td colSpan={6} style={{ padding: 40, textAlign: 'center', color: 'rgba(237,237,237,0.40)', fontSize: 12 }}>
                     {viewMode === 'unmapped' ? 'All resources in this department are mapped! 🎉' : 'No resources found for the selected filters.'}
                   </td>
                 </tr>

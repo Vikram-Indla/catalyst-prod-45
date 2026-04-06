@@ -61,7 +61,7 @@ function VisionSkeleton() {
       className="relative overflow-hidden"
       style={{
         minHeight: '56px',
-        background: 'linear-gradient(135deg, #1E3A8A 0%, #1E40AF 50%, #2563EB 100%)',
+        background: 'linear-gradient(135deg, #1E3A8A 0%, #7DB8FC 50%, #2563EB 100%)',
         borderRadius: 'var(--catalyst-radius-xl, 12px)',
         borderLeft: '3px solid #F59E0B',
         padding: '12px 20px',
@@ -95,7 +95,7 @@ function VisionError({ onRetry }: { onRetry: () => void }) {
       className="relative overflow-hidden flex items-center justify-center gap-3"
       style={{
         minHeight: '56px',
-        background: 'linear-gradient(135deg, #64748B 0%, #94A3B8 100%)',
+        background: 'linear-gradient(135deg, rgba(237,237,237,0.40) 0%, rgba(237,237,237,0.40) 100%)',
         borderRadius: 'var(--catalyst-radius-xl, 12px)',
         borderLeft: '3px solid #F59E0B',
         padding: '12px 20px',
@@ -130,7 +130,7 @@ function VisionEmpty({ isOwner, onDefine }: { isOwner: boolean; onDefine: () => 
       aria-label="Organizational vision statement"
       style={{
         minHeight: '56px',
-        background: 'linear-gradient(135deg, #1E3A8A 0%, #1E40AF 50%, #2563EB 100%)',
+        background: 'linear-gradient(135deg, #1E3A8A 0%, #7DB8FC 50%, #2563EB 100%)',
         borderRadius: 'var(--catalyst-radius-xl, 12px)',
         borderLeft: '3px solid #F59E0B',
         padding: '12px 20px',
@@ -224,7 +224,7 @@ export function VisionBanner() {
         aria-label="Organizational vision statement"
         style={{
           minHeight: '56px',
-          background: 'linear-gradient(135deg, #1E3A8A 0%, #1E40AF 50%, #2563EB 100%)',
+          background: 'linear-gradient(135deg, #1E3A8A 0%, #7DB8FC 50%, #2563EB 100%)',
           borderRadius: 'var(--catalyst-radius-xl, 12px)',
           borderLeft: '3px solid #F59E0B',
           boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.1), inset 0 -1px 0 rgba(0,0,0,0.1)',

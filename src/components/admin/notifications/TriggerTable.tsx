@@ -105,7 +105,7 @@ function CategoryAccordion({
   );
 
   return (
-    <Card className="overflow-hidden border-[var(--bd-default, #E2E8F0)]">
+    <Card className="overflow-hidden border-[var(--bd-default, rgba(255,255,255,0.10))]">
       {/* ── Category Header ──────────────────────────────────────── */}
       <button
         onClick={onToggle}
@@ -118,14 +118,14 @@ function CategoryAccordion({
             <ChevronRight className="h-4 w-4 text-[#475569] flex-shrink-0" />
           )}
 
-          <span className="text-sm font-semibold text-[#0F172A] font-['Inter']">
+          <span className="text-sm font-semibold text-[rgba(237,237,237,0.93)] font-['Inter']">
             {group.label}
           </span>
 
           {/* Enabled / Total badge */}
           <Badge
             variant="secondary"
-            className="text-[10px] h-5 px-1.5 bg-[#F1F5F9] text-[#475569] font-['JetBrains_Mono']"
+            className="text-[10px] h-5 px-1.5 bg-[#1A1A1A] text-[#475569] font-['JetBrains_Mono']"
           >
             {group.enabledCount}/{group.totalCount}
           </Badge>
@@ -140,7 +140,7 @@ function CategoryAccordion({
 
           {/* Silent indicator */}
           {silentCount > 0 && (
-            <span className="text-[10px] text-[#94A3B8]">
+            <span className="text-[10px] text-[rgba(237,237,237,0.40)]">
               {silentCount} silent
             </span>
           )}
@@ -148,13 +148,13 @@ function CategoryAccordion({
 
         {/* Right side — progress bar */}
         <div className="flex items-center gap-3">
-          <div className="w-24 h-1.5 bg-[#F1F5F9] rounded-full overflow-hidden">
+          <div className="w-24 h-1.5 bg-[#1A1A1A] rounded-full overflow-hidden">
             <div
               className="h-full bg-[#2563EB] rounded-full transition-all duration-300"
               style={{ width: `${group.totalCount > 0 ? (group.enabledCount / group.totalCount) * 100 : 0}%` }}
             />
           </div>
-          <span className="text-[10px] text-[#94A3B8] w-8 text-right font-['JetBrains_Mono']">
+          <span className="text-[10px] text-[rgba(237,237,237,0.40)] w-8 text-right font-['JetBrains_Mono']">
             {group.totalCount > 0 ? Math.round((group.enabledCount / group.totalCount) * 100) : 0}%
           </span>
         </div>
@@ -162,14 +162,14 @@ function CategoryAccordion({
 
       {/* ── Expanded Content ─────────────────────────────────────── */}
       {isExpanded && (
-        <div className="border-t border-[var(--bd-default, #E2E8F0)]">
+        <div className="border-t border-[var(--bd-default, rgba(255,255,255,0.10))]">
           {/* Column Headers */}
-          <div className="grid grid-cols-[32px_1fr_90px_80px_52px_52px_52px_52px_48px] gap-2 px-4 py-2 bg-[#F8FAFC] border-b border-[var(--bd-default, #E2E8F0)]">
+          <div className="grid grid-cols-[32px_1fr_90px_80px_52px_52px_52px_52px_48px] gap-2 px-4 py-2 bg-[#1A1A1A] border-b border-[var(--bd-default, rgba(255,255,255,0.10))]">
             <div className="flex items-center justify-center">
               <input
                 type="checkbox"
                 onChange={handleSelectAll}
-                className="h-3 w-3 rounded border-[#CBD5E1] text-[#2563EB]"
+                className="h-3 w-3 rounded border-[rgba(237,237,237,0.53)] text-[#2563EB]"
                 title="Select all in group"
               />
             </div>

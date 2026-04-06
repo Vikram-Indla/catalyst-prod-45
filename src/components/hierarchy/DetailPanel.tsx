@@ -34,7 +34,7 @@ interface DetailPanelProps {
 /* ── Skeleton ── */
 export function DetailPanelSkeleton() {
   const dk = useIsDark();
-  const shimmerBg = dk ? 'rgba(255,255,255,0.08)' : '#F1F5F9';
+  const shimmerBg = dk ? 'rgba(255,255,255,0.08)' : '#1A1A1A';
   return (
     <div style={{ background: 'var(--bg-app)', border: '1px solid var(--divider)', borderRadius: 8, position: 'sticky', top: 24 }}>
       {[1, 2, 3, 4, 5].map((i) => (
@@ -74,7 +74,7 @@ function priorityToLevel(name?: string): number {
 function FieldRow({ label, children }: { label: string; children: React.ReactNode }) {
   const dk = useIsDark();
   return (
-    <div style={{ padding: '8px 20px', borderBottom: `1px solid ${dk ? 'rgba(255,255,255,0.06)' : '#F1F5F9'}` }}>
+    <div style={{ padding: '8px 20px', borderBottom: `1px solid ${dk ? 'rgba(255,255,255,0.06)' : '#1A1A1A'}` }}>
       <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', color: 'var(--fg-3)', letterSpacing: '0.06em', marginBottom: 4, fontFamily: "'Inter', sans-serif" }}>
         {label}
       </div>
@@ -104,7 +104,7 @@ function Section({ title, count, defaultOpen = true, children }: { title: string
         {open ? <ChevronDown size={14} color="var(--fg-3)" /> : <ChevronRight size={14} color="var(--fg-3)" />}
         <span style={{ fontSize: 12, fontWeight: 600, textTransform: 'uppercase', color: 'var(--fg-3)', letterSpacing: '0.06em' }}>{title}</span>
         {count !== undefined && (
-          <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--fg-3)', background: dk ? 'rgba(255,255,255,0.08)' : '#F1F5F9', borderRadius: 9999, padding: '1px 6px' }}>{count}</span>
+          <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--fg-3)', background: dk ? 'rgba(255,255,255,0.08)' : '#1A1A1A', borderRadius: 9999, padding: '1px 6px' }}>{count}</span>
         )}
       </button>
       {open && children}
@@ -246,7 +246,7 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
               onClose={() => setActiveDropdown(null)}
             />
           )}
-          <span style={{ color: dk ? '#A1A1A1' : '#CBD5E1' }}>·</span>
+          <span style={{ color: dk ? '#A1A1A1' : 'rgba(237,237,237,0.53)' }}>·</span>
           <span style={{ fontSize: 12, fontWeight: 600, color: item.hierarchyColorText }}>{item.hierarchyName}</span>
         </div>
 
@@ -359,7 +359,7 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
           {item.stats.totalDescendants > 0 && (
             <FieldRow label="Progress">
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <div style={{ flex: 1, height: 6, background: dk ? 'rgba(255,255,255,0.08)' : '#F1F5F9', borderRadius: 4, overflow: 'hidden' }}>
+                <div style={{ flex: 1, height: 6, background: dk ? 'rgba(255,255,255,0.08)' : '#1A1A1A', borderRadius: 4, overflow: 'hidden' }}>
                   <div style={{ height: '100%', width: `${pct}%`, background: pct === 100 ? 'var(--sem-success)' : 'var(--cp-blue)', borderRadius: 4, transition: 'width 300ms ease' }} />
                 </div>
                 <span style={{ fontSize: 12, color: 'var(--fg-3)', fontVariantNumeric: 'tabular-nums' }}>
@@ -380,10 +380,10 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
                   onClick={() => onSelectItem?.(child)}
                   style={{
                     height: 50, display: 'flex', alignItems: 'center', gap: 6,
-                    padding: '0 20px', borderBottom: `1px solid ${dk ? 'rgba(255,255,255,0.06)' : '#F1F5F9'}`, cursor: 'pointer',
+                    padding: '0 20px', borderBottom: `1px solid ${dk ? 'rgba(255,255,255,0.06)' : '#1A1A1A'}`, cursor: 'pointer',
                     fontFamily: "'Inter', sans-serif",
                   }}
-                  onMouseEnter={e => (e.currentTarget.style.background = dk ? 'rgba(255,255,255,0.03)' : 'var(--bg-1, #F8FAFC)')}
+                  onMouseEnter={e => (e.currentTarget.style.background = dk ? 'rgba(255,255,255,0.03)' : 'var(--bg-1, #1A1A1A)')}
                   onMouseLeave={e => (e.currentTarget.style.background = '')}
                 >
                   {child.issueType && <JiraIssueTypeIcon type={child.issueType} size={12} />}
@@ -445,7 +445,7 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
               ))}
             </div>
             <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
-              <div style={{ width: 28, height: 28, borderRadius: '50%', background: dk ? 'rgba(255,255,255,0.08)' : '#F1F5F9', flexShrink: 0 }} />
+              <div style={{ width: 28, height: 28, borderRadius: '50%', background: dk ? 'rgba(255,255,255,0.08)' : '#1A1A1A', flexShrink: 0 }} />
               <textarea
                 placeholder="Add a comment..."
                 rows={2}

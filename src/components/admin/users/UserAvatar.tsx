@@ -10,7 +10,7 @@ import { cn } from '@/lib/utils';
 // Avatar colors — neutral blue-gray palette + approved Catalyst hues (no purple/pink/magenta)
 const AVATAR_COLORS = [
   '#475569', // Slate
-  '#334155', // Slate dark
+  'rgba(237,237,237,0.53)', // Slate dark
   '#3b82f6', // Blue
   '#0d9488', // Teal
   '#d97706', // Amber

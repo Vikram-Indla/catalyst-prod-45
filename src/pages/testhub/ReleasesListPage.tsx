@@ -14,23 +14,23 @@ import { CreateReleaseModal } from '@/components/testhub/releases/CreateReleaseM
 import { format } from 'date-fns';
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; icon: any }> = {
-  planning: { label: 'Planning', color: '#64748B', bg: '#F1F5F9', icon: Clock },
-  planned: { label: 'Planned', color: '#64748B', bg: '#F1F5F9', icon: Clock },
+  planning: { label: 'Planning', color: 'rgba(237,237,237,0.40)', bg: '#1A1A1A', icon: Clock },
+  planned: { label: 'Planned', color: 'rgba(237,237,237,0.40)', bg: '#1A1A1A', icon: Clock },
   development: { label: 'Development', color: '#8B5CF6', bg: '#F5F3FF', icon: Settings2 },
-  testing: { label: 'Testing', color: '#2563EB', bg: '#EFF6FF', icon: Beaker },
+  testing: { label: 'Testing', color: '#2563EB', bg: 'rgba(59,130,246,0.06)', icon: Beaker },
   uat: { label: 'UAT', color: '#EA580C', bg: '#FFF7ED', icon: Monitor },
   staging: { label: 'Staging', color: '#D97706', bg: '#FFFBEB', icon: Rocket },
-  ready: { label: 'Ready', color: '#059669', bg: '#ECFDF5', icon: CheckCircle2 },
-  released: { label: 'Released', color: '#059669', bg: '#ECFDF5', icon: CheckCircle2 },
-  shipped: { label: 'Shipped', color: '#059669', bg: '#ECFDF5', icon: CheckCircle2 },
-  archived: { label: 'Archived', color: '#94A3B8', bg: 'var(--bg-1, #F8FAFC)', icon: Archive },
+  ready: { label: 'Ready', color: '#059669', bg: 'rgba(74,222,128,0.06)', icon: CheckCircle2 },
+  released: { label: 'Released', color: '#059669', bg: 'rgba(74,222,128,0.06)', icon: CheckCircle2 },
+  shipped: { label: 'Shipped', color: '#059669', bg: 'rgba(74,222,128,0.06)', icon: CheckCircle2 },
+  archived: { label: 'Archived', color: 'rgba(237,237,237,0.40)', bg: 'var(--bg-1, #1A1A1A)', icon: Archive },
 };
 
 const HEALTH_CONFIG: Record<string, { label: string; color: string; dot: string }> = {
   healthy: { label: 'Healthy', color: '#059669', dot: '#22C55E' },
   at_risk: { label: 'At Risk', color: '#D97706', dot: '#F59E0B' },
   critical: { label: 'Critical', color: '#DC2626', dot: '#EF4444' },
-  none: { label: '—', color: '#94A3B8', dot: '#CBD5E1' },
+  none: { label: '—', color: 'rgba(237,237,237,0.40)', dot: 'rgba(237,237,237,0.53)' },
 };
 
 export default function ReleasesListPage() {
@@ -57,11 +57,11 @@ export default function ReleasesListPage() {
       {/* Page Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
         <div>
-          <h1 style={{ fontSize: 22, fontWeight: 700, color: 'var(--fg-1, #0F172A)', margin: 0, display: 'flex', alignItems: 'center', gap: 10 }}>
+          <h1 style={{ fontSize: 22, fontWeight: 700, color: 'var(--fg-1, rgba(237,237,237,0.93))', margin: 0, display: 'flex', alignItems: 'center', gap: 10 }}>
             <Package style={{ width: 24, height: 24, color: '#2563EB' }} />
             Releases
           </h1>
-          <p style={{ fontSize: 14, color: '#64748B', margin: '4px 0 0' }}>
+          <p style={{ fontSize: 14, color: 'rgba(237,237,237,0.40)', margin: '4px 0 0' }}>
             Manage software releases and track quality metrics
           </p>
         </div>
@@ -81,18 +81,18 @@ export default function ReleasesListPage() {
       <div style={{ display: 'flex', gap: 12, marginBottom: 20, alignItems: 'center', flexWrap: 'wrap' }}>
         {/* Search */}
         <div style={{ position: 'relative', flex: '0 1 280px' }}>
-          <Search style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', width: 16, height: 16, color: '#94A3B8' }} />
+          <Search style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', width: 16, height: 16, color: 'rgba(237,237,237,0.40)' }} />
           <input
             value={filters.search}
             onChange={e => setFilters(f => ({ ...f, search: e.target.value }))}
             placeholder="Search releases..."
             style={{
               width: '100%', height: 38, paddingLeft: 34, paddingRight: filters.search ? 32 : 12,
-              border: '1px solid var(--bd-default, #E2E8F0)', borderRadius: 8, fontSize: 13, outline: 'none',
+              border: '1px solid var(--bd-default, rgba(255,255,255,0.10))', borderRadius: 8, fontSize: 13, outline: 'none',
             }}
           />
           {filters.search && (
-            <button onClick={() => setFilters(f => ({ ...f, search: '' }))} style={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#94A3B8' }}>
+            <button onClick={() => setFilters(f => ({ ...f, search: '' }))} style={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(237,237,237,0.40)' }}>
               <X style={{ width: 14, height: 14 }} />
             </button>
           )}
@@ -102,7 +102,7 @@ export default function ReleasesListPage() {
         <select
           value={filters.status}
           onChange={e => setFilters(f => ({ ...f, status: e.target.value }))}
-          style={{ height: 38, padding: '8px 12px', border: '1px solid var(--bd-default, #E2E8F0)', borderRadius: 8, fontSize: 13, color: '#334155', background: 'var(--bg-app, #fff)', cursor: 'pointer' }}
+          style={{ height: 38, padding: '8px 12px', border: '1px solid var(--bd-default, rgba(255,255,255,0.10))', borderRadius: 8, fontSize: 13, color: 'rgba(237,237,237,0.53)', background: 'var(--bg-app, #fff)', cursor: 'pointer' }}
         >
           <option value="all">All Statuses</option>
           {Object.entries(STATUS_CONFIG).map(([key, cfg]) => (
@@ -114,7 +114,7 @@ export default function ReleasesListPage() {
         <select
           value={filters.health}
           onChange={e => setFilters(f => ({ ...f, health: e.target.value }))}
-          style={{ height: 38, padding: '8px 12px', border: '1px solid var(--bd-default, #E2E8F0)', borderRadius: 8, fontSize: 13, color: '#334155', background: 'var(--bg-app, #fff)', cursor: 'pointer' }}
+          style={{ height: 38, padding: '8px 12px', border: '1px solid var(--bd-default, rgba(255,255,255,0.10))', borderRadius: 8, fontSize: 13, color: 'rgba(237,237,237,0.53)', background: 'var(--bg-app, #fff)', cursor: 'pointer' }}
         >
           <option value="all">All Health</option>
           <option value="healthy">Healthy</option>
@@ -125,14 +125,14 @@ export default function ReleasesListPage() {
         <div style={{ flex: 1 }} />
 
         {/* View toggle */}
-        <div style={{ display: 'flex', border: '1px solid var(--bd-default, #E2E8F0)', borderRadius: 8, overflow: 'hidden' }}>
+        <div style={{ display: 'flex', border: '1px solid var(--bd-default, rgba(255,255,255,0.10))', borderRadius: 8, overflow: 'hidden' }}>
           <button
             onClick={() => setViewMode('table')}
             style={{
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               width: 36, height: 50, border: 'none', cursor: 'pointer',
-              backgroundColor: viewMode === 'table' ? '#EFF6FF' : '#fff',
-              color: viewMode === 'table' ? '#2563EB' : '#64748B',
+              backgroundColor: viewMode === 'table' ? 'rgba(59,130,246,0.06)' : '#fff',
+              color: viewMode === 'table' ? '#2563EB' : 'rgba(237,237,237,0.40)',
             }}
           >
             <List style={{ width: 16, height: 16 }} />
@@ -142,9 +142,9 @@ export default function ReleasesListPage() {
             style={{
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               width: 36, height: 50, border: 'none', cursor: 'pointer',
-              backgroundColor: viewMode === 'card' ? '#EFF6FF' : '#fff',
-              color: viewMode === 'card' ? '#2563EB' : '#64748B',
-              borderLeft: '1px solid var(--bd-default, #E2E8F0)',
+              backgroundColor: viewMode === 'card' ? 'rgba(59,130,246,0.06)' : '#fff',
+              color: viewMode === 'card' ? '#2563EB' : 'rgba(237,237,237,0.40)',
+              borderLeft: '1px solid var(--bd-default, rgba(255,255,255,0.10))',
             }}
           >
             <LayoutGrid style={{ width: 16, height: 16 }} />
@@ -154,11 +154,11 @@ export default function ReleasesListPage() {
 
       {/* Content */}
       {isLoading ? (
-        <div style={{ display: 'flex', justifyContent: 'center', padding: 60, color: '#94A3B8' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', padding: 60, color: 'rgba(237,237,237,0.40)' }}>
           Loading releases...
         </div>
       ) : releases.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: 60, color: '#94A3B8' }}>
+        <div style={{ textAlign: 'center', padding: 60, color: 'rgba(237,237,237,0.40)' }}>
           <Package style={{ width: 48, height: 48, margin: '0 auto 12px', opacity: 0.3 }} />
           <p style={{ fontSize: 15, fontWeight: 500 }}>No releases found</p>
           <p style={{ fontSize: 13 }}>Create your first release to get started</p>
@@ -169,7 +169,7 @@ export default function ReleasesListPage() {
         <CardView releases={releases} navigate={navigate} getExecPercent={getExecPercent} getPassRate={getPassRate} />
       )}
 
-      <div style={{ marginTop: 16, fontSize: 13, color: '#94A3B8' }}>
+      <div style={{ marginTop: 16, fontSize: 13, color: 'rgba(237,237,237,0.40)' }}>
         Showing {releases.length} release{releases.length !== 1 ? 's' : ''}
       </div>
 
@@ -187,10 +187,10 @@ export default function ReleasesListPage() {
 // ===== Table View =====
 function TableView({ releases, navigate }: { releases: Release[]; navigate: any }) {
   return (
-    <div style={{ border: '1px solid var(--bd-default, #E2E8F0)', borderRadius: 12, overflow: 'hidden', background: 'var(--bg-app, #fff)' }}>
+    <div style={{ border: '1px solid var(--bd-default, rgba(255,255,255,0.10))', borderRadius: 12, overflow: 'hidden', background: 'var(--bg-app, #fff)' }}>
       <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
         <thead>
-          <tr style={{ backgroundColor: 'var(--bg-1, #F8FAFC)', borderBottom: '1px solid var(--bd-default, #E2E8F0)' }}>
+          <tr style={{ backgroundColor: 'var(--bg-1, #1A1A1A)', borderBottom: '1px solid var(--bd-default, rgba(255,255,255,0.10))' }}>
             <th style={thStyle}>Version</th>
             <th style={thStyle}>Name</th>
             <th style={thStyle}>Status</th>
@@ -210,17 +210,17 @@ function TableView({ releases, navigate }: { releases: Release[]; navigate: any 
               <tr
                 key={r.id}
                 onClick={() => navigate(`/testhub/releases/${r.id}`)}
-                style={{ borderBottom: '1px solid #F1F5F9', cursor: 'pointer', transition: 'background 0.15s' }}
-                onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'var(--bg-1, #F8FAFC)')}
+                style={{ borderBottom: '1px solid #1A1A1A', cursor: 'pointer', transition: 'background 0.15s' }}
+                onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'var(--bg-1, #1A1A1A)')}
                 onMouseLeave={e => (e.currentTarget.style.backgroundColor = '')}
               >
                 <td style={tdStyle}>
-                  <span style={{ fontFamily: 'monospace', fontSize: 12, color: '#64748B', fontWeight: 600 }}>{r.version}</span>
+                  <span style={{ fontFamily: 'monospace', fontSize: 12, color: 'rgba(237,237,237,0.40)', fontWeight: 600 }}>{r.version}</span>
                 </td>
                 <td style={tdStyle}>
-                  <div style={{ fontWeight: 600, color: 'var(--fg-1, #0F172A)' }}>{r.name}</div>
+                  <div style={{ fontWeight: 600, color: 'var(--fg-1, rgba(237,237,237,0.93))' }}>{r.name}</div>
                   {r.vehicle && (
-                    <span style={{ fontSize: 11, color: '#64748B' }}>{r.vehicle.name}</span>
+                    <span style={{ fontSize: 11, color: 'rgba(237,237,237,0.40)' }}>{r.vehicle.name}</span>
                   )}
                 </td>
                 <td style={tdStyle}>
@@ -240,22 +240,22 @@ function TableView({ releases, navigate }: { releases: Release[]; navigate: any 
                   </span>
                 </td>
                 <td style={tdStyle}>
-                  <span style={{ fontSize: 12, color: '#334155' }}>
+                  <span style={{ fontSize: 12, color: 'rgba(237,237,237,0.53)' }}>
                     {r.test_cases_passed}/{r.test_cases_total || 0}
                   </span>
                 </td>
                 <td style={tdStyle}>
-                  <span style={{ fontSize: 12, color: r.critical_defects > 0 ? '#DC2626' : '#334155', fontWeight: r.critical_defects > 0 ? 600 : 400 }}>
+                  <span style={{ fontSize: 12, color: r.critical_defects > 0 ? '#DC2626' : 'rgba(237,237,237,0.53)', fontWeight: r.critical_defects > 0 ? 600 : 400 }}>
                     {r.defects_open} open{r.critical_defects > 0 ? ` (${r.critical_defects} critical)` : ''}
                   </span>
                 </td>
                 <td style={tdStyle}>
-                  <span style={{ fontSize: 12, color: '#64748B' }}>
+                  <span style={{ fontSize: 12, color: 'rgba(237,237,237,0.40)' }}>
                     {r.target_date ? format(new Date(r.target_date), 'MMM dd, yyyy') : '—'}
                   </span>
                 </td>
                 <td style={tdStyle}>
-                  <ChevronRight style={{ width: 16, height: 16, color: '#CBD5E1' }} />
+                  <ChevronRight style={{ width: 16, height: 16, color: 'rgba(237,237,237,0.53)' }} />
                 </td>
               </tr>
             );
@@ -280,17 +280,17 @@ function CardView({ releases, navigate, getExecPercent, getPassRate }: { release
             key={r.id}
             onClick={() => navigate(`/testhub/releases/${r.id}`)}
             style={{
-              background: 'var(--bg-app, #fff)', border: '1px solid var(--bd-default, #E2E8F0)', borderRadius: 12,
+              background: 'var(--bg-app, #fff)', border: '1px solid var(--bd-default, rgba(255,255,255,0.10))', borderRadius: 12,
               padding: 20, cursor: 'pointer', transition: 'all 0.2s',
               boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
             }}
             onMouseEnter={e => { e.currentTarget.style.borderColor = '#2563EB'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(37,99,235,0.1)'; }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--bd-default, #E2E8F0)'; e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.04)'; }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--bd-default, rgba(255,255,255,0.10))'; e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.04)'; }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
               <div>
-                <span style={{ fontFamily: 'monospace', fontSize: 11, color: '#94A3B8', fontWeight: 600 }}>{r.version}</span>
-                <h3 style={{ fontSize: 15, fontWeight: 700, color: 'var(--fg-1, #0F172A)', margin: '2px 0 0' }}>{r.name}</h3>
+                <span style={{ fontFamily: 'monospace', fontSize: 11, color: 'rgba(237,237,237,0.40)', fontWeight: 600 }}>{r.version}</span>
+                <h3 style={{ fontSize: 15, fontWeight: 700, color: 'var(--fg-1, rgba(237,237,237,0.93))', margin: '2px 0 0' }}>{r.name}</h3>
               </div>
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, width: 8, height: 8, borderRadius: '50%', backgroundColor: hc.dot }} />
             </div>
@@ -301,7 +301,7 @@ function CardView({ releases, navigate, getExecPercent, getPassRate }: { release
                 {sc.label}
               </span>
               {r.vehicle && (
-                <span style={{ padding: '2px 8px', borderRadius: 6, backgroundColor: '#F1F5F9', color: '#64748B', fontSize: 11, fontWeight: 500 }}>
+                <span style={{ padding: '2px 8px', borderRadius: 6, backgroundColor: '#1A1A1A', color: 'rgba(237,237,237,0.40)', fontSize: 11, fontWeight: 500 }}>
                   {r.vehicle.name}
                 </span>
               )}
@@ -310,23 +310,23 @@ function CardView({ releases, navigate, getExecPercent, getPassRate }: { release
             {/* Progress bar */}
             <div style={{ marginBottom: 12 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, marginBottom: 4 }}>
-                <span style={{ color: '#64748B' }}>Test Progress</span>
-                <span style={{ fontWeight: 600, color: 'var(--fg-1, #0F172A)' }}>{execPct}%</span>
+                <span style={{ color: 'rgba(237,237,237,0.40)' }}>Test Progress</span>
+                <span style={{ fontWeight: 600, color: 'var(--fg-1, rgba(237,237,237,0.93))' }}>{execPct}%</span>
               </div>
-              <div style={{ height: 6, backgroundColor: '#F1F5F9', borderRadius: 3 }}>
+              <div style={{ height: 6, backgroundColor: '#1A1A1A', borderRadius: 3 }}>
                 <div style={{ height: '100%', width: `${execPct}%`, backgroundColor: execPct >= 80 ? '#22C55E' : execPct >= 50 ? '#F59E0B' : '#3B82F6', borderRadius: 4, transition: 'width 0.3s' }} />
               </div>
             </div>
 
             {/* Stats row */}
-            <div style={{ display: 'flex', gap: 16, fontSize: 12, color: '#64748B' }}>
+            <div style={{ display: 'flex', gap: 16, fontSize: 12, color: 'rgba(237,237,237,0.40)' }}>
               <span><strong style={{ color: '#059669' }}>{r.test_cases_passed}</strong> passed</span>
               <span><strong style={{ color: '#DC2626' }}>{r.test_cases_failed || 0}</strong> failed</span>
               <span><strong style={{ color: '#D97706' }}>{r.defects_open}</strong> defects</span>
             </div>
 
             {/* Date */}
-            <div style={{ marginTop: 12, display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: '#94A3B8' }}>
+            <div style={{ marginTop: 12, display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'rgba(237,237,237,0.40)' }}>
               <Calendar style={{ width: 12, height: 12 }} />
               {r.target_date ? format(new Date(r.target_date), 'MMM dd, yyyy') : 'No target date'}
             </div>
@@ -339,7 +339,7 @@ function CardView({ releases, navigate, getExecPercent, getPassRate }: { release
 
 const thStyle: React.CSSProperties = {
   padding: '10px 14px', textAlign: 'left', fontSize: 11, fontWeight: 650,
-  color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.04em',
+  color: 'rgba(237,237,237,0.40)', textTransform: 'uppercase', letterSpacing: '0.04em',
 };
 
 const tdStyle: React.CSSProperties = {

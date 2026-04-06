@@ -60,7 +60,7 @@ import {
 const COLORS = {
   // Text
   textPrimary: '#0f172a',
-  textSecondary: '#334155',
+  textSecondary: 'rgba(237,237,237,0.53)',
   textMuted: '#64748b',
   textLight: '#94a3b8',
 

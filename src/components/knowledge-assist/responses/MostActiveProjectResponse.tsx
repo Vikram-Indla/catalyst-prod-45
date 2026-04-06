@@ -52,7 +52,7 @@ export function MostActiveProjectResponse({ onItemClick }: { onItemClick?: (key:
         <MiniStat value={`+${stats.newItems}`} label="New items" color="#1D4ED8" />
         <MiniStat value={String(stats.closed)} label="Closed" color="#16A34A" />
         <MiniStat value={String(stats.blocked)} label="Blocked" color="#DC2626" />
-        <MiniStat value={String(stats.totalUpdated)} label="Updates" color="#64748B" />
+        <MiniStat value={String(stats.totalUpdated)} label="Updates" color="rgba(237,237,237,0.40)" />
       </div>
       <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--fg-2)', marginBottom: 8, fontFamily: F.inter, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
         Latest Activity

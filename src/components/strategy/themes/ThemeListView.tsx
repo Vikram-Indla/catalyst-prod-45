@@ -59,7 +59,7 @@ export function ThemeListView({ themes, onSelect, isDark = false }: Props) {
   const sortIndicator = (field: SortField) => sortField === field ? (sortDir === 'asc' ? ' ↑' : ' ↓') : '';
 
   const borderColor = isDark ? DK.border : 'var(--divider)';
-  const borderSubtle = isDark ? DK.borderSubtle : '#F1F5F9';
+  const borderSubtle = isDark ? DK.borderSubtle : '#1A1A1A';
 
   const colHeaderStyle: React.CSSProperties = {
     fontSize: 10.5, fontWeight: 600,
@@ -206,7 +206,7 @@ export function ThemeListView({ themes, onSelect, isDark = false }: Props) {
               fontSize: 12, padding: '2px 8px', borderRadius: 4,
               border: `1px solid ${borderColor}`,
               background: isDark ? 'transparent' : 'var(--bg-app)',
-              color: page === 1 ? (isDark ? DK.t4 : '#CBD5E1') : (isDark ? DK.t2 : 'var(--fg-2)'),
+              color: page === 1 ? (isDark ? DK.t4 : 'rgba(237,237,237,0.53)') : (isDark ? DK.t2 : 'var(--fg-2)'),
               cursor: page === 1 ? 'default' : 'pointer',
             }}
           >←</button>
@@ -218,7 +218,7 @@ export function ThemeListView({ themes, onSelect, isDark = false }: Props) {
               fontSize: 12, padding: '2px 8px', borderRadius: 4,
               border: `1px solid ${borderColor}`,
               background: isDark ? 'transparent' : 'var(--bg-app)',
-              color: page === totalPages ? (isDark ? DK.t4 : '#CBD5E1') : (isDark ? DK.t2 : 'var(--fg-2)'),
+              color: page === totalPages ? (isDark ? DK.t4 : 'rgba(237,237,237,0.53)') : (isDark ? DK.t2 : 'var(--fg-2)'),
               cursor: page === totalPages ? 'default' : 'pointer',
             }}
           >→</button>
@@ -229,7 +229,7 @@ export function ThemeListView({ themes, onSelect, isDark = false }: Props) {
       {selected.size > 0 && (
         <div style={{
           position: 'fixed', bottom: 24, left: '50%', transform: 'translateX(-50%)',
-          background: isDark ? '#1A1A1A' : '#0F172A', color: '#FFFFFF', borderRadius: 12,
+          background: isDark ? '#1A1A1A' : 'rgba(237,237,237,0.93)', color: '#FFFFFF', borderRadius: 12,
           padding: '10px 16px', display: 'flex', alignItems: 'center', gap: 12,
           boxShadow: '0 8px 30px rgba(0,0,0,0.25)', zIndex: 50,
         }}>

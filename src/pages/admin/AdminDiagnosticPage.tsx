@@ -36,7 +36,7 @@ function StatusLozenge({ status }: { status: 'passed' | 'failed' | 'running' | '
       background: s.bg, color: s.color,
       fontSize: 10, fontWeight: 700, textTransform: 'uppercase',
       padding: '2px 8px', borderRadius: 4, letterSpacing: '0.04em',
-      fontFamily: 'Inter, sans-serif',
+      fontFamily: 'Geist, -apple-system, sans-serif',
     }}>
       {s.label}
     </span>
@@ -169,8 +169,8 @@ export default function AdminDiagnosticPage() {
           <Zap style={{ width: 18, height: 18, color: '#7C3AED' }} />
         </div>
         <div>
-          <h1 style={{ fontSize: 20, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A', fontFamily: 'Sora, sans-serif', margin: 0 }}>System Diagnostic</h1>
-          <p style={{ fontSize: 12, color: isDark ? '#878787' : '#64748B', margin: 0, fontFamily: 'Inter, sans-serif' }}>Edge functions, table inspector, and column guard checks</p>
+          <h1 style={{ fontSize: 20, fontWeight: 700, color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)', fontFamily: 'Sora, sans-serif', margin: 0 }}>System Diagnostic</h1>
+          <p style={{ fontSize: 12, color: isDark ? '#878787' : 'rgba(237,237,237,0.40)', margin: 0, fontFamily: 'Geist, -apple-system, sans-serif' }}>Edge functions, table inspector, and column guard checks</p>
         </div>
       </div>
 
@@ -180,7 +180,7 @@ export default function AdminDiagnosticPage() {
           {/* SECTION A — Connection Status */}
           <Card title="Connection Status">
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <span style={{ fontSize: 12, color: isDark ? '#878787' : '#64748B', fontFamily: 'JetBrains Mono, monospace' }}>{supabaseUrl}</span>
+              <span style={{ fontSize: 12, color: isDark ? '#878787' : 'rgba(237,237,237,0.40)', fontFamily: 'JetBrains Mono, monospace' }}>{supabaseUrl}</span>
               {connStatus === 'checking' && <StatusLozenge status="running" />}
               {connStatus === 'connected' && <StatusLozenge status="passed" />}
               {connStatus === 'error' && <StatusLozenge status="failed" />}
@@ -196,9 +196,9 @@ export default function AdminDiagnosticPage() {
                   onClick={() => selectPreset(p.name)}
                   style={{
                     fontSize: 11, padding: '3px 8px', borderRadius: 4,
-                    border: fnName === p.name ? '1px solid #7C3AED' : isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0',
+                    border: fnName === p.name ? '1px solid #7C3AED' : isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(255,255,255,0.10)',
                     background: fnName === p.name ? (isDark ? 'rgba(124,58,237,0.12)' : '#F5F3FF') : (isDark ? '#1A1A1A' : '#FFFFFF'),
-                    color: fnName === p.name ? '#7C3AED' : (isDark ? '#A1A1A1' : '#334155'),
+                    color: fnName === p.name ? '#7C3AED' : (isDark ? '#A1A1A1' : 'rgba(237,237,237,0.53)'),
                     cursor: 'pointer', fontFamily: 'JetBrains Mono, monospace',
                   }}
                 >
@@ -237,9 +237,9 @@ export default function AdminDiagnosticPage() {
               <div style={{
                 marginTop: 10, padding: '10px 12px', borderRadius: 6, fontSize: 12,
                 fontFamily: 'JetBrains Mono, monospace', wordBreak: 'break-all',
-                background: lastResult.ok ? '#1B7F37' : '#FEF2F2',
+                background: lastResult.ok ? '#1B7F37' : 'rgba(248,113,113,0.06)',
                 border: lastResult.ok ? '1px solid #16A34A' : '1.5px solid #DC2626',
-                color: lastResult.ok ? '#FFFFFF' : '#991B1B',
+                color: lastResult.ok ? '#FFFFFF' : '#F87171',
                 maxHeight: 120, overflowY: 'auto',
               }}>
                 {lastResult.ok
@@ -250,7 +250,7 @@ export default function AdminDiagnosticPage() {
           </Card>
 
           {/* SECTION D — Column Guard Checker */}
-          <Card title="Column Guard Checker" icon={<Shield style={{ width: 14, height: 14, color: '#334155' }} />}>
+          <Card title="Column Guard Checker" icon={<Shield style={{ width: 14, height: 14, color: 'rgba(237,237,237,0.53)' }} />}>
             <Button variant="outline" onClick={runGuards} disabled={guardsRunning} style={{ marginBottom: 12, gap: 6 }}>
               {guardsRunning ? <RefreshCw className="h-3.5 w-3.5 animate-spin" /> : <Shield className="h-3.5 w-3.5" />}
               Run Column Guards
@@ -262,15 +262,15 @@ export default function AdminDiagnosticPage() {
                   <div key={g.label} style={{
                     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                     height: 50, padding: '8px 12px', borderRadius: 4,
-                    border: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid #E2E8F0', background: isDark ? '#1A1A1A' : '#FFFFFF',
+                    border: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(255,255,255,0.10)', background: isDark ? '#1A1A1A' : '#FFFFFF',
                   }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                       {result ? (
                         result.passed ? <CheckCircle2 style={{ width: 14, height: 14, color: '#16A34A' }} /> : <XCircle style={{ width: 14, height: 14, color: '#DC2626' }} />
                       ) : (
-                        <Minus style={{ width: 14, height: 14, color: isDark ? '#878787' : '#94A3B8' }} />
+                        <Minus style={{ width: 14, height: 14, color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }} />
                       )}
-                      <span style={{ fontSize: 12, fontFamily: 'JetBrains Mono, monospace', color: isDark ? '#A1A1A1' : '#334155' }}>{g.label}</span>
+                      <span style={{ fontSize: 12, fontFamily: 'JetBrains Mono, monospace', color: isDark ? '#A1A1A1' : 'rgba(237,237,237,0.53)' }}>{g.label}</span>
                     </div>
                     <StatusLozenge status={!result ? 'not_tested' : guardsRunning ? 'running' : result.passed ? 'passed' : 'failed'} />
                   </div>
@@ -283,7 +283,7 @@ export default function AdminDiagnosticPage() {
         {/* RIGHT COLUMN */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
           {/* SECTION C — Table Inspector */}
-          <Card title="Table Inspector" icon={<Database style={{ width: 14, height: 14, color: '#334155' }} />}>
+          <Card title="Table Inspector" icon={<Database style={{ width: 14, height: 14, color: 'rgba(237,237,237,0.53)' }} />}>
             <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
               <Input
                 value={tableName}
@@ -303,17 +303,17 @@ export default function AdminDiagnosticPage() {
               Query Table
             </Button>
             {tableError && (
-              <div style={{ padding: '10px 12px', borderRadius: 6, background: '#FEF2F2', border: '1.5px solid #DC2626', color: '#991B1B', fontSize: 12, fontFamily: 'JetBrains Mono, monospace', marginBottom: 8 }}>
+              <div style={{ padding: '10px 12px', borderRadius: 6, background: 'rgba(248,113,113,0.06)', border: '1.5px solid #DC2626', color: '#F87171', fontSize: 12, fontFamily: 'JetBrains Mono, monospace', marginBottom: 8 }}>
                 {tableError}
               </div>
             )}
             {tableData && tableData.length > 0 && (
-              <div style={{ overflowX: 'auto', border: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid #E2E8F0', borderRadius: 4 }}>
+              <div style={{ overflowX: 'auto', border: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(255,255,255,0.10)', borderRadius: 4 }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 11, fontFamily: 'JetBrains Mono, monospace' }}>
                   <thead>
-                    <tr style={{ background: isDark ? '#1A1A1A' : '#F8FAFC' }}>
+                    <tr style={{ background: isDark ? '#1A1A1A' : '#1A1A1A' }}>
                       {Object.keys(tableData[0]).map(col => (
-                        <th key={col} style={{ height: 50, padding: '0 10px', textAlign: 'left', fontWeight: 650, fontSize: 10, textTransform: 'uppercase', color: isDark ? '#878787' : '#64748B', borderBottom: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid #E2E8F0', whiteSpace: 'nowrap' }}>
+                        <th key={col} style={{ height: 50, padding: '0 10px', textAlign: 'left', fontWeight: 650, fontSize: 10, textTransform: 'uppercase', color: isDark ? '#878787' : 'rgba(237,237,237,0.40)', borderBottom: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(255,255,255,0.10)', whiteSpace: 'nowrap' }}>
                           {col}
                         </th>
                       ))}
@@ -321,10 +321,10 @@ export default function AdminDiagnosticPage() {
                   </thead>
                   <tbody>
                     {tableData.map((row, i) => (
-                      <tr key={i} style={{ borderBottom: isDark ? '0.75px solid rgba(255,255,255,0.05)' : '0.75px solid #E2E8F0' }}>
+                      <tr key={i} style={{ borderBottom: isDark ? '0.75px solid rgba(255,255,255,0.05)' : '0.75px solid rgba(255,255,255,0.10)' }}>
                         {Object.values(row).map((val, j) => (
-                          <td key={j} style={{ height: 50, padding: '0 10px', color: isDark ? '#A1A1A1' : '#334155', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                            {val === null ? <span style={{ color: isDark ? '#878787' : '#94A3B8' }}>null</span> : typeof val === 'object' ? JSON.stringify(val).slice(0, 50) : String(val).slice(0, 80)}
+                          <td key={j} style={{ height: 50, padding: '0 10px', color: isDark ? '#A1A1A1' : 'rgba(237,237,237,0.53)', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                            {val === null ? <span style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>null</span> : typeof val === 'object' ? JSON.stringify(val).slice(0, 50) : String(val).slice(0, 80)}
                           </td>
                         ))}
                       </tr>
@@ -334,12 +334,12 @@ export default function AdminDiagnosticPage() {
               </div>
             )}
             {tableData && tableData.length === 0 && (
-              <div style={{ fontSize: 12, color: isDark ? '#878787' : '#64748B', padding: 10, textAlign: 'center' }}>No rows returned</div>
+              <div style={{ fontSize: 12, color: isDark ? '#878787' : 'rgba(237,237,237,0.40)', padding: 10, textAlign: 'center' }}>No rows returned</div>
             )}
           </Card>
 
           {/* SECTION E — Response Log */}
-          <Card title="Response Log" icon={<Terminal style={{ width: 14, height: 14, color: '#334155' }} />}>
+          <Card title="Response Log" icon={<Terminal style={{ width: 14, height: 14, color: 'rgba(237,237,237,0.53)' }} />}>
             <div
               ref={logRef}
               style={{
@@ -350,7 +350,7 @@ export default function AdminDiagnosticPage() {
               {logs.length === 0 && <span style={{ color: '#475569' }}>No log entries yet...</span>}
               {logs.map((entry, i) => (
                 <div key={i} style={{ marginBottom: 3, lineHeight: 1.5 }}>
-                  <span style={{ color: '#64748B' }}>[{entry.ts}]</span>{' '}
+                  <span style={{ color: 'rgba(237,237,237,0.40)' }}>[{entry.ts}]</span>{' '}
                   <span style={{
                     color: entry.type === 'error' ? '#F87171' : entry.type === 'success' ? '#4ADE80' : '#93C5FD',
                   }}>
@@ -374,11 +374,11 @@ function Card({ title, icon, children }: { title: string; icon?: React.ReactNode
   const { isDark } = useTheme();
   return (
     <div style={{
-      background: isDark ? '#1A1A1A' : '#FFFFFF', border: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid #E2E8F0', borderRadius: 8, padding: 16,
+      background: isDark ? '#1A1A1A' : '#FFFFFF', border: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(255,255,255,0.10)', borderRadius: 8, padding: 16,
     }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 12 }}>
         {icon}
-        <h2 style={{ fontSize: 13, fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A', fontFamily: 'Sora, sans-serif', margin: 0 }}>{title}</h2>
+        <h2 style={{ fontSize: 13, fontWeight: 600, color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)', fontFamily: 'Sora, sans-serif', margin: 0 }}>{title}</h2>
       </div>
       {children}
     </div>

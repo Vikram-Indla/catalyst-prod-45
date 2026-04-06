@@ -66,12 +66,12 @@ const TOKENS = `
   --srd-ink-m:#71717A;
   --srd-bg:#FFFFFF; --srd-bg-2:#FAFAFA; --srd-bg-3:#F4F4F5;
   --srd-bdr:#E4E4E7; --srd-bdr-s:#D4D4D8;
-  --srd-blue:#2563EB; --srd-blue-h:#1D4ED8; --srd-blue-bg:#EFF6FF; --srd-blue-bdr:#BFDBFE;
+  --srd-blue:#2563EB; --srd-blue-h:#1D4ED8; --srd-blue-bg:rgba(59,130,246,0.06); --srd-blue-bdr:#BFDBFE;
   --srd-teal:#0D9488; --srd-teal-t:#0A8277; --srd-teal-bg:#F0FDFA;
-  --srd-green:#16A34A; --srd-green-t:#11853D; --srd-green-bg:#F0FDF4;
-  --srd-red:#DC2626; --srd-red-t:#D92525; --srd-red-bg:#FEF2F2;
+  --srd-green:#16A34A; --srd-green-t:#11853D; --srd-green-bg:rgba(74,222,128,0.06);
+  --srd-red:#DC2626; --srd-red-t:#D92525; --srd-red-bg:rgba(248,113,113,0.06);
   --srd-purple:#2563EB;
-  --srd-ai:#2563EB; --srd-ai-d:#1E40AF; --srd-ai-bg:#EFF6FF; --srd-ai-bdr:#93C5FD;
+  --srd-ai:#2563EB; --srd-ai-d:#7DB8FC; --srd-ai-bg:rgba(59,130,246,0.06); --srd-ai-bdr:#93C5FD;
   --srd-r:4px; --srd-r2:6px; --srd-r3:8px; --srd-r4:12px; --srd-pill:9999px;
   font-family:'Inter',system-ui,sans-serif; color:var(--srd-ink);
   -webkit-font-smoothing:antialiased; line-height:1.5;

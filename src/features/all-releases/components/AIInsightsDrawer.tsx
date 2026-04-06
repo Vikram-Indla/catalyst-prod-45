@@ -22,8 +22,8 @@ function InsightItem({ insight, onActionClick }: { insight: AIReleaseInsight; on
       bg: 'bg-red-50 border-red-200',
     },
     warning: {
-      icon: <AlertTriangle className="w-4 h-4 text-[#64748B] flex-shrink-0" />,
-      bg: 'bg-[#F1F5F9] border-[rgba(15,23,42,0.12)]',
+      icon: <AlertTriangle className="w-4 h-4 text-[rgba(237,237,237,0.40)] flex-shrink-0" />,
+      bg: 'bg-[#1A1A1A] border-[rgba(15,23,42,0.12)]',
     },
     positive: {
       icon: <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0" />,

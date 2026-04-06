@@ -14,7 +14,7 @@ const PRIORITY_COLORS: Record<string, string> = {
   critical: '#FF5630',
   high: '#FF7452',
   medium: '#D97706',
-  low: '#94A3B8',
+  low: 'rgba(237,237,237,0.40)',
 };
 
 function getOverdueDays(dueDate: string | null): number | null {
@@ -101,7 +101,7 @@ export default function KanbanCardComponent({ card, onCardClick }: Props) {
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           opacity: hover ? 1 : 0, transition: 'opacity 100ms',
         }} onClick={e => e.stopPropagation()}>
-          <MoreHorizontal size={14} color="#94A3B8" />
+          <MoreHorizontal size={14} color="rgba(237,237,237,0.40)" />
         </button>
       </div>
 
@@ -120,7 +120,7 @@ export default function KanbanCardComponent({ card, onCardClick }: Props) {
         <div style={{
           display: 'inline-flex', alignItems: 'center', gap: 4,
           height: 18, padding: '0 7px', borderRadius: 4,
-          background: '#EFF6FF', border: '0.75px solid #DBEAFE',
+          background: 'rgba(59,130,246,0.06)', border: '0.75px solid #DBEAFE',
           maxWidth: '100%', overflow: 'hidden',
         }}>
           <span style={{
@@ -145,7 +145,7 @@ export default function KanbanCardComponent({ card, onCardClick }: Props) {
           {card.priority && (
             <span style={{
               width: 8, height: 8, borderRadius: '50%',
-              background: PRIORITY_COLORS[card.priority.name] ?? '#94A3B8',
+              background: PRIORITY_COLORS[card.priority.name] ?? 'rgba(237,237,237,0.40)',
               flexShrink: 0,
             }} title={card.priority.name} />
           )}
@@ -154,7 +154,7 @@ export default function KanbanCardComponent({ card, onCardClick }: Props) {
             <span style={{
               display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
               height: 18, minWidth: 22, padding: '0 5px', borderRadius: 4,
-              background: '#F0FDF4', border: '0.75px solid #DCFCE7',
+              background: 'rgba(74,222,128,0.06)', border: '0.75px solid #DCFCE7',
               fontSize: 10.5, fontWeight: 650, color: 'var(--sem-success)',
               fontFamily: "'JetBrains Mono', monospace",
             }}>{card.storyPoints}</span>

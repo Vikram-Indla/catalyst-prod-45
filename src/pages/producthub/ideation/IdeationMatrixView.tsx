@@ -1,6 +1,6 @@
 /**
  * IdeationMatrixView — Impact vs Complexity scatter plot with 4 quadrants
- * V12: Submitted bubbles use #64748B slate (not primary blue)
+ * V12: Submitted bubbles use rgba(237,237,237,0.40) slate (not primary blue)
  */
 import React, { useState } from 'react';
 import { useIdeas } from '@/hooks/useIdeation';
@@ -20,20 +20,20 @@ const STATUS_BUBBLE_COLORS: Record<string, string> = {
   'converted':    '#16A34A',
   'approved':     '#16A34A',
   'under_review': '#7C3AED',  // AI-enriched marker ✓
-  'submitted':    '#64748B',  // neutral slate — not primary blue
+  'submitted':    'rgba(237,237,237,0.40)',  // neutral slate — not primary blue
   'rejected':     '#DC2626',
-  'draft':        '#94A3B8',
+  'draft':        'rgba(237,237,237,0.40)',
 };
 
 function getBubbleColor(status: string): string {
-  return STATUS_BUBBLE_COLORS[status] ?? '#64748B';
+  return STATUS_BUBBLE_COLORS[status] ?? 'rgba(237,237,237,0.40)';
 }
 
 const QUADRANTS = [
-  { top: 0, left: 0, label: 'QUICK WINS', bg: '#F0FDF4', labelColor: '#16A34A' },
-  { top: 0, left: '50%', label: 'BIG BETS', bg: '#EFF6FF', labelColor: '#2563EB' },
-  { top: '50%', left: 0, label: 'FILL-INS', bg: '#F8FAFC', labelColor: '#64748B' },
-  { top: '50%', left: '50%', label: 'MONEY PIT', bg: '#FEF2F2', labelColor: '#DC2626' },
+  { top: 0, left: 0, label: 'QUICK WINS', bg: 'rgba(74,222,128,0.06)', labelColor: '#16A34A' },
+  { top: 0, left: '50%', label: 'BIG BETS', bg: 'rgba(59,130,246,0.06)', labelColor: '#2563EB' },
+  { top: '50%', left: 0, label: 'FILL-INS', bg: '#1A1A1A', labelColor: 'rgba(237,237,237,0.40)' },
+  { top: '50%', left: '50%', label: 'MONEY PIT', bg: 'rgba(248,113,113,0.06)', labelColor: '#DC2626' },
 ];
 
 export default function IdeationMatrixView({ onOpenDetail }: Props) {
@@ -72,11 +72,11 @@ export default function IdeationMatrixView({ onOpenDetail }: Props) {
           { label: 'SIZE', value: 'Votes' },
         ].map(ctrl => (
           <div key={ctrl.label} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <span style={{ fontSize: '11px', fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{ctrl.label}:</span>
+            <span style={{ fontSize: '11px', fontWeight: 600, color: 'rgba(237,237,237,0.40)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{ctrl.label}:</span>
             <div style={{
               width: '160px', fontSize: '12px', fontWeight: 600, padding: '5px 10px',
-              background: isDark ? '#1A1A1A' : '#F8FAFC', border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0', borderRadius: '6px',
-              color: isDark ? '#EDEDED' : '#334155', cursor: 'pointer',
+              background: isDark ? '#1A1A1A' : '#1A1A1A', border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(255,255,255,0.10)', borderRadius: '6px',
+              color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.53)', cursor: 'pointer',
             }}>
               {ctrl.value}
             </div>
@@ -87,7 +87,7 @@ export default function IdeationMatrixView({ onOpenDetail }: Props) {
       {/* Chart — V12: border-only, NO box-shadow */}
       <div style={{ maxWidth: '900px', margin: '0 auto' }}>
         <div style={{
-          width: '100%', height: '520px', background: isDark ? '#1A1A1A' : '#FFFFFF', border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0',
+          width: '100%', height: '520px', background: isDark ? '#1A1A1A' : '#FFFFFF', border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(255,255,255,0.10)',
           borderRadius: '6px', position: 'relative', overflow: 'hidden',
         }}>
           {/* Grid area */}
@@ -110,8 +110,8 @@ export default function IdeationMatrixView({ onOpenDetail }: Props) {
             ))}
 
             {/* Midlines */}
-            <div style={{ position: 'absolute', left: '50%', top: 0, bottom: 0, width: 0, borderLeft: '1.5px dashed #94A3B8', zIndex: 1 }} />
-            <div style={{ position: 'absolute', top: '50%', left: 0, right: 0, height: 0, borderTop: '1.5px dashed #94A3B8', zIndex: 1 }} />
+            <div style={{ position: 'absolute', left: '50%', top: 0, bottom: 0, width: 0, borderLeft: '1.5px dashed rgba(237,237,237,0.40)', zIndex: 1 }} />
+            <div style={{ position: 'absolute', top: '50%', left: 0, right: 0, height: 0, borderTop: '1.5px dashed rgba(237,237,237,0.40)', zIndex: 1 }} />
 
             {/* Dots */}
             {dots.map(dot => (
@@ -142,18 +142,18 @@ export default function IdeationMatrixView({ onOpenDetail }: Props) {
                 {hoveredDot === dot.key && (
                   <div style={{
                     position: 'absolute', bottom: `${dot.size + 8}px`, left: '50%', transform: 'translateX(-50%)',
-                    background: '#0F172A', color: '#FFFFFF', fontSize: '12px', borderRadius: '8px',
+                    background: 'rgba(237,237,237,0.93)', color: '#FFFFFF', fontSize: '12px', borderRadius: '8px',
                     padding: '8px 12px', whiteSpace: 'nowrap', zIndex: 20,
                     boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
                   }}>
                     <div style={{ fontWeight: 700, marginBottom: '2px' }}>{dot.key} · {dot.title}</div>
-                    <div style={{ fontSize: '11px', color: '#CBD5E1' }}>
+                    <div style={{ fontSize: '11px', color: 'rgba(237,237,237,0.53)' }}>
                       IMPACT: {dot.impact.toFixed(2)} · Votes: {dot.votes} · {dot.status}
                     </div>
                     <div style={{
                       position: 'absolute', bottom: '-4px', left: '50%', transform: 'translateX(-50%)',
                       width: 0, height: 0, borderLeft: '5px solid transparent', borderRight: '5px solid transparent',
-                      borderTop: '5px solid #0F172A',
+                      borderTop: '5px solid rgba(237,237,237,0.93)',
                     }} />
                   </div>
                 )}
@@ -164,14 +164,14 @@ export default function IdeationMatrixView({ onOpenDetail }: Props) {
           {/* Axis labels */}
           <div style={{
             position: 'absolute', bottom: '12px', left: '50%', transform: 'translateX(-50%)',
-            fontSize: '11px', fontWeight: 700, color: '#334155', letterSpacing: '1px',
+            fontSize: '11px', fontWeight: 700, color: 'rgba(237,237,237,0.53)', letterSpacing: '1px',
             textTransform: 'uppercase', whiteSpace: 'nowrap',
           }}>
             ← LOW COMPLEXITY — HIGH COMPLEXITY →
           </div>
           <div style={{
             position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%) rotate(-90deg)',
-            fontSize: '11px', fontWeight: 700, color: '#334155', letterSpacing: '1px',
+            fontSize: '11px', fontWeight: 700, color: 'rgba(237,237,237,0.53)', letterSpacing: '1px',
             textTransform: 'uppercase', whiteSpace: 'nowrap',
           }}>
             ← LOW STRATEGIC VALUE — HIGH STRATEGIC VALUE →
@@ -186,15 +186,15 @@ export default function IdeationMatrixView({ onOpenDetail }: Props) {
         {[
           { color: '#16A34A', label: 'Approved / Converted' },
           { color: '#7C3AED', label: 'Under Review (AI-enriched)' },
-          { color: '#64748B', label: 'Submitted' },
+          { color: 'rgba(237,237,237,0.40)', label: 'Submitted' },
           { color: '#DC2626', label: 'Rejected' },
         ].map(l => (
           <div key={l.label} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
             <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: l.color, flexShrink: 0 }} />
-            <span style={{ fontSize: '12px', color: isDark ? '#A1A1A1' : '#334155', fontWeight: 600 }}>{l.label}</span>
+            <span style={{ fontSize: '12px', color: isDark ? '#A1A1A1' : 'rgba(237,237,237,0.53)', fontWeight: 600 }}>{l.label}</span>
           </div>
         ))}
-        <span style={{ fontSize: '11px', color: '#94A3B8' }}>Dot size = Vote count</span>
+        <span style={{ fontSize: '11px', color: 'rgba(237,237,237,0.40)' }}>Dot size = Vote count</span>
       </div>
     </div>
   );

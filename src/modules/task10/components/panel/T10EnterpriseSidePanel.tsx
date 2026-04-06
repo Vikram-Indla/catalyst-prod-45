@@ -32,7 +32,7 @@ const COLORS = {
   gray400: '#94a3b8',
   gray500: '#64748b',
   gray600: '#475569',
-  gray700: '#334155',
+  gray700: 'rgba(237,237,237,0.53)',
   gray800: '#1e293b',
   gray900: '#0f172a',
   blue: '#3b82f6',

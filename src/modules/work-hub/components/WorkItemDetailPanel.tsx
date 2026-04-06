@@ -72,7 +72,7 @@ export function WorkItemDetailPanel({ item, onClose }: WorkItemDetailPanelProps)
       {/* Header */}
       <div
         className="flex items-center justify-between px-4 py-3"
-        style={{ borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}` }}
+        style={{ borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.10)'}` }}
       >
         <div className="flex items-center gap-2">
           <JiraIssueTypeIcon type={item.type} size={16} />
@@ -95,7 +95,7 @@ export function WorkItemDetailPanel({ item, onClose }: WorkItemDetailPanelProps)
       {item.parentKey && (
         <div
           className="px-4 py-2 text-xs"
-          style={{ borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}` }}
+          style={{ borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.10)'}` }}
         >
           <span style={{ color: isDark ? '#878787' : '#6B778C' }}>{item.parentKey}</span>
           <span style={{ color: isDark ? '#878787' : '#6B778C' }} className="mx-1">/</span>
@@ -135,7 +135,7 @@ export function WorkItemDetailPanel({ item, onClose }: WorkItemDetailPanelProps)
             <div
               className="flex items-center gap-2 p-2 rounded-md"
               style={{
-                backgroundColor: isDark ? '#1A1A1A' : '#F1F5F9',
+                backgroundColor: isDark ? '#1A1A1A' : '#1A1A1A',
                 border: isDark ? '1px solid rgba(255,255,255,0.08)' : 'none',
               }}
             >

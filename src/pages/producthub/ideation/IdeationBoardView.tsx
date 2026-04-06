@@ -59,7 +59,7 @@ export default function IdeationBoardView({ ideas, onOpenDetail, onConvert }: Pr
               <span style={{ fontSize: '11px', fontWeight: 700, color: dk.t2, textTransform: 'uppercase', letterSpacing: '0.07em' }}>{sc.label}</span>
               <span style={{
                 fontSize: '10px', fontFamily: "'JetBrains Mono', monospace", fontWeight: 700,
-                background: isDark ? 'rgba(255,255,255,0.06)' : '#F1F5F9', borderRadius: '100px',
+                background: isDark ? 'rgba(255,255,255,0.06)' : '#1A1A1A', borderRadius: '100px',
                 padding: '0 6px', height: 18, display: 'inline-flex', alignItems: 'center',
                 color: dk.t3,
               }}>
@@ -169,8 +169,8 @@ function IdeaBoardCard({ idea, columnStatus, onClick, onConvert, isDark, dk }: {
         </span>
         {idea.theme && (
           <span style={{
-            background: isDark ? 'rgba(59,130,246,0.12)' : '#EFF6FF',
-            color: isDark ? '#93C5FD' : '#1E40AF',
+            background: isDark ? 'rgba(59,130,246,0.12)' : 'rgba(59,130,246,0.06)',
+            color: isDark ? '#93C5FD' : '#7DB8FC',
             padding: '2px 6px', borderRadius: '4px',
             fontSize: '10px', fontWeight: 600, maxWidth: '160px',
             whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
@@ -197,7 +197,7 @@ function IdeaBoardCard({ idea, columnStatus, onClick, onConvert, isDark, dk }: {
       {/* AI insight strip */}
       {showFullAiStrip && (
         <div style={{
-          marginTop: '8px', background: isDark ? 'rgba(59,130,246,0.12)' : '#EFF6FF', borderRadius: '6px',
+          marginTop: '8px', background: isDark ? 'rgba(59,130,246,0.12)' : 'rgba(59,130,246,0.06)', borderRadius: '6px',
           padding: '5px 8px', fontSize: '10px', color: isDark ? '#93C5FD' : '#2563EB', fontWeight: 600,
         }}>
           {aiInsight}

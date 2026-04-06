@@ -128,7 +128,7 @@ export function Resource360Chronology({ items, onItemClick }: Props) {
                 const stale = getStaleIndicator(item.age_days, item.status, item.status_category);
                 const bg = showPendingOnly && isPending ? T.pendHl : idx % 2 === 0 ? T.surface : '#FAF8F5';
                 const isExpanded = expandedId === item.work_item_id;
-                const hc = WH_HUB_COLORS[item.hub] ?? '#64748B';
+                const hc = WH_HUB_COLORS[item.hub] ?? 'rgba(237,237,237,0.40)';
                 const hs = WH_HUB_SHORT[item.hub] ?? item.hub?.slice(0, 4).toUpperCase();
 
                 return (

@@ -212,7 +212,7 @@ export default function IdeasBacklogPage() {
           <div style={{ background: isDark ? 'transparent' : '#FFFFFF', borderRadius: '6px', border: `1px solid ${dk.border}`, overflow: 'hidden' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
-                <tr style={{ height: '50px', background: isDark ? 'rgba(255,255,255,0.03)' : '#F1F5F9' }}>
+                <tr style={{ height: '50px', background: isDark ? 'rgba(255,255,255,0.03)' : '#1A1A1A' }}>
                   <th style={{ width: '40px', padding: '0 8px', textAlign: 'center' }}>
                     <input type="checkbox" checked={selectedRows.size === ideas.length && ideas.length > 0} onChange={toggleAll} style={{ cursor: 'pointer', accentColor: '#2563EB' }} />
                   </th>
@@ -224,7 +224,7 @@ export default function IdeasBacklogPage() {
                   ].map(col => (
                     <th key={col.label} style={{
                       textAlign: 'left', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase',
-                      letterSpacing: '0.06em', color: isDark ? 'rgba(255,255,255,0.50)' : '#64748B', padding: '10px 12px',
+                      letterSpacing: '0.06em', color: isDark ? 'rgba(255,255,255,0.50)' : 'rgba(237,237,237,0.40)', padding: '10px 12px',
                       borderBottom: `0.75px solid ${dk.divider}`, whiteSpace: 'nowrap', width: col.width,
                     }}>{col.label}</th>
                   ))}
@@ -262,12 +262,12 @@ export default function IdeasBacklogPage() {
                         </div>
                       </td>
                       <td style={{ padding: '8px 12px' }}>
-                        <span style={{ display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px', borderRadius: 4, fontSize: '11px', fontWeight: 500, background: isDark ? 'rgba(255,255,255,0.06)' : '#F1F5F9', color: dk.t2, border: `1px solid ${dk.border}` }}>
+                        <span style={{ display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px', borderRadius: 4, fontSize: '11px', fontWeight: 500, background: isDark ? 'rgba(255,255,255,0.06)' : '#1A1A1A', color: dk.t2, border: `1px solid ${dk.border}` }}>
                           {(idea.idea_type || 'Feature').substring(0, 7)}
                         </span>
                       </td>
                       <td style={{ padding: '8px 12px' }}>
-                        <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', height: 20, minWidth: 26, padding: '0 4px', borderRadius: 4, fontSize: '11px', fontWeight: 650, background: isDark ? 'rgba(255,255,255,0.06)' : '#F1F5F9', color: dk.t2, border: `1px solid ${dk.border}` }}>
+                        <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', height: 20, minWidth: 26, padding: '0 4px', borderRadius: 4, fontSize: '11px', fontWeight: 650, background: isDark ? 'rgba(255,255,255,0.06)' : '#1A1A1A', color: dk.t2, border: `1px solid ${dk.border}` }}>
                           {idea.priority || 'P2'}
                         </span>
                       </td>
@@ -283,7 +283,7 @@ export default function IdeasBacklogPage() {
                       </td>
                       <td style={{ padding: '8px 12px' }}>
                         {idea.roadmap_quarter ? (
-                          <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', height: 18, padding: '0 4px', borderRadius: 4, fontSize: '11px', fontWeight: 700, background: QUARTER_BADGE[idea.roadmap_quarter]?.bg || '#E2E8F0', color: QUARTER_BADGE[idea.roadmap_quarter]?.text || '#94A3B8' }}>{idea.roadmap_quarter}</span>
+                          <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', height: 18, padding: '0 4px', borderRadius: 4, fontSize: '11px', fontWeight: 700, background: QUARTER_BADGE[idea.roadmap_quarter]?.bg || 'rgba(255,255,255,0.10)', color: QUARTER_BADGE[idea.roadmap_quarter]?.text || 'rgba(237,237,237,0.40)' }}>{idea.roadmap_quarter}</span>
                         ) : <span style={{ fontSize: '11px', color: dk.t3 }}>—</span>}
                       </td>
                       <td style={{ padding: '8px 12px' }}>

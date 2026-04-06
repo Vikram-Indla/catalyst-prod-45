@@ -42,8 +42,8 @@ interface TestCycle {
 const statusConfig: Record<string, { label: string; color: string; bg: string }> = {
   draft: { label: 'DRAFT', color: '#253858', bg: '#DFE1E6' },
   planned: { label: 'PLANNED', color: '#253858', bg: '#DFE1E6' },
-  active: { label: 'IN PROGRESS', color: '#0747A6', bg: '#DEEBFF' },
-  completed: { label: 'COMPLETED', color: '#006644', bg: '#E3FCEF' },
+  active: { label: 'IN PROGRESS', color: '#0747A6', bg: 'rgba(59,130,246,0.10)' },
+  completed: { label: 'COMPLETED', color: '#006644', bg: 'rgba(74,222,128,0.10)' },
   archived: { label: 'ARCHIVED', color: '#253858', bg: '#DFE1E6' },
   paused: { label: 'PAUSED', color: '#253858', bg: '#DFE1E6' },
 };
@@ -68,14 +68,14 @@ export default function TestCyclesPage() {
   const [cloneCycle, setCloneCycle] = useState<TestCycle | null>(null);
 
   // NOCTURNE tokens
-  const pageBg = isDark ? '#0A0A0A' : '#F8FAFC';
+  const pageBg = isDark ? '#0A0A0A' : '#1A1A1A';
   const surfaceBg = isDark ? '#1A1A1A' : '#FFFFFF';
-  const elevatedBg = isDark ? '#1A1A1A' : '#F8FAFC';
-  const borderColor = isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0';
-  const textPrimary = isDark ? '#EDEDED' : '#0F172A';
-  const textBody = isDark ? '#A1A1A1' : '#334155';
-  const textSecondary = isDark ? '#A1A1A1' : '#64748B';
-  const textMuted = isDark ? '#878787' : '#94A3B8';
+  const elevatedBg = isDark ? '#1A1A1A' : '#1A1A1A';
+  const borderColor = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.10)';
+  const textPrimary = isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)';
+  const textBody = isDark ? '#A1A1A1' : 'rgba(237,237,237,0.53)';
+  const textSecondary = isDark ? '#A1A1A1' : 'rgba(237,237,237,0.40)';
+  const textMuted = isDark ? '#878787' : 'rgba(237,237,237,0.40)';
 
   const fetchCycles = async () => {
     setIsLoading(true);
@@ -169,7 +169,7 @@ export default function TestCyclesPage() {
         {/* Status Filter */}
         <div style={{ position: 'relative' }}>
           <button onClick={(e) => { e.stopPropagation(); setIsFilterOpen(!isFilterOpen); setIsSortOpen(false); }}
-            style={{ height: 40, padding: '0 14px', border: `1.5px solid ${statusFilter.length > 0 ? '#2563EB' : borderColor}`, borderRadius: 8, backgroundColor: statusFilter.length > 0 ? (isDark ? '#1e293b' : '#EFF6FF') : surfaceBg, color: statusFilter.length > 0 ? '#2563EB' : textBody, fontSize: 14, fontWeight: 500, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+            style={{ height: 40, padding: '0 14px', border: `1.5px solid ${statusFilter.length > 0 ? '#2563EB' : borderColor}`, borderRadius: 8, backgroundColor: statusFilter.length > 0 ? (isDark ? '#1e293b' : 'rgba(59,130,246,0.06)') : surfaceBg, color: statusFilter.length > 0 ? '#2563EB' : textBody, fontSize: 14, fontWeight: 500, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
             <Filter size={16} /> Status
             {statusFilter.length > 0 && <span style={{ minWidth: 18, height: 18, padding: '0 5px', backgroundColor: '#2563EB', color: '#FFFFFF', fontSize: 11, fontWeight: 600, borderRadius: 8, display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>{statusFilter.length}</span>}
             <ChevronDown size={14} />
@@ -179,7 +179,7 @@ export default function TestCyclesPage() {
               {Object.entries(statusConfig).map(([key, config]) => {
                 const isChecked = statusFilter.includes(key);
                 return (
-                  <label key={key} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 8, cursor: 'pointer', backgroundColor: isChecked ? (isDark ? '#1e293b' : '#EFF6FF') : 'transparent' }}>
+                  <label key={key} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 8, cursor: 'pointer', backgroundColor: isChecked ? (isDark ? '#1e293b' : 'rgba(59,130,246,0.06)') : 'transparent' }}>
                     <input type="checkbox" checked={isChecked} onChange={() => setStatusFilter(prev => isChecked ? prev.filter(s => s !== key) : [...prev, key])} style={{ width: 16, height: 16, accentColor: '#2563EB' }} />
                     <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: config.color }} />
                     <span style={{ fontSize: 14, color: textBody }}>{config.label}</span>
@@ -196,7 +196,7 @@ export default function TestCyclesPage() {
         {/* Date Filter */}
         <div style={{ position: 'relative' }}>
           <button onClick={(e) => { e.stopPropagation(); setIsDateFilterOpen(!isDateFilterOpen); setIsFilterOpen(false); setIsSortOpen(false); }}
-            style={{ height: 40, padding: '0 14px', border: `1.5px solid ${(dateFrom || dateTo) ? '#2563EB' : borderColor}`, borderRadius: 8, backgroundColor: (dateFrom || dateTo) ? (isDark ? '#1e293b' : '#EFF6FF') : surfaceBg, color: (dateFrom || dateTo) ? '#2563EB' : textBody, fontSize: 14, fontWeight: 500, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+            style={{ height: 40, padding: '0 14px', border: `1.5px solid ${(dateFrom || dateTo) ? '#2563EB' : borderColor}`, borderRadius: 8, backgroundColor: (dateFrom || dateTo) ? (isDark ? '#1e293b' : 'rgba(59,130,246,0.06)') : surfaceBg, color: (dateFrom || dateTo) ? '#2563EB' : textBody, fontSize: 14, fontWeight: 500, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
             <Calendar size={16} /> Date
             {(dateFrom || dateTo) && <span style={{ minWidth: 8, height: 8, backgroundColor: '#2563EB', borderRadius: '50%', display: 'inline-block' }} />}
             <ChevronDown size={14} />
@@ -240,7 +240,7 @@ export default function TestCyclesPage() {
                     if (isActive) setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc');
                     else { setSortField(option.field); setSortDirection(option.defaultDir); }
                     setIsSortOpen(false);
-                  }} style={{ width: '100%', height: 40, padding: '8px 12px', border: 'none', borderRadius: 8, backgroundColor: isActive ? (isDark ? '#1e293b' : '#EFF6FF') : 'transparent', color: isActive ? '#2563EB' : textBody, fontSize: 14, fontWeight: isActive ? 600 : 400, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', textAlign: 'left' }}>
+                  }} style={{ width: '100%', height: 40, padding: '8px 12px', border: 'none', borderRadius: 8, backgroundColor: isActive ? (isDark ? '#1e293b' : 'rgba(59,130,246,0.06)') : 'transparent', color: isActive ? '#2563EB' : textBody, fontSize: 14, fontWeight: isActive ? 600 : 400, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', textAlign: 'left' }}>
                     <span>{option.label}</span>
                     {isActive && <span style={{ fontSize: 12 }}>{sortDirection === 'asc' ? '↑' : '↓'}</span>}
                   </button>

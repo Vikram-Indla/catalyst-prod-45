@@ -30,7 +30,7 @@ export function ThemeStatsStrip({ themes, isDark = false }: Props) {
       sub: `${themes.length} total`,
       icon: Layers,
       iconColor: '#2563EB',
-      iconBg: isDark ? 'rgba(59,130,246,0.12)' : '#EFF6FF',
+      iconBg: isDark ? 'rgba(59,130,246,0.12)' : 'rgba(59,130,246,0.06)',
       cardBg: undefined,
     },
     {
@@ -41,7 +41,7 @@ export function ThemeStatsStrip({ themes, isDark = false }: Props) {
       iconColor: progressDelta >= 0 ? '#0D9488' : '#DC2626',
       iconBg: isDark
         ? (progressDelta >= 0 ? 'rgba(13,148,136,0.12)' : 'rgba(220,38,38,0.12)')
-        : (progressDelta >= 0 ? '#F0FDFA' : '#FEF2F2'),
+        : (progressDelta >= 0 ? '#F0FDFA' : 'rgba(248,113,113,0.06)'),
       subColor: progressDelta >= 0 ? '#0D9488' : '#DC2626',
       cardBg: undefined,
     },
@@ -51,7 +51,7 @@ export function ThemeStatsStrip({ themes, isDark = false }: Props) {
       sub: themes.length ? `~${Math.round(totalGoals / themes.length)} per theme` : '—',
       icon: Target,
       iconColor: '#059669',
-      iconBg: isDark ? 'rgba(5,150,105,0.12)' : '#ECFDF5',
+      iconBg: isDark ? 'rgba(5,150,105,0.12)' : 'rgba(74,222,128,0.06)',
       cardBg: undefined,
     },
     {
@@ -60,7 +60,7 @@ export function ThemeStatsStrip({ themes, isDark = false }: Props) {
       sub: 'FY2026 planned',
       icon: DollarSign,
       iconColor: '#2563EB',
-      iconBg: isDark ? 'rgba(59,130,246,0.12)' : '#EFF6FF',
+      iconBg: isDark ? 'rgba(59,130,246,0.12)' : 'rgba(59,130,246,0.06)',
       cardBg: undefined,
     },
     {
@@ -71,7 +71,7 @@ export function ThemeStatsStrip({ themes, isDark = false }: Props) {
       iconColor: atRiskCount > 0 ? '#DC2626' : '#059669',
       iconBg: isDark
         ? (atRiskCount > 0 ? 'rgba(220,38,38,0.12)' : 'rgba(5,150,105,0.12)')
-        : (atRiskCount > 0 ? '#FEF2F2' : '#ECFDF5'),
+        : (atRiskCount > 0 ? 'rgba(248,113,113,0.06)' : 'rgba(74,222,128,0.06)'),
       valueColor: atRiskCount > 0 ? '#DC2626' : undefined,
       cardBg: undefined,
     },
@@ -89,7 +89,7 @@ export function ThemeStatsStrip({ themes, isDark = false }: Props) {
           <div className="flex items-start justify-between mb-2">
             <span style={{
               fontSize: 11, fontWeight: 600,
-              color: isDark ? DK.t2 : '#94A3B8',
+              color: isDark ? DK.t2 : 'rgba(237,237,237,0.40)',
               letterSpacing: '0.5px',
             }}>{c.label}</span>
             <div
@@ -101,12 +101,12 @@ export function ThemeStatsStrip({ themes, isDark = false }: Props) {
           </div>
           <p style={{
             fontSize: 26, fontWeight: 800,
-            color: (c as any).valueColor || (isDark ? DK.t1 : '#0F172A'),
+            color: (c as any).valueColor || (isDark ? DK.t1 : 'rgba(237,237,237,0.93)'),
             lineHeight: 1.1, marginBottom: 4, letterSpacing: '-0.5px',
           }}>{c.value}</p>
           <p style={{
             fontSize: 11,
-            color: (c as any).subColor || (isDark ? DK.t2 : '#94A3B8'),
+            color: (c as any).subColor || (isDark ? DK.t2 : 'rgba(237,237,237,0.40)'),
           }}>{c.sub}</p>
         </div>
       ))}

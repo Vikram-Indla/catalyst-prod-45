@@ -65,7 +65,7 @@ export function Drawer({ isOpen, onClose, title, width = 480, children }: Drawer
           maxWidth: '90vw',
           height: '100vh',
           background: 'var(--catalyst-bg-surface-0, #FFFFFF)',
-          borderLeft: '1px solid var(--catalyst-border-default, var(--bd-default, #E2E8F0))',
+          borderLeft: '1px solid var(--catalyst-border-default, var(--bd-default, rgba(255,255,255,0.10)))',
           boxShadow: '-8px 0 30px rgba(0,0,0,0.12)',
           zIndex: 400,
           display: 'flex',
@@ -79,10 +79,10 @@ export function Drawer({ isOpen, onClose, title, width = 480, children }: Drawer
           className="flex items-center justify-between shrink-0"
           style={{
             padding: '16px 20px',
-            borderBottom: '1px solid var(--catalyst-border-default, var(--bd-default, #E2E8F0))',
+            borderBottom: '1px solid var(--catalyst-border-default, var(--bd-default, rgba(255,255,255,0.10)))',
           }}
         >
-          <span style={{ fontSize: 16, fontWeight: 600, color: 'var(--catalyst-text-primary, #0F172A)' }}>
+          <span style={{ fontSize: 16, fontWeight: 600, color: 'var(--catalyst-text-primary, rgba(237,237,237,0.93))' }}>
             {title}
           </span>
           <button
@@ -95,10 +95,10 @@ export function Drawer({ isOpen, onClose, title, width = 480, children }: Drawer
               background: 'transparent',
               border: 'none',
               cursor: 'pointer',
-              color: 'var(--catalyst-text-tertiary, #94A3B8)',
+              color: 'var(--catalyst-text-tertiary, rgba(237,237,237,0.40))',
               transition: 'background 150ms',
             }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--catalyst-bg-hover, #F1F5F9)'; }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--catalyst-bg-hover, #1A1A1A)'; }}
             onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
           >
             <X size={16} />

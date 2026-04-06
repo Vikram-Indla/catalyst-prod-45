@@ -23,8 +23,8 @@ export const INITIATIVE_TYPE_COLORS: Record<InitiativeTypeKey, {
 }> = {
   project: {
     hex: '#2563EB',
-    bg: '#EFF6FF',
-    text: '#1E40AF',
+    bg: 'rgba(59,130,246,0.06)',
+    text: '#7DB8FC',
     border: '#1D4ED8',
     gradient: 'linear-gradient(90deg, #2563EB, #3B82F6)',
   },
@@ -44,8 +44,8 @@ export const INITIATIVE_TYPE_COLORS: Record<InitiativeTypeKey, {
   },
   business_request: {
     hex: '#B45309',
-    bg: '#FEF3C7',
-    text: '#92400E',
+    bg: 'rgba(251,191,36,0.10)',
+    text: '#FBBF24',
     border: '#D97706',
     gradient: 'linear-gradient(90deg, #D97706, #F59E0B)',
   },
@@ -63,9 +63,9 @@ export const HEALTH_STATUS_CONFIG: Record<HealthStatus, {
   bg: string;
   label: string;
 }> = {
-  on_track: { hex: '#16A34A', bg: '#F0FDF4', label: 'On Track' },
+  on_track: { hex: '#16A34A', bg: 'rgba(74,222,128,0.06)', label: 'On Track' },
   at_risk: { hex: '#D97706', bg: '#FFFBEB', label: 'At Risk' },
-  off_track: { hex: '#EF4444', bg: '#FEF2F2', label: 'Off Track' },
+  off_track: { hex: '#EF4444', bg: 'rgba(248,113,113,0.06)', label: 'Off Track' },
 };
 
 export interface RoadmapSummaryStats {

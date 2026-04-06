@@ -40,9 +40,9 @@ export function CommitteeModal({ open, onClose, committee, incidentId }: Committ
               onClick={() => setActiveTab(i)}
               className="px-3 py-2"
               style={{
-                fontFamily: 'Inter, sans-serif', fontSize: 12,
+                fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 12,
                 fontWeight: activeTab === i ? 650 : 400,
-                color: activeTab === i ? '#2563EB' : '#64748B',
+                color: activeTab === i ? '#2563EB' : 'rgba(237,237,237,0.40)',
                 borderBottom: activeTab === i ? '2px solid #2563EB' : '2px solid transparent',
               }}
             >
@@ -55,29 +55,29 @@ export function CommitteeModal({ open, onClose, committee, incidentId }: Committ
           {activeTab === 0 && (
             <div className="space-y-3">
               {members.length === 0 && (
-                <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: '#94A3B8' }}>No committee members assigned.</p>
+                <p style={{ fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 12, color: 'rgba(237,237,237,0.40)' }}>No committee members assigned.</p>
               )}
               {members.map((m: any) => {
                 const vote = m.vote;
                 const voteStatus = vote?.vote || 'pending';
                 return (
                   <div key={m.id} className="flex items-center gap-3 p-2" style={{ border: '1px solid rgba(15,23,42,0.08)', borderRadius: 4 }}>
-                    <div className="rounded-full flex items-center justify-center shrink-0" style={{ width: 32, height: 32, backgroundColor: 'var(--bd-default, #E2E8F0)', fontSize: 12, fontWeight: 650, color: '#475569' }}>
+                    <div className="rounded-full flex items-center justify-center shrink-0" style={{ width: 32, height: 32, backgroundColor: 'var(--bd-default, rgba(255,255,255,0.10))', fontSize: 12, fontWeight: 650, color: '#475569' }}>
                       {(m.user?.full_name || 'U').charAt(0).toUpperCase()}
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
-                        <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, fontWeight: 650, color: 'var(--fg-1, #0F172A)' }}>
+                        <span style={{ fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 12, fontWeight: 650, color: 'var(--fg-1, rgba(237,237,237,0.93))' }}>
                           {m.user?.full_name || 'Member'}
                         </span>
                         {m.role === 'chair' && (
                           <span className="px-1.5" style={{ fontSize: 9, fontWeight: 700, backgroundColor: '#F3E8FF', color: '#7C3AED', borderRadius: 3 }}>CHAIR</span>
                         )}
                         {m.has_veto && (
-                          <span className="px-1.5" style={{ fontSize: 9, fontWeight: 700, backgroundColor: '#FEE2E2', color: '#991B1B', borderRadius: 3 }}>VETO</span>
+                          <span className="px-1.5" style={{ fontSize: 9, fontWeight: 700, backgroundColor: 'rgba(248,113,113,0.10)', color: '#F87171', borderRadius: 3 }}>VETO</span>
                         )}
                       </div>
-                      <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: '#64748B' }}>{m.role || 'Member'}</span>
+                      <span style={{ fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 11, color: 'rgba(237,237,237,0.40)' }}>{m.role || 'Member'}</span>
                     </div>
                     <div className="flex items-center gap-1">
                       {['approved', 'rejected', 'pending'].map(v => (
@@ -89,11 +89,11 @@ export function CommitteeModal({ open, onClose, committee, incidentId }: Committ
                             fontWeight: voteStatus === v ? 700 : 400,
                             borderRadius: 4,
                             backgroundColor: voteStatus === v
-                              ? (v === 'approved' ? '#1B7F37' : v === 'rejected' ? '#FEE2E2' : '#DFE1E6')
+                              ? (v === 'approved' ? '#1B7F37' : v === 'rejected' ? 'rgba(248,113,113,0.10)' : '#DFE1E6')
                               : 'transparent',
                             color: voteStatus === v
-                              ? (v === 'approved' ? '#FFFFFF' : v === 'rejected' ? '#991B1B' : '#42526E')
-                              : '#94A3B8',
+                              ? (v === 'approved' ? '#FFFFFF' : v === 'rejected' ? '#F87171' : '#42526E')
+                              : 'rgba(237,237,237,0.40)',
                             border: voteStatus === v ? 'none' : '1px solid rgba(15,23,42,0.08)',
                           }}
                         >
@@ -108,11 +108,11 @@ export function CommitteeModal({ open, onClose, committee, incidentId }: Committ
           )}
 
           {activeTab === 1 && (
-            <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: '#94A3B8' }}>Approver management coming soon.</p>
+            <p style={{ fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 12, color: 'rgba(237,237,237,0.40)' }}>Approver management coming soon.</p>
           )}
 
           {activeTab === 2 && (
-            <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: '#94A3B8' }}>Activity log coming soon.</p>
+            <p style={{ fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 12, color: 'rgba(237,237,237,0.40)' }}>Activity log coming soon.</p>
           )}
         </div>
 

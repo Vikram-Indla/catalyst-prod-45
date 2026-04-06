@@ -7,12 +7,12 @@ const TYPE_STYLES: Record<string, { bg: string; label: string }> = {
   feature: { bg: '#2563EB', label: 'Feature' },
   bug: { bg: '#EF4444', label: 'Bug' },
   incident: { bg: '#F59E0B', label: 'Incident' },
-  subtask: { bg: '#64748B', label: 'Subtask' },
-  task: { bg: '#64748B', label: 'Task' },
+  subtask: { bg: 'rgba(237,237,237,0.40)', label: 'Subtask' },
+  task: { bg: 'rgba(237,237,237,0.40)', label: 'Task' },
   epic: { bg: '#7C3AED', label: 'Epic' },
 };
 
-const DEFAULT_STYLE = { bg: '#64748B', label: 'Item' };
+const DEFAULT_STYLE = { bg: 'rgba(237,237,237,0.40)', label: 'Item' };
 
 export function TypeBadge({ type }: { type: string }) {
   const key = (type || '').toLowerCase();

@@ -21,7 +21,7 @@ interface UnassignedCycle {
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; icon: any }> = {
   draft: { label: 'Draft', color: 'var(--fg-3)', bg: 'var(--cp-bd-zone)', icon: Clock },
-  active: { label: 'Active', color: 'var(--sem-success)', bg: '#ECFDF5', icon: Play },
+  active: { label: 'Active', color: 'var(--sem-success)', bg: 'rgba(74,222,128,0.06)', icon: Play },
   completed: { label: 'Completed', color: 'var(--cp-blue)', bg: 'color-mix(in srgb, var(--cp-blue) 8%, transparent)', icon: CheckCircle2 },
   archived: { label: 'Archived', color: 'var(--fg-4)', bg: 'var(--bg-1)', icon: Archive },
 };
@@ -183,7 +183,7 @@ export function AddCycleToPlanModal({ isOpen, onClose, planId, onAdded }: AddCyc
                 return (
                   <div key={cycle.id} onClick={() => toggleSelect(cycle.id)} style={{
                     display: 'flex', alignItems: 'center', gap: 14, padding: 14,
-                    backgroundColor: isSelected ? '#EFF6FF' : 'var(--bg-1)', borderRadius: 12,
+                    backgroundColor: isSelected ? 'rgba(59,130,246,0.06)' : 'var(--bg-1)', borderRadius: 12,
                     border: `2px solid ${isSelected ? '#2563EB' : 'transparent'}`, cursor: 'pointer', transition: 'all 0.15s',
                   }}>
                     <div style={{

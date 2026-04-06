@@ -59,7 +59,7 @@ export const R360ProfileHeader: React.FC<Props> = ({ member, kpis, activeTab, on
       </div>
 
       {/* Bottom bar: Tabs + Actions */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 16, paddingTop: 14, borderTop: '1px solid #F1F5F9' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 16, paddingTop: 14, borderTop: '1px solid #1A1A1A' }}>
         <div style={{ display: 'flex', gap: 4 }} role="tablist" aria-label="View mode">
           {TABS.map(tab => (
             <button

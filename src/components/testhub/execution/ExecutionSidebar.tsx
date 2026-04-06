@@ -56,11 +56,11 @@ const SEVERITY_COLORS: Record<string, string> = {
 };
 
 const STEP_COLORS: Record<string, { text: string; bg: string; border: string }> = {
-  passed:  { text: '#16A34A', bg: '#F0FDF4', border: '#BBF7D0' },
-  failed:  { text: '#DC2626', bg: '#FEF2F2', border: '#FECACA' },
+  passed:  { text: '#16A34A', bg: 'rgba(74,222,128,0.06)', border: '#BBF7D0' },
+  failed:  { text: '#DC2626', bg: 'rgba(248,113,113,0.06)', border: '#FECACA' },
   blocked: { text: '#D97706', bg: '#FFFBEB', border: '#FED7AA' },
-  skipped: { text: '#475569', bg: 'var(--bg-1, #F8FAFC)', border: 'var(--bd-default, #E2E8F0)' },
-  not_run: { text: '#64748B', bg: '#F1F5F9', border: 'var(--bd-default, #E2E8F0)' },
+  skipped: { text: '#475569', bg: 'var(--bg-1, #1A1A1A)', border: 'var(--bd-default, rgba(255,255,255,0.10))' },
+  not_run: { text: 'rgba(237,237,237,0.40)', bg: '#1A1A1A', border: 'var(--bd-default, rgba(255,255,255,0.10))' },
 };
 
 export function ExecutionSidebar({
@@ -212,7 +212,7 @@ export function ExecutionSidebar({
 
         {activeTab === 'history' && previousRunData && (
           <div>
-            <div style={{ marginBottom: 12, padding: '8px 12px', backgroundColor: '#EFF6FF', borderRadius: 6, border: '1px solid #BFDBFE' }}>
+            <div style={{ marginBottom: 12, padding: '8px 12px', backgroundColor: 'rgba(59,130,246,0.06)', borderRadius: 6, border: '1px solid #BFDBFE' }}>
               <p style={{ fontSize: 11, fontWeight: 600, color: '#1D4ED8', margin: 0 }}>
                 Previous Run #{previousRunData.execution_number}
               </p>
@@ -227,7 +227,7 @@ export function ExecutionSidebar({
                 return (
                   <div key={i} style={{
                     padding: '8px 10px', backgroundColor: 'var(--bg-app, #FFFFFF)',
-                    border: '0.75px solid var(--bd-default, #E2E8F0)', borderRadius: 6,
+                    border: '0.75px solid var(--bd-default, rgba(255,255,255,0.10))', borderRadius: 6,
                     borderLeft: `3px solid ${colors.border}`,
                   }}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
@@ -243,7 +243,7 @@ export function ExecutionSidebar({
                     </div>
                     <p style={{ fontSize: 11, color: 'hsl(var(--muted-foreground))', margin: 0, lineHeight: 1.4 }}>{step.title}</p>
                     {step.notes && (
-                      <p style={{ fontSize: 10, color: '#64748B', margin: '4px 0 0', fontStyle: 'italic' }}>{step.notes}</p>
+                      <p style={{ fontSize: 10, color: 'rgba(237,237,237,0.40)', margin: '4px 0 0', fontStyle: 'italic' }}>{step.notes}</p>
                     )}
                   </div>
                 );

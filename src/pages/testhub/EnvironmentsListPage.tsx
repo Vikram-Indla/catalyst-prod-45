@@ -35,26 +35,26 @@ interface EnvironmentSummary {
 }
 
 const TYPE_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
-  development: { label: 'Development', color: '#475569', bg: '#F1F5F9' },
-  testing: { label: 'Testing', color: '#475569', bg: '#F1F5F9' },
-  staging: { label: 'Staging', color: '#475569', bg: '#F1F5F9' },
-  uat: { label: 'UAT', color: '#475569', bg: '#F1F5F9' },
-  production: { label: 'Production', color: '#475569', bg: '#F1F5F9' },
-  other: { label: 'Other', color: '#475569', bg: '#F1F5F9' },
+  development: { label: 'Development', color: '#475569', bg: '#1A1A1A' },
+  testing: { label: 'Testing', color: '#475569', bg: '#1A1A1A' },
+  staging: { label: 'Staging', color: '#475569', bg: '#1A1A1A' },
+  uat: { label: 'UAT', color: '#475569', bg: '#1A1A1A' },
+  production: { label: 'Production', color: '#475569', bg: '#1A1A1A' },
+  other: { label: 'Other', color: '#475569', bg: '#1A1A1A' },
 };
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; icon: any }> = {
-  active: { label: 'Active', color: '#059669', bg: '#ECFDF5', icon: Power },
+  active: { label: 'Active', color: '#059669', bg: 'rgba(74,222,128,0.06)', icon: Power },
   maintenance: { label: 'Maintenance', color: '#D97706', bg: '#FFFBEB', icon: Wrench },
-  inactive: { label: 'Inactive', color: '#64748B', bg: '#F1F5F9', icon: Power },
-  deprecated: { label: 'Deprecated', color: '#94A3B8', bg: '#F8FAFC', icon: XCircle },
+  inactive: { label: 'Inactive', color: 'rgba(237,237,237,0.40)', bg: '#1A1A1A', icon: Power },
+  deprecated: { label: 'Deprecated', color: 'rgba(237,237,237,0.40)', bg: '#1A1A1A', icon: XCircle },
 };
 
 const HEALTH_CONFIG: Record<string, { label: string; color: string; bg: string; icon: any }> = {
-  healthy: { label: 'Healthy', color: '#059669', bg: '#ECFDF5', icon: CheckCircle2 },
+  healthy: { label: 'Healthy', color: '#059669', bg: 'rgba(74,222,128,0.06)', icon: CheckCircle2 },
   degraded: { label: 'Degraded', color: '#D97706', bg: '#FFFBEB', icon: AlertTriangle },
-  down: { label: 'Down', color: '#DC2626', bg: '#FEF2F2', icon: XCircle },
-  unknown: { label: 'Unknown', color: '#64748B', bg: '#F1F5F9', icon: HelpCircle },
+  down: { label: 'Down', color: '#DC2626', bg: 'rgba(248,113,113,0.06)', icon: XCircle },
+  unknown: { label: 'Unknown', color: 'rgba(237,237,237,0.40)', bg: '#1A1A1A', icon: HelpCircle },
 };
 
 export default function EnvironmentsListPage() {
@@ -135,7 +135,7 @@ export default function EnvironmentsListPage() {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: isDark ? '#0A0A0A' : '#F8FAFC' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: isDark ? '#0A0A0A' : '#1A1A1A' }}>
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
         <div>
@@ -148,8 +148,8 @@ export default function EnvironmentsListPage() {
               <Server size={24} style={{ color: '#FFFFFF' }} />
             </div>
             <div>
-              <h1 style={{ fontSize: 24, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A', margin: 0 }}>Test Environments</h1>
-              <p style={{ fontSize: 14, color: isDark ? '#A1A1A1' : '#64748B', margin: '4px 0 0' }}>Manage and monitor test environments</p>
+              <h1 style={{ fontSize: 24, fontWeight: 700, color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)', margin: 0 }}>Test Environments</h1>
+              <p style={{ fontSize: 14, color: isDark ? '#A1A1A1' : 'rgba(237,237,237,0.40)', margin: '4px 0 0' }}>Manage and monitor test environments</p>
             </div>
           </div>
         </div>
@@ -170,16 +170,16 @@ export default function EnvironmentsListPage() {
       {/* Summary Cards */}
       {summary && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 24 }}>
-          <div style={{ backgroundColor: isDark ? '#1A1A1A' : '#FFF', borderRadius: 12, padding: 20, border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}` }}>
+          <div style={{ backgroundColor: isDark ? '#1A1A1A' : '#FFF', borderRadius: 12, padding: 20, border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.10)'}` }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div>
-                <p style={{ fontSize: 12, color: isDark ? '#A1A1A1' : '#64748B', margin: 0, textTransform: 'uppercase' }}>Total</p>
-                <p style={{ fontSize: 28, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A', margin: '8px 0 0' }}>{summary.total_environments}</p>
+                <p style={{ fontSize: 12, color: isDark ? '#A1A1A1' : 'rgba(237,237,237,0.40)', margin: 0, textTransform: 'uppercase' }}>Total</p>
+                <p style={{ fontSize: 28, fontWeight: 700, color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)', margin: '8px 0 0' }}>{summary.total_environments}</p>
               </div>
               <Server size={24} style={{ color: '#6366F1' }} />
             </div>
           </div>
-          <div style={{ backgroundColor: '#ECFDF5', borderRadius: 12, padding: 20, border: '1px solid #A7F3D0' }}>
+          <div style={{ backgroundColor: 'rgba(74,222,128,0.06)', borderRadius: 12, padding: 20, border: '1px solid #A7F3D0' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div>
                 <p style={{ fontSize: 12, color: '#059669', margin: 0, textTransform: 'uppercase' }}>Healthy</p>
@@ -197,7 +197,7 @@ export default function EnvironmentsListPage() {
               <AlertTriangle size={24} style={{ color: '#D97706' }} />
             </div>
           </div>
-          <div style={{ backgroundColor: '#FEF2F2', borderRadius: 12, padding: 20, border: '1px solid #FECACA' }}>
+          <div style={{ backgroundColor: 'rgba(248,113,113,0.06)', borderRadius: 12, padding: 20, border: '1px solid #FECACA' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div>
                 <p style={{ fontSize: 12, color: '#DC2626', margin: 0, textTransform: 'uppercase' }}>Down</p>
@@ -212,7 +212,7 @@ export default function EnvironmentsListPage() {
       {/* Filters */}
       <div style={{ display: 'flex', gap: 12, marginBottom: 24, flexWrap: 'wrap', alignItems: 'center' }}>
         <div style={{ position: 'relative', flex: '1 1 300px', maxWidth: 400 }}>
-          <Search size={18} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: '#94A3B8' }} />
+          <Search size={18} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: 'rgba(237,237,237,0.40)' }} />
           <input
             type="text"
             placeholder="Search environments..."
@@ -220,12 +220,12 @@ export default function EnvironmentsListPage() {
             onChange={(e) => setSearchTerm(e.target.value)}
             style={{
               width: '100%', height: 44, padding: '0 14px 0 44px',
-              border: `1.5px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 12, fontSize: 14, backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#EDEDED' : undefined,
+              border: `1.5px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.10)'}`, borderRadius: 12, fontSize: 14, backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#EDEDED' : undefined,
             }}
           />
         </div>
         <Select value={typeFilter} onValueChange={setTypeFilter}>
-          <SelectTrigger className="h-[50px] w-[160px] border-[#E2E8F0] rounded text-[13px]" style={{ fontFamily: 'Inter, sans-serif' }}>
+          <SelectTrigger className="h-[50px] w-[160px] border-[rgba(255,255,255,0.10)] rounded text-[13px]" style={{ fontFamily: 'Geist, -apple-system, sans-serif' }}>
             <SelectValue placeholder="All Types" />
           </SelectTrigger>
           <SelectContent>
@@ -238,7 +238,7 @@ export default function EnvironmentsListPage() {
           </SelectContent>
         </Select>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="h-[50px] w-[160px] border-[#E2E8F0] rounded text-[13px]" style={{ fontFamily: 'Inter, sans-serif' }}>
+          <SelectTrigger className="h-[50px] w-[160px] border-[rgba(255,255,255,0.10)] rounded text-[13px]" style={{ fontFamily: 'Geist, -apple-system, sans-serif' }}>
             <SelectValue placeholder="All Status" />
           </SelectTrigger>
           <SelectContent>
@@ -250,7 +250,7 @@ export default function EnvironmentsListPage() {
         </Select>
         {hasActiveFilters && (
           <button onClick={clearFilters}
-            style={{ display: 'flex', alignItems: 'center', gap: 6, height: 44, padding: '0 16px', border: `1.5px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 12, backgroundColor: isDark ? '#1A1A1A' : '#FFF', color: isDark ? '#A1A1A1' : '#64748B', fontSize: 14, cursor: 'pointer' }}>
+            style={{ display: 'flex', alignItems: 'center', gap: 6, height: 44, padding: '0 16px', border: `1.5px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.10)'}`, borderRadius: 12, backgroundColor: isDark ? '#1A1A1A' : '#FFF', color: isDark ? '#A1A1A1' : 'rgba(237,237,237,0.40)', fontSize: 14, cursor: 'pointer' }}>
             <X size={16} /> Clear
           </button>
         )}
@@ -262,10 +262,10 @@ export default function EnvironmentsListPage() {
           <RefreshCw size={32} style={{ animation: 'spin 1s linear infinite', color: '#6366F1' }} />
         </div>
       ) : filteredEnvironments.length === 0 ? (
-        <div style={{ backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', borderRadius: 12, padding: 60, textAlign: 'center', border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}` }}>
-          <Server size={48} style={{ color: isDark ? '#878787' : '#CBD5E1', marginBottom: 16 }} />
-          <p style={{ fontSize: 16, color: isDark ? '#A1A1A1' : '#64748B', margin: 0 }}>No environments found</p>
-          <p style={{ fontSize: 14, color: isDark ? '#878787' : '#94A3B8', margin: '8px 0 0' }}>Add an environment to get started</p>
+        <div style={{ backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', borderRadius: 12, padding: 60, textAlign: 'center', border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.10)'}` }}>
+          <Server size={48} style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.53)', marginBottom: 16 }} />
+          <p style={{ fontSize: 16, color: isDark ? '#A1A1A1' : 'rgba(237,237,237,0.40)', margin: 0 }}>No environments found</p>
+          <p style={{ fontSize: 14, color: isDark ? '#878787' : 'rgba(237,237,237,0.40)', margin: '8px 0 0' }}>Add an environment to get started</p>
         </div>
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: 16 }}>
@@ -282,31 +282,31 @@ export default function EnvironmentsListPage() {
                 onClick={() => navigate(`/testhub/environments/${env.id}`)}
                 style={{
                   backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', borderRadius: 12, padding: 20,
-                  border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, cursor: 'pointer', transition: 'all 0.15s',
+                  border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.10)'}`, cursor: 'pointer', transition: 'all 0.15s',
                 }}
-                onMouseEnter={(e) => { e.currentTarget.style.borderColor = isDark ? 'rgba(255,255,255,0.15)' : '#CBD5E1'; e.currentTarget.style.boxShadow = isDark ? 'none' : '0 4px 12px rgba(0,0,0,0.05)'; }}
-                onMouseLeave={(e) => { e.currentTarget.style.borderColor = isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'; e.currentTarget.style.boxShadow = 'none'; }}
+                onMouseEnter={(e) => { e.currentTarget.style.borderColor = isDark ? 'rgba(255,255,255,0.15)' : 'rgba(237,237,237,0.53)'; e.currentTarget.style.boxShadow = isDark ? 'none' : '0 4px 12px rgba(0,0,0,0.05)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.borderColor = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.10)'; e.currentTarget.style.boxShadow = 'none'; }}
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     <span style={{ fontSize: 12, fontWeight: 600, color: '#6366F1', backgroundColor: '#EEF2FF', padding: '4px 10px', borderRadius: 6 }}>{env.env_key}</span>
-                    <span style={{ fontSize: 11, fontWeight: 600, color: '#475569', backgroundColor: '#F1F5F9', padding: '0 6px', borderRadius: 4, height: 20, display: 'inline-flex', alignItems: 'center', textTransform: 'uppercase' as const }}>{type.label}</span>
+                    <span style={{ fontSize: 11, fontWeight: 600, color: '#475569', backgroundColor: '#1A1A1A', padding: '0 6px', borderRadius: 4, height: 20, display: 'inline-flex', alignItems: 'center', textTransform: 'uppercase' as const }}>{type.label}</span>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 600, color: health.color, backgroundColor: health.bg, padding: '4px 8px', borderRadius: 6 }}>
                     <HealthIcon size={12} /> {health.label}
                   </div>
                 </div>
-                <h3 style={{ fontSize: 18, fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A', margin: '0 0 8px' }}>{env.name}</h3>
+                <h3 style={{ fontSize: 18, fontWeight: 600, color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)', margin: '0 0 8px' }}>{env.name}</h3>
                 {env.url && (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: isDark ? '#A1A1A1' : '#64748B', marginBottom: 12, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: isDark ? '#A1A1A1' : 'rgba(237,237,237,0.40)', marginBottom: 12, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     <ExternalLink size={14} /> {env.url}
                   </div>
                 )}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: 12, borderTop: `1px solid ${isDark ? 'rgba(255,255,255,0.05)' : '#F1F5F9'}` }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: 12, borderTop: `1px solid ${isDark ? 'rgba(255,255,255,0.05)' : '#1A1A1A'}` }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, fontWeight: 500, color: status.color }}>
                     <StatusIcon size={14} /> {status.label}
                   </div>
-                  <div style={{ fontSize: 12, color: isDark ? '#878787' : '#94A3B8' }}>Checked: {formatDate(env.last_health_check)}</div>
+                  <div style={{ fontSize: 12, color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>Checked: {formatDate(env.last_health_check)}</div>
                 </div>
               </div>
             );

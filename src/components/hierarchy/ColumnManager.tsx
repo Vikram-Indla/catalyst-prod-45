@@ -105,7 +105,7 @@ export function ColumnManagerDropdown({ visibleColumns, onChange }: ColumnManage
                 disabled={col.alwaysVisible}
                 style={{
                   width: '100%', display: 'flex', alignItems: 'center', gap: 8,
-                  padding: '6px 12px', fontSize: 13, color: col.alwaysVisible ? '#94A3B8' : '#334155',
+                  padding: '6px 12px', fontSize: 13, color: col.alwaysVisible ? 'rgba(237,237,237,0.40)' : 'rgba(237,237,237,0.53)',
                   background: 'none', border: 'none', cursor: col.alwaysVisible ? 'default' : 'pointer',
                   textAlign: 'left', opacity: col.alwaysVisible ? 0.6 : 1,
                 }}
@@ -114,7 +114,7 @@ export function ColumnManagerDropdown({ visibleColumns, onChange }: ColumnManage
               >
                 <div style={{
                   width: 16, height: 16, borderRadius: 4,
-                  border: isVisible ? '1px solid var(--cp-blue)' : '1px solid #CBD5E1',
+                  border: isVisible ? '1px solid var(--cp-blue)' : '1px solid rgba(237,237,237,0.53)',
                   background: isVisible ? 'var(--cp-blue)' : 'transparent',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
                 }}>

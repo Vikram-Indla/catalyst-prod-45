@@ -25,7 +25,7 @@ interface CreateTagModalProps {
 const PRESET_COLORS = [
   '#EF4444', '#F97316', '#F59E0B', '#EAB308', '#84CC16', '#22C55E', '#10B981',
   '#14B8A6', '#06B6D4', '#0EA5E9', '#3B82F6', '#6366F1', '#8B5CF6', '#A855F7',
-  '#D946EF', '#EC4899', '#F43F5E', '#78716C', '#64748B', '#0F172A',
+  '#D946EF', '#EC4899', '#F43F5E', '#78716C', 'rgba(237,237,237,0.40)', 'rgba(237,237,237,0.93)',
 ];
 
 const CATEGORY_SUGGESTIONS = [
@@ -135,7 +135,7 @@ export function CreateTagModal({ isOpen, onClose, onSaved, editingTag }: CreateT
             </label>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 12 }}>
               {PRESET_COLORS.map((c) => (
-                <button key={c} onClick={() => setColor(c)} style={{ width: 32, height: 32, borderRadius: 8, backgroundColor: c, border: color === c ? '3px solid #0F172A' : '2px solid transparent', cursor: 'pointer', transition: 'transform 0.1s' }}
+                <button key={c} onClick={() => setColor(c)} style={{ width: 32, height: 32, borderRadius: 8, backgroundColor: c, border: color === c ? '3px solid rgba(237,237,237,0.93)' : '2px solid transparent', cursor: 'pointer', transition: 'transform 0.1s' }}
                   onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'} onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'} />
               ))}
             </div>

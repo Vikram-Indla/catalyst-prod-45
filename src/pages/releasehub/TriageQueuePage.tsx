@@ -54,7 +54,7 @@ export default function TriageQueuePage() {
     <div style={{ background: 'var(--bg-app, #FFFFFF)', minHeight: '100%', padding: '24px' }}>
       <div className="mb-5">
         <h1 className="text-[22px] font-extrabold" style={{ fontFamily: RH.fontDisplay, color: RH.ink1 }}>Triage Queue</h1>
-        <p className="text-[13px] text-[#64748B]" style={{ fontFamily: RH.fontBody }}>
+        <p className="text-[13px] text-[rgba(237,237,237,0.40)]" style={{ fontFamily: RH.fontBody }}>
           Changes without an assigned release — {unlinked.length} item{unlinked.length !== 1 ? 's' : ''} require{unlinked.length === 1 ? 's' : ''} action
         </p>
       </div>
@@ -70,9 +70,9 @@ export default function TriageQueuePage() {
         <div className="bg-white dark:bg-[#1A1A1A] rounded border border-[rgba(15,23,42,0.12)] dark:border-[rgba(255,255,255,0.08)] overflow-hidden">
           <table className="w-full text-[13px]" style={{ fontFamily: RH.fontBody }} role="table">
             <thead>
-              <tr style={{ background: '#F1F5F9' }}>
+              <tr style={{ background: '#1A1A1A' }}>
                 {['KEY', 'TITLE', 'RISK', 'SOURCE', 'DATE', 'AI RECOMMENDATION', 'ACTIONS'].map(h => (
-                  <th key={h} className="px-3 py-0 h-[50px] text-left text-[11px] font-semibold uppercase tracking-[0.06em] text-[#64748B]">{h}</th>
+                  <th key={h} className="px-3 py-0 h-[50px] text-left text-[11px] font-semibold uppercase tracking-[0.06em] text-[rgba(237,237,237,0.40)]">{h}</th>
                 ))}
               </tr>
             </thead>
@@ -85,26 +85,26 @@ export default function TriageQueuePage() {
                       <span className="text-[13px] font-medium text-[#2563EB]" style={{ fontFamily: RH.fontMono }}>{c.chg_number}</span>
                     </td>
                     <td className="px-3 py-2 max-w-[220px]">
-                      <span className="text-[13px] text-[#0F172A] truncate block">{c.title}</span>
+                      <span className="text-[13px] text-[rgba(237,237,237,0.93)] truncate block">{c.title}</span>
                     </td>
                     <td className="px-3 py-2"><RiskBadge risk={mapRisk(c.risk_level)} /></td>
                     <td className="px-3 py-2"><SourceBadge source={c.source} /></td>
-                    <td className="px-3 py-2 text-[#64748B]" style={{ fontFamily: RH.fontMono, fontSize: 12 }}>
+                    <td className="px-3 py-2 text-[rgba(237,237,237,0.40)]" style={{ fontFamily: RH.fontMono, fontSize: 12 }}>
                       {c.deployment_date ? new Date(c.deployment_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '—'}
                     </td>
                     <td className="px-3 py-2">
                       {rec ? (
-                        <div className="bg-[#EFF6FF] border border-[#DBEAFE] rounded-md px-2.5 py-2 flex items-start gap-2 max-w-[260px]">
+                        <div className="bg-[rgba(59,130,246,0.06)] border border-[#DBEAFE] rounded-md px-2.5 py-2 flex items-start gap-2 max-w-[260px]">
                           <Sparkles className="w-3.5 h-3.5 text-[#2563EB] flex-shrink-0 mt-0.5" />
                           <div className="text-[12px] leading-relaxed">
                             <span className="font-semibold text-[#2563EB]">Suggested:</span>{' '}
-                            <span className="text-[#0F172A]">{rec.releaseName}</span>
+                            <span className="text-[rgba(237,237,237,0.93)]">{rec.releaseName}</span>
                             <br />
-                            <span className="text-[#64748B]">{rec.reason}</span>
+                            <span className="text-[rgba(237,237,237,0.40)]">{rec.reason}</span>
                           </div>
                         </div>
                       ) : (
-                        <span className="text-[#94A3B8] text-[12px]">No suggestion</span>
+                        <span className="text-[rgba(237,237,237,0.40)] text-[12px]">No suggestion</span>
                       )}
                     </td>
                     <td className="px-3 py-2">
@@ -119,7 +119,7 @@ export default function TriageQueuePage() {
                           <TriageLinkDropdown releases={releases} onLink={(releaseId) => linkChangeToRelease(c.id, releaseId)} />
                         )}
                         <button onClick={() => ignoreTriageItem(c.id)}
-                          className="h-7 px-3 rounded text-[11px] font-medium border border-[rgba(15,23,42,0.12)] dark:border-[rgba(255,255,255,0.08)] bg-white dark:bg-[#1A1A1A] text-[#94A3B8] hover:text-[#475569]">
+                          className="h-7 px-3 rounded text-[11px] font-medium border border-[rgba(15,23,42,0.12)] dark:border-[rgba(255,255,255,0.08)] bg-white dark:bg-[#1A1A1A] text-[rgba(237,237,237,0.40)] hover:text-[#475569]">
                           Ignore
                         </button>
                       </div>
@@ -148,10 +148,10 @@ function TriageLinkDropdown({ releases, onLink }: { releases: any[]; onLink: (re
           <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
           <div className="absolute top-full right-0 mt-1 w-48 bg-white dark:bg-[#1A1A1A] rounded-md shadow-lg border border-[rgba(15,23,42,0.12)] dark:border-[rgba(255,255,255,0.08)] z-50 py-1 max-h-48 overflow-y-auto">
             {releases.length === 0 ? (
-              <div className="px-3 py-2 text-[12px] text-[#94A3B8]">No releases available</div>
+              <div className="px-3 py-2 text-[12px] text-[rgba(237,237,237,0.40)]">No releases available</div>
             ) : releases.map((r: any) => (
               <button key={r.id} onClick={() => { onLink(r.id); setOpen(false); }}
-                className="w-full px-3 h-8 text-left text-[12px] font-medium hover:bg-[#F8FAFC] text-[#475569]">{r.name}</button>
+                className="w-full px-3 h-8 text-left text-[12px] font-medium hover:bg-[#1A1A1A] text-[#475569]">{r.name}</button>
             ))}
           </div>
         </>

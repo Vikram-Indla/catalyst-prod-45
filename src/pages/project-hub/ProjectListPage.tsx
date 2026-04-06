@@ -332,7 +332,7 @@ export default function ProjectListPage() {
             <button onClick={() => { archiveProject(ctxMenu.project.id, ctxMenu.project.name); setCtxMenu(null); }}
               className="w-full flex items-center gap-2.5 px-3 transition-colors"
               style={{ height: 50, fontSize: 13, color: '#DC2626', background: 'transparent', border: 'none', cursor: 'pointer' }}
-              onMouseEnter={e => { e.currentTarget.style.background = isDark ? 'rgba(220,38,38,0.1)' : '#FEF2F2'; }}
+              onMouseEnter={e => { e.currentTarget.style.background = isDark ? 'rgba(220,38,38,0.1)' : 'rgba(248,113,113,0.06)'; }}
               onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
             >
               <Archive size={16} color="#DC2626" /> Archive

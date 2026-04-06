@@ -20,7 +20,7 @@ export function CompletionDonut({ percent, done, total }: CompletionDonutProps) 
   return (
     <div className="flex flex-col items-center gap-3">
       <svg width={120} height={120} viewBox="0 0 120 120">
-        <circle cx="60" cy="60" r={radius} fill="none" stroke="var(--bd-default, #E2E8F0)" strokeWidth={12} />
+        <circle cx="60" cy="60" r={radius} fill="none" stroke="var(--bd-default, rgba(255,255,255,0.10))" strokeWidth={12} />
         <circle
           cx="60" cy="60" r={radius} fill="none" stroke="#0D9488" strokeWidth={12}
           strokeLinecap="round" strokeDasharray={circumference} strokeDashoffset={offset}

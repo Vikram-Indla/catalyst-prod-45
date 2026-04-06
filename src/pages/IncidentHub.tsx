@@ -19,13 +19,13 @@ function SkeletonTable() {
     <div style={{
       backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF',
       borderRadius: 8,
-      border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`,
+      border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.10)'}`,
       overflow: 'hidden',
     }}>
       {/* Header row */}
       <div className="flex items-center gap-3 px-4 h-10" style={{
         backgroundColor: isDark ? '#1A1A1A' : '#F4F7FA',
-        borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`,
+        borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.10)'}`,
       }}>
         {[120, 200, 80, 80, 100, 120].map((w, i) => (
           <Skeleton key={i} className="h-3 rounded" style={{ width: w }} />
@@ -34,7 +34,7 @@ function SkeletonTable() {
       {/* Data rows */}
       {Array.from({ length: 8 }).map((_, row) => (
         <div key={row} className="flex items-center gap-3 px-4 h-11" style={{
-          borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.05)' : '#F1F5F9'}`,
+          borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.05)' : '#1A1A1A'}`,
         }}>
           {[120, 200, 80, 80, 100, 120].map((w, i) => (
             <Skeleton key={i} className="h-3 rounded" style={{ width: w, opacity: 0.6 - row * 0.05 }} />
@@ -59,7 +59,7 @@ function SkeletonKanban() {
             {Array.from({ length: Math.floor(Math.random() * 3) + 1 }).map((_, i) => (
               <div key={i} className="rounded-lg p-3 space-y-2" style={{
                 backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF',
-                border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`,
+                border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.10)'}`,
               }}>
                 <Skeleton className="h-3 w-3/4 rounded" />
                 <Skeleton className="h-3 w-1/2 rounded" />
@@ -83,7 +83,7 @@ function SkeletonCards({ count = 4 }: { count?: number }) {
       {Array.from({ length: count }).map((_, i) => (
         <div key={i} className="rounded-lg p-4 space-y-3" style={{
           backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF',
-          border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`,
+          border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.10)'}`,
         }}>
           <Skeleton className="h-3 w-24 rounded" />
           <Skeleton className="h-8 w-16 rounded" />
@@ -99,10 +99,10 @@ function ViewShell({ view }: { view: IncidentHubView }) {
   const { title, subtitle } = VIEW_TITLES[view];
 
   return (
-    <div style={{ minHeight: 'calc(100vh - 48px)', backgroundColor: isDark ? '#0A0A0A' : '#F1F5F9', padding: 24 }}>
+    <div style={{ minHeight: 'calc(100vh - 48px)', backgroundColor: isDark ? '#0A0A0A' : '#1A1A1A', padding: 24 }}>
       <div className="mb-6">
         <h1 className="text-[22px] font-extrabold" style={{ fontFamily: '"Sora", sans-serif', color: isDark ? '#EDEDED' : '#080E1D' }}>{title}</h1>
-        <p className="text-[13px]" style={{ fontFamily: '"Inter", sans-serif', color: isDark ? '#878787' : '#64748B' }}>{subtitle}</p>
+        <p className="text-[13px]" style={{ fontFamily: '"Inter", sans-serif', color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>{subtitle}</p>
       </div>
 
       {/* View-specific skeleton states */}
@@ -121,13 +121,13 @@ function ViewShell({ view }: { view: IncidentHubView }) {
           <div className="grid grid-cols-2 gap-3">
             <div className="rounded-lg p-4 h-[300px] flex items-center justify-center" style={{
               backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF',
-              border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`,
+              border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.10)'}`,
             }}>
               <Skeleton className="h-48 w-48 rounded-full" />
             </div>
             <div className="rounded-lg p-4 h-[300px]" style={{
               backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF',
-              border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`,
+              border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.10)'}`,
             }}>
               <Skeleton className="h-4 w-32 rounded mb-4" />
               {Array.from({ length: 6 }).map((_, i) => (
@@ -144,7 +144,7 @@ function ViewShell({ view }: { view: IncidentHubView }) {
         <div className="space-y-4">
           <div className="rounded-lg p-6" style={{
             backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF',
-            border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`,
+            border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.10)'}`,
           }}>
             <div className="flex items-center gap-2 mb-4">
               <Skeleton className="h-5 w-5 rounded" />

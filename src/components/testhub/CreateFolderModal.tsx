@@ -218,7 +218,7 @@ export function CreateFolderModal({
                   style={{
                     width: 42,
                     height: 42,
-                    border: icon === opt.key ? '2px solid #2563EB' : '1.5px solid var(--bd-default, #E2E8F0)',
+                    border: icon === opt.key ? '2px solid #2563EB' : '1.5px solid var(--bd-default, rgba(255,255,255,0.10))',
                     borderRadius: 12,
                     background: icon === opt.key ? 'rgba(37,99,235,0.1)' : 'var(--cp-float)',
                     color: icon === opt.key ? 'var(--cp-blue)' : 'var(--fg-3)',

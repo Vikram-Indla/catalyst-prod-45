@@ -182,29 +182,29 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, onClick, end
       {showTooltip && createPortal(
         <div style={{
           position: 'fixed', left: tooltipPos.x, top: tooltipPos.y, zIndex: 9999,
-          background: 'var(--bg-app, #FFFFFF)', border: '1px solid var(--bd-default, #E2E8F0)', borderRadius: 12,
+          background: 'var(--bg-app, #FFFFFF)', border: '1px solid var(--bd-default, rgba(255,255,255,0.10))', borderRadius: 12,
           boxShadow: '0 20px 60px rgba(0,0,0,0.12)', pointerEvents: 'none',
           maxWidth: 320, minWidth: 260, padding: 12,
         }}>
-          <div style={{ fontWeight: 600, fontSize: 13, color: 'var(--fg-1, #0F172A)', marginBottom: 6 }}>
+          <div style={{ fontWeight: 600, fontSize: 13, color: 'var(--fg-1, rgba(237,237,237,0.93))', marginBottom: 6 }}>
             {item.request_key}: {item.title}
           </div>
-          <div className="flex items-center gap-1.5" style={{ fontSize: 12, color: '#64748B', marginBottom: 4 }}>
+          <div className="flex items-center gap-1.5" style={{ fontSize: 12, color: 'rgba(237,237,237,0.40)', marginBottom: 4 }}>
             <Calendar className="w-3 h-3" />
             {formatDate(item.start_date)} → {formatDate(item.end_date)}
-            {endDateIsEstimated && <span style={{ fontSize: 10, color: '#94A3B8', fontStyle: 'italic' }}>(est.)</span>}
+            {endDateIsEstimated && <span style={{ fontSize: 10, color: 'rgba(237,237,237,0.40)', fontStyle: 'italic' }}>(est.)</span>}
           </div>
           <div className="flex items-center gap-2">
             <span style={{ width: 6, height: 6, borderRadius: '50%', background: finalColor }} />
-            <span style={{ fontSize: 11, fontWeight: 500, color: '#334155' }}>
+            <span style={{ fontSize: 11, fontWeight: 500, color: 'rgba(237,237,237,0.53)' }}>
               {(item as any).initiative_type_label || typeKey}
             </span>
             {item.progress > 0 && (
               <div className="flex items-center gap-1 ml-auto">
-                <div style={{ width: 60, height: 4, background: '#F1F5F9', borderRadius: 999, overflow: 'hidden' }}>
+                <div style={{ width: 60, height: 4, background: '#1A1A1A', borderRadius: 999, overflow: 'hidden' }}>
                   <div style={{ width: `${item.progress}%`, height: '100%', background: finalColor, borderRadius: 999 }} />
                 </div>
-                <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--fg-1, #0F172A)' }}>{item.progress}%</span>
+                <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--fg-1, rgba(237,237,237,0.93))' }}>{item.progress}%</span>
               </div>
             )}
           </div>

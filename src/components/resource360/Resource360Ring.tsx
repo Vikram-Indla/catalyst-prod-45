@@ -152,7 +152,7 @@ export function Resource360Ring({ items, resourceName, resourceAvatar, jobRole, 
             const { x, y } = placeOnRing(i, visible.length);
             const cat = getStatusCategory(item.status, item.status_category);
             const sc = cat === 'todo' ? T.todo : T.progress;
-            const hc = WH_HUB_COLORS[item.hub] ?? '#64748B';
+            const hc = WH_HUB_COLORS[item.hub] ?? 'rgba(237,237,237,0.40)';
             const hs = WH_HUB_SHORT[item.hub] ?? item.hub?.slice(0, 4).toUpperCase();
             const stale = getStaleIndicator(item.age_days, item.status, item.status_category);
             const statusLabel = item.status.length > 12 ? item.status.slice(0, 12) + '…' : item.status;
@@ -234,7 +234,7 @@ export function Resource360Ring({ items, resourceName, resourceAvatar, jobRole, 
           <span style={{ fontSize: 10, fontWeight: 700, color: T.text4, marginLeft: 'auto' }}>{doneItems.length}</span>
         </div>
         {doneItems.map((item, idx) => {
-          const hc = WH_HUB_COLORS[item.hub] ?? '#64748B';
+          const hc = WH_HUB_COLORS[item.hub] ?? 'rgba(237,237,237,0.40)';
           const hs = WH_HUB_SHORT[item.hub] ?? item.hub?.slice(0, 4).toUpperCase();
           return (
             <div key={item.work_item_id} onClick={() => onItemClick(item)} style={{
