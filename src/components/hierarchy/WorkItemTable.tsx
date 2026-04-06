@@ -158,7 +158,7 @@ function LabelsPills({ labels }: { labels: string[] }) {
       {show.map(l => (
         <span key={l} style={{
           fontSize: 10, padding: '2px 8px', borderRadius: 9999,
-          background: '#F1F5F9', color: 'var(--fg-2)', whiteSpace: 'nowrap',
+          background: 'var(--cp-bg-sunken)', color: 'var(--fg-2)', whiteSpace: 'nowrap',
         }}>{l}</span>
       ))}
       {rest > 0 && <span style={{ fontSize: 10, color: 'var(--fg-4)' }}>+{rest}</span>}
@@ -173,7 +173,7 @@ function DueDateCell({ date }: { date?: string }) {
   const now = new Date();
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const dDate = new Date(d.getFullYear(), d.getMonth(), d.getDate());
-  let color = '#334155';
+  let color = 'var(--fg-1)';
   if (dDate < today) color = '#DC2626';
   else if (dDate.getTime() === today.getTime()) color = '#0284C7';
   return (
@@ -524,7 +524,7 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
         return (
           <div style={{ padding: '0 8px', minWidth: 0 }}>
             {item.fixVersion ? (
-              <span style={{ fontSize: 11, padding: '2px 8px', borderRadius: 3, background: '#F1F5F9', color: 'var(--fg-2)', display: 'inline-block', maxWidth: 160, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              <span style={{ fontSize: 11, padding: '2px 8px', borderRadius: 3, background: 'var(--cp-bg-sunken)', color: 'var(--fg-2)', display: 'inline-block', maxWidth: 160, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {item.fixVersion.name}
               </span>
             ) : <span style={{ fontSize: 12, color: 'var(--fg-4)' }}>—</span>}
@@ -539,7 +539,7 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
       case 'storyPoints':
         return (
           <div style={{ padding: '0 8px', textAlign: 'right' }}>
-            <span style={{ fontSize: 12, color: item.storyPoints != null ? '#334155' : '#94A3B8' }}>
+            <span style={{ fontSize: 12, color: item.storyPoints != null ? 'var(--fg-1)' : 'var(--fg-4)' }}>
               {item.storyPoints != null ? item.storyPoints : '—'}
             </span>
           </div>
@@ -553,7 +553,7 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
       case 'reporter':
         return (
           <div style={{ padding: '0 8px', overflow: 'hidden' }}>
-            <span style={{ fontSize: 12, color: item.reporter ? '#0F172A' : '#94A3B8', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            <span style={{ fontSize: 12, color: item.reporter ? 'var(--fg-1)' : 'var(--fg-4)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {item.reporter || '—'}
             </span>
           </div>

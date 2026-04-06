@@ -45,7 +45,7 @@ export function StatusDropdown({ currentStatus, availableStatuses, onSelect, onC
       }}
     >
       {availableStatuses.map((status) => {
-        const style = getStatusStyle(status);
+        const style = getStatusStyle(status, isDark);
         const isCurrent = status === currentStatus;
         return (
           <div

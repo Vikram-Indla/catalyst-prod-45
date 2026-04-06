@@ -166,7 +166,7 @@ function PriorityIcon({ name }: { name: string }) {
   return (
     <div style={{ display: 'flex', gap: 1.5, alignItems: 'flex-end', height: 14, width: 14 }}>
       {[1, 2, 3, 4].map(i => (
-        <div key={i} style={{ width: 2.5, height: 3 + i * 2.5, borderRadius: 1, background: i <= level ? color : isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0' }} />
+        <div key={i} style={{ width: 2.5, height: 3 + i * 2.5, borderRadius: 1, background: i <= level ? color : isDark ? 'rgba(255,255,255,0.10)' : '#E2E8F0' }} />
       ))}
     </div>
   );
@@ -415,9 +415,9 @@ export default function HierarchyPage() {
           style={{
             height: 36, padding: '0 14px', display: 'flex', alignItems: 'center', gap: 6,
             fontSize: 13, fontWeight: 500, fontFamily: "'Inter', sans-serif",
-            color: activeFilterCount > 0 ? '#2563EB' : '#334155',
-            background: activeFilterCount > 0 ? '#EFF6FF' : '#FFFFFF',
-            border: `1px solid ${activeFilterCount > 0 ? '#2563EB' : '#E2E8F0'}`,
+            color: activeFilterCount > 0 ? '#2563EB' : isDark ? '#A1A1A1' : '#334155',
+            background: activeFilterCount > 0 ? (isDark ? 'rgba(37,99,235,0.10)' : '#EFF6FF') : isDark ? '#1A1A1A' : '#FFFFFF',
+            border: `1px solid ${activeFilterCount > 0 ? '#2563EB' : isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`,
             borderRadius: 6, cursor: 'pointer', transition: 'all 80ms ease',
           }}
         >
@@ -439,7 +439,7 @@ export default function HierarchyPage() {
           <button onClick={() => setViewMode('table')}
             style={{
               width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center',
-              background: viewMode === 'table' ? '#EFF6FF' : '#FFFFFF', border: 'none', cursor: 'pointer',
+              background: viewMode === 'table' ? (isDark ? 'rgba(37,99,235,0.10)' : '#EFF6FF') : (isDark ? '#1A1A1A' : '#FFFFFF'), border: 'none', cursor: 'pointer',
               transition: 'background 80ms',
             }}>
             <TableProperties size={14} color={viewMode === 'table' ? '#2563EB' : '#64748B'} />
@@ -447,7 +447,7 @@ export default function HierarchyPage() {
           <button onClick={() => setViewMode('tree')}
             style={{
               width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center',
-              background: viewMode === 'tree' ? '#EFF6FF' : '#FFFFFF', border: 'none', cursor: 'pointer',
+              background: viewMode === 'tree' ? (isDark ? 'rgba(37,99,235,0.10)' : '#EFF6FF') : (isDark ? '#1A1A1A' : '#FFFFFF'), border: 'none', cursor: 'pointer',
               borderLeft: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, transition: 'background 80ms',
             }}>
             <GitBranch size={14} color={viewMode === 'tree' ? '#2563EB' : '#64748B'} />
@@ -572,7 +572,7 @@ export default function HierarchyPage() {
             </div>
           ) : filteredItems.length === 0 ? (
             <div style={{ border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 8, background: isDark ? '#1A1A1A' : '#FFFFFF', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 300, gap: 12, textAlign: 'center', padding: 48 }}>
-              <div style={{ width: 48, height: 48, borderRadius: 12, background: isDark ? '#1A1A1A' : '#F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <div style={{ width: 48, height: 48, borderRadius: 12, background: isDark ? 'rgba(255,255,255,0.04)' : '#F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <Search size={20} color="#94A3B8" />
               </div>
               <p style={{ fontSize: 14, fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A', margin: 0 }}>

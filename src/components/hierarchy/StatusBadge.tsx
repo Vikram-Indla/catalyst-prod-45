@@ -6,6 +6,7 @@
  */
 
 import React from 'react';
+import { useTheme } from '@/hooks/useTheme';
 
 type StatusCategory = 'grey' | 'blue' | 'green';
 
@@ -61,10 +62,16 @@ const STATUS_CATEGORY_MAP: Record<string, StatusCategory> = {
   'Merged': 'green',
 };
 
-const STATUS_STYLES: Record<StatusCategory, { background: string; color: string }> = {
+const STATUS_STYLES_LIGHT: Record<StatusCategory, { background: string; color: string }> = {
   grey:  { background: '#DFE1E6', color: '#253858' },
   blue:  { background: '#DEEBFF', color: '#0747A6' },
   green: { background: '#E3FCEF', color: '#006644' },
+};
+
+const STATUS_STYLES_DARK: Record<StatusCategory, { background: string; color: string }> = {
+  grey:  { background: 'rgba(255,255,255,0.08)', color: '#A1A1A1' },
+  blue:  { background: 'rgba(59,130,246,0.10)', color: '#7DB8FC' },
+  green: { background: 'rgba(74,222,128,0.10)', color: '#4ADE80' },
 };
 
 const STATUS_DISPLAY_NAMES: Record<string, string> = {
@@ -78,8 +85,9 @@ export function getStatusCategory(status: string): StatusCategory {
   return STATUS_CATEGORY_MAP[status] || STATUS_CATEGORY_MAP[status.toUpperCase()] || 'grey';
 }
 
-export function getStatusStyle(status: string) {
-  return STATUS_STYLES[getStatusCategory(status)];
+export function getStatusStyle(status: string, dark?: boolean) {
+  const styles = dark ? STATUS_STYLES_DARK : STATUS_STYLES_LIGHT;
+  return styles[getStatusCategory(status)];
 }
 
 export function getStatusDisplayName(status: string): string {
@@ -89,8 +97,8 @@ export function getStatusDisplayName(status: string): string {
 /** @deprecated Use getStatusStyle instead */
 export const STATUS_COLORS: Record<string, string> = {};
 /** @deprecated Use getStatusStyle instead */
-export function getStatusColor(status: string): string {
-  return getStatusStyle(status).background;
+export function getStatusColor(status: string, dark?: boolean): string {
+  return getStatusStyle(status, dark).background;
 }
 
 interface StatusBadgeProps {
@@ -100,7 +108,8 @@ interface StatusBadgeProps {
 }
 
 export function StatusBadge({ status, onClick, mini = false }: StatusBadgeProps) {
-  const style = getStatusStyle(status);
+  const { isDark } = useTheme();
+  const style = getStatusStyle(status, isDark);
   const displayName = getStatusDisplayName(status);
 
   return (

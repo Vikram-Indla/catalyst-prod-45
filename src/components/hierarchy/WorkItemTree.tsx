@@ -5,6 +5,7 @@
 
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { ChevronRight, ChevronDown, GripVertical, MoreHorizontal, Trash2 } from 'lucide-react';
+import { useTheme } from '@/hooks/useTheme';
 import type { WorkItem } from '@/types/hierarchy';
 import { canBeParentOf, HIERARCHY_LEVELS } from '@/types/hierarchy';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
@@ -23,19 +24,22 @@ interface WorkItemTreeProps {
 
 /* ── Skeleton rows ── */
 export function TreeSkeleton({ rows = 5 }: { rows?: number }) {
+  const { isDark } = useTheme();
+  const shimmerBg = isDark ? '#1A1A1A' : '#F1F5F9';
+  const headerBg = isDark ? 'rgba(255,255,255,0.03)' : '#FAFAFA';
   return (
     <div style={{ border: '1px solid var(--divider)', borderRadius: 8, overflow: 'hidden', background: 'var(--bg-app)' }}>
-      <div style={{ height: 32, background: '#FAFAFA', borderBottom: '1px solid var(--divider)', display: 'flex', alignItems: 'center', padding: '0 12px' }}>
+      <div style={{ height: 32, background: headerBg, borderBottom: '1px solid var(--divider)', display: 'flex', alignItems: 'center', padding: '0 12px' }}>
         <div style={{ width: 100, height: 10, background: 'var(--divider)', borderRadius: 4 }} />
       </div>
       {Array.from({ length: rows }).map((_, i) => (
         <div key={i} style={{ height: 44, maxHeight: 44, display: 'flex', alignItems: 'center', gap: 10, paddingLeft: 12 + (i % 3) * 20, paddingRight: 12, borderBottom: '1px solid var(--divider)' }}>
-          <div style={{ width: 20, height: 20, borderRadius: 4, background: '#F1F5F9' }} className="hi-shimmer" />
+          <div style={{ width: 20, height: 20, borderRadius: 4, background: shimmerBg }} className="hi-shimmer" />
           <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--divider)' }} className="hi-shimmer" />
           <div style={{ width: 48, height: 12, borderRadius: 4, background: 'var(--divider)' }} className="hi-shimmer" />
-          <div style={{ flex: 1, height: 12, borderRadius: 4, background: '#F1F5F9', maxWidth: 200 }} className="hi-shimmer" />
-          <div style={{ width: 60, height: 22, borderRadius: 9999, background: '#F1F5F9' }} className="hi-shimmer" />
-          <div style={{ width: 24, height: 24, borderRadius: '50%', background: '#F1F5F9' }} className="hi-shimmer" />
+          <div style={{ flex: 1, height: 12, borderRadius: 4, background: shimmerBg, maxWidth: 200 }} className="hi-shimmer" />
+          <div style={{ width: 60, height: 22, borderRadius: 9999, background: shimmerBg }} className="hi-shimmer" />
+          <div style={{ width: 24, height: 24, borderRadius: '50%', background: shimmerBg }} className="hi-shimmer" />
         </div>
       ))}
       <style>{`
@@ -79,8 +83,9 @@ function getAvatarColor(name: string): string {
 }
 
 function AssigneeAvatar({ assignee }: { assignee?: WorkItem['assignee'] }) {
+  const { isDark } = useTheme();
   if (!assignee) {
-    return <div style={{ width: 24, height: 24, borderRadius: '50%', background: '#F1F5F9', border: '1px solid var(--divider)', flexShrink: 0 }} />;
+    return <div style={{ width: 24, height: 24, borderRadius: '50%', background: isDark ? '#1A1A1A' : '#F1F5F9', border: '1px solid var(--divider)', flexShrink: 0 }} />;
   }
   const avatarUrl = (assignee as any).avatar;
   if (avatarUrl) {
@@ -97,6 +102,7 @@ function AssigneeAvatar({ assignee }: { assignee?: WorkItem['assignee'] }) {
 
 /* ── Progress bar (parents only) ── */
 function ProgressBar({ stats }: { stats: WorkItem['stats'] }) {
+  const { isDark } = useTheme();
   if (stats.totalDescendants === 0) return null;
   const pct = Math.round((stats.completedCount / stats.totalDescendants) * 100);
   const isComplete = pct === 100;
@@ -104,7 +110,7 @@ function ProgressBar({ stats }: { stats: WorkItem['stats'] }) {
   const textColor = isComplete ? '#15803D' : 'var(--cp-blue)';
   return (
     <div style={{ width: 64, display: 'flex', flexDirection: 'column', gap: 2, justifyContent: 'center' }}>
-      <div style={{ height: 4, background: '#F1F5F9', borderRadius: 2, overflow: 'hidden' }}>
+      <div style={{ height: 4, background: isDark ? '#1A1A1A' : '#F1F5F9', borderRadius: 2, overflow: 'hidden' }}>
         <div style={{ height: '100%', width: `${pct}%`, background: fillColor, borderRadius: 2, transition: 'width 300ms ease' }} />
       </div>
       <span style={{ fontSize: 11, fontWeight: 500, color: textColor, fontFamily: "'Inter', sans-serif", fontVariantNumeric: 'tabular-nums', textAlign: 'right' }}>
@@ -150,7 +156,7 @@ function ActionsMenu({ item, onDelete }: { item: WorkItem; onDelete?: (item: Wor
               color: 'var(--sem-danger)', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left',
               display: 'flex', alignItems: 'center', gap: 8,
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.background = '#FEF2F2')}
+            onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(220, 38, 38, 0.06)')}
             onMouseLeave={(e) => (e.currentTarget.style.background = '')}
           >
             <Trash2 size={14} /> Delete
@@ -380,6 +386,7 @@ function findParent(items: WorkItem[], targetId: string): WorkItem | null {
 }
 
 export function WorkItemTree({ items, selectedId, onSelect, onDeselect, onDelete, onMove, onAddChild, allExpanded }: WorkItemTreeProps) {
+  const { isDark } = useTheme();
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
   const prevAllExpanded = useRef(allExpanded);
   const [dragState, setDragState] = useState<DragState>({ draggedItem: null, dragOverId: null, isValidDrop: false });
@@ -509,7 +516,7 @@ export function WorkItemTree({ items, selectedId, onSelect, onDeselect, onDelete
     <div style={{ border: '1px solid var(--divider)', borderRadius: 8, overflow: 'hidden', background: 'var(--bg-app)' }}>
       {/* Column header row */}
       <div style={{
-        height: 36, background: '#FAFAFA', borderBottom: '1px solid var(--divider)',
+        height: 36, background: isDark ? 'rgba(255,255,255,0.03)' : '#FAFAFA', borderBottom: '1px solid var(--divider)',
         display: 'flex', alignItems: 'center', padding: '0 12px',
         fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 600,
         textTransform: 'uppercase', color: 'var(--fg-3)', letterSpacing: '0.06em',
