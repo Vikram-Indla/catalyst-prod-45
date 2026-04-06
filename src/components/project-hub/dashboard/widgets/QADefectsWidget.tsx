@@ -13,7 +13,7 @@ const sevClassName = (sev: string): string => {
   const s = (sev || '').toLowerCase();
   if (s === 'critical' || s === 'blocker') return 'bg-[#FFEBE6] dark:bg-[#3a1a1a] text-[#BF2600] dark:text-[#ff8f73]';
   if (s === 'high' || s === 'major') return 'bg-[#FFF7E6] dark:bg-[#3a2e1a] text-[#A36200] dark:text-[#ffc44d]';
-  return 'bg-[#DFE1E6] dark:bg-[#222222] text-[#253858] dark:text-[#888888]';
+  return 'bg-[#DFE1E6] dark:bg-[#292929] text-[#253858] dark:text-[#A1A1A1]';
 };
 
 export default function QADefectsWidget({ projectId, projectKey, collapsed, onToggleCollapse }: WidgetProps) {
@@ -62,7 +62,7 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
                 <>
                   {open > 0 && <span className="bg-[#DEEBFF] dark:bg-[#1a2a3a] text-[#0747A6] dark:text-[#79b8ff]" style={{ fontSize: 10, fontWeight: 700, padding: '1px 6px', borderRadius: 3, textTransform: 'uppercase' }}>{open} OPEN</span>}
                   {resolved > 0 && <span className="bg-[#E3FCEF] dark:bg-[#1a3a2a] text-[#006644] dark:text-[#85e89d]" style={{ fontSize: 10, fontWeight: 700, padding: '1px 6px', borderRadius: 3, textTransform: 'uppercase' }}>{resolved} RESOLVED</span>}
-                  {closed > 0 && <span className="bg-[#DFE1E6] dark:bg-[#222222] text-[#253858] dark:text-[#888888]" style={{ fontSize: 10, fontWeight: 700, padding: '1px 6px', borderRadius: 3, textTransform: 'uppercase' }}>{closed} CLOSED</span>}
+                  {closed > 0 && <span className="bg-[#DFE1E6] dark:bg-[#292929] text-[#253858] dark:text-[#A1A1A1]" style={{ fontSize: 10, fontWeight: 700, padding: '1px 6px', borderRadius: 3, textTransform: 'uppercase' }}>{closed} CLOSED</span>}
                 </>
               );
             })()}
@@ -88,7 +88,7 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
                   ? 'bg-[#DEEBFF] dark:bg-[#1a2a3a] text-[#0747A6] dark:text-[#79b8ff]'
                   : isResolved
                   ? 'bg-[#E3FCEF] dark:bg-[#1a3a2a] text-[#006644] dark:text-[#85e89d]'
-                  : 'bg-[#DFE1E6] dark:bg-[#222222] text-[#253858] dark:text-[#888888]';
+                  : 'bg-[#DFE1E6] dark:bg-[#292929] text-[#253858] dark:text-[#A1A1A1]';
                 const assigneeName = d.jira_assignee_name || '';
                 const assigneeFirst = assigneeName ? assigneeName.split(' ')[0] : '—';
                 const assigneeInitials = assigneeName ? assigneeName.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2) : '';

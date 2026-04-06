@@ -13,7 +13,7 @@ const priClassName = (pri: string): string => {
   const p = (pri || '').toLowerCase();
   if (p === 'highest' || p === 'p1') return 'bg-[#FFEBE6] dark:bg-[#3a1a1a] text-[#BF2600] dark:text-[#ff8f73]';
   if (p === 'high' || p === 'p2') return 'bg-[#FFF7E6] dark:bg-[#3a2e1a] text-[#A36200] dark:text-[#ffc44d]';
-  return 'bg-[#DFE1E6] dark:bg-[#222222] text-[#253858] dark:text-[#888888]';
+  return 'bg-[#DFE1E6] dark:bg-[#292929] text-[#253858] dark:text-[#A1A1A1]';
 };
 
 const priLabel = (pri: string): string => {
@@ -72,7 +72,7 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
                 <>
                   {open > 0 && <span className="bg-[#DEEBFF] dark:bg-[#1a2a3a] text-[#0747A6] dark:text-[#79b8ff]" style={{ fontSize: 10, fontWeight: 700, padding: '1px 6px', borderRadius: 3, textTransform: 'uppercase' }}>{open} OPEN</span>}
                   {resolved > 0 && <span className="bg-[#E3FCEF] dark:bg-[#1a3a2a] text-[#006644] dark:text-[#85e89d]" style={{ fontSize: 10, fontWeight: 700, padding: '1px 6px', borderRadius: 3, textTransform: 'uppercase' }}>{resolved} RESOLVED</span>}
-                  {closed > 0 && <span className="bg-[#DFE1E6] dark:bg-[#222222] text-[#253858] dark:text-[#888888]" style={{ fontSize: 10, fontWeight: 700, padding: '1px 6px', borderRadius: 3, textTransform: 'uppercase' }}>{closed} CLOSED</span>}
+                  {closed > 0 && <span className="bg-[#DFE1E6] dark:bg-[#292929] text-[#253858] dark:text-[#A1A1A1]" style={{ fontSize: 10, fontWeight: 700, padding: '1px 6px', borderRadius: 3, textTransform: 'uppercase' }}>{closed} CLOSED</span>}
                 </>
               );
             })()}
@@ -95,7 +95,7 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
                 const statusCls = isDone
                   ? inc.resolution
                     ? 'bg-[#E3FCEF] dark:bg-[#1a3a2a] text-[#006644] dark:text-[#85e89d]'
-                    : 'bg-[#DFE1E6] dark:bg-[#222222] text-[#253858] dark:text-[#888888]'
+                    : 'bg-[#DFE1E6] dark:bg-[#292929] text-[#253858] dark:text-[#A1A1A1]'
                   : 'bg-[#DEEBFF] dark:bg-[#1a2a3a] text-[#0747A6] dark:text-[#79b8ff]';
                 const assigneeName = inc.assignee || '';
                 const assigneeFirst = assigneeName ? assigneeName.split(' ')[0] : '—';
