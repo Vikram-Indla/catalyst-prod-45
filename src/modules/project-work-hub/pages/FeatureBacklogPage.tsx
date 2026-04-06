@@ -11,6 +11,8 @@ import { EditFeatureDialog } from '../components/dialogs/EditFeatureDialog';
 import { Button } from '@/components/ui/button';
 import { ChevronDown, ChevronRight, Plus, Pencil, Trash2, Layers } from 'lucide-react';
 import { toast } from 'sonner';
+import { useTheme } from '@/hooks/useTheme';
+import { DK, LK } from '@/utils/dark-mode-styles';
 import type { BacklogFeature } from '../types/backlog.types';
 
 export default function FeatureBacklogPage({ projectId: propProjectId }: { projectId?: string }) {
@@ -18,6 +20,8 @@ export default function FeatureBacklogPage({ projectId: propProjectId }: { proje
   const projectId = propProjectId || params.projectId;
   const queryClient = useQueryClient();
   const { data: features, isLoading, error } = useFeatureBacklog(projectId || '');
+  const { isDark } = useTheme();
+  const tk = isDark ? DK : LK;
 
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
   const [showCreate, setShowCreate] = useState(false);
@@ -43,18 +47,18 @@ export default function FeatureBacklogPage({ projectId: propProjectId }: { proje
 
   if (isLoading) {
     return (
-      <div className="h-full" style={{ background: '#FFFFFF' }}>
-        <div className="px-6 py-4"><div className="h-8 w-48 rounded" style={{ background: '#F1F5F9' }} /></div>
+      <div className="h-full" style={{ background: tk.pageBg }}>
+        <div className="px-6 py-4"><div className="h-8 w-48 rounded" style={{ background: tk.chipBg }} /></div>
         {[1, 2, 3].map(i => (
           <div key={i} className="px-6 py-2 flex gap-3 animate-pulse">
-            <div className="h-[36px] flex-1 rounded" style={{ background: '#F1F5F9' }} />
+            <div className="h-[36px] flex-1 rounded" style={{ background: tk.chipBg }} />
           </div>
         ))}
       </div>
     );
   }
 
-  if (error) return <div className="h-full flex items-center justify-center" style={{ background: '#FFFFFF', color: '#DC2626' }}>Error loading features</div>;
+  if (error) return <div className="h-full flex items-center justify-center" style={{ background: tk.pageBg, color: '#DC2626' }}>Error loading features</div>;
 
   const total = features?.length || 0;
 

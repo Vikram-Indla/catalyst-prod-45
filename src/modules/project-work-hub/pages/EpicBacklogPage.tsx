@@ -14,9 +14,9 @@ import { EditEpicDialog } from '@/modules/program-epics';
 import { Button } from '@/components/ui/button';
 import { ChevronDown, ChevronRight, Plus, Pencil, Trash2, Box } from 'lucide-react';
 import { toast } from 'sonner';
+import { useTheme } from '@/hooks/useTheme';
+import { DK, LK } from '@/utils/dark-mode-styles';
 import type { BacklogEpic } from '../types/backlog.types';
-
-const COL_HEADER: React.CSSProperties = { fontSize: 11, fontWeight: 650, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#64748B' };
 
 export default function EpicBacklogPage({ projectId: propProjectId }: { projectId?: string }) {
   const params = useParams<{ projectId: string }>();
@@ -25,6 +25,9 @@ export default function EpicBacklogPage({ projectId: propProjectId }: { projectI
   const { data: project } = useProject(projectId || '');
   const { data: epics, isLoading, error } = useEpicBacklog(projectId || '');
   const avatarsByName = useProfileAvatarsByName();
+  const { isDark } = useTheme();
+  const tk = isDark ? DK : LK;
+  const COL_HEADER: React.CSSProperties = { fontSize: 11, fontWeight: 650, textTransform: 'uppercase', letterSpacing: '0.06em', color: tk.t2 };
 
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
   const [showCreate, setShowCreate] = useState(false);
@@ -51,38 +54,38 @@ export default function EpicBacklogPage({ projectId: propProjectId }: { projectI
 
   if (!project?.program_id) {
     return (
-      <div className="h-full flex flex-col items-center justify-center" style={{ background: '#FFFFFF' }}>
-        <Box className="h-12 w-12 mb-4" style={{ color: '#9CA3AF' }} />
-        <p className="text-base font-medium" style={{ color: '#334155' }}>This project is not linked to a program</p>
-        <p className="text-sm mt-1" style={{ color: '#9CA3AF' }}>Epics require a program. Contact your administrator.</p>
+      <div className="h-full flex flex-col items-center justify-center" style={{ background: tk.pageBg }}>
+        <Box className="h-12 w-12 mb-4" style={{ color: tk.t3 }} />
+        <p className="text-base font-medium" style={{ color: tk.t1 }}>This project is not linked to a program</p>
+        <p className="text-sm mt-1" style={{ color: tk.t3 }}>Epics require a program. Contact your administrator.</p>
       </div>
     );
   }
 
   if (isLoading) {
     return (
-      <div className="h-full" style={{ background: '#FFFFFF' }}>
-        <div className="px-6 py-4"><div className="h-8 w-48 rounded" style={{ background: '#F1F5F9' }} /></div>
+      <div className="h-full" style={{ background: tk.pageBg }}>
+        <div className="px-6 py-4"><div className="h-8 w-48 rounded" style={{ background: tk.chipBg }} /></div>
         {[1, 2, 3].map(i => (
           <div key={i} className="px-6 py-2 flex gap-3 animate-pulse">
-            <div className="h-[36px] flex-1 rounded" style={{ background: '#F1F5F9' }} />
+            <div className="h-[36px] flex-1 rounded" style={{ background: tk.chipBg }} />
           </div>
         ))}
       </div>
     );
   }
 
-  if (error) return <div className="h-full flex items-center justify-center" style={{ background: '#FFFFFF', color: '#DC2626' }}>Error loading epics</div>;
+  if (error) return <div className="h-full flex items-center justify-center" style={{ background: tk.pageBg, color: '#DC2626' }}>Error loading epics</div>;
 
   const totalEpics = epics?.length || 0;
 
   return (
-    <div className="h-full flex flex-col" style={{ background: '#FFFFFF' }}>
-      <div className="flex items-center justify-between px-6 py-3 border-b" style={{ borderColor: '#E2E8F0' }}>
+    <div className="h-full flex flex-col" style={{ background: tk.pageBg }}>
+      <div className="flex items-center justify-between px-6 py-3 border-b" style={{ borderColor: tk.border }}>
         <div className="flex items-center gap-3">
           <JiraIssueTypeIcon type="epic" size={20} />
-          <h1 className="text-base font-semibold" style={{ color: '#0F172A', fontWeight: 650 }}>Epic Backlog</h1>
-          <span className="text-xs" style={{ color: '#64748B' }}>{totalEpics} epics across {groups.length} groups</span>
+          <h1 className="text-base font-semibold" style={{ color: tk.t1, fontWeight: 650 }}>Epic Backlog</h1>
+          <span className="text-xs" style={{ color: tk.t2 }}>{totalEpics} epics across {groups.length} groups</span>
         </div>
         <Button onClick={() => setShowCreate(true)} size="sm" style={{ backgroundColor: '#2563EB', color: '#FFFFFF', borderRadius: 6 }}>
           <Plus className="h-3.5 w-3.5 mr-1" /> Create Epic
