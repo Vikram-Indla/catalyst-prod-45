@@ -8,10 +8,10 @@ function useIsDark() {
 
 export function TableSkeleton({ rows = 10 }: { rows?: number }) {
   const dk = useIsDark();
-  const borderColor = dk ? 'rgba(255,255,255,0.08)' : 'var(--bd-default, rgba(255,255,255,0.10))';
-  const subtleBorder = dk ? 'rgba(255,255,255,0.06)' : '#1A1A1A';
-  const shimmerStrong = dk ? 'rgba(255,255,255,0.10)' : 'var(--bd-default, rgba(255,255,255,0.10))';
-  const shimmerLight = dk ? 'rgba(255,255,255,0.06)' : '#1A1A1A';
+  const borderColor = dk ? 'rgba(255,255,255,0.08)' : 'var(--bd-default, #E2E8F0)';
+  const subtleBorder = dk ? 'rgba(255,255,255,0.06)' : '#F1F5F9';
+  const shimmerStrong = dk ? 'rgba(255,255,255,0.10)' : 'var(--bd-default, #E2E8F0)';
+  const shimmerLight = dk ? 'rgba(255,255,255,0.06)' : '#F1F5F9';
   const headerBg = dk ? 'rgba(255,255,255,0.04)' : '#FAFAFA';
   const containerBg = dk ? '#1A1714' : '#FFFFFF';
 

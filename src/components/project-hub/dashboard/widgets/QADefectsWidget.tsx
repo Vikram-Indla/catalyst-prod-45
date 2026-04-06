@@ -4,7 +4,7 @@ import { useDashboardDefects } from '@/hooks/useDashboardWidgets';
 import { ExternalLink } from 'lucide-react';
 
 const getAvatarColor = (initials: string): string => {
-  if (!initials) return 'rgba(237,237,237,0.40)';
+  if (!initials) return '#94A3B8';
   const colors = ['#2563EB', '#0D9488', '#D97706', '#DC2626', '#059669', '#6366F1'];
   return colors[initials.charCodeAt(0) % colors.length];
 };
@@ -31,7 +31,7 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
     height: 'var(--cp-size-table-row)',
     borderBottom: '0.75px solid var(--cp-border-subtle)', textAlign: 'left', whiteSpace: 'nowrap',
   };
-  const thClassName = 'bg-[#1A1A1A] dark:bg-[#1A1A1A]';
+  const thClassName = 'bg-[#F1F5F9] dark:bg-[#1A1A1A]';
   const tdStyle: React.CSSProperties = {
     padding: '8px 12px', height: 'var(--cp-size-table-row)', maxHeight: 'var(--cp-size-table-row)',
     fontSize: 12, color: 'var(--cp-text-secondary)',
@@ -43,7 +43,7 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
   return (
     <WidgetWrapper title="QA Defects" subtitle="Cross-hub from TestHub" collapsed={collapsed} onToggleCollapse={onToggleCollapse} span={1} footer={footer} flushBody>
       {isLoading ? (
-        <div className="p-4 animate-pulse"><div className="h-20 rounded bg-[#1A1A1A] dark:bg-[#1A1A1A]" /></div>
+        <div className="p-4 animate-pulse"><div className="h-20 rounded bg-[#F1F5F9] dark:bg-[#1A1A1A]" /></div>
       ) : !defects?.length ? (
         <div className="flex flex-col items-center py-6 text-center">
           <div style={{ fontSize: 28, color: 'var(--cp-text-muted)', marginBottom: 8 }}>🐛</div>
@@ -60,8 +60,8 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
               const closed = defects.filter((d: any) => d.status === 'closed').length;
               return (
                 <>
-                  {open > 0 && <span className="bg-[rgba(59,130,246,0.10)] dark:bg-[#1a2a3a] text-[#0747A6] dark:text-[#79b8ff]" style={{ fontSize: 10, fontWeight: 700, padding: '1px 6px', borderRadius: 4, textTransform: 'uppercase' }}>{open} OPEN</span>}
-                  {resolved > 0 && <span className="bg-[rgba(74,222,128,0.10)] dark:bg-[#1a3a2a] text-[#006644] dark:text-[#85e89d]" style={{ fontSize: 10, fontWeight: 700, padding: '1px 6px', borderRadius: 4, textTransform: 'uppercase' }}>{resolved} RESOLVED</span>}
+                  {open > 0 && <span className="bg-[#DEEBFF] dark:bg-[#1a2a3a] text-[#0747A6] dark:text-[#79b8ff]" style={{ fontSize: 10, fontWeight: 700, padding: '1px 6px', borderRadius: 4, textTransform: 'uppercase' }}>{open} OPEN</span>}
+                  {resolved > 0 && <span className="bg-[#E3FCEF] dark:bg-[#1a3a2a] text-[#006644] dark:text-[#85e89d]" style={{ fontSize: 10, fontWeight: 700, padding: '1px 6px', borderRadius: 4, textTransform: 'uppercase' }}>{resolved} RESOLVED</span>}
                   {closed > 0 && <span className="bg-[#DFE1E6] dark:bg-[#292929] text-[#253858] dark:text-[#A1A1A1]" style={{ fontSize: 10, fontWeight: 700, padding: '1px 6px', borderRadius: 4, textTransform: 'uppercase' }}>{closed} CLOSED</span>}
                 </>
               );
@@ -85,9 +85,9 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
                 const isOpen = ['open', 'new', 'in_progress', 'reopened'].includes(d.status);
                 const isResolved = ['resolved', 'fixed', 'verified'].includes(d.status);
                 const statusCls = isOpen
-                  ? 'bg-[rgba(59,130,246,0.10)] dark:bg-[#1a2a3a] text-[#0747A6] dark:text-[#79b8ff]'
+                  ? 'bg-[#DEEBFF] dark:bg-[#1a2a3a] text-[#0747A6] dark:text-[#79b8ff]'
                   : isResolved
-                  ? 'bg-[rgba(74,222,128,0.10)] dark:bg-[#1a3a2a] text-[#006644] dark:text-[#85e89d]'
+                  ? 'bg-[#E3FCEF] dark:bg-[#1a3a2a] text-[#006644] dark:text-[#85e89d]'
                   : 'bg-[#DFE1E6] dark:bg-[#292929] text-[#253858] dark:text-[#A1A1A1]';
                 const assigneeName = d.jira_assignee_name || '';
                 const assigneeFirst = assigneeName ? assigneeName.split(' ')[0] : '—';

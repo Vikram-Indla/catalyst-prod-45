@@ -404,7 +404,7 @@ const styles: Record<string, React.CSSProperties> = {
   issuesTitle: {
     fontSize: 13,
     fontWeight: 700,
-    color: 'rgba(237,237,237,0.53)',
+    color: '#334155',
     letterSpacing: '0.08em',
   },
   issuesBadge: {

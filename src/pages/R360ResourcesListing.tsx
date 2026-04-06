@@ -83,7 +83,7 @@ export default function R360ResourcesListing() {
             </thead>
             <tbody>
               {filtered.map((r: any) => {
-                const deptColor = R360_DEPT_COLORS[r.department] || 'rgba(237,237,237,0.40)';
+                const deptColor = R360_DEPT_COLORS[r.department] || '#64748B';
                 return (
                   <tr key={r.id} onClick={() => navigate(`/project-hub/resources-v2/${r.id}`)}>
                     <td>

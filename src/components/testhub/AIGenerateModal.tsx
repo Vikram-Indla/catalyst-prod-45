@@ -469,7 +469,7 @@ export function AIGenerateModal({ isOpen, onClose, onSuccess, currentFolderId }:
                   backgroundColor: '#FFFBEB', border: '1px solid color-mix(in srgb, var(--sem-warning) 30%, transparent)',
                 }}>
                   <AlertTriangle size={24} style={{ color: 'var(--sem-warning)', margin: '0 auto 8px' }} />
-                  <p style={{ fontSize: 14, fontWeight: 600, color: '#FBBF24', margin: 0 }}>No folders found</p>
+                  <p style={{ fontSize: 14, fontWeight: 600, color: '#92400E', margin: 0 }}>No folders found</p>
                   <p style={{ fontSize: 13, color: '#A16207', marginTop: 4 }}>
                     Please create a folder in the Test Repository before generating test cases.
                   </p>
@@ -545,7 +545,7 @@ export function AIGenerateModal({ isOpen, onClose, onSuccess, currentFolderId }:
                     display: 'flex', gap: 8, alignItems: 'flex-start',
                   }}>
                     <AlertTriangle size={16} style={{ color: 'var(--sem-danger)', flexShrink: 0, marginTop: 1 }} />
-                    <span style={{ fontSize: 13, color: '#F87171', lineHeight: 1.5 }}>{validationError}</span>
+                    <span style={{ fontSize: 13, color: '#991B1B', lineHeight: 1.5 }}>{validationError}</span>
                   </div>
                 )}
               </div>

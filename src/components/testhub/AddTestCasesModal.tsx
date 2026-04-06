@@ -27,10 +27,10 @@ interface AddTestCasesModalProps {
 }
 
 const priorityConfig: Record<string, { color: string; bg: string }> = {
-  critical: { color: 'var(--sem-danger)', bg: 'rgba(248,113,113,0.06)' },
+  critical: { color: 'var(--sem-danger)', bg: '#FEF2F2' },
   high: { color: '#EA580C', bg: '#FFF7ED' },
   medium: { color: 'var(--sem-warning)', bg: '#FFFBEB' },
-  low: { color: 'var(--sem-success)', bg: 'rgba(74,222,128,0.06)' },
+  low: { color: 'var(--sem-success)', bg: '#ECFDF5' },
 };
 
 export function AddTestCasesModal({ isOpen, cycleId, existingTestCaseIds, onClose, onSuccess }: AddTestCasesModalProps) {
@@ -189,7 +189,7 @@ export function AddTestCasesModal({ isOpen, cycleId, existingTestCaseIds, onClos
                       return (
                         <tr key={tc.id} onClick={() => toggleSelection(tc.id)} style={{ borderBottom: '1px solid var(--cp-bd-zone)', cursor: 'pointer', backgroundColor: isSelected ? 'color-mix(in srgb, var(--cp-blue) 8%, transparent)' : 'transparent' }}>
                           <td style={{ padding: '12px 16px', width: 40 }}>
-                            <div style={{ width: 20, height: 20, borderRadius: 4, border: isSelected ? 'none' : '2px solid rgba(237,237,237,0.53)', backgroundColor: isSelected ? 'var(--cp-blue)' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <div style={{ width: 20, height: 20, borderRadius: 4, border: isSelected ? 'none' : '2px solid #CBD5E1', backgroundColor: isSelected ? 'var(--cp-blue)' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                               {isSelected && <Check size={14} style={{ color: '#FFFFFF' }} />}
                             </div>
                           </td>

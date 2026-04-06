@@ -93,7 +93,7 @@ function SourceBadge({ source }: { source?: 'jira' | 'catalyst' }) {
 }
 
 /* ── Avatar color palette (no purple/yellow) ── */
-const AVATAR_COLORS = ['#0D9488','#2563EB','#DC2626','#16A34A','rgba(237,237,237,0.40)','#0284C7','#059669','#BE123C','#1D4ED8','#0F766E'];
+const AVATAR_COLORS = ['#0D9488','#2563EB','#DC2626','#16A34A','#64748B','#0284C7','#059669','#BE123C','#1D4ED8','#0F766E'];
 function getAvatarColor(name: string): string {
   let hash = 0;
   for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
@@ -105,7 +105,7 @@ function AssigneeCell({ assignee, onClick }: { assignee?: WorkItem['assignee']; 
   if (!assignee) {
     return (
       <div style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: onClick ? 'pointer' : 'default' }} onClick={onClick}>
-        <div style={{ width: 24, height: 24, borderRadius: '50%', border: '1px dashed rgba(237,237,237,0.53)', flexShrink: 0 }} />
+        <div style={{ width: 24, height: 24, borderRadius: '50%', border: '1px dashed #CBD5E1', flexShrink: 0 }} />
         <span style={{ fontSize: 12, color: 'var(--fg-4)', fontStyle: 'italic' }}>Unassigned</span>
       </div>
     );
@@ -185,8 +185,8 @@ function DueDateCell({ date }: { date?: string }) {
 
 /* ── Type colors ── */
 const TYPE_COLORS: Record<string, string> = {
-  'Epic': '#2563EB', 'Feature': '#0D9488', 'Story': '#16A34A', 'Sub-task': 'rgba(237,237,237,0.40)',
-  'Task': 'rgba(237,237,237,0.40)', 'Bug': '#DC2626',
+  'Epic': '#2563EB', 'Feature': '#0D9488', 'Story': '#16A34A', 'Sub-task': '#64748B',
+  'Task': '#64748B', 'Bug': '#DC2626',
 };
 
 /* ── Parent cell (chip style matching ParentEpicChip) ── */
@@ -583,7 +583,7 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
       case 'type':
         return (
           <div style={{ padding: '0 8px' }}>
-            <span style={{ fontSize: 12, fontWeight: 500, color: TYPE_COLORS[item.issueType || ''] || 'rgba(237,237,237,0.40)' }}>
+            <span style={{ fontSize: 12, fontWeight: 500, color: TYPE_COLORS[item.issueType || ''] || '#64748B' }}>
               {item.issueType || '—'}
             </span>
           </div>

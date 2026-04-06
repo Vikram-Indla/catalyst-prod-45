@@ -59,7 +59,7 @@ export function PHBacklogView({ issues, releases, loading, onSelectIssue }: Prop
     urgent: '#EF4444',
     high: '#D97706',
     medium: '#2563EB',
-    low: 'rgba(237,237,237,0.40)',
+    low: '#64748B',
   };
 
   return (
@@ -165,7 +165,7 @@ export function PHBacklogView({ issues, releases, loading, onSelectIssue }: Prop
                         No items in this release
                       </div>
                     ) : groupIssues.map(issue => {
-                      const accentColor = PRIORITY_ACCENT[issue.priority] ?? 'rgba(237,237,237,0.40)';
+                      const accentColor = PRIORITY_ACCENT[issue.priority] ?? '#64748B';
                       const isHovered = hoveredId === issue.id;
                       return (
                         <div

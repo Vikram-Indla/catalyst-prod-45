@@ -585,7 +585,7 @@ function renderMenuItem(
           sideOffset={10}
           className="z-[200]"
           style={{
-            background: 'rgba(237,237,237,0.93)',
+            background: '#0F172A',
             color: '#FFFFFF',
             fontFamily: "'Inter', sans-serif",
             fontSize: '12px',

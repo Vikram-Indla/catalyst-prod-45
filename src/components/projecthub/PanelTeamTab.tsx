@@ -147,13 +147,13 @@ export function PanelTeamTab({ members, isLoading, projectId }: Props) {
     <div>
       {/* Search + Add button */}
       <div className="flex items-center gap-2 mx-4 mt-3 mb-2">
-        <div className="flex items-center gap-2 flex-1 rounded-lg bg-white dark:bg-transparent border border-[rgba(237,237,237,0.53)] dark:border-[rgba(255,255,255,0.10)]" style={{ height: 38, padding: '8px 12px' }}>
-          <Search size={14} className="shrink-0 text-[rgba(237,237,237,0.40)] dark:text-[rgba(255,255,255,0.40)]" />
+        <div className="flex items-center gap-2 flex-1 rounded-lg bg-white dark:bg-transparent border border-[#CBD5E1] dark:border-[rgba(255,255,255,0.10)]" style={{ height: 38, padding: '8px 12px' }}>
+          <Search size={14} className="shrink-0 text-[#94A3B8] dark:text-[rgba(255,255,255,0.40)]" />
           <input
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Search by name, role, or email..."
-            className="flex-1 bg-transparent p-0 m-0 appearance-none text-[rgba(237,237,237,0.93)] dark:text-[rgba(255,255,255,0.92)] placeholder:text-[rgba(237,237,237,0.40)] dark:placeholder:text-[rgba(255,255,255,0.40)]"
+            className="flex-1 bg-transparent p-0 m-0 appearance-none text-[#0F172A] dark:text-[rgba(255,255,255,0.92)] placeholder:text-[#94A3B8] dark:placeholder:text-[rgba(255,255,255,0.40)]"
             style={{ fontSize: 13, border: 'none', boxShadow: 'none', outline: 'none', WebkitAppearance: 'none', MozAppearance: 'none', background: 'transparent', borderRadius: 0 }}
           />
         </div>
@@ -168,14 +168,14 @@ export function PanelTeamTab({ members, isLoading, projectId }: Props) {
 
       {/* Search suggestions */}
       {searchSuggestions.length > 0 && (
-        <div className="mx-4 mb-3 rounded-lg overflow-hidden border border-[rgba(255,255,255,0.10)] dark:border-[rgba(255,255,255,0.10)] bg-white dark:bg-transparent">
-          <div className="text-[rgba(237,237,237,0.40)] dark:text-[rgba(255,255,255,0.55)] bg-[#1A1A1A] dark:bg-transparent border-b border-[#1A1A1A] dark:border-[rgba(255,255,255,0.08)]" style={{ padding: '6px 12px', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+        <div className="mx-4 mb-3 rounded-lg overflow-hidden border border-[#E2E8F0] dark:border-[rgba(255,255,255,0.10)] bg-white dark:bg-transparent">
+          <div className="text-[#64748B] dark:text-[rgba(255,255,255,0.55)] bg-[#F8FAFC] dark:bg-transparent border-b border-[#F1F5F9] dark:border-[rgba(255,255,255,0.08)]" style={{ padding: '6px 12px', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
             Add from directory
           </div>
           {searchSuggestions.map(u => (
             <div
               key={u.id}
-              className="flex items-center gap-3 px-3 py-2 transition-colors hover:bg-slate-50 dark:hover:bg-[rgba(255,255,255,0.03)] cursor-pointer group border-b border-[#1A1A1A] dark:border-[rgba(255,255,255,0.06)]"
+              className="flex items-center gap-3 px-3 py-2 transition-colors hover:bg-slate-50 dark:hover:bg-[rgba(255,255,255,0.03)] cursor-pointer group border-b border-[#F8FAFC] dark:border-[rgba(255,255,255,0.06)]"
               onClick={() => addMember.mutate({ userId: u.id, profileId: u.profile_id, roleName: u.role_name })}
             >
               {u.avatar_url ? (
@@ -186,11 +186,11 @@ export function PanelTeamTab({ members, isLoading, projectId }: Props) {
                 </div>
               )}
               <div className="flex-1 min-w-0">
-                <div className="text-[rgba(237,237,237,0.93)] dark:text-[rgba(255,255,255,0.92)]" style={{ fontSize: 13, fontWeight: 600 }}>{u.name}</div>
-                <div className="text-[rgba(237,237,237,0.40)] dark:text-[rgba(255,255,255,0.55)]" style={{ fontSize: 11 }}>
+                <div className="text-[#0F172A] dark:text-[rgba(255,255,255,0.92)]" style={{ fontSize: 13, fontWeight: 600 }}>{u.name}</div>
+                <div className="text-[#64748B] dark:text-[rgba(255,255,255,0.55)]" style={{ fontSize: 11 }}>
                   {u.role_name || 'No role'}
-                  {u.department_name && <span className="text-[rgba(237,237,237,0.53)] dark:text-[rgba(255,255,255,0.20)]"> · </span>}
-                  {u.department_name && <span className="text-[rgba(237,237,237,0.40)] dark:text-[rgba(255,255,255,0.40)]">{u.department_name}</span>}
+                  {u.department_name && <span className="text-[#CBD5E1] dark:text-[rgba(255,255,255,0.20)]"> · </span>}
+                  {u.department_name && <span className="text-[#94A3B8] dark:text-[rgba(255,255,255,0.40)]">{u.department_name}</span>}
                 </div>
               </div>
               <button
@@ -207,7 +207,7 @@ export function PanelTeamTab({ members, isLoading, projectId }: Props) {
 
       {/* Existing team members */}
       {grouped.length === 0 && searchSuggestions.length === 0 ? (
-        <div className="text-center py-8 text-[rgba(237,237,237,0.40)] dark:text-[rgba(255,255,255,0.40)]" style={{ fontSize: 13 }}>
+        <div className="text-center py-8 text-[#94A3B8] dark:text-[rgba(255,255,255,0.40)]" style={{ fontSize: 13 }}>
           {search ? `No team members match "${search}"` : 'No team members assigned'}
           {!search && (
             <div className="mt-3">
@@ -222,9 +222,9 @@ export function PanelTeamTab({ members, isLoading, projectId }: Props) {
           {grouped.map(g => (
             <div key={g.category} className="mt-4">
               <div className="flex items-center gap-2 mb-3">
-                <span className="text-[rgba(237,237,237,0.40)] dark:text-[rgba(255,255,255,0.55)]" style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{g.category}</span>
-                <span className="rounded-full bg-[rgba(59,130,246,0.06)] dark:bg-[rgba(59,130,246,0.15)] text-[#2563EB] dark:text-[#60A5FA]" style={{ padding: '1px 7px', fontSize: 10, fontWeight: 700 }}>{g.members.length}</span>
-                <div className="flex-1 bg-[rgba(255,255,255,0.10)] dark:bg-[rgba(255,255,255,0.08)]" style={{ height: 1 }} />
+                <span className="text-[#64748B] dark:text-[rgba(255,255,255,0.55)]" style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{g.category}</span>
+                <span className="rounded-full bg-[#EFF6FF] dark:bg-[rgba(59,130,246,0.15)] text-[#2563EB] dark:text-[#60A5FA]" style={{ padding: '1px 7px', fontSize: 10, fontWeight: 700 }}>{g.members.length}</span>
+                <div className="flex-1 bg-[#E2E8F0] dark:bg-[rgba(255,255,255,0.08)]" style={{ height: 1 }} />
               </div>
 
               <div className="space-y-0.5">
@@ -239,18 +239,18 @@ export function PanelTeamTab({ members, isLoading, projectId }: Props) {
                     )}
 
                     <div className="flex-1 min-w-0">
-                      <div className="text-[rgba(237,237,237,0.93)] dark:text-[rgba(255,255,255,0.92)]" style={{ fontSize: 14, fontWeight: 600, lineHeight: '20px' }}>{m.full_name}</div>
+                      <div className="text-[#0F172A] dark:text-[rgba(255,255,255,0.92)]" style={{ fontSize: 14, fontWeight: 600, lineHeight: '20px' }}>{m.full_name}</div>
                       <div style={{ fontSize: 12, color: ROLE_COLOR[m.project_role] || 'var(--cp-blue)', fontWeight: 500, lineHeight: '18px' }}>
                         {m.project_role || 'member'}
                       </div>
-                      <div className="text-[rgba(237,237,237,0.40)] dark:text-[rgba(255,255,255,0.40)]" style={{ fontSize: 11, lineHeight: '16px' }}>
+                      <div className="text-[#94A3B8] dark:text-[rgba(255,255,255,0.40)]" style={{ fontSize: 11, lineHeight: '16px' }}>
                         {resourceRoleMap.get(m.user_id) || m.job_role || 'Unassigned'}
                       </div>
                     </div>
 
                     <button
                       onClick={e => { e.stopPropagation(); removeMember.mutate(m.user_id); }}
-                      className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-md flex-shrink-0 bg-[rgba(248,113,113,0.06)] dark:bg-[rgba(220,38,38,0.10)] border border-[#FECACA] dark:border-[rgba(220,38,38,0.20)]"
+                      className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-md flex-shrink-0 bg-[#FEF2F2] dark:bg-[rgba(220,38,38,0.10)] border border-[#FECACA] dark:border-[rgba(220,38,38,0.20)]"
                       style={{ width: 28, height: 28, cursor: 'pointer' }}
                       title="Remove member"
                     >

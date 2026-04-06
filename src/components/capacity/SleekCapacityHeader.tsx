@@ -364,7 +364,7 @@ function StatChip({ value, label, color, isActive, onClick, pulse }: StatChipPro
   // Catalyst V1 Style Guide colors
   const colorStyles = {
     default: {
-      dot: 'bg-[rgba(237,237,237,0.53)]',
+      dot: 'bg-[#334155]',
       activeBg: 'bg-white dark:bg-[var(--surface-3)]',
       activeText: 'text-[#0f172a] dark:text-[var(--text-primary)]',
       inactiveText: 'text-[#475569] dark:text-[var(--text-secondary)]',

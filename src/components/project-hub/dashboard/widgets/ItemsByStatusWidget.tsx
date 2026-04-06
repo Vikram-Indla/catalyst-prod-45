@@ -9,7 +9,7 @@ export default function ItemsByStatusWidget({ projectId, projectKey, collapsed, 
   return (
     <WidgetWrapper title="Items by Status" subtitle="Status distribution" collapsed={collapsed} onToggleCollapse={onToggleCollapse} span={1}>
       {isLoading ? (
-        <div className="animate-pulse"><div className="h-7 rounded bg-[#1A1A1A] dark:bg-[#1A1A1A]" /></div>
+        <div className="animate-pulse"><div className="h-7 rounded bg-[#F1F5F9] dark:bg-[#1A1A1A]" /></div>
       ) : total === 0 ? (
         <div className="flex flex-col items-center py-6 text-center">
           <div style={{ fontSize: 28, color: 'var(--cp-text-muted)', marginBottom: 8 }}>📊</div>
@@ -26,13 +26,13 @@ export default function ItemsByStatusWidget({ projectId, projectKey, collapsed, 
               }}>{todo}</div>
             )}
             {inProgress > 0 && (
-              <div className="flex items-center justify-center bg-[rgba(59,130,246,0.10)] dark:bg-[#1a3a5c] text-[#0747A6] dark:text-[#7bb0ff]" style={{
+              <div className="flex items-center justify-center bg-[#DEEBFF] dark:bg-[#1a3a5c] text-[#0747A6] dark:text-[#7bb0ff]" style={{
                 width: `${(inProgress / total) * 100}%`, minWidth: inProgress > 0 ? 28 : 0,
                 fontSize: 11, fontWeight: 700,
               }}>{inProgress}</div>
             )}
             {done > 0 && (
-              <div className="flex items-center justify-center bg-[rgba(74,222,128,0.10)] dark:bg-[#1a3a2a] text-[#006644] dark:text-[#57d9a3]" style={{
+              <div className="flex items-center justify-center bg-[#E3FCEF] dark:bg-[#1a3a2a] text-[#006644] dark:text-[#57d9a3]" style={{
                 width: `${(done / total) * 100}%`, minWidth: done > 0 ? 28 : 0,
                 fontSize: 11, fontWeight: 700,
               }}>{done}</div>
@@ -45,11 +45,11 @@ export default function ItemsByStatusWidget({ projectId, projectKey, collapsed, 
               To Do {todo}
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="inline-block bg-[rgba(59,130,246,0.10)] dark:bg-[#1a3a5c]" style={{ width: 8, height: 8, borderRadius: 2 }} />
+              <span className="inline-block bg-[#DEEBFF] dark:bg-[#1a3a5c]" style={{ width: 8, height: 8, borderRadius: 2 }} />
               In Progress {inProgress}
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="inline-block bg-[rgba(74,222,128,0.10)] dark:bg-[#1a3a2a]" style={{ width: 8, height: 8, borderRadius: 2 }} />
+              <span className="inline-block bg-[#E3FCEF] dark:bg-[#1a3a2a]" style={{ width: 8, height: 8, borderRadius: 2 }} />
               Done {done}
             </span>
           </div>

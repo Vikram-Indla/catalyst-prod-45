@@ -341,7 +341,7 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
           </span>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             {/* m-10: Unread toggle with count */}
-            <span style={{ fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 13, color: T.text2 }}>
+            <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, color: T.text2 }}>
               Only show unread{unreadOnly && unreadCount !== undefined ? ` (${unreadCount})` : ''}
             </span>
             <button
@@ -363,7 +363,7 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
                 {unreadOnly ? (
                   <svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M1.5 4L3 5.5L6.5 2" stroke="#16A34A" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
                 ) : (
-                  <svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M2 2L6 6M6 2L2 6" stroke="rgba(237,237,237,0.53)" strokeWidth="1.2" strokeLinecap="round"/></svg>
+                  <svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M2 2L6 6M6 2L2 6" stroke="#334155" strokeWidth="1.2" strokeLinecap="round"/></svg>
                 )}
               </span>
             </button>
@@ -409,7 +409,7 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
                         style={{
                           display: 'flex', alignItems: 'center', gap: 8, width: '100%',
                           padding: '10px 14px', background: 'none', border: 'none',
-                          cursor: 'pointer', fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 13, color: T.text1,
+                          cursor: 'pointer', fontFamily: 'Inter, sans-serif', fontSize: 13, color: T.text1,
                           transition: 'background 150ms ease',
                         }}
                         onMouseEnter={(e) => e.currentTarget.style.background = T.hover}
@@ -459,7 +459,7 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
                   padding: '0 16px', height: 50,
                   background: 'none', border: 'none', borderBottom: isActive ? '2px solid #2563EB' : '2px solid transparent',
                   cursor: 'pointer',
-                  fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 13, fontWeight: 500,
+                  fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 500,
                   color: isActive ? '#2563EB' : T.text2,
                   transition: 'color 150ms ease',
                 }}
@@ -487,7 +487,7 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
         {/* 1.5 — Error state */}
         {hasError ? (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '48px 20px', gap: 12 }}>
-            <span style={{ fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 14, color: T.text3 }}>
+            <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 14, color: T.text3 }}>
               Could not load notifications
             </span>
             <button
@@ -496,7 +496,7 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
                 display: 'inline-flex', alignItems: 'center', gap: 6,
                 padding: '8px 16px', borderRadius: 6,
                 border: `0.5px solid ${T.borderStrong}`, background: 'transparent',
-                cursor: 'pointer', fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 13, fontWeight: 500, color: T.text2,
+                cursor: 'pointer', fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 500, color: T.text2,
               }}
             >
               <RefreshCw size={14} />

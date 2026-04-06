@@ -13,7 +13,7 @@ function ShimmerBlock({ width, height, borderRadius = 4, isDark }: { width: numb
       width, height, borderRadius,
       background: isDark
         ? 'linear-gradient(90deg, #232019 25%, #2C2823 50%, #232019 75%)'
-        : 'linear-gradient(90deg, #1A1A1A 25%, rgba(255,255,255,0.10) 50%, #1A1A1A 75%)',
+        : 'linear-gradient(90deg, #F1F5F9 25%, #E2E8F0 50%, #F1F5F9 75%)',
       backgroundSize: '400px 100%',
       animation: 'notif-shimmer 1.4s infinite linear',
     }} />

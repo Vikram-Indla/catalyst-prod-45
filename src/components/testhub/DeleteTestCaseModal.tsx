@@ -100,7 +100,7 @@ export function DeleteTestCaseModal({
           alignItems: 'center',
         }}>
           <h2 style={{
-            fontFamily: 'Geist, -apple-system, sans-serif',
+            fontFamily: 'Inter, sans-serif',
             fontSize: 18,
             fontWeight: 700,
             color: 'var(--fg-1)',
@@ -135,7 +135,7 @@ export function DeleteTestCaseModal({
               width: 40,
               height: 40,
               borderRadius: 12,
-              backgroundColor: 'rgba(251,191,36,0.10)',
+              backgroundColor: '#FEF3C7',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -145,7 +145,7 @@ export function DeleteTestCaseModal({
             </div>
             <div>
               <p style={{
-                fontFamily: 'Geist, -apple-system, sans-serif',
+                fontFamily: 'Inter, sans-serif',
                 fontSize: 14,
                 color: 'var(--fg-1)',
                 margin: 0,
@@ -160,7 +160,7 @@ export function DeleteTestCaseModal({
               
               <div style={{ marginTop: 16 }}>
                 <p style={{
-                  fontFamily: 'Geist, -apple-system, sans-serif',
+                  fontFamily: 'Inter, sans-serif',
                   fontSize: 13,
                   color: 'var(--fg-3)',
                   margin: '0 0 8px 0',
@@ -168,7 +168,7 @@ export function DeleteTestCaseModal({
                   This will permanently delete:
                 </p>
                 <ul style={{
-                  fontFamily: 'Geist, -apple-system, sans-serif',
+                  fontFamily: 'Inter, sans-serif',
                   fontSize: 13,
                   color: 'var(--fg-3)',
                   margin: 0,
@@ -182,7 +182,7 @@ export function DeleteTestCaseModal({
               </div>
 
               <p style={{
-                fontFamily: 'Geist, -apple-system, sans-serif',
+                fontFamily: 'Inter, sans-serif',
                 fontSize: 13,
                 fontWeight: 600,
                 color: 'var(--sem-danger)',
@@ -211,7 +211,7 @@ export function DeleteTestCaseModal({
               backgroundColor: 'var(--cp-float)',
               border: '1.5px solid var(--divider)',
               borderRadius: 8,
-              fontFamily: 'Geist, -apple-system, sans-serif',
+              fontFamily: 'Inter, sans-serif',
               fontSize: 14,
               fontWeight: 500,
               color: 'var(--fg-2)',
@@ -228,7 +228,7 @@ export function DeleteTestCaseModal({
               background: isDeleting ? 'var(--fg-4)' : 'linear-gradient(135deg, #EF4444 0%, #DC2626 100%)',
               border: 'none',
               borderRadius: 8,
-              fontFamily: 'Geist, -apple-system, sans-serif',
+              fontFamily: 'Inter, sans-serif',
               fontSize: 14,
               fontWeight: 600,
               color: '#FFFFFF',

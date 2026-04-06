@@ -360,7 +360,7 @@ export function CreateProjectDialog({ open, onClose }: Props) {
           <div style={{
             padding: '12px 16px', borderRadius: 8,
             border: `1px solid ${border}`,
-            background: dk ? 'rgba(255,255,255,0.02)' : 'var(--bg-1, #1A1A1A)',
+            background: dk ? 'rgba(255,255,255,0.02)' : 'var(--bg-1, #F8FAFC)',
           }}>
             <div className="flex items-center justify-between">
               <Switch checked={linkJira} onCheckedChange={setLinkJira} />

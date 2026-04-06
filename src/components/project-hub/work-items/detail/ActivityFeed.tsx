@@ -80,7 +80,7 @@ export function ActivityFeed({ workItemId }: Props) {
                 {quickReplies.map(q => (
                   <button
                     key={q}
-                    className="text-[12px] px-2.5 py-0.5 rounded-full hover:bg-[#1A1A1A]"
+                    className="text-[12px] px-2.5 py-0.5 rounded-full hover:bg-[#F1F5F9]"
                     style={{ border: '1px solid var(--divider)', color: 'var(--fg-2)' }}
                     onClick={() => setCommentText(q.replace('...', ''))}
                   >
@@ -103,7 +103,7 @@ export function ActivityFeed({ workItemId }: Props) {
       {/* Entries */}
       {isLoading ? (
         <div className="flex justify-center py-8">
-          <Loader2 size={20} className="animate-spin text-[rgba(237,237,237,0.40)]" />
+          <Loader2 size={20} className="animate-spin text-[#94A3B8]" />
         </div>
       ) : filtered.length === 0 ? (
         <div className="text-center py-8 text-[13px]" style={{ color: 'var(--fg-4)' }}>No activity yet</div>
@@ -148,7 +148,7 @@ function CommentEntry({ entry, onDelete, onToggleReaction }: {
         </div>
         <button
           onClick={onDelete}
-          className="opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded hover:bg-[rgba(248,113,113,0.06)]"
+          className="opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded hover:bg-[#FEF2F2]"
           title="Delete comment"
         >
           <Trash2 size={12} className="text-[#DC2626]" />
@@ -180,7 +180,7 @@ function CommentEntry({ entry, onDelete, onToggleReaction }: {
         <div className="relative">
           <button
             onClick={() => setPickerOpen(!pickerOpen)}
-            className="p-1 rounded hover:bg-[#1A1A1A] transition-colors"
+            className="p-1 rounded hover:bg-[#F1F5F9] transition-colors"
             style={{ color: 'var(--fg-4)' }}
           >
             <SmilePlus size={14} />
@@ -194,7 +194,7 @@ function CommentEntry({ entry, onDelete, onToggleReaction }: {
                 <button
                   key={e}
                   onClick={() => { onToggleReaction(e); setPickerOpen(false); }}
-                  className="w-7 h-7 flex items-center justify-center rounded hover:bg-[#1A1A1A] text-[16px]"
+                  className="w-7 h-7 flex items-center justify-center rounded hover:bg-[#F1F5F9] text-[16px]"
                 >
                   {e}
                 </button>

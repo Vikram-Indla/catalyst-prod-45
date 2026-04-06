@@ -34,11 +34,11 @@ const DOT_COLORS: Record<SyncStatus, string> = {
   stale: '#D97706',
   conflict: '#DC2626',
   syncing: '#2563EB',
-  pending: 'rgba(237,237,237,0.40)',
+  pending: '#94A3B8',
 };
 
 export function SyncStatusDot({ status, lastSyncedAt }: SyncStatusDotProps) {
-  const dotColor = DOT_COLORS[status] || 'rgba(237,237,237,0.40)';
+  const dotColor = DOT_COLORS[status] || '#94A3B8';
 
   let label: string;
   let labelColor: string;
@@ -47,7 +47,7 @@ export function SyncStatusDot({ status, lastSyncedAt }: SyncStatusDotProps) {
   switch (status) {
     case 'synced':
       label = relativeTime(lastSyncedAt);
-      labelColor = 'var(--cp-text-tertiary, rgba(237,237,237,0.40))';
+      labelColor = 'var(--cp-text-tertiary, #94A3B8)';
       break;
     case 'stale':
       label = relativeTime(lastSyncedAt);
@@ -64,7 +64,7 @@ export function SyncStatusDot({ status, lastSyncedAt }: SyncStatusDotProps) {
       break;
     default:
       label = 'Pending';
-      labelColor = 'var(--cp-text-tertiary, rgba(237,237,237,0.40))';
+      labelColor = 'var(--cp-text-tertiary, #94A3B8)';
   }
 
   return (
@@ -86,7 +86,7 @@ export function SyncStatusDot({ status, lastSyncedAt }: SyncStatusDotProps) {
             <span
               style={{
                 fontSize: 11,
-                fontFamily: 'Geist, -apple-system, sans-serif',
+                fontFamily: 'Inter, sans-serif',
                 color: labelColor,
                 fontWeight,
                 whiteSpace: 'nowrap',
@@ -106,7 +106,7 @@ export function SyncStatusDot({ status, lastSyncedAt }: SyncStatusDotProps) {
               padding: '4px 8px',
               borderRadius: 4,
               fontSize: 11,
-              fontFamily: 'Geist, -apple-system, sans-serif',
+              fontFamily: 'Inter, sans-serif',
               zIndex: 100,
               boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
             }}

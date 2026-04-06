@@ -377,7 +377,7 @@ export function CreateTestCaseModal({
     padding: '8px 12px',
     border: '1.5px solid var(--divider)',
     borderRadius: 8,
-    fontFamily: 'Geist, -apple-system, sans-serif',
+    fontFamily: 'Inter, sans-serif',
     fontSize: 14,
     color: 'var(--fg-1)',
     outline: 'none',
@@ -400,7 +400,7 @@ export function CreateTestCaseModal({
   const selectStyle: React.CSSProperties = {
     ...inputStyle,
     appearance: 'none' as const,
-    backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'16\' height=\'16\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%23EDEDED\' stroke-width=\'2\'%3E%3Cpath d=\'M6 9l6 6 6-6\'/%3E%3C/svg%3E")',
+    backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'16\' height=\'16\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%2394A3B8\' stroke-width=\'2\'%3E%3Cpath d=\'M6 9l6 6 6-6\'/%3E%3C/svg%3E")',
     backgroundRepeat: 'no-repeat',
     backgroundPosition: 'right 12px center',
     paddingRight: 40,
@@ -409,7 +409,7 @@ export function CreateTestCaseModal({
 
   const labelStyle: React.CSSProperties = {
     display: 'block',
-    fontFamily: 'Geist, -apple-system, sans-serif',
+    fontFamily: 'Inter, sans-serif',
     fontSize: 13,
     fontWeight: 600,
     color: 'var(--fg-1)',
@@ -468,14 +468,14 @@ export function CreateTestCaseModal({
         }}>
           <div>
             <h2 style={{
-              fontFamily: 'Geist, -apple-system, sans-serif',
+              fontFamily: 'Inter, sans-serif',
               fontSize: 18,
               fontWeight: 700,
               color: 'var(--fg-1)',
               margin: 0,
             }}>{modalTitle}</h2>
             <p style={{
-              fontFamily: 'Geist, -apple-system, sans-serif',
+              fontFamily: 'Inter, sans-serif',
               fontSize: 14,
               color: 'var(--fg-3)',
               margin: '4px 0 0 0',
@@ -553,7 +553,7 @@ export function CreateTestCaseModal({
                 />
                 {errors.title && (
                   <p style={{
-                    fontFamily: 'Geist, -apple-system, sans-serif',
+                    fontFamily: 'Inter, sans-serif',
                     fontSize: 12,
                     color: 'var(--sem-danger)',
                     marginTop: 4,
@@ -736,7 +736,7 @@ export function CreateTestCaseModal({
                   style={{
                     height: 32, padding: '0 14px', border: 'none', borderRadius: 6,
                     fontSize: 13, fontWeight: 500, cursor: 'pointer',
-                    backgroundColor: testFormat === opt.key ? '#2563EB' : '#1A1A1A',
+                    backgroundColor: testFormat === opt.key ? '#2563EB' : '#F1F5F9',
                     color: testFormat === opt.key ? '#FFF' : '#475569',
                     transition: 'all 0.15s',
                   }}
@@ -885,7 +885,7 @@ export function CreateTestCaseModal({
               backgroundColor: 'var(--cp-float)',
               border: '1.5px solid var(--divider)',
               borderRadius: 8,
-              fontFamily: 'Geist, -apple-system, sans-serif',
+              fontFamily: 'Inter, sans-serif',
               fontSize: 14,
               fontWeight: 500,
               color: 'var(--fg-2)',
@@ -910,7 +910,7 @@ export function CreateTestCaseModal({
               background: isSaving ? 'var(--fg-4)' : 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
               border: 'none',
               borderRadius: 8,
-              fontFamily: 'Geist, -apple-system, sans-serif',
+              fontFamily: 'Inter, sans-serif',
               fontSize: 14,
               fontWeight: 600,
               color: '#FFFFFF',

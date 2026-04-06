@@ -104,12 +104,12 @@ export const TriggerSearch = memo(function TriggerSearch({
       <div className="flex items-center gap-3 flex-wrap">
         {/* Search input */}
         <div className="relative flex-1 min-w-[240px]">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[rgba(237,237,237,0.40)]" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#94A3B8]" />
           <Input
             placeholder="Search triggers by name, key, or description..."
             value={filters.search}
             onChange={(e) => onFiltersChange({ ...filters, search: e.target.value })}
-            className="pl-9 h-9 text-sm border-[var(--bd-default, rgba(255,255,255,0.10))] focus-visible:ring-[#2563EB]"
+            className="pl-9 h-9 text-sm border-[var(--bd-default, #E2E8F0)] focus-visible:ring-[#2563EB]"
           />
         </div>
 
@@ -118,7 +118,7 @@ export const TriggerSearch = memo(function TriggerSearch({
           value={filters.hub}
           onValueChange={(v) => onFiltersChange({ ...filters, hub: v as HubSource | 'All' })}
         >
-          <SelectTrigger className="w-[150px] h-9 text-sm border-[var(--bd-default, rgba(255,255,255,0.10))]">
+          <SelectTrigger className="w-[150px] h-9 text-sm border-[var(--bd-default, #E2E8F0)]">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -136,7 +136,7 @@ export const TriggerSearch = memo(function TriggerSearch({
           value={filters.category}
           onValueChange={(v) => onFiltersChange({ ...filters, category: v as TriggerCategory | 'All' })}
         >
-          <SelectTrigger className="w-[190px] h-9 text-sm border-[var(--bd-default, rgba(255,255,255,0.10))]">
+          <SelectTrigger className="w-[190px] h-9 text-sm border-[var(--bd-default, #E2E8F0)]">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -157,7 +157,7 @@ export const TriggerSearch = memo(function TriggerSearch({
           className={`text-xs h-8 ${
             filters.enabledOnly
               ? 'bg-[#2563EB] hover:bg-[#1D4ED8] text-white'
-              : 'border-[var(--bd-default, rgba(255,255,255,0.10))]'
+              : 'border-[var(--bd-default, #E2E8F0)]'
           }`}
           onClick={() => onFiltersChange({ ...filters, enabledOnly: !filters.enabledOnly })}
         >
@@ -171,7 +171,7 @@ export const TriggerSearch = memo(function TriggerSearch({
           className={`text-xs h-8 ${
             filters.mandatoryOnly
               ? 'bg-[#DC2626] hover:bg-[#B91C1C] text-white'
-              : 'border-[var(--bd-default, rgba(255,255,255,0.10))]'
+              : 'border-[var(--bd-default, #E2E8F0)]'
           }`}
           onClick={() => onFiltersChange({ ...filters, mandatoryOnly: !filters.mandatoryOnly })}
         >
@@ -200,7 +200,7 @@ export const TriggerSearch = memo(function TriggerSearch({
 
       {/* ── Status row ───────────────────────────────────────────── */}
       <div className="flex items-center justify-between">
-        <span className="text-xs text-[rgba(237,237,237,0.40)]">
+        <span className="text-xs text-[#94A3B8]">
           Showing{' '}
           <span className="font-medium font-['JetBrains_Mono'] text-[#475569]">{filteredCount}</span>{' '}
           of{' '}
@@ -214,7 +214,7 @@ export const TriggerSearch = memo(function TriggerSearch({
           <Button
             variant="ghost"
             size="sm"
-            className="text-xs h-7 text-[#475569] hover:text-[rgba(237,237,237,0.93)]"
+            className="text-xs h-7 text-[#475569] hover:text-[#0F172A]"
             onClick={onExpandAll}
           >
             <SlidersHorizontal className="h-3 w-3 mr-1" />
@@ -223,7 +223,7 @@ export const TriggerSearch = memo(function TriggerSearch({
           <Button
             variant="ghost"
             size="sm"
-            className="text-xs h-7 text-[#475569] hover:text-[rgba(237,237,237,0.93)]"
+            className="text-xs h-7 text-[#475569] hover:text-[#0F172A]"
             onClick={onCollapseAll}
           >
             Collapse All

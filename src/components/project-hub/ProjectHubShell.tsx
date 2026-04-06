@@ -79,7 +79,7 @@ export function ProjectHubShell() {
       <TopNav onCreateClick={handleTopCreateClick} />
       <div className="flex flex-1 overflow-hidden">
         <Sidebar collapsed={collapsed} onToggle={() => setCollapsed(c => !c)} projects={projects} currentProject={currentProject} />
-        <main className="flex-1 min-w-0 overflow-y-auto bg-[#1A1A1A] dark:!bg-[#0A0A0A]">
+        <main className="flex-1 min-w-0 overflow-y-auto bg-[#F8FAFC] dark:!bg-[#0A0A0A]">
           <Outlet context={{ onNewProject: () => setCreateModalOpen(true) }} />
         </main>
       </div>

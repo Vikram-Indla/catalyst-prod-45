@@ -101,7 +101,7 @@ export function DayDetailPanel({
               <div key={status}>
                 <div className="flex items-center gap-2 mb-3">
                   <div className={cn('w-2 h-2 rounded-full', colors.bg, colors.border, 'border-2')} />
-                  <h3 className="text-sm font-semibold text-[rgba(237,237,237,0.53)]">
+                  <h3 className="text-sm font-semibold text-[#334155]">
                     {STATUS_LABELS[status]}
                   </h3>
                   <span className="text-xs text-[#64748b]">({statusEvents.length})</span>

@@ -3,8 +3,8 @@ import { useTheme } from "@/hooks/useTheme";
 
 const LIGHT_STYLES: Record<StatusType, { bg: string; text: string }> = {
   gray:  { bg: '#DFE1E6', text: '#253858' },
-  blue:  { bg: 'rgba(59,130,246,0.10)', text: '#0747A6' },
-  green: { bg: 'rgba(74,222,128,0.10)', text: '#006644' },
+  blue:  { bg: '#DEEBFF', text: '#0747A6' },
+  green: { bg: '#E3FCEF', text: '#006644' },
 };
 
 const DARK_STYLES: Record<StatusType, { bg: string; text: string }> = {
@@ -37,7 +37,7 @@ export default function StatusLozenge({ label, type }: StatusLozengeProps) {
       letterSpacing: '0.03em',
       lineHeight: '20px',
       whiteSpace: 'nowrap',
-      fontFamily: 'Geist, -apple-system, sans-serif',
+      fontFamily: 'Inter, sans-serif',
     }}>
       {label}
     </span>

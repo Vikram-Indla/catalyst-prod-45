@@ -5,9 +5,9 @@ import { useJiraUserDetail, useToggleUserStatus, useUpdatePerm } from '@/hooks/u
 
 const AVATAR_COLORS = [
   { bg: '#DBEAFE', text: '#1D4ED8' }, { bg: '#DCFCE7', text: '#15803D' },
-  { bg: 'rgba(251,191,36,0.10)', text: '#FBBF24' }, { bg: '#EDE9FE', text: '#A78BFA' },
-  { bg: 'rgba(248,113,113,0.10)', text: '#F87171' }, { bg: 'rgba(74,222,128,0.06)', text: '#0F766E' },
-  { bg: 'rgba(59,130,246,0.06)', text: '#1D4ED8' }, { bg: '#E0F2FE', text: '#0369A1' },
+  { bg: '#FEF3C7', text: '#92400E' }, { bg: '#EDE9FE', text: '#5B21B6' },
+  { bg: '#FEE2E2', text: '#991B1B' }, { bg: '#F0FDF4', text: '#0F766E' },
+  { bg: '#EFF6FF', text: '#1D4ED8' }, { bg: '#E0F2FE', text: '#0369A1' },
   { bg: '#F5F3FF', text: '#7C3AED' }, { bg: '#CCFBF1', text: '#0F766E' },
 ];
 
@@ -85,10 +85,10 @@ const InfoCard: React.FC<{ label: string; children: React.ReactNode; isDark?: bo
 );
 const PERM_LEVELS = ['view', 'edit', 'full', 'none'] as const;
 const PERM_COLORS: Record<string, { bg: string; color: string; bgDark: string; colorDark: string }> = {
-  view: { bg: 'rgba(59,130,246,0.06)', color: '#0747A6', bgDark: 'rgba(37,99,235,0.12)', colorDark: '#93C5FD' },
-  edit: { bg: 'rgba(251,191,36,0.10)', color: '#FBBF24', bgDark: 'rgba(251,191,36,0.12)', colorDark: '#FCD34D' },
+  view: { bg: '#EFF6FF', color: '#0747A6', bgDark: 'rgba(37,99,235,0.12)', colorDark: '#93C5FD' },
+  edit: { bg: '#FEF3C7', color: '#92400E', bgDark: 'rgba(251,191,36,0.12)', colorDark: '#FCD34D' },
   full: { bg: '#DCFCE7', color: '#006644', bgDark: 'rgba(34,197,94,0.12)', colorDark: '#86EFAC' },
-  none: { bg: '#1A1A1A', color: 'rgba(237,237,237,0.40)', bgDark: '#1A1A1A', colorDark: '#878787' },
+  none: { bg: '#F1F5F9', color: '#64748B', bgDark: '#1A1A1A', colorDark: '#878787' },
 };
 
 function getEventDotColor(ev: any): string {
@@ -299,9 +299,9 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
     text2: '#A1A1A1', text3: '#878787', sunken: '#0A0A0A',
     elevated: '#1A1A1A', inputBg: '#1A1A1A',
   } : {
-    surface: '#FFFFFF', border: 'rgba(15,23,42,0.10)', text1: 'rgba(237,237,237,0.93)',
-    text2: 'rgba(237,237,237,0.40)', text3: 'rgba(237,237,237,0.40)', sunken: '#1A1A1A',
-    elevated: '#1A1A1A', inputBg: '#FFFFFF',
+    surface: '#FFFFFF', border: 'rgba(15,23,42,0.10)', text1: '#0F172A',
+    text2: '#64748B', text3: '#94A3B8', sunken: '#F1F5F9',
+    elevated: '#F8FAFC', inputBg: '#FFFFFF',
   };
 
   if (isLoading || !user) {

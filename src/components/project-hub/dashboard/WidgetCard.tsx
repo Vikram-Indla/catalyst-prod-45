@@ -31,16 +31,16 @@ function WidgetCardInner({ title, subtitle, count, countColor, leftBorder, heade
   const getCountBadgeStyle = () => {
     if (!countColor) return dark
       ? { bg: 'rgba(255,255,255,0.06)', text: 'rgba(255,255,255,0.72)', border: 'rgba(255,255,255,0.12)' }
-      : { bg: 'var(--cp-bd-zone)', text: 'var(--fg-2)', border: 'rgba(237,237,237,0.53)' };
+      : { bg: 'var(--cp-bd-zone)', text: 'var(--fg-2)', border: '#CBD5E1' };
     if (countColor === '#D97706' || countColor === '#EF4444') return dark
       ? { bg: 'rgba(220,38,38,0.15)', text: '#FCA5A5', border: 'rgba(220,38,38,0.3)' }
-      : { bg: 'rgba(251,191,36,0.10)', text: '#FBBF24', border: '#FCD34D' };
+      : { bg: '#FEF3C7', text: '#92400E', border: '#FCD34D' };
     if (countColor === '#16A34A') return dark
       ? { bg: 'rgba(22,163,74,0.15)', text: '#86EFAC', border: 'rgba(22,163,74,0.3)' }
       : { bg: '#DCFCE7', text: '#166534', border: '#86EFAC' };
     return dark
       ? { bg: 'rgba(37,99,235,0.15)', text: '#93C5FD', border: 'rgba(37,99,235,0.3)' }
-      : { bg: '#DBEAFE', text: '#7DB8FC', border: '#93C5FD' };
+      : { bg: '#DBEAFE', text: '#1E40AF', border: '#93C5FD' };
   };
   const countStyle = getCountBadgeStyle();
 

@@ -107,7 +107,7 @@ export const WORKSTREAM_COLORS: Record<string, WorkstreamColorSet> = {
     hexLight: '#e2e8f0',
     hexFill: '#e2e8f0',
     textPrimary: '#475569',  // Slate-600
-    textDark: 'rgba(237,237,237,0.53)',     // Slate-700
+    textDark: '#334155',     // Slate-700
   },
   'MIM Website': {
     primary: '#64748b',
@@ -117,7 +117,7 @@ export const WORKSTREAM_COLORS: Record<string, WorkstreamColorSet> = {
     hexLight: '#e2e8f0',
     hexFill: '#e2e8f0',
     textPrimary: '#475569',
-    textDark: 'rgba(237,237,237,0.53)',
+    textDark: '#334155',
   },
   'MIM Website Track': {
     primary: '#64748b',
@@ -127,7 +127,7 @@ export const WORKSTREAM_COLORS: Record<string, WorkstreamColorSet> = {
     hexLight: '#e2e8f0',
     hexFill: '#e2e8f0',
     textPrimary: '#475569',
-    textDark: 'rgba(237,237,237,0.53)',
+    textDark: '#334155',
   },
 
   // Senaei — Teal palette (A5)
@@ -181,7 +181,7 @@ export const WORKSTREAM_COLORS: Record<string, WorkstreamColorSet> = {
     hexLight: '#e2e8f0',
     hexFill: '#e2e8f0',
     textPrimary: '#475569',
-    textDark: 'rgba(237,237,237,0.53)',
+    textDark: '#334155',
   },
   'Stand-Alone Projects': {
     primary: '#64748b',
@@ -191,7 +191,7 @@ export const WORKSTREAM_COLORS: Record<string, WorkstreamColorSet> = {
     hexLight: '#e2e8f0',
     hexFill: '#e2e8f0',
     textPrimary: '#475569',
-    textDark: 'rgba(237,237,237,0.53)',
+    textDark: '#334155',
   },
   'Stand-Alone Projects Track': {
     primary: '#64748b',
@@ -201,7 +201,7 @@ export const WORKSTREAM_COLORS: Record<string, WorkstreamColorSet> = {
     hexLight: '#e2e8f0',
     hexFill: '#e2e8f0',
     textPrimary: '#475569',
-    textDark: 'rgba(237,237,237,0.53)',
+    textDark: '#334155',
   },
 
   // Tahommona — Orange palette (A7)
@@ -236,7 +236,7 @@ export const DEFAULT_WORKSTREAM_COLOR: WorkstreamColorSet = {
   hexLight: '#e2e8f0',
   hexFill: '#e2e8f0',
   textPrimary: '#475569',
-  textDark: 'rgba(237,237,237,0.53)',
+  textDark: '#334155',
 };
 
 /**

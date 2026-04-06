@@ -104,7 +104,7 @@ export function CreateSchemeModal({ scheme, open, onClose, onCreated }: CreateSc
         <div className="space-y-4 py-2">
           {/* Name */}
           <div className="space-y-1.5">
-            <Label htmlFor="scheme-name" className="text-xs font-medium text-[rgba(237,237,237,0.93)]">
+            <Label htmlFor="scheme-name" className="text-xs font-medium text-[#0F172A]">
               Scheme Name
             </Label>
             <Input
@@ -119,7 +119,7 @@ export function CreateSchemeModal({ scheme, open, onClose, onCreated }: CreateSc
 
           {/* Description */}
           <div className="space-y-1.5">
-            <Label htmlFor="scheme-desc" className="text-xs font-medium text-[rgba(237,237,237,0.93)]">
+            <Label htmlFor="scheme-desc" className="text-xs font-medium text-[#0F172A]">
               Description
             </Label>
             <Textarea
@@ -132,9 +132,9 @@ export function CreateSchemeModal({ scheme, open, onClose, onCreated }: CreateSc
           </div>
 
           {/* Default toggle */}
-          <div className="flex items-center justify-between rounded-md border border-[var(--bd-default, rgba(255,255,255,0.10))] px-3 py-2.5">
+          <div className="flex items-center justify-between rounded-md border border-[var(--bd-default, #E2E8F0)] px-3 py-2.5">
             <div>
-              <p className="text-xs font-medium text-[rgba(237,237,237,0.93)]">Set as Default Scheme</p>
+              <p className="text-xs font-medium text-[#0F172A]">Set as Default Scheme</p>
               <p className="text-[11px] text-[#475569] mt-0.5">
                 New projects will automatically use this scheme.
               </p>

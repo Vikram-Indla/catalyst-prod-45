@@ -17,7 +17,7 @@ interface InlineEditTitleProps {
 
 export { type InlineEditTitleProps };
 
-export function InlineEditTitle({ value, onSave, fontSize = 13, fontWeight = 500, color = 'var(--fg-1, rgba(237,237,237,0.93))', style, forceEdit, onCancelForceEdit }: InlineEditTitleProps) {
+export function InlineEditTitle({ value, onSave, fontSize = 13, fontWeight = 500, color = 'var(--fg-1, #0F172A)', style, forceEdit, onCancelForceEdit }: InlineEditTitleProps) {
   const [editing, setEditing] = useState(false);
   const isEditing = editing || forceEdit;
   const [draft, setDraft] = useState(value);
@@ -88,7 +88,7 @@ export function InlineEditTitle({ value, onSave, fontSize = 13, fontWeight = 500
         size={12}
         className="hi-edit-icon"
         style={{
-          marginLeft: 4, color: 'rgba(237,237,237,0.40)', flexShrink: 0,
+          marginLeft: 4, color: '#94A3B8', flexShrink: 0,
           opacity: 0, transition: 'opacity 150ms ease',
         }}
       />

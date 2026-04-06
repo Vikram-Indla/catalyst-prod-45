@@ -144,7 +144,7 @@ export function WiringAudit() {
     <div
       style={{
         margin: "24px 0",
-        border: "1.5px solid var(--bd-default, rgba(255,255,255,0.10))",
+        border: "1.5px solid var(--bd-default, #E2E8F0)",
         borderRadius: 8,
         backgroundColor: "#FAFBFC",
         padding: 20,
@@ -152,7 +152,7 @@ export function WiringAudit() {
       }}
     >
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
-        <h3 style={{ fontSize: 14, fontWeight: 650, color: "rgba(237,237,237,0.93)", margin: 0 }}>
+        <h3 style={{ fontSize: 14, fontWeight: 650, color: "#0F172A", margin: 0 }}>
           P8 Wiring Audit — {checks.length} checks
         </h3>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
@@ -194,8 +194,8 @@ export function WiringAudit() {
             alignItems: "center",
             gap: 8,
             padding: "6px 0",
-            borderTop: i === 0 ? "1px solid var(--bd-default, rgba(255,255,255,0.10))" : "none",
-            borderBottom: "1px solid var(--bd-default, rgba(255,255,255,0.10))",
+            borderTop: i === 0 ? "1px solid var(--bd-default, #E2E8F0)" : "none",
+            borderBottom: "1px solid var(--bd-default, #E2E8F0)",
             fontSize: 12,
             fontFamily: "Inter, sans-serif",
           }}
@@ -217,8 +217,8 @@ export function WiringAudit() {
           >
             {r.status === "pass" ? "✓" : "✗"}
           </span>
-          <span style={{ fontWeight: 600, color: "rgba(237,237,237,0.93)", minWidth: 180 }}>{r.name}</span>
-          <span style={{ color: "rgba(237,237,237,0.40)" }}>{r.detail}</span>
+          <span style={{ fontWeight: 600, color: "#0F172A", minWidth: 180 }}>{r.name}</span>
+          <span style={{ color: "#64748B" }}>{r.detail}</span>
         </div>
       ))}
     </div>

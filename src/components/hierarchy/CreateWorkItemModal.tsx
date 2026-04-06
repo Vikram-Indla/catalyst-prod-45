@@ -58,7 +58,7 @@ function CustomSelect({
   return (
     <div ref={ref} style={{ position: 'relative' }}>
       <button type="button" onClick={() => setOpen((p) => !p)}
-        style={{ width: '100%', height: 50, padding: '8px 12px', fontSize: 14, fontFamily: "'Inter', sans-serif", color: selected ? 'rgba(237,237,237,0.93)' : 'rgba(237,237,237,0.40)', background: 'var(--cp-float)', border: '1.5px solid var(--divider)', borderRadius: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', textAlign: 'left' }}>
+        style={{ width: '100%', height: 50, padding: '8px 12px', fontSize: 14, fontFamily: "'Inter', sans-serif", color: selected ? '#0F172A' : '#94A3B8', background: 'var(--cp-float)', border: '1.5px solid var(--divider)', borderRadius: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', textAlign: 'left' }}>
         <span>{selected ? (renderOption ? renderOption(selected) : selected.label) : placeholder}</span>
         <ChevronDown size={14} color="var(--fg-3)" />
       </button>
@@ -68,7 +68,7 @@ function CustomSelect({
             <div key={opt.value} onClick={() => { onChange(opt.value); setOpen(false); }}
               style={{ padding: '8px 12px', fontSize: 13, cursor: 'pointer', background: opt.value === value ? 'var(--cp-primary-5)' : undefined, fontFamily: "'Inter', sans-serif" }}
               onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--bg-1)')}
-              onMouseLeave={(e) => (e.currentTarget.style.background = opt.value === value ? 'rgba(59,130,246,0.06)' : '')}>
+              onMouseLeave={(e) => (e.currentTarget.style.background = opt.value === value ? '#EFF6FF' : '')}>
               {renderOption ? renderOption(opt) : opt.label}
             </div>
           ))}

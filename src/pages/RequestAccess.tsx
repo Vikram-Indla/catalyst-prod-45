@@ -718,7 +718,7 @@ export default function RequestAccess() {
           
           <div className="mb-6">
             <p className="text-sm text-[#6B7280] mb-2">{t.requestId}</p>
-            <p className="text-3xl font-bold text-[rgba(237,237,237,0.93)]" style={{ fontFamily: "'Playfair Display', serif" }}>
+            <p className="text-3xl font-bold text-[#0F172A]" style={{ fontFamily: "'Playfair Display', serif" }}>
               {ticketNumber}
             </p>
             <p className="text-sm text-[#6B7280] mt-2">
