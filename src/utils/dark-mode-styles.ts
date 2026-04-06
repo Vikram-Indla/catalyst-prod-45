@@ -12,28 +12,28 @@ export type DarkTokens = {
 };
 
 export const DK: DarkTokens = {
-  // Backgrounds — NOCTURNE Warm Charcoal
+  // Backgrounds — Vercel Geist Solid Hex
   pageBg: '#0A0A0A',
-  cardBg: 'transparent',
-  headerBg: 'transparent',
-  tableHeaderBg: 'rgba(255,255,255,0.03)',
-  hoverBg: 'rgba(255,255,255,0.03)',
-  selectedBg: 'rgba(59,130,246,0.08)',
+  cardBg: '#1A1A1A',
+  headerBg: '#1A1A1A',
+  tableHeaderBg: '#1A1A1A',
+  hoverBg: '#1F1F1F',
+  selectedBg: '#292929',
   floatBg: '#1A1A1A',
-  chipBg: 'rgba(255,255,255,0.06)',
-  progressTrack: 'rgba(255,255,255,0.08)',
-  iconBg: 'rgba(255,255,255,0.06)',
+  chipBg: '#292929',
+  progressTrack: '#292929',
+  iconBg: '#292929',
   
-  // Text — NOCTURNE Warm Charcoal
+  // Text — Geist Neutral
   t1: '#EDEDED',   // primary text (titles, values, data)
   t2: '#A1A1A1',   // secondary (labels, legends)
   t3: '#878787',   // tertiary (timestamps, muted labels)
-  t4: 'rgba(237,237,237,0.30)',   // decorative (placeholders)
+  t4: '#878787',   // decorative (placeholders)
   
-  // Borders
-  border: 'rgba(255,255,255,0.08)',
-  borderStrong: 'rgba(255,255,255,0.12)',
-  divider: 'rgba(255,255,255,0.05)',
+  // Borders — Solid Hex
+  border: '#2E2E2E',
+  borderStrong: '#454545',
+  divider: '#292929',
   
   // Semantic
   blue: '#60A5FA',
@@ -41,7 +41,7 @@ export const DK: DarkTokens = {
   green: '#86EFAC',
   greenText: '#86EFAC',
   
-  // No shadow
+  // Shadows
   shadow: 'none',
   cardShadow: 'none',
 } as const;
