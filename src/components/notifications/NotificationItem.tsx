@@ -8,6 +8,7 @@ import StatusLozenge from "./StatusLozenge";
 import CommentPreview from "./CommentPreview";
 import ReactionBar from "./ReactionBar";
 import { Clock, UserCheck } from "lucide-react";
+import { useTheme } from "@/hooks/useTheme";
 
 interface NotificationItemProps {
   notification: Notification;
@@ -49,15 +50,16 @@ const normaliseStatus = (raw: string | null | undefined): {
   if (s === 'not run')     return { label: 'NOT RUN',     type: 'gray'  };
   if (s === 'passed')      return { label: 'PASSED',      type: 'green' };
   if (s === 'failed')      return { label: 'FAILED',      type: 'gray'  };
-  if (s === 'done')        return { label: 'DONE',        type: 'green' };
-  if (s === 'completed')   return { label: 'COMPLETED',   type: 'green' };
-  if (s === 'approved')    return { label: 'APPROVED',    type: 'green' };
-  if (s === 'active')      return { label: 'ACTIVE',      type: 'blue'  };
+  if (s === 'blocked')     return { label: 'BLOCKED',     type: 'gray'  };
   if (s === 'in progress') return { label: 'IN PROGRESS', type: 'blue'  };
-  if (s === 'in review')   return { label: 'IN REVIEW',   type: 'blue'  };
+  if (s === 'done')        return { label: 'DONE',        type: 'green' };
+  if (s === 'active')      return { label: 'ACTIVE',      type: 'blue'  };
+  if (s === 'open')        return { label: 'OPEN',        type: 'blue'  };
+  if (s === 'closed')      return { label: 'CLOSED',      type: 'green' };
+  if (s === 'resolved')    return { label: 'RESOLVED',    type: 'green' };
+  if (s === 'to do')       return { label: 'TO DO',       type: 'gray'  };
   if (s === 'backlog')     return { label: 'BACKLOG',     type: 'gray'  };
-  if (s === 'on hold')     return { label: 'ON HOLD',     type: 'gray'  };
-  return { label: raw.replace(/_/g, ' ').toUpperCase(), type: 'gray' };
+  return { label: raw.toUpperCase(), type: 'gray' };
 };
 
 function formatTimestamp(iso: string): string {
@@ -66,21 +68,34 @@ function formatTimestamp(iso: string): string {
   const diffMs = now.getTime() - d.getTime();
   const diffMin = Math.floor(diffMs / 60000);
   if (diffMin < 1) return 'Just now';
-  if (diffMin < 60) return `${diffMin} minute${diffMin !== 1 ? 's' : ''} ago`;
-  const diffHr = Math.floor(diffMin / 60);
-  if (diffHr < 24) return `${diffHr} hour${diffHr !== 1 ? 's' : ''} ago`;
-  const diffDay = Math.floor(diffHr / 24);
-  if (diffDay === 1) return '1 day ago';
-  return `${diffDay} days ago`;
+  if (diffMin < 60) return `${diffMin}m ago`;
+  const diffH = Math.floor(diffMin / 60);
+  if (diffH < 24) return `${diffH} hour${diffH !== 1 ? 's' : ''} ago`;
+  const diffD = Math.floor(diffH / 24);
+  if (diffD < 7) return `${diffD} day${diffD !== 1 ? 's' : ''} ago`;
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 }
 
 function NotificationItemInner({ notification, actorProfile, onMarkRead, onClick }: NotificationItemProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [isPressed, setIsPressed] = useState(false);
+  const { isDark } = useTheme();
   const isUnread = !notification.read_at;
   const isDueDate = DUE_DATE_TYPES.some(t => t === notification.notification_type);
   const isComment = COMMENT_PREVIEW_TYPES.some(t => t === notification.notification_type);
   const isDeleted = notification.entity_deleted;
+
+  // Dark mode tokens
+  const T = {
+    text1: isDark ? '#F5F3F0' : '#0F172A',
+    text2: isDark ? '#A09890' : '#64748B',
+    text3: isDark ? '#6B6560' : '#94A3B8',
+    hover: isDark ? 'rgba(255,255,255,0.04)' : 'rgba(15,23,42,0.04)',
+    press: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.08)',
+    borderStrong: isDark ? 'rgba(255,255,255,0.20)' : 'rgba(15,23,42,0.2)',
+    entityKey: isDark ? '#60A5FA' : '#2563EB',
+    checkStroke: isDark ? '#A09890' : '#64748B',
+  };
 
   // Determine if this is a system-generated assignment (no actor at all)
   const hasActor = !!(notification.actor_user_id && (actorProfile || notification.actor));
@@ -124,7 +139,7 @@ function NotificationItemInner({ notification, actorProfile, onMarkRead, onClick
         padding: '12px 20px',
         cursor: isDeleted ? 'default' : 'pointer',
         position: 'relative',
-        background: isPressed ? 'rgba(15,23,42,.08)' : isHovered ? 'rgba(15,23,42,.04)' : 'transparent',
+        background: isPressed ? T.press : isHovered ? T.hover : 'transparent',
         borderLeft: isDueDate ? '3px solid #D97706' : '3px solid transparent',
         transition: 'background 150ms ease',
         outline: 'none',
@@ -157,7 +172,7 @@ function NotificationItemInner({ notification, actorProfile, onMarkRead, onClick
           {/* Action text + timestamp */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
             <span style={{
-              fontFamily: 'Inter, sans-serif', fontSize: 13, color: '#0F172A', lineHeight: '18px',
+              fontFamily: 'Inter, sans-serif', fontSize: 13, color: T.text1, lineHeight: '18px',
               overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 360,
             }}>
               {isSystemAssign ? (
@@ -169,7 +184,7 @@ function NotificationItemInner({ notification, actorProfile, onMarkRead, onClick
                 </>
               )}
             </span>
-            <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: '#64748B', whiteSpace: 'nowrap', flexShrink: 0 }}>
+            <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: T.text2, whiteSpace: 'nowrap', flexShrink: 0 }}>
               {formatTimestamp(notification.created_at)}
             </span>
           </div>
@@ -179,7 +194,7 @@ function NotificationItemInner({ notification, actorProfile, onMarkRead, onClick
             <WorkItemIcon type={notification.entity_icon_type} />
             <span style={{
               fontFamily: 'Inter, sans-serif', fontSize: 13,
-              color: isDeleted ? '#94A3B8' : '#0F172A',
+              color: isDeleted ? T.text3 : T.text1,
               overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 360,
               fontStyle: isDeleted ? 'italic' : 'normal',
             }}>
@@ -191,13 +206,13 @@ function NotificationItemInner({ notification, actorProfile, onMarkRead, onClick
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4 }}>
             <span style={{
               fontFamily: 'Inter, sans-serif', fontSize: 12, fontWeight: 500,
-              color: isDeleted ? '#94A3B8' : '#2563EB',
+              color: isDeleted ? T.text3 : T.entityKey,
               textDecoration: isDeleted ? 'line-through' : 'none',
               overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 200,
             }}>
               {notification.entity_key}
             </span>
-            <span style={{ color: '#94A3B8', fontSize: 10 }}>•</span>
+            <span style={{ color: T.text3, fontSize: 10 }}>•</span>
             <StatusLozenge label={normaliseStatus(notification.status).label} type={normaliseStatus(notification.status).type} />
           </div>
 
@@ -208,7 +223,7 @@ function NotificationItemInner({ notification, actorProfile, onMarkRead, onClick
               background: 'rgba(217,119,6,.08)', borderRadius: 4, padding: '6px 10px',
             }}>
               <Clock size={14} color="#D97706" />
-              <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: '#92400E' }}>
+              <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: isDark ? '#FCD34D' : '#92400E' }}>
                 Due in {daysUntilDue} day{daysUntilDue !== 1 ? 's' : ''} — {notification.metadata.due_date}
               </span>
             </div>
@@ -249,7 +264,7 @@ function NotificationItemInner({ notification, actorProfile, onMarkRead, onClick
           style={{
             position: 'absolute', top: 12, right: 16,
             width: 28, height: 28, borderRadius: '50%',
-            border: '1.5px solid rgba(15,23,42,.2)',
+            border: `1.5px solid ${T.borderStrong}`,
             background: 'transparent', cursor: 'pointer',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             transition: 'opacity 150ms ease',
@@ -257,7 +272,7 @@ function NotificationItemInner({ notification, actorProfile, onMarkRead, onClick
           title="Mark as read"
         >
           <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-            <path d="M2 6L5 9L10 3" stroke="#64748B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M2 6L5 9L10 3" stroke={T.checkStroke} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
         </button>
       )}

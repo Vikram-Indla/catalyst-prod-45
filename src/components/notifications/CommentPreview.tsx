@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Paperclip } from "lucide-react";
 import { COMMENT_PREVIEW_MAX_CHARS } from "@/constants/notificationConstants";
+import { useTheme } from "@/hooks/useTheme";
 
 interface CommentPreviewProps {
   text: string;
@@ -9,21 +10,21 @@ interface CommentPreviewProps {
 
 export default function CommentPreview({ text, attachmentFilename }: CommentPreviewProps) {
   const [expanded, setExpanded] = useState(false);
+  const { isDark } = useTheme();
   const isTruncated = text.length > COMMENT_PREVIEW_MAX_CHARS;
   const displayText = expanded || !isTruncated ? text : text.slice(0, COMMENT_PREVIEW_MAX_CHARS) + '…';
 
   return (
     <div style={{
-      background: '#F8FAFC',
-      border: '0.5px solid rgba(15,23,42,.08)',
+      background: isDark ? '#232019' : '#F8FAFC',
+      border: `0.5px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,.08)'}`,
       borderRadius: 4,
       padding: '10px 12px',
       marginTop: 8,
       fontFamily: 'Inter, sans-serif',
       fontSize: 13,
-      color: '#0F172A',
+      color: isDark ? '#F5F3F0' : '#0F172A',
       lineHeight: '18px',
-      // m-11: max-height before "Show more"
       maxHeight: expanded ? 'none' : 80,
       overflow: 'hidden',
     }}>
@@ -40,7 +41,7 @@ export default function CommentPreview({ text, attachmentFilename }: CommentPrev
         </button>
       )}
       {attachmentFilename && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 6, color: '#64748B', fontSize: 12 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 6, color: isDark ? '#6B6560' : '#64748B', fontSize: 12 }}>
           <Paperclip size={13} />
           <span>{attachmentFilename}</span>
         </div>
