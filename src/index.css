@@ -1197,17 +1197,17 @@ html:has(body[data-scroll-locked]) {
     --card-border: var(--divider);
     
     /* === TABLE TOKENS (Bloomberg grade — surface only) === */
-    --table-container-bg: var(--bg-1);
-    --table-container-border: transparent;
-    --table-header-bg: var(--bg-2);
-    --table-header-text: var(--fg-1);
-    --table-header-border: var(--divider);
-    --table-row-bg: transparent;
-    --table-row-alt-bg: #111111;
-    --table-row-hover: var(--hover);
-    --table-row-selected: var(--row-selected);
-    --table-row-border: var(--divider);
-    --table-cell-divider: transparent;
+    --table-container-bg: #1A1A1A;
+    --table-container-border: #2E2E2E;
+    --table-header-bg: #111111;
+    --table-header-text: #878787;
+    --table-header-border: #2E2E2E;
+    --table-row-bg: #1A1A1A;
+    --table-row-alt-bg: #1A1A1A;
+    --table-row-hover: #1F1F1F;
+    --table-row-selected: #292929;
+    --table-row-border: #2E2E2E;
+    --table-cell-divider: #2E2E2E;
     --table-text-primary: var(--fg-1);
     --table-text-secondary: var(--fg-2);
     --table-text-muted: var(--fg-3);
