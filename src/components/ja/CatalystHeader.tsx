@@ -214,7 +214,7 @@ export function CatalystHeader() {
         </a>
         
         {/* ===== NAVIGATION ZONE ===== */}
-        <nav className="hidden md:flex items-center flex-1" style={{ gap: '4px' }}>
+        <nav className="hidden lg:flex items-center flex-1 overflow-hidden" style={{ gap: '4px' }}>
           <TooltipProvider>
             {navItems.map((item) => {
               if (!item.isEnabled) {
@@ -492,7 +492,7 @@ export function CatalystHeader() {
         </nav>
 
         {/* Mobile Menu */}
-        <div className="md:hidden flex-1">
+        <div className="lg:hidden flex-1">
           <Suspense fallback={null}>
             <MobileNavigationMenu />
           </Suspense>
