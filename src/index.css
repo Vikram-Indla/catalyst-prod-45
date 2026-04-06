@@ -2980,8 +2980,7 @@ input[type="range"]::-moz-range-thumb {
 
 .dark *,
 [data-theme="dark"] * {
-  --tw-divide-opacity: 0.04 !important;
-  scrollbar-color: hsl(var(--border-default)) hsl(var(--surface-2));
+  scrollbar-color: #2E2E2E #0A0A0A;
 }
 
 .dark .avatar-ring:hover,
