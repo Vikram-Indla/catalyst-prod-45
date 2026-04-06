@@ -9,6 +9,7 @@ import { useRealtimeNotifications } from "@/hooks/useRealtimeNotifications";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useActorProfiles } from "@/hooks/useActorProfiles";
+import { useTheme } from "@/hooks/useTheme";
 import NotificationItem from "./NotificationItem";
 import SectionHeader from "./SectionHeader";
 import EmptyState from "./EmptyState";
@@ -62,6 +63,25 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
   const { data: userId } = useUserId();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const { isDark } = useTheme();
+
+  // Dark mode tokens
+  const T = {
+    panelBg: isDark ? '#1A1714' : '#FFFFFF',
+    surfaceBg: isDark ? '#232019' : '#FFFFFF',
+    text1: isDark ? '#F5F3F0' : '#0F172A',
+    text2: isDark ? '#A09890' : '#64748B',
+    text3: isDark ? '#6B6560' : '#94A3B8',
+    border: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.08)',
+    borderStrong: isDark ? 'rgba(255,255,255,0.12)' : 'rgba(15,23,42,0.12)',
+    hover: isDark ? 'rgba(255,255,255,0.04)' : 'rgba(15,23,42,0.04)',
+    press: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.08)',
+    shadow: isDark
+      ? '0 8px 24px rgba(0,0,0,0.4), 0 0 1px rgba(0,0,0,0.5)'
+      : '0 8px 24px rgba(15,23,42,0.12), 0 0 1px rgba(15,23,42,0.08)',
+    menuBg: isDark ? '#232019' : '#FFFFFF',
+    divider: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(15,23,42,0.08)',
+  };
 
   const [activeTab, setActiveTab] = useState<NotificationTab>('direct');
   const [menuOpen, setMenuOpen] = useState(false);
@@ -269,10 +289,10 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
         right: 16,
         width: PANEL_WIDTH,
         bottom: 16,
-        background: '#FFFFFF',
-        border: '0.5px solid rgba(15,23,42,.08)',
+        background: T.panelBg,
+        border: `0.5px solid ${T.border}`,
         borderRadius: 6,
-        boxShadow: '0 8px 24px rgba(15,23,42,.12), 0 0 1px rgba(15,23,42,.08)',
+        boxShadow: T.shadow,
         zIndex: 400,
         overflow: 'hidden',
         display: 'flex',
@@ -316,12 +336,12 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
       {/* Header */}
       <div style={{ padding: '16px 20px 0' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{ fontFamily: 'Sora, sans-serif', fontSize: 20, fontWeight: 700, color: '#0F172A', margin: 0, lineHeight: 1.2 }}>
+          <span style={{ fontFamily: 'Sora, sans-serif', fontSize: 20, fontWeight: 700, color: T.text1, margin: 0, lineHeight: 1.2 }}>
             Notifications
           </span>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             {/* m-10: Unread toggle with count */}
-            <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, color: '#64748B' }}>
+            <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, color: T.text2 }}>
               Only show unread{unreadOnly && unreadCount !== undefined ? ` (${unreadCount})` : ''}
             </span>
             <button
@@ -329,7 +349,7 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
               aria-label={unreadOnly ? 'Show all notifications' : 'Show only unread'}
               style={{
                 width: 36, height: 20, borderRadius: 10, cursor: 'pointer', border: 'none',
-                background: unreadOnly ? '#16A34A' : '#334155',
+                background: unreadOnly ? '#16A34A' : (isDark ? '#444444' : '#334155'),
                 position: 'relative', transition: 'background 200ms ease',
                 padding: 0,
               }}
@@ -349,7 +369,7 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
             </button>
             {/* Open full page */}
             <button
-              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, borderRadius: 4, color: '#64748B' }}
+              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, borderRadius: 4, color: T.text2 }}
               title="Open in full page"
               aria-label="Open notifications in full page"
             >
@@ -359,7 +379,7 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
             <div style={{ position: 'relative' }}>
               <button
                 onClick={() => setMenuOpen(!menuOpen)}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, borderRadius: 4, color: '#64748B' }}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, borderRadius: 4, color: T.text2 }}
                 aria-label="More options"
                 aria-expanded={menuOpen}
               >
@@ -371,8 +391,8 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
                   role="menu"
                   style={{
                     position: 'absolute', top: '100%', right: 0, marginTop: 4,
-                    background: '#FFFFFF', border: '0.5px solid rgba(15,23,42,.08)', borderRadius: 6,
-                    boxShadow: '0 4px 12px rgba(15,23,42,.12)', minWidth: 200, zIndex: 10,
+                    background: T.menuBg, border: `0.5px solid ${T.border}`, borderRadius: 6,
+                    boxShadow: T.shadow, minWidth: 200, zIndex: 10,
                     animation: 'notif-dropdown-in 120ms ease-out forwards',
                     overflow: 'hidden',
                   }}
@@ -389,18 +409,18 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
                         style={{
                           display: 'flex', alignItems: 'center', gap: 8, width: '100%',
                           padding: '10px 14px', background: 'none', border: 'none',
-                          cursor: 'pointer', fontFamily: 'Inter, sans-serif', fontSize: 13, color: '#0F172A',
+                          cursor: 'pointer', fontFamily: 'Inter, sans-serif', fontSize: 13, color: T.text1,
                           transition: 'background 150ms ease',
                         }}
-                        onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(15,23,42,.04)'}
+                        onMouseEnter={(e) => e.currentTarget.style.background = T.hover}
                         onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
                       >
-                        <Icon size={16} color="#64748B" />
+                        <Icon size={16} color={T.text2} />
                         {label}
                       </button>
                       {/* m-05: divider between "Give feedback" and "Notification settings" */}
                       {dividerAfter && (
-                        <div style={{ height: '0.5px', background: 'rgba(15,23,42,.08)', margin: '0 14px' }} />
+                        <div style={{ height: '0.5px', background: T.divider, margin: '0 14px' }} />
                       )}
                     </div>
                   ))}
@@ -413,10 +433,10 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
               aria-label="Close notifications"
               style={{
                 background: 'none', border: 'none', cursor: 'pointer',
-                padding: 4, borderRadius: 4, color: '#64748B',
+                padding: 4, borderRadius: 4, color: T.text2,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}
-              onMouseEnter={e => (e.currentTarget.style.background = 'rgba(15,23,42,0.04)')}
+              onMouseEnter={e => (e.currentTarget.style.background = T.hover)}
               onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
             >
               <X size={16} />
@@ -425,7 +445,7 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
         </div>
 
         {/* Tabs */}
-        <div style={{ display: 'flex', borderBottom: '0.75px solid rgba(15,23,42,.08)', marginTop: 12 }}>
+        <div style={{ display: 'flex', borderBottom: `0.75px solid ${T.border}`, marginTop: 12 }}>
           {TABS.map(tab => {
             const isActive = activeTab === tab.key;
             return (
@@ -440,7 +460,7 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
                   background: 'none', border: 'none', borderBottom: isActive ? '2px solid #2563EB' : '2px solid transparent',
                   cursor: 'pointer',
                   fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 500,
-                  color: isActive ? '#2563EB' : '#64748B',
+                  color: isActive ? '#2563EB' : T.text2,
                   transition: 'color 150ms ease',
                 }}
               >
@@ -467,7 +487,7 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
         {/* 1.5 — Error state */}
         {hasError ? (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '48px 20px', gap: 12 }}>
-            <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 14, color: '#94A3B8' }}>
+            <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 14, color: T.text3 }}>
               Could not load notifications
             </span>
             <button
@@ -475,8 +495,8 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
               style={{
                 display: 'inline-flex', alignItems: 'center', gap: 6,
                 padding: '8px 16px', borderRadius: 6,
-                border: '0.5px solid rgba(15,23,42,.12)', background: 'transparent',
-                cursor: 'pointer', fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 500, color: '#475569',
+                border: `0.5px solid ${T.borderStrong}`, background: 'transparent',
+                cursor: 'pointer', fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 500, color: T.text2,
               }}
             >
               <RefreshCw size={14} />

@@ -1,9 +1,16 @@
 import type { StatusType } from "@/types/notifications";
+import { useTheme } from "@/hooks/useTheme";
 
-const LOZENGE_STYLES: Record<StatusType, { bg: string; text: string }> = {
+const LIGHT_STYLES: Record<StatusType, { bg: string; text: string }> = {
   gray:  { bg: '#DFE1E6', text: '#253858' },
   blue:  { bg: '#DEEBFF', text: '#0747A6' },
   green: { bg: '#E3FCEF', text: '#006644' },
+};
+
+const DARK_STYLES: Record<StatusType, { bg: string; text: string }> = {
+  gray:  { bg: '#1A1A1A', text: '#888888' },
+  blue:  { bg: '#1A2540', text: '#93C5FD' },
+  green: { bg: '#0F2A1A', text: '#86EFAC' },
 };
 
 interface StatusLozengeProps {
@@ -12,7 +19,9 @@ interface StatusLozengeProps {
 }
 
 export default function StatusLozenge({ label, type }: StatusLozengeProps) {
-  const s = LOZENGE_STYLES[type] || LOZENGE_STYLES.gray;
+  const { isDark } = useTheme();
+  const palette = isDark ? DARK_STYLES : LIGHT_STYLES;
+  const s = palette[type] || palette.gray;
   return (
     <span style={{
       display: 'inline-flex',

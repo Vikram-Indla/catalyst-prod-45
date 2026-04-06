@@ -470,6 +470,7 @@ function OverviewTab({ goal, theme, krs, confPct, confColor, daysToDeadline }: {
 
 // ── Tab: Key Results — Fix 2: modern card layout ──
 function KeyResultsTab({ krs, loading, onCheckinClick }: { krs: KeyResult[]; loading: boolean; onCheckinClick?: (id: string) => void }) {
+  const { isDark } = useTheme();
   if (loading) return <div style={{ textAlign: 'center', color: 'var(--fg-4)', padding: 40 }}>Loading key results...</div>;
   if (krs.length === 0) {
     return (
@@ -524,6 +525,7 @@ function KeyResultsTab({ krs, loading, onCheckinClick }: { krs: KeyResult[]; loa
 
 // ── Tab: Initiatives ──
 function InitiativesTab({ goalId }: { goalId: string }) {
+  const { isDark } = useTheme();
   const { data: links = [], isLoading } = useGoalInitiatives(goalId);
   const linkMutation = useLinkInitiative();
   const unlinkMutation = useUnlinkInitiative();
