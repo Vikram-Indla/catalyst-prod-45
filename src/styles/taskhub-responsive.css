@@ -890,3 +890,40 @@
     display: none !important;
   }
 }
+
+/* ==========================================================================
+   DARK MODE — [data-theme="dark"] overrides
+   Fixes hardcoded light-mode colors in responsive selectors
+   ========================================================================== */
+
+[data-theme="dark"] .mobile-bottom-nav {
+  background: #1A1A1A;
+  border-top-color: rgba(255,255,255,0.10);
+}
+
+[data-theme="dark"] .mobile-bottom-nav-item {
+  color: rgba(255,255,255,0.50);
+}
+
+[data-theme="dark"] .mobile-bottom-nav-item.active {
+  color: #60A5FA;
+  background: rgba(59,130,246,0.10);
+}
+
+[data-theme="dark"] .mobile-menu-toggle {
+  color: rgba(255,255,255,0.72);
+}
+
+[data-theme="dark"] .mobile-menu-toggle:hover {
+  background: rgba(255,255,255,0.06);
+}
+
+[data-theme="dark"] .modal-header {
+  background: #1A1A1A;
+  border-bottom-color: rgba(255,255,255,0.10);
+}
+
+[data-theme="dark"] .modal-footer {
+  background: #1A1A1A;
+  border-top-color: rgba(255,255,255,0.10);
+}

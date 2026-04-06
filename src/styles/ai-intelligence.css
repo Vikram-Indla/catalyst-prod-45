@@ -958,6 +958,35 @@
   line-height: 1.6;
 }
 
+/* ═══════════════════════════════════════════════════════════
+   DARK MODE — [data-theme="dark"] overrides
+   Redefines --rai-* tokens for NOCTURNE dark mode
+   ═══════════════════════════════════════════════════════════ */
+[data-theme="dark"] [data-module="ai-intelligence"] {
+  --rai-ink: rgba(255,255,255,0.92);
+  --rai-ink-secondary: rgba(255,255,255,0.85);
+  --rai-ink-tertiary: rgba(255,255,255,0.60);
+  --rai-ink-muted: rgba(255,255,255,0.35);
+  --rai-surface: #0A0A0A;
+  --rai-surface-secondary: #1A1A1A;
+  --rai-surface-tertiary: rgba(255,255,255,0.06);
+  --rai-border: rgba(255,255,255,0.10);
+  --rai-border-strong: rgba(255,255,255,0.18);
+  --rai-primary: #60A5FA;
+  --rai-primary-hover: #3B82F6;
+  --rai-primary-bg: rgba(59,130,246,0.10);
+  --rai-teal: #5EEAD4;
+  --rai-teal-bg: rgba(94,234,212,0.10);
+  --rai-success: #4ADE80;
+  --rai-success-bg: rgba(74,222,128,0.12);
+  --rai-warning: #FDE68A;
+  --rai-warning-bg: rgba(253,230,138,0.10);
+  --rai-danger: #FCA5A5;
+  --rai-danger-bg: rgba(239,68,68,0.10);
+  --rai-purple: #A78BFA;
+  --rai-purple-bg: rgba(167,139,250,0.10);
+}
+
 /* Loading skeleton */
 .rai-skeleton {
   background: linear-gradient(90deg, var(--rai-surface-tertiary) 25%, var(--rai-surface-secondary) 50%, var(--rai-surface-tertiary) 75%);

@@ -308,3 +308,23 @@
 }
 
 } /* END @layer ra-polish */
+
+/* ─────────────────────────────────────────────────────────────
+   DARK MODE — [data-theme="dark"] overrides for ra-polish
+   Outside @layer so it applies after all layer rules
+   ───────────────────────────────────────────────────────────── */
+[data-theme="dark"] .ra-polish {
+  /* Shadows — suppressed in dark */
+  --ra-card-shadow: none;
+  --ra-card-shadow-hover: 0 4px 12px rgba(0,0,0,0.3);
+
+  /* END Cell — dark pattern */
+  --ra-end-pattern-polish: repeating-linear-gradient(
+    -45deg,
+    rgba(255,255,255,0.03),
+    rgba(255,255,255,0.03) 4px,
+    rgba(255,255,255,0.06) 4px,
+    rgba(255,255,255,0.06) 8px
+  );
+  --ra-end-text-bg: rgba(255,255,255,0.06);
+}

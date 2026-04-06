@@ -55,18 +55,40 @@
 
 /* Dark mode overrides */
 .dark .planner-enterprise-clean,
-.dark:root {
-  --pln-v10-surface-page: #0f172a;
-  --pln-v10-surface-card: #1e293b;
-  --pln-v10-surface-hover: #334155;
-  
-  --pln-v10-border-default: #334155;
-  --pln-v10-border-subtle: #1e293b;
-  
-  --pln-v10-text-primary: #f1f5f9;
-  --pln-v10-text-secondary: #cbd5e1;
-  --pln-v10-text-muted: #94a3b8;
-  --pln-v10-text-light: #64748b;
+.dark:root,
+[data-theme="dark"] .planner-enterprise-clean,
+[data-theme="dark"]:root {
+  --pln-v10-surface-page: #0A0A0A;
+  --pln-v10-surface-card: #1A1A1A;
+  --pln-v10-surface-hover: rgba(255,255,255,0.06);
+
+  --pln-v10-border-default: rgba(255,255,255,0.10);
+  --pln-v10-border-subtle: rgba(255,255,255,0.05);
+
+  --pln-v10-text-primary: rgba(255,255,255,0.92);
+  --pln-v10-text-secondary: rgba(255,255,255,0.72);
+  --pln-v10-text-muted: rgba(255,255,255,0.60);
+  --pln-v10-text-light: rgba(255,255,255,0.35);
+
+  /* Status dots */
+  --pln-v10-status-backlog: rgba(255,255,255,0.50);
+  --pln-v10-status-planned: #60A5FA;
+  --pln-v10-status-progress: #FBBF24;
+  --pln-v10-status-review: #A78BFA;
+  --pln-v10-status-done: #4ADE80;
+
+  /* Priority */
+  --pln-v10-priority-color: rgba(255,255,255,0.50);
+
+  /* Workstream borders — lightened */
+  --pln-v10-ws-senaie: #67E8F9;
+  --pln-v10-ws-catalyst: #C4B5FD;
+  --pln-v10-ws-tahommna: #A5B4FC;
+  --pln-v10-ws-delivery: #FDBA74;
+  --pln-v10-ws-mim: #F9A8D4;
+  --pln-v10-ws-standalone: #BEF264;
+  --pln-v10-ws-data-ai: #5EEAD4;
+  --pln-v10-ws-default: rgba(255,255,255,0.18);
 }
 
 /* ==================== TASK CARD — BASE ==================== */

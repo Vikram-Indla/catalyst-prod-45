@@ -1080,3 +1080,34 @@
 .workstreams-enterprise-clean tbody td:first-child:empty {
   display: none !important;
 }
+
+/* ============================================================
+   DARK MODE — [data-theme="dark"] overrides
+   Redefines --ws-* tokens for NOCTURNE dark mode
+   ============================================================ */
+[data-theme="dark"] .workstreams-enterprise-clean,
+[data-theme="dark"]:root {
+  /* Surface Colors */
+  --ws-surface-page: #0A0A0A !important;
+  --ws-surface-card: #1A1A1A !important;
+  --ws-surface-hover: rgba(255,255,255,0.06) !important;
+  --ws-surface-selected: rgba(59,130,246,0.10) !important;
+
+  /* Border Colors */
+  --ws-border-default: rgba(255,255,255,0.10) !important;
+  --ws-border-subtle: rgba(255,255,255,0.05) !important;
+
+  /* Text Colors */
+  --ws-text-primary: rgba(255,255,255,0.92) !important;
+  --ws-text-secondary: rgba(255,255,255,0.72) !important;
+  --ws-text-muted: rgba(255,255,255,0.60) !important;
+  --ws-text-light: rgba(255,255,255,0.35) !important;
+
+  /* Accent */
+  --ws-accent-primary: #60A5FA !important;
+
+  /* Status Colors */
+  --ws-status-success: #4ADE80 !important;
+  --ws-status-warning: #FDE68A !important;
+  --ws-status-critical: #FCA5A5 !important;
+}
