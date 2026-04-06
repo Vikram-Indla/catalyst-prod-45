@@ -43,11 +43,11 @@ export default function ReleaseDetailPage() {
   const [activeTab, setActiveTab] = useState<'overview' | 'cycles' | 'defects' | 'milestones'>('overview');
 
   if (isLoading) {
-    return <div style={{ padding: 60, textAlign: 'center', color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>Loading release...</div>;
+    return <div style={{ padding: 60, textAlign: 'center', color: isDark ? '#878787' : '#94A3B8' }}>Loading release...</div>;
   }
 
   if (!release) {
-    return <div style={{ padding: 60, textAlign: 'center', color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>Release not found</div>;
+    return <div style={{ padding: 60, textAlign: 'center', color: isDark ? '#878787' : '#94A3B8' }}>Release not found</div>;
   }
 
   const sc = STATUS_CONFIG[release.status] || STATUS_CONFIG.planned;
@@ -76,16 +76,16 @@ export default function ReleaseDetailPage() {
   return (
     <div className="th-page-content" style={{ flex: 1, overflow: 'auto' }}>
       {/* Header */}
-      <div style={{ padding: '20px 32px', borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.10)'}`, background: isDark ? '#0A0A0A' : '#fff' }}>
+      <div style={{ padding: '20px 32px', borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, background: isDark ? '#0A0A0A' : '#fff' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
           <button
             onClick={() => navigate('/testhub/releases')}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', color: isDark ? '#A1A1A1' : 'rgba(237,237,237,0.40)', display: 'flex', alignItems: 'center', gap: 6 }}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', color: isDark ? '#A1A1A1' : '#64748B', display: 'flex', alignItems: 'center', gap: 6 }}
           >
             <ArrowLeft style={{ width: 18, height: 18 }} />
           </button>
-          <span style={{ fontFamily: 'monospace', fontSize: 13, color: isDark ? '#878787' : 'rgba(237,237,237,0.40)', fontWeight: 600 }}>{release.version}</span>
-          <h1 style={{ fontSize: 20, fontWeight: 700, color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)', margin: 0, flex: 1 }}>{release.name}</h1>
+          <span style={{ fontFamily: 'monospace', fontSize: 13, color: isDark ? '#878787' : '#94A3B8', fontWeight: 600 }}>{release.version}</span>
+          <h1 style={{ fontSize: 20, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A', margin: 0, flex: 1 }}>{release.name}</h1>
           <span style={{
             display: 'inline-flex', alignItems: 'center', gap: 5,
             padding: '4px 12px', borderRadius: 6, backgroundColor: sc.bg, color: sc.color, fontSize: 13, fontWeight: 600,
@@ -102,7 +102,7 @@ export default function ReleaseDetailPage() {
         {/* Stat cards */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 12 }}>
           <StatCard label="Days Left" value={daysLeft !== null ? String(daysLeft) : '—'} color="#2563EB" isDark={isDark} />
-          <StatCard label="Total Tests" value={String(release.test_cases_total || 0)} color={isDark ? '#A1A1A1' : 'rgba(237,237,237,0.53)'} isDark={isDark} />
+          <StatCard label="Total Tests" value={String(release.test_cases_total || 0)} color={isDark ? '#A1A1A1' : '#334155'} isDark={isDark} />
           <StatCard label="Execution" value={`${execRate}%`} color={execRate >= 80 ? '#059669' : '#D97706'} isDark={isDark} />
           <StatCard label="Pass Rate" value={`${passRate}%`} color={passRate >= 80 ? '#059669' : '#DC2626'} isDark={isDark} />
           <StatCard label="Open Defects" value={String(release.defects_open || 0)} color={release.defects_open > 0 ? '#DC2626' : '#059669'} isDark={isDark} />
@@ -111,7 +111,7 @@ export default function ReleaseDetailPage() {
       </div>
 
       {/* Tabs */}
-      <div style={{ display: 'flex', gap: 0, borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.10)'}`, padding: '0 32px', background: isDark ? '#0A0A0A' : '#fff' }}>
+      <div style={{ display: 'flex', gap: 0, borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, padding: '0 32px', background: isDark ? '#0A0A0A' : '#fff' }}>
         {tabs.map(tab => {
           const active = activeTab === tab.id;
           const TabIcon = tab.icon;
@@ -123,7 +123,7 @@ export default function ReleaseDetailPage() {
                 display: 'flex', alignItems: 'center', gap: 7, padding: '12px 20px',
                 fontSize: 14, fontWeight: active ? 600 : 500, border: 'none',
                 borderBottom: active ? '2px solid #2563EB' : '2px solid transparent',
-                color: active ? '#2563EB' : (isDark ? '#A1A1A1' : 'rgba(237,237,237,0.40)'), background: 'none', cursor: 'pointer',
+                color: active ? '#2563EB' : (isDark ? '#A1A1A1' : '#64748B'), background: 'none', cursor: 'pointer',
               }}
             >
               <TabIcon style={{ width: 15, height: 15 }} />
@@ -146,9 +146,9 @@ export default function ReleaseDetailPage() {
 
 function StatCard({ label, value, color, isDark }: { label: string; value: string; color: string; isDark: boolean }) {
   return (
-    <div style={{ padding: '14px 16px', background: isDark ? '#1A1A1A' : '#1A1A1A', borderRadius: 12, border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.10)'}` }}>
+    <div style={{ padding: '14px 16px', background: isDark ? '#1A1A1A' : '#F8FAFC', borderRadius: 12, border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}` }}>
       <div style={{ fontSize: 22, fontWeight: 700, color, fontVariantNumeric: 'tabular-nums' }}>{value}</div>
-      <div style={{ fontSize: 12, color: isDark ? '#A1A1A1' : 'rgba(237,237,237,0.40)', marginTop: 2 }}>{label}</div>
+      <div style={{ fontSize: 12, color: isDark ? '#A1A1A1' : '#64748B', marginTop: 2 }}>{label}</div>
     </div>
   );
 }
@@ -157,13 +157,13 @@ function OverviewTab({ release, isDark }: { release: any; isDark: boolean }) {
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: 24 }}>
       <div>
-        <h3 style={{ fontSize: 15, fontWeight: 700, color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)', marginBottom: 12 }}>Description</h3>
-        <p style={{ fontSize: 14, color: isDark ? '#A1A1A1' : 'rgba(237,237,237,0.53)', lineHeight: 1.7 }}>
+        <h3 style={{ fontSize: 15, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A', marginBottom: 12 }}>Description</h3>
+        <p style={{ fontSize: 14, color: isDark ? '#A1A1A1' : '#334155', lineHeight: 1.7 }}>
           {release.description || 'No description provided.'}
         </p>
 
-        <h3 style={{ fontSize: 15, fontWeight: 700, color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)', margin: '24px 0 12px' }}>Test Progress</h3>
-        <div style={{ height: 10, backgroundColor: isDark ? '#1A1A1A' : '#1A1A1A', borderRadius: 6, overflow: 'hidden', marginBottom: 8 }}>
+        <h3 style={{ fontSize: 15, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A', margin: '24px 0 12px' }}>Test Progress</h3>
+        <div style={{ height: 10, backgroundColor: isDark ? '#1A1A1A' : '#F1F5F9', borderRadius: 6, overflow: 'hidden', marginBottom: 8 }}>
           {release.test_cases_total > 0 && (
             <div style={{
               display: 'flex', height: '100%',
@@ -174,7 +174,7 @@ function OverviewTab({ release, isDark }: { release: any; isDark: boolean }) {
             </div>
           )}
         </div>
-        <div style={{ display: 'flex', gap: 16, fontSize: 12, color: isDark ? '#A1A1A1' : 'rgba(237,237,237,0.40)' }}>
+        <div style={{ display: 'flex', gap: 16, fontSize: 12, color: isDark ? '#A1A1A1' : '#64748B' }}>
           <span>✓ {release.test_cases_passed} Passed</span>
           <span>✗ {release.test_cases_failed || 0} Failed</span>
           <span>⊘ {release.test_cases_blocked || 0} Blocked</span>
@@ -183,8 +183,8 @@ function OverviewTab({ release, isDark }: { release: any; isDark: boolean }) {
       </div>
 
       {/* Details panel */}
-      <div style={{ background: isDark ? '#1A1A1A' : '#1A1A1A', borderRadius: 12, padding: 20, border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.10)'}` }}>
-        <h3 style={{ fontSize: 14, fontWeight: 700, color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)', marginBottom: 16 }}>Details</h3>
+      <div style={{ background: isDark ? '#1A1A1A' : '#F8FAFC', borderRadius: 12, padding: 20, border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}` }}>
+        <h3 style={{ fontSize: 14, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A', marginBottom: 16 }}>Details</h3>
         <dl style={{ margin: 0, display: 'flex', flexDirection: 'column', gap: 14 }}>
           <DetailRow label="Target Date" value={release.target_date ? format(new Date(release.target_date), 'MMMM dd, yyyy') : '—'} />
           <DetailRow label="Start Date" value={release.start_date ? format(new Date(release.start_date), 'MMMM dd, yyyy') : '—'} />
@@ -203,18 +203,18 @@ function DetailRow({ label, value }: { label: string; value: string }) {
   const { isDark } = useTheme();
   return (
     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-      <dt style={{ fontSize: 13, color: isDark ? '#A1A1A1' : 'rgba(237,237,237,0.40)' }}>{label}</dt>
-      <dd style={{ fontSize: 13, fontWeight: 600, color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)', margin: 0 }}>{value}</dd>
+      <dt style={{ fontSize: 13, color: isDark ? '#A1A1A1' : '#64748B' }}>{label}</dt>
+      <dd style={{ fontSize: 13, fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A', margin: 0 }}>{value}</dd>
     </div>
   );
 }
 
 function CyclesTab({ cycles, isLoading, navigate, isDark }: { cycles: any[]; isLoading: boolean; navigate: any; isDark: boolean }) {
-  if (isLoading) return <div style={{ padding: 40, textAlign: 'center', color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>Loading cycles...</div>;
+  if (isLoading) return <div style={{ padding: 40, textAlign: 'center', color: isDark ? '#878787' : '#94A3B8' }}>Loading cycles...</div>;
 
   if (cycles.length === 0) {
     return (
-      <div style={{ textAlign: 'center', padding: 48, color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>
+      <div style={{ textAlign: 'center', padding: 48, color: isDark ? '#878787' : '#94A3B8' }}>
         <RefreshCw style={{ width: 40, height: 40, margin: '0 auto 12px', opacity: 0.3 }} />
         <p style={{ fontSize: 14, fontWeight: 500 }}>No test cycles linked to this release</p>
         <p style={{ fontSize: 13 }}>Link test cycles from the Test Cycles module</p>
@@ -223,10 +223,10 @@ function CyclesTab({ cycles, isLoading, navigate, isDark }: { cycles: any[]; isL
   }
 
   return (
-    <div style={{ border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.10)'}`, borderRadius: 12, overflow: 'hidden', background: isDark ? '#1A1A1A' : '#fff' }}>
+    <div style={{ border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 12, overflow: 'hidden', background: isDark ? '#1A1A1A' : '#fff' }}>
       <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
         <thead>
-          <tr style={{ backgroundColor: isDark ? '#1A1A1A' : '#1A1A1A', borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.10)'}` }}>
+          <tr style={{ backgroundColor: isDark ? '#1A1A1A' : '#F8FAFC', borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}` }}>
             <th style={getThStyle(isDark)}>Cycle</th>
             <th style={getThStyle(isDark)}>Status</th>
             <th style={getThStyle(isDark)}>Total</th>
@@ -243,11 +243,11 @@ function CyclesTab({ cycles, isLoading, navigate, isDark }: { cycles: any[]; isL
               <tr
                 key={c.id}
                 onClick={() => navigate(`/testhub/cycles/${cycle.id}`)}
-                style={{ borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.05)' : '#1A1A1A'}`, cursor: 'pointer' }}
-                onMouseEnter={e => (e.currentTarget.style.backgroundColor = isDark ? '#1A1A1A' : '#1A1A1A')}
+                style={{ borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.05)' : '#F1F5F9'}`, cursor: 'pointer' }}
+                onMouseEnter={e => (e.currentTarget.style.backgroundColor = isDark ? '#1A1A1A' : '#F8FAFC')}
                 onMouseLeave={e => (e.currentTarget.style.backgroundColor = '')}
               >
-                <td style={tdStyle}><span style={{ fontWeight: 600, color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)' }}>{cycle.name}</span></td>
+                <td style={tdStyle}><span style={{ fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A' }}>{cycle.name}</span></td>
                 <td style={tdStyle}><span style={{ fontSize: 12, textTransform: 'capitalize' }}>{cycle.status}</span></td>
                 <td style={tdStyle}>{cycle.total_cases || 0}</td>
                 <td style={tdStyle}><span style={{ color: '#059669', fontWeight: 600 }}>{cycle.passed_count || 0}</span></td>
@@ -264,17 +264,17 @@ function CyclesTab({ cycles, isLoading, navigate, isDark }: { cycles: any[]; isL
 
 function DefectsTab({ release, isDark }: { release: any; isDark: boolean }) {
   return (
-    <div style={{ textAlign: 'center', padding: 48, color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>
+    <div style={{ textAlign: 'center', padding: 48, color: isDark ? '#878787' : '#94A3B8' }}>
       <Bug style={{ width: 40, height: 40, margin: '0 auto 12px', opacity: 0.3 }} />
       <p style={{ fontSize: 14, fontWeight: 500 }}>Defects linked to this release</p>
       <div style={{ display: 'flex', gap: 24, justifyContent: 'center', marginTop: 16 }}>
         <div style={{ textAlign: 'center' }}>
           <div style={{ fontSize: 28, fontWeight: 700, color: '#DC2626' }}>{release.defects_open || 0}</div>
-          <div style={{ fontSize: 12, color: isDark ? '#A1A1A1' : 'rgba(237,237,237,0.40)' }}>Open</div>
+          <div style={{ fontSize: 12, color: isDark ? '#A1A1A1' : '#64748B' }}>Open</div>
         </div>
         <div style={{ textAlign: 'center' }}>
           <div style={{ fontSize: 28, fontWeight: 700, color: '#DC2626' }}>{release.critical_defects || 0}</div>
-          <div style={{ fontSize: 12, color: isDark ? '#A1A1A1' : 'rgba(237,237,237,0.40)' }}>Critical</div>
+          <div style={{ fontSize: 12, color: isDark ? '#A1A1A1' : '#64748B' }}>Critical</div>
         </div>
       </div>
     </div>
@@ -283,7 +283,7 @@ function DefectsTab({ release, isDark }: { release: any; isDark: boolean }) {
 
 function MilestonesTab({ releaseId, isDark }: { releaseId: string; isDark: boolean }) {
   return (
-    <div style={{ textAlign: 'center', padding: 48, color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>
+    <div style={{ textAlign: 'center', padding: 48, color: isDark ? '#878787' : '#94A3B8' }}>
       <Calendar style={{ width: 40, height: 40, margin: '0 auto 12px', opacity: 0.3 }} />
       <p style={{ fontSize: 14, fontWeight: 500 }}>Release milestones</p>
       <p style={{ fontSize: 13 }}>Milestone management will be available in the next update</p>
@@ -293,7 +293,7 @@ function MilestonesTab({ releaseId, isDark }: { releaseId: string; isDark: boole
 
 const getThStyle = (isDark: boolean): React.CSSProperties => ({
   padding: '10px 14px', textAlign: 'left', fontSize: 11, fontWeight: 650,
-  color: isDark ? '#A1A1A1' : 'rgba(237,237,237,0.40)', textTransform: 'uppercase', letterSpacing: '0.04em',
+  color: isDark ? '#A1A1A1' : '#64748B', textTransform: 'uppercase', letterSpacing: '0.04em',
 });
 
 const tdStyle: React.CSSProperties = {

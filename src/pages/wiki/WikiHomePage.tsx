@@ -37,7 +37,7 @@ const TAG_STYLES: Record<string, { bg: string; color: string }> = {
 
 /* ── Skeleton ── */
 const Skeleton = ({ w, h, style, isDark }: { w: string | number; h: number; style?: React.CSSProperties; isDark?: boolean }) => (
-  <div style={{ width: w, height: h, borderRadius: 4, background: isDark ? '#1A1A1A' : 'rgba(255,255,255,0.10)', animation: 'pulse 1.5s ease-in-out infinite', ...style }} />
+  <div style={{ width: w, height: h, borderRadius: 4, background: isDark ? '#1A1A1A' : '#E2E8F0', animation: 'pulse 1.5s ease-in-out infinite', ...style }} />
 );
 
 /* ── Section Header ── */
@@ -46,9 +46,9 @@ const SectionHeader = React.memo(({ title, count, rightLabel, rightAction, isDar
 }) => (
   <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
     <div style={{ width: 3, height: 16, borderRadius: 4, background: '#2563EB' }} />
-    <span style={{ fontFamily: 'Sora, sans-serif', fontSize: 14, fontWeight: 600, color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)' }}>{title}</span>
+    <span style={{ fontFamily: 'Sora, sans-serif', fontSize: 14, fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A' }}>{title}</span>
     {count !== undefined && (
-      <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, fontWeight: 600, padding: '2px 8px', borderRadius: 4, background: isDark ? '#1A1A1A' : '#1A1A1A', color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>{count}</span>
+      <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, fontWeight: 600, padding: '2px 8px', borderRadius: 4, background: isDark ? '#1A1A1A' : '#F1F5F9', color: isDark ? '#878787' : '#64748B' }}>{count}</span>
     )}
     {rightLabel && (
       <span onClick={rightAction} style={{ marginLeft: 'auto', fontSize: 12, fontWeight: 650, color: '#2563EB', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 2 }}>
@@ -114,13 +114,13 @@ export default function WikiHomePage() {
   const bookmarkSet = new Set(bookmarkedIds ?? []);
 
   return (
-    <div style={{ fontFamily: 'Geist, -apple-system, sans-serif', color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)', background: isDark ? '#0A0A0A' : '#1A1A1A', minHeight: '100%' }}>
+    <div style={{ fontFamily: 'Inter, sans-serif', color: isDark ? '#EDEDED' : '#0F172A', background: isDark ? '#0A0A0A' : '#F8FAFC', minHeight: '100%' }}>
       {/* Onboarding Wizard */}
       {showOnboarding && <WikiOnboardingWizard onComplete={() => setOnboardingDismissed(true)} />}
 
       {/* Pending Acknowledgments Banner */}
       {pendingAcks.length > 0 && (
-        <div style={{ margin: '0 28px', padding: '10px 16px', background: isDark ? 'rgba(251,191,36,0.12)' : 'rgba(251,191,36,0.10)', border: isDark ? '0.75px solid rgba(251,191,36,0.2)' : '0.75px solid #FDE68A', borderRadius: 8, display: 'flex', alignItems: 'center', gap: 10, fontSize: 12, color: isDark ? '#FBBF24' : '#FBBF24', fontWeight: 500 }}>
+        <div style={{ margin: '0 28px', padding: '10px 16px', background: isDark ? 'rgba(251,191,36,0.12)' : '#FEF3C7', border: isDark ? '0.75px solid rgba(251,191,36,0.2)' : '0.75px solid #FDE68A', borderRadius: 8, display: 'flex', alignItems: 'center', gap: 10, fontSize: 12, color: isDark ? '#FBBF24' : '#92400E', fontWeight: 500 }}>
           <ShieldCheck size={14} />
           <span>{pendingAcks.length} article{pendingAcks.length !== 1 ? 's' : ''} require your acknowledgment</span>
         </div>
@@ -132,8 +132,8 @@ export default function WikiHomePage() {
 
         <div style={{ padding: '48px 40px 40px', display: 'flex', gap: 40, alignItems: 'flex-start', position: 'relative', zIndex: 1, flexWrap: 'wrap' }}>
           <div style={{ flex: 1, minWidth: 320, maxWidth: 640 }}>
-            <h1 style={{ fontFamily: 'Sora, sans-serif', fontSize: 18, fontWeight: 700, margin: '0 0 4px', color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)' }}>WikiHub</h1>
-            <p style={{ fontSize: 12, color: isDark ? '#878787' : 'rgba(237,237,237,0.40)', margin: '0 0 20px' }}>
+            <h1 style={{ fontFamily: 'Sora, sans-serif', fontSize: 18, fontWeight: 700, margin: '0 0 4px', color: isDark ? '#EDEDED' : '#0F172A' }}>WikiHub</h1>
+            <p style={{ fontSize: 12, color: isDark ? '#878787' : '#64748B', margin: '0 0 20px' }}>
               Ministry of Industry Knowledge Platform — 9 Domains · {stats?.totalArticles ?? 0} Articles · {stats?.totalDocuments ?? 0} Documents
             </p>
 
@@ -145,8 +145,8 @@ export default function WikiHomePage() {
               onMouseEnter={e => { e.currentTarget.style.borderColor = '#2563EB'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.08)'; }}
               onMouseLeave={e => { e.currentTarget.style.borderColor = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'; e.currentTarget.style.boxShadow = 'none'; }}
             >
-              <Search size={15} style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }} />
-              <span style={{ flex: 1, fontSize: 13, color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>Search articles, regulations, permits...</span>
+              <Search size={15} style={{ color: isDark ? '#878787' : '#94A3B8' }} />
+              <span style={{ flex: 1, fontSize: 13, color: isDark ? '#878787' : '#94A3B8' }}>Search articles, regulations, permits...</span>
               <span style={{ fontSize: 10, fontWeight: 500, padding: '2px 8px', borderRadius: 9999, background: 'rgba(124,58,237,0.06)', color: '#7C3AED' }}>AI-powered</span>
               <button style={{ fontSize: 12, fontWeight: 650, padding: '6px 14px', borderRadius: 6, border: 'none', background: '#2563EB', color: '#FFFFFF', cursor: 'pointer' }}>Search</button>
             </div>
@@ -158,14 +158,14 @@ export default function WikiHomePage() {
                 return (
                   <button key={c.label} onClick={() => setActiveChip(c.label)} style={{
                     fontSize: 11, fontWeight: active ? 650 : 500, padding: '5px 12px', borderRadius: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4,
-                    border: active ? '1.5px solid #2563EB' : isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(0,0,0,0.06)', background: active ? (isDark ? 'rgba(37,99,235,0.12)' : 'rgba(59,130,246,0.06)') : (isDark ? '#1A1A1A' : '#FFFFFF'), color: active ? '#2563EB' : (isDark ? '#878787' : 'rgba(237,237,237,0.40)'), transition: 'all 120ms',
+                    border: active ? '1.5px solid #2563EB' : isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(0,0,0,0.06)', background: active ? (isDark ? 'rgba(37,99,235,0.12)' : '#EFF6FF') : (isDark ? '#1A1A1A' : '#FFFFFF'), color: active ? '#2563EB' : (isDark ? '#878787' : '#64748B'), transition: 'all 120ms',
                   }}>{c.icon} {c.label}</button>
                 );
               })}
             </div>
 
             <div style={{ display: 'flex', gap: 8 }}>
-              <button onClick={() => setUploadOpen(true)} style={{ fontSize: 12, fontWeight: 650, padding: '8px 16px', borderRadius: 6, cursor: 'pointer', border: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(0,0,0,0.06)', background: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#A1A1A1' : 'rgba(237,237,237,0.53)', display: 'flex', alignItems: 'center', gap: 6 }}>
+              <button onClick={() => setUploadOpen(true)} style={{ fontSize: 12, fontWeight: 650, padding: '8px 16px', borderRadius: 6, cursor: 'pointer', border: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(0,0,0,0.06)', background: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#A1A1A1' : '#334155', display: 'flex', alignItems: 'center', gap: 6 }}>
                 <Upload size={14} /> Upload Document
               </button>
             </div>
@@ -174,7 +174,7 @@ export default function WikiHomePage() {
           {/* 2×2 stat cards */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, minWidth: 260 }}>
             {statsLoading ? Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} style={{ padding: 20, borderRadius: 8, background: isDark ? '#1A1A1A' : '#1A1A1A', border: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(0,0,0,0.06)' }}>
+              <div key={i} style={{ padding: 20, borderRadius: 8, background: isDark ? '#1A1A1A' : '#F8FAFC', border: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(0,0,0,0.06)' }}>
                 <Skeleton w={48} h={28} style={{ marginBottom: 8 }} isDark={isDark} /><Skeleton w={80} h={12} isDark={isDark} />
               </div>
             )) : (
@@ -201,7 +201,7 @@ export default function WikiHomePage() {
           )) : (quickRefs ?? []).length > 0 ? (quickRefs ?? []).map((qr: any) => (
             <QuickRefCard key={qr.id} qr={qr} onClick={() => setSelectedQR(qr)} isDark={isDark} />
           )) : (
-            <div style={{ padding: 32, textAlign: 'center', color: isDark ? '#878787' : 'rgba(237,237,237,0.40)', fontSize: 12, width: '100%' }}>No quick reference cards yet.</div>
+            <div style={{ padding: 32, textAlign: 'center', color: isDark ? '#878787' : '#64748B', fontSize: 12, width: '100%' }}>No quick reference cards yet.</div>
           )}
         </div>
 
@@ -216,11 +216,11 @@ export default function WikiHomePage() {
         >
           <HelpCircle size={16} style={{ color: '#2563EB' }} />
           <div style={{ flex: 1, minWidth: 200 }}>
-            <span style={{ fontSize: 12, color: isDark ? '#A1A1A1' : 'rgba(237,237,237,0.53)' }}>Can't find what you need? </span>
+            <span style={{ fontSize: 12, color: isDark ? '#A1A1A1' : '#334155' }}>Can't find what you need? </span>
             <span style={{ fontSize: 12, fontWeight: 700, color: '#2563EB', cursor: 'pointer' }} onClick={() => setKrFormOpen(true)}>Submit a Knowledge Request</span>
-            <span style={{ fontSize: 12, color: isDark ? '#A1A1A1' : 'rgba(237,237,237,0.53)' }}> — route to domain experts</span>
+            <span style={{ fontSize: 12, color: isDark ? '#A1A1A1' : '#334155' }}> — route to domain experts</span>
           </div>
-          <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 4, background: isDark ? 'rgba(37,99,235,0.12)' : 'rgba(59,130,246,0.06)', color: '#2563EB' }}>
+          <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 4, background: isDark ? 'rgba(37,99,235,0.12)' : '#EFF6FF', color: '#2563EB' }}>
             {requests?.length ?? 0} open
           </span>
         </div>
@@ -246,7 +246,7 @@ export default function WikiHomePage() {
               <Skeleton w={140} h={16} style={{ marginBottom: 12 }} isDark={isDark} /><Skeleton w="100%" h={4} style={{ marginBottom: 8 }} isDark={isDark} /><Skeleton w="60%" h={12} isDark={isDark} />
             </div>
           )) : (paths ?? []).length > 0 ? (paths ?? []).map((p: any) => <LearningPathCard key={p.id} p={p} navigate={navigate} isDark={isDark} />) : (
-            <div style={{ padding: 32, textAlign: 'center', color: isDark ? '#878787' : 'rgba(237,237,237,0.40)', fontSize: 12, gridColumn: '1 / -1' }}>No learning paths configured yet.</div>
+            <div style={{ padding: 32, textAlign: 'center', color: isDark ? '#878787' : '#64748B', fontSize: 12, gridColumn: '1 / -1' }}>No learning paths configured yet.</div>
           )}
         </div>
 
@@ -255,8 +255,8 @@ export default function WikiHomePage() {
         <div style={{ borderRadius: 8, border: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(0,0,0,0.06)', background: isDark ? '#1A1A1A' : '#FFFFFF', overflow: 'hidden', marginBottom: 40 }}>
           <div style={{
             display: 'grid', gridTemplateColumns: '3% 34% 8% 12% 8% 8% 14% 5% 3%',
-            background: isDark ? '#1A1A1A' : '#1A1A1A', padding: '8px 12px', height: 50, alignItems: 'center', borderBottom: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(0,0,0,0.06)',
-            fontFamily: 'Sora, sans-serif', fontSize: 10, fontWeight: 600, textTransform: 'uppercase' as const, color: isDark ? '#878787' : 'rgba(237,237,237,0.40)', letterSpacing: '0.05em',
+            background: isDark ? '#1A1A1A' : '#F1F5F9', padding: '8px 12px', height: 50, alignItems: 'center', borderBottom: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(0,0,0,0.06)',
+            fontFamily: 'Sora, sans-serif', fontSize: 10, fontWeight: 600, textTransform: 'uppercase' as const, color: isDark ? '#878787' : '#64748B', letterSpacing: '0.05em',
           }}>
             <span></span><span>Article</span><span>Domain</span><span>Status</span><span>Confidence</span><span>Helpful</span><span>Tags</span><span>Ver.</span><span></span>
           </div>
@@ -267,7 +267,7 @@ export default function WikiHomePage() {
           )) : (articles ?? []).length > 0 ? (articles ?? []).map((a: any) => (
             <ArticleRow key={a.id} a={a} navigate={navigate} bookmarked={bookmarkSet.has(a.id)} onToggleBookmark={() => toggleBookmark.mutate({ pageId: a.id })} isDark={isDark} />
           )) : (
-            <div style={{ padding: 40, textAlign: 'center', color: isDark ? '#878787' : 'rgba(237,237,237,0.40)', fontSize: 12 }}>No articles yet — upload a document or run a sync to get started.</div>
+            <div style={{ padding: 40, textAlign: 'center', color: isDark ? '#878787' : '#64748B', fontSize: 12 }}>No articles yet — upload a document or run a sync to get started.</div>
           )}
         </div>
       </div>
@@ -299,14 +299,14 @@ export default function WikiHomePage() {
 /* ── Stat Card ── */
 const StatCard = React.memo(({ label, value, valueColor, isDark }: { label: string; value: string | number; valueColor?: string; isDark?: boolean }) => (
   <div style={{
-    padding: 20, borderRadius: 8, background: isDark ? '#1A1A1A' : '#1A1A1A', textAlign: 'center',
+    padding: 20, borderRadius: 8, background: isDark ? '#1A1A1A' : '#F8FAFC', textAlign: 'center',
     border: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(0,0,0,0.06)', transition: 'all 150ms', cursor: 'default',
   }}
-    onMouseEnter={e => { e.currentTarget.style.borderColor = '#2563EB'; e.currentTarget.style.background = isDark ? 'rgba(37,99,235,0.12)' : 'rgba(59,130,246,0.06)'; }}
-    onMouseLeave={e => { e.currentTarget.style.borderColor = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'; e.currentTarget.style.background = isDark ? '#1A1A1A' : '#1A1A1A'; }}
+    onMouseEnter={e => { e.currentTarget.style.borderColor = '#2563EB'; e.currentTarget.style.background = isDark ? 'rgba(37,99,235,0.12)' : '#EFF6FF'; }}
+    onMouseLeave={e => { e.currentTarget.style.borderColor = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'; e.currentTarget.style.background = isDark ? '#1A1A1A' : '#F8FAFC'; }}
   >
-    <div style={{ fontFamily: 'Sora, sans-serif', fontSize: 28, fontWeight: 700, color: valueColor || (isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)') }}>{value}</div>
-    <div style={{ fontSize: 11, fontWeight: 650, textTransform: 'uppercase', color: isDark ? '#878787' : 'rgba(237,237,237,0.40)', letterSpacing: '0.05em', marginTop: 4 }}>{label}</div>
+    <div style={{ fontFamily: 'Sora, sans-serif', fontSize: 28, fontWeight: 700, color: valueColor || (isDark ? '#EDEDED' : '#0F172A') }}>{value}</div>
+    <div style={{ fontSize: 11, fontWeight: 650, textTransform: 'uppercase', color: isDark ? '#878787' : '#94A3B8', letterSpacing: '0.05em', marginTop: 4 }}>{label}</div>
   </div>
 ));
 StatCard.displayName = 'StatCard';
@@ -339,10 +339,10 @@ const QuickRefCard = React.memo(({ qr, onClick, isDark }: { qr: any; onClick: ()
       <div style={{ width: 30, height: 30, borderRadius: 6, background: isDark ? 'rgba(37,99,235,0.12)' : dc.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 10 }}>
         <Icon size={15} style={{ color: dc.fg }} />
       </div>
-      <div style={{ fontSize: 12, fontWeight: 600, color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)', marginBottom: 8, lineHeight: 1.3 }}>{qr.title}</div>
+      <div style={{ fontSize: 12, fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A', marginBottom: 8, lineHeight: 1.3 }}>{qr.title}</div>
       <div style={{ display: 'flex', gap: 12, fontSize: 10 }}>
         <span style={{ fontFamily: 'JetBrains Mono, monospace', color: '#2563EB', fontWeight: 500 }}>{qr.steps} steps</span>
-        <span style={{ fontFamily: 'JetBrains Mono, monospace', color: isDark ? '#878787' : 'rgba(237,237,237,0.40)', fontWeight: 500 }}>{formatK(qr.view_count ?? qr.views ?? 0)} views</span>
+        <span style={{ fontFamily: 'JetBrains Mono, monospace', color: isDark ? '#878787' : '#64748B', fontWeight: 500 }}>{formatK(qr.view_count ?? qr.views ?? 0)} views</span>
       </div>
     </div>
   );
@@ -366,9 +366,9 @@ const DomainCard = React.memo(({ d, Icon, navigate, isDark }: { d: any; Icon: Re
           <div style={{ width: 32, height: 32, borderRadius: 6, flexShrink: 0, background: isDark ? 'rgba(37,99,235,0.12)' : dc.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background 150ms' }}>
             <Icon size={16} style={{ color: dc.fg }} />
           </div>
-          <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, fontWeight: 700, color: isDark ? '#878787' : 'rgba(237,237,237,0.40)', background: isDark ? '#1A1A1A' : '#1A1A1A', padding: '1px 5px', borderRadius: 3 }}>{d.domain_code}</span>
+          <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, fontWeight: 700, color: isDark ? '#878787' : '#64748B', background: isDark ? '#1A1A1A' : '#F1F5F9', padding: '1px 5px', borderRadius: 3 }}>{d.domain_code}</span>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontFamily: 'Sora, sans-serif', fontSize: 12.5, fontWeight: 600, color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)' }}>{d.name}</div>
+            <div style={{ fontFamily: 'Sora, sans-serif', fontSize: 12.5, fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A' }}>{d.name}</div>
           </div>
           <span style={{ fontSize: 9, fontWeight: 700, textTransform: 'uppercase', padding: '2px 6px', borderRadius: 4, background: isDark ? 'rgba(55,48,163,0.15)' : tagStyle.bg, color: isDark ? '#A1A1A1' : tagStyle.color, letterSpacing: '0.04em' }}>{d.tag}</span>
         </div>
@@ -377,19 +377,19 @@ const DomainCard = React.memo(({ d, Icon, navigate, isDark }: { d: any; Icon: Re
         <div style={{ display: 'flex', justifyContent: 'center', gap: 24, marginBottom: 10 }}>
           {[{ v: d.article_count, l: 'Articles' }, { v: formatK(d.view_count), l: 'Views' }, { v: d.knowledge_gaps, l: 'Gaps' }].map(s => (
             <div key={s.l} style={{ textAlign: 'center' }}>
-              <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 13, fontWeight: 600, color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)' }}>{s.v}</div>
-              <div style={{ fontSize: 9, color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>{s.l}</div>
+              <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 13, fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A' }}>{s.v}</div>
+              <div style={{ fontSize: 9, color: isDark ? '#878787' : '#64748B' }}>{s.l}</div>
             </div>
           ))}
         </div>
 
         {/* Coverage bar */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{ fontSize: 10, fontWeight: 600, color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>Coverage</span>
-          <div style={{ flex: 1, height: 3, borderRadius: 4, background: isDark ? '#1A1A1A' : 'rgba(255,255,255,0.10)' }}>
+          <span style={{ fontSize: 10, fontWeight: 600, color: isDark ? '#878787' : '#64748B' }}>Coverage</span>
+          <div style={{ flex: 1, height: 3, borderRadius: 4, background: isDark ? '#1A1A1A' : '#E2E8F0' }}>
             <div style={{ height: '100%', borderRadius: 4, background: coverageColor, width: `${d.coverage_percent}%`, transition: 'width 600ms' }} />
           </div>
-          <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, fontWeight: 600, color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)' }}>{d.coverage_percent}%</span>
+          <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A' }}>{d.coverage_percent}%</span>
         </div>
       </div>
     </div>
@@ -411,15 +411,15 @@ const LearningPathCard = React.memo(({ p, navigate, isDark }: { p: any; navigate
           <GraduationCap size={16} style={{ color: '#FFFFFF' }} />
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontFamily: 'Sora, sans-serif', fontSize: 12.5, fontWeight: 600, color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)' }}>{p.title}</div>
+          <div style={{ fontFamily: 'Sora, sans-serif', fontSize: 12.5, fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A' }}>{p.title}</div>
         </div>
         <span style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', color: diffColor }}>{p.difficulty}</span>
       </div>
-      <div style={{ fontSize: 11.5, color: isDark ? '#878787' : 'rgba(237,237,237,0.40)', marginBottom: 12, lineHeight: 1.4 }}>{p.description}</div>
-      <div style={{ height: 4, borderRadius: 4, background: isDark ? '#1A1A1A' : 'rgba(255,255,255,0.10)', marginBottom: 8 }}>
+      <div style={{ fontSize: 11.5, color: isDark ? '#878787' : '#64748B', marginBottom: 12, lineHeight: 1.4 }}>{p.description}</div>
+      <div style={{ height: 4, borderRadius: 4, background: isDark ? '#1A1A1A' : '#E2E8F0', marginBottom: 8 }}>
         <div style={{ height: '100%', borderRadius: 4, background: '#2563EB', width: `${pct}%`, transition: 'width 600ms' }} />
       </div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, color: isDark ? '#878787' : '#64748B' }}>
         <span>{p.estimated_hours}h · {p.article_count} articles</span>
         <span>{pct}% complete</span>
       </div>
@@ -431,15 +431,15 @@ LearningPathCard.displayName = 'LearningPathCard';
 /* ── Article Row ── */
 const ArticleRow = React.memo(({ a, navigate, bookmarked, onToggleBookmark, isDark }: { a: any; navigate: any; bookmarked: boolean; onToggleBookmark: () => void; isDark?: boolean }) => {
   const formatIcon = a.format === 'pdf'
-    ? <span style={{ fontSize: 9, fontWeight: 700, padding: '1px 4px', borderRadius: 4, background: isDark ? 'rgba(220,38,38,0.15)' : 'rgba(248,113,113,0.10)', color: '#DC2626' }}>PDF</span>
-    : <FileText size={14} style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }} />;
+    ? <span style={{ fontSize: 9, fontWeight: 700, padding: '1px 4px', borderRadius: 4, background: isDark ? 'rgba(220,38,38,0.15)' : '#FEE2E2', color: '#DC2626' }}>PDF</span>
+    : <FileText size={14} style={{ color: isDark ? '#878787' : '#94A3B8' }} />;
 
   const verStatus = a.verification_status || 'unverified';
   const verBadge = verStatus === 'verified'
     ? { bg: 'rgba(22,163,74,0.08)', color: '#16A34A', label: 'Verified' }
     : verStatus === 'needs_review'
     ? { bg: 'rgba(217,119,6,0.08)', color: '#D97706', label: 'Needs Review' }
-    : { bg: isDark ? 'rgba(107,101,96,0.15)' : 'rgba(100,116,139,0.08)', color: isDark ? '#878787' : 'rgba(237,237,237,0.40)', label: 'Unverified' };
+    : { bg: isDark ? 'rgba(107,101,96,0.15)' : 'rgba(100,116,139,0.08)', color: isDark ? '#878787' : '#64748B', label: 'Unverified' };
 
   const conf = Math.round((a.ai_confidence ?? 0) * 100);
   const confColor = conf >= 90 ? '#16A34A' : conf >= 70 ? '#2563EB' : '#D97706';
@@ -459,14 +459,14 @@ const ArticleRow = React.memo(({ a, navigate, bookmarked, onToggleBookmark, isDa
 
       {/* Article title + TL;DR */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 0, paddingRight: 8 }}>
-        <span style={{ fontWeight: 500, color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: 12.5 }}>{a.title}</span>
+        <span style={{ fontWeight: 500, color: isDark ? '#EDEDED' : '#0F172A', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: 12.5 }}>{a.title}</span>
         {a.tldr && (
-          <span title={a.tldr} style={{ fontSize: 10, color: isDark ? '#878787' : 'rgba(237,237,237,0.40)', textDecoration: 'underline', textDecorationStyle: 'dashed', textUnderlineOffset: 2, cursor: 'help', flexShrink: 0 }}>TL;DR</span>
+          <span title={a.tldr} style={{ fontSize: 10, color: isDark ? '#878787' : '#64748B', textDecoration: 'underline', textDecorationStyle: 'dashed', textUnderlineOffset: 2, cursor: 'help', flexShrink: 0 }}>TL;DR</span>
         )}
       </div>
 
       {/* Domain */}
-      <span style={{ fontSize: 9, fontWeight: 650, padding: '1px 5px', borderRadius: 4, background: isDark ? '#1A1A1A' : '#1A1A1A', color: isDark ? '#878787' : 'rgba(237,237,237,0.40)', width: 'fit-content' }}>{a.domain_code}</span>
+      <span style={{ fontSize: 9, fontWeight: 650, padding: '1px 5px', borderRadius: 4, background: isDark ? '#1A1A1A' : '#F1F5F9', color: isDark ? '#878787' : '#64748B', width: 'fit-content' }}>{a.domain_code}</span>
 
       {/* Verification Status */}
       <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 6px', borderRadius: 4, background: verBadge.bg, color: verBadge.color, width: 'fit-content' }}>{verBadge.label}</span>
@@ -475,21 +475,21 @@ const ArticleRow = React.memo(({ a, navigate, bookmarked, onToggleBookmark, isDa
       <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, fontWeight: 500, color: confColor }}>{conf}%</span>
 
       {/* Helpful */}
-      <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>{Math.round(a.helpfulness_score ?? 0)}%</span>
+      <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: isDark ? '#878787' : '#64748B' }}>{Math.round(a.helpfulness_score ?? 0)}%</span>
 
       {/* Tags — grey pills */}
       <div style={{ display: 'flex', gap: 3, overflow: 'hidden' }}>
         {tags.map((t: string) => (
-          <span key={t} style={{ fontSize: 9.5, fontWeight: 500, padding: '1px 6px', borderRadius: 4, background: isDark ? '#1A1A1A' : '#1A1A1A', color: isDark ? '#878787' : 'rgba(237,237,237,0.40)', border: isDark ? '0.75px solid rgba(255,255,255,0.05)' : '0.75px solid rgba(0,0,0,0.06)', whiteSpace: 'nowrap' }}>{t}</span>
+          <span key={t} style={{ fontSize: 9.5, fontWeight: 500, padding: '1px 6px', borderRadius: 4, background: isDark ? '#1A1A1A' : '#F1F5F9', color: isDark ? '#878787' : '#64748B', border: isDark ? '0.75px solid rgba(255,255,255,0.05)' : '0.75px solid rgba(0,0,0,0.06)', whiteSpace: 'nowrap' }}>{t}</span>
         ))}
       </div>
 
       {/* Version */}
-      <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>v{a.version ?? 1}</span>
+      <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, color: isDark ? '#878787' : '#64748B' }}>v{a.version ?? 1}</span>
 
       {/* Bookmark */}
       <span onClick={e => { e.stopPropagation(); onToggleBookmark(); }} style={{ cursor: 'pointer' }}>
-        <Star size={13} fill={bookmarked ? '#2563EB' : 'none'} style={{ color: bookmarked ? '#2563EB' : (isDark ? '#878787' : 'rgba(237,237,237,0.53)') }} />
+        <Star size={13} fill={bookmarked ? '#2563EB' : 'none'} style={{ color: bookmarked ? '#2563EB' : (isDark ? '#878787' : '#CBD5E1') }} />
       </span>
     </div>
   );

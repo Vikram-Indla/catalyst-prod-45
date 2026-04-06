@@ -37,7 +37,7 @@ function CustomDropdown({ label, value, options, onChange, isDark }: { label: st
               <button key={o.value} onClick={() => { onChange(o.value); setOpen(false); }}
                 className="w-full px-3 h-9 text-left text-[13px] font-medium"
                 style={{ color: value === o.value ? '#2563EB' : (isDark ? '#A1A1A1' : '#475569') }}
-                onMouseEnter={e => (e.currentTarget.style.background = isDark ? '#292929' : '#1A1A1A')}
+                onMouseEnter={e => (e.currentTarget.style.background = isDark ? '#292929' : '#F8FAFC')}
                 onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
                 {o.label}
               </button>
@@ -103,7 +103,7 @@ export default function AllChangesPage() {
       <div className="flex items-center justify-between mb-5">
         <div>
           <h1 className="text-[22px] font-extrabold" style={{ fontFamily: RH.fontDisplay, color: isDark ? '#EDEDED' : RH.ink1 }}>All Changes</h1>
-          <p className="text-[13px]" style={{ fontFamily: RH.fontBody, color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>Every deployment change — past, present & future</p>
+          <p className="text-[13px]" style={{ fontFamily: RH.fontBody, color: isDark ? '#878787' : '#64748B' }}>Every deployment change — past, present & future</p>
         </div>
         <button onClick={() => setShowCreateChg(true)}
           className="h-9 px-4 rounded-md text-white text-[13px] font-semibold flex items-center gap-1.5 active:scale-[0.98] transition-transform"
@@ -116,10 +116,10 @@ export default function AllChangesPage() {
       <div className="flex items-center justify-between mb-4 gap-3 flex-wrap">
         <div className="flex items-center gap-2">
           <div className="relative">
-            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }} />
+            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: isDark ? '#878787' : '#94A3B8' }} />
             <input type="text" placeholder="Search changes..." value={search} onChange={e => setSearch(e.target.value)}
               className="h-9 w-[280px] pl-9 pr-3 rounded text-[13px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]"
-              style={{ border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.12)'}`, background: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)' }} />
+              style={{ border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.12)'}`, background: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#EDEDED' : '#0F172A' }} />
           </div>
           <CustomDropdown label="Status" value={statusFilter} options={statusOptions} onChange={v => setParam('status', v)} isDark={isDark} />
           <CustomDropdown label="Release" value={releaseFilter} options={releaseOptions} onChange={v => setParam('release', v)} isDark={isDark} />
@@ -127,12 +127,12 @@ export default function AllChangesPage() {
         <div className="flex items-center gap-1 rounded-md p-0.5" style={{ border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.12)'}`, background: isDark ? '#1A1A1A' : '#FFFFFF' }}>
           <button onClick={() => setParam('view', 'list')}
             className="h-7 px-2.5 rounded flex items-center gap-1 text-[11px] font-medium"
-            style={view === 'list' ? { background: isDark ? 'rgba(37,99,235,0.12)' : 'rgba(59,130,246,0.06)', color: '#2563EB' } : { color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>
+            style={view === 'list' ? { background: isDark ? 'rgba(37,99,235,0.12)' : '#EFF6FF', color: '#2563EB' } : { color: isDark ? '#878787' : '#94A3B8' }}>
             <List size={12} /> List
           </button>
           <button onClick={() => setParam('view', 'kanban')}
             className="h-7 px-2.5 rounded flex items-center gap-1 text-[11px] font-medium"
-            style={view === 'kanban' ? { background: isDark ? 'rgba(37,99,235,0.12)' : 'rgba(59,130,246,0.06)', color: '#2563EB' } : { color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>
+            style={view === 'kanban' ? { background: isDark ? 'rgba(37,99,235,0.12)' : '#EFF6FF', color: '#2563EB' } : { color: isDark ? '#878787' : '#94A3B8' }}>
             <Columns size={12} /> Kanban
           </button>
         </div>
@@ -156,12 +156,12 @@ export default function AllChangesPage() {
         <div className="rounded overflow-hidden" style={{ background: isDark ? '#1A1A1A' : '#FFFFFF', border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.12)'}` }}>
           <table className="w-full text-[13px]" style={{ fontFamily: RH.fontBody }} role="table">
             <thead>
-              <tr style={{ background: isDark ? '#1A1A1A' : '#1A1A1A' }}>
+              <tr style={{ background: isDark ? '#1A1A1A' : '#F1F5F9' }}>
                 <th className="w-[40px] px-3 py-0 h-[50px] text-center">
                   <input type="checkbox" checked={selectedIds.size === filtered.length && filtered.length > 0} onChange={toggleAll} className="rounded" />
                 </th>
                 {['KEY', 'TITLE', 'STATUS', 'RISK', 'RELEASE', 'SOURCE', 'SIGN-OFFS'].map(h => (
-                  <th key={h} className="px-3 py-0 h-[50px] text-left text-[11px] font-semibold uppercase tracking-[0.06em]" style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>{h}</th>
+                  <th key={h} className="px-3 py-0 h-[50px] text-left text-[11px] font-semibold uppercase tracking-[0.06em]" style={{ color: isDark ? '#878787' : '#64748B' }}>{h}</th>
                 ))}
               </tr>
             </thead>
@@ -181,16 +181,16 @@ export default function AllChangesPage() {
                       <span className="text-[13px] font-medium text-[#2563EB] hover:underline" style={{ fontFamily: RH.fontMono }}>{c.chg_number}</span>
                     </td>
                     <td className="px-3 py-0 max-w-[300px]">
-                      <span className="text-[13px] font-medium truncate block" style={{ color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)' }}>{c.title}</span>
+                      <span className="text-[13px] font-medium truncate block" style={{ color: isDark ? '#EDEDED' : '#0F172A' }}>{c.title}</span>
                     </td>
                     <td className="px-3 py-0"><StatusLozenge status={c.status} /></td>
                     <td className="px-3 py-0"><RiskBadge risk={mapRisk(c.risk_level)} /></td>
                     <td className="px-3 py-0">
-                      {relName ? <span className="text-[12px] font-medium text-[#2563EB]">{relName}</span> : <span style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>—</span>}
+                      {relName ? <span className="text-[12px] font-medium text-[#2563EB]">{relName}</span> : <span style={{ color: isDark ? '#878787' : '#94A3B8' }}>—</span>}
                     </td>
                     <td className="px-3 py-0"><SourceBadge source={c.source} /></td>
                     <td className="px-3 py-0">
-                      <span className="text-[12px]" style={{ fontFamily: RH.fontMono, color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>
+                      <span className="text-[12px]" style={{ fontFamily: RH.fontMono, color: isDark ? '#878787' : '#64748B' }}>
                         {c.pending_signoffs > 0 ? `${c.pending_signoffs} pending` : '—'}
                       </span>
                     </td>
@@ -221,10 +221,10 @@ function KanbanView({ changes, onSelect, isDark }: { changes: any[]; onSelect: (
       {columns.map(col => {
         const items = changes.filter((c: any) => c.status === col.key);
         return (
-          <div key={col.key} className="rounded-lg" style={{ background: isDark ? '#1A1A1A' : '#1A1A1A', minHeight: 200 }}>
+          <div key={col.key} className="rounded-lg" style={{ background: isDark ? '#1A1A1A' : '#F1F5F9', minHeight: 200 }}>
             <div className="px-3 py-2 flex items-center gap-2">
-              <span className="text-[11px] font-bold uppercase tracking-[0.06em]" style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>{col.label}</span>
-              <span className="text-[10px] font-bold rounded-full px-1.5" style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)', background: isDark ? '#1A1A1A' : '#FFFFFF' }}>{items.length}</span>
+              <span className="text-[11px] font-bold uppercase tracking-[0.06em]" style={{ color: isDark ? '#878787' : '#64748B' }}>{col.label}</span>
+              <span className="text-[10px] font-bold rounded-full px-1.5" style={{ color: isDark ? '#878787' : '#94A3B8', background: isDark ? '#1A1A1A' : '#FFFFFF' }}>{items.length}</span>
             </div>
             <div className="px-2 pb-2 space-y-2">
               {items.map((c: any) => (
@@ -232,7 +232,7 @@ function KanbanView({ changes, onSelect, isDark }: { changes: any[]; onSelect: (
                   className="w-full rounded-md p-3 text-left hover:shadow-sm transition-shadow"
                   style={{ background: isDark ? '#1A1A1A' : '#FFFFFF', border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.12)'}` }}>
                   <span className="text-[11px] font-medium text-[#2563EB] block mb-1" style={{ fontFamily: RH.fontMono }}>{c.chg_number}</span>
-                  <span className="text-[13px] font-medium block truncate" style={{ color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)' }}>{c.title}</span>
+                  <span className="text-[13px] font-medium block truncate" style={{ color: isDark ? '#EDEDED' : '#0F172A' }}>{c.title}</span>
                   <div className="flex items-center gap-2 mt-2">
                     <RiskBadge risk={c.risk_level?.toLowerCase() === 'low' || c.risk_level?.toLowerCase() === 'medium' ? 'standard' : c.risk_level} />
                     <SourceBadge source={c.source} />

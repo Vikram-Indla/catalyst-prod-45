@@ -261,8 +261,8 @@ export function WikiAdminSyncTab() {
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   flexShrink: 0, fontSize: 11, fontWeight: 700,
                   fontFamily: 'JetBrains Mono, monospace',
-                  background: isDone ? '#1B7F37' : isStepFailed ? 'rgba(220,38,38,0.08)' : isActive ? '#0C66E4' : (isDark ? '#1A1A1A' : 'var(--cp-bg-sunken, #1A1A1A)'),
-                  color: isDone ? '#FFFFFF' : isStepFailed ? '#DC2626' : isActive ? '#FFFFFF' : (isDark ? '#878787' : 'var(--cp-text-tertiary, rgba(237,237,237,0.40))'),
+                  background: isDone ? '#1B7F37' : isStepFailed ? 'rgba(220,38,38,0.08)' : isActive ? '#0C66E4' : (isDark ? '#1A1A1A' : 'var(--cp-bg-sunken, #F1F5F9)'),
+                  color: isDone ? '#FFFFFF' : isStepFailed ? '#DC2626' : isActive ? '#FFFFFF' : (isDark ? '#878787' : 'var(--cp-text-tertiary, #64748B)'),
                   ...(isActive ? { boxShadow: '0 0 0 3px rgba(37,99,235,0.2)' } : {}),
                 }}>
                   {isDone
@@ -336,7 +336,7 @@ export function WikiAdminSyncTab() {
       {latestRun?.status === 'complete' && (
         <div style={{
           padding: '10px 16px', borderRadius: 6,
-          background: isDark ? 'rgba(27,127,55,0.15)' : 'rgba(74,222,128,0.10)', border: '1px solid rgba(13,115,49,0.15)',
+          background: isDark ? 'rgba(27,127,55,0.15)' : '#E3FCEF', border: '1px solid rgba(13,115,49,0.15)',
           fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 13, fontWeight: 500,
           color: isDark ? '#4ADE80' : '#006644',
         }}>

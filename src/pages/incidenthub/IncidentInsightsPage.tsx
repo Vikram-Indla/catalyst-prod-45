@@ -16,9 +16,9 @@ export default function IncidentInsightsPage() {
   // NOCTURNE tokens
   const pageBg = isDark ? '#0A0A0A' : '#FFFFFF';
   const surfaceBg = isDark ? '#1A1A1A' : '#FFFFFF';
-  const textPrimary = isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)';
-  const textSecondary = isDark ? '#A1A1A1' : 'rgba(237,237,237,0.40)';
-  const textBody = isDark ? '#A1A1A1' : 'rgba(237,237,237,0.53)';
+  const textPrimary = isDark ? '#EDEDED' : '#0F172A';
+  const textSecondary = isDark ? '#A1A1A1' : '#64748B';
+  const textBody = isDark ? '#A1A1A1' : '#334155';
   const borderColor = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.12)';
 
   return (
@@ -72,12 +72,12 @@ export default function IncidentInsightsPage() {
                 { title: 'SLA breach pattern detected', desc: 'SEV-1 incidents averaging resolution above target threshold' },
               ].map((item, i) => (
                 <div key={i} className="p-2.5" style={{
-                  backgroundColor: isDark ? 'rgba(248,113,113,0.08)' : 'rgba(248,113,113,0.06)',
+                  backgroundColor: isDark ? 'rgba(248,113,113,0.08)' : '#FEF2F2',
                   borderRadius: 4,
                   border: `1px solid ${isDark ? 'rgba(248,113,113,0.2)' : '#FECACA'}`,
                 }}>
-                  <h4 style={{ fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 12, fontWeight: 650, color: isDark ? '#FCA5A5' : '#F87171', marginBottom: 2 }}>{item.title}</h4>
-                  <p style={{ fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 11, color: isDark ? '#F87171' : '#B91C1C' }}>{item.desc}</p>
+                  <h4 style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, fontWeight: 650, color: isDark ? '#FCA5A5' : '#991B1B', marginBottom: 2 }}>{item.title}</h4>
+                  <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: isDark ? '#F87171' : '#B91C1C' }}>{item.desc}</p>
                 </div>
               ))}
             </div>
@@ -95,12 +95,12 @@ export default function IncidentInsightsPage() {
                 { title: 'Pre-deployment health checks', desc: 'Add mandatory health check gates before production deployments' },
               ].map((item, i) => (
                 <div key={i} className="p-2.5" style={{
-                  backgroundColor: isDark ? 'rgba(34,197,94,0.08)' : 'rgba(74,222,128,0.06)',
+                  backgroundColor: isDark ? 'rgba(34,197,94,0.08)' : '#F0FDF4',
                   borderRadius: 4,
                   border: `1px solid ${isDark ? 'rgba(34,197,94,0.2)' : '#BBF7D0'}`,
                 }}>
-                  <h4 style={{ fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 12, fontWeight: 650, color: isDark ? '#86EFAC' : '#166534', marginBottom: 2 }}>{item.title}</h4>
-                  <p style={{ fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 11, color: isDark ? '#4ADE80' : '#15803D' }}>{item.desc}</p>
+                  <h4 style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, fontWeight: 650, color: isDark ? '#86EFAC' : '#166534', marginBottom: 2 }}>{item.title}</h4>
+                  <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: isDark ? '#4ADE80' : '#15803D' }}>{item.desc}</p>
                 </div>
               ))}
             </div>

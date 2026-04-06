@@ -126,7 +126,7 @@ export function GoalsHeatmapView({ goals, themes, onCellClick, isDark = false }:
                 return (
                   <div key={q} style={{
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    color: isDark ? DK.t3 : 'rgba(237,237,237,0.53)', fontSize: 12,
+                    color: isDark ? DK.t3 : '#CBD5E1', fontSize: 12,
                     background: isDark ? 'transparent' : 'var(--bg-app)',
                     borderRight: `1px solid ${rowBorder}`,
                   }}>

@@ -115,17 +115,17 @@ export default function GoalsKeyResultsPage() {
   return (
     <div data-goals-page="" style={{ padding: '16px 24px 24px', minHeight: '100%', backgroundColor: 'var(--bg)' }}>
       {/* Breadcrumb */}
-      <nav style={{ fontSize: 12, color: isDark ? DK.t2 : 'rgba(237,237,237,0.40)', marginBottom: 4 }} aria-label="Breadcrumb">
+      <nav style={{ fontSize: 12, color: isDark ? DK.t2 : '#64748B', marginBottom: 4 }} aria-label="Breadcrumb">
         <span style={{ cursor: 'pointer', color: isDark ? '#7DB8FC' : undefined }} onClick={() => navigate('/strategyhub')}>StrategyHub</span>
-        <span style={{ margin: '0 4px', color: isDark ? DK.t3 : 'rgba(237,237,237,0.40)' }}>›</span>
-        <span style={{ fontWeight: 600, color: isDark ? DK.t1 : 'rgba(237,237,237,0.93)' }}>Goals &amp; Key Results</span>
+        <span style={{ margin: '0 4px', color: isDark ? DK.t3 : '#94A3B8' }}>›</span>
+        <span style={{ fontWeight: 600, color: isDark ? DK.t1 : '#0F172A' }}>Goals &amp; Key Results</span>
       </nav>
 
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 8, marginBottom: 16, flexWrap: 'wrap', gap: 8 }}>
-        <h1 style={{ fontSize: 20, fontWeight: 700, color: isDark ? DK.t1 : 'rgba(237,237,237,0.93)', margin: 0 }}>Goals &amp; Key Results</h1>
+        <h1 style={{ fontSize: 20, fontWeight: 700, color: isDark ? DK.t1 : '#0F172A', margin: 0 }}>Goals &amp; Key Results</h1>
         <div style={{ display: 'flex', gap: 8 }}>
-          <button onClick={exportCSV} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '7px 14px', fontSize: 13, fontWeight: 500, color: isDark ? DK.t2 : 'rgba(237,237,237,0.40)', background: isDark ? 'transparent' : '#FFFFFF', border: `1px solid ${isDark ? DK.border : 'rgba(255,255,255,0.10)'}`, borderRadius: 6, cursor: 'pointer', boxShadow: isDark ? 'none' : '0 1px 2px rgba(0,0,0,0.04)' }}>
+          <button onClick={exportCSV} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '7px 14px', fontSize: 13, fontWeight: 500, color: isDark ? DK.t2 : '#64748B', background: isDark ? 'transparent' : '#FFFFFF', border: `1px solid ${isDark ? DK.border : '#E2E8F0'}`, borderRadius: 6, cursor: 'pointer', boxShadow: isDark ? 'none' : '0 1px 2px rgba(0,0,0,0.04)' }}>
             <Download size={14} /> Export
           </button>
           <button onClick={() => setShowCreateModal(true)} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '7px 16px', fontSize: 13, fontWeight: 600, color: '#FFFFFF', background: 'linear-gradient(135deg, #2563EB, #1D4ED8)', border: 'none', borderRadius: 6, cursor: 'pointer', boxShadow: '0 2px 8px rgba(37,99,235,0.18)' }}>

@@ -146,10 +146,10 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
           </button>
 
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginBottom: 10 }}>
-            {board.isPersonal && <Chip bg={isDark ? 'rgba(37,99,235,0.12)' : 'rgba(59,130,246,0.06)'} color="#2563EB">Personal</Chip>}
+            {board.isPersonal && <Chip bg={isDark ? 'rgba(37,99,235,0.12)' : '#EFF6FF'} color="#2563EB">Personal</Chip>}
             <Chip bg={vis.bg} color={vis.color}>{vis.label}</Chip>
             {board.swimlaneType !== 'none' && (
-              <Chip bg={isDark ? 'rgba(255,255,255,0.06)' : '#1A1A1A'} color={isDark ? '#A1A1A1' : 'rgba(237,237,237,0.40)'}>By {board.swimlaneType}</Chip>
+              <Chip bg={isDark ? 'rgba(255,255,255,0.06)' : '#F8FAFC'} color={isDark ? '#A1A1A1' : '#64748B'}>By {board.swimlaneType}</Chip>
             )}
             {/* Jira Sync badge */}
             {hasJiraSync && (

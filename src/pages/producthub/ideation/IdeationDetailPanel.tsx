@@ -113,7 +113,7 @@ function FieldPair({ label, value }: { label: string; value: React.ReactNode }) 
     <div>
       <div style={{
         fontSize: '11px', fontWeight: 700, textTransform: 'uppercase' as const,
-        letterSpacing: '0.06em', color: isDark ? '#878787' : 'rgba(237,237,237,0.40)', marginBottom: '6px',
+        letterSpacing: '0.06em', color: isDark ? '#878787' : '#64748B', marginBottom: '6px',
       }}>
         {label}
       </div>
@@ -260,7 +260,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
         }}>
           <span style={{
             fontFamily: "'JetBrains Mono', monospace", fontSize: '13px', fontWeight: 700,
-            color: dk.blueKey, background: isDark ? 'rgba(37,99,235,0.12)' : 'rgba(59,130,246,0.06)', padding: '3px 10px', borderRadius: '4px',
+            color: dk.blueKey, background: isDark ? 'rgba(37,99,235,0.12)' : '#EFF6FF', padding: '3px 10px', borderRadius: '4px',
           }}>
             {rawIdea.idea_key}
           </span>
@@ -269,7 +269,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
           <button onClick={() => { if (isEditing) { resetLocalState(); setIsEditing(false); } else { setIsEditing(true); } }} style={{
             width: '32px', height: '32px', borderRadius: '6px',
             border: `1px solid ${dk.border}`,
-            background: isEditing ? (isDark ? 'rgba(37,99,235,0.12)' : 'rgba(59,130,246,0.06)') : (isDark ? 'transparent' : '#FFFFFF'),
+            background: isEditing ? (isDark ? 'rgba(37,99,235,0.12)' : '#EFF6FF') : (isDark ? 'transparent' : '#FFFFFF'),
             cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
             color: dk.t2,
           }}>
@@ -292,7 +292,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
           {/* Convert banner */}
           {localStatus === 'Approved' && (
             <div style={{
-              margin: '16px 24px 0', background: isDark ? 'rgba(22,163,74,0.08)' : 'rgba(74,222,128,0.06)', border: `1px solid ${isDark ? 'rgba(22,163,74,0.20)' : '#86EFAC'}`,
+              margin: '16px 24px 0', background: isDark ? 'rgba(22,163,74,0.08)' : '#F0FDF4', border: `1px solid ${isDark ? 'rgba(22,163,74,0.20)' : '#86EFAC'}`,
               borderRadius: '6px', padding: '12px 16px',
               display: 'flex', alignItems: 'center', gap: '12px',
             }}>
@@ -448,7 +448,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
                   onClick={() => setLocalIsCommitted(!localIsCommitted)}
                   style={{
                     width: '44px', height: '24px', borderRadius: '12px', border: 'none',
-                    backgroundColor: localIsCommitted ? '#2563EB' : (isDark ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.10)'),
+                    backgroundColor: localIsCommitted ? '#2563EB' : (isDark ? 'rgba(255,255,255,0.12)' : '#E2E8F0'),
                     cursor: 'pointer', position: 'relative', transition: 'background 200ms ease',
                   }}
                 >
@@ -526,7 +526,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
               <div key={dim.letter} style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '14px' }}>
                 <div style={{
                   width: '32px', height: '32px', borderRadius: '50%',
-                  backgroundColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.10)', color: dk.t2,
+                  backgroundColor: isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0', color: dk.t2,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   fontSize: '13px', fontWeight: 700, flexShrink: 0,
                 }}>
@@ -537,7 +537,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
                     <span style={{ fontSize: '13px', fontWeight: 500, color: dk.t1 }}>{dim.name}</span>
                     <span style={{ fontSize: '12px', color: dk.t2 }}>{dim.weight}</span>
                   </div>
-                  <div style={{ height: '4px', borderRadius: '4px', backgroundColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.10)', overflow: 'hidden' }}>
+                  <div style={{ height: '4px', borderRadius: '4px', backgroundColor: isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0', overflow: 'hidden' }}>
                     <div style={{
                       height: '100%', width: `${(dim.score / 5) * 100}%`,
                       backgroundColor: dim.score > 0 ? '#2563EB' : 'transparent',

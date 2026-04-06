@@ -77,7 +77,7 @@ function FilterDropdown({ label, placeholder, options, selected, onToggle }: {
               >
                 <span style={{
                   width: 16, height: 16, borderRadius: 4, flexShrink: 0,
-                  border: `1.5px solid ${active ? 'var(--cp-blue)' : (isDark ? 'rgba(255,255,255,0.20)' : 'rgba(237,237,237,0.53)')}`,
+                  border: `1.5px solid ${active ? 'var(--cp-blue)' : (isDark ? 'rgba(255,255,255,0.20)' : '#CBD5E1')}`,
                   background: active ? '#2563EB' : (isDark ? 'transparent' : 'var(--bg-app)'),
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                 }}>

@@ -30,7 +30,7 @@ export function ThemeStatsStrip({ themes, isDark = false }: Props) {
       sub: `${themes.length} total`,
       icon: Layers,
       iconColor: '#2563EB',
-      iconBg: isDark ? 'rgba(59,130,246,0.12)' : 'rgba(59,130,246,0.06)',
+      iconBg: isDark ? 'rgba(59,130,246,0.12)' : '#EFF6FF',
       cardBg: undefined,
     },
     {
@@ -51,7 +51,7 @@ export function ThemeStatsStrip({ themes, isDark = false }: Props) {
       sub: themes.length ? `~${Math.round(totalGoals / themes.length)} per theme` : '—',
       icon: Target,
       iconColor: '#059669',
-      iconBg: isDark ? 'rgba(5,150,105,0.12)' : 'rgba(74,222,128,0.06)',
+      iconBg: isDark ? 'rgba(5,150,105,0.12)' : '#ECFDF5',
       cardBg: undefined,
     },
     {
@@ -60,7 +60,7 @@ export function ThemeStatsStrip({ themes, isDark = false }: Props) {
       sub: 'FY2026 planned',
       icon: DollarSign,
       iconColor: '#2563EB',
-      iconBg: isDark ? 'rgba(59,130,246,0.12)' : 'rgba(59,130,246,0.06)',
+      iconBg: isDark ? 'rgba(59,130,246,0.12)' : '#EFF6FF',
       cardBg: undefined,
     },
     {
@@ -89,7 +89,7 @@ export function ThemeStatsStrip({ themes, isDark = false }: Props) {
           <div className="flex items-start justify-between mb-2">
             <span style={{
               fontSize: 11, fontWeight: 600,
-              color: isDark ? DK.t2 : 'rgba(237,237,237,0.40)',
+              color: isDark ? DK.t2 : '#94A3B8',
               letterSpacing: '0.5px',
             }}>{c.label}</span>
             <div
@@ -101,12 +101,12 @@ export function ThemeStatsStrip({ themes, isDark = false }: Props) {
           </div>
           <p style={{
             fontSize: 26, fontWeight: 800,
-            color: (c as any).valueColor || (isDark ? DK.t1 : 'rgba(237,237,237,0.93)'),
+            color: (c as any).valueColor || (isDark ? DK.t1 : '#0F172A'),
             lineHeight: 1.1, marginBottom: 4, letterSpacing: '-0.5px',
           }}>{c.value}</p>
           <p style={{
             fontSize: 11,
-            color: (c as any).subColor || (isDark ? DK.t2 : 'rgba(237,237,237,0.40)'),
+            color: (c as any).subColor || (isDark ? DK.t2 : '#94A3B8'),
           }}>{c.sub}</p>
         </div>
       ))}

@@ -193,7 +193,7 @@ function WeekStripCollapsible({
   const dayCells = useMemo(() => periodType === 'weekly' ? getSaudiWorkDays(period.start) : getWeekCells(period.start), [periodType, period.start]);
 
   return (
-    <div style={{ padding: '10px 0', borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.05)' : '#1A1A1A'}` }}>
+    <div style={{ padding: '10px 0', borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.05)' : '#F1F5F9'}` }}>
       {/* Top toolbar: Toggle + Date + Mode Badge + Nav arrows */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px', flexWrap: 'wrap' as const }}>
         {/* Prominent Period Toggle */}
@@ -202,25 +202,25 @@ function WeekStripCollapsible({
           <button className={periodType === 'monthly' ? 'active' : ''} onClick={() => onPeriodTypeChange('monthly')}>Monthly</button>
         </div>
 
-        <div style={{ width: '1px', height: '20px', background: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.10)' }} />
-        <span style={{ fontSize: '13px', fontWeight: 700, color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)' }}>📅 {period.label}</span>
-        <span style={{ fontSize: '13px', fontWeight: 500, color: isDark ? '#A1A1A1' : 'rgba(237,237,237,0.53)' }}>{period.range}</span>
+        <div style={{ width: '1px', height: '20px', background: isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0' }} />
+        <span style={{ fontSize: '13px', fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A' }}>📅 {period.label}</span>
+        <span style={{ fontSize: '13px', fontWeight: 500, color: isDark ? '#A1A1A1' : '#334155' }}>{period.range}</span>
 
         {/* Mode Badge */}
         <span className={`r3-mode-badge ${isLive ? 'live' : 'snapshot'}`}>
           {isLive ? 'LIVE' : 'SNAPSHOT'}
         </span>
 
-        <button style={{ width: '28px', height: '28px', border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.10)'}`, borderRadius: '4px', background: isDark ? '#1A1A1A' : '#FFF', cursor: 'pointer', fontSize: '13px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', transition: 'background var(--cp-duration-fast, 0.15s) ease' }} onClick={() => onNavigatePeriod(-1)}
+        <button style={{ width: '28px', height: '28px', border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: '4px', background: isDark ? '#1A1A1A' : '#FFF', cursor: 'pointer', fontSize: '13px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', transition: 'background var(--cp-duration-fast, 0.15s) ease' }} onClick={() => onNavigatePeriod(-1)}
           onMouseEnter={e => { e.currentTarget.style.background = isDark ? 'rgba(255,255,255,0.04)' : 'rgba(15,23,42,0.04)'; }}
           onMouseLeave={e => { e.currentTarget.style.background = isDark ? '#1A1A1A' : '#FFF'; }}
         >‹</button>
-        <button style={{ width: '28px', height: '28px', border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.10)'}`, borderRadius: '4px', background: isDark ? '#1A1A1A' : '#FFF', cursor: 'pointer', fontSize: '13px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', transition: 'background var(--cp-duration-fast, 0.15s) ease' }} onClick={() => onNavigatePeriod(1)}
+        <button style={{ width: '28px', height: '28px', border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: '4px', background: isDark ? '#1A1A1A' : '#FFF', cursor: 'pointer', fontSize: '13px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', transition: 'background var(--cp-duration-fast, 0.15s) ease' }} onClick={() => onNavigatePeriod(1)}
           onMouseEnter={e => { e.currentTarget.style.background = isDark ? 'rgba(255,255,255,0.04)' : 'rgba(15,23,42,0.04)'; }}
           onMouseLeave={e => { e.currentTarget.style.background = isDark ? '#1A1A1A' : '#FFF'; }}
         >›</button>
 
-        <div style={{ width: '1px', height: '20px', background: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.10)', margin: '0 4px' }} />
+        <div style={{ width: '1px', height: '20px', background: isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0', margin: '0 4px' }} />
         {/* Status filter tabs */}
         {([
           { key: null, label: `All (${counts.all})` },
@@ -241,7 +241,7 @@ function WeekStripCollapsible({
             >{f.label}</span>
           );
         })}
-        <span style={{ marginLeft: 'auto', fontSize: '12.5px', color: isDark ? '#878787' : 'rgba(237,237,237,0.40)', fontFamily: "'JetBrains Mono', monospace" }}>{weekItems.length} items</span>
+        <span style={{ marginLeft: 'auto', fontSize: '12.5px', color: isDark ? '#878787' : '#64748B', fontFamily: "'JetBrains Mono', monospace" }}>{weekItems.length} items</span>
       </div>
 
       {/* Collapsible Week Strip */}
@@ -595,7 +595,7 @@ export default function R360MemberDetail() {
                 <div style={{ display: 'flex', gap: '10px' }}>
                   <div
                     onClick={() => setTicketListMode(bannerOpenCount > 0 ? 'open' : null)}
-                    style={{ padding: '12px 16px', borderRadius: '8px', minWidth: '76px', textAlign: 'center' as const, background: isDark ? 'rgba(37,99,235,0.12)' : 'rgba(59,130,246,0.06)', cursor: bannerOpenCount > 0 ? 'pointer' : 'default', transition: 'all 80ms ease' }}
+                    style={{ padding: '12px 16px', borderRadius: '8px', minWidth: '76px', textAlign: 'center' as const, background: isDark ? 'rgba(37,99,235,0.12)' : '#EFF6FF', cursor: bannerOpenCount > 0 ? 'pointer' : 'default', transition: 'all 80ms ease' }}
                     onMouseEnter={e => { if (bannerOpenCount > 0) (e.currentTarget.style.background = 'rgba(37,99,235,0.12)'); }}
                     onMouseLeave={e => { e.currentTarget.style.background = 'rgba(59,130,246,0.06)'; }}
                   >
@@ -632,14 +632,14 @@ export default function R360MemberDetail() {
                 {/* Back — text button */}
                 <button
                   onClick={() => navigate('/project-hub/resources')}
-                  style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: 'transparent', border: 'none', color: isDark ? '#878787' : 'rgba(237,237,237,0.40)', fontSize: '13px', fontWeight: 500, cursor: 'pointer', padding: '4px 8px' }}
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: 'transparent', border: 'none', color: isDark ? '#878787' : '#64748B', fontSize: '13px', fontWeight: 500, cursor: 'pointer', padding: '4px 8px' }}
                   onMouseEnter={e => { e.currentTarget.style.textDecoration = 'underline'; }}
                   onMouseLeave={e => { e.currentTarget.style.textDecoration = 'none'; }}
                 >
                   <ChevronLeft size={14} /> Back
                 </button>
                 {/* Quarter label — computed from current date */}
-                <button style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: 'rgba(15,23,42,0.05)', border: 'none', borderRadius: '6px', color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)', fontSize: '13px', fontWeight: 500, cursor: 'pointer', padding: '5px 12px' }}>
+                <button style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: 'rgba(15,23,42,0.05)', border: 'none', borderRadius: '6px', color: isDark ? '#EDEDED' : '#0F172A', fontSize: '13px', fontWeight: 500, cursor: 'pointer', padding: '5px 12px' }}>
                   <Calendar size={13} /> {`Q${Math.ceil((new Date().getMonth() + 1) / 3)}-${new Date().getFullYear()}`}
                 </button>
                 {/* Intelligence — brand blue standard */}
@@ -678,12 +678,12 @@ export default function R360MemberDetail() {
               <div className="r3-empty">No work items assigned in this period.</div>
               {workItems.length > 0 && lastActivityDate && (
                 <div style={{ margin: '16px auto', maxWidth: 560, padding: '16px 24px', borderRadius: '8px', border: '1px solid rgba(15,23,42,0.12)', background: isDark ? '#1A1A1A' : '#FFFFFF', textAlign: 'center' }}>
-                  <div style={{ fontSize: '13px', color: isDark ? '#A1A1A1' : 'rgba(237,237,237,0.53)', marginBottom: '10px' }}>
-                    <strong style={{ color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)' }}>{allOpenItems.length} open item{allOpenItems.length !== 1 ? 's' : ''}</strong> across all time
+                  <div style={{ fontSize: '13px', color: isDark ? '#A1A1A1' : '#334155', marginBottom: '10px' }}>
+                    <strong style={{ color: isDark ? '#EDEDED' : '#0F172A' }}>{allOpenItems.length} open item{allOpenItems.length !== 1 ? 's' : ''}</strong> across all time
                     {allStaleItems.length > 0 && <span> · {allStaleItems.length} stale</span>}
                   </div>
-                  <div style={{ fontSize: '12.5px', color: isDark ? '#878787' : 'rgba(237,237,237,0.40)', marginBottom: '12px' }}>
-                    Last activity: <strong style={{ color: isDark ? '#A1A1A1' : 'rgba(237,237,237,0.53)' }}>{lastActivityDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</strong>
+                  <div style={{ fontSize: '12.5px', color: isDark ? '#878787' : '#64748B', marginBottom: '12px' }}>
+                    Last activity: <strong style={{ color: isDark ? '#A1A1A1' : '#334155' }}>{lastActivityDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</strong>
                   </div>
                   <button
                     onClick={jumpToLastActivity}
@@ -900,7 +900,7 @@ function PriorityBadge({ priority }: { priority: string }) {
   if (p === 'high') {
     return <span style={{ fontSize: '11px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', background: 'rgba(248,113,113,0.06)', color: '#DC2626' }}>{priority}</span>;
   }
-  return <span style={{ fontSize: '10.5px', fontWeight: 500, color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>{priority}</span>;
+  return <span style={{ fontSize: '10.5px', fontWeight: 500, color: isDark ? '#878787' : '#64748B' }}>{priority}</span>;
 }
 
 function RingView({ items, name, role, avatarUrl, onSelect, selected, overview, onAvatarClick }: {
@@ -993,7 +993,7 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected, overview, 
           onClick={e => e.stopPropagation()}
         >
           {/* Header */}
-          <div style={{ padding: '12px 16px', borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.05)' : '#1A1A1A'}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ padding: '12px 16px', borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.05)' : '#F1F5F9'}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <div style={{
                 width: '22px', height: '22px', borderRadius: '50%', background: '#1B7F37',
@@ -1001,16 +1001,16 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected, overview, 
               }}>
                 <svg width="12" height="12" viewBox="0 0 12 12"><path d="M2.5 6l2.5 2.5 4.5-4.5" stroke="#16A34A" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" /></svg>
               </div>
-              <span style={{ fontSize: '14px', fontWeight: 650, color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)' }}>Completed This Week</span>
+              <span style={{ fontSize: '14px', fontWeight: 650, color: isDark ? '#EDEDED' : '#0F172A' }}>Completed This Week</span>
               <span style={{ fontSize: '11px', fontWeight: 700, color: '#FFFFFF', background: '#1B7F37', padding: '2px 8px', borderRadius: '12px' }}>{doneCount}</span>
             </div>
             <button onClick={(e) => { e.stopPropagation(); setShowDone(false); }}
-              style={{ width: '24px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.10)'}`, borderRadius: '4px', background: isDark ? '#1A1A1A' : '#FFF', cursor: 'pointer', color: isDark ? '#878787' : 'rgba(237,237,237,0.40)', fontSize: '14px' }}
+              style={{ width: '24px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: '4px', background: isDark ? '#1A1A1A' : '#FFF', cursor: 'pointer', color: isDark ? '#878787' : '#64748B', fontSize: '14px' }}
               aria-label="Close completed panel"
             >✕</button>
           </div>
           {/* Throughput */}
-          <div style={{ padding: '8px 16px', fontSize: '12px', color: isDark ? '#878787' : 'rgba(237,237,237,0.40)', borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.05)' : '#1A1A1A'}` }}>
+          <div style={{ padding: '8px 16px', fontSize: '12px', color: isDark ? '#878787' : '#64748B', borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.05)' : '#F1F5F9'}` }}>
             {doneCount} of {totalItems} total resolved ({totalItems > 0 ? Math.round((doneCount / totalItems) * 100) : 0}%)
           </div>
           {/* Item list */}
@@ -1028,18 +1028,18 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected, overview, 
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '3px', flexWrap: 'wrap' }}>
                       <span style={{ fontSize: '11.5px', fontWeight: 600, color: '#2563EB', fontFamily: "'JetBrains Mono', monospace" }}>{item.item_key}</span>
-                      <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', background: isDark ? '#1A1A1A' : '#1A1A1A', color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>{item.project_key}</span>
+                      <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', background: isDark ? '#1A1A1A' : '#F1F5F9', color: isDark ? '#878787' : '#64748B' }}>{item.project_key}</span>
                       <StatusLozenge status="Done" />
                     </div>
-                    <div style={{ fontSize: '12px', fontWeight: 400, color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)', lineHeight: '1.35', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.title}</div>
-                    <div style={{ fontSize: '11px', color: isDark ? '#878787' : 'rgba(237,237,237,0.40)', marginTop: '2px', fontStyle: 'italic' }}>Resolved{resolvedLabel ? ` · ${resolvedLabel}` : ''}</div>
+                    <div style={{ fontSize: '12px', fontWeight: 400, color: isDark ? '#EDEDED' : '#0F172A', lineHeight: '1.35', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.title}</div>
+                    <div style={{ fontSize: '11px', color: isDark ? '#878787' : '#64748B', marginTop: '2px', fontStyle: 'italic' }}>Resolved{resolvedLabel ? ` · ${resolvedLabel}` : ''}</div>
                   </div>
                 </div>
               );
             })}
           </div>
           {/* Footer */}
-          <div style={{ padding: '10px 16px', borderTop: `1px solid ${isDark ? 'rgba(255,255,255,0.05)' : '#1A1A1A'}`, fontSize: '11px', color: isDark ? '#878787' : 'rgba(237,237,237,0.40)', textAlign: 'center', fontStyle: 'italic' }}>
+          <div style={{ padding: '10px 16px', borderTop: `1px solid ${isDark ? 'rgba(255,255,255,0.05)' : '#F1F5F9'}`, fontSize: '11px', color: isDark ? '#878787' : '#94A3B8', textAlign: 'center', fontStyle: 'italic' }}>
             Click any item to view details
           </div>
         </div>
@@ -1077,25 +1077,25 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected, overview, 
           </div>
 
           {/* Name + Role */}
-          <div style={{ fontSize: '16px', fontWeight: 650, color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)', fontFamily: "'Sora', sans-serif" }}>{name}</div>
-          <div style={{ fontSize: '13px', color: isDark ? '#878787' : 'rgba(237,237,237,0.40)', marginBottom: '16px' }}>{role}</div>
+          <div style={{ fontSize: '16px', fontWeight: 650, color: isDark ? '#EDEDED' : '#0F172A', fontFamily: "'Sora', sans-serif" }}>{name}</div>
+          <div style={{ fontSize: '13px', color: isDark ? '#878787' : '#64748B', marginBottom: '16px' }}>{role}</div>
 
           {/* Week Stats Row */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px', fontSize: '13px' }}>
-            <span style={{ fontWeight: 650, color: isDark ? '#A1A1A1' : 'rgba(237,237,237,0.53)' }}>{nonDone.length} open</span>
-            <span style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>·</span>
+            <span style={{ fontWeight: 650, color: isDark ? '#A1A1A1' : '#334155' }}>{nonDone.length} open</span>
+            <span style={{ color: isDark ? '#878787' : '#94A3B8' }}>·</span>
             <span style={{ fontWeight: 650, color: staleItems.length > 0 ? '#DC2626' : 'rgba(237,237,237,0.53)' }}>{staleItems.length} stale</span>
-            <span style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>·</span>
+            <span style={{ color: isDark ? '#878787' : '#94A3B8' }}>·</span>
             <span style={{ fontWeight: 650, color: doneCount > 0 ? '#FFFFFF' : 'rgba(237,237,237,0.53)' }}>{doneCount} done</span>
           </div>
 
           {/* Divider */}
-          <div style={{ height: '1px', background: isDark ? '#1A1A1A' : '#1A1A1A', margin: '20px 0', width: '100%' }} />
+          <div style={{ height: '1px', background: isDark ? '#1A1A1A' : '#F1F5F9', margin: '20px 0', width: '100%' }} />
 
           {/* Open Items Section */}
           {nonDone.length > 0 && (
             <div style={{ textAlign: 'left' as const, marginBottom: '16px' }}>
-              <div style={{ fontSize: '11px', fontWeight: 700, color: isDark ? '#878787' : 'rgba(237,237,237,0.40)', textTransform: 'uppercase' as const, letterSpacing: '0.05em', marginBottom: '10px' }}>Open Items</div>
+              <div style={{ fontSize: '11px', fontWeight: 700, color: isDark ? '#878787' : '#64748B', textTransform: 'uppercase' as const, letterSpacing: '0.05em', marginBottom: '10px' }}>Open Items</div>
               {nonDone.map(item => {
                 const hasHighP = isHighPriority(item.priority);
                 const hasMedP = isMediumPriority(item.priority);
@@ -1115,18 +1115,18 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected, overview, 
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                         {getJiraIcon(item.item_type)}
-                        <span style={{ fontSize: '11px', fontWeight: 650, textTransform: 'uppercase' as const, color: isDark ? '#A1A1A1' : 'rgba(237,237,237,0.53)' }}>{item.item_type}</span>
+                        <span style={{ fontSize: '11px', fontWeight: 650, textTransform: 'uppercase' as const, color: isDark ? '#A1A1A1' : '#334155' }}>{item.item_type}</span>
                       </div>
-                      <span style={{ fontSize: '11px', color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>{item.priority}</span>
+                      <span style={{ fontSize: '11px', color: isDark ? '#878787' : '#64748B' }}>{item.priority}</span>
                     </div>
                     {/* Row 2 */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '5px' }}>
                       <span style={{ fontSize: '12px', fontWeight: 600, color: '#2563EB', fontFamily: "'JetBrains Mono', monospace" }}>{item.item_key}</span>
-                      <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', background: isDark ? '#1A1A1A' : '#1A1A1A', color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>{item.project_key}</span>
-                      <span style={{ marginLeft: 'auto', fontSize: '10px', fontWeight: 600, padding: '1px 6px', borderRadius: '4px', background: isDark ? '#0A0A0A' : '#1A1A1A', color: item.age_days > 30 ? '#D97706' : 'rgba(237,237,237,0.40)', fontFamily: "'JetBrains Mono', monospace" }}>{item.age_days}d</span>
+                      <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', background: isDark ? '#1A1A1A' : '#F1F5F9', color: isDark ? '#878787' : '#64748B' }}>{item.project_key}</span>
+                      <span style={{ marginLeft: 'auto', fontSize: '10px', fontWeight: 600, padding: '1px 6px', borderRadius: '4px', background: isDark ? '#0A0A0A' : '#F8FAFC', color: item.age_days > 30 ? '#D97706' : '#64748B', fontFamily: "'JetBrains Mono', monospace" }}>{item.age_days}d</span>
                     </div>
                     {/* Row 3 — full title */}
-                    <div style={{ fontSize: '12px', fontWeight: 500, color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)', lineHeight: '1.35', marginBottom: '5px' }}>{item.title}</div>
+                    <div style={{ fontSize: '12px', fontWeight: 500, color: isDark ? '#EDEDED' : '#0F172A', lineHeight: '1.35', marginBottom: '5px' }}>{item.title}</div>
                     {/* Row 4 */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
                       <StatusLozenge status={item.status} statusCategory={item.status_category} />
@@ -1157,16 +1157,16 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected, overview, 
                     <div style={{ flex: 1 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
                         <span style={{ fontSize: '11.5px', fontWeight: 600, color: '#2563EB', fontFamily: "'JetBrains Mono', monospace" }}>{item.item_key}</span>
-                        <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', background: isDark ? '#1A1A1A' : '#1A1A1A', color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>{item.project_key}</span>
+                        <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', background: isDark ? '#1A1A1A' : '#F1F5F9', color: isDark ? '#878787' : '#64748B' }}>{item.project_key}</span>
                         <StatusLozenge status="Done" />
                       </div>
-                      <div style={{ fontSize: '12px', color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)', marginTop: '2px' }}>{item.title}</div>
-                      <div style={{ fontSize: '11px', color: isDark ? '#878787' : 'rgba(237,237,237,0.40)', marginTop: '2px' }}>Resolved{resolvedLabel ? ` · ${resolvedLabel}` : ''}</div>
+                      <div style={{ fontSize: '12px', color: isDark ? '#EDEDED' : '#0F172A', marginTop: '2px' }}>{item.title}</div>
+                      <div style={{ fontSize: '11px', color: isDark ? '#878787' : '#94A3B8', marginTop: '2px' }}>Resolved{resolvedLabel ? ` · ${resolvedLabel}` : ''}</div>
                     </div>
                   </div>
                 );
               })}
-              <div style={{ fontSize: '12px', color: isDark ? '#878787' : 'rgba(237,237,237,0.40)', marginTop: '8px' }}>
+              <div style={{ fontSize: '12px', color: isDark ? '#878787' : '#64748B', marginTop: '8px' }}>
                 {doneCount} of {totalItems} total resolved ({totalItems > 0 ? Math.round((doneCount / totalItems) * 100) : 0}%)
               </div>
             </div>
@@ -1176,7 +1176,7 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected, overview, 
           {nonDone.length === 0 && doneItems.length === 0 && (
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', padding: '20px 0' }}>
               <CalendarX2 size={32} style={{ color: '#D4D4D8' }} />
-              <span style={{ fontSize: '13px', color: isDark ? '#878787' : 'rgba(237,237,237,0.40)', fontStyle: 'italic' }}>No activity recorded this week</span>
+              <span style={{ fontSize: '13px', color: isDark ? '#878787' : '#94A3B8', fontStyle: 'italic' }}>No activity recorded this week</span>
             </div>
           )}
         </div>
@@ -1249,23 +1249,23 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected, overview, 
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px', flexShrink: 0, height: '18px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                   {getJiraIcon(item.item_type)}
-                  <span style={{ fontSize: '11px', fontWeight: 650, textTransform: 'uppercase' as const, color: isDark ? '#A1A1A1' : 'rgba(237,237,237,0.53)' }}>{item.item_type}</span>
+                  <span style={{ fontSize: '11px', fontWeight: 650, textTransform: 'uppercase' as const, color: isDark ? '#A1A1A1' : '#334155' }}>{item.item_type}</span>
                 </div>
-                <span style={{ fontSize: '11px', color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>{item.priority}</span>
+                <span style={{ fontSize: '11px', color: isDark ? '#878787' : '#64748B' }}>{item.priority}</span>
               </div>
               {/* Row 2: key + project badge + age — fixed 18px */}
               <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '5px', flexShrink: 0, height: '18px' }}>
                 <span style={{ fontSize: '12px', fontWeight: 600, color: '#2563EB', fontFamily: "'JetBrains Mono', monospace" }}>{item.item_key}</span>
-                <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', background: isDark ? '#1A1A1A' : '#1A1A1A', color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>{item.project_key}</span>
+                <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', background: isDark ? '#1A1A1A' : '#F1F5F9', color: isDark ? '#878787' : '#64748B' }}>{item.project_key}</span>
                 <span style={{
                   marginLeft: 'auto', fontSize: '10px', fontWeight: 600,
-                  padding: '1px 6px', borderRadius: '4px', background: isDark ? '#0A0A0A' : '#1A1A1A',
+                  padding: '1px 6px', borderRadius: '4px', background: isDark ? '#0A0A0A' : '#F8FAFC',
                   color: item.age_days > 30 ? '#D97706' : 'rgba(237,237,237,0.40)',
                   fontFamily: "'JetBrains Mono', monospace",
                 }}>{item.age_days}d</span>
               </div>
               {/* Row 3: title — 11px, 2-line clamp, flex fills remaining space */}
-              <div style={{ fontSize: '11px', fontWeight: 500, color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)', lineHeight: '1.3', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', textOverflow: 'ellipsis', flex: '1 1 auto', minHeight: 0 } as React.CSSProperties}>{item.title}</div>
+              <div style={{ fontSize: '11px', fontWeight: 500, color: isDark ? '#EDEDED' : '#0F172A', lineHeight: '1.3', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', textOverflow: 'ellipsis', flex: '1 1 auto', minHeight: 0 } as React.CSSProperties}>{item.title}</div>
               {/* Row 4: status lozenge + from tag — fixed 24px, pinned to bottom */}
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap', marginTop: 'auto', flexShrink: 0, height: '24px' }}>
                 <StatusLozenge status={item.status} statusCategory={item.status_category} />
@@ -1275,12 +1275,12 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected, overview, 
                   </span>
                 )}
                 {isContributor && (
-                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '10px', fontWeight: 500, color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>→ <MiniAvatar name={item.assignee_name} size={16} /> {item.assignee_name}</span>
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '10px', fontWeight: 500, color: isDark ? '#878787' : '#64748B' }}>→ <MiniAvatar name={item.assignee_name} size={16} /> {item.assignee_name}</span>
                 )}
               </div>
             </div>
             {/* Updated Xd ago label below card */}
-            <div style={{ textAlign: 'center', marginTop: '6px', fontSize: '11px', color: isDark ? '#878787' : 'rgba(237,237,237,0.40)', width: `${CARD_W}px`, pointerEvents: 'none' }}>
+            <div style={{ textAlign: 'center', marginTop: '6px', fontSize: '11px', color: isDark ? '#878787' : '#94A3B8', width: `${CARD_W}px`, pointerEvents: 'none' }}>
               Updated {item.age_days}d ago
             </div>
           </div>
@@ -1292,8 +1292,8 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected, overview, 
         <div style={{
           position: 'absolute', bottom: '8px', left: '50%', transform: 'translateX(-50%)',
           display: 'flex', alignItems: 'center', gap: '8px',
-          fontSize: '11px', fontWeight: 600, color: isDark ? '#878787' : 'rgba(237,237,237,0.40)', background: isDark ? '#0A0A0A' : '#1A1A1A',
-          border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.10)'}`, borderRadius: '12px', padding: '3px 8px',
+          fontSize: '11px', fontWeight: 600, color: isDark ? '#878787' : '#64748B', background: isDark ? '#0A0A0A' : '#F8FAFC',
+          border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: '12px', padding: '3px 8px',
           fontFamily: "'JetBrains Mono', monospace", zIndex: 8,
         }}>
           <button
@@ -1327,7 +1327,7 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected, overview, 
 
       {/* EMPTY STATE */}
       {items.length === 0 && (
-        <div style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%,-50%)', textAlign: 'center', color: isDark ? '#878787' : 'rgba(237,237,237,0.40)', fontSize: '14px' }}>
+        <div style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%,-50%)', textAlign: 'center', color: isDark ? '#878787' : '#64748B', fontSize: '14px' }}>
           No work items found for this week
         </div>
       )}
@@ -1487,8 +1487,8 @@ function ChronologyView({ items, onSelect, weekStart, weekEnd }: { items: R360Wo
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4, flexShrink: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             {item.role_on_item === 'Contributor' && (
-              <span style={{ fontSize: 12.5, color: isDark ? '#A1A1A1' : 'rgba(237,237,237,0.53)', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-                <span style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>→</span> <MiniAvatar name={item.assignee_name} size={18} /> {item.assignee_name}
+              <span style={{ fontSize: 12.5, color: isDark ? '#A1A1A1' : '#334155', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                <span style={{ color: isDark ? '#878787' : '#64748B' }}>→</span> <MiniAvatar name={item.assignee_name} size={18} /> {item.assignee_name}
               </span>
             )}
             <span
@@ -1600,7 +1600,7 @@ function ChronologyView({ items, onSelect, weekStart, weekEnd }: { items: R360Wo
               {todayGroup[1].items.map(renderChronoCard)}
             </div>
           ) : (
-            <div style={{ paddingLeft: '28px', fontSize: '12px', fontStyle: 'italic', color: isDark ? '#878787' : 'rgba(237,237,237,0.40)', padding: '8px 0 8px 28px' }}>
+            <div style={{ paddingLeft: '28px', fontSize: '12px', fontStyle: 'italic', color: isDark ? '#878787' : '#94A3B8', padding: '8px 0 8px 28px' }}>
               No activity yet today
             </div>
           )
@@ -1617,7 +1617,7 @@ function ChronologyView({ items, onSelect, weekStart, weekEnd }: { items: R360Wo
             <span style={{ width: '10px', height: '10px', borderRadius: '50%', border: '2px solid #D97706', background: 'transparent', flexShrink: 0 }} />
             <span className="r3-date-label" style={{ fontWeight: 650, fontSize: '13px' }}>Carried Over</span>
             <span className="r3-date-count">{carryoverItems.length} items</span>
-            <span style={{ fontSize: '10px', padding: '2px 6px', borderRadius: '4px', background: isDark ? '#1A1A1A' : '#1A1A1A', color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>No activity this week</span>
+            <span style={{ fontSize: '10px', padding: '2px 6px', borderRadius: '4px', background: isDark ? '#1A1A1A' : '#F1F5F9', color: isDark ? '#878787' : '#64748B' }}>No activity this week</span>
             <ChevronDown size={16} className={`r3-date-chevron ${collapsed.has('__carryover__') ? 'r3-date-chevron--collapsed' : ''}`} />
           </div>
           {!collapsed.has('__carryover__') && (
@@ -1686,7 +1686,7 @@ function BoardView({ items, onSelect }: { items: R360WorkItem[]; onSelect: (i: R
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                         <span className="r3-priority-dot" style={{ background: priorityDotColor(item.priority) }} />
-                        <span style={{ fontSize: 12, fontWeight: 500, color: isDark ? '#A1A1A1' : 'rgba(237,237,237,0.53)' }}>{item.priority}</span>
+                        <span style={{ fontSize: 12, fontWeight: 500, color: isDark ? '#A1A1A1' : '#334155' }}>{item.priority}</span>
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                         <StatusLozenge status={item.status} statusCategory={item.status_category} />
@@ -1735,7 +1735,7 @@ function DetailPanel({ item, onClose, onSelectItem }: {
           </div>
           <div className="r3-panel-pills">
             <StatusPill label={item.status_label} color={item.status_color} bg={item.status_bg} dot={item.status_dot} />
-            <span style={{ fontSize: 10.5, fontWeight: 600, padding: '2px 8px', borderRadius: 4, background: isDark ? '#1A1A1A' : '#1A1A1A', color: isDark ? '#A1A1A1' : 'rgba(237,237,237,0.53)' }}>{item.priority}</span>
+            <span style={{ fontSize: 10.5, fontWeight: 600, padding: '2px 8px', borderRadius: 4, background: isDark ? '#1A1A1A' : '#F1F5F9', color: isDark ? '#A1A1A1' : '#334155' }}>{item.priority}</span>
             <span className="r3-type-badge">{getJiraIcon(item.item_type)} {item.item_type}</span>
             <ProjTag projectKey={item.project_key} />
             {item.role_on_item === 'Contributor' && (
@@ -1765,13 +1765,13 @@ function DetailPanel({ item, onClose, onSelectItem }: {
             <div className="r3-meta-cell">
               <div className="r3-meta-label">Assigned</div>
               <div className="r3-meta-value">{formatRelativeDate(item.created_at)}</div>
-              <div style={{ fontSize: 11, color: isDark ? '#A1A1A1' : 'rgba(237,237,237,0.53)' }}>{formatDate(item.created_at)}</div>
+              <div style={{ fontSize: 11, color: isDark ? '#A1A1A1' : '#334155' }}>{formatDate(item.created_at)}</div>
             </div>
             <div className="r3-meta-cell">
               <div className="r3-meta-label">Days Sitting</div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <span className={`r3-age r3-age--${item.age_class}`} style={{ fontSize: 13, fontWeight: 600 }}>{item.age_days}</span>
-                <div style={{ width: 60, height: 4, borderRadius: 4, background: isDark ? '#1A1A1A' : '#1A1A1A', overflow: 'hidden' }}>
+                <div style={{ width: 60, height: 4, borderRadius: 4, background: isDark ? '#1A1A1A' : '#F1F5F9', overflow: 'hidden' }}>
                   <div style={{ width: `${ageBarPercent(item.age_days)}%`, height: '100%', background: ageBarColor(item.age_days), borderRadius: 2 }} />
                 </div>
               </div>
@@ -1801,7 +1801,7 @@ function DetailPanel({ item, onClose, onSelectItem }: {
               <div className="r3-hier-item" style={{ padding: '6px 8px' }}>
                 {getJiraIcon('Epic')}
                 <span className="r3-card-key r3-card-key--sm">{item.parent_key}</span>
-                <span style={{ fontSize: 12, color: isDark ? '#A1A1A1' : 'rgba(237,237,237,0.53)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.parent_title}</span>
+                <span style={{ fontSize: 12, color: isDark ? '#A1A1A1' : '#334155', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.parent_title}</span>
               </div>
               <div className="r3-hier-connector">↳</div>
               <div className="r3-hier-item r3-hier-item--current">
@@ -1883,11 +1883,11 @@ function TicketListDrawer({ mode, items, onClose, onSelectItem }: {
               <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 28, height: 28, borderRadius: 6, background: accentBg, color: accentColor, fontSize: 14, fontWeight: 700 }}>
                 {items.length}
               </span>
-              <span style={{ fontSize: 15, fontWeight: 700, color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)' }}>{title}</span>
+              <span style={{ fontSize: 15, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A' }}>{title}</span>
             </div>
             <button className="r3-panel-close" onClick={onClose}><X size={14} /></button>
           </div>
-          <div style={{ fontSize: 12, color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>
+          <div style={{ fontSize: 12, color: isDark ? '#878787' : '#64748B' }}>
             {isStale ? 'Items with no activity for 14+ days' : 'All currently open items across all periods'}
           </div>
         </div>
@@ -1895,7 +1895,7 @@ function TicketListDrawer({ mode, items, onClose, onSelectItem }: {
         {/* List */}
         <div className="r3-panel-body" style={{ padding: 0 }}>
           {items.length === 0 ? (
-            <div style={{ padding: 24, textAlign: 'center', color: isDark ? '#878787' : 'rgba(237,237,237,0.40)', fontSize: 13 }}>
+            <div style={{ padding: 24, textAlign: 'center', color: isDark ? '#878787' : '#94A3B8', fontSize: 13 }}>
               No {mode} items
             </div>
           ) : (
@@ -1916,7 +1916,7 @@ function TicketListDrawer({ mode, items, onClose, onSelectItem }: {
                 {/* Key */}
                 <span className="r3-card-key r3-card-key--sm" style={{ flexShrink: 0, width: 80 }}>{item.item_key}</span>
                 {/* Title */}
-                <span style={{ fontSize: 12, color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                <span style={{ fontSize: 12, color: isDark ? '#EDEDED' : '#0F172A', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {item.title}
                 </span>
                 {/* Status */}

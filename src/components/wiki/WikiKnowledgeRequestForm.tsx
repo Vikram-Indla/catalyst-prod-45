@@ -72,7 +72,7 @@ export function WikiKnowledgeRequestForm({ open, onClose }: Props) {
   const inputStyle: React.CSSProperties = {
     width: '100%', fontSize: 12, padding: '8px 12px', borderRadius: 6,
     border: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(0,0,0,0.10)',
-    outline: 'none', fontFamily: 'Inter, sans-serif',
+    outline: 'none', fontFamily: 'Geist, -apple-system, sans-serif',
     transition: 'border-color 150ms',
     background: 'transparent',
     color: isDark ? '#EDEDED' : undefined,

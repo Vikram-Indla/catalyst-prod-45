@@ -10,7 +10,7 @@ export default function WikiLearningPathsPage() {
   const { isDark } = useTheme();
 
   return (
-    <div style={{ fontFamily: 'Geist, -apple-system, sans-serif', color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)', background: isDark ? '#0A0A0A' : '#1A1A1A', minHeight: '100%', padding: '24px 40px 48px' }}>
+    <div style={{ fontFamily: 'Inter, sans-serif', color: isDark ? '#EDEDED' : '#0F172A', background: isDark ? '#0A0A0A' : '#F8FAFC', minHeight: '100%', padding: '24px 40px 48px' }}>
       <nav style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 24 }}>
         <span onClick={() => navigate('/wiki')} style={{ fontSize: 13, color: '#2563EB', cursor: 'pointer' }}>Wiki</span>
         <ChevronRight size={12} style={{ color: 'rgba(237,237,237,0.40)' }} />
@@ -36,12 +36,12 @@ export default function WikiLearningPathsPage() {
                   <GraduationCap size={20} style={{ color: '#FFFFFF' }} />
                 </div>
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontFamily: 'Sora, sans-serif', fontSize: 14, fontWeight: 650, color: isDark ? '#EDEDED' : 'rgba(237,237,237,0.93)' }}>{p.title}</div>
+                  <div style={{ fontFamily: 'Sora, sans-serif', fontSize: 14, fontWeight: 650, color: isDark ? '#EDEDED' : '#0F172A' }}>{p.title}</div>
                   <span style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', color: diffColor }}>{p.difficulty}</span>
                 </div>
               </div>
               <div style={{ fontSize: 12, color: 'rgba(237,237,237,0.40)', marginBottom: 16, lineHeight: 1.5 }}>{p.description}</div>
-              <div style={{ height: 4, borderRadius: 4, background: isDark ? '#292929' : 'rgba(255,255,255,0.10)', marginBottom: 8 }}>
+              <div style={{ height: 4, borderRadius: 4, background: isDark ? '#292929' : '#E2E8F0', marginBottom: 8 }}>
                 <div style={{ height: '100%', borderRadius: 4, background: '#2563EB', width: `${pct}%` }} />
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: 'rgba(237,237,237,0.40)' }}>

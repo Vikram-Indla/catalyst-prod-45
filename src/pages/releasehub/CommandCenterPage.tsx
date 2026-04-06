@@ -23,14 +23,14 @@ function KPICard({ label, value, delta, deltaLabel, color, icon: Icon, loading, 
     <button onClick={onClick} className="rounded-[6px] p-5 text-left transition-all hover:shadow-sm" style={{ background: isDark ? '#1A1A1A' : '#FFFFFF', border: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.12)'}` }}>
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-[12px] font-medium uppercase tracking-[0.04em]" style={{ fontFamily: RH.fontBody, color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>{label}</p>
+          <p className="text-[12px] font-medium uppercase tracking-[0.04em]" style={{ fontFamily: RH.fontBody, color: isDark ? '#878787' : '#64748B' }}>{label}</p>
           {loading ? (
-            <div className="h-9 w-16 rounded animate-pulse mt-2" style={{ background: isDark ? '#1A1A1A' : '#1A1A1A' }} />
+            <div className="h-9 w-16 rounded animate-pulse mt-2" style={{ background: isDark ? '#1A1A1A' : '#F1F5F9' }} />
           ) : (
             <p className="text-[32px] mt-1" style={{ fontFamily: RH.fontDisplay, fontWeight: 700, color: isDark ? '#EDEDED' : RH.ink1 }}>{value}</p>
           )}
           {delta && !loading && (
-            <p className="text-[12px] mt-1" style={{ fontWeight: 600, color: deltaLabel === 'neutral' ? (isDark ? '#878787' : 'rgba(237,237,237,0.40)') : delta.startsWith('+') ? '#DC2626' : '#16A34A' }}>
+            <p className="text-[12px] mt-1" style={{ fontWeight: 600, color: deltaLabel === 'neutral' ? (isDark ? '#878787' : '#64748B') : delta.startsWith('+') ? '#DC2626' : '#16A34A' }}>
               {delta}
             </p>
           )}
@@ -239,7 +239,7 @@ export default function CommandCenterPage() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-[24px]" style={{ fontFamily: RH.fontDisplay, fontWeight: 650, color: isDark ? '#EDEDED' : RH.ink1 }}>Command Center</h1>
-          <p className="text-[13px] mt-1" style={{ fontFamily: RH.fontBody, color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>Release operations overview — real-time</p>
+          <p className="text-[13px] mt-1" style={{ fontFamily: RH.fontBody, color: isDark ? '#878787' : '#64748B' }}>Release operations overview — real-time</p>
         </div>
       </div>
 
@@ -265,8 +265,8 @@ export default function CommandCenterPage() {
               </div>
               <p className="text-[14px] mb-3" style={{ fontWeight: 650, color: isDark ? '#EDEDED' : RH.ink1 }}>{latestDeployed.title}</p>
               <div className="grid grid-cols-2 gap-3">
-                <div><p className="text-[11px] uppercase mb-0.5" style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>Release</p><p className="text-[12px]" style={{ color: isDark ? '#A1A1A1' : RH.ink2 }}>{latestDeployed.release_name || '—'}</p></div>
-                <div><p className="text-[11px] uppercase mb-0.5" style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>Deployed</p><p className="text-[12px]" style={{ color: isDark ? '#A1A1A1' : RH.ink2 }}>{latestDeployed.deployment_date ? format(new Date(latestDeployed.deployment_date), 'MMM d, yyyy') : '—'}</p></div>
+                <div><p className="text-[11px] uppercase mb-0.5" style={{ color: isDark ? '#878787' : '#64748B' }}>Release</p><p className="text-[12px]" style={{ color: isDark ? '#A1A1A1' : RH.ink2 }}>{latestDeployed.release_name || '—'}</p></div>
+                <div><p className="text-[11px] uppercase mb-0.5" style={{ color: isDark ? '#878787' : '#64748B' }}>Deployed</p><p className="text-[12px]" style={{ color: isDark ? '#A1A1A1' : RH.ink2 }}>{latestDeployed.deployment_date ? format(new Date(latestDeployed.deployment_date), 'MMM d, yyyy') : '—'}</p></div>
               </div>
             </div>
           ) : (
@@ -274,7 +274,7 @@ export default function CommandCenterPage() {
           )}
 
           {/* AI Post-Deployment Summary */}
-          <div className="mt-4 rounded-[6px] p-3.5" style={{ background: isDark ? 'rgba(37,99,235,0.12)' : 'rgba(59,130,246,0.06)', border: `0.75px solid ${isDark ? 'rgba(37,99,235,0.2)' : '#DBEAFE'}` }}>
+          <div className="mt-4 rounded-[6px] p-3.5" style={{ background: isDark ? 'rgba(37,99,235,0.12)' : '#EFF6FF', border: `0.75px solid ${isDark ? 'rgba(37,99,235,0.2)' : '#DBEAFE'}` }}>
             <div className="flex items-center gap-1.5 mb-1.5">
               <Sparkles size={12} style={{ color: '#2563EB' }} />
               <span className="text-[11px] font-bold text-[#2563EB] uppercase">AI Post-Deploy Summary</span>
@@ -282,7 +282,7 @@ export default function CommandCenterPage() {
             {!coreDataReady ? (
               <div className="h-3 w-3/4 rounded animate-pulse" style={{ background: isDark ? 'rgba(37,99,235,0.2)' : '#DBEAFE' }} />
             ) : (
-              <p className="text-[12px]" style={{ color: isDark ? '#A1A1A1' : 'rgba(237,237,237,0.53)' }}>{computed.postDeploySummary}</p>
+              <p className="text-[12px]" style={{ color: isDark ? '#A1A1A1' : '#334155' }}>{computed.postDeploySummary}</p>
             )}
           </div>
         </div>
@@ -293,13 +293,13 @@ export default function CommandCenterPage() {
             <SectionHeader title="Release Status" isDark={isDark} action={<button onClick={() => navigate('/release-hub/releases')} className="text-[12px] font-medium text-[#2563EB] hover:underline">View all</button>} />
           </div>
           {relLoading ? <SkeletonRows count={3} /> : activeRels.length === 0 ? (
-            <div className="px-5 py-8 text-center text-[13px]" style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>No active releases</div>
+            <div className="px-5 py-8 text-center text-[13px]" style={{ color: isDark ? '#878787' : '#94A3B8' }}>No active releases</div>
           ) : (
             <table className="w-full text-[13px]" style={{ fontFamily: RH.fontBody }}>
               <thead>
-                <tr style={{ background: isDark ? '#1A1A1A' : '#1A1A1A' }}>
+                <tr style={{ background: isDark ? '#1A1A1A' : '#F1F5F9' }}>
                   {['RELEASE', 'STATUS', 'CHANGES', 'TARGET', 'PROGRESS'].map(h => (
-                    <th key={h} className="px-3 text-left text-[11px] uppercase tracking-[0.06em]" style={{ fontWeight: 600, height: 50, padding: '8px 12px', color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>{h}</th>
+                    <th key={h} className="px-3 text-left text-[11px] uppercase tracking-[0.06em]" style={{ fontWeight: 600, height: 50, padding: '8px 12px', color: isDark ? '#878787' : '#64748B' }}>{h}</th>
                   ))}
                 </tr>
               </thead>
@@ -313,9 +313,9 @@ export default function CommandCenterPage() {
                       <td className="px-3" style={{ fontWeight: 650, color: isDark ? '#EDEDED' : RH.ink1 }}>{r.name}</td>
                       <td className="px-3"><ReleaseStatusBadge status={r.status} /></td>
                       <td className="px-3" style={{ fontFamily: RH.fontMono, fontWeight: 650 }}>{r.chg_count || chgCount}</td>
-                      <td className="px-3" style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>{r.target_date ? format(new Date(r.target_date), 'MMM d') : '—'}</td>
+                      <td className="px-3" style={{ color: isDark ? '#878787' : '#64748B' }}>{r.target_date ? format(new Date(r.target_date), 'MMM d') : '—'}</td>
                       <td className="px-3">
-                        <div className="w-20 h-1.5 rounded-full overflow-hidden" style={{ background: isDark ? '#1A1A1A' : '#1A1A1A' }}>
+                        <div className="w-20 h-1.5 rounded-full overflow-hidden" style={{ background: isDark ? '#1A1A1A' : '#F1F5F9' }}>
                           <div className="h-full bg-[#2563EB] rounded-full" style={{ width: `${Math.min(100, (chgCount > 0 ? 60 : 20))}%` }} />
                         </div>
                       </td>
@@ -362,7 +362,7 @@ export default function CommandCenterPage() {
             {!coreDataReady ? (
               <div className="h-3 w-3/4 rounded animate-pulse" style={{ background: isDark ? 'rgba(37,99,235,0.2)' : '#DBEAFE' }} />
             ) : (
-              <p className="text-[12px]" style={{ color: isDark ? '#A1A1A1' : 'rgba(237,237,237,0.53)' }}>{computed.conflictMessage}</p>
+              <p className="text-[12px]" style={{ color: isDark ? '#A1A1A1' : '#334155' }}>{computed.conflictMessage}</p>
             )}
           </div>
         </div>
@@ -372,21 +372,21 @@ export default function CommandCenterPage() {
           <div className="flex items-center gap-2 mb-4">
             <Sparkles size={14} style={{ color: '#2563EB' }} />
             <h2 className="text-[14px]" style={{ fontFamily: RH.fontDisplay, fontWeight: 650, color: isDark ? '#EDEDED' : RH.ink1 }}>AI Release Readiness</h2>
-            {activeRels[0] && <span className="text-[12px]" style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>— {activeRels[0]?.name}</span>}
+            {activeRels[0] && <span className="text-[12px]" style={{ color: isDark ? '#878787' : '#64748B' }}>— {activeRels[0]?.name}</span>}
           </div>
 
           {!coreDataReady ? (
             <>
               <div className="flex items-center gap-3 mb-4">
-                <div className="h-8 w-14 rounded animate-pulse" style={{ background: isDark ? '#1A1A1A' : '#1A1A1A' }} />
-                <div className="flex-1 h-1.5 rounded-full" style={{ background: isDark ? '#1A1A1A' : '#1A1A1A' }} />
+                <div className="h-8 w-14 rounded animate-pulse" style={{ background: isDark ? '#1A1A1A' : '#F1F5F9' }} />
+                <div className="flex-1 h-1.5 rounded-full" style={{ background: isDark ? '#1A1A1A' : '#F1F5F9' }} />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 {[1,2,3,4].map(i => (
                   <div key={i} className="rounded-[6px] p-3" style={{ border: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#DFE1E6'}`, borderLeft: `4px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#DFE1E6'}` }}>
-                    <div className="h-3 w-20 rounded animate-pulse mb-2" style={{ background: isDark ? '#1A1A1A' : '#1A1A1A' }} />
-                    <div className="h-5 w-10 rounded animate-pulse mb-1" style={{ background: isDark ? '#1A1A1A' : '#1A1A1A' }} />
-                    <div className="h-2.5 w-24 rounded animate-pulse" style={{ background: isDark ? '#1A1A1A' : '#1A1A1A' }} />
+                    <div className="h-3 w-20 rounded animate-pulse mb-2" style={{ background: isDark ? '#1A1A1A' : '#F1F5F9' }} />
+                    <div className="h-5 w-10 rounded animate-pulse mb-1" style={{ background: isDark ? '#1A1A1A' : '#F1F5F9' }} />
+                    <div className="h-2.5 w-24 rounded animate-pulse" style={{ background: isDark ? '#1A1A1A' : '#F1F5F9' }} />
                   </div>
                 ))}
               </div>
@@ -406,7 +406,7 @@ export default function CommandCenterPage() {
                 >
                   {computed.readinessScore}%
                 </span>
-                <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: isDark ? '#1A1A1A' : '#1A1A1A' }}>
+                <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: isDark ? '#1A1A1A' : '#F1F5F9' }}>
                   <div
                     className="h-full rounded-full transition-all"
                     style={{
@@ -441,7 +441,7 @@ export default function CommandCenterPage() {
                       <p className="text-[22px]" style={{ fontFamily: RH.fontDisplay, fontWeight: 700, color: isDark ? '#EDEDED' : RH.ink1 }}>
                         {gate.noData ? '—' : gate.value}
                       </p>
-                      <p className="text-[11px]" style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>{gate.noData ? 'No data yet' : gate.detail}</p>
+                      <p className="text-[11px]" style={{ color: isDark ? '#878787' : '#64748B' }}>{gate.noData ? 'No data yet' : gate.detail}</p>
                     </div>
                   );
                 })}
@@ -458,7 +458,7 @@ export default function CommandCenterPage() {
           <div className="px-5 py-3.5 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <h2 className="text-[14px]" style={{ fontFamily: RH.fontDisplay, fontWeight: 650, color: isDark ? '#EDEDED' : RH.ink1 }}>Sign-off Queue</h2>
-              <span className="inline-flex items-center h-5 px-1.5 rounded text-[11px] font-bold" style={{ background: isDark ? 'rgba(37,99,235,0.12)' : 'rgba(59,130,246,0.06)', color: '#2563EB' }}>AI Prioritized</span>
+              <span className="inline-flex items-center h-5 px-1.5 rounded text-[11px] font-bold" style={{ background: isDark ? 'rgba(37,99,235,0.12)' : '#EFF6FF', color: '#2563EB' }}>AI Prioritized</span>
             </div>
             <button onClick={() => navigate('/release-hub/sign-off-queue')} className="text-[12px] font-medium text-[#2563EB] hover:underline">View all</button>
           </div>
@@ -470,9 +470,9 @@ export default function CommandCenterPage() {
           ) : (
             <table className="w-full text-[13px]" style={{ fontFamily: RH.fontBody }}>
               <thead>
-                <tr style={{ background: isDark ? '#1A1A1A' : '#1A1A1A' }}>
+                <tr style={{ background: isDark ? '#1A1A1A' : '#F1F5F9' }}>
                   {['CHANGE', 'GATE', 'APPROVER', 'STATUS'].map(h => (
-                    <th key={h} className="text-left text-[11px] uppercase tracking-[0.06em]" style={{ fontWeight: 600, height: 50, padding: '8px 12px', color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>{h}</th>
+                    <th key={h} className="text-left text-[11px] uppercase tracking-[0.06em]" style={{ fontWeight: 600, height: 50, padding: '8px 12px', color: isDark ? '#878787' : '#64748B' }}>{h}</th>
                   ))}
                 </tr>
               </thead>
@@ -482,8 +482,8 @@ export default function CommandCenterPage() {
                     onMouseEnter={e => (e.currentTarget.style.background = isDark ? '#1A1A1A' : 'rgba(15,23,42,0.04)')}
                     onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
                     <td className="px-3" style={{ fontFamily: RH.fontMono, color: '#2563EB', fontWeight: 650 }}>{so.rh_changes?.chg_number || '—'}</td>
-                    <td className="px-3" style={{ color: isDark ? '#A1A1A1' : 'rgba(237,237,237,0.53)' }}>{so.signoff_role || so.stage || '—'}</td>
-                    <td className="px-3" style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>{so.assigned_to || '—'}</td>
+                    <td className="px-3" style={{ color: isDark ? '#A1A1A1' : '#334155' }}>{so.signoff_role || so.stage || '—'}</td>
+                    <td className="px-3" style={{ color: isDark ? '#878787' : '#64748B' }}>{so.assigned_to || '—'}</td>
                     <td className="px-3"><StatusLozenge status={so.status} /></td>
                   </tr>
                 ))}
@@ -498,7 +498,7 @@ export default function CommandCenterPage() {
             <SectionHeader title="Recent Production Events" isDark={isDark} action={<button onClick={() => navigate('/release-hub/production-events')} className="text-[12px] font-medium text-[#2563EB] hover:underline">View all</button>} />
           </div>
           {prodEvents.length === 0 ? (
-            <div className="px-5 py-8 text-center text-[13px]" style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>No production events</div>
+            <div className="px-5 py-8 text-center text-[13px]" style={{ color: isDark ? '#878787' : '#94A3B8' }}>No production events</div>
           ) : (
             <div className="px-5 pb-4 space-y-3">
               {prodEvents.slice(0, 4).map((ev: any) => (
@@ -509,7 +509,7 @@ export default function CommandCenterPage() {
                   }} />
                   <div className="flex-1 min-w-0">
                     <p className="text-[12px] truncate" style={{ fontWeight: 650, color: isDark ? '#EDEDED' : RH.ink1 }}>{ev.title}</p>
-                    <p className="text-[11px]" style={{ color: isDark ? '#878787' : 'rgba(237,237,237,0.40)' }}>{ev.deployed_at ? format(new Date(ev.deployed_at), 'MMM d, HH:mm') : '—'} · {ev.deployed_by}</p>
+                    <p className="text-[11px]" style={{ color: isDark ? '#878787' : '#64748B' }}>{ev.deployed_at ? format(new Date(ev.deployed_at), 'MMM d, HH:mm') : '—'} · {ev.deployed_by}</p>
                   </div>
                   {ev.deployment_result && <DeployResultBadge result={ev.deployment_result} />}
                 </div>

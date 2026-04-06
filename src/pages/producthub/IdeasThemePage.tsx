@@ -103,7 +103,7 @@ export default function IdeasThemePage() {
                       {theme.idea_count} {theme.idea_count === 1 ? 'idea' : 'ideas'}
                     </span>
                     <div style={{
-                      width: 36, height: 50, borderRadius: 8, background: isDark ? 'rgba(255,255,255,0.06)' : '#1A1A1A', border: `1px solid ${dk.border}`,
+                      width: 36, height: 50, borderRadius: 8, background: isDark ? 'rgba(255,255,255,0.06)' : '#F1F5F9', border: `1px solid ${dk.border}`,
                       display: 'flex', alignItems: 'center', justifyContent: 'center', color: dk.t3,
                     }}>
                       <IconComp size={18} strokeWidth={2} />
@@ -128,7 +128,7 @@ export default function IdeasThemePage() {
                         {convRate}%
                       </span>
                     </div>
-                    <div style={{ height: 6, borderRadius: 4, background: isDark ? 'rgba(255,255,255,0.08)' : '#1A1A1A', overflow: 'hidden', border: `1px solid ${dk.border}` }}>
+                    <div style={{ height: 6, borderRadius: 4, background: isDark ? 'rgba(255,255,255,0.08)' : '#F1F5F9', overflow: 'hidden', border: `1px solid ${dk.border}` }}>
                       <div style={{
                         width: `${Math.min(progressPct, 100)}%`, height: '100%',
                         background: barColor, borderRadius: 4, transition: 'width 0.3s',

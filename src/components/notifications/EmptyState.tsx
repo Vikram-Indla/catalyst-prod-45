@@ -7,14 +7,14 @@ interface EmptyStateProps {
 
 export default function EmptyState({ variant }: EmptyStateProps) {
   const { isDark } = useTheme();
-  const text1 = isDark ? '#F5F3F0' : 'rgba(237,237,237,0.93)';
-  const text3 = isDark ? '#6B6560' : 'rgba(237,237,237,0.40)';
-  const iconBgMuted = isDark ? '#232019' : '#1A1A1A';
+  const text1 = isDark ? '#F5F3F0' : '#0F172A';
+  const text3 = isDark ? '#6B6560' : '#94A3B8';
+  const iconBgMuted = isDark ? '#232019' : '#F1F5F9';
 
   if (variant === 'allCaughtUp') {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '48px 20px', gap: 8 }}>
-        <div style={{ width: 48, height: 48, borderRadius: '50%', background: isDark ? '#0F2A1A' : 'rgba(74,222,128,0.10)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ width: 48, height: 48, borderRadius: '50%', background: isDark ? '#0F2A1A' : '#E3FCEF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <CheckCircle size={24} color={isDark ? '#86EFAC' : '#006644'} />
         </div>
         <span style={{ fontFamily: 'Geist, -apple-system, sans-serif', fontSize: 14, fontWeight: 600, color: text1 }}>All caught up!</span>
