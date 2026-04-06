@@ -165,7 +165,7 @@ export function AllWorkTable({
     <>
       <div
         className="rounded border overflow-hidden overflow-x-auto h-full flex flex-col"
-        style={{ borderColor: 'rgba(15,23,42,0.12)', backgroundColor: 'var(--bg-app)', borderRadius: 4 }}
+        style={{ borderColor: 'var(--bd-default, rgba(255,255,255,0.08))', backgroundColor: 'var(--bg-app)', borderRadius: 4 }}
         role="table"
         aria-label="Work items table"
       >
@@ -178,7 +178,7 @@ export function AllWorkTable({
             height: 44,
             maxHeight: 44,
             backgroundColor: 'var(--bg-1)',
-            borderBottom: '1px solid rgba(15,23,42,0.08)',
+            borderBottom: '1px solid var(--bd-subtle, rgba(255,255,255,0.05))',
           }}
         >
           <div className="flex justify-center" role="columnheader">
@@ -277,11 +277,11 @@ const TableRow = memo(function TableRow({
         gridTemplateColumns: GRID_TEMPLATE,
         height: 44,
         maxHeight: 44,
-        borderBottom: '0.75px solid rgba(15,23,42,0.08)',
+        borderBottom: '0.75px solid var(--bd-subtle, rgba(255,255,255,0.05))',
         backgroundColor: isSelected ? 'rgba(37,99,235,0.08)' : node.depth > 0 ? 'var(--bg-1)' : 'var(--bg-app)',
         transition: 'background-color 80ms ease',
       }}
-      onMouseEnter={e => { if (!isSelected) (e.currentTarget.style.backgroundColor = 'rgba(15,23,42,0.04)'); }}
+      onMouseEnter={e => { if (!isSelected) (e.currentTarget.style.backgroundColor = 'var(--hover, rgba(255,255,255,0.04))'); }}
       onMouseLeave={e => { if (!isSelected) (e.currentTarget.style.backgroundColor = node.depth > 0 ? 'var(--bg-1)' : 'var(--bg-app)'); }}
       onClick={() => onOpenItem(item.issue_key)}
       onContextMenu={(e) => { e.preventDefault(); onContextMenu({ x: e.clientX, y: e.clientY, item }); }}
