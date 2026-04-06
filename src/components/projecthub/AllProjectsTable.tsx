@@ -549,7 +549,9 @@ export function AllProjectsTable({
             const checked = selectedRows.has(p.id);
             const active = isActiveStatus(p.status);
             const badgeColor = getBadgeColor(p.id);
-            const badgeText = p.project_key.substring(0, 2);
+            const badgeText = p.project_key;
+            const badgeWidth = badgeText.length > 3 ? 40 : 36;
+            const badgeFontSize = badgeText.length > 3 ? 8 : badgeText.length > 2 ? 9 : 10;
             const rowNum = pageOffset + idx + 1;
 
             const issueCount = syncData?.countMap?.[p.project_key] ?? p.total_issues ?? 0;
@@ -599,8 +601,16 @@ export function AllProjectsTable({
                         <Star size={14} fill={isFav ? '#F59E0B' : 'none'} className={isFav ? 'text-amber-500' : 'text-slate-300 dark:text-[#878787]'} />
                       </button>
                       <div
-                        className="flex items-center justify-center rounded-lg flex-shrink-0 text-[11px] font-bold text-white"
-                        style={{ width: 32, height: 32, background: badgeColor }}
+                        className="flex items-center justify-center rounded-lg flex-shrink-0 font-bold text-white uppercase"
+                        style={{
+                          width: badgeWidth,
+                          minWidth: badgeWidth,
+                          height: 32,
+                          background: badgeColor,
+                          fontSize: badgeFontSize,
+                          fontFamily: "'Sora', sans-serif",
+                          letterSpacing: badgeText.length > 2 ? '-0.02em' : undefined,
+                        }}
                       >
                         {badgeText}
                       </div>
