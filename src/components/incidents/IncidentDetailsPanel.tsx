@@ -80,7 +80,7 @@ export function IncidentDetailsPanel({
   return (
     <div className="space-y-4">
       {/* Status Panel - Jira style */}
-      <div className="bg-white dark:bg-[#232019] border border-[#E8E8E8] dark:border-[rgba(255,255,255,0.08)] rounded-lg p-4">
+      <div className="bg-white dark:bg-[#111111] border border-[#E8E8E8] dark:border-[rgba(255,255,255,0.08)] rounded-lg p-4">
         <IncidentStatusDropdown
           currentStatus={currentStatus}
           onStatusChange={onStatusChange}
@@ -89,7 +89,7 @@ export function IncidentDetailsPanel({
       </div>
 
       {/* Details Panel */}
-      <div className="bg-white dark:bg-[#232019] border border-[#E8E8E8] dark:border-[rgba(255,255,255,0.08)] rounded-lg p-4">
+      <div className="bg-white dark:bg-[#111111] border border-[#E8E8E8] dark:border-[rgba(255,255,255,0.08)] rounded-lg p-4">
         <h4 className="text-[11px] font-semibold uppercase text-[#8C8C8C] mb-3">Details</h4>
         <div className="space-y-0">
           {/* Priority (calculated, read-only) */}
@@ -106,7 +106,7 @@ export function IncidentDetailsPanel({
                 <SelectTrigger className="w-28 h-8">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-white dark:bg-[#2C2823]">
+                <SelectContent className="bg-white dark:bg-[#1A1A1A]">
                   {IMPACT_OPTIONS.map(opt => (
                     <SelectItem key={opt} value={opt} className="capitalize">{opt}</SelectItem>
                   ))}
@@ -125,7 +125,7 @@ export function IncidentDetailsPanel({
                 <SelectTrigger className="w-28 h-8">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-white dark:bg-[#2C2823]">
+                <SelectContent className="bg-white dark:bg-[#1A1A1A]">
                   {URGENCY_OPTIONS.map(opt => (
                     <SelectItem key={opt} value={opt} className="capitalize">{opt}</SelectItem>
                   ))}
@@ -150,7 +150,7 @@ export function IncidentDetailsPanel({
                 <SelectTrigger className="w-40 h-8">
                   <SelectValue placeholder="Select..." />
                 </SelectTrigger>
-                <SelectContent className="bg-white dark:bg-[#2C2823]">
+                <SelectContent className="bg-white dark:bg-[#1A1A1A]">
                   {USERS.map(user => (
                     <SelectItem key={user.id} value={user.id}>
                       <div className="flex items-center gap-2">
@@ -199,7 +199,7 @@ export function IncidentDetailsPanel({
       </div>
 
       {/* Labels */}
-      <div className="bg-white dark:bg-[#232019] border border-[#E8E8E8] dark:border-[rgba(255,255,255,0.08)] rounded-lg p-4">
+      <div className="bg-white dark:bg-[#111111] border border-[#E8E8E8] dark:border-[rgba(255,255,255,0.08)] rounded-lg p-4">
         <h4 className="text-[11px] font-semibold uppercase text-[#8C8C8C] mb-3">Labels</h4>
         <div className="flex flex-wrap gap-1.5">
           {currentLabels.map(label => (

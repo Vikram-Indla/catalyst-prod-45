@@ -222,7 +222,7 @@ export function StepDetails({ data, onChange, isValid, onValidChange }: StepDeta
               {selectedLead.avatar_url ? (
                 <img src={selectedLead.avatar_url} alt="" className="rounded-full" style={{ width: 22, height: 22, objectFit: 'cover' }} />
               ) : (
-                <div className="rounded-full flex items-center justify-center shrink-0 bg-[#E2E8F0] dark:bg-[#3A3530]" style={{ width: 22, height: 22, fontSize: 9, fontWeight: 700, color: '#475569' }}>
+                <div className="rounded-full flex items-center justify-center shrink-0 bg-[#E2E8F0] dark:bg-[#222222]" style={{ width: 22, height: 22, fontSize: 9, fontWeight: 700, color: '#475569' }}>
                   {getInitials(selectedLead.display_name)}
                 </div>
               )}
@@ -236,7 +236,7 @@ export function StepDetails({ data, onChange, isValid, onValidChange }: StepDeta
 
         {showLeadPicker && (
           <div
-            className="absolute left-0 right-0 z-50 bg-white dark:bg-[#232019] border border-[#E2E8F0] dark:border-[rgba(255,255,255,0.08)] rounded-lg shadow-lg"
+            className="absolute left-0 right-0 z-50 bg-white dark:bg-[#111111] border border-[#E2E8F0] dark:border-[rgba(255,255,255,0.08)] rounded-lg shadow-lg"
             style={{ top: '100%', marginTop: 4, maxHeight: 260, display: 'flex', flexDirection: 'column' }}
           >
             <div className="p-2 border-b border-[#E2E8F0] dark:border-[rgba(255,255,255,0.08)]">
@@ -266,7 +266,7 @@ export function StepDetails({ data, onChange, isValid, onValidChange }: StepDeta
                     {p.avatar_url ? (
                       <img src={p.avatar_url} alt="" className="rounded-full" style={{ width: 24, height: 24, objectFit: 'cover' }} />
                     ) : (
-                      <div className="rounded-full flex items-center justify-center shrink-0 bg-[#E2E8F0] dark:bg-[#3A3530]" style={{ width: 24, height: 24, fontSize: 9, fontWeight: 700, color: '#475569' }}>
+                      <div className="rounded-full flex items-center justify-center shrink-0 bg-[#E2E8F0] dark:bg-[#222222]" style={{ width: 24, height: 24, fontSize: 9, fontWeight: 700, color: '#475569' }}>
                         {getInitials(p.display_name)}
                       </div>
                     )}

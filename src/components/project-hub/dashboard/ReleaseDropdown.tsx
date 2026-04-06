@@ -34,7 +34,7 @@ export default function ReleaseDropdown({ projectId }: { projectId: string | nul
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <button
-          className="bg-[var(--cp-float)] dark:bg-[#232019]"
+          className="bg-[var(--cp-float)] dark:bg-[#111111]"
           style={{
             height: 34, padding: '0 14px', borderRadius: 8,
             border: '1px solid var(--divider)', cursor: 'pointer',
@@ -50,7 +50,7 @@ export default function ReleaseDropdown({ projectId }: { projectId: string | nul
           <ChevronDown size={14} color="var(--fg-3)" />
         </button>
       </PopoverTrigger>
-      <PopoverContent align="end" sideOffset={6} className="bg-[var(--cp-float)] dark:bg-[#232019]" style={{ width: 340, padding: 0, borderRadius: 10, border: '1px solid var(--divider)', boxShadow: '0 4px 12px rgba(0,0,0,.08)' }}>
+      <PopoverContent align="end" sideOffset={6} className="bg-[var(--cp-float)] dark:bg-[#111111]" style={{ width: 340, padding: 0, borderRadius: 10, border: '1px solid var(--divider)', boxShadow: '0 4px 12px rgba(0,0,0,.08)' }}>
         <div style={{ padding: '10px 14px 6px', borderBottom: '1px solid var(--cp-bd-zone)' }}>
           <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--fg-1)' }}>Select Releases</div>
         </div>

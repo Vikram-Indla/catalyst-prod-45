@@ -14,11 +14,11 @@ export default function IncidentInsightsPage() {
   const breachedCount = incidents?.filter(i => i.resolution_breached).length || 0;
 
   // NOCTURNE tokens
-  const pageBg = isDark ? '#1A1714' : '#FFFFFF';
-  const surfaceBg = isDark ? '#232019' : '#FFFFFF';
-  const textPrimary = isDark ? '#F5F3F0' : '#0F172A';
-  const textSecondary = isDark ? '#A09890' : '#64748B';
-  const textBody = isDark ? '#A09890' : '#334155';
+  const pageBg = isDark ? '#0A0A0A' : '#FFFFFF';
+  const surfaceBg = isDark ? '#111111' : '#FFFFFF';
+  const textPrimary = isDark ? '#EDEDED' : '#0F172A';
+  const textSecondary = isDark ? '#888888' : '#64748B';
+  const textBody = isDark ? '#888888' : '#334155';
   const borderColor = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.12)';
 
   return (

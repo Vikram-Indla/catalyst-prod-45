@@ -29,7 +29,7 @@
   --pk-ink-secondary: rgba(235,238,245,0.85);
   --pk-ink-tertiary: rgba(235,238,245,0.72);
   --pk-ink-muted: rgba(235,238,245,0.50);
-  --pk-surface: #1A1714;
+  --pk-surface: #0A0A0A;
   --pk-surface-column: rgba(255,255,255,0.03);
   --pk-surface-tertiary: rgba(255,255,255,0.05);
   --pk-border: rgba(255,255,255,0.10);
@@ -69,7 +69,7 @@
 }
 .dark .pk-dropdown,
 [data-theme="dark"] .pk-dropdown {
-  background: #232019;
+  background: #111111;
   border-color: rgba(255,255,255,0.12);
   box-shadow: 0 8px 24px rgba(0,0,0,0.4);
 }
@@ -79,7 +79,7 @@
 }
 .dark .pk-context-menu,
 [data-theme="dark"] .pk-context-menu {
-  background: #232019;
+  background: #111111;
   border-color: rgba(255,255,255,0.12);
   box-shadow: 0 8px 24px rgba(0,0,0,0.5);
 }

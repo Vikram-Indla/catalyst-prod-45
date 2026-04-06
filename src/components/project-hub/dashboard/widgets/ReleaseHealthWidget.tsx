@@ -17,8 +17,8 @@ export default function ReleaseHealthWidget({ projectId, projectKey, collapsed, 
     <WidgetWrapper title="Release Health" subtitle="Active release progress" collapsed={collapsed} onToggleCollapse={onToggleCollapse} span={1} footer={footer}>
       {isLoading ? (
         <div className="animate-pulse space-y-3">
-          <div className="h-4 rounded bg-[#F1F5F9] dark:bg-[#2C2823]" style={{ width: '60%' }} />
-          <div className="h-2 rounded bg-[#F1F5F9] dark:bg-[#2C2823]" />
+          <div className="h-4 rounded bg-[#F1F5F9] dark:bg-[#1A1A1A]" style={{ width: '60%' }} />
+          <div className="h-2 rounded bg-[#F1F5F9] dark:bg-[#1A1A1A]" />
         </div>
       ) : !rel ? (
         <div className="flex flex-col items-center py-6 text-center">
@@ -38,7 +38,7 @@ export default function ReleaseHealthWidget({ projectId, projectKey, collapsed, 
           </div>
           <div style={{ fontSize: 12, color: 'var(--cp-text-tertiary)' }}>{rel.done} of {rel.total} items done</div>
           {/* Progress bar */}
-          <div className="bg-[#F1F5F9] dark:bg-[#2C2823]" style={{ height: 6, borderRadius: 3, overflow: 'hidden' }}>
+          <div className="bg-[#F1F5F9] dark:bg-[#1A1A1A]" style={{ height: 6, borderRadius: 3, overflow: 'hidden' }}>
             <div className="bg-[#2563EB]" style={{ height: '100%', width: `${rel.completionPct}%`, borderRadius: 3, transition: 'width 300ms ease' }} />
           </div>
           <div className="flex items-center justify-between" style={{ fontSize: 11 }}>

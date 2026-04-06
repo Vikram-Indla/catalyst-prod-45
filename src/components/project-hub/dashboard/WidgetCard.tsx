@@ -48,7 +48,7 @@ function WidgetCardInner({ title, subtitle, count, countColor, leftBorder, heade
     <div
       role="region"
       aria-label={title}
-      className={`ph-widget-card ${dark ? 'bg-[#1A1714]' : 'bg-[var(--bg-app)]'}`}
+      className={`ph-widget-card ${dark ? 'bg-[#0A0A0A]' : 'bg-[var(--bg-app)]'}`}
       style={{
         border: dark ? '1px solid rgba(255,255,255,0.08)' : '1px solid var(--divider)',
         borderRadius: 10,
@@ -71,7 +71,7 @@ function WidgetCardInner({ title, subtitle, count, countColor, leftBorder, heade
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{ fontSize: 14, fontWeight: 700, color: dark ? '#F5F3F0' : 'var(--fg-1)', fontFamily: "'Sora', sans-serif", letterSpacing: '-0.02em' }}>
+          <span style={{ fontSize: 14, fontWeight: 700, color: dark ? '#EDEDED' : 'var(--fg-1)', fontFamily: "'Sora', sans-serif", letterSpacing: '-0.02em' }}>
             {title}
           </span>
           {count !== undefined && (
@@ -92,7 +92,7 @@ function WidgetCardInner({ title, subtitle, count, countColor, leftBorder, heade
               {count}
             </span>
           )}
-          {subtitle && <span style={{ fontSize: 11, color: dark ? '#A09890' : 'var(--fg-3)', fontWeight: 500, fontFamily: "'Inter', sans-serif" }}>{subtitle}</span>}
+          {subtitle && <span style={{ fontSize: 11, color: dark ? '#888888' : 'var(--fg-3)', fontWeight: 500, fontFamily: "'Inter', sans-serif" }}>{subtitle}</span>}
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
           {headerRight}

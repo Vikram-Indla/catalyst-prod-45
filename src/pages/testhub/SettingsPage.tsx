@@ -141,13 +141,13 @@ export default function SettingsPage() {
   };
 
   // NOCTURNE tokens
-  const pageBg = isDark ? '#1A1714' : '#F8FAFC';
-  const surfaceBg = isDark ? '#232019' : '#FFF';
-  const elevatedBg = isDark ? '#2C2823' : '#F1F5F9';
+  const pageBg = isDark ? '#0A0A0A' : '#F8FAFC';
+  const surfaceBg = isDark ? '#111111' : '#FFF';
+  const elevatedBg = isDark ? '#1A1A1A' : '#F1F5F9';
   const borderColor = isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0';
-  const textPrimary = isDark ? '#F5F3F0' : '#0F172A';
-  const textSecondary = isDark ? '#A09890' : '#64748B';
-  const textMuted = isDark ? '#6B6560' : '#94A3B8';
+  const textPrimary = isDark ? '#EDEDED' : '#0F172A';
+  const textSecondary = isDark ? '#888888' : '#64748B';
+  const textMuted = isDark ? '#666666' : '#94A3B8';
 
   if (isLoading) {
     return (

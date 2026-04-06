@@ -82,7 +82,7 @@ export function IssueBreakdownPopover({ projectKey, projectName, issueCount }: P
       <PopoverContent
         align="center"
         side="bottom"
-        className="w-[320px] p-0 bg-white dark:!bg-[#232019] border-slate-200 dark:border-white/[0.08] shadow-lg"
+        className="w-[320px] p-0 bg-white dark:!bg-[#111111] border-slate-200 dark:border-white/[0.08] shadow-lg"
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}

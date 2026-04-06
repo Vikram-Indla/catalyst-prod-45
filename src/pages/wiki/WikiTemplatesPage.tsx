@@ -37,7 +37,7 @@ function DuplicateWarning({ duplicates, onDismiss, isDark }: { duplicates: any[]
             >{d.title}</span>
           </div>
         ))}
-        <div style={{ fontSize: 11, color: isDark ? '#A09890' : '#92400E', marginTop: 4 }}>
+        <div style={{ fontSize: 11, color: isDark ? '#888888' : '#92400E', marginTop: 4 }}>
           You can proceed or navigate to an existing article instead.
         </div>
       </div>
@@ -55,7 +55,7 @@ function SimpleDateInput({ label, value, onChange, helperText, isDark }: {
   return (
     <div style={{ flex: 1, minWidth: 200 }}>
       <label style={{
-        fontSize: 11, fontWeight: 700, color: isDark ? '#6B6560' : '#64748B', marginBottom: 4,
+        fontSize: 11, fontWeight: 700, color: isDark ? '#666666' : '#64748B', marginBottom: 4,
         textTransform: 'uppercase' as const, letterSpacing: '0.04em', display: 'block',
       }}>{label}</label>
       <div style={{ position: 'relative' }}>
@@ -66,12 +66,12 @@ function SimpleDateInput({ label, value, onChange, helperText, isDark }: {
           style={{
             width: '100%', padding: '7px 10px', fontSize: 12, borderRadius: 4,
             border: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.12)'}`,
-            background: isDark ? '#232019' : '#FFFFFF',
-            color: isDark ? '#F5F3F0' : '#0F172A', fontFamily: 'Inter, sans-serif',
+            background: isDark ? '#111111' : '#FFFFFF',
+            color: isDark ? '#EDEDED' : '#0F172A', fontFamily: 'Inter, sans-serif',
           }}
         />
       </div>
-      <div style={{ fontSize: 10, color: isDark ? '#6B6560' : '#94A3B8', marginTop: 4 }}>{helperText}</div>
+      <div style={{ fontSize: 10, color: isDark ? '#666666' : '#94A3B8', marginTop: 4 }}>{helperText}</div>
     </div>
   );
 }
@@ -170,18 +170,18 @@ export default function WikiTemplatesPage() {
   return (
     <div style={{
       fontFamily: 'Inter, sans-serif',
-      color: isDark ? '#F5F3F0' : '#0F172A',
-      background: isDark ? '#1A1714' : '#F8FAFC',
+      color: isDark ? '#EDEDED' : '#0F172A',
+      background: isDark ? '#0A0A0A' : '#F8FAFC',
       minHeight: '100%', padding: '24px 40px 48px',
     }}>
       <nav style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 24 }}>
         <span onClick={() => navigate('/wiki')} style={{ fontSize: 13, color: '#2563EB', cursor: 'pointer' }}>Wiki</span>
-        <ChevronRight size={12} style={{ color: isDark ? '#6B6560' : '#94A3B8' }} />
-        <span style={{ fontSize: 13, color: isDark ? '#A09890' : '#64748B', fontWeight: 600 }}>Templates</span>
+        <ChevronRight size={12} style={{ color: isDark ? '#666666' : '#94A3B8' }} />
+        <span style={{ fontSize: 13, color: isDark ? '#888888' : '#64748B', fontWeight: 600 }}>Templates</span>
       </nav>
 
-      <h1 style={{ fontFamily: "'Sora', sans-serif", fontSize: 18, fontWeight: 700, marginBottom: 8, color: isDark ? '#F5F3F0' : '#0F172A' }}>Article Templates</h1>
-      <p style={{ fontSize: 12, color: isDark ? '#A09890' : '#64748B', marginBottom: 16 }}>Pre-built structures for common article types. Click "Use Template" to create a pre-filled article.</p>
+      <h1 style={{ fontFamily: "'Sora', sans-serif", fontSize: 18, fontWeight: 700, marginBottom: 8, color: isDark ? '#EDEDED' : '#0F172A' }}>Article Templates</h1>
+      <p style={{ fontSize: 12, color: isDark ? '#888888' : '#64748B', marginBottom: 16 }}>Pre-built structures for common article types. Click "Use Template" to create a pre-filled article.</p>
 
       {/* ── Duplicate Detection Warning ── */}
       <DuplicateWarning
@@ -204,16 +204,16 @@ export default function WikiTemplatesPage() {
       {/* ── Content Scheduling Section ── */}
       <div style={{
         marginBottom: 20, padding: '14px 16px', borderRadius: 6,
-        background: isDark ? '#232019' : '#FFFFFF',
+        background: isDark ? '#111111' : '#FFFFFF',
         border: `0.75px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.08)'}`,
       }}>
         <button onClick={() => setShowScheduling(!showScheduling)} style={{
-          fontSize: 12, fontWeight: 650, color: isDark ? '#F5F3F0' : '#0F172A', background: 'transparent',
+          fontSize: 12, fontWeight: 650, color: isDark ? '#EDEDED' : '#0F172A', background: 'transparent',
           border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8, width: '100%',
         }}>
           <CalendarIcon size={14} style={{ color: '#2563EB' }} />
           Content Scheduling
-          <span style={{ fontSize: 10, color: isDark ? '#6B6560' : '#94A3B8', fontWeight: 500, marginLeft: 'auto' }}>
+          <span style={{ fontSize: 10, color: isDark ? '#666666' : '#94A3B8', fontWeight: 500, marginLeft: 'auto' }}>
             {showScheduling ? '▾' : '▸'} {publishAt || archiveAt ? '(configured)' : '(optional)'}
           </span>
         </button>
@@ -248,7 +248,7 @@ export default function WikiTemplatesPage() {
         {isLoading ? Array.from({ length: 5 }).map((_, i) => (
           <div key={i} style={{
             padding: 20, borderRadius: 8,
-            background: isDark ? '#232019' : '#FFFFFF',
+            background: isDark ? '#111111' : '#FFFFFF',
             border: `0.75px solid ${borderColor}`, height: 140,
           }} />
         )) : (templates ?? []).map((t: any) => {
@@ -256,7 +256,7 @@ export default function WikiTemplatesPage() {
           return (
             <div key={t.id} style={{
               padding: 20, borderRadius: 8,
-              background: isDark ? '#232019' : '#FFFFFF',
+              background: isDark ? '#111111' : '#FFFFFF',
               border: `0.75px solid ${borderColor}`,
               transition: 'border-color 120ms',
             }}
@@ -265,26 +265,26 @@ export default function WikiTemplatesPage() {
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
                 <div style={{
                   width: 32, height: 32, borderRadius: 6,
-                  background: isDark ? '#2C2823' : '#F1F5F9',
+                  background: isDark ? '#1A1A1A' : '#F1F5F9',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                 }}>
-                  <FileText size={16} style={{ color: isDark ? '#A09890' : '#64748B' }} />
+                  <FileText size={16} style={{ color: isDark ? '#888888' : '#64748B' }} />
                 </div>
                 <div>
-                  <div style={{ fontFamily: "'Sora', sans-serif", fontSize: 13, fontWeight: 600, color: isDark ? '#F5F3F0' : '#0F172A' }}>{t.name}</div>
-                  <div style={{ fontSize: 11, color: isDark ? '#A09890' : '#64748B' }}>{t.description}</div>
+                  <div style={{ fontFamily: "'Sora', sans-serif", fontSize: 13, fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A' }}>{t.name}</div>
+                  <div style={{ fontSize: 11, color: isDark ? '#888888' : '#64748B' }}>{t.description}</div>
                 </div>
               </div>
-              <div style={{ fontSize: 11, color: isDark ? '#A09890' : '#64748B', marginBottom: 12 }}>{sections.length} sections</div>
+              <div style={{ fontSize: 11, color: isDark ? '#888888' : '#64748B', marginBottom: 12 }}>{sections.length} sections</div>
               <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 12 }}>
                 {sections.slice(0, 4).map((s: any, i: number) => (
                   <span key={i} style={{
                     fontSize: 9, padding: '2px 6px', borderRadius: 3,
-                    background: isDark ? '#2C2823' : '#F1F5F9',
-                    color: isDark ? '#A09890' : '#64748B',
+                    background: isDark ? '#1A1A1A' : '#F1F5F9',
+                    color: isDark ? '#888888' : '#64748B',
                   }}>{s.title}</span>
                 ))}
-                {sections.length > 4 && <span style={{ fontSize: 9, color: isDark ? '#6B6560' : '#94A3B8' }}>+{sections.length - 4} more</span>}
+                {sections.length > 4 && <span style={{ fontSize: 9, color: isDark ? '#666666' : '#94A3B8' }}>+{sections.length - 4} more</span>}
               </div>
               <button
                 onClick={() => handleUseTemplate(t)}

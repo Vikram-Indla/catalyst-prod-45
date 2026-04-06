@@ -34,7 +34,7 @@ export function ProductHubPageHeader({ title, subtitle, actions }: ProductHubPag
             fontFamily: "'Sora', system-ui",
             fontSize: 22,
             fontWeight: 700,
-            color: isDark ? '#F5F3F0' : '#09090B',
+            color: isDark ? '#EDEDED' : '#09090B',
             letterSpacing: '-0.025em',
             margin: 0,
             lineHeight: 1.3,
@@ -45,7 +45,7 @@ export function ProductHubPageHeader({ title, subtitle, actions }: ProductHubPag
         <p
           style={{
             fontSize: 13,
-            color: isDark ? '#A09890' : '#71717A',
+            color: isDark ? '#888888' : '#71717A',
             marginTop: 2,
             margin: 0,
             marginBlockStart: 2,

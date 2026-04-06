@@ -86,14 +86,14 @@ export const catalystTokens = {
   // Dark Mode — NOCTURNE Warm Charcoal
   dark: {
     text: {
-      primary: '#F5F3F0',
-      secondary: '#A09890',
-      muted: '#6B6560',
+      primary: '#EDEDED',
+      secondary: '#888888',
+      muted: '#666666',
     },
     surface: {
-      bg: '#1A1714',
-      card: '#232019',
-      hover: '#2C2823',
+      bg: '#0A0A0A',
+      card: '#111111',
+      hover: '#1A1A1A',
       active: 'rgba(59, 130, 246, 0.2)',
     },
     border: {

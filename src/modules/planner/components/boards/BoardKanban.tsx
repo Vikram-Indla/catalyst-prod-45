@@ -232,7 +232,7 @@ export function BoardKanban({ filters, onTaskClick, onAddTask }: BoardKanbanProp
 
               {/* Add Column Button */}
               <button
-                className="boards-add-column dark:border-[rgba(255,255,255,0.08)] dark:text-[#6B6560] dark:hover:bg-[#232019] dark:hover:text-[#F5F3F0] dark:hover:border-[rgba(255,255,255,0.15)]"
+                className="boards-add-column dark:border-[rgba(255,255,255,0.08)] dark:text-[#666666] dark:hover:bg-[#111111] dark:hover:text-[#EDEDED] dark:hover:border-[rgba(255,255,255,0.15)]"
                 onClick={() => setIsAddColumnOpen(true)}
               >
                 <Plus className="w-5 h-5" />
@@ -246,15 +246,15 @@ export function BoardKanban({ filters, onTaskClick, onAddTask }: BoardKanbanProp
               <BoardTaskCard task={activeTask} isDragging />
             )}
             {activeColumn && (
-              <div className="boards-column boards-column--overlay dark:bg-[#232019]">
+              <div className="boards-column boards-column--overlay dark:bg-[#111111]">
                 <div className="boards-column__header">
                   <div className="boards-column__header-left">
                     <span
                       className="boards-column__dot"
                       style={{ backgroundColor: activeColumn.color }}
                     />
-                    <h3 className="boards-column__title dark:text-[#F5F3F0]">{activeColumn.name}</h3>
-                    <span className="boards-column__count dark:bg-[#2C2823] dark:text-[#A09890]">{activeColumn.task_count}</span>
+                    <h3 className="boards-column__title dark:text-[#EDEDED]">{activeColumn.name}</h3>
+                    <span className="boards-column__count dark:bg-[#1A1A1A] dark:text-[#888888]">{activeColumn.task_count}</span>
                   </div>
                 </div>
               </div>

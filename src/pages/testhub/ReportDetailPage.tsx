@@ -45,14 +45,14 @@ export default function ReportDetailPage() {
   const [isLoading, setIsLoading] = useState(true);
 
   // NOCTURNE tokens
-  const pageBg = isDark ? '#1A1714' : '#F8FAFC';
-  const surfaceBg = isDark ? '#232019' : '#FFF';
+  const pageBg = isDark ? '#0A0A0A' : '#F8FAFC';
+  const surfaceBg = isDark ? '#111111' : '#FFF';
   const borderColor = isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0';
   const borderSubtle = isDark ? 'rgba(255,255,255,0.05)' : '#F1F5F9';
-  const textPrimary = isDark ? '#F5F3F0' : '#0F172A';
-  const textSecondary = isDark ? '#A09890' : '#64748B';
-  const textMuted = isDark ? '#6B6560' : '#94A3B8';
-  const textBody = isDark ? '#A09890' : '#334155';
+  const textPrimary = isDark ? '#EDEDED' : '#0F172A';
+  const textSecondary = isDark ? '#888888' : '#64748B';
+  const textMuted = isDark ? '#666666' : '#94A3B8';
+  const textBody = isDark ? '#888888' : '#334155';
 
   const fetchReport = async () => {
     if (!reportId) return;
@@ -201,7 +201,7 @@ export default function ReportDetailPage() {
               <span style={{ fontSize: 14, fontWeight: 600, color: textPrimary }}>Execution Progress</span>
               <span style={{ fontSize: 14, fontWeight: 700, color: '#2563EB' }}>{data.summary.progress_percent}%</span>
             </div>
-            <div style={{ height: 16, backgroundColor: isDark ? '#3A3530' : '#E2E8F0', borderRadius: 8, overflow: 'hidden', display: 'flex' }}>
+            <div style={{ height: 16, backgroundColor: isDark ? '#222222' : '#E2E8F0', borderRadius: 8, overflow: 'hidden', display: 'flex' }}>
               {data.summary.total_cases > 0 && (
                 <>
                   <div style={{ width: `${(data.summary.passed / data.summary.total_cases) * 100}%`, backgroundColor: '#10B981' }} />
@@ -227,7 +227,7 @@ export default function ReportDetailPage() {
               </h3>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 12 }}>
                 {data.assignee_breakdown.map((a: any, i: number) => (
-                  <div key={i} style={{ padding: 14, backgroundColor: isDark ? '#2C2823' : '#F8FAFC', borderRadius: 8 }}>
+                  <div key={i} style={{ padding: 14, backgroundColor: isDark ? '#1A1A1A' : '#F8FAFC', borderRadius: 8 }}>
                     <p style={{ fontSize: 14, fontWeight: 600, color: textPrimary, margin: '0 0 8px' }}>{a.assignee_name}</p>
                     <div style={{ display: 'flex', gap: 12, fontSize: 12 }}>
                       <span>Total: {a.total}</span>
@@ -266,7 +266,7 @@ export default function ReportDetailPage() {
                         <td style={{ padding: '12px 8px' }}>
                           <span style={{
                             fontSize: 11, fontWeight: 500, padding: '3px 8px', borderRadius: 4,
-                            backgroundColor: tc.status === 'passed' ? (isDark ? '#1A2E1A' : '#ECFDF5') : tc.status === 'failed' ? (isDark ? '#3D2020' : '#FEF2F2') : (isDark ? '#2C2823' : '#F1F5F9'),
+                            backgroundColor: tc.status === 'passed' ? (isDark ? '#1A2E1A' : '#ECFDF5') : tc.status === 'failed' ? (isDark ? '#3D2020' : '#FEF2F2') : (isDark ? '#1A1A1A' : '#F1F5F9'),
                             color: tc.status === 'passed' ? '#059669' : tc.status === 'failed' ? '#DC2626' : textSecondary,
                           }}>
                             {tc.status || 'Not Run'}
@@ -293,7 +293,7 @@ export default function ReportDetailPage() {
           {data.severity_breakdown && (
             <div style={{ display: 'flex', gap: 16, marginBottom: 16, flexWrap: 'wrap' }}>
               {Object.entries(data.severity_breakdown).map(([sev, count]) => (
-                <div key={sev} style={{ padding: '8px 16px', backgroundColor: isDark ? '#2C2823' : '#F8FAFC', borderRadius: 8, fontSize: 13, color: textBody }}>
+                <div key={sev} style={{ padding: '8px 16px', backgroundColor: isDark ? '#1A1A1A' : '#F8FAFC', borderRadius: 8, fontSize: 13, color: textBody }}>
                   <span style={{ fontWeight: 600, textTransform: 'capitalize' }}>{sev}</span>: {String(count)}
                 </div>
               ))}
@@ -329,7 +329,7 @@ export default function ReportDetailPage() {
       {/* Generic placeholder for other types */}
       {!['cycle_summary', 'defect'].includes(report.type) && (
         <div style={{ backgroundColor: surfaceBg, borderRadius: 12, padding: 40, border: `1px solid ${borderColor}`, textAlign: 'center' }}>
-          <FileBarChart size={48} style={{ color: isDark ? '#6B6560' : '#CBD5E1', marginBottom: 16 }} />
+          <FileBarChart size={48} style={{ color: isDark ? '#666666' : '#CBD5E1', marginBottom: 16 }} />
           <p style={{ fontSize: 16, color: textSecondary, margin: 0 }}>Report data visualization coming soon</p>
           <p style={{ fontSize: 13, color: textMuted, margin: '8px 0 0' }}>Raw data has been captured and stored</p>
         </div>

@@ -233,7 +233,7 @@ export default function CoverageMatrixPage() {
   }
 
   return (
-    <div className={`flex-1 flex flex-col overflow-auto ${isDark ? 'bg-[#1A1714]' : ''}`}>
+    <div className={`flex-1 flex flex-col overflow-auto ${isDark ? 'bg-[#0A0A0A]' : ''}`}>
       <TestHubPageHeader title="Traceability Matrix" subtitle={`${summary.pct}% coverage (${summary.full}/${summary.total} requirements) · ${summary.none} gap${summary.none !== 1 ? 's' : ''}${summary.critGaps > 0 ? ` (${summary.critGaps} critical)` : ''}`}>
         <Button variant="outline" size="sm" onClick={() => exportCSV(filtered)}>
           <Download className="w-4 h-4 mr-2" />

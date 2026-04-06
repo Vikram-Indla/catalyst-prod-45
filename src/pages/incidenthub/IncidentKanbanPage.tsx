@@ -40,17 +40,17 @@ export default function IncidentKanbanPage() {
   }, [incidents]);
 
   // NOCTURNE tokens
-  const pageBg = isDark ? '#1A1714' : '#FFFFFF';
-  const surfaceBg = isDark ? '#232019' : '#FFFFFF';
-  const laneBg = isDark ? '#232019' : '#F1F5F9';
-  const cardBg = isDark ? '#2C2823' : '#FFFFFF';
+  const pageBg = isDark ? '#0A0A0A' : '#FFFFFF';
+  const surfaceBg = isDark ? '#111111' : '#FFFFFF';
+  const laneBg = isDark ? '#111111' : '#F1F5F9';
+  const cardBg = isDark ? '#1A1A1A' : '#FFFFFF';
   const borderColor = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.12)';
-  const textPrimary = isDark ? '#F5F3F0' : '#0F172A';
-  const textSecondary = isDark ? '#A09890' : '#64748B';
-  const textMuted = isDark ? '#6B6560' : '#94A3B8';
-  const countBg = isDark ? '#2C2823' : '#F1F5F9';
+  const textPrimary = isDark ? '#EDEDED' : '#0F172A';
+  const textSecondary = isDark ? '#888888' : '#64748B';
+  const textMuted = isDark ? '#666666' : '#94A3B8';
+  const countBg = isDark ? '#1A1A1A' : '#F1F5F9';
   const avatarBg = isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0';
-  const avatarText = isDark ? '#A09890' : '#475569';
+  const avatarText = isDark ? '#888888' : '#475569';
 
   if (isLoading) {
     return <div className="flex-1 p-6" style={{ backgroundColor: pageBg }}><Skeleton className="h-8 w-48 mb-6" /><Skeleton className="h-96 w-full" /></div>;
@@ -80,7 +80,7 @@ export default function IncidentKanbanPage() {
             <div key={col.key} className="flex flex-col shrink-0" style={{ width: 260 }}>
               {/* Column Header */}
               <div className="flex items-center gap-2 px-3 py-2 mb-2">
-                <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: col.dotColor, display: 'inline-block', border: col.dotColor === '#DFE1E6' ? `1px solid ${isDark ? '#6B6560' : '#94A3B8'}` : 'none' }} />
+                <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: col.dotColor, display: 'inline-block', border: col.dotColor === '#DFE1E6' ? `1px solid ${isDark ? '#666666' : '#94A3B8'}` : 'none' }} />
                 <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: textSecondary }}>
                   {col.label}
                 </span>

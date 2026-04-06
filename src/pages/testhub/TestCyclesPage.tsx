@@ -68,14 +68,14 @@ export default function TestCyclesPage() {
   const [cloneCycle, setCloneCycle] = useState<TestCycle | null>(null);
 
   // NOCTURNE tokens
-  const pageBg = isDark ? '#1A1714' : '#F8FAFC';
-  const surfaceBg = isDark ? '#232019' : '#FFFFFF';
-  const elevatedBg = isDark ? '#2C2823' : '#F8FAFC';
+  const pageBg = isDark ? '#0A0A0A' : '#F8FAFC';
+  const surfaceBg = isDark ? '#111111' : '#FFFFFF';
+  const elevatedBg = isDark ? '#1A1A1A' : '#F8FAFC';
   const borderColor = isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0';
-  const textPrimary = isDark ? '#F5F3F0' : '#0F172A';
-  const textBody = isDark ? '#A09890' : '#334155';
-  const textSecondary = isDark ? '#A09890' : '#64748B';
-  const textMuted = isDark ? '#6B6560' : '#94A3B8';
+  const textPrimary = isDark ? '#EDEDED' : '#0F172A';
+  const textBody = isDark ? '#888888' : '#334155';
+  const textSecondary = isDark ? '#888888' : '#64748B';
+  const textMuted = isDark ? '#666666' : '#94A3B8';
 
   const fetchCycles = async () => {
     setIsLoading(true);

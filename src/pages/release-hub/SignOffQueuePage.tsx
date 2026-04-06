@@ -56,19 +56,19 @@ export default function SignOffQueuePage() {
   };
 
   return (
-    <div className="p-6" style={{ background: isDark ? '#1A1714' : '#FFFFFF' }}>
+    <div className="p-6" style={{ background: isDark ? '#0A0A0A' : '#FFFFFF' }}>
       <div className="mb-5">
-        <h1 className="text-[24px]" style={{ fontFamily: RH.fontDisplay, fontWeight: 650, color: isDark ? '#F5F3F0' : RH.ink1 }}>Sign-off Queue</h1>
-        <p className="text-[13px] mt-1" style={{ color: isDark ? '#6B6560' : '#64748B' }}>All pending approvals — notifications sent to approver's For You homepage</p>
+        <h1 className="text-[24px]" style={{ fontFamily: RH.fontDisplay, fontWeight: 650, color: isDark ? '#EDEDED' : RH.ink1 }}>Sign-off Queue</h1>
+        <p className="text-[13px] mt-1" style={{ color: isDark ? '#666666' : '#64748B' }}>All pending approvals — notifications sent to approver's For You homepage</p>
       </div>
 
       {/* Toolbar */}
       <div className="flex items-center gap-3 mb-4">
         <div className="relative">
-          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: isDark ? '#6B6560' : '#94A3B8' }} />
+          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: isDark ? '#666666' : '#94A3B8' }} />
           <input type="text" placeholder="Search changes or approvers..." value={search} onChange={e => setSearch(e.target.value)}
             className="h-9 w-72 pl-9 pr-3 rounded-[4px] text-[13px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20"
-            style={{ border: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(15,23,42,0.12)', fontFamily: RH.fontBody, background: isDark ? '#232019' : '#FFFFFF', color: isDark ? '#F5F3F0' : undefined, placeholder: isDark ? '#6B6560' : '#64748B' }} />
+            style={{ border: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(15,23,42,0.12)', fontFamily: RH.fontBody, background: isDark ? '#111111' : '#FFFFFF', color: isDark ? '#EDEDED' : undefined, placeholder: isDark ? '#666666' : '#64748B' }} />
         </div>
       </div>
 
@@ -78,12 +78,12 @@ export default function SignOffQueuePage() {
       ) : signoffs.length === 0 ? (
         <EmptyState icon={CheckSquare} title="No pending sign-offs" subtitle="All approvals are up to date" />
       ) : (
-        <div className="rounded-[6px] overflow-hidden" style={{ border: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(15,23,42,0.12)', background: isDark ? '#232019' : '#FFFFFF' }}>
+        <div className="rounded-[6px] overflow-hidden" style={{ border: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(15,23,42,0.12)', background: isDark ? '#111111' : '#FFFFFF' }}>
           <table className="w-full text-[13px]" style={{ fontFamily: RH.fontBody }}>
             <thead>
-              <tr style={{ background: isDark ? '#2C2823' : '#F1F5F9' }}>
+              <tr style={{ background: isDark ? '#1A1A1A' : '#F1F5F9' }}>
                 {['CHANGE', 'TITLE', 'GATE', 'APPROVER', 'RISK', 'STATUS', 'ACTIONS'].map(h => (
-                  <th key={h} className="text-left text-[11px] uppercase tracking-[0.06em]" style={{ fontWeight: 600, height: 36, padding: '0 12px', color: isDark ? '#6B6560' : '#64748B' }}>{h}</th>
+                  <th key={h} className="text-left text-[11px] uppercase tracking-[0.06em]" style={{ fontWeight: 600, height: 36, padding: '0 12px', color: isDark ? '#666666' : '#64748B' }}>{h}</th>
                 ))}
               </tr>
             </thead>
@@ -95,14 +95,14 @@ export default function SignOffQueuePage() {
                   <tr key={so.id}
                     onClick={() => setSelectedChange(so.rh_changes)}
                     className="cursor-pointer group"
-                    style={{ height: 36, maxHeight: 36, borderBottom: isDark ? '0.75px solid rgba(255,255,255,0.05)' : '0.75px solid rgba(15,23,42,0.06)', background: isDark ? '#232019' : undefined }}
-                    onMouseEnter={e => (e.currentTarget.style.background = isDark ? '#2C2823' : 'rgba(15,23,42,0.04)')}
-                    onMouseLeave={e => (e.currentTarget.style.background = isDark ? '#232019' : '')}
+                    style={{ height: 36, maxHeight: 36, borderBottom: isDark ? '0.75px solid rgba(255,255,255,0.05)' : '0.75px solid rgba(15,23,42,0.06)', background: isDark ? '#111111' : undefined }}
+                    onMouseEnter={e => (e.currentTarget.style.background = isDark ? '#1A1A1A' : 'rgba(15,23,42,0.04)')}
+                    onMouseLeave={e => (e.currentTarget.style.background = isDark ? '#111111' : '')}
                   >
                     <td className="px-3" style={{ fontFamily: RH.fontMono, color: '#2563EB', fontWeight: 650 }}>{so.rh_changes?.chg_number || '—'}</td>
-                    <td className="px-3 truncate max-w-[240px]" style={{ color: isDark ? '#A09890' : RH.ink2 }}>{so.rh_changes?.title || '—'}</td>
-                    <td className="px-3" style={{ color: isDark ? '#A09890' : RH.ink2 }}>{so.signoff_role || so.stage || '—'}</td>
-                    <td className="px-3" style={{ color: isDark ? '#6B6560' : '#64748B' }}>{so.assigned_to || '—'}</td>
+                    <td className="px-3 truncate max-w-[240px]" style={{ color: isDark ? '#888888' : RH.ink2 }}>{so.rh_changes?.title || '—'}</td>
+                    <td className="px-3" style={{ color: isDark ? '#888888' : RH.ink2 }}>{so.signoff_role || so.stage || '—'}</td>
+                    <td className="px-3" style={{ color: isDark ? '#666666' : '#64748B' }}>{so.assigned_to || '—'}</td>
                     <td className="px-3"><RiskBadge risk={so.rh_changes?.risk_level || 'standard'} /></td>
                     <td className="px-3"><StatusLozenge status={so.status} /></td>
                     <td className="px-3">
@@ -127,7 +127,7 @@ export default function SignOffQueuePage() {
 
       {/* Approve/Reject Modal */}
       <Dialog open={!!actionModal} onOpenChange={() => { setActionModal(null); setComment(''); }}>
-        <DialogContent className="sm:max-w-[520px]" style={{ background: isDark ? '#232019' : '#FFFFFF' }}>
+        <DialogContent className="sm:max-w-[520px]" style={{ background: isDark ? '#111111' : '#FFFFFF' }}>
           <DialogHeader>
             <DialogTitle style={{ fontFamily: RH.fontDisplay, fontWeight: 650 }}>
               {actionModal?.action === 'approve' ? 'Approve Sign-off' : 'Reject Sign-off'}
@@ -135,21 +135,21 @@ export default function SignOffQueuePage() {
           </DialogHeader>
           {actionModal && (
             <div className="space-y-4">
-              <div className="rounded-[6px] p-3" style={{ background: isDark ? '#2C2823' : '#F1F5F9' }}>
-                <p className="text-[12px] mb-1" style={{ color: isDark ? '#6B6560' : '#64748B' }}>Gate: <span className="font-bold" style={{ color: isDark ? '#A09890' : '#334155' }}>{actionModal.signoff.signoff_role || actionModal.signoff.stage}</span></p>
-                <p className="text-[12px]" style={{ color: isDark ? '#6B6560' : '#64748B' }}>Change: <span style={{ fontFamily: RH.fontMono, fontWeight: 650, color: '#2563EB' }}>{actionModal.signoff.rh_changes?.chg_number}</span> — {actionModal.signoff.rh_changes?.title}</p>
+              <div className="rounded-[6px] p-3" style={{ background: isDark ? '#1A1A1A' : '#F1F5F9' }}>
+                <p className="text-[12px] mb-1" style={{ color: isDark ? '#666666' : '#64748B' }}>Gate: <span className="font-bold" style={{ color: isDark ? '#888888' : '#334155' }}>{actionModal.signoff.signoff_role || actionModal.signoff.stage}</span></p>
+                <p className="text-[12px]" style={{ color: isDark ? '#666666' : '#64748B' }}>Change: <span style={{ fontFamily: RH.fontMono, fontWeight: 650, color: '#2563EB' }}>{actionModal.signoff.rh_changes?.chg_number}</span> — {actionModal.signoff.rh_changes?.title}</p>
                 {actionModal.signoff.rh_changes?.risk_level && <div className="mt-2"><RiskBadge risk={actionModal.signoff.rh_changes.risk_level} /></div>}
               </div>
               <div>
-                <label className="block text-[12px] font-semibold mb-1" style={{ color: isDark ? '#A09890' : '#475569' }}>Comment {actionModal.action === 'reject' && '*'}</label>
+                <label className="block text-[12px] font-semibold mb-1" style={{ color: isDark ? '#888888' : '#475569' }}>Comment {actionModal.action === 'reject' && '*'}</label>
                 <textarea value={comment} onChange={e => setComment(e.target.value)} placeholder="Add a comment..."
                   className="w-full h-24 px-3 py-2 rounded-[4px] text-[13px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 resize-none"
-                  style={{ border: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(15,23,42,0.12)', background: isDark ? '#2C2823' : undefined, color: isDark ? '#F5F3F0' : undefined }} />
+                  style={{ border: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(15,23,42,0.12)', background: isDark ? '#1A1A1A' : undefined, color: isDark ? '#EDEDED' : undefined }} />
               </div>
             </div>
           )}
           <DialogFooter>
-            <button onClick={() => { setActionModal(null); setComment(''); }} className="h-9 px-4 rounded-[6px] text-[13px] font-medium" style={{ color: isDark ? '#A09890' : '#475569', border: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(15,23,42,0.12)', background: isDark ? '#2C2823' : undefined }}>Cancel</button>
+            <button onClick={() => { setActionModal(null); setComment(''); }} className="h-9 px-4 rounded-[6px] text-[13px] font-medium" style={{ color: isDark ? '#888888' : '#475569', border: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(15,23,42,0.12)', background: isDark ? '#1A1A1A' : undefined }}>Cancel</button>
             <button onClick={handleAction} disabled={approveSignoff.isPending || rejectSignoff.isPending}
               className={`h-9 px-4 rounded-[6px] text-[13px] font-semibold text-white disabled:opacity-50 ${actionModal?.action === 'approve' ? 'bg-[#16A34A] hover:bg-[#15803D]' : 'bg-[#DC2626] hover:bg-[#B91C1C]'}`}>
               {actionModal?.action === 'approve' ? 'Approve' : 'Reject'}

@@ -40,9 +40,9 @@ function statusBadge(status: string, isDark = false) {
     completed:   { dot: '#4F46E5', bg: 'rgba(79,70,229,0.08)',  text: '#4338CA', bgDk: '#1A2030', txtDk: '#93C5FD', label: 'Completed' },
     at_risk:     { dot: '#D97706', bg: 'rgba(217,119,6,0.08)',  text: '#B45309', bgDk: '#2A2418', txtDk: '#FBBF24', label: 'At Risk' },
     off_track:   { dot: '#EF4444', bg: 'rgba(239,68,68,0.08)',  text: '#DC2626', bgDk: '#2A1C1E', txtDk: '#FCA5A5', label: 'Off Track' },
-    draft:       { dot: '#94A3B8', bg: '#F1F5F9',               text: '#64748B', bgDk: '#2C2823', txtDk: '#A09890', label: 'Draft' },
-    not_started: { dot: '#94A3B8', bg: '#F1F5F9',               text: '#64748B', bgDk: '#2C2823', txtDk: '#A09890', label: 'Not Started' },
-    cancelled:   { dot: '#94A3B8', bg: '#F1F5F9',               text: '#64748B', bgDk: '#2C2823', txtDk: '#A09890', label: 'Cancelled' },
+    draft:       { dot: '#94A3B8', bg: '#F1F5F9',               text: '#64748B', bgDk: '#1A1A1A', txtDk: '#888888', label: 'Draft' },
+    not_started: { dot: '#94A3B8', bg: '#F1F5F9',               text: '#64748B', bgDk: '#1A1A1A', txtDk: '#888888', label: 'Not Started' },
+    cancelled:   { dot: '#94A3B8', bg: '#F1F5F9',               text: '#64748B', bgDk: '#1A1A1A', txtDk: '#888888', label: 'Cancelled' },
   };
   const s = map[status] || map.draft;
   return (

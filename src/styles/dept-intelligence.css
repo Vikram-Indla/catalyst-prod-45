@@ -46,9 +46,9 @@
   --di-ink-secondary: rgba(235,238,245, 0.82);
   --di-ink-tertiary: rgba(235,238,245, 0.65);
   --di-ink-muted: rgba(235,238,245, 0.45);
-  --di-surface: #1A1714;
+  --di-surface: #0A0A0A;
   --di-surface-secondary: #1E1B17;
-  --di-surface-tertiary: #232019;
+  --di-surface-tertiary: #111111;
   --di-border: rgba(235,238,245, 0.10);
   --di-border-strong: rgba(235,238,245, 0.16);
   --di-primary: #3B82F6;

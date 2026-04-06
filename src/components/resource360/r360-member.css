@@ -1238,7 +1238,7 @@
 
 /* Root background */
 .dark #r360-root {
-  background: #1A1714 !important;
+  background: #0A0A0A !important;
   --cp-interact-hover: rgba(255,255,255,0.04);
   --cp-interact-press: rgba(255,255,255,0.08);
   --cp-interact-selected: rgba(37,99,235,0.12);
@@ -1251,8 +1251,8 @@
   border-color: rgba(255,255,255,0.08) !important;
 }
 .dark #r360-root .r3-period-toggle button {
-  background: #232019 !important;
-  color: #A09890 !important;
+  background: #111111 !important;
+  color: #888888 !important;
 }
 .dark #r360-root .r3-period-toggle button.active {
   background: #2563EB !important;
@@ -1262,11 +1262,11 @@
 /* Toolbar, surfaces, cards */
 .dark #r360-root .r3-toolbar,
 .dark #r360-root .r3-summary-bar {
-  background: #1A1714 !important;
+  background: #0A0A0A !important;
 }
 .dark #r360-root .r3-week-header,
 .dark #r360-root .r3-timeline-header {
-  color: #F5F3F0 !important;
+  color: #EDEDED !important;
 }
 
 /* Text overrides — primary */
@@ -1275,7 +1275,7 @@
 .dark #r360-root .r3-section-label,
 .dark #r360-root .r3-item-title,
 .dark #r360-root .r3-board-title {
-  color: #F5F3F0 !important;
+  color: #EDEDED !important;
 }
 
 /* Text overrides — secondary */
@@ -1283,14 +1283,14 @@
 .dark #r360-root .r3-item-meta,
 .dark #r360-root .r3-period-toggle button:not(.active),
 .dark #r360-root .r3-filter-label {
-  color: #A09890 !important;
+  color: #888888 !important;
 }
 
 /* Text overrides — muted */
 .dark #r360-root .r3-label-muted,
 .dark #r360-root .r3-count,
 .dark #r360-root .r3-empty {
-  color: #6B6560 !important;
+  color: #666666 !important;
 }
 
 /* Borders and dividers */
@@ -1314,7 +1314,7 @@
 .dark #r360-root .r3-week-row,
 .dark #r360-root .r3-timeline-row,
 .dark #r360-root .r3-week-row:nth-child(even) {
-  background: #1A1714 !important;
+  background: #0A0A0A !important;
 }
 .dark #r360-root .r3-week-row:hover,
 .dark #r360-root .r3-timeline-row:hover,
@@ -1327,16 +1327,16 @@
 .dark #r360-root .r3-stat-card,
 .dark #r360-root .r3-detail-card,
 .dark #r360-root .r3-card-surface {
-  background: #232019 !important;
+  background: #111111 !important;
   border-color: rgba(255,255,255,0.08) !important;
 }
 
 /* Filter chips & status buttons */
 .dark #r360-root .r3-filter-chip,
 .dark #r360-root .r3-status-filter {
-  background: #232019 !important;
+  background: #111111 !important;
   border-color: rgba(255,255,255,0.08) !important;
-  color: #A09890 !important;
+  color: #888888 !important;
 }
 .dark #r360-root .r3-filter-chip.active,
 .dark #r360-root .r3-status-filter.active {
@@ -1353,12 +1353,12 @@
 
 /* Progress bar track */
 .dark #r360-root .r3-progress-track {
-  background: #2C2823 !important;
+  background: #1A1A1A !important;
 }
 
 /* Drawer / side panel */
 .dark #r360-root .item-drawer {
-  background: #232019 !important;
+  background: #111111 !important;
   border-color: rgba(255,255,255,0.08) !important;
 }
 .dark #r360-root .item-drawer .drawer-header {
@@ -1367,12 +1367,12 @@
 
 /* Board column backgrounds */
 .dark #r360-root .r3-board-column {
-  background: #1A1714 !important;
+  background: #0A0A0A !important;
 }
 
 /* Chronology view */
 .dark #r360-root .r3-chrono-cell {
-  background: #1A1714 !important;
+  background: #0A0A0A !important;
   border-color: rgba(255,255,255,0.05) !important;
 }
 .dark #r360-root .r3-chrono-cell.current {
@@ -1381,8 +1381,8 @@
 
 /* Select / dropdown overrides */
 .dark #r360-root select {
-  background: #232019 !important;
-  color: #F5F3F0 !important;
+  background: #111111 !important;
+  color: #EDEDED !important;
   border-color: rgba(255,255,255,0.08) !important;
 }
 
@@ -1397,5 +1397,5 @@
 .dark #r360-root [style*="background: #fff"],
 .dark #r360-root [style*="background:#FFFFFF"],
 .dark #r360-root [style*="background:#fff"] {
-  background: #1A1714 !important;
+  background: #0A0A0A !important;
 }

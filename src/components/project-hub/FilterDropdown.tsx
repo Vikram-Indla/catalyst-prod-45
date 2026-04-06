@@ -74,7 +74,7 @@ export function FilterDropdown({ filters, onChange }: FilterDropdownProps) {
 
       {open && (
         <div
-          className="absolute top-full left-0 mt-1 z-50 bg-[var(--bg-app)] dark:bg-[#232019] border border-[var(--divider)] dark:border-[rgba(255,255,255,0.12)]"
+          className="absolute top-full left-0 mt-1 z-50 bg-[var(--bg-app)] dark:bg-[#111111] border border-[var(--divider)] dark:border-[rgba(255,255,255,0.12)]"
           style={{
             width: 280,
             borderRadius: 8,

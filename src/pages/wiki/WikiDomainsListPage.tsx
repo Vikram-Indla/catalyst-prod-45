@@ -19,18 +19,18 @@ export default function WikiDomainsListPage() {
   const { data: domains, isLoading } = useWikiDomainCards();
 
   return (
-    <div style={{ fontFamily: 'Inter, sans-serif', color: isDark ? '#F5F3F0' : '#0F172A', background: isDark ? '#1A1714' : '#F8FAFC', minHeight: '100%', padding: '24px 40px 48px' }}>
+    <div style={{ fontFamily: 'Inter, sans-serif', color: isDark ? '#EDEDED' : '#0F172A', background: isDark ? '#0A0A0A' : '#F8FAFC', minHeight: '100%', padding: '24px 40px 48px' }}>
       <nav style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 24 }}>
         <span onClick={() => navigate('/wiki')} style={{ fontSize: 13, color: '#2563EB', cursor: 'pointer' }}>Wiki</span>
-        <ChevronRight size={12} style={{ color: isDark ? '#6B6560' : '#94A3B8' }} />
-        <span style={{ fontSize: 13, color: isDark ? '#A09890' : '#64748B', fontWeight: 600 }}>All Domains</span>
+        <ChevronRight size={12} style={{ color: isDark ? '#666666' : '#94A3B8' }} />
+        <span style={{ fontSize: 13, color: isDark ? '#888888' : '#64748B', fontWeight: 600 }}>All Domains</span>
       </nav>
 
       <h1 style={{ fontFamily: 'Sora, sans-serif', fontSize: 18, fontWeight: 700, marginBottom: 24 }}>All 9 Domains</h1>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 12 }}>
         {isLoading ? Array.from({ length: 9 }).map((_, i) => (
-          <div key={i} style={{ padding: 20, borderRadius: 8, background: isDark ? '#232019' : '#FFFFFF', border: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(0,0,0,0.06)', height: 120 }} />
+          <div key={i} style={{ padding: 20, borderRadius: 8, background: isDark ? '#111111' : '#FFFFFF', border: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(0,0,0,0.06)', height: 120 }} />
         )) : (domains ?? []).map((d: any) => {
           const Icon = DOMAIN_ICONS[d.domain_code] || Globe;
           const tagRaw = TAG_STYLES[d.tag] || TAG_STYLES.SUPPORT;
@@ -38,24 +38,24 @@ export default function WikiDomainsListPage() {
           const coverageColor = d.coverage_percent >= 80 ? '#16A34A' : d.coverage_percent >= 60 ? '#2563EB' : '#D97706';
           return (
             <div key={d.domain_code} onClick={() => navigate(`/wiki/domains/${d.domain_code}`)} style={{
-              padding: 20, borderRadius: 8, background: isDark ? '#232019' : '#FFFFFF', border: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(0,0,0,0.06)', cursor: 'pointer', transition: 'border-color 120ms',
+              padding: 20, borderRadius: 8, background: isDark ? '#111111' : '#FFFFFF', border: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(0,0,0,0.06)', cursor: 'pointer', transition: 'border-color 120ms',
             }} onMouseEnter={e => e.currentTarget.style.borderColor = '#2563EB'} onMouseLeave={e => e.currentTarget.style.borderColor = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
-                <div style={{ width: 32, height: 32, borderRadius: 6, background: isDark ? '#2C2823' : '#F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <Icon size={16} style={{ color: isDark ? '#A09890' : '#64748B' }} />
+                <div style={{ width: 32, height: 32, borderRadius: 6, background: isDark ? '#1A1A1A' : '#F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Icon size={16} style={{ color: isDark ? '#888888' : '#64748B' }} />
                 </div>
-                <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, fontWeight: 700, color: isDark ? '#A09890' : '#64748B', background: isDark ? '#2C2823' : '#F1F5F9', padding: '1px 5px', borderRadius: 3 }}>{d.domain_code}</span>
+                <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, fontWeight: 700, color: isDark ? '#888888' : '#64748B', background: isDark ? '#1A1A1A' : '#F1F5F9', padding: '1px 5px', borderRadius: 3 }}>{d.domain_code}</span>
                 <span style={{ fontFamily: 'Sora, sans-serif', fontSize: 13, fontWeight: 600, flex: 1 }}>{d.name}</span>
                 <span style={{ fontSize: 9, fontWeight: 700, textTransform: 'uppercase', padding: '2px 6px', borderRadius: 3, background: tagStyle.bg, color: tagStyle.color }}>{d.tag}</span>
               </div>
-              <div style={{ display: 'flex', gap: 16, marginBottom: 10, fontSize: 11, color: isDark ? '#A09890' : '#64748B' }}>
+              <div style={{ display: 'flex', gap: 16, marginBottom: 10, fontSize: 11, color: isDark ? '#888888' : '#64748B' }}>
                 <span>{d.article_count} articles</span>
                 <span>{d.view_count} views</span>
                 {d.knowledge_gaps > 0 && <span style={{ color: '#D97706' }}>{d.knowledge_gaps} gaps</span>}
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <span style={{ fontSize: 10, fontWeight: 600, color: isDark ? '#A09890' : '#64748B' }}>Coverage</span>
-                <div style={{ flex: 1, height: 3, borderRadius: 2, background: isDark ? '#3A3530' : '#E2E8F0' }}>
+                <span style={{ fontSize: 10, fontWeight: 600, color: isDark ? '#888888' : '#64748B' }}>Coverage</span>
+                <div style={{ flex: 1, height: 3, borderRadius: 2, background: isDark ? '#222222' : '#E2E8F0' }}>
                   <div style={{ height: '100%', borderRadius: 2, background: coverageColor, width: `${d.coverage_percent}%` }} />
                 </div>
                 <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, fontWeight: 600 }}>{d.coverage_percent}%</span>

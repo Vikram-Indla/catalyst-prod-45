@@ -18,7 +18,7 @@ import { useIsDark } from '@/components/strategy/themes/useIsDark';
 
 // Dark mode tokens
 const DK = {
-  bg: '#1A1714',
+  bg: '#0A0A0A',
   t1: 'var(--cp-t1)',
   t2: 'var(--cp-t2)',
   t3: 'var(--cp-t3)',

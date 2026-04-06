@@ -99,11 +99,11 @@ export default function WikiAnalyticsPage() {
   const border = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)';
 
   return (
-    <div style={{ fontFamily: 'Inter, sans-serif', color: isDark ? '#F5F3F0' : '#0F172A', background: isDark ? '#1A1714' : '#F8FAFC', minHeight: '100%', padding: '24px 40px 48px' }}>
+    <div style={{ fontFamily: 'Inter, sans-serif', color: isDark ? '#EDEDED' : '#0F172A', background: isDark ? '#0A0A0A' : '#F8FAFC', minHeight: '100%', padding: '24px 40px 48px' }}>
       <nav style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 24 }}>
         <span onClick={() => navigate('/wiki')} style={{ fontSize: 13, color: '#2563EB', cursor: 'pointer' }}>Wiki</span>
-        <ChevronRight size={12} style={{ color: isDark ? '#6B6560' : '#94A3B8' }} />
-        <span style={{ fontSize: 13, color: isDark ? '#A09890' : '#64748B', fontWeight: 600 }}>Analytics</span>
+        <ChevronRight size={12} style={{ color: isDark ? '#666666' : '#94A3B8' }} />
+        <span style={{ fontSize: 13, color: isDark ? '#888888' : '#64748B', fontWeight: 600 }}>Analytics</span>
       </nav>
 
       <h1 style={{ fontFamily: F.sora, fontSize: 18, fontWeight: 700, marginBottom: 24 }}>WikiHub Analytics</h1>
@@ -111,11 +111,11 @@ export default function WikiAnalyticsPage() {
       {/* Stats Grid */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: 12, marginBottom: 32 }}>
         {isLoading ? Array.from({ length: 8 }).map((_, i) => (
-          <div key={i} style={{ padding: 20, borderRadius: 8, background: isDark ? '#232019' : '#FFFFFF', border: `0.75px solid ${border}`, height: 80 }} />
+          <div key={i} style={{ padding: 20, borderRadius: 8, background: isDark ? '#111111' : '#FFFFFF', border: `0.75px solid ${border}`, height: 80 }} />
         )) : statCards.map(s => (
-          <div key={s.label} style={{ padding: 20, borderRadius: 8, background: isDark ? '#232019' : '#FFFFFF', border: `0.75px solid ${border}`, textAlign: 'center' }}>
-            <div style={{ fontFamily: F.sora, fontSize: 24, fontWeight: 700, color: isDark ? '#F5F3F0' : '#0F172A' }}>{s.value}</div>
-            <div style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', color: isDark ? '#6B6560' : '#94A3B8', marginTop: 4, letterSpacing: '0.05em' }}>{s.label}</div>
+          <div key={s.label} style={{ padding: 20, borderRadius: 8, background: isDark ? '#111111' : '#FFFFFF', border: `0.75px solid ${border}`, textAlign: 'center' }}>
+            <div style={{ fontFamily: F.sora, fontSize: 24, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A' }}>{s.value}</div>
+            <div style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', color: isDark ? '#666666' : '#94A3B8', marginTop: 4, letterSpacing: '0.05em' }}>{s.label}</div>
           </div>
         ))}
       </div>
@@ -123,14 +123,14 @@ export default function WikiAnalyticsPage() {
       {/* Charts Row */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginBottom: 32 }}>
         {/* Articles per Domain */}
-        <div style={{ padding: 20, borderRadius: 8, background: isDark ? '#232019' : '#FFFFFF', border: `0.75px solid ${border}` }}>
+        <div style={{ padding: 20, borderRadius: 8, background: isDark ? '#111111' : '#FFFFFF', border: `0.75px solid ${border}` }}>
           <h2 style={{ fontFamily: F.sora, fontSize: 14, fontWeight: 600, marginBottom: 16, margin: '0 0 16px' }}>Articles per Domain</h2>
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={domainDistribution ?? []}>
               <CartesianGrid strokeDasharray="3 3" stroke={border} />
-              <XAxis dataKey="domain" tick={{ fontSize: 10, fill: isDark ? '#A09890' : '#64748B' }} />
-              <YAxis tick={{ fontSize: 10, fill: isDark ? '#A09890' : '#64748B' }} />
-              <Tooltip contentStyle={{ fontSize: 12, borderRadius: 6, border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, background: isDark ? '#2C2823' : '#FFFFFF', color: isDark ? '#F5F3F0' : undefined }} />
+              <XAxis dataKey="domain" tick={{ fontSize: 10, fill: isDark ? '#888888' : '#64748B' }} />
+              <YAxis tick={{ fontSize: 10, fill: isDark ? '#888888' : '#64748B' }} />
+              <Tooltip contentStyle={{ fontSize: 12, borderRadius: 6, border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, background: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#EDEDED' : undefined }} />
               <Bar dataKey="count" radius={[4, 4, 0, 0]}>
                 {(domainDistribution ?? []).map((d: any) => (
                   <Cell key={d.domain} fill={DOMAIN_COLORS[d.domain] || '#64748B'} />
@@ -141,7 +141,7 @@ export default function WikiAnalyticsPage() {
         </div>
 
         {/* Verification Status Pie */}
-        <div style={{ padding: 20, borderRadius: 8, background: isDark ? '#232019' : '#FFFFFF', border: `0.75px solid ${border}` }}>
+        <div style={{ padding: 20, borderRadius: 8, background: isDark ? '#111111' : '#FFFFFF', border: `0.75px solid ${border}` }}>
           <h2 style={{ fontFamily: F.sora, fontSize: 14, fontWeight: 600, marginBottom: 16, margin: '0 0 16px' }}>Verification Status</h2>
           <ResponsiveContainer width="100%" height={220}>
             <PieChart>
@@ -150,8 +150,8 @@ export default function WikiAnalyticsPage() {
                   <Cell key={i} fill={entry.fill} />
                 ))}
               </Pie>
-              <Tooltip contentStyle={{ fontSize: 12, borderRadius: 6, background: isDark ? '#2C2823' : '#FFFFFF', color: isDark ? '#F5F3F0' : undefined, border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}` }} />
-              <Legend wrapperStyle={{ fontSize: 11, color: isDark ? '#A09890' : undefined }} />
+              <Tooltip contentStyle={{ fontSize: 12, borderRadius: 6, background: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#EDEDED' : undefined, border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}` }} />
+              <Legend wrapperStyle={{ fontSize: 11, color: isDark ? '#888888' : undefined }} />
             </PieChart>
           </ResponsiveContainer>
         </div>
@@ -162,12 +162,12 @@ export default function WikiAnalyticsPage() {
         {/* Most Viewed */}
         <div>
           <h2 style={{ fontFamily: F.sora, fontSize: 14, fontWeight: 600, marginBottom: 12 }}>Most Viewed Articles</h2>
-          <div style={{ borderRadius: 8, border: `0.75px solid ${border}`, background: isDark ? '#232019' : '#FFFFFF', overflow: 'hidden' }}>
+          <div style={{ borderRadius: 8, border: `0.75px solid ${border}`, background: isDark ? '#111111' : '#FFFFFF', overflow: 'hidden' }}>
             <div style={{
               display: 'grid', gridTemplateColumns: '1fr 60px 60px 60px',
-              background: isDark ? '#2C2823' : '#F1F5F9', padding: '0 14px', height: 32, alignItems: 'center',
+              background: isDark ? '#1A1A1A' : '#F1F5F9', padding: '0 14px', height: 32, alignItems: 'center',
               fontFamily: F.sora, fontSize: 10, fontWeight: 600, textTransform: 'uppercase' as const,
-              color: isDark ? '#6B6560' : '#64748B', letterSpacing: '0.05em', borderBottom: `0.75px solid ${border}`,
+              color: isDark ? '#666666' : '#64748B', letterSpacing: '0.05em', borderBottom: `0.75px solid ${border}`,
             }}>
               <span>Article</span><span>Views</span><span>Help.</span><span>Conf.</span>
             </div>
@@ -183,7 +183,7 @@ export default function WikiAnalyticsPage() {
                    onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
                   <span style={{ fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.title}</span>
                   <span style={{ fontFamily: F.mono, fontSize: 11 }}>{a.view_count ?? 0}</span>
-                  <span style={{ fontFamily: F.mono, fontSize: 11, color: isDark ? '#A09890' : '#64748B' }}>{Math.round(a.helpfulness_score ?? 0)}%</span>
+                  <span style={{ fontFamily: F.mono, fontSize: 11, color: isDark ? '#888888' : '#64748B' }}>{Math.round(a.helpfulness_score ?? 0)}%</span>
                   <span style={{ fontFamily: F.mono, fontSize: 11, color: confColor }}>{conf}%</span>
                 </div>
               );
@@ -194,17 +194,17 @@ export default function WikiAnalyticsPage() {
         {/* Least Helpful */}
         <div>
           <h2 style={{ fontFamily: F.sora, fontSize: 14, fontWeight: 600, marginBottom: 12 }}>Least Helpful Articles</h2>
-          <div style={{ borderRadius: 8, border: `0.75px solid ${border}`, background: isDark ? '#232019' : '#FFFFFF', overflow: 'hidden' }}>
+          <div style={{ borderRadius: 8, border: `0.75px solid ${border}`, background: isDark ? '#111111' : '#FFFFFF', overflow: 'hidden' }}>
             <div style={{
               display: 'grid', gridTemplateColumns: '1fr 60px 60px',
-              background: isDark ? '#2C2823' : '#F1F5F9', padding: '0 14px', height: 32, alignItems: 'center',
+              background: isDark ? '#1A1A1A' : '#F1F5F9', padding: '0 14px', height: 32, alignItems: 'center',
               fontFamily: F.sora, fontSize: 10, fontWeight: 600, textTransform: 'uppercase' as const,
-              color: isDark ? '#6B6560' : '#64748B', letterSpacing: '0.05em', borderBottom: `0.75px solid ${border}`,
+              color: isDark ? '#666666' : '#64748B', letterSpacing: '0.05em', borderBottom: `0.75px solid ${border}`,
             }}>
               <span>Article</span><span>Help.</span><span>Votes</span>
             </div>
             {(leastHelpful ?? []).length === 0 ? (
-              <div style={{ padding: 24, textAlign: 'center', color: isDark ? '#6B6560' : '#94A3B8', fontSize: 12 }}>No feedback data yet</div>
+              <div style={{ padding: 24, textAlign: 'center', color: isDark ? '#666666' : '#94A3B8', fontSize: 12 }}>No feedback data yet</div>
             ) : (leastHelpful ?? []).map((a: any) => (
               <div key={a.id} onClick={() => navigate(`/wiki/${a.slug}`)} style={{
                 display: 'grid', gridTemplateColumns: '1fr 60px 60px',
@@ -214,7 +214,7 @@ export default function WikiAnalyticsPage() {
                  onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
                 <span style={{ fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.title}</span>
                 <span style={{ fontFamily: F.mono, fontSize: 11, color: '#DC2626' }}>{Math.round(a.helpfulness_score ?? 0)}%</span>
-                <span style={{ fontFamily: F.mono, fontSize: 11, color: isDark ? '#A09890' : '#64748B' }}>{a.helpfulness_votes}</span>
+                <span style={{ fontFamily: F.mono, fontSize: 11, color: isDark ? '#888888' : '#64748B' }}>{a.helpfulness_votes}</span>
               </div>
             ))}
           </div>

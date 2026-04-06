@@ -29,7 +29,7 @@ const ErrorBanner = ({ message, onRetry }: { message: string; onRetry: () => voi
       <span style={{ fontSize: 13, color: '#DC2626', flex: 1 }}>Failed to load data: {message}</span>
       <button onClick={onRetry} style={{
         fontSize: 12, fontWeight: 600, padding: '5px 14px', borderRadius: 6,
-        background: isDark ? '#232019' : '#FFFFFF', border: '1px solid #FCA5A5', color: '#DC2626',
+        background: isDark ? '#111111' : '#FFFFFF', border: '1px solid #FCA5A5', color: '#DC2626',
         cursor: 'pointer',
       }}>Retry</button>
     </div>
@@ -104,7 +104,7 @@ const Resource360Page = () => {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%', fontFamily: "'Inter', sans-serif" }}>
         {/* Banner skeleton */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 20, padding: '16px 20px', background: isDark ? '#1A1714' : '#FFFFFF', borderBottom: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 20, padding: '16px 20px', background: isDark ? '#0A0A0A' : '#FFFFFF', borderBottom: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0' }}>
           <div className="r360-skeleton" style={{ width: 64, height: 64, borderRadius: '50%' }} />
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8 }}>
             <SkeletonBlock height={20} />
@@ -122,7 +122,7 @@ const Resource360Page = () => {
           </div>
         </div>
         {/* Toolbar skeleton */}
-        <div style={{ padding: '8px 20px', background: isDark ? '#1A1714' : '#FFFFFF', borderBottom: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0' }}>
+        <div style={{ padding: '8px 20px', background: isDark ? '#0A0A0A' : '#FFFFFF', borderBottom: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0' }}>
           <SkeletonBlock height={36} />
         </div>
         {/* Content skeleton */}
@@ -150,7 +150,7 @@ const Resource360Page = () => {
   return (
     <div className="r360-root" style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%', fontFamily: "'Inter', sans-serif" }}>
       {summaryLoading ? (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 20, padding: '16px 20px', background: isDark ? '#1A1714' : '#FFFFFF', borderBottom: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 20, padding: '16px 20px', background: isDark ? '#0A0A0A' : '#FFFFFF', borderBottom: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0' }}>
           <div className="r360-skeleton" style={{ width: 64, height: 64, borderRadius: '50%' }} />
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8 }}>
             <SkeletonBlock height={20} />
@@ -241,7 +241,7 @@ const skeletonCSS = `
     animation: r360shimmer 1.5s infinite;
   }
   .dark .r360-skeleton {
-    background: linear-gradient(90deg, #232019 25%, #2C2823 50%, #232019 75%);
+    background: linear-gradient(90deg, #111111 25%, #1A1A1A 50%, #111111 75%);
     background-size: 200% 100%;
   }
   @keyframes r360shimmer {

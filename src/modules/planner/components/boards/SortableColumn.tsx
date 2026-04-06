@@ -100,7 +100,7 @@ export function SortableColumn({
       ref={setSortableRef}
       style={style}
       className={cn(
-        'boards-column dark:text-[#F5F3F0]',
+        'boards-column dark:text-[#EDEDED]',
         isDragging && 'boards-column--dragging'
       )}
     >
@@ -109,7 +109,7 @@ export function SortableColumn({
         <div className="boards-column__header-left">
           {/* Drag Handle - Always visible with proper touch handling */}
           <div
-            className="boards-column__drag-handle dark:text-[#6B6560] dark:hover:text-[#A09890]"
+            className="boards-column__drag-handle dark:text-[#666666] dark:hover:text-[#888888]"
             {...attributes}
             {...listeners}
             style={{ touchAction: 'none' }}
@@ -125,10 +125,10 @@ export function SortableColumn({
           />
           
           {/* Title */}
-          <h3 className="boards-column__title dark:text-[#F5F3F0]">{column.name}</h3>
+          <h3 className="boards-column__title dark:text-[#EDEDED]">{column.name}</h3>
 
           {/* Task Count */}
-          <span className="boards-column__count dark:bg-[#2C2823] dark:text-[#A09890]">{column.task_count}</span>
+          <span className="boards-column__count dark:bg-[#1A1A1A] dark:text-[#888888]">{column.task_count}</span>
         </div>
         
         <div className="flex items-center gap-1">
@@ -180,13 +180,13 @@ export function SortableColumn({
         </SortableContext>
 
         {tasks.length === 0 && (
-          <div className="boards-column__empty dark:bg-[#232019] dark:border-[rgba(255,255,255,0.08)] dark:text-[#6B6560]">
+          <div className="boards-column__empty dark:bg-[#111111] dark:border-[rgba(255,255,255,0.08)] dark:text-[#666666]">
             No tasks
           </div>
         )}
 
         {/* Add Task Button at bottom */}
-        <button className="boards-add-task dark:border-[rgba(255,255,255,0.08)] dark:text-[#6B6560] dark:hover:bg-[#2C2823] dark:hover:text-[#F5F3F0] dark:hover:border-[rgba(255,255,255,0.15)]" onClick={() => onAddTask?.(column.id)}>
+        <button className="boards-add-task dark:border-[rgba(255,255,255,0.08)] dark:text-[#666666] dark:hover:bg-[#1A1A1A] dark:hover:text-[#EDEDED] dark:hover:border-[rgba(255,255,255,0.15)]" onClick={() => onAddTask?.(column.id)}>
           <Plus className="w-4 h-4" />
           Add Task
         </button>

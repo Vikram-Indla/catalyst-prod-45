@@ -13,7 +13,7 @@ const priClassName = (pri: string): string => {
   const p = (pri || '').toLowerCase();
   if (p === 'highest' || p === 'p1') return 'bg-[#FFEBE6] dark:bg-[#3a1a1a] text-[#BF2600] dark:text-[#ff8f73]';
   if (p === 'high' || p === 'p2') return 'bg-[#FFF7E6] dark:bg-[#3a2e1a] text-[#A36200] dark:text-[#ffc44d]';
-  return 'bg-[#DFE1E6] dark:bg-[#3A3530] text-[#253858] dark:text-[#A09890]';
+  return 'bg-[#DFE1E6] dark:bg-[#222222] text-[#253858] dark:text-[#888888]';
 };
 
 const priLabel = (pri: string): string => {
@@ -40,19 +40,19 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
     height: 'var(--cp-size-table-row)',
     borderBottom: '0.75px solid var(--cp-border-subtle)', textAlign: 'left', whiteSpace: 'nowrap',
   };
-  const thClassName = 'bg-[#F1F5F9] dark:bg-[#2C2823]';
+  const thClassName = 'bg-[#F1F5F9] dark:bg-[#1A1A1A]';
   const tdStyle: React.CSSProperties = {
     padding: '0 12px', height: 'var(--cp-size-table-row)', maxHeight: 'var(--cp-size-table-row)',
     fontSize: 12, color: 'var(--cp-text-secondary)',
     borderBottom: '0.75px solid var(--cp-border-subtle)',
     whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
   };
-  const tdClassName = 'bg-white dark:bg-[#1A1714]';
+  const tdClassName = 'bg-white dark:bg-[#0A0A0A]';
 
   return (
     <WidgetWrapper title="Production Incidents" subtitle="Cross-hub from IncidentHub" collapsed={collapsed} onToggleCollapse={onToggleCollapse} span={2} footer={footer} flushBody>
       {isLoading ? (
-        <div className="p-4 animate-pulse"><div className="h-24 rounded bg-[#F1F5F9] dark:bg-[#2C2823]" /></div>
+        <div className="p-4 animate-pulse"><div className="h-24 rounded bg-[#F1F5F9] dark:bg-[#1A1A1A]" /></div>
       ) : !incidents?.length ? (
         <div className="flex flex-col items-center py-6 text-center">
           <div style={{ fontSize: 28, color: 'var(--cp-text-muted)', marginBottom: 8 }}>🛡</div>
@@ -72,7 +72,7 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
                 <>
                   {open > 0 && <span className="bg-[#DEEBFF] dark:bg-[#1a2a3a] text-[#0747A6] dark:text-[#79b8ff]" style={{ fontSize: 10, fontWeight: 700, padding: '1px 6px', borderRadius: 3, textTransform: 'uppercase' }}>{open} OPEN</span>}
                   {resolved > 0 && <span className="bg-[#E3FCEF] dark:bg-[#1a3a2a] text-[#006644] dark:text-[#85e89d]" style={{ fontSize: 10, fontWeight: 700, padding: '1px 6px', borderRadius: 3, textTransform: 'uppercase' }}>{resolved} RESOLVED</span>}
-                  {closed > 0 && <span className="bg-[#DFE1E6] dark:bg-[#3A3530] text-[#253858] dark:text-[#A09890]" style={{ fontSize: 10, fontWeight: 700, padding: '1px 6px', borderRadius: 3, textTransform: 'uppercase' }}>{closed} CLOSED</span>}
+                  {closed > 0 && <span className="bg-[#DFE1E6] dark:bg-[#222222] text-[#253858] dark:text-[#888888]" style={{ fontSize: 10, fontWeight: 700, padding: '1px 6px', borderRadius: 3, textTransform: 'uppercase' }}>{closed} CLOSED</span>}
                 </>
               );
             })()}
@@ -95,7 +95,7 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
                 const statusCls = isDone
                   ? inc.resolution
                     ? 'bg-[#E3FCEF] dark:bg-[#1a3a2a] text-[#006644] dark:text-[#85e89d]'
-                    : 'bg-[#DFE1E6] dark:bg-[#3A3530] text-[#253858] dark:text-[#A09890]'
+                    : 'bg-[#DFE1E6] dark:bg-[#222222] text-[#253858] dark:text-[#888888]'
                   : 'bg-[#DEEBFF] dark:bg-[#1a2a3a] text-[#0747A6] dark:text-[#79b8ff]';
                 const assigneeName = inc.assignee || '';
                 const assigneeFirst = assigneeName ? assigneeName.split(' ')[0] : '—';
@@ -103,7 +103,7 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
                 const avatarColor = getAvatarColor(assigneeInitials);
                 const avatarUrl = inc.assignee_avatar_url;
                 return (
-                  <tr key={inc.id} className="transition-colors duration-[120ms] hover:bg-black/[0.04] dark:hover:bg-white/[0.04] bg-white dark:bg-[#1A1714]">
+                  <tr key={inc.id} className="transition-colors duration-[120ms] hover:bg-black/[0.04] dark:hover:bg-white/[0.04] bg-white dark:bg-[#0A0A0A]">
                     <td className={tdClassName} style={{ ...tdStyle, color: 'var(--cp-primary-60)', fontWeight: 500, fontFamily: 'var(--cp-font-mono)', fontSize: 11 }}>{inc.issue_key}</td>
                     <td className={tdClassName} style={tdStyle}>
                       <span className={`inline-flex items-center ${pCls}`} style={{ height: 18, padding: '0 6px', fontSize: 10, fontWeight: 700, borderRadius: 'var(--cp-radius-sm)', textTransform: 'uppercase' }}>

@@ -149,7 +149,7 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
             {board.isPersonal && <Chip bg={isDark ? 'rgba(37,99,235,0.12)' : '#EFF6FF'} color="#2563EB">Personal</Chip>}
             <Chip bg={vis.bg} color={vis.color}>{vis.label}</Chip>
             {board.swimlaneType !== 'none' && (
-              <Chip bg={isDark ? 'rgba(255,255,255,0.06)' : '#F8FAFC'} color={isDark ? '#A09890' : '#64748B'}>By {board.swimlaneType}</Chip>
+              <Chip bg={isDark ? 'rgba(255,255,255,0.06)' : '#F8FAFC'} color={isDark ? '#888888' : '#64748B'}>By {board.swimlaneType}</Chip>
             )}
             {/* Jira Sync badge */}
             {hasJiraSync && (
@@ -184,11 +184,11 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
         <div style={{
           display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 8,
           padding: '8px 12px',
-          background: isDark ? '#232019' : 'var(--bg-1)', borderTop: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(15,23,42,0.08)',
+          background: isDark ? '#111111' : 'var(--bg-1)', borderTop: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(15,23,42,0.08)',
         }}>
           <button onClick={e => { e.stopPropagation(); onSettings(); }} style={{
             display: 'flex', alignItems: 'center', gap: 5, height: 30, padding: '0 10px',
-            background: isDark ? '#1A1714' : 'var(--bg-app)', border: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(15,23,42,0.12)',
+            background: isDark ? '#0A0A0A' : 'var(--bg-app)', border: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(15,23,42,0.12)',
             borderRadius: 5, cursor: 'pointer', fontSize: 11.5, fontWeight: 500,
             color: 'var(--fg-2)', fontFamily: "'Inter', sans-serif",
           }}>
@@ -229,13 +229,13 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
                 width: '100%', height: 36, padding: '0 12px', boxSizing: 'border-box',
                 border: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(15,23,42,0.15)', borderRadius: 6,
                 fontSize: 13, fontFamily: "'Inter', sans-serif", color: 'var(--fg-1)',
-                outline: 'none', background: isDark ? '#1A1714' : 'var(--bg-app)', marginBottom: 16,
+                outline: 'none', background: isDark ? '#0A0A0A' : 'var(--bg-app)', marginBottom: 16,
               }}
             />
             <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
               <button onClick={() => { setDeleteModal(false); setDeleteConfirm(''); }} style={{
                 padding: '8px 16px', fontSize: 13, fontWeight: 500, borderRadius: 6,
-                border: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(15,23,42,0.15)', background: isDark ? '#1A1714' : 'var(--bg-app)',
+                border: isDark ? '0.75px solid rgba(255,255,255,0.08)' : '0.75px solid rgba(15,23,42,0.15)', background: isDark ? '#0A0A0A' : 'var(--bg-app)',
                 color: 'var(--fg-2)', cursor: 'pointer', fontFamily: "'Inter', sans-serif",
               }}>Cancel</button>
               <button onClick={handleDelete}

@@ -83,7 +83,7 @@ export function ColumnsPanel({
       ref={panelRef}
       className="absolute top-full right-0 mt-2 w-64 rounded-lg shadow-lg z-[500] overflow-hidden"
       style={{
-        backgroundColor: isDark ? '#232019' : 'var(--surface-1)',
+        backgroundColor: isDark ? '#111111' : 'var(--surface-1)',
         border: isDark ? '1px solid rgba(235,238,245,0.10)' : '1px solid var(--border-color)',
       }}
     >
@@ -142,7 +142,7 @@ export function ColumnsPanel({
         className="px-4 py-3 border-t flex gap-2"
         style={{ 
           borderColor: isDark ? 'rgba(235,238,245,0.10)' : 'var(--divider)',
-          backgroundColor: isDark ? '#1A1714' : 'var(--surface-2)',
+          backgroundColor: isDark ? '#0A0A0A' : 'var(--surface-2)',
         }}
       >
         <Button

@@ -176,17 +176,17 @@
    ECLIPSE — NOCTURNE DARK MODE (R360 Tokens)
    ═══════════════════════════════════════════════════════ */
 .dark .r360-root {
-  --r360-bg: #1A1714;
-  --r360-bg-alt: #232019;
-  --r360-bg-warm: #232019;
-  --r360-surface: #232019;
+  --r360-bg: #0A0A0A;
+  --r360-bg-alt: #111111;
+  --r360-bg-warm: #111111;
+  --r360-surface: #111111;
   --r360-surface-hover: rgba(255,255,255,0.04);
   --r360-surface-active: rgba(255,255,255,0.06);
 
-  --r360-text-1: #F5F3F0;
-  --r360-text-2: #A09890;
-  --r360-text-3: #A09890;
-  --r360-text-4: #6B6560;
+  --r360-text-1: #EDEDED;
+  --r360-text-2: #888888;
+  --r360-text-3: #888888;
+  --r360-text-4: #666666;
 
   --r360-border: rgba(255,255,255,0.08);
   --r360-border-light: rgba(255,255,255,0.06);
@@ -206,5 +206,5 @@
 }
 
 .dark .r360-root .r360-row-alt {
-  background: #232019;
+  background: #111111;
 }

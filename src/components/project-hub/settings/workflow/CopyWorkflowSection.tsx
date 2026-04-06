@@ -88,7 +88,7 @@ export function CopyWorkflowSection({ projectId, onCopied }: CopyWorkflowSection
           <select
             value={sourceProjectId}
             onChange={e => setSourceProjectId(e.target.value)}
-            className="bg-[var(--cp-float)] dark:bg-[#232019]"
+            className="bg-[var(--cp-float)] dark:bg-[#111111]"
             style={{ ...inputStyle, cursor: 'pointer', maxWidth: 260 }}
           >
             <option value="">Select a project...</option>
@@ -116,7 +116,7 @@ export function CopyWorkflowSection({ projectId, onCopied }: CopyWorkflowSection
           className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50"
           onClick={e => { if (e.target === e.currentTarget) setConfirmOpen(false); }}
         >
-          <div className="bg-[var(--cp-float)] dark:bg-[#232019]" style={{ width: 440, borderRadius: 12, padding: 24, boxShadow: '0 20px 25px -5px rgba(0,0,0,.1)', fontFamily: "'Inter', sans-serif" }}>
+          <div className="bg-[var(--cp-float)] dark:bg-[#111111]" style={{ width: 440, borderRadius: 12, padding: 24, boxShadow: '0 20px 25px -5px rgba(0,0,0,.1)', fontFamily: "'Inter', sans-serif" }}>
             <div className="flex items-center justify-between mb-4">
               <h3 style={{ fontSize: 16, fontWeight: 700, color: 'var(--fg-1)', fontFamily: "'Sora', sans-serif" }}>Copy Workflow</h3>
               <button onClick={() => setConfirmOpen(false)} className="flex items-center justify-center rounded-md hover:bg-[var(--cp-bd-zone)] transition-colors" style={{ width: 28, height: 28, border: 'none', background: 'transparent', cursor: 'pointer' }}>
@@ -127,7 +127,7 @@ export function CopyWorkflowSection({ projectId, onCopied }: CopyWorkflowSection
               This will replace your current workflow with the workflow from <strong>{selectedProject?.name}</strong>. Continue?
             </p>
             <div className="flex justify-end gap-2 mt-6">
-              <button onClick={() => setConfirmOpen(false)} className="bg-[var(--cp-float)] dark:bg-[#232019]" style={{ height: 36, padding: '0 16px', fontSize: 13, fontWeight: 500, color: 'var(--fg-2)', border: '1px solid var(--divider)', borderRadius: 6, cursor: 'pointer' }}>Cancel</button>
+              <button onClick={() => setConfirmOpen(false)} className="bg-[var(--cp-float)] dark:bg-[#111111]" style={{ height: 36, padding: '0 16px', fontSize: 13, fontWeight: 500, color: 'var(--fg-2)', border: '1px solid var(--divider)', borderRadius: 6, cursor: 'pointer' }}>Cancel</button>
               <button
                 onClick={handleCopy}
                 disabled={loading}

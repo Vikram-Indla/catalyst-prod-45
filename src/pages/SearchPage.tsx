@@ -311,7 +311,7 @@ export default function SearchPage() {
   }
 
   return (
-    <div className="flex flex-col h-full bg-white dark:bg-[#1A1714]">
+    <div className="flex flex-col h-full bg-white dark:bg-[#0A0A0A]">
       <div className="border-b border-border px-6 py-4">
         <h1 className="text-xl font-semibold text-foreground">Issue Navigator</h1>
         <p className="text-sm text-muted-foreground mt-1">
