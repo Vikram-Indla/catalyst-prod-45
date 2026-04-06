@@ -129,6 +129,28 @@
   background-color: var(--wh-bg);
 }
 
+/* ── DARK MODE (Vercel Neutral) ── */
+.dark .workhub-module,
+[data-theme="dark"] .workhub-module {
+  --wh-bg: #0A0A0A;
+  --wh-surface: #111111;
+  --wh-surface-elevated: #1A1A1A;
+  --wh-border: rgba(255,255,255,0.08);
+  --wh-border-light: rgba(255,255,255,0.05);
+  --wh-text-primary: #EDEDED;
+  --wh-text-secondary: #888888;
+  --wh-text-tertiary: #666666;
+  --wh-shadow-sm: none;
+  --wh-shadow-md: none;
+  --wh-shadow-lg: none;
+  --wh-primary-light: rgba(37,99,235,0.12);
+  --wh-teal-light: rgba(13,148,136,0.12);
+  --wh-success-light: rgba(22,163,74,0.12);
+  --wh-warning-light: rgba(217,119,6,0.12);
+  --wh-danger-light: rgba(239,68,68,0.12);
+  --wh-info-light: rgba(124,58,237,0.12);
+}
+
 .workhub-display {
   font-family: var(--wh-font-display);
 }
