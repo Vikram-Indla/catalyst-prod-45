@@ -2985,22 +2985,22 @@ input[type="range"]::-moz-range-thumb {
 
 .dark .avatar-ring:hover,
 [data-theme="dark"] .avatar-ring:hover {
-  box-shadow: 0 0 0 2px hsl(var(--surface-1)), 0 0 0 4px hsl(var(--brand-primary));
+  box-shadow: 0 0 0 2px #0A0A0A, 0 0 0 4px #3B82F6;
 }
 
 .dark .focus-ring:focus-visible,
 [data-theme="dark"] .focus-ring:focus-visible {
-  box-shadow: 0 0 0 2px hsl(var(--surface-1)), 0 0 0 4px hsl(var(--focus-ring) / 0.4);
+  box-shadow: 0 0 0 2px #0A0A0A, 0 0 0 4px rgba(59,130,246,0.4);
 }
 
 .dark .scrollbar-catalyst::-webkit-scrollbar-thumb,
 [data-theme="dark"] .scrollbar-catalyst::-webkit-scrollbar-thumb {
-  background: hsl(var(--border-default) / 0.5);
+  background: #292929;
 }
 
 .dark .scrollbar-catalyst::-webkit-scrollbar-thumb:hover,
 [data-theme="dark"] .scrollbar-catalyst::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--border-default));
+  background: #454545;
 }
 
 .dark table,
