@@ -2959,7 +2959,7 @@ input[type="range"]::-moz-range-thumb {
   --text-1: #EDEDED;
   --text-2: #A1A1A1;
   --text-3: #878787;
-  --tw-border-opacity: 0.08 !important;
+  
 }
 
 .dark ::-webkit-scrollbar-track,
