@@ -4871,7 +4871,7 @@ input[type="range"]::-moz-range-thumb {
 
 .dark [role="dialog"][aria-label="Notifications"] [role="button"]:hover,
 [data-theme="dark"] [role="dialog"][aria-label="Notifications"] [role="button"]:hover {
-  background: rgba(255,255,255,0.06) !important;
+  background: #1F1F1F !important;
 }
 
 /* Notification section wrapper */
