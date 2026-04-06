@@ -1336,7 +1336,7 @@
   border-color: var(--cp-bd);
 }
 [data-theme="dark"] .th-btn-secondary:hover {
-  background: rgba(255,255,255,0.04);
+  background: #1F1F1F;
   border-color: var(--cp-bd-hover);
 }
 
@@ -1421,7 +1421,7 @@
   color: var(--fg-4);
 }
 [data-theme="dark"] .th-view-toggle-btn:hover {
-  background: rgba(255,255,255,0.04);
+  background: #1F1F1F;
 }
 [data-theme="dark"] .th-view-toggle-btn.active {
   background: var(--cp-blue-wash);
@@ -1448,7 +1448,7 @@
   border-color: var(--cp-bd);
 }
 [data-theme="dark"] .th-filter-btn:hover {
-  background: rgba(255,255,255,0.04);
+  background: #1F1F1F;
   border-color: var(--cp-bd-hover);
 }
 [data-theme="dark"] .th-filter-btn svg {
@@ -1683,7 +1683,7 @@
   color: var(--fg-3);
 }
 [data-theme="dark"] .th-pagination-btn:hover:not(:disabled) {
-  background: rgba(255,255,255,0.04);
+  background: #1F1F1F;
   border-color: var(--cp-bd-hover);
 }
 
