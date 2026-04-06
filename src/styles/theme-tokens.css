@@ -93,20 +93,20 @@
   --cp-float:           #111111;
 
   /* Text — warm off-white opacity scale */
-  --cp-t1:              rgba(235,238,245, 0.92);
-  --cp-t2:              rgba(235,238,245, 0.72);
-  --cp-t3:              rgba(235,238,245, 0.60);
-  --cp-t4:              rgba(235,238,245, 0.35);
+  --cp-t1:              rgba(255,255,255, 0.92);
+  --cp-t2:              rgba(255,255,255, 0.72);
+  --cp-t3:              rgba(255,255,255, 0.60);
+  --cp-t4:              rgba(255,255,255, 0.35);
 
   /* Borders — warm off-white opacity scale */
-  --cp-bd:              rgba(235,238,245, 0.10);
-  --cp-bd-zone:         rgba(235,238,245, 0.08);
-  --cp-bd-hover:        rgba(235,238,245, 0.18);
-  --cp-bd-table:        rgba(235,238,245, 0.08);
+  --cp-bd:              rgba(255,255,255, 0.10);
+  --cp-bd-zone:         rgba(255,255,255, 0.08);
+  --cp-bd-hover:        rgba(255,255,255, 0.18);
+  --cp-bd-table:        rgba(255,255,255, 0.08);
 
   /* Interactive */
-  --cp-hover:           rgba(235,238,245, 0.03);
-  --cp-press:           rgba(235,238,245, 0.06);
+  --cp-hover:           rgba(255,255,255, 0.03);
+  --cp-press:           rgba(255,255,255, 0.06);
   --cp-focus-ring:      rgba(59,130,246, 0.45);
 
   /* Brand */
@@ -148,10 +148,10 @@
   --status-done-text:       #FFFFFF;
 
   /* Progress */
-  --cp-prg-bg:          rgba(235,238,245, 0.05);
+  --cp-prg-bg:          rgba(255,255,255, 0.05);
 
   /* Scrollbar */
-  --cp-scroll:          rgba(235,238,245, 0.10);
+  --cp-scroll:          rgba(255,255,255, 0.10);
 
   /* Chart Palette */
   --cp-chart-1: #60A5FA;

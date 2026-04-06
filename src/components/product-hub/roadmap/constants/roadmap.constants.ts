@@ -67,10 +67,10 @@ export const SURFACE = {
 
 // ── Dark Mode Variants (Nocturne One Surface Model) ──
 export const INK_DARK = {
-  1: 'rgba(235,238,245,0.92)',
-  2: 'rgba(235,238,245,0.72)',
-  3: 'rgba(235,238,245,0.60)',
-  4: 'rgba(235,238,245,0.50)',
+  1: 'rgba(255,255,255,0.92)',
+  2: 'rgba(255,255,255,0.72)',
+  3: 'rgba(255,255,255,0.60)',
+  4: 'rgba(255,255,255,0.50)',
 };
 
 export const SURFACE_DARK = {

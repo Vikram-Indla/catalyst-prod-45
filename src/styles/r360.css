@@ -410,44 +410,44 @@
 
 /* FIX 3: Table header background */
 .dark #r360-root .r3-table th {
-  background: rgba(235,238,245,0.04);
-  color: rgba(235,238,245,0.55);
-  border-bottom-color: rgba(235,238,245,0.10);
+  background: rgba(255,255,255,0.04);
+  color: rgba(255,255,255,0.55);
+  border-bottom-color: rgba(255,255,255,0.10);
 }
 .dark #r360-root .r3-table td {
-  color: rgba(235,238,245,0.92);
-  border-bottom-color: rgba(235,238,245,0.08);
+  color: rgba(255,255,255,0.92);
+  border-bottom-color: rgba(255,255,255,0.08);
 }
 .dark #r360-root .r3-table tbody tr:hover {
-  background: rgba(235,238,245,0.04);
+  background: rgba(255,255,255,0.04);
 }
 
 /* FIX 4: Location labels — neutral text */
 .dark #r360-root .r3-loc-on,
 .dark #r360-root .r3-loc-off {
-  color: rgba(235,238,245,0.72);
+  color: rgba(255,255,255,0.72);
 }
 
 /* FIX 5: Action icons — neutral at rest, brighter on hover */
 .dark #r360-root .r3-btn {
   background: transparent;
-  border-color: rgba(235,238,245,0.10);
-  color: rgba(235,238,245,0.55);
+  border-color: rgba(255,255,255,0.10);
+  color: rgba(255,255,255,0.55);
 }
 .dark #r360-root .r3-btn:hover {
-  color: rgba(235,238,245,0.72);
-  border-color: rgba(235,238,245,0.20);
-  background: rgba(235,238,245,0.04);
+  color: rgba(255,255,255,0.72);
+  border-color: rgba(255,255,255,0.20);
+  background: rgba(255,255,255,0.04);
 }
 
 /* FIX 6: Filter chips dark mode */
 .dark #r360-root .r3-chip {
   background: transparent;
-  border-color: rgba(235,238,245,0.10);
-  color: rgba(235,238,245,0.72);
+  border-color: rgba(255,255,255,0.10);
+  color: rgba(255,255,255,0.72);
 }
 .dark #r360-root .r3-chip:hover {
-  border-color: rgba(235,238,245,0.20);
+  border-color: rgba(255,255,255,0.20);
 }
 .dark #r360-root .r3-chip--active {
   background: #3B82F6;
@@ -457,29 +457,29 @@
 
 /* FIX 7: Resource type tabs dark mode */
 .dark #r360-root .r3-tab {
-  color: rgba(235,238,245,0.55);
+  color: rgba(255,255,255,0.55);
   background: transparent;
 }
 .dark #r360-root .r3-tab:hover {
-  background: rgba(235,238,245,0.04);
+  background: rgba(255,255,255,0.04);
 }
 .dark #r360-root .r3-tab--active {
   background: transparent;
-  color: rgba(235,238,245,0.92);
+  color: rgba(255,255,255,0.92);
   border-bottom-color: #3B82F6;
 }
 
 /* General dark overrides for R360 surfaces */
 .dark #r360-root {
-  color: rgba(235,238,245,0.92);
+  color: rgba(255,255,255,0.92);
 }
 .dark #r360-root .r3-title {
-  color: rgba(235,238,245,0.92);
+  color: rgba(255,255,255,0.92);
 }
 .dark #r360-root .r3-search {
   background-color: transparent;
-  border-color: rgba(235,238,245,0.10);
-  color: rgba(235,238,245,0.92);
+  border-color: rgba(255,255,255,0.10);
+  color: rgba(255,255,255,0.92);
 }
 .dark #r360-root .r3-search:focus {
   border-color: #3B82F6;

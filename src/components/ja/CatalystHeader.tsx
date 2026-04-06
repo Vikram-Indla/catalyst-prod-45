@@ -573,7 +573,7 @@ export function CatalystHeader() {
             <button
               onClick={() => window.dispatchEvent(new CustomEvent('open-global-search'))}
               className="sm:hidden flex items-center justify-center rounded-lg transition-colors focus:outline-none"
-              style={{ width: '36px', height: '36px', color: isDark ? 'rgba(235,238,245,0.55)' : '#94A3B8', background: 'transparent', borderRadius: '8px', border: 'none', cursor: 'pointer' }}
+              style={{ width: '36px', height: '36px', color: isDark ? 'rgba(255,255,255,0.55)' : '#94A3B8', background: 'transparent', borderRadius: '8px', border: 'none', cursor: 'pointer' }}
             >
               <Search style={{ width: '18px', height: '18px' }} />
             </button>

@@ -150,12 +150,12 @@
   --roadmap-type-improvement-bar:   linear-gradient(135deg, #4ADE80, #22C55E);
 
   --roadmap-timeline-header-bg:     rgba(255,255,255,0.03);
-  --roadmap-timeline-quarter-text:  rgba(235,238,245,0.72);
-  --roadmap-timeline-month-text:    rgba(235,238,245,0.92);
+  --roadmap-timeline-quarter-text:  rgba(255,255,255,0.72);
+  --roadmap-timeline-month-text:    rgba(255,255,255,0.92);
   --roadmap-timeline-grid:          rgba(255,255,255,0.06);
 
   --roadmap-group-bg:               rgba(255,255,255,0.03);
-  --roadmap-group-text:             rgba(235,238,245,0.72);
+  --roadmap-group-text:             rgba(255,255,255,0.72);
   --roadmap-group-border:           rgba(255,255,255,0.08);
   --roadmap-group-count-bg:         rgba(255,255,255,0.05);
   --roadmap-group-count-border:     rgba(255,255,255,0.10);

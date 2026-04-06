@@ -1685,7 +1685,7 @@ html:has(body[data-scroll-locked]) {
   [data-theme="dark"] [data-sidebar],
   [data-theme="dark"] .sidebar {
     background-color: #0A0A0A;
-    border-right-color: rgba(235,238,245,0.08);
+    border-right-color: rgba(255,255,255,0.08);
     box-shadow: none;
   }
   
@@ -4677,7 +4677,7 @@ input[type="range"]::-moz-range-thumb {
 [data-theme="dark"] [data-sidebar],
 [data-theme="dark"] aside {
   background-color: #0A0A0A !important;
-  border-color: rgba(235,238,245,0.08) !important;
+  border-color: rgba(255,255,255,0.08) !important;
   box-shadow: none !important;
 }
 

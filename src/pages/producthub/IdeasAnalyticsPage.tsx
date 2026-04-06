@@ -22,7 +22,7 @@ const STATUS_BAR_COLORS_DARK: Record<string, string> = {
   'Approved': 'rgba(59,130,246,0.15)', 'Converted to Initiative': 'rgba(22,163,74,0.15)',
 };
 const STATUS_TEXT_COLORS_DARK: Record<string, string> = {
-  'Draft': 'rgba(235,238,245,0.72)', 'Submitted': 'rgba(235,238,245,0.72)', 'Under Review': '#93C5FD',
+  'Draft': 'rgba(255,255,255,0.72)', 'Submitted': 'rgba(255,255,255,0.72)', 'Under Review': '#93C5FD',
   'Approved': '#93C5FD', 'Converted to Initiative': '#86EFAC',
 };
 
