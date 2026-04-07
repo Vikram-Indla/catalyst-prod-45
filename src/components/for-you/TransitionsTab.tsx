@@ -9,8 +9,10 @@ import { StatusLozenge } from '@/components/ui/StatusLozenge';
 import { supabase } from '@/integrations/supabase/client';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 
-// Design tokens (same as ForYouDetailPanel)
-const T = {
+import { useTheme } from '@/hooks/useTheme';
+
+// Design tokens — light + dark
+const TL = {
   ink: '#09090B', inkSecondary: '#18181B', inkTertiary: '#3F3F46',
   inkMuted: '#71717A', inkMutedStrong: '#6F6F78',
   surface: '#FFFFFF', surfaceSecondary: '#FAFAFA', surfaceTertiary: '#F4F4F5',
@@ -20,6 +22,17 @@ const T = {
   success: '#16A34A', successBg: '#F0FDF4',
   warning: '#D97706', warningBg: '#FFFBEB',
   danger: '#DC2626', dangerBg: '#FEF2F2',
+};
+const TD = {
+  ink: '#EDEDED', inkSecondary: '#A1A1A1', inkTertiary: '#878787',
+  inkMuted: 'rgba(255,255,255,0.45)', inkMutedStrong: 'rgba(255,255,255,0.50)',
+  surface: '#0A0A0A', surfaceSecondary: '#1A1A1A', surfaceTertiary: '#1F1F1F',
+  border: '#2E2E2E', borderStrong: '#454545',
+  primary: '#3B82F6', primaryHover: '#60A5FA', primaryBg: 'rgba(59,130,246,0.10)',
+  teal: '#2DD4BF', tealBg: 'rgba(13,148,136,0.10)',
+  success: '#4ADE80', successBg: 'rgba(74,222,128,0.10)',
+  warning: '#FBBF24', warningBg: 'rgba(251,191,36,0.10)',
+  danger: '#F87171', dangerBg: 'rgba(239,68,68,0.10)',
 };
 
 // --- Types ---
@@ -311,7 +324,7 @@ function HandoffConnector({ from, to, isRework }: { from: PersonInfo; to: Person
 
 function StepCard({ step, index }: { step: TransitionStep; index: number }) {
   const category = getStatusCategory(step.status);
-  const nodeColor = category === 'done' ? '#1B7F37' : category === 'inprogress' ? '#0C66E4' : '#DFE1E6';
+  const nodeColor = category === 'done' ? T.success : category === 'inprogress' ? T.primary : T.borderStrong;
   const nodeBorder = category === 'done' ? '#00875A' : category === 'inprogress' ? '#0065FF' : '#A5ADBA';
   const [showComments, setShowComments] = useState(step.comments.length <= 2);
 
@@ -470,6 +483,8 @@ interface TransitionsTabProps {
 }
 
 export function TransitionsTab({ issueKey }: TransitionsTabProps) {
+  const { isDark } = useTheme();
+  const T = isDark ? TD : TL;
   const [steps, setSteps] = useState<TransitionStep[]>([]);
   const [loading, setLoading] = useState(true);
 
