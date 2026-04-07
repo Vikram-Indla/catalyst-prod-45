@@ -235,15 +235,28 @@ export const CreateStoryDialog: React.FC<CreateStoryDialogProps> = ({
   }, [isOpen]);
 
   // ─── Resolve ph_projects ID (must come first — other queries depend on it) ──
+  // The projectId from props may be from the `projects` table, but ph_work_items
+  // and ph_workflow_statuses reference `ph_projects`. Try multiple lookups.
   const { data: phProjectId } = useQuery({
     queryKey: ['ph-project-id-lookup', projectId],
     queryFn: async () => {
-      const { data: direct } = await supabase
+      // 1. Check if projectId already works in ph_work_items
+      const { data: directItems } = await supabase
+        .from('ph_work_items')
+        .select('id')
+        .eq('project_id', projectId)
+        .limit(1);
+      if (directItems && directItems.length > 0) return projectId;
+
+      // 2. Check if projectId works in ph_workflow_statuses
+      const { data: directStatuses } = await supabase
         .from('ph_workflow_statuses')
         .select('id')
         .eq('project_id', projectId)
         .limit(1);
-      if (direct && direct.length > 0) return projectId;
+      if (directStatuses && directStatuses.length > 0) return projectId;
+
+      // 3. Fallback: look up ph_projects by key from the projects table
       const { data: proj } = await supabase
         .from('projects')
         .select('key')
@@ -257,6 +270,15 @@ export const CreateStoryDialog: React.FC<CreateStoryDialogProps> = ({
           .maybeSingle();
         if (phProj) return phProj.id;
       }
+
+      // 4. Last resort: try ph_projects directly by ID
+      const { data: phDirect } = await supabase
+        .from('ph_projects')
+        .select('id')
+        .eq('id', projectId)
+        .maybeSingle();
+      if (phDirect) return phDirect.id;
+
       return projectId;
     },
     enabled: isOpen && !!projectId,
