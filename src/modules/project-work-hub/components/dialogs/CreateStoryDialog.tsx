@@ -87,8 +87,7 @@ function UserAvatar({ name, url, size = 24 }: { name: string; url?: string | nul
 interface WorkflowStatus {
   id: string;
   name: string;
-  slug?: string;
-  status_category?: string;
+  category?: string;
   position?: number;
 }
 
@@ -174,7 +173,7 @@ export const CreateStoryDialog: React.FC<CreateStoryDialogProps> = ({
     queryFn: async () => {
       const { data, error } = await supabase
         .from('ph_workflow_statuses')
-        .select('id, name, slug, status_category, position')
+        .select('id, name, category, position')
         .eq('project_id', projectId)
         .order('position');
       if (error) throw error;
@@ -209,13 +208,12 @@ export const CreateStoryDialog: React.FC<CreateStoryDialogProps> = ({
     if (workflowStatuses && workflowStatuses.length > 0 && !statusId) {
       const inReq = workflowStatuses.find(s =>
         s.name?.toLowerCase().replace(/\s+/g, '_') === 'in_requirements' ||
-        s.slug === 'in_requirements' ||
         s.name?.toLowerCase() === 'in requirements'
       );
       if (inReq) {
         setStatusId(inReq.id);
       } else {
-        const firstTodo = workflowStatuses.find(s => s.status_category === 'todo');
+        const firstTodo = workflowStatuses.find(s => s.category === 'todo');
         if (firstTodo) setStatusId(firstTodo.id);
         else setStatusId(workflowStatuses[0].id);
       }
@@ -227,7 +225,7 @@ export const CreateStoryDialog: React.FC<CreateStoryDialogProps> = ({
     if (!workflowStatuses) return { todo: [], in_progress: [], done: [] };
     const groups: Record<string, WorkflowStatus[]> = { todo: [], in_progress: [], done: [] };
     for (const s of workflowStatuses) {
-      const cat = s.status_category || 'todo';
+      const cat = s.category || 'todo';
       if (groups[cat]) groups[cat].push(s);
       else groups.todo.push(s);
     }
@@ -427,7 +425,7 @@ export const CreateStoryDialog: React.FC<CreateStoryDialogProps> = ({
                     <div className="flex items-center gap-2">
                       <span
                         className="w-2 h-2 rounded-full shrink-0"
-                        style={{ backgroundColor: STATUS_CATEGORY_STYLES[selectedStatus.status_category || 'todo']?.dot || '#DFE1E6' }}
+                        style={{ backgroundColor: STATUS_CATEGORY_STYLES[selectedStatus.category || 'todo']?.dot || '#DFE1E6' }}
                       />
                       <span>{selectedStatus.name?.toUpperCase()}</span>
                     </div>
