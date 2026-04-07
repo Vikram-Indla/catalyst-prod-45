@@ -125,7 +125,7 @@ function DescriptionEditor({ value, onChange, expanded, isDark }: { value: strin
     editorProps: {
       attributes: {
         class: 'outline-none px-4 py-3 text-[14px] leading-relaxed',
-        style: `color: ${isDark ? '#EDEDED' : '#292A2E'};`,
+        style: 'color: var(--fg-1, #292A2E);',
       },
     },
   });
@@ -141,7 +141,7 @@ function DescriptionEditor({ value, onChange, expanded, isDark }: { value: strin
       style={{
         width: 28, height: 28, borderRadius: 4,
         background: active ? 'rgba(37,99,235,0.08)' : 'transparent',
-        color: active ? '#1868DB' : (isDark ? '#A1A1A1' : '#505258'),
+        color: active ? '#1868DB' : 'var(--fg-3, #505258)',
       }}
     >
       {children}
@@ -149,23 +149,23 @@ function DescriptionEditor({ value, onChange, expanded, isDark }: { value: strin
   );
 
   return (
-    <div style={{ border: `1px solid ${isDark ? '#2E2E2E' : '#E0E0E0'}`, borderRadius: 3, overflow: 'hidden' }}>
+    <div style={{ border: '1px solid var(--divider, #E0E0E0)', borderRadius: 3, overflow: 'hidden' }}>
       {/* Toolbar */}
-      <div className="flex items-center gap-0.5 px-2" style={{ height: 32, borderBottom: '1px solid #E0E0E0', background: isDark ? '#1A1A1A' : '#FFFFFF' }}>
+      <div className="flex items-center gap-0.5 px-2" style={{ height: 32, borderBottom: '1px solid #E0E0E0', background: 'var(--bg-app, #FFFFFF)' }}>
         <ToolBtn active={editor.isActive('bold')} onClick={() => editor.chain().focus().toggleBold().run()} title="Bold">
           <Bold size={14} />
         </ToolBtn>
         <ToolBtn active={editor.isActive('italic')} onClick={() => editor.chain().focus().toggleItalic().run()} title="Italic">
           <Italic size={14} />
         </ToolBtn>
-        <div style={{ width: 1, height: 16, background: isDark ? '#454545' : '#E0E0E0', margin: '0 4px' }} />
+        <div style={{ width: 1, height: 16, background: 'var(--divider, #E0E0E0)', margin: '0 4px' }} />
         <ToolBtn active={editor.isActive('bulletList')} onClick={() => editor.chain().focus().toggleBulletList().run()} title="Bullet list">
           <List size={14} />
         </ToolBtn>
         <ToolBtn active={editor.isActive('orderedList')} onClick={() => editor.chain().focus().toggleOrderedList().run()} title="Numbered list">
           <ListOrdered size={14} />
         </ToolBtn>
-        <div style={{ width: 1, height: 16, background: isDark ? '#454545' : '#E0E0E0', margin: '0 4px' }} />
+        <div style={{ width: 1, height: 16, background: 'var(--divider, #E0E0E0)', margin: '0 4px' }} />
         <ToolBtn active={editor.isActive('codeBlock')} onClick={() => editor.chain().focus().toggleCodeBlock().run()} title="Code block">
           <Code2 size={14} />
         </ToolBtn>
@@ -183,7 +183,7 @@ function DescriptionEditor({ value, onChange, expanded, isDark }: { value: strin
         >
           <Link2 size={14} />
         </ToolBtn>
-        <div style={{ width: 1, height: 16, background: isDark ? '#454545' : '#E0E0E0', margin: '0 4px' }} />
+        <div style={{ width: 1, height: 16, background: 'var(--divider, #E0E0E0)', margin: '0 4px' }} />
         <ToolBtn onClick={() => editor.chain().focus().undo().run()} title="Undo">
           <Undo2 size={14} />
         </ToolBtn>
@@ -192,7 +192,7 @@ function DescriptionEditor({ value, onChange, expanded, isDark }: { value: strin
         </ToolBtn>
       </div>
       {/* Editor */}
-      <div style={{ minHeight: expanded ? 300 : 141, backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF' }}>
+      <div style={{ minHeight: expanded ? 300 : 141, backgroundColor: 'var(--bg-app, #FFFFFF)' }}>
         <EditorContent editor={editor} />
       </div>
     </div>
@@ -215,20 +215,24 @@ interface CreateStoryDialogProps {
   projectId: string;
 }
 
-// ─── Theme-aware form tokens ─────────────────────────────
-const FORM_LIGHT = {
-  label: '#505258', asterisk: '#AE2E24', input: '#292A2E', placeholder: '#6B6E76',
-  helper: '#6B6E76', border: '#8C8F97', editorBorder: '#E0E0E0', editorToolbarBg: '#FFFFFF',
-  headerBorder: 'rgba(0,0,0,0.06)', footerBorder: 'rgba(0,0,0,0.06)',
-  title: '#292A2E', linkBlue: '#1868DB', cancelText: '#505258',
-  statusBg: 'rgba(5,21,36,0.06)', statusText: '#292A2E',
-};
-const FORM_DARK = {
-  label: '#A1A1A1', asterisk: '#F87171', input: '#EDEDED', placeholder: '#878787',
-  helper: '#878787', border: '#454545', editorBorder: '#2E2E2E', editorToolbarBg: '#1A1A1A',
-  headerBorder: '#2E2E2E', footerBorder: '#2E2E2E',
-  title: '#EDEDED', linkBlue: '#60A5FA', cancelText: '#A1A1A1',
-  statusBg: 'rgba(255,255,255,0.06)', statusText: '#EDEDED',
+// ─── Theme tokens using CSS variables (auto light/dark) ──
+const FV = {
+  label: 'var(--fg-3, #505258)',
+  asterisk: 'var(--sem-danger, #DC2626)',
+  input: 'var(--fg-1, #292A2E)',
+  placeholder: 'var(--fg-4, #6B6E76)',
+  helper: 'var(--fg-4, #6B6E76)',
+  border: 'var(--divider, #E2E8F0)',
+  headerBorder: 'var(--cp-bd-zone, rgba(0,0,0,0.06))',
+  title: 'var(--fg-1, #292A2E)',
+  linkBlue: 'var(--cp-blue, #2563EB)',
+  cancelText: 'var(--fg-3, #505258)',
+  statusBg: 'var(--cp-hover, rgba(0,0,0,0.04))',
+  statusText: 'var(--fg-1, #292A2E)',
+  selectBg: 'var(--bg-app, #FFFFFF)',
+  surface: 'var(--cp-float, #FFFFFF)',
+  editorBg: 'var(--bg-1, #FFFFFF)',
+  toolbarBg: 'var(--bg-1, #FFFFFF)',
 };
 
 export const CreateStoryDialog: React.FC<CreateStoryDialogProps> = ({
@@ -240,7 +244,7 @@ export const CreateStoryDialog: React.FC<CreateStoryDialogProps> = ({
   const queryClient = useQueryClient();
   const titleRef = useRef<HTMLInputElement>(null);
   const { isDark } = useTheme();
-  const F = isDark ? FORM_DARK : FORM_LIGHT;
+  const F = FV; // CSS variables auto-switch light/dark
 
   const [isExpanded, setIsExpanded] = useState(false);
   const [title, setTitle] = useState('');
@@ -592,7 +596,7 @@ export const CreateStoryDialog: React.FC<CreateStoryDialogProps> = ({
                 <Label className="text-[12px] font-semibold" style={{ color: F.label }}>Summary <span style={{ color: F.asterisk }}>*</span></Label>
                 <span className="text-[12px]" style={{ color: F.helper }}>{title.length}/200</span>
               </div>
-              <Input ref={titleRef} value={title} onChange={(e) => setTitle(e.target.value.slice(0, 200))} placeholder="What needs to be done?" disabled={createStory.isPending} className="!rounded-none !rounded-b-[3px] focus:!ring-0" style={{ height: 36, borderTop: 'none', borderLeft: 'none', borderRight: 'none', borderBottom: `1px solid ${F.border}`, fontSize: 14, color: F.input, backgroundColor: 'transparent' }} />
+              <Input ref={titleRef} value={title} onChange={(e) => setTitle(e.target.value.slice(0, 200))} placeholder="What needs to be done?" disabled={createStory.isPending} className="!rounded-none !rounded-b-[3px] focus:!ring-0" style={{ height: 36, borderTop: 'none', borderLeft: 'none', borderRight: 'none', borderBottom: '1px solid var(--divider, #E2E8F0)', fontSize: 14, color: 'var(--fg-1, #292A2E)', backgroundColor: 'transparent' }} />
               {title.length > 0 && title.length < 3 && <p className="text-[12px] mt-1" style={{ color: F.asterisk }}>Title must be at least 3 characters</p>}
             </div>
 
@@ -600,7 +604,7 @@ export const CreateStoryDialog: React.FC<CreateStoryDialogProps> = ({
             <div>
               <Label className="text-[12px] font-semibold mb-1 block" style={{ color: F.label }}>Parent <span style={{ color: F.asterisk }}>*</span></Label>
               <Select value={parentId} onValueChange={setParentId} disabled={parentsLoading || createStory.isPending}>
-                <SelectTrigger style={{ width: 350, height: 40, border: `1px solid ${F.border}`, borderRadius: 3, backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', color: F.input }}>
+                <SelectTrigger style={{ width: 350, height: 40, border: `1px solid ${F.border}`, borderRadius: 3, backgroundColor: 'var(--bg-app, #FFFFFF)', color: 'var(--fg-1, #292A2E)' }}>
                   <SelectValue placeholder={parentsLoading ? 'Loading...' : 'Select parent'}>
                     {parentId && (() => {
                       const sel = allParents.find(p => p.id === parentId);
@@ -609,7 +613,7 @@ export const CreateStoryDialog: React.FC<CreateStoryDialogProps> = ({
                       const projPrefix = sel.key?.split('-')[0] || '';
                       return (
                         <div className="flex items-center gap-1.5 min-w-0">
-                          <span className="shrink-0 text-[8px] font-bold uppercase px-1 rounded" style={{ backgroundColor: isDark ? '#292929' : '#F1F5F9', color: F.label }}>{projPrefix}</span>
+                          <span className="shrink-0 text-[8px] font-bold uppercase px-1 rounded" style={{ backgroundColor: 'var(--cp-bd-zone, #F1F5F9)', color: F.label }}>{projPrefix}</span>
                           <span style={{ color: ti.color, fontSize: 11 }}>{ti.symbol}</span>
                           <span className="truncate text-[13px]">{sel.key} · {sel.title}</span>
                         </div>
@@ -655,7 +659,7 @@ export const CreateStoryDialog: React.FC<CreateStoryDialogProps> = ({
                         <div className="flex flex-col gap-1">
                           <div className="flex items-center gap-2">
                             {/* Project badge */}
-                            <span className="shrink-0 text-[9px] font-bold uppercase px-1 py-0.5 rounded" style={{ backgroundColor: isDark ? '#292929' : '#F1F5F9', color: F.label, letterSpacing: '0.04em' }}>
+                            <span className="shrink-0 text-[9px] font-bold uppercase px-1 py-0.5 rounded" style={{ backgroundColor: 'var(--cp-bd-zone, #F1F5F9)', color: F.label, letterSpacing: '0.04em' }}>
                               {projPrefix}
                             </span>
                             {/* Type icon */}
@@ -663,7 +667,7 @@ export const CreateStoryDialog: React.FC<CreateStoryDialogProps> = ({
                               <span className="text-white text-[9px] font-bold leading-none">{ti.symbol === '◆' ? '⚡' : '▲'}</span>
                             </span>
                             {/* Issue key */}
-                            <span className="text-[12px] font-semibold" style={{ color: isDark ? '#7DB8FC' : '#0C66E4' }}>{p.key}</span>
+                            <span className="text-[12px] font-semibold" style={{ color: 'var(--cp-blue, #0C66E4)' }}>{p.key}</span>
                           </div>
                           <span className="text-[13px] truncate max-w-[320px] pl-[1px]" style={{ color: F.input }}>{p.title}</span>
                         </div>
@@ -679,7 +683,7 @@ export const CreateStoryDialog: React.FC<CreateStoryDialogProps> = ({
             <div>
               <Label className="text-[12px] font-semibold mb-1 block" style={{ color: F.label }}>Priority</Label>
               <Select value={priority} onValueChange={setPriority} disabled={createStory.isPending}>
-                <SelectTrigger style={{ width: 350, height: 40, border: `1px solid ${F.border}`, borderRadius: 3, backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', color: F.input }}><SelectValue /></SelectTrigger>
+                <SelectTrigger style={{ width: 350, height: 40, border: `1px solid ${F.border}`, borderRadius: 3, backgroundColor: 'var(--bg-app, #FFFFFF)', color: 'var(--fg-1, #292A2E)' }}><SelectValue /></SelectTrigger>
                 <SelectContent>{PRIORITIES.map(p => { const Icon = p.icon; return (<SelectItem key={p.value} value={p.value}><div className="flex items-center gap-2"><Icon size={16} style={{ color: p.color }} /><span>{p.label}</span></div></SelectItem>); })}</SelectContent>
               </Select>
             </div>
@@ -694,7 +698,7 @@ export const CreateStoryDialog: React.FC<CreateStoryDialogProps> = ({
             <div>
               <Label className="text-[12px] font-semibold mb-1 block" style={{ color: F.label }}>Target Release</Label>
               <Select value={releaseId} onValueChange={setReleaseId} disabled={createStory.isPending}>
-                <SelectTrigger style={{ width: 350, height: 40, border: `1px solid ${F.border}`, borderRadius: 3, backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', color: F.input }}><SelectValue placeholder="Select release" /></SelectTrigger>
+                <SelectTrigger style={{ width: 350, height: 40, border: `1px solid ${F.border}`, borderRadius: 3, backgroundColor: 'var(--bg-app, #FFFFFF)', color: 'var(--fg-1, #292A2E)' }}><SelectValue placeholder="Select release" /></SelectTrigger>
                 <SelectContent><SelectItem value="__none__"><span className="text-muted-foreground">None</span></SelectItem>{releases?.map(r => (<SelectItem key={r.id} value={r.id}>{r.name}</SelectItem>))}</SelectContent>
               </Select>
             </div>
@@ -706,7 +710,7 @@ export const CreateStoryDialog: React.FC<CreateStoryDialogProps> = ({
                 {currentUser?.id && <button type="button" onClick={() => setAssigneeId(currentUser.id)} className="text-[13px] font-medium hover:underline" style={{ color: F.linkBlue }}>Assign to me</button>}
               </div>
               <Select value={assigneeId} onValueChange={setAssigneeId} disabled={createStory.isPending}>
-                <SelectTrigger style={{ height: 40, border: `1px solid ${F.border}`, borderRadius: 3, backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', color: F.input }}>
+                <SelectTrigger style={{ height: 40, border: `1px solid ${F.border}`, borderRadius: 3, backgroundColor: 'var(--bg-app, #FFFFFF)', color: 'var(--fg-1, #292A2E)' }}>
                   <SelectValue placeholder="Automatic">
                     {selectedAssignee ? (<div className="flex items-center gap-2"><UserAvatar name={selectedAssignee.full_name} url={selectedAssignee.avatar_url} /><span>{selectedAssignee.full_name}</span></div>) : (<div className="flex items-center gap-2"><User size={16} className="text-muted-foreground" /><span>Automatic</span></div>)}
                   </SelectValue>
@@ -722,7 +726,7 @@ export const CreateStoryDialog: React.FC<CreateStoryDialogProps> = ({
             <div>
               <Label className="text-[12px] font-semibold mb-1 block" style={{ color: F.label }}>Reporter <span style={{ color: F.asterisk }}>*</span></Label>
               <Select value={reporterId} onValueChange={setReporterId} disabled={createStory.isPending}>
-                <SelectTrigger style={{ width: 350, height: 40, border: `1px solid ${F.border}`, borderRadius: 3, backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', color: F.input }}>
+                <SelectTrigger style={{ width: 350, height: 40, border: `1px solid ${F.border}`, borderRadius: 3, backgroundColor: 'var(--bg-app, #FFFFFF)', color: 'var(--fg-1, #292A2E)' }}>
                   <SelectValue placeholder="Select reporter">{selectedReporter && (<div className="flex items-center gap-2"><UserAvatar name={selectedReporter.full_name} url={selectedReporter.avatar_url} /><span>{selectedReporter.full_name}</span></div>)}</SelectValue>
                 </SelectTrigger>
                 <SelectContent>{profiles?.map(p => (<SelectItem key={p.id} value={p.id}><div className="flex items-center gap-2"><UserAvatar name={p.full_name} url={p.avatar_url} /><span>{p.full_name}</span></div></SelectItem>))}</SelectContent>
