@@ -72038,15 +72038,15 @@ export type Database = {
             Returns: {
               active_cycles: number
               automation_coverage: number
+              blocked_tests: number
               completed_cycles: number
-              overall_pass_rate: number
-              total_blocked: number
+              executed_tests: number
+              failed_tests: number
+              not_run_tests: number
+              pass_rate: number
+              passed_tests: number
+              skipped_tests: number
               total_cycles: number
-              total_executed: number
-              total_failed: number
-              total_not_run: number
-              total_passed: number
-              total_skipped: number
               total_test_cases: number
             }[]
           }
