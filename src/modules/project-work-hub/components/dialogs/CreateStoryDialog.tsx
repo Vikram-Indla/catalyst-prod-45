@@ -57,7 +57,8 @@ const PRIORITIES = [
 
 // ─── Status category dot colors ──────────────────────────
 const CAT_DOT: Record<string, string> = {
-  todo: '#DFE1E6',
+  todo: '#A5ADBA',
+  to_do: '#A5ADBA',
   in_progress: '#0C66E4',
   done: '#1B7F37',
 };
@@ -484,19 +485,56 @@ export const CreateStoryDialog: React.FC<CreateStoryDialogProps> = ({
                 <SelectTrigger className="h-8 w-auto min-w-[180px] inline-flex border-0" style={{ background: 'rgba(5,21,36,0.06)', borderRadius: 3, fontSize: 14, fontWeight: 500, color: '#292A2E' }}>
                   <SelectValue placeholder="Select status">
                     {selectedStatus && (
-                      <div className="flex items-center gap-2">
-                        <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: CAT_DOT[selectedStatus.category || 'todo'] || '#DFE1E6' }} />
+                      <div className="flex items-center gap-2.5">
+                        <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: CAT_DOT[selectedStatus.category || 'todo'] || '#A5ADBA' }} />
                         <span>{selectedStatus.name?.toUpperCase()}</span>
                       </div>
                     )}
                   </SelectValue>
                 </SelectTrigger>
-                <SelectContent>
-                  {groupedStatuses.todo.length > 0 && (<SelectGroup><SelectLabel className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground px-2">To Do</SelectLabel>{groupedStatuses.todo.map(s => (<SelectItem key={s.id} value={s.id}><div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: '#DFE1E6' }} /><span>{s.name?.toUpperCase()}</span></div></SelectItem>))}</SelectGroup>)}
-                  {groupedStatuses.todo.length > 0 && groupedStatuses.in_progress.length > 0 && <SelectSeparator />}
-                  {groupedStatuses.in_progress.length > 0 && (<SelectGroup><SelectLabel className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground px-2">In Progress</SelectLabel>{groupedStatuses.in_progress.map(s => (<SelectItem key={s.id} value={s.id}><div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: '#0C66E4' }} /><span>{s.name?.toUpperCase()}</span></div></SelectItem>))}</SelectGroup>)}
-                  {groupedStatuses.in_progress.length > 0 && groupedStatuses.done.length > 0 && <SelectSeparator />}
-                  {groupedStatuses.done.length > 0 && (<SelectGroup><SelectLabel className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground px-2">Done</SelectLabel>{groupedStatuses.done.map(s => (<SelectItem key={s.id} value={s.id}><div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: '#1B7F37' }} /><span>{s.name?.toUpperCase()}</span></div></SelectItem>))}</SelectGroup>)}
+                <SelectContent className="min-w-[280px] max-h-[400px]">
+                  {/* TO DO category */}
+                  {groupedStatuses.todo.length > 0 && (
+                    <SelectGroup>
+                      <SelectLabel className="px-4 pt-3 pb-1.5 text-[11px] font-bold uppercase tracking-[0.08em]" style={{ color: '#505258' }}>To Do</SelectLabel>
+                      {groupedStatuses.todo.map(s => (
+                        <SelectItem key={s.id} value={s.id} className="!py-2.5 !pl-4">
+                          <div className="flex items-center gap-3">
+                            <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: '#A5ADBA' }} />
+                            <span className="text-[14px] font-medium" style={{ color: '#292A2E' }}>{s.name?.toUpperCase()}</span>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  )}
+                  {/* IN PROGRESS category */}
+                  {groupedStatuses.in_progress.length > 0 && (
+                    <SelectGroup>
+                      <SelectLabel className="px-4 pt-3 pb-1.5 text-[11px] font-bold uppercase tracking-[0.08em]" style={{ color: '#505258' }}>In Progress</SelectLabel>
+                      {groupedStatuses.in_progress.map(s => (
+                        <SelectItem key={s.id} value={s.id} className="!py-2.5 !pl-4">
+                          <div className="flex items-center gap-3">
+                            <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: '#0C66E4' }} />
+                            <span className="text-[14px] font-medium" style={{ color: '#292A2E' }}>{s.name?.toUpperCase()}</span>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  )}
+                  {/* DONE category */}
+                  {groupedStatuses.done.length > 0 && (
+                    <SelectGroup>
+                      <SelectLabel className="px-4 pt-3 pb-1.5 text-[11px] font-bold uppercase tracking-[0.08em]" style={{ color: '#505258' }}>Done</SelectLabel>
+                      {groupedStatuses.done.map(s => (
+                        <SelectItem key={s.id} value={s.id} className="!py-2.5 !pl-4">
+                          <div className="flex items-center gap-3">
+                            <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: '#1B7F37' }} />
+                            <span className="text-[14px] font-medium" style={{ color: '#292A2E' }}>{s.name?.toUpperCase()}</span>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  )}
                 </SelectContent>
               </Select>
               <p className="text-[12px] mt-1" style={{ color: '#6B6E76' }}>This is the initial status upon creation</p>
