@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { ExternalLink, MoreVertical, CheckCheck, MessageSquare, Settings, RefreshCw, X, Zap } from "lucide-react";
+import { ExternalLink, MoreVertical, CheckCheck, MessageSquare, Settings, RefreshCw, X } from "lucide-react";
 import type { Notification, NotificationTab } from "@/types/notifications";
 import { PANEL_WIDTH } from "@/constants/notificationConstants";
 import { useNotificationsQuery, useMarkAsRead, useMarkAllAsRead, useSnoozeNotification } from "@/hooks/useNotificationsNew";
