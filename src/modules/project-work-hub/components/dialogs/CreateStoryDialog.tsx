@@ -39,6 +39,7 @@ import {
   Link2,
   Undo2,
   Redo2,
+  Search,
 } from 'lucide-react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
@@ -59,6 +60,12 @@ const CAT_DOT: Record<string, string> = {
   todo: '#DFE1E6',
   in_progress: '#0C66E4',
   done: '#1B7F37',
+};
+
+// ─── Parent type icons (Epic + Feature) ─────────────────
+const PARENT_TYPE_ICONS: Record<string, { symbol: string; color: string }> = {
+  Epic:    { symbol: '◆', color: '#7C3AED' },
+  Feature: { symbol: '▲', color: '#2563EB' },
 };
 
 // ─── Avatar Helper (FIX 8: validate URL, 16px rounded-square) ─
@@ -212,7 +219,9 @@ export const CreateStoryDialog: React.FC<CreateStoryDialogProps> = ({
   const titleRef = useRef<HTMLInputElement>(null);
 
   const [title, setTitle] = useState('');
-  const [featureId, setFeatureId] = useState('');
+  const [parentId, setParentId] = useState('');
+  const [parentSearch, setParentSearch] = useState('');
+  const [showDoneParents, setShowDoneParents] = useState(false);
   const [description, setDescription] = useState('');
   const [priority, setPriority] = useState('medium');
   const [statusId, setStatusId] = useState('');
@@ -227,7 +236,31 @@ export const CreateStoryDialog: React.FC<CreateStoryDialogProps> = ({
 
   // ─── Data Queries ────────────────────────────────────────
 
-  const { data: features, isLoading: featuresLoading } = useQuery({
+  // Parent items: Epics + Features from ph_work_items
+  const { data: parentItems, isLoading: parentsLoading } = useQuery({
+    queryKey: ['parent-items-for-story', resolvedProjectId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('ph_work_items')
+        .select('id, item_key, item_type, title, summary, status')
+        .eq('project_id', resolvedProjectId)
+        .in('item_type', ['Epic', 'Feature'])
+        .is('deleted_at', null)
+        .order('item_key');
+      if (error) throw error;
+      return (data || []).map(d => ({
+        id: d.id,
+        key: d.item_key,
+        type: d.item_type,
+        title: d.title || d.summary,
+        status: d.status,
+      }));
+    },
+    enabled: isOpen && !!resolvedProjectId,
+  });
+
+  // Also query features table as fallback (for projects not using ph_work_items)
+  const { data: legacyFeatures } = useQuery({
     queryKey: ['features-for-story', projectId],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -236,8 +269,36 @@ export const CreateStoryDialog: React.FC<CreateStoryDialogProps> = ({
       if (error) throw error;
       return data || [];
     },
-    enabled: isOpen && !!projectId,
+    enabled: isOpen && !!projectId && (!parentItems || parentItems.length === 0),
   });
+
+  // Combine: prefer ph_work_items, fall back to features table
+  const allParents = React.useMemo(() => {
+    if (parentItems && parentItems.length > 0) return parentItems;
+    if (legacyFeatures && legacyFeatures.length > 0) {
+      return legacyFeatures.map(f => ({
+        id: f.id, key: f.display_id || '', type: 'Feature' as string,
+        title: f.name, status: 'active',
+      }));
+    }
+    return [];
+  }, [parentItems, legacyFeatures]);
+
+  // Filter parents by search + done toggle
+  const filteredParents = React.useMemo(() => {
+    let items = allParents;
+    if (!showDoneParents) {
+      const doneStatuses = ['done', 'closed', 'resolved', 'completed', 'in production', 'in_production', 'production ready', 'production_ready'];
+      items = items.filter(p => !doneStatuses.includes(p.status?.toLowerCase() || ''));
+    }
+    if (parentSearch.trim()) {
+      const q = parentSearch.toLowerCase();
+      items = items.filter(p =>
+        p.key?.toLowerCase().includes(q) || p.title?.toLowerCase().includes(q)
+      );
+    }
+    return items;
+  }, [allParents, showDoneParents, parentSearch]);
 
   const { data: profiles } = useQuery({
     queryKey: ['profiles-for-story'],
@@ -348,7 +409,7 @@ export const CreateStoryDialog: React.FC<CreateStoryDialogProps> = ({
   // ─── Mutation ────────────────────────────────────────────
 
   const createStory = useMutation({
-    mutationFn: async (d: { title: string; name: string; description?: string; feature_id: string; priority?: string; assignee_id?: string; owner_id?: string }) => {
+    mutationFn: async (d: { title: string; name: string; description?: string; feature_id: string; parent_id?: string; priority?: string; assignee_id?: string; owner_id?: string }) => {
       const { data, error } = await supabase
         .from('stories')
         .insert({ title: d.title, name: d.name, description: d.description || null, feature_id: d.feature_id, priority: d.priority || 'medium', assignee_id: d.assignee_id || null, owner_id: d.owner_id || null, status: 'todo' })
@@ -368,15 +429,15 @@ export const CreateStoryDialog: React.FC<CreateStoryDialogProps> = ({
   });
 
   const resetForm = () => {
-    setTitle(''); setFeatureId(''); setDescription(''); setPriority('medium');
+    setTitle(''); setParentId(''); setParentSearch(''); setDescription(''); setPriority('medium');
     setStatusId(''); setAssigneeId(''); setReporterId(currentUser?.id || ''); setReleaseId('');
   };
 
   const handleSubmit = () => {
-    if (!title.trim() || !featureId || !reporterId) return;
+    if (!title.trim() || !parentId || !reporterId) return;
     createStory.mutate({
       title: title.trim(), name: title.trim(), description: description || undefined,
-      feature_id: featureId, priority: priority || 'medium',
+      feature_id: parentId, parent_id: parentId, priority: priority || 'medium',
       assignee_id: assigneeId && assigneeId !== '__none__' ? assigneeId : undefined,
       owner_id: reporterId && reporterId !== '__none__' ? reporterId : undefined,
     });
@@ -387,7 +448,7 @@ export const CreateStoryDialog: React.FC<CreateStoryDialogProps> = ({
   };
 
   const handleClose = () => { resetForm(); onClose(); };
-  const isValid = title.trim().length >= 3 && featureId && reporterId;
+  const isValid = title.trim().length >= 3 && parentId && reporterId;
   const findProfile = (id: string) => profiles?.find(p => p.id === id);
   const selectedReporter = findProfile(reporterId);
   const selectedAssignee = findProfile(assigneeId);
@@ -445,14 +506,74 @@ export const CreateStoryDialog: React.FC<CreateStoryDialogProps> = ({
               {title.length > 0 && title.length < 3 && <p className="text-[12px] mt-1" style={{ color: '#AE2E24' }}>Title must be at least 3 characters</p>}
             </div>
 
-            {/* ROW 3: Feature */}
+            {/* ROW 3: Parent (Epic or Feature) */}
             <div>
-              <Label className="text-[12px] font-semibold mb-1 block" style={{ color: '#505258' }}>Feature <span style={{ color: '#AE2E24' }}>*</span></Label>
-              <Select value={featureId} onValueChange={setFeatureId} disabled={featuresLoading || createStory.isPending}>
-                <SelectTrigger style={{ width: 350, height: 40, border: '1px solid #8C8F97', borderRadius: 3 }}><SelectValue placeholder={featuresLoading ? 'Loading...' : 'Select parent feature'} /></SelectTrigger>
-                <SelectContent>{features?.map(f => (<SelectItem key={f.id} value={f.id}>{f.display_id ? `${f.display_id}: ` : ''}{f.name}</SelectItem>))}{features?.length === 0 && <div className="px-2 py-3 text-sm text-muted-foreground text-center">No features found.</div>}</SelectContent>
+              <Label className="text-[12px] font-semibold mb-1 block" style={{ color: '#505258' }}>Parent <span style={{ color: '#AE2E24' }}>*</span></Label>
+              <Select value={parentId} onValueChange={setParentId} disabled={parentsLoading || createStory.isPending}>
+                <SelectTrigger style={{ width: 350, height: 40, border: '1px solid #8C8F97', borderRadius: 3 }}>
+                  <SelectValue placeholder={parentsLoading ? 'Loading...' : 'Select parent'}>
+                    {parentId && (() => {
+                      const sel = allParents.find(p => p.id === parentId);
+                      if (!sel) return null;
+                      const ti = PARENT_TYPE_ICONS[sel.type] || PARENT_TYPE_ICONS.Feature;
+                      return (
+                        <div className="flex items-center gap-2 min-w-0">
+                          <span style={{ color: ti.color, fontSize: 12 }}>{ti.symbol}</span>
+                          <span className="truncate">{sel.key} · {sel.title}</span>
+                        </div>
+                      );
+                    })()}
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent className="max-h-[320px]">
+                  {/* Search */}
+                  <div className="px-2 py-1.5 border-b" style={{ borderColor: '#E0E0E0' }}>
+                    <div className="relative">
+                      <Search size={14} className="absolute left-2 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                      <input
+                        value={parentSearch}
+                        onChange={(e) => setParentSearch(e.target.value)}
+                        placeholder="Search by key or title..."
+                        className="w-full pl-7 pr-2 py-1.5 text-[13px] rounded border focus:outline-none focus:ring-1 focus:ring-[#1868DB] bg-transparent"
+                        style={{ borderColor: '#E0E0E0', height: 30, color: '#292A2E' }}
+                      />
+                    </div>
+                  </div>
+                  {/* Show done toggle */}
+                  <div className="px-3 py-2 border-b flex items-center gap-2" style={{ borderColor: '#E0E0E0' }}>
+                    <Checkbox
+                      id="show-done-parents"
+                      checked={showDoneParents}
+                      onCheckedChange={(c) => setShowDoneParents(c === true)}
+                      className="w-3.5 h-3.5"
+                    />
+                    <label htmlFor="show-done-parents" className="text-[13px] cursor-pointer select-none" style={{ color: '#292A2E' }}>
+                      Show everything marked as done
+                    </label>
+                  </div>
+                  {/* Items */}
+                  {filteredParents.length === 0 && (
+                    <div className="px-3 py-4 text-[13px] text-center text-muted-foreground">No matching items found.</div>
+                  )}
+                  {filteredParents.map((p) => {
+                    const ti = PARENT_TYPE_ICONS[p.type] || PARENT_TYPE_ICONS.Feature;
+                    return (
+                      <SelectItem key={p.id} value={p.id} className="!py-2">
+                        <div className="flex flex-col gap-0.5">
+                          <div className="flex items-center gap-1.5">
+                            <span className="w-3 h-3 rounded-sm flex items-center justify-center shrink-0" style={{ backgroundColor: ti.color }}>
+                              <span className="text-white text-[8px] font-bold leading-none">{ti.symbol === '◆' ? '⚡' : '▲'}</span>
+                            </span>
+                            <span className="text-[12px] font-medium" style={{ color: '#505258' }}>{p.key}</span>
+                          </div>
+                          <span className="text-[13px] truncate max-w-[300px]" style={{ color: '#292A2E' }}>{p.title}</span>
+                        </div>
+                      </SelectItem>
+                    );
+                  })}
+                </SelectContent>
               </Select>
-              <p className="text-[12px] mt-1" style={{ color: '#6B6E76' }}>Stories must belong to a Feature</p>
+              <p className="text-[12px] mt-1" style={{ color: '#6B6E76' }}>Your work type hierarchy determines the work items you can select here.</p>
             </div>
 
             {/* ROW 4: Priority */}
