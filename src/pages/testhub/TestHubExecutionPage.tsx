@@ -311,6 +311,12 @@ export default function TestHubExecutionPage() {
   const steps = currentTestCase?.test_case?.steps || [];
   const currentStep = steps[currentStepIndex];
 
+  // Version drift detection
+  const isVersionDrifted = currentTestCase != null
+    && currentTestCase.locked_version != null
+    && currentTestCase.test_case?.current_version != null
+    && currentTestCase.test_case.current_version !== currentTestCase.locked_version;
+
   // Step statuses for the current test case
   const currentStepStatuses = stepStatuses.get(selectedTestCaseId || '') || steps.map((_, i) => ({ stepIndex: i, status: 'not_run' as const }));
 
