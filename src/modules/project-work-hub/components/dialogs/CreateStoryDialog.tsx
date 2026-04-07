@@ -330,17 +330,47 @@ export const CreateStoryDialog: React.FC<CreateStoryDialogProps> = ({
     enabled: isOpen,
   });
 
+  // Try ph_workflow_statuses first (by ph_projects.id), fall back to ph_issues distinct statuses
   const { data: workflowStatuses } = useQuery({
-    queryKey: ['ph-workflow-statuses', resolvedProjectId],
+    queryKey: ['workflow-statuses-for-dialog', resolvedProjectId, projectKey],
     queryFn: async () => {
-      const { data, error } = await supabase
+      // 1. Try ph_workflow_statuses with resolved ph_projects ID
+      const { data: wfData } = await supabase
         .from('ph_workflow_statuses')
         .select('id, name, category, position, is_default')
-        .eq('project_id', resolvedProjectId).order('position');
-      if (error) throw error;
-      return (data || []) as WorkflowStatus[];
+        .eq('project_id', resolvedProjectId)
+        .order('position');
+      if (wfData && wfData.length > 0) {
+        return wfData as WorkflowStatus[];
+      }
+
+      // 2. Fallback: derive statuses from ph_issues for this project
+      if (projectKey) {
+        const { data: issueStatuses } = await supabase
+          .from('ph_issues')
+          .select('status, status_category')
+          .eq('project_key', projectKey)
+          .is('jira_removed_at', null);
+        if (issueStatuses && issueStatuses.length > 0) {
+          // Deduplicate
+          const seen = new Map<string, { name: string; category: string }>();
+          for (const s of issueStatuses) {
+            if (s.status && !seen.has(s.status)) {
+              seen.set(s.status, { name: s.status, category: s.status_category || 'todo' });
+            }
+          }
+          return Array.from(seen.entries()).map(([name, v], i) => ({
+            id: `derived-${name}`,
+            name: v.name,
+            category: v.category?.toLowerCase().replace(/\s+/g, '_') || 'todo',
+            position: i,
+            is_default: v.name.toUpperCase().includes('REQUIREMENTS'),
+          })) as WorkflowStatus[];
+        }
+      }
+      return [] as WorkflowStatus[];
     },
-    enabled: isOpen && !!resolvedProjectId,
+    enabled: isOpen && (!!resolvedProjectId || !!projectKey),
   });
 
   const { data: releases } = useQuery({
