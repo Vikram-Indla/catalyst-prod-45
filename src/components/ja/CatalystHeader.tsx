@@ -196,20 +196,19 @@ export function CatalystHeader() {
       >
         {/* ===== LOGO ZONE ===== */}
         <a 
-          className="flex items-center flex-shrink-0 cursor-pointer no-underline rounded-lg transition-colors p-1 -m-1"
+          className="flex items-center flex-shrink-0 cursor-pointer no-underline transition-opacity"
           style={{ 
-            marginRight: '4px',
-            paddingRight: '20px',
-            borderRight: '1px solid var(--cp-bd-zone)',
+            marginRight: '16px',
+            opacity: 1,
           }}
-          onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--cp-hover)'; }}
-          onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+          onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.8'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.opacity = '1'; }}
           onClick={() => navigate('/home')}
         >
           {!sidebarExpanded ? (
-            <img src={isDark ? catalystLogoMark2Dark : catalystLogoMark2} alt="Catalyst" style={{ height: '28px', width: '28px' }} />
+            <img src={isDark ? catalystLogoMark2Dark : catalystLogoMark2} alt="Catalyst" style={{ height: '24px', width: '24px' }} />
           ) : (
-            <img src={isDark ? catalystWordmark3Dark : catalystWordmark3} alt="Catalyst" style={{ height: '32px', width: 'auto' }} />
+            <img src={isDark ? catalystWordmark3Dark : catalystWordmark3} alt="Catalyst" style={{ height: '26px', width: 'auto' }} />
           )}
         </a>
         
