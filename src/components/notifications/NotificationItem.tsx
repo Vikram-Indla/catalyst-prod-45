@@ -84,9 +84,15 @@ function getActionText(type: string, actorName: string | null): string {
     case 'tester_assigned':
       return actorName ? `${actorName} assigned you to` : 'You have been assigned to';
     case 'unassigned':
-      return actorName ? `${actorName} removed you from` : 'You have been removed from';
+      return actorName ? `${actorName} changed the assignee on` : 'Assignee changed on';
     case 'status_changed':
-      return actorName ? `${actorName} updated` : 'Status updated on';
+      return actorName ? `${actorName} transitioned` : 'Status changed on';
+    case 'issue_resolved':
+      return actorName ? `${actorName} resolved` : 'Issue resolved:';
+    case 'issue_closed':
+      return actorName ? `${actorName} closed` : 'Issue closed:';
+    case 'issue_reopened':
+      return actorName ? `${actorName} reopened` : 'Issue reopened:';
     case 'mentioned_in_comment':
       return actorName ? `${actorName} mentioned you in` : 'You were mentioned in';
     case 'commented_on_work_item':
