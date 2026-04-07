@@ -234,114 +234,72 @@ export const CreateStoryDialog: React.FC<CreateStoryDialogProps> = ({
     if (isOpen) setTimeout(() => titleRef.current?.focus(), 150);
   }, [isOpen]);
 
-  // ─── Resolve ph_projects ID (must come first — other queries depend on it) ──
-  // The projectId from props may be from the `projects` table, but ph_work_items
-  // and ph_workflow_statuses reference `ph_projects`. Try multiple lookups.
-  const { data: phProjectId } = useQuery({
-    queryKey: ['ph-project-id-lookup', projectId],
+  // ─── Resolve project key + ph_projects ID ──
+  // The projectId prop comes from the `projects` table. We need:
+  // - projectKey (e.g. "BAU") for querying ph_issues
+  // - phProjectId (UUID) for querying ph_workflow_statuses + ph_work_items
+  const { data: projectLookup } = useQuery({
+    queryKey: ['project-lookup-for-dialog', projectId],
     queryFn: async () => {
-      // 1. Check if projectId already works in ph_work_items
-      const { data: directItems } = await supabase
-        .from('ph_work_items')
-        .select('id')
-        .eq('project_id', projectId)
-        .limit(1);
-      if (directItems && directItems.length > 0) return projectId;
-
-      // 2. Check if projectId works in ph_workflow_statuses
-      const { data: directStatuses } = await supabase
-        .from('ph_workflow_statuses')
-        .select('id')
-        .eq('project_id', projectId)
-        .limit(1);
-      if (directStatuses && directStatuses.length > 0) return projectId;
-
-      // 3. Fallback: look up ph_projects by key from the projects table
+      // Get key from projects table
       const { data: proj } = await supabase
         .from('projects')
         .select('key')
         .eq('id', projectId)
         .maybeSingle();
-      if (proj?.key) {
+      const key = proj?.key?.toUpperCase() || '';
+
+      // Find ph_projects ID by key
+      let phId = projectId;
+      if (key) {
         const { data: phProj } = await supabase
           .from('ph_projects')
           .select('id')
-          .eq('key', proj.key.toUpperCase())
+          .eq('key', key)
           .maybeSingle();
-        if (phProj) return phProj.id;
+        if (phProj) phId = phProj.id;
       }
-
-      // 4. Last resort: try ph_projects directly by ID
-      const { data: phDirect } = await supabase
-        .from('ph_projects')
-        .select('id')
-        .eq('id', projectId)
-        .maybeSingle();
-      if (phDirect) return phDirect.id;
-
-      return projectId;
+      return { key, phId };
     },
     enabled: isOpen && !!projectId,
   });
 
-  const resolvedProjectId = phProjectId || projectId;
+  const projectKey = projectLookup?.key || '';
+  const resolvedProjectId = projectLookup?.phId || projectId;
 
   // ─── Data Queries ────────────────────────────────────────
 
-  // Parent items: Epics + Features from ph_work_items
+  // Parent items: Epics + Features from ph_issues (same source as Epic Backlog)
   const { data: parentItems, isLoading: parentsLoading } = useQuery({
-    queryKey: ['parent-items-for-story', resolvedProjectId],
+    queryKey: ['parent-items-for-story', projectKey],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('ph_work_items')
-        .select('id, item_key, item_type, title, summary, status')
-        .eq('project_id', resolvedProjectId)
-        .in('item_type', ['Epic', 'Feature'])
-        .is('deleted_at', null)
-        .order('item_key');
+        .from('ph_issues')
+        .select('id, issue_key, issue_type, summary, status, status_category')
+        .eq('project_key', projectKey)
+        .in('issue_type', ['Epic', 'Feature'])
+        .is('jira_removed_at', null)
+        .order('issue_key');
       if (error) throw error;
       return (data || []).map(d => ({
         id: d.id,
-        key: d.item_key,
-        type: d.item_type,
-        title: d.title || d.summary,
+        key: d.issue_key,
+        type: d.issue_type,
+        title: d.summary,
         status: d.status,
+        statusCategory: d.status_category,
       }));
     },
-    enabled: isOpen && !!resolvedProjectId,
+    enabled: isOpen && !!projectKey,
   });
 
-  // Also query features table as fallback (for projects not using ph_work_items)
-  const { data: legacyFeatures } = useQuery({
-    queryKey: ['features-for-story', projectId],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('features').select('id, name, display_id')
-        .eq('project_id', projectId).is('deleted_at', null).order('name');
-      if (error) throw error;
-      return data || [];
-    },
-    enabled: isOpen && !!projectId && (!parentItems || parentItems.length === 0),
-  });
-
-  // Combine: prefer ph_work_items, fall back to features table
-  const allParents = React.useMemo(() => {
-    if (parentItems && parentItems.length > 0) return parentItems;
-    if (legacyFeatures && legacyFeatures.length > 0) {
-      return legacyFeatures.map(f => ({
-        id: f.id, key: f.display_id || '', type: 'Feature' as string,
-        title: f.name, status: 'active',
-      }));
-    }
-    return [];
-  }, [parentItems, legacyFeatures]);
+  const allParents = parentItems || [];
 
   // Filter parents by search + done toggle
   const filteredParents = React.useMemo(() => {
     let items = allParents;
     if (!showDoneParents) {
-      const doneStatuses = ['done', 'closed', 'resolved', 'completed', 'in production', 'in_production', 'production ready', 'production_ready'];
-      items = items.filter(p => !doneStatuses.includes(p.status?.toLowerCase() || ''));
+      items = items.filter(p => p.statusCategory !== 'done' && p.statusCategory !== 'Done');
     }
     if (parentSearch.trim()) {
       const q = parentSearch.toLowerCase();
