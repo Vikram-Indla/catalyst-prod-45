@@ -87,8 +87,7 @@ function UserAvatar({ name, url, size = 24 }: { name: string; url?: string | nul
 interface WorkflowStatus {
   id: string;
   name: string;
-  slug?: string;
-  status_category?: string;
+  category?: string;
   position?: number;
 }
 
@@ -174,7 +173,7 @@ export const CreateStoryDialog: React.FC<CreateStoryDialogProps> = ({
     queryFn: async () => {
       const { data, error } = await supabase
         .from('ph_workflow_statuses')
-        .select('id, name, status_category, position')
+        .select('id, name, category, position')
         .eq('project_id', projectId)
         .order('position');
       if (error) throw error;
