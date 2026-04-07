@@ -913,6 +913,7 @@ export default function TestHubExecutionPage() {
                         </span>
                       </div>
                     )}
+                  </div>
 
                   {/* Read-only step list */}
                   <div style={{ flex: 1, overflowY: 'auto', padding: 24 }}>
