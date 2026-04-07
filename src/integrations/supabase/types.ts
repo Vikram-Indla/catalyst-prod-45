@@ -72067,23 +72067,7 @@ export type Database = {
         Args: { p_end_date?: string; p_start_date?: string }
         Returns: Json
       }
-      get_defect_stats:
-        | {
-            Args: never
-            Returns: {
-              closed_defects: number
-              critical_defects: number
-              fixed_defects: number
-              high_defects: number
-              in_progress_defects: number
-              low_defects: number
-              medium_defects: number
-              open_defects: number
-              total_defects: number
-              verified_defects: number
-            }[]
-          }
-        | { Args: { p_project_id?: string }; Returns: Json }
+      get_defect_stats: { Args: { p_project_id?: string }; Returns: Json }
       get_delete_dependencies: {
         Args: { p_test_case_ids: Json }
         Returns: Json
