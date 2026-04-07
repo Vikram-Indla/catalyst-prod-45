@@ -124,8 +124,8 @@ function DescriptionEditor({ value, onChange, expanded, isDark }: { value: strin
     },
     editorProps: {
       attributes: {
-        class: 'outline-none px-4 py-3 text-[14px] leading-relaxed',
-        style: 'color: var(--fg-1, #292A2E);',
+        class: 'outline-none px-4 py-3 text-[14px] leading-relaxed focus:outline-none',
+        style: `color: var(--fg-1, #292A2E); min-height: ${expanded ? '268px' : '109px'};`,
       },
     },
   });
@@ -150,8 +150,9 @@ function DescriptionEditor({ value, onChange, expanded, isDark }: { value: strin
 
   return (
     <div style={{ border: '1px solid var(--divider, #E0E0E0)', borderRadius: 3, overflow: 'hidden' }}>
+      <style>{`.create-story-editor .ProseMirror { outline: none !important; box-shadow: none !important; border: none !important; } .create-story-editor .ProseMirror:focus { outline: none !important; }`}</style>
       {/* Toolbar */}
-      <div className="flex items-center gap-0.5 px-2" style={{ height: 32, borderBottom: '1px solid #E0E0E0', background: 'var(--bg-app, #FFFFFF)' }}>
+      <div className="flex items-center gap-0.5 px-2" style={{ height: 32, borderBottom: '1px solid var(--divider, #E0E0E0)', background: 'var(--bg-app, #FFFFFF)' }}>
         <ToolBtn active={editor.isActive('bold')} onClick={() => editor.chain().focus().toggleBold().run()} title="Bold">
           <Bold size={14} />
         </ToolBtn>
@@ -192,7 +193,7 @@ function DescriptionEditor({ value, onChange, expanded, isDark }: { value: strin
         </ToolBtn>
       </div>
       {/* Editor */}
-      <div style={{ minHeight: expanded ? 300 : 141, backgroundColor: 'var(--bg-app, #FFFFFF)' }}>
+      <div className="create-story-editor">
         <EditorContent editor={editor} />
       </div>
     </div>
