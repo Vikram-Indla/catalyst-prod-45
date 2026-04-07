@@ -633,27 +633,27 @@ export const CreateStoryDialog: React.FC<CreateStoryDialogProps> = ({
                 </SelectTrigger>
                 <SelectContent className="max-h-[320px]">
                   {/* Search */}
-                  <div className="px-2 py-1.5 border-b" style={{ borderColor: '#E0E0E0' }}>
+                  <div className="px-2 py-1.5 border-b border-border">
                     <div className="relative">
                       <Search size={14} className="absolute left-2 top-1/2 -translate-y-1/2 text-muted-foreground" />
                       <input
                         value={parentSearch}
                         onChange={(e) => setParentSearch(e.target.value)}
                         placeholder="Search by key or title..."
-                        className="w-full pl-7 pr-2 py-1.5 text-[13px] rounded border focus:outline-none focus:ring-1 focus:ring-[#1868DB] bg-transparent"
-                        style={{ borderColor: '#E0E0E0', height: 30, color: F.input }}
+                        className="w-full pl-7 pr-2 py-1.5 text-[13px] rounded border border-border focus:outline-none focus:ring-1 focus:ring-[#1868DB] bg-transparent text-foreground placeholder:text-muted-foreground"
+                        style={{ height: 30 }}
                       />
                     </div>
                   </div>
                   {/* Show done toggle */}
-                  <div className="px-3 py-2 border-b flex items-center gap-2" style={{ borderColor: '#E0E0E0' }}>
+                  <div className="px-3 py-2 border-b border-border flex items-center gap-2">
                     <Checkbox
                       id="show-done-parents"
                       checked={showDoneParents}
                       onCheckedChange={(c) => setShowDoneParents(c === true)}
                       className="w-3.5 h-3.5"
                     />
-                    <label htmlFor="show-done-parents" className="text-[13px] cursor-pointer select-none" style={{ color: F.input }}>
+                    <label htmlFor="show-done-parents" className="text-[13px] cursor-pointer select-none text-foreground">
                       Show everything marked as done
                     </label>
                   </div>
