@@ -1,6 +1,7 @@
 export const COMMENT_PREVIEW_TYPES = [
   'mentioned_in_comment',
   'commented_on_work_item',
+  'commented',
 ] as const;
 
 export const DUE_DATE_TYPES = ['due_date_approaching'] as const;
