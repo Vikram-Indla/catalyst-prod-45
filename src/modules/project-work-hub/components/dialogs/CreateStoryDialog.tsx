@@ -192,7 +192,7 @@ function DescriptionEditor({ value, onChange, expanded, isDark }: { value: strin
         </ToolBtn>
       </div>
       {/* Editor */}
-      <div style={{ minHeight: expanded ? 300 : 141 }}>
+      <div style={{ minHeight: expanded ? 300 : 141, backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF' }}>
         <EditorContent editor={editor} />
       </div>
     </div>
@@ -592,7 +592,7 @@ export const CreateStoryDialog: React.FC<CreateStoryDialogProps> = ({
                 <Label className="text-[12px] font-semibold" style={{ color: F.label }}>Summary <span style={{ color: F.asterisk }}>*</span></Label>
                 <span className="text-[12px]" style={{ color: F.helper }}>{title.length}/200</span>
               </div>
-              <Input ref={titleRef} value={title} onChange={(e) => setTitle(e.target.value.slice(0, 200))} placeholder="What needs to be done?" disabled={createStory.isPending} className="!border-t-0 !border-l-0 !border-r-0 !rounded-none !rounded-b-[3px] !bg-transparent focus:!ring-0" style={{ height: 36, borderBottom: `0.5px solid ${F.border}`, fontSize: 14, color: F.input }} />
+              <Input ref={titleRef} value={title} onChange={(e) => setTitle(e.target.value.slice(0, 200))} placeholder="What needs to be done?" disabled={createStory.isPending} className="!rounded-none !rounded-b-[3px] focus:!ring-0" style={{ height: 36, borderTop: 'none', borderLeft: 'none', borderRight: 'none', borderBottom: `1px solid ${F.border}`, fontSize: 14, color: F.input, backgroundColor: 'transparent' }} />
               {title.length > 0 && title.length < 3 && <p className="text-[12px] mt-1" style={{ color: F.asterisk }}>Title must be at least 3 characters</p>}
             </div>
 
@@ -600,7 +600,7 @@ export const CreateStoryDialog: React.FC<CreateStoryDialogProps> = ({
             <div>
               <Label className="text-[12px] font-semibold mb-1 block" style={{ color: F.label }}>Parent <span style={{ color: F.asterisk }}>*</span></Label>
               <Select value={parentId} onValueChange={setParentId} disabled={parentsLoading || createStory.isPending}>
-                <SelectTrigger style={{ width: 350, height: 40, border: `1px solid ${F.border}`, borderRadius: 3 }}>
+                <SelectTrigger style={{ width: 350, height: 40, border: `1px solid ${F.border}`, borderRadius: 3, backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', color: F.input }}>
                   <SelectValue placeholder={parentsLoading ? 'Loading...' : 'Select parent'}>
                     {parentId && (() => {
                       const sel = allParents.find(p => p.id === parentId);
@@ -679,7 +679,7 @@ export const CreateStoryDialog: React.FC<CreateStoryDialogProps> = ({
             <div>
               <Label className="text-[12px] font-semibold mb-1 block" style={{ color: F.label }}>Priority</Label>
               <Select value={priority} onValueChange={setPriority} disabled={createStory.isPending}>
-                <SelectTrigger style={{ width: 350, height: 40, border: `1px solid ${F.border}`, borderRadius: 3 }}><SelectValue /></SelectTrigger>
+                <SelectTrigger style={{ width: 350, height: 40, border: `1px solid ${F.border}`, borderRadius: 3, backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', color: F.input }}><SelectValue /></SelectTrigger>
                 <SelectContent>{PRIORITIES.map(p => { const Icon = p.icon; return (<SelectItem key={p.value} value={p.value}><div className="flex items-center gap-2"><Icon size={16} style={{ color: p.color }} /><span>{p.label}</span></div></SelectItem>); })}</SelectContent>
               </Select>
             </div>
@@ -694,7 +694,7 @@ export const CreateStoryDialog: React.FC<CreateStoryDialogProps> = ({
             <div>
               <Label className="text-[12px] font-semibold mb-1 block" style={{ color: F.label }}>Target Release</Label>
               <Select value={releaseId} onValueChange={setReleaseId} disabled={createStory.isPending}>
-                <SelectTrigger style={{ width: 350, height: 40, border: `1px solid ${F.border}`, borderRadius: 3 }}><SelectValue placeholder="Select release" /></SelectTrigger>
+                <SelectTrigger style={{ width: 350, height: 40, border: `1px solid ${F.border}`, borderRadius: 3, backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', color: F.input }}><SelectValue placeholder="Select release" /></SelectTrigger>
                 <SelectContent><SelectItem value="__none__"><span className="text-muted-foreground">None</span></SelectItem>{releases?.map(r => (<SelectItem key={r.id} value={r.id}>{r.name}</SelectItem>))}</SelectContent>
               </Select>
             </div>
@@ -706,7 +706,7 @@ export const CreateStoryDialog: React.FC<CreateStoryDialogProps> = ({
                 {currentUser?.id && <button type="button" onClick={() => setAssigneeId(currentUser.id)} className="text-[13px] font-medium hover:underline" style={{ color: F.linkBlue }}>Assign to me</button>}
               </div>
               <Select value={assigneeId} onValueChange={setAssigneeId} disabled={createStory.isPending}>
-                <SelectTrigger style={{ height: 40, border: `1px solid ${F.border}`, borderRadius: 3 }}>
+                <SelectTrigger style={{ height: 40, border: `1px solid ${F.border}`, borderRadius: 3, backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', color: F.input }}>
                   <SelectValue placeholder="Automatic">
                     {selectedAssignee ? (<div className="flex items-center gap-2"><UserAvatar name={selectedAssignee.full_name} url={selectedAssignee.avatar_url} /><span>{selectedAssignee.full_name}</span></div>) : (<div className="flex items-center gap-2"><User size={16} className="text-muted-foreground" /><span>Automatic</span></div>)}
                   </SelectValue>
@@ -722,7 +722,7 @@ export const CreateStoryDialog: React.FC<CreateStoryDialogProps> = ({
             <div>
               <Label className="text-[12px] font-semibold mb-1 block" style={{ color: F.label }}>Reporter <span style={{ color: F.asterisk }}>*</span></Label>
               <Select value={reporterId} onValueChange={setReporterId} disabled={createStory.isPending}>
-                <SelectTrigger style={{ width: 350, height: 40, border: `1px solid ${F.border}`, borderRadius: 3 }}>
+                <SelectTrigger style={{ width: 350, height: 40, border: `1px solid ${F.border}`, borderRadius: 3, backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', color: F.input }}>
                   <SelectValue placeholder="Select reporter">{selectedReporter && (<div className="flex items-center gap-2"><UserAvatar name={selectedReporter.full_name} url={selectedReporter.avatar_url} /><span>{selectedReporter.full_name}</span></div>)}</SelectValue>
                 </SelectTrigger>
                 <SelectContent>{profiles?.map(p => (<SelectItem key={p.id} value={p.id}><div className="flex items-center gap-2"><UserAvatar name={p.full_name} url={p.avatar_url} /><span>{p.full_name}</span></div></SelectItem>))}</SelectContent>
