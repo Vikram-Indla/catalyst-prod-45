@@ -355,20 +355,7 @@ export default function TestHubExecutionPage() {
           return;
         }
 
-        // Get next execution number
-        const { data: lastExec, error: lastExecError } = await supabase
-          .from('th_test_executions')
-          .select('execution_number')
-          .eq('cycle_scope_id', selectedTestCaseId)
-          .order('execution_number', { ascending: false })
-          .limit(1)
-          .maybeSingle();
-
-        if (lastExecError) {
-          console.error('[ExecHistory] Failed to fetch last execution number:', lastExecError.code, lastExecError.message, lastExecError.details, lastExecError.hint);
-        }
-
-        const nextExecutionNumber = (lastExec?.execution_number ?? 0) + 1;
+        // execution_number is assigned by DB trigger (trg_assign_execution_number)
         const key = selectedTestCaseId;
         const currentStatuses = stepStatuses.get(key) || steps.map((_, i) => ({ stepIndex: i, status: 'not_run' as const }));
         const stepResultsSnapshot = steps.map((s, i) => ({
