@@ -72,11 +72,11 @@ function determineHealthFromProgress(progress: number): string {
 
 function getHealthColor(health?: string): string {
   switch (health) {
-    case 'good': return 'hsl(173 58% 39%)';
-    case 'fair': return 'hsl(38 92% 50%)';
-    case 'poor': return 'hsl(0 84% 60%)';
-    case 'at_risk': return 'hsl(25 95% 53%)';
-    default: return 'hsl(var(--muted-foreground))';
+    case 'good': return '#0D9488';
+    case 'fair': return '#D97706';
+    case 'poor': return '#EF4444';
+    case 'at_risk': return '#F97316';
+    default: return '#878787';
   }
 }
 

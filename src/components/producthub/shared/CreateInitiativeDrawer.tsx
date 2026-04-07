@@ -6,6 +6,7 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { X, Loader2, FileText, Tag, Users, Calendar, RefreshCw, GitMerge } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useTheme } from '@/hooks/useTheme';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { catalystToast } from '@/lib/catalystToast';
@@ -138,6 +139,7 @@ const INPUT_CLS = "w-full h-9 px-3 text-[13px] bg-white border rounded-lg focus:
 
 /* ── Main Component ── */
 export function CreateInitiativeDrawer({ open, onClose, conversionSource, onCreated }: CreateInitiativeDrawerProps) {
+  const { isDark } = useTheme();
   const { data: nextKey } = useNextInitiativeKey();
   const createMutation = useCreateInitiative();
   const { data: departmentOptions } = useDepartmentOptions();
@@ -297,7 +299,7 @@ export function CreateInitiativeDrawer({ open, onClose, conversionSource, onCrea
 
           {/* Conversion banners */}
           {conversionSource?.type === 'single' && (
-            <div className="p-3 rounded-lg mb-3" style={{ background: '#F0FDF4', border: '1px solid #BBF7D0' }}>
+            <div className="p-3 rounded-lg mb-3" style={{ background: isDark ? 'rgba(74,222,128,0.08)' : '#F0FDF4', border: `1px solid ${isDark ? 'rgba(74,222,128,0.2)' : '#BBF7D0'}` }}>
               <div className="text-[13px] font-bold flex items-center gap-1.5" style={{ color: T.ink }}>
                 <RefreshCw className="w-3.5 h-3.5" /> Converting idea to initiative
               </div>
@@ -308,7 +310,7 @@ export function CreateInitiativeDrawer({ open, onClose, conversionSource, onCrea
             </div>
           )}
           {conversionSource?.type === 'merge' && conversionSource.mergeIdea && (
-            <div className="p-3 rounded-lg mb-3" style={{ background: '#EFF6FF', border: '1px solid #BFDBFE' }}>
+            <div className="p-3 rounded-lg mb-3" style={{ background: isDark ? 'rgba(59,130,246,0.08)' : '#EFF6FF', border: `1px solid ${isDark ? 'rgba(59,130,246,0.2)' : '#BFDBFE'}` }}>
               <div className="text-[13px] font-bold flex items-center gap-1.5" style={{ color: T.ink }}>
                 <GitMerge className="w-3.5 h-3.5" /> Merging 2 ideas into 1 initiative
               </div>

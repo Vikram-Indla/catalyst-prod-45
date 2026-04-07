@@ -22,22 +22,23 @@ import { DetailTabActivity } from './DetailTabActivity';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient, useMutation } from '@tanstack/react-query';
 import { toast } from 'sonner';
+import { useTheme } from '@/hooks/useTheme';
 import '@/styles/initiative-detail-panel.css';
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 
-/* ── Status color map (MARAM V3.1 Dual Token) ── */
-const STATUS_PILL_COLORS: Record<string, { text: string; bg: string; bdr: string }> = {
-  new_demand:    { text: '#2563EB', bg: '#EFF6FF', bdr: 'rgba(37,99,235,0.2)' },
-  under_review:  { text: '#9A5402', bg: '#FFFBEB', bdr: 'rgba(217,119,6,0.2)' },
-  approved:      { text: '#0D7331', bg: '#F0FDF4', bdr: 'rgba(22,163,74,0.2)' },
-  in_progress:   { text: '#08736B', bg: '#F0FDFA', bdr: 'rgba(13,148,136,0.2)' },
-  on_hold:       { text: '#6F6F78', bg: '#F1F5F9', bdr: 'rgba(113,113,122,0.2)' },
-  delivered:     { text: '#7C3AED', bg: '#F5F3FF', bdr: 'rgba(124,58,237,0.2)' },
-  closed:        { text: '#0D7331', bg: '#F0FDF4', bdr: 'rgba(22,163,74,0.2)' },
-  cancelled:     { text: '#D92525', bg: '#FEF2F2', bdr: 'rgba(220,38,38,0.2)' },
+/* ── Status color map (MARAM V3.1 Dual Token) — light + dark ── */
+const STATUS_PILL_COLORS: Record<string, { text: [string, string]; bg: [string, string]; bdr: [string, string] }> = {
+  new_demand:    { text: ['#2563EB', '#7DB8FC'], bg: ['#EFF6FF', 'rgba(37,99,235,0.10)'],  bdr: ['rgba(37,99,235,0.2)', 'rgba(37,99,235,0.25)'] },
+  under_review:  { text: ['#9A5402', '#FDE68A'], bg: ['#FFFBEB', 'rgba(251,191,36,0.10)'], bdr: ['rgba(217,119,6,0.2)', 'rgba(251,191,36,0.25)'] },
+  approved:      { text: ['#0D7331', '#4ADE80'], bg: ['#F0FDF4', 'rgba(74,222,128,0.10)'], bdr: ['rgba(22,163,74,0.2)', 'rgba(74,222,128,0.25)'] },
+  in_progress:   { text: ['#08736B', '#5EEAD4'], bg: ['#F0FDFA', 'rgba(13,148,136,0.10)'], bdr: ['rgba(13,148,136,0.2)', 'rgba(13,148,136,0.25)'] },
+  on_hold:       { text: ['#6F6F78', '#A1A1A1'], bg: ['#F1F5F9', '#2E2E2E'],               bdr: ['rgba(113,113,122,0.2)', '#454545'] },
+  delivered:     { text: ['#7C3AED', '#C4B5FD'], bg: ['#F5F3FF', 'rgba(124,58,237,0.10)'], bdr: ['rgba(124,58,237,0.2)', 'rgba(124,58,237,0.25)'] },
+  closed:        { text: ['#0D7331', '#4ADE80'], bg: ['#F0FDF4', 'rgba(74,222,128,0.10)'], bdr: ['rgba(22,163,74,0.2)', 'rgba(74,222,128,0.25)'] },
+  cancelled:     { text: ['#D92525', '#FCA5A5'], bg: ['#FEF2F2', 'rgba(239,68,68,0.10)'],  bdr: ['rgba(220,38,38,0.2)', 'rgba(239,68,68,0.25)'] },
 };
 
 /* UI status to DB status mapping */
@@ -93,6 +94,7 @@ export const InitiativeDetailPanel: React.FC<InitiativeDetailPanelProps> = ({
   initiatives,
   onClose,
 }) => {
+  const { isDark } = useTheme();
   const [activeTab, setActiveTab] = useState<TabKey>('overview');
   const [isVisible, setIsVisible] = useState(false);
   const [closing, setClosing] = useState(false);
@@ -107,7 +109,9 @@ export const InitiativeDetailPanel: React.FC<InitiativeDetailPanelProps> = ({
 
   // Get DB status for the initiative
   const dbStatus = UI_TO_DB[initiative.status] || initiative.status;
-  const pillColors = STATUS_PILL_COLORS[dbStatus] || STATUS_PILL_COLORS.new_demand;
+  const rawPill = STATUS_PILL_COLORS[dbStatus] || STATUS_PILL_COLORS.new_demand;
+  const di = isDark ? 1 : 0;
+  const pillColors = { text: rawPill.text[di], bg: rawPill.bg[di], bdr: rawPill.bdr[di] };
   const statusLabel = STATUS_LABELS[dbStatus] || initiative.status;
   const typeKey = initiative.initiative_type_key || '';
   const typeColors = TYPE_COLORS[typeKey];

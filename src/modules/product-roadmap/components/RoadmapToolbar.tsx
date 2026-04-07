@@ -4,6 +4,7 @@
  */
 
 import React, { useState } from 'react';
+import { useTheme } from '@/hooks/useTheme';
 import { 
   Search, Filter, Group, Download, Plus, ChevronLeft, ChevronRight,
   Maximize2, Minimize2, Printer, Contrast,
@@ -68,6 +69,7 @@ export function RoadmapToolbar({
   isFullscreen, onToggleFullscreen,
   viewMode, onViewModeChange, onPrint, highContrast, onToggleHighContrast,
 }: RoadmapToolbarProps) {
+  const { isDark } = useTheme();
   const { tokens, brand } = useRoadmapTheme();
   const [localTimelineFilter, setLocalTimelineFilter] = useState<TimelineFilterState>(DEFAULT_TIMELINE_FILTER);
   const effectiveTimelineFilter = timelineFilter ?? localTimelineFilter;
@@ -149,8 +151,8 @@ export function RoadmapToolbar({
               style={{
                 height: 32, padding: '0 10px', border: 'none', cursor: 'pointer',
                 fontSize: 11, fontWeight: viewMode === k ? 600 : 500,
-                color: viewMode === k ? '#2563EB' : (hc ? '#3F3F46' : '#71717A'),
-                background: viewMode === k ? '#EFF6FF' : (hc ? '#F0F0F0' : '#fff'),
+                color: viewMode === k ? '#2563EB' : (isDark ? '#A1A1A1' : (hc ? '#3F3F46' : '#71717A')),
+                background: viewMode === k ? (isDark ? 'rgba(37,99,235,0.12)' : '#EFF6FF') : (isDark ? '#1A1A1A' : (hc ? '#F0F0F0' : '#fff')),
                 borderRight: k === 'gantt' ? `1px solid ${borderColor}` : 'none',
               }}
             >

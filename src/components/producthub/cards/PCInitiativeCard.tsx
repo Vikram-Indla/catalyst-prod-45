@@ -7,6 +7,7 @@ import { formatDistanceToNow, format } from 'date-fns';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
+import { useTheme } from '@/hooks/useTheme';
 
 interface PCInitiativeCardProps {
   initiative: Initiative;
@@ -34,6 +35,20 @@ const STATUS_PILL_STYLES: Record<string, { color: string; bg: string; border: st
 
 const DEFAULT_STATUS_PILL = { color: '#71717A', bg: '#F4F4F5', border: 'rgba(113,113,122,0.2)' };
 
+/** Dark mode wash: lighten color, use rgba bg, and rgba border */
+function darkPill(pill: { color: string; bg: string; border: string }): { color: string; bg: string; border: string } {
+  // Extract rgb from hex color and create a wash
+  const hex = pill.color;
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return {
+    color: `rgba(${Math.min(r + 80, 255)},${Math.min(g + 80, 255)},${Math.min(b + 80, 255)},0.9)`,
+    bg: `rgba(${r},${g},${b},0.10)`,
+    border: `rgba(${r},${g},${b},0.20)`,
+  };
+}
+
 const TYPE_CONFIG: Record<string, { label: string; color: string; Icon: LucideIcon }> = {
   project: { label: 'Project', color: '#0D9488', Icon: FolderKanban },
   enhancement: { label: 'Enhancement', color: '#2563EB', Icon: Zap },
@@ -45,8 +60,10 @@ const TYPE_CONFIG: Record<string, { label: string; color: string; Icon: LucideIc
 
 export const PCInitiativeCard: React.FC<PCInitiativeCardProps> = ({ initiative, isSelected, onClick }) => {
   const queryClient = useQueryClient();
+  const { isDark } = useTheme();
   const status = STATUS_DISPLAY[initiative.status];
-  const pillStyle = STATUS_PILL_STYLES[initiative.status] || DEFAULT_STATUS_PILL;
+  const rawPill = STATUS_PILL_STYLES[initiative.status] || DEFAULT_STATUS_PILL;
+  const pillStyle = isDark ? darkPill(rawPill) : rawPill;
   
   const typeKey = initiative.initiative_type_key || '';
   const typeConf = TYPE_CONFIG[typeKey];

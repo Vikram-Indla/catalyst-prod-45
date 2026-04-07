@@ -52,8 +52,8 @@ const TrendBadge = ({ trend, value }: { trend: TrendDirection; value: string }) 
     <span className={cn(
       "inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium",
 isNeutral && "bg-muted/50 text-muted-foreground",
-      isPositive && "bg-[#e8f5e9] text-[#4a7c4a]",
-      !isPositive && !isNeutral && "bg-amber-50 text-amber-600"
+      isPositive && "bg-[#e8f5e9] dark:bg-[rgba(74,222,128,0.10)] text-[#4a7c4a] dark:text-[#4ADE80]",
+      !isPositive && !isNeutral && "bg-amber-50 dark:bg-[rgba(251,191,36,0.10)] text-amber-600 dark:text-[#FBBF24]"
     )}>
       {isPositive && <TrendingUp className="h-3 w-3" />}
       {isNeutral && <Minus className="h-3 w-3" />}

@@ -65,7 +65,7 @@ export function StatusSelect({ value, onChange, disabled }: StatusSelectProps) {
         type="button"
         onClick={() => !disabled && setOpen(!open)}
         disabled={disabled}
-        className="w-full flex items-center justify-between px-3 py-2.5 bg-white border rounded-lg text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full flex items-center justify-between px-3 py-2.5 bg-white dark:bg-[#1A1A1A] border rounded-lg text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         style={{
           borderColor: open ? 'var(--cp-blue)' : 'var(--divider)',
           boxShadow: open ? '0 0 0 3px rgba(37,99,235,0.1)' : 'none',
@@ -86,7 +86,7 @@ export function StatusSelect({ value, onChange, disabled }: StatusSelectProps) {
 
       {open && (
         <div
-          className="absolute z-50 mt-1 w-full bg-white border rounded-lg overflow-hidden max-h-72 overflow-y-auto"
+          className="absolute z-50 mt-1 w-full bg-white dark:bg-[#1A1A1A] border dark:border-[#2E2E2E] rounded-lg overflow-hidden max-h-72 overflow-y-auto"
           style={{
             borderColor: 'var(--divider)',
             boxShadow: '0 12px 40px rgba(0,0,0,0.14)',

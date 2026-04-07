@@ -137,12 +137,16 @@ export default function IdeationDrivesView() {
               {/* V12 3-color lozenge for status */}
               <span style={{
                 display: 'inline-flex', alignItems: 'center',
-                background: isActive ? '#0C66E4' : '#DFE1E6',
-                color: isActive ? '#FFFFFF' : '#42526E',
-                height: 20, padding: '0 6px', borderRadius: 4, fontSize: '11px', fontWeight: 700,
+                background: isActive
+                  ? (isDark ? 'rgba(59,130,246,0.10)' : '#DEEBFF')
+                  : (isDark ? '#2E2E2E' : '#DFE1E6'),
+                color: isActive
+                  ? (isDark ? '#7DB8FC' : '#0747A6')
+                  : (isDark ? '#A1A1A1' : '#253858'),
+                height: 20, padding: '0 6px', borderRadius: 3, fontSize: '11px', fontWeight: 700,
                 textTransform: 'uppercase', letterSpacing: '0.03em',
               }}>
-                {isActive ? 'Active' : 'Draft'}
+                {isActive ? 'ACTIVE' : 'DRAFT'}
               </span>
             </div>
 
