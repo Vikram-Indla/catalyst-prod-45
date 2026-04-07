@@ -77,6 +77,7 @@ interface CycleTestCase {
   failure_reason: string | null;
   started_at: string | null;
   
+  locked_version?: number | null;
   test_case: {
     id: string;
     case_key: string;
@@ -85,6 +86,7 @@ interface CycleTestCase {
     preconditions: string | null;
     priority_id: string | null;
     case_type_id: string | null;
+    current_version?: number | null;
     priority?: { id: string; name: string; color: string } | null;
     case_type?: { id: string; name: string } | null;
     steps?: TestStep[];
@@ -196,7 +198,7 @@ export default function TestHubExecutionPage() {
     if (!cycleId) return;
     const { data, error } = await (supabase as any)
       .from('tm_cycle_scope')
-      .select(`*, test_case:tm_test_cases ( id, case_key, title, description, preconditions, priority_id, case_type_id, priority:tm_case_priorities ( id, name, color ), case_type:tm_case_types ( id, name ) ), assignee:profiles!assigned_to ( id, full_name )`)
+      .select(`*, test_case:tm_test_cases ( id, case_key, title, description, preconditions, priority_id, case_type_id, current_version, priority:tm_case_priorities ( id, name, color ), case_type:tm_case_types ( id, name ) ), assignee:profiles!assigned_to ( id, full_name )`)
       .eq('cycle_id', cycleId)
       .order('added_at');
 
@@ -308,6 +310,12 @@ export default function TestHubExecutionPage() {
   const currentIndex = filteredTestCases.findIndex(tc => tc.id === selectedTestCaseId);
   const steps = currentTestCase?.test_case?.steps || [];
   const currentStep = steps[currentStepIndex];
+
+  // Version drift detection
+  const isVersionDrifted = currentTestCase != null
+    && currentTestCase.locked_version != null
+    && currentTestCase.test_case?.current_version != null
+    && currentTestCase.test_case.current_version !== currentTestCase.locked_version;
 
   // Step statuses for the current test case
   const currentStepStatuses = stepStatuses.get(selectedTestCaseId || '') || steps.map((_, i) => ({ stepIndex: i, status: 'not_run' as const }));
@@ -889,6 +897,22 @@ export default function TestHubExecutionPage() {
                       Run #{executionHistory.execution_number} · Executed {new Date(executionHistory.executed_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                       {executionHistory.executor?.full_name ? ` · ${executionHistory.executor.full_name}` : ''}
                     </p>
+                    {isVersionDrifted && (
+                      <div style={{
+                        marginTop: 10, padding: '8px 12px', borderRadius: 6,
+                        backgroundColor: isDark ? 'rgba(251,191,36,0.12)' : '#FFFBEB',
+                        border: `1px solid ${isDark ? 'rgba(251,191,36,0.2)' : '#FDE68A'}`,
+                        display: 'flex', alignItems: 'center', gap: 6,
+                        fontSize: 12, color: isDark ? '#FBBF24' : '#92400E',
+                      }}>
+                        <AlertTriangle size={14} style={{ color: '#D97706', flexShrink: 0 }} />
+                        <span>
+                          This test case has been updated since it was added to this cycle
+                          (locked v{currentTestCase?.locked_version} → current v{currentTestCase?.test_case?.current_version}).
+                          Execution continues against the original scoped version.
+                        </span>
+                      </div>
+                    )}
                   </div>
 
                   {/* Read-only step list */}
@@ -1017,6 +1041,22 @@ export default function TestHubExecutionPage() {
                   </div>
                   <h2 style={{ fontSize: 18, fontWeight: 700, color: 'hsl(var(--foreground))', margin: 0, lineHeight: 1.3 }}>{testCase.title}</h2>
                   {testCase.description && <p style={{ fontSize: 13, color: 'hsl(var(--muted-foreground))', margin: '6px 0 0', lineHeight: 1.4 }}>{testCase.description}</p>}
+                  {isVersionDrifted && (
+                    <div style={{
+                      marginTop: 10, padding: '8px 12px', borderRadius: 6,
+                      backgroundColor: isDark ? 'rgba(251,191,36,0.12)' : '#FFFBEB',
+                      border: `1px solid ${isDark ? 'rgba(251,191,36,0.2)' : '#FDE68A'}`,
+                      display: 'flex', alignItems: 'center', gap: 6,
+                      fontSize: 12, color: isDark ? '#FBBF24' : '#92400E',
+                    }}>
+                      <AlertTriangle size={14} style={{ color: '#D97706', flexShrink: 0 }} />
+                      <span>
+                        This test case has been updated since it was added to this cycle
+                        (locked v{currentTestCase?.locked_version} → current v{currentTestCase?.test_case?.current_version}).
+                        Execution continues against the original scoped version.
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 {/* Step progress indicator */}
