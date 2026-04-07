@@ -424,8 +424,7 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
                     position: 'absolute', top: '100%', right: 0, marginTop: 4,
                     background: T.menuBg, border: `0.5px solid ${T.border}`, borderRadius: 6,
                     boxShadow: T.shadow, minWidth: 200, zIndex: 10,
-                    animation: 'notif-dropdown-in 120ms ease-out forwards',
-                    overflow: 'hidden',
+                    padding: '4px 0',
                   }}
                 >
                   {[
