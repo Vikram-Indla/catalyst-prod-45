@@ -560,10 +560,12 @@ export const CreateStoryDialog: React.FC<CreateStoryDialogProps> = ({
                       const sel = allParents.find(p => p.id === parentId);
                       if (!sel) return null;
                       const ti = PARENT_TYPE_ICONS[sel.type] || PARENT_TYPE_ICONS.Feature;
+                      const projPrefix = sel.key?.split('-')[0] || '';
                       return (
-                        <div className="flex items-center gap-2 min-w-0">
-                          <span style={{ color: ti.color, fontSize: 12 }}>{ti.symbol}</span>
-                          <span className="truncate">{sel.key} · {sel.title}</span>
+                        <div className="flex items-center gap-1.5 min-w-0">
+                          <span className="shrink-0 text-[8px] font-bold uppercase px-1 rounded" style={{ backgroundColor: '#F1F5F9', color: '#505258' }}>{projPrefix}</span>
+                          <span style={{ color: ti.color, fontSize: 11 }}>{ti.symbol}</span>
+                          <span className="truncate text-[13px]">{sel.key} · {sel.title}</span>
                         </div>
                       );
                     })()}
@@ -601,16 +603,23 @@ export const CreateStoryDialog: React.FC<CreateStoryDialogProps> = ({
                   )}
                   {filteredParents.map((p) => {
                     const ti = PARENT_TYPE_ICONS[p.type] || PARENT_TYPE_ICONS.Feature;
+                    const projPrefix = p.key?.split('-')[0] || '';
                     return (
-                      <SelectItem key={p.id} value={p.id} className="!py-2">
-                        <div className="flex flex-col gap-0.5">
-                          <div className="flex items-center gap-1.5">
-                            <span className="w-3 h-3 rounded-sm flex items-center justify-center shrink-0" style={{ backgroundColor: ti.color }}>
-                              <span className="text-white text-[8px] font-bold leading-none">{ti.symbol === '◆' ? '⚡' : '▲'}</span>
+                      <SelectItem key={p.id} value={p.id} className="!py-2.5">
+                        <div className="flex flex-col gap-1">
+                          <div className="flex items-center gap-2">
+                            {/* Project badge */}
+                            <span className="shrink-0 text-[9px] font-bold uppercase px-1 py-0.5 rounded" style={{ backgroundColor: '#F1F5F9', color: '#505258', letterSpacing: '0.04em' }}>
+                              {projPrefix}
                             </span>
-                            <span className="text-[12px] font-medium" style={{ color: '#505258' }}>{p.key}</span>
+                            {/* Type icon */}
+                            <span className="w-4 h-4 rounded-sm flex items-center justify-center shrink-0" style={{ backgroundColor: ti.color }}>
+                              <span className="text-white text-[9px] font-bold leading-none">{ti.symbol === '◆' ? '⚡' : '▲'}</span>
+                            </span>
+                            {/* Issue key */}
+                            <span className="text-[12px] font-semibold" style={{ color: '#0C66E4' }}>{p.key}</span>
                           </div>
-                          <span className="text-[13px] truncate max-w-[300px]" style={{ color: '#292A2E' }}>{p.title}</span>
+                          <span className="text-[13px] truncate max-w-[320px] pl-[1px]" style={{ color: '#292A2E' }}>{p.title}</span>
                         </div>
                       </SelectItem>
                     );
