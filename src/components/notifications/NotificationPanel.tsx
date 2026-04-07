@@ -92,6 +92,7 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const { isDark } = useTheme();
+  const { data: lastSyncTime } = useLastSyncTime();
 
   // Dark mode tokens
   const T = {
