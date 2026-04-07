@@ -703,7 +703,7 @@ export function ListView() {
                                       {/* Comments */}
                                       {isFieldVisible('comments') && (
                                         <TableCell className="w-28" onClick={(e) => e.stopPropagation()}>
-                                          <button className="inline-flex items-center gap-1 text-[14px] text-slate-500 hover:text-slate-900 hover:bg-slate-50 rounded px-1 py-0.5 -mx-1 transition-colors">
+                                          <button className="inline-flex items-center gap-1 text-[14px] text-slate-500 dark:text-[#878787] hover:text-slate-900 dark:hover:text-[#EDEDED] hover:bg-slate-50 dark:hover:bg-[#1F1F1F] rounded px-1 py-0.5 -mx-1 transition-colors">
                                             <MessageSquare className="h-3.5 w-3.5" />
                                             {item.comments > 0 ? (
                                               <span>{item.comments} comment{item.comments > 1 ? 's' : ''}</span>
@@ -750,7 +750,7 @@ export function ListView() {
                                           {item.labels.length > 0 ? (
                                             <div className="flex gap-1 flex-wrap">
                                               {item.labels.map((label) => (
-                                                <span key={label} className="text-[11px] text-slate-600 bg-slate-100 px-1.5 py-0.5 rounded">
+                                                <span key={label} className="text-[11px] text-slate-600 dark:text-[#A1A1A1] bg-slate-100 dark:bg-[#292929] px-1.5 py-0.5 rounded">
                                                   {label}
                                                 </span>
                                               ))}
@@ -792,7 +792,7 @@ export function ListView() {
 
             {/* Footer inside card */}
             <div className="border-t border-slate-200 dark:border-[#2E2E2E] flex items-center justify-between px-4 py-2 bg-white dark:bg-[#1A1A1A] flex-shrink-0">
-              <span className="text-[14px] text-slate-600">
+              <span className="text-[14px] text-slate-600 dark:text-[#A1A1A1]">
                 {selectedItems.size > 0 
                   ? `${selectedItems.size} item${selectedItems.size > 1 ? 's' : ''} selected`
                   : `Showing ${sortedItems.length} of ${items.length} items`

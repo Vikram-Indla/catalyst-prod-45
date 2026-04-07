@@ -276,7 +276,7 @@ export function TeamPanel({
                   </div>
 
                   {/* Stats */}
-                  <div className="grid grid-cols-4 gap-2 p-3 bg-white/50">
+                  <div className="grid grid-cols-4 gap-2 p-3 bg-white/50 dark:bg-[#111111]/50">
                     <StatCard 
                       label="Members" 
                       value={team.stats.totalMembers} 
@@ -301,7 +301,7 @@ export function TeamPanel({
                   <div className="p-4 space-y-4">
                     {/* Description */}
                     {team.description && (
-                      <div className="p-3 rounded-lg bg-slate-50 border border-border">
+                      <div className="p-3 rounded-lg bg-slate-50 dark:bg-[#111111] border border-border">
                         <p className="text-sm text-text-secondary">{team.description}</p>
                       </div>
                     )}
@@ -318,7 +318,7 @@ export function TeamPanel({
                           <button
                             key={member.id}
                             onClick={() => onMemberClick?.(member.userId)}
-                            className="w-full flex items-center gap-3 p-2.5 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors group"
+                            className="w-full flex items-center gap-3 p-2.5 rounded-xl cursor-pointer hover:bg-slate-50 dark:hover:bg-[#1F1F1F] transition-colors group"
                           >
                             <div 
                               className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-medium"
@@ -349,7 +349,7 @@ export function TeamPanel({
                         ))}
 
                         {/* Add Member placeholder */}
-                        <button className="w-full flex items-center gap-3 p-2.5 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors text-text-muted">
+                        <button className="w-full flex items-center gap-3 p-2.5 rounded-xl cursor-pointer hover:bg-slate-50 dark:hover:bg-[#1F1F1F] transition-colors text-text-muted">
                           <div className="w-8 h-8 rounded-full flex items-center justify-center border-2 border-dashed border-slate-300">
                             <Plus className="w-4 h-4" />
                           </div>
@@ -416,7 +416,7 @@ export function TeamPanel({
 
 function StatCard({ label, value, color, icon }: { label: string; value: number; color?: string; icon?: React.ReactNode }) {
   return (
-    <div className="text-center p-2 rounded-lg bg-white border border-border">
+    <div className="text-center p-2 rounded-lg bg-white dark:bg-[#1A1A1A] border border-border">
       <div className="flex items-center justify-center gap-1">
         {icon}
         <span 

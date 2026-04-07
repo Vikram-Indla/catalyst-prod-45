@@ -70,7 +70,7 @@ export function ResourcePanel({
               <>
                 {/* Header */}
                 <div className="border-b border-border">
-                  <div className="p-4 bg-gradient-to-r from-slate-50 to-blue-50">
+                  <div className="p-4 bg-gradient-to-r from-slate-50 to-blue-50 dark:from-[#111111] dark:to-[#111111]">
                     <div className="flex items-start justify-between">
                       <div className="flex items-center gap-3">
                         <div 
@@ -119,7 +119,7 @@ export function ResourcePanel({
                   </div>
 
                   {/* Stats */}
-                  <div className="grid grid-cols-4 gap-2 p-3 bg-slate-50">
+                  <div className="grid grid-cols-4 gap-2 p-3 bg-slate-50 dark:bg-[#111111]">
                     <StatCard label="Total" value={resource.taskCount} />
                     <StatCard 
                       label="Overdue" 
@@ -216,8 +216,8 @@ export function ResourcePanel({
 
 function StatCard({ label, value, color }: { label: string; value: number; color?: string }) {
   return (
-    <div className="text-center p-2 rounded-lg bg-white border border-border">
-      <div 
+    <div className="text-center p-2 rounded-lg bg-white dark:bg-[#1A1A1A] border border-border">
+      <div
         className="text-lg font-bold"
         style={{ color: color || '#1e293b' }}
       >
