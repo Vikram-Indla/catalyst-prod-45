@@ -77,6 +77,7 @@ interface CycleTestCase {
   failure_reason: string | null;
   started_at: string | null;
   
+  locked_version?: number | null;
   test_case: {
     id: string;
     case_key: string;
@@ -85,6 +86,7 @@ interface CycleTestCase {
     preconditions: string | null;
     priority_id: string | null;
     case_type_id: string | null;
+    current_version?: number | null;
     priority?: { id: string; name: string; color: string } | null;
     case_type?: { id: string; name: string } | null;
     steps?: TestStep[];
@@ -196,7 +198,7 @@ export default function TestHubExecutionPage() {
     if (!cycleId) return;
     const { data, error } = await (supabase as any)
       .from('tm_cycle_scope')
-      .select(`*, test_case:tm_test_cases ( id, case_key, title, description, preconditions, priority_id, case_type_id, priority:tm_case_priorities ( id, name, color ), case_type:tm_case_types ( id, name ) ), assignee:profiles!assigned_to ( id, full_name )`)
+      .select(`*, test_case:tm_test_cases ( id, case_key, title, description, preconditions, priority_id, case_type_id, current_version, priority:tm_case_priorities ( id, name, color ), case_type:tm_case_types ( id, name ) ), assignee:profiles!assigned_to ( id, full_name )`)
       .eq('cycle_id', cycleId)
       .order('added_at');
 
