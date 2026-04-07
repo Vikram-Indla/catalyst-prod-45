@@ -43,22 +43,36 @@ const normaliseStatus = (raw: string | null | undefined): { label: string; type:
 
 /* ═══ C-02: WorkItemIcon — canonical inline SVGs ═══ */
 function WorkItemIcon({ type }: { type: string }) {
-  const t = (type || '').toLowerCase();
-  if (t === 'bug' || t === 'defect')
+  const t = (type || '').toLowerCase().trim();
+  // Bug / Defect — red asterisk
+  if (t === 'bug' || t === 'defect' || t === 'qa bug')
     return <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="#CC0000"/><path d="M8 3L9.2 6.2H12.5L9.9 8.1L10.9 11.3L8 9.4L5.1 11.3L6.1 8.1L3.5 6.2H6.8Z" fill="white"/></svg>;
+  // Story — green bookmark
   if (t === 'story')
     return <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="#36B37E"/><path d="M4 3h8v10l-4-2.5L4 13V3z" fill="white"/></svg>;
-  if (t === 'task' || t === 'catalyst_issue' || t === 'subtask')
+  // Task variants — blue checkbox
+  if (t === 'task' || t === 'catalyst_issue' || t === 'subtask' || t === 'sub-task'
+      || t === 'frontend' || t === 'backend' || t === 'integration'
+      || t === 'brd task' || t === 'change request' || t === 'figma'
+      || t === 'entity figma' || t === 'issue')
     return <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="#2563EB"/><path d="M4 8.5l2.5 2.5 5.5-5.5" stroke="white" strokeWidth="1.8" fill="none" strokeLinecap="round"/></svg>;
+  // Epic — purple lightning
   if (t === 'epic')
     return <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="#7C3AED"/><path d="M9.5 3L5.5 9h4L6.5 13l6-7H9l.5-3z" fill="white"/></svg>;
+  // Business request / gap — green bookmark (story-like)
+  if (t === 'business request' || t === 'business gap')
+    return <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="#36B37E"/><path d="M4 3h8v10l-4-2.5L4 13V3z" fill="white"/></svg>;
+  // Test case
   if (t === 'test_case' || t === 'tm_test_case')
     return <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="#0D9488"/><path d="M4 5h8M4 8h5M4 11h3" stroke="white" strokeWidth="1.5" strokeLinecap="round"/></svg>;
+  // Test plan
   if (t === 'test_plan')
     return <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="#0D9488"/><path d="M4 4h8v8H4z" fill="none" stroke="white" strokeWidth="1.2"/><path d="M6 7l1.5 1.5 3-3" stroke="white" strokeWidth="1.5" fill="none" strokeLinecap="round"/></svg>;
-  if (t === 'incident')
+  // Incident / production incident — red warning
+  if (t === 'incident' || t === 'production incident')
     return <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="#DC2626"/><path d="M8 4v5M8 10.5v1.5" stroke="white" strokeWidth="2" strokeLinecap="round"/></svg>;
-  return <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="#64748B"/></svg>;
+  // Default — blue task (safe fallback for unknown Jira types)
+  return <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="#2563EB"/><path d="M4 8.5l2.5 2.5 5.5-5.5" stroke="white" strokeWidth="1.8" fill="none" strokeLinecap="round"/></svg>;
 }
 
 /* ═══ M-03/M-04: getActionText — consistent grammar ═══ */
