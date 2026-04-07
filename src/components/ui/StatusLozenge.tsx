@@ -29,11 +29,11 @@ function getStatusCategory(status: string): StatusCategory {
 }
 
 function getLozengeTokens(category: StatusCategory): { bg: string; text: string } {
-  const isDark = document.documentElement.classList.contains('dark');
+  const isDark = typeof document !== 'undefined' && document.documentElement.classList.contains('dark');
   const map: Record<StatusCategory, { bg: [string, string]; text: [string, string] }> = {
-    todo:       { bg: ['#DFE1E6', '#1A1A1A'], text: ['#42526E', '#B8BCC8'] },
-    inprogress: { bg: ['#0C66E4', '#1A2030'], text: ['#FFFFFF', '#93C5FD'] },
-    done:       { bg: ['#1B7F37', '#182820'], text: ['#FFFFFF', '#86EFAC'] },
+    todo:       { bg: ['#DFE1E6', '#2E2E2E'],                    text: ['#253858', '#A1A1A1'] },
+    inprogress: { bg: ['#DEEBFF', 'rgba(59,130,246,0.10)'],      text: ['#0747A6', '#7DB8FC'] },
+    done:       { bg: ['#E3FCEF', 'rgba(74,222,128,0.10)'],      text: ['#006644', '#4ADE80'] },
   };
   const entry = map[category];
   return { bg: isDark ? entry.bg[1] : entry.bg[0], text: isDark ? entry.text[1] : entry.text[0] };
@@ -79,7 +79,7 @@ export function StatusLozenge({ status }: { status: string }) {
         lineHeight: "16px",
         whiteSpace: "nowrap",
         verticalAlign: "middle",
-        letterSpacing: "0",
+        letterSpacing: "0.03em",
       }}
     >
       {displayName}

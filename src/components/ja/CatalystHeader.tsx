@@ -253,7 +253,7 @@ export function CatalystHeader() {
               const activeColor = isDark ? '#FFFFFF' : 'var(--cp-blue-text)';
               const inactiveColor = isDark ? '#A1A1A1' : 'var(--cp-t3)';
               const hoverColor = isDark ? '#FFFFFF' : 'var(--cp-t1)';
-              const activeUnderline = isDark ? '#FFFFFF' : 'var(--cp-blue-text)';
+              const activeUnderline = '#3B82F6';
               const hoverUnderline = isDark ? '#484F58' : 'var(--cp-bd)';
               const navButtonStyle: React.CSSProperties = {
                 height: '100%',
@@ -280,6 +280,7 @@ export function CatalystHeader() {
                 if (!isActive) {
                   e.currentTarget.style.color = isEnter ? hoverColor : inactiveColor;
                   e.currentTarget.style.borderBottom = isEnter ? `2px solid ${hoverUnderline}` : '2px solid transparent';
+                  e.currentTarget.style.background = isEnter ? (isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)') : 'transparent';
                 }
               };
               

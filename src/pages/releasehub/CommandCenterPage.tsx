@@ -20,7 +20,10 @@ function KPICard({ label, value, delta, deltaLabel, color, icon: Icon, loading, 
   label: string; value: number | string; delta?: string; deltaLabel?: string; color: string; icon: any; loading?: boolean; onClick?: () => void; isDark?: boolean;
 }) {
   return (
-    <button onClick={onClick} className="rounded-[6px] p-5 text-left transition-all hover:shadow-sm" style={{ background: isDark ? '#1A1A1A' : '#FFFFFF', border: `0.75px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.12)'}` }}>
+    <button onClick={onClick} className="rounded-[6px] p-5 text-left transition-all hover:shadow-md" style={{ background: isDark ? '#1A1A1A' : '#FFFFFF', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, cursor: onClick ? 'pointer' : 'default' }}
+      onMouseEnter={(e) => { e.currentTarget.style.borderColor = isDark ? '#454545' : '#CBD5E1'; }}
+      onMouseLeave={(e) => { e.currentTarget.style.borderColor = isDark ? '#2E2E2E' : '#E2E8F0'; }}
+    >
       <div className="flex items-start justify-between">
         <div>
           <p className="text-[12px] font-medium uppercase tracking-[0.04em]" style={{ fontFamily: RH.fontBody, color: isDark ? '#878787' : '#64748B' }}>{label}</p>
@@ -104,10 +107,10 @@ export default function CommandCenterPage() {
 
   // Pipeline columns
   const pipelineCols = [
-    { key: 'new', label: 'NEW', loz: { bg: '#DFE1E6', text: '#42526E' } },
-    { key: 'in_uat', label: 'IN UAT', loz: { bg: '#0C66E4', text: '#FFFFFF' } },
-    { key: 'in_beta', label: 'IN BETA', loz: { bg: '#0C66E4', text: '#FFFFFF' } },
-    { key: 'in_production', label: 'IN PROD', loz: { bg: '#1B7F37', text: '#FFFFFF' } },
+    { key: 'new', label: 'NEW', loz: { bg: isDark ? '#2E2E2E' : '#DFE1E6', text: isDark ? '#A1A1A1' : '#253858' } },
+    { key: 'in_uat', label: 'IN UAT', loz: { bg: isDark ? 'rgba(59,130,246,0.15)' : '#DEEBFF', text: isDark ? '#7DB8FC' : '#0747A6' } },
+    { key: 'in_beta', label: 'IN BETA', loz: { bg: isDark ? 'rgba(59,130,246,0.15)' : '#DEEBFF', text: isDark ? '#7DB8FC' : '#0747A6' } },
+    { key: 'in_production', label: 'IN PROD', loz: { bg: isDark ? 'rgba(74,222,128,0.15)' : '#E3FCEF', text: isDark ? '#4ADE80' : '#006644' } },
   ];
 
   // ═══════════════════════════════════════════
@@ -297,9 +300,9 @@ export default function CommandCenterPage() {
           ) : (
             <table className="w-full text-[13px]" style={{ fontFamily: RH.fontBody }}>
               <thead>
-                <tr style={{ background: isDark ? '#1A1A1A' : '#F1F5F9' }}>
+                <tr style={{ background: isDark ? '#111111' : '#F8FAFC', borderBottom: `2px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}` }}>
                   {['RELEASE', 'STATUS', 'CHANGES', 'TARGET', 'PROGRESS'].map(h => (
-                    <th key={h} className="px-3 text-left text-[11px] uppercase tracking-[0.06em]" style={{ fontWeight: 600, height: 50, padding: '8px 12px', color: isDark ? '#878787' : '#64748B' }}>{h}</th>
+                    <th key={h} className="px-3 text-left text-[11px] uppercase tracking-[0.06em]" style={{ fontWeight: 600, height: 36, padding: '10px 12px', color: isDark ? '#878787' : '#64748B' }}>{h}</th>
                   ))}
                 </tr>
               </thead>
@@ -307,7 +310,7 @@ export default function CommandCenterPage() {
                 {activeRels.map((r: any) => {
                   const chgCount = changes.filter((c: any) => c.release_id === r.id).length;
                   return (
-                    <tr key={r.id} onClick={() => setSelectedRelease(r)} className="cursor-pointer" style={{ height: 50, borderBottom: `0.75px solid ${isDark ? '#292929' : 'rgba(15,23,42,0.06)'}` }}
+                    <tr key={r.id} onClick={() => setSelectedRelease(r)} className="cursor-pointer" style={{ height: 44, borderBottom: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}` }}
                       onMouseEnter={e => (e.currentTarget.style.background = isDark ? '#1A1A1A' : 'rgba(15,23,42,0.04)')}
                       onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
                       <td className="px-3" style={{ fontWeight: 650, color: isDark ? '#EDEDED' : RH.ink1 }}>{r.name}</td>
@@ -315,7 +318,7 @@ export default function CommandCenterPage() {
                       <td className="px-3" style={{ fontFamily: RH.fontMono, fontWeight: 650 }}>{r.chg_count || chgCount}</td>
                       <td className="px-3" style={{ color: isDark ? '#878787' : '#64748B' }}>{r.target_date ? format(new Date(r.target_date), 'MMM d') : '—'}</td>
                       <td className="px-3">
-                        <div className="w-20 h-1.5 rounded-full overflow-hidden" style={{ background: isDark ? '#1A1A1A' : '#F1F5F9' }}>
+                        <div className="w-20 h-2 rounded-full overflow-hidden" style={{ background: isDark ? '#1A1A1A' : '#F1F5F9' }}>
                           <div className="h-full bg-[#2563EB] rounded-full" style={{ width: `${Math.min(100, (chgCount > 0 ? 60 : 20))}%` }} />
                         </div>
                       </td>

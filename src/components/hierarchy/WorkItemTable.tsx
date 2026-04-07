@@ -252,7 +252,7 @@ function ColHeader({ label, sortKey, currentSort, currentDir, onSort, width, fle
     <div
       onClick={() => onSort(sortKey)}
       style={{
-        width, flex, height: 50, display: 'flex', alignItems: 'center', padding: '0 8px',
+        width, flex, height: 36, display: 'flex', alignItems: 'center', padding: '0 8px',
         fontSize: 11, fontWeight: 600, textTransform: 'uppercase', color: 'var(--fg-3)',
         letterSpacing: '0.06em', cursor: 'pointer', userSelect: 'none', minWidth: 0,
       }}
@@ -466,11 +466,11 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
               <button
                 onClick={(e) => { e.stopPropagation(); toggle(item.id); }}
                 className="hi-expand-chevron"
-                style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', display: 'flex', flexShrink: 0 }}
+                style={{ background: 'none', border: 'none', padding: 4, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, width: 24, height: 24, borderRadius: 4 }}
               >
                 {isExpanded ? <ChevronDown size={16} color="var(--fg-4)" /> : <ChevronRight size={16} color="var(--fg-4)" />}
               </button>
-            ) : <div className="hi-expand-chevron" style={{ flexShrink: 0 }} />}
+            ) : <div className="hi-expand-chevron" style={{ flexShrink: 0, width: 24 }} />}
 
             <span className="hi-type-icon-wrapper">{item.issueType && <JiraIssueTypeIcon type={item.issueType} size={16} />}</span>
 
@@ -616,10 +616,10 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
             display: 'grid',
             gridTemplateColumns,
             alignItems: 'center',
-            height: 50,
+            height: 36,
             minWidth: 1100,
-                background: isDark ? '#1F1F1F' : '#F1F5F9',
-                borderBottom: isDark ? '2px solid #2E2E2E' : '2px solid var(--divider)',
+                background: isDark ? '#111111' : '#F8FAFC',
+                borderBottom: isDark ? '2px solid #2E2E2E' : '2px solid #E2E8F0',
           }}
         >
           <div style={{ width: 44, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -665,9 +665,9 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
                 display: 'grid',
                 gridTemplateColumns,
                 alignItems: 'center',
-                borderBottom: isDark ? '1px solid #292929' : '1px solid #F1F5F9',
+                borderBottom: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0',
                 cursor: 'pointer',
-                background: isChecked ? 'var(--cp-primary-5)' : isSelected ? 'rgba(37, 99, 235, 0.08)' : isDark ? (index % 2 === 1 ? '#111111' : 'transparent') : (index % 2 === 1 ? '#FAFAFA' : '#FFFFFF'),
+                background: isChecked ? 'var(--cp-primary-5)' : isSelected ? 'rgba(37, 99, 235, 0.08)' : 'transparent',
               }}
             >
               <div style={{ width: 44, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>

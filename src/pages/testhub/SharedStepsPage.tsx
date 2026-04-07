@@ -394,7 +394,7 @@ export default function SharedStepsPage() {
                   onClick={(e) => e.stopPropagation()}
                   style={{
                     position: 'absolute', top: 'calc(100% + 4px)', left: 0, width: 280,
-                    backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 12,
+                    backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 8,
                     boxShadow: isDark ? '0 10px 40px rgba(0,0,0,0.4)' : '0 10px 40px rgba(0,0,0,0.12)', zIndex: 200, overflow: 'hidden',
                   }}
                 >
@@ -471,7 +471,7 @@ export default function SharedStepsPage() {
                   onClick={(e) => e.stopPropagation()}
                   style={{
                     position: 'absolute', top: 'calc(100% + 4px)', left: 0, width: 220,
-                    backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 12,
+                    backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 8,
                     boxShadow: isDark ? '0 10px 40px rgba(0,0,0,0.4)' : '0 10px 40px rgba(0,0,0,0.12)', zIndex: 200, padding: 8,
                   }}
                 >
@@ -651,7 +651,7 @@ export default function SharedStepsPage() {
                 </table>
               </div>
             ) : (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))', gap: 16 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: 12, gridAutoRows: '1fr' }}>
                 {sharedSteps.map(step => (
                   <SharedStepCard
                     key={step.id}
@@ -779,8 +779,8 @@ function SharedStepCard({ step, onView, onEdit, onDuplicate, onDelete, isDark = 
   return (
     <div
       style={{
-        backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 12,
-        padding: 20, cursor: 'pointer', transition: 'border-color 0.15s, box-shadow 0.15s',
+        backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 8,
+        padding: 16, cursor: 'pointer', transition: 'border-color 0.15s, box-shadow 0.15s', display: 'flex', flexDirection: 'column' as const,
       }}
       onMouseEnter={(e) => { e.currentTarget.style.borderColor = isDark ? '#454545' : '#CBD5E1'; e.currentTarget.style.boxShadow = isDark ? '0 4px 12px rgba(0,0,0,0.2)' : '0 4px 12px rgba(0,0,0,0.08)'; }}
       onMouseLeave={(e) => { e.currentTarget.style.borderColor = isDark ? '#2E2E2E' : '#E2E8F0'; e.currentTarget.style.boxShadow = 'none'; }}
@@ -799,7 +799,7 @@ function SharedStepCard({ step, onView, onEdit, onDuplicate, onDelete, isDark = 
             </span>
           )}
           <span style={{
-            padding: '3px 10px', backgroundColor: isDark ? 'rgba(37,99,235,0.15)' : '#EFF6FF', borderRadius: 12,
+            padding: '2px 8px', backgroundColor: isDark ? 'rgba(37,99,235,0.15)' : '#EFF6FF', borderRadius: 4,
             fontSize: 11, fontWeight: 600, color: '#2563EB', fontFamily: 'Inter',
           }}>
             Used {step.usage_count}x

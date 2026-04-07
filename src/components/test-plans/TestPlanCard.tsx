@@ -26,8 +26,8 @@ export function TestPlanCard({ plan, onDelete }: Props) {
 
   return (
     <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => navigate(`/testhub/test-plans/${plan.id}`)}>
-      <CardContent className="p-4">
-        <div className="flex items-start justify-between mb-3">
+      <CardContent className="p-3">
+        <div className="flex items-start justify-between mb-2">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
               <span className="font-mono text-sm text-primary">{plan.plan_key}</span>
@@ -49,7 +49,7 @@ export function TestPlanCard({ plan, onDelete }: Props) {
             </DropdownMenu>
           </div>
         </div>
-        <div className="flex items-center gap-4 text-sm text-muted-foreground mb-3">
+        <div className="flex items-center gap-3 text-sm text-muted-foreground mb-2">
           <div className="flex items-center gap-1"><Calendar className="h-4 w-4" />{dateRange()}</div>
           <div className="flex items-center gap-1"><Users className="h-4 w-4" />{plan.release?.name || 'No release'}</div>
         </div>

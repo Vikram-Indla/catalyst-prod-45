@@ -313,16 +313,16 @@ export function SidebarBase({
               
               return (
                 <div key={section.title}>
-                  {!expanded && sectionIndex > 0 && (
-                    <div style={{ borderTop: `1px solid ${dividerColor}`, marginTop: '4px', paddingTop: '4px' }} />
+                  {sectionIndex > 0 && (
+                    <div style={{ borderTop: `1px solid ${dividerColor}`, marginTop: '6px', paddingTop: '6px' }} />
                   )}
                   {/* Section Header — t2 in dark mode per D8-R3 Fix 5 */}
                   {expanded && section.title && (
-                    <div 
-                      style={{ 
+                    <div
+                      style={{
                         padding: '14px 10px 6px 10px',
                         lineHeight: 1,
-                        marginTop: sectionIndex > 0 ? '8px' : '0',
+                        marginTop: sectionIndex > 0 ? '4px' : '0',
                       }}
                     >
                       <span 
@@ -395,10 +395,10 @@ function renderMenuItem(
       onClick={() => handleNavigation(item.path)}
       className="group w-full flex items-center border-none cursor-pointer transition-all relative"
       style={{
-        height: '50px',
+        height: '36px',
         padding: expanded ? '0 10px' : '0',
         gap: '10px',
-        marginBottom: '2px',
+        marginBottom: '1px',
         fontSize: '13px',
         fontWeight: active ? 600 : 500,
         color: active ? tk.activeText : tk.itemText,
@@ -450,7 +450,7 @@ function renderMenuItem(
             className="h-[17px] w-[17px]" 
             style={{ 
               color: active ? tk.activeText : tk.itemText,
-              strokeWidth: 1.4,
+              strokeWidth: 1.5,
             }}
           />
         )}
@@ -459,7 +459,7 @@ function renderMenuItem(
         <>
           <span 
             className="flex-1 text-left"
-            style={{ lineHeight: '44px', whiteSpace: 'nowrap' }}
+            style={{ lineHeight: '36px', whiteSpace: 'nowrap' }}
           >
             {item.title}
           </span>
