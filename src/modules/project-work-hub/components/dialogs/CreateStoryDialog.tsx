@@ -209,7 +209,6 @@ export const CreateStoryDialog: React.FC<CreateStoryDialogProps> = ({
       const inReq = workflowStatuses.find(s =>
         s.name?.toLowerCase().replace(/\s+/g, '_') === 'in_requirements' ||
         s.name?.toLowerCase() === 'in requirements'
-        s.name?.toLowerCase() === 'in requirements'
       );
       if (inReq) {
         setStatusId(inReq.id);
