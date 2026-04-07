@@ -174,7 +174,7 @@ export const CreateStoryDialog: React.FC<CreateStoryDialogProps> = ({
     queryFn: async () => {
       const { data, error } = await supabase
         .from('ph_workflow_statuses')
-        .select('id, name, slug, status_category, position')
+        .select('id, name, status_category, position')
         .eq('project_id', projectId)
         .order('position');
       if (error) throw error;
