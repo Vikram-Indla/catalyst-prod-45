@@ -219,12 +219,12 @@ export function CatalystTable<T>({
   return (
     <div ref={containerRef} className="w-full">
       {/* Table container - full width, content-driven height */}
-      <div className="w-full rounded-md border border-border overflow-hidden bg-card">
+      <div className="w-full rounded-md border border-border dark:border-[#2E2E2E] overflow-hidden bg-card dark:bg-[#0A0A0A]">
         {/* Horizontal scroll only when columns exceed container */}
         <div className="w-full overflow-x-auto">
           {/* Header - 32px height */}
-          <div 
-            className="grid items-center h-8 bg-muted border-b border-border sticky top-0 z-10"
+          <div
+            className="grid items-center h-9 bg-muted dark:bg-[#111111] border-b-2 border-border dark:border-[#2E2E2E] sticky top-0 z-10"
             style={{ gridTemplateColumns: gridTemplate, minWidth: 'max-content' }}
           >
             {columns.map((col, idx) => (
@@ -258,7 +258,7 @@ export function CatalystTable<T>({
                 <div
                   key={rowId}
                   className={cn(
-                    "grid items-center h-9 border-b border-border last:border-b-0 transition-colors",
+                    "grid items-center h-9 border-b border-border dark:border-[#2E2E2E] last:border-b-0 transition-colors",
                     onRowClick && "cursor-pointer",
                     isHovered && "bg-muted/50"
                   )}

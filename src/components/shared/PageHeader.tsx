@@ -42,8 +42,8 @@ export function PageHeader({
       >
         <div className="flex items-center gap-3">
           <h1
-            className="text-xl font-semibold"
-            style={{ color: 'hsl(var(--secondary-green))' }}
+            className="text-xl font-semibold text-foreground"
+            style={{ fontFamily: "'Sora', sans-serif", letterSpacing: '-0.02em' }}
           >
             {title}
           </h1>
@@ -69,8 +69,7 @@ export function PageHeader({
       {/* Optional subtitle */}
       {subtitle && (
         <p
-          className="text-sm mb-2"
-          style={{ color: 'var(--text-2)' }}
+          className="text-sm mb-2 text-muted-foreground dark:text-[#A1A1A1]"
         >
           {subtitle}
         </p>

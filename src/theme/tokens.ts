@@ -141,8 +141,9 @@ export const radius = {
 // ============================================
 export const typography = {
   fontFamily: {
-    sans: "'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-    mono: "'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, monospace",
+    heading: "'Sora', sans-serif",
+    sans: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+    mono: "'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, monospace",
   },
   fontSize: {
     xs: '11px',
@@ -346,6 +347,80 @@ export const chartPalette = {
 } as const;
 
 // ============================================
+// NOCTURNE DARK MODE — HEX PALETTE
+// Use these for direct hex references in components
+// ============================================
+export const nocturne = {
+  pageBg: '#0A0A0A',
+  cardSurface: '#1A1A1A',
+  hoverSurface: '#1F1F1F',
+  activePressed: '#292929',
+  sidebarBg: '#111111',
+  modalOverlay: '#000000',
+  borderDefault: '#2E2E2E',
+  borderSubtle: '#292929',
+  borderMedium: '#454545',
+  textPrimary: '#EDEDED',
+  textSecondary: '#A1A1A1',
+  textMuted: '#878787',
+  textTertiary: '#7D7D7D',
+  placeholder: '#878787',
+} as const;
+
+// ============================================
+// CATALYST V12 LIGHT MODE — HEX PALETTE
+// ============================================
+export const catalyst = {
+  pageBg: '#FFFFFF',
+  cardSurface: '#FFFFFF',
+  bgOverlay: '#F8FAFC',
+  bgInset: '#F1F5F9',
+  textPrimary: '#0F172A',
+  textSecondary: '#475569',
+  textMuted: '#94A3B8',
+  textDisabled: '#CBD5E1',
+  borderDefault: '#E2E8F0',
+  borderStrong: '#CBD5E1',
+  borderFocus: '#2563EB',
+  primaryBlue: '#2563EB',
+  primaryBlueHover: '#1D4ED8',
+  aiPurple: '#7C3AED',
+  aiTeal: '#0D9488',
+} as const;
+
+// ============================================
+// STATUS LOZENGE — 3-COLOUR GUARDRAIL (ABSOLUTE)
+// Grey = To Do / Backlog / On Hold
+// Blue = In Progress / In Review / Active
+// Green = Done / Approved / Completed
+// ============================================
+export const statusLozenge = {
+  grey:  { lightBg: '#DFE1E6', lightText: '#253858', darkBg: '#2E2E2E', darkText: '#A1A1A1' },
+  blue:  { lightBg: '#DEEBFF', lightText: '#0747A6', darkBg: 'rgba(59,130,246,0.10)', darkText: '#7DB8FC' },
+  green: { lightBg: '#E3FCEF', lightText: '#006644', darkBg: 'rgba(74,222,128,0.10)', darkText: '#4ADE80' },
+} as const;
+
+// ============================================
+// CATALYST FONT STACK (LOCKED)
+// ============================================
+export const fonts = {
+  heading: "'Sora', sans-serif",
+  body: "'Inter', sans-serif",
+  mono: "'JetBrains Mono', monospace",
+} as const;
+
+// ============================================
+// TABLE DENSITY (LOCKED)
+// ============================================
+export const tableDensity = {
+  rowHeight: '36px',
+  maxRowHeight: '36px',
+  cellPadding: '8px 12px',
+  headerPadding: '10px 12px',
+  divider: '0.75px solid var(--cp-border-default)',
+} as const;
+
+// ============================================
 // EXPORT ALL TOKENS
 // ============================================
 export const tokens = {
@@ -362,6 +437,11 @@ export const tokens = {
   interactive,
   status,
   chartPalette,
+  nocturne,
+  catalyst,
+  statusLozenge,
+  fonts,
+  tableDensity,
 } as const;
 
 export default tokens;
