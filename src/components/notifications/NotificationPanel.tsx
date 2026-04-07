@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { ExternalLink, MoreVertical, CheckCheck, MessageSquare, Settings, RefreshCw, X } from "lucide-react";
+import { ExternalLink, MoreVertical, CheckCheck, MessageSquare, Settings, RefreshCw, X, Zap } from "lucide-react";
 import type { Notification, NotificationTab } from "@/types/notifications";
 import { PANEL_WIDTH } from "@/constants/notificationConstants";
 import { useNotificationsQuery, useMarkAsRead, useMarkAllAsRead, useSnoozeNotification } from "@/hooks/useNotificationsNew";
@@ -15,6 +15,34 @@ import SectionHeader from "./SectionHeader";
 import EmptyState from "./EmptyState";
 import LoadingSkeleton from "./LoadingSkeleton";
 import AIDigestTab from "./AIDigestTab";
+
+function useLastSyncTime() {
+  return useQuery({
+    queryKey: ['last-jira-sync'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('ph_sync_log')
+        .select('completed_at, projects_synced')
+        .order('completed_at', { ascending: false })
+        .limit(1)
+        .single();
+      if (error || !data?.completed_at) return null;
+      return data.completed_at as string;
+    },
+    staleTime: 60_000,
+    refetchInterval: 60_000,
+  });
+}
+
+function formatSyncAgo(iso: string): string {
+  const diff = Date.now() - new Date(iso).getTime();
+  const mins = Math.floor(diff / 60_000);
+  if (mins < 1) return 'just now';
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h ago`;
+  return `${Math.floor(hrs / 24)}d ago`;
+}
 
 interface NotificationPanelProps {
   isOpen: boolean;
