@@ -54,8 +54,8 @@ const PRIORITIES = [
   { value: 'highest', label: 'Highest', icon: ChevronsUp, color: '#CF2600' },
   { value: 'high',    label: 'High',    icon: ChevronUp,  color: '#E56910' },
   { value: 'medium',  label: 'Medium',  icon: Minus,      color: '#CF7B00' },
-  { value: 'low',     label: 'Low',     icon: ChevronDown, color: F.linkBlue },
-  { value: 'lowest',  label: 'Lowest',  icon: ChevronsDown, color: F.linkBlue },
+  { value: 'low',     label: 'Low',     icon: ChevronDown, color: '#1868DB' },
+  { value: 'lowest',  label: 'Lowest',  icon: ChevronsDown, color: '#1868DB' },
 ] as const;
 
 // ─── Status category dot colors ──────────────────────────
