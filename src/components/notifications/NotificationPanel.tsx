@@ -83,7 +83,6 @@ function groupByDate(items: Notification[]): { label: string; items: Notificatio
 
 const TABS: { key: NotificationTab; label: string; hasDot?: boolean }[] = [
   { key: 'direct', label: 'Direct' },
-  { key: 'watching', label: 'Watching' },
   { key: 'ai', label: 'AI Digest', hasDot: true },
 ];
 
