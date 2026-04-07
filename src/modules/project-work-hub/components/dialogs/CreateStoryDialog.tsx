@@ -501,21 +501,13 @@ export const CreateStoryDialog: React.FC<CreateStoryDialogProps> = ({
         size="xl"
         className={`overflow-hidden flex flex-col !p-0 ${
           isExpanded
-            ? '!fixed !max-w-[1200px] !max-h-none !translate-x-0 !translate-y-0'
+            ? '!max-w-[1100px] !w-[90vw] !max-h-[85vh]'
             : '!max-w-[800px] max-h-[90vh]'
         }`}
         style={{
           borderRadius: 6,
           border: '1px solid var(--divider, #E2E8F0)',
           boxShadow: '0 8px 24px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.05)',
-          ...(isExpanded ? {
-            top: 80,
-            left: '50%',
-            transform: 'translateX(-50%)',
-            width: 'calc(100vw - 280px)',
-            maxWidth: 1200,
-            height: 'calc(100vh - 104px)',
-          } : {}),
         }}
         onKeyDown={handleKeyDown}
       >
