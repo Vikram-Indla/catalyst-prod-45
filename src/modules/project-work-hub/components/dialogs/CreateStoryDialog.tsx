@@ -40,6 +40,8 @@ import {
   Undo2,
   Redo2,
   Search,
+  Maximize2,
+  Minimize2,
 } from 'lucide-react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
@@ -108,7 +110,7 @@ function UserAvatar({ name, url, size = 16 }: { name: string; url?: string | nul
 }
 
 // ─── Mini Rich Text Editor (FIX 2) ──────────────────────
-function DescriptionEditor({ value, onChange }: { value: string; onChange: (html: string) => void }) {
+function DescriptionEditor({ value, onChange, expanded }: { value: string; onChange: (html: string) => void; expanded?: boolean }) {
   const editor = useEditor({
     extensions: [
       StarterKit.configure({ heading: false }),
@@ -121,7 +123,7 @@ function DescriptionEditor({ value, onChange }: { value: string; onChange: (html
     },
     editorProps: {
       attributes: {
-        class: 'outline-none min-h-[109px] max-h-[200px] overflow-y-auto px-3 py-2 text-[14px] leading-relaxed',
+        class: 'outline-none px-4 py-3 text-[14px] leading-relaxed',
         style: 'color: #292A2E;',
       },
     },
@@ -189,7 +191,9 @@ function DescriptionEditor({ value, onChange }: { value: string; onChange: (html
         </ToolBtn>
       </div>
       {/* Editor */}
-      <EditorContent editor={editor} />
+      <div style={{ minHeight: expanded ? 300 : 141 }}>
+        <EditorContent editor={editor} />
+      </div>
     </div>
   );
 }
@@ -219,6 +223,7 @@ export const CreateStoryDialog: React.FC<CreateStoryDialogProps> = ({
   const queryClient = useQueryClient();
   const titleRef = useRef<HTMLInputElement>(null);
 
+  const [isExpanded, setIsExpanded] = useState(false);
   const [title, setTitle] = useState('');
   const [parentId, setParentId] = useState('');
   const [parentSearch, setParentSearch] = useState('');
@@ -465,17 +470,32 @@ export const CreateStoryDialog: React.FC<CreateStoryDialogProps> = ({
     <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
       <DialogContent
         size="xl"
-        className="!max-w-[800px] !rounded-[3px] !bg-white max-h-[90vh] overflow-hidden flex flex-col !p-0"
-        style={{ boxShadow: 'rgba(30,31,33,0.15) 0px 8px 12px 0px, rgba(30,31,33,0.31) 0px 0px 1px 0px' }}
+        className={`!rounded-[3px] !bg-white overflow-hidden flex flex-col !p-0 ${
+          isExpanded
+            ? '!fixed !top-[56px] !left-[232px] !right-0 !bottom-0 !max-w-none !max-h-none !translate-x-0 !translate-y-0 !rounded-none'
+            : '!max-w-[800px] max-h-[90vh]'
+        }`}
+        style={{
+          boxShadow: isExpanded ? 'none' : 'rgba(30,31,33,0.15) 0px 8px 12px 0px, rgba(30,31,33,0.31) 0px 0px 1px 0px',
+        }}
         onKeyDown={handleKeyDown}
       >
-        <div className="px-6 pt-6 pb-4 border-b" style={{ borderColor: 'rgba(0,0,0,0.06)' }}>
+        {/* Header with expand toggle */}
+        <div className="px-6 pt-5 pb-4 border-b flex items-center justify-between" style={{ borderColor: 'rgba(0,0,0,0.06)' }}>
           <DialogTitle className="text-[20px] tracking-[-0.01em]" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 653, color: '#292A2E' }}>
             Create Story
           </DialogTitle>
+          <button
+            type="button"
+            onClick={() => setIsExpanded(!isExpanded)}
+            className="flex items-center justify-center w-7 h-7 rounded hover:bg-gray-100 transition-colors mr-8"
+            title={isExpanded ? 'Collapse dialog' : 'Expand to full screen'}
+          >
+            {isExpanded ? <Minimize2 size={16} style={{ color: '#505258' }} /> : <Maximize2 size={16} style={{ color: '#505258' }} />}
+          </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto px-6 py-5" style={{ maxHeight: 'calc(90vh - 160px)' }}>
+        <div className="flex-1 overflow-y-auto px-6 py-5" style={{ maxHeight: isExpanded ? 'none' : 'calc(90vh - 160px)' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
 
             {/* ROW 1: Status lozenge */}
@@ -641,7 +661,7 @@ export const CreateStoryDialog: React.FC<CreateStoryDialogProps> = ({
             {/* ROW 5: Description (TipTap rich text) */}
             <div>
               <Label className="text-[12px] font-semibold mb-1 block" style={{ color: '#505258' }}>Description</Label>
-              <DescriptionEditor value={description} onChange={setDescription} />
+              <DescriptionEditor value={description} onChange={setDescription} expanded={isExpanded} />
             </div>
 
             {/* ROW 6: Target Release */}
