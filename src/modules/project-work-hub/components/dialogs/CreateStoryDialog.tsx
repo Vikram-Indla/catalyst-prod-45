@@ -190,9 +190,9 @@ function DescriptionEditor({ value, onChange }: { value: string; onChange: (html
 interface WorkflowStatus {
   id: string;
   name: string;
-  slug?: string;
-  status_category?: string;
+  category?: string;
   position?: number;
+  is_default?: boolean | null;
 }
 
 interface CreateStoryDialogProps {
@@ -259,17 +259,51 @@ export const CreateStoryDialog: React.FC<CreateStoryDialogProps> = ({
     enabled: isOpen,
   });
 
+  // Resolve ph_projects ID — the projectId from props may be from the `projects` table,
+  // but ph_workflow_statuses references `ph_projects`. Try both.
+  const { data: phProjectId } = useQuery({
+    queryKey: ['ph-project-id-lookup', projectId],
+    queryFn: async () => {
+      // First check if projectId is already a ph_projects ID
+      const { data: direct } = await supabase
+        .from('ph_workflow_statuses')
+        .select('id')
+        .eq('project_id', projectId)
+        .limit(1);
+      if (direct && direct.length > 0) return projectId;
+
+      // Fallback: look up ph_projects by key matching the projects table
+      const { data: proj } = await supabase
+        .from('projects')
+        .select('key')
+        .eq('id', projectId)
+        .maybeSingle();
+      if (proj?.key) {
+        const { data: phProj } = await supabase
+          .from('ph_projects')
+          .select('id')
+          .eq('key', proj.key.toUpperCase())
+          .maybeSingle();
+        if (phProj) return phProj.id;
+      }
+      return projectId; // fallback to original
+    },
+    enabled: isOpen && !!projectId,
+  });
+
+  const resolvedProjectId = phProjectId || projectId;
+
   const { data: workflowStatuses } = useQuery({
-    queryKey: ['ph-workflow-statuses', projectId],
+    queryKey: ['ph-workflow-statuses', resolvedProjectId],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('ph_workflow_statuses')
-        .select('id, name, slug, status_category, position')
-        .eq('project_id', projectId).order('position');
+        .select('id, name, category, position, is_default')
+        .eq('project_id', resolvedProjectId).order('position');
       if (error) throw error;
       return (data || []) as WorkflowStatus[];
     },
-    enabled: isOpen && !!projectId,
+    enabled: isOpen && !!resolvedProjectId,
   });
 
   const { data: releases } = useQuery({
@@ -290,12 +324,11 @@ export const CreateStoryDialog: React.FC<CreateStoryDialogProps> = ({
   useEffect(() => {
     if (workflowStatuses && workflowStatuses.length > 0 && !statusId) {
       const inReq = workflowStatuses.find(s =>
-        s.name?.toUpperCase().replace(/\s+/g, ' ').trim() === 'IN REQUIREMENTS' ||
-        s.slug === 'in_requirements'
+        s.name?.toUpperCase().replace(/\s+/g, ' ').trim() === 'IN REQUIREMENTS'
       );
       if (inReq) setStatusId(inReq.id);
       else {
-        const firstTodo = workflowStatuses.find(s => s.status_category === 'todo');
+        const firstTodo = workflowStatuses.find(s => s.category === 'todo');
         setStatusId(firstTodo?.id || workflowStatuses[0].id);
       }
     }
@@ -305,7 +338,7 @@ export const CreateStoryDialog: React.FC<CreateStoryDialogProps> = ({
     if (!workflowStatuses) return { todo: [], in_progress: [], done: [] };
     const groups: Record<string, WorkflowStatus[]> = { todo: [], in_progress: [], done: [] };
     for (const s of workflowStatuses) {
-      const cat = s.status_category || 'todo';
+      const cat = s.category || 'todo';
       if (groups[cat]) groups[cat].push(s);
       else groups.todo.push(s);
     }
@@ -385,7 +418,7 @@ export const CreateStoryDialog: React.FC<CreateStoryDialogProps> = ({
                   <SelectValue placeholder="Select status">
                     {selectedStatus && (
                       <div className="flex items-center gap-2">
-                        <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: CAT_DOT[selectedStatus.status_category || 'todo'] || '#DFE1E6' }} />
+                        <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: CAT_DOT[selectedStatus.category || 'todo'] || '#DFE1E6' }} />
                         <span>{selectedStatus.name?.toUpperCase()}</span>
                       </div>
                     )}
