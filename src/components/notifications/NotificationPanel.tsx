@@ -429,8 +429,8 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
                   }}
                 >
                   {[
-                    { icon: CheckCheck, label: 'Mark all as read', action: () => { markAllRead(undefined); setMenuOpen(false); }, dividerAfter: false },
-                    { icon: MessageSquare, label: 'Give feedback', action: () => setMenuOpen(false), dividerAfter: true },
+                    { icon: CheckCheck, label: 'Mark all as read', action: () => { markAllRead(undefined); setMenuOpen(false); }, dividerAfter: true },
+                    { icon: MessageSquare, label: 'Give feedback', action: () => setMenuOpen(false), dividerAfter: false },
                     { icon: Settings, label: 'Notification settings', action: () => setMenuOpen(false), dividerAfter: false },
                   ].map(({ icon: Icon, label, action, dividerAfter }) => (
                     <div key={label}>
