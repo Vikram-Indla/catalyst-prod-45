@@ -2,8 +2,6 @@ import { memo, useState } from "react";
 import type { Notification } from "@/types/notifications";
 import type { ActorProfile } from "@/hooks/useActorProfiles";
 import { COMMENT_PREVIEW_TYPES, DUE_DATE_TYPES } from "@/constants/notificationConstants";
-import { getAvatarColor, getUserInitials } from "@/utils/avatarColor";
-import { WorkItemIcon } from "./WorkItemIcons";
 import StatusLozenge from "./StatusLozenge";
 import CommentPreview from "./CommentPreview";
 import ReactionBar from "./ReactionBar";
@@ -17,51 +15,81 @@ interface NotificationItemProps {
   onClick?: (notification: Notification) => void;
 }
 
-function getActionVerb(type: string, isSystemAssign: boolean): string {
-  if (isSystemAssign && type === 'unassigned') return 'You have been unassigned from';
-  if (isSystemAssign && type === 'assigned') return 'You have been assigned to';
-  if (isSystemAssign) return 'You have been assigned to';
-  const map: Record<string, string> = {
-    assigned_work_item: 'assigned you to',
-    assigned: 'assigned you to',
-    assigned_story: 'assigned you a story in',
-    mentioned_in_comment: 'mentioned you in a comment on',
-    commented_on_work_item: 'commented on',
-    commented: 'commented on',
-    updated_work_item: 'updated',
-    status_changed: 'changed the status of',
-    reassigned_work_item: 'reassigned',
-    unassigned: 'unassigned you from',
-    created_work_item: 'created',
-    release_approval_requested: 'requested approval for',
-    incident_escalated: 'escalated',
-    test_case_failed: 'marked as failed:',
-    due_date_approaching: 'due date approaching for',
-    ai_insight_generated: 'AI generated insight for',
-  };
-  return map[type] || 'updated';
+/* ═══ C-04: normaliseStatus — complete V12 map ═══ */
+const normaliseStatus = (raw: string | null | undefined): { label: string; type: 'gray' | 'blue' | 'green' } | null => {
+  if (!raw) return null;
+  const s = raw.toLowerCase().replace(/_/g, ' ').trim();
+  if (s === 'not run')          return { label: 'NOT RUN',     type: 'gray'  };
+  if (s === 'passed')           return { label: 'PASSED',      type: 'green' };
+  if (s === 'failed')           return { label: 'FAILED',      type: 'gray'  };
+  if (s === 'todo' || s === 'to do') return { label: 'TO DO',  type: 'gray'  };
+  if (s === 'in progress')      return { label: 'IN PROGRESS', type: 'blue'  };
+  if (s === 'in development')   return { label: 'IN PROGRESS', type: 'blue'  };
+  if (s === 'in review')        return { label: 'IN REVIEW',   type: 'blue'  };
+  if (s === 'ready for development') return { label: 'IN REVIEW', type: 'blue' };
+  if (s === 'done')             return { label: 'DONE',        type: 'green' };
+  if (s === 'completed')        return { label: 'COMPLETED',   type: 'green' };
+  if (s === 'approved')         return { label: 'APPROVED',    type: 'green' };
+  if (s === 'backlog')          return { label: 'BACKLOG',     type: 'gray'  };
+  if (s === 'on hold')          return { label: 'ON HOLD',     type: 'gray'  };
+  if (s === 'active')           return { label: 'ACTIVE',      type: 'blue'  };
+  if (s === 'cancelled')        return { label: 'CANCELLED',   type: 'gray'  };
+  if (s === 'open')             return { label: 'OPEN',        type: 'blue'  };
+  if (s === 'closed')           return { label: 'CLOSED',      type: 'green' };
+  if (s === 'resolved')         return { label: 'RESOLVED',    type: 'green' };
+  if (s === 'blocked')          return { label: 'BLOCKED',     type: 'gray'  };
+  return { label: raw.replace(/_/g, ' ').toUpperCase(), type: 'gray' };
+};
+
+/* ═══ C-02: WorkItemIcon — canonical inline SVGs ═══ */
+function WorkItemIcon({ type }: { type: string }) {
+  const t = (type || '').toLowerCase();
+  if (t === 'bug' || t === 'defect')
+    return <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="#CC0000"/><path d="M8 3L9.2 6.2H12.5L9.9 8.1L10.9 11.3L8 9.4L5.1 11.3L6.1 8.1L3.5 6.2H6.8Z" fill="white"/></svg>;
+  if (t === 'story')
+    return <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="#36B37E"/><path d="M4 3h8v10l-4-2.5L4 13V3z" fill="white"/></svg>;
+  if (t === 'task' || t === 'catalyst_issue' || t === 'subtask')
+    return <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="#2563EB"/><path d="M4 8.5l2.5 2.5 5.5-5.5" stroke="white" strokeWidth="1.8" fill="none" strokeLinecap="round"/></svg>;
+  if (t === 'epic')
+    return <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="#7C3AED"/><path d="M9.5 3L5.5 9h4L6.5 13l6-7H9l.5-3z" fill="white"/></svg>;
+  if (t === 'test_case' || t === 'tm_test_case')
+    return <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="#0D9488"/><path d="M4 5h8M4 8h5M4 11h3" stroke="white" strokeWidth="1.5" strokeLinecap="round"/></svg>;
+  if (t === 'test_plan')
+    return <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="#0D9488"/><path d="M4 4h8v8H4z" fill="none" stroke="white" strokeWidth="1.2"/><path d="M6 7l1.5 1.5 3-3" stroke="white" strokeWidth="1.5" fill="none" strokeLinecap="round"/></svg>;
+  if (t === 'incident')
+    return <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="#DC2626"/><path d="M8 4v5M8 10.5v1.5" stroke="white" strokeWidth="2" strokeLinecap="round"/></svg>;
+  return <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="#64748B"/></svg>;
 }
 
-const normaliseStatus = (raw: string | null | undefined): {
-  label: string;
-  type: 'gray' | 'blue' | 'green';
-} => {
-  if (!raw) return { label: 'UNKNOWN', type: 'gray' };
-  const s = raw.toLowerCase().replace(/_/g, ' ').trim();
-  if (s === 'not run')     return { label: 'NOT RUN',     type: 'gray'  };
-  if (s === 'passed')      return { label: 'PASSED',      type: 'green' };
-  if (s === 'failed')      return { label: 'FAILED',      type: 'gray'  };
-  if (s === 'blocked')     return { label: 'BLOCKED',     type: 'gray'  };
-  if (s === 'in progress') return { label: 'IN PROGRESS', type: 'blue'  };
-  if (s === 'done')        return { label: 'DONE',        type: 'green' };
-  if (s === 'active')      return { label: 'ACTIVE',      type: 'blue'  };
-  if (s === 'open')        return { label: 'OPEN',        type: 'blue'  };
-  if (s === 'closed')      return { label: 'CLOSED',      type: 'green' };
-  if (s === 'resolved')    return { label: 'RESOLVED',    type: 'green' };
-  if (s === 'to do')       return { label: 'TO DO',       type: 'gray'  };
-  if (s === 'backlog')     return { label: 'BACKLOG',     type: 'gray'  };
-  return { label: raw.toUpperCase(), type: 'gray' };
-};
+/* ═══ M-03/M-04: getActionText — consistent grammar ═══ */
+function getActionText(type: string, actorName: string | null): string {
+  switch (type) {
+    case 'assigned':
+    case 'assigned_work_item':
+    case 'assigned_story':
+    case 'tester_assigned':
+      return actorName ? `${actorName} assigned you to` : 'You have been assigned to';
+    case 'unassigned':
+      return actorName ? `${actorName} removed you from` : 'You have been removed from';
+    case 'status_changed':
+      return actorName ? `${actorName} updated` : 'Status updated on';
+    case 'mentioned_in_comment':
+      return actorName ? `${actorName} mentioned you in` : 'You were mentioned in';
+    case 'commented_on_work_item':
+    case 'commented':
+      return actorName ? `${actorName} commented on` : 'New comment on';
+    case 'reassigned_work_item':
+      return actorName ? `${actorName} reassigned` : 'Reassignment on';
+    case 'created_work_item':
+      return actorName ? `${actorName} created` : 'New item created:';
+    case 'due_date_approaching':
+      return 'Due date approaching for';
+    case 'incident_escalated':
+      return actorName ? `${actorName} escalated` : 'Incident escalated:';
+    default:
+      return actorName ? `${actorName} updated` : 'Update on';
+  }
+}
 
 function formatTimestamp(iso: string): string {
   const d = new Date(iso);
@@ -71,9 +99,9 @@ function formatTimestamp(iso: string): string {
   if (diffMin < 1) return 'Just now';
   if (diffMin < 60) return `${diffMin}m ago`;
   const diffH = Math.floor(diffMin / 60);
-  if (diffH < 24) return `${diffH} hour${diffH !== 1 ? 's' : ''} ago`;
+  if (diffH < 24) return `${diffH}h ago`;
   const diffD = Math.floor(diffH / 24);
-  if (diffD < 7) return `${diffD} day${diffD !== 1 ? 's' : ''} ago`;
+  if (diffD < 7) return `${diffD}d ago`;
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 }
 
@@ -86,7 +114,6 @@ function NotificationItemInner({ notification, actorProfile, onMarkRead, onClick
   const isComment = COMMENT_PREVIEW_TYPES.some(t => t === notification.notification_type);
   const isDeleted = notification.entity_deleted;
 
-  // Dark mode tokens
   const T = {
     text1: isDark ? '#EDEDED' : '#0F172A',
     text2: isDark ? '#A1A1A1' : '#64748B',
@@ -94,24 +121,54 @@ function NotificationItemInner({ notification, actorProfile, onMarkRead, onClick
     hover: isDark ? '#1F1F1F' : 'rgba(15,23,42,0.04)',
     press: isDark ? '#2E2E2E' : 'rgba(15,23,42,0.08)',
     borderStrong: isDark ? '#454545' : 'rgba(15,23,42,0.2)',
-    entityKey: isDark ? '#60A5FA' : '#2563EB',
     checkStroke: isDark ? '#A1A1A1' : '#64748B',
   };
 
-  // Determine if this is a system-generated assignment (no actor at all)
-  const hasActor = !!(notification.actor_user_id && (actorProfile || notification.actor));
-  const isSystemAssign = !hasActor
-    && (notification.notification_type === 'assigned' || notification.notification_type === 'unassigned' || notification.notification_type === 'status_changed');
-
-  const actorName = isSystemAssign
-    ? ''
-    : (actorProfile?.full_name || notification.actor?.full_name || (notification.metadata as any)?.actor_display_name || 'Unknown');
-  const actorId = notification.actor?.id || notification.actor_user_id || 'system';
-  const avatarColor = isSystemAssign ? '#6B7280' : getAvatarColor(actorId);
-  const initials = isSystemAssign ? '' : getUserInitials(actorName);
+  /* ═══ C-03: Actor avatar logic ═══ */
+  const hasActor = !!notification.actor_user_id;
+  const actorName = actorProfile?.full_name || notification.actor?.full_name || (notification.metadata as any)?.actor_display_name || null;
   const avatarUrl = actorProfile?.avatar_url || notification.actor?.avatar_url || null;
 
-  // m-15: read item opacity on text only, not avatar
+  const renderAvatar = () => {
+    if (!hasActor) {
+      // System action — neutral grey circle with icon
+      return (
+        <div style={{
+          width: 36, height: 36, borderRadius: '50%',
+          background: isDark ? '#292929' : '#E2E8F0',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          flexShrink: 0,
+        }}>
+          <UserCheck size={16} color={isDark ? '#878787' : '#94A3B8'} />
+        </div>
+      );
+    }
+    if (avatarUrl) {
+      return (
+        <img
+          src={avatarUrl}
+          alt={actorName || ''}
+          style={{ width: 36, height: 36, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }}
+        />
+      );
+    }
+    // Initials fallback
+    const name = actorName || '?';
+    const initials = name.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase();
+    const colours = ['#2563EB', '#0D9488', '#7C3AED', '#DC2626', '#D97706'];
+    const bg = colours[(notification.actor_user_id || '').charCodeAt(0) % colours.length];
+    return (
+      <div style={{
+        width: 36, height: 36, borderRadius: '50%', background: bg,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        fontSize: 13, fontWeight: 650, color: '#FFFFFF',
+        fontFamily: 'Inter, sans-serif', flexShrink: 0,
+      }}>
+        {initials}
+      </div>
+    );
+  };
+
   const textOpacity = isUnread ? 1 : 0.8;
 
   const daysUntilDue = notification.metadata?.due_date
@@ -119,9 +176,12 @@ function NotificationItemInner({ notification, actorProfile, onMarkRead, onClick
     : null;
 
   const handleClick = () => {
-    if (isDeleted) return; // entity_deleted — no navigation
+    if (isDeleted) return;
     onClick?.(notification);
   };
+
+  const actionText = getActionText(notification.notification_type, actorName);
+  const statusProps = normaliseStatus(notification.status);
 
   return (
     <div
@@ -137,66 +197,52 @@ function NotificationItemInner({ notification, actorProfile, onMarkRead, onClick
         if (e.key === 'r' || e.key === 'R') { if (isUnread) onMarkRead?.(notification.id); }
       }}
       style={{
-        padding: '12px 20px',
+        /* P-02: tightened padding, NO left border/bar */
+        padding: '12px 16px',
         cursor: isDeleted ? 'default' : 'pointer',
         position: 'relative',
         background: isPressed ? T.press : isHovered ? T.hover : 'transparent',
-        borderLeft: isDueDate ? '3px solid #D97706' : '3px solid transparent',
         transition: 'background 150ms ease',
         outline: 'none',
       }}
     >
-      <div style={{ display: 'flex', gap: 12 }}>
-        {/* Avatar — always full opacity per m-15 */}
-        {avatarUrl && !isSystemAssign ? (
-          <img
-            src={avatarUrl}
-            alt={actorName}
-            style={{
-              width: 40, height: 40, borderRadius: '50%', flexShrink: 0,
-              objectFit: 'cover',
-            }}
-          />
-        ) : (
-          <div style={{
-            width: 40, height: 40, borderRadius: '50%', flexShrink: 0,
-            background: avatarColor,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            color: '#FFFFFF', fontFamily: 'Inter, sans-serif', fontSize: 14, fontWeight: 700,
-          }}>
-            {isSystemAssign ? <UserCheck size={20} color="#FFFFFF" /> : initials}
-          </div>
-        )}
+      <div style={{ display: 'flex', gap: 10 }}>
+        {/* C-03: Avatar */}
+        {renderAvatar()}
 
-        {/* Body — text opacity for read items */}
+        {/* Body */}
         <div style={{ flex: 1, minWidth: 0, opacity: textOpacity }}>
-          {/* Action text + timestamp */}
+          {/* Action text + timestamp + unread dot */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
             <span style={{
               fontFamily: 'Inter, sans-serif', fontSize: 13, color: T.text1, lineHeight: '18px',
-              overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 360,
+              overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1, minWidth: 0,
             }}>
-              {isSystemAssign ? (
-                <span style={{ fontWeight: 600 }}>{getActionVerb(notification.notification_type, true)}</span>
-              ) : (
-                <>
-                  <span style={{ fontWeight: 650 }}>{actorName}</span>{' '}
-                  <span style={{ fontWeight: 500 }}>{getActionVerb(notification.notification_type, false)}</span>
-                </>
+              {/* M-03/M-04: consistent action text */}
+              <span style={{ fontWeight: hasActor ? 400 : 600 }}>{actionText}</span>
+            </span>
+            {/* M-05: timestamp + unread dot cluster (right-aligned) */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
+              <span style={{ fontSize: 11, color: '#94A3B8', fontWeight: 400, whiteSpace: 'nowrap', fontFamily: 'Inter, sans-serif' }}>
+                {formatTimestamp(notification.created_at)}
+              </span>
+              {/* C-01: unread dot — small circle right of timestamp */}
+              {isUnread && !isHovered && (
+                <div style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: '#2563EB', flexShrink: 0 }} />
               )}
-            </span>
-            <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: T.text2, whiteSpace: 'nowrap', flexShrink: 0 }}>
-              {formatTimestamp(notification.created_at)}
-            </span>
+            </div>
           </div>
 
           {/* Entity row */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4 }}>
-            <WorkItemIcon type={notification.entity_icon_type} />
+            {/* C-02: canonical SVG icon */}
+            <span style={{ flexShrink: 0, display: 'inline-flex' }}>
+              <WorkItemIcon type={notification.entity_icon_type || notification.entity_type} />
+            </span>
             <span style={{
               fontFamily: 'Inter, sans-serif', fontSize: 13,
               color: isDeleted ? T.text3 : T.text1,
-              overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 360,
+              overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
               fontStyle: isDeleted ? 'italic' : 'normal',
             }}>
               {isDeleted ? 'This item no longer exists' : notification.entity_title}
@@ -205,16 +251,21 @@ function NotificationItemInner({ notification, actorProfile, onMarkRead, onClick
 
           {/* Meta row */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4 }}>
+            {/* M-06: entity key link — muted blue */}
             <span style={{
               fontFamily: 'Inter, sans-serif', fontSize: 12, fontWeight: 500,
-              color: isDeleted ? T.text3 : T.entityKey,
+              color: isDeleted ? T.text3 : '#3B82F6',
               textDecoration: isDeleted ? 'line-through' : 'none',
-              overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 200,
+              cursor: 'pointer',
             }}>
               {notification.entity_key}
             </span>
-            <span style={{ color: T.text3, fontSize: 10 }}>•</span>
-            <StatusLozenge label={normaliseStatus(notification.status).label} type={normaliseStatus(notification.status).type} />
+            {statusProps && (
+              <>
+                <span style={{ color: T.text3, fontSize: 10 }}>•</span>
+                <StatusLozenge label={statusProps.label} type={statusProps.type} />
+              </>
+            )}
           </div>
 
           {/* Due date alert */}
@@ -238,7 +289,7 @@ function NotificationItemInner({ notification, actorProfile, onMarkRead, onClick
             />
           )}
 
-          {/* Reaction bar for comment types */}
+          {/* Reaction bar */}
           {isComment && (
             <ReactionBar
               reactions={notification.metadata?.reactions}
@@ -248,15 +299,6 @@ function NotificationItemInner({ notification, actorProfile, onMarkRead, onClick
           )}
         </div>
       </div>
-
-      {/* Unread dot */}
-      {isUnread && !isHovered && (
-        <div style={{
-          position: 'absolute', top: 16, right: 20,
-          width: 8, height: 8, borderRadius: '50%',
-          background: isDueDate ? '#D97706' : '#2563EB',
-        }} />
-      )}
 
       {/* Mark-read circle on hover */}
       {isUnread && isHovered && (

@@ -369,22 +369,7 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
             <span style={{ fontFamily: 'Sora, sans-serif', fontSize: 20, fontWeight: 700, color: T.text1, margin: 0, lineHeight: 1.2 }}>
               Notifications
             </span>
-            {lastSyncTime && (
-              <span
-                title={`Last Jira sync: ${new Date(lastSyncTime).toLocaleString('en-US', { timeZone: 'Asia/Riyadh' })}`}
-                style={{
-                  display: 'inline-flex', alignItems: 'center', gap: 4,
-                  fontSize: 11, fontFamily: "'JetBrains Mono', monospace", fontWeight: 500,
-                  color: isDark ? '#878787' : '#94A3B8',
-                  background: isDark ? '#1A1A1A' : '#F1F5F9',
-                  border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`,
-                  borderRadius: 4, padding: '2px 8px', lineHeight: 1.4,
-                }}
-              >
-                <Zap size={10} strokeWidth={2.5} style={{ color: '#16A34A' }} />
-                Synced {formatSyncAgo(lastSyncTime)}
-              </span>
-            )}
+            {/* P-01: Sync chip removed from header */}
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             {/* m-10: Unread toggle with count */}

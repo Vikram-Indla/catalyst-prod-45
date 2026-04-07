@@ -1,9 +1,10 @@
 import { useTheme } from "@/hooks/useTheme";
 
 interface SectionHeaderProps {
-  label: string; // "Today", "Yesterday", "Older" — sentence case, NOT uppercase
+  label: string;
 }
 
+/* P-03: Section labels — Today / Yesterday / Older */
 export default function SectionHeader({ label }: SectionHeaderProps) {
   const { isDark } = useTheme();
   return (
@@ -12,11 +13,13 @@ export default function SectionHeader({ label }: SectionHeaderProps) {
       top: 0,
       zIndex: 10,
       background: isDark ? '#0A0A0A' : '#FFFFFF',
-      padding: '10px 20px 4px',
+      padding: '12px 16px 4px',
       fontFamily: 'Inter, sans-serif',
       fontSize: 11,
-      fontWeight: 600,
-      color: isDark ? '#A1A1A1' : '#64748B',
+      fontWeight: 500,
+      color: isDark ? '#878787' : '#94A3B8',
+      textTransform: 'uppercase',
+      letterSpacing: '0.05em',
     }}>
       {label}
     </div>
