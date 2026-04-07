@@ -476,37 +476,65 @@ export const CreateStoryDialog: React.FC<CreateStoryDialogProps> = ({
     <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
       <DialogContent
         size="xl"
-        className={`!rounded-[3px] !bg-white dark:!bg-white !border-0 dark:!border-0 dark:!shadow-2xl overflow-hidden flex flex-col !p-0 ${
+        className={`overflow-hidden flex flex-col !p-0 ${
           isExpanded
-            ? '!fixed !top-[56px] !left-[232px] !right-0 !bottom-0 !max-w-none !max-h-none !translate-x-0 !translate-y-0 !rounded-none'
+            ? '!fixed !top-[56px] !left-[232px] !right-0 !bottom-0 !max-w-none !max-h-none !translate-x-0 !translate-y-0'
             : '!max-w-[800px] max-h-[90vh]'
         }`}
         style={{
+          backgroundColor: '#FFFFFF',
+          borderRadius: isExpanded ? 0 : 3,
+          border: 'none',
           boxShadow: isExpanded ? 'none' : 'rgba(30,31,33,0.15) 0px 8px 12px 0px, rgba(30,31,33,0.31) 0px 0px 1px 0px',
+          colorScheme: 'light',
         }}
         onKeyDown={handleKeyDown}
       >
-        {/* Force light-mode rendering inside dialog regardless of app theme */}
+        {/* Force light-mode inside dialog — overrides shadcn dark:bg-[#212121] */}
         <style>{`
-          .create-story-dialog, .create-story-dialog * {
-            --background: 0 0% 100%;
-            --foreground: 222.2 84% 4.9%;
-            --popover: 0 0% 100%;
-            --popover-foreground: 222.2 84% 4.9%;
-            --card: 0 0% 100%;
-            --card-foreground: 222.2 84% 4.9%;
-            --muted: 210 40% 96.1%;
-            --muted-foreground: 215.4 16.3% 46.9%;
-            --border: 214.3 31.8% 91.4%;
-            --input: 214.3 31.8% 91.4%;
-            color-scheme: light;
+          .create-story-light-force {
+            --background: 0 0% 100% !important;
+            --foreground: 222.2 84% 4.9% !important;
+            --popover: 0 0% 100% !important;
+            --popover-foreground: 222.2 84% 4.9% !important;
+            --card: 0 0% 100% !important;
+            --card-foreground: 222.2 84% 4.9% !important;
+            --muted: 210 40% 96.1% !important;
+            --muted-foreground: 215.4 16.3% 46.9% !important;
+            --border: 214.3 31.8% 91.4% !important;
+            --input: 214.3 31.8% 91.4% !important;
+            --accent: 210 40% 96.1% !important;
+            --accent-foreground: 222.2 84% 4.9% !important;
+            background-color: #FFFFFF !important;
+            color: #292A2E !important;
           }
-          .create-story-dialog [data-radix-select-content] {
-            background: white !important;
-            border-color: #E2E8F0 !important;
+          .create-story-light-force input,
+          .create-story-light-force textarea,
+          .create-story-light-force button,
+          .create-story-light-force [role="combobox"],
+          .create-story-light-force [data-radix-collection-item] {
+            color: #292A2E !important;
+          }
+          .create-story-light-force input::placeholder,
+          .create-story-light-force textarea::placeholder {
+            color: #6B6E76 !important;
+          }
+          .create-story-light-force [data-radix-select-trigger] {
+            background-color: #FFFFFF !important;
+            border-color: #8C8F97 !important;
+            color: #292A2E !important;
+          }
+          .create-story-light-force .tiptap {
+            color: #292A2E !important;
+          }
+          .create-story-light-force .ProseMirror {
+            color: #292A2E !important;
+          }
+          .create-story-light-force .ProseMirror p.is-editor-empty:first-child::before {
+            color: #6B6E76 !important;
           }
         `}</style>
-        <div className="create-story-dialog">
+        <div className="create-story-light-force">
         {/* Header with expand toggle */}
         <div className="px-6 pt-5 pb-4 border-b flex items-center justify-between" style={{ borderColor: 'rgba(0,0,0,0.06)' }}>
           <DialogTitle className="text-[20px] tracking-[-0.01em]" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 653, color: '#292A2E' }}>
@@ -746,7 +774,7 @@ export const CreateStoryDialog: React.FC<CreateStoryDialogProps> = ({
             </Button>
           </div>
         </div>
-        </div>{/* close .create-story-dialog wrapper */}
+        </div>{/* close .create-story-light-force wrapper */}
       </DialogContent>
     </Dialog>
   );
