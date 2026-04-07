@@ -369,7 +369,6 @@ export default function TestHubExecutionPage() {
 
         console.log('[ExecHistory] INSERT payload:', {
           cycle_scope_id: selectedTestCaseId,
-          execution_number: nextExecutionNumber,
           result: status,
           step_results: stepResultsSnapshot,
           executed_by: currentUserId,
@@ -381,7 +380,6 @@ export default function TestHubExecutionPage() {
           test_cycle_id: cycle?.id ?? null,
           cycle_name: cycle?.name ?? null,
           cycle_scope_id: selectedTestCaseId,
-          execution_number: nextExecutionNumber ?? 1,
           result: status,
           step_results: stepResultsSnapshot ?? [],
           executed_by: currentUserId,
