@@ -57549,6 +57549,20 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "fk_tm_test_plans_release_id"
+            columns: ["release_id"]
+            isOneToOne: false
+            referencedRelation: "releases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_tm_test_plans_release_id"
+            columns: ["release_id"]
+            isOneToOne: false
+            referencedRelation: "vw_epic_stories"
+            referencedColumns: ["release_id"]
+          },
+          {
             foreignKeyName: "tm_test_plans_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
