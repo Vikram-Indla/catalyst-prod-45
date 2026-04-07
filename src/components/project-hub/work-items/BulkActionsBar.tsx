@@ -58,7 +58,7 @@ export function BulkActionsBar({
               <button
                 key={s.id}
                 onClick={() => { onSetStatus(s.id); setStatusOpen(false); }}
-                className="w-full flex items-center gap-2 px-3 py-1.5 text-[12px] hover:bg-[#F8FAFC] text-left"
+                className="w-full flex items-center gap-2 px-3 py-1.5 text-[12px] hover:bg-[#F8FAFC] dark:hover:bg-[#1F1F1F] text-left"
                 style={{ color: 'var(--fg-1)' }}
               >
                 <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: STATUS_COLORS[s.category] || 'var(--fg-4)' }} />
@@ -88,7 +88,7 @@ export function BulkActionsBar({
               <button
                 key={p}
                 onClick={() => { onSetPriority(p); setPriorityOpen(false); }}
-                className="w-full text-left px-3 py-1.5 text-[12px] hover:bg-[#F8FAFC]"
+                className="w-full text-left px-3 py-1.5 text-[12px] hover:bg-[#F8FAFC] dark:hover:bg-[#1F1F1F]"
                 style={{ color: 'var(--fg-1)' }}
               >
                 {p}

@@ -120,7 +120,7 @@ export function EpicDetailsViewTab({ data, onChange }: EpicDetailsViewTabProps) 
   return (
     <div className="flex flex-col h-full space-y-5 bg-muted/30 p-1">
       {/* DETAILS Section */}
-      <div className="border border-border rounded-xl bg-white p-5 space-y-5 shadow-sm">
+      <div className="border border-border rounded-xl bg-white dark:bg-[#1A1A1A] p-5 space-y-5 shadow-sm">
         <h3 className="text-xs font-semibold uppercase tracking-wider text-brand-primary">Details</h3>
           
         {/* Summary - required */}
@@ -178,7 +178,7 @@ export function EpicDetailsViewTab({ data, onChange }: EpicDetailsViewTabProps) 
       </div>
 
       {/* STRATEGIC ALIGNMENT Section */}
-      <div className="border border-border rounded-xl bg-white p-5 space-y-5 shadow-sm">
+      <div className="border border-border rounded-xl bg-white dark:bg-[#1A1A1A] p-5 space-y-5 shadow-sm">
         <h3 className="text-xs font-semibold uppercase tracking-wider text-brand-primary">Strategic Alignment</h3>
         
         {/* Strategic Theme - Editable dropdown */}
@@ -332,7 +332,7 @@ export function EpicDetailsViewTab({ data, onChange }: EpicDetailsViewTabProps) 
       </div>
 
       {/* PLANNING & DELIVERY Section */}
-      <div className="border border-border rounded-xl bg-white p-5 space-y-5 shadow-sm flex-1">
+      <div className="border border-border rounded-xl bg-white dark:bg-[#1A1A1A] p-5 space-y-5 shadow-sm flex-1">
         <h3 className="text-xs font-semibold uppercase tracking-wider text-brand-primary">Planning & Delivery</h3>
           
         {/* Dates - 2-column (Start Date, Target Complete) */}

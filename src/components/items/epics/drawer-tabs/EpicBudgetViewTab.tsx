@@ -68,7 +68,7 @@ export function EpicBudgetViewTab({ data, onChange }: EpicBudgetViewTabProps) {
       {/* Summary Tiles - same as BusinessRequest but simpler */}
       <div className="grid grid-cols-3 gap-4">
         {/* Funding Status Tile */}
-        <div className="border border-border rounded-lg p-4 bg-white">
+        <div className="border border-border rounded-lg p-4 bg-white dark:bg-[#1A1A1A]">
           <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
             <Wallet className="h-3.5 w-3.5" />
             Funding Status
@@ -78,7 +78,7 @@ export function EpicBudgetViewTab({ data, onChange }: EpicBudgetViewTabProps) {
         </div>
 
         {/* Approved Budget Tile */}
-        <div className="border border-border rounded-lg p-4 bg-white">
+        <div className="border border-border rounded-lg p-4 bg-white dark:bg-[#1A1A1A]">
           <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
             <TrendingUp className="h-3.5 w-3.5" />
             Approved Budget
@@ -93,7 +93,7 @@ export function EpicBudgetViewTab({ data, onChange }: EpicBudgetViewTabProps) {
 
       {/* FUNDING & BUDGET Section */}
       <Collapsible open={isFundingOpen} onOpenChange={setIsFundingOpen}>
-        <div className="border border-border rounded-xl bg-white shadow-sm">
+        <div className="border border-border rounded-xl bg-white dark:bg-[#1A1A1A] shadow-sm">
           <CollapsibleTrigger className="flex items-center justify-between w-full p-5">
             <h3 className="text-xs font-semibold uppercase tracking-wider text-brand-primary">
               Funding & Budget

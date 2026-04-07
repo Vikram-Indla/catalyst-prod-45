@@ -80,13 +80,13 @@ export function FilterBar({
     <div className="flex items-center gap-3 flex-wrap">
       {/* Search */}
       <div className="relative flex-1 min-w-[200px] max-w-[300px]">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-[#878787]" />
         <Input
           id="release-search"
           placeholder="Search releases..."
           value={filter.search}
           onChange={(e) => onSearchChange(e.target.value)}
-          className="pl-9 bg-white"
+          className="pl-9 bg-white dark:bg-[#1A1A1A]"
         />
       </div>
 
@@ -94,7 +94,7 @@ export function FilterBar({
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="outline" className={cn(
-            "bg-white",
+            "bg-white dark:bg-[#1A1A1A]",
             filter.status.length > 0 && "border-primary text-primary"
           )}>
             Status
@@ -124,7 +124,7 @@ export function FilterBar({
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="outline" className={cn(
-            "bg-white",
+            "bg-white dark:bg-[#1A1A1A]",
             filter.health.length > 0 && "border-primary text-primary"
           )}>
             Health
@@ -155,7 +155,7 @@ export function FilterBar({
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="outline" className={cn(
-            "bg-white",
+            "bg-white dark:bg-[#1A1A1A]",
             filter.quarter !== 'all' && "border-primary text-primary"
           )}>
             {filter.quarter === 'all' ? 'Quarter' : filter.quarter}
@@ -182,7 +182,7 @@ export function FilterBar({
           variant="ghost"
           size="sm"
           onClick={onClearFilters}
-          className="text-slate-500 hover:text-slate-700"
+          className="text-slate-500 hover:text-slate-700 dark:text-[#A1A1A1] dark:hover:text-[#EDEDED]"
         >
           <X className="w-4 h-4 mr-1" />
           Clear ({activeFilterCount})

@@ -1126,7 +1126,7 @@ export default function RequestAccess() {
                         ? "border-[#C8A566] bg-[#C8A566] text-white"
                         : idx < currentStep
                           ? "border-[#067647] bg-[#067647] text-white"
-                          : "border-[#D1D5DB] text-[#6B7280] bg-white"
+                          : "border-[#D1D5DB] dark:border-[#454545] text-[#6B7280] dark:text-[#878787] bg-white dark:bg-[#1A1A1A]"
                     )}>
                       {idx < currentStep ? <Check className="w-3.5 h-3.5" /> : idx + 1}
                     </span>

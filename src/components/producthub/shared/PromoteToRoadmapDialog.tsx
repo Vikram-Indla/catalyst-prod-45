@@ -112,7 +112,7 @@ export function PromoteToRoadmapDialog({ open, onClose, initiative }: Props) {
           />
           {/* Dialog */}
           <motion.div
-            className="relative w-[420px] bg-white rounded-2xl shadow-xl overflow-hidden"
+            className="relative w-[420px] bg-white dark:bg-[#1A1A1A] rounded-2xl shadow-xl overflow-hidden"
             initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}
             transition={{ duration: 0.2 }}
           >
@@ -142,7 +142,7 @@ export function PromoteToRoadmapDialog({ open, onClose, initiative }: Props) {
                       onClick={() => setSelectedType(opt.key)}
                       className={cn(
                         'flex flex-col items-center p-2 rounded-md cursor-pointer transition-all border-2',
-                        isActive ? 'bg-white shadow-sm' : 'border-transparent hover:bg-white/60'
+                        isActive ? 'bg-white dark:bg-[#1A1A1A] shadow-sm' : 'border-transparent hover:bg-white/60 dark:hover:bg-[#1F1F1F]'
                       )}
                       style={{ borderColor: isActive ? colors.border : 'transparent' }}
                     >
@@ -163,7 +163,7 @@ export function PromoteToRoadmapDialog({ open, onClose, initiative }: Props) {
                 <select
                   value={priority}
                   onChange={e => setPriority(e.target.value)}
-                  className="w-full h-9 px-3 text-[13px] bg-white border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none appearance-none"
+                  className="w-full h-9 px-3 text-[13px] bg-white dark:bg-[#1A1A1A] dark:text-[#EDEDED] border dark:border-[#2E2E2E] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none appearance-none"
                   style={{ borderColor: 'var(--divider)' }}
                 >
                   {PRIORITY_OPTIONS.map(opt => (
