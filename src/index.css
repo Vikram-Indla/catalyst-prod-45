@@ -2329,46 +2329,11 @@ html:has(body[data-scroll-locked]) {
 
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   LIGHT MODE — SEV/MUTED TEXT VISIBILITY FIX
-   Ensure SEV column, small stats, and muted labels are readable in light mode
+   LIGHT MODE — TEXT VISIBILITY FIX (scoped to :root:not(.dark))
+   Consolidated — DO NOT duplicate these rules without :root:not(.dark) scope
    ═══════════════════════════════════════════════════════════════════════════ */
 
-/* Boost muted text visibility in light mode */
-.text-muted-foreground {
-  color: #595959 !important;
-}
-
-/* SEV badge text must be readable */
-[class*="sev-"],
-[class*="severity-"],
-[data-severity] {
-  min-contrast: AA;
-}
-
-/* Light mode gray text boost (too light grays) */
-.text-gray-400,
-.text-slate-400,
-.text-zinc-400,
-.text-neutral-400 {
-  color: #737373 !important;
-}
-
-.text-gray-500,
-.text-slate-500,
-.text-zinc-500,
-.text-neutral-500 {
-  color: #616161 !important;
-}
-
-/* Table meta/stats in light mode */
-table .text-muted-foreground,
-table .text-gray-400,
-table .text-gray-500,
-[class*="Table"] .text-muted-foreground {
-  color: #595959 !important;
-}
-
-/* Badge/chip text readability in light mode */
+/* Badge/chip text readability */
 .badge,
 [class*="Badge"],
 [class*="Chip"],
