@@ -897,7 +897,22 @@ export default function TestHubExecutionPage() {
                       Run #{executionHistory.execution_number} · Executed {new Date(executionHistory.executed_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                       {executionHistory.executor?.full_name ? ` · ${executionHistory.executor.full_name}` : ''}
                     </p>
-                  </div>
+                    {isVersionDrifted && (
+                      <div style={{
+                        marginTop: 10, padding: '8px 12px', borderRadius: 6,
+                        backgroundColor: isDark ? 'rgba(251,191,36,0.12)' : '#FFFBEB',
+                        border: `1px solid ${isDark ? 'rgba(251,191,36,0.2)' : '#FDE68A'}`,
+                        display: 'flex', alignItems: 'center', gap: 6,
+                        fontSize: 12, color: isDark ? '#FBBF24' : '#92400E',
+                      }}>
+                        <AlertTriangle size={14} style={{ color: '#D97706', flexShrink: 0 }} />
+                        <span>
+                          This test case has been updated since it was added to this cycle
+                          (locked v{currentTestCase?.locked_version} → current v{currentTestCase?.test_case?.current_version}).
+                          Execution continues against the original scoped version.
+                        </span>
+                      </div>
+                    )}
 
                   {/* Read-only step list */}
                   <div style={{ flex: 1, overflowY: 'auto', padding: 24 }}>
@@ -1025,6 +1040,22 @@ export default function TestHubExecutionPage() {
                   </div>
                   <h2 style={{ fontSize: 18, fontWeight: 700, color: 'hsl(var(--foreground))', margin: 0, lineHeight: 1.3 }}>{testCase.title}</h2>
                   {testCase.description && <p style={{ fontSize: 13, color: 'hsl(var(--muted-foreground))', margin: '6px 0 0', lineHeight: 1.4 }}>{testCase.description}</p>}
+                  {isVersionDrifted && (
+                    <div style={{
+                      marginTop: 10, padding: '8px 12px', borderRadius: 6,
+                      backgroundColor: isDark ? 'rgba(251,191,36,0.12)' : '#FFFBEB',
+                      border: `1px solid ${isDark ? 'rgba(251,191,36,0.2)' : '#FDE68A'}`,
+                      display: 'flex', alignItems: 'center', gap: 6,
+                      fontSize: 12, color: isDark ? '#FBBF24' : '#92400E',
+                    }}>
+                      <AlertTriangle size={14} style={{ color: '#D97706', flexShrink: 0 }} />
+                      <span>
+                        This test case has been updated since it was added to this cycle
+                        (locked v{currentTestCase?.locked_version} → current v{currentTestCase?.test_case?.current_version}).
+                        Execution continues against the original scoped version.
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 {/* Step progress indicator */}
