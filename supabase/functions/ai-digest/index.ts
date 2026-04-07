@@ -81,7 +81,7 @@ serve(async (req) => {
       );
     }
 
-    // 4. Build prompt and call Anthropic
+    // 4. Build prompt and call Lovable AI Gateway
     const formattedList = notifications
       .map(
         (n, i) =>
@@ -89,28 +89,29 @@ serve(async (req) => {
       )
       .join("\n");
 
-    const anthropicKey = Deno.env.get("ANTHROPIC_API_KEY");
-    if (!anthropicKey) {
-      console.error("ANTHROPIC_API_KEY not configured");
+    const lovableApiKey = Deno.env.get("LOVABLE_API_KEY");
+    if (!lovableApiKey) {
+      console.error("LOVABLE_API_KEY not configured");
       return new Response(
         JSON.stringify({ digest: null, error: "digest_unavailable" }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    const anthropicResp = await fetch("https://api.anthropic.com/v1/messages", {
+    const aiResp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
-        "x-api-key": anthropicKey,
-        "anthropic-version": "2023-06-01",
+        Authorization: `Bearer ${lovableApiKey}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "claude-sonnet-4-20250514",
-        max_tokens: 600,
-        system:
-          "You are an AI assistant for Catalyst, an enterprise portfolio management platform for the Saudi Ministry of Industry. Analyse the user's recent notifications and produce a prioritised daily digest.",
+        model: "google/gemini-3-flash-preview",
         messages: [
+          {
+            role: "system",
+            content:
+              "You are an AI assistant for Catalyst, an enterprise portfolio management platform for the Saudi Ministry of Industry. Analyse the user's recent notifications and produce a prioritised daily digest. Return ONLY valid JSON, no markdown fences.",
+          },
           {
             role: "user",
             content: `Here are my recent notifications from the last 48 hours:\n${formattedList}\n\nReturn ONLY valid JSON with this exact structure, no markdown:\n{\n  "summary": "One sentence overview of what needs attention today.",\n  "items": [\n    { "priority": "HIGH", "title": "...", "detail": "...", "hub": "..." },\n    { "priority": "MED",  "title": "...", "detail": "...", "hub": "..." },\n    { "priority": "LOW",  "title": "...", "detail": "...", "hub": "..." }\n  ]\n}\nLimit to maximum 6 items total. Priority HIGH = needs action today.`,
@@ -119,17 +120,32 @@ serve(async (req) => {
       }),
     });
 
-    if (!anthropicResp.ok) {
-      const errText = await anthropicResp.text();
-      console.error("Anthropic API error:", anthropicResp.status, errText);
+    if (!aiResp.ok) {
+      const errText = await aiResp.text();
+      console.error("Lovable AI Gateway error:", aiResp.status, errText);
+      if (aiResp.status === 429) {
+        return new Response(
+          JSON.stringify({ digest: null, error: "rate_limited" }),
+          { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+      if (aiResp.status === 402) {
+        return new Response(
+          JSON.stringify({ digest: null, error: "credits_exhausted" }),
+          { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
       return new Response(
         JSON.stringify({ digest: null, error: "digest_unavailable" }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    const anthropicData = await anthropicResp.json();
-    const rawText = anthropicData.content?.[0]?.text || "";
+    const aiData = await aiResp.json();
+    let rawText = aiData.choices?.[0]?.message?.content || "";
+
+    // Strip markdown fences if present
+    rawText = rawText.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "").trim();
 
     // 5. Parse + cache
     let parsedDigest;
