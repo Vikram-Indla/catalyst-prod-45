@@ -46,7 +46,7 @@ function WorkItemIcon({ type }: { type: string }) {
   const t = (type || '').toLowerCase().trim();
   // Bug / Defect — red asterisk
   if (t === 'bug' || t === 'defect' || t === 'qa bug')
-    return <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="#CC0000"/><path d="M8 3L9.2 6.2H12.5L9.9 8.1L10.9 11.3L8 9.4L5.1 11.3L6.1 8.1L3.5 6.2H6.8Z" fill="white"/></svg>;
+    return <svg width="16" height="16" viewBox="0 0 16 16"><path fill="#FF5630" fillRule="evenodd" d="M2,0 L14,0 C15.1045695,0 16,0.8954305 16,2 L16,14 C16,15.1045695 15.1045695,16 14,16 L2,16 C0.8954305,16 0,15.1045695 0,14 L0,2 C0,0.8954305 0.8954305,0 2,0 Z M8,12 C10.209139,12 12,10.209139 12,8 C12,5.790861 10.209139,4 8,4 C5.790861,4 4,5.790861 4,8 C4,10.209139 5.790861,12 8,12 Z"/></svg>;
   // Story — green bookmark
   if (t === 'story')
     return <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="#36B37E"/><path d="M4 3h8v10l-4-2.5L4 13V3z" fill="white"/></svg>;
