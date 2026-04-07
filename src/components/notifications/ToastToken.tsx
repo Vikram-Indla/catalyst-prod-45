@@ -15,8 +15,11 @@ interface ToastTokenProps {
 function getActionVerb(type: string): string {
   const map: Record<string, string> = {
     assigned_work_item: 'assigned you to',
+    assigned: 'assigned you to',
+    unassigned: 'unassigned you from',
     mentioned_in_comment: 'mentioned you in',
     commented_on_work_item: 'commented on',
+    commented: 'commented on',
     status_changed: 'changed status of',
     due_date_approaching: 'due date approaching for',
   };

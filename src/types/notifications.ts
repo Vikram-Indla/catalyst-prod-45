@@ -1,6 +1,6 @@
 export type NotificationType =
   | 'assigned_work_item' | 'assigned_story' | 'assigned' | 'mentioned_in_comment'
-  | 'commented_on_work_item' | 'updated_work_item' | 'status_changed'
+  | 'commented_on_work_item' | 'commented' | 'updated_work_item' | 'status_changed'
   | 'reassigned_work_item' | 'created_work_item' | 'release_approval_requested'
   | 'incident_escalated' | 'test_case_failed' | 'risk_threshold_breached'
   | 'budget_exceeded' | 'okr_milestone_achieved' | 'document_shared'
@@ -9,7 +9,7 @@ export type NotificationType =
 
 export type NotificationEntityType =
   | 'work_item' | 'project' | 'release' | 'incident'
-  | 'test_case' | 'okr' | 'document' | 'risk';
+  | 'test_case' | 'okr' | 'document' | 'risk' | 'issue';
 
 export type NotificationTab = 'direct' | 'watching' | 'ai';
 

@@ -27,6 +27,7 @@ function getActionVerb(type: string, isSystemAssign: boolean): string {
     assigned_story: 'assigned you a story in',
     mentioned_in_comment: 'mentioned you in a comment on',
     commented_on_work_item: 'commented on',
+    commented: 'commented on',
     updated_work_item: 'updated',
     status_changed: 'changed the status of',
     reassigned_work_item: 'reassigned',
