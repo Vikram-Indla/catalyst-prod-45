@@ -115,9 +115,10 @@ function mapDbRowToTMCycle(row: any): TMCycle {
     failed_count: row.failed_count || 0,
     blocked_count: row.blocked_count || 0,
     not_run_count: row.not_run_count || 0,
-    pass_rate: row.total_cases > 0 
-      ? Math.round((row.passed_count / row.total_cases) * 100) 
-      : 0,
+    pass_rate: (() => {
+      const executed = (row.passed_count || 0) + (row.failed_count || 0) + (row.blocked_count || 0);
+      return executed > 0 ? Math.round(((row.passed_count || 0) / executed) * 100) : 0;
+    })(),
   };
 }
 
