@@ -284,7 +284,7 @@ function ReportSection({
       <div className={cn("px-4 py-2", bgColor)}>
         <h3 className={cn("font-semibold", titleColor)}>{title}</h3>
       </div>
-      <div className="bg-white divide-y divide-border">
+      <div className="bg-white dark:bg-[#1A1A1A] divide-y divide-border">
         {children}
       </div>
     </motion.div>

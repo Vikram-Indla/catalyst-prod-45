@@ -239,7 +239,7 @@ export function AllWorkView() {
       <React.Fragment key={item.id}>
         <tr 
           className={cn(
-            "hover:bg-slate-50 border-b border-slate-200 group cursor-pointer",
+            "hover:bg-slate-50 dark:hover:bg-[#1F1F1F] border-b border-slate-200 dark:border-[#2E2E2E] group cursor-pointer",
             isSelected && detailModeEnabled && "bg-blue-50"
           )}
           onClick={() => handleRowClick(item)}
@@ -261,7 +261,7 @@ export function AllWorkView() {
             {showHierarchy && hasChildren ? (
               <button
                 onClick={() => toggleExpand(item.id)}
-                className="p-0.5 hover:bg-slate-100 rounded"
+                className="p-0.5 hover:bg-slate-100 dark:hover:bg-[#1F1F1F] rounded"
               >
                 {isExpanded ? (
                   <ChevronDown className="h-4 w-4 text-slate-500" />
@@ -284,7 +284,7 @@ export function AllWorkView() {
               <span className="text-[13px] font-medium text-blue-600 hover:underline cursor-pointer whitespace-nowrap">
                 {item.key}
               </span>
-              <span className="text-[13px] text-slate-700 truncate max-w-[400px]">
+              <span className="text-[13px] text-slate-700 dark:text-[#A1A1A1] truncate max-w-[400px]">
                 {item.summary}
               </span>
             </div>
@@ -295,7 +295,7 @@ export function AllWorkView() {
               <div className="w-6 h-6 rounded-full bg-slate-300 flex items-center justify-center text-[10px] text-white font-medium">
                 {item.reporter.split(' ').map(n => n[0]).join('').slice(0, 2)}
               </div>
-              <span className="text-[13px] text-slate-700 truncate max-w-[140px]">
+              <span className="text-[13px] text-slate-700 dark:text-[#A1A1A1] truncate max-w-[140px]">
                 {item.reporter}
               </span>
             </div>
@@ -307,15 +307,15 @@ export function AllWorkView() {
                 <div className="w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center text-[10px] text-white font-medium">
                   {item.assignee.split(' ').map(n => n[0]).join('').slice(0, 2)}
                 </div>
-                <span className="text-[13px] text-slate-700">{item.assignee}</span>
+                <span className="text-[13px] text-slate-700 dark:text-[#A1A1A1]">{item.assignee}</span>
               </div>
             ) : (
-              <span className="text-[13px] text-slate-400">Unassigned</span>
+              <span className="text-[13px] text-slate-400 dark:text-[#878787]">Unassigned</span>
             )}
           </td>
           {/* Created */}
           <td className="px-3 py-2">
-            <span className="text-[13px] text-slate-700 whitespace-nowrap">{item.created}</span>
+            <span className="text-[13px] text-slate-700 dark:text-[#A1A1A1] whitespace-nowrap">{item.created}</span>
           </td>
           {/* Parent */}
           <td className="px-3 py-2" onClick={(e) => e.stopPropagation()}>
@@ -328,12 +328,12 @@ export function AllWorkView() {
                 <ChevronRight className="h-3 w-3" />
               </button>
             ) : (
-              <span className="text-[13px] text-slate-500">None</span>
+              <span className="text-[13px] text-slate-500 dark:text-[#878787]">None</span>
             )}
           </td>
           {/* Actions */}
           <td className="px-2 py-2 w-8" onClick={(e) => e.stopPropagation()}>
-            <button className="opacity-0 group-hover:opacity-100 p-1 hover:bg-slate-100 rounded">
+            <button className="opacity-0 group-hover:opacity-100 p-1 hover:bg-slate-100 dark:hover:bg-[#1F1F1F] rounded">
               <MoreHorizontal className="h-4 w-4 text-slate-500" />
             </button>
           </td>
@@ -346,7 +346,7 @@ export function AllWorkView() {
   return (
     <div className="h-full flex flex-col" style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif' }}>
       {/* Filter Toolbar */}
-      <div className="px-4 py-3 bg-white">
+      <div className="px-4 py-3 bg-white dark:bg-[#1A1A1A]">
         {/* Filter Chips + Right Controls */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -358,8 +358,8 @@ export function AllWorkView() {
                   isActive={assigneeOpen || selectedAssignees.size > 0} 
                 />
               </PopoverTrigger>
-              <PopoverContent className="w-72 p-0 bg-white border-slate-200 shadow-lg" align="start">
-                <div className="p-3 border-b border-slate-100">
+              <PopoverContent className="w-72 p-0 bg-white dark:bg-[#1A1A1A] border-slate-200 dark:border-[#2E2E2E] shadow-lg" align="start">
+                <div className="p-3 border-b border-slate-100 dark:border-[#2E2E2E]">
                   <div className="text-[13px] text-slate-500 mb-2">Assignee = (equals)</div>
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
@@ -375,7 +375,7 @@ export function AllWorkView() {
                   {mockAssignees
                     .filter(a => a.name.toLowerCase().includes(assigneeSearch.toLowerCase()))
                     .map((assignee) => (
-                      <label key={assignee.id} className="flex items-center gap-3 px-3 py-2 hover:bg-slate-50 cursor-pointer">
+                      <label key={assignee.id} className="flex items-center gap-3 px-3 py-2 hover:bg-slate-50 dark:hover:bg-[#1F1F1F] cursor-pointer">
                         <Checkbox
                           checked={selectedAssignees.has(assignee.id)}
                           onCheckedChange={(checked) => {
@@ -386,11 +386,11 @@ export function AllWorkView() {
                           }}
                         />
                         <span className="text-lg">{assignee.avatar}</span>
-                        <span className="text-[14px] text-slate-900">{assignee.name}</span>
+                        <span className="text-[14px] text-slate-900 dark:text-[#EDEDED]">{assignee.name}</span>
                       </label>
                     ))}
                 </div>
-                <div className="p-3 border-t border-slate-100">
+                <div className="p-3 border-t border-slate-100 dark:border-[#2E2E2E]">
                   <button className="text-[13px] text-blue-600 hover:underline">Show full list</button>
                 </div>
               </PopoverContent>
@@ -404,8 +404,8 @@ export function AllWorkView() {
                   isActive={typeOpen || selectedTypes.size > 0} 
                 />
               </PopoverTrigger>
-              <PopoverContent className="w-72 p-0 bg-white border-slate-200 shadow-lg" align="start">
-                <div className="p-3 border-b border-slate-100">
+              <PopoverContent className="w-72 p-0 bg-white dark:bg-[#1A1A1A] border-slate-200 dark:border-[#2E2E2E] shadow-lg" align="start">
+                <div className="p-3 border-b border-slate-100 dark:border-[#2E2E2E]">
                   <div className="text-[13px] text-slate-500 mb-2">Type = (equals)</div>
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
@@ -424,7 +424,7 @@ export function AllWorkView() {
                     .map((type) => {
                       const Icon = type.icon;
                       return (
-                        <label key={type.id} className="flex items-center gap-3 px-3 py-2 hover:bg-slate-50 cursor-pointer">
+                        <label key={type.id} className="flex items-center gap-3 px-3 py-2 hover:bg-slate-50 dark:hover:bg-[#1F1F1F] cursor-pointer">
                           <Checkbox
                             checked={selectedTypes.has(type.id)}
                             onCheckedChange={(checked) => {
@@ -435,12 +435,12 @@ export function AllWorkView() {
                             }}
                           />
                           <Icon className={cn('h-4 w-4', type.color)} />
-                          <span className="text-[14px] text-slate-900">{type.name}</span>
+                          <span className="text-[14px] text-slate-900 dark:text-[#EDEDED]">{type.name}</span>
                         </label>
                       );
                     })}
                 </div>
-                <div className="p-3 border-t border-slate-100">
+                <div className="p-3 border-t border-slate-100 dark:border-[#2E2E2E]">
                   <button className="text-[13px] text-blue-600 hover:underline">Show full list</button>
                 </div>
               </PopoverContent>
@@ -454,8 +454,8 @@ export function AllWorkView() {
                   isActive={statusOpen || selectedStatuses.size > 0} 
                 />
               </PopoverTrigger>
-              <PopoverContent className="w-72 p-0 bg-white border-slate-200 shadow-lg" align="start">
-                <div className="p-3 border-b border-slate-100">
+              <PopoverContent className="w-72 p-0 bg-white dark:bg-[#1A1A1A] border-slate-200 dark:border-[#2E2E2E] shadow-lg" align="start">
+                <div className="p-3 border-b border-slate-100 dark:border-[#2E2E2E]">
                   <div className="text-[13px] text-slate-500 mb-2">Status = (equals)</div>
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
@@ -471,7 +471,7 @@ export function AllWorkView() {
                   {mockStatuses
                     .filter(s => s.name.toLowerCase().includes(statusSearch.toLowerCase()))
                     .map((status) => (
-                      <label key={status.id} className="flex items-center gap-3 px-3 py-2 hover:bg-slate-50 cursor-pointer">
+                      <label key={status.id} className="flex items-center gap-3 px-3 py-2 hover:bg-slate-50 dark:hover:bg-[#1F1F1F] cursor-pointer">
                         <Checkbox
                           checked={selectedStatuses.has(status.id)}
                           onCheckedChange={(checked) => {
@@ -485,14 +485,14 @@ export function AllWorkView() {
                       </label>
                     ))}
                 </div>
-                <div className="p-3 border-t border-slate-100 flex justify-between">
+                <div className="p-3 border-t border-slate-100 dark:border-[#2E2E2E] flex justify-between">
                   <button className="text-[13px] text-blue-600 hover:underline">Show full list</button>
                   <span className="text-[12px] text-slate-500">{mockStatuses.length} of 32</span>
                 </div>
               </PopoverContent>
             </Popover>
 
-            <button className="text-[13px] text-slate-600 hover:text-slate-900 px-2 flex items-center gap-1">
+            <button className="text-[13px] text-slate-600 dark:text-[#A1A1A1] hover:text-slate-900 dark:hover:text-[#EDEDED] px-2 flex items-center gap-1">
               More filters
               <ChevronDown className="h-3.5 w-3.5" />
             </button>
@@ -503,7 +503,7 @@ export function AllWorkView() {
             <Button 
               variant="outline" 
               size="sm" 
-              className="h-8 px-3 text-[13px] gap-1 border-slate-200 text-slate-700 hover:bg-slate-50"
+              className="h-8 px-3 text-[13px] gap-1 border-slate-200 dark:border-[#2E2E2E] text-slate-700 dark:text-[#A1A1A1] hover:bg-slate-50 dark:hover:bg-[#1F1F1F]"
               onClick={() => setCreateVersionOpen(true)}
             >
               <Plus className="h-3.5 w-3.5" />
@@ -513,12 +513,12 @@ export function AllWorkView() {
             {/* Group */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="h-8 px-3 text-[13px] gap-1 border-slate-200 text-slate-700 hover:bg-slate-50">
+                <Button variant="outline" size="sm" className="h-8 px-3 text-[13px] gap-1 border-slate-200 dark:border-[#2E2E2E] text-slate-700 dark:text-[#A1A1A1] hover:bg-slate-50 dark:hover:bg-[#1F1F1F]">
                   Group
                   <ChevronDown className="h-3.5 w-3.5" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="bg-white border-slate-200">
+              <DropdownMenuContent align="end" className="bg-white dark:bg-[#1A1A1A] border-slate-200 dark:border-[#2E2E2E]">
                 <DropdownMenuItem className="text-[14px]">None</DropdownMenuItem>
                 <DropdownMenuItem className="text-[14px]">Status</DropdownMenuItem>
                 <DropdownMenuItem className="text-[14px]">Assignee</DropdownMenuItem>
@@ -529,11 +529,11 @@ export function AllWorkView() {
             {/* Export */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-600 hover:bg-slate-100">
+                <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-600 dark:text-[#A1A1A1] hover:bg-slate-100 dark:hover:bg-[#1F1F1F]">
                   <Download className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-64 bg-white border-slate-200">
+              <DropdownMenuContent align="end" className="w-64 bg-white dark:bg-[#1A1A1A] border-slate-200 dark:border-[#2E2E2E]">
                 <DropdownMenuItem className="text-[14px]">Print list</DropdownMenuItem>
                 <DropdownMenuItem className="text-[14px]">Print details</DropdownMenuItem>
                 <DropdownMenuSeparator />
@@ -543,8 +543,8 @@ export function AllWorkView() {
             </DropdownMenu>
 
             {/* View Toggle Icons */}
-            <div className="flex items-center border border-slate-200 rounded-md overflow-hidden">
-              <button className="h-8 w-8 flex items-center justify-center text-slate-400 hover:bg-slate-50">
+            <div className="flex items-center border border-slate-200 dark:border-[#2E2E2E] rounded-md overflow-hidden">
+              <button className="h-8 w-8 flex items-center justify-center text-slate-400 dark:text-[#878787] hover:bg-slate-50 dark:hover:bg-[#1F1F1F]">
                 <LayoutGrid className="h-4 w-4" />
               </button>
               <button className="h-8 w-8 flex items-center justify-center text-blue-600 bg-blue-50">
@@ -560,7 +560,7 @@ export function AllWorkView() {
                 "h-8 w-8",
                 detailModeEnabled 
                   ? "bg-blue-600 hover:bg-blue-700 text-white" 
-                  : "border-slate-200 text-slate-600 hover:bg-slate-100"
+                  : "border-slate-200 dark:border-[#2E2E2E] text-slate-600 dark:text-[#A1A1A1] hover:bg-slate-100 dark:hover:bg-[#1F1F1F]"
               )}
               onClick={() => {
                 if (detailModeEnabled) {
@@ -586,11 +586,11 @@ export function AllWorkView() {
             {/* More Options */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-600 hover:bg-slate-100">
+                <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-600 dark:text-[#A1A1A1] hover:bg-slate-100 dark:hover:bg-[#1F1F1F]">
                   <MoreHorizontal className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56 bg-white border-slate-200">
+              <DropdownMenuContent align="end" className="w-56 bg-white dark:bg-[#1A1A1A] border-slate-200 dark:border-[#2E2E2E]">
                 <DropdownMenuItem className="text-[14px]">View work items as a chart</DropdownMenuItem>
                 <DropdownMenuItem className="text-[14px]">Format rules</DropdownMenuItem>
                 <DropdownMenuSeparator />
@@ -618,10 +618,10 @@ export function AllWorkView() {
       </div>
 
       {/* Main Content Area */}
-      <div className="flex-1 flex overflow-hidden border-t border-slate-200">
+      <div className="flex-1 flex overflow-hidden border-t border-slate-200 dark:border-[#2E2E2E]">
         {/* Split View - Ticket List (when detail mode enabled) */}
         {detailModeEnabled && (
-          <div className="w-[320px] flex-shrink-0 border-r border-slate-200 overflow-hidden">
+          <div className="w-[320px] flex-shrink-0 border-r border-slate-200 dark:border-[#2E2E2E] overflow-hidden">
             <AllWorkTicketList
               items={mockItems}
               selectedItemId={selectedWorkItem?.id || null}
@@ -643,9 +643,9 @@ export function AllWorkView() {
           </div>
         ) : (
           /* Regular Table View */
-          <div className="flex-1 overflow-auto bg-white">
+          <div className="flex-1 overflow-auto bg-white dark:bg-[#1A1A1A]">
             <table className="min-w-full border-collapse">
-              <thead className="bg-white sticky top-0 z-10 border-b border-slate-200">
+              <thead className="bg-white dark:bg-[#1A1A1A] sticky top-0 z-10 border-b border-slate-200 dark:border-[#2E2E2E]">
                 <tr>
                   <th className="w-8 px-2 py-2">
                     <Checkbox />
@@ -673,12 +673,12 @@ export function AllWorkView() {
                     {/* Column Configuration Popover */}
                     <Popover open={columnsOpen} onOpenChange={setColumnsOpen}>
                       <PopoverTrigger asChild>
-                        <button className="p-1 hover:bg-slate-100 rounded">
+                        <button className="p-1 hover:bg-slate-100 dark:hover:bg-[#1F1F1F] rounded">
                           <Columns className="h-4 w-4 text-slate-500" />
                         </button>
                       </PopoverTrigger>
-                      <PopoverContent className="w-64 p-0 bg-white border-slate-200 shadow-lg" align="end">
-                        <div className="p-3 border-b border-slate-100">
+                      <PopoverContent className="w-64 p-0 bg-white dark:bg-[#1A1A1A] border-slate-200 dark:border-[#2E2E2E] shadow-lg" align="end">
+                        <div className="p-3 border-b border-slate-100 dark:border-[#2E2E2E]">
                           <Tabs defaultValue="my-defaults" className="w-full">
                             <TabsList className="grid w-full grid-cols-2 h-8">
                               <TabsTrigger value="my-defaults" className="text-[12px] data-[state=active]:text-blue-600">
@@ -689,7 +689,7 @@ export function AllWorkView() {
                             </TabsList>
                           </Tabs>
                         </div>
-                        <div className="p-3 border-b border-slate-100">
+                        <div className="p-3 border-b border-slate-100 dark:border-[#2E2E2E]">
                           <div className="relative">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                             <Input
@@ -704,7 +704,7 @@ export function AllWorkView() {
                           {availableColumns
                             .filter(col => col.name.toLowerCase().includes(columnSearch.toLowerCase()))
                             .map((column) => (
-                              <label key={column.id} className="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 cursor-pointer rounded">
+                              <label key={column.id} className="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 dark:hover:bg-[#1F1F1F] cursor-pointer rounded">
                                 <Checkbox
                                   checked={enabledColumns.has(column.id)}
                                   onCheckedChange={(checked) => {
@@ -714,11 +714,11 @@ export function AllWorkView() {
                                     setEnabledColumns(newSet);
                                   }}
                                 />
-                                <span className="text-[13px] text-slate-700">{column.name}</span>
+                                <span className="text-[13px] text-slate-700 dark:text-[#A1A1A1]">{column.name}</span>
                               </label>
                             ))}
                         </div>
-                        <div className="p-3 border-t border-slate-100 flex justify-between items-center">
+                        <div className="p-3 border-t border-slate-100 dark:border-[#2E2E2E] flex justify-between items-center">
                           <button className="text-[12px] text-blue-600 hover:underline">Create a field</button>
                           <span className="text-[11px] text-slate-500">{enabledColumns.size} of {availableColumns.length}</span>
                         </div>
@@ -736,7 +736,7 @@ export function AllWorkView() {
       </div>
 
       {/* Footer */}
-      <div className="px-4 py-2 text-[13px] text-slate-600 bg-white">
+      <div className="px-4 py-2 text-[13px] text-slate-600 dark:text-[#A1A1A1] bg-white dark:bg-[#1A1A1A]">
         Showing {countItems(mockItems)} items
       </div>
 

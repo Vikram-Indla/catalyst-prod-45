@@ -146,15 +146,15 @@ export function T10NewListModal({ isOpen, onClose, onCreated }: T10NewListModalP
 
       {/* Modal */}
       <div 
-        className="relative z-10 w-full max-w-md mx-4 bg-white rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 fade-in duration-200"
+        className="relative z-10 w-full max-w-md mx-4 bg-white dark:bg-[#1A1A1A] rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 fade-in duration-200"
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
-          <h2 className="text-lg font-semibold text-slate-900">Create list</h2>
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-[#2E2E2E]">
+          <h2 className="text-lg font-semibold text-slate-900 dark:text-[#EDEDED]">Create list</h2>
           <button
             type="button"
-            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+            className="p-1.5 rounded-lg text-slate-400 dark:text-[#878787] hover:text-slate-600 hover:bg-slate-100 transition-colors"
             onClick={onClose}
           >
             <X size={18} />
@@ -166,7 +166,7 @@ export function T10NewListModal({ isOpen, onClose, onCreated }: T10NewListModalP
           <div className="px-6 py-5 space-y-5">
             {/* Name Field */}
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-slate-700">
+              <label className="block text-sm font-medium text-slate-700 dark:text-[#A1A1A1]">
                 Name <span className="text-red-500">*</span>
               </label>
               <input
@@ -176,8 +176,8 @@ export function T10NewListModal({ isOpen, onClose, onCreated }: T10NewListModalP
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g., Q1 Sprint Goals"
                 maxLength={100}
-                className={`w-full px-4 py-2.5 text-[15px] text-slate-900 placeholder:text-slate-400 bg-white border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all ${
-                  nameError ? 'border-red-400' : 'border-slate-300'
+                className={`w-full px-4 py-2.5 text-[15px] text-slate-900 dark:text-[#EDEDED] placeholder:text-slate-400 dark:placeholder:text-[#878787] bg-white dark:bg-[#1A1A1A] border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all ${
+                  nameError ? 'border-red-400' : 'border-slate-300 dark:border-[#454545]'
                 }`}
               />
               {nameError && (
@@ -187,40 +187,40 @@ export function T10NewListModal({ isOpen, onClose, onCreated }: T10NewListModalP
 
             {/* Description Field */}
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-slate-700">
-                Description <span className="text-slate-400 font-normal">(optional)</span>
+              <label className="block text-sm font-medium text-slate-700 dark:text-[#A1A1A1]">
+                Description <span className="text-slate-400 dark:text-[#878787] font-normal">(optional)</span>
               </label>
               <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="What is this list for?"
                 rows={2}
-                className="w-full px-4 py-2.5 text-[15px] text-slate-900 placeholder:text-slate-400 bg-white border border-slate-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                className="w-full px-4 py-2.5 text-[15px] text-slate-900 dark:text-[#EDEDED] placeholder:text-slate-400 dark:placeholder:text-[#878787] bg-white dark:bg-[#1A1A1A] border border-slate-300 dark:border-[#454545] rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
               />
             </div>
 
             {/* Start Week Selection */}
             <div className="space-y-3">
-              <label className="block text-sm font-semibold text-slate-900">
+              <label className="block text-sm font-semibold text-slate-900 dark:text-[#EDEDED]">
                 Start Week
               </label>
               
-              <div className="border border-slate-200 rounded-lg overflow-hidden">
+              <div className="border border-slate-200 dark:border-[#2E2E2E] rounded-lg overflow-hidden">
                 {weekOptions.map((week: WeekOption) => (
                   <label
                     key={week.offset}
                     className={`flex items-center justify-between px-4 py-3 cursor-pointer transition-colors ${
                       selectedOffset === week.offset 
-                        ? 'bg-blue-50 border-2 border-blue-500 -m-[1px] rounded-lg relative z-10' 
-                        : 'hover:bg-slate-50 border-b border-slate-100 last:border-b-0'
+                        ? 'bg-blue-50 border-2 border-blue-500 -m-[1px] rounded-lg relative z-10'
+                        : 'hover:bg-slate-50 dark:hover:bg-[#1F1F1F] border-b border-slate-100 last:border-b-0'
                     }`}
                   >
                     <div className="flex items-center gap-3">
                       {/* Radio Circle */}
                       <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${
-                        selectedOffset === week.offset 
-                          ? 'border-blue-600 bg-blue-600' 
-                          : 'border-slate-300'
+                        selectedOffset === week.offset
+                          ? 'border-blue-600 bg-blue-600'
+                          : 'border-slate-300 dark:border-[#454545]'
                       }`}>
                         {selectedOffset === week.offset && (
                           <div className="w-2 h-2 rounded-full bg-white" />
@@ -228,7 +228,7 @@ export function T10NewListModal({ isOpen, onClose, onCreated }: T10NewListModalP
                       </div>
                       
                       {/* Label */}
-                      <span className="text-[15px] font-medium text-slate-900">
+                      <span className="text-[15px] font-medium text-slate-900 dark:text-[#EDEDED]">
                         {week.label}
                       </span>
                       
@@ -261,7 +261,7 @@ export function T10NewListModal({ isOpen, onClose, onCreated }: T10NewListModalP
             {/* Week Preview Banner */}
             <div className={`flex items-start gap-3 p-4 rounded-lg border ${
               selectedWeek.isUpcoming
-                ? 'bg-slate-50 border-slate-200'
+                ? 'bg-slate-50 dark:bg-[#111111] border-slate-200 dark:border-[#2E2E2E]'
                 : 'bg-blue-50 border-blue-200'
             }`}>
               <Calendar 
@@ -290,11 +290,11 @@ export function T10NewListModal({ isOpen, onClose, onCreated }: T10NewListModalP
           </div>
 
           {/* Footer */}
-          <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-200 bg-slate-50">
+          <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-200 dark:border-[#2E2E2E] bg-slate-50 dark:bg-[#111111]">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors"
+              className="px-4 py-2 text-sm font-medium text-slate-700 dark:text-[#A1A1A1] bg-white dark:bg-[#1A1A1A] border border-slate-300 dark:border-[#454545] rounded-lg hover:bg-slate-50 dark:hover:bg-[#1F1F1F] transition-colors"
             >
               Cancel
             </button>
