@@ -234,6 +234,36 @@ export const CreateStoryDialog: React.FC<CreateStoryDialogProps> = ({
     if (isOpen) setTimeout(() => titleRef.current?.focus(), 150);
   }, [isOpen]);
 
+  // ─── Resolve ph_projects ID (must come first — other queries depend on it) ──
+  const { data: phProjectId } = useQuery({
+    queryKey: ['ph-project-id-lookup', projectId],
+    queryFn: async () => {
+      const { data: direct } = await supabase
+        .from('ph_workflow_statuses')
+        .select('id')
+        .eq('project_id', projectId)
+        .limit(1);
+      if (direct && direct.length > 0) return projectId;
+      const { data: proj } = await supabase
+        .from('projects')
+        .select('key')
+        .eq('id', projectId)
+        .maybeSingle();
+      if (proj?.key) {
+        const { data: phProj } = await supabase
+          .from('ph_projects')
+          .select('id')
+          .eq('key', proj.key.toUpperCase())
+          .maybeSingle();
+        if (phProj) return phProj.id;
+      }
+      return projectId;
+    },
+    enabled: isOpen && !!projectId,
+  });
+
+  const resolvedProjectId = phProjectId || projectId;
+
   // ─── Data Queries ────────────────────────────────────────
 
   // Parent items: Epics + Features from ph_work_items
@@ -319,40 +349,6 @@ export const CreateStoryDialog: React.FC<CreateStoryDialogProps> = ({
     },
     enabled: isOpen,
   });
-
-  // Resolve ph_projects ID — the projectId from props may be from the `projects` table,
-  // but ph_workflow_statuses references `ph_projects`. Try both.
-  const { data: phProjectId } = useQuery({
-    queryKey: ['ph-project-id-lookup', projectId],
-    queryFn: async () => {
-      // First check if projectId is already a ph_projects ID
-      const { data: direct } = await supabase
-        .from('ph_workflow_statuses')
-        .select('id')
-        .eq('project_id', projectId)
-        .limit(1);
-      if (direct && direct.length > 0) return projectId;
-
-      // Fallback: look up ph_projects by key matching the projects table
-      const { data: proj } = await supabase
-        .from('projects')
-        .select('key')
-        .eq('id', projectId)
-        .maybeSingle();
-      if (proj?.key) {
-        const { data: phProj } = await supabase
-          .from('ph_projects')
-          .select('id')
-          .eq('key', proj.key.toUpperCase())
-          .maybeSingle();
-        if (phProj) return phProj.id;
-      }
-      return projectId; // fallback to original
-    },
-    enabled: isOpen && !!projectId,
-  });
-
-  const resolvedProjectId = phProjectId || projectId;
 
   const { data: workflowStatuses } = useQuery({
     queryKey: ['ph-workflow-statuses', resolvedProjectId],
