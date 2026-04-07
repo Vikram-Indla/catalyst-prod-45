@@ -499,13 +499,23 @@ export const CreateStoryDialog: React.FC<CreateStoryDialogProps> = ({
     <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
       <DialogContent
         size="xl"
-        className={`!rounded-[6px] overflow-hidden flex flex-col !p-0 ${
+        className={`overflow-hidden flex flex-col !p-0 ${
           isExpanded
-            ? '!fixed !top-[56px] !left-[232px] !right-0 !bottom-0 !max-w-none !max-h-none !translate-x-0 !translate-y-0 !rounded-none'
+            ? '!fixed !max-w-[1200px] !max-h-none !translate-x-0 !translate-y-0'
             : '!max-w-[800px] max-h-[90vh]'
         }`}
         style={{
-          boxShadow: isExpanded ? 'none' : 'rgba(30,31,33,0.15) 0px 8px 12px 0px, rgba(30,31,33,0.31) 0px 0px 1px 0px',
+          borderRadius: 6,
+          border: '1px solid var(--divider, #E2E8F0)',
+          boxShadow: '0 8px 24px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.05)',
+          ...(isExpanded ? {
+            top: 80,
+            left: '50%',
+            transform: 'translateX(-50%)',
+            width: 'calc(100vw - 280px)',
+            maxWidth: 1200,
+            height: 'calc(100vh - 104px)',
+          } : {}),
         }}
         onKeyDown={handleKeyDown}
       >
@@ -532,7 +542,7 @@ export const CreateStoryDialog: React.FC<CreateStoryDialogProps> = ({
             <div>
               <Label className="text-[12px] font-semibold mb-1 block" style={{ color: F.label }}>Status</Label>
               <Select value={statusId} onValueChange={setStatusId} disabled={createStory.isPending}>
-                <SelectTrigger className="h-8 w-auto min-w-[180px] inline-flex border-0" style={{ background: F.statusBg, borderRadius: 3, fontSize: 14, fontWeight: 500, color: F.input }}>
+                <SelectTrigger className="h-8 w-auto min-w-[180px] inline-flex" style={{ background: F.statusBg, border: '1px solid var(--divider, #E2E8F0)', borderRadius: 3, fontSize: 14, fontWeight: 500, color: 'var(--fg-1, #292A2E)' }}>
                   <SelectValue placeholder="Select status">
                     {selectedStatus && (
                       <div className="flex items-center gap-2.5">
