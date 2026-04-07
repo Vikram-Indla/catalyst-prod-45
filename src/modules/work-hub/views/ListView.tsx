@@ -441,7 +441,7 @@ export function ListView() {
                   </AvatarFallback>
                 </Avatar>
               ))}
-              <div className="h-7 w-7 rounded-full bg-slate-200 flex items-center justify-center text-[11px] text-slate-600 border-2 border-white font-medium">
+              <div className="h-7 w-7 rounded-full bg-slate-200 dark:bg-[#292929] flex items-center justify-center text-[11px] text-slate-600 dark:text-[#A1A1A1] border-2 border-white dark:border-[#1A1A1A] font-medium">
                 +{assigneeOptions.length - 3}
               </div>
             </div>
@@ -766,7 +766,7 @@ export function ListView() {
                                       {/* Created */}
                                       {isFieldVisible('created') && (
                                         <TableCell className="w-28">
-                                          <div className="inline-flex items-center gap-1 text-[14px] text-slate-500">
+                                          <div className="inline-flex items-center gap-1 text-[14px] text-slate-500 dark:text-[#878787]">
                                             <Calendar className="h-3.5 w-3.5" />
                                             <span>{formatDate(item.created)}</span>
                                           </div>
