@@ -37,47 +37,61 @@ import { useQueryClient } from '@tanstack/react-query';
 import { COLORS, STATUS_COLORS, WORKSTREAM_COLORS } from '@/components/planner/task-modal/colors';
 
 // Enterprise Clean spec colors - inline styles to ensure specificity
-const STATUS_CONFIG: Record<string, { 
-  label: string; 
-  dotColor: string; 
+const STATUS_CONFIG: Record<string, {
+  label: string;
+  dotColor: string;
   bgColor: string;
   borderColor: string;
+  darkBgColor: string;
+  darkBorderColor: string;
 }> = {
-  'backlog': { 
-    label: 'Backlog', 
-    dotColor: '#94a3b8', 
-    bgColor: 'transparent', 
-    borderColor: '#e2e8f0' 
+  'backlog': {
+    label: 'Backlog',
+    dotColor: '#94a3b8',
+    bgColor: 'transparent',
+    borderColor: '#e2e8f0',
+    darkBgColor: 'transparent',
+    darkBorderColor: '#2E2E2E',
   },
-  'planned': { 
-    label: 'Planned', 
-    dotColor: '#3b82f6', 
-    bgColor: 'transparent', 
-    borderColor: '#e2e8f0' 
+  'planned': {
+    label: 'Planned',
+    dotColor: '#3b82f6',
+    bgColor: 'transparent',
+    borderColor: '#e2e8f0',
+    darkBgColor: 'transparent',
+    darkBorderColor: '#2E2E2E',
   },
-  'in-progress': { 
-    label: 'In Progress', 
-    dotColor: '#f59e0b', 
-    bgColor: '#fffbeb',  // Subtle amber tint
-    borderColor: '#fde68a' 
+  'in-progress': {
+    label: 'In Progress',
+    dotColor: '#f59e0b',
+    bgColor: '#fffbeb',
+    borderColor: '#fde68a',
+    darkBgColor: 'rgba(251,191,36,0.08)',
+    darkBorderColor: 'rgba(251,191,36,0.2)',
   },
-  'in progress': { 
-    label: 'In Progress', 
-    dotColor: '#f59e0b', 
-    bgColor: '#fffbeb',  // Subtle amber tint
-    borderColor: '#fde68a' 
+  'in progress': {
+    label: 'In Progress',
+    dotColor: '#f59e0b',
+    bgColor: '#fffbeb',
+    borderColor: '#fde68a',
+    darkBgColor: 'rgba(251,191,36,0.08)',
+    darkBorderColor: 'rgba(251,191,36,0.2)',
   },
-  'review': { 
-    label: 'Review', 
-    dotColor: '#8b5cf6', 
-    bgColor: 'transparent', 
-    borderColor: '#e2e8f0' 
+  'review': {
+    label: 'Review',
+    dotColor: '#8b5cf6',
+    bgColor: 'transparent',
+    borderColor: '#e2e8f0',
+    darkBgColor: 'transparent',
+    darkBorderColor: '#2E2E2E',
   },
-  'done': { 
-    label: 'Done', 
-    dotColor: '#16a34a', 
-    bgColor: '#f0fdf4',  // Subtle green tint
-    borderColor: '#bbf7d0' 
+  'done': {
+    label: 'Done',
+    dotColor: '#16a34a',
+    bgColor: '#f0fdf4',
+    borderColor: '#bbf7d0',
+    darkBgColor: 'rgba(74,222,128,0.08)',
+    darkBorderColor: 'rgba(74,222,128,0.2)',
   },
 };
 

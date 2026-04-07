@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
+import { useTheme } from '@/hooks/useTheme';
 
 interface ConvertDialogProps {
   open: boolean;
@@ -24,6 +25,7 @@ const TYPES = [
 ];
 
 export function ConvertDialog({ open, onClose, incidentId }: ConvertDialogProps) {
+  const { isDark } = useTheme();
   const [selected, setSelected] = useState<string | null>(null);
 
   const handleConvert = () => {
@@ -49,8 +51,8 @@ export function ConvertDialog({ open, onClose, incidentId }: ConvertDialogProps)
                 className="p-3 text-left transition-all"
                 style={{
                   borderRadius: 6,
-                  border: `1.5px solid ${selected === t.key ? '#2563EB' : 'rgba(15,23,42,0.12)'}`,
-                  backgroundColor: selected === t.key ? '#EFF6FF' : '#FFFFFF',
+                  border: `1.5px solid ${selected === t.key ? '#2563EB' : (isDark ? '#2E2E2E' : 'rgba(15,23,42,0.12)')}`,
+                  backgroundColor: selected === t.key ? (isDark ? 'rgba(37,99,235,0.12)' : '#EFF6FF') : (isDark ? '#1A1A1A' : '#FFFFFF'),
                 }}
               >
                 {/* Type icon circle */}

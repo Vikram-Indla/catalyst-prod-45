@@ -26,24 +26,26 @@ function formatDate(d: string) {
   return new Date(d).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
 }
 
-/* ── StatusLozenge (V12 3-color guardrail) ── */
+/* ── StatusLozenge (V12 3-color guardrail + NOCTURNE dark) ── */
 function StatusLozenge({ status }: { status: string }) {
+  const isDark = typeof document !== 'undefined' && document.documentElement.classList.contains('dark');
   const s = (status || '').toLowerCase();
-  const map: Record<string, { bg: string; color: string; label: string }> = {
-    published: { bg: '#1B7F37', color: '#FFFFFF', label: 'PUBLISHED' },
-    done: { bg: '#1B7F37', color: '#FFFFFF', label: 'DONE' },
-    verified: { bg: '#1B7F37', color: '#FFFFFF', label: 'VERIFIED' },
-    'in progress': { bg: '#0C66E4', color: '#FFFFFF', label: 'IN PROGRESS' },
-    review: { bg: '#0C66E4', color: '#FFFFFF', label: 'IN REVIEW' },
-    needs_review: { bg: '#0C66E4', color: '#FFFFFF', label: 'NEEDS REVIEW' },
-    draft: { bg: '#DFE1E6', color: '#44546F', label: 'DRAFT' },
-    archived: { bg: '#DFE1E6', color: '#44546F', label: 'ARCHIVED' },
+  const map: Record<string, { bg: [string, string]; color: [string, string]; label: string }> = {
+    published:    { bg: ['#E3FCEF', 'rgba(74,222,128,0.10)'], color: ['#006644', '#4ADE80'], label: 'PUBLISHED' },
+    done:         { bg: ['#E3FCEF', 'rgba(74,222,128,0.10)'], color: ['#006644', '#4ADE80'], label: 'DONE' },
+    verified:     { bg: ['#E3FCEF', 'rgba(74,222,128,0.10)'], color: ['#006644', '#4ADE80'], label: 'VERIFIED' },
+    'in progress':{ bg: ['#DEEBFF', 'rgba(59,130,246,0.10)'], color: ['#0747A6', '#7DB8FC'], label: 'IN PROGRESS' },
+    review:       { bg: ['#DEEBFF', 'rgba(59,130,246,0.10)'], color: ['#0747A6', '#7DB8FC'], label: 'IN REVIEW' },
+    needs_review: { bg: ['#DEEBFF', 'rgba(59,130,246,0.10)'], color: ['#0747A6', '#7DB8FC'], label: 'NEEDS REVIEW' },
+    draft:        { bg: ['#DFE1E6', '#2E2E2E'],               color: ['#253858', '#A1A1A1'], label: 'DRAFT' },
+    archived:     { bg: ['#DFE1E6', '#2E2E2E'],               color: ['#253858', '#A1A1A1'], label: 'ARCHIVED' },
   };
-  const v = map[s] || { bg: '#DFE1E6', color: '#44546F', label: (status || '—').toUpperCase() };
+  const d = { bg: ['#DFE1E6', '#2E2E2E'] as [string, string], color: ['#253858', '#A1A1A1'] as [string, string], label: (status || '—').toUpperCase() };
+  const v = map[s] || d;
   return (
     <span style={{
-      fontSize: 10, fontWeight: 700, padding: '2px 6px', borderRadius: 4,
-      background: v.bg, color: v.color, textTransform: 'uppercase',
+      fontSize: 11, fontWeight: 700, padding: '2px 6px', borderRadius: 3, letterSpacing: '0.03em',
+      background: isDark ? v.bg[1] : v.bg[0], color: isDark ? v.color[1] : v.color[0], textTransform: 'uppercase',
     }}>{v.label}</span>
   );
 }

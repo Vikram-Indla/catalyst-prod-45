@@ -6,6 +6,7 @@
 import React from 'react';
 import { GripVertical, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useTheme } from '@/hooks/useTheme';
 import type { RoadmapDemand } from '../types/roadmap';
 
 // ── Initiative type color map ──
@@ -54,6 +55,7 @@ interface RoadmapListRowProps {
 }
 
 export function RoadmapListRow({ item, index, isFocused, isSelected, onClick, isDragging, ownerName }: RoadmapListRowProps) {
+  const { isDark } = useTheme();
   const typeKey = (item as any).initiative_type_key || 'project';
   const typeColor = TYPE_COLORS[typeKey] || '#94A3B8';
   const isCritical = item.priority_tier === 'P0' || item.priority_tier === 'critical';
@@ -74,8 +76,8 @@ export function RoadmapListRow({ item, index, isFocused, isSelected, onClick, is
       )}
       style={{
         height: 44,
-        backgroundColor: isSelected ? '#EFF6FF' : 'transparent',
-        borderBottom: '1px solid #F1F5F9',
+        backgroundColor: isSelected ? (isDark ? 'rgba(37,99,235,0.08)' : '#EFF6FF') : 'transparent',
+        borderBottom: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`,
         outline: isFocused ? '2px solid #2563EB' : 'none',
         outlineOffset: -2,
       }}

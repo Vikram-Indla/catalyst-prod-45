@@ -13,6 +13,7 @@ import { Label } from '@/components/ui/label';
 import { useCreateIncident } from '@/hooks/useIncidents';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
+import { useTheme } from '@/hooks/useTheme';
 
 interface NewIncidentModalProps {
   open: boolean;
@@ -20,16 +21,17 @@ interface NewIncidentModalProps {
 }
 
 const SEVERITIES = ['SEV1', 'SEV2', 'SEV3', 'SEV4'] as const;
-const SEV_STYLES: Record<string, { bg: string; border: string; text: string }> = {
-  SEV1: { bg: '#FEE2E2', border: '#FECACA', text: '#991B1B' },
-  SEV2: { bg: '#FEF3C7', border: '#FDE68A', text: '#92400E' },
-  SEV3: { bg: '#DBEAFE', border: '#BFDBFE', text: '#1E40AF' },
-  SEV4: { bg: '#F1F5F9', border: 'var(--bd-default, #E2E8F0)', text: '#475569' },
+const SEV_STYLES: Record<string, { bg: string; border: string; text: string; darkBg: string; darkBorder: string; darkText: string }> = {
+  SEV1: { bg: '#FEE2E2', border: '#FECACA', text: '#991B1B', darkBg: 'rgba(239,68,68,0.12)', darkBorder: 'rgba(239,68,68,0.2)', darkText: '#FCA5A5' },
+  SEV2: { bg: '#FEF3C7', border: '#FDE68A', text: '#92400E', darkBg: 'rgba(251,191,36,0.12)', darkBorder: 'rgba(251,191,36,0.2)', darkText: '#FDE68A' },
+  SEV3: { bg: '#DBEAFE', border: '#BFDBFE', text: '#1E40AF', darkBg: 'rgba(59,130,246,0.12)', darkBorder: 'rgba(59,130,246,0.2)', darkText: '#93C5FD' },
+  SEV4: { bg: '#F1F5F9', border: '#E2E8F0', text: '#475569', darkBg: '#2E2E2E', darkBorder: '#454545', darkText: '#A1A1A1' },
 };
 
 export function NewIncidentModal({ open, onClose }: NewIncidentModalProps) {
   const createIncident = useCreateIncident();
   const qc = useQueryClient();
+  const { isDark } = useTheme();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [severity, setSeverity] = useState<string>('SEV3');
@@ -95,12 +97,12 @@ export function NewIncidentModal({ open, onClose }: NewIncidentModalProps) {
                     className="p-2 text-center transition-all"
                     style={{
                       borderRadius: 4,
-                      border: `1.5px solid ${selected ? s.text : s.border}`,
-                      backgroundColor: selected ? s.bg : '#FFFFFF',
+                      border: `1.5px solid ${selected ? (isDark ? s.darkText : s.text) : (isDark ? s.darkBorder : s.border)}`,
+                      backgroundColor: selected ? (isDark ? s.darkBg : s.bg) : (isDark ? '#1A1A1A' : '#FFFFFF'),
                       fontFamily: 'JetBrains Mono, monospace',
                       fontSize: 12,
                       fontWeight: 700,
-                      color: s.text,
+                      color: isDark ? s.darkText : s.text,
                     }}
                   >
                     {sev.replace(/(\d)/, '-$1')}

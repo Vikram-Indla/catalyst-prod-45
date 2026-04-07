@@ -80,21 +80,10 @@ const STATUS_CONFIG: Record<string, { label: string; dotColor: string; borderCol
   'completed': { label: 'COMPLETED', dotColor: 'bg-secondary-green', borderColor: 'border-secondary-green', textColor: 'text-secondary-green' },
 };
 
-// Status Badge with outlined style and dot indicator
+// Status Badge — delegates to shared StatusLozenge (3-colour guardrail)
+import { StatusLozenge as SharedStatusLozenge } from '@/components/ui/StatusLozenge';
 function StatusBadge({ status }: { status: string }) {
-  const normalizedStatus = status.toLowerCase().replace(/[\s_]+/g, '-');
-  const config = STATUS_CONFIG[normalizedStatus] || STATUS_CONFIG['pending'];
-  
-  return (
-    <span className={cn(
-      "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold uppercase tracking-wider border bg-transparent",
-      config.borderColor,
-      config.textColor
-    )}>
-      <span className={cn("w-1.5 h-1.5 rounded-full", config.dotColor)} />
-      {config.label}
-    </span>
-  );
+  return <SharedStatusLozenge status={status} />;
 }
 
 // Sortable header component

@@ -6,6 +6,7 @@
 import { cn } from '@/lib/utils';
 import { TrendingUp, TrendingDown } from 'lucide-react';
 import type { ProgressBaseline, TrendCode } from '../../lib/okrTypes';
+import { useTheme } from '@/hooks/useTheme';
 
 interface OkrProgressCellProps {
   baseline: ProgressBaseline;
@@ -52,11 +53,12 @@ function TrendArrow({ trend }: { trend: TrendCode }) {
 }
 
 export function OkrProgressCell({ baseline, status, compact = false }: OkrProgressCellProps) {
+  const { isDark } = useTheme();
   const { actual, trend, variance } = baseline;
-  
+
   // Only show dash if actual is null/undefined (not just 0)
   if (actual == null) {
-    return <span className="text-sm text-[#8a8a8a] text-right block">—</span>;
+    return <span className="text-sm text-muted-foreground text-right block">—</span>;
   }
 
   const barColor = getProgressBarColor(actual);
@@ -65,7 +67,8 @@ export function OkrProgressCell({ baseline, status, compact = false }: OkrProgre
     <div className="flex items-center justify-start gap-3 w-full">
       {/* Progress bar - fixed width, left-aligned with visible track */}
       <div className={cn(
-        "h-2 rounded-full overflow-hidden flex-shrink-0 bg-[#e5e5e5]",
+        "h-2 rounded-full overflow-hidden flex-shrink-0",
+        isDark ? 'bg-[#292929]' : 'bg-[#e5e5e5]',
         compact ? 'w-20' : 'w-28'
       )}>
         <div
@@ -73,9 +76,9 @@ export function OkrProgressCell({ baseline, status, compact = false }: OkrProgre
           style={{ width: `${Math.min(actual, 100)}%` }}
         />
       </div>
-      
+
       {/* Percentage */}
-      <span className="text-[14px] font-semibold text-[#171717] flex-shrink-0 min-w-[36px] text-left tabular-nums">
+      <span className={cn("text-[14px] font-semibold flex-shrink-0 min-w-[36px] text-left tabular-nums", isDark ? 'text-[#EDEDED]' : 'text-[#171717]')}>
         {Math.round(actual)}%
       </span>
       
