@@ -351,17 +351,23 @@ export const CreateStoryDialog: React.FC<CreateStoryDialogProps> = ({
       }
 
       // 2. Fallback: derive statuses from ph_issues for this project
+      // Filter to known workflow statuses only (exclude legacy/orphan statuses)
       if (projectKey) {
+        const KNOWN_WORKFLOW_STATUSES = new Set([
+          'In Requirements', 'In Design', 'Ready for Development', 'Technical Validation',
+          'In Development', 'On Hold', 'In QA', 'In Entity Integration', 'In UAT',
+          'In BETA', 'End to End Testing', 'Production Ready', 'Beta Ready', 'In Production',
+          'Backlog', 'To Do', 'Todo', 'Done', 'Closed',
+        ]);
         const { data: issueStatuses } = await supabase
           .from('ph_issues')
           .select('status, status_category')
           .eq('project_key', projectKey)
           .is('jira_removed_at', null);
         if (issueStatuses && issueStatuses.length > 0) {
-          // Deduplicate
           const seen = new Map<string, { name: string; category: string }>();
           for (const s of issueStatuses) {
-            if (s.status && !seen.has(s.status)) {
+            if (s.status && !seen.has(s.status) && KNOWN_WORKFLOW_STATUSES.has(s.status)) {
               seen.set(s.status, { name: s.status, category: s.status_category || 'todo' });
             }
           }
