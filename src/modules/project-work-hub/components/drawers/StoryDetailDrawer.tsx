@@ -7,11 +7,12 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
-import { X, MessageSquare, History, FileText } from 'lucide-react';
+import { X, MessageSquare, History, FileText, ArrowRight, Eye } from 'lucide-react';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { ParentEpicChip } from '../shared/ParentEpicChip';
 import { getLozengeStyle, STORY_STATUS_LOZENGE, getPriorityLabel, getPriorityColor, getInitials } from '../../utils/backlog.utils';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { format, formatDistanceToNow } from 'date-fns';
 import { toast } from 'sonner';
 
@@ -33,6 +34,182 @@ const STATUS_GROUPS = [
   { label: 'IN PROGRESS', statuses: ['In Development', 'In QA', 'In UAT', 'BETA READY', 'In BETA', 'In Progress', 'In Review'] },
   { label: 'DONE', statuses: ['In Production', 'Done'] },
 ];
+
+// ─── Workflow Transitions (derived from BAU Jira workflow) ───
+// Maps: current status → { label: transition name, target: target status }[]
+const WORKFLOW_TRANSITIONS: Record<string, { label: string; target: string }[]> = {
+  'In Requirements': [
+    { label: 'Design', target: 'In Design' },
+    { label: 'dev', target: 'Ready for Development' },
+    { label: 'TV', target: 'Technical Validation' },
+  ],
+  'In Design': [
+    { label: 'req', target: 'In Requirements' },
+    { label: 'dev', target: 'Ready for Development' },
+  ],
+  'Ready for Development': [
+    { label: 'dev', target: 'In Development' },
+    { label: 'req', target: 'In Requirements' },
+  ],
+  'Technical Validation': [
+    { label: 'req', target: 'In Requirements' },
+    { label: 'dev', target: 'Ready for Development' },
+  ],
+  'In Development': [
+    { label: 'QA', target: 'In QA' },
+    { label: 'hold', target: 'On Hold' },
+    { label: 'req', target: 'In Requirements' },
+  ],
+  'On Hold': [
+    { label: 'dev', target: 'In Development' },
+    { label: 'req', target: 'In Requirements' },
+  ],
+  'In QA': [
+    { label: 'dev', target: 'In Development' },
+    { label: 'INT', target: 'In Entity Integration' },
+    { label: 'UAT', target: 'In UAT' },
+  ],
+  'In Entity Integration': [
+    { label: 'QA', target: 'In QA' },
+    { label: 'UAT', target: 'In UAT' },
+  ],
+  'In UAT': [
+    { label: 'BETA', target: 'In BETA' },
+    { label: 'QA', target: 'In QA' },
+    { label: 'prod', target: 'In Production' },
+  ],
+  'In BETA': [
+    { label: 'E2E', target: 'End to End Testing' },
+    { label: 'UAT', target: 'In UAT' },
+    { label: 'prod ready', target: 'Production Ready' },
+    { label: 'prod', target: 'In Production' },
+  ],
+  'End to End Testing': [
+    { label: 'prod ready', target: 'Production Ready' },
+    { label: 'BETA', target: 'In BETA' },
+    { label: 'beta ready', target: 'Beta Ready' },
+  ],
+  'Production Ready': [
+    { label: 'prod', target: 'In Production' },
+    { label: 'E2E', target: 'End to End Testing' },
+  ],
+  'Beta Ready': [
+    { label: 'prod', target: 'In Production' },
+    { label: 'E2E', target: 'End to End Testing' },
+  ],
+  'In Production': [],
+};
+
+// All unique statuses in the workflow for the diagram
+const WORKFLOW_NODES = [
+  { id: 'In Requirements', category: 'todo' },
+  { id: 'In Design', category: 'todo' },
+  { id: 'Ready for Development', category: 'todo' },
+  { id: 'Technical Validation', category: 'todo' },
+  { id: 'In Development', category: 'in_progress' },
+  { id: 'On Hold', category: 'in_progress' },
+  { id: 'In QA', category: 'in_progress' },
+  { id: 'In Entity Integration', category: 'in_progress' },
+  { id: 'In UAT', category: 'in_progress' },
+  { id: 'In BETA', category: 'in_progress' },
+  { id: 'End to End Testing', category: 'in_progress' },
+  { id: 'Production Ready', category: 'done' },
+  { id: 'Beta Ready', category: 'done' },
+  { id: 'In Production', category: 'done' },
+];
+
+const NODE_COLORS: Record<string, { bg: string; border: string }> = {
+  todo: { bg: '#F1F5F9', border: '#CBD5E1' },
+  in_progress: { bg: '#DBEAFE', border: '#93C5FD' },
+  done: { bg: '#D1FAE5', border: '#6EE7B7' },
+};
+
+function getStatusCategory(status: string): string {
+  const node = WORKFLOW_NODES.find(n => n.id === status);
+  return node?.category || 'todo';
+}
+
+function getStatusLozengeColor(category: string): string {
+  if (category === 'done') return '#1B7F37';
+  if (category === 'in_progress') return '#0C66E4';
+  return '#A5ADBA';
+}
+
+// ─── View Workflow Modal ─────────────────────────────────
+function WorkflowModal({ open, onClose, currentStatus }: { open: boolean; onClose: () => void; currentStatus: string }) {
+  const transitions = Object.entries(WORKFLOW_TRANSITIONS).flatMap(([from, tos]) =>
+    tos.map(t => ({ from, to: t.target }))
+  );
+  const currentTransitions = WORKFLOW_TRANSITIONS[currentStatus] || [];
+  const canMoveTo = currentTransitions.map(t => t.target);
+
+  return (
+    <Dialog open={open} onOpenChange={v => { if (!v) onClose(); }}>
+      <DialogContent className="!max-w-[900px] !rounded-[6px] !bg-white !p-0" style={{ maxHeight: '85vh' }}>
+        <div className="px-6 pt-5 pb-4 border-b" style={{ borderColor: '#E2E8F0' }}>
+          <h2 style={{ fontSize: 16, fontWeight: 650, color: '#292A2E', fontFamily: 'Inter, sans-serif' }}>Workflow</h2>
+        </div>
+        <div className="px-6 py-5" style={{ maxHeight: 'calc(85vh - 120px)', overflowY: 'auto' }}>
+          {/* Current status + valid moves */}
+          <div className="flex items-start gap-8 mb-6">
+            <div>
+              <div style={{ fontSize: 12, fontWeight: 650, color: '#505258', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Current status</div>
+              <span style={{
+                display: 'inline-flex', alignItems: 'center', height: 24, padding: '0 8px',
+                borderRadius: 3, fontSize: 12, fontWeight: 700, border: '1px solid #292A2E', color: '#292A2E',
+              }}>{currentStatus.toUpperCase()}</span>
+            </div>
+            {canMoveTo.length > 0 && (
+              <div>
+                <div style={{ fontSize: 12, fontWeight: 650, color: '#505258', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.05em' }}>This work item can be moved to</div>
+                <div className="flex flex-wrap gap-2">
+                  {canMoveTo.map(s => (
+                    <span key={s} style={{
+                      display: 'inline-flex', alignItems: 'center', height: 24, padding: '0 8px',
+                      borderRadius: 3, fontSize: 12, fontWeight: 600, border: '1px solid #CBD5E1', color: '#505258',
+                    }}>{s.toUpperCase()}</span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+          {/* Status grid */}
+          <div style={{ border: '1px solid #E2E8F0', borderRadius: 6, padding: 24 }}>
+            <div className="flex flex-wrap gap-3 justify-center">
+              {WORKFLOW_NODES.map(node => {
+                const colors = NODE_COLORS[node.category];
+                const isCurrent = node.id === currentStatus;
+                const isReachable = canMoveTo.includes(node.id);
+                return (
+                  <div
+                    key={node.id}
+                    style={{
+                      display: 'inline-flex', alignItems: 'center', height: 32, padding: '0 12px',
+                      borderRadius: 4, fontSize: 11, fontWeight: 600, textTransform: 'uppercase',
+                      letterSpacing: '0.02em', whiteSpace: 'nowrap',
+                      background: isCurrent ? '#DBEAFE' : colors.bg,
+                      border: `2px solid ${isCurrent ? '#2563EB' : isReachable ? '#2563EB' : colors.border}`,
+                      color: isCurrent ? '#1E40AF' : '#505258',
+                      boxShadow: isCurrent ? '0 0 0 2px rgba(37,99,235,0.2)' : 'none',
+                    }}
+                  >
+                    {node.id}
+                  </div>
+                );
+              })}
+            </div>
+            <p className="text-center mt-4" style={{ fontSize: 11, color: '#94A3B8' }}>
+              Current status highlighted in blue. Reachable statuses have blue border.
+            </p>
+          </div>
+        </div>
+        <div className="px-6 py-3 border-t flex justify-end" style={{ borderColor: '#E2E8F0' }}>
+          <button onClick={onClose} style={{ height: 32, padding: '0 16px', borderRadius: 3, fontSize: 14, fontWeight: 500, color: '#505258', background: 'transparent', border: 'none', cursor: 'pointer' }}>Close</button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
 
 function getStatusLozengeColors(status: string): { bg: string; text: string; label: string } {
   const cfg = STORY_STATUS_LOZENGE[status];
@@ -68,6 +245,7 @@ export const StoryDetailDrawer: React.FC<StoryDetailDrawerProps> = ({ isOpen, on
   const [editingDesc, setEditingDesc] = useState(false);
   const [descValue, setDescValue] = useState('');
   const [activeTab, setActiveTab] = useState<TabId>('details');
+  const [workflowOpen, setWorkflowOpen] = useState(false);
 
   // Main query
   const { data: story, isLoading, error } = useQuery({
@@ -223,43 +401,88 @@ export const StoryDetailDrawer: React.FC<StoryDetailDrawerProps> = ({ isOpen, on
           <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
             {/* Title + Status + Description (always visible) */}
             <div style={{ padding: '16px 20px 0' }}>
-              {/* Status lozenge (clickable) */}
+              {/* Status lozenge with workflow transitions (Jira-style) */}
               <div style={{ marginBottom: 12 }}>
                 <Popover>
                   <PopoverTrigger asChild>
-                    <button style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
-                      {statusColors && (
-                        <span style={{
-                          display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px',
-                          borderRadius: 4, fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
-                          letterSpacing: '0.03em', background: statusColors.bg, color: statusColors.text,
-                        }}>
-                          {statusColors.label}
-                        </span>
-                      )}
+                    <button style={{
+                      display: 'inline-flex', alignItems: 'center', gap: 4, height: 28, padding: '0 10px',
+                      borderRadius: 3, fontSize: 12, fontWeight: 700, textTransform: 'uppercase',
+                      border: 'none', cursor: 'pointer',
+                      background: statusColors ? getStatusLozengeColor(getStatusCategory(story.status)) : '#A5ADBA',
+                      color: '#FFFFFF',
+                    }}>
+                      {story.status?.toUpperCase() || 'UNKNOWN'}
+                      <span style={{ fontSize: 8, marginLeft: 2 }}>▾</span>
                     </button>
                   </PopoverTrigger>
-                  <PopoverContent align="start" style={{ width: 220, padding: '4px 0', background: 'var(--bg-app, #FFFFFF)', border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6, zIndex: 9999, maxHeight: 320, overflowY: 'auto' }}>
-                    {STATUS_GROUPS.map(group => (
-                      <div key={group.label}>
-                        <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#94A3B8', padding: '6px 12px 2px' }}>{group.label}</div>
-                        {group.statuses.map(s => {
-                          const sc = getStatusLozengeColors(s);
-                          return (
-                            <button key={s} onClick={() => handleUpdate('status', s)} style={{
-                              width: '100%', padding: '5px 12px', fontSize: 13, border: 'none', textAlign: 'left',
-                              background: story.status === s ? 'rgba(37,99,235,0.08)' : 'transparent',
-                              color: 'var(--fg-1, #0F172A)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
-                            }}>
-                              <span style={{ display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px', borderRadius: 4, fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em', background: sc.bg, color: sc.text }}>{sc.label}</span>
-                            </button>
-                          );
-                        })}
-                      </div>
-                    ))}
+                  <PopoverContent align="start" style={{ width: 300, padding: 0, background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 6, zIndex: 9999, overflow: 'hidden' }}>
+                    {/* Transition options (Jira-style: label → TARGET) */}
+                    {(() => {
+                      const transitions = WORKFLOW_TRANSITIONS[story.status] || [];
+                      if (transitions.length > 0) {
+                        return (
+                          <>
+                            {transitions.map(t => {
+                              const targetCat = getStatusCategory(t.target);
+                              const targetColor = targetCat === 'done' ? '#1B7F37' : targetCat === 'in_progress' ? '#0C66E4' : '#A5ADBA';
+                              return (
+                                <button
+                                  key={t.target}
+                                  onClick={() => handleUpdate('status', t.target)}
+                                  className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-[#F8FAFC] transition-colors"
+                                  style={{ border: 'none', cursor: 'pointer', background: 'transparent' }}
+                                >
+                                  <span style={{ fontSize: 13, fontWeight: 500, color: '#505258', minWidth: 40 }}>{t.label}</span>
+                                  <ArrowRight size={14} style={{ color: '#94A3B8', flexShrink: 0 }} />
+                                  <span style={{
+                                    display: 'inline-flex', alignItems: 'center', height: 22, padding: '0 8px',
+                                    borderRadius: 3, fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
+                                    background: targetColor, color: '#FFFFFF', letterSpacing: '0.02em',
+                                  }}>
+                                    {t.target.toUpperCase()}
+                                  </span>
+                                </button>
+                              );
+                            })}
+                          </>
+                        );
+                      }
+                      // Fallback: show all statuses grouped (for statuses not in transition map)
+                      return STATUS_GROUPS.map(group => (
+                        <div key={group.label}>
+                          <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#94A3B8', padding: '8px 12px 4px' }}>{group.label}</div>
+                          {group.statuses.map(s => {
+                            const sc = getStatusLozengeColors(s);
+                            return (
+                              <button key={s} onClick={() => handleUpdate('status', s)} style={{
+                                width: '100%', padding: '5px 12px', fontSize: 13, border: 'none', textAlign: 'left',
+                                background: story.status === s ? 'rgba(37,99,235,0.08)' : 'transparent',
+                                color: '#292A2E', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
+                              }}>
+                                <span style={{ display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px', borderRadius: 4, fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em', background: sc.bg, color: sc.text }}>{sc.label}</span>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      ));
+                    })()}
+                    {/* Divider + View Workflow link */}
+                    <div style={{ borderTop: '1px solid #E2E8F0' }}>
+                      <button
+                        onClick={() => setWorkflowOpen(true)}
+                        className="w-full flex items-center gap-2 px-4 py-2.5 hover:bg-[#F8FAFC] transition-colors"
+                        style={{ border: 'none', cursor: 'pointer', background: 'transparent', fontSize: 13, color: '#505258', fontWeight: 500 }}
+                      >
+                        <Eye size={14} style={{ color: '#94A3B8' }} />
+                        View workflow
+                      </button>
+                    </div>
                   </PopoverContent>
                 </Popover>
               </div>
+              {/* Workflow modal */}
+              <WorkflowModal open={workflowOpen} onClose={() => setWorkflowOpen(false)} currentStatus={story.status || ''} />
 
               {/* Title */}
               {editingTitle ? (
