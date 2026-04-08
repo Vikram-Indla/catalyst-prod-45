@@ -136,6 +136,7 @@ export default function StoryDetailModal({ isOpen, onClose, itemId, projectId, p
   const { user: authUser } = useAuth();
   const dt = isDark ? TD : T;
   const overlayRef = useRef<HTMLDivElement>(null);
+  const avatarsByName = useProfileAvatarsByName();
 
   const [editingTitle, setEditingTitle] = useState(false);
   const [titleValue, setTitleValue] = useState('');
