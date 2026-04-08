@@ -142,12 +142,12 @@ function WhySurfaced({ trigger }: { trigger: string }) {
         <div style={{
           marginBlockStart: 4,
           padding: '6px 8px',
-          background: 'rgba(37,99,235,.04)',
-          border: '0.75px solid rgba(37,99,235,.15)',
+          background: T.isDark ? 'rgba(37,99,235,.08)' : 'rgba(37,99,235,.04)',
+          border: `0.75px solid ${T.isDark ? 'rgba(37,99,235,.2)' : 'rgba(37,99,235,.12)'}`,
           borderRadius: 4,
           fontFamily: 'Inter, sans-serif',
-          fontSize: 11, fontStyle: 'italic',
-          color: 'rgba(37,99,235,.6)',
+          fontSize: 12, fontStyle: 'italic',
+          color: T.ink3,
           lineHeight: 1.5,
         }}>
           {trigger}
