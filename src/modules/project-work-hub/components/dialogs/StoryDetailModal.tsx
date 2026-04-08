@@ -62,11 +62,36 @@ function getStatusCategory(s: string): string {
   return 'todo';
 }
 
+function getStatusLozenge(status?: string | null, statusCategory?: string | null) {
+  const normalizedStatus = status?.toLowerCase() ?? '';
+  const cat = statusCategory?.toLowerCase() ?? '';
+
+  if (
+    cat === 'done' ||
+    cat === 'complete' ||
+    normalizedStatus === 'done' ||
+    normalizedStatus === 'completed' ||
+    normalizedStatus === 'approved'
+  ) {
+    return { bg: '#E3FCEF', color: '#006644' };
+  }
+
+  if (
+    cat === 'in_progress' ||
+    cat === 'inprogress' ||
+    normalizedStatus.includes('progress') ||
+    normalizedStatus.includes('review') ||
+    normalizedStatus.includes('beta')
+  ) {
+    return { bg: '#DEEBFF', color: '#0747A6' };
+  }
+
+  return { bg: '#DFE1E6', color: '#253858' };
+}
+
 function lozengeStyle(status: string) {
-  const cat = getStatusCategory(status);
-  if (cat === 'done') return { background: '#E3FCEF', color: '#006644' };
-  if (cat === 'in_progress') return { background: '#DEEBFF', color: '#0747A6' };
-  return { background: '#DFE1E6', color: '#253858' };
+  const s = getStatusLozenge(status, getStatusCategory(status));
+  return { background: s.bg, color: s.color };
 }
 
 const LOZENGE_BASE: React.CSSProperties = {
@@ -650,9 +675,15 @@ export default function StoryDetailModal({
       >
         {/* ═══ HEADER ═══ */}
         <div style={{
-          background: DT.headerBg, borderBottom: `1px solid ${DT.border}`,
-          padding: '0 16px', height: 48, display: 'flex', alignItems: 'center',
-          flexShrink: 0, gap: 8,
+          background: '#F4F5F7',
+          borderBottom: '1px solid #DFE1E6',
+          height: '48px',
+          padding: '0 16px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexShrink: 0,
+          gap: 8,
         }}>
           {/* Left breadcrumb */}
           <span style={{ fontSize: 12, color: DT.labelGrey }}>{projectKey}</span>
@@ -779,41 +810,55 @@ export default function StoryDetailModal({
                 {editingDesc ? (
                   <div>
                     <textarea
-                      autoFocus
                       value={descDraft}
-                      onChange={e => setDescDraft(e.target.value)}
-                      onKeyDown={e => { if (e.key === 'Escape') setEditingDesc(false); }}
+                      onChange={(e) => setDescDraft(e.target.value)}
                       style={{
-                        width: '100%', minHeight: 120, fontSize: 14, color: DT.bodyText,
-                        border: `1px solid ${DT.border}`, borderRadius: 4, padding: '8px 12px',
-                        fontFamily: 'inherit', resize: 'vertical', outline: 'none', lineHeight: 1.7,
+                        width: '100%', minHeight: 120, padding: '8px 12px',
+                        border: '2px solid #0052CC', borderRadius: 4,
+                        fontSize: 14, color: '#172B4D', resize: 'vertical',
+                        fontFamily: 'Inter, sans-serif', outline: 'none',
+                        boxSizing: 'border-box'
                       }}
-                      onFocus={e => e.currentTarget.style.borderColor = '#4C9AFF'}
-                      onBlur={e => { e.currentTarget.style.borderColor = DT.border; }}
+                      autoFocus
                     />
-                    <div style={{ display: 'flex', gap: 6, marginTop: 6 }}>
-                      <button onClick={handleSaveDesc} style={{
-                        padding: '4px 12px', fontSize: 12, fontWeight: 600, background: DT.linkBlue,
-                        color: '#fff', border: 'none', borderRadius: 3, cursor: 'pointer',
-                      }}>Save</button>
-                      <button onClick={() => setEditingDesc(false)} style={{
-                        padding: '4px 12px', fontSize: 12, color: DT.labelGrey, background: 'none',
-                        border: 'none', cursor: 'pointer',
-                      }}>Cancel</button>
+                    <div style={{ display:'flex', gap:8, marginTop:8 }}>
+                      <button onClick={handleSaveDesc}
+                        style={{ background:'#0052CC', color:'#fff', border:'none',
+                                 borderRadius:4, padding:'6px 16px', fontSize:13,
+                                 fontWeight:600, cursor:'pointer' }}>
+                        Save
+                      </button>
+                      <button onClick={() => { setEditingDesc(false); setDescDraft(story?.description_text ?? ''); }}
+                        style={{ background:'none', color:'#6B778C', border:'1px solid #DFE1E6',
+                                 borderRadius:4, padding:'6px 16px', fontSize:13, cursor:'pointer' }}>
+                        Cancel
+                      </button>
                     </div>
                   </div>
                 ) : (
-                  <div
-                    onClick={() => { setDescDraft(story.description_text || ''); setEditingDesc(true); }}
-                    style={{
-                      fontSize: 14, color: story.description_text ? DT.bodyText : DT.labelGrey,
-                      fontStyle: story.description_text ? 'normal' : 'italic',
-                      whiteSpace: 'pre-wrap', lineHeight: 1.7, cursor: 'text',
-                      minHeight: 40, padding: '4px 0',
-                    }}
-                  >
-                    {story.description_text || 'Add a description...'}
-                  </div>
+                  story?.description_text ? (
+                    <div
+                      onClick={() => { setDescDraft(story.description_text ?? ''); setEditingDesc(true); }}
+                      style={{
+                        fontSize: 14, color: '#172B4D', lineHeight: 1.6,
+                        padding: '8px 0', cursor: 'pointer', minHeight: 40,
+                        whiteSpace: 'pre-wrap', borderRadius: 4
+                      }}
+                      title="Click to edit description"
+                    >
+                      {story.description_text}
+                    </div>
+                  ) : (
+                    <div
+                      onClick={() => setEditingDesc(true)}
+                      style={{
+                        fontSize: 14, color: '#6B778C', cursor: 'pointer',
+                        padding: '8px 0', minHeight: 40, fontStyle: 'italic'
+                      }}
+                    >
+                      Add a description…
+                    </div>
+                  )
                 )}
               </div>
 
@@ -1221,37 +1266,63 @@ export default function StoryDetailModal({
               {/* STATUS */}
               <div ref={statusRef} style={{ position: 'relative', marginBottom: 16 }}>
                 <div style={{ ...LABEL, marginBottom: 4 }}>Status</div>
-                <button
-                  onClick={() => setStatusOpen(o => !o)}
-                  style={{
-                    width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                    padding: '5px 10px', borderRadius: 3, border: 'none', cursor: 'pointer',
-                    fontSize: 12, fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase',
-                    ...lozengeStyle(story.status || 'To Do'),
-                  }}
-                >
-                  {story.status || 'To Do'}
-                  <ChevronDown size={12} />
-                </button>
-                {statusOpen && (
-                  <div style={{
-                    position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 10,
-                    background: '#fff', border: `1px solid ${DT.border}`, borderRadius: 4,
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.12)', marginTop: 2,
-                  }}>
-                    {STATUS_OPTIONS.map(s => (
-                      <div key={s} onClick={() => handleStatusChange(s)} style={{
-                        padding: '6px 10px', cursor: 'pointer', fontSize: 12,
-                        display: 'flex', alignItems: 'center', gap: 6,
-                      }}
-                        onMouseEnter={e => e.currentTarget.style.background = DT.hoverRow}
-                        onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-                      >
-                        <StatusLozenge status={s} />
-                      </div>
-                    ))}
+                <div style={{ position:'relative' }}>
+                  <div
+                    onClick={() => setStatusOpen(!statusOpen)}
+                    style={{
+                      display: 'inline-flex', alignItems: 'center', gap: 4,
+                      background: getStatusLozenge(story.status || 'To Do', story.status_category || '').bg,
+                      color: getStatusLozenge(story.status || 'To Do', story.status_category || '').color,
+                      height: 20, borderRadius: 3, padding: '0 8px',
+                      fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
+                      letterSpacing: '0.03em', cursor: 'pointer', userSelect: 'none'
+                    }}
+                  >
+                    {story.status || 'To Do'}
+                    <ChevronDown size={12} />
                   </div>
-                )}
+
+                  {statusOpen && (
+                    <div style={{
+                      position: 'absolute', top: 28, left: 0, zIndex: 100,
+                      background: '#fff', border: '1px solid #DFE1E6',
+                      borderRadius: 4, boxShadow: '0 4px 12px rgba(9,30,66,0.15)',
+                      minWidth: 180, padding: '4px 0'
+                    }}>
+                      {[
+                        { label: 'To Do', category: 'to_do' },
+                        { label: 'In Progress', category: 'in_progress' },
+                        { label: 'In Review', category: 'in_progress' },
+                        { label: 'Done', category: 'done' },
+                        { label: 'On Hold', category: 'to_do' },
+                        { label: 'In Requirements', category: 'to_do' },
+                      ].map(opt => (
+                        <div
+                          key={opt.label}
+                          onClick={() => {
+                            handleStatusChange(opt.label);
+                            setStatusOpen(false);
+                          }}
+                          style={{
+                            padding: '8px 12px', cursor: 'pointer', fontSize: 13,
+                            color: '#172B4D', display: 'flex', alignItems: 'center', gap: 8
+                          }}
+                          onMouseEnter={e => (e.currentTarget.style.background = 'rgba(9,30,66,0.04)')}
+                          onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                        >
+                          <span style={{
+                            background: getStatusLozenge(opt.label, opt.category).bg,
+                            color: getStatusLozenge(opt.label, opt.category).color,
+                            borderRadius: 3, padding: '1px 6px',
+                            fontSize: 11, fontWeight: 700, textTransform: 'uppercase'
+                          }}>
+                            {opt.label}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* ASSIGNEE */}
@@ -1326,24 +1397,26 @@ export default function StoryDetailModal({
               {/* STORY POINTS */}
               <div style={{ marginBottom: 16 }}>
                 <div style={{ ...LABEL, marginBottom: 4 }}>Story Points</div>
-                {editingSP ? (
-                  <input
-                    autoFocus
-                    type="number" min={0} max={99}
-                    value={spDraft}
-                    onChange={e => setSpDraft(e.target.value)}
-                    onBlur={handleSaveSP}
-                    onKeyDown={e => { if (e.key === 'Enter') handleSaveSP(); if (e.key === 'Escape') setEditingSP(false); }}
-                    style={{ width: 60, fontSize: 13, padding: '2px 6px', border: `1px solid ${DT.border}`, borderRadius: 3 }}
-                  />
-                ) : (
-                  <span
-                    onClick={() => { setSpDraft(String(story.story_points ?? '')); setEditingSP(true); }}
-                    style={{ fontSize: 13, color: DT.bodyText, cursor: 'text' }}
-                  >
-                    {story.story_points ?? '—'}
-                  </span>
-                )}
+                <input
+                  type="number"
+                  defaultValue={story?.story_points ?? ''}
+                  onBlur={(e) => {
+                    const val = e.target.value ? parseInt(e.target.value) : null;
+                    supabase.from('ph_issues')
+                      .update({ story_points: val })
+                      .eq('id', itemId)
+                      .then(() => refetch());
+                  }}
+                  placeholder="—"
+                  style={{
+                    width: 64, border: '1px solid #DFE1E6', borderRadius: 4,
+                    padding: '3px 8px', fontSize: 13, color: '#172B4D',
+                    textAlign: 'center', outline: 'none',
+                    fontFamily: 'Inter, sans-serif'
+                  }}
+                  onFocus={e => (e.target.style.borderColor = '#0052CC')}
+                  onBlurCapture={e => (e.target.style.borderColor = '#DFE1E6')}
+                />
               </div>
 
               {/* DUE DATE */}
