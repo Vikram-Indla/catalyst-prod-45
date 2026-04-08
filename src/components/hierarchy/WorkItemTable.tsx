@@ -86,7 +86,7 @@ function extractSortValue(item: WorkItem, colId: string): unknown {
     case 'reporter':
       return item.reporter ?? '';
     default:
-      return (item as Record<string, unknown>)[colId] ?? '';
+      return (item as unknown as Record<string, unknown>)[colId] ?? '';
   }
 }
 
