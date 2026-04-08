@@ -462,7 +462,7 @@ export default function StoryDetailModal({
   const [titleDraft, setTitleDraft] = useState('');
   const [editingDesc, setEditingDesc] = useState(false);
   const [descDraft, setDescDraft] = useState('');
-  const [activeTab, setActiveTab] = useState<'all' | 'comments' | 'history' | 'worklog' | 'sla_history'>('all');
+  const [activeTab, setActiveTab] = useState<'all' | 'comments' | 'history'>('all');
   const [showUploadZone, setShowUploadZone] = useState(false);
   const [commentBody, setCommentBody] = useState('');
   const [commentFocused, setCommentFocused] = useState(false);
@@ -914,8 +914,6 @@ export default function StoryDetailModal({
     { key: 'all', label: 'All' },
     { key: 'comments', label: 'Comments' },
     { key: 'history', label: 'History' },
-    { key: 'worklog', label: 'Work log' },
-    { key: 'sla_history', label: 'SLA History' },
   ] as const;
 
   const btnBase: React.CSSProperties = {
@@ -1589,12 +1587,6 @@ export default function StoryDetailModal({
                     )}
                     {activeTab === 'history' && allHistory.length === 0 && (
                       <div style={{ fontSize: 13, color: V.textMuted, textAlign: 'center', padding: 16 }}>No activity yet</div>
-                    )}
-                    {activeTab === 'worklog' && (
-                      <div style={{ fontSize: 13, color: V.textMuted, textAlign: 'center', padding: 16 }}>No work logged</div>
-                    )}
-                    {activeTab === 'sla_history' && (
-                      <div style={{ fontSize: 13, color: V.textMuted, textAlign: 'center', padding: 16 }}>No SLA history</div>
                     )}
                   </div>
                 </div>
