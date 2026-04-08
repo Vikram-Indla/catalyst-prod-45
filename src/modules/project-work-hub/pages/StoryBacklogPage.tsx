@@ -10,6 +10,7 @@ import { ParentEpicChip } from '../components/shared/ParentEpicChip';
 import { DeleteConfirmDialog } from '../components/dialogs/DeleteConfirmDialog';
 import { CreateStoryDialog } from '../components/dialogs/CreateStoryDialog';
 import { EditStoryDialog } from '../components/dialogs/EditStoryDialog';
+import StoryDetailModal from '../components/dialogs/StoryDetailModal';
 import { Button } from '@/components/ui/button';
 import { ChevronDown, ChevronRight, Plus, Pencil, Trash2, BookOpen } from 'lucide-react';
 import { toast } from 'sonner';
@@ -20,7 +21,6 @@ import type { BacklogStory } from '../types/backlog.types';
 export default function StoryBacklogPage({ projectId: propProjectId, projectKey }: { projectId?: string; projectKey?: string }) {
   const params = useParams<{ projectId: string }>();
   const projectId = propProjectId || params.projectId;
-  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { data: stories, isLoading, error } = useStoryBacklog(projectId || '');
   const avatarsByName = useProfileAvatarsByName();
@@ -31,7 +31,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
   const [showCreate, setShowCreate] = useState(false);
   const [editStoryId, setEditStoryId] = useState<string | null>(null);
-  
+  const [detailItemId, setDetailItemId] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<BacklogStory | null>(null);
 
   const groups = useMemo(() => groupByStatus(stories || [], STORY_GROUP_ORDER), [stories]);
