@@ -137,7 +137,7 @@ function PriorityIcon({ priority }: { priority?: string | null }) {
   const c = PRIORITY_COLORS[p] || '#CF7B00';
   if (p === 'highest' || p === 'critical') return <ChevronsUp size={16} color="#AE2A19" strokeWidth={2.5} style={{ flexShrink: 0 }} />;
   if (p === 'high') return <ChevronUp size={16} color="#DE350B" strokeWidth={2.5} style={{ flexShrink: 0 }} />;
-  if (p === 'low') return <ChevronDownIcon size={16} color="#36B37E" strokeWidth={2.5} style={{ flexShrink: 0 }} />;
+  if (p === 'low') return <ChevronDown size={16} color="#36B37E" strokeWidth={2.5} style={{ flexShrink: 0 }} />;
   if (p === 'lowest') return <ChevronsDown size={16} color="#6B778C" strokeWidth={2.5} style={{ flexShrink: 0 }} />;
   // Medium — amber equals sign
   return (
