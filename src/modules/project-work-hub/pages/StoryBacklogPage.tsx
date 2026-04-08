@@ -22,7 +22,6 @@ const StoryDetailModal = lazy(() => import('../components/dialogs/StoryDetailMod
 export default function StoryBacklogPage({ projectId: propProjectId, projectKey }: { projectId?: string; projectKey?: string }) {
   const params = useParams<{ projectId: string }>();
   const projectId = propProjectId || params.projectId;
-  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { data: stories, isLoading, error } = useStoryBacklog(projectId || '');
   const avatarsByName = useProfileAvatarsByName();
@@ -34,6 +33,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
   const [showCreate, setShowCreate] = useState(false);
   const [editStoryId, setEditStoryId] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<BacklogStory | null>(null);
+  const [detailItemId, setDetailItemId] = useState<string | null>(null);
 
   const groups = useMemo(() => groupByStatus(stories || [], STORY_GROUP_ORDER), [stories]);
 
