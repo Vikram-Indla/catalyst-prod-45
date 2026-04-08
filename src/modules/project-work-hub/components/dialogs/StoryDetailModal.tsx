@@ -942,6 +942,7 @@ export default function StoryDetailModal({
           background: V.overlay, display: 'flex',
           alignItems: 'center', justifyContent: 'center',
           fontFamily: 'Inter, sans-serif',
+          animation: 'sdm-overlay-in 180ms ease-out both',
         }}
         onClick={e => { if (e.target === e.currentTarget) onClose(); }}
       >
@@ -950,11 +951,13 @@ export default function StoryDetailModal({
             width: isExpanded ? '96%' : 900,
             maxWidth: isExpanded ? '96%' : 'calc(100vw - 48px)',
             height: isExpanded ? '95vh' : 'auto',
+            minHeight: 400,
             maxHeight: isExpanded ? '95vh' : '90vh',
-            borderRadius: isExpanded ? 8 : 8,
-            transition: 'width 200ms ease, max-width 200ms ease, max-height 200ms ease, border-radius 200ms ease',
+            borderRadius: 8,
+            transition: 'width 200ms ease, max-width 200ms ease, max-height 200ms ease',
             overflow: 'hidden', display: 'flex',
             flexDirection: 'column', boxShadow: '0 8px 32px rgba(0,0,0,0.18)', background: V.white,
+            animation: 'sdm-card-in 220ms ease-out both',
           }}
           onClick={e => e.stopPropagation()}
         >
