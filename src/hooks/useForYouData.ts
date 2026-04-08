@@ -386,7 +386,7 @@ function mapIssueToWorkItem(row: any, starredSet: Set<string>, projectNameMap: M
   };
 }
 
-const SELECT_FIELDS = 'id, project_id, issue_key, project_key, project_name, issue_type, summary, status, status_category, assignee_account_id, assignee_display_name, reporter_display_name, priority, jira_updated_at, jira_created_at, parent_key, parent_summary, sprint_name, story_points, labels, fix_versions, components, description_text, last_synced_at';
+const SELECT_FIELDS = 'id, issue_key, project_key, project_name, issue_type, summary, status, status_category, assignee_account_id, assignee_display_name, reporter_display_name, priority, jira_updated_at, jira_created_at, parent_key, parent_summary, sprint_name, story_points, labels, fix_versions, components, description_text, last_synced_at';
 
 export function useForYouData() {
   const [activeMode, setActiveMode] = useState<ModeFilter>('all');
@@ -438,6 +438,11 @@ export function useForYouData() {
       setIsLoading(true);
       try {
         const { data: jiraProjects } = await supabase.from('ph_jira_projects').select('project_key, name');
+        const { data: catalystProjects } = await supabase.from('projects').select('id, key');
+        const projectIdMap = new Map<string, string>();
+        if (catalystProjects) {
+          catalystProjects.forEach(p => projectIdMap.set(p.key, p.id));
+        }
         if (jiraProjects) {
           const pMap = new Map<string, string>();
           jiraProjects.forEach(p => pMap.set(p.project_key, p.name));
@@ -464,11 +469,11 @@ export function useForYouData() {
         let jiraWorked: any[] = [];
         if (jiraAccountIds.length > 0) {
           const { data: assigned } = await supabase.from('ph_issues').select(SELECT_FIELDS).in('assignee_account_id', jiraAccountIds).order('jira_updated_at', { ascending: false }).limit(200);
-          jiraAssigned = assigned || [];
+          jiraAssigned = (assigned || []).map(r => ({ ...r, project_id: projectIdMap.get(r.project_key) || null }));
           const ninetyDaysAgo = new Date();
           ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
           const { data: worked } = await supabase.from('ph_issues').select(SELECT_FIELDS).in('assignee_account_id', jiraAccountIds).gte('jira_updated_at', ninetyDaysAgo.toISOString()).order('jira_updated_at', { ascending: false }).limit(200);
-          jiraWorked = worked || [];
+          jiraWorked = (worked || []).map(r => ({ ...r, project_id: projectIdMap.get(r.project_key) || null }));
         }
 
         // Native Catalyst tables — stories, features, epics, incidents
@@ -547,7 +552,8 @@ export function useForYouData() {
           const starredKeys = new Set(stars.map(s => s.item_id));
           setStarredItems(starredKeys as any);
           const itemIds = stars.map(s => s.item_id);
-          const { data: starredIssues } = await supabase.from('ph_issues').select(SELECT_FIELDS).in('issue_key', itemIds).order('jira_updated_at', { ascending: false });
+          const { data: starredIssuesRaw } = await supabase.from('ph_issues').select(SELECT_FIELDS).in('issue_key', itemIds).order('jira_updated_at', { ascending: false });
+          const starredIssues = (starredIssuesRaw || []).map(r => ({ ...r, project_id: projectIdMap.get(r.project_key) || null }));
           const { data: starredPlannerTasks } = await supabase.from('planner_tasks').select('task_key, title, priority, assignee_id, updated_at, created_at, status_id').in('task_key', itemIds).is('deleted_at', null);
           let starredPlannerMapped: any[] = [];
           if (starredPlannerTasks && starredPlannerTasks.length > 0) {
