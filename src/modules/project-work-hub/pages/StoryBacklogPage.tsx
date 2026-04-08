@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useQueryClient, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useStoryBacklog } from '../hooks/useBacklogData';
@@ -10,7 +10,6 @@ import { ParentEpicChip } from '../components/shared/ParentEpicChip';
 import { DeleteConfirmDialog } from '../components/dialogs/DeleteConfirmDialog';
 import { CreateStoryDialog } from '../components/dialogs/CreateStoryDialog';
 import { EditStoryDialog } from '../components/dialogs/EditStoryDialog';
-import StoryDetailModal from '../components/dialogs/StoryDetailModal';
 import { Button } from '@/components/ui/button';
 import { ChevronDown, ChevronRight, Plus, Pencil, Trash2, BookOpen } from 'lucide-react';
 import { toast } from 'sonner';
@@ -21,6 +20,7 @@ import type { BacklogStory } from '../types/backlog.types';
 export default function StoryBacklogPage({ projectId: propProjectId, projectKey }: { projectId?: string; projectKey?: string }) {
   const params = useParams<{ projectId: string }>();
   const projectId = propProjectId || params.projectId;
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { data: stories, isLoading, error } = useStoryBacklog(projectId || '');
   const avatarsByName = useProfileAvatarsByName();
@@ -31,7 +31,6 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
   const [showCreate, setShowCreate] = useState(false);
   const [editStoryId, setEditStoryId] = useState<string | null>(null);
-  const [detailItemId, setDetailItemId] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<BacklogStory | null>(null);
 
   const groups = useMemo(() => groupByStatus(stories || [], STORY_GROUP_ORDER), [stories]);
@@ -125,12 +124,12 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
                     <div key={story.id} className="group flex items-center h-[50px] px-2 border-b cursor-pointer" style={{ borderColor: tk.divider, maxHeight: 50, transition: 'background 120ms' }}
                       onMouseEnter={(e) => (e.currentTarget.style.background = tk.hoverBg)}
                       onMouseLeave={(e) => (e.currentTarget.style.background = '')}
-                      onClick={() => setDetailItemId(story.id)}>
+                      onClick={() => navigate(`/project-hub/${projectKey}/story/${story.id}`)}>
                       <div style={{ width: 38, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <input type="checkbox" onClick={(e) => e.stopPropagation()} className="opacity-0 group-hover:opacity-100 transition-opacity" style={{ width: 14, height: 14 }} />
                       </div>
                       <div style={{ width: 26, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <button onClick={(e) => { e.stopPropagation(); setDetailItemId(story.id); }} className="opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+                        <button onClick={(e) => { e.stopPropagation(); navigate(`/project-hub/${projectKey}/story/${story.id}`); }} className="opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
                           <ChevronRight className="h-3.5 w-3.5" style={{ color: tk.t3 }} />
                         </button>
                       </div>
@@ -214,16 +213,6 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
         isPending={deleteMutation.isPending}
       />
 
-      {detailItemId && (
-        <StoryDetailModal
-          isOpen={!!detailItemId}
-          onClose={() => setDetailItemId(null)}
-          itemId={detailItemId}
-          projectId={projectId || ''}
-          projectKey={projectKey || ''}
-          onOpenItem={(id) => setDetailItemId(id)}
-        />
-      )}
     </div>
   );
 }
