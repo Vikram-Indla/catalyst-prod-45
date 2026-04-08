@@ -1,9 +1,9 @@
-import type { ComponentType } from 'react';
+import type { ComponentType, SVGAttributes } from 'react';
 
 export interface ActionMenuItem {
   id: string;
   label: string;
-  icon?: ComponentType<{ size?: number; className?: string }>;
+  icon?: ComponentType<{ size?: number | string; className?: string } & SVGAttributes<SVGSVGElement>>;
   shortcut?: string;
   onClick?: () => void;
   danger?: boolean;
