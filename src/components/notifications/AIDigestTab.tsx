@@ -209,7 +209,7 @@ function DigestCard({
   const navigate = useNavigate();
   const [hovered, setHovered] = useState(false);
   const ps = PRIORITY_STYLE[item.priority] || PRIORITY_STYLE.LOW;
-  const HubIcon = HUB_ICON[item.hub] || Folder;
+  const HubIcon = HUB_ICON[item.hub] || Briefcase;
   const accentColour = item.hub_colour || HUB_COLOURS[item.hub] || '#374151';
 
   const priorityLabel = item.priority === 'HIGH' ? 'High'
