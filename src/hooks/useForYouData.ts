@@ -157,6 +157,130 @@ function mapPlannerTaskToIssueRow(row: any) {
   };
 }
 
+// Map native stories table row to ph_issues-compatible shape
+function mapStoryToIssueRow(row: any, assigneeName: string, projectName: string, projectKey: string) {
+  return {
+    id: row.id,
+    project_id: row.feature?.project_id || null,
+    issue_key: row.story_key || `US-${row.id.slice(0, 6)}`,
+    project_key: projectKey,
+    project_name: projectName,
+    issue_type: 'story',
+    summary: row.title || row.name || '',
+    status: row.status || row.state || 'Open',
+    status_category: null,
+    assignee_account_id: row.assignee_id,
+    assignee_display_name: assigneeName,
+    reporter_display_name: null,
+    priority: row.priority || 'Medium',
+    jira_updated_at: row.updated_at,
+    jira_created_at: row.created_at || row.updated_at,
+    parent_key: row.feature?.display_id || null,
+    parent_summary: row.feature?.name || null,
+    workstream_name: projectName,
+    sprint_name: null,
+    story_points: row.story_points || row.estimate_points || null,
+    labels: row.tags || null,
+    fix_versions: null,
+    components: null,
+    description_text: row.description || null,
+    last_synced_at: null,
+  };
+}
+
+// Map native features table row to ph_issues-compatible shape
+function mapFeatureToIssueRow(row: any, assigneeName: string, projectName: string, projectKey: string) {
+  return {
+    id: row.id,
+    project_id: row.project_id || null,
+    issue_key: row.display_id || `F-${row.id.slice(0, 6)}`,
+    project_key: projectKey,
+    project_name: projectName,
+    issue_type: 'feature',
+    summary: row.name || '',
+    status: row.status || 'Open',
+    status_category: null,
+    assignee_account_id: row.assignee_id,
+    assignee_display_name: assigneeName,
+    reporter_display_name: null,
+    priority: row.priority || 'Medium',
+    jira_updated_at: row.updated_at,
+    jira_created_at: row.created_at || row.updated_at,
+    parent_key: row.epic?.epic_key || null,
+    parent_summary: row.epic?.name || null,
+    workstream_name: projectName,
+    sprint_name: null,
+    story_points: row.estimate_points || null,
+    labels: row.labels || null,
+    fix_versions: null,
+    components: row.components || null,
+    description_text: row.description || null,
+    last_synced_at: null,
+  };
+}
+
+// Map native epics table row to ph_issues-compatible shape
+function mapEpicToIssueRow(row: any, assigneeName: string) {
+  return {
+    id: row.id,
+    project_id: null,
+    issue_key: row.epic_key || `E-${row.id.slice(0, 6)}`,
+    project_key: row.epic_key?.split('-')[0] || 'EP',
+    project_name: 'Portfolio',
+    issue_type: 'epic',
+    summary: row.name || '',
+    status: row.status || row.state || 'Open',
+    status_category: null,
+    assignee_account_id: row.assignee_id || row.owner_id,
+    assignee_display_name: assigneeName,
+    reporter_display_name: null,
+    priority: 'Medium',
+    jira_updated_at: row.updated_at,
+    jira_created_at: row.created_at || row.updated_at,
+    parent_key: null,
+    parent_summary: null,
+    workstream_name: 'Portfolio',
+    sprint_name: null,
+    story_points: row.points_estimate || null,
+    labels: row.tags || null,
+    fix_versions: null,
+    components: null,
+    description_text: row.description || null,
+    last_synced_at: null,
+  };
+}
+
+// Map native incidents table row to ph_issues-compatible shape
+function mapIncidentToIssueRow(row: any, assigneeName: string, projectName: string, projectKey: string) {
+  return {
+    id: row.id,
+    project_id: row.project_id || null,
+    issue_key: row.incident_key || `INC-${row.id.slice(0, 6)}`,
+    project_key: projectKey,
+    project_name: projectName,
+    issue_type: 'incident',
+    summary: row.title || '',
+    status: row.status || 'Open',
+    status_category: null,
+    assignee_account_id: row.assignee_id,
+    assignee_display_name: assigneeName,
+    reporter_display_name: row.reporter_name || null,
+    priority: row.priority || row.severity || 'Medium',
+    jira_updated_at: row.updated_at,
+    jira_created_at: row.created_at || row.updated_at,
+    parent_key: null,
+    parent_summary: null,
+    workstream_name: projectName,
+    sprint_name: null,
+    story_points: null,
+    labels: null,
+    fix_versions: null,
+    components: null,
+    description_text: row.description || null,
+    last_synced_at: null,
+  };
+}
+
 function inferHub(issueType: string, projectKey: string): HubType {
   const type = (issueType || '').toLowerCase();
   if (type.includes('incident') || type.includes('production')) return 'IncidentHub';
@@ -347,11 +471,75 @@ export function useForYouData() {
           jiraWorked = worked || [];
         }
 
-        setAssignedItems([...jiraAssigned, ...plannerMapped]);
+        // Native Catalyst tables — stories, features, epics, incidents
+        // These always get queried so the Home page shows data even without Jira sync
+        const { data: userProfileData } = await supabase.from('profiles').select('id, full_name').eq('id', authUser.id).single();
+        const userName = userProfileData?.full_name || 'Unassigned';
+
+        // Stories assigned to current user
+        const { data: nativeStories } = await supabase
+          .from('stories')
+          .select('id, story_key, title, name, status, state, priority, assignee_id, story_points, estimate_points, tags, description, updated_at, created_at, feature:features(id, name, display_id, project_id, project:projects(id, name, key))')
+          .eq('assignee_id', authUser.id)
+          .is('deleted_at', null)
+          .order('updated_at', { ascending: false })
+          .limit(200);
+        const nativeStoryRows = (nativeStories || []).map(s => {
+          const projName = s.feature?.project?.name || s.feature?.name || 'Backlog';
+          const projKey = s.feature?.project?.key || s.feature?.display_id || 'BKL';
+          return mapStoryToIssueRow(s, userName, projName, projKey);
+        });
+
+        // Features assigned to current user
+        const { data: nativeFeatures } = await supabase
+          .from('features')
+          .select('id, display_id, name, status, priority, assignee_id, estimate_points, labels, components, description, updated_at, created_at, project_id, project:projects(id, name, key), epic:epics(id, name, epic_key)')
+          .eq('assignee_id', authUser.id)
+          .is('deleted_at', null)
+          .order('updated_at', { ascending: false })
+          .limit(100);
+        const nativeFeatureRows = (nativeFeatures || []).map(f => {
+          const projName = f.project?.name || 'Portfolio';
+          const projKey = f.project?.key || 'PRT';
+          return mapFeatureToIssueRow(f, userName, projName, projKey);
+        });
+
+        // Epics assigned/owned by current user
+        const { data: nativeEpics } = await supabase
+          .from('epics')
+          .select('id, epic_key, name, status, state, assignee_id, owner_id, points_estimate, tags, description, updated_at, created_at')
+          .or(`assignee_id.eq.${authUser.id},owner_id.eq.${authUser.id}`)
+          .is('deleted_at', null)
+          .order('updated_at', { ascending: false })
+          .limit(100);
+        const nativeEpicRows = (nativeEpics || []).map(e => mapEpicToIssueRow(e, userName));
+
+        // Incidents assigned to current user
+        const { data: nativeIncidents } = await supabase
+          .from('incidents')
+          .select('id, incident_key, title, status, severity, priority, assignee_id, reporter_name, description, updated_at, created_at, project_id, project:projects!incidents_project_id_fkey(id, name, key)')
+          .eq('assignee_id', authUser.id)
+          .is('deleted_at', null)
+          .order('updated_at', { ascending: false })
+          .limit(100);
+        const nativeIncidentRows = (nativeIncidents || []).map(inc => {
+          const projName = inc.project?.name || 'Operations';
+          const projKey = inc.project?.key || 'OPS';
+          return mapIncidentToIssueRow(inc, userName, projName, projKey);
+        });
+
+        const allNativeItems = [...nativeStoryRows, ...nativeFeatureRows, ...nativeEpicRows, ...nativeIncidentRows];
+
+        // Deduplicate: Jira-synced issues take priority over native items (match by key)
+        const jiraKeys = new Set([...jiraAssigned, ...jiraWorked].map(r => r.issue_key));
+        const dedupedNativeItems = allNativeItems.filter(item => !jiraKeys.has(item.issue_key));
+
+        setAssignedItems([...jiraAssigned, ...plannerMapped, ...dedupedNativeItems]);
         const ninetyDaysAgo2 = new Date();
         ninetyDaysAgo2.setDate(ninetyDaysAgo2.getDate() - 90);
         const recentPlannerTasks = plannerMapped.filter(t => t.jira_updated_at && new Date(t.jira_updated_at) >= ninetyDaysAgo2);
-        setWorkedOnItems([...jiraWorked, ...recentPlannerTasks]);
+        const recentNativeItems = dedupedNativeItems.filter(item => item.jira_updated_at && new Date(item.jira_updated_at) >= ninetyDaysAgo2);
+        setWorkedOnItems([...jiraWorked, ...recentPlannerTasks, ...recentNativeItems]);
 
         // Starred
         const { data: stars } = await supabase.from('user_starred_items').select('item_id, item_type').eq('user_id', authUser.id);
@@ -368,7 +556,11 @@ export function useForYouData() {
             const stMap = new Map((sts || []).map(s => [s.id, s.name]));
             starredPlannerMapped = starredPlannerTasks.map(row => mapPlannerTaskToIssueRow({ ...row, assignee_name: 'Unassigned', status_name: stMap.get(row.status_id) || 'Backlog' }));
           }
-          setStarredData([...(starredIssues || []), ...starredPlannerMapped]);
+          // Also check native tables for starred items
+          const starredNativeItems = allNativeItems.filter(item => starredKeys.has(item.issue_key));
+          const existingStarredKeys = new Set([...(starredIssues || []).map((r: any) => r.issue_key), ...starredPlannerMapped.map(r => r.issue_key)]);
+          const dedupedStarredNative = starredNativeItems.filter(item => !existingStarredKeys.has(item.issue_key));
+          setStarredData([...(starredIssues || []), ...starredPlannerMapped, ...dedupedStarredNative]);
         }
       } catch (err) {
         console.error('Error fetching ForYou data:', err);
