@@ -1079,9 +1079,9 @@ export default function StoryDetailModal({
                 )}
 
                 {/* Action row — only + button (gear removed) */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 12 }}>
+                <div ref={plusMenuRef} style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 12, position: 'relative' }}>
                   <button
-                    onClick={() => setMenuOpen(true)}
+                    onClick={() => setPlusMenuOpen(o => !o)}
                     style={{
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       width: 28, height: 28, borderRadius: 4,
@@ -1092,6 +1092,22 @@ export default function StoryDetailModal({
                   >
                     <Plus size={16} />
                   </button>
+                  {plusMenuOpen && (
+                    <div style={{
+                      position: 'absolute', top: 32, left: 0, width: 220,
+                      background: V.white, borderRadius: 6, boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
+                      border: `0.75px solid ${V.border}`, zIndex: 20, overflow: 'hidden', padding: '4px 0',
+                    }}>
+                      <MenuBtn icon={<Plus size={14} />} label="Create subtask" shortcut="⇧C" onClick={() => { setShowSubtaskInput(true); setPlusMenuOpen(false); }} />
+                      <MenuBtn icon={<Link2 size={14} />} label="Link work item" shortcut="⇧K" onClick={() => { setShowLinkModal(true); setPlusMenuOpen(false); }} />
+                      <MenuBtn icon={<Paperclip size={14} />} label="Add attachment" onClick={() => { fileInputRef.current?.click(); setPlusMenuOpen(false); }} />
+                      <MenuBtn icon={<Copy size={14} />} label="Clone issue" onClick={() => { handleClone(); setPlusMenuOpen(false); }} />
+                      <MenuBtn icon={<Flag size={14} />} label={isFlagged ? 'Remove flag' : 'Add flag'} onClick={() => { setIsFlagged(f => !f); setPlusMenuOpen(false); }} />
+                      <div style={{ height: 1, background: V.border, margin: '4px 0' }} />
+                      <MenuBtn icon={<Archive size={14} />} label="Archive" onClick={() => { handleSoftDelete('Archive'); setPlusMenuOpen(false); }} />
+                      <MenuBtn icon={<Trash2 size={14} />} label="Delete" onClick={() => { handleSoftDelete('Delete'); setPlusMenuOpen(false); }} danger />
+                    </div>
+                  )}
                 </div>
 
                 {/* ── KEY DETAILS ── */}
