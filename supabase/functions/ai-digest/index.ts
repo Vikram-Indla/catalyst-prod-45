@@ -94,7 +94,7 @@ serve(async (req) => {
     const [notifRes, releasesRes, incidentsRes, testFailRes] = await Promise.allSettled([
       withTimeout(supabase
         .from("notifications")
-        .select("notification_type, entity_type, entity_title, entity_id, hub_source, status, created_at")
+        .select("notification_type, entity_type, entity_title, entity_id, entity_key, hub_source, status, created_at")
         .eq("recipient_user_id", userId)
         .eq("is_dismissed", false)
         .gte("created_at", cutoff48h)
@@ -154,7 +154,7 @@ serve(async (req) => {
       : 'None';
 
     const fmtNotifs = notifications.slice(0, 15).map((n, i) =>
-      `${i+1}. [${n.notification_type}] ${n.entity_title} (${n.entity_type}, hub: ${n.hub_source}, entity_id: ${n.entity_id ?? 'null'})`
+      `${i+1}. [${n.notification_type}] ${n.entity_title} (${n.entity_type}, hub: ${n.hub_source}, key: ${n.entity_key ?? 'none'}, id: ${n.entity_id ?? 'null'})`
     ).join('\n') || 'None';
 
     const lovableApiKey = Deno.env.get("LOVABLE_API_KEY");
@@ -180,9 +180,9 @@ SCORING RULES:
 OUTPUT RULES:
 - Maximum 5 items total, ranked by urgency × role_weight
 - risk_horizon: "critical_now" = action needed <6h, "today" = before end of work day, "this_week" = before Thursday 23:59, "good_news" = positive signal
-- trigger: 1 sentence explaining WHY this was surfaced. Use human-readable descriptions only. NEVER include raw UUIDs, database IDs, or entity_id values in the trigger text. Refer to items by their title or readable key (e.g. "INC-0041" not "4d05709e-...").
+- trigger: 1 sentence explaining WHY this was surfaced. Use human-readable descriptions only. ALWAYS refer to items by their Jira key (e.g. "INC-0041", "SEN-123") or title — NEVER use raw UUIDs or entity_id values. The 'key' field in notification data is the Jira key.
 - consequence: 1 sentence, specific business outcome if ignored
-- action: imperative verb phrase, specific. NEVER include raw UUIDs. Use readable keys or titles (e.g. "Assign INC-0041 to QA lead before 17:00", NOT "Assign issue 4d05709e to...")
+- action: imperative verb phrase, specific. ALWAYS use Jira keys or titles to reference items (e.g. "Assign INC-0041 to QA lead before 17:00"). NEVER use raw UUIDs.
 - cta_path: MUST start with one of: /project-hub /release-hub /test-hub /incident-hub /task-hub /strategy-hub /product-hub /plan-hub
 - entity_id: use the real uuid from the data, or null if not available. This is for internal linking only — NEVER surface it in user-facing text fields (trigger, action, detail, consequence, title).
 - confidence: 0-100 integer, your certainty this is genuinely actionable today
