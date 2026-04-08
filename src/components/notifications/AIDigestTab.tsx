@@ -332,10 +332,8 @@ function DigestCard({
             {/* Row 6 — footer */}
             <div style={{
               display: 'flex', alignItems: 'center',
-              justifyContent: 'space-between', flexWrap: 'wrap', gap: 8,
+              justifyContent: 'flex-end', gap: 8,
             }}>
-              <ConfidenceBar value={item.confidence} />
-
               <button
                 onClick={() => { navigate(sanitiseCTAPath(item.cta_path)); onNavigate?.(); }}
                 aria-label={item.cta_label}
