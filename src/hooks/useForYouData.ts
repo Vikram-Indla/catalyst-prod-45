@@ -386,7 +386,7 @@ function mapIssueToWorkItem(row: any, starredSet: Set<string>, projectNameMap: M
   };
 }
 
-const SELECT_FIELDS = 'id, project_id, issue_key, project_key, project_name, issue_type, summary, status, status_category, assignee_account_id, assignee_display_name, reporter_display_name, priority, jira_updated_at, jira_created_at, parent_key, parent_summary, sprint_name, story_points, labels, fix_versions, components, description_text, last_synced_at';
+const SELECT_FIELDS = 'id, issue_key, project_key, project_name, issue_type, summary, status, status_category, assignee_account_id, assignee_display_name, reporter_display_name, priority, jira_updated_at, jira_created_at, parent_key, parent_summary, sprint_name, story_points, labels, fix_versions, components, description_text, last_synced_at';
 
 export function useForYouData() {
   const [activeMode, setActiveMode] = useState<ModeFilter>('all');
