@@ -190,6 +190,8 @@ export default function StoryDetailModal({
   const [watcherCount, setWatcherCount] = useState(0);
   const [editingSP, setEditingSP] = useState(false);
   const [spDraft, setSpDraft] = useState('');
+  const [childOpen, setChildOpen] = useState(true);
+  const [linksOpen, setLinksOpen] = useState(true);
 
   const menuRef = useRef<HTMLDivElement>(null);
   const statusRef = useRef<HTMLDivElement>(null);
