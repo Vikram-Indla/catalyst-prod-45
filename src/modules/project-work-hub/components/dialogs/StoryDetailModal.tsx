@@ -11,7 +11,7 @@ import { toast } from 'sonner';
 import {
   X, Eye, EyeOff, Link2, MoreHorizontal, Copy, Archive, Trash2,
   ChevronDown, ChevronRight, Plus, Flag, Paperclip, FileText,
-  ExternalLink, Maximize2, Share2, Pencil, ListFilter,
+  ExternalLink, Maximize2, Minimize2, Share2, Pencil, ListFilter,
   ChevronsUp, ChevronUp, Minus, ChevronsDown, Search,
 } from 'lucide-react';
 
@@ -942,7 +942,7 @@ export default function StoryDetailModal({
             maxHeight: isExpanded ? '100vh' : '90vh',
             borderRadius: isExpanded ? 0 : 8,
             transition: 'width 200ms ease, max-width 200ms ease, max-height 200ms ease, border-radius 200ms ease',
-            borderRadius: 8, overflow: 'hidden', display: 'flex',
+            overflow: 'hidden', display: 'flex',
             flexDirection: 'column', boxShadow: '0 8px 32px rgba(0,0,0,0.18)',
           }}
           onClick={e => e.stopPropagation()}
