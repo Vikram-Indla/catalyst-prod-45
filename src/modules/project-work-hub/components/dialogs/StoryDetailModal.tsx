@@ -10,6 +10,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { ParentEpicChip } from '../shared/ParentEpicChip';
 import { getLozengeStyle, STORY_STATUS_LOZENGE, getPriorityLabel, getPriorityColor, getInitials } from '../../utils/backlog.utils';
+import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 import { format, formatDistanceToNow } from 'date-fns';
 import { toast } from 'sonner';
 import { useTheme } from '@/hooks/useTheme';
@@ -135,6 +136,7 @@ export default function StoryDetailModal({ isOpen, onClose, itemId, projectId, p
   const { user: authUser } = useAuth();
   const dt = isDark ? TD : T;
   const overlayRef = useRef<HTMLDivElement>(null);
+  const avatarsByName = useProfileAvatarsByName();
 
   const [editingTitle, setEditingTitle] = useState(false);
   const [titleValue, setTitleValue] = useState('');
@@ -680,7 +682,7 @@ export default function StoryDetailModal({ isOpen, onClose, itemId, projectId, p
                     ))}
                   </div>
 
-                  <ActivityContent tab={activeTab} allActivity={allActivity} comments={jiraComments} changelog={changelog} isDark={isDark} dt={dt} />
+                  <ActivityContent tab={activeTab} allActivity={allActivity} comments={jiraComments} changelog={changelog} isDark={isDark} dt={dt} avatarMap={avatarsByName} />
 
                   {/* Comment input */}
                   <div style={{ marginTop: 16 }}>
@@ -966,49 +968,103 @@ function SidebarField({ label, isDark, children }: { label: string; isDark: bool
   );
 }
 
-function ActivityContent({ tab, allActivity, comments, changelog, isDark, dt }: {
-  tab: TabId; allActivity: any[]; comments: any[]; changelog: any[]; isDark: boolean; dt: typeof T;
+function ActivityAvatar({ name, avatarMap, size = 32, isDark }: { name: string; avatarMap: Map<string, string>; size?: number; isDark: boolean }) {
+  const url = avatarMap.get((name || '').toLowerCase());
+  if (url) return <img src={url} alt={name} style={{ width: size, height: size, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />;
+  const COLORS = ['#0D9488','#2563EB','#DC2626','#16A34A','#0891B2','#EA580C','#4F46E5','#059669','#B91C1C','#0E7490'];
+  let hash = 0;
+  for (let i = 0; i < (name||'').length; i++) hash = (name||'').charCodeAt(i) + ((hash << 5) - hash);
+  const bg = COLORS[Math.abs(hash) % COLORS.length];
+  return (
+    <div style={{ width: size, height: size, borderRadius: '50%', background: bg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: size * 0.38, fontWeight: 700, color: '#FFFFFF', flexShrink: 0, letterSpacing: '-0.02em' }}>
+      {getInitials(name || 'U')}
+    </div>
+  );
+}
+
+function ActivityBadge({ label, isDark }: { label: string; isDark: boolean }) {
+  return (
+    <span style={{
+      display: 'inline-flex', alignItems: 'center', height: 18, padding: '0 6px',
+      borderRadius: 3, fontSize: 10, fontWeight: 700, textTransform: 'uppercase',
+      letterSpacing: '0.03em',
+      background: isDark ? '#292929' : '#F1F5F9',
+      color: isDark ? '#A1A1A1' : '#42526E',
+      border: `1px solid ${isDark ? '#454545' : '#DFE1E6'}`,
+    }}>{label}</span>
+  );
+}
+
+function ActivityContent({ tab, allActivity, comments, changelog, isDark, dt, avatarMap }: {
+  tab: TabId; allActivity: any[]; comments: any[]; changelog: any[]; isDark: boolean; dt: typeof T; avatarMap: Map<string, string>;
 }) {
+
   const renderComment = (c: any) => (
-    <div key={c.id} style={{ display: 'flex', gap: 10, padding: '8px 0', borderBottom: `0.75px solid ${isDark ? '#292929' : '#F4F5F7'}` }}>
-      <div style={{ width: 24, height: 24, borderRadius: '50%', background: isDark ? '#292929' : '#F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: isDark ? '#A1A1A1' : '#64748B', flexShrink: 0 }}>
-        {getInitials(c.author_display_name || 'U')}
-      </div>
+    <div key={c.id} style={{ display: 'flex', gap: 12, padding: '16px 0', borderBottom: `0.75px solid ${isDark ? '#292929' : '#F4F5F7'}` }}>
+      <ActivityAvatar name={c.author_display_name || 'Unknown'} avatarMap={avatarMap} isDark={isDark} />
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
-          <span style={{ fontSize: 13, fontWeight: 600, color: dt.bodyText }}>{c.author_display_name || 'Unknown'}</span>
-          <span style={{ fontSize: 11, color: dt.labelGrey }}>{c.jira_created_at ? formatDistanceToNow(new Date(c.jira_created_at), { addSuffix: true }) : ''}</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 2 }}>
+          <span style={{ fontSize: 14, fontWeight: 700, color: dt.bodyText }}>{c.author_display_name || 'Unknown'}</span>
+          <span style={{ fontSize: 12, color: dt.labelGrey }}>added a Comment</span>
         </div>
-        <div style={{ fontSize: 13, color: isDark ? '#A1A1A1' : '#42526E', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>{c.body}</div>
+        <div style={{ fontSize: 12, color: dt.labelGrey, marginBottom: 8 }}>
+          {c.jira_created_at ? formatDistanceToNow(new Date(c.jira_created_at), { addSuffix: true }) : ''}
+        </div>
+        <ActivityBadge label="Comments" isDark={isDark} />
+        <div style={{ fontSize: 13, color: isDark ? '#A1A1A1' : '#42526E', lineHeight: 1.6, whiteSpace: 'pre-wrap', marginTop: 10 }}>{c.body}</div>
       </div>
     </div>
   );
 
   const renderHistory = (entry: any) => {
-    const isStatus = entry.field_name === 'status';
+    const fieldName = entry.field_name || 'field';
+    const isAssignee = fieldName.toLowerCase() === 'assignee';
+    const isStatus = fieldName.toLowerCase() === 'status';
     const fromSc = isStatus ? getStatusLozengeColors(entry.from_string || '') : null;
     const toSc = isStatus ? getStatusLozengeColors(entry.to_string || '') : null;
+    const displayField = fieldName.charAt(0).toUpperCase() + fieldName.slice(1);
+
     return (
-      <div key={entry.id} style={{ display: 'flex', gap: 10, padding: '6px 0', borderBottom: `0.75px solid ${isDark ? '#292929' : '#F4F5F7'}` }}>
-        <div style={{ width: 24, height: 24, borderRadius: '50%', background: isDark ? '#292929' : '#F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: isDark ? '#A1A1A1' : '#64748B', flexShrink: 0 }}>
-          {getInitials(entry.author_display_name || 'S')}
-        </div>
+      <div key={entry.id} style={{ display: 'flex', gap: 12, padding: '16px 0', borderBottom: `0.75px solid ${isDark ? '#292929' : '#F4F5F7'}` }}>
+        <ActivityAvatar name={entry.author_display_name || 'System'} avatarMap={avatarMap} isDark={isDark} />
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2, flexWrap: 'wrap' }}>
-            <span style={{ fontSize: 13, fontWeight: 600, color: dt.bodyText }}>{entry.author_display_name || 'System'}</span>
-            <span style={{ fontSize: 11, color: dt.labelGrey }}>{entry.jira_created_at ? formatDistanceToNow(new Date(entry.jira_created_at), { addSuffix: true }) : ''}</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 2, flexWrap: 'wrap' }}>
+            <span style={{ fontSize: 14, fontWeight: 700, color: dt.bodyText }}>{entry.author_display_name || 'System'}</span>
+            <span style={{ fontSize: 12, color: dt.labelGrey }}>
+              changed the <strong style={{ fontWeight: 700, color: dt.bodyText }}>{displayField}</strong>
+            </span>
           </div>
-          {isStatus ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
-              {fromSc && <span style={{ display: 'inline-flex', alignItems: 'center', height: 18, padding: '0 5px', borderRadius: 3, fontSize: 10, fontWeight: 700, textTransform: 'uppercase', background: fromSc.bg, color: fromSc.text }}>{fromSc.label}</span>}
-              <span style={{ fontSize: 12, color: dt.labelGrey }}>→</span>
-              {toSc && <span style={{ display: 'inline-flex', alignItems: 'center', height: 18, padding: '0 5px', borderRadius: 3, fontSize: 10, fontWeight: 700, textTransform: 'uppercase', background: toSc.bg, color: toSc.text }}>{toSc.label}</span>}
+          <div style={{ fontSize: 12, color: dt.labelGrey, marginBottom: 8 }}>
+            {entry.jira_created_at ? formatDistanceToNow(new Date(entry.jira_created_at), { addSuffix: true }) : ''}
+          </div>
+          <ActivityBadge label="History" isDark={isDark} />
+
+          {isAssignee ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 10, flexWrap: 'wrap' }}>
+              {entry.from_string && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <ActivityAvatar name={entry.from_string} avatarMap={avatarMap} size={24} isDark={isDark} />
+                  <span style={{ fontSize: 13, color: dt.bodyText }}>{entry.from_string}</span>
+                </div>
+              )}
+              <span style={{ fontSize: 14, color: dt.labelGrey }}>→</span>
+              {entry.to_string && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <ActivityAvatar name={entry.to_string} avatarMap={avatarMap} size={24} isDark={isDark} />
+                  <span style={{ fontSize: 13, color: dt.bodyText }}>{entry.to_string}</span>
+                </div>
+              )}
+            </div>
+          ) : isStatus ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 10, flexWrap: 'wrap' }}>
+              {fromSc && <span style={{ display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px', borderRadius: 3, fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em', background: fromSc.bg, color: fromSc.text, border: `1px solid ${isDark ? '#454545' : '#DFE1E6'}` }}>{fromSc.label}</span>}
+              <span style={{ fontSize: 14, color: dt.labelGrey }}>→</span>
+              {toSc && <span style={{ display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px', borderRadius: 3, fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em', background: toSc.bg, color: toSc.text, border: `1px solid ${isDark ? '#454545' : '#DFE1E6'}` }}>{toSc.label}</span>}
             </div>
           ) : (
-            <div style={{ fontSize: 13, color: isDark ? '#A1A1A1' : '#42526E' }}>
-              Changed <strong style={{ color: dt.bodyText, fontWeight: 600 }}>{entry.field_name}</strong>
-              {entry.from_string && <> from <span style={{ color: dt.labelGrey }}>{entry.from_string}</span></>}
-              {entry.to_string && <> to <span style={{ color: dt.bodyText }}>{entry.to_string}</span></>}
+            <div style={{ fontSize: 13, color: isDark ? '#A1A1A1' : '#42526E', marginTop: 10 }}>
+              {entry.from_string && <><span style={{ color: dt.labelGrey }}>{entry.from_string}</span> → </>}
+              <span style={{ color: dt.bodyText, fontWeight: 600 }}>{entry.to_string || '—'}</span>
             </div>
           )}
         </div>
