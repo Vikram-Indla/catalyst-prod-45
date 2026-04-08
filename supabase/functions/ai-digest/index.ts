@@ -263,13 +263,52 @@ Return JSON:
       return new Response(JSON.stringify({ digest: null, error: "digest_unavailable" }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
-    const items = ((parsed.items ?? []) as Record<string, unknown>[]).map(item => ({
+    let items = ((parsed.items ?? []) as Record<string, unknown>[]).map(item => ({
       ...item,
       cta_path: sanitisePath(item.cta_path as string),
       confidence: clampConf(item.confidence),
       hub_colour: HUB_COLOURS[(item.hub as string) ?? ''] ?? '#374151',
       entity_id: typeof item.entity_id === 'string' && item.entity_id.length === 36 ? item.entity_id : null,
     }));
+
+    // Post-process: resolve ANY UUID fragments in text fields to Jira keys
+    const uuidPattern = /\b([0-9a-f]{8})(?:-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})?\b/gi;
+    const textFields = ['trigger', 'action', 'detail', 'consequence', 'title'] as const;
+    const allText = items.map(i => textFields.map(f => String(i[f] ?? '')).join(' ')).join(' ');
+    const uuidMatches = [...allText.matchAll(uuidPattern)];
+    const shortIds = [...new Set(uuidMatches.map(m => m[1].toLowerCase()))];
+
+    if (shortIds.length > 0) {
+      // Find matching ph_issues by id prefix
+      const orFilter = shortIds.map(s => `id.like.${s}%`).join(',');
+      const { data: issueRows } = await supabase
+        .from('ph_issues')
+        .select('id, issue_key')
+        .or(orFilter)
+        .limit(50);
+
+      if (issueRows && issueRows.length > 0) {
+        const keyMap: Record<string, string> = {};
+        for (const row of issueRows) {
+          keyMap[row.id] = row.issue_key;
+          keyMap[row.id.split('-')[0]] = row.issue_key;
+        }
+
+        items = items.map(item => {
+          const patched = { ...item };
+          for (const field of textFields) {
+            if (typeof patched[field] === 'string') {
+              let val = patched[field] as string;
+              for (const [uuid, key] of Object.entries(keyMap)) {
+                val = val.split(uuid).join(key);
+              }
+              patched[field] = val;
+            }
+          }
+          return patched;
+        });
+      }
+    }
 
     const digestV2 = { ...parsed, items };
     const hasCritical = items.some(i => i.risk_horizon === 'critical_now');

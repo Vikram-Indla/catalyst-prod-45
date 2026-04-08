@@ -188,18 +188,37 @@ export default function AIRecapTabV2() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user || cancelled) { setLoading(false); return; }
 
-      const { data } = await supabase
-        .from('ai_digest_cache')
-        .select('digest_json')
-        .eq('user_id', user.id)
-        .order('generated_at', { ascending: false })
-        .limit(1);
+      // Call the edge function which handles UUID→key resolution server-side
+      let digest: any = null;
+      try {
+        const { data: fnData } = await supabase.functions.invoke('ai-digest', {
+          method: 'POST',
+          body: {},
+        });
+        if (fnData?.digest) {
+          digest = fnData.digest;
+        }
+      } catch {
+        // Fallback: read from cache directly
+      }
+
+      // Fallback to cache if edge function failed
+      if (!digest) {
+        const { data: cacheData } = await supabase
+          .from('ai_digest_cache')
+          .select('digest_json')
+          .eq('user_id', user.id)
+          .order('generated_at', { ascending: false })
+          .limit(1);
+        if (cacheData?.length && cacheData[0].digest_json) {
+          digest = cacheData[0].digest_json;
+        }
+      }
 
       if (cancelled) return;
 
-      if (data && data.length > 0 && data[0].digest_json) {
+      if (digest) {
         try {
-          const digest = data[0].digest_json as any;
           const rawItems: any[] = Array.isArray(digest.items) ? digest.items : [];
 
           // Collect entity_ids for key resolution
@@ -207,15 +226,44 @@ export default function AIRecapTabV2() {
             .map((item: any) => item.entity_id)
             .filter((id: any) => id && typeof id === 'string' && id.length > 8);
 
+          // Also extract UUID-like fragments from all text fields
+          const uuidRegex = /\b([0-9a-f]{8})(?:-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})?\b/gi;
+          const allText = rawItems.map((item: any) =>
+            [item.action, item.detail, item.trigger, item.title, item.consequence, item.ai_action_text, item.ai_body_text]
+              .filter(Boolean).join(' ')
+          ).join(' ');
+          const textUuids = [...allText.matchAll(uuidRegex)].map(m => m[0]);
+          
+          // Combine: full UUIDs from entity_ids + any found in text
+          const allUuids = [...new Set([...entityIds, ...textUuids.filter(u => u.length === 36)])];
+          const shortOnlyIds = [...new Set(textUuids.filter(u => u.length === 8))];
+
           // Resolve UUIDs → Jira keys
           let keyMap: Record<string, string> = {};
-          if (entityIds.length > 0) {
+          
+          if (allUuids.length > 0) {
             const { data: issueRows } = await supabase
               .from('ph_issues')
               .select('id, issue_key')
-              .in('id', entityIds);
+              .in('id', allUuids);
             if (issueRows) {
               for (const row of issueRows) {
+                keyMap[row.id] = row.issue_key;
+              }
+            }
+          }
+
+          // Also resolve short UUID prefixes (8-char) that weren't full UUIDs
+          const unresolvedShorts = shortOnlyIds.filter(s => !Object.keys(keyMap).some(k => k.startsWith(s)));
+          if (unresolvedShorts.length > 0) {
+            const orFilter = unresolvedShorts.map(s => `id.like.${s}%`).join(',');
+            const { data: shortRows } = await supabase
+              .from('ph_issues')
+              .select('id, issue_key')
+              .or(orFilter)
+              .limit(50);
+            if (shortRows) {
+              for (const row of shortRows) {
                 keyMap[row.id] = row.issue_key;
               }
             }
