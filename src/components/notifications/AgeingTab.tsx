@@ -3,7 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Loader2 } from 'lucide-react';
 
 /* ═══════════════════════════════════════
-   Ageing Tab — Live Data
+   Ageing Tab — Live Data from ph_issues
    Design: V12 Hybrid Precision
    ═══════════════════════════════════════ */
 
@@ -13,7 +13,6 @@ type StatusType = 'TODO' | 'IN PROGRESS';
 interface AgeingItem {
   id: string;
   jira_key: string;
-  jira_url: string;
   item_type: ItemType;
   summary: string;
   status: StatusType;
@@ -115,15 +114,16 @@ function mapIssueType(raw: string): ItemType {
   if (v.includes('incident')) return 'Production Incident';
   if (v.includes('bug')) return 'QA Bug';
   if (v.includes('sub')) return 'Sub-task';
-  if (v.includes('feature')) return 'Feature';
+  if (v.includes('feature') || v.includes('new feature')) return 'Feature';
   return 'Story';
 }
 
-function mapStatus(raw: string): StatusType | null {
-  const v = raw.toLowerCase().replace(/[\s_-]/g, '');
-  if (v === 'todo' || v === 'backlog' || v === 'open' || v === 'new') return 'TODO';
-  if (v === 'inprogress' || v === 'inreview' || v === 'active') return 'IN PROGRESS';
-  return null; // Done items excluded
+function mapStatusCategory(statusCategory: string): StatusType | null {
+  const v = statusCategory.toLowerCase().replace(/[\s_-]/g, '');
+  if (v === 'todo' || v === 'new') return 'TODO';
+  if (v === 'inprogress') return 'IN PROGRESS';
+  if (v === 'done') return null;
+  return 'TODO'; // default open items to TODO
 }
 
 export function useAgeingCount(): number {
@@ -133,16 +133,25 @@ export function useAgeingCount(): number {
     (async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user || cancelled) return;
-      const { data } = await supabase
-        .from('catalyst_issues')
-        .select('id, status')
-        .eq('assignee_id', user.id);
-      if (cancelled) return;
-      const openCount = (data ?? []).filter(i => {
-        const s = mapStatus(i.status);
-        return s !== null;
-      }).length;
-      setCount(openCount);
+
+      // Resolve user → jira_account_id
+      const { data: identityRows } = await supabase
+        .from('jira_identity_map')
+        .select('jira_account_id')
+        .eq('catalyst_user_id', user.id)
+        .limit(1);
+
+      if (cancelled || !identityRows?.length) return;
+      const jiraAccountId = identityRows[0].jira_account_id;
+
+      const { count: total } = await supabase
+        .from('ph_issues')
+        .select('*', { count: 'exact', head: true })
+        .eq('assignee_account_id', jiraAccountId)
+        .neq('status_category', 'done')
+        .is('deleted_at', null);
+
+      if (!cancelled) setCount(total ?? 0);
     })();
     return () => { cancelled = true; };
   }, []);
@@ -162,24 +171,38 @@ export default function AgeingTab() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user || cancelled) { setLoading(false); return; }
 
+      // Resolve user → jira_account_id via jira_identity_map
+      const { data: identityRows } = await supabase
+        .from('jira_identity_map')
+        .select('jira_account_id')
+        .eq('catalyst_user_id', user.id)
+        .limit(1);
+
+      if (cancelled || !identityRows?.length) { setLoading(false); return; }
+      const jiraAccountId = identityRows[0].jira_account_id;
+
+      // Fetch open issues assigned to this user from ph_issues
       const { data } = await supabase
-        .from('catalyst_issues')
-        .select('id, issue_key, issue_type, title, status, created_at')
-        .eq('assignee_id', user.id);
+        .from('ph_issues')
+        .select('id, issue_key, issue_type, summary, status, status_category, jira_created_at')
+        .eq('assignee_account_id', jiraAccountId)
+        .neq('status_category', 'done')
+        .is('deleted_at', null)
+        .order('jira_created_at', { ascending: false });
 
       if (cancelled) return;
 
       const mapped: AgeingItem[] = (data ?? [])
         .map(row => {
-          const status = mapStatus(row.status);
+          const status = mapStatusCategory(row.status_category ?? '');
           if (!status) return null;
-          const daysAssigned = Math.max(1, Math.floor((Date.now() - new Date(row.created_at ?? '').getTime()) / (1000 * 60 * 60 * 24)));
+          const createdAt = row.jira_created_at ? new Date(row.jira_created_at).getTime() : Date.now();
+          const daysAssigned = Math.max(1, Math.floor((Date.now() - createdAt) / (1000 * 60 * 60 * 24)));
           return {
             id: row.id,
             jira_key: row.issue_key,
-            jira_url: '#',
             item_type: mapIssueType(row.issue_type),
-            summary: row.title,
+            summary: row.summary,
             status,
             days_assigned: daysAssigned,
           } as AgeingItem;
@@ -311,20 +334,15 @@ export default function AgeingTab() {
                       <TypeIcon type={item.item_type} />
                     </td>
                     <td style={tdStyle}>
-                      <a
-                        href={item.jira_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
+                      <span
                         style={{
                           fontFamily: "'JetBrains Mono', monospace",
                           fontSize: 11.5, fontWeight: 700, color: T.primary,
-                          textDecoration: 'none', cursor: 'pointer',
+                          cursor: 'pointer',
                         }}
-                        onMouseEnter={e => (e.currentTarget.style.textDecoration = 'underline')}
-                        onMouseLeave={e => (e.currentTarget.style.textDecoration = 'none')}
                       >
                         {item.jira_key}
-                      </a>
+                      </span>
                     </td>
                     <td style={{
                       ...tdStyle,
