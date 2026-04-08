@@ -178,10 +178,16 @@ export default function ForYouPage() {
         onDelete={handleBulkDelete}
       />
 
-      {/* Detail Panel — lazy loaded */}
-      {selectedItem && (
+      {/* Detail Modal — lazy loaded */}
+      {selectedItem && selectedItem.phIssueId && selectedItem.projectId && (
         <Suspense fallback={null}>
-          <ForYouDetailPanel item={selectedItem} onClose={closeDetailPanel} />
+          <StoryDetailModal
+            isOpen={true}
+            onClose={closeDetailPanel}
+            itemId={selectedItem.phIssueId}
+            projectId={selectedItem.projectId}
+            projectKey={selectedItem.projectKey}
+          />
         </Suspense>
       )}
 
