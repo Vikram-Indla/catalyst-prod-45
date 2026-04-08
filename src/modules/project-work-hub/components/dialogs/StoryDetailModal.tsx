@@ -653,8 +653,10 @@ export default function StoryDetailModal({
           flexShrink: 0, gap: 8,
         }}>
           {/* Left breadcrumb */}
+          <span style={{ fontSize: 12, color: DT.labelGrey }}>{projectKey}</span>
+          <span style={{ fontSize: 12, color: DT.labelGrey }}>›</span>
           <IssueTypeIcon type={story?.issue_type} size={16} />
-          <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: DT.labelGrey }}>
+          <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 12, fontWeight: 600, color: DT.bodyText }}>
             {story?.issue_key || '—'}
           </span>
           {story?.parent_key && (
@@ -669,7 +671,6 @@ export default function StoryDetailModal({
                 }}
                 onClick={() => {
                   if (onOpenItem && story?.parent_key) {
-                    // find parent by key
                     supabase.from('ph_issues').select('id').eq('issue_key', story.parent_key).single()
                       .then(({ data }) => { if (data) onOpenItem(data.id); });
                   }
