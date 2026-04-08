@@ -2,8 +2,8 @@ import { useState, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Loader2, RefreshCw, CheckCircle2, X, ChevronDown,
-  ExternalLink, BrainCircuit, Clock, Folder, Bug, Rocket,
-  FlaskConical, AlertTriangle, ListChecks, BarChart3, LayoutGrid,
+  ExternalLink, BrainCircuit, Clock, Bug, Rocket,
+  FlaskConical, AlertTriangle, ListChecks, BarChart3, LayoutGrid, Briefcase,
 } from 'lucide-react';
 import { useAiDigest, useForceRefreshDigest } from '@/hooks/useAiDigest';
 import { useAuth } from '@/hooks/useAuth';
