@@ -35,7 +35,7 @@ interface StoryDetailModalProps {
   onOpenItem?: (itemId: string) => void;
 }
 
-type TabId = 'all' | 'comments' | 'history' | 'worklog';
+type TabId = 'all' | 'comments' | 'history';
 
 /* ═══════════════════════════════════════════════
    DESIGN TOKENS
@@ -1101,14 +1101,14 @@ export default function StoryDetailModal({ isOpen, onClose, itemId, projectId, p
                 <div style={{ marginTop: 8 }}>
                   <div style={{ ...LABEL, marginBottom: 12 }}>Activity</div>
                   <div style={{ display: 'flex', gap: 0, borderBottom: `1px solid ${dt.border}`, marginBottom: 16 }}>
-                    {(['all', 'comments', 'history', 'worklog'] as TabId[]).map(tab => (
+                    {(['all', 'comments', 'history'] as TabId[]).map(tab => (
                       <button key={tab} onClick={() => setActiveTab(tab)} style={{
                         fontSize: 13, fontWeight: 500, padding: '8px 14px', border: 'none', cursor: 'pointer',
                         background: 'none', color: activeTab === tab ? dt.linkBlue : (isDark ? '#A1A1A1' : '#42526E'),
                         borderBottom: `2px solid ${activeTab === tab ? dt.linkBlue : 'transparent'}`,
                         textTransform: 'capitalize',
                       }}>
-                        {tab === 'worklog' ? 'Work log' : tab}
+                        {tab}
                       </button>
                     ))}
                   </div>
@@ -1514,9 +1514,6 @@ function ActivityContent({ tab, allActivity, comments, changelog, isDark, dt, av
   if (tab === 'history') {
     if (!changelog.length) return <div style={{ fontSize: 13, color: dt.labelGrey, padding: 16, textAlign: 'center' }}>No history available</div>;
     return <div>{changelog.map(renderHistory)}</div>;
-  }
-  if (tab === 'worklog') {
-    return <div style={{ fontSize: 13, color: dt.labelGrey, padding: 16, textAlign: 'center' }}>No work logged</div>;
   }
   if (!allActivity.length) return <div style={{ fontSize: 13, color: dt.labelGrey, padding: 16, textAlign: 'center' }}>No activity</div>;
   return <div>{allActivity.map(a => a._type === 'comment' ? renderComment(a) : renderHistory(a))}</div>;
