@@ -487,7 +487,7 @@ interface TransitionsTabProps {
 
 export function TransitionsTab({ issueKey }: TransitionsTabProps) {
   const { isDark } = useTheme();
-  const T = isDark ? TD : TL;
+  T = isDark ? TD : TL;
   const [steps, setSteps] = useState<TransitionStep[]>([]);
   const [loading, setLoading] = useState(true);
 
