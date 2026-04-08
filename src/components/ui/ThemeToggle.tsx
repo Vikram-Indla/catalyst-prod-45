@@ -1,73 +1,59 @@
 /**
- * ThemeToggle — Cycles: light → dark → system → light
+ * ThemeToggle — 2-state: light ↔ dark
  * Position: Nav bar right cluster, after Settings, before avatar
  */
 
 import React from 'react';
-import { Sun, Moon, Monitor } from 'lucide-react';
-import { useThemeMode, type ThemeMode } from '@/providers/ThemeProvider';
+import { Sun, Moon } from 'lucide-react';
+import { useThemeMode } from '@/providers/ThemeProvider';
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 
-const CYCLE: ThemeMode[] = ['light', 'dark', 'system'];
-
-const ICONS: Record<ThemeMode, typeof Sun> = {
-  light: Sun,
-  dark: Moon,
-  system: Monitor,
-};
-
-const LABELS: Record<ThemeMode, string> = {
-  light: 'Light mode',
-  dark: 'Dark mode',
-  system: 'System (auto)',
-};
-
 export function ThemeToggle() {
   const { theme, setTheme } = useThemeMode();
+  const isDark = theme === 'dark';
 
   const handleClick = () => {
-    const currentIndex = CYCLE.indexOf(theme);
-    const nextIndex = (currentIndex + 1) % CYCLE.length;
-    setTheme(CYCLE[nextIndex]);
+    setTheme(isDark ? 'light' : 'dark');
   };
 
-  const Icon = ICONS[theme];
+  const Icon = isDark ? Sun : Moon;
+  const label = isDark ? 'Switch to light mode' : 'Switch to dark mode';
 
   return (
     <Tooltip>
       <TooltipTrigger asChild>
         <button
           onClick={handleClick}
-          aria-label={LABELS[theme]}
-          className="relative flex items-center justify-center rounded-lg transition-all"
+          aria-label={label}
+          className="flex items-center justify-center transition-colors duration-150"
           style={{
-            width: '36px',
-            height: '50px',
-            color: 'var(--cp-t2)',
+            width: 36,
+            height: 36,
+            color: 'var(--cp-t3, #64748B)',
             background: 'transparent',
-            border: '1px solid var(--cp-bd)',
+            border: 'none',
             cursor: 'pointer',
-            borderRadius: '8px',
+            borderRadius: 6,
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.color = 'var(--cp-t1)';
-            e.currentTarget.style.background = 'var(--cp-hover)';
+            e.currentTarget.style.color = 'var(--cp-t1, #0F172A)';
+            e.currentTarget.style.background = 'rgba(0,0,0,0.04)';
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.color = 'var(--cp-t3)';
+            e.currentTarget.style.color = 'var(--cp-t3, #64748B)';
             e.currentTarget.style.background = 'transparent';
           }}
-          title={LABELS[theme]}
+          title={label}
         >
-          <Icon className="w-5 h-5 transition-transform duration-200" />
+          <Icon className="w-[18px] h-[18px]" />
         </button>
       </TooltipTrigger>
       <TooltipContent>
-        <p>{LABELS[theme]}</p>
+        <p>{label}</p>
       </TooltipContent>
     </Tooltip>
   );
