@@ -203,9 +203,11 @@ function ConfidenceBar({ value }: { value: number }) {
 function DigestCard({
   item,
   onDismiss,
+  onNavigate,
 }: {
   item: DigestItemV2;
   onDismiss: () => void;
+  onNavigate?: () => void;
 }) {
   const T = useTokens();
   const navigate = useNavigate();
@@ -338,7 +340,7 @@ function DigestCard({
               <ConfidenceBar value={item.confidence} />
 
               <button
-                onClick={() => { navigate(sanitiseCTAPath(item.cta_path)); onClose?.(); }}
+                onClick={() => { navigate(sanitiseCTAPath(item.cta_path)); onNavigate?.(); }}
                 aria-label={item.cta_label}
                 className="focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2563EB]"
                 style={{
