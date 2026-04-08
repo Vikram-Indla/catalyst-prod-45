@@ -416,7 +416,7 @@ export default function HierarchyPage() {
         <button
           onClick={handleFilterToggle}
           style={{
-            height: 50, padding: '0 14px', display: 'flex', alignItems: 'center', gap: 6,
+            height: 34, padding: '0 14px', display: 'flex', alignItems: 'center', gap: 6,
             fontSize: 13, fontWeight: 500, fontFamily: "'Inter', sans-serif",
             color: activeFilterCount > 0 ? '#2563EB' : isDark ? '#A1A1A1' : '#334155',
             background: activeFilterCount > 0 ? (isDark ? 'rgba(37,99,235,0.10)' : '#EFF6FF') : isDark ? '#1A1A1A' : '#FFFFFF',
