@@ -453,8 +453,7 @@ export default function StoryDetailModal({
       priority: 'Medium',
       jira_created_at: new Date().toISOString(),
       jira_updated_at: new Date().toISOString(),
-    } as any]
-    });
+    } as any]);
     setNewSubtaskTitle('');
     setShowSubtaskInput(false);
     qc.invalidateQueries({ queryKey: ['ph_subtasks', story.issue_key] });
