@@ -442,7 +442,7 @@ export default function StoryDetailModal({
 
   const handleCreateSubtask = useCallback(async () => {
     if (!newSubtaskTitle.trim() || !story) return;
-    await supabase.from('ph_issues').insert({
+    await supabase.from('ph_issues').insert([{
       summary: newSubtaskTitle.trim(),
       parent_key: story.issue_key,
       project_key: story.project_key,
@@ -453,6 +453,7 @@ export default function StoryDetailModal({
       priority: 'Medium',
       jira_created_at: new Date().toISOString(),
       jira_updated_at: new Date().toISOString(),
+    } as any]
     });
     setNewSubtaskTitle('');
     setShowSubtaskInput(false);
@@ -769,7 +770,7 @@ export default function StoryDetailModal({
                     onMouseEnter={e => e.currentTarget.style.background = DT.hoverRow}
                     onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                   >
-                    <IssueTypeIcon type={st.issue_type || 'subtask'} size={14} />
+                    <IssueTypeIcon type={'subtask'} size={14} />
                     <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: DT.labelGrey }}>{st.issue_key}</span>
                     <span style={{ flex: 1, fontSize: 13, color: DT.bodyText, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {st.summary}
@@ -1166,7 +1167,7 @@ export default function StoryDetailModal({
               <div style={{ marginBottom: 16 }}>
                 <div style={{ ...LABEL, marginBottom: 4 }}>Labels</div>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-                  {(story.labels && story.labels.length > 0) ? story.labels.map((l: string) => (
+                  {(story.labels && Array.isArray(story.labels) && (story.labels as string[]).length > 0) ? (story.labels as string[]).map((l: string) => (
                     <span key={l} style={{
                       background: DT.border, color: '#253858', padding: '2px 6px',
                       borderRadius: 3, fontSize: 10, fontWeight: 600,
@@ -1179,7 +1180,7 @@ export default function StoryDetailModal({
               <div style={{ marginBottom: 16 }}>
                 <div style={{ ...LABEL, marginBottom: 4 }}>Fix Versions</div>
                 <span style={{ fontSize: 13, color: DT.bodyText }}>
-                  {story.fix_versions || '—'}
+                  {String(story.fix_versions || '—')}
                 </span>
               </div>
 
