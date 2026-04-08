@@ -10,6 +10,8 @@ const AnnouncementBanner = lazy(() => import('@/components/notifications/Announc
 import { useTrackLastRoute } from '@/hooks/useSessionPersistence';
 import { useEnabledModules } from '@/hooks/useModules';
 import { useRecentPlaceTracker } from '@/hooks/useRecentPlaceTracker';
+import { useCatalystTitle } from '@/hooks/useCatalystTitle';
+import { deriveHubFromPath, derivePageFromPath } from '@/lib/tabIdentity';
 
 // ─── Lazy-loaded sidebars (only the active one loads into memory) ────
 const UnifiedSidebar = lazy(() => import('./UnifiedSidebar').then(m => ({ default: m.UnifiedSidebar })));
