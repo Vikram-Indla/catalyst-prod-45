@@ -681,7 +681,7 @@ export default function StoryDetailModal({ isOpen, onClose, itemId, projectId, p
                     ))}
                   </div>
 
-                  <ActivityContent tab={activeTab} allActivity={allActivity} comments={jiraComments} changelog={changelog} isDark={isDark} dt={dt} />
+                  <ActivityContent tab={activeTab} allActivity={allActivity} comments={jiraComments} changelog={changelog} isDark={isDark} dt={dt} avatarMap={avatarsByName} />
 
                   {/* Comment input */}
                   <div style={{ marginTop: 16 }}>
