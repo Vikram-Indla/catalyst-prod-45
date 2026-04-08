@@ -18,31 +18,27 @@ import { formatDistanceToNow } from 'date-fns';
 function useTokens() {
   const { isDark } = useTheme();
   return {
-    ink1:      isDark ? 'var(--cp-ink-1, #EDEDED)' : 'var(--cp-ink-1, #0F172A)',
-    ink2:      isDark ? 'var(--cp-ink-2, #A1A1A1)' : 'var(--cp-ink-2, #334155)',
-    ink3:      isDark ? 'var(--cp-ink-3, #878787)' : 'var(--cp-ink-3, #475569)',
-    ink4:      isDark ? 'var(--cp-ink-4, #7D7D7D)' : 'var(--cp-ink-4, #64748B)',
-    ink5:      isDark ? 'var(--cp-ink-5, #666)'    : 'var(--cp-ink-5, #94A3B8)',
-    surface:   isDark ? 'var(--cp-surface, #181A1E)' : 'var(--cp-surface, #F8FAFC)',
-    border:    isDark ? 'var(--cp-border, rgba(255,255,255,.1))' : 'var(--cp-border, #E2E8F0)',
-    borderLt:  isDark ? 'rgba(255,255,255,.06)' : 'var(--cp-border-lt, #F1F5F9)',
-    white:     isDark ? 'var(--cp-white, #1E2027)' : 'var(--cp-white, #FFFFFF)',
+    ink1:      isDark ? '#EDEDED' : '#0F172A',
+    ink2:      isDark ? '#A1A1A1' : '#334155',
+    ink3:      isDark ? '#A1A1A1' : '#475569',
+    ink4:      isDark ? '#878787' : '#64748B',
+    ink5:      isDark ? '#7D7D7D' : '#94A3B8',
+    surface:   isDark ? '#1A1A1A' : '#F8FAFC',
+    border:    isDark ? '#2E2E2E' : '#E2E8F0',
+    borderLt:  isDark ? '#292929' : '#F1F5F9',
+    white:     isDark ? '#1A1A1A' : '#FFFFFF',
     cardBg:    isDark ? '#1A1A1A' : '#FFFFFF',
     cardBd:    isDark ? '#2E2E2E' : '#E2E8F0',
-    purple:    'var(--cp-purple, #7C3AED)',
-    purpleLt:  'var(--cp-purple-lt, rgba(124,58,237,.08))',
-    purpleBd:  'var(--cp-purple-bd, rgba(124,58,237,.2))',
-    primary:   'var(--cp-primary, #2563EB)',
-    primaryLt: 'var(--cp-primary-lt, #EFF6FF)',
-    primaryBd: 'var(--cp-primary-bd, #BFDBFE)',
-    success:   'var(--cp-success, #16A34A)',
+    primary:   '#2563EB',
+    primaryLt: isDark ? 'rgba(37,99,235,.1)' : '#EFF6FF',
+    primaryBd: isDark ? 'rgba(37,99,235,.25)' : '#BFDBFE',
+    success:   '#16A34A',
     isDark,
   };
 }
 
 /* ── Hub icon map ── */
-const HUB_ICON: Record<string, typeof Folder> = {
-  ProjectHub: Folder,
+const HUB_ICON: Record<string, typeof Rocket> = {
   ReleaseHub: Rocket,
   IncidentHub: AlertTriangle,
   TestHub: FlaskConical,
@@ -55,14 +51,14 @@ const HUB_ICON: Record<string, typeof Folder> = {
 /* ── Section config ── */
 const SECTIONS: { horizon: RiskHorizon; label: string; dot: string; countBg: string; countText: string }[] = [
   { horizon: 'critical_now', label: 'CRITICAL NOW',   dot: '#DC2626', countBg: '#FEE2E2', countText: '#B91C1C' },
-  { horizon: 'today',        label: 'ACTION TODAY',   dot: '#D97706', countBg: '#FEF3C7', countText: '#92400E' },
+  { horizon: 'today',        label: 'ACTION TODAY',   dot: '#DC2626', countBg: '#FEE2E2', countText: '#B91C1C' },
   { horizon: 'this_week',    label: 'WATCH THIS WEEK',dot: '#2563EB', countBg: '#EFF6FF', countText: '#1D4ED8' },
   { horizon: 'good_news',    label: 'GOOD NEWS',      dot: '#16A34A', countBg: '#D1FAE5', countText: '#065F46' },
 ];
 
 const PRIORITY_STYLE: Record<string, { bg: string; text: string }> = {
   HIGH: { bg: '#FEE2E2', text: '#B91C1C' },
-  MED:  { bg: '#FEF3C7', text: '#92400E' },
+  MED:  { bg: '#DEEBFF', text: '#0747A6' },
   LOW:  { bg: '#F3F4F6', text: '#374151' },
 };
 
