@@ -2,9 +2,10 @@
  * Defect Detail Page — G25 Rebuild
  * Route: /testhub/defects/:defectId
  */
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ChevronLeft, Edit, MoreVertical, Trash2, Bug } from 'lucide-react';
+import { ChevronLeft, Edit, MoreVertical, Trash2, Bug, Play } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -32,6 +33,23 @@ export default function DefectDetailPage() {
   const [showStatusModal, setShowStatusModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showAddLink, setShowAddLink] = useState(false);
+  const [executionRunId, setExecutionRunId] = useState<string | null>(null);
+
+  // Query tm_defect_links for reverse navigation to execution run
+  useEffect(() => {
+    if (!defect?.id) return;
+    (async () => {
+      const { data } = await (supabase as any)
+        .from('tm_defect_links')
+        .select('test_run_id')
+        .eq('defect_id', defect.id)
+        .not('test_run_id', 'is', null)
+        .limit(1);
+      if (data && data.length > 0) {
+        setExecutionRunId(data[0].test_run_id);
+      }
+    })();
+  }, [defect?.id]);
 
   const handleDelete = async () => {
     if (!defect || !confirm(`Delete ${defect.defect_key}?`)) return;
@@ -157,6 +175,17 @@ export default function DefectDetailPage() {
               <CardContent><p className="text-sm whitespace-pre-wrap">{defect.actual_result}</p></CardContent>
             </Card>
           )}
+        </div>
+      )}
+
+      {/* Execution origin banner */}
+      {executionRunId && (
+        <div className="flex items-center gap-3 p-3 bg-primary/5 border border-primary/20 rounded-lg">
+          <Play className="h-4 w-4 text-primary flex-shrink-0" />
+          <span className="text-sm text-muted-foreground">Created from execution run</span>
+          <Button variant="outline" size="sm" onClick={() => navigate(`/testhub/cycles/${executionRunId}?mode=view`)}>
+            View Execution
+          </Button>
         </div>
       )}
 

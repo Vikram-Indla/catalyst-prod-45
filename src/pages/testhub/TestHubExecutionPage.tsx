@@ -171,6 +171,7 @@ export default function TestHubExecutionPage() {
   // UI state
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isFailureModalOpen, setIsFailureModalOpen] = useState(false);
+  const [isSkipModalOpen, setIsSkipModalOpen] = useState(false);
   const [showShortcuts, setShowShortcuts] = useState(false);
   const [showSidebar, setShowSidebar] = useState(true);
   const [fastTrackMode, setFastTrackMode] = useState(false);
@@ -178,9 +179,9 @@ export default function TestHubExecutionPage() {
   const [notes, setNotes] = useState('');
 
   // Refs for keyboard handler
-  const stateRef = useRef({ isSubmitting: false, isFailureModalOpen: false, showShortcuts: false, currentStepIndex: 0, fastTrackMode: false });
+  const stateRef = useRef({ isSubmitting: false, isFailureModalOpen: false, isSkipModalOpen: false, showShortcuts: false, currentStepIndex: 0, fastTrackMode: false });
   useEffect(() => {
-    stateRef.current = { isSubmitting, isFailureModalOpen, showShortcuts, currentStepIndex, fastTrackMode };
+    stateRef.current = { isSubmitting, isFailureModalOpen, isSkipModalOpen, showShortcuts, currentStepIndex, fastTrackMode };
   });
 
   // ── Data fetching ──────────────────────────────────────────────────────
@@ -453,7 +454,7 @@ export default function TestHubExecutionPage() {
   };
   const handleSkip = () => {
     if (fastTrackMode || steps.length === 0) {
-      updateExecutionStatus('skipped');
+      setIsSkipModalOpen(true);
     } else {
       updateStepStatus('skipped');
     }
@@ -467,6 +468,11 @@ export default function TestHubExecutionPage() {
     } else {
       await updateStepStatus('failed', failureReason);
     }
+  };
+
+  const handleSkipConfirm = async (skipReason: string, _defectId: string | null, skipNotes: string) => {
+    setIsSkipModalOpen(false);
+    await updateExecutionStatus('skipped', skipReason, skipNotes);
   };
 
   // Step-level status tracking + DB persistence
@@ -588,7 +594,7 @@ export default function TestHubExecutionPage() {
       const s = stateRef.current;
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement || e.target instanceof HTMLSelectElement) return;
       if (s.showShortcuts && e.key === 'Escape') { setShowShortcuts(false); e.preventDefault(); return; }
-      if (s.isFailureModalOpen || s.showShortcuts) return;
+      if (s.isFailureModalOpen || s.isSkipModalOpen || s.showShortcuts) return;
 
       const key = e.key.toLowerCase();
 
@@ -1331,6 +1337,18 @@ export default function TestHubExecutionPage() {
         cycleTestCaseId={selectedTestCaseId || undefined}
         onClose={() => setIsFailureModalOpen(false)}
         onConfirm={handleFailureConfirm}
+      />
+
+      {/* Skip reason modal — reuses FailureReasonModal UI */}
+      <FailureReasonModal
+        isOpen={isSkipModalOpen}
+        testCaseKey={currentTestCase?.test_case?.case_key || ''}
+        testCaseTitle={currentTestCase?.test_case?.title || ''}
+        testCaseId={currentTestCase?.test_case_id}
+        cycleId={cycleId}
+        cycleTestCaseId={selectedTestCaseId || undefined}
+        onClose={() => setIsSkipModalOpen(false)}
+        onConfirm={handleSkipConfirm}
       />
 
       <KeyboardShortcutsGuide isOpen={showShortcuts} onClose={() => setShowShortcuts(false)} />
