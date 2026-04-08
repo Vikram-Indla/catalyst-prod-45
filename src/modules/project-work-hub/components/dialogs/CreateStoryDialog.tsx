@@ -512,7 +512,7 @@ export const CreateStoryDialog: React.FC<CreateStoryDialogProps> = ({
         }}
         onKeyDown={handleKeyDown}
       >
-        <div>
+        <div className="flex flex-col overflow-hidden" style={{ maxHeight: isExpanded ? '85vh' : undefined }}>
         {/* Header with expand toggle */}
         <div className="px-6 pt-5 pb-4 border-b flex items-center justify-between" style={{ borderColor: F.headerBorder }}>
           <DialogTitle className="text-[20px] tracking-[-0.01em]" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 653, color: F.input }}>
