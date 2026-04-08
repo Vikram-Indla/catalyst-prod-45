@@ -296,8 +296,8 @@ function DigestCard({
 
             {/* Row 2 — detail */}
             <p style={{
-              fontFamily: 'Inter, sans-serif', fontSize: 11, fontWeight: 400,
-              color: T.ink3, lineHeight: 1.55,
+              fontFamily: 'Inter, sans-serif', fontSize: 12, fontWeight: 400,
+              color: T.ink2, lineHeight: 1.55,
               margin: '0 0 5px', wordBreak: 'break-word',
             }}>
               {item.detail}
@@ -307,7 +307,7 @@ function DigestCard({
             {item.consequence && (
               <p style={{
                 fontFamily: 'Inter, sans-serif', fontSize: 11, fontStyle: 'italic',
-                color: T.ink5, lineHeight: 1.5,
+                color: T.ink4, lineHeight: 1.5,
                 margin: '0 0 6px',
               }}>
                 {item.consequence}
@@ -317,8 +317,8 @@ function DigestCard({
             {/* Row 4 — action */}
             {item.action && (
               <p style={{
-                fontFamily: 'Inter, sans-serif', fontSize: 11, fontWeight: 650,
-                color: T.ink2, lineHeight: 1.5,
+                fontFamily: 'Inter, sans-serif', fontSize: 12, fontWeight: 650,
+                color: T.ink1, lineHeight: 1.5,
                 margin: '0 0 8px',
               }}>
                 <span style={{ color: T.primary }}>→ </span>
