@@ -438,6 +438,11 @@ export function useForYouData() {
       setIsLoading(true);
       try {
         const { data: jiraProjects } = await supabase.from('ph_jira_projects').select('project_key, name');
+        const { data: catalystProjects } = await supabase.from('projects').select('id, key');
+        const projectIdMap = new Map<string, string>();
+        if (catalystProjects) {
+          catalystProjects.forEach(p => projectIdMap.set(p.key, p.id));
+        }
         if (jiraProjects) {
           const pMap = new Map<string, string>();
           jiraProjects.forEach(p => pMap.set(p.project_key, p.name));
