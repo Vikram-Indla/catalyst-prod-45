@@ -281,7 +281,7 @@ function DigestCard({
 
               <button
                 onClick={(e) => { e.stopPropagation(); dismiss(); }}
-                aria-label="Dismiss this digest item"
+                aria-label="Dismiss this recap item"
                 className="focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2563EB]"
                 style={{
                   background: 'none', border: 'none', cursor: 'pointer',
@@ -487,16 +487,16 @@ export default function AIDigestTab({ onClose }: { onClose?: () => void } = {}) 
         <span style={{
           fontFamily: 'Inter, sans-serif', fontSize: 14, fontWeight: 650, color: T.ink1,
         }}>
-          Digest unavailable
+          Recap unavailable
         </span>
         <span style={{
           fontFamily: 'Inter, sans-serif', fontSize: 12, color: T.ink4, textAlign: 'center',
         }}>
-          Unable to generate digest right now. Try again later.
+          Unable to generate recap right now. Try again later.
         </span>
         <button
           onClick={() => refetch()}
-          aria-label="Retry generating digest"
+          aria-label="Retry generating recap"
           className="focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2563EB]"
           style={{
             marginBlockStart: 8, padding: '6px 16px',
@@ -653,7 +653,7 @@ export default function AIDigestTab({ onClose }: { onClose?: () => void } = {}) 
         <button
           onClick={handleRefresh}
           disabled={refreshing}
-          aria-label="Refresh digest"
+          aria-label="Refresh recap"
           className="focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2563EB]"
           style={{
             display: 'inline-flex', alignItems: 'center', gap: 4,
@@ -668,7 +668,7 @@ export default function AIDigestTab({ onClose }: { onClose?: () => void } = {}) 
               animation: refreshing ? 'digest-spin 800ms linear infinite' : 'none',
             }}
           />
-          {refreshing ? 'Refreshing…' : 'Refresh digest'}
+          {refreshing ? 'Refreshing…' : 'Refresh recap'}
         </button>
         <span style={{ fontSize: 11, color: T.ink5 }}>
           {d.has_critical ? 'Next refresh in 30m' : 'Next refresh in 4h'}
