@@ -488,15 +488,20 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
                 aria-selected={isActive}
                 style={{
                   display: 'flex', alignItems: 'center', gap: 6,
-                  padding: '0 16px', height: 50,
+                  padding: '8px 14px', height: 'auto',
                   background: 'none', border: 'none', borderBottom: isActive ? '2px solid #2563EB' : '2px solid transparent',
                   cursor: 'pointer',
-                  fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 500,
+                  fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: isActive ? 650 : 500,
                   color: isActive ? '#2563EB' : T.text2,
                   transition: 'color 150ms ease',
                 }}
+                onMouseEnter={e => { if (!isActive) e.currentTarget.style.color = T.text1; }}
+                onMouseLeave={e => { if (!isActive) e.currentTarget.style.color = T.text2; }}
               >
                 {tab.label}
+                {tab.badge === 'ageing' && (
+                  <AgeingBadge />
+                )}
               </button>
             );
           })}
@@ -529,7 +534,9 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
             </button>
           </div>
         ) : activeTab === 'ai' ? (
-          <AIDigestTab onClose={onClose} />
+          <AIRecapTabV2 />
+        ) : activeTab === 'ageing' ? (
+          <AgeingTab />
         ) : isLoading && notifications.length === 0 ? (
           <LoadingSkeleton />
         ) : notifications.length === 0 ? (
