@@ -119,7 +119,7 @@ function WhySurfaced({ trigger }: { trigger: string }) {
           display: 'inline-flex', alignItems: 'center', gap: 4,
           background: 'none', border: 'none', cursor: 'pointer',
           padding: 0, fontFamily: 'Inter, sans-serif',
-          fontSize: 10, fontWeight: 600, color: T.purple,
+          fontSize: 11, fontWeight: 600, color: T.purple,
         }}
         className="focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2563EB]"
       >
@@ -150,7 +150,7 @@ function WhySurfaced({ trigger }: { trigger: string }) {
           border: '0.75px solid rgba(124,58,237,.15)',
           borderRadius: 4,
           fontFamily: 'Inter, sans-serif',
-          fontSize: 10, fontStyle: 'italic',
+          fontSize: 11, fontStyle: 'italic',
           color: 'rgba(124,58,237,.6)',
           lineHeight: 1.5,
         }}>
@@ -171,7 +171,7 @@ function ConfidenceBar({ value }: { value: number }) {
 
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-      <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 9, color: T.ink5, whiteSpace: 'nowrap' }}>
+      <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: T.ink5, whiteSpace: 'nowrap' }}>
         AI confidence
       </span>
       <div
@@ -238,6 +238,7 @@ function DigestCard({
           <div style={{
             width: 3, flexShrink: 0,
             background: accentColour,
+            borderRadius: 0,
           }} />
 
           {/* Card body */}
@@ -251,7 +252,7 @@ function DigestCard({
 
               {item.project_name && (
                 <span style={{
-                  fontFamily: 'Inter, sans-serif', fontSize: 10, fontWeight: 500,
+                  fontFamily: 'Inter, sans-serif', fontSize: 11, fontWeight: 500,
                   color: T.ink4, background: T.surface,
                   border: `0.75px solid ${T.border}`,
                   borderRadius: 'var(--cp-radius-badge, 3px)',
@@ -262,7 +263,7 @@ function DigestCard({
               )}
 
               <span style={{
-                fontFamily: 'Inter, sans-serif', fontSize: 10, fontWeight: 600,
+                fontFamily: 'Inter, sans-serif', fontSize: 11, fontWeight: 600,
                 background: ps.bg, color: ps.text,
                 padding: '2px 7px',
                 borderRadius: 'var(--cp-radius-badge, 3px)',
@@ -345,7 +346,7 @@ function DigestCard({
                 className="focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2563EB]"
                 style={{
                   display: 'inline-flex', alignItems: 'center', gap: 4,
-                  fontFamily: 'Inter, sans-serif', fontSize: 10, fontWeight: 600,
+                  fontFamily: 'Inter, sans-serif', fontSize: 11, fontWeight: 600,
                   color: T.primary,
                   background: T.primaryLt,
                   border: `0.75px solid ${T.primaryBd}`,
@@ -385,14 +386,14 @@ function SectionHeader({
         background: dot, flexShrink: 0,
       }} />
       <span style={{
-        fontFamily: 'Inter, sans-serif', fontSize: 10, fontWeight: 700,
+        fontFamily: 'Inter, sans-serif', fontSize: 11, fontWeight: 700,
         textTransform: 'uppercase', letterSpacing: '0.04em',
         color: T.ink2, flex: 1,
       }}>
         {label}
       </span>
       <span style={{
-        fontFamily: 'Inter, sans-serif', fontSize: 10, fontWeight: 600,
+        fontFamily: 'Inter, sans-serif', fontSize: 11, fontWeight: 600,
         background: countBg, color: countText,
         padding: '1px 7px', borderRadius: 'var(--cp-radius-badge, 3px)',
       }}>
