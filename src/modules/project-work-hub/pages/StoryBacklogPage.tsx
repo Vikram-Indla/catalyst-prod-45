@@ -215,6 +215,19 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
         isPending={deleteMutation.isPending}
       />
 
+      {detailItemId && (
+        <Suspense fallback={null}>
+          <StoryDetailModal
+            isOpen={!!detailItemId}
+            onClose={() => setDetailItemId(null)}
+            itemId={detailItemId}
+            projectId={projectId || ''}
+            projectKey={projectKey || ''}
+            onOpenItem={(id) => setDetailItemId(id)}
+          />
+        </Suspense>
+      )}
+
     </div>
   );
 }
