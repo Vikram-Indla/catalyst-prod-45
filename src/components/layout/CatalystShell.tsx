@@ -43,6 +43,9 @@ function CatalystShellContent() {
   // Track room visits for Recent Rooms functionality
   useRecentPlaceTracker();
   const location = useLocation();
+  const hub = deriveHubFromPath(location.pathname);
+  const page = derivePageFromPath(location.pathname);
+  useCatalystTitle(page, hub);
   const navigate = useNavigate();
   const params = useParams<{ programId?: string; portfolioId?: string; teamId?: string; projectId?: string }>();
   const { workspaceType, programId: contextProgramId, projectId: contextProjectId, selectedQuarter, setSelectedQuarter, sidebarExpanded, setSidebarExpanded } = useCatalystContext();
