@@ -10,6 +10,8 @@ const AnnouncementBanner = lazy(() => import('@/components/notifications/Announc
 import { useTrackLastRoute } from '@/hooks/useSessionPersistence';
 import { useEnabledModules } from '@/hooks/useModules';
 import { useRecentPlaceTracker } from '@/hooks/useRecentPlaceTracker';
+import { useCatalystTitle } from '@/hooks/useCatalystTitle';
+import { deriveHubFromPath, derivePageFromPath } from '@/lib/tabIdentity';
 
 // ─── Lazy-loaded sidebars (only the active one loads into memory) ────
 const UnifiedSidebar = lazy(() => import('./UnifiedSidebar').then(m => ({ default: m.UnifiedSidebar })));
@@ -41,6 +43,9 @@ function CatalystShellContent() {
   // Track room visits for Recent Rooms functionality
   useRecentPlaceTracker();
   const location = useLocation();
+  const hub = deriveHubFromPath(location.pathname);
+  const page = derivePageFromPath(location.pathname);
+  useCatalystTitle(page, hub);
   const navigate = useNavigate();
   const params = useParams<{ programId?: string; portfolioId?: string; teamId?: string; projectId?: string }>();
   const { workspaceType, programId: contextProgramId, projectId: contextProjectId, selectedQuarter, setSelectedQuarter, sidebarExpanded, setSidebarExpanded } = useCatalystContext();
