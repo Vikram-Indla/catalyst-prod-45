@@ -176,23 +176,56 @@ export default function AIRecapTabV2() {
       if (data && data.length > 0 && data[0].digest_json) {
         try {
           const digest = data[0].digest_json as any;
-          const parsedItems: RecapItem[] = [];
-          if (Array.isArray(digest.items)) {
-            digest.items.forEach((item: any, idx: number) => {
-              parsedItems.push({
-                id: `ai-${idx}`,
-                category: item.category || 'recap',
-                jira_key: item.jira_key || item.key || '',
-                jira_url: item.jira_url || '#',
-                summary: item.summary || item.title || '',
-                ai_body_text: item.body || item.ai_body_text || '',
-                ai_action_text: item.action || item.ai_action_text || '',
-                timestamp: item.timestamp || '',
-                done_text: item.done_text || '',
-                actors: item.actors || [],
-              });
-            });
+          const rawItems: any[] = Array.isArray(digest.items) ? digest.items : [];
+
+          // Collect entity_ids that need issue_key resolution
+          const entityIds = rawItems
+            .map((item: any) => item.entity_id)
+            .filter((id: any) => id && typeof id === 'string' && id.length > 8);
+
+          // Resolve UUIDs → Jira keys from ph_issues
+          let keyMap: Record<string, string> = {};
+          if (entityIds.length > 0) {
+            const { data: issueRows } = await supabase
+              .from('ph_issues')
+              .select('id, issue_key')
+              .in('id', entityIds);
+            if (issueRows) {
+              for (const row of issueRows) {
+                keyMap[row.id] = row.issue_key;
+              }
+            }
           }
+
+          const parsedItems: RecapItem[] = rawItems.map((item: any, idx: number) => {
+            // Resolve jira_key: prefer explicit key, then resolve from entity_id
+            const resolvedKey = item.jira_key || item.key || (item.entity_id ? keyMap[item.entity_id] : '') || '';
+            const ctaPath = item.cta_path || '';
+
+            // Map risk_horizon to category
+            let category: 'recap' | 'suggestion' | 'done' = 'recap';
+            if (item.category) {
+              category = item.category;
+            } else if (item.risk_horizon === 'good_news') {
+              category = 'done';
+            } else if (item.risk_horizon === 'this_week') {
+              category = 'suggestion';
+            }
+
+            return {
+              id: `ai-${idx}`,
+              category,
+              jira_key: resolvedKey,
+              jira_url: ctaPath || '#',
+              summary: item.summary || item.title || '',
+              ai_body_text: item.detail || item.body || item.ai_body_text || '',
+              ai_action_text: item.action || item.ai_action_text || '',
+              timestamp: item.timestamp || '',
+              done_text: item.done_text || '',
+              actors: item.actors || [],
+            };
+          });
+
           setItems(parsedItems);
         } catch {
           setItems([]);
