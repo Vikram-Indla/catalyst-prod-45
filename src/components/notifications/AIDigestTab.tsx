@@ -115,7 +115,7 @@ function WhySurfaced({ trigger }: { trigger: string }) {
           display: 'inline-flex', alignItems: 'center', gap: 4,
           background: 'none', border: 'none', cursor: 'pointer',
           padding: 0, fontFamily: 'Inter, sans-serif',
-          fontSize: 11, fontWeight: 600, color: T.purple,
+          fontSize: 11, fontWeight: 600, color: T.primary,
         }}
         className="focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2563EB]"
       >
@@ -442,7 +442,7 @@ export default function AIDigestTab({ onClose }: { onClose?: () => void } = {}) 
         <Loader2
           size={28}
           style={{
-            color: T.purple,
+            color: T.primary,
             animation: 'digest-spin 1s linear infinite',
           }}
         />
@@ -544,14 +544,14 @@ export default function AIDigestTab({ onClose }: { onClose?: () => void } = {}) 
       <div style={{
         display: 'inline-flex', alignItems: 'center', gap: 6,
         padding: '6px 12px', marginBlockEnd: 10,
-        background: T.purpleLt,
-        border: `0.5px solid ${T.purpleBd}`,
+        background: T.primaryLt,
+        border: `0.5px solid ${T.primaryBd}`,
         borderRadius: 'var(--cp-radius-card, 6px)',
       }}>
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
           <path d="M7 1L8.5 5.5L13 7L8.5 8.5L7 13L5.5 8.5L1 7L5.5 5.5L7 1Z" fill="#7C3AED" />
         </svg>
-        <span style={{ fontSize: 13, fontWeight: 600, color: T.purple }}>
+        <span style={{ fontSize: 13, fontWeight: 600, color: T.primary }}>
           AI Digest — Today
         </span>
       </div>
@@ -593,7 +593,7 @@ export default function AIDigestTab({ onClose }: { onClose?: () => void } = {}) 
       {/* Summary */}
       {d.summary && (
         <div style={{
-          borderInlineStart: `3px solid ${T.purple}`,
+          borderInlineStart: `3px solid ${T.primary}`,
           paddingInlineStart: 10,
           marginBlockEnd: 16,
         }}>
@@ -648,7 +648,7 @@ export default function AIDigestTab({ onClose }: { onClose?: () => void } = {}) 
             display: 'inline-flex', alignItems: 'center', gap: 4,
             background: 'none', border: 'none', cursor: 'pointer',
             fontFamily: 'Inter, sans-serif', fontSize: 12,
-            color: T.purple, padding: 0,
+            color: T.primary, padding: 0,
           }}
         >
           <RefreshCw
