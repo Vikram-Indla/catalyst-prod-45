@@ -19,7 +19,7 @@ import { toast } from 'sonner';
 import type { AIPriorityItem, AINextItemData, AIStats, AISuggestionData } from '@/components/catalyst-ai/CatalystAIPanel';
 
 // ─── Heavy panels: lazy-loaded so they never block initial render ────
-const ForYouDetailPanel = lazy(() => import('@/components/for-you/ForYouDetailPanel').then(m => ({ default: m.ForYouDetailPanel })));
+const StoryDetailModal = lazy(() => import('@/modules/project-work-hub/components/dialogs/StoryDetailModal'));
 const CatalystAIPanel = lazy(() => import('@/components/catalyst-ai/CatalystAIPanel').then(m => ({ default: m.CatalystAIPanel })));
 
 export default function ForYouPage() {
