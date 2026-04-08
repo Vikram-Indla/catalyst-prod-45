@@ -13,7 +13,7 @@ import {
   Zap, ChevronDown, ChevronRight, Plus, Flag, Paperclip, FileText,
   Image as ImageIcon, File as FileIcon, ExternalLink, Maximize2,
   Share2, Sparkles, Settings, Pencil, ListFilter,
-  ChevronsUp, ChevronUp, Minus, ChevronDown as ChevronDownIcon, ChevronsDown,
+  ChevronsUp, ChevronUp, Minus, ChevronsDown,
 } from 'lucide-react';
 
 /* ═══════════════════════════════════════════════
