@@ -185,9 +185,10 @@ OUTPUT RULES:
 - action: imperative verb phrase, specific. NEVER include raw UUIDs. Use readable keys or titles (e.g. "Assign INC-0041 to QA lead before 17:00", NOT "Assign issue 4d05709e to...")
 - cta_path: MUST start with one of: /project-hub /release-hub /test-hub /incident-hub /task-hub /strategy-hub /product-hub /plan-hub
 - entity_id: use the real uuid from the data, or null if not available. This is for internal linking only — NEVER surface it in user-facing text fields (trigger, action, detail, consequence, title).
-- confidence: 0–100 integer, your certainty this is genuinely actionable today
+- confidence: 0-100 integer, your certainty this is genuinely actionable today
+- metrics: 2-4 key numbers from the source data as a compact stat line. Examples: "61% ready · 3 critical defects · target in 2d", "Open 4h 22m · SLA breach in 1h 38m · unassigned", "7 failed / 42 total · 16% pass rate · last run 3h ago". Use ONLY values present in the data provided. No invented numbers.
 - has_critical: true if ANY item has risk_horizon "critical_now"
-- good_news: include ONLY if something concretely improved — max 1 item, priority LOW
+- good_news: include ONLY if something concretely improved - max 1 item, priority LOW
 - If fewer than 5 genuine signals exist, return fewer items. Do NOT pad.`;
 
     const userPrompt = `PORTFOLIO STATE:
@@ -206,7 +207,7 @@ ${fmtNotifs}
 
 Return JSON:
 {
-  "summary": "One sentence for ${rolePersona} — most important thing right now",
+  "summary": "One sentence daily briefing for ${rolePersona} — recap portfolio state as of now. Lead with the most critical number or fact. Write as a briefing, not an alert. Example: '3 critical defects block Release 2.4 shipping Thursday — registration flow is down for new users and requires immediate triage.'",
   "role_persona": "${rolePersona}",
   "has_critical": true|false,
   "generated_at": "${now.toISOString()}",
@@ -225,7 +226,8 @@ Return JSON:
       "confidence": 0-100,
       "entity_id": "uuid or null",
       "project_name": "name or null",
-      "hub_colour": "#hex"
+      "hub_colour": "#hex",
+      "metrics": "compact stat line string"
     }
   ]
 }`;

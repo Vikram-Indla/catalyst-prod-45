@@ -281,7 +281,7 @@ function DigestCard({
 
               <button
                 onClick={(e) => { e.stopPropagation(); dismiss(); }}
-                aria-label="Dismiss this digest item"
+                aria-label="Dismiss this recap item"
                 className="focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2563EB]"
                 style={{
                   background: 'none', border: 'none', cursor: 'pointer',
@@ -293,6 +293,19 @@ function DigestCard({
                 <X size={12} style={{ color: T.ink5 }} />
               </button>
             </div>
+
+            {/* Row 1b — metrics */}
+            {(item as any).metrics && (
+              <div style={{
+                fontFamily: 'JetBrains Mono, monospace', fontSize: 11, fontWeight: 600,
+                color: T.ink2, background: T.surface,
+                border: `0.75px solid ${T.border}`,
+                borderRadius: 4, padding: '3px 8px',
+                marginBlockEnd: 6, display: 'inline-block',
+              }}>
+                {(item as any).metrics}
+              </div>
+            )}
 
             {/* Row 2 — detail */}
             <p style={{
@@ -474,16 +487,16 @@ export default function AIDigestTab({ onClose }: { onClose?: () => void } = {}) 
         <span style={{
           fontFamily: 'Inter, sans-serif', fontSize: 14, fontWeight: 650, color: T.ink1,
         }}>
-          Digest unavailable
+          Recap unavailable
         </span>
         <span style={{
           fontFamily: 'Inter, sans-serif', fontSize: 12, color: T.ink4, textAlign: 'center',
         }}>
-          Unable to generate digest right now. Try again later.
+          Unable to generate recap right now. Try again later.
         </span>
         <button
           onClick={() => refetch()}
-          aria-label="Retry generating digest"
+          aria-label="Retry generating recap"
           className="focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2563EB]"
           style={{
             marginBlockStart: 8, padding: '6px 16px',
@@ -550,7 +563,7 @@ export default function AIDigestTab({ onClose }: { onClose?: () => void } = {}) 
           <path d="M7 1L8.5 5.5L13 7L8.5 8.5L7 13L5.5 8.5L1 7L5.5 5.5L7 1Z" fill="#2563EB" />
         </svg>
         <span style={{ fontSize: 13, fontWeight: 600, color: T.primary }}>
-          AI Digest — Today
+          AI Recap — Today
         </span>
       </div>
 
@@ -640,7 +653,7 @@ export default function AIDigestTab({ onClose }: { onClose?: () => void } = {}) 
         <button
           onClick={handleRefresh}
           disabled={refreshing}
-          aria-label="Refresh digest"
+          aria-label="Refresh recap"
           className="focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2563EB]"
           style={{
             display: 'inline-flex', alignItems: 'center', gap: 4,
@@ -655,7 +668,7 @@ export default function AIDigestTab({ onClose }: { onClose?: () => void } = {}) 
               animation: refreshing ? 'digest-spin 800ms linear infinite' : 'none',
             }}
           />
-          {refreshing ? 'Refreshing…' : 'Refresh digest'}
+          {refreshing ? 'Refreshing…' : 'Refresh recap'}
         </button>
         <span style={{ fontSize: 11, color: T.ink5 }}>
           {d.has_critical ? 'Next refresh in 30m' : 'Next refresh in 4h'}
