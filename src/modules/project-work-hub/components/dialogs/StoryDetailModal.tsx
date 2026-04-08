@@ -11,7 +11,7 @@ import { toast } from 'sonner';
 import {
   X, Eye, EyeOff, Link2, MoreHorizontal, Copy, Archive, Trash2,
   ChevronDown, ChevronRight, Plus, Flag, Paperclip, FileText,
-  ExternalLink, Maximize2, Share2, Pencil, ListFilter,
+  ExternalLink, Maximize2, Minimize2, Share2, Pencil, ListFilter,
   ChevronsUp, ChevronUp, Minus, ChevronsDown, Search,
 } from 'lucide-react';
 
@@ -473,6 +473,7 @@ export default function StoryDetailModal({
   const [newSubtaskTitle, setNewSubtaskTitle] = useState('');
   const [showLinkModal, setShowLinkModal] = useState(false);
   const [isFlagged, setIsFlagged] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
   const [isWatching, setIsWatching] = useState(false);
   const [watcherCount, setWatcherCount] = useState(0);
   const [editingDueDate, setEditingDueDate] = useState(false);
@@ -936,10 +937,13 @@ export default function StoryDetailModal({
       >
         <div
           style={{
-            width: 900, maxWidth: 'calc(100vw - 48px)',
-            maxHeight: '90vh', background: V.white,
-            borderRadius: 8, overflow: 'hidden', display: 'flex',
-            flexDirection: 'column', boxShadow: '0 8px 32px rgba(0,0,0,0.18)',
+            width: isExpanded ? '100vw' : 900,
+            maxWidth: isExpanded ? '100vw' : 'calc(100vw - 48px)',
+            maxHeight: isExpanded ? '100vh' : '90vh',
+            borderRadius: isExpanded ? 0 : 8,
+            transition: 'width 200ms ease, max-width 200ms ease, max-height 200ms ease, border-radius 200ms ease',
+            overflow: 'hidden', display: 'flex',
+            flexDirection: 'column', boxShadow: '0 8px 32px rgba(0,0,0,0.18)', background: V.white,
           }}
           onClick={e => e.stopPropagation()}
         >
@@ -991,11 +995,8 @@ export default function StoryDetailModal({
               }}>
                 <Share2 size={15} />
               </button>
-              <button style={btnBase} title="Expand" onClick={() => {
-                // Navigate to full page view
-                window.open(`/project-hub/${projectKey}/issue/${itemId}`, '_blank');
-              }}>
-                <Maximize2 size={15} />
+              <button style={{ ...btnBase, color: isExpanded ? V.primaryBlue : undefined }} title={isExpanded ? 'Collapse' : 'Expand'} onClick={() => setIsExpanded(e => !e)}>
+                {isExpanded ? <Minimize2 size={15} /> : <Maximize2 size={15} />}
               </button>
 
               {/* 3-dot menu */}
