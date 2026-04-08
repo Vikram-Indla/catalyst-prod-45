@@ -3,4 +3,4 @@
  */
 
 export { WorkHubLayout } from './WorkHubLayout';
-export { WorkHubSidebar } from './WorkHubSidebar';
+
