@@ -11,7 +11,7 @@ export type NotificationEntityType =
   | 'work_item' | 'project' | 'release' | 'incident'
   | 'test_case' | 'okr' | 'document' | 'risk' | 'issue';
 
-export type NotificationTab = 'direct' | 'watching' | 'ai';
+export type NotificationTab = 'direct' | 'watching' | 'ai' | 'ageing';
 
 export type WorkItemIconType =
   | 'bug' | 'story' | 'task' | 'epic' | 'subtask'

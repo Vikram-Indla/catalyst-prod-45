@@ -14,7 +14,8 @@ import NotificationItem from "./NotificationItem";
 import SectionHeader from "./SectionHeader";
 import EmptyState from "./EmptyState";
 import LoadingSkeleton from "./LoadingSkeleton";
-import AIDigestTab from "./AIDigestTab";
+import AIRecapTabV2 from "./AIRecapTabV2";
+import AgeingTab, { useAgeingCount } from "./AgeingTab";
 
 function useLastSyncTime() {
   return useQuery({
@@ -81,10 +82,25 @@ function groupByDate(items: Notification[]): { label: string; items: Notificatio
   return groups.filter(g => g.items.length > 0);
 }
 
-const TABS: { key: NotificationTab; label: string }[] = [
+const TABS: { key: NotificationTab; label: string; badge?: 'ageing' }[] = [
   { key: 'direct', label: 'Direct' },
   { key: 'ai', label: 'AI Recap' },
+  { key: 'ageing', label: 'Ageing', badge: 'ageing' },
 ];
+
+function AgeingBadge() {
+  const count = useAgeingCount();
+  if (count === 0) return null;
+  return (
+    <span style={{
+      fontSize: 10, fontWeight: 700, borderRadius: 10,
+      padding: '1px 6px', background: '#FEE2E2', color: '#991B1B',
+      lineHeight: '16px',
+    }}>
+      {count}
+    </span>
+  );
+}
 
 export default function NotificationPanel({ isOpen, onClose }: NotificationPanelProps) {
   const { data: userId } = useUserId();
@@ -486,15 +502,20 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
                 aria-selected={isActive}
                 style={{
                   display: 'flex', alignItems: 'center', gap: 6,
-                  padding: '0 16px', height: 50,
+                  padding: '8px 14px', height: 'auto',
                   background: 'none', border: 'none', borderBottom: isActive ? '2px solid #2563EB' : '2px solid transparent',
                   cursor: 'pointer',
-                  fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 500,
+                  fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: isActive ? 650 : 500,
                   color: isActive ? '#2563EB' : T.text2,
                   transition: 'color 150ms ease',
                 }}
+                onMouseEnter={e => { if (!isActive) e.currentTarget.style.color = T.text1; }}
+                onMouseLeave={e => { if (!isActive) e.currentTarget.style.color = T.text2; }}
               >
                 {tab.label}
+                {tab.badge === 'ageing' && (
+                  <AgeingBadge />
+                )}
               </button>
             );
           })}
@@ -527,7 +548,9 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
             </button>
           </div>
         ) : activeTab === 'ai' ? (
-          <AIDigestTab onClose={onClose} />
+          <AIRecapTabV2 />
+        ) : activeTab === 'ageing' ? (
+          <AgeingTab />
         ) : isLoading && notifications.length === 0 ? (
           <LoadingSkeleton />
         ) : notifications.length === 0 ? (

@@ -108,6 +108,41 @@
   --ra-slot-pending: #E5E5E5;
   --ra-slot-error: #DC2626;
 
+  /* ═══ CATALYST V12 HYBRID PRECISION — NotifyHub Tokens ═══ */
+  --cp-primary: #2563EB;
+  --cp-primary-hover: #1D4ED8;
+  --cp-primary-light: #EFF6FF;
+  --cp-primary-border: #BFDBFE;
+  --cp-ink-1: #0F172A;
+  --cp-ink-2: #334155;
+  --cp-ink-3: #64748B;
+  --cp-ink-4: #94A3B8;
+  --cp-surface: #F8FAFC;
+  --cp-card: #FFFFFF;
+  --cp-border: #E2E8F0;
+  --cp-border-lt: #F1F5F9;
+  --cp-success: #16A34A;
+  --cp-success-light: #E3FCEF;
+  --cp-success-text: #006644;
+  --cp-warning: #D97706;
+  --cp-warning-light: #FEF3C7;
+  --cp-warning-text: #92400E;
+  --cp-danger: #DC2626;
+  --cp-danger-light: #FEE2E2;
+  --cp-danger-text: #991B1B;
+  --cp-amber: #F59E0B;
+  --sl-todo-bg: #DFE1E6;
+  --sl-todo-text: #253858;
+  --sl-inprog-bg: #DEEBFF;
+  --sl-inprog-text: #0747A6;
+  --sl-done-bg: #E3FCEF;
+  --sl-done-text: #006644;
+  --radius-sm: 3px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --row-h: 36px;
+  --panel-w: 540px;
+
   /* ═══ CATALYST V12 HYBRID PRECISION — Wiki Design Tokens ═══ */
   --cp-bg-page: #FFFFFF;
   --cp-bg-surface: #F8FAFC;
