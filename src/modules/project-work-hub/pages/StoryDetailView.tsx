@@ -336,9 +336,61 @@ export default function StoryDetailView({ projectId, projectKey, itemId }: Story
             <div style={{ ...LABEL, marginBottom: 12 }}>Key Details</div>
 
             <SidebarField label="Status" tk={tk}>
-              {statusColors && (
-                <span style={{ display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px', borderRadius: 4, fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em', background: statusColors.bg, color: statusColors.text }}>{statusColors.label}</span>
-              )}
+              <Popover>
+                <PopoverTrigger asChild>
+                  <button style={{
+                    display: 'inline-flex', alignItems: 'center', gap: 4, height: 22, padding: '0 8px',
+                    borderRadius: 4, fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em',
+                    border: 'none', cursor: 'pointer',
+                    background: statusColors?.bg || '#DFE1E6', color: statusColors?.text || '#253858',
+                  }}>
+                    {statusColors?.label || story?.status?.toUpperCase() || 'UNKNOWN'}
+                    <span style={{ fontSize: 8, marginLeft: 2 }}>▾</span>
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent align="start" side="bottom" style={{ width: 300, padding: 0, background: isDark ? '#1A1A1A' : '#FFFFFF', border: `1px solid ${tk.border}`, borderRadius: 6, zIndex: 9999, overflow: 'hidden' }}>
+                  {(() => {
+                    const transitions = WORKFLOW_TRANSITIONS[story.status] || [];
+                    if (transitions.length > 0) {
+                      return transitions.map(t => {
+                        const targetCat = getStatusCategory(t.target);
+                        const targetColor = targetCat === 'done' ? '#1B7F37' : targetCat === 'in_progress' ? '#0C66E4' : '#A5ADBA';
+                        return (
+                          <button key={t.target} onClick={() => handleUpdate('status', t.target)}
+                            className="w-full flex items-center gap-3 px-4 py-3 text-left transition-colors"
+                            style={{ border: 'none', cursor: 'pointer', background: 'transparent' }}
+                            onMouseEnter={e => (e.currentTarget.style.background = tk.hoverBg)}
+                            onMouseLeave={e => (e.currentTarget.style.background = '')}
+                          >
+                            <span style={{ fontSize: 13, fontWeight: 500, color: tk.t2, minWidth: 40 }}>{t.label}</span>
+                            <ArrowRight size={14} style={{ color: tk.t3, flexShrink: 0 }} />
+                            <span style={{ display: 'inline-flex', alignItems: 'center', height: 22, padding: '0 8px', borderRadius: 3, fontSize: 11, fontWeight: 700, textTransform: 'uppercase', background: targetColor, color: '#FFFFFF', letterSpacing: '0.02em' }}>
+                              {t.target.toUpperCase()}
+                            </span>
+                          </button>
+                        );
+                      });
+                    }
+                    return STATUS_GROUPS.map(group => (
+                      <div key={group.label}>
+                        <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: tk.t3, padding: '8px 12px 4px' }}>{group.label}</div>
+                        {group.statuses.map(s => {
+                          const sc = getStatusLozengeColors(s);
+                          return (
+                            <button key={s} onClick={() => handleUpdate('status', s)} style={{
+                              width: '100%', padding: '5px 12px', fontSize: 13, border: 'none', textAlign: 'left',
+                              background: story.status === s ? 'rgba(37,99,235,0.08)' : 'transparent',
+                              color: tk.t1, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
+                            }}>
+                              <span style={{ display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px', borderRadius: 4, fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em', background: sc.bg, color: sc.text }}>{sc.label}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    ));
+                  })()}
+                </PopoverContent>
+              </Popover>
             </SidebarField>
 
             <SidebarField label="Priority" tk={tk}>
