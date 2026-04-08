@@ -61,7 +61,6 @@ const HUB_ROUTES: Record<string, string> = {
   TaskHub: "/task-hub", PlanHub: "/plan-hub",
 };
 
-const ALL_HUBS: SearchHub[] = ["StrategyHub","ProductHub","ProjectHub","ReleaseHub","TestHub","IncidentHub","TaskHub","PlanHub"];
 const ALL_TYPES: { key: string; label: string }[] = Object.entries(WORK_ICONS).map(([k, v]) => ({ key: k, label: v.label }));
 
 function mapType(raw: string | null | undefined): string {
@@ -120,7 +119,7 @@ function getAvatarColor(name: string): string {
   return colors[Math.abs(hash) % colors.length];
 }
 
-/* ── ResultRow ── */
+/* ── ResultRow (breathable 50px) ── */
 function ResultRow({ item, isSelected, onHover, onClick, avatarMap }: {
   item: SearchResult; isSelected: boolean; onHover: () => void; onClick: () => void;
   avatarMap: Map<string, string>;
@@ -135,34 +134,36 @@ function ResultRow({ item, isSelected, onHover, onClick, avatarMap }: {
       onClick={onClick}
       onMouseEnter={onHover}
       style={{
-        display: "flex", alignItems: "center", height: 44,
-        padding: "0 16px", gap: 10, cursor: "pointer",
+        display: "flex", alignItems: "center", minHeight: 50,
+        padding: "8px 20px", gap: 12, cursor: "pointer",
         backgroundColor: isSelected ? "var(--gs-selected)" : "transparent",
         borderBottom: "0.75px solid var(--gs-border-subtle)",
+        transition: "background 80ms ease",
       }}
     >
       <span
-        style={{ flexShrink: 0, width: 14, height: 14 }}
+        style={{ flexShrink: 0, width: 16, height: 16 }}
         dangerouslySetInnerHTML={{ __html: icon.svg }}
       />
       <span style={{
-        fontFamily: "JetBrains Mono, monospace", fontSize: 11,
-        color: "var(--gs-key)", fontWeight: 500, flexShrink: 0, minWidth: 70,
+        fontFamily: "JetBrains Mono, monospace", fontSize: 11.5,
+        color: "var(--gs-key)", fontWeight: 600, flexShrink: 0, minWidth: 80,
       }}>
         {item.item_key}
       </span>
       <span style={{
-        flex: 1, fontSize: 13, color: "var(--gs-text)", fontFamily: "Inter, sans-serif",
+        flex: 1, fontSize: 13.5, color: "var(--gs-text)", fontFamily: "Inter, sans-serif",
         overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+        fontWeight: 450, lineHeight: 1.4,
       }}>
         {item.title}
       </span>
       <div style={{
         display: "flex", alignItems: "center", gap: 8, flexShrink: 0,
-        fontSize: 11, color: "var(--gs-text-secondary)", fontFamily: "Inter, sans-serif",
+        fontSize: 11.5, color: "var(--gs-text-secondary)", fontFamily: "Inter, sans-serif",
       }}>
         {item.project_name && (
-          <span style={{ maxWidth: 120, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+          <span style={{ maxWidth: 130, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
             {item.project_name}
           </span>
         )}
@@ -175,10 +176,10 @@ function ResultRow({ item, isSelected, onHover, onClick, avatarMap }: {
               const clr = getAvatarColor(item.assignee_name!);
               return avatarUrl ? (
                 <img src={avatarUrl} alt={item.assignee_name!}
-                  style={{ width: 22, height: 22, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
+                  style={{ width: 24, height: 24, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
               ) : (
                 <span style={{
-                  width: 22, height: 22, borderRadius: "50%", fontSize: 9, fontWeight: 600,
+                  width: 24, height: 24, borderRadius: "50%", fontSize: 9, fontWeight: 600,
                   color: "#fff", display: "inline-flex", alignItems: "center", justifyContent: "center",
                   backgroundColor: clr, flexShrink: 0,
                 }}>
@@ -192,7 +193,7 @@ function ResultRow({ item, isSelected, onHover, onClick, avatarMap }: {
         <span>{timeAgo(item.viewed_at)}</span>
         <span style={{
           fontSize: 10, fontWeight: 600, color: "#fff", backgroundColor: hubColor,
-          borderRadius: 4, padding: "1px 6px", letterSpacing: "0.02em",
+          borderRadius: 4, padding: "2px 7px", letterSpacing: "0.02em",
         }}>
           {hubShort}
         </span>
@@ -230,12 +231,12 @@ function FilterChip({ label, items, selected, onSelect, avatarMap }: {
       <button
         onClick={() => setOpen(!open)}
         style={{
-          display: "flex", alignItems: "center", gap: 4, height: 28,
+          display: "flex", alignItems: "center", gap: 5, height: 30,
           padding: "0 10px", fontSize: 12, fontFamily: "Inter, sans-serif",
           color: selected ? "var(--gs-chip-active-text)" : "var(--gs-chip-text)", fontWeight: selected ? 500 : 400,
           backgroundColor: selected ? "var(--gs-chip-active-bg)" : "var(--gs-chip-bg)",
           border: `1px solid ${selected ? "var(--gs-chip-active-border)" : "var(--gs-chip-border)"}`,
-          borderRadius: 4, cursor: "pointer", whiteSpace: "nowrap",
+          borderRadius: 5, cursor: "pointer", whiteSpace: "nowrap",
         }}
       >
         {activeLabel || label}
@@ -243,16 +244,16 @@ function FilterChip({ label, items, selected, onSelect, avatarMap }: {
       </button>
       {open && (
         <div style={{
-          position: "absolute", top: 32, left: 0, zIndex: 100,
+          position: "absolute", top: 34, left: 0, zIndex: 100,
           backgroundColor: "var(--gs-dropdown-bg)", border: "1px solid var(--gs-chip-border)",
           borderRadius: 6, boxShadow: "var(--gs-dropdown-shadow)",
-          minWidth: 200, maxHeight: 280, overflowY: "auto",
+          minWidth: 220, maxHeight: 300, overflowY: "auto",
         }}>
           {selected && (
             <div
               onClick={() => { onSelect(null); setOpen(false); }}
               style={{
-                padding: "0 12px", height: 50, display: "flex", alignItems: "center",
+                padding: "10px 14px", display: "flex", alignItems: "center",
                 fontSize: 12, color: "var(--gs-danger)", cursor: "pointer",
                 borderBottom: "0.75px solid var(--gs-border-subtle)",
               }}
@@ -267,7 +268,7 @@ function FilterChip({ label, items, selected, onSelect, avatarMap }: {
               key={item.value}
               onClick={() => { onSelect(item.value); setOpen(false); }}
               style={{
-                padding: "0 12px", height: 50, display: "flex", alignItems: "center", gap: 8,
+                padding: "8px 14px", display: "flex", alignItems: "center", gap: 8,
                 fontSize: 13, color: selected === item.value ? "var(--gs-chip-active-text)" : "var(--gs-text)",
                 fontFamily: "Inter, sans-serif", cursor: "pointer",
                 backgroundColor: selected === item.value ? "var(--gs-chip-active-bg)" : "transparent",
@@ -288,13 +289,13 @@ function FilterChip({ label, items, selected, onSelect, avatarMap }: {
                 const photoUrl = avatarMap?.get(item.display.toLowerCase());
                 if (photoUrl) {
                   return <img src={photoUrl} alt={item.display} style={{
-                    width: 28, height: 28, borderRadius: "50%", objectFit: "cover", flexShrink: 0,
+                    width: 26, height: 26, borderRadius: "50%", objectFit: "cover", flexShrink: 0,
                   }} />;
                 }
                 return (
                   <span style={{
                     display: "inline-flex", alignItems: "center", justifyContent: "center",
-                    width: 28, height: 28, borderRadius: "50%",
+                    width: 26, height: 26, borderRadius: "50%",
                     backgroundColor: item.color, color: "#FFFFFF",
                     fontSize: 10, fontWeight: 600, fontFamily: "Inter, sans-serif",
                     flexShrink: 0, lineHeight: 1,
@@ -306,6 +307,155 @@ function FilterChip({ label, items, selected, onSelect, avatarMap }: {
               {item.display}
             </div>
           ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ── Searchable Filter Chip (for Assignee) ── */
+function SearchableFilterChip({ label, items, selected, onSelect, avatarMap }: {
+  label: string;
+  items: { value: string; display: string; color?: string }[];
+  selected: string | null;
+  onSelect: (v: string | null) => void;
+  avatarMap?: Map<string, string>;
+}) {
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState("");
+  const ref = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [open]);
+
+  useEffect(() => {
+    if (open) setTimeout(() => inputRef.current?.focus(), 50);
+    else setSearch("");
+  }, [open]);
+
+  const filtered = items.filter(i =>
+    i.display.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const activeLabel = selected
+    ? items.find(i => i.value === selected)?.display || selected
+    : null;
+
+  return (
+    <div ref={ref} style={{ position: "relative" }}>
+      <button
+        onClick={() => setOpen(!open)}
+        style={{
+          display: "flex", alignItems: "center", gap: 5, height: 30,
+          padding: "0 10px", fontSize: 12, fontFamily: "Inter, sans-serif",
+          color: selected ? "var(--gs-chip-active-text)" : "var(--gs-chip-text)", fontWeight: selected ? 500 : 400,
+          backgroundColor: selected ? "var(--gs-chip-active-bg)" : "var(--gs-chip-bg)",
+          border: `1px solid ${selected ? "var(--gs-chip-active-border)" : "var(--gs-chip-border)"}`,
+          borderRadius: 5, cursor: "pointer", whiteSpace: "nowrap",
+        }}
+      >
+        {activeLabel || label}
+        <ChevronDown size={12} />
+      </button>
+      {open && (
+        <div style={{
+          position: "absolute", top: 34, left: 0, zIndex: 100,
+          backgroundColor: "var(--gs-dropdown-bg)", border: "1px solid var(--gs-chip-border)",
+          borderRadius: 6, boxShadow: "var(--gs-dropdown-shadow)",
+          minWidth: 240, maxHeight: 320, display: "flex", flexDirection: "column",
+          overflow: "hidden",
+        }}>
+          <div style={{
+            padding: "8px 10px",
+            borderBottom: "0.75px solid var(--gs-border-subtle)",
+          }}>
+            <input
+              ref={inputRef}
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder="Search assignees..."
+              style={{
+                width: "100%", height: 32, padding: "0 10px",
+                fontSize: 12, fontFamily: "Inter, sans-serif",
+                color: "var(--gs-text)", backgroundColor: "var(--gs-chip-bg)",
+                border: `1px solid var(--gs-chip-border)`, borderRadius: 4,
+                outline: "none", appearance: "none",
+                WebkitAppearance: "none", boxShadow: "none",
+              }}
+              onFocus={e => (e.currentTarget.style.borderColor = "var(--gs-chip-active-border)")}
+              onBlur={e => (e.currentTarget.style.borderColor = "var(--gs-chip-border)")}
+              onClick={e => e.stopPropagation()}
+            />
+          </div>
+          <div style={{ overflowY: "auto", maxHeight: 260 }}>
+            {selected && (
+              <div
+                onClick={() => { onSelect(null); setOpen(false); }}
+                style={{
+                  padding: "10px 14px", display: "flex", alignItems: "center",
+                  fontSize: 12, color: "var(--gs-danger)", cursor: "pointer",
+                  borderBottom: "0.75px solid var(--gs-border-subtle)",
+                }}
+                onMouseEnter={e => (e.currentTarget.style.backgroundColor = "var(--gs-danger-hover)")}
+                onMouseLeave={e => (e.currentTarget.style.backgroundColor = "transparent")}
+              >
+                Clear filter
+              </div>
+            )}
+            {filtered.length === 0 ? (
+              <div style={{
+                padding: "16px 14px", textAlign: "center",
+                fontSize: 12, color: "var(--gs-text-muted)", fontFamily: "Inter, sans-serif",
+              }}>
+                No assignees found
+              </div>
+            ) : filtered.map(item => {
+              const photoUrl = avatarMap?.get(item.display.toLowerCase());
+              return (
+                <div
+                  key={item.value}
+                  onClick={() => { onSelect(item.value); setOpen(false); }}
+                  style={{
+                    padding: "8px 14px", display: "flex", alignItems: "center", gap: 8,
+                    fontSize: 13, color: selected === item.value ? "var(--gs-chip-active-text)" : "var(--gs-text)",
+                    fontFamily: "Inter, sans-serif", cursor: "pointer",
+                    backgroundColor: selected === item.value ? "var(--gs-chip-active-bg)" : "transparent",
+                    fontWeight: selected === item.value ? 500 : 400,
+                  }}
+                  onMouseEnter={e => {
+                    if (selected !== item.value) e.currentTarget.style.backgroundColor = "var(--gs-hover)";
+                  }}
+                  onMouseLeave={e => {
+                    if (selected !== item.value) e.currentTarget.style.backgroundColor = "transparent";
+                  }}
+                >
+                  {photoUrl ? (
+                    <img src={photoUrl} alt={item.display} style={{
+                      width: 26, height: 26, borderRadius: "50%", objectFit: "cover", flexShrink: 0,
+                    }} />
+                  ) : (
+                    <span style={{
+                      display: "inline-flex", alignItems: "center", justifyContent: "center",
+                      width: 26, height: 26, borderRadius: "50%",
+                      backgroundColor: item.color || "#525252", color: "#FFFFFF",
+                      fontSize: 10, fontWeight: 600, fontFamily: "Inter, sans-serif",
+                      flexShrink: 0,
+                    }}>
+                      {item.display.split(" ").map((n: string) => n[0]).join("").toUpperCase().slice(0, 2)}
+                    </span>
+                  )}
+                  {item.display}
+                </div>
+              );
+            })}
+          </div>
         </div>
       )}
     </div>
@@ -357,10 +507,10 @@ export function GlobalSearch() {
     new Set(recents.filter(r => r.assignee_name).map(r => r.assignee_name!))
   ).map(name => ({ value: name, display: name, color: getAvatarColor(name) }));
 
-  // Derive unique hubs from recents
-  const hubOptions = ALL_HUBS.map(h => ({
-    value: h, display: h.replace(/([A-Z])/g, " $1").trim(), color: HUB_COLORS[h],
-  }));
+  // Derive unique projects from recents
+  const projectOptions = Array.from(
+    new Set(recents.filter(r => r.project_name).map(r => r.project_name!))
+  ).map(name => ({ value: name, display: name }));
 
   // Type options with SVG icons
   const typeOptions = ALL_TYPES.map(t => ({
@@ -442,11 +592,7 @@ export function GlobalSearch() {
 
   // Filter recents by active filters
   const filteredRecents = recents.filter(item => {
-    if (filters.hub) {
-      const itemHub = (item.hub || "").trim();
-      const filterHub = (filters.hub || "").trim();
-      if (itemHub !== filterHub) return false;
-    }
+    if (filters.project && item.project_name !== filters.project) return false;
     if (filters.assignee && item.assignee_name !== filters.assignee) return false;
     if (filters.type && mapType(item.item_type) !== filters.type) return false;
     return true;
@@ -515,9 +661,9 @@ export function GlobalSearch() {
 
       {/* Modal */}
       <div data-gs-dialog style={{
-        position: "fixed", top: "15%", left: "50%", transform: "translateX(-50%)",
-        zIndex: 9999, width: 680, maxHeight: 640,
-        backgroundColor: "var(--gs-bg)", borderRadius: 8,
+        position: "fixed", top: "12%", left: "50%", transform: "translateX(-50%)",
+        zIndex: 9999, width: 720, maxHeight: "76vh",
+        backgroundColor: "var(--gs-bg)", borderRadius: 10,
         boxShadow: "var(--gs-shadow)",
         border: "1px solid var(--gs-border)",
         display: "flex", flexDirection: "column",
@@ -525,13 +671,14 @@ export function GlobalSearch() {
         colorScheme: isDark ? "dark" : "light",
       }}>
 
-        {/* ── SEARCH BAR (56px) ── */}
+        {/* ── SEARCH BAR (60px) ── */}
         <div style={{
-          display: "flex", alignItems: "center", height: 56,
-          padding: "0 16px", gap: 10,
+          display: "flex", alignItems: "center", minHeight: 60,
+          padding: "0 20px", gap: 12,
           borderBottom: "1px solid var(--gs-border)",
+          flexShrink: 0,
         }}>
-          <Search size={18} color="var(--gs-icon)" style={{ flexShrink: 0 }} />
+          <Search size={20} color="var(--gs-icon)" style={{ flexShrink: 0 }} />
           <input
             ref={inputRef}
             value={query}
@@ -539,7 +686,7 @@ export function GlobalSearch() {
             placeholder="Search Catalyst..."
             style={{
               flex: 1, border: "none", outline: "none",
-              fontSize: 15, fontFamily: "Inter, sans-serif",
+              fontSize: 16, fontFamily: "Inter, sans-serif",
               color: "var(--gs-text)",
               backgroundColor: "transparent",
               colorScheme: isDark ? "dark" : "light",
@@ -550,9 +697,10 @@ export function GlobalSearch() {
               padding: 0,
               margin: 0,
               caretColor: "var(--gs-text)",
+              lineHeight: 1.4,
             }}
           />
-          <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
             <kbd style={{
               fontSize: 11, fontFamily: "JetBrains Mono, monospace",
               color: "var(--gs-kbd-text)", backgroundColor: "var(--gs-kbd-bg)",
@@ -562,7 +710,7 @@ export function GlobalSearch() {
             <button
               onClick={close}
               style={{
-                width: 28, height: 28, borderRadius: 4,
+                width: 30, height: 30, borderRadius: 5,
                 border: "none", backgroundColor: "transparent",
                 display: "flex", alignItems: "center", justifyContent: "center",
                 cursor: "pointer", color: "var(--gs-icon)",
@@ -575,32 +723,33 @@ export function GlobalSearch() {
           </div>
         </div>
 
-        {/* ── FILTER BAR (40px) ── */}
+        {/* ── FILTER BAR (44px) ── */}
         <div style={{
-          display: "flex", alignItems: "center", height: 40,
-          padding: "0 16px", gap: 8,
+          display: "flex", alignItems: "center", minHeight: 44,
+          padding: "0 20px", gap: 8,
           borderBottom: "1px solid var(--gs-border)",
           backgroundColor: "var(--gs-bar-bg)",
+          flexShrink: 0,
         }}>
           <Settings2 size={14} color="var(--gs-icon)" style={{ flexShrink: 0, marginRight: 4 }} />
-          <FilterChip label="Hub" items={hubOptions} selected={filters.hub} onSelect={v => setFilter("hub", v as any)} />
-          <FilterChip label="Assignee" items={assigneeOptions} selected={filters.assignee} onSelect={v => setFilter("assignee", v)} avatarMap={nameAvatarMap} />
+          <FilterChip label="Project" items={projectOptions} selected={filters.project} onSelect={v => setFilter("project", v)} />
+          <SearchableFilterChip label="Assignee" items={assigneeOptions} selected={filters.assignee} onSelect={v => setFilter("assignee", v)} avatarMap={nameAvatarMap} />
           <FilterChip label="Type" items={typeOptions} selected={filters.type} onSelect={v => setFilter("type", v as any)} />
         </div>
 
         {/* ── RESULTS BODY ── */}
         <div style={{
           flex: 1, overflowY: "auto",
-          maxHeight: "calc(640px - 56px - 40px - 36px)",
+          minHeight: 0,
         }}>
           {/* Loading skeleton */}
           {showSearch && isLoading && [1,2,3,4].map(i => (
             <div key={i} style={{
-              display: "flex", alignItems: "center", height: 44, padding: "0 16px", gap: 10,
+              display: "flex", alignItems: "center", height: 50, padding: "0 20px", gap: 12,
             }}>
-              <div style={{ width: 14, height: 14, borderRadius: 4, backgroundColor: "var(--gs-skeleton)" }} />
-              <div style={{ width: 60, height: 12, borderRadius: 4, backgroundColor: "var(--gs-skeleton)" }} />
-              <div style={{ flex: 1, height: 12, borderRadius: 4, backgroundColor: "var(--gs-skeleton)" }} />
+              <div style={{ width: 16, height: 16, borderRadius: 4, backgroundColor: "var(--gs-skeleton)" }} />
+              <div style={{ width: 70, height: 14, borderRadius: 4, backgroundColor: "var(--gs-skeleton)" }} />
+              <div style={{ flex: 1, height: 14, borderRadius: 4, backgroundColor: "var(--gs-skeleton)" }} />
             </div>
           ))}
 
@@ -610,10 +759,10 @@ export function GlobalSearch() {
             if (groups.length === 0) return (
               <div style={{
                 display: "flex", flexDirection: "column", alignItems: "center",
-                justifyContent: "center", height: 200, gap: 8,
+                justifyContent: "center", height: 220, gap: 10,
               }}>
-                <Clock size={24} style={{ color: "var(--gs-text-muted)" }} />
-                <span style={{ fontSize: 13, color: "var(--gs-text-secondary)", fontFamily: "Inter, sans-serif" }}>
+                <Clock size={28} style={{ color: "var(--gs-text-muted)" }} />
+                <span style={{ fontSize: 14, color: "var(--gs-text-secondary)", fontFamily: "Inter, sans-serif" }}>
                   No recent items yet
                 </span>
                 <span style={{ fontSize: 12, color: "var(--gs-text-muted)", fontFamily: "Inter, sans-serif" }}>
@@ -633,7 +782,7 @@ export function GlobalSearch() {
                   return (
                     <div key={group}>
                       <div style={{
-                        padding: "10px 16px 4px", fontSize: 11, fontWeight: 600,
+                        padding: "12px 20px 6px", fontSize: 11, fontWeight: 600,
                         color: "var(--gs-section-text)", fontFamily: "Inter, sans-serif",
                         textTransform: "uppercase", letterSpacing: "0.06em",
                         backgroundColor: "var(--gs-section-bg)",
@@ -656,13 +805,14 @@ export function GlobalSearch() {
                 })}
                 {hasMore && (
                   <div
-                    onClick={() => setVisibleCount(c => c + 10)}
+                    onClick={(e) => { e.stopPropagation(); setVisibleCount(c => c + 10); }}
                     style={{
                       display: "flex", alignItems: "center", justifyContent: "center",
-                      height: 40, fontSize: 12, fontWeight: 500,
+                      height: 44, fontSize: 12, fontWeight: 500,
                       color: "var(--gs-key)", fontFamily: "Inter, sans-serif",
                       cursor: "pointer", borderTop: "0.75px solid var(--gs-border-subtle)",
                       gap: 6, transition: "background 100ms ease",
+                      flexShrink: 0,
                     }}
                     onMouseEnter={e => (e.currentTarget.style.backgroundColor = "var(--gs-hover)")}
                     onMouseLeave={e => (e.currentTarget.style.backgroundColor = "transparent")}
@@ -683,17 +833,17 @@ export function GlobalSearch() {
               {results.length === 0 ? (
                 <div style={{
                   display: "flex", flexDirection: "column", alignItems: "center",
-                  justifyContent: "center", height: 160, gap: 8,
+                  justifyContent: "center", height: 180, gap: 10,
                 }}>
-                  <Search size={24} style={{ color: "var(--gs-text-muted)" }} />
-                  <span style={{ fontSize: 13, color: "var(--gs-text-secondary)", fontFamily: "Inter, sans-serif" }}>
+                  <Search size={28} style={{ color: "var(--gs-text-muted)" }} />
+                  <span style={{ fontSize: 14, color: "var(--gs-text-secondary)", fontFamily: "Inter, sans-serif" }}>
                     No results for "{debouncedQuery}"
                   </span>
                 </div>
               ) : (
                 <>
                   <div style={{
-                    padding: "10px 16px 4px", fontSize: 11, fontWeight: 600,
+                    padding: "12px 20px 6px", fontSize: 11, fontWeight: 600,
                     color: "var(--gs-section-text)", textTransform: "uppercase", letterSpacing: "0.06em",
                     fontFamily: "Inter, sans-serif",
                   }}>
@@ -711,13 +861,14 @@ export function GlobalSearch() {
                   ))}
                   {hasMore && (
                     <div
-                      onClick={() => setVisibleCount(c => c + 10)}
+                      onClick={(e) => { e.stopPropagation(); setVisibleCount(c => c + 10); }}
                       style={{
                         display: "flex", alignItems: "center", justifyContent: "center",
-                        height: 40, fontSize: 12, fontWeight: 500,
+                        height: 44, fontSize: 12, fontWeight: 500,
                         color: "var(--gs-key)", fontFamily: "Inter, sans-serif",
                         cursor: "pointer", borderTop: "0.75px solid var(--gs-border-subtle)",
                         gap: 6, transition: "background 100ms ease",
+                        flexShrink: 0,
                       }}
                       onMouseEnter={e => (e.currentTarget.style.backgroundColor = "var(--gs-hover)")}
                       onMouseLeave={e => (e.currentTarget.style.backgroundColor = "transparent")}
@@ -734,13 +885,14 @@ export function GlobalSearch() {
           )}
         </div>
 
-        {/* ── FOOTER (36px) ── */}
+        {/* ── FOOTER (44px) ── */}
         <div style={{
-          display: "flex", alignItems: "center", height: 50,
-          padding: "0 16px", gap: 16,
+          display: "flex", alignItems: "center", minHeight: 44,
+          padding: "0 20px", gap: 16,
           borderTop: "1px solid var(--gs-border)",
           backgroundColor: "var(--gs-footer-bg)",
           fontSize: 11, fontFamily: "Inter, sans-serif", color: "var(--gs-text-secondary)",
+          flexShrink: 0,
         }}>
           <span style={{ display: "flex", alignItems: "center", gap: 4 }}>
             <Kbd>↑</Kbd><Kbd>↓</Kbd> <span>Navigate</span>
@@ -783,31 +935,35 @@ export function GlobalSearchTrigger() {
   return (
     <button
       onClick={open}
+      className="hidden sm:flex items-center focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-1"
       style={{
-        display: "flex", alignItems: "center", gap: 8,
-        height: 32, padding: "0 12px",
-        backgroundColor: dk ? '#292929' : "#F4F5F7",
-        border: `1px solid ${dk ? '#2E2E2E' : "#DFE1E6"}`,
-        borderRadius: 6, cursor: "pointer",
+        gap: 8, height: 36, padding: "0 14px",
+        borderRadius: 8,
+        border: `1px solid ${dk ? "#2E2E2E" : "rgba(15,23,42,0.08)"}`,
+        backgroundColor: dk ? "#1A1A1A" : "#F8FAFC",
+        color: dk ? "#878787" : "#97A0AF",
+        cursor: "pointer",
         fontSize: 13, fontFamily: "Inter, sans-serif",
-        color: dk ? 'rgba(255,255,255,0.55)' : "#6B778C",
+        transition: "border-color 100ms ease, background 100ms ease",
       }}
-      onMouseEnter={e => { e.currentTarget.style.backgroundColor = dk ? '#2E2E2E' : "#EBECF0"; }}
-      onMouseLeave={e => { e.currentTarget.style.backgroundColor = dk ? '#292929' : "#F4F5F7"; }}
+      onMouseEnter={e => {
+        e.currentTarget.style.borderColor = dk ? "#454545" : "rgba(15,23,42,0.16)";
+        e.currentTarget.style.backgroundColor = dk ? "#1F1F1F" : "#F1F5F9";
+      }}
+      onMouseLeave={e => {
+        e.currentTarget.style.borderColor = dk ? "#2E2E2E" : "rgba(15,23,42,0.08)";
+        e.currentTarget.style.backgroundColor = dk ? "#1A1A1A" : "#F8FAFC";
+      }}
     >
       <Search size={14} />
-      <span>Search...</span>
-      <span style={{ display: "flex", gap: 2, marginLeft: 4 }}>
-        {["⌘","K"].map(k => (
-          <kbd key={k} style={{
-            fontSize: 10, fontFamily: "JetBrains Mono, monospace",
-            color: dk ? 'rgba(255,255,255,0.30)' : "#97A0AF",
-            backgroundColor: dk ? '#0A0A0A' : "#fff",
-            border: `1px solid ${dk ? '#2E2E2E' : "#DFE1E6"}`,
-            borderRadius: 4, padding: "1px 4px",
-          }}>{k}</kbd>
-        ))}
-      </span>
+      <span>Search Catalyst...</span>
+      <kbd style={{
+        fontSize: 11, fontFamily: "JetBrains Mono, monospace",
+        color: dk ? "rgba(255,255,255,0.35)" : "#97A0AF",
+        backgroundColor: dk ? "#292929" : "#F1F5F9",
+        border: `1px solid ${dk ? "#2E2E2E" : "#E2E8F0"}`,
+        borderRadius: 4, padding: "1px 5px", marginLeft: 8,
+      }}>⌘K</kbd>
     </button>
   );
 }
