@@ -908,106 +908,130 @@ export default function StoryDetailModal({
 
               {/* ── LINKED ISSUES ── */}
               <div style={{ marginTop: 32 }}>
-                <div style={{ ...LABEL, marginBottom: 8 }}>Linked Issues</div>
-                {Object.keys(linkGroups).length === 0 && !showLinkForm && (
-                  <div style={{ fontSize: 13, color: DT.labelGrey, textAlign: 'center', padding: 16 }}>No linked items. Use the link form above to connect work.</div>
-                )}
-                {Object.entries(linkGroups).map(([type, items]) => (
-                  <div key={type} style={{ marginBottom: 8 }}>
-                    <div style={{ fontSize: 11, fontWeight: 600, color: DT.labelGrey, textTransform: 'uppercase', marginBottom: 4 }}>
-                      {LINK_TYPES.find(l => l.value === type)?.label || type}
-                    </div>
-                    {items.map(li => {
-                      const isDone = getStatusCategory(li.status || '') === 'done';
-                      return (
-                        <div
-                          key={li.id}
-                          style={{
-                            display: 'flex', alignItems: 'center', gap: 8, height: 32,
-                            padding: '0 8px', borderRadius: 3, position: 'relative',
-                          }}
-                          onMouseEnter={e => {
-                            e.currentTarget.style.background = DT.hoverRow;
-                            const x = e.currentTarget.querySelector('[data-remove]') as HTMLElement;
-                            if (x) x.style.opacity = '1';
-                          }}
-                          onMouseLeave={e => {
-                            e.currentTarget.style.background = 'transparent';
-                            const x = e.currentTarget.querySelector('[data-remove]') as HTMLElement;
-                            if (x) x.style.opacity = '0';
-                          }}
-                        >
-                          <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: DT.labelGrey }}>{li.issue_key}</span>
-                          <span style={{
-                            flex: 1, fontSize: 13, overflow: 'hidden',
-                            textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                            color: isDone ? DT.labelGrey : DT.bodyText,
-                            textDecoration: isDone ? 'line-through' : 'none',
-                          }}>{li.summary}</span>
-                          <StatusLozenge status={li.status || 'To Do'} />
-                          <PriorityDot priority={li.priority} />
-                          <button
-                            data-remove
-                            onClick={() => handleRemoveLink(li.linkId!)}
-                            style={{ ...btnBase, opacity: 0, width: 20, height: 20, fontSize: 14, transition: 'opacity 100ms' }}
-                          >×</button>
-                        </div>
-                      );
-                    })}
+                <div
+                  style={{
+                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                    padding: '8px 0', borderBottom: `1px solid ${DT.border}`,
+                    cursor: 'pointer', userSelect: 'none',
+                  }}
+                  onClick={() => setLinksOpen(o => !o)}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <ChevronDown size={14} color={DT.labelGrey} style={{ transform: linksOpen ? 'none' : 'rotate(-90deg)', transition: 'transform 150ms' }} />
+                    <Link2 size={14} color={DT.labelGrey} />
+                    <span style={{ fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', color: DT.labelGrey }}>Linked Issues</span>
+                    <span style={{ background: DT.headerBg, border: `1px solid ${DT.border}`, borderRadius: 10, padding: '1px 7px', fontSize: 11, fontWeight: 600, color: DT.labelGrey }}>{linkedIssues.length}</span>
                   </div>
-                ))}
-                {showLinkForm ? (
-                  <div style={{ padding: 8, background: DT.headerBg, borderRadius: 4, marginTop: 4 }}>
-                    <select
-                      value={linkType}
-                      onChange={e => setLinkType(e.target.value)}
-                      style={{ width: '100%', fontSize: 12, padding: '4px 8px', borderRadius: 3, border: `1px solid ${DT.border}`, marginBottom: 8 }}
-                    >
-                      {LINK_TYPES.map(lt => <option key={lt.value} value={lt.value}>{lt.label}</option>)}
-                    </select>
-                    <input
-                      autoFocus
-                      value={linkSearch}
-                      onChange={e => handleLinkSearch(e.target.value)}
-                      placeholder="Search by key or title..."
-                      style={{ width: '100%', padding: '6px 10px', fontSize: 12, border: `1px solid ${DT.border}`, borderRadius: 3, fontFamily: 'inherit', marginBottom: 4 }}
-                    />
-                    {linkResults.map(r => (
-                      <div
-                        key={r.id}
-                        onClick={() => handleCreateLink(r.id)}
-                        style={{ padding: '6px 8px', fontSize: 12, cursor: 'pointer', borderRadius: 3, display: 'flex', gap: 8 }}
-                        onMouseEnter={e => e.currentTarget.style.background = DT.hoverRow}
-                        onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-                      >
-                        <span style={{ color: DT.labelGrey, fontFamily: 'monospace' }}>{r.issue_key}</span>
-                        <span style={{ color: DT.bodyText }}>{r.summary}</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <button onClick={(e) => { e.stopPropagation(); setShowLinkForm(true); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: DT.linkBlue, fontSize: 20, lineHeight: '1' }}>+</button>
+                  </div>
+                </div>
+                {linksOpen && (
+                  <div style={{ marginTop: 4 }}>
+                    {Object.keys(linkGroups).length === 0 && !showLinkForm && (
+                      <div style={{ fontSize: 13, color: DT.labelGrey, textAlign: 'center', padding: 16 }}>No linked items. Use the link form above to connect work.</div>
+                    )}
+                    {Object.entries(linkGroups).map(([type, items]) => (
+                      <div key={type} style={{ marginBottom: 8 }}>
+                        <div style={{ fontSize: 11, fontWeight: 600, color: DT.labelGrey, textTransform: 'uppercase', marginBottom: 4 }}>
+                          {LINK_TYPES.find(l => l.value === type)?.label || type}
+                        </div>
+                        {items.map(li => {
+                          const isDone = getStatusCategory(li.status || '') === 'done';
+                          return (
+                            <div
+                              key={li.id}
+                              style={{
+                                display: 'flex', alignItems: 'center', gap: 8, height: 32,
+                                padding: '0 8px', borderRadius: 3, position: 'relative',
+                              }}
+                              onMouseEnter={e => {
+                                e.currentTarget.style.background = DT.hoverRow;
+                                const x = e.currentTarget.querySelector('[data-remove]') as HTMLElement;
+                                if (x) x.style.opacity = '1';
+                              }}
+                              onMouseLeave={e => {
+                                e.currentTarget.style.background = 'transparent';
+                                const x = e.currentTarget.querySelector('[data-remove]') as HTMLElement;
+                                if (x) x.style.opacity = '0';
+                              }}
+                            >
+                              <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: DT.labelGrey }}>{li.issue_key}</span>
+                              <span style={{
+                                flex: 1, fontSize: 13, overflow: 'hidden',
+                                textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                                color: isDone ? DT.labelGrey : DT.bodyText,
+                                textDecoration: isDone ? 'line-through' : 'none',
+                              }}>{li.summary}</span>
+                              <StatusLozenge status={li.status || 'To Do'} />
+                              <PriorityDot priority={li.priority} />
+                              <button
+                                data-remove
+                                onClick={() => handleRemoveLink(li.linkId!)}
+                                style={{ ...btnBase, opacity: 0, width: 20, height: 20, fontSize: 14, transition: 'opacity 100ms' }}
+                              >×</button>
+                            </div>
+                          );
+                        })}
                       </div>
                     ))}
-                    <button onClick={() => { setShowLinkForm(false); setLinkSearch(''); setLinkResults([]); }}
-                      style={{ fontSize: 11, color: DT.labelGrey, background: 'none', border: 'none', cursor: 'pointer', marginTop: 4 }}>
-                      Cancel
-                    </button>
+                    {showLinkForm && (
+                      <div style={{ padding: 8, background: DT.headerBg, borderRadius: 4, marginTop: 4 }}>
+                        <select
+                          value={linkType}
+                          onChange={e => setLinkType(e.target.value)}
+                          style={{ width: '100%', fontSize: 12, padding: '4px 8px', borderRadius: 3, border: `1px solid ${DT.border}`, marginBottom: 8 }}
+                        >
+                          {LINK_TYPES.map(lt => <option key={lt.value} value={lt.value}>{lt.label}</option>)}
+                        </select>
+                        <input
+                          autoFocus
+                          value={linkSearch}
+                          onChange={e => handleLinkSearch(e.target.value)}
+                          placeholder="Search by key or title..."
+                          style={{ width: '100%', padding: '6px 10px', fontSize: 12, border: `1px solid ${DT.border}`, borderRadius: 3, fontFamily: 'inherit', marginBottom: 4 }}
+                        />
+                        {linkResults.map(r => (
+                          <div
+                            key={r.id}
+                            onClick={() => handleCreateLink(r.id)}
+                            style={{ padding: '6px 8px', fontSize: 12, cursor: 'pointer', borderRadius: 3, display: 'flex', gap: 8 }}
+                            onMouseEnter={e => e.currentTarget.style.background = DT.hoverRow}
+                            onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                          >
+                            <span style={{ color: DT.labelGrey, fontFamily: 'monospace' }}>{r.issue_key}</span>
+                            <span style={{ color: DT.bodyText }}>{r.summary}</span>
+                          </div>
+                        ))}
+                        <button onClick={() => { setShowLinkForm(false); setLinkSearch(''); setLinkResults([]); }}
+                          style={{ fontSize: 11, color: DT.labelGrey, background: 'none', border: 'none', cursor: 'pointer', marginTop: 4 }}>
+                          Cancel
+                        </button>
+                      </div>
+                    )}
                   </div>
-                ) : (
-                  <button
-                    onClick={() => setShowLinkForm(true)}
-                    style={{ background: 'none', border: 'none', color: DT.linkBlue, fontSize: 12, cursor: 'pointer', padding: '4px 0', marginTop: 4, display: 'flex', alignItems: 'center', gap: 4 }}
-                  >
-                    <Plus size={12} /> Link an issue
-                  </button>
                 )}
               </div>
 
               {/* ── ATTACHMENTS ── */}
               <div style={{ marginTop: 32 }}>
                 <div
-                  style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', marginBottom: 8 }}
+                  style={{
+                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                    padding: '8px 0', borderBottom: `1px solid ${DT.border}`,
+                    cursor: 'pointer', userSelect: 'none',
+                  }}
                   onClick={() => setAttachOpen(o => !o)}
                 >
-                  {attachOpen ? <ChevronDown size={14} color={DT.labelGrey} /> : <ChevronRight size={14} color={DT.labelGrey} />}
-                  <Paperclip size={14} color={DT.labelGrey} />
-                  <span style={LABEL}>Attachments</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <ChevronDown size={14} color={DT.labelGrey} style={{ transform: attachOpen ? 'none' : 'rotate(-90deg)', transition: 'transform 150ms' }} />
+                    <Paperclip size={14} color={DT.labelGrey} />
+                    <span style={{ fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', color: DT.labelGrey }}>Attachments</span>
+                    {attachments.length > 0 && (
+                      <span style={{ background: DT.headerBg, border: `1px solid ${DT.border}`, borderRadius: 10, padding: '1px 7px', fontSize: 11, fontWeight: 600, color: DT.labelGrey }}>{attachments.length}</span>
+                    )}
+                  </div>
+                </div>
                   {attachments.length > 0 && (
                     <span style={{ fontSize: 10, background: DT.border, color: '#253858', borderRadius: 8, padding: '1px 6px', fontWeight: 600 }}>
                       {attachments.length}
