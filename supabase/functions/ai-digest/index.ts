@@ -180,11 +180,11 @@ SCORING RULES:
 OUTPUT RULES:
 - Maximum 5 items total, ranked by urgency × role_weight
 - risk_horizon: "critical_now" = action needed <6h, "today" = before end of work day, "this_week" = before Thursday 23:59, "good_news" = positive signal
-- trigger: 1 sentence, cite actual data values (column names and values from context)
+- trigger: 1 sentence explaining WHY this was surfaced. Use human-readable descriptions only. NEVER include raw UUIDs, database IDs, or entity_id values in the trigger text. Refer to items by their title or readable key (e.g. "INC-0041" not "4d05709e-...").
 - consequence: 1 sentence, specific business outcome if ignored
-- action: imperative verb phrase, specific ("Assign INC-0041 to QA lead before 17:00")
+- action: imperative verb phrase, specific. NEVER include raw UUIDs. Use readable keys or titles (e.g. "Assign INC-0041 to QA lead before 17:00", NOT "Assign issue 4d05709e to...")
 - cta_path: MUST start with one of: /project-hub /release-hub /test-hub /incident-hub /task-hub /strategy-hub /product-hub /plan-hub
-- entity_id: use the real uuid from the data, or null if not available
+- entity_id: use the real uuid from the data, or null if not available. This is for internal linking only — NEVER surface it in user-facing text fields (trigger, action, detail, consequence, title).
 - confidence: 0–100 integer, your certainty this is genuinely actionable today
 - has_critical: true if ANY item has risk_horizon "critical_now"
 - good_news: include ONLY if something concretely improved — max 1 item, priority LOW
