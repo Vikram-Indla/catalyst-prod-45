@@ -179,8 +179,6 @@ export default function StoryDetailModal({ isOpen, onClose, itemId, projectId, p
   const [subtasksOpen, setSubtasksOpen] = useState(true);
   const [linkedOpen, setLinkedOpen] = useState(true);
   const [sidebarDetailsOpen, setSidebarDetailsOpen] = useState(true);
-  const [devOpen, setDevOpen] = useState(false);
-  const [autoOpen, setAutoOpen] = useState(false);
   const [statusDropdownOpen, setStatusDropdownOpen] = useState(false);
 
   // Inline edit states
@@ -1289,13 +1287,6 @@ export default function StoryDetailModal({ isOpen, onClose, itemId, projectId, p
                   </SidebarField>
                 </SidebarAccordion>
 
-                <SidebarAccordion title="DEVELOPMENT" isOpen={devOpen} onToggle={() => setDevOpen(!devOpen)} isDark={isDark}>
-                  <div style={{ fontSize: 13, color: dt.labelGrey, padding: '4px 0' }}>No development items linked.</div>
-                </SidebarAccordion>
-
-                <SidebarAccordion title="AUTOMATION" isOpen={autoOpen} onToggle={() => setAutoOpen(!autoOpen)} isDark={isDark}>
-                  <div style={{ fontSize: 13, color: dt.labelGrey, padding: '4px 0' }}>No automation rules active.</div>
-                </SidebarAccordion>
 
                 <div style={{ marginTop: 16, borderTop: `0.75px solid ${dt.border}`, paddingTop: 12 }}>
                   <div style={{ fontSize: 11, color: dt.labelGrey, marginBottom: 4 }}>
