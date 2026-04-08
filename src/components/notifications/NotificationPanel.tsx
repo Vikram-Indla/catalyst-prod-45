@@ -88,6 +88,20 @@ const TABS: { key: NotificationTab; label: string; badge?: 'ageing' }[] = [
   { key: 'ageing', label: 'Ageing', badge: 'ageing' },
 ];
 
+function AgeingBadge() {
+  const count = useAgeingCount();
+  if (count === 0) return null;
+  return (
+    <span style={{
+      fontSize: 10, fontWeight: 700, borderRadius: 10,
+      padding: '1px 6px', background: '#FEE2E2', color: '#991B1B',
+      lineHeight: '16px',
+    }}>
+      {count}
+    </span>
+  );
+}
+
 export default function NotificationPanel({ isOpen, onClose }: NotificationPanelProps) {
   const { data: userId } = useUserId();
   const queryClient = useQueryClient();
