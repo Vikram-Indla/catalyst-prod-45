@@ -36,6 +36,7 @@ const AllProjectsPageLazy = lazy(() => import("../pages/projecthub/AllProjectsPa
 const NativeEpicBacklogPageLazy = lazy(() => import("../pages/project-hub/NativeEpicBacklogPage"));
 const NativeFeatureBacklogPageLazy = lazy(() => import("../pages/project-hub/NativeFeatureBacklogPage"));
 const NativeStoryBacklogPageLazy = lazy(() => import("../pages/project-hub/NativeStoryBacklogPage"));
+const StoryDetailPageLazy = lazy(() => import("../pages/project-hub/StoryDetailPage"));
 const HierarchyPageLazy = lazy(() => import("../pages/project-hub/HierarchyPage"));
 const PHPlaceholderBase = lazy(() => import("../pages/project-hub/PhasePlaceholderPage"));
 
@@ -898,6 +899,7 @@ export default function FullAppRoutes() {
         <Route path="/project-hub/:key/epic-backlog" element={<S><NativeEpicBacklogPageLazy /></S>} />
         <Route path="/project-hub/:key/feature-backlog" element={<S><NativeFeatureBacklogPageLazy /></S>} />
         <Route path="/project-hub/:key/story-backlog" element={<S><NativeStoryBacklogPageLazy /></S>} />
+        <Route path="/project-hub/:key/story/:itemId" element={<S><StoryDetailPageLazy /></S>} />
         <Route path="/project-hub/:key/board" element={<S><ProjectBoardPageLazy /></S>} />
         <Route path="/project-hub/:key/boards" element={<S><ProjectBoardManagerPageLazy /></S>} />
         <Route path="/project-hub/:key/boards/:boardId" element={<S><ProjectBoardCanvasPageLazy /></S>} />
