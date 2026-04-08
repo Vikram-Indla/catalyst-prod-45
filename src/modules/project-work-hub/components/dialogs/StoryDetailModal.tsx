@@ -989,6 +989,96 @@ export default function StoryDetailModal({
                 )}
               </div>
 
+              {/* ── ATTACHMENTS ── */}
+              <div style={{ marginTop: 32 }}>
+                <div
+                  style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', marginBottom: 8 }}
+                  onClick={() => setAttachOpen(o => !o)}
+                >
+                  {attachOpen ? <ChevronDown size={14} color={DT.labelGrey} /> : <ChevronRight size={14} color={DT.labelGrey} />}
+                  <Paperclip size={14} color={DT.labelGrey} />
+                  <span style={LABEL}>Attachments</span>
+                  {attachments.length > 0 && (
+                    <span style={{ fontSize: 10, background: DT.border, color: '#253858', borderRadius: 8, padding: '1px 6px', fontWeight: 600 }}>
+                      {attachments.length}
+                    </span>
+                  )}
+                </div>
+                {attachOpen && (
+                  <div>
+                    {attachments.map((att: any) => (
+                      <div
+                        key={att.id}
+                        style={{
+                          display: 'flex', alignItems: 'center', gap: 8, height: 36,
+                          padding: '0 8px', borderRadius: 3,
+                        }}
+                        onMouseEnter={e => e.currentTarget.style.background = DT.hoverRow}
+                        onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                      >
+                        {getFileIcon(att.mime_type)}
+                        <span style={{ flex: 1, fontSize: 13, color: DT.bodyText, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 240 }}>
+                          {att.file_name}
+                        </span>
+                        <span style={{ fontSize: 11, color: DT.labelGrey, flexShrink: 0 }}>
+                          {formatFileSize(att.file_size || 0)}
+                        </span>
+                        <button
+                          onClick={() => window.open(getAttachmentUrl(att.storage_path), '_blank')}
+                          style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 24, height: 24, borderRadius: 3, border: 'none', background: 'transparent', cursor: 'pointer', color: DT.linkBlue }}
+                          title="Download"
+                        >
+                          <ExternalLink size={14} />
+                        </button>
+                        <button
+                          onClick={() => handleAttachmentDelete(att.id, att.storage_path)}
+                          style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 24, height: 24, borderRadius: 3, border: 'none', background: 'transparent', cursor: 'pointer', color: DT.dangerRed }}
+                          title="Delete"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    ))}
+                    {attachments.length === 0 && (
+                      <div style={{ fontSize: 13, color: DT.labelGrey, textAlign: 'center', padding: 16 }}>
+                        No attachments yet. Drop files above to attach.
+                      </div>
+                    )}
+                    {/* Upload zone */}
+                    <div
+                      onClick={() => fileInputRef.current?.click()}
+                      style={{
+                        border: `1.5px dashed ${DT.border}`, borderRadius: 6, height: 64,
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        cursor: 'pointer', marginTop: 8, transition: 'border-color 150ms',
+                      }}
+                      onMouseEnter={e => e.currentTarget.style.borderColor = DT.linkBlue}
+                      onMouseLeave={e => e.currentTarget.style.borderColor = DT.border}
+                      onDragOver={e => { e.preventDefault(); e.currentTarget.style.borderColor = DT.linkBlue; }}
+                      onDragLeave={e => { e.currentTarget.style.borderColor = DT.border; }}
+                      onDrop={e => {
+                        e.preventDefault();
+                        e.currentTarget.style.borderColor = DT.border;
+                        const files = e.dataTransfer.files;
+                        if (files.length > 0) handleAttachmentUpload(files[0]);
+                      }}
+                    >
+                      <span style={{ fontSize: 13, color: DT.labelGrey }}>Drop files here or click to upload</span>
+                    </div>
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      style={{ display: 'none' }}
+                      onChange={e => {
+                        const file = e.target.files?.[0];
+                        if (file) handleAttachmentUpload(file);
+                        e.target.value = '';
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
+
               {/* ── ACTIVITY ── */}
               <div style={{ marginTop: 32 }}>
                 <div style={{ ...LABEL, marginBottom: 12 }}>Activity</div>
