@@ -217,9 +217,8 @@ export default function AIRecapTabV2() {
 
       if (cancelled) return;
 
-      if (data && data.length > 0 && data[0].digest_json) {
+      if (digest) {
         try {
-          const digest = data[0].digest_json as any;
           const rawItems: any[] = Array.isArray(digest.items) ? digest.items : [];
 
           // Collect entity_ids for key resolution
