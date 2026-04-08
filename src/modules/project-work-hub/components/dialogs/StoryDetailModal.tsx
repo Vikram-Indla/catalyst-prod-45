@@ -930,8 +930,9 @@ export default function StoryDetailModal({
                         >
                           <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: DT.labelGrey }}>{li.issue_key}</span>
                           <span style={{
-                            flex: 1, fontSize: 13, color: DT.bodyText, overflow: 'hidden',
+                            flex: 1, fontSize: 13, overflow: 'hidden',
                             textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                            color: isDone ? DT.labelGrey : DT.bodyText,
                             textDecoration: isDone ? 'line-through' : 'none',
                           }}>{li.summary}</span>
                           <StatusLozenge status={li.status || 'To Do'} />
