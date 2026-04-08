@@ -165,16 +165,6 @@ function SectionBlock({
   );
 }
 
-/** Replace UUID fragments in text with resolved Jira keys */
-function replaceUuidsInText(text: string, keyMap: Record<string, string>): string {
-  let result = text;
-  for (const [uuid, key] of Object.entries(keyMap)) {
-    const shortId = uuid.split('-')[0];
-    result = result.split(shortId).join(key);
-    result = result.split(uuid).join(key);
-  }
-  return result;
-}
 
 export default function AIRecapTabV2() {
   const [doneOpen, setDoneOpen] = useState(false);
