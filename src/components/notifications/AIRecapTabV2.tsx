@@ -188,12 +188,32 @@ export default function AIRecapTabV2() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user || cancelled) { setLoading(false); return; }
 
-      const { data } = await supabase
-        .from('ai_digest_cache')
-        .select('digest_json')
-        .eq('user_id', user.id)
-        .order('generated_at', { ascending: false })
-        .limit(1);
+      // Call the edge function which handles UUID→key resolution server-side
+      let digest: any = null;
+      try {
+        const { data: fnData } = await supabase.functions.invoke('ai-digest', {
+          method: 'POST',
+          body: {},
+        });
+        if (fnData?.digest) {
+          digest = fnData.digest;
+        }
+      } catch {
+        // Fallback: read from cache directly
+      }
+
+      // Fallback to cache if edge function failed
+      if (!digest) {
+        const { data: cacheData } = await supabase
+          .from('ai_digest_cache')
+          .select('digest_json')
+          .eq('user_id', user.id)
+          .order('generated_at', { ascending: false })
+          .limit(1);
+        if (cacheData?.length && cacheData[0].digest_json) {
+          digest = cacheData[0].digest_json;
+        }
+      }
 
       if (cancelled) return;
 
