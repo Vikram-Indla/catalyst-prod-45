@@ -10,7 +10,8 @@ import { formatDistanceToNow } from 'date-fns';
 import { toast } from 'sonner';
 import {
   X, Eye, EyeOff, Link2, MoreHorizontal, Copy, Archive, Trash2,
-  Zap, ChevronDown, Plus, Flag,
+  Zap, ChevronDown, ChevronRight, Plus, Flag, Paperclip, FileText,
+  Image as ImageIcon, File as FileIcon, ExternalLink,
 } from 'lucide-react';
 
 /* ═══════════════════════════════════════════════
