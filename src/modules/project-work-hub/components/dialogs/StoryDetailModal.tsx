@@ -10,6 +10,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { ParentEpicChip } from '../shared/ParentEpicChip';
 import { getLozengeStyle, STORY_STATUS_LOZENGE, getPriorityLabel, getPriorityColor, getInitials } from '../../utils/backlog.utils';
+import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 import { format, formatDistanceToNow } from 'date-fns';
 import { toast } from 'sonner';
 import { useTheme } from '@/hooks/useTheme';
