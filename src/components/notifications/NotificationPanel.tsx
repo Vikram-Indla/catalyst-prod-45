@@ -82,9 +82,10 @@ function groupByDate(items: Notification[]): { label: string; items: Notificatio
   return groups.filter(g => g.items.length > 0);
 }
 
-const TABS: { key: NotificationTab; label: string }[] = [
+const TABS: { key: NotificationTab; label: string; badge?: 'ageing' }[] = [
   { key: 'direct', label: 'Direct' },
   { key: 'ai', label: 'AI Recap' },
+  { key: 'ageing', label: 'Ageing', badge: 'ageing' },
 ];
 
 export default function NotificationPanel({ isOpen, onClose }: NotificationPanelProps) {
