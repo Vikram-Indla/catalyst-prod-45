@@ -92,7 +92,7 @@ export function getPriorityColor(priority: string | null): string {
     case 'critical':
     case 'highest': return '#DC2626';
     case 'high':    return '#D97706';
-    case 'medium':  return '#2563EB';
+    case 'medium':  return '#CF7B00';
     case 'low':
     case 'lowest':  return '#6B7280';
     default:        return '#9CA3AF';
