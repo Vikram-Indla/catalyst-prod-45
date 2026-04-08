@@ -12,7 +12,8 @@ import {
   X, Eye, EyeOff, Link2, MoreHorizontal, Copy, Archive, Trash2,
   Zap, ChevronDown, ChevronRight, Plus, Flag, Paperclip, FileText,
   Image as ImageIcon, File as FileIcon, ExternalLink, Maximize2,
-  Share2, Sparkles, Settings,
+  Share2, Sparkles, Settings, Pencil, ListFilter,
+  ChevronsUp, ChevronUp, Minus, ChevronDown as ChevronDownIcon, ChevronsDown,
 } from 'lucide-react';
 
 /* ═══════════════════════════════════════════════
@@ -132,11 +133,15 @@ function AvatarCircle({ name, size = 24 }: { name?: string | null; size?: number
 }
 
 function PriorityIcon({ priority }: { priority?: string | null }) {
-  const c = PRIORITY_COLORS[(priority || 'medium').toLowerCase()] || '#CF7B00';
+  const p = (priority || 'medium').toLowerCase();
+  const c = PRIORITY_COLORS[p] || '#CF7B00';
+  if (p === 'highest' || p === 'critical') return <ChevronsUp size={16} color="#AE2A19" strokeWidth={2.5} style={{ flexShrink: 0 }} />;
+  if (p === 'high') return <ChevronUp size={16} color="#DE350B" strokeWidth={2.5} style={{ flexShrink: 0 }} />;
+  if (p === 'low') return <ChevronDownIcon size={16} color="#36B37E" strokeWidth={2.5} style={{ flexShrink: 0 }} />;
+  if (p === 'lowest') return <ChevronsDown size={16} color="#6B778C" strokeWidth={2.5} style={{ flexShrink: 0 }} />;
+  // Medium — amber equals sign
   return (
-    <svg width="14" height="14" viewBox="0 0 14 14" style={{ flexShrink: 0 }}>
-      <line x1="2" y1="7" x2="12" y2="7" stroke={c} strokeWidth="2" strokeLinecap="round" />
-    </svg>
+    <span style={{ fontSize: 18, fontWeight: 700, color: '#D97706', lineHeight: 1, flexShrink: 0 }}>=</span>
   );
 }
 
@@ -252,7 +257,8 @@ export default function StoryDetailModal({
   const [titleDraft, setTitleDraft] = useState('');
   const [editingDesc, setEditingDesc] = useState(false);
   const [descDraft, setDescDraft] = useState('');
-  const [activeTab, setActiveTab] = useState<'all' | 'comments' | 'history' | 'worklog'>('all');
+  const [activeTab, setActiveTab] = useState<'all' | 'comments' | 'history' | 'worklog' | 'sla_history' | 'timepiece'>('all');
+  const [showUploadZone, setShowUploadZone] = useState(false);
   const [commentBody, setCommentBody] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
   const [statusOpen, setStatusOpen] = useState(false);
@@ -682,6 +688,8 @@ export default function StoryDetailModal({
     { key: 'comments', label: 'Comments' },
     { key: 'history', label: 'History' },
     { key: 'worklog', label: 'Work log' },
+    { key: 'sla_history', label: 'SLA History' },
+    { key: 'timepiece', label: 'Timepiece' },
   ] as const;
 
   const btnBase: React.CSSProperties = {
@@ -824,11 +832,18 @@ export default function StoryDetailModal({
                 <h1
                   onClick={() => { setTitleDraft(story.summary || ''); setEditingTitle(true); }}
                   style={{
-                    fontSize: 24, fontWeight: 600, color: V.textPrimary, margin: 0,
+                    fontSize: 22, fontWeight: 600, color: V.textPrimary, margin: 0,
                     cursor: 'text', lineHeight: 1.3, fontFamily: 'Sora, sans-serif',
                   }}
                 >
-                  {story.summary || 'Untitled'}
+                  {(story.summary || 'Untitled').includes(' / ') ? (
+                    <>
+                      <span>{(story.summary || '').split(' / ')[0]}</span>
+                      <span style={{ display: 'block', fontSize: 16, fontWeight: 400, color: V.textSecondary, marginTop: 4 }}>
+                        {(story.summary || '').split(' / ').slice(1).join(' / ')}
+                      </span>
+                    </>
+                  ) : (story.summary || 'Untitled')}
                 </h1>
               )}
 
@@ -924,15 +939,31 @@ export default function StoryDetailModal({
                     </div>
                   ) : (
                     <div
-                      onClick={() => { setDescDraft(story.description_text ?? ''); setEditingDesc(true); }}
+                      className="group"
                       style={{
+                        position: 'relative',
                         fontSize: 14, color: story.description_text ? V.textPrimary : V.textMuted,
-                        lineHeight: 1.6, padding: '8px 0', cursor: 'pointer', minHeight: 40,
+                        lineHeight: 1.6, padding: '8px 0', minHeight: 40,
                         whiteSpace: 'pre-wrap', borderRadius: 4,
                         fontStyle: story.description_text ? 'normal' : 'italic',
+                        cursor: 'default',
                       }}
                     >
                       {story.description_text || 'Add a description…'}
+                      <button
+                        onClick={() => { setDescDraft(story.description_text ?? ''); setEditingDesc(true); }}
+                        className="opacity-0 group-hover:opacity-100"
+                        style={{
+                          position: 'absolute', top: 8, right: 0,
+                          width: 28, height: 28, borderRadius: 4,
+                          border: `0.75px solid ${V.border}`, background: V.white,
+                          cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          color: V.textMuted, transition: 'opacity 150ms',
+                        }}
+                        title="Edit description"
+                      >
+                        <Pencil size={13} />
+                      </button>
                     </div>
                   )}
                 </div>
@@ -944,7 +975,7 @@ export default function StoryDetailModal({
                 count={attachments.length}
                 defaultOpen={false}
                 actions={
-                  <button onClick={() => fileInputRef.current?.click()} style={{ ...btnBase, width: 24, height: 24, color: V.primaryBlue }}>
+                  <button onClick={() => { setShowUploadZone(z => !z); fileInputRef.current?.click(); }} style={{ ...btnBase, width: 24, height: 24, color: V.primaryBlue }}>
                     <Plus size={14} />
                   </button>
                 }
@@ -975,28 +1006,30 @@ export default function StoryDetailModal({
                 {attachments.length === 0 && (
                   <div style={{ fontSize: 13, color: V.textMuted, textAlign: 'center', padding: 16 }}>No attachments yet</div>
                 )}
-                {/* Upload zone */}
-                <div
-                  onClick={() => fileInputRef.current?.click()}
-                  style={{
-                    border: `1.5px dashed ${V.border}`, borderRadius: 6, height: 56,
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    cursor: 'pointer', marginTop: 8, transition: 'border-color 150ms',
-                    fontSize: 12, color: V.textMuted,
-                  }}
-                  onMouseEnter={e => e.currentTarget.style.borderColor = V.primaryBlue}
-                  onMouseLeave={e => e.currentTarget.style.borderColor = V.border}
-                  onDragOver={e => { e.preventDefault(); e.currentTarget.style.borderColor = V.primaryBlue; }}
-                  onDragLeave={e => e.currentTarget.style.borderColor = V.border}
-                  onDrop={e => {
-                    e.preventDefault();
-                    e.currentTarget.style.borderColor = V.border;
-                    const file = e.dataTransfer.files[0];
-                    if (file) handleAttachmentUpload(file);
-                  }}
-                >
-                  Drop files here or click to upload (max 10MB)
-                </div>
+                {/* Upload zone — hidden until [+] clicked */}
+                {showUploadZone && (
+                  <div
+                    onClick={() => fileInputRef.current?.click()}
+                    style={{
+                      border: `1.5px dashed ${V.border}`, borderRadius: 6, height: 56,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      cursor: 'pointer', marginTop: 8, transition: 'border-color 150ms',
+                      fontSize: 12, color: V.textMuted,
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.borderColor = V.primaryBlue}
+                    onMouseLeave={e => e.currentTarget.style.borderColor = V.border}
+                    onDragOver={e => { e.preventDefault(); e.currentTarget.style.borderColor = V.primaryBlue; }}
+                    onDragLeave={e => e.currentTarget.style.borderColor = V.border}
+                    onDrop={e => {
+                      e.preventDefault();
+                      e.currentTarget.style.borderColor = V.border;
+                      const file = e.dataTransfer.files[0];
+                      if (file) handleAttachmentUpload(file);
+                    }}
+                  >
+                    Drop files here or click to upload (max 10MB)
+                  </div>
+                )}
                 <input ref={fileInputRef} type="file" style={{ display: 'none' }} onChange={e => {
                   const file = e.target.files?.[0];
                   if (file) handleAttachmentUpload(file);
@@ -1211,7 +1244,7 @@ export default function StoryDetailModal({
                 <span style={{ fontSize: 14, fontWeight: 600, color: V.textPrimary }}>Activity</span>
 
                 {/* Tab bar */}
-                <div style={{ display: 'flex', gap: 0, borderBottom: `0.75px solid ${V.border}`, marginTop: 8 }}>
+                <div style={{ display: 'flex', gap: 0, borderBottom: `0.75px solid ${V.border}`, marginTop: 8, alignItems: 'center' }}>
                   {activityTabs.map(tab => (
                     <button
                       key={tab.key}
@@ -1221,12 +1254,16 @@ export default function StoryDetailModal({
                         color: activeTab === tab.key ? V.primaryBlue : V.textMuted,
                         border: 'none', background: 'transparent', cursor: 'pointer',
                         borderBottom: activeTab === tab.key ? `2px solid ${V.primaryBlue}` : '2px solid transparent',
-                        marginBottom: -0.75,
+                        marginBottom: -0.75, whiteSpace: 'nowrap',
                       }}
                     >
                       {tab.label}
                     </button>
                   ))}
+                  <div style={{ flex: 1 }} />
+                  <button style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 28, height: 28, borderRadius: 3, border: 'none', background: 'transparent', cursor: 'pointer', color: V.textMuted, marginBottom: -0.75 }} title="Sort/Filter">
+                    <ListFilter size={14} />
+                  </button>
                 </div>
 
                 {/* Comment input */}
@@ -1258,22 +1295,24 @@ export default function StoryDetailModal({
                     )}
                     {/* Quick-reply pills */}
                     <div style={{ display: 'flex', gap: 6, marginTop: 6 }}>
-                      {['Status update...', 'Thanks!', 'Agree, moving forward'].map(pill => (
+                      {['Status update...', 'Thanks...', 'Agree...'].map(pill => (
                         <button
                           key={pill}
                           onClick={() => { setCommentBody(pill === 'Status update...' ? '' : pill); commentInputRef.current?.focus(); }}
                           style={{
-                            padding: '3px 10px', fontSize: 11, borderRadius: 12,
+                            padding: '4px 10px', fontSize: 12, borderRadius: 4,
                             border: `0.75px solid ${V.border}`, background: V.white,
-                            color: V.textMuted, cursor: 'pointer',
+                            color: V.textSecondary, cursor: 'pointer',
                           }}
                         >
                           {pill}
                         </button>
                       ))}
                     </div>
-                    <div style={{ fontSize: 12, color: V.textMuted, marginTop: 6, fontStyle: 'italic' }}>
-                      Pro tip: press <strong>M</strong> to comment
+                    <div style={{ fontSize: 12, color: '#94A3B8', marginTop: 6, display: 'flex', alignItems: 'center', gap: 4 }}>
+                      Pro tip: press{' '}
+                      <kbd style={{ display: 'inline-block', padding: '1px 5px', fontSize: 11, fontWeight: 600, fontFamily: 'JetBrains Mono, monospace', background: V.insetBg, border: `0.75px solid ${V.border}`, borderRadius: 3, color: V.textSecondary }}>M</kbd>
+                      {' '}to comment
                     </div>
                   </div>
                 </div>
@@ -1342,6 +1381,12 @@ export default function StoryDetailModal({
                   )}
                   {activeTab === 'worklog' && (
                     <div style={{ fontSize: 13, color: V.textMuted, textAlign: 'center', padding: 16 }}>No work logged</div>
+                  )}
+                  {activeTab === 'sla_history' && (
+                    <div style={{ fontSize: 13, color: V.textMuted, textAlign: 'center', padding: 16 }}>No SLA history</div>
+                  )}
+                  {activeTab === 'timepiece' && (
+                    <div style={{ fontSize: 13, color: V.textMuted, textAlign: 'center', padding: 16 }}>No time entries</div>
                   )}
                 </div>
               </div>
