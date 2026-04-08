@@ -70,6 +70,58 @@ export function useStoryHistory(issueKey: string | null) {
   });
 }
 
+// ─── READ: Child issues (subtasks) ──────────────────────────
+export function useChildIssues(parentKey: string | null) {
+  return useQuery({
+    queryKey: ['story-detail-children', parentKey],
+    queryFn: async () => {
+      if (!parentKey) return [];
+      const { data } = await supabase
+        .from('ph_issues')
+        .select('id, issue_key, summary, status, status_category, priority, assignee_display_name, story_points, issue_type')
+        .eq('parent_key', parentKey)
+        .order('issue_key');
+      return data || [];
+    },
+    enabled: !!parentKey,
+  });
+}
+
+// ─── READ: Linked work items ────────────────────────────────
+export function useLinkedIssues(issueKey: string | null) {
+  return useQuery({
+    queryKey: ['story-detail-links', issueKey],
+    queryFn: async () => {
+      if (!issueKey) return [];
+      const { data } = await supabase
+        .from('ph_issue_links')
+        .select('id, link_type, inward_issue_key, outward_issue_key')
+        .or(`inward_issue_key.eq.${issueKey},outward_issue_key.eq.${issueKey}`);
+      if (!data || data.length === 0) return [];
+
+      // Resolve linked issue details
+      const linkedKeys = data.map(l =>
+        l.inward_issue_key === issueKey ? l.outward_issue_key : l.inward_issue_key
+      ).filter(Boolean);
+
+      if (linkedKeys.length === 0) return [];
+
+      const { data: linkedIssues } = await supabase
+        .from('ph_issues')
+        .select('id, issue_key, summary, status, status_category, assignee_display_name, priority, issue_type')
+        .in('issue_key', linkedKeys);
+
+      return data.map(link => {
+        const isInward = link.inward_issue_key === issueKey;
+        const targetKey = isInward ? link.outward_issue_key : link.inward_issue_key;
+        const target = linkedIssues?.find(i => i.issue_key === targetKey);
+        return { ...link, direction: isInward ? 'outward' : 'inward', target };
+      }).filter(l => l.target);
+    },
+    enabled: !!issueKey,
+  });
+}
+
 // ─── READ: Sibling stories for prev/next nav ────────────────
 export function useStorySiblings(projectId: string) {
   return useQuery({
