@@ -24,7 +24,7 @@ const IncidentHubSidebar = lazy(() => import('./IncidentHubSidebar').then(m => (
 const PlanHubSidebar = lazy(() => import('./PlanHubSidebar').then(m => ({ default: m.PlanHubSidebar })));
 const TaskHubSidebar = lazy(() => import('./TaskHubSidebar').then(m => ({ default: m.TaskHubSidebar })));
 const TestHubSidebar = lazy(() => import('./TestHubSidebar').then(m => ({ default: m.TestHubSidebar })));
-const WorkHubSidebar = lazy(() => import('@/components/workhub/layout/WorkHubSidebar').then(m => ({ default: m.WorkHubSidebar })));
+
 const ProjectHubSidebar = lazy(() => import('./ProjectHubSidebar').then(m => ({ default: m.ProjectHubSidebar })));
 const WikiSidebar = lazy(() => import('./WikiSidebar').then(m => ({ default: m.WikiSidebar })));
 
@@ -101,8 +101,6 @@ function CatalystShellContent() {
   // Check if on ProjectHub V5 route (/project-hub/*)
   const isProjectHubRoute = location.pathname.startsWith('/project-hub');
 
-  // Check if on WorkHub/ProjectHub route (v4.5)
-  const isWorkHubRoute = location.pathname.startsWith('/workhub') || location.pathname.startsWith('/projecthub');
 
   // Check if on Wiki route
   const isWikiRoute = location.pathname.startsWith('/wiki');
@@ -175,15 +173,6 @@ function CatalystShellContent() {
       );
     }
 
-    // ProjectHub sidebar (same pattern as TestHub — shell-managed)
-    if (isWorkHubRoute) {
-      return (
-        <WorkHubSidebar
-          expanded={sidebarExpanded}
-          onToggle={() => setSidebarExpanded(!sidebarExpanded)}
-        />
-      );
-    }
 
     // ReleaseHub sidebar (new Release Management module)
     if (isReleaseHubRoute) {
