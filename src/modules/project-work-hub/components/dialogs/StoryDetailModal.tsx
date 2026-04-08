@@ -819,83 +819,90 @@ export default function StoryDetailModal({
 
               {/* ── CHILD ISSUES ── */}
               <div style={{ marginTop: 32 }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-                  <div style={LABEL}>Child Issues</div>
-                  {totalSubtasks > 0 && (
-                    <span style={{ fontSize: 11, color: DT.labelGrey }}>{doneSubtasks} of {totalSubtasks} done</span>
-                  )}
+                <div
+                  style={{
+                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                    padding: '8px 0', borderBottom: `1px solid ${DT.border}`,
+                    cursor: 'pointer', userSelect: 'none',
+                  }}
+                  onClick={() => setChildOpen(o => !o)}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <ChevronDown size={14} color={DT.labelGrey} style={{ transform: childOpen ? 'none' : 'rotate(-90deg)', transition: 'transform 150ms' }} />
+                    <span style={{ fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', color: DT.labelGrey }}>Child Issues</span>
+                    <span style={{ background: DT.headerBg, border: `1px solid ${DT.border}`, borderRadius: 10, padding: '1px 7px', fontSize: 11, fontWeight: 600, color: DT.labelGrey }}>{totalSubtasks}</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    {totalSubtasks > 0 && (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <div style={{ width: 80, height: 4, background: DT.border, borderRadius: 2 }}>
+                          <div style={{ width: `${progressPct}%`, height: '100%', background: DT.progressGreen, borderRadius: 2, transition: 'width 200ms' }} />
+                        </div>
+                        <span style={{ fontSize: 11, color: DT.labelGrey }}>{Math.round(progressPct)}%</span>
+                      </div>
+                    )}
+                    <button onClick={(e) => { e.stopPropagation(); setShowSubtaskInput(true); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: DT.linkBlue, fontSize: 20, lineHeight: '1' }}>+</button>
+                  </div>
                 </div>
-                {totalSubtasks > 0 && (
-                  <div style={{ height: 4, background: DT.border, borderRadius: 2, marginBottom: 8, overflow: 'hidden' }}>
-                    <div style={{ height: '100%', width: `${progressPct}%`, background: DT.progressGreen, borderRadius: 2, transition: 'width 200ms' }} />
+                {childOpen && (
+                  <div style={{ marginTop: 4 }}>
+                    {subtasks.map(st => (
+                      <div
+                        key={st.id}
+                        onClick={() => onOpenItem?.(st.id)}
+                        style={{
+                          display: 'flex', alignItems: 'center', gap: 8, height: 32,
+                          padding: '0 8px', borderRadius: 3, cursor: 'pointer',
+                        }}
+                        onMouseEnter={e => e.currentTarget.style.background = DT.hoverRow}
+                        onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                      >
+                        <IssueTypeIcon type={'subtask'} size={14} />
+                        <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: DT.labelGrey }}>{st.issue_key}</span>
+                        <span style={{
+                          flex: 1, fontSize: 13, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                          color: getStatusCategory(st.status || '') === 'done' ? DT.labelGrey : DT.bodyText,
+                          textDecoration: getStatusCategory(st.status || '') === 'done' ? 'line-through' : 'none',
+                        }}>
+                          {st.summary}
+                        </span>
+                        <span style={{ background: DT.epicChipBg, color: DT.epicChipText, borderRadius: 3, padding: '1px 6px', fontSize: 11, fontWeight: 700 }}>
+                          {st.story_points ?? '—'}
+                        </span>
+                        <StatusLozenge status={st.status || 'To Do'} />
+                        <AvatarCircle name={st.assignee_display_name} size={18} />
+                      </div>
+                    ))}
+                    {subtasks.length === 0 && !showSubtaskInput && (
+                      <div style={{ fontSize: 13, color: DT.labelGrey, textAlign: 'center', padding: 16 }}>No subtasks yet. Click '+' above to create one.</div>
+                    )}
+                    {showSubtaskInput && (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4 }}>
+                        <IssueTypeIcon type="subtask" size={14} />
+                        <input
+                          autoFocus
+                          value={newSubtaskTitle}
+                          onChange={e => setNewSubtaskTitle(e.target.value)}
+                          onKeyDown={e => {
+                            if (e.key === 'Enter') handleCreateSubtask();
+                            if (e.key === 'Escape') { setShowSubtaskInput(false); setNewSubtaskTitle(''); }
+                          }}
+                          placeholder="What needs to be done?"
+                          style={{
+                            flex: 1, border: `1px solid ${DT.border}`, borderRadius: 3,
+                            padding: '4px 8px', fontSize: 13, fontFamily: 'inherit', outline: 'none',
+                          }}
+                        />
+                        <button onClick={handleCreateSubtask} style={{
+                          padding: '3px 10px', fontSize: 12, fontWeight: 600, background: DT.linkBlue,
+                          color: '#fff', border: 'none', borderRadius: 3, cursor: 'pointer',
+                        }}>Create</button>
+                        <button onClick={() => { setShowSubtaskInput(false); setNewSubtaskTitle(''); }} style={{
+                          fontSize: 16, color: DT.labelGrey, background: 'none', border: 'none', cursor: 'pointer',
+                        }}>×</button>
+                      </div>
+                    )}
                   </div>
-                )}
-                {subtasks.map(st => (
-                  <div
-                    key={st.id}
-                    onClick={() => onOpenItem?.(st.id)}
-                    style={{
-                      display: 'flex', alignItems: 'center', gap: 8, height: 32,
-                      padding: '0 8px', borderRadius: 3, cursor: 'pointer',
-                    }}
-                    onMouseEnter={e => e.currentTarget.style.background = DT.hoverRow}
-                    onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-                  >
-                    <IssueTypeIcon type={'subtask'} size={14} />
-                    <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: DT.labelGrey }}>{st.issue_key}</span>
-                    <span style={{
-                      flex: 1, fontSize: 13, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                      color: getStatusCategory(st.status || '') === 'done' ? DT.labelGrey : DT.bodyText,
-                      textDecoration: getStatusCategory(st.status || '') === 'done' ? 'line-through' : 'none',
-                    }}>
-                      {st.summary}
-                    </span>
-                    <span style={{ background: DT.epicChipBg, color: DT.epicChipText, borderRadius: 3, padding: '1px 6px', fontSize: 11, fontWeight: 700 }}>
-                      {st.story_points ?? '—'}
-                    </span>
-                    <StatusLozenge status={st.status || 'To Do'} />
-                    <AvatarCircle name={st.assignee_display_name} size={18} />
-                  </div>
-                ))}
-                {subtasks.length === 0 && !showSubtaskInput && (
-                  <div style={{ fontSize: 13, color: DT.labelGrey, textAlign: 'center', padding: 16 }}>No subtasks yet. Click '+' above to create one.</div>
-                )}
-                {showSubtaskInput ? (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4 }}>
-                    <IssueTypeIcon type="subtask" size={14} />
-                    <input
-                      autoFocus
-                      value={newSubtaskTitle}
-                      onChange={e => setNewSubtaskTitle(e.target.value)}
-                      onKeyDown={e => {
-                        if (e.key === 'Enter') handleCreateSubtask();
-                        if (e.key === 'Escape') { setShowSubtaskInput(false); setNewSubtaskTitle(''); }
-                      }}
-                      placeholder="What needs to be done?"
-                      style={{
-                        flex: 1, border: `1px solid ${DT.border}`, borderRadius: 3,
-                        padding: '4px 8px', fontSize: 13, fontFamily: 'inherit', outline: 'none',
-                      }}
-                    />
-                    <button onClick={handleCreateSubtask} style={{
-                      padding: '3px 10px', fontSize: 12, fontWeight: 600, background: DT.linkBlue,
-                      color: '#fff', border: 'none', borderRadius: 3, cursor: 'pointer',
-                    }}>Create</button>
-                    <button onClick={() => { setShowSubtaskInput(false); setNewSubtaskTitle(''); }} style={{
-                      fontSize: 16, color: DT.labelGrey, background: 'none', border: 'none', cursor: 'pointer',
-                    }}>×</button>
-                  </div>
-                ) : (
-                  <button
-                    onClick={() => setShowSubtaskInput(true)}
-                    style={{
-                      background: 'none', border: 'none', color: DT.linkBlue,
-                      fontSize: 12, cursor: 'pointer', padding: '4px 0', marginTop: 4,
-                      display: 'flex', alignItems: 'center', gap: 4,
-                    }}
-                  >
-                    <Plus size={12} /> Create child issue
-                  </button>
                 )}
               </div>
 
