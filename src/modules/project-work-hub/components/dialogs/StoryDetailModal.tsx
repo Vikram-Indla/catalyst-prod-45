@@ -937,10 +937,11 @@ export default function StoryDetailModal({
       >
         <div
           style={{
-            width: isExpanded ? '100vw' : 900,
-            maxWidth: isExpanded ? '100vw' : 'calc(100vw - 48px)',
-            maxHeight: isExpanded ? '100vh' : '90vh',
-            borderRadius: isExpanded ? 0 : 8,
+            width: isExpanded ? '96%' : 900,
+            maxWidth: isExpanded ? '96%' : 'calc(100vw - 48px)',
+            height: isExpanded ? '95vh' : 'auto',
+            maxHeight: isExpanded ? '95vh' : '90vh',
+            borderRadius: isExpanded ? 8 : 8,
             transition: 'width 200ms ease, max-width 200ms ease, max-height 200ms ease, border-radius 200ms ease',
             overflow: 'hidden', display: 'flex',
             flexDirection: 'column', boxShadow: '0 8px 32px rgba(0,0,0,0.18)', background: V.white,
