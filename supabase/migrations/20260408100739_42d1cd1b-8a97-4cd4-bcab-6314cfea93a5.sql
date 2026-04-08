@@ -1,0 +1,1 @@
+CREATE POLICY "wh_issues_insert" ON public.ph_issues FOR INSERT TO authenticated WITH CHECK (true);
