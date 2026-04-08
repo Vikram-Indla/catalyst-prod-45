@@ -15,7 +15,7 @@ export function useStoryDetail(storyId: string | null) {
       if (!storyId) return null;
       const { data, error } = await supabase
         .from('ph_issues')
-        .select('id, issue_key, summary, description_text, status, status_category, priority, assignee_display_name, reporter_display_name, due_date, labels, parent_key, parent_summary, fix_versions, jira_created_at, jira_updated_at, issue_type, project_id')
+        .select('id, issue_key, summary, description_text, status, status_category, priority, assignee_display_name, reporter_display_name, due_date, labels, parent_key, parent_summary, fix_versions, jira_created_at, jira_updated_at, issue_type, project_key')
         .eq('id', storyId)
         .single();
       if (error) throw error;
@@ -27,7 +27,7 @@ export function useStoryDetail(storyId: string | null) {
           .from('ph_issues')
           .select('id, issue_key, summary')
           .eq('issue_key', data.parent_key)
-          .single();
+          .maybeSingle();
         if (epic) parentEpic = { id: epic.id, epic_key: epic.issue_key, name: epic.summary };
       }
       return { ...data, parentEpic };
@@ -88,72 +88,74 @@ export function useChildIssues(parentKey: string | null) {
 }
 
 // ─── READ: Linked work items ────────────────────────────────
-export function useLinkedIssues(issueKey: string | null) {
+// ph_issue_links uses source_id/target_id (UUIDs), not issue keys
+export function useLinkedIssues(storyId: string | null) {
   return useQuery({
-    queryKey: ['story-detail-links', issueKey],
+    queryKey: ['story-detail-links', storyId],
     queryFn: async () => {
-      if (!issueKey) return [];
+      if (!storyId) return [];
       const { data } = await supabase
         .from('ph_issue_links')
-        .select('id, link_type, inward_issue_key, outward_issue_key')
-        .or(`inward_issue_key.eq.${issueKey},outward_issue_key.eq.${issueKey}`);
+        .select('id, link_type, source_id, target_id')
+        .or(`source_id.eq.${storyId},target_id.eq.${storyId}`);
       if (!data || data.length === 0) return [];
 
-      // Resolve linked issue details
-      const linkedKeys = data.map(l =>
-        l.inward_issue_key === issueKey ? l.outward_issue_key : l.inward_issue_key
+      // Resolve linked issue details by ID
+      const linkedIds = data.map(l =>
+        l.source_id === storyId ? l.target_id : l.source_id
       ).filter(Boolean);
 
-      if (linkedKeys.length === 0) return [];
+      if (linkedIds.length === 0) return [];
 
       const { data: linkedIssues } = await supabase
         .from('ph_issues')
         .select('id, issue_key, summary, status, status_category, assignee_display_name, priority, issue_type')
-        .in('issue_key', linkedKeys);
+        .in('id', linkedIds);
 
       return data.map(link => {
-        const isInward = link.inward_issue_key === issueKey;
-        const targetKey = isInward ? link.outward_issue_key : link.inward_issue_key;
-        const target = linkedIssues?.find(i => i.issue_key === targetKey);
-        return { ...link, direction: isInward ? 'outward' : 'inward', target };
+        const isSource = link.source_id === storyId;
+        const targetId = isSource ? link.target_id : link.source_id;
+        const target = linkedIssues?.find(i => i.id === targetId);
+        return { ...link, direction: isSource ? 'outward' : 'inward', target };
       }).filter(l => l.target);
     },
-    enabled: !!issueKey,
+    enabled: !!storyId,
   });
 }
 
 // ─── READ: Sibling stories for prev/next nav ────────────────
-export function useStorySiblings(projectId: string) {
+// ph_issues uses project_key (string), not project_id (UUID)
+export function useStorySiblings(projectKey: string) {
   return useQuery({
-    queryKey: ['story-detail-siblings', projectId],
+    queryKey: ['story-detail-siblings', projectKey],
     queryFn: async () => {
       const { data } = await supabase
         .from('ph_issues')
         .select('id, issue_key, summary')
-        .eq('project_id', projectId)
+        .eq('project_key', projectKey)
         .in('issue_type', ['Story', 'story'])
         .order('jira_created_at', { ascending: false })
         .limit(200);
       return data || [];
     },
-    enabled: !!projectId,
+    enabled: !!projectKey,
   });
 }
 
 // ─── READ: Parent candidates (epics/features) ───────────────
-export function useParentCandidates(projectId: string) {
+export function useParentCandidates(projectKey: string) {
   return useQuery({
-    queryKey: ['story-detail-parents', projectId],
+    queryKey: ['story-detail-parents', projectKey],
     queryFn: async () => {
       const { data } = await supabase
         .from('ph_issues')
         .select('id, issue_key, summary, issue_type')
-        .eq('project_id', projectId)
+        .eq('project_key', projectKey)
         .in('issue_type', ['Epic', 'epic', 'Feature', 'feature'])
         .order('summary');
       return data || [];
     },
-    enabled: !!projectId,
+    enabled: !!projectKey,
   });
 }
 
@@ -194,29 +196,20 @@ export function useUpdateStoryField(storyId: string | null) {
 
       // Enqueue Jira write-back if connection active
       try {
-        const { data: issueRow } = await supabase
-          .from('ph_issues')
-          .select('issue_key')
-          .eq('id', storyId)
-          .single();
+        const { data: connection } = await supabase
+          .from('jira_connections')
+          .select('is_active')
+          .limit(1)
+          .maybeSingle();
 
-        if (issueRow?.issue_key) {
-          const { data: connection } = await supabase
-            .from('jira_connections')
-            .select('is_active')
-            .limit(1)
-            .maybeSingle();
-
-          if (connection?.is_active) {
-            await supabase.from('jira_write_back_queue').insert({
-              issue_key: issueRow.issue_key,
-              operation: 'update',
-              field_name: field,
-              new_value: String(value ?? ''),
-              status: 'pending',
-              created_at: new Date().toISOString(),
-            });
-          }
+        if (connection?.is_active) {
+          await supabase.from('jira_write_back_queue').insert({
+            ph_issue_id: storyId,
+            operation: 'update',
+            field_name: field,
+            new_value: String(value ?? ''),
+            status: 'pending',
+          });
         }
       } catch {
         // Non-critical — don't block the update
