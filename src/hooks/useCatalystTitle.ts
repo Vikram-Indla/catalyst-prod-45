@@ -19,10 +19,9 @@ export function useCatalystTitle(
     const hubName = hub ?? 'Catalyst';
 
     if (hub) {
-      document.title = `${page} · ${hubName} · Catalyst`;
+      document.title = `Catalyst · ${hubName} · ${page}`;
     } else {
-      // Home, Settings, or any non-hub page
-      document.title = pageName ? `${page} · Catalyst` : 'Catalyst';
+      document.title = pageName ? `Catalyst · ${page}` : 'Catalyst';
     }
   }, [pageName, hub, location.pathname]);
 }
