@@ -1,18 +1,23 @@
 /** Maps a URL pathname to a canonical Catalyst hub name */
 export function deriveHubFromPath(pathname: string): string | undefined {
-  const HUB_MAP: Record<string, string> = {
-    '/strategy': 'StrategyHub',
-    '/product': 'ProductHub',
-    '/project-hub': 'ProjectHub',
-    '/release-hub': 'ReleaseHub',
-    '/testhub': 'TestHub',
-    '/incident-hub': 'IncidentHub',
-    '/task-hub': 'TaskHub',
-    '/plan-hub': 'PlanHub',
-    '/wiki': 'WikiHub',
-  };
-  // Match against the first segment(s) of the pathname
-  for (const [prefix, hub] of Object.entries(HUB_MAP)) {
+  const HUB_MAP: [string, string][] = [
+    ['/project-hub', 'ProjectHub'],
+    ['/release-hub', 'ReleaseHub'],
+    ['/releasehub', 'ReleaseHub'],
+    ['/incident-hub', 'IncidentHub'],
+    ['/task-hub', 'TaskHub'],
+    ['/taskhub', 'TaskHub'],
+    ['/testhub', 'TestHub'],
+    ['/planhub', 'PlanHub'],
+    ['/plan-hub', 'PlanHub'],
+    ['/producthub', 'ProductHub'],
+    ['/product', 'ProductHub'],
+    ['/wiki', 'WikiHub'],
+    ['/strategy', 'StrategyHub'],
+    ['/release', 'ReleaseHub'],
+    ['/priorities', 'TaskHub'],
+  ];
+  for (const [prefix, hub] of HUB_MAP) {
     if (pathname === prefix || pathname.startsWith(prefix + '/')) {
       return hub;
     }
