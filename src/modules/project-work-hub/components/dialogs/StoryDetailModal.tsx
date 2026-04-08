@@ -386,6 +386,74 @@ export default function StoryDetailModal({
     })();
   }, [isOpen, itemId]);
 
+  // ── ATTACHMENTS ───────────────────────────────
+  const { data: attachments = [], refetch: refetchAttachments } = useQuery({
+    queryKey: ['story-detail-attachments', itemId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('ph_attachments')
+        .select('*')
+        .eq('work_item_id', itemId)
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      return data ?? [];
+    },
+    enabled: !!itemId,
+  });
+
+  const [attachOpen, setAttachOpen] = useState(true);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const formatFileSize = (bytes: number): string => {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  };
+
+  const handleAttachmentUpload = useCallback(async (file: File) => {
+    if (file.size > 10 * 1024 * 1024) {
+      alert('File size exceeds 10MB limit.');
+      return;
+    }
+    const ext = file.name.split('.').pop();
+    const path = `attachments/${itemId}/${Date.now()}.${ext}`;
+    const { error: uploadError } = await supabase.storage
+      .from('attachments')
+      .upload(path, file, { upsert: false });
+    if (uploadError) { console.error('Upload error', uploadError); toast.error('Upload failed'); return; }
+    const { data: { user } } = await supabase.auth.getUser();
+    await supabase.from('ph_attachments').insert([{
+      work_item_id: itemId,
+      uploaded_by: user?.id,
+      file_name: file.name,
+      file_size: file.size,
+      mime_type: file.type,
+      storage_path: path,
+    } as any]);
+    refetchAttachments();
+    toast.success('File attached');
+  }, [itemId, refetchAttachments]);
+
+  const handleAttachmentDelete = useCallback(async (attachmentId: string, storagePath: string) => {
+    if (!window.confirm('Remove this attachment?')) return;
+    await supabase.storage.from('attachments').remove([storagePath]);
+    await supabase.from('ph_attachments').delete().eq('id', attachmentId);
+    refetchAttachments();
+  }, [refetchAttachments]);
+
+  const getAttachmentUrl = (storagePath: string) => {
+    const { data } = supabase.storage.from('attachments').getPublicUrl(storagePath);
+    return data.publicUrl;
+  };
+
+  const getFileIcon = (mimeType: string | null) => {
+    if (!mimeType) return <FileIcon size={16} color={DT.labelGrey} />;
+    if (mimeType.startsWith('image/')) return <ImageIcon size={16} color="#4BADE8" />;
+    if (mimeType.includes('pdf') || mimeType.includes('document') || mimeType.includes('text'))
+      return <FileText size={16} color="#CF7B00" />;
+    return <FileIcon size={16} color={DT.labelGrey} />;
+  };
+
   // ── FIELD SAVE HELPER ─────────────────────────
   const saveField = useCallback(async (field: string, value: any) => {
     await supabase.from('ph_issues').update({ [field]: value }).eq('id', itemId);
