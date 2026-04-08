@@ -2,8 +2,8 @@ import { useState, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Loader2, RefreshCw, CheckCircle2, X, ChevronDown,
-  ExternalLink, BrainCircuit, Clock, Folder, Bug, Rocket,
-  FlaskConical, AlertTriangle, ListChecks, BarChart3, LayoutGrid,
+  ExternalLink, BrainCircuit, Clock, Bug, Rocket,
+  FlaskConical, AlertTriangle, ListChecks, BarChart3, LayoutGrid, Briefcase,
 } from 'lucide-react';
 import { useAiDigest, useForceRefreshDigest } from '@/hooks/useAiDigest';
 import { useAuth } from '@/hooks/useAuth';
@@ -18,31 +18,27 @@ import { formatDistanceToNow } from 'date-fns';
 function useTokens() {
   const { isDark } = useTheme();
   return {
-    ink1:      isDark ? 'var(--cp-ink-1, #EDEDED)' : 'var(--cp-ink-1, #0F172A)',
-    ink2:      isDark ? 'var(--cp-ink-2, #A1A1A1)' : 'var(--cp-ink-2, #334155)',
-    ink3:      isDark ? 'var(--cp-ink-3, #878787)' : 'var(--cp-ink-3, #475569)',
-    ink4:      isDark ? 'var(--cp-ink-4, #7D7D7D)' : 'var(--cp-ink-4, #64748B)',
-    ink5:      isDark ? 'var(--cp-ink-5, #666)'    : 'var(--cp-ink-5, #94A3B8)',
-    surface:   isDark ? 'var(--cp-surface, #181A1E)' : 'var(--cp-surface, #F8FAFC)',
-    border:    isDark ? 'var(--cp-border, rgba(255,255,255,.1))' : 'var(--cp-border, #E2E8F0)',
-    borderLt:  isDark ? 'rgba(255,255,255,.06)' : 'var(--cp-border-lt, #F1F5F9)',
-    white:     isDark ? 'var(--cp-white, #1E2027)' : 'var(--cp-white, #FFFFFF)',
+    ink1:      isDark ? '#EDEDED' : '#0F172A',
+    ink2:      isDark ? '#A1A1A1' : '#334155',
+    ink3:      isDark ? '#A1A1A1' : '#475569',
+    ink4:      isDark ? '#878787' : '#64748B',
+    ink5:      isDark ? '#7D7D7D' : '#94A3B8',
+    surface:   isDark ? '#1A1A1A' : '#F8FAFC',
+    border:    isDark ? '#2E2E2E' : '#E2E8F0',
+    borderLt:  isDark ? '#292929' : '#F1F5F9',
+    white:     isDark ? '#1A1A1A' : '#FFFFFF',
     cardBg:    isDark ? '#1A1A1A' : '#FFFFFF',
     cardBd:    isDark ? '#2E2E2E' : '#E2E8F0',
-    purple:    'var(--cp-purple, #7C3AED)',
-    purpleLt:  'var(--cp-purple-lt, rgba(124,58,237,.08))',
-    purpleBd:  'var(--cp-purple-bd, rgba(124,58,237,.2))',
-    primary:   'var(--cp-primary, #2563EB)',
-    primaryLt: 'var(--cp-primary-lt, #EFF6FF)',
-    primaryBd: 'var(--cp-primary-bd, #BFDBFE)',
-    success:   'var(--cp-success, #16A34A)',
+    primary:   '#2563EB',
+    primaryLt: isDark ? 'rgba(37,99,235,.1)' : '#EFF6FF',
+    primaryBd: isDark ? 'rgba(37,99,235,.25)' : '#BFDBFE',
+    success:   '#16A34A',
     isDark,
   };
 }
 
 /* ── Hub icon map ── */
-const HUB_ICON: Record<string, typeof Folder> = {
-  ProjectHub: Folder,
+const HUB_ICON: Record<string, typeof Rocket> = {
   ReleaseHub: Rocket,
   IncidentHub: AlertTriangle,
   TestHub: FlaskConical,
@@ -55,14 +51,14 @@ const HUB_ICON: Record<string, typeof Folder> = {
 /* ── Section config ── */
 const SECTIONS: { horizon: RiskHorizon; label: string; dot: string; countBg: string; countText: string }[] = [
   { horizon: 'critical_now', label: 'CRITICAL NOW',   dot: '#DC2626', countBg: '#FEE2E2', countText: '#B91C1C' },
-  { horizon: 'today',        label: 'ACTION TODAY',   dot: '#D97706', countBg: '#FEF3C7', countText: '#92400E' },
+  { horizon: 'today',        label: 'ACTION TODAY',   dot: '#DC2626', countBg: '#FEE2E2', countText: '#B91C1C' },
   { horizon: 'this_week',    label: 'WATCH THIS WEEK',dot: '#2563EB', countBg: '#EFF6FF', countText: '#1D4ED8' },
   { horizon: 'good_news',    label: 'GOOD NEWS',      dot: '#16A34A', countBg: '#D1FAE5', countText: '#065F46' },
 ];
 
 const PRIORITY_STYLE: Record<string, { bg: string; text: string }> = {
   HIGH: { bg: '#FEE2E2', text: '#B91C1C' },
-  MED:  { bg: '#FEF3C7', text: '#92400E' },
+  MED:  { bg: '#DEEBFF', text: '#0747A6' },
   LOW:  { bg: '#F3F4F6', text: '#374151' },
 };
 
@@ -119,7 +115,7 @@ function WhySurfaced({ trigger }: { trigger: string }) {
           display: 'inline-flex', alignItems: 'center', gap: 4,
           background: 'none', border: 'none', cursor: 'pointer',
           padding: 0, fontFamily: 'Inter, sans-serif',
-          fontSize: 11, fontWeight: 600, color: T.purple,
+          fontSize: 11, fontWeight: 600, color: T.primary,
         }}
         className="focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2563EB]"
       >
@@ -146,12 +142,12 @@ function WhySurfaced({ trigger }: { trigger: string }) {
         <div style={{
           marginBlockStart: 4,
           padding: '6px 8px',
-          background: 'rgba(124,58,237,.04)',
-          border: '0.75px solid rgba(124,58,237,.15)',
+          background: 'rgba(37,99,235,.04)',
+          border: '0.75px solid rgba(37,99,235,.15)',
           borderRadius: 4,
           fontFamily: 'Inter, sans-serif',
           fontSize: 11, fontStyle: 'italic',
-          color: 'rgba(124,58,237,.6)',
+          color: 'rgba(37,99,235,.6)',
           lineHeight: 1.5,
         }}>
           {trigger}
@@ -213,7 +209,7 @@ function DigestCard({
   const navigate = useNavigate();
   const [hovered, setHovered] = useState(false);
   const ps = PRIORITY_STYLE[item.priority] || PRIORITY_STYLE.LOW;
-  const HubIcon = HUB_ICON[item.hub] || Folder;
+  const HubIcon = HUB_ICON[item.hub] || Briefcase;
   const accentColour = item.hub_colour || HUB_COLOURS[item.hub] || '#374151';
 
   const priorityLabel = item.priority === 'HIGH' ? 'High'
@@ -300,8 +296,8 @@ function DigestCard({
 
             {/* Row 2 — detail */}
             <p style={{
-              fontFamily: 'Inter, sans-serif', fontSize: 11, fontWeight: 400,
-              color: T.ink3, lineHeight: 1.55,
+              fontFamily: 'Inter, sans-serif', fontSize: 12, fontWeight: 400,
+              color: T.ink2, lineHeight: 1.55,
               margin: '0 0 5px', wordBreak: 'break-word',
             }}>
               {item.detail}
@@ -311,7 +307,7 @@ function DigestCard({
             {item.consequence && (
               <p style={{
                 fontFamily: 'Inter, sans-serif', fontSize: 11, fontStyle: 'italic',
-                color: T.ink5, lineHeight: 1.5,
+                color: T.ink4, lineHeight: 1.5,
                 margin: '0 0 6px',
               }}>
                 {item.consequence}
@@ -321,8 +317,8 @@ function DigestCard({
             {/* Row 4 — action */}
             {item.action && (
               <p style={{
-                fontFamily: 'Inter, sans-serif', fontSize: 11, fontWeight: 650,
-                color: T.ink2, lineHeight: 1.5,
+                fontFamily: 'Inter, sans-serif', fontSize: 12, fontWeight: 650,
+                color: T.ink1, lineHeight: 1.5,
                 margin: '0 0 8px',
               }}>
                 <span style={{ color: T.primary }}>→ </span>
@@ -446,7 +442,7 @@ export default function AIDigestTab({ onClose }: { onClose?: () => void } = {}) 
         <Loader2
           size={28}
           style={{
-            color: T.purple,
+            color: T.primary,
             animation: 'digest-spin 1s linear infinite',
           }}
         />
@@ -548,14 +544,14 @@ export default function AIDigestTab({ onClose }: { onClose?: () => void } = {}) 
       <div style={{
         display: 'inline-flex', alignItems: 'center', gap: 6,
         padding: '6px 12px', marginBlockEnd: 10,
-        background: T.purpleLt,
-        border: `0.5px solid ${T.purpleBd}`,
+        background: T.primaryLt,
+        border: `0.5px solid ${T.primaryBd}`,
         borderRadius: 'var(--cp-radius-card, 6px)',
       }}>
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-          <path d="M7 1L8.5 5.5L13 7L8.5 8.5L7 13L5.5 8.5L1 7L5.5 5.5L7 1Z" fill="#7C3AED" />
+          <path d="M7 1L8.5 5.5L13 7L8.5 8.5L7 13L5.5 8.5L1 7L5.5 5.5L7 1Z" fill="#2563EB" />
         </svg>
-        <span style={{ fontSize: 13, fontWeight: 600, color: T.purple }}>
+        <span style={{ fontSize: 13, fontWeight: 600, color: T.primary }}>
           AI Digest — Today
         </span>
       </div>
@@ -597,7 +593,7 @@ export default function AIDigestTab({ onClose }: { onClose?: () => void } = {}) 
       {/* Summary */}
       {d.summary && (
         <div style={{
-          borderInlineStart: `3px solid ${T.purple}`,
+          borderInlineStart: `3px solid ${T.primary}`,
           paddingInlineStart: 10,
           marginBlockEnd: 16,
         }}>
@@ -652,7 +648,7 @@ export default function AIDigestTab({ onClose }: { onClose?: () => void } = {}) 
             display: 'inline-flex', alignItems: 'center', gap: 4,
             background: 'none', border: 'none', cursor: 'pointer',
             fontFamily: 'Inter, sans-serif', fontSize: 12,
-            color: T.purple, padding: 0,
+            color: T.primary, padding: 0,
           }}
         >
           <RefreshCw
