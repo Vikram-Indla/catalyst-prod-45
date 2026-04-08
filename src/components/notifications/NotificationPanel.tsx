@@ -14,7 +14,8 @@ import NotificationItem from "./NotificationItem";
 import SectionHeader from "./SectionHeader";
 import EmptyState from "./EmptyState";
 import LoadingSkeleton from "./LoadingSkeleton";
-import AIDigestTab from "./AIDigestTab";
+import AIRecapTabV2 from "./AIRecapTabV2";
+import AgeingTab, { useAgeingCount } from "./AgeingTab";
 
 function useLastSyncTime() {
   return useQuery({
