@@ -145,9 +145,11 @@ function NotificationItemInner({ notification, actorProfile, onMarkRead, onClick
   };
 
   /* ═══ C-03: Actor avatar logic ═══ */
-  const hasActor = !!notification.actor_user_id;
-  const actorName = actorProfile?.full_name || notification.actor?.full_name || (notification.metadata as any)?.actor_display_name || null;
-  const avatarUrl = actorProfile?.avatar_url || notification.actor?.avatar_url || null;
+  const metaActorName = (notification.metadata as any)?.actor_display_name || null;
+  const metaActorAvatar = (notification.metadata as any)?.actor_avatar_url || null;
+  const hasActor = !!notification.actor_user_id || !!metaActorName;
+  const actorName = actorProfile?.full_name || notification.actor?.full_name || metaActorName || null;
+  const avatarUrl = actorProfile?.avatar_url || notification.actor?.avatar_url || (metaActorAvatar || null);
 
   const renderAvatar = () => {
     if (!hasActor) {
