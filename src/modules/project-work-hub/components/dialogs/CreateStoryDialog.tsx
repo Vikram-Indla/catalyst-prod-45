@@ -528,7 +528,7 @@ export const CreateStoryDialog: React.FC<CreateStoryDialogProps> = ({
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto px-6 py-5" style={{ maxHeight: isExpanded ? 'none' : 'calc(90vh - 160px)' }}>
+        <div className="flex-1 overflow-y-auto px-6 py-5" style={{ minHeight: 0 }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
 
             {/* ROW 1: Status lozenge */}
