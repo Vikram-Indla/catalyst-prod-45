@@ -469,11 +469,11 @@ export function useForYouData() {
         let jiraWorked: any[] = [];
         if (jiraAccountIds.length > 0) {
           const { data: assigned } = await supabase.from('ph_issues').select(SELECT_FIELDS).in('assignee_account_id', jiraAccountIds).order('jira_updated_at', { ascending: false }).limit(200);
-          jiraAssigned = assigned || [];
+          jiraAssigned = (assigned || []).map(r => ({ ...r, project_id: projectIdMap.get(r.project_key) || null }));
           const ninetyDaysAgo = new Date();
           ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
           const { data: worked } = await supabase.from('ph_issues').select(SELECT_FIELDS).in('assignee_account_id', jiraAccountIds).gte('jira_updated_at', ninetyDaysAgo.toISOString()).order('jira_updated_at', { ascending: false }).limit(200);
-          jiraWorked = worked || [];
+          jiraWorked = (worked || []).map(r => ({ ...r, project_id: projectIdMap.get(r.project_key) || null }));
         }
 
         // Native Catalyst tables — stories, features, epics, incidents
