@@ -841,15 +841,22 @@ export default function StoryDetailModal({
                   >
                     <IssueTypeIcon type={'subtask'} size={14} />
                     <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: DT.labelGrey }}>{st.issue_key}</span>
-                    <span style={{ flex: 1, fontSize: 13, color: DT.bodyText, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    <span style={{
+                      flex: 1, fontSize: 13, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                      color: getStatusCategory(st.status || '') === 'done' ? DT.labelGrey : DT.bodyText,
+                      textDecoration: getStatusCategory(st.status || '') === 'done' ? 'line-through' : 'none',
+                    }}>
                       {st.summary}
+                    </span>
+                    <span style={{ background: DT.epicChipBg, color: DT.epicChipText, borderRadius: 3, padding: '1px 6px', fontSize: 11, fontWeight: 700 }}>
+                      {st.story_points ?? '—'}
                     </span>
                     <StatusLozenge status={st.status || 'To Do'} />
                     <AvatarCircle name={st.assignee_display_name} size={18} />
                   </div>
                 ))}
                 {subtasks.length === 0 && !showSubtaskInput && (
-                  <div style={{ fontSize: 13, color: DT.labelGrey, fontStyle: 'italic', padding: '4px 0' }}>No child issues</div>
+                  <div style={{ fontSize: 13, color: DT.labelGrey, textAlign: 'center', padding: 16 }}>No subtasks yet. Click '+' above to create one.</div>
                 )}
                 {showSubtaskInput ? (
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4 }}>
