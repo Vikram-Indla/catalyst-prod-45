@@ -1109,14 +1109,14 @@ export default function StoryDetailModal({
 
               {/* ── ACTIVITY ── */}
               <div style={{ marginTop: 32 }}>
-                <div style={{ ...LABEL, marginBottom: 12 }}>Activity</div>
-                <div style={{ display: 'flex', gap: 0, borderBottom: `1px solid ${DT.border}`, marginBottom: 16 }}>
+                <div style={{ fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', color: DT.labelGrey, marginBottom: 12 }}>Activity</div>
+                <div style={{ display: 'flex', gap: 0, borderBottom: `2px solid ${DT.border}`, marginBottom: 16 }}>
                   {(['comments', 'history'] as const).map(tab => (
                     <button key={tab} onClick={() => setActiveTab(tab)} style={{
-                      fontSize: 13, fontWeight: 500, padding: '8px 14px', border: 'none', cursor: 'pointer',
-                      background: 'none', color: activeTab === tab ? DT.linkBlue : '#42526E',
+                      fontSize: 14, fontWeight: activeTab === tab ? 600 : 400, padding: '8px 16px', border: 'none', cursor: 'pointer',
+                      background: 'none', color: activeTab === tab ? DT.bodyText : DT.labelGrey,
                       borderBottom: `2px solid ${activeTab === tab ? DT.linkBlue : 'transparent'}`,
-                      marginBottom: -1, textTransform: 'capitalize',
+                      marginBottom: -2, textTransform: 'capitalize',
                     }}>
                       {tab}{tab === 'history' && allHistory.length > 0 ? ` (${allHistory.length})` : ''}
                     </button>
