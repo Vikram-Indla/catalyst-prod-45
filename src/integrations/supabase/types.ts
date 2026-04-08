@@ -242,24 +242,33 @@ export type Database = {
       }
       ai_digest_cache: {
         Row: {
+          context_version: number | null
           digest_json: Json
           expires_at: string
           generated_at: string
+          has_critical: boolean | null
           id: string
+          role_persona: string | null
           user_id: string
         }
         Insert: {
+          context_version?: number | null
           digest_json: Json
           expires_at?: string
           generated_at?: string
+          has_critical?: boolean | null
           id?: string
+          role_persona?: string | null
           user_id: string
         }
         Update: {
+          context_version?: number | null
           digest_json?: Json
           expires_at?: string
           generated_at?: string
+          has_critical?: boolean | null
           id?: string
+          role_persona?: string | null
           user_id?: string
         }
         Relationships: []
