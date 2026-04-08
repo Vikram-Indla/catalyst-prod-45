@@ -494,13 +494,6 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
                   transition: 'color 150ms ease',
                 }}
               >
-                {/* m-12: AI Digest tab dot with pulse animation when new */}
-                {tab.hasDot && (
-                  <span style={{
-                    width: 6, height: 6, borderRadius: '50%', background: '#7C3AED', flexShrink: 0,
-                    animation: 'pulseDot 1.5s infinite',
-                  }} />
-                )}
                 {tab.label}
               </button>
             );
@@ -534,7 +527,7 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
             </button>
           </div>
         ) : activeTab === 'ai' ? (
-          <AIDigestTab />
+          <AIDigestTab onClose={onClose} />
         ) : isLoading && notifications.length === 0 ? (
           <LoadingSkeleton />
         ) : notifications.length === 0 ? (

@@ -628,6 +628,7 @@ export default function AIDigestTab({ onClose }: { onClose?: () => void } = {}) 
                   key={item._idx}
                   item={item}
                   onDismiss={() => dismissItem(item._idx)}
+                  onNavigate={onClose}
                 />
               ))}
             </div>
