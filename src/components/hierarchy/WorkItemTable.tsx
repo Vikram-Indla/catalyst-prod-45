@@ -45,6 +45,35 @@ interface FlatRow {
   hasChildren: boolean;
 }
 
+function sortTree(
+  nodes: WorkItem[],
+  key: string,
+  dir: 'asc' | 'desc'
+): WorkItem[] {
+  const sorted = [...nodes].sort((a, b) => {
+    const aVal = (a as Record<string, unknown>)[key];
+    const bVal = (b as Record<string, unknown>)[key];
+    if (aVal == null && bVal == null) return 0;
+    if (aVal == null) return 1;
+    if (bVal == null) return -1;
+    let cmp = 0;
+    if (typeof aVal === 'string' && typeof bVal === 'string') {
+      cmp = aVal.localeCompare(bVal);
+    } else if (typeof aVal === 'number' && typeof bVal === 'number') {
+      cmp = aVal - bVal;
+    } else {
+      cmp = String(aVal).localeCompare(String(bVal));
+    }
+    return dir === 'asc' ? cmp : -cmp;
+  });
+  return sorted.map(node => ({
+    ...node,
+    children: node.children?.length
+      ? sortTree(node.children, key, dir)
+      : node.children,
+  }));
+}
+
 function flattenTree(items: WorkItem[], expandedIds: Set<string>, depth = 0): FlatRow[] {
   const result: FlatRow[] = [];
   for (const item of items) {
@@ -302,7 +331,10 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
     else { setSortKey(key); setSortDir('asc'); }
   }, [sortKey]);
 
-  const flatRows = useMemo(() => flattenTree(items, expandedIds), [items, expandedIds]);
+  const flatRows = useMemo(() => {
+    const sorted = sortKey ? sortTree(items, sortKey, sortDir) : items;
+    return flattenTree(sorted, expandedIds);
+  }, [items, expandedIds, sortKey, sortDir]);
   const visibleRows = flatRows.slice(0, perPage);
   const totalFlat = flatRows.length;
 
