@@ -6,6 +6,17 @@ import { useStoryBacklog } from '../hooks/useBacklogData';
 import { groupByStatus, STORY_GROUP_ORDER, STORY_STATUS_LOZENGE, getLozengeStyle, formatDueDate, getPriorityLabel, getPriorityColor, getInitials } from '../utils/backlog.utils';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
+import { ParentEpicChip } from '../components/shared/ParentEpicChip';
+import { DeleteConfirmDialog } from '../components/dialogs/DeleteConfirmDialog';
+import { CreateStoryDialog } from '../components/dialogs/CreateStoryDialog';
+import { EditStoryDialog } from '../components/dialogs/EditStoryDialog';
+import { Button } from '@/components/ui/button';
+import { ChevronDown, ChevronRight, Plus, Pencil, Trash2, BookOpen } from 'lucide-react';
+import { toast } from 'sonner';
+import { useTheme } from '@/hooks/useTheme';
+import { DK, LK } from '@/utils/dark-mode-styles';
+import type { BacklogStory } from '../types/backlog.types';
+
 export default function StoryBacklogPage({ projectId: propProjectId, projectKey }: { projectId?: string; projectKey?: string }) {
   const params = useParams<{ projectId: string }>();
   const projectId = propProjectId || params.projectId;
