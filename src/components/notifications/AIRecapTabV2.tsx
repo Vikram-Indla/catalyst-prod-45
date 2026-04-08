@@ -169,11 +169,9 @@ function SectionBlock({
 function replaceUuidsInText(text: string, keyMap: Record<string, string>): string {
   let result = text;
   for (const [uuid, key] of Object.entries(keyMap)) {
-    // Replace short UUID prefix (e.g., "4d05709e")
     const shortId = uuid.split('-')[0];
-    result = result.replaceAll(shortId, key);
-    // Replace full UUID
-    result = result.replaceAll(uuid, key);
+    result = result.split(shortId).join(key);
+    result = result.split(uuid).join(key);
   }
   return result;
 }
