@@ -142,12 +142,12 @@ function WhySurfaced({ trigger }: { trigger: string }) {
         <div style={{
           marginBlockStart: 4,
           padding: '6px 8px',
-          background: 'rgba(124,58,237,.04)',
-          border: '0.75px solid rgba(124,58,237,.15)',
+          background: 'rgba(37,99,235,.04)',
+          border: '0.75px solid rgba(37,99,235,.15)',
           borderRadius: 4,
           fontFamily: 'Inter, sans-serif',
           fontSize: 11, fontStyle: 'italic',
-          color: 'rgba(124,58,237,.6)',
+          color: 'rgba(37,99,235,.6)',
           lineHeight: 1.5,
         }}>
           {trigger}
@@ -549,7 +549,7 @@ export default function AIDigestTab({ onClose }: { onClose?: () => void } = {}) 
         borderRadius: 'var(--cp-radius-card, 6px)',
       }}>
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-          <path d="M7 1L8.5 5.5L13 7L8.5 8.5L7 13L5.5 8.5L1 7L5.5 5.5L7 1Z" fill="#7C3AED" />
+          <path d="M7 1L8.5 5.5L13 7L8.5 8.5L7 13L5.5 8.5L1 7L5.5 5.5L7 1Z" fill="#2563EB" />
         </svg>
         <span style={{ fontSize: 13, fontWeight: 600, color: T.primary }}>
           AI Digest — Today
