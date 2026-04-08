@@ -45,31 +45,98 @@ interface FlatRow {
   hasChildren: boolean;
 }
 
-function sortTree(
-  nodes: WorkItem[],
-  key: string,
-  dir: 'asc' | 'desc'
-): WorkItem[] {
-  const sorted = [...nodes].sort((a, b) => {
-    const aVal = (a as unknown as Record<string, unknown>)[key];
-    const bVal = (b as unknown as Record<string, unknown>)[key];
-    if (aVal == null && bVal == null) return 0;
-    if (aVal == null) return 1;
-    if (bVal == null) return -1;
-    let cmp = 0;
-    if (typeof aVal === 'string' && typeof bVal === 'string') {
-      cmp = aVal.localeCompare(bVal);
-    } else if (typeof aVal === 'number' && typeof bVal === 'number') {
-      cmp = aVal - bVal;
-    } else {
-      cmp = String(aVal).localeCompare(String(bVal));
-    }
+// ─── Sort weight maps (Jira-standard ordering) ──────────
+const PRIORITY_WEIGHT: Record<string, number> = {
+  critical: 1, blocker: 1, high: 2, medium: 3, low: 4, none: 5,
+};
+const STATUS_WEIGHT: Record<string, number> = {
+  backlog: 1, 'to do': 2, 'in progress': 3, 'in review': 4, 'in beta': 5, done: 6, closed: 7,
+};
+const TYPE_WEIGHT: Record<string, number> = {
+  epic: 1, story: 2, feature: 3, 'new feature': 3, task: 4, bug: 5, subtask: 6, 'sub-task': 6, improvement: 7,
+};
+
+// ─── Map col.id → sortable scalar extractor ─────────────
+function extractSortValue(item: WorkItem, colId: string): unknown {
+  switch (colId) {
+    case 'work':
+      return `${item.key ?? ''} ${item.title ?? ''}`.trim().toLowerCase();
+    case 'parent':
+      return item.parentKey ?? item.parentSummary ?? '';
+    case 'created':
+      return item.createdAt ?? '';
+    case 'updated':
+      return item.updatedAt ?? '';
+    case 'type':
+      return item.issueType ?? '';
+    case 'status':
+      return item.status?.name ?? '';
+    case 'assignee':
+      return item.assignee?.displayName ?? '';
+    case 'fixVersion':
+      return item.fixVersion?.name ?? '';
+    case 'labels':
+      return (item.labels ?? [])[0] ?? '';
+    case 'priority':
+      return PRIORITY_WEIGHT[(item.priority?.name ?? 'none').toLowerCase()] ?? 5;
+    case 'storyPoints':
+      return item.storyPoints ?? null;
+    case 'dueDate':
+      return item.dueDate ?? '';
+    case 'reporter':
+      return item.reporter ?? '';
+    default:
+      return (item as Record<string, unknown>)[colId] ?? '';
+  }
+}
+
+// ─── Compare two scalar values with correct type logic ───
+function compareValues(aVal: unknown, bVal: unknown, dir: 'asc' | 'desc'): number {
+  if (aVal == null && bVal == null) return 0;
+  if (aVal == null) return 1;
+  if (bVal == null) return -1;
+  let cmp = 0;
+  if (typeof aVal === 'number' && typeof bVal === 'number') {
+    cmp = aVal - bVal;
+  } else if (
+    typeof aVal === 'string' && typeof bVal === 'string' &&
+    aVal.match(/^\d{4}-\d{2}-\d{2}/) && bVal.match(/^\d{4}-\d{2}-\d{2}/)
+  ) {
+    cmp = new Date(aVal).getTime() - new Date(bVal).getTime();
+  } else if (typeof aVal === 'string' && typeof bVal === 'string') {
+    cmp = aVal.localeCompare(bVal, undefined, { sensitivity: 'base' });
+  } else {
+    cmp = String(aVal).localeCompare(String(bVal));
+  }
+  return dir === 'asc' ? cmp : -cmp;
+}
+
+// ─── Full comparator with weight maps for status/type ────
+function compareWorkItems(a: WorkItem, b: WorkItem, colId: string, dir: 'asc' | 'desc'): number {
+  if (colId === 'status') {
+    const aW = STATUS_WEIGHT[(a.status?.name ?? '').toLowerCase()] ?? 8;
+    const bW = STATUS_WEIGHT[(b.status?.name ?? '').toLowerCase()] ?? 8;
+    const cmp = aW - bW;
     return dir === 'asc' ? cmp : -cmp;
-  });
+  }
+  if (colId === 'type') {
+    const aW = TYPE_WEIGHT[(a.issueType ?? '').toLowerCase()] ?? 8;
+    const bW = TYPE_WEIGHT[(b.issueType ?? '').toLowerCase()] ?? 8;
+    const cmp = aW - bW;
+    return dir === 'asc' ? cmp : -cmp;
+  }
+  const aVal = extractSortValue(a, colId);
+  const bVal = extractSortValue(b, colId);
+  return compareValues(aVal, bVal, dir);
+}
+
+// ─── Recursive tree sort (sort siblings, preserve nesting) ─
+function sortTree(nodes: WorkItem[], colId: string, dir: 'asc' | 'desc'): WorkItem[] {
+  const sorted = [...nodes].sort((a, b) => compareWorkItems(a, b, colId, dir));
   return sorted.map(node => ({
     ...node,
     children: node.children?.length
-      ? sortTree(node.children, key, dir)
+      ? sortTree(node.children, colId, dir)
       : node.children,
   }));
 }
