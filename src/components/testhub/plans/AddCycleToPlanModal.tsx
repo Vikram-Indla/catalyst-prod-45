@@ -79,22 +79,15 @@ export function AddCycleToPlanModal({ isOpen, onClose, planId, onAdded }: AddCyc
     if (selectedIds.size === 0) return;
     setIsSubmitting(true);
     try {
-      const { data: existing } = await supabase
-        .from('th_plan_cycles')
-        .select('sequence')
-        .eq('plan_id', planId)
-        .order('sequence', { ascending: false })
-        .limit(1);
+      const { data: { user } } = await supabase.auth.getUser();
 
-      let nextSequence = (existing && existing.length > 0) ? (existing[0] as any).sequence + 1 : 0;
-
-      const inserts = Array.from(selectedIds).map((cycleId, index) => ({
+      const inserts = Array.from(selectedIds).map((cycleId) => ({
         plan_id: planId,
         cycle_id: cycleId,
-        sequence: nextSequence + index,
+        linked_by: user?.id,
       }));
 
-      const { error } = await supabase.from('th_plan_cycles').insert(inserts as any);
+      const { error } = await (supabase as any).from('plan_test_cycles').insert(inserts as any);
       if (error) throw error;
 
       catalystToast.success(`Added ${selectedIds.size} cycle${selectedIds.size > 1 ? 's' : ''} to plan`);

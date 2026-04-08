@@ -293,7 +293,7 @@ export default function PlanDetailPage() {
                           <tr key={lc.id} className="border-b last:border-b-0 hover:bg-muted/30 transition-colors" style={{ height: 50, maxHeight: 50 }}>
                             <td className="px-4 py-2">
                               <button
-                                onClick={() => navigate(`/testhub/cycles/${c.id}`)}
+                                onClick={() => navigate(`/testhub/cycles/${c.id}?fromPlanId=${planId}`)}
                                 className="font-mono text-xs text-primary hover:underline"
                               >
                                 {c.cycle_key}
