@@ -901,7 +901,7 @@ export default function StoryDetailModal({
               <div style={{ marginTop: 32 }}>
                 <div style={{ ...LABEL, marginBottom: 8 }}>Linked Issues</div>
                 {Object.keys(linkGroups).length === 0 && !showLinkForm && (
-                  <div style={{ fontSize: 13, color: DT.labelGrey, fontStyle: 'italic', padding: '4px 0' }}>No linked issues</div>
+                  <div style={{ fontSize: 13, color: DT.labelGrey, textAlign: 'center', padding: 16 }}>No linked items. Use the link form above to connect work.</div>
                 )}
                 {Object.entries(linkGroups).map(([type, items]) => (
                   <div key={type} style={{ marginBottom: 8 }}>
@@ -1032,7 +1032,7 @@ export default function StoryDetailModal({
                 {activeTab === 'history' && (
                   <div>
                     {allHistory.length === 0 && (
-                      <div style={{ fontSize: 13, color: DT.labelGrey, fontStyle: 'italic', padding: '8px 0' }}>No history</div>
+                      <div style={{ fontSize: 13, color: DT.labelGrey, textAlign: 'center', padding: 16 }}>No history yet. Changes will appear here automatically.</div>
                     )}
                     {allHistory.map(h => (
                       <div key={h.id} style={{ display: 'flex', gap: 8, padding: '6px 0', borderBottom: `0.75px solid ${DT.headerBg}`, minHeight: 28, alignItems: 'center' }}>
