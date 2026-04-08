@@ -226,6 +226,8 @@ function mapIssueToWorkItem(row: any, starredSet: Set<string>, projectNameMap: M
     id: row.issue_key,
     key: row.issue_key,
     summary: row.summary || '',
+    phIssueId: row.id || undefined,
+    projectId: row.project_id || undefined,
     mode: inferMode(projectKey, issueType),
     level: issueType,
     project: row.workstream_name || row.project_name || projectNameMap.get(projectKey) || projectKey,
