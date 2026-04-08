@@ -26,6 +26,8 @@ export interface WorkItem {
   id: string;
   key: string;
   summary: string;
+  phIssueId?: string;
+  projectId?: string;
   mode: WorkMode;
   level: string;
   project: string;
@@ -224,6 +226,8 @@ function mapIssueToWorkItem(row: any, starredSet: Set<string>, projectNameMap: M
     id: row.issue_key,
     key: row.issue_key,
     summary: row.summary || '',
+    phIssueId: row.id || undefined,
+    projectId: row.project_id || undefined,
     mode: inferMode(projectKey, issueType),
     level: issueType,
     project: row.workstream_name || row.project_name || projectNameMap.get(projectKey) || projectKey,
@@ -258,7 +262,7 @@ function mapIssueToWorkItem(row: any, starredSet: Set<string>, projectNameMap: M
   };
 }
 
-const SELECT_FIELDS = 'issue_key, project_key, project_name, issue_type, summary, status, status_category, assignee_account_id, assignee_display_name, reporter_display_name, priority, jira_updated_at, jira_created_at, parent_key, parent_summary, sprint_name, story_points, labels, fix_versions, components, description_text, last_synced_at';
+const SELECT_FIELDS = 'id, project_id, issue_key, project_key, project_name, issue_type, summary, status, status_category, assignee_account_id, assignee_display_name, reporter_display_name, priority, jira_updated_at, jira_created_at, parent_key, parent_summary, sprint_name, story_points, labels, fix_versions, components, description_text, last_synced_at';
 
 export function useForYouData() {
   const [activeMode, setActiveMode] = useState<ModeFilter>('all');
