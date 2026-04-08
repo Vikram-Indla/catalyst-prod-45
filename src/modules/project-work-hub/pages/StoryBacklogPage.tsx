@@ -1,5 +1,5 @@
-import React, { useState, useMemo } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import React, { useState, useMemo, lazy, Suspense } from 'react';
+import { useParams } from 'react-router-dom';
 import { useQueryClient, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useStoryBacklog } from '../hooks/useBacklogData';
@@ -16,6 +16,8 @@ import { toast } from 'sonner';
 import { useTheme } from '@/hooks/useTheme';
 import { DK, LK } from '@/utils/dark-mode-styles';
 import type { BacklogStory } from '../types/backlog.types';
+
+const StoryDetailModal = lazy(() => import('../components/dialogs/StoryDetailModal'));
 
 export default function StoryBacklogPage({ projectId: propProjectId, projectKey }: { projectId?: string; projectKey?: string }) {
   const params = useParams<{ projectId: string }>();
