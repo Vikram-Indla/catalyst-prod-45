@@ -30,6 +30,19 @@ interface StoryDetailModalProps {
 /* ═══════════════════════════════════════════════
    V12 DESIGN TOKENS (hex only — no HSL)
    ═══════════════════════════════════════════════ */
+/* Smooth entrance keyframes — injected once */
+const ANIM_STYLE_ID = 'story-modal-anims';
+if (typeof document !== 'undefined' && !document.getElementById(ANIM_STYLE_ID)) {
+  const s = document.createElement('style');
+  s.id = ANIM_STYLE_ID;
+  s.textContent = `
+    @keyframes sdm-overlay-in { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes sdm-card-in { from { opacity: 0; transform: scale(0.97) translateY(8px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  `;
+  document.head.appendChild(s);
+}
+
 const V = {
   overlay: 'rgba(0,0,0,0.5)',
   white: '#FFFFFF',
@@ -930,6 +943,7 @@ export default function StoryDetailModal({
           background: V.overlay, display: 'flex',
           alignItems: 'center', justifyContent: 'center',
           fontFamily: 'Inter, sans-serif',
+          animation: 'sdm-overlay-in 180ms ease-out both',
         }}
         onClick={e => { if (e.target === e.currentTarget) onClose(); }}
       >
@@ -938,11 +952,13 @@ export default function StoryDetailModal({
             width: isExpanded ? '96%' : 900,
             maxWidth: isExpanded ? '96%' : 'calc(100vw - 48px)',
             height: isExpanded ? '95vh' : 'auto',
+            minHeight: 400,
             maxHeight: isExpanded ? '95vh' : '90vh',
-            borderRadius: isExpanded ? 8 : 8,
-            transition: 'width 200ms ease, max-width 200ms ease, max-height 200ms ease, border-radius 200ms ease',
+            borderRadius: 8,
+            transition: 'width 200ms ease, max-width 200ms ease, max-height 200ms ease',
             overflow: 'hidden', display: 'flex',
             flexDirection: 'column', boxShadow: '0 8px 32px rgba(0,0,0,0.18)', background: V.white,
+            animation: 'sdm-card-in 220ms ease-out both',
           }}
           onClick={e => e.stopPropagation()}
         >
@@ -1029,8 +1045,11 @@ export default function StoryDetailModal({
              BODY
              ═══════════════════════════════════════ */}
           {isLoading ? (
-            <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: V.textMuted, padding: 40 }}>
-              Loading...
+            <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: V.textMuted, padding: 40, minHeight: 300 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
+                <div style={{ width: 24, height: 24, border: '2.5px solid #E2E8F0', borderTopColor: '#2563EB', borderRadius: '50%', animation: 'spin 0.7s linear infinite' }} />
+                <span style={{ fontSize: 13 }}>Loading…</span>
+              </div>
             </div>
           ) : isError || !story ? (
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8, padding: 40 }}>
