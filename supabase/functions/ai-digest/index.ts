@@ -206,7 +206,7 @@ ${fmtNotifs}
 
 Return JSON:
 {
-  "summary": "One sentence for ${rolePersona} — most important thing right now",
+  "summary": "One sentence daily briefing for ${rolePersona} — recap portfolio state as of now. Lead with the most critical number or fact. Write as a briefing, not an alert. Example: '3 critical defects block Release 2.4 shipping Thursday — registration flow is down for new users and requires immediate triage.'",
   "role_persona": "${rolePersona}",
   "has_critical": true|false,
   "generated_at": "${now.toISOString()}",
@@ -225,7 +225,8 @@ Return JSON:
       "confidence": 0-100,
       "entity_id": "uuid or null",
       "project_name": "name or null",
-      "hub_colour": "#hex"
+      "hub_colour": "#hex",
+      "metrics": "compact stat line string"
     }
   ]
 }`;

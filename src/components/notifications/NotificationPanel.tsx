@@ -83,7 +83,7 @@ function groupByDate(items: Notification[]): { label: string; items: Notificatio
 
 const TABS: { key: NotificationTab; label: string }[] = [
   { key: 'direct', label: 'Direct' },
-  { key: 'ai', label: 'AI Digest' },
+  { key: 'ai', label: 'AI Recap' },
 ];
 
 export default function NotificationPanel({ isOpen, onClose }: NotificationPanelProps) {

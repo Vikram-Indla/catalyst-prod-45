@@ -294,6 +294,19 @@ function DigestCard({
               </button>
             </div>
 
+            {/* Row 1b — metrics */}
+            {(item as any).metrics && (
+              <div style={{
+                fontFamily: 'JetBrains Mono, monospace', fontSize: 11, fontWeight: 600,
+                color: T.ink2, background: T.surface,
+                border: `0.75px solid ${T.border}`,
+                borderRadius: 4, padding: '3px 8px',
+                marginBlockEnd: 6, display: 'inline-block',
+              }}>
+                {(item as any).metrics}
+              </div>
+            )}
+
             {/* Row 2 — detail */}
             <p style={{
               fontFamily: 'Inter, sans-serif', fontSize: 12, fontWeight: 400,
@@ -550,7 +563,7 @@ export default function AIDigestTab({ onClose }: { onClose?: () => void } = {}) 
           <path d="M7 1L8.5 5.5L13 7L8.5 8.5L7 13L5.5 8.5L1 7L5.5 5.5L7 1Z" fill="#2563EB" />
         </svg>
         <span style={{ fontSize: 13, fontWeight: 600, color: T.primary }}>
-          AI Digest — Today
+          AI Recap — Today
         </span>
       </div>
 
