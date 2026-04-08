@@ -81,9 +81,9 @@ function groupByDate(items: Notification[]): { label: string; items: Notificatio
   return groups.filter(g => g.items.length > 0);
 }
 
-const TABS: { key: NotificationTab; label: string; hasDot?: boolean }[] = [
+const TABS: { key: NotificationTab; label: string }[] = [
   { key: 'direct', label: 'Direct' },
-  { key: 'ai', label: 'AI Digest', hasDot: true },
+  { key: 'ai', label: 'AI Digest' },
 ];
 
 export default function NotificationPanel({ isOpen, onClose }: NotificationPanelProps) {

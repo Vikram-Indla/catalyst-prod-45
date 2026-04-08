@@ -338,7 +338,7 @@ function DigestCard({
               <ConfidenceBar value={item.confidence} />
 
               <button
-                onClick={() => navigate(sanitiseCTAPath(item.cta_path))}
+                onClick={() => { navigate(sanitiseCTAPath(item.cta_path)); onClose?.(); }}
                 aria-label={item.cta_label}
                 className="focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2563EB]"
                 style={{
@@ -403,13 +403,20 @@ function SectionHeader({
 /* ═══════════════════════════════════════════
    MAIN COMPONENT
    ═══════════════════════════════════════════ */
-export default function AIDigestTab() {
+export default function AIDigestTab({ onClose }: { onClose?: () => void } = {}) {
   const { digest, isEmpty, isLoading, isError, refetch } = useAiDigest();
   const { forceRefresh } = useForceRefreshDigest();
   const { user } = useAuth();
   const T = useTokens();
   const [refreshing, setRefreshing] = useState(false);
   const [dismissed, setDismissed] = useState<Set<number>>(new Set());
+  const digestRef = useRef(digest);
+
+  // W-03: Reset dismissed set when digest data changes (new generation)
+  if (digest !== digestRef.current) {
+    digestRef.current = digest;
+    if (dismissed.size > 0) setDismissed(new Set());
+  }
 
   const handleRefresh = useCallback(async () => {
     setRefreshing(true);
