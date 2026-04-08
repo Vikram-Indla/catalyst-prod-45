@@ -761,7 +761,7 @@ export default function StoryDetailModal({ isOpen, onClose, itemId, projectId, p
 
   return (
     <div ref={overlayRef} onClick={(e) => { if (e.target === overlayRef.current) onClose(); }}
-      style={{ position: 'fixed', inset: 0, zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', background: dt.overlay }}>
+      style={{ position: 'fixed', inset: 0, zIndex: 9999, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', paddingTop: 40, overflowY: 'auto', background: dt.overlay }}>
 
       <div style={{ width: '100%', maxWidth: 1100, height: '88vh', display: 'flex', flexDirection: 'column', borderRadius: 3, background: dt.modalBg, overflow: 'hidden' }}>
 
