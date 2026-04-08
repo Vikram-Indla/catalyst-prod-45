@@ -337,25 +337,7 @@ function NotificationItemInner({ notification, actorProfile, onMarkRead, onClick
         </div>
       </div>
 
-      {/* Mark-read circle on hover */}
-      {isUnread && isHovered && (
-        <button
-          onClick={(e) => { e.stopPropagation(); onMarkRead?.(notification.id); }}
-          style={{
-            position: 'absolute', top: 12, right: 16,
-            width: 28, height: 28, borderRadius: '50%',
-            border: `1.5px solid ${T.borderStrong}`,
-            background: 'transparent', cursor: 'pointer',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            transition: 'opacity 150ms ease',
-          }}
-          title="Mark as read"
-        >
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-            <path d="M2 6L5 9L10 3" stroke={T.checkStroke} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-        </button>
-      )}
+      {/* Mark-read button moved inline — see timestamp cluster above */}
     </div>
   );
 }
