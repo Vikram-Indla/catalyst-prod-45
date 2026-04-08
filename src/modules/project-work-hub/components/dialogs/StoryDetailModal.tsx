@@ -467,6 +467,7 @@ export default function StoryDetailModal({
   const [commentBody, setCommentBody] = useState('');
   const [commentFocused, setCommentFocused] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [plusMenuOpen, setPlusMenuOpen] = useState(false);
   const [statusOpen, setStatusOpen] = useState(false);
   const [showSubtaskInput, setShowSubtaskInput] = useState(false);
   const [newSubtaskTitle, setNewSubtaskTitle] = useState('');
