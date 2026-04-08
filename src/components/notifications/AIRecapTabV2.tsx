@@ -221,56 +221,9 @@ export default function AIRecapTabV2() {
         try {
           const rawItems: any[] = Array.isArray(digest.items) ? digest.items : [];
 
-          // Collect entity_ids for key resolution
-          const entityIds = rawItems
-            .map((item: any) => item.entity_id)
-            .filter((id: any) => id && typeof id === 'string' && id.length > 8);
-
-          // Also extract UUID-like fragments from all text fields
-          const uuidRegex = /\b([0-9a-f]{8})(?:-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})?\b/gi;
-          const allText = rawItems.map((item: any) =>
-            [item.action, item.detail, item.trigger, item.title, item.consequence, item.ai_action_text, item.ai_body_text]
-              .filter(Boolean).join(' ')
-          ).join(' ');
-          const textUuids = [...allText.matchAll(uuidRegex)].map(m => m[0]);
-          
-          // Combine: full UUIDs from entity_ids + any found in text
-          const allUuids = [...new Set([...entityIds, ...textUuids.filter(u => u.length === 36)])];
-          const shortOnlyIds = [...new Set(textUuids.filter(u => u.length === 8))];
-
-          // Resolve UUIDs → Jira keys
-          let keyMap: Record<string, string> = {};
-          
-          if (allUuids.length > 0) {
-            const { data: issueRows } = await supabase
-              .from('ph_issues')
-              .select('id, issue_key')
-              .in('id', allUuids);
-            if (issueRows) {
-              for (const row of issueRows) {
-                keyMap[row.id] = row.issue_key;
-              }
-            }
-          }
-
-          // Also resolve short UUID prefixes (8-char) that weren't full UUIDs
-          const unresolvedShorts = shortOnlyIds.filter(s => !Object.keys(keyMap).some(k => k.startsWith(s)));
-          if (unresolvedShorts.length > 0) {
-            const orFilter = unresolvedShorts.map(s => `id.like.${s}%`).join(',');
-            const { data: shortRows } = await supabase
-              .from('ph_issues')
-              .select('id, issue_key')
-              .or(orFilter)
-              .limit(50);
-            if (shortRows) {
-              for (const row of shortRows) {
-                keyMap[row.id] = row.issue_key;
-              }
-            }
-          }
-
           const parsedItems: RecapItem[] = rawItems.map((item: any, idx: number) => {
-            const resolvedKey = item.entity_id ? (keyMap[item.entity_id] || '') : '';
+            // Use entity_key directly from digest (resolved server-side)
+            const resolvedKey = item.entity_key || '';
 
             let category: 'recap' | 'suggestion' | 'done' = 'recap';
             if (item.category) {
@@ -281,21 +234,16 @@ export default function AIRecapTabV2() {
               category = 'suggestion';
             }
 
-            // Replace UUID fragments in all text fields
-            const actionText = replaceUuidsInText(item.action || item.ai_action_text || '', keyMap);
-            const detailText = replaceUuidsInText(item.detail || item.body || item.ai_body_text || '', keyMap);
-            const triggerText = replaceUuidsInText(item.trigger || '', keyMap);
-
             return {
               id: `ai-${idx}`,
               category,
               jira_key: resolvedKey,
               jira_url: item.cta_path || '#',
               summary: item.title || item.summary || '',
-              ai_body_text: detailText,
-              ai_action_text: actionText,
+              ai_body_text: item.detail || item.body || item.ai_body_text || '',
+              ai_action_text: item.action || item.ai_action_text || '',
               timestamp: item.timestamp || '',
-              done_text: detailText || triggerText,
+              done_text: item.detail || item.trigger || '',
               actors: item.actors || [],
               project_name: item.project_name || '',
             };

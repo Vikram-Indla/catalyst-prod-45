@@ -263,13 +263,29 @@ Return JSON:
       return new Response(JSON.stringify({ digest: null, error: "digest_unavailable" }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
-    let items = ((parsed.items ?? []) as Record<string, unknown>[]).map(item => ({
-      ...item,
-      cta_path: sanitisePath(item.cta_path as string),
-      confidence: clampConf(item.confidence),
-      hub_colour: HUB_COLOURS[(item.hub as string) ?? ''] ?? '#374151',
-      entity_id: typeof item.entity_id === 'string' && item.entity_id.length === 36 ? item.entity_id : null,
-    }));
+    // Build a key map from all source data
+    const sourceKeyMap: Record<string, string> = {};
+    for (const n of notifications) {
+      if (n.entity_id && n.entity_key) sourceKeyMap[n.entity_id] = n.entity_key;
+    }
+    for (const i of incidents) {
+      if (i.id && i.incident_key) sourceKeyMap[i.id] = i.incident_key;
+    }
+    for (const t of testFails) {
+      if (t.id && t.case_key) sourceKeyMap[t.id] = t.case_key;
+    }
+
+    let items = ((parsed.items ?? []) as Record<string, unknown>[]).map(item => {
+      const eid = typeof item.entity_id === 'string' && item.entity_id.length === 36 ? item.entity_id : null;
+      return {
+        ...item,
+        cta_path: sanitisePath(item.cta_path as string),
+        confidence: clampConf(item.confidence),
+        hub_colour: HUB_COLOURS[(item.hub as string) ?? ''] ?? '#374151',
+        entity_id: eid,
+        entity_key: eid ? (sourceKeyMap[eid] ?? null) : null,
+      };
+    });
 
     // Post-process: resolve ANY UUID fragments in text fields to Jira keys
     const uuidPattern = /\b([0-9a-f]{8})(?:-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})?\b/gi;
@@ -278,37 +294,58 @@ Return JSON:
     const uuidMatches = [...allText.matchAll(uuidPattern)];
     const shortIds = [...new Set(uuidMatches.map(m => m[1].toLowerCase()))];
 
-    if (shortIds.length > 0) {
-      // Find matching ph_issues by id prefix
-      const orFilter = shortIds.map(s => `id.like.${s}%`).join(',');
+    // Also collect entity_ids that didn't resolve from source data
+    const unresolvedEntityIds = items
+      .filter(i => i.entity_id && !i.entity_key)
+      .map(i => i.entity_id as string);
+
+    // Resolve from ph_issues if needed
+    const allIdsToResolve = [...new Set([...unresolvedEntityIds])];
+    let issueKeyMap: Record<string, string> = {};
+
+    if (allIdsToResolve.length > 0 || shortIds.length > 0) {
+      const filters: string[] = [];
+      if (allIdsToResolve.length > 0) {
+        filters.push(...allIdsToResolve.map(id => `id.eq.${id}`));
+      }
+      if (shortIds.length > 0) {
+        filters.push(...shortIds.map(s => `id.like.${s}%`));
+      }
       const { data: issueRows } = await supabase
         .from('ph_issues')
         .select('id, issue_key')
-        .or(orFilter)
+        .or(filters.join(','))
         .limit(50);
 
-      if (issueRows && issueRows.length > 0) {
-        const keyMap: Record<string, string> = {};
+      if (issueRows) {
         for (const row of issueRows) {
-          keyMap[row.id] = row.issue_key;
-          keyMap[row.id.split('-')[0]] = row.issue_key;
+          issueKeyMap[row.id] = row.issue_key;
+          issueKeyMap[row.id.split('-')[0]] = row.issue_key;
         }
-
-        items = items.map(item => {
-          const patched = { ...item };
-          for (const field of textFields) {
-            if (typeof patched[field] === 'string') {
-              let val = patched[field] as string;
-              for (const [uuid, key] of Object.entries(keyMap)) {
-                val = val.split(uuid).join(key);
-              }
-              patched[field] = val;
-            }
-          }
-          return patched;
-        });
       }
     }
+
+    // Merge all key maps
+    const fullKeyMap = { ...issueKeyMap, ...sourceKeyMap };
+
+    // Replace UUIDs in text and fill missing entity_key
+    items = items.map(item => {
+      const patched = { ...item };
+      // Fill entity_key from issueKeyMap if still missing
+      if (patched.entity_id && !patched.entity_key && issueKeyMap[patched.entity_id as string]) {
+        patched.entity_key = issueKeyMap[patched.entity_id as string];
+      }
+      for (const field of textFields) {
+        if (typeof patched[field] === 'string') {
+          let val = patched[field] as string;
+          for (const [uuid, key] of Object.entries(fullKeyMap)) {
+            val = val.split(uuid).join(key);
+          }
+          patched[field] = val;
+        }
+      }
+      return patched;
+    });
 
     const digestV2 = { ...parsed, items };
     const hasCritical = items.some(i => i.risk_horizon === 'critical_now');
