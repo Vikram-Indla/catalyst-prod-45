@@ -482,6 +482,7 @@ export default function StoryDetailModal({
   const [assigneeResults, setAssigneeResults] = useState<any[]>([]);
 
   const menuRef = useRef<HTMLDivElement>(null);
+  const plusMenuRef = useRef<HTMLDivElement>(null);
   const statusRef = useRef<HTMLDivElement>(null);
   const commentInputRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
