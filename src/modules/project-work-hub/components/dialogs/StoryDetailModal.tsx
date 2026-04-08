@@ -943,7 +943,7 @@ export default function StoryDetailModal({
             borderRadius: isExpanded ? 0 : 8,
             transition: 'width 200ms ease, max-width 200ms ease, max-height 200ms ease, border-radius 200ms ease',
             overflow: 'hidden', display: 'flex',
-            flexDirection: 'column', boxShadow: '0 8px 32px rgba(0,0,0,0.18)',
+            flexDirection: 'column', boxShadow: '0 8px 32px rgba(0,0,0,0.18)', background: V.white,
           }}
           onClick={e => e.stopPropagation()}
         >
