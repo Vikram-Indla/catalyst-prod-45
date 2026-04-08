@@ -59,7 +59,7 @@ interface StoryDetailViewProps {
   itemId: string;
 }
 
-export function StoryDetailView({ projectId, projectKey, itemId }: StoryDetailViewProps) {
+export default function StoryDetailView({ projectId, projectKey, itemId }: StoryDetailViewProps) {
   const navigate = useNavigate();
 
   // ─── Data hooks ────────────────────────────────────────────

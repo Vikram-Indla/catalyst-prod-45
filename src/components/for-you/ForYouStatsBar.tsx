@@ -7,11 +7,11 @@ import React from 'react';
 
 const HUB_DOT_COLORS: Record<string, string> = {
   Project: '#2563EB',
-  Product: '#3F3F46',
-  Task: '#D4D4D8',
+  Product: '#7C3AED',
+  Task: '#EA580C',
   Incident: '#DC2626',
   Release: '#16A34A',
-  Test: '#3F3F46',
+  Test: '#0891B2',
   Strategy: '#0891B2',
   Plan: '#6366F1',
 };
@@ -33,7 +33,7 @@ export function ForYouStatsBar({ hubCounts, projectCount, reporterCount }: ForYo
       gap: 24,
       padding: '10px 0',
       marginBottom: 12,
-      borderBottom: '1px solid var(--divider)',
+      borderBottom: '1px solid var(--cp-bd, var(--divider))',
     }}>
       {entries.map(([hub, count]) => (
         <div key={hub} style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>

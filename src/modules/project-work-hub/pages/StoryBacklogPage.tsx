@@ -212,6 +212,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
         itemName={deleteTarget?.title || ''}
         isPending={deleteMutation.isPending}
       />
+
     </div>
   );
 }

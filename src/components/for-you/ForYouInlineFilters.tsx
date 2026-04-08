@@ -12,7 +12,7 @@ const HUB_DOT_COLORS: Record<string, string> = {
   Task: '#EA580C',
   Incident: '#DC2626',
   Release: '#16A34A',
-  Test: '#3F3F46',
+  Test: '#0891B2',
   Strategy: '#0891B2',
   Plan: '#6366F1',
 };

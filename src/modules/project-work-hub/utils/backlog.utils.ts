@@ -8,14 +8,21 @@ export interface LozengeConfig {
   label: string;
 }
 
-const LOZENGE_STYLES: Record<LozengeColor, { bg: string; text: string }> = {
-  grey:  { bg: '#DFE1E6', text: '#42526E' },
-  blue:  { bg: '#0C66E4', text: '#FFFFFF' },
-  green: { bg: '#1B7F37', text: '#FFFFFF' },
+const LOZENGE_STYLES_LIGHT: Record<LozengeColor, { bg: string; text: string }> = {
+  grey:  { bg: '#DFE1E6', text: '#253858' },
+  blue:  { bg: '#DEEBFF', text: '#0747A6' },
+  green: { bg: '#E3FCEF', text: '#006644' },
+};
+
+const LOZENGE_STYLES_DARK: Record<LozengeColor, { bg: string; text: string }> = {
+  grey:  { bg: '#2E2E2E', text: '#A1A1A1' },
+  blue:  { bg: 'rgba(59,130,246,0.10)', text: '#7DB8FC' },
+  green: { bg: 'rgba(74,222,128,0.10)', text: '#4ADE80' },
 };
 
 export function getLozengeStyle(color: LozengeColor) {
-  return LOZENGE_STYLES[color];
+  const isDark = typeof document !== 'undefined' && document.documentElement.classList.contains('dark');
+  return isDark ? LOZENGE_STYLES_DARK[color] : LOZENGE_STYLES_LIGHT[color];
 }
 
 // ─── EPIC STATUS (Jira values) ───────────────────
@@ -85,7 +92,7 @@ export function getPriorityColor(priority: string | null): string {
     case 'critical':
     case 'highest': return '#DC2626';
     case 'high':    return '#D97706';
-    case 'medium':  return '#2563EB';
+    case 'medium':  return '#CF7B00';
     case 'low':
     case 'lowest':  return '#6B7280';
     default:        return '#9CA3AF';

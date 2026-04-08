@@ -369,9 +369,9 @@ function SubTasksTabContent({ parentKey, onSubTaskClick }: { parentKey: string; 
           <span style={{ fontSize: 13, fontWeight: 600, color: T.ink }}>{total} sub-task{total !== 1 ? 's' : ''}</span>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             {[
-              { count: todoTasks.length, label: 'To Do', bg: '#DFE1E6', color: '#44546F' },
-              { count: progressTasks.length, label: 'In Progress', bg: '#0C66E4', color: '#FFFFFF' },
-              { count: doneTasks.length, label: 'Done', bg: '#1B7F37', color: '#FFFFFF' },
+              { count: todoTasks.length, label: 'To Do', bg: T.border, color: T.inkSecondary },
+              { count: progressTasks.length, label: 'In Progress', bg: T.primary, color: '#FFFFFF' },
+              { count: doneTasks.length, label: 'Done', bg: T.success, color: '#FFFFFF' },
             ].map(s => (
               <span key={s.label} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                 <span style={{ display: 'inline-block', padding: '1px 6px', borderRadius: 4, backgroundColor: s.bg, color: s.color, fontSize: 11, fontWeight: 700 }}>{s.count}</span>
