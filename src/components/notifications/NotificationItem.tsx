@@ -241,14 +241,31 @@ function NotificationItemInner({ notification, actorProfile, onMarkRead, onClick
               {/* M-03/M-04: consistent action text */}
               <span style={{ fontWeight: hasActor ? 400 : 600 }}>{actionText}</span>
             </span>
-            {/* M-05: timestamp + unread dot cluster (right-aligned) */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
+            {/* M-05: timestamp + unread indicator cluster (right-aligned) */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
               <span style={{ fontSize: 11, color: '#94A3B8', fontWeight: 400, whiteSpace: 'nowrap', fontFamily: 'Inter, sans-serif' }}>
                 {formatTimestamp(notification.created_at)}
               </span>
-              {/* C-01: unread dot — small circle right of timestamp */}
+              {/* C-01: unread dot OR mark-read button — inline, no overlap */}
               {isUnread && !isHovered && (
                 <div style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: '#2563EB', flexShrink: 0 }} />
+              )}
+              {isUnread && isHovered && (
+                <button
+                  onClick={(e) => { e.stopPropagation(); onMarkRead?.(notification.id); }}
+                  style={{
+                    width: 24, height: 24, borderRadius: '50%',
+                    border: `1.5px solid ${T.borderStrong}`,
+                    background: 'transparent', cursor: 'pointer',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    padding: 0, flexShrink: 0,
+                  }}
+                  title="Mark as read"
+                >
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                    <path d="M2 6L5 9L10 3" stroke={T.checkStroke} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </button>
               )}
             </div>
           </div>
