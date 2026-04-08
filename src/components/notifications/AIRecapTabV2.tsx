@@ -18,6 +18,7 @@ interface RecapItem {
   timestamp: string;
   done_text?: string;
   actors: string[];
+  project_name?: string;
 }
 
 const T = {
@@ -43,13 +44,14 @@ const T = {
 };
 
 function RecapCard({ item, borderColor }: { item: RecapItem; borderColor: string }) {
+  const hasKey = item.jira_key && item.jira_key.length > 0;
   return (
     <div
       style={{
         border: `0.75px solid ${T.border}`,
         borderLeft: `3px solid ${borderColor}`,
         borderRadius: 6,
-        padding: '12px 14px',
+        padding: '14px 16px',
         background: T.card,
         transition: 'background 120ms ease',
       }}
@@ -57,55 +59,67 @@ function RecapCard({ item, borderColor }: { item: RecapItem; borderColor: string
       onMouseLeave={e => (e.currentTarget.style.background = '')}
     >
       {/* Top row */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 6 }}>
-        <a
-          href={item.jira_url}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={e => e.stopPropagation()}
-          style={{
-            fontFamily: "'JetBrains Mono', monospace",
-            fontSize: 11, fontWeight: 700, color: T.primary,
-            background: T.primaryLight, padding: '2px 6px',
-            borderRadius: 3, textDecoration: 'none', whiteSpace: 'nowrap',
-          }}
-        >
-          {item.jira_key}
-        </a>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+        {hasKey ? (
+          <a
+            href={item.jira_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={e => e.stopPropagation()}
+            style={{
+              fontFamily: "'JetBrains Mono', monospace",
+              fontSize: 11, fontWeight: 700, color: T.primary,
+              background: T.primaryLight, padding: '2px 7px',
+              borderRadius: 3, textDecoration: 'none', whiteSpace: 'nowrap',
+            }}
+          >
+            {item.jira_key}
+          </a>
+        ) : item.project_name ? (
+          <span style={{
+            fontSize: 10, fontWeight: 700, color: T.ink3,
+            background: '#F1F5F9', padding: '2px 7px',
+            borderRadius: 3, whiteSpace: 'nowrap',
+            textTransform: 'uppercase', letterSpacing: '0.03em',
+          }}>
+            {item.project_name}
+          </span>
+        ) : null}
         <span style={{
-          fontSize: 12.5, fontWeight: 650, color: T.ink1,
-          flex: 1, lineHeight: 1.3,
+          fontSize: 13, fontWeight: 650, color: T.ink1,
+          flex: 1, lineHeight: 1.35,
           overflow: 'hidden', textOverflow: 'ellipsis',
           display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
         }}>
           {item.summary}
         </span>
-        <span style={{ fontSize: 10, color: T.ink4, marginLeft: 'auto', whiteSpace: 'nowrap' }}>
-          {item.timestamp}
-        </span>
       </div>
 
       {/* Body */}
-      <p
-        style={{
-          fontSize: 12.5, color: T.ink2, lineHeight: 1.55,
-          margin: '0 0 7px', fontFamily: 'Inter, sans-serif',
-        }}
-        dangerouslySetInnerHTML={{ __html: item.ai_body_text }}
-      />
+      {item.ai_body_text && (
+        <p
+          style={{
+            fontSize: 12.5, color: T.ink2, lineHeight: 1.6,
+            margin: '0 0 10px', fontFamily: 'Inter, sans-serif',
+          }}
+          dangerouslySetInnerHTML={{ __html: item.ai_body_text }}
+        />
+      )}
 
       {/* Action row */}
-      <div style={{
-        display: 'flex', gap: 6, padding: '7px 10px',
-        background: T.surface, borderRadius: 4,
-        border: `0.75px solid ${T.borderLt}`,
-        alignItems: 'flex-start',
-      }}>
-        <span style={{ color: T.warning, fontSize: 13, fontWeight: 700, flexShrink: 0 }}>→</span>
-        <span style={{ fontSize: 12, fontWeight: 600, color: T.ink1, lineHeight: 1.4 }}>
-          {item.ai_action_text}
-        </span>
-      </div>
+      {item.ai_action_text && (
+        <div style={{
+          display: 'flex', gap: 8, padding: '8px 12px',
+          background: T.surface, borderRadius: 4,
+          border: `0.75px solid ${T.borderLt}`,
+          alignItems: 'flex-start',
+        }}>
+          <span style={{ color: T.warning, fontSize: 13, fontWeight: 700, flexShrink: 0 }}>→</span>
+          <span style={{ fontSize: 12, fontWeight: 600, color: T.ink1, lineHeight: 1.45 }}>
+            {item.ai_action_text}
+          </span>
+        </div>
+      )}
     </div>
   );
 }
@@ -121,7 +135,7 @@ function SectionBlock({
     <div>
       <div style={{
         display: 'flex', alignItems: 'center', gap: 8,
-        padding: '12px 18px 8px',
+        padding: '14px 18px 10px',
       }}>
         <span style={{
           width: 7, height: 7, borderRadius: '50%',
@@ -142,13 +156,24 @@ function SectionBlock({
           {items.length}
         </span>
       </div>
-      <div style={{ padding: '0 18px', display: 'flex', flexDirection: 'column', gap: 8 }}>
+      <div style={{ padding: '0 18px', display: 'flex', flexDirection: 'column', gap: 10 }}>
         {items.map(item => (
           <RecapCard key={item.id} item={item} borderColor={borderColor} />
         ))}
       </div>
     </div>
   );
+}
+
+/** Replace UUID fragments in text with resolved Jira keys */
+function replaceUuidsInText(text: string, keyMap: Record<string, string>): string {
+  let result = text;
+  for (const [uuid, key] of Object.entries(keyMap)) {
+    const shortId = uuid.split('-')[0];
+    result = result.split(shortId).join(key);
+    result = result.split(uuid).join(key);
+  }
+  return result;
 }
 
 export default function AIRecapTabV2() {
@@ -160,7 +185,6 @@ export default function AIRecapTabV2() {
     let cancelled = false;
     (async () => {
       setLoading(true);
-      // Try to load from ai_digest_cache
       const { data: { user } } = await supabase.auth.getUser();
       if (!user || cancelled) { setLoading(false); return; }
 
@@ -178,12 +202,12 @@ export default function AIRecapTabV2() {
           const digest = data[0].digest_json as any;
           const rawItems: any[] = Array.isArray(digest.items) ? digest.items : [];
 
-          // Collect entity_ids that need issue_key resolution
+          // Collect entity_ids for key resolution
           const entityIds = rawItems
             .map((item: any) => item.entity_id)
             .filter((id: any) => id && typeof id === 'string' && id.length > 8);
 
-          // Resolve UUIDs → Jira keys from ph_issues
+          // Resolve UUIDs → Jira keys
           let keyMap: Record<string, string> = {};
           if (entityIds.length > 0) {
             const { data: issueRows } = await supabase
@@ -198,11 +222,8 @@ export default function AIRecapTabV2() {
           }
 
           const parsedItems: RecapItem[] = rawItems.map((item: any, idx: number) => {
-            // Resolve jira_key: prefer explicit key, then resolve from entity_id
-            const resolvedKey = item.jira_key || item.key || (item.entity_id ? keyMap[item.entity_id] : '') || '';
-            const ctaPath = item.cta_path || '';
+            const resolvedKey = item.entity_id ? (keyMap[item.entity_id] || '') : '';
 
-            // Map risk_horizon to category
             let category: 'recap' | 'suggestion' | 'done' = 'recap';
             if (item.category) {
               category = item.category;
@@ -212,17 +233,23 @@ export default function AIRecapTabV2() {
               category = 'suggestion';
             }
 
+            // Replace UUID fragments in all text fields
+            const actionText = replaceUuidsInText(item.action || item.ai_action_text || '', keyMap);
+            const detailText = replaceUuidsInText(item.detail || item.body || item.ai_body_text || '', keyMap);
+            const triggerText = replaceUuidsInText(item.trigger || '', keyMap);
+
             return {
               id: `ai-${idx}`,
               category,
               jira_key: resolvedKey,
-              jira_url: ctaPath || '#',
-              summary: item.summary || item.title || '',
-              ai_body_text: item.detail || item.body || item.ai_body_text || '',
-              ai_action_text: item.action || item.ai_action_text || '',
+              jira_url: item.cta_path || '#',
+              summary: item.title || item.summary || '',
+              ai_body_text: detailText,
+              ai_action_text: actionText,
               timestamp: item.timestamp || '',
-              done_text: item.done_text || '',
+              done_text: detailText || triggerText,
               actors: item.actors || [],
+              project_name: item.project_name || '',
             };
           });
 
@@ -245,7 +272,7 @@ export default function AIRecapTabV2() {
   const now = new Date();
   const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  const dateStr = `${dayNames[now.getDay()]}, ${now.getDate()} ${monthNames[now.getMonth()]} · digital-transformation`;
+  const dateStr = `${dayNames[now.getDay()]}, ${now.getDate()} ${monthNames[now.getMonth()]}`;
 
   return (
     <div style={{ fontFamily: 'Inter, sans-serif' }}>
@@ -273,16 +300,13 @@ export default function AIRecapTabV2() {
           display: 'flex', flexDirection: 'column', alignItems: 'center',
           justifyContent: 'center', padding: '48px 24px', gap: 8,
         }}>
-          <span style={{ fontSize: 13, color: T.ink3, fontFamily: 'Inter, sans-serif' }}>
-            No AI recap available yet
-          </span>
-          <span style={{ fontSize: 11, color: T.ink4, fontFamily: 'Inter, sans-serif', textAlign: 'center' }}>
+          <span style={{ fontSize: 13, color: T.ink3 }}>No AI recap available yet</span>
+          <span style={{ fontSize: 11, color: T.ink4, textAlign: 'center' }}>
             The AI recap will generate automatically based on your portfolio activity
           </span>
         </div>
       ) : (
         <>
-          {/* Recap section */}
           <SectionBlock
             label="RECAP"
             dotColor="#3B82F6"
@@ -292,9 +316,8 @@ export default function AIRecapTabV2() {
             borderColor="#3B82F6"
           />
 
-          {/* Suggestions section */}
           {suggestionItems.length > 0 && (
-            <div style={{ marginTop: 8 }}>
+            <div style={{ marginTop: 10 }}>
               <SectionBlock
                 label="SUGGESTIONS FOR TODAY"
                 dotColor="#D97706"
@@ -306,14 +329,14 @@ export default function AIRecapTabV2() {
             </div>
           )}
 
-          {/* Completed Today — collapsible */}
+          {/* Completed Today — collapsible with full detail */}
           {doneItems.length > 0 && (
-            <div style={{ marginTop: 6 }}>
+            <div style={{ marginTop: 8 }}>
               <button
                 onClick={() => setDoneOpen(!doneOpen)}
                 style={{
                   width: '100%', display: 'flex', alignItems: 'center',
-                  padding: '10px 18px', background: 'none', border: 'none',
+                  padding: '12px 18px', background: 'none', border: 'none',
                   borderTop: `0.75px solid ${T.borderLt}`,
                   cursor: 'pointer', gap: 8,
                 }}
@@ -343,31 +366,49 @@ export default function AIRecapTabV2() {
               </button>
 
               {doneOpen && (
-                <div style={{ padding: '4px 18px 12px', display: 'flex', flexDirection: 'column', gap: 6 }}>
+                <div style={{ padding: '4px 18px 14px', display: 'flex', flexDirection: 'column', gap: 8 }}>
                   {doneItems.map(item => (
                     <div
                       key={item.id}
                       style={{
-                        display: 'flex', alignItems: 'flex-start', gap: 8,
-                        padding: '8px 12px', background: '#F0FDF4',
-                        borderRadius: 5, border: '0.75px solid #D1FAE5',
+                        padding: '12px 14px',
+                        background: '#F0FDF4',
+                        borderRadius: 6, border: '0.75px solid #D1FAE5',
+                        borderLeft: '3px solid #16A34A',
                       }}
                     >
-                      <Check size={14} style={{ color: T.success, flexShrink: 0, marginTop: 1 }} />
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 6, flex: 1, flexWrap: 'wrap' }}>
-                        <span style={{
-                          fontFamily: "'JetBrains Mono', monospace",
-                          fontSize: 10.5, fontWeight: 700,
-                          background: '#E2E8F0', color: T.ink3,
-                          padding: '2px 6px', borderRadius: 3,
-                        }}>
-                          {item.jira_key}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+                        <Check size={14} style={{ color: T.success, flexShrink: 0 }} />
+                        {item.jira_key ? (
+                          <span style={{
+                            fontFamily: "'JetBrains Mono', monospace",
+                            fontSize: 10.5, fontWeight: 700,
+                            background: '#E2E8F0', color: T.ink3,
+                            padding: '2px 6px', borderRadius: 3,
+                          }}>
+                            {item.jira_key}
+                          </span>
+                        ) : item.project_name ? (
+                          <span style={{
+                            fontSize: 10, fontWeight: 700, color: T.ink3,
+                            background: '#E2E8F0', padding: '2px 6px',
+                            borderRadius: 3, textTransform: 'uppercase',
+                          }}>
+                            {item.project_name}
+                          </span>
+                        ) : null}
+                        <span style={{ fontSize: 13, fontWeight: 650, color: '#065F46', lineHeight: 1.35 }}>
+                          {item.summary}
                         </span>
-                        <span
-                          style={{ fontSize: 12, color: T.ink2, lineHeight: 1.4 }}
-                          dangerouslySetInnerHTML={{ __html: item.done_text || '' }}
-                        />
                       </div>
+                      {item.ai_body_text && (
+                        <p style={{
+                          fontSize: 12, color: '#334155', lineHeight: 1.55,
+                          margin: '0 0 0 22px',
+                        }}>
+                          {item.ai_body_text}
+                        </p>
+                      )}
                     </div>
                   ))}
                 </div>
