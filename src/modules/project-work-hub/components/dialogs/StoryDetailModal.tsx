@@ -1,10 +1,10 @@
 /**
  * StoryDetailModal — Full overlay issue detail panel
- * Pixel-perfect enterprise modal matching Jira-style design.
+ * V2 REBUILD — All fields inline-editable
  * Left: title, parent, key details, description, subtasks, linked items, activity
  * Right: status, AI assist, details accordion, timestamps
  */
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
@@ -13,11 +13,12 @@ import { getLozengeStyle, STORY_STATUS_LOZENGE, getPriorityLabel, getPriorityCol
 import { format, formatDistanceToNow } from 'date-fns';
 import { toast } from 'sonner';
 import { useTheme } from '@/hooks/useTheme';
-import { DK, LK } from '@/utils/dark-mode-styles';
+import { useAuth } from '@/lib/auth';
 import {
-  ChevronDown, ChevronRight, ChevronUp, X, Maximize2, Minimize2,
+  ChevronDown, ChevronRight, X,
   Eye, Share2, MoreHorizontal, Plus, Settings, Flag, Copy, Move,
-  Archive, Trash2, Sparkles, ArrowRight,
+  Archive, Trash2, Sparkles, AlertOctagon, ArrowUp, Minus, ArrowDown,
+  Calendar,
 } from 'lucide-react';
 
 /* ═══════════════════════════════════════════════
@@ -29,14 +30,13 @@ interface StoryDetailModalProps {
   itemId: string;
   projectId: string;
   projectKey: string;
-  /** Called when user clicks a subtask/linked item to open nested */
   onOpenItem?: (itemId: string) => void;
 }
 
 type TabId = 'all' | 'comments' | 'history' | 'worklog';
 
 /* ═══════════════════════════════════════════════
-   DESIGN TOKENS (spec)
+   DESIGN TOKENS
    ═══════════════════════════════════════════════ */
 const T = {
   overlay: 'rgba(9,30,66,0.54)',
@@ -52,6 +52,8 @@ const T = {
   epicChipText: '#5243AA',
   aiPurple: '#7C3AED',
   dangerRed: '#DE350B',
+  inputBorder: '#DFE1E6',
+  inputFocus: '#4C9AFF',
 };
 
 const TD = {
@@ -68,6 +70,8 @@ const TD = {
   epicChipText: '#C4B5FD',
   aiPurple: '#7C3AED',
   dangerRed: '#EF4444',
+  inputBorder: '#454545',
+  inputFocus: '#4C9AFF',
 };
 
 /* ═══════════════════════════════════════════════
@@ -89,6 +93,8 @@ const WORKFLOW_NODES: Record<string, string> = {
   'Production Ready': 'done', 'Beta Ready': 'done', 'In Production': 'done', 'Done': 'done',
 };
 
+const PRIORITIES = ['Critical', 'High', 'Medium', 'Low'] as const;
+
 function getStatusLozengeColors(status: string): { bg: string; text: string; label: string } {
   const cfg = STORY_STATUS_LOZENGE[status];
   if (cfg) {
@@ -107,13 +113,26 @@ function formatFixVersions(fv: any): string {
   } catch { return '—'; }
 }
 
+function PriorityIcon({ priority, size = 14 }: { priority: string | null; size?: number }) {
+  const color = getPriorityColor(priority);
+  switch (priority?.toLowerCase()) {
+    case 'critical':
+    case 'highest': return <AlertOctagon size={size} style={{ color }} />;
+    case 'high': return <ArrowUp size={size} style={{ color }} />;
+    case 'medium': return <Minus size={size} style={{ color }} />;
+    case 'low':
+    case 'lowest': return <ArrowDown size={size} style={{ color }} />;
+    default: return <Minus size={size} style={{ color: '#9CA3AF' }} />;
+  }
+}
+
 /* ═══════════════════════════════════════════════
    MAIN COMPONENT
    ═══════════════════════════════════════════════ */
 export default function StoryDetailModal({ isOpen, onClose, itemId, projectId, projectKey, onOpenItem }: StoryDetailModalProps) {
   const queryClient = useQueryClient();
   const { isDark } = useTheme();
-  const tk = isDark ? DK : LK;
+  const { user: authUser } = useAuth();
   const dt = isDark ? TD : T;
   const overlayRef = useRef<HTMLDivElement>(null);
 
@@ -132,27 +151,48 @@ export default function StoryDetailModal({ isOpen, onClose, itemId, projectId, p
   const [devOpen, setDevOpen] = useState(false);
   const [autoOpen, setAutoOpen] = useState(false);
   const [statusDropdownOpen, setStatusDropdownOpen] = useState(false);
+
+  // Inline edit states
+  const [editingPriority, setEditingPriority] = useState(false);
+  const [editingAssignee, setEditingAssignee] = useState(false);
+  const [editingDueDate, setEditingDueDate] = useState(false);
+  const [dueDateValue, setDueDateValue] = useState('');
+  const [assigneeSearch, setAssigneeSearch] = useState('');
+
   const menuRef = useRef<HTMLDivElement>(null);
   const statusRef = useRef<HTMLDivElement>(null);
+  const priorityRef = useRef<HTMLDivElement>(null);
+  const assigneeRef = useRef<HTMLDivElement>(null);
 
   // Close on Escape
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') { setShowMenu(false); setStatusDropdownOpen(false); onClose(); }
+      if (e.key === 'Escape') {
+        if (showMenu) { setShowMenu(false); return; }
+        if (statusDropdownOpen) { setStatusDropdownOpen(false); return; }
+        if (editingPriority) { setEditingPriority(false); return; }
+        if (editingAssignee) { setEditingAssignee(false); return; }
+        if (editingDueDate) { setEditingDueDate(false); return; }
+        if (editingTitle) { setEditingTitle(false); return; }
+        if (editingDesc) { setEditingDesc(false); return; }
+        onClose();
+      }
     };
     if (isOpen) document.addEventListener('keydown', handler);
     return () => document.removeEventListener('keydown', handler);
-  }, [isOpen, onClose]);
+  }, [isOpen, onClose, showMenu, statusDropdownOpen, editingPriority, editingAssignee, editingDueDate, editingTitle, editingDesc]);
 
-  // Close menu on outside click
+  // Close dropdowns on outside click
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (showMenu && menuRef.current && !menuRef.current.contains(e.target as Node)) setShowMenu(false);
       if (statusDropdownOpen && statusRef.current && !statusRef.current.contains(e.target as Node)) setStatusDropdownOpen(false);
+      if (editingPriority && priorityRef.current && !priorityRef.current.contains(e.target as Node)) setEditingPriority(false);
+      if (editingAssignee && assigneeRef.current && !assigneeRef.current.contains(e.target as Node)) setEditingAssignee(false);
     };
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
-  }, [showMenu, statusDropdownOpen]);
+  }, [showMenu, statusDropdownOpen, editingPriority, editingAssignee]);
 
   /* ─── DATA QUERIES ─── */
   const { data: story, isLoading } = useQuery({
@@ -160,7 +200,7 @@ export default function StoryDetailModal({ isOpen, onClose, itemId, projectId, p
     queryFn: async () => {
       const { data, error } = await supabase
         .from('ph_issues')
-        .select('id, issue_key, summary, description_text, status, status_category, priority, assignee_display_name, reporter_display_name, due_date, labels, parent_key, parent_summary, fix_versions, jira_created_at, jira_updated_at, issue_type')
+        .select('id, issue_key, summary, description_text, status, status_category, priority, assignee_account_id, assignee_display_name, reporter_display_name, due_date, labels, parent_key, parent_summary, fix_versions, jira_created_at, jira_updated_at, issue_type, project_key')
         .eq('id', itemId)
         .single();
       if (error) throw error;
@@ -174,7 +214,21 @@ export default function StoryDetailModal({ isOpen, onClose, itemId, projectId, p
     enabled: isOpen && !!itemId,
   });
 
-  // Subtasks (children)
+  // Team members for assignee picker
+  const { data: teamMembers = [] } = useQuery({
+    queryKey: ['team-members-picker', projectKey],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('ph_user_mapping')
+        .select('jira_account_id, jira_display_name, jira_avatar_url')
+        .eq('is_mapped', true)
+        .order('jira_display_name');
+      return data || [];
+    },
+    enabled: isOpen,
+  });
+
+  // Subtasks
   const { data: subtasks = [] } = useQuery({
     queryKey: ['story-detail-subtasks', story?.issue_key],
     queryFn: async () => {
@@ -246,6 +300,7 @@ export default function StoryDetailModal({ isOpen, onClose, itemId, projectId, p
     if (story) {
       setTitleValue(story.summary || '');
       setDescValue(story.description_text || '');
+      setDueDateValue(story.due_date || '');
     }
   }, [story]);
 
@@ -263,6 +318,7 @@ export default function StoryDetailModal({ isOpen, onClose, itemId, projectId, p
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['story-detail-modal', itemId] });
       queryClient.invalidateQueries({ queryKey: ['backlog-stories'] });
+      queryClient.invalidateQueries({ queryKey: ['for-you'] });
     },
     onError: () => toast.error('Failed to update'),
   });
@@ -270,6 +326,30 @@ export default function StoryDetailModal({ isOpen, onClose, itemId, projectId, p
   const handleUpdate = useCallback((field: string, value: any) => {
     updateMutation.mutate({ field, value });
   }, [updateMutation]);
+
+  const handleAssignToMe = useCallback(async () => {
+    if (!authUser?.id) return;
+    // Look up current user's Jira display name
+    const { data: mapping } = await supabase
+      .from('ph_user_mapping')
+      .select('jira_display_name, jira_account_id')
+      .eq('catalyst_profile_id', authUser.id)
+      .eq('is_mapped', true)
+      .limit(1)
+      .single();
+    if (mapping) {
+      handleUpdate('assignee_display_name', mapping.jira_display_name);
+      handleUpdate('assignee_account_id', mapping.jira_account_id);
+      toast.success('Assigned to you');
+    } else {
+      // Fallback: get profile name
+      const { data: profile } = await supabase.from('profiles').select('full_name').eq('id', authUser.id).single();
+      if (profile) {
+        handleUpdate('assignee_display_name', profile.full_name);
+        toast.success('Assigned to you');
+      }
+    }
+  }, [authUser?.id, handleUpdate]);
 
   const cloneMutation = useMutation({
     mutationFn: async () => {
@@ -286,6 +366,7 @@ export default function StoryDetailModal({ isOpen, onClose, itemId, projectId, p
         labels: story.labels,
         fix_versions: story.fix_versions,
         project_id: projectId,
+        project_key: story.project_key || projectKey,
         issue_key: `CLONE-${Date.now()}`,
       } as any).select('id').single();
       if (error) throw error;
@@ -301,7 +382,8 @@ export default function StoryDetailModal({ isOpen, onClose, itemId, projectId, p
 
   const deleteMutation = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase.from('ph_issues').delete().eq('id', itemId);
+      // Soft delete
+      const { error } = await supabase.from('ph_issues').update({ deleted_at: new Date().toISOString() } as any).eq('id', itemId);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -313,19 +395,28 @@ export default function StoryDetailModal({ isOpen, onClose, itemId, projectId, p
     onError: () => toast.error('Delete failed'),
   });
 
+  // Filtered team members for assignee search
+  const filteredMembers = useMemo(() => {
+    if (!assigneeSearch) return teamMembers;
+    const q = assigneeSearch.toLowerCase();
+    return teamMembers.filter(m => m.jira_display_name?.toLowerCase().includes(q));
+  }, [teamMembers, assigneeSearch]);
+
   if (!isOpen) return null;
 
   const statusColors = story?.status ? getStatusLozengeColors(story.status) : null;
   const subtasksDone = subtasks.filter((s: any) => ['Done', 'In Production'].includes(s.status)).length;
   const subtasksPercent = subtasks.length > 0 ? Math.round((subtasksDone / subtasks.length) * 100) : 0;
 
-  // All activity (merged comments + changelog, sorted desc)
   const allActivity = [
     ...jiraComments.map(c => ({ ...c, _type: 'comment' as const, _date: c.jira_created_at })),
     ...changelog.map(c => ({ ...c, _type: 'history' as const, _date: c.jira_created_at })),
   ].sort((a, b) => new Date(b._date || 0).getTime() - new Date(a._date || 0).getTime());
 
   const LABEL: React.CSSProperties = { fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', color: dt.labelGrey };
+
+  // Inline edit style helpers
+  const editableHover: React.CSSProperties = { cursor: 'pointer', borderRadius: 3, padding: '2px 4px', margin: '-2px -4px', transition: 'background 120ms' };
 
   return (
     <div ref={overlayRef} onClick={(e) => { if (e.target === overlayRef.current) onClose(); }}
@@ -335,7 +426,6 @@ export default function StoryDetailModal({ isOpen, onClose, itemId, projectId, p
 
         {/* ═══ HEADER 44px ═══ */}
         <div style={{ height: 44, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 12px', background: dt.headerBg, borderBottom: `1px solid ${dt.border}` }}>
-          {/* LEFT: Breadcrumb */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: dt.bodyText }}>
             {story?.parentEpic && (
               <>
@@ -350,16 +440,14 @@ export default function StoryDetailModal({ isOpen, onClose, itemId, projectId, p
             <JiraIssueTypeIcon type={story?.issue_type || 'story'} size={14} />
             <span style={{ fontWeight: 600, fontFamily: "'JetBrains Mono', monospace", fontSize: 12 }}>{story?.issue_key || '...'}</span>
           </div>
-          {/* RIGHT: Actions */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
             <HeaderBtn icon={<Eye size={14} />} tooltip="Watchers" isDark={isDark} />
             <HeaderBtn icon={<Share2 size={14} />} tooltip="Share" isDark={isDark} />
-            {/* 3-dot menu */}
             <div style={{ position: 'relative' }} ref={menuRef}>
               <HeaderBtn icon={<MoreHorizontal size={14} />} tooltip="More" isDark={isDark} onClick={() => setShowMenu(!showMenu)} />
               {showMenu && (
                 <div style={{ position: 'absolute', right: 0, top: 32, background: dt.modalBg, border: `1px solid ${dt.border}`, borderRadius: 3, boxShadow: '0 8px 16px rgba(9,30,66,0.18)', minWidth: 200, zIndex: 10000, overflow: 'hidden' }}>
-                  <MenuItem icon={<Flag size={14} />} label="Add flag" isDark={isDark} onClick={() => { toast.info('Flag added'); setShowMenu(false); }} />
+                  <MenuItem icon={<Flag size={14} />} label="Add flag" isDark={isDark} onClick={() => { handleUpdate('is_flagged', true); toast.success('Flag added'); setShowMenu(false); }} />
                   <div style={{ height: 1, background: dt.border }} />
                   <MenuItem icon={<Copy size={14} />} label="Clone" isDark={isDark} onClick={() => cloneMutation.mutate()} />
                   <MenuItem icon={<Move size={14} />} label="Move to…" isDark={isDark} onClick={() => { toast.info('Move: coming soon'); setShowMenu(false); }} />
@@ -386,12 +474,14 @@ export default function StoryDetailModal({ isOpen, onClose, itemId, projectId, p
                     {editingTitle ? (
                       <input value={titleValue} onChange={e => setTitleValue(e.target.value)}
                         onBlur={() => { handleUpdate('summary', titleValue); setEditingTitle(false); }}
-                        onKeyDown={e => { if (e.key === 'Enter') { handleUpdate('summary', titleValue); setEditingTitle(false); } if (e.key === 'Escape') setEditingTitle(false); }}
+                        onKeyDown={e => { if (e.key === 'Enter') { handleUpdate('summary', titleValue); setEditingTitle(false); } if (e.key === 'Escape') { setTitleValue(story.summary || ''); setEditingTitle(false); } }}
                         autoFocus
-                        style={{ width: '100%', fontSize: 20, fontWeight: 600, color: dt.bodyText, border: `1.5px solid #4C9AFF`, borderRadius: 3, padding: '4px 8px', outline: 'none', fontFamily: 'Inter, sans-serif', background: 'transparent' }}
+                        style={{ width: '100%', fontSize: 20, fontWeight: 600, color: dt.bodyText, border: `1.5px solid ${dt.inputFocus}`, borderRadius: 3, padding: '4px 8px', outline: 'none', fontFamily: 'Inter, sans-serif', background: 'transparent', boxShadow: '0 0 0 2px rgba(76,154,255,0.2)' }}
                       />
                     ) : (
-                      <h1 onClick={() => setEditingTitle(true)} style={{ fontSize: 20, fontWeight: 600, color: dt.bodyText, margin: 0, cursor: 'text', fontFamily: 'Inter, sans-serif', lineHeight: 1.4 }}>
+                      <h1 onClick={() => setEditingTitle(true)} style={{ fontSize: 20, fontWeight: 600, color: dt.bodyText, margin: 0, cursor: 'text', fontFamily: 'Inter, sans-serif', lineHeight: 1.4, borderRadius: 3, padding: '2px 4px', transition: 'background 120ms' }}
+                        onMouseEnter={e => (e.currentTarget.style.background = dt.hoverRow)}
+                        onMouseLeave={e => (e.currentTarget.style.background = '')}>
                         {story.summary || <span style={{ fontStyle: 'italic', color: dt.labelGrey }}>Click to add a title...</span>}
                       </h1>
                     )}
@@ -415,23 +505,68 @@ export default function StoryDetailModal({ isOpen, onClose, itemId, projectId, p
                   <button style={{ width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none', borderRadius: 3, background: dt.headerBg, cursor: 'pointer', color: dt.labelGrey }} title="Configure fields"><Settings size={14} /></button>
                 </div>
 
-                {/* 4. KEY DETAILS (collapsible) */}
+                {/* 4. KEY DETAILS (collapsible) — INLINE EDITABLE */}
                 <CollapsibleSection title="KEY DETAILS" isOpen={keyDetailsOpen} onToggle={() => setKeyDetailsOpen(!keyDetailsOpen)} isDark={isDark}>
+                  {/* Parent */}
                   <DetailRow label="Parent" isDark={isDark}>
                     {story.parentEpic ? (
                       <ParentEpicChip epicId={story.parentEpic.id} epicKey={story.parentEpic.epic_key} epicName={story.parentEpic.name} />
                     ) : <span style={{ fontSize: 13, color: dt.labelGrey }}>—</span>}
                   </DetailRow>
+
+                  {/* Priority — INLINE EDITABLE */}
                   <DetailRow label="Priority" isDark={isDark}>
-                    <span style={{ fontSize: 13, color: getPriorityColor(story.priority), fontWeight: 500 }}>{getPriorityLabel(story.priority)}</span>
+                    <div style={{ position: 'relative' }} ref={priorityRef}>
+                      <div onClick={() => setEditingPriority(!editingPriority)}
+                        style={{ ...editableHover, display: 'flex', alignItems: 'center', gap: 6 }}
+                        onMouseEnter={e => (e.currentTarget.style.background = dt.hoverRow)}
+                        onMouseLeave={e => { if (!editingPriority) e.currentTarget.style.background = ''; }}>
+                        <PriorityIcon priority={story.priority} />
+                        <span style={{ fontSize: 13, color: getPriorityColor(story.priority), fontWeight: 500 }}>{getPriorityLabel(story.priority)}</span>
+                        <ChevronDown size={10} style={{ color: dt.labelGrey, marginLeft: 2 }} />
+                      </div>
+                      {editingPriority && (
+                        <div style={{ position: 'absolute', left: 0, top: '100%', marginTop: 4, background: dt.modalBg, border: `1px solid ${dt.border}`, borderRadius: 3, boxShadow: '0 4px 12px rgba(9,30,66,0.15)', zIndex: 10, minWidth: 160, overflow: 'hidden' }}>
+                          {PRIORITIES.map(p => (
+                            <button key={p} onClick={() => { handleUpdate('priority', p); setEditingPriority(false); }}
+                              style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 8, padding: '7px 12px', border: 'none', background: story.priority === p ? (isDark ? 'rgba(59,130,246,0.08)' : 'rgba(37,99,235,0.08)') : 'transparent', cursor: 'pointer', fontSize: 13, color: dt.bodyText, textAlign: 'left' }}
+                              onMouseEnter={e => { if (story.priority !== p) e.currentTarget.style.background = dt.hoverRow; }}
+                              onMouseLeave={e => { if (story.priority !== p) e.currentTarget.style.background = ''; }}>
+                              <PriorityIcon priority={p} />
+                              <span style={{ color: getPriorityColor(p), fontWeight: 500 }}>{p}</span>
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   </DetailRow>
+
+                  {/* Release */}
                   <DetailRow label="Release" isDark={isDark}>
                     <span style={{ fontSize: 13, color: formatFixVersions(story.fix_versions) !== '—' ? dt.bodyText : dt.labelGrey }}>{formatFixVersions(story.fix_versions)}</span>
                   </DetailRow>
+
+                  {/* Due Date — INLINE EDITABLE */}
                   <DetailRow label="Due Date" isDark={isDark}>
-                    <span style={{ fontSize: 13, fontFamily: "'JetBrains Mono', monospace", color: story.due_date ? dt.bodyText : dt.labelGrey }}>
-                      {story.due_date ? format(new Date(story.due_date), 'MMM d, yyyy') : '—'}
-                    </span>
+                    {editingDueDate ? (
+                      <input type="date" value={dueDateValue}
+                        onChange={e => setDueDateValue(e.target.value)}
+                        onBlur={() => { handleUpdate('due_date', dueDateValue || null); setEditingDueDate(false); }}
+                        onKeyDown={e => { if (e.key === 'Enter') { handleUpdate('due_date', dueDateValue || null); setEditingDueDate(false); } if (e.key === 'Escape') setEditingDueDate(false); }}
+                        autoFocus
+                        style={{ fontSize: 13, fontFamily: "'JetBrains Mono', monospace", border: `1.5px solid ${dt.inputFocus}`, borderRadius: 3, padding: '2px 6px', outline: 'none', background: 'transparent', color: dt.bodyText, boxShadow: '0 0 0 2px rgba(76,154,255,0.2)' }}
+                      />
+                    ) : (
+                      <div onClick={() => { setDueDateValue(story.due_date || ''); setEditingDueDate(true); }}
+                        style={{ ...editableHover, display: 'flex', alignItems: 'center', gap: 6 }}
+                        onMouseEnter={e => (e.currentTarget.style.background = dt.hoverRow)}
+                        onMouseLeave={e => (e.currentTarget.style.background = '')}>
+                        <Calendar size={12} style={{ color: dt.labelGrey }} />
+                        <span style={{ fontSize: 13, fontFamily: "'JetBrains Mono', monospace", color: story.due_date ? dt.bodyText : dt.labelGrey }}>
+                          {story.due_date ? format(new Date(story.due_date), 'MMM d, yyyy') : '—'}
+                        </span>
+                      </div>
+                    )}
                   </DetailRow>
                 </CollapsibleSection>
 
@@ -442,14 +577,17 @@ export default function StoryDetailModal({ isOpen, onClose, itemId, projectId, p
                     <textarea value={descValue} onChange={e => setDescValue(e.target.value)}
                       onBlur={() => { handleUpdate('description_text', descValue); setEditingDesc(false); }}
                       autoFocus rows={6}
-                      style={{ width: '100%', border: `1.5px solid #4C9AFF`, borderRadius: 3, padding: 10, fontSize: 14, color: dt.bodyText, fontFamily: 'Inter, sans-serif', outline: 'none', resize: 'vertical', minHeight: 120, background: 'transparent', boxShadow: '0 0 0 2px rgba(76,154,255,0.2)' }}
+                      style={{ width: '100%', border: `1.5px solid ${dt.inputFocus}`, borderRadius: 3, padding: 10, fontSize: 14, color: dt.bodyText, fontFamily: 'Inter, sans-serif', outline: 'none', resize: 'vertical', minHeight: 120, background: 'transparent', boxShadow: '0 0 0 2px rgba(76,154,255,0.2)' }}
                     />
                   ) : (
                     <div onClick={() => setEditingDesc(true)} style={{
                       fontSize: 14, color: story.description_text ? dt.bodyText : dt.labelGrey,
                       fontStyle: story.description_text ? 'normal' : 'italic',
                       cursor: 'text', minHeight: 40, lineHeight: 1.7, whiteSpace: 'pre-wrap',
-                    }}>
+                      borderRadius: 3, padding: '4px 6px', transition: 'background 120ms',
+                    }}
+                      onMouseEnter={e => (e.currentTarget.style.background = dt.hoverRow)}
+                      onMouseLeave={e => (e.currentTarget.style.background = '')}>
                       {story.description_text || 'Click to add description...'}
                     </div>
                   )}
@@ -463,7 +601,7 @@ export default function StoryDetailModal({ isOpen, onClose, itemId, projectId, p
                       <button style={{ fontSize: 11, fontWeight: 600, color: dt.linkBlue, background: 'none', border: 'none', cursor: 'pointer' }}>+ Add</button>
                     </div>
                   }>
-                  {subtasks.length > 0 && (
+                  {subtasks.length > 0 ? (
                     <>
                       <div style={{ width: '100%', height: 5, borderRadius: 2, background: isDark ? '#2E2E2E' : '#DFE1E6', marginBottom: 8, overflow: 'hidden' }}>
                         <div style={{ height: '100%', borderRadius: 2, background: dt.progressGreen, width: `${subtasksPercent}%`, transition: 'width 300ms' }} />
@@ -488,8 +626,7 @@ export default function StoryDetailModal({ isOpen, onClose, itemId, projectId, p
                         );
                       })}
                     </>
-                  )}
-                  {subtasks.length === 0 && <div style={{ fontSize: 13, color: dt.labelGrey, padding: '8px 0' }}>No subtasks</div>}
+                  ) : <div style={{ fontSize: 13, color: dt.labelGrey, padding: '8px 0' }}>No subtasks</div>}
                 </CollapsibleSection>
 
                 {/* 7. LINKED WORK ITEMS */}
@@ -497,7 +634,6 @@ export default function StoryDetailModal({ isOpen, onClose, itemId, projectId, p
                   rightContent={<button style={{ fontSize: 11, fontWeight: 600, color: dt.linkBlue, background: 'none', border: 'none', cursor: 'pointer', marginLeft: 'auto' }}>+ Link</button>}>
                   {linkedItems.length > 0 ? (
                     <div>
-                      {/* Group by link_type */}
                       {Object.entries(
                         linkedItems.reduce((acc: Record<string, any[]>, li: any) => {
                           const key = li.link_type || 'Related';
@@ -525,9 +661,7 @@ export default function StoryDetailModal({ isOpen, onClose, itemId, projectId, p
                         </div>
                       ))}
                     </div>
-                  ) : (
-                    <div style={{ fontSize: 13, color: dt.labelGrey, padding: '8px 0' }}>No linked items</div>
-                  )}
+                  ) : <div style={{ fontSize: 13, color: dt.labelGrey, padding: '8px 0' }}>No linked items</div>}
                 </CollapsibleSection>
 
                 {/* 8. ACTIVITY */}
@@ -546,14 +680,13 @@ export default function StoryDetailModal({ isOpen, onClose, itemId, projectId, p
                     ))}
                   </div>
 
-                  {/* Tab content */}
                   <ActivityContent tab={activeTab} allActivity={allActivity} comments={jiraComments} changelog={changelog} isDark={isDark} dt={dt} />
 
                   {/* Comment input */}
                   <div style={{ marginTop: 16 }}>
                     <textarea value={commentText} onChange={e => setCommentText(e.target.value)} placeholder="Add a comment..."
-                      style={{ width: '100%', minHeight: 72, border: `1px solid ${dt.border}`, borderRadius: 3, padding: 10, fontSize: 13, fontFamily: 'Inter, sans-serif', color: dt.bodyText, background: 'transparent', outline: 'none', resize: 'vertical' }}
-                      onFocus={e => { e.currentTarget.style.borderColor = '#4C9AFF'; e.currentTarget.style.boxShadow = '0 0 0 2px rgba(76,154,255,0.2)'; }}
+                      style={{ width: '100%', minHeight: 72, border: `1px solid ${dt.border}`, borderRadius: 3, padding: 10, fontSize: 13, fontFamily: 'Inter, sans-serif', color: dt.bodyText, background: 'transparent', outline: 'none', resize: 'vertical', boxSizing: 'border-box' }}
+                      onFocus={e => { e.currentTarget.style.borderColor = dt.inputFocus; e.currentTarget.style.boxShadow = '0 0 0 2px rgba(76,154,255,0.2)'; }}
                       onBlur={e => { e.currentTarget.style.borderColor = dt.border; e.currentTarget.style.boxShadow = 'none'; }}
                     />
                     <div style={{ display: 'flex', gap: 6, marginTop: 8 }}>
@@ -622,24 +755,72 @@ export default function StoryDetailModal({ isOpen, onClose, itemId, projectId, p
 
                 {/* 3. DETAILS ACCORDION */}
                 <SidebarAccordion title="DETAILS" isOpen={sidebarDetailsOpen} onToggle={() => setSidebarDetailsOpen(!sidebarDetailsOpen)} isDark={isDark}>
+                  {/* Fix Versions */}
                   <SidebarField label="Fix Versions" isDark={isDark}>
                     <span style={{ fontSize: 13, color: formatFixVersions(story.fix_versions) !== '—' ? dt.bodyText : dt.labelGrey }}>{formatFixVersions(story.fix_versions)}</span>
                   </SidebarField>
+
+                  {/* Assignee — INLINE EDITABLE */}
                   <SidebarField label="Assignee" isDark={isDark}>
-                    {story.assignee_display_name ? (
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                        <div style={{ width: 24, height: 24, borderRadius: '50%', background: isDark ? '#292929' : '#F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: isDark ? '#A1A1A1' : '#64748B', flexShrink: 0 }}>
-                          {getInitials(story.assignee_display_name)}
+                    <div style={{ position: 'relative' }} ref={assigneeRef}>
+                      <div onClick={() => { setEditingAssignee(!editingAssignee); setAssigneeSearch(''); }}
+                        style={{ ...editableHover, display: 'flex', alignItems: 'center', gap: 6 }}
+                        onMouseEnter={e => (e.currentTarget.style.background = dt.hoverRow)}
+                        onMouseLeave={e => { if (!editingAssignee) e.currentTarget.style.background = ''; }}>
+                        {story.assignee_display_name ? (
+                          <>
+                            <div style={{ width: 24, height: 24, borderRadius: '50%', background: isDark ? '#292929' : '#F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: isDark ? '#A1A1A1' : '#64748B', flexShrink: 0 }}>
+                              {getInitials(story.assignee_display_name)}
+                            </div>
+                            <span style={{ fontSize: 13, color: dt.bodyText }}>{story.assignee_display_name}</span>
+                          </>
+                        ) : (
+                          <span style={{ fontSize: 13, color: dt.labelGrey, fontStyle: 'italic' }}>Unassigned</span>
+                        )}
+                        <ChevronDown size={10} style={{ color: dt.labelGrey, marginLeft: 'auto' }} />
+                      </div>
+
+                      {editingAssignee && (
+                        <div style={{ position: 'absolute', left: -8, right: -8, top: '100%', marginTop: 4, background: dt.modalBg, border: `1px solid ${dt.border}`, borderRadius: 3, boxShadow: '0 4px 12px rgba(9,30,66,0.15)', zIndex: 10, maxHeight: 240, overflow: 'hidden' }}>
+                          <div style={{ padding: '6px 8px', borderBottom: `1px solid ${dt.border}` }}>
+                            <input value={assigneeSearch} onChange={e => setAssigneeSearch(e.target.value)}
+                              placeholder="Search people..."
+                              autoFocus
+                              style={{ width: '100%', fontSize: 12, border: 'none', outline: 'none', background: 'transparent', color: dt.bodyText, padding: '2px 0' }}
+                            />
+                          </div>
+                          <div style={{ maxHeight: 190, overflowY: 'auto' }}>
+                            {/* Unassign option */}
+                            <button onClick={() => { handleUpdate('assignee_display_name', null); handleUpdate('assignee_account_id', null); setEditingAssignee(false); toast.success('Unassigned'); }}
+                              style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 8, padding: '7px 12px', border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 13, color: dt.labelGrey, textAlign: 'left', fontStyle: 'italic' }}
+                              onMouseEnter={e => (e.currentTarget.style.background = dt.hoverRow)}
+                              onMouseLeave={e => (e.currentTarget.style.background = '')}>
+                              Unassigned
+                            </button>
+                            {filteredMembers.map(m => (
+                              <button key={m.jira_account_id} onClick={() => { handleUpdate('assignee_display_name', m.jira_display_name); handleUpdate('assignee_account_id', m.jira_account_id); setEditingAssignee(false); toast.success(`Assigned to ${m.jira_display_name}`); }}
+                                style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 8, padding: '7px 12px', border: 'none', background: story.assignee_account_id === m.jira_account_id ? (isDark ? 'rgba(59,130,246,0.08)' : 'rgba(37,99,235,0.08)') : 'transparent', cursor: 'pointer', fontSize: 13, color: dt.bodyText, textAlign: 'left' }}
+                                onMouseEnter={e => { if (story.assignee_account_id !== m.jira_account_id) e.currentTarget.style.background = dt.hoverRow; }}
+                                onMouseLeave={e => { if (story.assignee_account_id !== m.jira_account_id) e.currentTarget.style.background = ''; }}>
+                                <div style={{ width: 24, height: 24, borderRadius: '50%', background: isDark ? '#292929' : '#F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: isDark ? '#A1A1A1' : '#64748B', flexShrink: 0 }}>
+                                  {getInitials(m.jira_display_name)}
+                                </div>
+                                {m.jira_display_name}
+                              </button>
+                            ))}
+                          </div>
                         </div>
-                        <span style={{ fontSize: 13, color: dt.bodyText }}>{story.assignee_display_name}</span>
-                      </div>
-                    ) : (
-                      <div>
-                        <span style={{ fontSize: 13, color: dt.labelGrey, fontStyle: 'italic' }}>Unassigned</span>
-                        <div><button style={{ fontSize: 11, color: dt.linkBlue, background: 'none', border: 'none', cursor: 'pointer', padding: 0, marginTop: 2 }}>Assign to me</button></div>
-                      </div>
+                      )}
+                    </div>
+                    {!editingAssignee && !story.assignee_display_name && (
+                      <button onClick={handleAssignToMe} style={{ fontSize: 11, color: dt.linkBlue, background: 'none', border: 'none', cursor: 'pointer', padding: 0, marginTop: 4 }}>Assign to me</button>
+                    )}
+                    {!editingAssignee && story.assignee_display_name && (
+                      <button onClick={handleAssignToMe} style={{ fontSize: 11, color: dt.linkBlue, background: 'none', border: 'none', cursor: 'pointer', padding: 0, marginTop: 2 }}>Assign to me</button>
                     )}
                   </SidebarField>
+
+                  {/* Reporter */}
                   <SidebarField label="Reporter" isDark={isDark}>
                     {story.reporter_display_name ? (
                       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -650,6 +831,8 @@ export default function StoryDetailModal({ isOpen, onClose, itemId, projectId, p
                       </div>
                     ) : <span style={{ fontSize: 13, color: dt.labelGrey }}>—</span>}
                   </SidebarField>
+
+                  {/* Labels */}
                   <SidebarField label="Labels" isDark={isDark}>
                     {story.labels && Array.isArray(story.labels) && story.labels.length > 0 ? (
                       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
@@ -844,7 +1027,6 @@ function ActivityContent({ tab, allActivity, comments, changelog, isDark, dt }: 
   if (tab === 'worklog') {
     return <div style={{ fontSize: 13, color: dt.labelGrey, padding: 16, textAlign: 'center' }}>No work logged</div>;
   }
-  // 'all' tab
   if (!allActivity.length) return <div style={{ fontSize: 13, color: dt.labelGrey, padding: 16, textAlign: 'center' }}>No activity</div>;
   return <div>{allActivity.map(a => a._type === 'comment' ? renderComment(a) : renderHistory(a))}</div>;
 }
