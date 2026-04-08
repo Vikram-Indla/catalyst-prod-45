@@ -1,8 +1,9 @@
-import { useState } from 'react';
-import { ChevronRight, Check } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { ChevronRight, Check, Loader2 } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
 /* ═══════════════════════════════════════
-   AI Recap Tab V2 — Stage C (Seed Data)
+   AI Recap Tab V2 — Live Data
    Design: V12 Hybrid Precision
    ═══════════════════════════════════════ */
 
@@ -18,62 +19,6 @@ interface RecapItem {
   done_text?: string;
   actors: string[];
 }
-
-const SEED_DATA: RecapItem[] = [
-  {
-    id: '1', category: 'recap', jira_key: 'BAU-5307', jira_url: '#',
-    summary: 'Broken Auth Flow — Password OTP Navigation',
-    ai_body_text: '<strong>Eng. Khalid Al-Otaibi</strong> deployed the fix and marked this ready for testing. The OTP back-click loop is resolved in staging. <strong>Yazeed Daraz</strong> is the assigned QA reviewer; no sign-off yet.',
-    ai_action_text: 'Nudge Yazeed Daraz to begin QA sign-off today — this blocks the auth release window.',
-    timestamp: '2h ago', actors: ['Eng. Khalid Al-Otaibi', 'Yazeed Daraz'],
-  },
-  {
-    id: '2', category: 'recap', jira_key: 'BAU-5246', jira_url: '#',
-    summary: 'Tab Component Issue — BETA & PROD',
-    ai_body_text: '<strong>Eng. Sara Al-Ghamdi</strong> verified the fix and <strong>Dr. Ahmed Al-Rashid</strong> approved the merge. Deployed across both environments with no regression reported.',
-    ai_action_text: 'Close ticket and mark DONE — no further action needed.',
-    timestamp: '5h ago', actors: ['Eng. Sara Al-Ghamdi', 'Dr. Ahmed Al-Rashid'],
-  },
-  {
-    id: '3', category: 'recap', jira_key: 'BAU-5304', jira_url: '#',
-    summary: 'OTP Messaging — Removal per Feedback',
-    ai_body_text: 'Message removed as requested by <strong>Yazeed Daraz</strong>. Team notified and pending testing confirmation. The underlying account creation flow remains open with no owner assigned.',
-    ai_action_text: 'Assign ownership of the account creation flow discussion before end of day.',
-    timestamp: '6h ago', actors: ['Yazeed Daraz'],
-  },
-  {
-    id: '4', category: 'suggestion', jira_key: 'BAU-5280', jira_url: '#',
-    summary: 'Create Account — Design Consistency',
-    ai_body_text: '<strong>Yazeed Daraz</strong> flagged 4 unresolved Figma delta points on the Create Account section. No response from <strong>Eng. Lama Al-Zahrani</strong> (front-end lead) in 18 hours. Parallel activity on <span style="color:var(--cp-primary);font-weight:600">BAU-5304</span> makes this a compounding risk.',
-    ai_action_text: 'Schedule a 15-min sync between Yazeed Daraz and Eng. Lama Al-Zahrani today to resolve the Figma deltas.',
-    timestamp: '1d ago', actors: ['Yazeed Daraz', 'Eng. Lama Al-Zahrani'],
-  },
-  {
-    id: '5', category: 'suggestion', jira_key: 'SAU-0877', jira_url: '#',
-    summary: 'is_dismissed Column Missing — NotifyHub',
-    ai_body_text: 'This defect has had zero activity for 3 days and is not assigned. It directly blocks the toast dismiss behaviour — a user-visible regression. No release cycle has pulled it in.',
-    ai_action_text: 'Assign to Eng. Faisal Al-Harbi and pull into the current release cycle immediately.',
-    timestamp: '3d ago', actors: [],
-  },
-  {
-    id: '6', category: 'done', jira_key: 'BAU-5307', jira_url: '#',
-    summary: '', ai_body_text: '', ai_action_text: '', timestamp: '',
-    done_text: 'Fix deployed by <strong>Eng. Khalid Al-Otaibi</strong> — auth OTP loop resolved, awaiting QA sign-off.',
-    actors: ['Eng. Khalid Al-Otaibi'],
-  },
-  {
-    id: '7', category: 'done', jira_key: 'BAU-5246', jira_url: '#',
-    summary: '', ai_body_text: '', ai_action_text: '', timestamp: '',
-    done_text: 'Tab component merged by <strong>Dr. Ahmed Al-Rashid</strong> across BETA and PROD.',
-    actors: ['Dr. Ahmed Al-Rashid'],
-  },
-  {
-    id: '8', category: 'done', jira_key: 'BAU-5304', jira_url: '#',
-    summary: '', ai_body_text: '', ai_action_text: '', timestamp: '',
-    done_text: 'OTP message removed per <strong>Yazeed Daraz</strong> feedback — team notified.',
-    actors: ['Yazeed Daraz'],
-  },
-];
 
 const T = {
   primary: 'var(--cp-primary, #2563EB)',
@@ -208,10 +153,61 @@ function SectionBlock({
 
 export default function AIRecapTabV2() {
   const [doneOpen, setDoneOpen] = useState(false);
+  const [items, setItems] = useState<RecapItem[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const recapItems = SEED_DATA.filter(i => i.category === 'recap');
-  const suggestionItems = SEED_DATA.filter(i => i.category === 'suggestion');
-  const doneItems = SEED_DATA.filter(i => i.category === 'done');
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      setLoading(true);
+      // Try to load from ai_digest_cache
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user || cancelled) { setLoading(false); return; }
+
+      const { data } = await supabase
+        .from('ai_digest_cache')
+        .select('digest_json')
+        .eq('user_id', user.id)
+        .order('generated_at', { ascending: false })
+        .limit(1);
+
+      if (cancelled) return;
+
+      if (data && data.length > 0 && data[0].digest_json) {
+        try {
+          const digest = data[0].digest_json as any;
+          const parsedItems: RecapItem[] = [];
+          if (Array.isArray(digest.items)) {
+            digest.items.forEach((item: any, idx: number) => {
+              parsedItems.push({
+                id: `ai-${idx}`,
+                category: item.category || 'recap',
+                jira_key: item.jira_key || item.key || '',
+                jira_url: item.jira_url || '#',
+                summary: item.summary || item.title || '',
+                ai_body_text: item.body || item.ai_body_text || '',
+                ai_action_text: item.action || item.ai_action_text || '',
+                timestamp: item.timestamp || '',
+                done_text: item.done_text || '',
+                actors: item.actors || [],
+              });
+            });
+          }
+          setItems(parsedItems);
+        } catch {
+          setItems([]);
+        }
+      } else {
+        setItems([]);
+      }
+      setLoading(false);
+    })();
+    return () => { cancelled = true; };
+  }, []);
+
+  const recapItems = items.filter(i => i.category === 'recap');
+  const suggestionItems = items.filter(i => i.category === 'suggestion');
+  const doneItems = items.filter(i => i.category === 'done');
 
   const now = new Date();
   const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -235,94 +231,118 @@ export default function AIRecapTabV2() {
         <span style={{ fontSize: 11, color: T.ink4 }}>{dateStr}</span>
       </div>
 
-      {/* Recap section */}
-      <SectionBlock
-        label="RECAP"
-        dotColor="#3B82F6"
-        countBg="#DEEBFF"
-        countText="#0747A6"
-        items={recapItems}
-        borderColor="#3B82F6"
-      />
-
-      {/* Suggestions section */}
-      <div style={{ marginTop: 8 }}>
-        <SectionBlock
-          label="SUGGESTIONS FOR TODAY"
-          dotColor={T.warning}
-          countBg={T.warningLight}
-          countText={T.warningText}
-          items={suggestionItems}
-          borderColor="#D97706"
-        />
-      </div>
-
-      {/* Completed Today — collapsible */}
-      <div style={{ marginTop: 6 }}>
-        <button
-          onClick={() => setDoneOpen(!doneOpen)}
-          style={{
-            width: '100%', display: 'flex', alignItems: 'center',
-            padding: '10px 18px', background: 'none', border: 'none',
-            borderTop: `0.75px solid ${T.borderLt}`,
-            cursor: 'pointer', gap: 8,
-          }}
-        >
-          <Check size={14} style={{ color: T.success, flexShrink: 0 }} />
-          <span style={{
-            fontSize: 11, fontWeight: 700, color: T.ink3,
-            textTransform: 'uppercase', letterSpacing: '0.04em',
-          }}>
-            Completed Today
+      {loading ? (
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 48 }}>
+          <Loader2 size={20} style={{ color: T.ink4, animation: 'spin 1s linear infinite' }} />
+        </div>
+      ) : items.length === 0 ? (
+        <div style={{
+          display: 'flex', flexDirection: 'column', alignItems: 'center',
+          justifyContent: 'center', padding: '48px 24px', gap: 8,
+        }}>
+          <span style={{ fontSize: 13, color: T.ink3, fontFamily: 'Inter, sans-serif' }}>
+            No AI recap available yet
           </span>
-          <span style={{
-            fontSize: 10, fontWeight: 700,
-            background: T.successLight, color: T.successText,
-            borderRadius: 10, padding: '1px 6px',
-          }}>
-            {doneItems.length}
+          <span style={{ fontSize: 11, color: T.ink4, fontFamily: 'Inter, sans-serif', textAlign: 'center' }}>
+            The AI recap will generate automatically based on your portfolio activity
           </span>
-          <ChevronRight
-            size={14}
-            style={{
-              marginLeft: 'auto', color: T.ink3,
-              transform: doneOpen ? 'rotate(90deg)' : 'rotate(0deg)',
-              transition: 'transform 150ms ease',
-            }}
+        </div>
+      ) : (
+        <>
+          {/* Recap section */}
+          <SectionBlock
+            label="RECAP"
+            dotColor="#3B82F6"
+            countBg="#DEEBFF"
+            countText="#0747A6"
+            items={recapItems}
+            borderColor="#3B82F6"
           />
-        </button>
 
-        {doneOpen && (
-          <div style={{ padding: '4px 18px 12px', display: 'flex', flexDirection: 'column', gap: 6 }}>
-            {doneItems.map(item => (
-              <div
-                key={item.id}
+          {/* Suggestions section */}
+          {suggestionItems.length > 0 && (
+            <div style={{ marginTop: 8 }}>
+              <SectionBlock
+                label="SUGGESTIONS FOR TODAY"
+                dotColor="#D97706"
+                countBg={T.warningLight}
+                countText={T.warningText}
+                items={suggestionItems}
+                borderColor="#D97706"
+              />
+            </div>
+          )}
+
+          {/* Completed Today — collapsible */}
+          {doneItems.length > 0 && (
+            <div style={{ marginTop: 6 }}>
+              <button
+                onClick={() => setDoneOpen(!doneOpen)}
                 style={{
-                  display: 'flex', alignItems: 'flex-start', gap: 8,
-                  padding: '8px 12px', background: '#F0FDF4',
-                  borderRadius: 5, border: '0.75px solid #D1FAE5',
+                  width: '100%', display: 'flex', alignItems: 'center',
+                  padding: '10px 18px', background: 'none', border: 'none',
+                  borderTop: `0.75px solid ${T.borderLt}`,
+                  cursor: 'pointer', gap: 8,
                 }}
               >
-                <Check size={14} style={{ color: T.success, flexShrink: 0, marginTop: 1 }} />
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6, flex: 1, flexWrap: 'wrap' }}>
-                  <span style={{
-                    fontFamily: "'JetBrains Mono', monospace",
-                    fontSize: 10.5, fontWeight: 700,
-                    background: '#E2E8F0', color: T.ink3,
-                    padding: '2px 6px', borderRadius: 3,
-                  }}>
-                    {item.jira_key}
-                  </span>
-                  <span
-                    style={{ fontSize: 12, color: T.ink2, lineHeight: 1.4 }}
-                    dangerouslySetInnerHTML={{ __html: item.done_text || '' }}
-                  />
+                <Check size={14} style={{ color: T.success, flexShrink: 0 }} />
+                <span style={{
+                  fontSize: 11, fontWeight: 700, color: T.ink3,
+                  textTransform: 'uppercase', letterSpacing: '0.04em',
+                }}>
+                  Completed Today
+                </span>
+                <span style={{
+                  fontSize: 10, fontWeight: 700,
+                  background: T.successLight, color: T.successText,
+                  borderRadius: 10, padding: '1px 6px',
+                }}>
+                  {doneItems.length}
+                </span>
+                <ChevronRight
+                  size={14}
+                  style={{
+                    marginLeft: 'auto', color: T.ink3,
+                    transform: doneOpen ? 'rotate(90deg)' : 'rotate(0deg)',
+                    transition: 'transform 150ms ease',
+                  }}
+                />
+              </button>
+
+              {doneOpen && (
+                <div style={{ padding: '4px 18px 12px', display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  {doneItems.map(item => (
+                    <div
+                      key={item.id}
+                      style={{
+                        display: 'flex', alignItems: 'flex-start', gap: 8,
+                        padding: '8px 12px', background: '#F0FDF4',
+                        borderRadius: 5, border: '0.75px solid #D1FAE5',
+                      }}
+                    >
+                      <Check size={14} style={{ color: T.success, flexShrink: 0, marginTop: 1 }} />
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 6, flex: 1, flexWrap: 'wrap' }}>
+                        <span style={{
+                          fontFamily: "'JetBrains Mono', monospace",
+                          fontSize: 10.5, fontWeight: 700,
+                          background: '#E2E8F0', color: T.ink3,
+                          padding: '2px 6px', borderRadius: 3,
+                        }}>
+                          {item.jira_key}
+                        </span>
+                        <span
+                          style={{ fontSize: 12, color: T.ink2, lineHeight: 1.4 }}
+                          dangerouslySetInnerHTML={{ __html: item.done_text || '' }}
+                        />
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+              )}
+            </div>
+          )}
+        </>
+      )}
     </div>
   );
 }
