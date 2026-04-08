@@ -35,6 +35,9 @@ const TD = {
   danger: '#F87171', dangerBg: 'rgba(239,68,68,0.10)',
 };
 
+// Module-level token reference for sub-components (updated by main component on each render)
+let T: typeof TL = TL;
+
 // --- Types ---
 interface TransitionStep {
   status: string;
