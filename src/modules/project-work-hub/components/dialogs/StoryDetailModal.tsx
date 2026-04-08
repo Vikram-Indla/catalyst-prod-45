@@ -1044,8 +1044,11 @@ export default function StoryDetailModal({
              BODY
              ═══════════════════════════════════════ */}
           {isLoading ? (
-            <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: V.textMuted, padding: 40 }}>
-              Loading...
+            <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: V.textMuted, padding: 40, minHeight: 300 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
+                <div style={{ width: 24, height: 24, border: '2.5px solid #E2E8F0', borderTopColor: '#2563EB', borderRadius: '50%', animation: 'spin 0.7s linear infinite' }} />
+                <span style={{ fontSize: 13 }}>Loading…</span>
+              </div>
             </div>
           ) : isError || !story ? (
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8, padding: 40 }}>
