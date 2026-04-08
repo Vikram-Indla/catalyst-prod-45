@@ -390,22 +390,25 @@ export default function HierarchyPage() {
       }}>
         {/* Search */}
         <div style={{
-          width: 240, height: 50, display: 'flex', alignItems: 'center', gap: 6,
+          width: 240, height: 34, display: 'flex', alignItems: 'center', gap: 6,
           padding: '0 10px', background: isDark ? '#0A0A0A' : '#F8FAFC', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 6,
           transition: 'border-color 80ms, box-shadow 80ms',
         }}
           onFocus={e => { e.currentTarget.style.borderColor = '#2563EB'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.08)'; }}
           onBlur={e => { e.currentTarget.style.borderColor = isDark ? '#2E2E2E' : '#E2E8F0'; e.currentTarget.style.boxShadow = 'none'; }}
         >
-          <Search size={14} color="#94A3B8" />
+          <Search size={14} color="#94A3B8" style={{ flexShrink: 0 }} />
           <input
             value={searchInput}
             onChange={e => handleSearchChange(e.target.value)}
             placeholder="Search work items"
+            className="!bg-transparent !border-0 !p-0 !outline-none !shadow-none !ring-0 focus:!outline-none focus:!shadow-none focus:!ring-0"
             style={{
               flex: 1, border: 'none', background: 'transparent', outline: 'none',
               fontSize: 13, fontFamily: "'Inter', sans-serif", color: isDark ? '#EDEDED' : '#0F172A',
-            }}
+              WebkitAppearance: 'none', MozAppearance: 'none', appearance: 'none',
+              WebkitBoxShadow: '0 0 0 1000px transparent inset',
+            } as React.CSSProperties}
           />
         </div>
 
