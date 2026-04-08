@@ -79,11 +79,10 @@ function DismissableCard({
   children,
   onDismiss,
 }: {
-  children: React.ReactNode;
+  children: (dismiss: () => void) => React.ReactNode;
   onDismiss: () => void;
 }) {
   const [dismissing, setDismissing] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
 
   const handleDismiss = useCallback(() => {
     setDismissing(true);
@@ -92,7 +91,6 @@ function DismissableCard({
 
   return (
     <div
-      ref={ref}
       style={{
         overflow: 'hidden',
         transition: 'max-height 200ms ease, opacity 200ms ease',
@@ -100,9 +98,7 @@ function DismissableCard({
         opacity: dismissing ? 0 : 1,
       }}
     >
-      {typeof children === 'function'
-        ? (children as (dismiss: () => void) => React.ReactNode)(handleDismiss)
-        : children}
+      {children(handleDismiss)}
     </div>
   );
 }
