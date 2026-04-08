@@ -3,7 +3,7 @@
  * Route: /testhub/cycles/:cycleId
  */
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import {
   ArrowLeft, Pencil, Play, CheckCircle2, XCircle, AlertTriangle,
   Clock, Plus, User, Calendar, RefreshCw, Trash2, Download, Users, BarChart3, Server
@@ -75,6 +75,8 @@ const priorityConfig: Record<string, { color: string; bg: string }> = {
 export default function TestCycleDetailPage() {
   const { cycleId } = useParams<{ cycleId: string }>();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const fromPlanId = searchParams.get('fromPlanId');
   const { isDark } = useTheme();
   const [cycle, setCycle] = useState<TestCycle | null>(null);
   const [testCases, setTestCases] = useState<CycleTestCase[]>([]);
@@ -225,8 +227,8 @@ export default function TestCycleDetailPage() {
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: isDark ? '#0A0A0A' : '#F8FAFC' }}>
       {/* Header */}
       <div style={{ padding: '20px 32px', backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', borderBottom: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}` }}>
-        <button onClick={() => navigate('/testhub/cycles')} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: 0, border: 'none', backgroundColor: 'transparent', color: isDark ? '#878787' : '#64748B', fontSize: 13, fontWeight: 500, cursor: 'pointer', marginBottom: 16 }}>
-          <ArrowLeft size={16} /> Back to Cycles
+        <button onClick={() => navigate(fromPlanId ? `/testhub/test-plans/${fromPlanId}` : '/testhub/cycles')} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: 0, border: 'none', backgroundColor: 'transparent', color: isDark ? '#878787' : '#64748B', fontSize: 13, fontWeight: 500, cursor: 'pointer', marginBottom: 16 }}>
+          <ArrowLeft size={16} /> {fromPlanId ? 'Back to Plan' : 'Back to Cycles'}
         </button>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <div>
