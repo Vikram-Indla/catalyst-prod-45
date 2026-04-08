@@ -192,17 +192,18 @@ const MenuItemRow = React.forwardRef<HTMLButtonElement, MenuItemRowProps>(
         aria-disabled={item.disabled}
       >
         {item.icon && (
-          <item.icon
-            size={16}
-            className=""
+          <span
             style={{
               flexShrink: 0,
               marginRight: 12,
+              display: 'inline-flex',
               color: isDanger
                 ? ITEM_DANGER_COLOR
                 : 'var(--cp-text-secondary, #334155)',
             }}
-          />
+          >
+            <item.icon size={16} />
+          </span>
         )}
         <span style={{ flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
           {item.label}
