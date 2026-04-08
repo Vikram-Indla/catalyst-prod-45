@@ -10,7 +10,8 @@ import { formatDistanceToNow } from 'date-fns';
 import { toast } from 'sonner';
 import {
   X, Eye, EyeOff, Link2, MoreHorizontal, Copy, Archive, Trash2,
-  Zap, ChevronDown, Plus, Flag,
+  Zap, ChevronDown, ChevronRight, Plus, Flag, Paperclip, FileText,
+  Image as ImageIcon, File as FileIcon, ExternalLink,
 } from 'lucide-react';
 
 /* ═══════════════════════════════════════════════
@@ -385,6 +386,74 @@ export default function StoryDetailModal({
     })();
   }, [isOpen, itemId]);
 
+  // ── ATTACHMENTS ───────────────────────────────
+  const { data: attachments = [], refetch: refetchAttachments } = useQuery({
+    queryKey: ['story-detail-attachments', itemId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('ph_attachments')
+        .select('*')
+        .eq('work_item_id', itemId)
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      return data ?? [];
+    },
+    enabled: !!itemId,
+  });
+
+  const [attachOpen, setAttachOpen] = useState(true);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const formatFileSize = (bytes: number): string => {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  };
+
+  const handleAttachmentUpload = useCallback(async (file: File) => {
+    if (file.size > 10 * 1024 * 1024) {
+      alert('File size exceeds 10MB limit.');
+      return;
+    }
+    const ext = file.name.split('.').pop();
+    const path = `attachments/${itemId}/${Date.now()}.${ext}`;
+    const { error: uploadError } = await supabase.storage
+      .from('attachments')
+      .upload(path, file, { upsert: false });
+    if (uploadError) { console.error('Upload error', uploadError); toast.error('Upload failed'); return; }
+    const { data: { user } } = await supabase.auth.getUser();
+    await supabase.from('ph_attachments').insert([{
+      work_item_id: itemId,
+      uploaded_by: user?.id,
+      file_name: file.name,
+      file_size: file.size,
+      mime_type: file.type,
+      storage_path: path,
+    } as any]);
+    refetchAttachments();
+    toast.success('File attached');
+  }, [itemId, refetchAttachments]);
+
+  const handleAttachmentDelete = useCallback(async (attachmentId: string, storagePath: string) => {
+    if (!window.confirm('Remove this attachment?')) return;
+    await supabase.storage.from('attachments').remove([storagePath]);
+    await supabase.from('ph_attachments').delete().eq('id', attachmentId);
+    refetchAttachments();
+  }, [refetchAttachments]);
+
+  const getAttachmentUrl = (storagePath: string) => {
+    const { data } = supabase.storage.from('attachments').getPublicUrl(storagePath);
+    return data.publicUrl;
+  };
+
+  const getFileIcon = (mimeType: string | null) => {
+    if (!mimeType) return <FileIcon size={16} color={DT.labelGrey} />;
+    if (mimeType.startsWith('image/')) return <ImageIcon size={16} color="#4BADE8" />;
+    if (mimeType.includes('pdf') || mimeType.includes('document') || mimeType.includes('text'))
+      return <FileText size={16} color="#CF7B00" />;
+    return <FileIcon size={16} color={DT.labelGrey} />;
+  };
+
   // ── FIELD SAVE HELPER ─────────────────────────
   const saveField = useCallback(async (field: string, value: any) => {
     await supabase.from('ph_issues').update({ [field]: value }).eq('id', itemId);
@@ -584,8 +653,10 @@ export default function StoryDetailModal({
           flexShrink: 0, gap: 8,
         }}>
           {/* Left breadcrumb */}
+          <span style={{ fontSize: 12, color: DT.labelGrey }}>{projectKey}</span>
+          <span style={{ fontSize: 12, color: DT.labelGrey }}>›</span>
           <IssueTypeIcon type={story?.issue_type} size={16} />
-          <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: DT.labelGrey }}>
+          <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 12, fontWeight: 600, color: DT.bodyText }}>
             {story?.issue_key || '—'}
           </span>
           {story?.parent_key && (
@@ -600,7 +671,6 @@ export default function StoryDetailModal({
                 }}
                 onClick={() => {
                   if (onOpenItem && story?.parent_key) {
-                    // find parent by key
                     supabase.from('ph_issues').select('id').eq('issue_key', story.parent_key).single()
                       .then(({ data }) => { if (data) onOpenItem(data.id); });
                   }
@@ -771,15 +841,22 @@ export default function StoryDetailModal({
                   >
                     <IssueTypeIcon type={'subtask'} size={14} />
                     <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: DT.labelGrey }}>{st.issue_key}</span>
-                    <span style={{ flex: 1, fontSize: 13, color: DT.bodyText, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    <span style={{
+                      flex: 1, fontSize: 13, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                      color: getStatusCategory(st.status || '') === 'done' ? DT.labelGrey : DT.bodyText,
+                      textDecoration: getStatusCategory(st.status || '') === 'done' ? 'line-through' : 'none',
+                    }}>
                       {st.summary}
+                    </span>
+                    <span style={{ background: DT.epicChipBg, color: DT.epicChipText, borderRadius: 3, padding: '1px 6px', fontSize: 11, fontWeight: 700 }}>
+                      {st.story_points ?? '—'}
                     </span>
                     <StatusLozenge status={st.status || 'To Do'} />
                     <AvatarCircle name={st.assignee_display_name} size={18} />
                   </div>
                 ))}
                 {subtasks.length === 0 && !showSubtaskInput && (
-                  <div style={{ fontSize: 13, color: DT.labelGrey, fontStyle: 'italic', padding: '4px 0' }}>No child issues</div>
+                  <div style={{ fontSize: 13, color: DT.labelGrey, textAlign: 'center', padding: 16 }}>No subtasks yet. Click '+' above to create one.</div>
                 )}
                 {showSubtaskInput ? (
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4 }}>
@@ -824,7 +901,7 @@ export default function StoryDetailModal({
               <div style={{ marginTop: 32 }}>
                 <div style={{ ...LABEL, marginBottom: 8 }}>Linked Issues</div>
                 {Object.keys(linkGroups).length === 0 && !showLinkForm && (
-                  <div style={{ fontSize: 13, color: DT.labelGrey, fontStyle: 'italic', padding: '4px 0' }}>No linked issues</div>
+                  <div style={{ fontSize: 13, color: DT.labelGrey, textAlign: 'center', padding: 16 }}>No linked items. Use the link form above to connect work.</div>
                 )}
                 {Object.entries(linkGroups).map(([type, items]) => (
                   <div key={type} style={{ marginBottom: 8 }}>
@@ -853,8 +930,9 @@ export default function StoryDetailModal({
                         >
                           <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: DT.labelGrey }}>{li.issue_key}</span>
                           <span style={{
-                            flex: 1, fontSize: 13, color: DT.bodyText, overflow: 'hidden',
+                            flex: 1, fontSize: 13, overflow: 'hidden',
                             textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                            color: isDone ? DT.labelGrey : DT.bodyText,
                             textDecoration: isDone ? 'line-through' : 'none',
                           }}>{li.summary}</span>
                           <StatusLozenge status={li.status || 'To Do'} />
@@ -912,6 +990,96 @@ export default function StoryDetailModal({
                 )}
               </div>
 
+              {/* ── ATTACHMENTS ── */}
+              <div style={{ marginTop: 32 }}>
+                <div
+                  style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', marginBottom: 8 }}
+                  onClick={() => setAttachOpen(o => !o)}
+                >
+                  {attachOpen ? <ChevronDown size={14} color={DT.labelGrey} /> : <ChevronRight size={14} color={DT.labelGrey} />}
+                  <Paperclip size={14} color={DT.labelGrey} />
+                  <span style={LABEL}>Attachments</span>
+                  {attachments.length > 0 && (
+                    <span style={{ fontSize: 10, background: DT.border, color: '#253858', borderRadius: 8, padding: '1px 6px', fontWeight: 600 }}>
+                      {attachments.length}
+                    </span>
+                  )}
+                </div>
+                {attachOpen && (
+                  <div>
+                    {attachments.map((att: any) => (
+                      <div
+                        key={att.id}
+                        style={{
+                          display: 'flex', alignItems: 'center', gap: 8, height: 36,
+                          padding: '0 8px', borderRadius: 3,
+                        }}
+                        onMouseEnter={e => e.currentTarget.style.background = DT.hoverRow}
+                        onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                      >
+                        {getFileIcon(att.mime_type)}
+                        <span style={{ flex: 1, fontSize: 13, color: DT.bodyText, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 240 }}>
+                          {att.file_name}
+                        </span>
+                        <span style={{ fontSize: 11, color: DT.labelGrey, flexShrink: 0 }}>
+                          {formatFileSize(att.file_size || 0)}
+                        </span>
+                        <button
+                          onClick={() => window.open(getAttachmentUrl(att.storage_path), '_blank')}
+                          style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 24, height: 24, borderRadius: 3, border: 'none', background: 'transparent', cursor: 'pointer', color: DT.linkBlue }}
+                          title="Download"
+                        >
+                          <ExternalLink size={14} />
+                        </button>
+                        <button
+                          onClick={() => handleAttachmentDelete(att.id, att.storage_path)}
+                          style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 24, height: 24, borderRadius: 3, border: 'none', background: 'transparent', cursor: 'pointer', color: DT.dangerRed }}
+                          title="Delete"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    ))}
+                    {attachments.length === 0 && (
+                      <div style={{ fontSize: 13, color: DT.labelGrey, textAlign: 'center', padding: 16 }}>
+                        No attachments yet. Drop files above to attach.
+                      </div>
+                    )}
+                    {/* Upload zone */}
+                    <div
+                      onClick={() => fileInputRef.current?.click()}
+                      style={{
+                        border: `1.5px dashed ${DT.border}`, borderRadius: 6, height: 64,
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        cursor: 'pointer', marginTop: 8, transition: 'border-color 150ms',
+                      }}
+                      onMouseEnter={e => e.currentTarget.style.borderColor = DT.linkBlue}
+                      onMouseLeave={e => e.currentTarget.style.borderColor = DT.border}
+                      onDragOver={e => { e.preventDefault(); e.currentTarget.style.borderColor = DT.linkBlue; }}
+                      onDragLeave={e => { e.currentTarget.style.borderColor = DT.border; }}
+                      onDrop={e => {
+                        e.preventDefault();
+                        e.currentTarget.style.borderColor = DT.border;
+                        const files = e.dataTransfer.files;
+                        if (files.length > 0) handleAttachmentUpload(files[0]);
+                      }}
+                    >
+                      <span style={{ fontSize: 13, color: DT.labelGrey }}>Drop files here or click to upload</span>
+                    </div>
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      style={{ display: 'none' }}
+                      onChange={e => {
+                        const file = e.target.files?.[0];
+                        if (file) handleAttachmentUpload(file);
+                        e.target.value = '';
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
+
               {/* ── ACTIVITY ── */}
               <div style={{ marginTop: 32 }}>
                 <div style={{ ...LABEL, marginBottom: 12 }}>Activity</div>
@@ -955,7 +1123,7 @@ export default function StoryDetailModal({
                 {activeTab === 'history' && (
                   <div>
                     {allHistory.length === 0 && (
-                      <div style={{ fontSize: 13, color: DT.labelGrey, fontStyle: 'italic', padding: '8px 0' }}>No history</div>
+                      <div style={{ fontSize: 13, color: DT.labelGrey, textAlign: 'center', padding: 16 }}>No history yet. Changes will appear here automatically.</div>
                     )}
                     {allHistory.map(h => (
                       <div key={h.id} style={{ display: 'flex', gap: 8, padding: '6px 0', borderBottom: `0.75px solid ${DT.headerBg}`, minHeight: 28, alignItems: 'center' }}>
