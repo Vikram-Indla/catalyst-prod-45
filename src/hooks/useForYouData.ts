@@ -552,7 +552,8 @@ export function useForYouData() {
           const starredKeys = new Set(stars.map(s => s.item_id));
           setStarredItems(starredKeys as any);
           const itemIds = stars.map(s => s.item_id);
-          const { data: starredIssues } = await supabase.from('ph_issues').select(SELECT_FIELDS).in('issue_key', itemIds).order('jira_updated_at', { ascending: false });
+          const { data: starredIssuesRaw } = await supabase.from('ph_issues').select(SELECT_FIELDS).in('issue_key', itemIds).order('jira_updated_at', { ascending: false });
+          const starredIssues = (starredIssuesRaw || []).map(r => ({ ...r, project_id: projectIdMap.get(r.project_key) || null }));
           const { data: starredPlannerTasks } = await supabase.from('planner_tasks').select('task_key, title, priority, assignee_id, updated_at, created_at, status_id').in('task_key', itemIds).is('deleted_at', null);
           let starredPlannerMapped: any[] = [];
           if (starredPlannerTasks && starredPlannerTasks.length > 0) {
