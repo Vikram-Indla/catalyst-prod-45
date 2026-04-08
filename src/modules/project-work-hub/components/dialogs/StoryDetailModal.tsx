@@ -1032,12 +1032,6 @@ export default function StoryDetailModal({
                     )}
                   </div>
                 </div>
-                  {attachments.length > 0 && (
-                    <span style={{ fontSize: 10, background: DT.border, color: '#253858', borderRadius: 8, padding: '1px 6px', fontWeight: 600 }}>
-                      {attachments.length}
-                    </span>
-                  )}
-                </div>
                 {attachOpen && (
                   <div>
                     {attachments.map((att: any) => (
