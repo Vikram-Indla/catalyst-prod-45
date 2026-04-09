@@ -567,10 +567,9 @@ function EmptyState({ icon, message, action }: { icon: React.ReactNode; message:
 /* ═══════════════════════════════════════════════
    KEY DETAILS STRIP
    ═══════════════════════════════════════════════ */
-function KeyDetailsStrip({ story, onAssigneeClick, onFixVersionClick }: {
+function KeyDetailsStrip({ story, onAssigneeClick }: {
   story: any;
   onAssigneeClick?: () => void;
-  onFixVersionClick?: () => void;
 }) {
   return (
     <div style={{
@@ -620,27 +619,6 @@ function KeyDetailsStrip({ story, onAssigneeClick, onFixVersionClick }: {
           </div>
         </StripField>
       )}
-      <StripField label="Fix Versions">
-        <div
-          style={{ display: 'flex', alignItems: 'center', gap: 4, cursor: 'pointer', borderRadius: 4, padding: '2px 4px', margin: '-2px -4px', transition: 'background 120ms' }}
-          onClick={onFixVersionClick}
-          onMouseEnter={e => e.currentTarget.style.background = 'rgba(0,0,0,0.04)'}
-          onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-          title="Click to change fix version"
-        >
-          {story.fix_versions ? (
-            <span style={{
-              display: 'inline-block', background: V.lozengeGreyBg, color: V.lozengeGreyText,
-              padding: '2px 6px', borderRadius: 3, fontSize: 11, fontWeight: 600,
-            }}>
-              {String(story.fix_versions)}
-            </span>
-          ) : (
-            <span style={{ fontSize: 13, color: V.textMuted }}>—</span>
-          )}
-          <ChevronDown size={12} style={{ color: V.textMuted, marginLeft: 2 }} />
-        </div>
-      </StripField>
     </div>
   );
 }
