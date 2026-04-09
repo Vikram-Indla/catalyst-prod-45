@@ -33,6 +33,7 @@ interface TestCycle {
   in_progress_count?: number;
   environment_id?: string | null;
   environment?: string | null;
+  resolved_environment_name?: string | null;
 }
 
 interface CycleTestCase {
@@ -101,7 +102,18 @@ export default function TestCycleDetailPage() {
         .eq('id', cycleId).maybeSingle();
       if (error) throw error;
       if (!data) { catalystToast.error('Cycle not found'); return; }
-      setCycle(data);
+
+      // Resolve environment name from tm_environments if environment_id exists
+      let resolvedName: string | null = null;
+      if (data.environment_id) {
+        const { data: envData } = await (supabase as any)
+          .from('tm_environments')
+          .select('name')
+          .eq('id', data.environment_id)
+          .maybeSingle();
+        resolvedName = envData?.name || null;
+      }
+      setCycle({ ...data, resolved_environment_name: resolvedName });
     } catch { catalystToast.error('Failed to load cycle'); }
   };
 
@@ -249,7 +261,7 @@ export default function TestCycleDetailPage() {
                   style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: cycle.environment_id ? 'pointer' : 'default', padding: '2px 8px', backgroundColor: '#EFF6FF', borderRadius: 6, color: '#2563EB', fontWeight: 500 }}
                 >
                   <Server size={14} />
-                  {cycle.environment ? cycle.environment.charAt(0).toUpperCase() + cycle.environment.slice(1) : 'Environment'}
+                  {cycle.resolved_environment_name || (cycle.environment ? cycle.environment.charAt(0).toUpperCase() + cycle.environment.slice(1) : 'Environment')}
                 </span>
               )}
             </div>
