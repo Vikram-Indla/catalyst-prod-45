@@ -72093,7 +72093,7 @@ export type Database = {
         Args: { p_end_date?: string; p_start_date?: string }
         Returns: Json
       }
-      get_defect_stats: { Args: { p_project_id?: string }; Returns: Json }
+      get_defect_stats: { Args: { p_project_id: string }; Returns: Json }
       get_delete_dependencies: {
         Args: { p_test_case_ids: Json }
         Returns: Json

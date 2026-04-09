@@ -2,7 +2,7 @@
  * Defects List Page — Rewired to tm_defects via useDefects hook
  * Route: /testhub/defects
  */
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTheme } from '@/hooks/useTheme';
 import { cn } from '@/lib/utils';
 import { Bug, Plus, Download } from 'lucide-react';
@@ -25,6 +25,8 @@ export default function DefectsPage() {
   const [filters, setFilters] = useState<Record<string, any>>({});
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [showCreate, setShowCreate] = useState(false);
+  const [page, setPage] = useState(1);
+  const pageSize = 50;
 
   // Build tm_* typed filters from the UI filter state
   const tmFilters: TMDefectFilters = {
@@ -38,7 +40,13 @@ export default function DefectsPage() {
     tmFilters.severity = filters.severity.map((s: string) => s.toUpperCase()) as any;
   }
 
-  const { data: tmDefects, isLoading } = useDefects(DEFAULT_PROJECT_ID, tmFilters);
+  // Reset page when filters change
+  useEffect(() => { setPage(1); }, [filters]);
+
+  const { data: defectsResult, isLoading } = useDefects(DEFAULT_PROJECT_ID, tmFilters, page, pageSize);
+  const tmDefects = defectsResult?.data || [];
+  const totalCount = defectsResult?.total || 0;
+
   const { data: stats, isLoading: loadingStats } = useDefectStats(DEFAULT_PROJECT_ID);
   const deleteDefect = useDeleteDefect();
 
@@ -51,7 +59,7 @@ export default function DefectsPage() {
   });
 
   // Map TMDefect → Defect shape for the existing DefectTable component
-  const defects: Defect[] = (tmDefects || []).map(d => ({
+  const defects: Defect[] = tmDefects.map(d => ({
     id: d.id,
     defect_key: d.key,
     title: d.title,
@@ -99,9 +107,11 @@ export default function DefectsPage() {
     }
   };
 
+  const totalPages = Math.ceil(totalCount / pageSize);
+
   // Stats bar data
   const statsBar = stats ? {
-    total: stats.total,
+    total: totalCount,
     open: stats.by_status.OPEN || 0,
     in_progress: stats.by_status.IN_PROGRESS || 0,
     resolved: stats.by_status.FIXED || 0,
@@ -142,7 +152,7 @@ export default function DefectsPage() {
 
         {/* Results Count */}
         <p className="text-sm text-muted-foreground">
-          Showing {defects.length} defect{defects.length !== 1 ? 's' : ''}
+          Showing {tmDefects.length} of {totalCount} defects
         </p>
 
         {/* Table */}
@@ -166,6 +176,19 @@ export default function DefectsPage() {
         ) : (
           <div className={cn("border rounded-lg", isDark && "border-[#2E2E2E]")}>
             <DefectTable defects={defects} selectedIds={selectedIds} onSelectionChange={setSelectedIds} onDelete={handleDelete} />
+          </div>
+        )}
+
+        {/* Pagination */}
+        {totalCount > pageSize && (
+          <div className="flex items-center justify-between mt-4">
+            <span className="text-sm text-muted-foreground">
+              Page {page} of {totalPages}
+            </span>
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm" onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}>Previous</Button>
+              <Button variant="outline" size="sm" onClick={() => setPage(p => p + 1)} disabled={page * pageSize >= totalCount}>Next</Button>
+            </div>
           </div>
         )}
 
