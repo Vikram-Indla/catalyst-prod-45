@@ -3,6 +3,7 @@
  * Route: /testhub/defects
  */
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useTheme } from '@/hooks/useTheme';
 import { cn } from '@/lib/utils';
 import { Bug, Plus, Download } from 'lucide-react';
@@ -22,7 +23,11 @@ const DEFAULT_PROJECT_ID = '00000000-0000-0000-0000-000000000001';
 
 export default function DefectsPage() {
   const { isDark } = useTheme();
-  const [filters, setFilters] = useState<Record<string, any>>({});
+  const [searchParams] = useSearchParams();
+  const [filters, setFilters] = useState<Record<string, any>>(() => {
+    const searchParam = searchParams.get('search');
+    return searchParam ? { search: searchParam } : {};
+  });
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [showCreate, setShowCreate] = useState(false);
   const [page, setPage] = useState(1);
