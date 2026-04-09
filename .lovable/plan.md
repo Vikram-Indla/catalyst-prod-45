@@ -1,55 +1,44 @@
 
-# Jira Sync Comprehensive Audit & Fix Plan
 
-## ROOT CAUSE ANALYSIS
+## Fix: Environment Badge Showing "Staging" Instead of Selected Environment
 
-### Issue 1: "15 hours ago" — Sync log never completes
-The edge function (`wh-jira-sync`) crashes/times out after processing ~4,100 issues (BAU + ICP). It starts IP but hits Deno's wall clock limit → `shutdown`. The final `completed_at` update never runs, so `ph_sync_log` stays `status: 'running'` forever. The "UPDATED" column queries for `status IN ('success','warning')` and finds nothing recent → falls back to stale `last_synced_at`.
+### Problem
+The cycle detail page reads the legacy `environment` text column (always `'staging'`) instead of resolving the environment name from `environment_id` via the `tm_environments` table.
 
-**Fix:** Update edge function to write `completed_at` after EACH project (not just at the end). Also mark previous stuck "running" entries as "timeout" on startup.
+### Root Cause
+Two environment columns exist on `tm_test_cycles`:
+- `environment` (text) — legacy, defaults to `'staging'`, never updated by edit modal
+- `environment_id` (UUID) — correctly set by the edit modal, references `tm_environments`
 
-### Issue 2: Pre-2026 issues included
-BAU has 3,022 issues from before 2026. The JQL uses `updated >= -360d` (12 months lookback), which pulls issues created in 2025 that were merely *updated* in 2026. This is correct Jira behavior — syncing recently-touched issues regardless of creation date.
+The detail page renders `cycle.environment` (the stale text field) instead of looking up the name from `tm_environments` using `environment_id`.
 
-**Decision needed:** Keep all recently-updated issues (current behavior) OR filter display to 2026-created only? I recommend keeping the sync as-is (it's correct) but noting this is by design.
+### Fix — Two files only
 
-### Issue 3: Missing Jira flags across hubs
-Many hubs consume `ph_issues` data but don't show a Jira origin indicator.
+**File 1: `src/pages/testhub/TestCycleDetailPage.tsx`**
+- Add a `useEffect` or inline query that resolves `environment_id` → environment name from `tm_environments`
+- Replace line 258's display logic: instead of `cycle.environment.charAt(0).toUpperCase()...`, show the resolved environment name
+- Fallback: if no `environment_id`, check legacy `environment` field; if neither, show nothing
 
-## HUB-BY-HUB AUDIT
+**File 2: `src/components/testhub/CreateTestCycleModal.tsx`**
+- In `handleSubmit` (line 170–178), when saving `environment_id`, also update the `environment` text column with the selected environment's name for backward compatibility
+- This ensures other pages that still read the legacy column also get the correct value
 
-| Hub | Jira Data Source | Jira Flag Present? | Fix Needed |
-|-----|-----------------|-------------------|------------|
-| **Home** (ForYou) | `ph_issues` via TransitionsTab, DetailPanel | ❌ No flag | Add Jira chip to work items |
-| **StrategyHub** | `es_initiative_epics` → links to `ph_issues` | ❌ No flag | Add flag on linked epics |
-| **ProductHub** | Initiatives, Cards, Roadmap — mostly `ph_initiatives` not `ph_issues` | ⚠️ Partial | Check if cards show Jira key |
-| **ProjectHub** | `ph_issues` (primary), AllProjectsTable, WorkItems, Dashboard | ✅ Sync chip on projects | Fix UPDATED column, add flag on work items |
-| **ReleaseHub** | `rh_release_issues` linked to `ph_issues` | ⚠️ Partial | Add Jira badge on release items |
-| **TestHub** | `tm_defects` mirrored from `ph_issues` | ✅ "From Jira" badge | Already done |
-| **IncidentHub** | `ph_issues` where type='Production Incident' | ❌ No flag | Add Jira key column/badge |
+### Technical Detail
 
-## EXECUTION PLAN (in priority order)
+```text
+Detail page resolution logic:
+  1. If cycle.environment_id → fetch name from tm_environments → display
+  2. Else if cycle.environment → capitalize and display
+  3. Else → hide badge
 
-### Fix 1: Edge function — per-project completion tracking
-- Update `wh-jira-sync` to write `completed_at` after each project batch
-- Clean up stuck "running" entries on startup
-- **Impact:** Fixes "15 hours ago" immediately
+Edit modal save fix:
+  updateData.environment = selectedEnvironmentName  // sync legacy column
+  updateData.environment_id = environmentId          // already correct
+```
 
-### Fix 2: ProjectHub UPDATED column
-- Fall back to `MAX(last_synced_at)` from `ph_issues` when no completed sync log exists
-- **Impact:** Shows accurate "just now" after sync
+### Files to touch
+- `src/pages/testhub/TestCycleDetailPage.tsx`
+- `src/components/testhub/CreateTestCycleModal.tsx`
 
-### Fix 3: Reusable `<JiraSyncChip>` component
-- Small chip showing Jira icon + key (e.g., "BAU-1234")
-- Reusable across all hubs
+### No other files modified
 
-### Fix 4: Add Jira flags to IncidentHub list
-- Add `jira_key` column to incident grid
-
-### Fix 5: Add Jira flags to Home/ForYou
-- Show Jira chip on work items in transitions/detail panel
-
-### Fix 6: Add Jira flags to ReleaseHub items
-- Show Jira badge on release issue rows
-
-**Note:** StrategyHub and ProductHub don't directly display `ph_issues` rows in most views — their Jira linkage is indirect through initiative-epic joins. Adding flags there is lower priority.
