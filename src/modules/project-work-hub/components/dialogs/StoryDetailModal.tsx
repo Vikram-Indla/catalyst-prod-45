@@ -567,7 +567,11 @@ function EmptyState({ icon, message, action }: { icon: React.ReactNode; message:
 /* ═══════════════════════════════════════════════
    KEY DETAILS STRIP
    ═══════════════════════════════════════════════ */
-function KeyDetailsStrip({ story }: { story: any }) {
+function KeyDetailsStrip({ story, onAssigneeClick, onFixVersionClick }: {
+  story: any;
+  onAssigneeClick?: () => void;
+  onFixVersionClick?: () => void;
+}) {
   return (
     <div style={{
       display: 'flex', flexWrap: 'wrap', gap: 0,
@@ -588,11 +592,18 @@ function KeyDetailsStrip({ story }: { story: any }) {
         </div>
       </StripField>
       <StripField label="Assignee">
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+        <div
+          style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', borderRadius: 4, padding: '2px 4px', margin: '-2px -4px', transition: 'background 120ms' }}
+          onClick={onAssigneeClick}
+          onMouseEnter={e => e.currentTarget.style.background = 'rgba(0,0,0,0.04)'}
+          onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+          title="Click to change assignee"
+        >
           <AvatarCircle name={story.assignee_display_name} size={20} />
           <span style={{ fontSize: 13, fontWeight: 500, color: story.assignee_display_name ? V.textPrimary : V.textMuted }}>
             {story.assignee_display_name || 'Unassigned'}
           </span>
+          <ChevronDown size={12} style={{ color: V.textMuted, marginLeft: 2 }} />
         </div>
       </StripField>
       <StripField label="Reporter">
@@ -609,16 +620,27 @@ function KeyDetailsStrip({ story }: { story: any }) {
           </div>
         </StripField>
       )}
-      {story.fix_versions && (
-        <StripField label="Fix Versions">
-          <span style={{
-            display: 'inline-block', background: V.lozengeGreyBg, color: V.lozengeGreyText,
-            padding: '2px 6px', borderRadius: 3, fontSize: 11, fontWeight: 600,
-          }}>
-            {String(story.fix_versions)}
-          </span>
-        </StripField>
-      )}
+      <StripField label="Fix Versions">
+        <div
+          style={{ display: 'flex', alignItems: 'center', gap: 4, cursor: 'pointer', borderRadius: 4, padding: '2px 4px', margin: '-2px -4px', transition: 'background 120ms' }}
+          onClick={onFixVersionClick}
+          onMouseEnter={e => e.currentTarget.style.background = 'rgba(0,0,0,0.04)'}
+          onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+          title="Click to change fix version"
+        >
+          {story.fix_versions ? (
+            <span style={{
+              display: 'inline-block', background: V.lozengeGreyBg, color: V.lozengeGreyText,
+              padding: '2px 6px', borderRadius: 3, fontSize: 11, fontWeight: 600,
+            }}>
+              {String(story.fix_versions)}
+            </span>
+          ) : (
+            <span style={{ fontSize: 13, color: V.textMuted }}>—</span>
+          )}
+          <ChevronDown size={12} style={{ color: V.textMuted, marginLeft: 2 }} />
+        </div>
+      </StripField>
     </div>
   );
 }
@@ -668,6 +690,9 @@ export default function StoryDetailModal({
   const [assigneeResults, setAssigneeResults] = useState<any[]>([]);
   const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
   const [editCommentDraft, setEditCommentDraft] = useState('');
+  const [editingFixVersion, setEditingFixVersion] = useState(false);
+  const [fixVersionResults, setFixVersionResults] = useState<any[]>([]);
+  const [fixVersionSearch, setFixVersionSearch] = useState('');
 
   // Confirm dialog state
   const [confirmDialog, setConfirmDialog] = useState<{
@@ -682,6 +707,7 @@ export default function StoryDetailModal({
   const commentInputRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const assigneeRef = useRef<HTMLDivElement>(null);
+  const fixVersionRef = useRef<HTMLDivElement>(null);
 
   // ── BODY SCROLL LOCK + KEYBOARD ───────────────
   useEffect(() => {
@@ -713,10 +739,11 @@ export default function StoryDetailModal({
       if (statusOpen && statusRef.current && !statusRef.current.contains(e.target as Node)) setStatusOpen(false);
       if (priorityOpen && priorityRef.current && !priorityRef.current.contains(e.target as Node)) setPriorityOpen(false);
       if (editingAssignee && assigneeRef.current && !assigneeRef.current.contains(e.target as Node)) setEditingAssignee(false);
+      if (editingFixVersion && fixVersionRef.current && !fixVersionRef.current.contains(e.target as Node)) setEditingFixVersion(false);
     };
     document.addEventListener('mousedown', h);
     return () => document.removeEventListener('mousedown', h);
-  }, [menuOpen, plusMenuOpen, statusOpen, priorityOpen, editingAssignee]);
+  }, [menuOpen, plusMenuOpen, statusOpen, priorityOpen, editingAssignee, editingFixVersion]);
 
   // ── PRIMARY QUERY ─────────────────────────────
   const { data: story, isLoading, isError, refetch } = useQuery({
@@ -965,6 +992,25 @@ export default function StoryDetailModal({
     const { data } = await supabase.from('profiles').select('id, full_name').ilike('full_name', `%${q}%`).limit(10);
     setAssigneeResults(data ?? []);
   }, []);
+
+  const handleFixVersionSearch = useCallback(async (q: string) => {
+    setFixVersionSearch(q);
+    let query = (supabase as any).from('wh_fix_versions').select('id, name').eq('project_id', projectId).is('deleted_at', null).order('sort_order', { ascending: true }).limit(20);
+    if (q.length >= 1) query = query.ilike('name', `%${q}%`);
+    const { data } = await query;
+    setFixVersionResults(data ?? []);
+  }, [projectId]);
+
+  const handleFixVersionSelect = useCallback(async (versionName: string) => {
+    await supabase.from('ph_issues').update({
+      fix_versions: versionName || null,
+    }).eq('id', itemId);
+    await enqueueWriteBack(itemId, 'fix_versions', versionName);
+    qc.invalidateQueries({ queryKey: ['ph_issue_detail', itemId] });
+    setEditingFixVersion(false);
+    if (versionName) toast.success(`Fix version → ${versionName}`);
+    else toast.success('Fix version cleared');
+  }, [itemId, qc]);
 
   const handleSaveComment = useCallback(async () => {
     if (!commentBody.trim()) return;
@@ -1348,7 +1394,101 @@ export default function StoryDetailModal({
                 )}
 
                 {/* ── KEY DETAILS STRIP (always visible) ── */}
-                <KeyDetailsStrip story={story} />
+                <div style={{ position: 'relative' }}>
+                  <KeyDetailsStrip
+                    story={story}
+                    onAssigneeClick={() => { setEditingAssignee(true); handleAssigneeSearch(''); }}
+                    onFixVersionClick={() => { setEditingFixVersion(true); handleFixVersionSearch(''); }}
+                  />
+
+                  {/* Assignee picker popover (anchored to strip) */}
+                  {editingAssignee && (
+                    <div ref={assigneeRef} style={{
+                      position: 'absolute', top: '100%', left: 240, width: 240, zIndex: 50,
+                      background: V.white, border: `0.75px solid ${V.border}`,
+                      borderRadius: 6, boxShadow: '0 8px 12px rgba(30,31,33,0.15), 0 0 1px rgba(30,31,33,0.31)',
+                      padding: 8, marginTop: 4,
+                    }}>
+                      <input
+                        autoFocus value={assigneeSearch}
+                        onChange={e => handleAssigneeSearch(e.target.value)}
+                        placeholder="Search team members..."
+                        style={{
+                          width: '100%', padding: '6px 8px', fontSize: 12,
+                          border: `0.75px solid ${V.border}`, borderRadius: 4,
+                          outline: 'none', marginBottom: 4, boxSizing: 'border-box',
+                        }}
+                      />
+                      <div style={{ maxHeight: 180, overflowY: 'auto' }}>
+                        <div
+                          onClick={() => handleAssigneeSelect('', '')}
+                          style={{ padding: '6px 8px', fontSize: 12, cursor: 'pointer', borderRadius: 3, color: V.textMuted, fontStyle: 'italic' }}
+                          onMouseEnter={e => e.currentTarget.style.background = V.hoverRow}
+                          onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                        >Unassigned</div>
+                        {assigneeResults.map(p => (
+                          <div
+                            key={p.id}
+                            onClick={() => handleAssigneeSelect(p.id, p.full_name || 'User')}
+                            style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 8px', fontSize: 12, cursor: 'pointer', borderRadius: 3 }}
+                            onMouseEnter={e => e.currentTarget.style.background = V.hoverRow}
+                            onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                          >
+                            <AvatarCircle name={p.full_name} size={20} />
+                            <span>{p.full_name || 'Unknown'}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Fix Version picker popover (anchored to strip) */}
+                  {editingFixVersion && (
+                    <div ref={fixVersionRef} style={{
+                      position: 'absolute', top: '100%', right: 0, width: 240, zIndex: 50,
+                      background: V.white, border: `0.75px solid ${V.border}`,
+                      borderRadius: 6, boxShadow: '0 8px 12px rgba(30,31,33,0.15), 0 0 1px rgba(30,31,33,0.31)',
+                      padding: 8, marginTop: 4,
+                    }}>
+                      <input
+                        autoFocus value={fixVersionSearch}
+                        onChange={e => handleFixVersionSearch(e.target.value)}
+                        placeholder="Search versions..."
+                        style={{
+                          width: '100%', padding: '6px 8px', fontSize: 12,
+                          border: `0.75px solid ${V.border}`, borderRadius: 4,
+                          outline: 'none', marginBottom: 4, boxSizing: 'border-box',
+                        }}
+                      />
+                      <div style={{ maxHeight: 180, overflowY: 'auto' }}>
+                        <div
+                          onClick={() => handleFixVersionSelect('')}
+                          style={{ padding: '6px 8px', fontSize: 12, cursor: 'pointer', borderRadius: 3, color: V.textMuted, fontStyle: 'italic' }}
+                          onMouseEnter={e => e.currentTarget.style.background = V.hoverRow}
+                          onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                        >None</div>
+                        {fixVersionResults.map(v => (
+                          <div
+                            key={v.id}
+                            onClick={() => handleFixVersionSelect(v.name)}
+                            style={{
+                              display: 'flex', alignItems: 'center', gap: 6, padding: '6px 8px',
+                              fontSize: 12, cursor: 'pointer', borderRadius: 3,
+                              background: String(story.fix_versions) === v.name ? V.selectedRow : 'transparent',
+                            }}
+                            onMouseEnter={e => { if (String(story.fix_versions) !== v.name) e.currentTarget.style.background = V.hoverRow; }}
+                            onMouseLeave={e => { if (String(story.fix_versions) !== v.name) e.currentTarget.style.background = 'transparent'; }}
+                          >
+                            <span>{v.name}</span>
+                          </div>
+                        ))}
+                        {fixVersionResults.length === 0 && fixVersionSearch && (
+                          <div style={{ padding: '8px', fontSize: 12, color: V.textMuted, textAlign: 'center' }}>No versions found</div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
 
                 {/* Action row — + button */}
                 <div ref={plusMenuRef} style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 16, position: 'relative' }}>
