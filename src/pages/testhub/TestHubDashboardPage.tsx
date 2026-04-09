@@ -53,6 +53,8 @@ export default function TestHubDashboardPage() {
   const [recentActivity, setRecentActivity] = useState<RecentActivity[]>([]);
   const [failingTests, setFailingTests] = useState<FailingTest[]>([]);
   const [defectStats, setDefectStats] = useState<DefectStats | null>(null);
+  const [automationCoverage, setAutomationCoverage] = useState(0);
+  const [automatedCount, setAutomatedCount] = useState(0);
 
   const fetchDashboardData = async () => {
     setIsLoading(true);
@@ -69,6 +71,7 @@ export default function TestHubDashboardPage() {
         failingScopesRes,
         defectStatsRes,
         defectDirectRes,
+        automationRes,
       ] = await Promise.all([
         // Total test cases
         supabase.from('tm_test_cases').select('*', { count: 'exact', head: true }),
@@ -102,10 +105,19 @@ export default function TestHubDashboardPage() {
         // Defect stats (DO NOT TOUCH)
         supabase.rpc('get_defect_stats', { p_project_id: null }),
         (supabase as any).from('tm_defects').select('status'),
+        supabase.from('tm_test_cases').select('automation_status'),
       ]);
 
       // ── Process: test case count ──
       setTotalTestCases(testCasesRes.count ?? 0);
+
+      if (!automationRes.error && automationRes.data) {
+        const total = automationRes.data.length;
+        const automated = automationRes.data.filter((r: any) => r.automation_status === 'automated').length;
+        const pct = total > 0 ? Math.round((automated / total) * 100) : 0;
+        setAutomatedCount(automated);
+        setAutomationCoverage(pct);
+      }
 
       // ── Process: execution status counts from tm_cycle_scope ──
       const scopeStatuses = (scopeStatusesRes.data as any[] | null) ?? [];
@@ -308,9 +320,10 @@ export default function TestHubDashboardPage() {
             trend={{ direction: 'up', value: '+2', color: '#DC2626' }}
             subtitle={`${totalFailed} failed tests`} sparkData={[0, 1, 1, 2, 2, 3, 3, 3]}
             valueColor={totalBlocked > 0 ? '#DC2626' : undefined} />
-          <KPICard label="Automation coverage" value="0%" accent="#10B981"
+          <KPICard label="Automation coverage" value={`${automationCoverage}%`} accent="#10B981"
             trend={{ direction: 'flat', value: '—', color: '#94A3B8' }}
-            subtitle="No automation data available" sparkData={[0, 0, 0, 0, 0, 0, 0, 0]} />
+            subtitle={`${automatedCount} of ${totalTestCases} automated`}
+            sparkData={[0, 0, 0, 0, 0, 0, 0, automationCoverage]} />
         </div>
 
         {/* ── EXECUTION STATUS BAR — 48px ── */}
