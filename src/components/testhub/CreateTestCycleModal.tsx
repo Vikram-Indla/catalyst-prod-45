@@ -166,9 +166,9 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
     setIsSubmitting(true);
 
     try {
+      // Resolve environment name for legacy column sync
+      const selectedEnv = environments.find(e => e.id === environmentId);
       if (mode === 'edit' && cycle) {
-        // Resolve environment name for legacy column sync
-        const selectedEnv = environments.find(e => e.id === environmentId);
         const updateData: any = {
           name: name.trim(),
           description: description.trim() || null,
