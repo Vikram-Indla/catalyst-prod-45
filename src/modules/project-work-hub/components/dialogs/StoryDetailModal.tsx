@@ -246,7 +246,7 @@ async function enqueueWriteBack(phIssueId: string, fieldName: string, newValue: 
       field_name: fieldName,
       new_value: newValue,
       operation: 'UPDATE',
-      push_status: 'pending',
+      status: 'pending',
     });
   } catch { /* non-critical */ }
 }
