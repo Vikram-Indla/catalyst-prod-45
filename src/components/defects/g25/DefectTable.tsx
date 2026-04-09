@@ -1,13 +1,13 @@
 import { useNavigate } from 'react-router-dom';
-import { MoreHorizontal, ExternalLink, UserRound } from 'lucide-react';
+import { MoreHorizontal, ExternalLink, UserRound, ChevronsUp, ChevronUp, Minus, ChevronDown } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Defect } from '@/types/defects';
 import { cn } from '@/lib/utils';
 
-// ── Severity Lozenge (V12 bordered muted) ──
+// ── Severity Lozenge (V12 bordered muted — intentional inline hex) ──
 const SEVERITY_MAP: Record<string, { label: string; bg: string; text: string; border: string }> = {
   critical: { label: 'CRITICAL', bg: '#FFECEC', text: '#AE2A19', border: '#FFBDAD' },
   high:     { label: 'HIGH',     bg: '#FFF4EC', text: '#974F0C', border: '#FFD2A7' },
@@ -23,14 +23,13 @@ function SeverityPill({ severity }: { severity: string }) {
       height: 20, padding: '0 6px', borderRadius: 3,
       backgroundColor: s.bg, color: s.text, border: `1px solid ${s.border}`,
       fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em', lineHeight: '20px',
-      fontFamily: 'Inter, sans-serif',
     }}>
       {s.label}
     </span>
   );
 }
 
-// ── Status Lozenge (3-color guardrail + reopened) ──
+// ── Status Lozenge (3-color guardrail — intentional inline hex) ──
 const STATUS_MAP: Record<string, { label: string; bg: string; text: string }> = {
   open:        { label: 'OPEN',        bg: '#DEEBFF', text: '#0747A6' },
   new:         { label: 'NEW',         bg: '#DEEBFF', text: '#0747A6' },
@@ -51,31 +50,46 @@ function StatusPill({ status }: { status: string }) {
       height: 20, padding: '0 6px', borderRadius: 3,
       backgroundColor: s.bg, color: s.text,
       fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em', lineHeight: '20px',
-      fontFamily: 'Inter, sans-serif',
     }}>
       {s.label}
     </span>
   );
 }
 
-// ── Priority dot + text ──
-const PRIORITY_DOT: Record<string, string> = {
-  critical: '#E5484D',
-  urgent: '#E5484D',
-  high: '#F76B15',
-  medium: '#F5A623',
-  low: '#8993A4',
+// ── Priority chevron icon (matching ProjectHub) ──
+const PRIORITY_ICONS: Record<string, { Icon: typeof ChevronsUp; color: string; label: string }> = {
+  critical: { Icon: ChevronsUp, color: '#E5484D', label: 'Critical' },
+  urgent:   { Icon: ChevronsUp, color: '#E5484D', label: 'Urgent' },
+  high:     { Icon: ChevronUp,  color: '#F76B15', label: 'High' },
+  medium:   { Icon: Minus,      color: '#6B778C', label: 'Medium' },
+  low:      { Icon: ChevronDown, color: '#94A3B8', label: 'Low' },
 };
 
 function PriorityCell({ priority }: { priority: string }) {
-  const dot = PRIORITY_DOT[priority] || PRIORITY_DOT.medium;
-  const label = priority.charAt(0).toUpperCase() + priority.slice(1).toLowerCase();
+  const p = PRIORITY_ICONS[priority] || PRIORITY_ICONS.medium;
   return (
-    <div className="flex items-center gap-1.5">
-      <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: dot, flexShrink: 0 }} />
-      <span style={{ fontSize: 13, fontWeight: 500, color: '#172B4D', fontFamily: 'Inter, sans-serif' }}>{label}</span>
-    </div>
+    <span className="inline-flex items-center gap-1">
+      <p.Icon className="h-3.5 w-3.5" style={{ color: p.color }} />
+      <span className="text-[13px] font-medium text-slate-700">{p.label}</span>
+    </span>
   );
+}
+
+// ── Avatar colours (deterministic per name) ──
+const AVATAR_COLOURS = [
+  { bg: '#DBEAFE', text: '#1D4ED8' },
+  { bg: '#D1FAE5', text: '#065F46' },
+  { bg: '#FEE2E2', text: '#991B1B' },
+  { bg: '#FEF3C7', text: '#92400E' },
+  { bg: '#E0E7FF', text: '#3730A3' },
+  { bg: '#FCE7F3', text: '#9D174D' },
+  { bg: '#CCFBF1', text: '#065F46' },
+  { bg: '#F3E8FF', text: '#6B21A8' },
+];
+
+function getAvatarColour(name: string) {
+  const idx = name.charCodeAt(0) % AVATAR_COLOURS.length;
+  return AVATAR_COLOURS[idx];
 }
 
 // ── Age formatter ──
@@ -93,17 +107,20 @@ function getRelativeAge(createdAt: string): string {
   return `${day} ${mon}`;
 }
 
+// ── Column definitions ──
+type ColumnKey = 'SEVERITY' | 'PRIORITY' | 'STATUS' | 'ASSIGNEE' | 'AGE';
+
 interface Props {
   defects: Defect[];
   selectedIds: Set<string>;
   onSelectionChange: (ids: Set<string>) => void;
   onDelete: (defect: Defect) => void;
+  visibleColumns?: Set<ColumnKey>;
 }
 
-const TH_STYLE = { fontSize: '10.5px', fontWeight: 600 as const, textTransform: 'uppercase' as const, letterSpacing: '0.04em', color: '#64748B' };
-
-export function DefectTable({ defects, selectedIds, onSelectionChange, onDelete }: Props) {
+export function DefectTable({ defects, selectedIds, onSelectionChange, onDelete, visibleColumns }: Props) {
   const navigate = useNavigate();
+  const cols = visibleColumns || new Set<ColumnKey>(['SEVERITY', 'PRIORITY', 'STATUS', 'ASSIGNEE', 'AGE']);
 
   const toggleAll = () => {
     onSelectionChange(selectedIds.size === defects.length ? new Set() : new Set(defects.map(d => d.id)));
@@ -118,81 +135,102 @@ export function DefectTable({ defects, selectedIds, onSelectionChange, onDelete 
   return (
     <Table>
       <TableHeader>
-        <TableRow className="h-9" style={{ backgroundColor: '#F8FAFC' }}>
-          <TableHead className="w-10" style={TH_STYLE}><Checkbox checked={defects.length > 0 && selectedIds.size === defects.length} onCheckedChange={toggleAll} /></TableHead>
-          <TableHead className="w-28" style={TH_STYLE}>Key</TableHead>
-          <TableHead style={TH_STYLE}>Title</TableHead>
-          <TableHead className="w-24" style={TH_STYLE}>Severity</TableHead>
-          <TableHead className="w-24" style={TH_STYLE}>Priority</TableHead>
-          <TableHead className="w-28" style={TH_STYLE}>Status</TableHead>
-          <TableHead className="w-36" style={TH_STYLE}>Assignee</TableHead>
-          <TableHead className="w-24" style={TH_STYLE}>Age</TableHead>
+        <TableRow className="h-9 bg-slate-50">
+          <TableHead className="w-10 px-3 py-2 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+            <Checkbox checked={defects.length > 0 && selectedIds.size === defects.length} onCheckedChange={toggleAll} />
+          </TableHead>
+          <TableHead className="w-28 px-3 py-2 text-xs font-semibold text-slate-500 uppercase tracking-wider">Key</TableHead>
+          <TableHead className="px-3 py-2 text-xs font-semibold text-slate-500 uppercase tracking-wider">Title</TableHead>
+          {cols.has('SEVERITY') && <TableHead className="w-24 px-3 py-2 text-xs font-semibold text-slate-500 uppercase tracking-wider">Severity</TableHead>}
+          {cols.has('PRIORITY') && <TableHead className="w-24 px-3 py-2 text-xs font-semibold text-slate-500 uppercase tracking-wider">Priority</TableHead>}
+          {cols.has('STATUS') && <TableHead className="w-28 px-3 py-2 text-xs font-semibold text-slate-500 uppercase tracking-wider">Status</TableHead>}
+          {cols.has('ASSIGNEE') && <TableHead className="w-36 px-3 py-2 text-xs font-semibold text-slate-500 uppercase tracking-wider">Assignee</TableHead>}
+          {cols.has('AGE') && <TableHead className="w-24 px-3 py-2 text-xs font-semibold text-slate-500 uppercase tracking-wider">Age</TableHead>}
           <TableHead className="w-10" />
         </TableRow>
       </TableHeader>
       <TableBody>
         {defects.map(d => (
-          <TableRow key={d.id} className={cn("group cursor-pointer hover:bg-muted/50", selectedIds.has(d.id) && "bg-primary/5")} style={{ height: 36, maxHeight: 36 }} onClick={() => navigate(`/testhub/defects/${d.id}`)}>
-            <TableCell style={{ padding: '8px 12px' }} onClick={e => e.stopPropagation()}><Checkbox checked={selectedIds.has(d.id)} onCheckedChange={() => toggleOne(d.id)} /></TableCell>
-            <TableCell style={{ padding: '8px 12px' }}>
+          <TableRow
+            key={d.id}
+            className={cn('group cursor-pointer hover:bg-slate-50 transition-colors', selectedIds.has(d.id) && 'bg-blue-600/[0.08]')}
+            style={{ height: 36, maxHeight: 36 }}
+            onClick={() => navigate(`/testhub/defects/${d.id}`)}
+          >
+            {/* Checkbox */}
+            <TableCell className="px-3 py-2" onClick={e => e.stopPropagation()}>
+              <Checkbox checked={selectedIds.has(d.id)} onCheckedChange={() => toggleOne(d.id)} />
+            </TableCell>
+
+            {/* Key */}
+            <TableCell className="px-3 py-2">
               {d.jira_source && d.jira_key ? (
                 <div className="flex flex-col gap-0.5">
                   <div className="flex items-center gap-1.5">
-                    <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, fontWeight: 700, color: '#2563EB', backgroundColor: '#EFF6FF', borderRadius: 3, padding: '0 4px', lineHeight: '18px' }}>JIRA</span>
+                    <span className="font-mono text-[11px] font-bold text-blue-600 bg-blue-50 rounded px-1 leading-[18px]">JIRA</span>
                     {d.external_url ? (
-                      <a href={d.external_url} target="_blank" rel="noopener noreferrer" style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 13, color: '#2563EB' }} className="hover:underline" onClick={e => e.stopPropagation()}>{d.jira_key}</a>
+                      <a href={d.external_url} target="_blank" rel="noopener noreferrer" className="font-mono text-[13px] text-blue-600 hover:underline" onClick={e => e.stopPropagation()}>{d.jira_key}</a>
                     ) : (
-                      <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 13, color: '#2563EB' }}>{d.jira_key}</span>
+                      <span className="font-mono text-[13px] text-blue-600">{d.jira_key}</span>
                     )}
                   </div>
-                  <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: '#6B778C' }}>{d.defect_key}</span>
+                  <span className="font-mono text-[11px] text-slate-500">{d.defect_key}</span>
                 </div>
               ) : (
-                <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 13, color: '#172B4D' }}>{d.defect_key}</span>
+                <span className="font-mono text-[13px] text-slate-900">{d.defect_key}</span>
               )}
             </TableCell>
-            <TableCell style={{ padding: '8px 12px', fontSize: 13, fontWeight: 500, color: '#172B4D', fontFamily: 'Inter, sans-serif' }} className="max-w-md truncate">{d.title}</TableCell>
-            <TableCell style={{ padding: '8px 12px' }}><SeverityPill severity={d.severity} /></TableCell>
-            <TableCell style={{ padding: '8px 12px' }}><PriorityCell priority={d.priority} /></TableCell>
-            <TableCell style={{ padding: '8px 12px' }}><StatusPill status={d.status} /></TableCell>
-            <TableCell style={{ padding: '8px 12px' }}>
-              {d.assignee ? (
-                <div className="flex items-center gap-2">
-                  <span style={{
-                    width: 24, height: 24, borderRadius: '50%', backgroundColor: '#DEEBFF', color: '#0747A6',
-                    fontSize: 11, fontWeight: 700, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-                    fontFamily: 'Inter, sans-serif',
-                  }}>
-                    {initials(d.assignee.full_name)}
-                  </span>
-                  <span style={{ fontSize: 13, fontWeight: 500, color: '#172B4D', fontFamily: 'Inter, sans-serif' }} className="truncate">{d.assignee.full_name}</span>
-                </div>
-              ) : (
-                <div className="flex items-center gap-2">
-                  <span style={{
-                    width: 24, height: 24, borderRadius: '50%', backgroundColor: '#F4F5F7', border: '1px solid #DFE1E6',
-                    display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-                  }}>
-                    <UserRound style={{ width: 12, height: 12, color: '#8993A4' }} />
-                  </span>
-                  <span style={{ fontSize: 13, fontWeight: 400, color: '#8993A4', fontFamily: 'Inter, sans-serif' }}>Unassigned</span>
-                </div>
-              )}
-            </TableCell>
-            <TableCell style={{ padding: '8px 12px', fontSize: 12, fontWeight: 400, color: '#6B778C', fontFamily: 'Inter, sans-serif' }}>{getRelativeAge(d.created_at)}</TableCell>
-            <TableCell style={{ padding: '8px 12px' }} onClick={e => e.stopPropagation()}>
+
+            {/* Title */}
+            <TableCell className="px-3 py-2 text-sm font-medium text-slate-900 max-w-md truncate">{d.title}</TableCell>
+
+            {/* Severity */}
+            {cols.has('SEVERITY') && <TableCell className="px-3 py-2"><SeverityPill severity={d.severity} /></TableCell>}
+
+            {/* Priority */}
+            {cols.has('PRIORITY') && <TableCell className="px-3 py-2"><PriorityCell priority={d.priority} /></TableCell>}
+
+            {/* Status */}
+            {cols.has('STATUS') && <TableCell className="px-3 py-2"><StatusPill status={d.status} /></TableCell>}
+
+            {/* Assignee */}
+            {cols.has('ASSIGNEE') && (
+              <TableCell className="px-3 py-2">
+                {d.assignee ? (
+                  <div className="flex items-center gap-2">
+                    <Avatar className="h-6 w-6">
+                      <AvatarFallback
+                        className="text-[10px] font-bold"
+                        style={{
+                          backgroundColor: getAvatarColour(d.assignee.full_name).bg,
+                          color: getAvatarColour(d.assignee.full_name).text,
+                        }}
+                      >
+                        {initials(d.assignee.full_name)}
+                      </AvatarFallback>
+                    </Avatar>
+                    <span className="text-[13px] font-medium text-slate-900 truncate">{d.assignee.full_name}</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <div className="h-6 w-6 rounded-full bg-slate-100 border border-slate-900/[0.12] flex items-center justify-center flex-shrink-0">
+                      <UserRound className="h-3 w-3 text-slate-400" />
+                    </div>
+                    <span className="text-[13px] text-slate-400">Unassigned</span>
+                  </div>
+                )}
+              </TableCell>
+            )}
+
+            {/* Age */}
+            {cols.has('AGE') && <TableCell className="px-3 py-2 text-xs text-slate-500">{getRelativeAge(d.created_at)}</TableCell>}
+
+            {/* Actions */}
+            <TableCell className="px-3 py-2" onClick={e => e.stopPropagation()}>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <button
-                    className="opacity-0 group-hover:opacity-100 transition-opacity duration-150"
-                    style={{
-                      width: 28, height: 28, borderRadius: 4, border: 'none', background: 'transparent',
-                      display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
-                    }}
-                    onMouseEnter={e => (e.currentTarget.style.background = 'rgba(0,0,0,0.06)')}
-                    onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-                  >
-                    <MoreHorizontal style={{ width: 16, height: 16, color: '#6B778C' }} />
+                  <button className="opacity-0 group-hover:opacity-100 transition-opacity duration-150 h-7 w-7 rounded inline-flex items-center justify-center hover:bg-slate-900/[0.06]">
+                    <MoreHorizontal className="h-4 w-4 text-slate-500" />
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
