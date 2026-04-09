@@ -141,19 +141,19 @@ serve(async (req) => {
 
     const rolePersona = inferRole(userId, releases as Record<string, string>[]);
 
-    const fmtReleases = releases.map(r =>
+    const fmtReleases = releases.map((r: any) =>
       `Release "${r.name}": target=${r.target_date}, health=${r.health}, is_blocked=${r.is_blocked}, defects_open=${r.defects_open}, critical_defects=${r.critical_defects}, readiness_pct=${r.readiness_pct}%, id=${r.id}`
     ).join('\n') || 'None';
 
-    const fmtIncidents = incidents.map(i =>
+    const fmtIncidents = incidents.map((i: any) =>
       `[${i.incident_key}] "${i.title}" severity=${i.severity}, status=${i.status}, assignee=${i.assignee_id === userId ? 'YOU' : 'other'}, created=${i.created_at}, id=${i.id}`
     ).join('\n') || 'None';
 
     const fmtTests = testFails.length
-      ? `${testFails.length} test cases failed in last 24h. case_keys: ${testFails.slice(0,5).map(t => t.case_key).join(', ')}${testFails.length > 5 ? ' ...' : ''}`
+      ? `${testFails.length} test cases failed in last 24h. case_keys: ${testFails.slice(0,5).map((t: any) => t.case_key).join(', ')}${testFails.length > 5 ? ' ...' : ''}`
       : 'None';
 
-    const fmtNotifs = notifications.slice(0, 15).map((n, i) =>
+    const fmtNotifs = notifications.slice(0, 15).map((n: any, i: number) =>
       `${i+1}. [${n.notification_type}] ${n.entity_title} (${n.entity_type}, hub: ${n.hub_source}, key: ${n.entity_key ?? 'none'}, id: ${n.entity_id ?? 'null'})`
     ).join('\n') || 'None';
 
