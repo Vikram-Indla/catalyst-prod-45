@@ -75,6 +75,7 @@ export default function TestHubDashboardPage() {
         defectStatsRes,
         defectDirectRes,
         automationRes,
+        myStatsRes,
       ] = await Promise.all([
         // Total test cases
         supabase.from('tm_test_cases').select('*', { count: 'exact', head: true }),
