@@ -1371,12 +1371,42 @@ export default function StoryDetailModal({
                   </h1>
                 )}
 
+                {/* Action row — + button (below title) */}
+                <div ref={plusMenuRef} style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 12, position: 'relative' }}>
+                  <button
+                    onClick={() => setPlusMenuOpen(o => !o)}
+                    style={{
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      width: 28, height: 28, borderRadius: 4,
+                      border: `0.75px solid ${V.border}`, background: V.white,
+                      cursor: 'pointer', color: V.textMuted,
+                      transition: 'border-color 150ms, color 150ms',
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.borderColor = V.primaryBlue; e.currentTarget.style.color = V.primaryBlue; }}
+                    onMouseLeave={e => { e.currentTarget.style.borderColor = V.border; e.currentTarget.style.color = V.textMuted; }}
+                    title="Actions"
+                  >
+                    <Plus size={16} />
+                  </button>
+                  {plusMenuOpen && (
+                    <div style={{
+                      position: 'absolute', top: 32, left: 0, width: 220,
+                      background: V.white, borderRadius: 6,
+                      boxShadow: '0 8px 12px rgba(30,31,33,0.15), 0 0 1px rgba(30,31,33,0.31)',
+                      border: `0.75px solid ${V.border}`, zIndex: 20, overflow: 'hidden', padding: '4px 0',
+                    }}>
+                      <MenuBtn icon={<Plus size={14} />} label="Create subtask" shortcut="⇧C" onClick={() => { setShowSubtaskInput(true); setPlusMenuOpen(false); }} />
+                      <MenuBtn icon={<Link2 size={14} />} label="Link work item" shortcut="⇧K" onClick={() => { setShowLinkModal(true); setPlusMenuOpen(false); }} />
+                      <MenuBtn icon={<Paperclip size={14} />} label="Add attachment" onClick={() => { fileInputRef.current?.click(); setPlusMenuOpen(false); }} />
+                    </div>
+                  )}
+                </div>
+
                 {/* ── KEY DETAILS STRIP (always visible) ── */}
                 <div style={{ position: 'relative' }}>
                   <KeyDetailsStrip
                     story={story}
                     onAssigneeClick={() => { setEditingAssignee(true); handleAssigneeSearch(''); }}
-                    
                   />
 
                   {/* Assignee picker popover (anchored to strip) */}
@@ -1418,13 +1448,6 @@ export default function StoryDetailModal({
                         ))}
                       </div>
                     </div>
-                  )}
-
-
-
-
-
-
                   )}
                 </div>
 
