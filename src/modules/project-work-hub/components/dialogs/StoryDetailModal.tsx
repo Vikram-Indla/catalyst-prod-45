@@ -567,7 +567,11 @@ function EmptyState({ icon, message, action }: { icon: React.ReactNode; message:
 /* ═══════════════════════════════════════════════
    KEY DETAILS STRIP
    ═══════════════════════════════════════════════ */
-function KeyDetailsStrip({ story }: { story: any }) {
+function KeyDetailsStrip({ story, onAssigneeClick, onFixVersionClick }: {
+  story: any;
+  onAssigneeClick?: () => void;
+  onFixVersionClick?: () => void;
+}) {
   return (
     <div style={{
       display: 'flex', flexWrap: 'wrap', gap: 0,
@@ -588,11 +592,18 @@ function KeyDetailsStrip({ story }: { story: any }) {
         </div>
       </StripField>
       <StripField label="Assignee">
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+        <div
+          style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', borderRadius: 4, padding: '2px 4px', margin: '-2px -4px', transition: 'background 120ms' }}
+          onClick={onAssigneeClick}
+          onMouseEnter={e => e.currentTarget.style.background = 'rgba(0,0,0,0.04)'}
+          onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+          title="Click to change assignee"
+        >
           <AvatarCircle name={story.assignee_display_name} size={20} />
           <span style={{ fontSize: 13, fontWeight: 500, color: story.assignee_display_name ? V.textPrimary : V.textMuted }}>
             {story.assignee_display_name || 'Unassigned'}
           </span>
+          <ChevronDown size={12} style={{ color: V.textMuted, marginLeft: 2 }} />
         </div>
       </StripField>
       <StripField label="Reporter">
@@ -609,16 +620,27 @@ function KeyDetailsStrip({ story }: { story: any }) {
           </div>
         </StripField>
       )}
-      {story.fix_versions && (
-        <StripField label="Fix Versions">
-          <span style={{
-            display: 'inline-block', background: V.lozengeGreyBg, color: V.lozengeGreyText,
-            padding: '2px 6px', borderRadius: 3, fontSize: 11, fontWeight: 600,
-          }}>
-            {String(story.fix_versions)}
-          </span>
-        </StripField>
-      )}
+      <StripField label="Fix Versions">
+        <div
+          style={{ display: 'flex', alignItems: 'center', gap: 4, cursor: 'pointer', borderRadius: 4, padding: '2px 4px', margin: '-2px -4px', transition: 'background 120ms' }}
+          onClick={onFixVersionClick}
+          onMouseEnter={e => e.currentTarget.style.background = 'rgba(0,0,0,0.04)'}
+          onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+          title="Click to change fix version"
+        >
+          {story.fix_versions ? (
+            <span style={{
+              display: 'inline-block', background: V.lozengeGreyBg, color: V.lozengeGreyText,
+              padding: '2px 6px', borderRadius: 3, fontSize: 11, fontWeight: 600,
+            }}>
+              {String(story.fix_versions)}
+            </span>
+          ) : (
+            <span style={{ fontSize: 13, color: V.textMuted }}>—</span>
+          )}
+          <ChevronDown size={12} style={{ color: V.textMuted, marginLeft: 2 }} />
+        </div>
+      </StripField>
     </div>
   );
 }
