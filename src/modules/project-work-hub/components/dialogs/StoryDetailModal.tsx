@@ -1394,7 +1394,101 @@ export default function StoryDetailModal({
                 )}
 
                 {/* ── KEY DETAILS STRIP (always visible) ── */}
-                <KeyDetailsStrip story={story} />
+                <div style={{ position: 'relative' }}>
+                  <KeyDetailsStrip
+                    story={story}
+                    onAssigneeClick={() => { setEditingAssignee(true); handleAssigneeSearch(''); }}
+                    onFixVersionClick={() => { setEditingFixVersion(true); handleFixVersionSearch(''); }}
+                  />
+
+                  {/* Assignee picker popover (anchored to strip) */}
+                  {editingAssignee && (
+                    <div ref={assigneeRef} style={{
+                      position: 'absolute', top: '100%', left: 240, width: 240, zIndex: 50,
+                      background: V.white, border: `0.75px solid ${V.border}`,
+                      borderRadius: 6, boxShadow: '0 8px 12px rgba(30,31,33,0.15), 0 0 1px rgba(30,31,33,0.31)',
+                      padding: 8, marginTop: 4,
+                    }}>
+                      <input
+                        autoFocus value={assigneeSearch}
+                        onChange={e => handleAssigneeSearch(e.target.value)}
+                        placeholder="Search team members..."
+                        style={{
+                          width: '100%', padding: '6px 8px', fontSize: 12,
+                          border: `0.75px solid ${V.border}`, borderRadius: 4,
+                          outline: 'none', marginBottom: 4, boxSizing: 'border-box',
+                        }}
+                      />
+                      <div style={{ maxHeight: 180, overflowY: 'auto' }}>
+                        <div
+                          onClick={() => handleAssigneeSelect('', '')}
+                          style={{ padding: '6px 8px', fontSize: 12, cursor: 'pointer', borderRadius: 3, color: V.textMuted, fontStyle: 'italic' }}
+                          onMouseEnter={e => e.currentTarget.style.background = V.hoverRow}
+                          onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                        >Unassigned</div>
+                        {assigneeResults.map(p => (
+                          <div
+                            key={p.id}
+                            onClick={() => handleAssigneeSelect(p.id, p.full_name || 'User')}
+                            style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 8px', fontSize: 12, cursor: 'pointer', borderRadius: 3 }}
+                            onMouseEnter={e => e.currentTarget.style.background = V.hoverRow}
+                            onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                          >
+                            <AvatarCircle name={p.full_name} size={20} />
+                            <span>{p.full_name || 'Unknown'}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Fix Version picker popover (anchored to strip) */}
+                  {editingFixVersion && (
+                    <div ref={fixVersionRef} style={{
+                      position: 'absolute', top: '100%', right: 0, width: 240, zIndex: 50,
+                      background: V.white, border: `0.75px solid ${V.border}`,
+                      borderRadius: 6, boxShadow: '0 8px 12px rgba(30,31,33,0.15), 0 0 1px rgba(30,31,33,0.31)',
+                      padding: 8, marginTop: 4,
+                    }}>
+                      <input
+                        autoFocus value={fixVersionSearch}
+                        onChange={e => handleFixVersionSearch(e.target.value)}
+                        placeholder="Search versions..."
+                        style={{
+                          width: '100%', padding: '6px 8px', fontSize: 12,
+                          border: `0.75px solid ${V.border}`, borderRadius: 4,
+                          outline: 'none', marginBottom: 4, boxSizing: 'border-box',
+                        }}
+                      />
+                      <div style={{ maxHeight: 180, overflowY: 'auto' }}>
+                        <div
+                          onClick={() => handleFixVersionSelect('')}
+                          style={{ padding: '6px 8px', fontSize: 12, cursor: 'pointer', borderRadius: 3, color: V.textMuted, fontStyle: 'italic' }}
+                          onMouseEnter={e => e.currentTarget.style.background = V.hoverRow}
+                          onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                        >None</div>
+                        {fixVersionResults.map(v => (
+                          <div
+                            key={v.id}
+                            onClick={() => handleFixVersionSelect(v.name)}
+                            style={{
+                              display: 'flex', alignItems: 'center', gap: 6, padding: '6px 8px',
+                              fontSize: 12, cursor: 'pointer', borderRadius: 3,
+                              background: String(story.fix_versions) === v.name ? V.selectedRow : 'transparent',
+                            }}
+                            onMouseEnter={e => { if (String(story.fix_versions) !== v.name) e.currentTarget.style.background = V.hoverRow; }}
+                            onMouseLeave={e => { if (String(story.fix_versions) !== v.name) e.currentTarget.style.background = 'transparent'; }}
+                          >
+                            <span>{v.name}</span>
+                          </div>
+                        ))}
+                        {fixVersionResults.length === 0 && fixVersionSearch && (
+                          <div style={{ padding: '8px', fontSize: 12, color: V.textMuted, textAlign: 'center' }}>No versions found</div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
 
                 {/* Action row — + button */}
                 <div ref={plusMenuRef} style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 16, position: 'relative' }}>
