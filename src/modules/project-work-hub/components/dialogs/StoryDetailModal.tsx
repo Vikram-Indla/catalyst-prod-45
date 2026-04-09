@@ -2091,10 +2091,22 @@ export default function StoryDetailModal({
                         </span>
                       )) : <span style={{ fontSize: 14, color: V.textMuted }}>None</span>}
                     </div>
-                    <LabelAdder onAdd={(label: string) => {
-                      const current = Array.isArray(story.labels) ? (story.labels as string[]) : [];
-                      if (!current.includes(label)) saveField('labels', [...current, label]);
-                    }} />
+                    <div style={{ marginTop: 4 }}>
+                      <input
+                        type="text"
+                        placeholder="Add label…"
+                        style={{ fontSize: 12, padding: '2px 6px', border: `1px solid ${V.border}`, borderRadius: 3, background: 'transparent', color: V.textPrimary, width: '100%' }}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            const val = (e.target as HTMLInputElement).value.trim();
+                            if (!val) return;
+                            const current = Array.isArray(story.labels) ? (story.labels as string[]) : [];
+                            if (!current.includes(val)) saveField('labels', [...current, val]);
+                            (e.target as HTMLInputElement).value = '';
+                          }
+                        }}
+                      />
+                    </div>
                   </SidebarField>
 
                   {/* Due Date */}
