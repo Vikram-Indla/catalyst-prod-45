@@ -16,12 +16,20 @@ export function DefectFilters({ filters, onChange, users }: Props) {
   return (
     <div className="flex items-center gap-3 flex-wrap">
       <div className="relative w-64">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input placeholder="Search by title, DEF key, or Jira ID..." value={filters.search || ''} onChange={e => onChange({ ...filters, search: e.target.value })} className="pl-10" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: '#8993A4' }} />
+        <Input
+          placeholder="Search by title, key, Jira ID..."
+          value={filters.search || ''}
+          onChange={e => onChange({ ...filters, search: e.target.value })}
+          className="pl-10"
+          style={{ height: 32, fontSize: 13, fontFamily: 'Inter, sans-serif', borderColor: '#DFE1E6', borderRadius: 4, color: '#172B4D' }}
+        />
       </div>
 
       <Select value={filters.status?.[0] || 'all'} onValueChange={v => onChange({ ...filters, status: v === 'all' ? undefined : [v as any] })}>
-        <SelectTrigger className="w-36"><SelectValue placeholder="Status" /></SelectTrigger>
+        <SelectTrigger style={{ width: 144, height: 32, fontSize: 13, fontFamily: 'Inter, sans-serif', borderColor: '#DFE1E6', borderRadius: 4, color: '#172B4D', backgroundColor: '#FFFFFF' }}>
+          <SelectValue placeholder="Status" />
+        </SelectTrigger>
         <SelectContent>
           <SelectItem value="all">All Status</SelectItem>
           <SelectItem value="new">New</SelectItem>
@@ -36,7 +44,9 @@ export function DefectFilters({ filters, onChange, users }: Props) {
       </Select>
 
       <Select value={filters.severity?.[0] || 'all'} onValueChange={v => onChange({ ...filters, severity: v === 'all' ? undefined : [v as any] })}>
-        <SelectTrigger className="w-32"><SelectValue placeholder="Severity" /></SelectTrigger>
+        <SelectTrigger style={{ width: 128, height: 32, fontSize: 13, fontFamily: 'Inter, sans-serif', borderColor: '#DFE1E6', borderRadius: 4, color: '#172B4D', backgroundColor: '#FFFFFF' }}>
+          <SelectValue placeholder="Severity" />
+        </SelectTrigger>
         <SelectContent>
           <SelectItem value="all">All Severity</SelectItem>
           <SelectItem value="critical">Critical</SelectItem>
@@ -47,7 +57,9 @@ export function DefectFilters({ filters, onChange, users }: Props) {
       </Select>
 
       <Select value={filters.priority?.[0] || 'all'} onValueChange={v => onChange({ ...filters, priority: v === 'all' ? undefined : [v as any] })}>
-        <SelectTrigger className="w-32"><SelectValue placeholder="Priority" /></SelectTrigger>
+        <SelectTrigger style={{ width: 128, height: 32, fontSize: 13, fontFamily: 'Inter, sans-serif', borderColor: '#DFE1E6', borderRadius: 4, color: '#172B4D', backgroundColor: '#FFFFFF' }}>
+          <SelectValue placeholder="Priority" />
+        </SelectTrigger>
         <SelectContent>
           <SelectItem value="all">All Priority</SelectItem>
           <SelectItem value="urgent">Urgent</SelectItem>
@@ -58,7 +70,9 @@ export function DefectFilters({ filters, onChange, users }: Props) {
       </Select>
 
       <Select value={filters.assignedTo || 'all'} onValueChange={v => onChange({ ...filters, assignedTo: v === 'all' ? undefined : v })}>
-        <SelectTrigger className="w-40"><SelectValue placeholder="Assignee" /></SelectTrigger>
+        <SelectTrigger style={{ width: 160, height: 32, fontSize: 13, fontFamily: 'Inter, sans-serif', borderColor: '#DFE1E6', borderRadius: 4, color: '#172B4D', backgroundColor: '#FFFFFF' }}>
+          <SelectValue placeholder="Assignee" />
+        </SelectTrigger>
         <SelectContent>
           <SelectItem value="all">All Assignees</SelectItem>
           <SelectItem value="unassigned">Unassigned</SelectItem>
