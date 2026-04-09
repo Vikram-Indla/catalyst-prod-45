@@ -278,8 +278,8 @@ export default function TestHubDashboardPage() {
   if (isLoading) {
     return (
       <div style={{ height: 'calc(100vh - 44px)', display: 'flex', flexDirection: 'column', overflow: 'hidden', background: isDark ? '#0A0A0A' : '#F8FAFC', padding: '12px 16px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 12, flexShrink: 0, marginBottom: 12 }}>
-          {[...Array(5)].map((_, i) => (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 12, flexShrink: 0, marginBottom: 12 }}>
+          {[...Array(6)].map((_, i) => (
             <div key={i} className="animate-pulse" style={{ height: 130, background: isDark ? '#1A1A1A' : '#E2E8F0', borderRadius: 8 }} />
           ))}
         </div>
