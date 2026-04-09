@@ -87,8 +87,8 @@ serve(async (req) => {
       .toISOString().split('T')[0];
 
     const TIMEOUT_MS = 8000;
-    const withTimeout = <T>(p: Promise<T>): Promise<T> =>
-      Promise.race([p, new Promise<T>((_, rej) =>
+    const withTimeout = <T>(p: PromiseLike<T>): Promise<T> =>
+      Promise.race([Promise.resolve(p), new Promise<T>((_, rej) =>
         setTimeout(() => rej(new Error('query_timeout')), TIMEOUT_MS))]);
 
     const [notifRes, releasesRes, incidentsRes, testFailRes] = await Promise.allSettled([
@@ -127,10 +127,10 @@ serve(async (req) => {
         .limit(20)),
     ]);
 
-    const notifications = notifRes.status === 'fulfilled' ? notifRes.value.data ?? [] : [];
-    const releases = releasesRes.status === 'fulfilled' ? releasesRes.value.data ?? [] : [];
-    const incidents = incidentsRes.status === 'fulfilled' ? incidentsRes.value.data ?? [] : [];
-    const testFails = testFailRes.status === 'fulfilled' ? testFailRes.value.data ?? [] : [];
+    const notifications: any[] = notifRes.status === 'fulfilled' ? (notifRes.value as any).data ?? [] : [];
+    const releases: any[] = releasesRes.status === 'fulfilled' ? (releasesRes.value as any).data ?? [] : [];
+    const incidents: any[] = incidentsRes.status === 'fulfilled' ? (incidentsRes.value as any).data ?? [] : [];
+    const testFails: any[] = testFailRes.status === 'fulfilled' ? (testFailRes.value as any).data ?? [] : [];
 
     if (!notifications.length && !releases.length && !incidents.length && !testFails.length) {
       return new Response(
