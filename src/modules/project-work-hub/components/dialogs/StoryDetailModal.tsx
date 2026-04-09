@@ -246,7 +246,8 @@ async function enqueueWriteBack(phIssueId: string, fieldName: string, newValue: 
       field_name: fieldName,
       new_value: newValue,
       operation: 'UPDATE',
-      push_status: 'pending',
+      status: 'approved',
+      approved_at: new Date().toISOString(),
     });
   } catch { /* non-critical */ }
 }
