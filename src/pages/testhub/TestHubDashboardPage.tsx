@@ -326,8 +326,8 @@ export default function TestHubDashboardPage() {
       {/* ═══ BODY ═══ */}
       <div style={{ flex: 1, minHeight: 0, padding: '12px 16px', overflow: 'hidden', display: 'flex', flexDirection: 'column', gap: 12 }}>
 
-        {/* ── KPI STRIP — 5 cards ── */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 12, flexShrink: 0 }}>
+        {/* ── KPI STRIP — 6 cards ── */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 12, flexShrink: 0 }}>
           <KPICard label="Total test cases" value={totalTestCases} accent="#2563EB"
             trend={{ direction: 'up', value: '+3', color: '#059669' }}
             subtitle={`${totalCycles} cycles total`} sparkData={[4, 6, 5, 8, 10, 9, 12, 14]} />
@@ -346,6 +346,10 @@ export default function TestHubDashboardPage() {
             trend={{ direction: 'flat', value: '—', color: '#94A3B8' }}
             subtitle={`${automatedCount} of ${totalTestCases} automated`}
             sparkData={[0, 0, 0, 0, 0, 0, 0, automationCoverage]} />
+          <KPICard label="My executions today" value={myExecutionsToday} accent="#8B5CF6"
+            trend={{ direction: 'flat', value: '—', color: '#94A3B8' }}
+            subtitle={`${myPassedToday} passed today`}
+            sparkData={[0, 0, 0, 0, 0, 0, 0, myExecutionsToday]} />
         </div>
 
         {/* ── EXECUTION STATUS BAR — 48px ── */}
