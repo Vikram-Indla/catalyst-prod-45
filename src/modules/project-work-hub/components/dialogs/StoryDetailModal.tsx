@@ -71,15 +71,13 @@ const V = {
   statusBorder: 'rgba(9, 30, 66, 0.29)',
 };
 
-const STATUS_OPTIONS = [
-  { label: 'To Do', category: 'todo' },
-  { label: 'Backlog', category: 'todo' },
-  { label: 'In Requirements', category: 'in_progress' },
-  { label: 'In Progress', category: 'in_progress' },
-  { label: 'In Review', category: 'in_progress' },
-  { label: 'Done', category: 'done' },
-  { label: 'On Hold', category: 'todo' },
+const STATUS_OPTION_GROUPS = [
+  { groupLabel: 'TO DO', category: 'todo', statuses: ['Backlog', 'In Requirements', 'In Design', 'Ready for Development', 'Technical Validation', 'To Do'] },
+  { groupLabel: 'IN PROGRESS', category: 'in_progress', statuses: ['In Development', 'On Hold', 'In QA', 'In Entity Integration', 'In UAT', 'In BETA', 'End to End Testing', 'In Progress', 'In Review'] },
+  { groupLabel: 'DONE', category: 'done', statuses: ['Production Ready', 'Beta Ready', 'In Production', 'Done', 'Closed'] },
 ];
+
+const STATUS_OPTIONS = STATUS_OPTION_GROUPS.flatMap(g => g.statuses.map(s => ({ label: s, category: g.category })));
 
 const PRIORITY_OPTIONS = [
   { label: 'Highest', value: 'Highest' },
@@ -612,7 +610,7 @@ function KeyDetailsStrip({ story, onAssigneeClick }: {
         </div>
       </StripField>
       {story.parent_key && (
-        <StripField label="Epic">
+        <StripField label="Parent">
           <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
             <IssueTypeIcon type="epic" size={14} />
             <span style={{ fontSize: 12, fontFamily: 'JetBrains Mono, monospace', color: V.linkBlue }}>{story.parent_key}</span>
