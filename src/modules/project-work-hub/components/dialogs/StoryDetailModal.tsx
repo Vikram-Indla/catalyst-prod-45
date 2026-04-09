@@ -993,6 +993,25 @@ export default function StoryDetailModal({
     setAssigneeResults(data ?? []);
   }, []);
 
+  const handleFixVersionSearch = useCallback(async (q: string) => {
+    setFixVersionSearch(q);
+    let query = (supabase as any).from('wh_fix_versions').select('id, name').eq('project_id', projectId).is('deleted_at', null).order('sort_order', { ascending: true }).limit(20);
+    if (q.length >= 1) query = query.ilike('name', `%${q}%`);
+    const { data } = await query;
+    setFixVersionResults(data ?? []);
+  }, [projectId]);
+
+  const handleFixVersionSelect = useCallback(async (versionName: string) => {
+    await supabase.from('ph_issues').update({
+      fix_versions: versionName || null,
+    }).eq('id', itemId);
+    await enqueueWriteBack(itemId, 'fix_versions', versionName);
+    qc.invalidateQueries({ queryKey: ['ph_issue_detail', itemId] });
+    setEditingFixVersion(false);
+    if (versionName) toast.success(`Fix version → ${versionName}`);
+    else toast.success('Fix version cleared');
+  }, [itemId, qc]);
+
   const handleSaveComment = useCallback(async () => {
     if (!commentBody.trim()) return;
     const { data: { user } } = await supabase.auth.getUser();
