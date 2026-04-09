@@ -39,7 +39,16 @@ interface LinkedTest {
   case_key: string;
   title: string;
   priority: string;
+  coverage_status: string;
 }
+
+const COVERAGE_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
+  'Passed':  { label: 'PASSED',  color: '#006644', bg: '#E3FCEF' },
+  'Failed':  { label: 'FAILED',  color: '#BF2600', bg: '#FFEBE6' },
+  'Blocked': { label: 'BLOCKED', color: '#FF8B00', bg: '#FFFAE6' },
+  'Skipped': { label: 'SKIPPED', color: '#6B778C', bg: '#DFE1E6' },
+  'Not Run': { label: 'NOT RUN', color: '#253858', bg: '#DFE1E6' },
+};
 
 const TYPE_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
   functional: { label: 'Functional', color: '#2563EB', bg: '#EFF6FF' },
