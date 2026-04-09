@@ -1973,20 +1973,31 @@ export default function StoryDetailModal({
                       position: 'absolute', top: 40, left: 0, right: 0, zIndex: 100,
                       background: V.white, border: `0.75px solid ${V.border}`,
                       borderRadius: 6, boxShadow: '0 8px 12px rgba(30,31,33,0.15), 0 0 1px rgba(30,31,33,0.31)',
-                      padding: '4px 0',
+                      padding: '4px 0', maxHeight: 320, overflowY: 'auto',
                     }}>
-                      {STATUS_OPTIONS.map(opt => (
-                        <div
-                          key={opt.label} onClick={() => handleStatusChange(opt.label)}
-                          style={{
-                            padding: '8px 12px', cursor: 'pointer', fontSize: 13,
-                            display: 'flex', alignItems: 'center', gap: 8,
-                            transition: 'background 120ms',
-                          }}
-                          onMouseEnter={e => e.currentTarget.style.background = V.hoverRow}
-                          onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-                        >
-                          <StatusLozenge status={opt.label} category={opt.category} />
+                      {STATUS_OPTION_GROUPS.map(group => (
+                        <div key={group.groupLabel}>
+                          <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: V.textMuted, padding: '8px 12px 4px' }}>{group.groupLabel}</div>
+                          {group.statuses.map(s => {
+                            const isCurrent = story.status === s;
+                            return (
+                              <div
+                                key={s} onClick={() => handleStatusChange(s)}
+                                style={{
+                                  padding: '6px 12px', cursor: 'pointer', fontSize: 13,
+                                  display: 'flex', alignItems: 'center', gap: 8,
+                                  background: isCurrent ? V.selectedRow : 'transparent',
+                                  transition: 'background 120ms',
+                                }}
+                                onMouseEnter={e => { if (!isCurrent) e.currentTarget.style.background = V.hoverRow; }}
+                                onMouseLeave={e => { if (!isCurrent) e.currentTarget.style.background = isCurrent ? V.selectedRow : 'transparent'; }}
+                              >
+                                <span style={{ width: 8, height: 8, borderRadius: '50%', background: group.category === 'done' ? '#006644' : group.category === 'in_progress' ? '#0747A6' : '#94A3B8' }} />
+                                <span>{s}</span>
+                                {isCurrent && <span style={{ marginLeft: 'auto', fontSize: 12, color: V.primaryBlue }}>✓</span>}
+                              </div>
+                            );
+                          })}
                         </div>
                       ))}
                     </div>
