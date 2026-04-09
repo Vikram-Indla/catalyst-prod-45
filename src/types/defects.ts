@@ -10,8 +10,12 @@ export interface Defect {
   title: string;
   description: string | null;
   severity: DefectSeverity;
-  priority: DefectPriority;
+  priority: DefectPriority | null;
   status: DefectStatus;
+  // Source-aware display fields
+  displayKey?: string;
+  isJiraSource?: boolean;
+  assigneeName?: string;
   resolution: DefectResolution | null;
   assigned_to: string | null;
   reported_by: string | null;
