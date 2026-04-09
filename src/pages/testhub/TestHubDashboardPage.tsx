@@ -55,6 +55,9 @@ export default function TestHubDashboardPage() {
   const [defectStats, setDefectStats] = useState<DefectStats | null>(null);
   const [automationCoverage, setAutomationCoverage] = useState(0);
   const [automatedCount, setAutomatedCount] = useState(0);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [myExecutionsToday, setMyExecutionsToday] = useState(0);
+  const [myPassedToday, setMyPassedToday] = useState(0);
 
   const fetchDashboardData = async () => {
     setIsLoading(true);
