@@ -17,7 +17,7 @@ export function DefectFilters({ filters, onChange, users }: Props) {
     <div className="flex items-center gap-3 flex-wrap">
       <div className="relative w-64">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input placeholder="Search by title, key, Jira ID..." value={filters.search || ''} onChange={e => onChange({ ...filters, search: e.target.value })} className="pl-10" />
+        <Input placeholder="Search by title, DEF key, or Jira ID..." value={filters.search || ''} onChange={e => onChange({ ...filters, search: e.target.value })} className="pl-10" />
       </div>
 
       <Select value={filters.status?.[0] || 'all'} onValueChange={v => onChange({ ...filters, status: v === 'all' ? undefined : [v as any] })}>

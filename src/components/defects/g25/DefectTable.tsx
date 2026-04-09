@@ -55,23 +55,11 @@ export function DefectTable({ defects, selectedIds, onSelectionChange, onDelete 
               {d.jira_source && d.jira_key ? (
                 <div className="flex flex-col gap-0.5">
                   <div className="flex items-center gap-1.5">
-                    <img
-                      src="https://cdn.worldvectorlogo.com/logos/jira-1.svg"
-                      alt="Jira"
-                      className="h-3.5 w-3.5 flex-shrink-0"
-                    />
+                    <span className="text-xs font-bold text-blue-500 border border-blue-300 rounded px-1">JIRA</span>
                     {d.external_url ? (
-                      <a
-                        href={d.external_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="font-mono text-sm text-[#2563EB] hover:underline"
-                        onClick={e => e.stopPropagation()}
-                      >
-                        {d.jira_key}
-                      </a>
+                      <a href={d.external_url} target="_blank" rel="noopener noreferrer" className="font-mono text-sm text-blue-600 hover:underline" onClick={e => e.stopPropagation()}>{d.jira_key}</a>
                     ) : (
-                      <span className="font-mono text-sm text-[#2563EB]">{d.jira_key}</span>
+                      <span className="font-mono text-sm text-blue-600">{d.jira_key}</span>
                     )}
                   </div>
                   <span className="font-mono text-xs text-muted-foreground">{d.defect_key}</span>
