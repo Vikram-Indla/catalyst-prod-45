@@ -98,6 +98,7 @@ export function TestCycleCard({
 
   const executedCount = cycle.passed_count + cycle.failed_count + cycle.blocked_count + cycle.skipped_count;
   const progressPercent = cycle.total_cases > 0 ? Math.min(100, Math.round((executedCount / cycle.total_cases) * 100)) : 0;
+  const isOverdue = !!(cycle.planned_end && new Date(cycle.planned_end) < new Date() && cycle.status !== 'completed' && cycle.status !== 'archived');
 
   return (
     <div
@@ -194,6 +195,15 @@ export function TestCycleCard({
         <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
           <Calendar size={14} />
           {formatDate(cycle.planned_start)} — {formatDate(cycle.planned_end)}
+          {isOverdue && (
+            <span style={{
+              fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
+              color: '#B91C1C', backgroundColor: '#FEE2E2',
+              padding: '2px 6px', borderRadius: 4, marginLeft: 6,
+            }}>
+              Overdue
+            </span>
+          )}
         </span>
       </div>
 
