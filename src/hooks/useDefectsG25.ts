@@ -176,19 +176,53 @@ export function useDeleteDefectG25() {
   });
 }
 
-// ─── History ─────────────────────────────────────────────────────
+// ─── History (via tm_defect_links → th_test_executions) ──────────
 export function useDefectHistoryG25(defectId: string | undefined) {
   return useQuery({
     queryKey: ['g25-defect-history', defectId],
-    queryFn: async (): Promise<DefectHistoryEntry[]> => {
+    queryFn: async () => {
       if (!defectId) return [];
-      const { data, error } = await (supabase as any)
-        .from('tm_defect_history')
-        .select(`*, changer:profiles!tm_defect_history_changed_by_fkey(full_name, avatar_url)`)
-        .eq('defect_id', defectId)
-        .order('changed_at', { ascending: false });
-      if (error) throw new Error(error.message);
-      return (data || []) as unknown as DefectHistoryEntry[];
+      // 1. Get linked execution run IDs
+      const { data: links, error: linkErr } = await (supabase as any)
+        .from('tm_defect_links')
+        .select('id, test_run_id, step_result_id, created_at')
+        .eq('defect_id', defectId);
+      if (linkErr || !links?.length) return [];
+
+      const runIds = links
+        .map((l: any) => l.test_run_id)
+        .filter(Boolean) as string[];
+      if (!runIds.length) return [];
+
+      // 2. Fetch executions for those runs
+      const { data: execs, error: execErr } = await supabase
+        .from('th_test_executions')
+        .select('id, result, executed_at, executed_by, notes, test_case_id, cycle_scope_id')
+        .in('id', runIds)
+        .order('executed_at', { ascending: false });
+      if (execErr || !execs?.length) return [];
+
+      // 3. Resolve executor names
+      const userIds = [...new Set(execs.map((e: any) => e.executed_by).filter(Boolean))];
+      let profileMap: Record<string, string> = {};
+      if (userIds.length) {
+        const { data: profiles } = await supabase
+          .from('profiles')
+          .select('id, full_name')
+          .in('id', userIds);
+        if (profiles) {
+          profileMap = Object.fromEntries(profiles.map((p: any) => [p.id, p.full_name]));
+        }
+      }
+
+      return execs.map((e: any) => ({
+        id: e.id,
+        action: e.result,
+        performed_by: profileMap[e.executed_by] || 'Unknown',
+        performed_at: e.executed_at,
+        notes: e.notes,
+        test_case_id: e.test_case_id,
+      }));
     },
     enabled: !!defectId,
   });
