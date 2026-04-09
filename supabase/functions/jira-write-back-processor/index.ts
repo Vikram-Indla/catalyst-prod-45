@@ -75,15 +75,42 @@ Deno.serve(async (req) => {
         const payload = item.operation_payload || {};
         const operation: string = item.operation || "update";
 
-        // 2a. Fetch work item
-        const { data: workItem } = await supabase
-          .from("ph_work_items")
-          .select("id, jira_key, project_id")
-          .eq("id", item.ph_work_item_id)
-          .maybeSingle();
+        // 2a. Fetch work item — try ph_work_item_id first, fall back to ph_issue_id → ph_issues
+        let workItem: { id: string; jira_key: string | null; project_id: string | null } | null = null;
+
+        if (item.ph_work_item_id) {
+          const { data } = await supabase
+            .from("ph_work_items")
+            .select("id, jira_key, project_id")
+            .eq("id", item.ph_work_item_id)
+            .maybeSingle();
+          workItem = data;
+        }
+
+        // Fallback: resolve from ph_issues (StoryDetailModal writes ph_issue_id)
+        if (!workItem && item.ph_issue_id) {
+          const { data: issue } = await supabase
+            .from("ph_issues")
+            .select("id, jira_key, project_key")
+            .eq("id", item.ph_issue_id)
+            .maybeSingle();
+          if (issue) {
+            // Resolve project_id from project_key
+            let resolvedProjectId: string | null = null;
+            if (issue.project_key) {
+              const { data: proj } = await supabase
+                .from("projects")
+                .select("id")
+                .eq("project_key", issue.project_key)
+                .maybeSingle();
+              resolvedProjectId = proj?.id || null;
+            }
+            workItem = { id: issue.id, jira_key: issue.jira_key, project_id: resolvedProjectId };
+          }
+        }
 
         if (!workItem && operation !== "delete") {
-          throw new Error(`Work item ${item.ph_work_item_id} not found`);
+          throw new Error(`Work item not found for queue ${item.id} (ph_work_item_id=${item.ph_work_item_id}, ph_issue_id=${item.ph_issue_id})`);
         }
 
         const projectId = workItem?.project_id || payload.project_id;
