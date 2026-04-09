@@ -707,6 +707,7 @@ export default function StoryDetailModal({
   const commentInputRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const assigneeRef = useRef<HTMLDivElement>(null);
+  const fixVersionRef = useRef<HTMLDivElement>(null);
 
   // ── BODY SCROLL LOCK + KEYBOARD ───────────────
   useEffect(() => {
