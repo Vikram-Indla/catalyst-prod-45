@@ -1376,7 +1376,7 @@ export default function StoryDetailModal({
                   <KeyDetailsStrip
                     story={story}
                     onAssigneeClick={() => { setEditingAssignee(true); handleAssigneeSearch(''); }}
-                    onFixVersionClick={() => { setEditingFixVersion(true); handleFixVersionSearch(''); }}
+                    
                   />
 
                   {/* Assignee picker popover (anchored to strip) */}
@@ -1420,82 +1420,11 @@ export default function StoryDetailModal({
                     </div>
                   )}
 
-                  {/* Fix Version picker popover (anchored to strip) */}
-                  {editingFixVersion && (
-                    <div ref={fixVersionRef} style={{
-                      position: 'absolute', top: '100%', right: 0, width: 240, zIndex: 50,
-                      background: V.white, border: `0.75px solid ${V.border}`,
-                      borderRadius: 6, boxShadow: '0 8px 12px rgba(30,31,33,0.15), 0 0 1px rgba(30,31,33,0.31)',
-                      padding: 8, marginTop: 4,
-                    }}>
-                      <input
-                        autoFocus value={fixVersionSearch}
-                        onChange={e => handleFixVersionSearch(e.target.value)}
-                        placeholder="Search versions..."
-                        style={{
-                          width: '100%', padding: '6px 8px', fontSize: 12,
-                          border: `0.75px solid ${V.border}`, borderRadius: 4,
-                          outline: 'none', marginBottom: 4, boxSizing: 'border-box',
-                        }}
-                      />
-                      <div style={{ maxHeight: 180, overflowY: 'auto' }}>
-                        <div
-                          onClick={() => handleFixVersionSelect('')}
-                          style={{ padding: '6px 8px', fontSize: 12, cursor: 'pointer', borderRadius: 3, color: V.textMuted, fontStyle: 'italic' }}
-                          onMouseEnter={e => e.currentTarget.style.background = V.hoverRow}
-                          onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-                        >None</div>
-                        {fixVersionResults.map(v => (
-                          <div
-                            key={v.id}
-                            onClick={() => handleFixVersionSelect(v.name)}
-                            style={{
-                              display: 'flex', alignItems: 'center', gap: 6, padding: '6px 8px',
-                              fontSize: 12, cursor: 'pointer', borderRadius: 3,
-                              background: String(story.fix_versions) === v.name ? V.selectedRow : 'transparent',
-                            }}
-                            onMouseEnter={e => { if (String(story.fix_versions) !== v.name) e.currentTarget.style.background = V.hoverRow; }}
-                            onMouseLeave={e => { if (String(story.fix_versions) !== v.name) e.currentTarget.style.background = 'transparent'; }}
-                          >
-                            <span>{v.name}</span>
-                          </div>
-                        ))}
-                        {fixVersionResults.length === 0 && fixVersionSearch && (
-                          <div style={{ padding: '8px', fontSize: 12, color: V.textMuted, textAlign: 'center' }}>No versions found</div>
-                        )}
-                      </div>
-                    </div>
-                  )}
-                </div>
 
-                {/* Action row — + button */}
-                <div ref={plusMenuRef} style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 16, position: 'relative' }}>
-                  <button
-                    onClick={() => setPlusMenuOpen(o => !o)}
-                    style={{
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      width: 28, height: 28, borderRadius: 4,
-                      border: `0.75px solid ${V.border}`, background: V.white,
-                      cursor: 'pointer', color: V.textMuted,
-                      transition: 'border-color 150ms, color 150ms',
-                    }}
-                    onMouseEnter={e => { e.currentTarget.style.borderColor = V.primaryBlue; e.currentTarget.style.color = V.primaryBlue; }}
-                    onMouseLeave={e => { e.currentTarget.style.borderColor = V.border; e.currentTarget.style.color = V.textMuted; }}
-                    title="Actions"
-                  >
-                    <Plus size={16} />
-                  </button>
-                  {plusMenuOpen && (
-                    <div style={{
-                      position: 'absolute', top: 32, left: 0, width: 220,
-                      background: V.white, borderRadius: 6,
-                      boxShadow: '0 8px 12px rgba(30,31,33,0.15), 0 0 1px rgba(30,31,33,0.31)',
-                      border: `0.75px solid ${V.border}`, zIndex: 20, overflow: 'hidden', padding: '4px 0',
-                    }}>
-                      <MenuBtn icon={<Plus size={14} />} label="Create subtask" shortcut="⇧C" onClick={() => { setShowSubtaskInput(true); setPlusMenuOpen(false); }} />
-                      <MenuBtn icon={<Link2 size={14} />} label="Link work item" shortcut="⇧K" onClick={() => { setShowLinkModal(true); setPlusMenuOpen(false); }} />
-                      <MenuBtn icon={<Paperclip size={14} />} label="Add attachment" onClick={() => { fileInputRef.current?.click(); setPlusMenuOpen(false); }} />
-                    </div>
+
+
+
+
                   )}
                 </div>
 
