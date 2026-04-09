@@ -161,7 +161,7 @@ export function useDefects(
       }
 
       if (filters?.search) {
-        query = query.or(`title.ilike.%${filters.search}%,defect_key.ilike.%${filters.search}%,description.ilike.%${filters.search}%`);
+        query = query.or(`title.ilike.%${filters.search}%,defect_key.ilike.%${filters.search}%,description.ilike.%${filters.search}%,jira_key.ilike.%${filters.search}%`);
       }
 
       if (filters?.date_from) {

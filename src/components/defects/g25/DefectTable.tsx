@@ -51,7 +51,35 @@ export function DefectTable({ defects, selectedIds, onSelectionChange, onDelete 
         {defects.map(d => (
           <TableRow key={d.id} className={cn("cursor-pointer hover:bg-muted/50", selectedIds.has(d.id) && "bg-primary/5")} style={{ height: 50, maxHeight: 50, minHeight: 36 }} onClick={() => navigate(`/testhub/defects/${d.id}`)}>
             <TableCell style={{ padding: '8px 12px' }} onClick={e => e.stopPropagation()}><Checkbox checked={selectedIds.has(d.id)} onCheckedChange={() => toggleOne(d.id)} /></TableCell>
-            <TableCell style={{ padding: '8px 12px' }} className="font-mono text-sm text-primary">{d.defect_key}</TableCell>
+            <TableCell style={{ padding: '8px 12px' }}>
+              {d.jira_source && d.jira_key ? (
+                <div className="flex flex-col gap-0.5">
+                  <div className="flex items-center gap-1.5">
+                    <img
+                      src="https://cdn.worldvectorlogo.com/logos/jira-1.svg"
+                      alt="Jira"
+                      className="h-3.5 w-3.5 flex-shrink-0"
+                    />
+                    {d.external_url ? (
+                      <a
+                        href={d.external_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-mono text-sm text-[#2563EB] hover:underline"
+                        onClick={e => e.stopPropagation()}
+                      >
+                        {d.jira_key}
+                      </a>
+                    ) : (
+                      <span className="font-mono text-sm text-[#2563EB]">{d.jira_key}</span>
+                    )}
+                  </div>
+                  <span className="font-mono text-xs text-muted-foreground">{d.defect_key}</span>
+                </div>
+              ) : (
+                <span className="font-mono text-sm text-primary">{d.defect_key}</span>
+              )}
+            </TableCell>
             <TableCell style={{ padding: '8px 12px' }} className="max-w-md truncate font-medium">{d.title}</TableCell>
             <TableCell style={{ padding: '8px 12px' }}><SeverityBadge severity={d.severity} /></TableCell>
             <TableCell style={{ padding: '8px 12px' }}><PriorityBadge priority={d.priority} /></TableCell>
