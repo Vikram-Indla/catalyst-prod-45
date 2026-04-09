@@ -39,7 +39,16 @@ interface LinkedTest {
   case_key: string;
   title: string;
   priority: string;
+  coverage_status: string;
 }
+
+const COVERAGE_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
+  'Passed':  { label: 'PASSED',  color: '#006644', bg: '#E3FCEF' },
+  'Failed':  { label: 'FAILED',  color: '#BF2600', bg: '#FFEBE6' },
+  'Blocked': { label: 'BLOCKED', color: '#FF8B00', bg: '#FFFAE6' },
+  'Skipped': { label: 'SKIPPED', color: '#6B778C', bg: '#DFE1E6' },
+  'Not Run': { label: 'NOT RUN', color: '#253858', bg: '#DFE1E6' },
+};
 
 const TYPE_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
   functional: { label: 'Functional', color: '#2563EB', bg: '#EFF6FF' },
@@ -83,7 +92,7 @@ export default function RequirementDetailPage() {
       // Fetch linked tests via tm_requirement_tests joined to tm_test_cases
       const { data: linksData } = await (supabase as any)
         .from('tm_requirement_tests')
-        .select('id, test_case_id, test_case:tm_test_cases(id, case_key, title, priority_id, priority:tm_case_priorities(id, name, color))')
+        .select('id, test_case_id, coverage_status, test_case:tm_test_cases(id, case_key, title, priority_id, priority:tm_case_priorities(id, name, color))')
         .eq('requirement_id', requirementId);
       
       if (linksData) {
@@ -93,6 +102,7 @@ export default function RequirementDetailPage() {
           case_key: l.test_case?.case_key || '—',
           title: l.test_case?.title || 'Unknown',
           priority: l.test_case?.priority?.name || 'Medium',
+          coverage_status: l.coverage_status || 'Not Run',
         })));
       } else {
         setLinkedTests([]);
@@ -241,8 +251,18 @@ export default function RequirementDetailPage() {
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
                     <span style={{ fontSize: 12, fontWeight: 600, color: '#2563EB', backgroundColor: '#EFF6FF', padding: '2px 8px', borderRadius: 4 }}>{test.case_key}</span>
                     <span style={{ fontSize: 11, fontWeight: 500, color: '#64748B' }}>{test.priority}</span>
+                    {(() => {
+                      const cov = COVERAGE_CONFIG[test.coverage_status] || COVERAGE_CONFIG['Not Run'];
+                      return (
+                        <span style={{
+                          fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em',
+                          color: cov.color, backgroundColor: cov.bg,
+                          padding: '2px 6px', borderRadius: 3, height: 20, display: 'inline-flex', alignItems: 'center',
+                        }}>{cov.label}</span>
+                      );
+                    })()}
                   </div>
-                  <p style={{ fontSize: 14, color: '#0F172A', margin: 0 }}>{test.title}</p>
+                  <p style={{ fontSize: 14, color: isDark ? '#EDEDED' : '#0F172A', margin: 0 }}>{test.title}</p>
                 </div>
                 <div style={{ display: 'flex', gap: 8 }}>
                   <button onClick={() => navigate(`/testhub/repository?view=${test.test_case_id}`)}
