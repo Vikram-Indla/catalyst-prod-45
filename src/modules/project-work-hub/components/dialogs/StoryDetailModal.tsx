@@ -690,6 +690,9 @@ export default function StoryDetailModal({
   const [assigneeResults, setAssigneeResults] = useState<any[]>([]);
   const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
   const [editCommentDraft, setEditCommentDraft] = useState('');
+  const [editingFixVersion, setEditingFixVersion] = useState(false);
+  const [fixVersionResults, setFixVersionResults] = useState<any[]>([]);
+  const [fixVersionSearch, setFixVersionSearch] = useState('');
 
   // Confirm dialog state
   const [confirmDialog, setConfirmDialog] = useState<{
