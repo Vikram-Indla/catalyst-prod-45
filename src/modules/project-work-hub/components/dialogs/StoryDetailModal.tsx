@@ -2075,14 +2075,26 @@ export default function StoryDetailModal({
                   </SidebarField>
 
                   <SidebarField label="Labels">
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginBottom: 4 }}>
                       {(story.labels && Array.isArray(story.labels) && (story.labels as string[]).length > 0) ? (story.labels as string[]).map((l: string) => (
                         <span key={l} style={{
                           background: V.borderSubtle, color: V.lozengeGreyText, padding: '2px 8px',
-                          borderRadius: 9999, fontSize: 11, fontWeight: 600,
-                        }}>{l}</span>
+                          borderRadius: 9999, fontSize: 11, fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: 4,
+                        }}>
+                          {l}
+                          <button onClick={() => {
+                            const updated = (story.labels as string[]).filter((x: string) => x !== l);
+                            saveField('labels', updated);
+                          }} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, color: V.textMuted, display: 'flex' }}>
+                            <X size={10} />
+                          </button>
+                        </span>
                       )) : <span style={{ fontSize: 14, color: V.textMuted }}>None</span>}
                     </div>
+                    <LabelAdder onAdd={(label: string) => {
+                      const current = Array.isArray(story.labels) ? (story.labels as string[]) : [];
+                      if (!current.includes(label)) saveField('labels', [...current, label]);
+                    }} />
                   </SidebarField>
 
                   {/* Due Date */}
