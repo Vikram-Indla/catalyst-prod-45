@@ -71,15 +71,13 @@ const V = {
   statusBorder: 'rgba(9, 30, 66, 0.29)',
 };
 
-const STATUS_OPTIONS = [
-  { label: 'To Do', category: 'todo' },
-  { label: 'Backlog', category: 'todo' },
-  { label: 'In Requirements', category: 'in_progress' },
-  { label: 'In Progress', category: 'in_progress' },
-  { label: 'In Review', category: 'in_progress' },
-  { label: 'Done', category: 'done' },
-  { label: 'On Hold', category: 'todo' },
+const STATUS_OPTION_GROUPS = [
+  { groupLabel: 'TO DO', category: 'todo', statuses: ['Backlog', 'In Requirements', 'In Design', 'Ready for Development', 'Technical Validation', 'To Do'] },
+  { groupLabel: 'IN PROGRESS', category: 'in_progress', statuses: ['In Development', 'On Hold', 'In QA', 'In Entity Integration', 'In UAT', 'In BETA', 'End to End Testing', 'In Progress', 'In Review'] },
+  { groupLabel: 'DONE', category: 'done', statuses: ['Production Ready', 'Beta Ready', 'In Production', 'Done', 'Closed'] },
 ];
+
+const STATUS_OPTIONS = STATUS_OPTION_GROUPS.flatMap(g => g.statuses.map(s => ({ label: s, category: g.category })));
 
 const PRIORITY_OPTIONS = [
   { label: 'Highest', value: 'Highest' },
@@ -612,7 +610,7 @@ function KeyDetailsStrip({ story, onAssigneeClick }: {
         </div>
       </StripField>
       {story.parent_key && (
-        <StripField label="Epic">
+        <StripField label="Parent">
           <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
             <IssueTypeIcon type="epic" size={14} />
             <span style={{ fontSize: 12, fontFamily: 'JetBrains Mono, monospace', color: V.linkBlue }}>{story.parent_key}</span>
@@ -1975,20 +1973,31 @@ export default function StoryDetailModal({
                       position: 'absolute', top: 40, left: 0, right: 0, zIndex: 100,
                       background: V.white, border: `0.75px solid ${V.border}`,
                       borderRadius: 6, boxShadow: '0 8px 12px rgba(30,31,33,0.15), 0 0 1px rgba(30,31,33,0.31)',
-                      padding: '4px 0',
+                      padding: '4px 0', maxHeight: 320, overflowY: 'auto',
                     }}>
-                      {STATUS_OPTIONS.map(opt => (
-                        <div
-                          key={opt.label} onClick={() => handleStatusChange(opt.label)}
-                          style={{
-                            padding: '8px 12px', cursor: 'pointer', fontSize: 13,
-                            display: 'flex', alignItems: 'center', gap: 8,
-                            transition: 'background 120ms',
-                          }}
-                          onMouseEnter={e => e.currentTarget.style.background = V.hoverRow}
-                          onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-                        >
-                          <StatusLozenge status={opt.label} category={opt.category} />
+                      {STATUS_OPTION_GROUPS.map(group => (
+                        <div key={group.groupLabel}>
+                          <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: V.textMuted, padding: '8px 12px 4px' }}>{group.groupLabel}</div>
+                          {group.statuses.map(s => {
+                            const isCurrent = story.status === s;
+                            return (
+                              <div
+                                key={s} onClick={() => handleStatusChange(s)}
+                                style={{
+                                  padding: '6px 12px', cursor: 'pointer', fontSize: 13,
+                                  display: 'flex', alignItems: 'center', gap: 8,
+                                  background: isCurrent ? V.selectedRow : 'transparent',
+                                  transition: 'background 120ms',
+                                }}
+                                onMouseEnter={e => { if (!isCurrent) e.currentTarget.style.background = V.hoverRow; }}
+                                onMouseLeave={e => { if (!isCurrent) e.currentTarget.style.background = isCurrent ? V.selectedRow : 'transparent'; }}
+                              >
+                                <span style={{ width: 8, height: 8, borderRadius: '50%', background: group.category === 'done' ? '#006644' : group.category === 'in_progress' ? '#0747A6' : '#94A3B8' }} />
+                                <span>{s}</span>
+                                {isCurrent && <span style={{ marginLeft: 'auto', fontSize: 12, color: V.primaryBlue }}>✓</span>}
+                              </div>
+                            );
+                          })}
                         </div>
                       ))}
                     </div>
@@ -2066,14 +2075,26 @@ export default function StoryDetailModal({
                   </SidebarField>
 
                   <SidebarField label="Labels">
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginBottom: 4 }}>
                       {(story.labels && Array.isArray(story.labels) && (story.labels as string[]).length > 0) ? (story.labels as string[]).map((l: string) => (
                         <span key={l} style={{
                           background: V.borderSubtle, color: V.lozengeGreyText, padding: '2px 8px',
-                          borderRadius: 9999, fontSize: 11, fontWeight: 600,
-                        }}>{l}</span>
+                          borderRadius: 9999, fontSize: 11, fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: 4,
+                        }}>
+                          {l}
+                          <button onClick={() => {
+                            const updated = (story.labels as string[]).filter((x: string) => x !== l);
+                            saveField('labels', updated);
+                          }} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, color: V.textMuted, display: 'flex' }}>
+                            <X size={10} />
+                          </button>
+                        </span>
                       )) : <span style={{ fontSize: 14, color: V.textMuted }}>None</span>}
                     </div>
+                    <LabelAdder onAdd={(label: string) => {
+                      const current = Array.isArray(story.labels) ? (story.labels as string[]) : [];
+                      if (!current.includes(label)) saveField('labels', [...current, label]);
+                    }} />
                   </SidebarField>
 
                   {/* Due Date */}
