@@ -195,6 +195,15 @@ export function TestCycleCard({
         <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
           <Calendar size={14} />
           {formatDate(cycle.planned_start)} — {formatDate(cycle.planned_end)}
+          {isOverdue && (
+            <span style={{
+              fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
+              color: '#B91C1C', backgroundColor: '#FEE2E2',
+              padding: '2px 6px', borderRadius: 4, marginLeft: 6,
+            }}>
+              Overdue
+            </span>
+          )}
         </span>
       </div>
 
