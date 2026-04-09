@@ -166,6 +166,8 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
     setIsSubmitting(true);
 
     try {
+      // Resolve environment name for legacy column sync
+      const selectedEnv = environments.find(e => e.id === environmentId);
       if (mode === 'edit' && cycle) {
         const updateData: any = {
           name: name.trim(),
@@ -173,6 +175,7 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
           planned_start: startDate || null,
           planned_end: endDate || null,
           environment_id: environmentId || null,
+          environment: selectedEnv?.name || null,
           status: cycleStatus,
           updated_at: new Date().toISOString(),
         };
@@ -197,6 +200,7 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
           planned_start: startDate || null,
           planned_end: endDate || null,
           environment_id: environmentId || null,
+          environment: selectedEnv?.name || null,
           status: 'draft',
           total_cases: 0, passed_count: 0, failed_count: 0,
           blocked_count: 0, skipped_count: 0, not_run_count: 0,
