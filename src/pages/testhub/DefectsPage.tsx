@@ -120,15 +120,7 @@ export default function DefectsPage() {
     open: stats.by_status.OPEN || 0,
     in_progress: stats.by_status.IN_PROGRESS || 0,
     resolved: stats.by_status.FIXED || 0,
-    verified: stats.by_status.VERIFIED || 0,
     closed: stats.by_status.CLOSED || 0,
-    deferred: 0,
-    critical: stats.by_severity.CRITICAL || 0,
-    high: stats.by_severity.MAJOR || 0,
-    medium: stats.by_severity.MINOR || 0,
-    low: stats.by_severity.TRIVIAL || 0,
-    unassigned: 0,
-    overdue: 0,
   } : null;
 
   return (
@@ -141,14 +133,38 @@ export default function DefectsPage() {
       </TestHubPageHeader>
       <div className={cn("p-6 space-y-6 flex-1 overflow-auto", isDark && "bg-[#0A0A0A]")}>
 
-        {/* Stats Bar */}
+        {/* Stats Bar — V12 visual hierarchy */}
         {loadingStats ? <Skeleton className="h-12 w-full" /> : statsBar && (
-          <div className="flex items-center gap-4 text-xs">
-            <span className="font-semibold">{statsBar.total} Total</span>
-            <span>Open: {statsBar.open}</span>
-            <span>In Progress: {statsBar.in_progress}</span>
-            <span>Resolved: {statsBar.resolved}</span>
-            <span>Closed: {statsBar.closed}</span>
+          <div className="flex items-center gap-4">
+            {/* Total */}
+            <div className="flex items-center gap-1.5">
+              <span style={{ fontFamily: 'Sora, sans-serif', fontSize: 15, fontWeight: 700, color: '#172B4D' }}>
+                {statsBar.total.toLocaleString()}
+              </span>
+              <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 400, color: '#6B778C' }}>
+                defects
+              </span>
+            </div>
+
+            {/* Divider */}
+            <span style={{ width: 1, height: 16, backgroundColor: '#DFE1E6' }} />
+
+            {/* Status groups — stacked count + label */}
+            {[
+              { count: statsBar.open, label: 'Open', color: '#0747A6' },
+              { count: statsBar.in_progress, label: 'In Progress', color: '#0747A6' },
+              { count: statsBar.resolved, label: 'Resolved', color: '#006644' },
+              { count: statsBar.closed, label: 'Closed', color: '#006644' },
+            ].map(item => (
+              <div key={item.label} className="flex flex-col items-center">
+                <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 600, color: item.color }}>
+                  {item.count.toLocaleString()}
+                </span>
+                <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, fontWeight: 400, color: '#6B778C' }}>
+                  {item.label}
+                </span>
+              </div>
+            ))}
           </div>
         )}
 
@@ -156,8 +172,8 @@ export default function DefectsPage() {
         <DefectFilters filters={filters as any} onChange={setFilters as any} users={users || []} />
 
         {/* Results Count */}
-        <p className="text-sm text-muted-foreground">
-          Showing {tmDefects.length} of {totalCount} defects
+        <p style={{ fontSize: 13, fontWeight: 400, color: '#6B778C', fontFamily: 'Inter, sans-serif' }}>
+          Showing {tmDefects.length} of {totalCount.toLocaleString()} defects
         </p>
 
         {/* Table */}
@@ -187,7 +203,7 @@ export default function DefectsPage() {
         {/* Pagination */}
         {totalCount > pageSize && (
           <div className="flex items-center justify-between mt-4">
-            <span className="text-sm text-muted-foreground">
+            <span style={{ fontSize: 13, color: '#6B778C', fontFamily: 'Inter, sans-serif' }}>
               Page {page} of {totalPages}
             </span>
             <div className="flex gap-2">
