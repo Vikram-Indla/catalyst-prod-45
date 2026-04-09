@@ -6,10 +6,12 @@ import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useTheme } from '@/hooks/useTheme';
 import { cn } from '@/lib/utils';
-import { Bug, Plus, Download } from 'lucide-react';
+import { Bug, Plus, Download, List, LayoutGrid, Settings2 } from 'lucide-react';
 import { TestHubPageHeader } from '@/components/testhub/TestHubPageHeader';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useDefects, useDefectStats, useDeleteDefect } from '@/hooks/test-management/useDefects';
 import { DefectFilters } from '@/components/defects/g25/DefectFilters';
 import { DefectTable } from '@/components/defects/g25/DefectTable';
@@ -18,11 +20,23 @@ import { DefectFilters as TMDefectFilters } from '@/types/test-management';
 import { Defect } from '@/types/defects';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
 const DEFAULT_PROJECT_ID = '00000000-0000-0000-0000-000000000001';
 
+type ColumnKey = 'SEVERITY' | 'PRIORITY' | 'STATUS' | 'ASSIGNEE' | 'AGE';
+
+const ALL_COLUMNS: { key: ColumnKey; label: string; locked?: boolean }[] = [
+  { key: 'SEVERITY', label: 'Severity' },
+  { key: 'PRIORITY', label: 'Priority' },
+  { key: 'STATUS', label: 'Status' },
+  { key: 'ASSIGNEE', label: 'Assignee' },
+  { key: 'AGE', label: 'Age' },
+];
+
 export default function DefectsPage() {
   const { isDark } = useTheme();
+  const { toast } = useToast();
   const [searchParams] = useSearchParams();
   const [filters, setFilters] = useState<Record<string, any>>(() => {
     const searchParam = searchParams.get('search');
@@ -31,6 +45,10 @@ export default function DefectsPage() {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [showCreate, setShowCreate] = useState(false);
   const [page, setPage] = useState(1);
+  const [viewMode, setViewMode] = useState<'list' | 'board'>('list');
+  const [visibleColumns, setVisibleColumns] = useState<Set<ColumnKey>>(
+    new Set(['SEVERITY', 'PRIORITY', 'STATUS', 'ASSIGNEE', 'AGE'])
+  );
   const pageSize = 50;
 
   // Build tm_* typed filters from the UI filter state
@@ -112,6 +130,16 @@ export default function DefectsPage() {
     }
   };
 
+  const toggleColumn = (key: ColumnKey) => {
+    const next = new Set(visibleColumns);
+    if (next.has(key)) {
+      next.delete(key);
+    } else {
+      next.add(key);
+    }
+    setVisibleColumns(next);
+  };
+
   const totalPages = Math.ceil(totalCount / pageSize);
 
   // Stats bar data
@@ -125,56 +153,111 @@ export default function DefectsPage() {
 
   return (
     <div className={cn("flex flex-col h-full", isDark && "bg-[#0A0A0A]")}>
+      {/* Row 1 — Page header */}
       <TestHubPageHeader title="Defects" subtitle="Track and manage bugs discovered during testing">
+        {/* View toggle */}
+        <div className="flex gap-0.5 border border-slate-200 rounded-md p-0.5 bg-white">
+          <button
+            className={cn(
+              'h-7 w-7 rounded flex items-center justify-center transition-colors',
+              viewMode === 'list' ? 'bg-blue-600/10 text-blue-600' : 'text-slate-500 hover:bg-slate-900/[0.06]'
+            )}
+            onClick={() => setViewMode('list')}
+            title="List view"
+          >
+            <List className="h-4 w-4" />
+          </button>
+          <button
+            className={cn(
+              'h-7 w-7 rounded flex items-center justify-center transition-colors',
+              viewMode === 'board' ? 'bg-blue-600/10 text-blue-600' : 'text-slate-500 hover:bg-slate-900/[0.06]'
+            )}
+            onClick={() => {
+              toast({ title: 'Board view coming soon', description: 'This feature is under development.' });
+            }}
+            title="Board view"
+          >
+            <LayoutGrid className="h-4 w-4" />
+          </button>
+        </div>
         <Button variant="outline" size="sm"><Download className="h-4 w-4 mr-2" />Export</Button>
-        <Button onClick={() => setShowCreate(true)} className="bg-[#2563EB] text-white hover:opacity-90">
+        <Button onClick={() => setShowCreate(true)} className="bg-blue-600 text-white hover:bg-blue-700">
           <Plus className="h-4 w-4 mr-2" />Create Defect
         </Button>
       </TestHubPageHeader>
-      <div className={cn("p-6 space-y-6 flex-1 overflow-auto", isDark && "bg-[#0A0A0A]")}>
 
-        {/* Stats Bar — V12 visual hierarchy */}
-        {loadingStats ? <Skeleton className="h-12 w-full" /> : statsBar && (
+      <div className={cn("p-6 space-y-4 flex-1 overflow-auto", isDark && "bg-[#0A0A0A]")}>
+        {/* Row 2 — Stats bar */}
+        {loadingStats ? <Skeleton className="h-10 w-full" /> : statsBar && (
           <div className="flex items-center gap-4">
-            {/* Total */}
             <div className="flex items-center gap-1.5">
-              <span style={{ fontFamily: 'Sora, sans-serif', fontSize: 15, fontWeight: 700, color: '#172B4D' }}>
+              <span className="font-['Sora'] text-[15px] font-bold text-slate-900">
                 {statsBar.total.toLocaleString()}
               </span>
-              <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 400, color: '#6B778C' }}>
-                defects
-              </span>
+              <span className="text-[13px] text-slate-500">defects</span>
             </div>
-
-            {/* Divider */}
-            <span style={{ width: 1, height: 16, backgroundColor: '#DFE1E6' }} />
-
-            {/* Status groups — stacked count + label */}
+            <span className="w-px h-4 bg-slate-200" />
             {[
-              { count: statsBar.open, label: 'Open', color: '#0747A6' },
-              { count: statsBar.in_progress, label: 'In Progress', color: '#0747A6' },
-              { count: statsBar.resolved, label: 'Resolved', color: '#006644' },
-              { count: statsBar.closed, label: 'Closed', color: '#006644' },
+              { count: statsBar.open, label: 'Open', color: 'text-[#0747A6]' },
+              { count: statsBar.in_progress, label: 'In Progress', color: 'text-[#0747A6]' },
+              { count: statsBar.resolved, label: 'Resolved', color: 'text-[#006644]' },
+              { count: statsBar.closed, label: 'Closed', color: 'text-[#006644]' },
             ].map(item => (
               <div key={item.label} className="flex flex-col items-center">
-                <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 600, color: item.color }}>
+                <span className={cn('text-[13px] font-semibold', item.color)}>
                   {item.count.toLocaleString()}
                 </span>
-                <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, fontWeight: 400, color: '#6B778C' }}>
-                  {item.label}
-                </span>
+                <span className="text-[11px] text-slate-500">{item.label}</span>
               </div>
             ))}
           </div>
         )}
 
-        {/* Filters */}
-        <DefectFilters filters={filters as any} onChange={setFilters as any} users={users || []} />
-
-        {/* Results Count */}
-        <p style={{ fontSize: 13, fontWeight: 400, color: '#6B778C', fontFamily: 'Inter, sans-serif' }}>
-          Showing {tmDefects.length} of {totalCount.toLocaleString()} defects
-        </p>
+        {/* Row 3 — Filters + results count + column configurator */}
+        <div className="flex items-center justify-between gap-4">
+          <DefectFilters filters={filters as any} onChange={setFilters as any} users={users || []} />
+          <div className="flex items-center gap-3 flex-shrink-0">
+            <span className="text-[13px] text-slate-500">
+              Showing {tmDefects.length} of {totalCount.toLocaleString()}
+            </span>
+            {/* Column configurator */}
+            <Popover>
+              <PopoverTrigger asChild>
+                <button
+                  className="h-7 w-7 rounded flex items-center justify-center text-slate-500 hover:bg-slate-900/[0.06] transition-colors"
+                  title="Configure columns"
+                >
+                  <Settings2 className="h-4 w-4" />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent align="end" className="w-[200px] p-0 bg-white">
+                <div className="px-3 py-2 text-[11px] font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-100">
+                  Columns
+                </div>
+                {/* Locked columns */}
+                <div className="px-3 py-1.5 flex items-center gap-2 opacity-50">
+                  <Checkbox checked disabled className="h-3.5 w-3.5" />
+                  <span className="text-[13px] text-slate-500">Key</span>
+                </div>
+                <div className="px-3 py-1.5 flex items-center gap-2 opacity-50">
+                  <Checkbox checked disabled className="h-3.5 w-3.5" />
+                  <span className="text-[13px] text-slate-500">Title</span>
+                </div>
+                {/* Toggleable columns */}
+                {ALL_COLUMNS.map(col => (
+                  <div
+                    key={col.key}
+                    className="px-3 py-1.5 flex items-center gap-2 cursor-pointer hover:bg-slate-50"
+                    onClick={() => toggleColumn(col.key)}
+                  >
+                    <Checkbox checked={visibleColumns.has(col.key)} className="h-3.5 w-3.5" />
+                    <span className="text-[13px] text-slate-900">{col.label}</span>
+                  </div>
+                ))}
+              </PopoverContent>
+            </Popover>
+          </div>
+        </div>
 
         {/* Table */}
         {isLoading ? (
@@ -195,15 +278,21 @@ export default function DefectsPage() {
             </Button>
           </div>
         ) : (
-          <div className={cn("border rounded-lg", isDark && "border-[#2E2E2E]")}>
-            <DefectTable defects={defects} selectedIds={selectedIds} onSelectionChange={setSelectedIds} onDelete={handleDelete} />
+          <div className={cn("border rounded-lg overflow-hidden", isDark && "border-[#2E2E2E]")}>
+            <DefectTable
+              defects={defects}
+              selectedIds={selectedIds}
+              onSelectionChange={setSelectedIds}
+              onDelete={handleDelete}
+              visibleColumns={visibleColumns}
+            />
           </div>
         )}
 
         {/* Pagination */}
         {totalCount > pageSize && (
           <div className="flex items-center justify-between mt-4">
-            <span style={{ fontSize: 13, color: '#6B778C', fontFamily: 'Inter, sans-serif' }}>
+            <span className="text-[13px] text-slate-500">
               Page {page} of {totalPages}
             </span>
             <div className="flex gap-2">
