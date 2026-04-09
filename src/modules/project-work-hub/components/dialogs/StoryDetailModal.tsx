@@ -905,7 +905,7 @@ export default function StoryDetailModal({
 
   // ── FIELD SAVE ────────────────────────────────
   const saveField = useCallback(async (field: string, value: any) => {
-    await supabase.from('ph_issues').update({ [field]: value }).eq('id', itemId);
+    await supabase.from('ph_issues').update({ [field]: value, jira_updated_at: new Date().toISOString() }).eq('id', itemId);
     await enqueueWriteBack(itemId, field, String(value));
     qc.invalidateQueries({ queryKey: ['ph_issue_detail', itemId] });
   }, [itemId, qc]);
