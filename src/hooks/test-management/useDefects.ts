@@ -197,9 +197,11 @@ export function useDefectStats(projectId: string | undefined) {
     queryFn: async () => {
       if (!projectId) return null;
 
-      const { data, error } = await supabase.rpc('get_defect_stats', { p_project_id: projectId });
+      const { data: rpcData, error } = await supabase.rpc('get_defect_stats', { p_project_id: projectId });
 
       if (error) throw error;
+
+      const data = rpcData as any;
 
       return {
         total: data.total || 0,
