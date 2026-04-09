@@ -55,6 +55,9 @@ export default function TestHubDashboardPage() {
   const [defectStats, setDefectStats] = useState<DefectStats | null>(null);
   const [automationCoverage, setAutomationCoverage] = useState(0);
   const [automatedCount, setAutomatedCount] = useState(0);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [myExecutionsToday, setMyExecutionsToday] = useState(0);
+  const [myPassedToday, setMyPassedToday] = useState(0);
 
   const fetchDashboardData = async () => {
     setIsLoading(true);
@@ -72,6 +75,7 @@ export default function TestHubDashboardPage() {
         defectStatsRes,
         defectDirectRes,
         automationRes,
+        myStatsRes,
       ] = await Promise.all([
         // Total test cases
         supabase.from('tm_test_cases').select('*', { count: 'exact', head: true }),
@@ -106,6 +110,13 @@ export default function TestHubDashboardPage() {
         supabase.rpc('get_defect_stats', { p_project_id: null }),
         (supabase as any).from('tm_defects').select('status'),
         supabase.from('tm_test_cases').select('automation_status'),
+        currentUserId
+          ? (supabase as any)
+              .from('th_test_executions')
+              .select('id, result')
+              .eq('executed_by', currentUserId)
+              .gte('executed_at', new Date().toISOString().slice(0, 10))
+          : Promise.resolve({ data: [], error: null }),
       ]);
 
       // ── Process: test case count ──
@@ -117,6 +128,11 @@ export default function TestHubDashboardPage() {
         const pct = total > 0 ? Math.round((automated / total) * 100) : 0;
         setAutomatedCount(automated);
         setAutomationCoverage(pct);
+      }
+
+      if (!myStatsRes.error && myStatsRes.data) {
+        setMyExecutionsToday((myStatsRes.data as any[]).length);
+        setMyPassedToday((myStatsRes.data as any[]).filter((r: any) => r.result === 'passed').length);
       }
 
       // ── Process: execution status counts from tm_cycle_scope ──
@@ -225,6 +241,12 @@ export default function TestHubDashboardPage() {
 
   useEffect(() => { fetchDashboardData(); }, []);
 
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (user) setCurrentUserId(user.id);
+    });
+  }, []);
+
   const formatLastUpdated = () =>
     lastUpdated.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
 
@@ -256,8 +278,8 @@ export default function TestHubDashboardPage() {
   if (isLoading) {
     return (
       <div style={{ height: 'calc(100vh - 44px)', display: 'flex', flexDirection: 'column', overflow: 'hidden', background: isDark ? '#0A0A0A' : '#F8FAFC', padding: '12px 16px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 12, flexShrink: 0, marginBottom: 12 }}>
-          {[...Array(5)].map((_, i) => (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 12, flexShrink: 0, marginBottom: 12 }}>
+          {[...Array(6)].map((_, i) => (
             <div key={i} className="animate-pulse" style={{ height: 130, background: isDark ? '#1A1A1A' : '#E2E8F0', borderRadius: 8 }} />
           ))}
         </div>
@@ -304,8 +326,8 @@ export default function TestHubDashboardPage() {
       {/* ═══ BODY ═══ */}
       <div style={{ flex: 1, minHeight: 0, padding: '12px 16px', overflow: 'hidden', display: 'flex', flexDirection: 'column', gap: 12 }}>
 
-        {/* ── KPI STRIP — 5 cards ── */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 12, flexShrink: 0 }}>
+        {/* ── KPI STRIP — 6 cards ── */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 12, flexShrink: 0 }}>
           <KPICard label="Total test cases" value={totalTestCases} accent="#2563EB"
             trend={{ direction: 'up', value: '+3', color: '#059669' }}
             subtitle={`${totalCycles} cycles total`} sparkData={[4, 6, 5, 8, 10, 9, 12, 14]} />
@@ -324,6 +346,10 @@ export default function TestHubDashboardPage() {
             trend={{ direction: 'flat', value: '—', color: '#94A3B8' }}
             subtitle={`${automatedCount} of ${totalTestCases} automated`}
             sparkData={[0, 0, 0, 0, 0, 0, 0, automationCoverage]} />
+          <KPICard label="My executions today" value={myExecutionsToday} accent="#8B5CF6"
+            trend={{ direction: 'flat', value: '—', color: '#94A3B8' }}
+            subtitle={`${myPassedToday} passed today`}
+            sparkData={[0, 0, 0, 0, 0, 0, 0, myExecutionsToday]} />
         </div>
 
         {/* ── EXECUTION STATUS BAR — 48px ── */}
