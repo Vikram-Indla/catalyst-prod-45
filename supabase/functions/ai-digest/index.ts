@@ -87,8 +87,8 @@ serve(async (req) => {
       .toISOString().split('T')[0];
 
     const TIMEOUT_MS = 8000;
-    const withTimeout = <T>(p: Promise<T>): Promise<T> =>
-      Promise.race([p, new Promise<T>((_, rej) =>
+    const withTimeout = <T>(p: PromiseLike<T>): Promise<T> =>
+      Promise.race([Promise.resolve(p), new Promise<T>((_, rej) =>
         setTimeout(() => rej(new Error('query_timeout')), TIMEOUT_MS))]);
 
     const [notifRes, releasesRes, incidentsRes, testFailRes] = await Promise.allSettled([
@@ -127,10 +127,10 @@ serve(async (req) => {
         .limit(20)),
     ]);
 
-    const notifications = notifRes.status === 'fulfilled' ? notifRes.value.data ?? [] : [];
-    const releases = releasesRes.status === 'fulfilled' ? releasesRes.value.data ?? [] : [];
-    const incidents = incidentsRes.status === 'fulfilled' ? incidentsRes.value.data ?? [] : [];
-    const testFails = testFailRes.status === 'fulfilled' ? testFailRes.value.data ?? [] : [];
+    const notifications: any[] = notifRes.status === 'fulfilled' ? (notifRes.value as any).data ?? [] : [];
+    const releases: any[] = releasesRes.status === 'fulfilled' ? (releasesRes.value as any).data ?? [] : [];
+    const incidents: any[] = incidentsRes.status === 'fulfilled' ? (incidentsRes.value as any).data ?? [] : [];
+    const testFails: any[] = testFailRes.status === 'fulfilled' ? (testFailRes.value as any).data ?? [] : [];
 
     if (!notifications.length && !releases.length && !incidents.length && !testFails.length) {
       return new Response(
@@ -141,19 +141,19 @@ serve(async (req) => {
 
     const rolePersona = inferRole(userId, releases as Record<string, string>[]);
 
-    const fmtReleases = releases.map(r =>
+    const fmtReleases = releases.map((r: any) =>
       `Release "${r.name}": target=${r.target_date}, health=${r.health}, is_blocked=${r.is_blocked}, defects_open=${r.defects_open}, critical_defects=${r.critical_defects}, readiness_pct=${r.readiness_pct}%, id=${r.id}`
     ).join('\n') || 'None';
 
-    const fmtIncidents = incidents.map(i =>
+    const fmtIncidents = incidents.map((i: any) =>
       `[${i.incident_key}] "${i.title}" severity=${i.severity}, status=${i.status}, assignee=${i.assignee_id === userId ? 'YOU' : 'other'}, created=${i.created_at}, id=${i.id}`
     ).join('\n') || 'None';
 
     const fmtTests = testFails.length
-      ? `${testFails.length} test cases failed in last 24h. case_keys: ${testFails.slice(0,5).map(t => t.case_key).join(', ')}${testFails.length > 5 ? ' ...' : ''}`
+      ? `${testFails.length} test cases failed in last 24h. case_keys: ${testFails.slice(0,5).map((t: any) => t.case_key).join(', ')}${testFails.length > 5 ? ' ...' : ''}`
       : 'None';
 
-    const fmtNotifs = notifications.slice(0, 15).map((n, i) =>
+    const fmtNotifs = notifications.slice(0, 15).map((n: any, i: number) =>
       `${i+1}. [${n.notification_type}] ${n.entity_title} (${n.entity_type}, hub: ${n.hub_source}, key: ${n.entity_key ?? 'none'}, id: ${n.entity_id ?? 'null'})`
     ).join('\n') || 'None';
 
@@ -275,7 +275,7 @@ Return JSON:
       if (t.id && t.case_key) sourceKeyMap[t.id] = t.case_key;
     }
 
-    let items = ((parsed.items ?? []) as Record<string, unknown>[]).map(item => {
+    let items: any[] = ((parsed.items ?? []) as any[]).map((item: any) => {
       const eid = typeof item.entity_id === 'string' && item.entity_id.length === 36 ? item.entity_id : null;
       return {
         ...item,
@@ -290,7 +290,7 @@ Return JSON:
     // Post-process: resolve ANY UUID fragments in text fields to Jira keys
     const uuidPattern = /\b([0-9a-f]{8})(?:-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})?\b/gi;
     const textFields = ['trigger', 'action', 'detail', 'consequence', 'title'] as const;
-    const allText = items.map(i => textFields.map(f => String(i[f] ?? '')).join(' ')).join(' ');
+    const allText = items.map((i: any) => textFields.map(f => String(i[f] ?? '')).join(' ')).join(' ');
     const uuidMatches = [...allText.matchAll(uuidPattern)];
     const shortIds = [...new Set(uuidMatches.map(m => m[1].toLowerCase()))];
 
@@ -329,11 +329,10 @@ Return JSON:
     const fullKeyMap = { ...issueKeyMap, ...sourceKeyMap };
 
     // Replace UUIDs in text and fill missing entity_key
-    items = items.map(item => {
+    items = items.map((item: any) => {
       const patched = { ...item };
-      // Fill entity_key from issueKeyMap if still missing
-      if (patched.entity_id && !patched.entity_key && issueKeyMap[patched.entity_id as string]) {
-        patched.entity_key = issueKeyMap[patched.entity_id as string];
+      if (patched.entity_id && !patched.entity_key && issueKeyMap[patched.entity_id]) {
+        patched.entity_key = issueKeyMap[patched.entity_id];
       }
       for (const field of textFields) {
         if (typeof patched[field] === 'string') {
@@ -348,7 +347,7 @@ Return JSON:
     });
 
     const digestV2 = { ...parsed, items };
-    const hasCritical = items.some(i => i.risk_horizon === 'critical_now');
+    const hasCritical = items.some((i: any) => i.risk_horizon === 'critical_now');
     const ttlMs = hasCritical ? 30 * 60 * 1000 : 4 * 60 * 60 * 1000;
     const expiresAt = new Date(Date.now() + ttlMs).toISOString();
 
