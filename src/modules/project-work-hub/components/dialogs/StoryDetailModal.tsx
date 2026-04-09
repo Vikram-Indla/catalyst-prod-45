@@ -739,10 +739,11 @@ export default function StoryDetailModal({
       if (statusOpen && statusRef.current && !statusRef.current.contains(e.target as Node)) setStatusOpen(false);
       if (priorityOpen && priorityRef.current && !priorityRef.current.contains(e.target as Node)) setPriorityOpen(false);
       if (editingAssignee && assigneeRef.current && !assigneeRef.current.contains(e.target as Node)) setEditingAssignee(false);
+      if (editingFixVersion && fixVersionRef.current && !fixVersionRef.current.contains(e.target as Node)) setEditingFixVersion(false);
     };
     document.addEventListener('mousedown', h);
     return () => document.removeEventListener('mousedown', h);
-  }, [menuOpen, plusMenuOpen, statusOpen, priorityOpen, editingAssignee]);
+  }, [menuOpen, plusMenuOpen, statusOpen, priorityOpen, editingAssignee, editingFixVersion]);
 
   // ── PRIMARY QUERY ─────────────────────────────
   const { data: story, isLoading, isError, refetch } = useQuery({
