@@ -275,7 +275,7 @@ Return JSON:
       if (t.id && t.case_key) sourceKeyMap[t.id] = t.case_key;
     }
 
-    let items = ((parsed.items ?? []) as Record<string, unknown>[]).map(item => {
+    let items: any[] = ((parsed.items ?? []) as any[]).map((item: any) => {
       const eid = typeof item.entity_id === 'string' && item.entity_id.length === 36 ? item.entity_id : null;
       return {
         ...item,
@@ -290,7 +290,7 @@ Return JSON:
     // Post-process: resolve ANY UUID fragments in text fields to Jira keys
     const uuidPattern = /\b([0-9a-f]{8})(?:-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})?\b/gi;
     const textFields = ['trigger', 'action', 'detail', 'consequence', 'title'] as const;
-    const allText = items.map(i => textFields.map(f => String(i[f] ?? '')).join(' ')).join(' ');
+    const allText = items.map((i: any) => textFields.map(f => String(i[f] ?? '')).join(' ')).join(' ');
     const uuidMatches = [...allText.matchAll(uuidPattern)];
     const shortIds = [...new Set(uuidMatches.map(m => m[1].toLowerCase()))];
 
@@ -329,11 +329,10 @@ Return JSON:
     const fullKeyMap = { ...issueKeyMap, ...sourceKeyMap };
 
     // Replace UUIDs in text and fill missing entity_key
-    items = items.map(item => {
+    items = items.map((item: any) => {
       const patched = { ...item };
-      // Fill entity_key from issueKeyMap if still missing
-      if (patched.entity_id && !patched.entity_key && issueKeyMap[patched.entity_id as string]) {
-        patched.entity_key = issueKeyMap[patched.entity_id as string];
+      if (patched.entity_id && !patched.entity_key && issueKeyMap[patched.entity_id]) {
+        patched.entity_key = issueKeyMap[patched.entity_id];
       }
       for (const field of textFields) {
         if (typeof patched[field] === 'string') {
@@ -348,7 +347,7 @@ Return JSON:
     });
 
     const digestV2 = { ...parsed, items };
-    const hasCritical = items.some(i => i.risk_horizon === 'critical_now');
+    const hasCritical = items.some((i: any) => i.risk_horizon === 'critical_now');
     const ttlMs = hasCritical ? 30 * 60 * 1000 : 4 * 60 * 60 * 1000;
     const expiresAt = new Date(Date.now() + ttlMs).toISOString();
 
