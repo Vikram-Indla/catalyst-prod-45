@@ -150,15 +150,25 @@ export default function CoverageMatrixPage() {
         .order('req_key');
       const { data, error } = await query;
       if (error) throw error;
-      // tm_requirements doesn't have coverage columns — default them
-      const enriched = ((data as any[]) || []).map((r: any) => ({
-        ...r,
-        coverage_percent: r.coverage_percent ?? 0,
-        total_linked_tests: r.total_linked_tests ?? 0,
-        passed_tests: r.passed_tests ?? 0,
-        failed_tests: r.failed_tests ?? 0,
-        not_run_tests: r.not_run_tests ?? 0,
-      }));
+      const enriched = await Promise.all(
+        ((data as any[]) || []).map(async (r: any) => {
+          const { data: tests } = await (supabase as any)
+            .rpc('get_requirement_tests', { p_requirement_id: r.id });
+          const linked = tests || [];
+          const total = linked.length;
+          const passed = linked.filter((t: any) => t.latest_status === 'pass').length;
+          const failed = linked.filter((t: any) => t.latest_status === 'fail').length;
+          const not_run = linked.filter((t: any) => !t.latest_status).length;
+          return {
+            ...r,
+            total_linked_tests: total,
+            passed_tests: passed,
+            failed_tests: failed,
+            not_run_tests: not_run,
+            coverage_percent: total > 0 ? Math.round((passed / total) * 100) : 0,
+          };
+        })
+      );
       setRequirements(enriched);
     } catch (err) {
       console.error('Fetch error:', err);

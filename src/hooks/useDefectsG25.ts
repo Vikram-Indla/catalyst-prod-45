@@ -80,12 +80,22 @@ export function useCreateDefectG25() {
     mutationFn: async (input: Record<string, any>) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
+      const { run_id, ...defectPayload } = input;
       const { data, error } = await (supabase as any)
         .from('tm_defects')
-        .insert({ ...input, reported_by: user.id } as any)
+        .insert({ ...defectPayload, reported_by: user.id } as any)
         .select()
         .single();
       if (error) throw new Error(error.message);
+      // Link defect to execution run if run_id was provided
+      if (run_id && data?.id) {
+        const { error: linkError } = await (supabase as any)
+          .from('tm_defect_links')
+          .insert({ defect_id: data.id, test_run_id: run_id, created_by: user.id });
+        if (linkError) {
+          console.error('[useCreateDefectG25] tm_defect_links insert failed:', linkError.message);
+        }
+      }
       return data;
     },
     onSuccess: (data: any) => {

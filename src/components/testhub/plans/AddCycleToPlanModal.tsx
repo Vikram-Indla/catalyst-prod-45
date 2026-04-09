@@ -84,10 +84,10 @@ export function AddCycleToPlanModal({ isOpen, onClose, planId, onAdded }: AddCyc
       const inserts = Array.from(selectedIds).map((cycleId) => ({
         plan_id: planId,
         cycle_id: cycleId,
-        linked_by: user?.id,
+        linked_by: user?.id || null,
       }));
 
-      const { error } = await (supabase as any).from('plan_test_cycles').insert(inserts as any);
+      const { error } = await (supabase as any).from('plan_test_cycles').insert(inserts);
       if (error) throw error;
 
       catalystToast.success(`Added ${selectedIds.size} cycle${selectedIds.size > 1 ? 's' : ''} to plan`);

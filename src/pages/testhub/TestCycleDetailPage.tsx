@@ -228,15 +228,9 @@ export default function TestCycleDetailPage() {
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: isDark ? '#0A0A0A' : '#F8FAFC' }}>
       {/* Header */}
       <div style={{ padding: '20px 32px', backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', borderBottom: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}` }}>
-        {fromPlanId ? (
-          <button onClick={() => navigate(`/testhub/plans/${fromPlanId}`)} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: 0, border: 'none', backgroundColor: 'transparent', color: isDark ? '#878787' : '#64748B', fontSize: 13, fontWeight: 500, cursor: 'pointer', marginBottom: 16 }}>
-            <ArrowLeft size={16} /> ← Back to Plan
-          </button>
-        ) : (
-          <button onClick={() => navigate('/testhub/cycles')} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: 0, border: 'none', backgroundColor: 'transparent', color: isDark ? '#878787' : '#64748B', fontSize: 13, fontWeight: 500, cursor: 'pointer', marginBottom: 16 }}>
-            <ArrowLeft size={16} /> Back to Cycles
-          </button>
-        )}
+        <button onClick={() => navigate(fromPlanId ? `/testhub/test-plans/${fromPlanId}` : '/testhub/cycles')} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: 0, border: 'none', backgroundColor: 'transparent', color: isDark ? '#878787' : '#64748B', fontSize: 13, fontWeight: 500, cursor: 'pointer', marginBottom: 16 }}>
+          <ArrowLeft size={16} /> {fromPlanId ? 'Back to Plan' : 'Back to Cycles'}
+        </button>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>

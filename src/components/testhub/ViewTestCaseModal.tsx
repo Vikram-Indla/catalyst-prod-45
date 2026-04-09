@@ -196,7 +196,8 @@ export function ViewTestCaseModal({
       setActiveTab('details');
       fetchRelatedData();
     }
-  }, [isOpen, testCase]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, testCase?.id]);
 
   const fetchRelatedData = async () => {
     if (!testCase) return;
@@ -205,10 +206,14 @@ export function ViewTestCaseModal({
     try {
       const [stepsRes, linksRes, historyRes, runsRes, attachmentsRes] = await Promise.all([
         supabase.from('tm_test_steps').select('*').eq('test_case_id', testCase.id).order('step_number'),
-        (supabase as any).from('tm_test_case_links').select('*').eq('test_case_id', testCase.id),
-        (supabase as any).from('tm_test_case_versions').select('*').eq('test_case_id', testCase.id).order('version_number', { ascending: false }),
-        (supabase as any).from('th_test_executions').select('*').eq('test_case_id', testCase.id).order('executed_at', { ascending: false }),
-        (supabase as any).from('th_test_case_attachments').select('*').eq('test_case_id', testCase.id),
+        // @ts-expect-error — table exists, types.ts pending update
+        supabase.from('tm_test_case_links').select('*').eq('test_case_id', testCase.id),
+        // @ts-expect-error — table exists, types.ts pending update
+        supabase.from('tm_test_case_versions').select('*').eq('test_case_id', testCase.id).order('version_number', { ascending: false }),
+        // @ts-expect-error — table exists, types.ts pending update
+        supabase.from('th_test_executions').select('*').eq('test_case_id', testCase.id).order('executed_at', { ascending: false }),
+        // @ts-expect-error — table exists, types.ts pending update
+        supabase.from('th_test_case_attachments').select('*').eq('test_case_id', testCase.id),
       ]);
 
       setSteps(stepsRes.data || []);
@@ -216,8 +221,8 @@ export function ViewTestCaseModal({
       const linksData = (linksRes.data || []).map((l: any) => ({
         id: l.id,
         link_type: l.linked_item_type || '',
-        linked_item_key: l.linked_item_id || '',
-        linked_item_title: l.linked_item_type || '',
+        linked_item_key: l.linked_item_key || '',
+        linked_item_title: l.linked_item_title || '',
       }));
       setLinks(linksData);
       // Map tm_test_case_versions to expected shape
