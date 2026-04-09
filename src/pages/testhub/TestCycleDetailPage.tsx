@@ -32,6 +32,7 @@ interface TestCycle {
   not_run_count: number;
   in_progress_count?: number;
   environment_id?: string | null;
+  environment?: string | null;
 }
 
 interface CycleTestCase {
@@ -96,7 +97,7 @@ export default function TestCycleDetailPage() {
     if (!cycleId) return;
     try {
       const { data, error } = await (supabase as any).from('tm_test_cycles')
-        .select('id, cycle_key, name, description, status, planned_start, planned_end, environment_id, project_id, total_cases, passed_count, failed_count, blocked_count, skipped_count, not_run_count, in_progress_count, created_at, updated_at')
+        .select('id, cycle_key, name, description, status, planned_start, planned_end, environment_id, environment, project_id, total_cases, passed_count, failed_count, blocked_count, skipped_count, not_run_count, in_progress_count, created_at, updated_at')
         .eq('id', cycleId).maybeSingle();
       if (error) throw error;
       if (!data) { catalystToast.error('Cycle not found'); return; }
@@ -248,13 +249,13 @@ export default function TestCycleDetailPage() {
             {cycle.description && <p style={{ fontSize: 14, color: isDark ? '#878787' : '#64748B', margin: '0 0 8px', maxWidth: 600 }}>{cycle.description}</p>}
             <div style={{ display: 'flex', alignItems: 'center', gap: 16, fontSize: 13, color: isDark ? '#878787' : '#64748B' }}>
               <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><Calendar size={14} />{formatDate(cycle.planned_start)} — {formatDate(cycle.planned_end)}</span>
-              {cycle.environment_id && (
+              {(cycle.environment_id || cycle.environment) && (
                 <span
-                  onClick={() => navigate(`/testhub/environments/${cycle.environment_id}`)}
-                  style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', padding: '2px 8px', backgroundColor: '#EFF6FF', borderRadius: 6, color: '#2563EB', fontWeight: 500 }}
+                  onClick={() => cycle.environment_id ? navigate(`/testhub/environments/${cycle.environment_id}`) : undefined}
+                  style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: cycle.environment_id ? 'pointer' : 'default', padding: '2px 8px', backgroundColor: '#EFF6FF', borderRadius: 6, color: '#2563EB', fontWeight: 500 }}
                 >
                   <Server size={14} />
-                  Environment
+                  {cycle.environment ? cycle.environment.charAt(0).toUpperCase() + cycle.environment.slice(1) : 'Environment'}
                 </span>
               )}
             </div>
