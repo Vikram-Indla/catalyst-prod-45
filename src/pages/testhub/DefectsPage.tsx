@@ -88,7 +88,7 @@ export default function DefectsPage() {
     title: d.title,
     description: d.description || null,
     severity: (d.severity?.toLowerCase() || 'medium') as Defect['severity'],
-    priority: 'medium' as Defect['priority'],
+    priority: (((d as any).priority as string)?.toLowerCase() || 'medium') as Defect['priority'],
     status: (d.status?.toLowerCase() === 'fixed' ? 'resolved' :
              d.status?.toLowerCase() === 'wont_fix' ? 'closed' :
              d.status?.toLowerCase() === 'duplicate' ? 'closed' :
