@@ -1,44 +1,31 @@
 
 
-## Fix: Environment Badge Showing "Staging" Instead of Selected Environment
+## Three Targeted Fixes — Defects Module
 
-### Problem
-The cycle detail page reads the legacy `environment` text column (always `'staging'`) instead of resolving the environment name from `environment_id` via the `tm_environments` table.
+### FIX 1 — DefectTable.tsx: Jira key display in KEY column
+**File:** `src/components/defects/g25/DefectTable.tsx`, line 54
 
-### Root Cause
-Two environment columns exist on `tm_test_cycles`:
-- `environment` (text) — legacy, defaults to `'staging'`, never updated by edit modal
-- `environment_id` (UUID) — correctly set by the edit modal, references `tm_environments`
+Replace the simple `{d.defect_key}` span with conditional logic:
+- If `d.jira_source && d.jira_key`: show Jira icon + linked jira_key as primary, defect_key as secondary smaller text
+- Otherwise: show defect_key as before
 
-The detail page renders `cycle.environment` (the stale text field) instead of looking up the name from `tm_environments` using `environment_id`.
+The `Defect` type already includes `jira_key`, `jira_source`, and `external_url` — no type changes needed.
 
-### Fix — Two files only
+### FIX 2 — useDefects.ts: Add jira_key to search filter
+**File:** `src/hooks/test-management/useDefects.ts`, line 164
 
-**File 1: `src/pages/testhub/TestCycleDetailPage.tsx`**
-- Add a `useEffect` or inline query that resolves `environment_id` → environment name from `tm_environments`
-- Replace line 258's display logic: instead of `cycle.environment.charAt(0).toUpperCase()...`, show the resolved environment name
-- Fallback: if no `environment_id`, check legacy `environment` field; if neither, show nothing
+Append `,jira_key.ilike.%${filters.search}%` to the existing `.or()` string so searching "BAU-001" finds Jira-sourced defects.
 
-**File 2: `src/components/testhub/CreateTestCycleModal.tsx`**
-- In `handleSubmit` (line 170–178), when saving `environment_id`, also update the `environment` text column with the selected environment's name for backward compatibility
-- This ensures other pages that still read the legacy column also get the correct value
+### FIX 3 — DefectFilters.tsx: Update search placeholder
+**File:** `src/components/defects/g25/DefectFilters.tsx`, line 20
 
-### Technical Detail
+Change placeholder from `"Search defects..."` to `"Search by title, key, Jira ID..."`.
 
-```text
-Detail page resolution logic:
-  1. If cycle.environment_id → fetch name from tm_environments → display
-  2. Else if cycle.environment → capitalize and display
-  3. Else → hide badge
+### Files touched (3 only)
+- `src/components/defects/g25/DefectTable.tsx`
+- `src/hooks/test-management/useDefects.ts`
+- `src/components/defects/g25/DefectFilters.tsx`
 
-Edit modal save fix:
-  updateData.environment = selectedEnvironmentName  // sync legacy column
-  updateData.environment_id = environmentId          // already correct
-```
-
-### Files to touch
-- `src/pages/testhub/TestCycleDetailPage.tsx`
-- `src/components/testhub/CreateTestCycleModal.tsx`
-
-### No other files modified
+### Verification
+After changes, read back the three modified sections to confirm correctness.
 
