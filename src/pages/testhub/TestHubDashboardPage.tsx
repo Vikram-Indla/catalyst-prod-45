@@ -228,6 +228,12 @@ export default function TestHubDashboardPage() {
 
   useEffect(() => { fetchDashboardData(); }, []);
 
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (user) setCurrentUserId(user.id);
+    });
+  }, []);
+
   const formatLastUpdated = () =>
     lastUpdated.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
 
