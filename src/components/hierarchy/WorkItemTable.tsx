@@ -7,6 +7,7 @@
 
 import React, { useState, useMemo, useCallback, memo } from 'react';
 import { ChevronRight, ChevronDown, MoreHorizontal, ArrowUp, ArrowDown } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { useTheme } from '@/hooks/useTheme';
 import type { WorkItem } from '@/types/hierarchy';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
@@ -387,6 +388,7 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
   const updateField = useUpdateIssueField(projectKey);
   const bulkUpdate = useBulkUpdateIssues(projectKey);
   const bulkDelete = useBulkDeleteIssues(projectKey);
+  const navigate = useNavigate();
   const allAssignees = useMemo(() => collectAssignees(items), [items]);
 
   const toggle = useCallback((id: string) => {
@@ -587,6 +589,30 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
             />
 
             {hasMultipleSources && <SourceBadge source={item.source} />}
+            {item.issueType === 'QA Bug' && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  navigate(`/testhub/defects?search=${encodeURIComponent(item.key)}`);
+                }}
+                style={{
+                  flexShrink: 0,
+                  fontSize: 9,
+                  fontWeight: 700,
+                  letterSpacing: '0.06em',
+                  padding: '1px 6px',
+                  borderRadius: 4,
+                  background: '#ECFDF5',
+                  color: '#059669',
+                  border: '1px solid #6EE7B7',
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                  textTransform: 'uppercase',
+                }}
+              >
+                View in TestHub →
+              </button>
+            )}
           </div>
         );
       case 'status':
