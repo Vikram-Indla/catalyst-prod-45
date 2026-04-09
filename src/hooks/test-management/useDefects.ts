@@ -112,11 +112,16 @@ async function generateDefectKey(projectId: string): Promise<string> {
 // FETCH DEFECTS (with filters)
 // ============================================================================
 
-export function useDefects(projectId: string | undefined, filters?: DefectFilters) {
+export function useDefects(
+  projectId: string | undefined,
+  filters?: DefectFilters,
+  page: number = 1,
+  pageSize: number = 50
+) {
   return useQuery({
-    queryKey: ['tm-defects', projectId, filters],
-    queryFn: async (): Promise<TMDefect[]> => {
-      if (!projectId) return [];
+    queryKey: ['tm-defects', projectId, filters, page, pageSize],
+    queryFn: async (): Promise<{ data: TMDefect[]; total: number }> => {
+      if (!projectId) return { data: [], total: 0 };
 
       let query = supabase
         .from('tm_defects')
@@ -124,7 +129,7 @@ export function useDefects(projectId: string | undefined, filters?: DefectFilter
           *,
           assignee:profiles!tm_defects_assignee_id_fkey(id, full_name, avatar_url),
           reporter:profiles!tm_defects_reporter_id_fkey(id, full_name, avatar_url)
-        `)
+        `, { count: 'exact' })
         .eq('project_id', projectId)
         .order('created_at', { ascending: false });
 
@@ -167,14 +172,16 @@ export function useDefects(projectId: string | undefined, filters?: DefectFilter
         query = query.lte('created_at', filters.date_to);
       }
 
-      const { data, error } = await query;
+      query = query.range((page - 1) * pageSize, page * pageSize - 1);
+
+      const { data, error, count } = await query;
 
       if (error) {
         console.error('Error fetching defects:', error);
         throw error;
       }
 
-      return (data || []).map(mapDbRowToTMDefect);
+      return { data: (data || []).map(mapDbRowToTMDefect), total: count || 0 };
     },
     enabled: !!projectId,
   });
@@ -190,35 +197,28 @@ export function useDefectStats(projectId: string | undefined) {
     queryFn: async () => {
       if (!projectId) return null;
 
-      const { data, error } = await supabase
-        .from('tm_defects')
-        .select('status, severity')
-        .eq('project_id', projectId);
+      const { data, error } = await supabase.rpc('get_defect_stats', { p_project_id: projectId });
 
       if (error) throw error;
 
-      const stats = {
-        total: data?.length || 0,
-        by_status: {} as Record<DefectStatus, number>,
-        by_severity: {} as Record<DefectSeverity, number>,
+      return {
+        total: data.total || 0,
+        by_status: {
+          OPEN: data.open || 0,
+          IN_PROGRESS: data.in_progress || 0,
+          FIXED: data.resolved || 0,
+          VERIFIED: data.verified || 0,
+          CLOSED: data.closed || 0,
+          WONT_FIX: 0,
+          DUPLICATE: 0,
+        } as Record<DefectStatus, number>,
+        by_severity: {
+          CRITICAL: data.critical || 0,
+          MAJOR: data.high || 0,
+          MINOR: data.medium || 0,
+          TRIVIAL: data.low || 0,
+        } as Record<DefectSeverity, number>,
       };
-
-      // Initialize
-      const statuses: DefectStatus[] = ['OPEN', 'IN_PROGRESS', 'FIXED', 'VERIFIED', 'CLOSED', 'WONT_FIX', 'DUPLICATE'];
-      const severities: DefectSeverity[] = ['CRITICAL', 'MAJOR', 'MINOR', 'TRIVIAL'];
-      
-      statuses.forEach(s => stats.by_status[s] = 0);
-      severities.forEach(s => stats.by_severity[s] = 0);
-
-      // Count (convert from DB format)
-      data?.forEach(d => {
-        const status = statusFromDb(d.status);
-        const severity = severityFromDb(d.severity);
-        stats.by_status[status]++;
-        stats.by_severity[severity]++;
-      });
-
-      return stats;
     },
     enabled: !!projectId,
   });
