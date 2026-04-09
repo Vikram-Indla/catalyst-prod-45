@@ -109,6 +109,13 @@ export default function TestHubDashboardPage() {
         supabase.rpc('get_defect_stats', { p_project_id: null }),
         (supabase as any).from('tm_defects').select('status'),
         supabase.from('tm_test_cases').select('automation_status'),
+        currentUserId
+          ? (supabase as any)
+              .from('th_test_executions')
+              .select('id, result')
+              .eq('executed_by', currentUserId)
+              .gte('executed_at', new Date().toISOString().slice(0, 10))
+          : Promise.resolve({ data: [], error: null }),
       ]);
 
       // ── Process: test case count ──
@@ -120,6 +127,11 @@ export default function TestHubDashboardPage() {
         const pct = total > 0 ? Math.round((automated / total) * 100) : 0;
         setAutomatedCount(automated);
         setAutomationCoverage(pct);
+      }
+
+      if (!myStatsRes.error && myStatsRes.data) {
+        setMyExecutionsToday((myStatsRes.data as any[]).length);
+        setMyPassedToday((myStatsRes.data as any[]).filter((r: any) => r.result === 'passed').length);
       }
 
       // ── Process: execution status counts from tm_cycle_scope ──
