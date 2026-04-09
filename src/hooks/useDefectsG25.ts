@@ -228,19 +228,28 @@ export function useDefectHistoryG25(defectId: string | undefined) {
   });
 }
 
-// ─── Comments ────────────────────────────────────────────────────
+// ─── Comments (via tm_comments generic table) ───────────────────
 export function useDefectCommentsG25(defectId: string | undefined) {
   return useQuery({
     queryKey: ['g25-defect-comments', defectId],
     queryFn: async (): Promise<DefectComment[]> => {
       if (!defectId) return [];
-      const { data, error } = await (supabase as any)
-        .from('tm_defect_comments')
-        .select(`*, creator:profiles!tm_defect_comments_created_by_fkey(full_name, avatar_url)`)
-        .eq('defect_id', defectId)
+      const { data, error } = await supabase
+        .from('tm_comments')
+        .select(`*, creator:profiles!tm_comments_author_id_fkey(full_name, avatar_url)`)
+        .eq('entity_type', 'defect')
+        .eq('entity_id', defectId)
         .order('created_at', { ascending: true });
       if (error) throw new Error(error.message);
-      return (data || []) as unknown as DefectComment[];
+      return (data || []).map((c: any) => ({
+        id: c.id,
+        defect_id: defectId,
+        comment: c.content,
+        created_by: c.author_id,
+        created_at: c.created_at,
+        updated_at: c.updated_at,
+        creator: c.creator,
+      })) as DefectComment[];
     },
     enabled: !!defectId,
   });
@@ -252,13 +261,13 @@ export function useCreateDefectCommentG25() {
     mutationFn: async ({ defectId, comment }: { defectId: string; comment: string }) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
-      const { data, error } = await (supabase as any)
-        .from('tm_defect_comments')
-        .insert({ defect_id: defectId, comment, created_by: user.id } as any)
+      const { data, error } = await supabase
+        .from('tm_comments')
+        .insert({ entity_type: 'defect', entity_id: defectId, content: comment, author_id: user.id })
         .select()
         .single();
       if (error) throw new Error(error.message);
-      return data;
+      return { ...data, defect_id: defectId };
     },
     onSuccess: (data: any) => {
       qc.invalidateQueries({ queryKey: ['g25-defect-comments', data.defect_id] });
@@ -272,7 +281,7 @@ export function useDeleteDefectCommentG25() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async ({ commentId, defectId }: { commentId: string; defectId: string }) => {
-      const { error } = await (supabase as any).from('tm_defect_comments').delete().eq('id', commentId);
+      const { error } = await supabase.from('tm_comments').delete().eq('id', commentId);
       if (error) throw new Error(error.message);
       return defectId;
     },
