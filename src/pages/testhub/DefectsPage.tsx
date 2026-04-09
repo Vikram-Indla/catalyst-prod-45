@@ -82,47 +82,59 @@ export default function DefectsPage() {
   });
 
   // Map TMDefect → Defect shape for the existing DefectTable component
-  const defects: Defect[] = tmDefects.map(d => ({
-    id: d.id,
-    defect_key: d.key,
-    title: d.title,
-    description: d.description || null,
-    severity: (d.severity?.toLowerCase() || 'medium') as Defect['severity'],
-    priority: (((d as any).priority as string)?.toLowerCase() || 'medium') as Defect['priority'],
-    status: (d.status?.toLowerCase() === 'fixed' ? 'resolved' :
-             d.status?.toLowerCase() === 'wont_fix' ? 'closed' :
-             d.status?.toLowerCase() === 'duplicate' ? 'closed' :
-             d.status?.toLowerCase() === 'verified' ? 'verified' :
-             d.status?.toLowerCase() || 'new') as Defect['status'],
-    resolution: null,
-    assigned_to: d.assigned_to,
-    reported_by: d.reported_by || null,
-    component: null,
-    environment: null,
-    affected_version: null,
-    fixed_version: null,
-    folder_id: null,
-    due_date: null,
-    steps_to_reproduce: null,
-    expected_result: null,
-    actual_result: null,
-    external_id: d.external_id || null,
-    external_url: d.external_url || null,
-    resolved_at: null,
-    verified_at: null,
-    closed_at: null,
-    created_at: d.created_at,
-    updated_at: d.updated_at,
-    jira_key: d.jira_key || null,
-    jira_source: !!d.jira_source,
-    jira_project_key: d.jira_project_key || null,
-    jira_status: d.jira_status || null,
-    jira_status_category: null,
-    jira_assignee_name: d.assignee?.full_name || null,
-    jira_reporter_name: d.reporter?.full_name || null,
-    assignee: d.assignee ? { id: d.assignee.id, full_name: d.assignee.full_name, avatar_url: d.assignee.avatar_url || null } : null,
-    reporter: d.reporter ? { id: d.reporter.id, full_name: d.reporter.full_name, avatar_url: d.reporter.avatar_url || null } : null,
-  }));
+  const defects: Defect[] = tmDefects.map(d => {
+    const isJira = !!(d as any).jira_source;
+    const jiraKey = (d as any).jira_key as string | null;
+    const jiraAssigneeName = (d as any).jira_assignee_name as string | null;
+
+    return {
+      id: d.id,
+      defect_key: d.key,
+      title: d.title,
+      description: d.description || null,
+      severity: (d.severity?.toLowerCase() || 'medium') as Defect['severity'],
+      priority: (((d as any).priority as string)?.toLowerCase() || null) as Defect['priority'],
+      status: (d.status?.toLowerCase() === 'fixed' ? 'resolved' :
+               d.status?.toLowerCase() === 'wont_fix' ? 'closed' :
+               d.status?.toLowerCase() === 'duplicate' ? 'closed' :
+               d.status?.toLowerCase() === 'verified' ? 'verified' :
+               d.status?.toLowerCase() || 'new') as Defect['status'],
+      resolution: null,
+      assigned_to: d.assigned_to,
+      reported_by: d.reported_by || null,
+      component: null,
+      environment: null,
+      affected_version: null,
+      fixed_version: null,
+      folder_id: null,
+      due_date: null,
+      steps_to_reproduce: null,
+      expected_result: null,
+      actual_result: null,
+      external_id: d.external_id || null,
+      external_url: d.external_url || null,
+      resolved_at: null,
+      verified_at: null,
+      closed_at: null,
+      created_at: d.created_at,
+      updated_at: d.updated_at,
+      jira_key: jiraKey,
+      jira_source: isJira,
+      jira_project_key: (d as any).jira_project_key || null,
+      jira_status: (d as any).jira_status || null,
+      jira_status_category: null,
+      jira_assignee_name: jiraAssigneeName,
+      jira_reporter_name: d.reporter?.full_name || null,
+      assignee: d.assignee ? { id: d.assignee.id, full_name: d.assignee.full_name, avatar_url: d.assignee.avatar_url || null } : null,
+      reporter: d.reporter ? { id: d.reporter.id, full_name: d.reporter.full_name, avatar_url: d.reporter.avatar_url || null } : null,
+      // Source-aware display fields
+      displayKey: isJira && jiraKey ? jiraKey : d.key,
+      isJiraSource: isJira,
+      assigneeName: isJira
+        ? (jiraAssigneeName ?? 'Unassigned')
+        : (d.assignee?.full_name ?? 'Unassigned'),
+    };
+  });
 
   const handleDelete = async (defect: Defect) => {
     if (confirm(`Delete "${defect.defect_key}"? This cannot be undone.`)) {
