@@ -320,6 +320,11 @@ serve(async (req) => {
             raw_json: null,
           }
         })
+        // ── 2026 GUARDRAIL — only sync items created in 2026+ ──
+        .filter((r: any) => {
+          if (!r.jira_created_at) return false
+          return new Date(r.jira_created_at).getFullYear() >= 2026
+        })
 
         // ── GOVERNANCE LOCK CHECK — filter out governance-closed items ──
         const rowKeys = rows.map((r: any) => r.issue_key)
