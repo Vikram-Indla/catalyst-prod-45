@@ -8,36 +8,55 @@ export function useGovernanceScore() {
     queryKey: ["governance-score", user?.id],
     enabled: !!user?.id,
     queryFn: async () => {
-      const today = new Date().toISOString().split("T")[0];
-      const { data } = await supabase
-        .from("governance_score")
-        .select("rag_status,stale_count,breach_streak_days,score_pct")
-        .eq("user_id", user!.id)
-        .eq("scan_date", today)
-        .maybeSingle();
-      if (!data) {
+      // Step 1: Resolve Jira identity (same as AgeingTab)
+      const { data: identityRows } = await supabase
+        .from("jira_identity_map")
+        .select("jira_account_id")
+        .eq("catalyst_user_id", user!.id)
+        .limit(1);
+
+      let stale = 0;
+
+      if (identityRows?.length) {
+        const jiraAccountId = identityRows[0].jira_account_id;
+
+        // Step 2: EXACT same query as AgeingTab — ph_issues, non-done, not deleted
         const { count } = await supabase
-          .from("catalyst_issues")
+          .from("ph_issues")
           .select("*", { count: "exact", head: true })
-          .eq("assignee_id", user!.id)
-          .neq("status", "done")
-          .lt("updated_at", new Date(Date.now() - 30 * 86400_000).toISOString());
-        const stale = count ?? 0;
-        return {
-          ragStatus: stale === 0 ? "green" as const : stale <= 30 ? "amber" as const : "red" as const,
-          staleCount: stale,
-          breachStreak: 0,
-          scorePct: Math.max(0, 100 - Math.min(stale, 100)),
-        };
+          .eq("assignee_account_id", jiraAccountId)
+          .neq("status_category", "done")
+          .is("deleted_at", null);
+
+        stale = count ?? 0;
       }
+
+      // Step 3: Get breach streak from yesterday's governance_score record
+      const yesterday = new Date(Date.now() - 86400_000).toISOString().split("T")[0];
+      const { data: prev } = await supabase
+        .from("governance_score")
+        .select("breach_streak_days")
+        .eq("user_id", user!.id)
+        .eq("scan_date", yesterday)
+        .maybeSingle();
+
+      const streakYesterday = prev?.breach_streak_days ?? 0;
+      const breachStreak = stale > 0 ? streakYesterday + 1 : 0;
+
+      // Step 4: RAG thresholds aligned to ageing count
+      const ragStatus =
+        stale === 0 ? "green"
+        : stale <= 20 ? "amber"
+        : "red";
+
       return {
-        ragStatus: data.rag_status as "green" | "amber" | "red",
-        staleCount: data.stale_count,
-        breachStreak: data.breach_streak_days,
-        scorePct: data.score_pct,
+        ragStatus: ragStatus as "green" | "amber" | "red",
+        staleCount: stale,
+        breachStreak,
+        scorePct: Math.max(0, 100 - Math.min(stale * 2, 100)),
       };
     },
-    staleTime: 5 * 60_000,
-    refetchOnWindowFocus: false,
+    staleTime: 0,
+    refetchOnWindowFocus: true,
   });
 }
