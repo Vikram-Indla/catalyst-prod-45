@@ -121,9 +121,6 @@ export function useCapacityData() {
         };
       });
       
-      // QA: Log resource counts for verification
-      console.log('[Capacity] Resources loaded:', mappedResources.length, 'with avatars:', mappedResources.filter(r => r.avatar_url).length);
-      
       return mappedResources as CapacityResource[];
     },
   });
