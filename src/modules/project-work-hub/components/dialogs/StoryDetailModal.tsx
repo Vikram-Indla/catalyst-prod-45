@@ -869,7 +869,43 @@ export default function StoryDetailModal({
                     </div>
                     {activeActivityTab === 'comments' && (
                       <div>
-                        {comments.length === 0 && <div style={{ padding: '20px 0', color: '#97A0AF', fontSize: 13, textAlign: 'center' }}>No comments yet</div>}
+                        {/* ── Jira-style Comments Summary Card ── */}
+                        {(commentSummary || commentSummaryLoading) && showCommentSummary && (
+                          <div style={{
+                            border: '1px solid #DFE1E6', borderRadius: 8, padding: '16px 20px',
+                            marginBottom: 20, background: '#FFFFFF',
+                          }}>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5E6C84" strokeWidth="1.8"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="17" y2="12"/><line x1="3" y1="18" x2="13" y2="18"/></svg>
+                                <span style={{ fontSize: 14, fontWeight: 700, color: '#172B4D' }}>Comments summary</span>
+                                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 12, color: '#6B778C' }}>
+                                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#6B778C" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                                  Only visible to you
+                                </span>
+                              </div>
+                              <button onClick={() => { setShowCommentSummary(false); setCommentSummary(null); }} style={{
+                                background: 'none', border: 'none', cursor: 'pointer', padding: 4,
+                                color: '#6B778C', display: 'flex', alignItems: 'center',
+                              }}>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                              </button>
+                            </div>
+                            {commentSummaryLoading ? (
+                              <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '12px 0', color: '#6B778C', fontSize: 14 }}>
+                                <div style={{ width: 16, height: 16, border: '2px solid #DFE1E6', borderTopColor: '#2563EB', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+                                Summarizing comments…
+                              </div>
+                            ) : (
+                              <div style={{ fontSize: 14, color: '#172B4D', lineHeight: 1.7, whiteSpace: 'pre-wrap' }}
+                                dangerouslySetInnerHTML={{ __html: (commentSummary ?? '').replace(/^[-•]\s*/gm, '').split('\n').filter(l => l.trim()).map((line, i, arr) => {
+                                  if (i === 0 && !line.startsWith('•')) return `<p style="margin:0 0 12px">${line}</p><ul style="margin:0;padding-left:20px">`;
+                                  return `<li style="margin-bottom:6px;color:#172B4D">${line}</li>`;
+                                }).join('') + '</ul>' }}
+                              />
+                            )}
+                          </div>
+                        )}
                         {comments.map(c => {
                           const bg = getAvatarColor(c.author_id);
                           return (
