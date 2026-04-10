@@ -1408,6 +1408,7 @@ export default function StoryDetailModal({
   const [acceptanceCriteria, setAcceptanceCriteria] = useState('');
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const addMenuRef = useRef<HTMLDivElement>(null);
   const descriptionRef = useRef<HTMLDivElement>(null);
 
   // AI Improve Story state
