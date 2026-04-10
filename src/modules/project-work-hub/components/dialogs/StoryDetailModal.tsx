@@ -202,6 +202,7 @@ export default function StoryDetailModal({
     const h = (e: MouseEvent) => {
       if (aiDropRef.current && !aiDropRef.current.contains(e.target as Node)) setAiDropOpen(false);
       if (addMenuRef.current && !addMenuRef.current.contains(e.target as Node)) setShowAddMenu(false);
+      if (aiMenuRef.current && !aiMenuRef.current.contains(e.target as Node)) setShowAiMenu(false);
       if (statusDropdownRef.current && !statusDropdownRef.current.contains(e.target as Node)) setShowStatusDropdown(false);
       if (dotsMenuRef.current && !dotsMenuRef.current.contains(e.target as Node)) setShowDotsMenu(false);
     };
