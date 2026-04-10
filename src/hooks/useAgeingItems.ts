@@ -78,8 +78,12 @@ export function useAgeingItems() {
           return sc !== "done";
         })
         .map(row => {
-          const createdAt = row.jira_created_at ? new Date(row.jira_created_at).getTime() : now;
-          const daysOpen = Math.max(1, Math.floor((now - createdAt) / 86400_000));
+          const createdAtMs = row.jira_created_at
+            ? new Date(row.jira_created_at).getTime()
+            : null;
+          const daysOpen = createdAtMs
+            ? Math.max(1, Math.floor((now - createdAtMs) / 86400_000))
+            : 0;
           const issueKey = row.issue_key || "";
           const projectKey = row.project_key || (issueKey.includes("-") ? issueKey.split("-")[0] : "");
 
@@ -113,10 +117,10 @@ export function useAgeingItems() {
             project_key: projectKey,
             priority: row.priority ?? "medium",
             comment_count: commentCount,
-            child_issue_count: 0, // not available — will be enriched later if needed
-            assignee_is_active: true, // not available — default active
+            child_issue_count: 0, // not available — default 0
+            assignee_is_active: true, // not available — assume active
             assignee_last_login: null, // not available
-            assignee_last_login_days: 999, // treat unknown as very long inactive
+            assignee_last_login_days: 0, // 0 = unknown = assume active
           } as AgeingItem;
         });
     },
