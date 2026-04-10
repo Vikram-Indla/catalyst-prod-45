@@ -18,13 +18,6 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import {
   X, ChevronDown, ChevronRight, Plus, Paperclip,
   ExternalLink, Share2, Pencil, Search, MessageSquare, Clock,
   GripVertical, Edit2, Link2, Trash2, Check,
@@ -1309,13 +1302,28 @@ function AIImprovePanel({ storyId, issueKey, currentDescription, currentAcceptan
 }) {
   const [open, setOpen] = useState(false);
   const [improveType, setImproveType] = useState<AIImproveType>('improve_clarify');
+  const [improveTypeOpen, setImproveTypeOpen] = useState(false);
+  const improveTypeRef = useRef<HTMLDivElement>(null);
   const [focusHint, setFocusHint] = useState('');
   const [output, setOutput] = useState<AIOutput | null>(null);
   const [editedOutput, setEditedOutput] = useState<AIOutput | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [wasEdited, setWasEdited] = useState(false);
+  const IMPROVE_OPTIONS = AI_IMPROVE_OPTIONS;
+  const selectedOption = IMPROVE_OPTIONS.find(o => o.value === improveType);
   const effectiveOutput = editedOutput ?? output;
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (improveTypeRef.current && !improveTypeRef.current.contains(e.target as Node)) {
+        setImproveTypeOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
 
   const handleGenerate = async () => {
     if (wasEdited && output) { if (!confirm('Regenerating will discard your edits. Continue?')) return; }
@@ -1337,23 +1345,97 @@ function AIImprovePanel({ storyId, issueKey, currentDescription, currentAcceptan
       <button className="sdm-ai-trigger" onClick={() => setOpen(o => !o)} aria-expanded={open}><Sparkles size={12} /> AI Improve Story</button>
       {open && (
         <div className="sdm-ai-panel" id="sdm-ai-panel" role="dialog" aria-label="AI Improve Story Requirements">
-           <div className="sdm-ai-panel-header" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-             <div className="sdm-ai-panel-title" style={{ flex: 1 }}><Sparkles size={11} /> AI Improve Story Requirements</div>
-             <span style={{ fontSize: 10, color: '#1D4ED8', background: '#DBEAFE', padding: '1px 6px', borderRadius: 3, fontFamily: 'monospace', fontWeight: 600, letterSpacing: '0.02em' }}>gemini-flash</span>
-             <button className="sdm-chevron-btn" onClick={() => setOpen(false)}><X size={12} /></button>
-           </div>
+          <div className="sdm-ai-panel-header" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div className="sdm-ai-panel-title" style={{ flex: 1 }}><Sparkles size={11} /> AI Improve Story Requirements</div>
+            <span style={{ fontSize: 10, color: '#1D4ED8', background: '#DBEAFE', padding: '1px 6px', borderRadius: 3, fontFamily: 'monospace', fontWeight: 600, letterSpacing: '0.02em' }}>gemini-flash</span>
+            <button className="sdm-chevron-btn" onClick={() => setOpen(false)}><X size={12} /></button>
+          </div>
           <div className="sdm-ai-panel-body">
             <div className="sdm-ai-field"><div className="sdm-ai-field-label">Improve type</div>
-              <Select value={improveType} onValueChange={(val) => setImproveType(val as AIImproveType)}>
-                <SelectTrigger className="w-full h-8 bg-white border-[rgba(9,30,66,0.14)] text-[13px] focus:border-[#2563EB]">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="bg-white border border-[rgba(9,30,66,0.14)] rounded-md shadow-md z-50">
-                  {AI_IMPROVE_OPTIONS.map(o => (
-                    <SelectItem key={o.value} value={o.value} className="text-[13px] text-[#172B4D] focus:bg-[#EFF6FF] focus:text-[#1D4ED8] data-[state=checked]:bg-[#EFF6FF] data-[state=checked]:text-[#1D4ED8] cursor-pointer">{o.label}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <div ref={improveTypeRef} style={{ position: 'relative' }}>
+                <button
+                  type="button"
+                  onClick={() => setImproveTypeOpen(o => !o)}
+                  onKeyDown={e => { if (e.key === 'Escape') setImproveTypeOpen(false); }}
+                  style={{
+                    width: '100%',
+                    height: 32,
+                    padding: '0 10px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    background: '#FFFFFF',
+                    border: '1px solid rgba(9,30,66,0.18)',
+                    borderRadius: 4,
+                    cursor: 'pointer',
+                    fontSize: 13,
+                    color: '#172B4D',
+                    fontFamily: 'inherit',
+                    outline: 'none',
+                  }}
+                  onFocus={e => (e.currentTarget.style.borderColor = '#2563EB')}
+                  onBlur={e => (e.currentTarget.style.borderColor = 'rgba(9,30,66,0.18)')}
+                >
+                  <span>{selectedOption?.label ?? 'Select...'}</span>
+                  <svg
+                    width="14" height="14" viewBox="0 0 24 24" fill="none"
+                    stroke="#6B778C" strokeWidth="2"
+                    style={{ flexShrink: 0, transform: improveTypeOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.15s' }}
+                  >
+                    <path d="m6 9 6 6 6-6"/>
+                  </svg>
+                </button>
+                {improveTypeOpen && (
+                  <div style={{
+                    position: 'absolute',
+                    top: 'calc(100% + 4px)',
+                    left: 0,
+                    right: 0,
+                    background: '#FFFFFF',
+                    border: '1px solid rgba(9,30,66,0.2)',
+                    borderRadius: 6,
+                    boxShadow: '0 6px 16px rgba(9,30,66,0.14)',
+                    zIndex: 9999,
+                    overflow: 'hidden',
+                  }}>
+                    {IMPROVE_OPTIONS.map(option => (
+                      <div
+                        key={option.value}
+                        onClick={() => { setImproveType(option.value); setImproveTypeOpen(false); }}
+                        style={{
+                          padding: '8px 12px',
+                          fontSize: 13,
+                          color: option.value === improveType ? '#1D4ED8' : '#172B4D',
+                          background: option.value === improveType ? '#EFF6FF' : 'transparent',
+                          cursor: 'pointer',
+                          borderBottom: '1px solid rgba(9,30,66,0.04)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          transition: 'background 0.1s',
+                        }}
+                        onMouseEnter={e => {
+                          if (option.value !== improveType) {
+                            (e.currentTarget as HTMLElement).style.background = 'rgba(9,30,66,0.04)';
+                          }
+                        }}
+                        onMouseLeave={e => {
+                          if (option.value !== improveType) {
+                            (e.currentTarget as HTMLElement).style.background = 'transparent';
+                          }
+                        }}
+                      >
+                        <span>{option.label}</span>
+                        {option.value === improveType && (
+                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#1D4ED8" strokeWidth="2.5">
+                            <polyline points="20 6 9 17 4 12"/>
+                          </svg>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
             <div className="sdm-ai-field"><div className="sdm-ai-field-label">Focus area <span style={{ color: '#8993A4' }}>(optional)</span></div>
               <input className="sdm-ai-focus-input" type="text" placeholder='e.g. "focus on edge cases"' value={focusHint} onChange={e => setFocusHint(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') handleGenerate(); }} />
