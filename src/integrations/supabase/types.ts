@@ -10479,6 +10479,30 @@ export type Database = {
         }
         Relationships: []
       }
+      governance_sync_skip_log: {
+        Row: {
+          id: string
+          item_key: string
+          jira_payload: Json | null
+          skip_source: string
+          skipped_at: string
+        }
+        Insert: {
+          id?: string
+          item_key: string
+          jira_payload?: Json | null
+          skip_source?: string
+          skipped_at?: string
+        }
+        Update: {
+          id?: string
+          item_key?: string
+          jira_payload?: Json | null
+          skip_source?: string
+          skipped_at?: string
+        }
+        Relationships: []
+      }
       hi_hierarchy_levels: {
         Row: {
           color: string
@@ -72813,6 +72837,35 @@ export type Database = {
       get_worker_activity: { Args: { p_run_id: string }; Returns: Json }
       get_worker_pools: { Args: { p_project_id: string }; Returns: Json }
       get_worker_status: { Args: { p_run_id: string }; Returns: Json }
+      governance_exclusion_check: {
+        Args: { p_item_key: string }
+        Returns: boolean
+      }
+      governance_force_close: {
+        Args: {
+          p_category: string
+          p_closed_by: string
+          p_closure_reason: string
+          p_issue_id: string
+          p_item_key: string
+          p_jira_attempted?: boolean
+          p_jira_error?: string
+          p_jira_success?: boolean
+          p_original_status: string
+          p_stale_days: number
+        }
+        Returns: string
+      }
+      governance_locked_keys: {
+        Args: { p_item_keys: string[] }
+        Returns: {
+          locked_key: string
+        }[]
+      }
+      governance_restore: {
+        Args: { p_log_id: string; p_restored_by: string }
+        Returns: undefined
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
