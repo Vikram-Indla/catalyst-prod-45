@@ -103,7 +103,11 @@ export default function StoryDetailModal({
     queryKey: ['ph-comments', itemId], enabled: !!itemId && isOpen,
     queryFn: async () => {
       const { data } = await supabase.from('ph_comments').select('id, work_item_id, body, author_id, created_at, updated_at').eq('work_item_id', itemId).order('created_at', { ascending: true });
-      return (data ?? []) as unknown as PhComment[];
+      if (!data?.length) return [] as PhComment[];
+      const authorIds = [...new Set(data.map(c => c.author_id).filter(Boolean))];
+      const { data: profiles } = await supabase.from('profiles').select('id, full_name, avatar_url, email').in('id', authorIds);
+      const profileMap = new Map((profiles ?? []).map(p => [p.id, p]));
+      return data.map(c => ({ ...c, author: profileMap.get(c.author_id) ?? null })) as unknown as PhComment[];
     },
   });
 
@@ -111,7 +115,11 @@ export default function StoryDetailModal({
     queryKey: ['ph-activity-log', itemId], enabled: !!itemId && isOpen,
     queryFn: async () => {
       const { data } = await supabase.from('ph_activity_log').select('id, work_item_id, action, field_name, old_value, new_value, user_id, metadata, created_at').eq('work_item_id', itemId).order('created_at', { ascending: false });
-      return (data ?? []) as unknown as PhActivityLog[];
+      if (!data?.length) return [] as PhActivityLog[];
+      const userIds = [...new Set(data.map(e => e.user_id).filter(Boolean))];
+      const { data: profiles } = await supabase.from('profiles').select('id, full_name, avatar_url, email').in('id', userIds);
+      const profileMap = new Map((profiles ?? []).map(p => [p.id, p]));
+      return data.map(e => ({ ...e, actor: profileMap.get(e.user_id) ?? null })) as unknown as PhActivityLog[];
     },
   });
 
