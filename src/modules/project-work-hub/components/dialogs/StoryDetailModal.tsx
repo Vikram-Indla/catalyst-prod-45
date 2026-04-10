@@ -155,6 +155,7 @@ export default function StoryDetailModal({
   const [localPriority, setLocalPriority] = useState<string>('');
   const [showStatusDropdown, setShowStatusDropdown] = useState(false);
   const [showAddMenu, setShowAddMenu] = useState(false);
+  const [showAiMenu, setShowAiMenu] = useState(false);
   const [showDotsMenu, setShowDotsMenu] = useState(false);
   const [acceptanceCriteria, setAcceptanceCriteria] = useState('');
   const [titleFocused, setTitleFocused] = useState(false);
