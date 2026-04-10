@@ -1,6 +1,11 @@
 /**
- * StoryDetailModal — V13 Rebuild · Stage C (Full UI)
- * Jira-style two-panel detail modal for work items.
+ * StoryDetailModal — V14 Rebuild · Full Integration
+ * Jira-style two-panel detail modal with:
+ *   - ChildIssuesSection (catalogue v2 extension)
+ *   - ParentField (searchable epic picker)
+ *   - AIImprovePanel (AI-powered story improvement)
+ *   - AcceptanceCriteria section (editable)
+ *   - Ring-fenced CSS via data-sdm-scope
  */
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
@@ -10,7 +15,12 @@ import { toast } from 'sonner';
 import {
   X, ChevronDown, ChevronRight, Plus, Paperclip,
   ExternalLink, Share2, Pencil, Search, MessageSquare, Clock,
+  GripVertical, Edit2, Link2, Trash2, Check,
+  Eye, EyeOff, Sparkles, Loader2, RotateCcw,
 } from 'lucide-react';
+
+// Ring-fenced CSS for extension components
+import './story-detail-extensions.css';
 
 /* ═══════════════════════════════════════════════
    ANIMATIONS
@@ -54,6 +64,8 @@ interface PhIssue {
   jira_created_at: string | null;
   jira_updated_at: string | null;
   deleted_at: string | null;
+  acceptance_criteria?: string | null;
+  position?: number | null;
 }
 
 interface FixVersion { id: string; name: string; released: boolean; releaseDate?: string; }
@@ -122,6 +134,45 @@ interface ProjectMember {
   user_id: string; role: string; profile?: Profile;
 }
 
+// ── Extension component types ────────────────────
+type ChildIssueType = 'task' | 'bug' | 'Sub-task';
+
+interface ChildIssue {
+  id: string;
+  issue_key: string;
+  summary: string;
+  status: string;
+  status_category: 'todo' | 'in_progress' | 'done';
+  issue_type: ChildIssueType;
+  assignee_account_id: string | null;
+  assignee_display_name: string | null;
+  priority: 'Highest' | 'High' | 'Medium' | 'Low' | 'Lowest';
+  position: number;
+  deleted_at: string | null;
+}
+
+interface ParentIssue {
+  id: string;
+  issue_key: string;
+  summary: string;
+  issue_type: string;
+  status: string;
+  status_category: 'todo' | 'in_progress' | 'done';
+}
+
+type AIImproveType =
+  | 'improve_clarify'
+  | 'expand_detail'
+  | 'add_acceptance_criteria'
+  | 'convert_user_story'
+  | 'shorten_focus'
+  | 'add_edge_cases';
+
+interface AIOutput {
+  description: string;
+  acceptance_criteria: string;
+}
+
 /* ═══════════════════════════════════════════════
    CONSTANTS
    ═══════════════════════════════════════════════ */
@@ -175,6 +226,35 @@ const LINK_TYPES = [
   'is_duplicated_by', 'implements', 'is_implemented_by', 'clones', 'is_cloned_by',
 ] as const;
 
+/** StatusLozenge — IMMUTABLE 3-color (V12 guardrail) */
+const LOZENGE_STYLES: Record<'grey' | 'blue' | 'green', React.CSSProperties> = {
+  grey:  { background: '#DFE1E6', color: '#253858' },
+  blue:  { background: '#DEEBFF', color: '#0747A6' },
+  green: { background: '#E3FCEF', color: '#006644' },
+};
+
+/** Priority → dot color */
+const PRIORITY_COLORS: Record<string, string> = {
+  Highest: '#FF5630', High: '#FF5630', Medium: '#FFAB00', Low: '#36B37E', Lowest: '#8993A4',
+};
+
+/** Work item type icons — canonical SVG */
+const WORK_ITEM_ICONS: Record<string, string> = {
+  task: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="#2684FF" fill-rule="evenodd" d="M3,0 L21,0 C22.6568542,-3.04359188e-16 24,1.34314575 24,3 L24,21 C24,22.6568542 22.6568542,24 21,24 L3,24 C1.34314575,24 2.02906125e-16,22.6568542 0,21 L0,3 C-2.02906125e-16,1.34314575 1.34314575,3.04359188e-16 3,0 Z M6,4 C4.8954305,4 4,4.8954305 4,6 L4,18 C4,19.1045695 4.8954305,20 6,20 L18,20 C19.1045695,20 20,19.1045695 20,18 L20,6 C20,4.8954305 19.1045695,4 18,4 L6,4 Z M6,6 L6,18 L18,18 L18,6 L6,6 Z"/></svg>`,
+  'Sub-task': `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="#2684FF" fill-rule="evenodd" d="M13,11 L13,6 C13,5.44771525 12.5522847,5 12,5 L6,5 C5.44771525,5 5,5.44771525 5,6 L5,12 C5,12.5522847 5.44771525,13 6,13 L11,13 L11,18 C11,18.5522847 11.4477153,19 12,19 L18,19 C18.5522847,19 19,18.5522847 19,18 L19,12 C19,11.4477153 18.5522847,11 18,11 L13,11 Z M3,0 L21,0 C22.6568542,-3.04359188e-16 24,1.34314575 24,3 L24,21 C24,22.6568542 22.6568542,24 21,24 L3,24 C1.34314575,24 2.02906125e-16,22.6568542 0,21 L0,3 C-2.02906125e-16,1.34314575 1.34314575,3.04359188e-16 3,0 Z M7,7 L11,7 L11,11 L7,11 L7,7 Z M13,13 L17,13 L17,17 L13,17 L13,13 Z"/></svg>`,
+  bug: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="#FF5630" fill-rule="evenodd" d="M3,0 L21,0 C22.6568542,-3.04359188e-16 24,1.34314575 24,3 L24,21 C24,22.6568542 22.6568542,24 21,24 L3,24 C1.34314575,24 2.02906125e-16,22.6568542 0,21 L0,3 C-2.02906125e-16,1.34314575 1.34314575,3.04359188e-16 3,0 Z M12,17 C14.7614237,17 17,14.7614237 17,12 C17,9.23857625 14.7614237,7 12,7 C9.23857625,7 7,9.23857625 7,12 C7,14.7614237 9.23857625,17 12,17 Z"/></svg>`,
+  epic: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="#6554C0" fill-rule="evenodd" d="M3,0 L21,0 C22.6568542,-3.04359188e-16 24,1.34314575 24,3 L24,21 C24,22.6568542 22.6568542,24 21,24 L3,24 C1.34314575,24 2.02906125e-16,22.6568542 0,21 L0,3 C-2.02906125e-16,1.34314575 1.34314575,3.04359188e-16 3,0 Z M18.1875,9.4 L15.125,9.4 L15.125,4.8 C15.125,3.80261507 14.3098441,3 13.3125,3 L9.875,14.5744 L9.875,19.2 C9.875,20.1973849 10.6901559,21 11.6875,21 L20,11.2 C20,10.2026151 19.1848441,9.4 18.1875,9.4 Z"/></svg>`,
+};
+
+const AI_IMPROVE_OPTIONS: { value: AIImproveType; label: string }[] = [
+  { value: 'improve_clarify', label: 'Improve & Clarify' },
+  { value: 'expand_detail', label: 'Expand & Detail' },
+  { value: 'add_acceptance_criteria', label: 'Add Acceptance Criteria' },
+  { value: 'convert_user_story', label: 'Convert to User Story format' },
+  { value: 'shorten_focus', label: 'Shorten & Focus' },
+  { value: 'add_edge_cases', label: 'Add Edge Cases' },
+];
+
 /* ═══════════════════════════════════════════════
    HELPERS
    ═══════════════════════════════════════════════ */
@@ -207,11 +287,22 @@ function getAvatarColor(id: string): string {
   return colors[Math.abs(hash) % colors.length];
 }
 
+function getLozengeVariant(statusCategory: 'todo' | 'in_progress' | 'done'): 'grey' | 'blue' | 'green' {
+  if (statusCategory === 'done') return 'green';
+  if (statusCategory === 'in_progress') return 'blue';
+  return 'grey';
+}
+
 function getSeverity(priority: string | null): { label: string; bg: string; color: string } {
   if (!priority) return { label: 'SEV-3', bg: '#F1F5F9', color: '#475569' };
   if (priority === 'Highest' || priority === 'High') return { label: 'SEV-1', bg: '#FFE2DD', color: '#AE2A19' };
   if (priority === 'Medium') return { label: 'SEV-2', bg: '#FFF0E6', color: '#9E4C00' };
   return { label: 'SEV-3', bg: '#F1F5F9', color: '#475569' };
+}
+
+function nextPosition(children: ChildIssue[]): number {
+  if (children.length === 0) return 1024;
+  return Math.max(...children.map(c => c.position)) + 1024;
 }
 
 /* ── CANONICAL WORK ITEM SVGs ─────────────────── */
@@ -233,7 +324,6 @@ function IssueIcon({ type, size = 16 }: { type: string; size?: number }) {
   if (t.includes('task')) return (
     <svg width={size} height={size} viewBox="0 0 16 16" fill="none"><rect width="16" height="16" rx="3" fill="#4BADE8"/><path d="M4.5 8.5L7 11L11.5 5.5" stroke="#FFF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
   );
-  // Default: Story
   return (
     <svg width={size} height={size} viewBox="0 0 16 16" fill="none"><path d="M4 1h6.5L14 4.5V13a2 2 0 01-2 2H4a2 2 0 01-2-2V3a2 2 0 012-2z" fill="#36B37E"/><path d="M10 1v4h4" fill="#2A9D3E"/></svg>
   );
@@ -266,7 +356,6 @@ function JiraStatusPill({ status, category }: { status: string; category: string
   );
 }
 
-/* Skeleton bar */
 function Skel({ w, h = 14 }: { w: number | string; h?: number }) {
   return <div style={{ width: w, height: h, borderRadius: 4, background: '#F1F5F9', animation: 'sdm-pulse 1.5s ease-in-out infinite' }} />;
 }
@@ -283,7 +372,6 @@ interface StoryDetailModalProps {
 type ChildTab = 'subtasks' | 'defects' | 'incidents' | 'testcases' | 'executions';
 type ActivityTab = 'comments' | 'history';
 
-/* Table cell style constant */
 const TC: React.CSSProperties = {
   padding: '8px 12px', fontSize: 12, fontFamily: 'Inter, sans-serif',
   borderBottom: '0.75px solid #E4E7EC', whiteSpace: 'nowrap', overflow: 'hidden',
@@ -296,7 +384,416 @@ const TH: React.CSSProperties = {
 };
 
 /* ═══════════════════════════════════════════════
-   COMPONENT
+   EXTENSION COMPONENT 1 — ChildIssuesSection
+   ═══════════════════════════════════════════════ */
+
+function ChildIssuesSection({ storyKey, storyId, projectKey }: { storyKey: string; storyId: string; projectKey: string }) {
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
+
+  const [expanded, setExpanded] = useState(true);
+  const [showDone, setShowDone] = useState(true);
+  const [creating, setCreating] = useState(false);
+  const [draftSummary, setDraftSummary] = useState('');
+  const [draftType, setDraftType] = useState<ChildIssueType>('task');
+  const createInputRef = useRef<HTMLInputElement>(null);
+
+  const { data: children = [], isLoading } = useQuery({
+    queryKey: ['childIssues', storyKey],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('ph_issues')
+        .select('id, issue_key, summary, status, status_category, issue_type, assignee_account_id, assignee_display_name, priority, position, deleted_at')
+        .eq('parent_key', storyKey)
+        .is('deleted_at', null)
+        .order('position', { ascending: true });
+      if (error) throw error;
+      return (data ?? []) as ChildIssue[];
+    },
+  });
+
+  const progress = useMemo(() => {
+    if (!children.length) return null;
+    const done = children.filter(c => c.status_category === 'done').length;
+    return { done, total: children.length, pct: Math.round((done / children.length) * 100) };
+  }, [children]);
+
+  const visibleChildren = useMemo(
+    () => showDone ? children : children.filter(c => c.status_category !== 'done'),
+    [children, showDone]
+  );
+
+  const createMutation = useMutation({
+    mutationFn: async (summary: string) => {
+      const { data, error } = await supabase
+        .from('ph_issues')
+        .insert({
+          summary: summary.trim(),
+          issue_type: draftType,
+          parent_key: storyKey,
+          project_key: projectKey,
+          status: 'To Do',
+          status_category: 'todo',
+          priority: 'Medium',
+          position: nextPosition(children),
+          reporter_account_id: user?.id,
+        })
+        .select('id, issue_key, summary, status, status_category, issue_type, assignee_account_id, assignee_display_name, priority, position, deleted_at')
+        .single();
+      if (error) throw error;
+      return data as ChildIssue;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['childIssues', storyKey] });
+      setDraftSummary('');
+      setTimeout(() => createInputRef.current?.focus(), 50);
+    },
+  });
+
+  const handleCreateSubmit = useCallback(() => {
+    if (!draftSummary.trim()) return;
+    createMutation.mutate(draftSummary);
+  }, [draftSummary, createMutation]);
+
+  const handleCreateKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') { e.preventDefault(); handleCreateSubmit(); }
+    if (e.key === 'Escape') { setCreating(false); setDraftSummary(''); }
+  };
+
+  useEffect(() => {
+    if (creating) setTimeout(() => createInputRef.current?.focus(), 50);
+  }, [creating]);
+
+  const deleteMutation = useMutation({
+    mutationFn: async (childId: string) => {
+      const { error } = await supabase.from('ph_issues').update({ deleted_at: new Date().toISOString() }).eq('id', childId);
+      if (error) throw error;
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['childIssues', storyKey] }),
+  });
+
+  return (
+    <div className="sdm-child-issues" style={{ marginTop: 20 }}>
+      <div className="sdm-child-header">
+        <div className="sdm-child-header-left">
+          <button className="sdm-chevron-btn" onClick={() => setExpanded(e => !e)} aria-expanded={expanded}>
+            {expanded ? <ChevronDown size={12} strokeWidth={2.5} /> : <ChevronRight size={12} strokeWidth={2.5} />}
+          </button>
+          <span className="sdm-child-title">Child Issues</span>
+          <span className="sdm-count-badge">{children.length}</span>
+        </div>
+        {expanded && progress && (
+          <div className="sdm-progress-block" title={`${progress.done} of ${progress.total} child issues done`}>
+            <div className="sdm-progress-track" role="progressbar" aria-valuenow={progress.done} aria-valuemax={progress.total}>
+              <div className="sdm-progress-fill" style={{ width: `${progress.pct}%` }} />
+            </div>
+            <span className="sdm-progress-text">{progress.done} of {progress.total} done</span>
+          </div>
+        )}
+        {expanded && (
+          <div className="sdm-child-header-right">
+            {children.some(c => c.status_category === 'done') && (
+              <button className="sdm-visibility-btn" onClick={() => setShowDone(s => !s)} title={showDone ? 'Hide completed' : 'Show completed'}>
+                {showDone ? <><Eye size={11} /> Hide completed</> : <><EyeOff size={11} /> Show completed ({children.filter(c => c.status_category === 'done').length} hidden)</>}
+              </button>
+            )}
+            <button className="sdm-create-btn" onClick={() => setCreating(true)}>
+              <Plus size={11} strokeWidth={2.5} /> Create child issue
+            </button>
+          </div>
+        )}
+      </div>
+
+      {expanded && (
+        <div role="region" aria-label="Child issues">
+          {isLoading && (
+            <div>
+              {[1, 2, 3].map(i => (
+                <div key={i} className="sdm-skeleton-row">
+                  <div className="sdm-skeleton-pulse" style={{ width: 16, height: 16 }} />
+                  <div className="sdm-skeleton-pulse" style={{ width: 60, height: 12 }} />
+                  <div className="sdm-skeleton-pulse" style={{ flex: 1, height: 12 }} />
+                  <div className="sdm-skeleton-pulse" style={{ width: 60, height: 18 }} />
+                  <div className="sdm-skeleton-pulse" style={{ width: 24, height: 24, borderRadius: '50%' }} />
+                </div>
+              ))}
+            </div>
+          )}
+          {!isLoading && children.length === 0 && (
+            <section className="sdm-child-empty" aria-label="No child issues">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#8993A4" strokeWidth="1.5" className="sdm-child-empty-icon">
+                <rect x="3" y="3" width="18" height="18" rx="3"/><path d="M9 12h6M12 9v6"/>
+              </svg>
+              <div className="sdm-child-empty-heading">No child issues yet</div>
+              <div className="sdm-child-empty-sub">Break this story into tasks to track progress</div>
+              <button className="sdm-child-empty-cta" onClick={() => setCreating(true)}>+ Create child issue</button>
+            </section>
+          )}
+          {!isLoading && visibleChildren.length > 0 && (
+            <ul className="sdm-child-list" role="list">
+              {visibleChildren.map(child => {
+                const isDone = child.status_category === 'done';
+                const lozengeVariant = getLozengeVariant(child.status_category);
+                const avatarColor = child.assignee_display_name ? getAvatarColor(child.assignee_display_name) : '#8993A4';
+                const avatarInitial = child.assignee_display_name ? child.assignee_display_name.charAt(0).toUpperCase() : '?';
+                return (
+                  <li key={child.id} className="sdm-child-row" role="listitem">
+                    <span className="sdm-drag-handle"><GripVertical size={14} /></span>
+                    <span className="sdm-type-icon" dangerouslySetInnerHTML={{ __html: WORK_ITEM_ICONS[child.issue_type] ?? WORK_ITEM_ICONS.task }} />
+                    <span className="sdm-child-key">{child.issue_key}</span>
+                    <span className={`sdm-child-summary${isDone ? ' sdm-child-summary--done' : ''}`}>{child.summary}</span>
+                    <span className={`sdm-status-lozenge sdm-status-lozenge--${lozengeVariant}`} style={LOZENGE_STYLES[lozengeVariant]}>{child.status}</span>
+                    <div className="sdm-child-avatar" style={{ background: avatarColor }} title={child.assignee_display_name ?? 'Unassigned'}>{avatarInitial}</div>
+                    <div className="sdm-priority-dot" style={{ background: PRIORITY_COLORS[child.priority] ?? '#8993A4' }} title={`Priority: ${child.priority}`} />
+                    <div className="sdm-row-actions">
+                      <button className="sdm-row-action-btn" title="Edit summary" onClick={e => e.stopPropagation()}><Edit2 size={12} /></button>
+                      <button className="sdm-row-action-btn" title="Copy link" onClick={e => { e.stopPropagation(); navigator.clipboard.writeText(`${window.location.origin}/issues/${child.issue_key}`); }}><Link2 size={12} /></button>
+                      <button className="sdm-row-action-btn sdm-row-action-btn--danger" title="Delete" onClick={e => { e.stopPropagation(); if (confirm(`Delete ${child.issue_key}?`)) deleteMutation.mutate(child.id); }}><Trash2 size={12} /></button>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+          {creating && (
+            <div className="sdm-create-row">
+              <button className="sdm-type-select-btn" title={`Issue type: ${draftType}`} onClick={() => setDraftType(t => t === 'task' ? 'bug' : 'task')}>
+                <span dangerouslySetInnerHTML={{ __html: WORK_ITEM_ICONS[draftType] }} />
+              </button>
+              <input ref={createInputRef} className="sdm-create-input" type="text" placeholder="What needs to be done?" value={draftSummary} onChange={e => setDraftSummary(e.target.value)} onKeyDown={handleCreateKeyDown} maxLength={255} />
+              <button className="sdm-confirm-btn" onClick={handleCreateSubmit} disabled={!draftSummary.trim() || createMutation.isPending}>
+                {createMutation.isPending ? <Loader2 size={14} className="animate-spin" /> : <Check size={14} />}
+              </button>
+              <button className="sdm-cancel-btn" onClick={() => { setCreating(false); setDraftSummary(''); }}><X size={14} /></button>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════
+   EXTENSION COMPONENT 2 — ParentField
+   ═══════════════════════════════════════════════ */
+
+function ParentFieldPicker({ storyKey, parentKey, projectKey, onParentChange }: {
+  storyKey: string; parentKey: string | null; projectKey: string;
+  onParentChange: (newParentKey: string | null) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState('');
+  const containerRef = useRef<HTMLDivElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  const { data: currentParent } = useQuery({
+    queryKey: ['parentIssue', parentKey],
+    queryFn: async () => {
+      if (!parentKey) return null;
+      const { data, error } = await supabase.from('ph_issues')
+        .select('id, issue_key, summary, issue_type, status, status_category')
+        .eq('issue_key', parentKey).is('deleted_at', null).single();
+      if (error) return null;
+      return data as ParentIssue;
+    },
+    enabled: !!parentKey,
+  });
+
+  const { data: searchResults = [] } = useQuery({
+    queryKey: ['parentSearch', projectKey, search],
+    queryFn: async () => {
+      let query = supabase.from('ph_issues')
+        .select('id, issue_key, summary, issue_type, status, status_category')
+        .eq('project_key', projectKey).eq('issue_type', 'Epic')
+        .is('deleted_at', null).neq('issue_key', storyKey)
+        .order('jira_updated_at', { ascending: false }).limit(10);
+      if (search.trim()) {
+        query = query.or(`issue_key.ilike.${search}%,summary.ilike.%${search}%`);
+      }
+      const { data, error } = await query;
+      if (error) throw error;
+      return (data ?? []) as ParentIssue[];
+    },
+    enabled: open,
+  });
+
+  useEffect(() => {
+    if (!open) return;
+    const handleClick = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setOpen(false); setSearch('');
+      }
+    };
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [open]);
+
+  useEffect(() => {
+    if (open) setTimeout(() => searchInputRef.current?.focus(), 50);
+  }, [open]);
+
+  const handleSelect = (key: string | null) => { onParentChange(key); setOpen(false); setSearch(''); };
+
+  return (
+    <div ref={containerRef} style={{ position: 'relative', flex: 1 }}>
+      {parentKey && currentParent ? (
+        <div className="sdm-parent-field" onClick={() => setOpen(o => !o)}>
+          <span dangerouslySetInnerHTML={{ __html: WORK_ITEM_ICONS[currentParent.issue_type.toLowerCase()] ?? WORK_ITEM_ICONS.epic }} />
+          <span className="sdm-parent-key">{currentParent.issue_key}</span>
+          <span className="sdm-parent-name">{currentParent.summary}</span>
+          <span className="sdm-parent-chevron"><ChevronRight size={10} /></span>
+        </div>
+      ) : (
+        <div className="sdm-parent-field sdm-parent-field--empty" onClick={() => setOpen(o => !o)} role="button">
+          None — Add parent
+        </div>
+      )}
+      {open && (
+        <div className="sdm-parent-popover" role="dialog" aria-label="Select parent issue">
+          <div className="sdm-popover-search">
+            <input ref={searchInputRef} className="sdm-popover-input" type="text" placeholder="Search epics…" value={search} onChange={e => setSearch(e.target.value)} onKeyDown={e => { if (e.key === 'Escape') { setOpen(false); setSearch(''); } }} />
+          </div>
+          <div className="sdm-popover-results">
+            {parentKey && (
+              <div className="sdm-popover-none-option" onClick={() => handleSelect(null)} role="button">✕ Remove parent</div>
+            )}
+            {searchResults.map(result => (
+              <div key={result.id} className={`sdm-popover-result${result.issue_key === parentKey ? ' sdm-popover-result--active' : ''}`} onClick={() => handleSelect(result.issue_key)} role="button">
+                <span dangerouslySetInnerHTML={{ __html: WORK_ITEM_ICONS.epic }} />
+                <span className="sdm-popover-result-key">{result.issue_key}</span>
+                <span className="sdm-popover-result-name">{result.summary}</span>
+                {result.issue_key === parentKey && <Check size={12} style={{ color: '#2563EB', flexShrink: 0 }} />}
+              </div>
+            ))}
+            {searchResults.length === 0 && search && (
+              <div style={{ padding: 12, fontSize: 12, color: '#6B778C', textAlign: 'center' }}>No epics found for "{search}"</div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════
+   EXTENSION COMPONENT 3 — AIImprovePanel
+   ═══════════════════════════════════════════════ */
+
+function AIImprovePanel({ storyId, issueKey, currentDescription, currentAcceptanceCriteria, onApplyDescription, onApplyAcceptanceCriteria }: {
+  storyId: string; issueKey: string; currentDescription: string;
+  currentAcceptanceCriteria: string;
+  onApplyDescription: (text: string, prev: string) => void;
+  onApplyAcceptanceCriteria: (text: string, prev: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [improveType, setImproveType] = useState<AIImproveType>('improve_clarify');
+  const [focusHint, setFocusHint] = useState('');
+  const [output, setOutput] = useState<AIOutput | null>(null);
+  const [editedOutput, setEditedOutput] = useState<AIOutput | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [wasEdited, setWasEdited] = useState(false);
+
+  const effectiveOutput = editedOutput ?? output;
+
+  const handleGenerate = async () => {
+    if (wasEdited && output) {
+      if (!confirm('Regenerating will discard your edits. Continue?')) return;
+    }
+    setLoading(true); setError(null); setOutput(null); setEditedOutput(null); setWasEdited(false);
+    try {
+      const { data, error: fnError } = await supabase.functions.invoke('ai-improve-story', {
+        body: { issue_id: storyId, improve_type: improveType, focus_hint: focusHint.trim() || null, current_description: currentDescription || '(empty)', current_ac: currentAcceptanceCriteria || '(none)' },
+      });
+      if (fnError) throw fnError;
+      if (!data?.description && !data?.acceptance_criteria) throw new Error('AI returned empty response');
+      setOutput({ description: data.description ?? '', acceptance_criteria: data.acceptance_criteria ?? '' });
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'AI features are temporarily unavailable. Try again later.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <>
+      <button className="sdm-ai-trigger" onClick={() => setOpen(o => !o)} aria-expanded={open}>
+        <Sparkles size={12} /> AI Improve Story
+      </button>
+      {open && (
+        <div className="sdm-ai-panel" id="sdm-ai-panel" role="dialog" aria-label="AI Improve Story Requirements">
+          <div className="sdm-ai-panel-header">
+            <div className="sdm-ai-panel-title"><Sparkles size={11} /> AI Improve Story Requirements</div>
+            <button className="sdm-chevron-btn" onClick={() => setOpen(false)}><X size={12} /></button>
+          </div>
+          <div className="sdm-ai-panel-body">
+            <div className="sdm-ai-field">
+              <div className="sdm-ai-field-label">Improve type</div>
+              <select className="sdm-ai-select" value={improveType} onChange={e => setImproveType(e.target.value as AIImproveType)}>
+                {AI_IMPROVE_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+              </select>
+            </div>
+            <div className="sdm-ai-field">
+              <div className="sdm-ai-field-label">Focus area <span style={{ color: '#8993A4' }}>(optional)</span></div>
+              <input className="sdm-ai-focus-input" type="text" placeholder='e.g. "focus on edge cases"' value={focusHint} onChange={e => setFocusHint(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') handleGenerate(); }} />
+            </div>
+            <div className="sdm-ai-field">
+              <div className="sdm-ai-field-label">Context from story</div>
+              <div className="sdm-ai-context-box">
+                {currentDescription || <em style={{ color: '#8993A4' }}>No description yet — AI will generate from story title and context</em>}
+              </div>
+            </div>
+            <button className="sdm-ai-generate-btn" onClick={handleGenerate} disabled={loading}>
+              {loading ? <><Loader2 size={13} className="animate-spin" /> Generating…</> : <><Sparkles size={13} /> Generate</>}
+            </button>
+            {error && (
+              <div style={{ marginTop: 8, padding: '8px 10px', background: '#FFF1EF', border: '1px solid #FFBDAD', borderRadius: 4, fontSize: 12, color: '#BF2600' }}>
+                ⚠ {error}
+                <button onClick={handleGenerate} style={{ marginLeft: 8, color: '#BF2600', textDecoration: 'underline', background: 'none', border: 'none', cursor: 'pointer', fontSize: 12 }}>Retry</button>
+              </div>
+            )}
+            {loading && (
+              <div className="sdm-ai-output" style={{ marginTop: 10 }}>
+                <div style={{ padding: 12 }}>
+                  <div className="sdm-ai-shimmer-line" style={{ width: '40%' }} />
+                  <div className="sdm-ai-shimmer-line" />
+                  <div className="sdm-ai-shimmer-line" style={{ width: '85%' }} />
+                  <div className="sdm-ai-shimmer-line" style={{ width: '60%' }} />
+                </div>
+              </div>
+            )}
+            {!loading && effectiveOutput && (
+              <div className="sdm-ai-output">
+                <div className="sdm-ai-output-content" contentEditable suppressContentEditableWarning onInput={() => setWasEdited(true)}>
+                  {effectiveOutput.description && (
+                    <><strong style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#6B778C' }}>Description</strong>
+                    <p style={{ marginTop: 6 }}>{effectiveOutput.description}</p></>
+                  )}
+                  {effectiveOutput.acceptance_criteria && (
+                    <><strong style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#6B778C', display: 'block', marginTop: 10 }}>Acceptance Criteria</strong>
+                    <pre style={{ fontFamily: 'inherit', whiteSpace: 'pre-wrap', marginTop: 6, fontSize: 12 }}>{effectiveOutput.acceptance_criteria}</pre></>
+                  )}
+                  {wasEdited && <div style={{ marginTop: 8, fontSize: 11, color: '#6B778C' }}>✏ Edited — your changes preserved on Apply</div>}
+                </div>
+                <div className="sdm-ai-actions-row">
+                  <button className="sdm-ai-action-btn sdm-ai-action-btn--regen" onClick={handleGenerate}><RotateCcw size={11} style={{ marginRight: 4 }} /> Regenerate</button>
+                  {effectiveOutput.description && <button className="sdm-ai-action-btn sdm-ai-action-btn--apply" onClick={() => { onApplyDescription(effectiveOutput.description, currentDescription); setOpen(false); }}>← Apply to Description</button>}
+                  {effectiveOutput.acceptance_criteria && <button className="sdm-ai-action-btn sdm-ai-action-btn--apply" onClick={() => { onApplyAcceptanceCriteria(effectiveOutput.acceptance_criteria, currentAcceptanceCriteria); setOpen(false); }}>← Apply to AC</button>}
+                  {effectiveOutput.description && effectiveOutput.acceptance_criteria && (
+                    <button className="sdm-ai-action-btn sdm-ai-action-btn--apply-both" onClick={() => { onApplyDescription(effectiveOutput.description, currentDescription); onApplyAcceptanceCriteria(effectiveOutput.acceptance_criteria, currentAcceptanceCriteria); setOpen(false); }}>← Apply Both</button>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
+/* ═══════════════════════════════════════════════
+   MAIN COMPONENT
    ═══════════════════════════════════════════════ */
 
 export default function StoryDetailModal({
@@ -451,7 +948,6 @@ export default function StoryDetailModal({
   const [activeChildTab, setActiveChildTab] = useState<ChildTab>('subtasks');
   const [activeActivityTab, setActiveActivityTab] = useState<ActivityTab>('comments');
   const [newComment, setNewComment] = useState('');
-  const [showAiImprove, setShowAiImprove] = useState(false);
   const [showWorkflow, setShowWorkflow] = useState(false);
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
   const [showLinkModal, setShowLinkModal] = useState(false);
@@ -467,8 +963,9 @@ export default function StoryDetailModal({
   const [showAssigneePicker, setShowAssigneePicker] = useState(false);
   const [linkSearch, setLinkSearch] = useState('');
   const [linkType, setLinkType] = useState<string>('relates_to');
-
   const [selectedLinkTarget, setSelectedLinkTarget] = useState<PhIssue | null>(null);
+  const [acceptanceCriteria, setAcceptanceCriteria] = useState('');
+
   const fileInputRef = useRef<HTMLInputElement>(null);
   const descriptionRef = useRef<HTMLDivElement>(null);
 
@@ -476,6 +973,7 @@ export default function StoryDetailModal({
     if (issue) {
       setLocalStatus(issue.status);
       setLocalPriority(issue.priority ?? 'Medium');
+      setAcceptanceCriteria(issue.acceptance_criteria ?? '');
     }
   }, [issue?.id]);
 
@@ -495,8 +993,7 @@ export default function StoryDetailModal({
         .eq('id', itemId);
       if (error) throw error;
       await supabase.from('jira_write_back_queue').insert({
-        ph_issue_id: itemId,
-        field_name: 'status', new_value: newStatus, status: 'approved',
+        ph_issue_id: itemId, field_name: 'status', new_value: newStatus, status: 'approved',
       });
     },
     onSuccess: () => {
@@ -504,7 +1001,7 @@ export default function StoryDetailModal({
       queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] });
       queryClient.invalidateQueries({ queryKey: ['ph_issues'] });
     },
-    onError: (err: Error) => { console.error('Mutation failed:', err); toast.error('Failed to update status'); },
+    onError: (err: Error) => toast.error('Failed to update status'),
   });
 
   const updateFieldMutation = useMutation({
@@ -516,8 +1013,7 @@ export default function StoryDetailModal({
         old_value: oldValue, new_value: value, user_id: user!.id,
       });
       await supabase.from('jira_write_back_queue').insert({
-        ph_issue_id: itemId,
-        field_name: field, new_value: value, status: 'approved',
+        ph_issue_id: itemId, field_name: field, new_value: value, status: 'approved',
       });
     },
     onSuccess: () => {
@@ -525,7 +1021,7 @@ export default function StoryDetailModal({
       queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] });
       queryClient.invalidateQueries({ queryKey: ['ph-activity-log', itemId] });
     },
-    onError: (err: Error) => { console.error('Mutation failed:', err); toast.error('Failed to update'); },
+    onError: () => toast.error('Failed to update'),
   });
 
   const updateAssigneeMutation = useMutation({
@@ -544,7 +1040,7 @@ export default function StoryDetailModal({
       toast.success('Assignee updated');
       queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] });
     },
-    onError: (err: Error) => { console.error('Mutation failed:', err); toast.error('Failed to update assignee'); },
+    onError: () => toast.error('Failed to update assignee'),
   });
 
   const addCommentMutation = useMutation({
@@ -559,7 +1055,7 @@ export default function StoryDetailModal({
       toast.success('Comment added');
       queryClient.invalidateQueries({ queryKey: ['ph-comments', itemId] });
     },
-    onError: (err: Error) => { console.error('Mutation failed:', err); toast.error('Failed to add comment'); },
+    onError: () => toast.error('Failed to add comment'),
   });
 
   const deleteCommentMutation = useMutation({
@@ -571,14 +1067,13 @@ export default function StoryDetailModal({
       toast.success('Comment deleted');
       queryClient.invalidateQueries({ queryKey: ['ph-comments', itemId] });
     },
-    onError: (err: Error) => { console.error('Mutation failed:', err); toast.error('Failed to delete comment'); },
+    onError: () => toast.error('Failed to delete comment'),
   });
 
   const deleteIssueMutation = useMutation({
     mutationFn: async () => {
       const { error } = await supabase.from('ph_issues')
-        .update({ deleted_at: new Date().toISOString() })
-        .eq('id', itemId);
+        .update({ deleted_at: new Date().toISOString() }).eq('id', itemId);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -586,7 +1081,7 @@ export default function StoryDetailModal({
       queryClient.invalidateQueries({ queryKey: ['ph_issues'] });
       onClose();
     },
-    onError: (err: Error) => { console.error('Mutation failed:', err); toast.error('Failed to delete'); },
+    onError: () => toast.error('Failed to delete'),
   });
 
   const addLinkMutation = useMutation({
@@ -596,13 +1091,11 @@ export default function StoryDetailModal({
       if (error) throw error;
     },
     onSuccess: () => {
-      setShowLinkModal(false);
-      setSelectedLinkTarget(null);
-      setLinkSearch('');
+      setShowLinkModal(false); setSelectedLinkTarget(null); setLinkSearch('');
       toast.success('Issue linked');
       queryClient.invalidateQueries({ queryKey: ['ph-issue-links', itemId] });
     },
-    onError: (err: Error) => { console.error('Mutation failed:', err); toast.error('Failed to link'); },
+    onError: () => toast.error('Failed to link'),
   });
 
   const uploadAttachmentMutation = useMutation({
@@ -620,7 +1113,7 @@ export default function StoryDetailModal({
       toast.success('Attachment uploaded');
       queryClient.invalidateQueries({ queryKey: ['ph-attachments', itemId] });
     },
-    onError: (err: Error) => { console.error('Mutation failed:', err); toast.error('Failed to upload'); },
+    onError: () => toast.error('Failed to upload'),
   });
 
   const handleCommentSubmit = () => {
@@ -628,53 +1121,59 @@ export default function StoryDetailModal({
   };
 
   const handleCommentKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
-      e.preventDefault();
-      handleCommentSubmit();
-    }
+    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); handleCommentSubmit(); }
   };
 
   const assignToMe = () => {
     if (!currentProfile || !user) return;
-    updateAssigneeMutation.mutate({
-      userId: user.id,
-      displayName: currentProfile.full_name ?? user.email ?? 'Me',
-    });
+    updateAssigneeMutation.mutate({ userId: user.id, displayName: currentProfile.full_name ?? user.email ?? 'Me' });
   };
 
   const saveFigmaLink = useCallback(() => {
-    if (!/^https:\/\/(www\.)?figma\.com\//.test(figmaUrl)) {
-      setFigmaError('Only Figma URLs accepted (figma.com)');
-      return;
-    }
+    if (!/^https:\/\/(www\.)?figma\.com\//.test(figmaUrl)) { setFigmaError('Only Figma URLs accepted (figma.com)'); return; }
     setFigmaError('');
     supabase.from('ph_attachments').insert({
-      work_item_id: itemId, file_name: figmaUrl,
-      file_size: 0, mime_type: 'application/figma',
+      work_item_id: itemId, file_name: figmaUrl, file_size: 0, mime_type: 'application/figma',
       storage_path: figmaUrl, uploaded_by: user!.id,
     }).then(({ error }) => {
       if (error) { toast.error(`Failed to save Figma link: ${error.message}`); return; }
-      setFigmaUrl('');
-      setShowFigmaInput(false);
+      setFigmaUrl(''); setShowFigmaInput(false);
       toast.success('Figma design link added');
       queryClient.invalidateQueries({ queryKey: ['ph-attachments', itemId] });
     });
   }, [figmaUrl, itemId, user, queryClient]);
 
-  // Link search query
   const { data: linkSearchData = [] } = useQuery({
     queryKey: ['ph-link-search', linkSearch],
     enabled: linkSearch.length >= 2 && showLinkModal,
     queryFn: async () => {
       const { data } = await supabase.from('ph_issues')
         .select('id, issue_key, summary, issue_type, status, status_category')
-        .is('deleted_at', null)
-        .neq('id', itemId)
+        .is('deleted_at', null).neq('id', itemId)
         .or(`issue_key.ilike.%${linkSearch}%,summary.ilike.%${linkSearch}%`)
         .limit(10);
       return (data ?? []) as unknown as PhIssue[];
     },
   });
+
+  /* ── AI Apply handlers ─────────────────────── */
+  const handleApplyDescription = useCallback(async (newDesc: string, prev: string) => {
+    updateFieldMutation.mutate({ field: 'description_text', value: newDesc, oldValue: prev });
+    if (descriptionRef.current) descriptionRef.current.innerText = newDesc;
+  }, [updateFieldMutation]);
+
+  const handleApplyAC = useCallback(async (newAC: string, _prev: string) => {
+    setAcceptanceCriteria(newAC);
+    await supabase.from('ph_issues').update({ acceptance_criteria: newAC }).eq('id', itemId);
+    queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] });
+    toast.success('Acceptance criteria updated by AI');
+  }, [itemId, queryClient]);
+
+  const handleParentChange = useCallback(async (newParentKey: string | null) => {
+    await supabase.from('ph_issues').update({ parent_key: newParentKey }).eq('id', itemId);
+    queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] });
+    toast.success('Parent updated');
+  }, [itemId, queryClient]);
 
   /* ── DERIVED ───────────────────────────────── */
   const statusCategory = issue?.status_category ?? 'todo';
@@ -688,7 +1187,6 @@ export default function StoryDetailModal({
     return [];
   }, [issue?.fix_versions]);
 
-  /* ── ACTIONS ───────────────────────────────── */
   const handleShare = useCallback(() => {
     const url = `${window.location.origin}${window.location.pathname}?issue=${issue?.issue_key ?? ''}`;
     navigator.clipboard.writeText(url);
@@ -697,7 +1195,6 @@ export default function StoryDetailModal({
 
   if (!isOpen) return null;
 
-  /* ── CHILD TAB DATA ────────────────────────── */
   const childTabDefs: { key: ChildTab; label: string; count: number }[] = [
     { key: 'subtasks', label: 'Subtasks', count: subtasks.length },
     { key: 'defects', label: 'Defects', count: defects.length },
@@ -943,14 +1440,14 @@ export default function StoryDetailModal({
         style={{ position: 'fixed', inset: 0, zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.5)', animation: 'sdm-overlay-in 200ms ease-out' }}
         onClick={onClose}
       >
-        {/* MODAL PANEL */}
+        {/* MODAL PANEL — data-sdm-scope enables ring-fenced CSS */}
         <div
+          data-sdm-scope
           style={{ width: 1100, maxWidth: '95vw', maxHeight: 'calc(100vh - 96px)', background: '#FFFFFF', borderRadius: 12, border: '1px solid #E4E7EC', display: 'flex', flexDirection: 'column', overflow: 'hidden', animation: 'sdm-card-in 250ms ease-out' }}
           onClick={e => e.stopPropagation()}
         >
           {/* ── A. TOP BAR ─────────────────────── */}
           <div style={{ height: 44, minHeight: 44, background: '#F8FAFC', borderBottom: '1px solid #E4E7EC', display: 'flex', alignItems: 'center', padding: '0 16px', gap: 8 }}>
-            {/* Breadcrumb */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, flex: 1, minWidth: 0 }}>
               {issue?.parent_key ? (
                 <>
@@ -966,7 +1463,6 @@ export default function StoryDetailModal({
               )}
               <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, fontWeight: 700, color: '#475467', background: '#EEF2F7', padding: '2px 6px', borderRadius: 3 }}>{issue?.issue_key ?? '—'}</span>
             </div>
-            {/* Right actions */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
               <button onClick={handleShare} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '4px 8px', borderRadius: 6, border: '1px solid #E4E7EC', background: '#FFF', fontSize: 11, fontWeight: 500, color: '#475467', cursor: 'pointer' }}>
                 <Share2 size={13} /> Share
@@ -1005,8 +1501,7 @@ export default function StoryDetailModal({
 
                   {/* 2. TITLE */}
                   <h1
-                    contentEditable
-                    suppressContentEditableWarning
+                    contentEditable suppressContentEditableWarning
                     onBlur={e => {
                       const newTitle = e.currentTarget.textContent?.trim() ?? '';
                       if (newTitle && newTitle !== issue?.summary) {
@@ -1016,11 +1511,8 @@ export default function StoryDetailModal({
                     style={{ fontFamily: 'Sora, sans-serif', fontSize: 20, fontWeight: 700, color: '#101828', lineHeight: 1.3, letterSpacing: '-0.01em', margin: '0 0 4px', outline: 'none', cursor: 'text', borderRadius: 4 }}
                   >{issue?.summary ?? '—'}</h1>
 
-                  {/* (subtitle removed — no Arabic title field on ph_issues) */}
-
-                  {/* 4. TITLE TOOLBAR */}
+                  {/* 3. TITLE TOOLBAR */}
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 20 }}>
-                    {/* +Add button */}
                     <div style={{ position: 'relative' }}>
                       <button onClick={() => setShowAddMenu(!showAddMenu)} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '5px 10px', borderRadius: 6, border: '1px solid #BFDBFE', background: '#EFF6FF', fontSize: 12, fontWeight: 600, color: '#2563EB', cursor: 'pointer' }}>
                         <Plus size={13} /> Add
@@ -1035,18 +1527,19 @@ export default function StoryDetailModal({
                         </div>
                       )}
                     </div>
-                    {/* Improve Story */}
-                    <button onClick={() => setShowAiImprove(true)} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '5px 10px', borderRadius: 6, border: '1px solid #BFDBFE', background: '#EFF6FF', fontSize: 12, fontWeight: 600, color: '#2563EB', cursor: 'pointer' }}>
-                      <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M8 1l1.8 5.2L15 8l-5.2 1.8L8 15l-1.8-5.2L1 8l5.2-1.8L8 1z" fill="#2563EB"/></svg>
-                      Improve Story
-                    </button>
-                    {/* Share */}
+                    {/* AI Improve Story trigger */}
+                    <AIImprovePanel
+                      storyId={itemId}
+                      issueKey={issue?.issue_key ?? ''}
+                      currentDescription={issue?.description_text ?? ''}
+                      currentAcceptanceCriteria={acceptanceCriteria}
+                      onApplyDescription={handleApplyDescription}
+                      onApplyAcceptanceCriteria={handleApplyAC}
+                    />
                     <button onClick={handleShare} style={{ width: 28, height: 28, borderRadius: 6, border: '1px solid #E4E7EC', background: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#98A2B3' }}><Share2 size={13} /></button>
-                    {/* ··· */}
-                    <button onClick={() => setShowDotsMenu(!showDotsMenu)} style={{ width: 28, height: 28, borderRadius: 6, border: '1px solid #E4E7EC', background: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: 14, color: '#98A2B3' }}>···</button>
                   </div>
 
-                  {/* 5. FIGMA URL INPUT ROW */}
+                  {/* 4. FIGMA URL INPUT ROW */}
                   {showFigmaInput && (
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16, padding: '8px 12px', background: '#F8FAFC', borderRadius: 8, border: '1px solid #E4E7EC' }}>
                       <span style={{ fontSize: 12, fontWeight: 500, color: '#475467', whiteSpace: 'nowrap' }}>Figma URL</span>
@@ -1057,25 +1550,7 @@ export default function StoryDetailModal({
                     </div>
                   )}
 
-                  {/* 6. AI IMPROVE PANEL */}
-                  {showAiImprove && (
-                    <div style={{ background: '#EFF6FF', border: '1.5px solid #BFDBFE', borderRadius: 12, padding: 16, marginBottom: 20 }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
-                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1l1.8 5.2L15 8l-5.2 1.8L8 15l-1.8-5.2L1 8l5.2-1.8L8 1z" fill="#2563EB"/></svg>
-                        <span style={{ fontFamily: 'Sora, sans-serif', fontSize: 14, fontWeight: 700, color: '#101828' }}>Improved Story</span>
-                        <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 6px', borderRadius: 10, background: '#DBEAFE', color: '#2563EB', textTransform: 'uppercase' }}>AI SUGGESTION</span>
-                      </div>
-                      <div style={{ background: '#FFF', border: '1px solid #BFDBFE', borderRadius: 8, padding: 12, fontSize: 13, color: '#344054', lineHeight: 1.6, marginBottom: 12 }}>
-                        As a <strong>portfolio manager</strong>, I need the ability to view all active work items grouped by delivery status so that I can quickly identify bottlenecks and make informed resource allocation decisions during weekly governance reviews.
-                      </div>
-                      <div style={{ display: 'flex', gap: 8 }}>
-                        <button onClick={() => { setShowAiImprove(false); toast('Story updated with AI suggestion'); }} style={{ padding: '6px 14px', borderRadius: 6, background: '#2563EB', color: '#FFF', border: 'none', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>✓ Accept</button>
-                        <button onClick={() => setShowAiImprove(false)} style={{ padding: '6px 14px', borderRadius: 6, background: '#FFF', border: '1px solid #E4E7EC', fontSize: 12, fontWeight: 500, cursor: 'pointer', color: '#475467' }}>Dismiss</button>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* 7. KEY DETAILS COLLAPSIBLE */}
+                  {/* 5. KEY DETAILS COLLAPSIBLE */}
                   <div style={{ marginBottom: 20 }}>
                     <button onClick={() => setKeyDetailsOpen(!keyDetailsOpen)} style={{ display: 'flex', alignItems: 'center', gap: 4, background: 'none', border: 'none', cursor: 'pointer', padding: 0, marginBottom: 8 }}>
                       {keyDetailsOpen ? <ChevronDown size={14} color="#475467" /> : <ChevronRight size={14} color="#475467" />}
@@ -1083,23 +1558,19 @@ export default function StoryDetailModal({
                     </button>
                     {keyDetailsOpen && (
                       <div style={{ display: 'grid', gridTemplateColumns: '110px 1fr', gap: 0 }}>
-                        {/* Parent */}
                         <div style={detailLabel}>Parent</div>
                         <div style={detailValue}>
                           {issue?.parent_key ? (
-                            <button onClick={() => { /* resolve parentId and onOpenItem */ }} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: '#F1F5F9', border: '1px solid #E4E7EC', borderRadius: 4, padding: '2px 8px', cursor: 'pointer', fontSize: 11, fontWeight: 600, fontFamily: 'JetBrains Mono, monospace', color: '#0052CC' }}>
+                            <button onClick={() => {}} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: '#F1F5F9', border: '1px solid #E4E7EC', borderRadius: 4, padding: '2px 8px', cursor: 'pointer', fontSize: 11, fontWeight: 600, fontFamily: 'JetBrains Mono, monospace', color: '#0052CC' }}>
                               <IssueIcon type="Epic" size={12} /> {issue.parent_key} {issue.parent_summary ? `— ${issue.parent_summary}` : ''}
                             </button>
                           ) : <span style={{ color: '#98A2B3' }}>—</span>}
                         </div>
-                        {/* Priority */}
                         <div style={detailLabel}>Priority</div>
                         <div style={detailValue}>{renderPriority(localPriority)}</div>
-                        {/* Description */}
                         <div style={{ ...detailLabel, alignSelf: 'start', paddingTop: 10 }}>Description</div>
                         <div style={{ ...detailValue, paddingTop: 8, paddingBottom: 8 }}>
                           <div style={{ border: '1px solid #E4E7EC', borderRadius: 8, overflow: 'hidden', transition: 'all 150ms' }}>
-                            {/* Toolbar */}
                             <div style={{ display: 'flex', alignItems: 'center', gap: 2, padding: '6px 8px', borderBottom: '1px solid #E4E7EC', background: '#F7F8FA', flexWrap: 'wrap' }}>
                               {[
                                 { cmd: 'bold', label: 'B', fw: 'bold', fs: 'normal', td: 'none' },
@@ -1118,11 +1589,9 @@ export default function StoryDetailModal({
                               <button onMouseDown={(e) => { e.preventDefault(); document.execCommand('insertOrderedList'); }}
                                 style={{ width: 24, height: 24, borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, color: '#475467', background: 'transparent', border: 'none', cursor: 'pointer' }}>1.</button>
                             </div>
-                            {/* Editable content */}
                             <div
                               ref={descriptionRef}
-                              contentEditable
-                              suppressContentEditableWarning
+                              contentEditable suppressContentEditableWarning
                               onBlur={(e) => {
                                 const newText = e.currentTarget.innerText;
                                 if (newText !== (issue?.description_text ?? '')) {
@@ -1145,17 +1614,46 @@ export default function StoryDetailModal({
                     )}
                   </div>
 
+                  {/* 6. ACCEPTANCE CRITERIA */}
+                  <div className="sdm-ac-section">
+                    <div className="sdm-ac-header">
+                      <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 700, color: '#475467' }}>Acceptance Criteria</span>
+                    </div>
+                    <div
+                      className="sdm-ac-body"
+                      contentEditable suppressContentEditableWarning
+                      onBlur={e => {
+                        const newAC = e.currentTarget.innerText.trim();
+                        if (newAC !== acceptanceCriteria) {
+                          setAcceptanceCriteria(newAC);
+                          supabase.from('ph_issues').update({ acceptance_criteria: newAC }).eq('id', itemId).then(() => {
+                            queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] });
+                          });
+                        }
+                      }}
+                    >
+                      {acceptanceCriteria || <span className="sdm-ac-empty">No acceptance criteria defined · Add manually or use AI →</span>}
+                    </div>
+                  </div>
+
+                  {/* 7. CHILD ISSUES — Extension Component */}
+                  {issue && (
+                    <ChildIssuesSection
+                      storyKey={issue.issue_key}
+                      storyId={issue.id}
+                      projectKey={issue.project_key}
+                    />
+                  )}
+
                   {/* 8. DIVIDER */}
                   <div style={{ height: 1, background: '#F7F8FA', margin: '20px 0' }} />
 
-                  {/* 9. CHILD ITEMS SECTION */}
+                  {/* 9. CHILD ITEMS TABS SECTION (legacy 5-tab) */}
                   <div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
                       <span style={{ fontFamily: 'Sora, sans-serif', fontSize: 14, fontWeight: 700, color: '#101828' }}>Child Items</span>
                       <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 6px', borderRadius: 10, background: '#F1F5F9', color: '#475467' }}>{subtasks.length + defects.length + incidents.length + testCases.length}</span>
                     </div>
-
-                    {/* Progress bar (subtasks) */}
                     {activeChildTab === 'subtasks' && subtasks.length > 0 && (
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
                         <div style={{ flex: 1, height: 6, borderRadius: 3, background: '#F1F5F9', overflow: 'hidden' }}>
@@ -1164,8 +1662,6 @@ export default function StoryDetailModal({
                         <span style={{ fontSize: 11, fontWeight: 500, color: '#475467', whiteSpace: 'nowrap' }}>{doneSubtasks} of {subtasks.length} done</span>
                       </div>
                     )}
-
-                    {/* TABS */}
                     <div style={{ display: 'flex', gap: 0, borderBottom: '1px solid #E4E7EC', marginBottom: 0 }}>
                       {childTabDefs.map(tab => {
                         const isActive = activeChildTab === tab.key;
@@ -1182,8 +1678,6 @@ export default function StoryDetailModal({
                         );
                       })}
                     </div>
-
-                    {/* TABLE */}
                     {renderChildTable()}
                   </div>
 
@@ -1232,7 +1726,6 @@ export default function StoryDetailModal({
                   {/* 13. ACTIVITY SECTION */}
                   <div>
                     <div style={{ fontFamily: 'Sora, sans-serif', fontSize: 14, fontWeight: 700, color: '#101828', marginBottom: 12 }}>Activity</div>
-                    {/* TABS */}
                     <div style={{ display: 'flex', gap: 0, borderBottom: '1px solid #E4E7EC', marginBottom: 16 }}>
                       {(['comments', 'history'] as ActivityTab[]).map(tab => {
                         const isActive = activeActivityTab === tab;
@@ -1248,8 +1741,6 @@ export default function StoryDetailModal({
                         );
                       })}
                     </div>
-
-                    {/* COMMENTS TAB */}
                     {activeActivityTab === 'comments' && (
                       <div>
                         {comments.length === 0 && <div style={{ padding: '20px 0', color: '#98A2B3', fontSize: 13, textAlign: 'center' }}>No comments yet</div>}
@@ -1273,17 +1764,10 @@ export default function StoryDetailModal({
                             </div>
                           );
                         })}
-                        {/* New comment input */}
                         <div style={{ display: 'flex', gap: 10, marginTop: 8 }}>
                           <div style={{ width: 28, height: 28, borderRadius: '50%', background: getAvatarColor(user?.id ?? ''), color: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, flexShrink: 0, marginTop: 2 }}>{getInitials(currentProfile?.full_name)}</div>
                           <div style={{ flex: 1 }}>
-                            <textarea
-                              value={newComment}
-                              onChange={e => setNewComment(e.target.value)}
-                              onKeyDown={handleCommentKeyDown}
-                              placeholder="Add a comment…"
-                              style={{ width: '100%', minHeight: 40, borderRadius: 8, border: '1px solid #E4E7EC', padding: '8px 12px', fontSize: 13, resize: 'vertical', outline: 'none', fontFamily: 'Inter, sans-serif' }}
-                            />
+                            <textarea value={newComment} onChange={e => setNewComment(e.target.value)} onKeyDown={handleCommentKeyDown} placeholder="Add a comment…" style={{ width: '100%', minHeight: 40, borderRadius: 8, border: '1px solid #E4E7EC', padding: '8px 12px', fontSize: 13, resize: 'vertical', outline: 'none', fontFamily: 'Inter, sans-serif' }} />
                             <div style={{ fontSize: 10, color: '#C9CDD4', marginTop: 4 }}>
                               <kbd style={{ padding: '1px 4px', borderRadius: 3, background: '#F1F5F9', border: '1px solid #E4E7EC', fontSize: 9 }}>M</kbd> to comment · <kbd style={{ padding: '1px 4px', borderRadius: 3, background: '#F1F5F9', border: '1px solid #E4E7EC', fontSize: 9 }}>Ctrl+Enter</kbd> to submit
                             </div>
@@ -1291,8 +1775,6 @@ export default function StoryDetailModal({
                         </div>
                       </div>
                     )}
-
-                    {/* HISTORY TAB */}
                     {activeActivityTab === 'history' && (
                       <div>
                         {activityLog.length === 0 && <div style={{ padding: '20px 0', color: '#98A2B3', fontSize: 13, textAlign: 'center' }}>No activity recorded</div>}
@@ -1370,7 +1852,6 @@ export default function StoryDetailModal({
               <div style={{ padding: 14, borderBottom: '1px solid #E4E7EC' }}>
                 <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#98A2B3', marginBottom: 12 }}>DETAILS</div>
 
-                {/* Fix Version */}
                 <DetailRow label="Fix Version">
                   {fixVersionNames.length > 0 ? (
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
@@ -1378,17 +1859,25 @@ export default function StoryDetailModal({
                         <span key={i} style={{ fontSize: 10, fontWeight: 600, padding: '2px 6px', borderRadius: 3, background: '#F1F5F9', color: '#475569' }}>{v}</span>
                       ))}
                     </div>
-                  ) : (
-                    <span style={{ color: '#98A2B3', fontSize: 12 }}>—</span>
-                  )}
+                  ) : <span style={{ color: '#98A2B3', fontSize: 12 }}>—</span>}
                 </DetailRow>
 
-                {/* Change No */}
                 <DetailRow label="Change No.">
                   <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, fontWeight: 600, color: '#0052CC' }}>—</span>
                 </DetailRow>
 
-                {/* Assignee */}
+                {/* Parent — Extension ParentField picker */}
+                <DetailRow label="Parent">
+                  {issue && (
+                    <ParentFieldPicker
+                      storyKey={issue.issue_key}
+                      parentKey={issue.parent_key}
+                      projectKey={issue.project_key}
+                      onParentChange={handleParentChange}
+                    />
+                  )}
+                </DetailRow>
+
                 <DetailRow label="Assignee">
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                     {issue?.assignee_display_name ? renderAvatar(issue.assignee_display_name, issue.assignee_account_id) : <span style={{ color: '#98A2B3', fontSize: 12 }}>Unassigned</span>}
@@ -1396,7 +1885,6 @@ export default function StoryDetailModal({
                   <button onClick={assignToMe} style={{ fontSize: 11, color: '#0052CC', background: 'none', border: 'none', cursor: 'pointer', padding: 0, marginTop: 2 }}>Assign to me</button>
                 </DetailRow>
 
-                {/* Reporter — READ ONLY */}
                 <DetailRow label="Reporter">
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                     {issue?.reporter_display_name ? renderAvatar(issue.reporter_display_name, issue.reporter_account_id) : <span style={{ color: '#98A2B3', fontSize: 12 }}>—</span>}
@@ -1404,7 +1892,6 @@ export default function StoryDetailModal({
                   <span style={{ fontSize: 10, color: '#98A2B3' }}>(read-only)</span>
                 </DetailRow>
 
-                {/* Labels */}
                 <DetailRow label="Labels">
                   {issue?.labels?.length ? (
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
@@ -1432,7 +1919,6 @@ export default function StoryDetailModal({
 
       {/* ── C. MODALS ────────────────────────── */}
 
-      {/* CONFIRM DELETE */}
       {showConfirmDelete && (
         <div style={{ position: 'fixed', inset: 0, zIndex: 10000, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(9,30,66,0.4)' }}>
           <div style={{ background: '#FFF', borderRadius: 12, padding: 28, width: 400, maxWidth: '95vw', animation: 'sdm-confirm-in 200ms ease-out' }}>
@@ -1446,7 +1932,6 @@ export default function StoryDetailModal({
         </div>
       )}
 
-      {/* WORKFLOW MODAL */}
       {showWorkflow && (
         <div style={{ position: 'fixed', inset: 0, zIndex: 10000, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.55)' }}>
           <div style={{ background: '#FFF', borderRadius: 14, width: 820, maxWidth: '95vw', maxHeight: '90vh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
@@ -1462,22 +1947,16 @@ export default function StoryDetailModal({
             <div style={{ padding: '8px 20px', fontSize: 11, color: '#98A2B3', borderBottom: '1px solid #E4E7EC' }}>Transitions are open — any status can move to any. Colours customisable in Admin Panel → Workflows.</div>
             <div style={{ flex: 1, overflow: 'auto', padding: 20 }}>
               <svg width="760" height="200" viewBox="0 0 760 200">
-                {/* TODO row */}
                 {STATUS_CATEGORIES.todo.map((st, i) => {
-                  const x = 20 + i * 120;
-                  const isActive = localStatus === st;
+                  const x = 20 + i * 120; const isActive = localStatus === st;
                   return <g key={st}><rect x={x} y={10} width={110} height={32} rx={6} fill="#F4F5F7" stroke={isActive ? '#2563EB' : '#DFE1E6'} strokeWidth={isActive ? 2.5 : 1} /><text x={x + 55} y={30} textAnchor="middle" fontSize={9} fontWeight={600} fill="#42526E">{st}</text></g>;
                 })}
-                {/* IN PROGRESS row */}
                 {STATUS_CATEGORIES.in_progress.map((st, i) => {
-                  const x = 20 + i * 75;
-                  const isActive = localStatus === st;
+                  const x = 20 + i * 75; const isActive = localStatus === st;
                   return <g key={st}><rect x={x} y={75} width={70} height={32} rx={6} fill="#DEEBFF" stroke={isActive ? '#2563EB' : '#B3D4FF'} strokeWidth={isActive ? 2.5 : 1} /><text x={x + 35} y={95} textAnchor="middle" fontSize={7} fontWeight={600} fill="#0747A6">{st}</text></g>;
                 })}
-                {/* DONE row */}
                 {STATUS_CATEGORIES.done.map((st, i) => {
-                  const x = 20 + i * 130;
-                  const isActive = localStatus === st;
+                  const x = 20 + i * 130; const isActive = localStatus === st;
                   return <g key={st}><rect x={x} y={140} width={120} height={32} rx={6} fill="#E3FCEF" stroke={isActive ? '#2563EB' : '#ABF5D1'} strokeWidth={isActive ? 2.5 : 1} /><text x={x + 60} y={160} textAnchor="middle" fontSize={9} fontWeight={600} fill="#006644">{st}</text></g>;
                 })}
               </svg>
@@ -1486,7 +1965,6 @@ export default function StoryDetailModal({
         </div>
       )}
 
-      {/* LINK WORK ITEM MODAL */}
       {showLinkModal && (
         <div style={{ position: 'fixed', inset: 0, zIndex: 10000, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(9,30,66,0.4)' }}>
           <div style={{ background: '#FFF', borderRadius: 12, width: 520, maxWidth: '95vw', overflow: 'hidden', animation: 'sdm-confirm-in 200ms ease-out' }}>
@@ -1495,16 +1973,12 @@ export default function StoryDetailModal({
               <button onClick={() => setShowLinkModal(false)} style={{ width: 28, height: 28, borderRadius: 6, border: 'none', background: 'transparent', cursor: 'pointer', color: '#98A2B3' }}><X size={16} /></button>
             </div>
             <div style={{ padding: 20 }}>
-              {/* Link type */}
               <div style={{ marginBottom: 14 }}>
                 <div style={{ fontSize: 12, fontWeight: 600, color: '#475467', marginBottom: 4 }}>Link Type</div>
-                <div style={{ position: 'relative' }}>
-                  <button style={{ width: '100%', height: 36, borderRadius: 4, border: '1px solid #E4E7EC', background: '#FFF', padding: '0 12px', fontSize: 12, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', color: '#101828' }}>
-                    {LINK_TYPE_LABELS[linkType] ?? linkType} <ChevronDown size={12} color="#98A2B3" />
-                  </button>
-                </div>
+                <button style={{ width: '100%', height: 36, borderRadius: 4, border: '1px solid #E4E7EC', background: '#FFF', padding: '0 12px', fontSize: 12, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', color: '#101828' }}>
+                  {LINK_TYPE_LABELS[linkType] ?? linkType} <ChevronDown size={12} color="#98A2B3" />
+                </button>
               </div>
-              {/* Search */}
               <div style={{ marginBottom: 14 }}>
                 <div style={{ fontSize: 12, fontWeight: 600, color: '#475467', marginBottom: 4 }}>Search Issues</div>
                 <div style={{ position: 'relative' }}>
@@ -1554,7 +2028,6 @@ function DetailRow({ label, children }: { label: string; children: React.ReactNo
   );
 }
 
-/* Menu item style */
 const menuItem: React.CSSProperties = {
   display: 'block', width: '100%', padding: '7px 14px', background: 'none',
   border: 'none', cursor: 'pointer', fontSize: 13, color: '#344054',
