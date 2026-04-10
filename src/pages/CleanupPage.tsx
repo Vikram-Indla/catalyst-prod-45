@@ -262,13 +262,13 @@ export default function CleanupPage() {
       categoryKey: catKey,
     });
 
-    result[1] = sharedItems.filter(i => i.comment_count === 0 && i.days_open >= 60).map(i => toCleanup(i, 1));
-    result[2] = sharedItems.filter(i => i.item_type === 'Story' && i.days_open >= 30 && i.child_issue_count === 0).map(i => toCleanup(i, 2));
-    result[3] = sharedItems.filter(i => !i.assignee_is_active || i.assignee_last_login_days > 60).map(i => toCleanup(i, 3));
-    result[4] = sharedItems.filter(i => i.parent_key != null && i.parent_issue_type === 'Epic' && i.days_open >= 45).map(i => toCleanup(i, 4));
+    result[1] = sharedItems.filter(i => (i.comment_count ?? 0) === 0 && i.days_open >= 60).map(i => toCleanup(i, 1));
+    result[2] = sharedItems.filter(i => (i.issue_type_raw ?? '').toLowerCase() === 'story' && i.days_open >= 30 && (i.child_issue_count ?? 1) === 0).map(i => toCleanup(i, 2));
+    result[3] = sharedItems.filter(i => i.assignee_is_active === false || (i.assignee_last_login_days > 0 && i.assignee_last_login_days > 60)).map(i => toCleanup(i, 3));
+    result[4] = sharedItems.filter(i => i.parent_key != null && (i.parent_issue_type ?? '').toLowerCase() === 'epic' && i.days_open >= 45).map(i => toCleanup(i, 4));
     result[5] = sharedItems.filter(i => i.days_open >= 90 && ['low', 'lowest'].includes((i.priority ?? '').toLowerCase())).map(i => toCleanup(i, 5));
     result[6] = [];
-    result[7] = sharedItems.filter(i => ['Bug', 'QA Bug', 'bug', 'qa bug'].includes(i.issue_type_raw ?? '') && (!i.assignee_is_active || i.assignee_last_login_days > 60)).map(i => toCleanup(i, 7));
+    result[7] = sharedItems.filter(i => ['bug', 'qa bug'].includes((i.issue_type_raw ?? '').toLowerCase()) && (i.assignee_is_active === false || (i.assignee_last_login_days > 0 && i.assignee_last_login_days > 60))).map(i => toCleanup(i, 7));
 
     return result;
   }, [sharedItems]);
