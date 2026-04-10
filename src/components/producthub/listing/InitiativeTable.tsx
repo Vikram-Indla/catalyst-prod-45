@@ -308,7 +308,7 @@ export function InitiativeTable({
                     const sorted = header.column.getIsSorted();
                     const canSort = header.column.getCanSort();
                     return (
-                      <th key={header.id} style={{ width: header.getSize(), minWidth: header.getSize(), position: 'relative', color: sorted ? 'var(--pb-primary)' : undefined }}>
+                      <th key={header.id} style={{ width: header.getSize(), minWidth: header.getSize(), color: sorted ? 'var(--pb-primary)' : undefined }}>
                         {header.isPlaceholder ? null : (
                           <div
                             style={{ display: 'flex', alignItems: 'center', gap: 4, cursor: canSort ? 'pointer' : undefined, paddingRight: 8 }}
