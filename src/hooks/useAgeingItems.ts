@@ -2,6 +2,7 @@
  * useAgeingItems — Shared hook for ageing/governance data.
  * Single source of truth for both AgeingTab and CleanupPage.
  * Queries ph_issues via jira_identity_map.
+ * Fetches items where user is ASSIGNEE or REPORTER, tags my_role.
  */
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -33,6 +34,7 @@ export interface AgeingItem {
   assignee_is_active: boolean;
   assignee_last_login: string | null;
   assignee_last_login_days: number;
+  my_role: 'assignee' | 'reporter';
 }
 
 function mapIssueType(raw: string): string {
@@ -43,6 +45,8 @@ function mapIssueType(raw: string): string {
   if (v.includes("feature") || v.includes("new feature")) return "Feature";
   return "Story";
 }
+
+const SELECT_FIELDS = "id, issue_key, issue_type, summary, status, status_category, priority, jira_created_at, jira_updated_at, parent_key, reporter_account_id, reporter_display_name, assignee_account_id, assignee_display_name, comments, fix_versions, project_key";
 
 export function useAgeingItems() {
   const { user } = useAuth();
@@ -61,18 +65,44 @@ export function useAgeingItems() {
 
       if (!identityRows?.length) return [];
 
-      const jiraAccountId = identityRows[0].jira_account_id;
+      const myJiraId = identityRows[0].jira_account_id;
 
-      const { data } = await supabase
-        .from("ph_issues")
-        .select("id, issue_key, issue_type, summary, status, status_category, priority, jira_created_at, jira_updated_at, parent_key, reporter_account_id, reporter_display_name, assignee_account_id, assignee_display_name, comments, fix_versions, project_key")
-        .eq("assignee_account_id", jiraAccountId)
-        .neq("status_category", "done")
-        .is("deleted_at", null)
-        .order("jira_created_at", { ascending: false });
+      // Run both queries in parallel
+      const [assigneeResult, reporterResult] = await Promise.all([
+        supabase
+          .from("ph_issues")
+          .select(SELECT_FIELDS)
+          .eq("assignee_account_id", myJiraId)
+          .neq("status_category", "done")
+          .is("deleted_at", null)
+          .order("jira_created_at", { ascending: false }),
+        supabase
+          .from("ph_issues")
+          .select(SELECT_FIELDS)
+          .eq("reporter_account_id", myJiraId)
+          .neq("assignee_account_id", myJiraId)
+          .neq("status_category", "done")
+          .is("deleted_at", null)
+          .order("jira_created_at", { ascending: false }),
+      ]);
 
       const now = Date.now();
-      return (data ?? [])
+
+      // Tag and merge
+      const tagged = [
+        ...(assigneeResult.data ?? []).map(r => ({ ...r, _role: 'assignee' as const })),
+        ...(reporterResult.data ?? []).map(r => ({ ...r, _role: 'reporter' as const })),
+      ];
+
+      // Deduplicate by id
+      const seen = new Set<string>();
+      const unique = tagged.filter(r => {
+        if (seen.has(r.id)) return false;
+        seen.add(r.id);
+        return true;
+      });
+
+      return unique
         .filter(row => {
           const sc = (row.status_category || "").toLowerCase().replace(/[\s_-]/g, "");
           return sc !== "done";
@@ -87,10 +117,8 @@ export function useAgeingItems() {
           const issueKey = row.issue_key || "";
           const projectKey = row.project_key || (issueKey.includes("-") ? issueKey.split("-")[0] : "");
 
-          // comment_count: derive from comments JSON array if available
           const commentCount = Array.isArray(row.comments) ? row.comments.length : 0;
 
-          // fix_versions: extract name from JSON array
           const fixVer = Array.isArray(row.fix_versions) && row.fix_versions.length > 0
             ? (row.fix_versions as any[]).map((v: any) => typeof v === 'string' ? v : v?.name || '').filter(Boolean).join(', ')
             : null;
@@ -109,7 +137,7 @@ export function useAgeingItems() {
             reporter_account_id: row.reporter_account_id,
             reporter_display_name: row.reporter_display_name,
             parent_key: row.parent_key,
-            parent_issue_type: null, // not available in ph_issues schema
+            parent_issue_type: null,
             created_at: row.jira_created_at || "",
             jira_updated_at: row.jira_updated_at,
             fixed_versions: fixVer,
@@ -117,10 +145,11 @@ export function useAgeingItems() {
             project_key: projectKey,
             priority: row.priority ?? "medium",
             comment_count: commentCount,
-            child_issue_count: 0, // not available — default 0
-            assignee_is_active: true, // not available — assume active
-            assignee_last_login: null, // not available
+            child_issue_count: 0,
+            assignee_is_active: true, // no column in ph_issues — assume active
+            assignee_last_login: null, // no column in ph_issues
             assignee_last_login_days: 0, // 0 = unknown = assume active
+            my_role: row._role,
           } as AgeingItem;
         });
     },
