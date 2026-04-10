@@ -1,1 +1,0 @@
-export { WorkItemAnalyticsDrawer } from './WorkItemAnalyticsDrawer';
