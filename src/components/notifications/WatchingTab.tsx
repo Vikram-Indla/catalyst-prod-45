@@ -137,7 +137,9 @@ export default function WatchingTab() {
         ? await supabase.from("profiles").select("id, full_name, avatar_url").in("id", uniqueActorIds)
         : { data: [] };
 
-      const profileMap = new Map(profiles?.map(p => [p.id, p]) ?? []);
+      const profileMap = new Map<string, { id: string; full_name: string; avatar_url: string | null }>(
+        (profiles ?? []).map(p => [p.id, p])
+      );
 
       return acts.map(a => {
         const issue = issueMap.get(a.issue_id);
