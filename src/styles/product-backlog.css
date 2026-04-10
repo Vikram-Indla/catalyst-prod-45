@@ -464,7 +464,7 @@
   height: 36px;
   max-height: 36px;
   min-height: 36px;
-  border-bottom: 0.75px solid var(--cp-border-subtle);
+  border-bottom: 1px solid rgba(11, 18, 14, 0.08);
   cursor: pointer;
   transition: background var(--cp-duration-instant) var(--cp-easing-standard);
 }
