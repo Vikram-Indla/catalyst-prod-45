@@ -264,51 +264,37 @@ export function DefectTable({ defects, selectedIds, onSelectionChange, onDelete,
                 {/* Status */}
                 {cols.has('STATUS') && <td style={TD_STYLE}><StatusBadge status={d.status} /></td>}
 
-                {/* Assignee */}
+                {/* Assignee — matching /for-you avatar pattern */}
                 {cols.has('ASSIGNEE') && (
                   <td style={TD_STYLE}>
-                    {d.assignee ? (
-                      <div className="flex items-center gap-2">
-                        <Avatar className="h-6 w-6 flex-shrink-0">
-                          <AvatarFallback
-                            style={{
-                              fontSize: 10, fontWeight: 700,
-                              backgroundColor: getAvatarColour(d.assignee.full_name).bg,
-                              color: getAvatarColour(d.assignee.full_name).text,
-                            }}
-                          >
-                            {initials(d.assignee.full_name)}
-                          </AvatarFallback>
-                        </Avatar>
-                        <span style={{ fontSize: 13, fontWeight: 500, color: '#1E293B' }} className="truncate">
-                          {d.assigneeName || d.assignee.full_name}
-                        </span>
-                      </div>
-                    ) : d.assigneeName && d.assigneeName !== 'Unassigned' ? (
-                      <div className="flex items-center gap-2">
-                        <Avatar className="h-6 w-6 flex-shrink-0">
-                          <AvatarFallback
-                            style={{
-                              fontSize: 10, fontWeight: 700,
-                              backgroundColor: getAvatarColour(d.assigneeName).bg,
-                              color: getAvatarColour(d.assigneeName).text,
-                            }}
-                          >
-                            {initials(d.assigneeName)}
-                          </AvatarFallback>
-                        </Avatar>
-                        <span style={{ fontSize: 13, fontWeight: 500, color: '#1E293B' }} className="truncate">
-                          {d.assigneeName}
-                        </span>
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-2">
-                        <div style={{ width: 24, height: 24, borderRadius: '50%', backgroundColor: '#F1F5F9', border: '1px solid rgba(15,23,42,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                          <UserRound size={12} style={{ color: '#94A3B8' }} />
+                    {(() => {
+                      const assigneeName = d.assigneeName || d.assignee?.full_name;
+                      if (!assigneeName || assigneeName === 'Unassigned') {
+                        return (
+                          <div className="flex items-center gap-2">
+                            <div style={{ width: 24, height: 24, borderRadius: '50%', backgroundColor: '#F1F5F9', border: '1px solid rgba(15,23,42,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                              <UserRound size={12} style={{ color: '#94A3B8' }} />
+                            </div>
+                            <span style={{ fontSize: 13, color: '#94A3B8' }}>Unassigned</span>
+                          </div>
+                        );
+                      }
+                      const avatarUrl = d.assignee?.avatar_url || nameAvatarMap.get(assigneeName.toLowerCase());
+                      const ini = initials(assigneeName);
+                      const clr = AVATAR_COLOURS[ini.charCodeAt(0) % AVATAR_COLOURS.length];
+                      return (
+                        <div className="flex items-center gap-2">
+                          {avatarUrl ? (
+                            <img src={avatarUrl} alt={assigneeName} style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover', flexShrink: 0, border: '1px solid rgba(15,23,42,0.12)' }} />
+                          ) : (
+                            <div style={{ width: 24, height: 24, borderRadius: '50%', background: clr, color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, flexShrink: 0 }}>{ini}</div>
+                          )}
+                          <span style={{ fontSize: 13, fontWeight: 500, color: '#1E293B', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                            {assigneeName}
+                          </span>
                         </div>
-                        <span style={{ fontSize: 13, color: '#94A3B8' }}>Unassigned</span>
-                      </div>
-                    )}
+                      );
+                    })()}
                   </td>
                 )}
 
