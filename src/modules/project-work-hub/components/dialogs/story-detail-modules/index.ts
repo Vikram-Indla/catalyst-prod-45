@@ -42,3 +42,4 @@ export { LinkedIssuesSection } from './LinkedIssuesSection';
 
 // Editable fields
 export { EditableAssignee, EditablePriority, EditableLabels, ParentFieldPicker } from './EditableFields';
+export { ConfirmDialog } from './ConfirmDialog';

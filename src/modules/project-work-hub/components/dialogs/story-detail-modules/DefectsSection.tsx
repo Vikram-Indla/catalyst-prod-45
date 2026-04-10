@@ -10,6 +10,7 @@ import type { ColumnConfig, PhIssueRow } from './types';
 import { DEFAULT_COLUMNS, WORK_ITEM_ICONS } from './constants';
 import { nextPos } from './helpers';
 import { SectionBlock, IssueRow, ColumnPicker, InlineCreateRow, SkeletonRows, EmptyState } from './shared-components';
+import { ConfirmDialog } from './ConfirmDialog';
 
 export function DefectsSection({ storyKey, projectKey }: { storyKey: string; projectKey: string }) {
   const queryClient = useQueryClient();
@@ -17,6 +18,7 @@ export function DefectsSection({ storyKey, projectKey }: { storyKey: string; pro
   const [columns, setColumns] = useState<ColumnConfig>(DEFAULT_COLUMNS);
   const [creating, setCreating] = useState(false);
   const [draftSummary, setDraftSummary] = useState('');
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; key: string } | null>(null);
   const createRef = useRef<HTMLInputElement>(null);
 
   const { data: defects = [], isLoading } = useQuery({
@@ -54,29 +56,39 @@ export function DefectsSection({ storyKey, projectKey }: { storyKey: string; pro
   const doneCount = defects.filter(d => d.status_category === 'done').length;
 
   return (
-    <SectionBlock title="Defects" count={defects.length} doneCount={doneCount} defaultExpanded={defects.length > 0} headerRight={
-      <>
-        <ColumnPicker columns={columns} onChange={setColumns} />
-        <button className="sdm-create-btn" onClick={() => setCreating(true)}><Plus size={11} strokeWidth={2.5} /> Log defect</button>
-      </>
-    }>
-      {isLoading && <SkeletonRows count={2} />}
-      {!isLoading && defects.length === 0 && <EmptyState heading="No defects logged" sub="Log defects found during testing" cta="+ Log defect" onCta={() => setCreating(true)} />}
-      {!isLoading && defects.length > 0 && (
-        <div className="sdm-child-list" role="list">
-          {defects.map(item => (
-            <IssueRow key={item.id} item={item} columns={columns}
-              onDelete={() => { if (confirm(`Delete ${item.issue_key}?`)) deleteMutation.mutate(item.id); }}
-              onCopyLink={() => navigator.clipboard.writeText(`${window.location.origin}/issues/${item.issue_key}`)} />
-          ))}
-        </div>
-      )}
-      {creating && (
-        <InlineCreateRow ref={createRef} value={draftSummary} onChange={setDraftSummary}
-          onSubmit={() => { if (draftSummary.trim()) createMutation.mutate(draftSummary); }}
-          onCancel={() => { setCreating(false); setDraftSummary(''); }}
-          pending={createMutation.isPending} typeIcon={WORK_ITEM_ICONS.Defect} placeholder="Describe the defect…" />
-      )}
-    </SectionBlock>
+    <>
+      <SectionBlock title="Defects" count={defects.length} doneCount={doneCount} defaultExpanded={defects.length > 0} headerRight={
+        <>
+          <ColumnPicker columns={columns} onChange={setColumns} />
+          <button className="sdm-create-btn" onClick={() => setCreating(true)}><Plus size={11} strokeWidth={2.5} /> Log defect</button>
+        </>
+      }>
+        {isLoading && <SkeletonRows count={2} />}
+        {!isLoading && defects.length === 0 && <EmptyState heading="No defects logged" sub="Log defects found during testing" cta="+ Log defect" onCta={() => setCreating(true)} />}
+        {!isLoading && defects.length > 0 && (
+          <div className="sdm-child-list" role="list">
+            {defects.map(item => (
+              <IssueRow key={item.id} item={item} columns={columns}
+                onDelete={() => setDeleteTarget({ id: item.id, key: item.issue_key })}
+                onCopyLink={() => navigator.clipboard.writeText(`${window.location.origin}/issues/${item.issue_key}`)} />
+            ))}
+          </div>
+        )}
+        {creating && (
+          <InlineCreateRow ref={createRef} value={draftSummary} onChange={setDraftSummary}
+            onSubmit={() => { if (draftSummary.trim()) createMutation.mutate(draftSummary); }}
+            onCancel={() => { setCreating(false); setDraftSummary(''); }}
+            pending={createMutation.isPending} typeIcon={WORK_ITEM_ICONS.Defect} placeholder="Describe the defect…" />
+        )}
+      </SectionBlock>
+      <ConfirmDialog
+        open={!!deleteTarget}
+        title={`Delete ${deleteTarget?.key ?? ''}?`}
+        message="This defect will be soft-deleted. It can be restored within 30 days."
+        confirmLabel="Delete"
+        onConfirm={() => { if (deleteTarget) deleteMutation.mutate(deleteTarget.id); setDeleteTarget(null); }}
+        onCancel={() => setDeleteTarget(null)}
+      />
+    </>
   );
 }
