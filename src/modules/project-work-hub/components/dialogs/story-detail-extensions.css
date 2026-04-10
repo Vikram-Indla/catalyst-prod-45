@@ -569,8 +569,10 @@
 [data-sdm-scope] .sdm-parent-popover {
   position: absolute;
   top: calc(100% + 4px);
-  left: 0;
   right: 0;
+  min-width: 320px;
+  width: max-content;
+  max-width: 420px;
   background: #FFFFFF;
   border: 1px solid rgba(9, 30, 66, 0.24);
   border-radius: 6px;
