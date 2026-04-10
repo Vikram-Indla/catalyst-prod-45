@@ -525,11 +525,6 @@ export default function CleanupPage() {
     toast.info(`Reporters to be notified: ${msg}`);
   }, [selectedItems]);
 
-  // Column widths for list view
-  const COL = {
-    check: 32, key: 110, summary: 0, parent: 160, project: 100,
-    reporter: 140, assignee: 140, status: 130, days: 64, category: 120, detail: 32,
-  };
 
   return (
     <div style={{
