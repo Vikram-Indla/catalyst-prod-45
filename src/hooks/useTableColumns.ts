@@ -163,10 +163,36 @@ export function useTableColumns(tableKey: string, defaultColumns: ColumnDef[]) {
     persistPrefs(defaultOrder, defaultWidths);
   }, [defaultOrder, defaultWidths, persistPrefs]);
 
-  // ── Ordered column defs ──
-  const orderedColumns = columnOrder
-    .map(key => defaultColumns.find(c => c.key === key))
-    .filter(Boolean) as ColumnDef[];
+  // ── Ordered column defs — locked columns pinned to default positions ──
+  const orderedColumns = (() => {
+    // Separate locked from unlocked, preserving default positions for locked
+    const lockedMap = new Map<number, ColumnDef>();
+    const unlockedOrder: string[] = [];
+
+    defaultColumns.forEach((c, i) => {
+      if (c.locked) lockedMap.set(i, c);
+    });
+
+    // Get the reordered unlocked keys
+    columnOrder.forEach(key => {
+      const col = defaultColumns.find(c => c.key === key);
+      if (col && !col.locked) unlockedOrder.push(key);
+    });
+
+    // Build final array: insert locked at their default indices, fill rest with unlocked
+    const result: ColumnDef[] = [];
+    let unlockedIdx = 0;
+    for (let i = 0; i < defaultColumns.length; i++) {
+      if (lockedMap.has(i)) {
+        result.push(lockedMap.get(i)!);
+      } else if (unlockedIdx < unlockedOrder.length) {
+        const col = defaultColumns.find(c => c.key === unlockedOrder[unlockedIdx]);
+        if (col) result.push(col);
+        unlockedIdx++;
+      }
+    }
+    return result;
+  })();
 
   return {
     orderedColumns,
