@@ -13,12 +13,12 @@ interface Props {
   onSelectAll: () => void;
   onClear: () => void;
   onDone: () => void;
+  onEdit?: (ids: string[]) => void;
 }
 
-export function AllWorkBulkBar({ selectedIds, items = [], totalCount, onSelectAll, onClear, onDone }: Props) {
+export function AllWorkBulkBar({ selectedIds, items = [], totalCount, onSelectAll, onClear, onDone, onEdit }: Props) {
   const handleDelete = async (ids: string[]) => {
     try {
-      // Delete from catalyst_issues (primary all-work table)
       const { error } = await supabase
         .from('catalyst_issues')
         .delete()
@@ -37,6 +37,7 @@ export function AllWorkBulkBar({ selectedIds, items = [], totalCount, onSelectAl
       items={items}
       onClear={onClear}
       onDelete={handleDelete}
+      onEdit={onEdit}
       entityLabel="work item"
     />
   );

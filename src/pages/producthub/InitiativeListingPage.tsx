@@ -520,6 +520,10 @@ export default function InitiativeListingPage() {
           selectedIds={selectedIds}
           items={paginatedData.map(d => ({ id: d.id, issue_key: d.initiative_key, title: d.title, status: d.status, priority: d.priority ?? undefined, assignee_name: d.assignee_name ?? undefined }))}
           onClear={() => setSelectedIds([])}
+          onEdit={(ids) => {
+            const item = paginatedData.find(d => d.id === ids[0]);
+            if (item) { setDetailInitiative(item); setDetailOpen(true); }
+          }}
           onDelete={(ids) => handleBulkAction('delete')}
           entityLabel="initiative"
         />

@@ -189,6 +189,11 @@ export default function AllWork() {
           onSelectAll={handleSelectAll}
           onClear={() => setSelectedIds(new Set())}
           onDone={() => { setSelectedIds(new Set()); refetch(); }}
+          onEdit={(ids) => {
+            const firstKey = ids[0];
+            const item = items.find(i => i.id === firstKey || i.issue_key === firstKey);
+            if (item) setSelectedItemKey(item.issue_key);
+          }}
         />
       )}
 
