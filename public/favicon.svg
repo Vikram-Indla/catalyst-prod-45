@@ -1,11 +1,30 @@
-<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+<svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Catalyst Logo Mark - Option A: Protective Arc - LIGHT MODE -->
+  <!-- Standalone mark for favicon, app icon, etc. -->
+  
   <defs>
-    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#D4A843"/>
-      <stop offset="50%" style="stop-color:#C49A38"/>
-      <stop offset="100%" style="stop-color:#A07E2C"/>
+    <linearGradient id="catalystBlue" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3B82F6"/>
+      <stop offset="100%" stop-color="#1D4ED8"/>
     </linearGradient>
   </defs>
-  <rect width="100" height="100" rx="16" fill="#000000"/>
-  <path d="M62 30C55.5 24.5 47.5 22 39.5 22.5C24 23.5 16 36 16 50C16 64 24 76.5 39.5 77.5C47.5 78 55.5 75.5 62 70L56 62C51.5 66 45.5 68 39.8 67.5C30.5 67 26 59 26 50C26 41 30.5 33 39.8 32.5C45.5 32 51.5 34 56 38L62 30Z" fill="url(#goldGrad)"/>
+  
+  <!-- Umbrella arc (protective canopy) -->
+  <path 
+    d="M10 24C10 12 22 4 40 4C58 4 70 12 70 24" 
+    stroke="url(#catalystBlue)" 
+    stroke-width="6" 
+    stroke-linecap="round" 
+    fill="none"
+  />
+  
+  <!-- C letterform -->
+  <path 
+    d="M64 38C64 28 54 22 40 22C24 22 14 32 14 48C14 64 24 74 40 74C54 74 64 66 64 56" 
+    stroke="url(#catalystBlue)" 
+    stroke-width="8" 
+    stroke-linecap="round" 
+    fill="none"
+  />
+  
 </svg>
