@@ -18,9 +18,10 @@ export interface AgeingItem {
   issue_type_raw: string;
   assignee_account_id: string | null;
   reporter_account_id: string | null;
+  reporter_display_name: string | null;
   parent_key: string | null;
   created_at: string;
-  updated_at: string | null;
+  jira_updated_at: string | null;
 }
 
 function mapIssueType(raw: string): string {
@@ -41,7 +42,6 @@ export function useAgeingItems() {
     staleTime: 60_000,
     refetchOnWindowFocus: true,
     queryFn: async () => {
-      // Step 1: Resolve Jira identity
       const { data: identityRows } = await supabase
         .from("jira_identity_map")
         .select("jira_account_id")
@@ -52,10 +52,9 @@ export function useAgeingItems() {
 
       const jiraAccountId = identityRows[0].jira_account_id;
 
-      // Step 2: Fetch all non-done, non-deleted issues for this assignee
       const { data } = await supabase
         .from("ph_issues")
-        .select("id, issue_key, issue_type, summary, status, status_category, jira_created_at, updated_at, parent_key, reporter_account_id, assignee_account_id")
+        .select("id, issue_key, issue_type, summary, status, status_category, jira_created_at, jira_updated_at, parent_key, reporter_account_id, reporter_display_name, assignee_account_id")
         .eq("assignee_account_id", jiraAccountId)
         .neq("status_category", "done")
         .is("deleted_at", null)
@@ -76,14 +75,15 @@ export function useAgeingItems() {
             item_type: mapIssueType(row.issue_type),
             summary: row.summary,
             status: row.status,
-            status_category: row.status_category,
+            status_category: row.status_category ?? "",
             days_assigned: daysAssigned,
             issue_type_raw: row.issue_type,
             assignee_account_id: row.assignee_account_id,
             reporter_account_id: row.reporter_account_id,
+            reporter_display_name: row.reporter_display_name,
             parent_key: row.parent_key,
             created_at: row.jira_created_at || "",
-            updated_at: row.updated_at,
+            jira_updated_at: row.jira_updated_at,
           } as AgeingItem;
         });
     },
