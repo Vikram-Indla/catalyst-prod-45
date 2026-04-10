@@ -171,6 +171,9 @@ export default function StoryDetailModal({
   const [showDotsMenu, setShowDotsMenu] = useState(false);
   const [acceptanceCriteria, setAcceptanceCriteria] = useState('');
   const [titleFocused, setTitleFocused] = useState(false);
+  const [commentSummary, setCommentSummary] = useState<string | null>(null);
+  const [commentSummaryLoading, setCommentSummaryLoading] = useState(false);
+  const [showCommentSummary, setShowCommentSummary] = useState(true);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const addMenuRef = useRef<HTMLDivElement>(null);
@@ -574,7 +577,30 @@ export default function StoryDetailModal({
                           </div>
                           {[
                             { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5E6C84" strokeWidth="1.8"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>, label: 'Improve description', action: () => { setShowAiMenu(false); setAiPanelOpen(true); setAiOutput(null); setAiError(null); } },
-                            { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5E6C84" strokeWidth="1.8"><rect x="2" y="3" width="20" height="18" rx="2"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="11" x2="16" y2="11"/><line x1="8" y1="15" x2="12" y2="15"/></svg>, label: 'Summarize comments', action: () => { setShowAiMenu(false); toast.info('Summarize comments — coming soon'); } },
+                            { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5E6C84" strokeWidth="1.8"><rect x="2" y="3" width="20" height="18" rx="2"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="11" x2="16" y2="11"/><line x1="8" y1="15" x2="12" y2="15"/></svg>, label: 'Summarize comments', action: async () => {
+                              setShowAiMenu(false);
+                              if (comments.length === 0) { toast.info('No comments to summarize'); return; }
+                              setCommentSummaryLoading(true); setShowCommentSummary(true); setCommentSummary(null);
+                              setActiveActivityTab('comments');
+                              try {
+                                const commentText = comments.map((c, i) => `[${c.author?.full_name ?? 'Unknown'}]: ${c.body}`).join('\n');
+                                const { data, error: fnErr } = await supabase.functions.invoke('ai-improve-story', {
+                                  body: {
+                                    issue_id: itemId,
+                                    improve_type: 'summarize_comments',
+                                    focus_hint: 'Summarize the following comments into a concise overview with key bullet points. Return ONLY the summary text, no JSON.',
+                                    current_description: commentText,
+                                    current_ac: '',
+                                    issue_summary: issue?.summary ?? '',
+                                  },
+                                });
+                                if (fnErr) throw fnErr;
+                                const summaryText = typeof data === 'string' ? data : (data?.description || data?.summary || JSON.stringify(data));
+                                setCommentSummary(summaryText);
+                              } catch {
+                                setCommentSummary('Unable to generate summary. Please try again.');
+                              } finally { setCommentSummaryLoading(false); }
+                            } },
                             { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5E6C84" strokeWidth="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/><path d="M13 8h4"/><path d="M13 12h4"/><path d="M13 16h2"/></svg>, label: 'Suggest child work items', action: () => { setShowAiMenu(false); const el = document.querySelector('[data-section="child-issues"]'); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' }); toast.info('Use the AI suggest bar in Child Issues section below'); } },
                             { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5E6C84" strokeWidth="1.8"><path d="M9 17H7A5 5 0 0 1 7 7h2"/><path d="M15 7h2a5 5 0 1 1 0 10h-2"/><line x1="8" y1="12" x2="16" y2="12"/></svg>, label: 'Link similar work items', action: () => { setShowAiMenu(false); const el = document.querySelector('[data-section="linked-issues"]'); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' }); toast.info('Use the AI link bar in Linked Issues section below'); } },
                           ].map((item, i) => (
