@@ -438,13 +438,15 @@ export default function AgeingTab() {
     <div style={{ fontFamily: 'Inter, sans-serif', display: 'flex', flexDirection: 'column', height: '100%' }}>
       {/* Toolbar */}
       <div style={{
-        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+        display: 'flex', alignItems: 'center',
         padding: '10px 14px',
         borderBottom: '0.75px solid var(--cp-border-lt, #F1F5F9)',
+        gap: 8,
       }}>
         <span style={{
           fontSize: 11, fontWeight: 700, color: 'var(--cp-ink-3, #64748B)',
           textTransform: 'uppercase', letterSpacing: '0.05em',
+          flexShrink: 0,
         }}>
           Ageing — Assigned to You
         </span>
@@ -458,6 +460,10 @@ export default function AgeingTab() {
               onClick={() => setActiveFilter(f)}
             />
           ))}
+        </div>
+        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 6 }}>
+          <GovernanceRagPill />
+          <AICleanupButton />
         </div>
       </div>
 
