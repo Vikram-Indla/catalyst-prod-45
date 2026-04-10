@@ -124,7 +124,7 @@ export function ChildIssuesSection({ storyKey, storyId, projectKey }: { storyKey
 
   return (
     <>
-      <SectionBlock title="Child Issues" count={children.length} doneCount={doneCount} defaultExpanded headerRight={
+      <SectionBlock title="Child Issues" count={children.length} doneCount={doneCount} defaultExpanded={children.length > 0} headerRight={
         <>
           {doneCount > 0 && (
             <button className="sdm-visibility-btn" onClick={() => setShowDone(s => !s)}>
@@ -132,7 +132,7 @@ export function ChildIssuesSection({ storyKey, storyId, projectKey }: { storyKey
             </button>
           )}
           <ColumnPicker columns={columns} onChange={setColumns} />
-          <button onClick={() => setCreating(true)} title="Create child issue" style={{
+          <button onClick={() => setCreating(true)} title="Create sub-task" style={{
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             width: 24, height: 24, border: 'none', borderRadius: 3, background: 'transparent',
             cursor: 'pointer', color: '#6B778C', transition: 'background 0.15s, color 0.15s',
@@ -187,7 +187,7 @@ export function ChildIssuesSection({ storyKey, storyId, projectKey }: { storyKey
 
         {isLoading && <SkeletonRows />}
         {!isLoading && children.length === 0 && !creating && (
-          <EmptyState heading="No child issues yet" sub="Break this story into tasks to track progress" cta="+ Create child issue" onCta={() => setCreating(true)} />
+          <EmptyState heading="No child issues yet" sub="Break this story into sub-tasks to track progress" cta="+ Create sub-task" onCta={() => setCreating(true)} />
         )}
         {!isLoading && visible.length > 0 && (
           <div className="sdm-child-list" role="list">
