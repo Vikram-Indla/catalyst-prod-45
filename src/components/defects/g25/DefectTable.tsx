@@ -324,7 +324,7 @@ export function DefectTable({ defects, selectedIds, onSelectionChange, onDelete,
     s.has(id) ? s.delete(id) : s.add(id);
     onSelectionChange(s);
   };
-  const initials = (name: string) => name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+  
 
   const handleBulkAction = (action: string) => {
     toast.info(`${action} action for ${selectedIds.size} items — coming soon`);
