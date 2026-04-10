@@ -169,13 +169,13 @@
 [data-theme="dark"] .pb-table thead,
 [data-theme="dark"] .pb-table thead tr,
 [data-theme="dark"] .pb-table thead th {
-  background-color: #1F1F1F !important;
+  background-color: #0A0A0A !important;
   color: #7D7D7D;
   border-bottom-color: #2E2E2E;
 }
 .dark .pb-table thead th:hover,
 [data-theme="dark"] .pb-table thead th:hover {
-  background-color: #292929 !important;
+  color: #A1A1A1;
 }
 .dark .pb-table tbody,
 .dark .pb-table tbody tr,
