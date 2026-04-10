@@ -495,32 +495,35 @@ export default function AgeingTab() {
     <div style={{ fontFamily: 'Inter, sans-serif', display: 'flex', flexDirection: 'column', height: '100%' }}>
       {/* Toolbar */}
       <div style={{
-        display: 'flex', alignItems: 'center',
         padding: '10px 14px',
         borderBottom: '0.75px solid var(--cp-border-lt, #F1F5F9)',
-        gap: 8,
       }}>
-        <span style={{
-          fontSize: 11, fontWeight: 700, color: 'var(--cp-ink-3, #64748B)',
-          textTransform: 'uppercase', letterSpacing: '0.05em',
-          flexShrink: 0,
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 8,
+          flexWrap: 'wrap',
         }}>
-          Ageing — Assigned to You
-        </span>
-        <div style={{ display: 'flex', gap: 5 }}>
-          {filters.map(f => (
-            <FilterPill
-              key={f}
-              label={f}
-              isActive={activeFilter === f}
-              count={typeCounts[f] || 0}
-              onClick={() => setActiveFilter(f)}
-            />
-          ))}
-        </div>
-        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 6 }}>
-          <GovernanceRagPill />
-          <AICleanupButton />
+          <span style={{
+            fontSize: 11, fontWeight: 700, color: 'var(--cp-ink-3, #64748B)',
+            textTransform: 'uppercase', letterSpacing: '0.05em',
+            flexShrink: 0,
+          }}>
+            Ageing — Assigned to You
+          </span>
+          <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
+            {filters.map(f => (
+              <FilterPill
+                key={f}
+                label={f}
+                isActive={activeFilter === f}
+                count={typeCounts[f] || 0}
+                onClick={() => setActiveFilter(f)}
+              />
+            ))}
+          </div>
+          <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
+            <GovernanceRagPill />
+            <AICleanupButton />
+          </div>
         </div>
       </div>
 
