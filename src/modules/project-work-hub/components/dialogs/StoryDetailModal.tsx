@@ -325,9 +325,14 @@ export default function StoryDetailModal({
   const handleAiGenerate = useCallback(async () => {
     if (aiGenerating) return;
     if (aiEdited && aiOutput) {
-      if (!confirm('Regenerating will discard your edits. Continue?')) return;
+      setShowAiRegenConfirm(true);
+      return;
     }
-    setAiGenerating(true); setAiError(null); setAiOutput(null); setAiEdited(false);
+    doAiGenerate();
+  }, [aiGenerating, aiEdited, aiOutput]);
+
+  const doAiGenerate = useCallback(async () => {
+    setAiGenerating(true); setAiError(null); setAiOutput(null); setAiEdited(false); setShowAiRegenConfirm(false);
     try {
       const { data, error: fnError } = await supabase.functions.invoke('ai-improve-story', {
         body: {
