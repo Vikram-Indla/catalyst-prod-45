@@ -15,7 +15,7 @@ import {
   Eye, EyeOff, Sparkles, Loader2, RotateCcw, Settings2, AlertTriangle,
   SquarePen,
 } from 'lucide-react';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+
 
 // Ring-fenced CSS for extension components
 import './story-detail-extensions.css';
