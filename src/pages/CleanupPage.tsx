@@ -899,13 +899,16 @@ export default function CleanupPage() {
                 <Button
                   disabled={selected.size === 0}
                   onClick={() => setShowForceCloseDialog(true)}
+                  className="disabled:opacity-100"
                   style={{
                     height: 32, fontSize: 12, fontWeight: 700,
-                    background: selected.size > 0 ? '#DC2626' : '#DC2626',
-                    color: '#ffffff', border: 'none',
-                    opacity: selected.size === 0 ? 0.4 : 1,
-                    pointerEvents: selected.size === 0 ? 'none' : 'auto',
+                    background: selected.size > 0 ? '#DC2626' : '#F1F5F9',
+                    color: selected.size > 0 ? '#ffffff' : '#94A3B8',
+                    border: selected.size > 0 ? 'none' : '1px solid #E2E8F0',
+                    cursor: selected.size === 0 ? 'not-allowed' : 'pointer',
                   }}
+                  onMouseEnter={e => { if (selected.size > 0) e.currentTarget.style.background = '#B91C1C'; }}
+                  onMouseLeave={e => { if (selected.size > 0) e.currentTarget.style.background = '#DC2626'; }}
                 >
                   Force Close ({selected.size})
                 </Button>
