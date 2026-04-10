@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils';
 interface Props {
   filters: DefectFiltersType;
   onChange: (f: DefectFiltersType) => void;
-  users: { id: string; full_name: string }[];
+  users: { id: string; full_name: string; avatar_url?: string | null }[];
 }
 
 // ── Filter chip pill component ──
