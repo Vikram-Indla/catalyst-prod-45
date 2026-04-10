@@ -502,44 +502,29 @@ export function AllProjectsTable({
     staleTime: 15_000,
   });
 
-  const headerLabels = ['#', 'PROJECT', 'STATUS', 'LEAD', 'MEMBERS', ''];
-  const sortableMap: Record<number, SortColumn> = { 1: 'name', 2: 'status' };
-
   return (
-    <div className="overflow-x-auto">
-      {/* FIX 1: table-fixed layout with exact column widths */}
-      <table className="table-fixed w-full border-collapse font-['Inter',sans-serif]">
+    <div className="overflow-x-auto" style={{ borderRadius: 0 }}>
+      <table className="pb-table">
         <colgroup>
-          <col className="w-[48px] min-w-[48px] max-w-[48px]" />
-          <col style={{ width: 'auto', minWidth: 280 }} />
-          <col className="w-[110px] min-w-[110px] max-w-[110px]" />
-          <col className="w-[200px] min-w-[200px] max-w-[200px]" />
-          <col className="w-[150px] min-w-[150px] max-w-[150px]" />
-          <col className="w-[48px] min-w-[48px] max-w-[48px]" />
+          <col style={{ width: 48 }} />
+          <col style={{ width: 100 }} />
+          <col style={{ width: 'auto', minWidth: 260 }} />
+          <col style={{ width: 110 }} />
+          <col style={{ width: 200 }} />
+          <col style={{ width: 150 }} />
+          <col style={{ width: 200 }} />
+          <col style={{ width: 48 }} />
         </colgroup>
         <thead>
           <tr>
-            {headerLabels.map((label, i) => {
-              const sortCol_ = sortableMap[i];
-              const isSortable = !!sortCol_;
-              return (
-                <th
-                  key={i}
-                  onClick={isSortable ? () => onSort(sortCol_) : undefined}
-                  className={cn(
-                    "px-2 py-2.5 text-[11px] font-bold uppercase tracking-[0.06em] whitespace-nowrap overflow-hidden text-ellipsis",
-                    "bg-slate-50 dark:bg-[#1A1A1A] text-slate-500 dark:text-[#A1A1A1] border-b-2 border-slate-200 dark:border-[#2E2E2E]",
-                    isSortable ? "cursor-pointer select-none" : "",
-                    i === 0 ? "text-center" : "text-left"
-                  )}
-                >
-                  <div className="flex items-center gap-1">
-                    {label}
-                    {isSortable && <SortIcon col={sortCol_} sortCol={sortCol} sortDir={sortDir} />}
-                  </div>
-                </th>
-              );
-            })}
+            <th className="text-center">#</th>
+            <th>PROJECT KEY</th>
+            <th>PROJECT NAME</th>
+            <th>STATUS</th>
+            <th>LEAD</th>
+            <th>MEMBERS</th>
+            <th>SYNC</th>
+            <th />
           </tr>
         </thead>
         <tbody>
@@ -549,8 +534,6 @@ export function AllProjectsTable({
             const active = isActiveStatus(p.status);
             const badgeColor = getBadgeColor(p.id);
             const badgeText = p.project_key;
-            const badgeWidth = badgeText.length > 3 ? 40 : 36;
-            const badgeFontSize = badgeText.length > 3 ? 8 : badgeText.length > 2 ? 9 : 10;
             const rowNum = pageOffset + idx + 1;
 
             const issueCount = syncData?.countMap?.[p.project_key] ?? p.total_issues ?? 0;
@@ -559,22 +542,20 @@ export function AllProjectsTable({
             const syncAge = syncTs
               ? formatDistanceToNowStrict(new Date(syncTs), { addSuffix: false })
               : null;
-
-            // FIX 8: Dynamic sync dot color
             const syncDotColor = getSyncDotColor(syncTs, null);
             const syncTooltipText = getSyncTooltip(syncTs, null);
 
             return (
               <tr
                 key={p.id}
-                className="group"
+                className={cn('group', checked && 'pb-row-selected')}
                 style={{
                   opacity: active ? 1 : 0.45,
                   pointerEvents: active ? 'auto' : 'none',
                 }}
               >
-                {/* Cell 1: # / Checkbox — FIX 5: CSS-only hover */}
-                <td className="px-2 py-3 text-center border-b border-slate-100 dark:border-[#2E2E2E] overflow-hidden">
+                {/* # / Checkbox */}
+                <td className="text-center" style={{ overflow: 'hidden' }}>
                   <span className="group-hover:hidden text-xs text-slate-400 dark:text-[#878787] tabular-nums">
                     {rowNum}
                   </span>
@@ -588,61 +569,36 @@ export function AllProjectsTable({
                   />
                 </td>
 
-                {/* Cell 2: Project — FIX 7: Mono key badge */}
-                <td className="py-3 px-3 border-b border-slate-100 dark:border-[#2E2E2E] overflow-hidden">
-                  <div className="flex flex-col items-start gap-1">
-                    <div className="flex items-center gap-2.5 w-full min-w-0">
-                      <button
-                        onClick={e => { e.stopPropagation(); onToggleFav(p.id, isFav); }}
-                        className="bg-transparent border-none cursor-pointer p-0 focus-visible:ring-2 focus-visible:ring-blue-600 outline-none rounded flex-shrink-0"
-                        style={{ pointerEvents: 'auto' }}
-                      >
-                        <Star size={14} fill={isFav ? '#F59E0B' : 'none'} className={isFav ? 'text-amber-500' : 'text-slate-300 dark:text-[#878787]'} />
-                      </button>
-                      <div
-                        className="flex items-center justify-center rounded-lg flex-shrink-0 font-bold text-white uppercase"
-                        style={{
-                          width: badgeWidth,
-                          minWidth: badgeWidth,
-                          height: 32,
-                          background: badgeColor,
-                          fontSize: badgeFontSize,
-                          fontFamily: "'Sora', sans-serif",
-                          letterSpacing: badgeText.length > 2 ? '-0.02em' : undefined,
-                        }}
-                      >
-                        {badgeText}
-                      </div>
-                      <span
-                        onClick={() => navigate(`/project-hub/${p.project_key}/dashboard`)}
-                        className="font-semibold text-sm truncate max-w-[240px] hover:text-blue-600 hover:underline cursor-pointer text-slate-900 dark:text-white"
-                        title={p.name}
-                        style={{ pointerEvents: 'auto' }}
-                      >
-                        {p.name}
-                      </span>
-                      <span className="ml-2 font-mono text-[11px] bg-slate-100 dark:bg-[#2E2E2E] text-slate-500 dark:text-[#A1A1A1] px-1.5 py-0.5 rounded tracking-wide flex-shrink-0">
-                        {p.project_key}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2 pl-[42px]">
-                      <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-100 dark:bg-[#2E2E2E] text-[11px] font-medium text-slate-500 dark:text-[#A1A1A1]">
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <span className={cn("w-1.5 h-1.5 rounded-full cursor-help", syncDotColor)} />
-                          </TooltipTrigger>
-                          <TooltipContent side="top" className="text-xs whitespace-pre-line max-w-[220px]">
-                            {syncTooltipText}
-                          </TooltipContent>
-                        </Tooltip>
-                        {syncAge ? `↔ ${syncAge}` : 'Not synced'} · {issueCount} issues
-                      </div>
-                    </div>
+                {/* PROJECT KEY */}
+                <td>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={e => { e.stopPropagation(); onToggleFav(p.id, isFav); }}
+                      className="bg-transparent border-none cursor-pointer p-0 outline-none rounded flex-shrink-0"
+                      style={{ pointerEvents: 'auto' }}
+                    >
+                      <Star size={14} fill={isFav ? '#F59E0B' : 'none'} className={isFav ? 'text-amber-500' : 'text-slate-300 dark:text-[#878787]'} />
+                    </button>
+                    <span className="font-mono text-[11px] font-bold tracking-wide text-white px-1.5 py-0.5 rounded" style={{ background: badgeColor }}>
+                      {badgeText}
+                    </span>
                   </div>
                 </td>
 
-                {/* Cell 3: Status */}
-                <td className="px-2 py-2 text-center border-b border-slate-100 dark:border-[#2E2E2E] overflow-hidden">
+                {/* PROJECT NAME */}
+                <td>
+                  <span
+                    onClick={() => navigate(`/project-hub/${p.project_key}/dashboard`)}
+                    className="font-semibold text-[13px] truncate hover:text-blue-600 hover:underline cursor-pointer text-slate-900 dark:text-white"
+                    title={p.name}
+                    style={{ pointerEvents: 'auto' }}
+                  >
+                    {p.name}
+                  </span>
+                </td>
+
+                {/* STATUS */}
+                <td className="text-center">
                   {active ? (
                     <StatusChangePopover project={p} />
                   ) : (
@@ -650,18 +606,35 @@ export function AllProjectsTable({
                   )}
                 </td>
 
-                {/* Cell 4: Lead — FIX 2: Pencil icon only trigger */}
-                <td className="px-2 py-2 border-b border-slate-100 dark:border-[#2E2E2E] overflow-hidden">
+                {/* LEAD */}
+                <td>
                   <LeadReassignPopover project={p} />
                 </td>
 
-                {/* Cell 5: Members */}
-                <td className="px-2 py-2 border-b border-slate-100 dark:border-[#2E2E2E] overflow-hidden">
+                {/* MEMBERS */}
+                <td>
                   <MemberManagePopover project={p} />
                 </td>
 
-                {/* Cell 8: Actions */}
-                <td className="px-1 py-2 text-center border-b border-slate-100 dark:border-[#2E2E2E]" style={{ pointerEvents: 'auto' }}>
+                {/* SYNC */}
+                <td>
+                  <div className="flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-[#A1A1A1]">
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <span className={cn("w-2 h-2 rounded-full flex-shrink-0 cursor-help", syncDotColor)} />
+                      </TooltipTrigger>
+                      <TooltipContent side="top" className="text-xs whitespace-pre-line max-w-[220px]">
+                        {syncTooltipText}
+                      </TooltipContent>
+                    </Tooltip>
+                    <span className="font-medium">
+                      {syncAge ? `↔ ${syncAge}` : 'Not synced'} · {issueCount} issues
+                    </span>
+                  </div>
+                </td>
+
+                {/* Actions */}
+                <td className="text-center" style={{ pointerEvents: 'auto' }}>
                   {active ? (
                     <RowActionMenu project={p} />
                   ) : (
