@@ -1670,7 +1670,7 @@ export default function StoryDetailModal({
 
                   {/* 3. TITLE TOOLBAR */}
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 20 }}>
-                    <div style={{ position: 'relative' }}>
+                    <div ref={addMenuRef} style={{ position: 'relative' }}>
                       <button onClick={() => setShowAddMenu(!showAddMenu)} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '5px 10px', borderRadius: 6, border: '1px solid #BFDBFE', background: '#EFF6FF', fontSize: 12, fontWeight: 600, color: '#2563EB', cursor: 'pointer' }}><Plus size={13} /> Add</button>
                       {showAddMenu && (
                         <div style={{ position: 'absolute', left: 0, top: 34, background: '#FFF', border: '1px solid #E4E7EC', borderRadius: 8, boxShadow: '0 4px 12px rgba(0,0,0,0.1)', padding: '4px 0', zIndex: 50, minWidth: 200 }}>
