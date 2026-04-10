@@ -2,6 +2,8 @@ import { useState, useMemo, useRef, useCallback } from 'react';
 import { Star, MoreHorizontal, Lock, ChevronUp, ChevronDown, ExternalLink, Settings, Archive, Search, Pencil } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import '@/styles/product-backlog.css';
+import { useTableColumns, type ColumnDef as TColDef } from '@/hooks/useTableColumns';
+import { ResizableTableHeader } from '@/components/shared/ResizableTableHeader';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { ProjectListItem, SortColumn, SortDirection, ProjectStatus } from '@/types/projecthub';
 import { ProjectStatusBadge } from './ProjectStatusBadge';
