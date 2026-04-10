@@ -1855,9 +1855,225 @@ export default function StoryDetailModal({
                         </div>
                       )}
                     </div>
-                    <AIImprovePanel storyId={itemId} issueKey={issue?.issue_key ?? ''} currentDescription={issue?.description_text ?? ''} currentAcceptanceCriteria={acceptanceCriteria} onApplyDescription={handleApplyDescription} onApplyAcceptanceCriteria={handleApplyAC} />
+                    <button
+                      type="button"
+                      onClick={() => { setAiPanelOpen(o => !o); setAiOutput(null); setAiError(null); }}
+                      style={{
+                        display: 'inline-flex', alignItems: 'center', gap: 5,
+                        height: 30, padding: '0 10px',
+                        background: aiPanelOpen ? '#DBEAFE' : '#EFF6FF',
+                        border: `1px solid ${aiPanelOpen ? '#93C5FD' : '#BFDBFE'}`,
+                        borderRadius: 4, cursor: 'pointer',
+                        fontSize: 12, fontWeight: 500, color: '#1D4ED8',
+                        fontFamily: 'inherit',
+                        transition: 'background 0.15s, border-color 0.15s',
+                      }}
+                      onMouseEnter={e => { if (!aiPanelOpen) (e.currentTarget as HTMLElement).style.background = '#DBEAFE'; }}
+                      onMouseLeave={e => { if (!aiPanelOpen) (e.currentTarget as HTMLElement).style.background = '#EFF6FF'; }}
+                    >
+                      <Sparkles size={12} />
+                      AI Improve Story
+                    </button>
                     <button onClick={handleShare} style={{ width: 28, height: 28, borderRadius: 6, border: '1px solid #E4E7EC', background: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#98A2B3' }}><Share2 size={13} /></button>
                   </div>
+
+                  {/* AI IMPROVE PANEL — inline block */}
+                  {aiPanelOpen && (
+                    <div style={{ marginBottom: 20, border: '1px solid #BFDBFE', borderRadius: 8, overflow: 'hidden', animation: 'sdm-slide-down 0.2s ease' }}>
+                      {/* Header */}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 14px', background: '#DBEAFE' }}>
+                        <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 6 }}>
+                          <Sparkles size={13} style={{ color: '#2563EB' }} />
+                          <span style={{ fontSize: 12, fontWeight: 700, color: '#1E40AF', textTransform: 'uppercase', letterSpacing: '0.04em' }}>AI Improve Story Requirements</span>
+                        </div>
+                        <span style={{ fontSize: 10, color: '#1D4ED8', background: '#EFF6FF', padding: '1px 6px', borderRadius: 3, fontFamily: 'JetBrains Mono, monospace', fontWeight: 600, letterSpacing: '0.02em' }}>gemini-flash</span>
+                        <button
+                          onClick={() => { setAiPanelOpen(false); setAiOutput(null); setAiError(null); }}
+                          style={{ width: 22, height: 22, borderRadius: 3, background: 'transparent', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6B778C' }}
+                          onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = 'rgba(9,30,66,0.08)')}
+                          onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = 'transparent')}
+                        ><X size={13} /></button>
+                      </div>
+                      {/* Body */}
+                      <div style={{ padding: '14px 14px 16px', background: '#FFFFFF' }}>
+                        {/* Improve type */}
+                        <div style={{ marginBottom: 12 }}>
+                          <div style={{ fontSize: 11, fontWeight: 600, color: '#6B778C', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Improve type</div>
+                          <div ref={aiDropRef} style={{ position: 'relative' }}>
+                            <button
+                              type="button"
+                              onClick={() => setAiDropOpen(o => !o)}
+                              onKeyDown={e => { if (e.key === 'Escape') setAiDropOpen(false); }}
+                              style={{
+                                width: '100%', height: 32, padding: '0 10px',
+                                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                                background: '#FFFFFF', border: '1px solid rgba(9,30,66,0.18)',
+                                borderRadius: 4, cursor: 'pointer', fontFamily: 'inherit',
+                                fontSize: 13, color: '#172B4D', outline: 'none',
+                              }}
+                              onFocus={e => (e.currentTarget.style.borderColor = '#2563EB')}
+                              onBlur={e => (e.currentTarget.style.borderColor = 'rgba(9,30,66,0.18)')}
+                            >
+                              <span>{AI_IMPROVE_OPTIONS.find(o => o.value === aiImproveType)?.label}</span>
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6B778C" strokeWidth="2"
+                                style={{ flexShrink: 0, transform: aiDropOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.15s' }}>
+                                <path d="m6 9 6 6 6-6"/>
+                              </svg>
+                            </button>
+                            {aiDropOpen && (
+                              <div style={{
+                                position: 'absolute', top: 'calc(100% + 4px)', left: 0, right: 0,
+                                background: '#FFFFFF', border: '1px solid rgba(9,30,66,0.2)',
+                                borderRadius: 6, boxShadow: '0 6px 16px rgba(9,30,66,0.14)',
+                                zIndex: 9999, overflow: 'hidden',
+                              }}>
+                                {AI_IMPROVE_OPTIONS.map(opt => (
+                                  <div
+                                    key={opt.value}
+                                    onClick={() => { setAiImproveType(opt.value); setAiDropOpen(false); }}
+                                    style={{
+                                      padding: '7px 12px', fontSize: 13, cursor: 'pointer',
+                                      color: opt.value === aiImproveType ? '#1D4ED8' : '#172B4D',
+                                      background: opt.value === aiImproveType ? '#EFF6FF' : 'transparent',
+                                      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                                      borderBottom: '1px solid rgba(9,30,66,0.04)',
+                                    }}
+                                    onMouseEnter={e => { if (opt.value !== aiImproveType) (e.currentTarget as HTMLElement).style.background = 'rgba(9,30,66,0.04)'; }}
+                                    onMouseLeave={e => { if (opt.value !== aiImproveType) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
+                                  >
+                                    <span>{opt.label}</span>
+                                    {opt.value === aiImproveType && (
+                                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#1D4ED8" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                                    )}
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                        {/* Focus area */}
+                        <div style={{ marginBottom: 12 }}>
+                          <div style={{ fontSize: 11, fontWeight: 600, color: '#6B778C', marginBottom: 4 }}>Focus area <span style={{ fontWeight: 400, color: '#8993A4' }}>(optional)</span></div>
+                          <input
+                            value={aiFocusHint}
+                            onChange={e => setAiFocusHint(e.target.value)}
+                            onKeyDown={e => { if (e.key === 'Enter') handleAiGenerate(); }}
+                            placeholder='e.g. "focus on edge cases" or "make more concise"'
+                            style={{
+                              width: '100%', height: 32, padding: '0 8px',
+                              border: '1px solid rgba(9,30,66,0.14)', borderRadius: 4,
+                              fontFamily: 'inherit', fontSize: 13, color: '#172B4D',
+                              background: '#fff', outline: 'none',
+                            }}
+                            onFocus={e => (e.target.style.borderColor = '#2563EB')}
+                            onBlur={e => (e.target.style.borderColor = 'rgba(9,30,66,0.14)')}
+                          />
+                        </div>
+                        {/* Context */}
+                        <div style={{ marginBottom: 14 }}>
+                          <div style={{ fontSize: 11, fontWeight: 600, color: '#6B778C', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Context from story</div>
+                          <div style={{ padding: '8px 10px', background: '#F8FAFC', border: '1px solid rgba(9,30,66,0.08)', borderRadius: 4, fontSize: 12, color: '#42526E', lineHeight: 1.5, maxHeight: 80, overflow: 'auto' }}>
+                            {issue?.description_text || <em style={{ color: '#8993A4' }}>No description yet — AI will generate from story title</em>}
+                          </div>
+                        </div>
+                        {/* Generate button */}
+                        <div style={{ marginBottom: 8 }}>
+                          <button
+                            onClick={handleAiGenerate}
+                            disabled={aiGenerating}
+                            style={{
+                              display: 'inline-flex', alignItems: 'center', gap: 6,
+                              height: 34, padding: '0 16px', borderRadius: 4, border: 'none',
+                              background: aiGenerating ? '#93C5FD' : '#2563EB',
+                              color: '#FFFFFF', fontSize: 13, fontWeight: 600,
+                              cursor: aiGenerating ? 'wait' : 'pointer', fontFamily: 'inherit',
+                              transition: 'background 0.15s',
+                            }}
+                            onMouseEnter={e => { if (!aiGenerating) (e.currentTarget.style.background = '#1D4ED8'); }}
+                            onMouseLeave={e => { if (!aiGenerating) (e.currentTarget.style.background = '#2563EB'); }}
+                          >
+                            {aiGenerating ? (
+                              <><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ animation: 'sdm-spin 1s linear infinite' }}><path d="M21 12a9 9 0 1 1-6.219-8.56" /></svg> Generating…</>
+                            ) : (
+                              <><Sparkles size={13} /> Generate</>
+                            )}
+                          </button>
+                        </div>
+                        {/* Error */}
+                        {aiError && (
+                          <div style={{ marginTop: 4, padding: '8px 10px', background: '#FFF1EF', border: '1px solid #FFBDAD', borderRadius: 4, fontSize: 12, color: '#BF2600', display: 'flex', alignItems: 'center', gap: 6 }}>
+                            <AlertTriangle size={13} />
+                            {aiError}
+                            <button onClick={handleAiGenerate} style={{ marginLeft: 'auto', color: '#BF2600', textDecoration: 'underline', background: 'none', border: 'none', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit' }}>Retry</button>
+                          </div>
+                        )}
+                        {/* Shimmer loading */}
+                        {aiGenerating && (
+                          <div style={{ marginTop: 10, padding: 12, background: '#F8FAFC', borderRadius: 6, border: '1px solid rgba(9,30,66,0.08)' }}>
+                            {[100, 85, 70, 55].map((w, i) => (
+                              <div key={i} style={{ height: 12, marginBottom: 8, borderRadius: 4, width: `${w}%`, background: 'linear-gradient(90deg, #F1F5F9 25%, #E2E8F0 50%, #F1F5F9 75%)', backgroundSize: '200% 100%', animation: 'sdm-shimmer 1.5s ease-in-out infinite' }} />
+                            ))}
+                          </div>
+                        )}
+                        {/* Output */}
+                        {aiOutput && !aiGenerating && (
+                          <div style={{ marginTop: 10 }}>
+                            <div style={{ padding: 12, background: '#F8FAFC', borderRadius: 6, border: '1px solid rgba(9,30,66,0.08)', fontSize: 13, color: '#172B4D', lineHeight: 1.6 }}>
+                              {aiOutput.description && (
+                                <>
+                                  <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#6B778C', marginBottom: 6 }}>Description</div>
+                                  <p style={{ margin: '0 0 12px', whiteSpace: 'pre-wrap' }}>{aiOutput.description}</p>
+                                </>
+                              )}
+                              {aiOutput.acceptance_criteria && (
+                                <>
+                                  <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#6B778C', marginBottom: 6 }}>Acceptance Criteria</div>
+                                  <pre style={{ fontFamily: 'inherit', whiteSpace: 'pre-wrap', margin: 0, fontSize: 12 }}>{aiOutput.acceptance_criteria}</pre>
+                                </>
+                              )}
+                            </div>
+                            {/* Action buttons */}
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 10 }}>
+                              <button
+                                onClick={handleAiGenerate}
+                                style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '5px 10px', borderRadius: 4, border: '1px solid #BFDBFE', background: 'transparent', fontSize: 12, fontWeight: 500, color: '#1D4ED8', cursor: 'pointer', fontFamily: 'inherit' }}
+                                onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = '#EFF6FF')}
+                                onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = 'transparent')}
+                              ><RotateCcw size={11} /> Regenerate</button>
+                              {aiOutput.description && (
+                                <button
+                                  onClick={() => { handleApplyDescription(aiOutput.description, issue?.description_text ?? ''); setAiPanelOpen(false); }}
+                                  style={{ padding: '5px 10px', borderRadius: 4, border: '1px solid #BFDBFE', background: 'transparent', fontSize: 12, fontWeight: 500, color: '#1D4ED8', cursor: 'pointer', fontFamily: 'inherit' }}
+                                  onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = '#EFF6FF')}
+                                  onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = 'transparent')}
+                                >← Apply to Description</button>
+                              )}
+                              {aiOutput.acceptance_criteria && (
+                                <button
+                                  onClick={() => { handleApplyAC(aiOutput.acceptance_criteria, acceptanceCriteria); setAiPanelOpen(false); }}
+                                  style={{ padding: '5px 10px', borderRadius: 4, border: '1px solid #BFDBFE', background: 'transparent', fontSize: 12, fontWeight: 500, color: '#1D4ED8', cursor: 'pointer', fontFamily: 'inherit' }}
+                                  onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = '#EFF6FF')}
+                                  onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = 'transparent')}
+                                >← Apply to AC</button>
+                              )}
+                              {aiOutput.description && aiOutput.acceptance_criteria && (
+                                <button
+                                  onClick={() => {
+                                    handleApplyDescription(aiOutput.description, issue?.description_text ?? '');
+                                    handleApplyAC(aiOutput.acceptance_criteria, acceptanceCriteria);
+                                    setAiPanelOpen(false);
+                                  }}
+                                  style={{ padding: '5px 10px', borderRadius: 4, border: 'none', background: '#2563EB', fontSize: 12, fontWeight: 600, color: '#FFFFFF', cursor: 'pointer', fontFamily: 'inherit' }}
+                                  onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = '#1D4ED8')}
+                                  onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = '#2563EB')}
+                                >← Apply Both</button>
+                              )}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
 
                   {/* 4. FIGMA URL INPUT ROW */}
                   {showFigmaInput && (
