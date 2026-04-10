@@ -237,7 +237,7 @@ function ParentPickerCell({ defectId, currentParentKey, projectKey }: { defectId
             <div className="py-6 text-center text-[13px] text-slate-400">No matching items</div>
           ) : filtered.map(opt => {
             const isSelected = currentParentKey === opt.key;
-            const dotColor = getStatusDotColor(opt.statusCategory);
+            
             return (
               <button
                 key={opt.key}
