@@ -75,6 +75,44 @@ Deno.serve(async (req) => {
         const payload = item.operation_payload || {};
         const operation: string = item.operation || "update";
 
+        // ── GOVERNANCE LOCK CHECK — skip write-back for governance-closed items ──
+        const govCheckKey = payload.jira_key || null;
+        const govCheckId = item.ph_issue_id || null;
+        let isGovernanceLocked = false;
+
+        if (govCheckKey) {
+          const { data: govLock } = await supabase
+            .from('governance_closure_log')
+            .select('id')
+            .eq('item_key', govCheckKey)
+            .is('restored_at', null)
+            .limit(1)
+            .maybeSingle();
+          isGovernanceLocked = !!govLock;
+        } else if (govCheckId) {
+          const { data: govLock } = await supabase
+            .from('governance_closure_log')
+            .select('id')
+            .eq('issue_id', govCheckId)
+            .is('restored_at', null)
+            .limit(1)
+            .maybeSingle();
+          isGovernanceLocked = !!govLock;
+        }
+
+        if (isGovernanceLocked) {
+          console.log(`[governance] Skipping write-back for locked item ${govCheckKey || govCheckId}`);
+          await supabase
+            .from("jira_write_back_queue")
+            .update({
+              status: "skipped",
+              last_error: "Governance-locked: item closed by governance policy",
+              push_attempted_at: new Date().toISOString(),
+            })
+            .eq("id", item.id);
+          continue;
+        }
+
         // 2a. Fetch work item — try ph_work_item_id first, fall back to ph_issue_id → ph_issues
         let workItem: { id: string; jira_key: string | null; project_id: string | null } | null = null;
 
