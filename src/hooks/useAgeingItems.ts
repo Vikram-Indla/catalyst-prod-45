@@ -89,7 +89,7 @@ export function useAgeingItems() {
             parent_key: row.parent_key,
             created_at: row.jira_created_at || "",
             jira_updated_at: row.jira_updated_at,
-            fixed_versions: (row as any).fixed_versions ?? null,
+            fixed_versions: null,
             reporter_name: row.reporter_display_name ?? null,
             project_key: projectKey,
           } as AgeingItem;
