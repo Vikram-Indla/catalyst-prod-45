@@ -1,7 +1,9 @@
 import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
-import { Loader2, ChevronDown, ChevronRight } from 'lucide-react';
+import { Loader2, ChevronDown, ChevronRight, Sparkles } from 'lucide-react';
 import AgeingSkeleton from './AgeingSkeleton';
+import { useGovernanceScore } from '@/hooks/useGovernanceScore';
 
 /* ═══════════════════════════════════════
    Ageing Tab — Grouped by Time Period
@@ -308,6 +310,63 @@ const GROUP_ACCENT: Record<TimeGroup, string> = {
   older:     '#64748B',
 };
 
+/* ── Governance RAG Pill ── */
+function GovernanceRagPill() {
+  const { data } = useGovernanceScore();
+  const navigate = useNavigate();
+  const ragStatus = data?.ragStatus ?? 'green';
+
+  const cfg = {
+    green: { bg: '#ECFDF5', border: '#6EE7B7', color: '#065F46', dot: '#10B981', anim: 'none' },
+    amber: { bg: '#FFFBEB', border: '#FCD34D', color: '#92400E', dot: '#F59E0B', anim: 'rag-pulse 1.5s ease-in-out infinite' },
+    red:   { bg: '#FEF2F2', border: '#FCA5A5', color: '#991B1B', dot: '#EF4444', anim: 'rag-pulse 0.8s ease-in-out infinite' },
+  }[ragStatus];
+
+  return (
+    <>
+      <style>{`@keyframes rag-pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }`}</style>
+      <button
+        onClick={() => navigate('/cleanup')}
+        style={{
+          display: 'inline-flex', alignItems: 'center', gap: 4,
+          borderRadius: 20, padding: '3px 9px',
+          fontSize: 10, fontWeight: 700,
+          background: cfg.bg, border: `1.5px solid ${cfg.border}`, color: cfg.color,
+          cursor: 'pointer', fontFamily: 'Inter, sans-serif',
+        }}
+      >
+        <span style={{
+          width: 6, height: 6, borderRadius: '50%',
+          background: cfg.dot, display: 'inline-block',
+          animation: cfg.anim,
+        }} />
+        {ragStatus.toUpperCase()}
+      </button>
+    </>
+  );
+}
+
+/* ── AI Cleanup Button ── */
+function AICleanupButton() {
+  const navigate = useNavigate();
+  return (
+    <button
+      onClick={() => navigate('/cleanup')}
+      style={{
+        height: 26, padding: '0 10px', borderRadius: 6,
+        background: '#7C3AED', color: '#fff',
+        fontSize: 10, fontWeight: 700, border: 'none',
+        cursor: 'pointer', display: 'inline-flex',
+        alignItems: 'center', gap: 5,
+        fontFamily: 'Inter, sans-serif',
+      }}
+    >
+      <Sparkles size={12} strokeWidth={1.5} />
+      AI Cleanup
+    </button>
+  );
+}
+
 /* ── Main Component ── */
 export default function AgeingTab() {
   const [activeFilter, setActiveFilter] = useState('All');
@@ -436,13 +495,15 @@ export default function AgeingTab() {
     <div style={{ fontFamily: 'Inter, sans-serif', display: 'flex', flexDirection: 'column', height: '100%' }}>
       {/* Toolbar */}
       <div style={{
-        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+        display: 'flex', alignItems: 'center',
         padding: '10px 14px',
         borderBottom: '0.75px solid var(--cp-border-lt, #F1F5F9)',
+        gap: 8,
       }}>
         <span style={{
           fontSize: 11, fontWeight: 700, color: 'var(--cp-ink-3, #64748B)',
           textTransform: 'uppercase', letterSpacing: '0.05em',
+          flexShrink: 0,
         }}>
           Ageing — Assigned to You
         </span>
@@ -456,6 +517,10 @@ export default function AgeingTab() {
               onClick={() => setActiveFilter(f)}
             />
           ))}
+        </div>
+        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 6 }}>
+          <GovernanceRagPill />
+          <AICleanupButton />
         </div>
       </div>
 
