@@ -68,6 +68,7 @@ if (typeof document !== 'undefined' && !document.getElementById(ANIM_STYLE_ID)) 
     @keyframes sdm-slide-down { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes sdm-shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
     @keyframes sdm-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    @keyframes sdm-panel-in { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
   `;
   document.head.appendChild(s);
 }
