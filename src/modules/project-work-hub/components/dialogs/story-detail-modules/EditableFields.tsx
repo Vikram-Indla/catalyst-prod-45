@@ -538,7 +538,7 @@ export function ParentFieldPicker({ storyKey, parentKey, projectKey, onParentCha
       >
         {parentKey && currentParent ? (
           <>
-            <span dangerouslySetInnerHTML={{ __html: EPIC_ICON_SVG }} style={{ display: 'flex', flexShrink: 0 }} />
+            <EpicIconInline />
             <span style={{ flex: 1, fontSize: 14, color: '#172B4D', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {currentParent.issue_key} {currentParent.summary}
             </span>
@@ -595,10 +595,9 @@ export function ParentFieldPicker({ storyKey, parentKey, projectKey, onParentCha
               </label>
             </div>
 
-            {/* Results — two-line layout like Jira */}
+            {/* Results — Jira parity: epic icon + key on line 1, summary on line 2, NO color dots */}
             <div style={{ flex: 1, overflowY: 'auto' }}>
               {searchResults.map(result => {
-                const dotColor = getDotColor(result.issue_key);
                 const isActive = result.issue_key === parentKey;
                 return (
                   <div key={result.id} onClick={() => handleSelect(result.issue_key)}
@@ -611,16 +610,16 @@ export function ParentFieldPicker({ storyKey, parentKey, projectKey, onParentCha
                     onMouseEnter={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = '#F4F5F7'; }}
                     onMouseLeave={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = isActive ? '#DEEBFF' : 'transparent'; }}
                   >
-                    {/* Line 1: dot + icon + key */}
+                    {/* Line 1: icon + key */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2 }}>
-                      <div style={{ width: 10, height: 10, borderRadius: 2, background: dotColor, flexShrink: 0 }} />
-                      <span dangerouslySetInnerHTML={{ __html: EPIC_ICON_SVG }} style={{ display: 'flex', flexShrink: 0 }} />
+                      <EpicIconInline />
                       <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, color: '#6B778C', fontSize: 12 }}>{result.issue_key}</span>
                     </div>
                     {/* Line 2: summary */}
-                    <div style={{ fontSize: 14, color: '#172B4D', paddingLeft: 32, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    <div style={{ fontSize: 14, color: '#172B4D', paddingLeft: 22, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {result.summary}
                     </div>
+                  </div>
                   </div>
                 );
               })}
