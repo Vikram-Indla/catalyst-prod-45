@@ -1,8 +1,7 @@
 /**
  * useAgeingItems — Shared hook for ageing/governance data.
  * Single source of truth for both AgeingTab and CleanupPage.
- * Queries ph_issues via jira_identity_map.
- * Fetches items where user is ASSIGNEE or REPORTER, tags my_role.
+ * Runs 2 base queries (assignee + reporter) + 4 enrichment queries in parallel.
  */
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -10,35 +9,54 @@ import { useAuth } from "@/hooks/useAuth";
 
 export interface AgeingItem {
   id: string;
-  jira_key: string;
-  item_type: string;
+  issue_key: string;
+  issue_type: string;
   summary: string;
   status: string;
   status_category: string;
-  days_open: number;
-  issue_type_raw: string;
-  assignee_account_id: string | null;
-  assignee_display_name: string | null;
+  priority: string;
+  jira_created_at: string;
+  jira_updated_at: string;
+  parent_key: string | null;
+  parent_summary: string | null;
+  parent_issue_type: string | null;
+  project_key: string;
+  project_name: string;
   reporter_account_id: string | null;
   reporter_display_name: string | null;
-  parent_key: string | null;
-  parent_issue_type: string | null;
-  created_at: string;
-  jira_updated_at: string | null;
-  fixed_versions: string | null;
-  reporter_name: string | null;
-  project_key: string;
-  priority: string;
+  assignee_account_id: string | null;
+  assignee_display_name: string | null;
+  fix_versions: string | null;
   comment_count: number;
   child_issue_count: number;
-  assignee_is_active: boolean;
-  assignee_last_login: string | null;
+  assignee_status: string;
+  assignee_last_login_at: string | null;
   assignee_last_login_days: number;
+  assignee_is_inactive: boolean;
   my_role: 'assignee' | 'reporter';
+  days_open: number;
+
+  // ── Compat aliases used by AgeingTab / CleanupPage ──
+  jira_key: string;
+  item_type: string;
+  issue_type_raw: string;
+  reporter_name: string | null;
+  fixed_versions: string | null;
+  created_at: string;
+  assignee_is_active: boolean;
 }
 
+const BASE_SELECT = `
+  id, issue_key, issue_type, summary, status,
+  status_category, priority, jira_created_at,
+  jira_updated_at, parent_key, parent_summary,
+  project_key, project_name, reporter_account_id,
+  reporter_display_name, assignee_account_id,
+  assignee_display_name, fix_versions
+`;
+
 function mapIssueType(raw: string): string {
-  const v = raw.toLowerCase();
+  const v = (raw || '').toLowerCase();
   if (v.includes("incident")) return "Production Incident";
   if (v.includes("bug")) return "QA Bug";
   if (v.includes("sub")) return "Sub-task";
@@ -46,112 +64,187 @@ function mapIssueType(raw: string): string {
   return "Story";
 }
 
-const SELECT_FIELDS = "id, issue_key, issue_type, summary, status, status_category, priority, jira_created_at, jira_updated_at, parent_key, reporter_account_id, reporter_display_name, assignee_account_id, assignee_display_name, comments, fix_versions, project_key";
-
 export function useAgeingItems() {
   const { user } = useAuth();
 
   return useQuery({
     queryKey: ["ageing-items", user?.id],
-    enabled: !!user?.id,
-    staleTime: 60_000,
+    staleTime: 0,
     refetchOnWindowFocus: true,
-    queryFn: async () => {
-      const { data: identityRows } = await supabase
+    enabled: !!user?.id,
+    queryFn: async (): Promise<AgeingItem[]> => {
+      // ── STEP 1: Get my Jira account ID ──
+      const { data: identity } = await supabase
         .from("jira_identity_map")
         .select("jira_account_id")
         .eq("catalyst_user_id", user!.id)
-        .limit(1);
+        .single();
 
-      if (!identityRows?.length) return [];
+      const myJiraId = identity?.jira_account_id;
+      if (!myJiraId) return [];
 
-      const myJiraId = identityRows[0].jira_account_id;
-
-      // Run both queries in parallel
+      // ── STEP 2: Fetch base items (assignee + reporter) in parallel ──
       const [assigneeResult, reporterResult] = await Promise.all([
         supabase
           .from("ph_issues")
-          .select(SELECT_FIELDS)
+          .select(BASE_SELECT)
           .eq("assignee_account_id", myJiraId)
           .neq("status_category", "done")
-          .is("deleted_at", null)
-          .order("jira_created_at", { ascending: false }),
+          .is("deleted_at", null),
         supabase
           .from("ph_issues")
-          .select(SELECT_FIELDS)
+          .select(BASE_SELECT)
           .eq("reporter_account_id", myJiraId)
           .neq("assignee_account_id", myJiraId)
           .neq("status_category", "done")
-          .is("deleted_at", null)
-          .order("jira_created_at", { ascending: false }),
+          .is("deleted_at", null),
       ]);
 
-      const now = Date.now();
+      const rawAssignee = (assigneeResult.data ?? []).map(i => ({ ...i, my_role: 'assignee' as const }));
+      const rawReporter = (reporterResult.data ?? []).map(i => ({ ...i, my_role: 'reporter' as const }));
 
-      // Tag and merge
-      const tagged = [
-        ...(assigneeResult.data ?? []).map(r => ({ ...r, _role: 'assignee' as const })),
-        ...(reporterResult.data ?? []).map(r => ({ ...r, _role: 'reporter' as const })),
-      ];
-
-      // Deduplicate by id
       const seen = new Set<string>();
-      const unique = tagged.filter(r => {
-        if (seen.has(r.id)) return false;
-        seen.add(r.id);
+      const baseItems = [...rawAssignee, ...rawReporter].filter(i => {
+        if (seen.has(i.id)) return false;
+        seen.add(i.id);
         return true;
       });
 
-      return unique
-        .filter(row => {
-          const sc = (row.status_category || "").toLowerCase().replace(/[\s_-]/g, "");
-          return sc !== "done";
-        })
-        .map(row => {
-          const createdAtMs = row.jira_created_at
-            ? new Date(row.jira_created_at).getTime()
-            : null;
-          const daysOpen = createdAtMs
-            ? Math.max(1, Math.floor((now - createdAtMs) / 86400_000))
-            : 0;
-          const issueKey = row.issue_key || "";
-          const projectKey = row.project_key || (issueKey.includes("-") ? issueKey.split("-")[0] : "");
+      if (baseItems.length === 0) return [];
 
-          const commentCount = Array.isArray(row.comments) ? row.comments.length : 0;
+      const issueIds = baseItems.map(i => i.id);
+      const issueKeys = baseItems.map(i => i.issue_key);
+      const assigneeJiraIds = [...new Set(
+        baseItems.map(i => i.assignee_account_id).filter(Boolean)
+      )] as string[];
+      const parentKeys = [...new Set(
+        baseItems.map(i => i.parent_key).filter(Boolean)
+      )] as string[];
 
-          const fixVer = Array.isArray(row.fix_versions) && row.fix_versions.length > 0
-            ? (row.fix_versions as any[]).map((v: any) => typeof v === 'string' ? v : v?.name || '').filter(Boolean).join(', ')
-            : null;
+      // ── STEP 3: Enrichment queries (all parallel) ──
+      const [commentsResult, childrenResult, profilesResult, parentsResult] = await Promise.all([
+        // Comment counts per issue
+        supabase
+          .from("ph_comments")
+          .select("work_item_id")
+          .in("work_item_id", issueIds),
+        // Child issue counts
+        supabase
+          .from("ph_issues")
+          .select("parent_key")
+          .in("parent_key", issueKeys)
+          .is("deleted_at", null),
+        // Assignee profile data
+        assigneeJiraIds.length > 0
+          ? supabase
+              .from("profiles")
+              .select("jira_account_id, status, last_login_at")
+              .in("jira_account_id", assigneeJiraIds)
+          : Promise.resolve({ data: [] as any[] }),
+        // Parent issue types
+        parentKeys.length > 0
+          ? supabase
+              .from("ph_issues")
+              .select("issue_key, issue_type")
+              .in("issue_key", parentKeys)
+          : Promise.resolve({ data: [] as any[] }),
+      ]);
 
-          return {
-            id: row.id,
-            jira_key: issueKey,
-            item_type: mapIssueType(row.issue_type),
-            summary: row.summary,
-            status: row.status,
-            status_category: row.status_category ?? "",
-            days_open: daysOpen,
-            issue_type_raw: row.issue_type,
-            assignee_account_id: row.assignee_account_id,
-            assignee_display_name: row.assignee_display_name ?? null,
-            reporter_account_id: row.reporter_account_id,
-            reporter_display_name: row.reporter_display_name,
-            parent_key: row.parent_key,
-            parent_issue_type: null,
-            created_at: row.jira_created_at || "",
-            jira_updated_at: row.jira_updated_at,
-            fixed_versions: fixVer,
-            reporter_name: row.reporter_display_name ?? null,
-            project_key: projectKey,
-            priority: row.priority ?? "medium",
-            comment_count: commentCount,
-            child_issue_count: 0,
-            assignee_is_active: true, // no column in ph_issues — assume active
-            assignee_last_login: null, // no column in ph_issues
-            assignee_last_login_days: 0, // 0 = unknown = assume active
-            my_role: row._role,
-          } as AgeingItem;
-        });
+      // ── STEP 4: Build lookup maps ──
+      const commentMap: Record<string, number> = {};
+      for (const row of (commentsResult.data ?? [])) {
+        commentMap[row.work_item_id] = (commentMap[row.work_item_id] ?? 0) + 1;
+      }
+
+      const childMap: Record<string, number> = {};
+      for (const row of (childrenResult.data ?? [])) {
+        if (row.parent_key) {
+          childMap[row.parent_key] = (childMap[row.parent_key] ?? 0) + 1;
+        }
+      }
+
+      const profileMap: Record<string, { status: string; last_login_at: string | null }> = {};
+      for (const row of (profilesResult.data ?? [])) {
+        if (row.jira_account_id) {
+          profileMap[row.jira_account_id] = {
+            status: row.status ?? 'active',
+            last_login_at: row.last_login_at ?? null,
+          };
+        }
+      }
+
+      const parentTypeMap: Record<string, string> = {};
+      for (const row of (parentsResult.data ?? [])) {
+        parentTypeMap[row.issue_key] = row.issue_type;
+      }
+
+      // ── STEP 5: Assemble final items ──
+      const now = Date.now();
+
+      return baseItems.map(item => {
+        const profile = item.assignee_account_id
+          ? profileMap[item.assignee_account_id]
+          : undefined;
+
+        const assignee_last_login_at = profile?.last_login_at ?? null;
+        const assignee_last_login_days = assignee_last_login_at
+          ? Math.floor((now - new Date(assignee_last_login_at).getTime()) / 86400000)
+          : 0;
+
+        const assignee_is_inactive =
+          (profile?.status != null && profile.status.toLowerCase() !== 'active') ||
+          (assignee_last_login_days > 0 && assignee_last_login_days > 60);
+
+        const days_open = item.jira_created_at
+          ? Math.max(1, Math.floor((now - new Date(item.jira_created_at).getTime()) / 86400000))
+          : 0;
+
+        const fixVer = Array.isArray(item.fix_versions) && item.fix_versions.length > 0
+          ? (item.fix_versions as any[]).map((v: any) => typeof v === 'string' ? v : v?.name || '').filter(Boolean).join(', ')
+          : (typeof item.fix_versions === 'string' ? item.fix_versions : null);
+
+        const parentIssueType = item.parent_key
+          ? (parentTypeMap[item.parent_key] ?? null)
+          : null;
+
+        return {
+          id: item.id,
+          issue_key: item.issue_key || '',
+          issue_type: item.issue_type || 'Task',
+          summary: item.summary || '',
+          status: item.status || '',
+          status_category: item.status_category || '',
+          priority: item.priority || 'medium',
+          jira_created_at: item.jira_created_at || '',
+          jira_updated_at: item.jira_updated_at || '',
+          parent_key: item.parent_key,
+          parent_summary: item.parent_summary ?? null,
+          parent_issue_type: parentIssueType,
+          project_key: item.project_key || '',
+          project_name: item.project_name || '',
+          reporter_account_id: item.reporter_account_id,
+          reporter_display_name: item.reporter_display_name ?? null,
+          assignee_account_id: item.assignee_account_id,
+          assignee_display_name: item.assignee_display_name ?? null,
+          fix_versions: fixVer,
+          comment_count: commentMap[item.id] ?? 0,
+          child_issue_count: childMap[item.issue_key] ?? 0,
+          assignee_status: profile?.status ?? 'active',
+          assignee_last_login_at,
+          assignee_last_login_days,
+          assignee_is_inactive,
+          my_role: item.my_role,
+          days_open,
+          // Compat aliases
+          jira_key: item.issue_key || '',
+          item_type: mapIssueType(item.issue_type || ''),
+          issue_type_raw: item.issue_type || '',
+          reporter_name: item.reporter_display_name ?? null,
+          fixed_versions: fixVer,
+          created_at: item.jira_created_at || '',
+          assignee_is_active: !assignee_is_inactive,
+        } as AgeingItem;
+      });
     },
   });
 }
