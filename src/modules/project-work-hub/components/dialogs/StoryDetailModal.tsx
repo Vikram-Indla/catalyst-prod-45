@@ -79,7 +79,7 @@ interface PhIssue {
   reporter_account_id: string | null;
   reporter_display_name: string | null;
   project_key: string;
-  fix_versions: FixVersion[] | null;
+  fix_versions: any | null;
   labels: string[] | null;
   jira_created_at: string | null;
   jira_updated_at: string | null;
@@ -448,7 +448,7 @@ export default function StoryDetailModal({
       const { data: links } = await supabase
         .from('ph_issue_links')
         .select('id, source_id, target_id, link_type, created_by, created_at')
-        .eq('source_id', itemId)
+        .or(`source_id.eq.${itemId},target_id.eq.${itemId}`)
         .order('created_at', { ascending: false });
       if (!links?.length) return [];
       const targetIds = links.map(l => l.target_id);
@@ -504,7 +504,7 @@ export default function StoryDetailModal({
       const caseIds = links.map(l => l.test_case_id);
       const { data: cases } = await supabase
         .from('tm_test_cases')
-        .select('id, case_key, title, type, status, assignee_id, created_at')
+        .select('id, case_key, title, status, assigned_to, created_at')
         .in('id', caseIds);
       return (cases ?? []) as TmTestCase[];
     },
