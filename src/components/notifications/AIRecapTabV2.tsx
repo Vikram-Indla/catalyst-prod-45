@@ -22,6 +22,41 @@ interface RecapItem {
   project_name?: string;
 }
 
+interface DigestItem {
+  category?: 'recap' | 'suggestion' | 'done';
+  risk_horizon?: 'critical_now' | 'today' | 'this_week' | 'good_news';
+  entity_key?: string | null;
+  cta_path?: string | null;
+  title?: string | null;
+  summary?: string | null;
+  detail?: string | null;
+  body?: string | null;
+  ai_body_text?: string | null;
+  action?: string | null;
+  ai_action_text?: string | null;
+  timestamp?: string | null;
+  trigger?: string | null;
+  actors?: string[] | null;
+  project_name?: string | null;
+}
+
+interface DigestPayload {
+  summary?: string;
+  role_persona?: string;
+  has_critical?: boolean;
+  generated_at?: string;
+  items?: DigestItem[];
+}
+
+interface DigestResponse {
+  digest: DigestPayload | null;
+  cached?: boolean;
+  empty?: boolean;
+  error?: string;
+}
+
+type LoadState = 'loading' | 'generating' | 'ready' | 'empty' | 'error';
+
 const T = {
   primary: 'var(--cp-primary, #2563EB)',
   primaryLight: 'var(--cp-primary-light, #EFF6FF)',
@@ -166,91 +201,147 @@ function SectionBlock({
   );
 }
 
+function parseDigestItems(digest: DigestPayload): RecapItem[] {
+  const rawItems = Array.isArray(digest.items) ? digest.items : [];
+
+  return rawItems.map((item, idx) => {
+    const resolvedKey = item.entity_key || '';
+
+    let category: 'recap' | 'suggestion' | 'done' = 'recap';
+    if (item.category) {
+      category = item.category;
+    } else if (item.risk_horizon === 'good_news') {
+      category = 'done';
+    } else if (item.risk_horizon === 'this_week') {
+      category = 'suggestion';
+    }
+
+    return {
+      id: `ai-${idx}`,
+      category,
+      jira_key: resolvedKey,
+      jira_url: item.cta_path || '#',
+      summary: item.title || item.summary || '',
+      ai_body_text: item.detail || item.body || item.ai_body_text || '',
+      ai_action_text: item.action || item.ai_action_text || '',
+      timestamp: item.timestamp || '',
+      done_text: item.detail || item.trigger || '',
+      actors: item.actors || [],
+      project_name: item.project_name || '',
+    };
+  });
+}
 
 export default function AIRecapTabV2() {
   const [doneOpen, setDoneOpen] = useState(false);
   const [items, setItems] = useState<RecapItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loadState, setLoadState] = useState<LoadState>('loading');
+  const [statusMessage, setStatusMessage] = useState("Loading today's AI recap…");
+  const [reloadToken, setReloadToken] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
-    (async () => {
-      setLoading(true);
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user || cancelled) { setLoading(false); return; }
 
-      // Call the edge function which handles UUID→key resolution server-side
-      let digest: any = null;
-      try {
-        const { data: fnData } = await supabase.functions.invoke('ai-digest', {
+    const loadDigest = async () => {
+      setLoadState('loading');
+      setStatusMessage("Loading today's AI recap…");
+      setItems([]);
+
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user || cancelled) {
+        if (!cancelled) {
+          setLoadState('empty');
+          setStatusMessage('Sign in to load your AI recap.');
+        }
+        return;
+      }
+
+      const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+      let digest: DigestPayload | null = null;
+      let backendReturnedEmpty = false;
+      let lastError = '';
+
+      for (let attempt = 0; attempt < 3 && !digest && !cancelled; attempt++) {
+        if (attempt > 0) {
+          setLoadState('generating');
+          setStatusMessage("Generating today's AI recap…");
+          await sleep(1200);
+          if (cancelled) return;
+        }
+
+        const { data: fnData, error: fnError } = await supabase.functions.invoke<DigestResponse>('ai-digest', {
           method: 'POST',
           body: {},
         });
+
         if (fnData?.digest) {
           digest = fnData.digest;
+          backendReturnedEmpty = !!fnData.empty;
+          break;
         }
-      } catch {
-        // Fallback: read from cache directly
-      }
 
-      // Fallback to cache if edge function failed
-      if (!digest) {
+        backendReturnedEmpty = backendReturnedEmpty || !!fnData?.empty;
+        lastError = fnError?.message || fnData?.error || lastError;
+
         const { data: cacheData } = await supabase
           .from('ai_digest_cache')
           .select('digest_json')
           .eq('user_id', user.id)
           .order('generated_at', { ascending: false })
-          .limit(1);
-        if (cacheData?.length && cacheData[0].digest_json) {
-          digest = cacheData[0].digest_json;
+          .limit(1)
+          .maybeSingle();
+
+        if (cacheData?.digest_json) {
+          digest = cacheData.digest_json as unknown as DigestPayload;
+          break;
         }
       }
 
       if (cancelled) return;
 
-      if (digest) {
-        try {
-          const rawItems: any[] = Array.isArray(digest.items) ? digest.items : [];
-
-          const parsedItems: RecapItem[] = rawItems.map((item: any, idx: number) => {
-            // Use entity_key directly from digest (resolved server-side)
-            const resolvedKey = item.entity_key || '';
-
-            let category: 'recap' | 'suggestion' | 'done' = 'recap';
-            if (item.category) {
-              category = item.category;
-            } else if (item.risk_horizon === 'good_news') {
-              category = 'done';
-            } else if (item.risk_horizon === 'this_week') {
-              category = 'suggestion';
-            }
-
-            return {
-              id: `ai-${idx}`,
-              category,
-              jira_key: resolvedKey,
-              jira_url: item.cta_path || '#',
-              summary: item.title || item.summary || '',
-              ai_body_text: item.detail || item.body || item.ai_body_text || '',
-              ai_action_text: item.action || item.ai_action_text || '',
-              timestamp: item.timestamp || '',
-              done_text: item.detail || item.trigger || '',
-              actors: item.actors || [],
-              project_name: item.project_name || '',
-            };
-          });
-
-          setItems(parsedItems);
-        } catch {
-          setItems([]);
-        }
-      } else {
-        setItems([]);
+      if (!digest) {
+        setLoadState(backendReturnedEmpty ? 'empty' : 'error');
+        setStatusMessage(
+          backendReturnedEmpty
+            ? 'No recap was generated because there were no portfolio signals to summarize yet.'
+            : lastError === 'rate_limited'
+              ? 'AI recap is being rate-limited right now. Please retry in a moment.'
+              : lastError === 'credits_exhausted'
+                ? 'AI recap is temporarily unavailable because AI credits are exhausted.'
+                : 'We could not generate the AI recap right now. Please retry.'
+        );
+        return;
       }
-      setLoading(false);
-    })();
+
+      try {
+        const parsedItems = parseDigestItems(digest);
+        setItems(parsedItems);
+
+        if (parsedItems.length > 0) {
+          setLoadState('ready');
+          setStatusMessage('');
+          return;
+        }
+
+        setLoadState(backendReturnedEmpty ? 'empty' : 'error');
+        setStatusMessage(
+          backendReturnedEmpty
+            ? 'No recap was generated because there were no portfolio signals to summarize yet.'
+            : 'The recap response came back empty, so we are treating it as unavailable instead of pretending there is nothing to show.'
+        );
+      } catch (error) {
+        console.error('[AIRecapTabV2] Failed to parse digest:', error);
+        setItems([]);
+        setLoadState('error');
+        setStatusMessage('We could not finish generating the AI recap yet. Please retry.');
+      }
+    };
+
+    void loadDigest();
     return () => { cancelled = true; };
-  }, []);
+  }, [reloadToken]);
+
+  const handleRetry = () => setReloadToken(value => value + 1);
 
   const recapItems = items.filter(i => i.category === 'recap');
   const suggestionItems = items.filter(i => i.category === 'suggestion');
@@ -278,17 +369,57 @@ export default function AIRecapTabV2() {
         <span style={{ fontSize: 11, color: T.ink4 }}>{dateStr}</span>
       </div>
 
-      {loading ? (
-        <AIRecapSkeleton />
-      ) : items.length === 0 ? (
+      {(loadState === 'loading' || loadState === 'generating') ? (
+        <>
+          <AIRecapSkeleton />
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 8,
+            padding: '6px 18px 18px',
+          }}>
+            <Loader2 size={14} className="animate-spin" style={{ color: T.ink3, flexShrink: 0 }} />
+            <span style={{ fontSize: 12, fontWeight: 500, color: T.ink3 }}>
+              {statusMessage}
+            </span>
+          </div>
+        </>
+      ) : loadState === 'empty' ? (
         <div style={{
           display: 'flex', flexDirection: 'column', alignItems: 'center',
           justifyContent: 'center', padding: '48px 24px', gap: 8,
         }}>
-          <span style={{ fontSize: 13, color: T.ink3 }}>No AI recap available yet</span>
-          <span style={{ fontSize: 11, color: T.ink4, textAlign: 'center' }}>
-            The AI recap will generate automatically based on your portfolio activity
+          <span style={{ fontSize: 13, fontWeight: 650, color: T.ink2 }}>No AI recap generated yet</span>
+          <span style={{
+            fontSize: 12, color: T.ink3, textAlign: 'center',
+            lineHeight: 1.55, maxWidth: 420,
+          }}>
+            {statusMessage}
           </span>
+        </div>
+      ) : loadState === 'error' ? (
+        <div style={{
+          display: 'flex', flexDirection: 'column', alignItems: 'center',
+          justifyContent: 'center', padding: '48px 24px', gap: 10,
+        }}>
+          <span style={{ fontSize: 13, fontWeight: 650, color: T.ink2 }}>AI recap is taking longer than expected</span>
+          <span style={{
+            fontSize: 12, color: T.ink3, textAlign: 'center',
+            lineHeight: 1.55, maxWidth: 420,
+          }}>
+            {statusMessage}
+          </span>
+          <button
+            onClick={handleRetry}
+            style={{
+              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+              padding: '8px 12px', borderRadius: 6,
+              border: `0.75px solid ${T.border}`,
+              background: T.card, color: T.ink2,
+              cursor: 'pointer', fontFamily: 'Inter, sans-serif',
+              fontSize: 12, fontWeight: 600,
+            }}
+          >
+            Retry recap
+          </button>
         </div>
       ) : (
         <>
