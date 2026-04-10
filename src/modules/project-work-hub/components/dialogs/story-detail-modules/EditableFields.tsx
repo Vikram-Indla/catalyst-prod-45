@@ -459,16 +459,13 @@ export function EditableLabels({ issueId, currentLabels, onUpdate }: { issueId: 
 
 /* ── ParentFieldPicker — Jira-parity rebuild ── */
 
-/** Canonical epic icon — lightning bolt on purple rounded square */
-const EPIC_ICON_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><rect fill="#6554C0" width="16" height="16" rx="2"/><path fill="#FFF" d="M11.5 6.5H9.5V3.5C9.5 3.22 9.28 3 9 3H7C6.72 3 6.5 3.22 6.5 3.5V8H4.5C4.22 8 4.08 8.34 4.27 8.54L8.27 12.79C8.46 12.99 8.77 12.99 8.96 12.79L12.73 8.54C12.92 8.34 12.78 8 12.5 8H11.5V6.5Z"/></svg>`;
-
-/** Deterministic color palette for project dots */
-const DOT_COLORS = ['#4C9AFF', '#6554C0', '#36B37E', '#FFAB00', '#FF5630', '#00B8D9', '#FF7452', '#57D9A3'];
-function getDotColor(key: string) {
-  let hash = 0;
-  for (let i = 0; i < key.length; i++) hash = ((hash << 5) - hash + key.charCodeAt(i)) | 0;
-  return DOT_COLORS[Math.abs(hash) % DOT_COLORS.length];
-}
+/** Canonical epic icon — lightning bolt on purple rounded square (Jira parity) */
+const EpicIconInline = ({ size = 16 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 16 16" style={{ flexShrink: 0 }}>
+    <rect fill="#6554C0" width="16" height="16" rx="2"/>
+    <path fill="#FFF" d="M8.39 2L4.5 9h3.11v5L11.5 7H8.39V2z"/>
+  </svg>
+);
 
 export function ParentFieldPicker({ storyKey, parentKey, projectKey, onParentChange }: {
   storyKey: string; parentKey: string | null; projectKey: string;
