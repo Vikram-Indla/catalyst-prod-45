@@ -155,12 +155,14 @@ export default function StoryDetailModal({
   const [localPriority, setLocalPriority] = useState<string>('');
   const [showStatusDropdown, setShowStatusDropdown] = useState(false);
   const [showAddMenu, setShowAddMenu] = useState(false);
+  const [showAiMenu, setShowAiMenu] = useState(false);
   const [showDotsMenu, setShowDotsMenu] = useState(false);
   const [acceptanceCriteria, setAcceptanceCriteria] = useState('');
   const [titleFocused, setTitleFocused] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const addMenuRef = useRef<HTMLDivElement>(null);
+  const aiMenuRef = useRef<HTMLDivElement>(null);
   const descriptionRef = useRef<HTMLDivElement>(null);
   const statusDropdownRef = useRef<HTMLDivElement>(null);
   const dotsMenuRef = useRef<HTMLDivElement>(null);
@@ -200,6 +202,7 @@ export default function StoryDetailModal({
     const h = (e: MouseEvent) => {
       if (aiDropRef.current && !aiDropRef.current.contains(e.target as Node)) setAiDropOpen(false);
       if (addMenuRef.current && !addMenuRef.current.contains(e.target as Node)) setShowAddMenu(false);
+      if (aiMenuRef.current && !aiMenuRef.current.contains(e.target as Node)) setShowAiMenu(false);
       if (statusDropdownRef.current && !statusDropdownRef.current.contains(e.target as Node)) setShowStatusDropdown(false);
       if (dotsMenuRef.current && !dotsMenuRef.current.contains(e.target as Node)) setShowDotsMenu(false);
     };
@@ -538,15 +541,49 @@ export default function StoryDetailModal({
                         </div>
                       )}
                     </div>
-                    <button onClick={() => { setAiPanelOpen(o => !o); setAiOutput(null); setAiError(null); }} style={{
-                      width: 28, height: 28, border: '1px solid #DFE1E6', background: '#FAFBFC',
-                      borderRadius: 4, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      color: '#5E6C84', transition: 'background 0.15s',
-                    }}
-                      onMouseEnter={e => { e.currentTarget.style.background = '#EBECF0'; }}
-                      onMouseLeave={e => { e.currentTarget.style.background = '#FAFBFC'; }}
-                      title="AI Improve Story"
-                    ><Sparkles size={14} /></button>
+                    <div ref={aiMenuRef} style={{ position: 'relative' }}>
+                      <button onClick={() => setShowAiMenu(o => !o)} style={{
+                        width: 28, height: 28, border: '1px solid #DFE1E6', background: '#FAFBFC',
+                        borderRadius: 4, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        color: '#5E6C84', transition: 'background 0.15s',
+                      }}
+                        onMouseEnter={e => { e.currentTarget.style.background = '#EBECF0'; }}
+                        onMouseLeave={e => { e.currentTarget.style.background = '#FAFBFC'; }}
+                        title="Catalyst Intelligence"
+                      ><Sparkles size={14} /></button>
+                      {showAiMenu && (
+                        <div style={{
+                          position: 'absolute', left: 0, top: 34, background: '#FFF',
+                          border: '1px solid #DFE1E6', borderRadius: 8,
+                          boxShadow: '0 8px 28px rgba(9,30,66,0.22)', padding: '12px 0 8px',
+                          zIndex: 50, minWidth: 280, animation: 'sdm-slide-down 0.15s ease',
+                        }}>
+                          <div style={{ padding: '0 16px 10px', fontSize: 11, fontWeight: 700, color: '#6B778C', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                            Catalyst Intelligence
+                          </div>
+                          {[
+                            { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5E6C84" strokeWidth="1.8"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>, label: 'Improve description', action: () => { setShowAiMenu(false); setAiPanelOpen(true); setAiOutput(null); setAiError(null); } },
+                            { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5E6C84" strokeWidth="1.8"><rect x="2" y="3" width="20" height="18" rx="2"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="11" x2="16" y2="11"/><line x1="8" y1="15" x2="12" y2="15"/></svg>, label: 'Summarize comments', action: () => { setShowAiMenu(false); toast.info('Summarize comments — coming soon'); } },
+                            { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5E6C84" strokeWidth="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/><path d="M13 8h4"/><path d="M13 12h4"/><path d="M13 16h2"/></svg>, label: 'Suggest child work items', action: () => { setShowAiMenu(false); const el = document.querySelector('[data-section="child-issues"]'); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' }); toast.info('Use the AI suggest bar in Child Issues section below'); } },
+                            { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5E6C84" strokeWidth="1.8"><path d="M9 17H7A5 5 0 0 1 7 7h2"/><path d="M15 7h2a5 5 0 1 1 0 10h-2"/><line x1="8" y1="12" x2="16" y2="12"/></svg>, label: 'Link similar work items', action: () => { setShowAiMenu(false); const el = document.querySelector('[data-section="linked-issues"]'); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' }); toast.info('Use the AI link bar in Linked Issues section below'); } },
+                          ].map((item, i) => (
+                            <button key={i} onClick={item.action} style={{
+                              display: 'flex', alignItems: 'center', gap: 12,
+                              width: '100%', padding: '10px 16px', border: 'none',
+                              background: 'transparent', cursor: 'pointer',
+                              fontSize: 14, color: '#172B4D', fontFamily: 'inherit',
+                              textAlign: 'left', transition: 'background 0.1s',
+                            }}
+                              onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
+                              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                            >
+                              {item.icon}
+                              {item.label}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   </div>
 
                   {/* AI IMPROVE PANEL */}
