@@ -169,13 +169,13 @@
 [data-theme="dark"] .pb-table thead,
 [data-theme="dark"] .pb-table thead tr,
 [data-theme="dark"] .pb-table thead th {
-  background-color: #1F1F1F !important;
+  background-color: #0A0A0A !important;
   color: #7D7D7D;
   border-bottom-color: #2E2E2E;
 }
 .dark .pb-table thead th:hover,
 [data-theme="dark"] .pb-table thead th:hover {
-  background-color: #292929 !important;
+  color: #A1A1A1;
 }
 .dark .pb-table tbody,
 .dark .pb-table tbody tr,
@@ -426,7 +426,7 @@
 }
 .pb-table thead,
 .pb-table thead tr {
-  background-color: var(--cp-bg-sunken) !important;
+  background-color: var(--cp-bg-page) !important;
 }
 .pb-table thead th {
   position: sticky;
@@ -434,21 +434,21 @@
   z-index: 10;
   height: 40px;
   padding: 0 12px;
-  background-color: var(--cp-bg-sunken) !important;
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--cp-text-muted);
+  background-color: var(--cp-bg-page) !important;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: normal;
+  color: #44546F;
   text-align: start;
   white-space: nowrap;
-  border-bottom: 0.75px solid var(--cp-border-default);
+  border-bottom: 1px solid rgba(11, 18, 14, 0.14);
   cursor: pointer;
   user-select: none;
   transition: background var(--cp-duration-instant) var(--cp-easing-standard);
 }
 .pb-table thead th:hover {
-  background-color: var(--cp-interact-hover) !important;
+  color: #172B4D;
 }
 /* V12: 36px rows, 0.75px dividers, rgba hover */
 .pb-table tbody,
