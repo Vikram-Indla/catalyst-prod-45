@@ -506,7 +506,8 @@ export function AllProjectsTable({
     <div className="overflow-x-auto" style={{ borderRadius: 0 }}>
       <table className="pb-table">
         <colgroup>
-          <col style={{ width: 48 }} />
+          <col style={{ width: 40 }} />
+          <col style={{ width: 36 }} />
           <col style={{ width: 100 }} />
           <col style={{ width: 'auto', minWidth: 260 }} />
           <col style={{ width: 110 }} />
@@ -518,6 +519,7 @@ export function AllProjectsTable({
         <thead>
           <tr>
             <th className="text-center">#</th>
+            <th />
             <th>PROJECT KEY</th>
             <th>PROJECT NAME</th>
             <th>STATUS</th>
@@ -554,35 +556,29 @@ export function AllProjectsTable({
                   pointerEvents: active ? 'auto' : 'none',
                 }}
               >
-                {/* # / Checkbox */}
-                <td className="text-center" style={{ overflow: 'hidden' }}>
-                  <span className="group-hover:hidden text-xs text-slate-400 dark:text-[#878787] tabular-nums">
+                {/* # */}
+                <td className="text-center">
+                  <span className="text-xs text-slate-400 dark:text-[#878787] tabular-nums">
                     {rowNum}
                   </span>
-                  <input
-                    type="checkbox"
-                    checked={checked}
-                    onChange={() => onToggleRow(p.id)}
-                    className="hidden group-hover:inline"
-                    style={{ width: 16, height: 16, cursor: 'pointer', pointerEvents: 'auto' }}
-                    onClick={e => e.stopPropagation()}
-                  />
+                </td>
+
+                {/* Star */}
+                <td className="text-center">
+                  <button
+                    onClick={e => { e.stopPropagation(); onToggleFav(p.id, isFav); }}
+                    className="bg-transparent border-none cursor-pointer p-0 outline-none rounded flex-shrink-0"
+                    style={{ pointerEvents: 'auto' }}
+                  >
+                    <Star size={14} fill={isFav ? '#F59E0B' : 'none'} className={isFav ? 'text-amber-500' : 'text-slate-300 dark:text-[#878787]'} />
+                  </button>
                 </td>
 
                 {/* PROJECT KEY */}
                 <td>
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={e => { e.stopPropagation(); onToggleFav(p.id, isFav); }}
-                      className="bg-transparent border-none cursor-pointer p-0 outline-none rounded flex-shrink-0"
-                      style={{ pointerEvents: 'auto' }}
-                    >
-                      <Star size={14} fill={isFav ? '#F59E0B' : 'none'} className={isFav ? 'text-amber-500' : 'text-slate-300 dark:text-[#878787]'} />
-                    </button>
-                    <span className="font-mono text-[11px] font-bold tracking-wide text-white px-1.5 py-0.5 rounded" style={{ background: badgeColor }}>
-                      {badgeText}
-                    </span>
-                  </div>
+                  <span className="font-mono text-[11px] font-bold tracking-wide text-white px-1.5 py-0.5 rounded" style={{ background: badgeColor }}>
+                    {badgeText}
+                  </span>
                 </td>
 
                 {/* PROJECT NAME */}
