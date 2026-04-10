@@ -56,6 +56,18 @@ const PRIORITY_SVG: Record<string, React.ReactNode> = {
   ),
 };
 
+/* ── Avatar helper — prioritises real image ── */
+function AvatarCircle({ userId, name, avatarUrl, size = 28 }: { userId: string; name: string; avatarUrl?: string | null; size?: number }) {
+  if (avatarUrl) {
+    return <img src={avatarUrl} alt={name} style={{ width: size, height: size, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />;
+  }
+  return (
+    <div style={{ width: size, height: size, borderRadius: '50%', background: getAvatarColor(userId), display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: Math.round(size * 0.39), fontWeight: 700, color: '#fff', flexShrink: 0 }}>
+      {name.charAt(0).toUpperCase()}
+    </div>
+  );
+}
+
 /* ── EditableAssignee ──────────────────────── */
 export function EditableAssignee({ issueId, projectId, currentAssigneeId, currentAssigneeName, onUpdate }: {
   issueId: string; projectId: string; currentAssigneeId: string | null; currentAssigneeName: string | null; onUpdate: () => void;
@@ -78,6 +90,18 @@ export function EditableAssignee({ issueId, projectId, currentAssigneeId, curren
     enabled: open,
   });
 
+  // Fetch current assignee's avatar_url for the trigger display
+  const { data: assigneeProfile } = useQuery({
+    queryKey: ['profile-avatar', currentAssigneeId],
+    queryFn: async () => {
+      if (!currentAssigneeId) return null;
+      const { data } = await supabase.from('profiles').select('avatar_url').eq('id', currentAssigneeId).single();
+      return data;
+    },
+    enabled: !!currentAssigneeId,
+    staleTime: 60000,
+  });
+
   const updateMutation = useMutation({
     mutationFn: async (userId: string | null) => {
       const { error } = await supabase.from('ph_issues').update({
@@ -96,7 +120,6 @@ export function EditableAssignee({ issueId, projectId, currentAssigneeId, curren
   }, [open]);
 
   const filtered = members.filter(m => m.full_name.toLowerCase().includes(search.toLowerCase()));
-  const avatarColor = currentAssigneeId ? getAvatarColor(currentAssigneeId) : '#8993A4';
 
   return (
     <div ref={ref} style={{ flex: 1, position: 'relative' }}>
@@ -110,7 +133,7 @@ export function EditableAssignee({ issueId, projectId, currentAssigneeId, curren
       >
         {currentAssigneeName ? (
           <>
-            <div style={{ width: 28, height: 28, borderRadius: '50%', background: avatarColor, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, color: '#fff', flexShrink: 0 }}>{currentAssigneeName.charAt(0).toUpperCase()}</div>
+            <AvatarCircle userId={currentAssigneeId!} name={currentAssigneeName} avatarUrl={assigneeProfile?.avatar_url} />
             <span style={{ fontSize: 14, color: '#172B4D', fontWeight: 400 }}>{currentAssigneeName}</span>
           </>
         ) : (
@@ -154,7 +177,7 @@ export function EditableAssignee({ issueId, projectId, currentAssigneeId, curren
                 onMouseEnter={e => { if (m.user_id !== currentAssigneeId) (e.currentTarget as HTMLElement).style.background = '#F4F5F7'; }}
                 onMouseLeave={e => { if (m.user_id !== currentAssigneeId) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
               >
-                <div style={{ width: 28, height: 28, borderRadius: '50%', flexShrink: 0, background: getAvatarColor(m.user_id), display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, color: '#FFFFFF' }}>{m.full_name.charAt(0).toUpperCase()}</div>
+                <AvatarCircle userId={m.user_id} name={m.full_name} avatarUrl={m.avatar_url} />
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontSize: 14, fontWeight: 400, color: '#172B4D', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{m.full_name}</div>
                 </div>
