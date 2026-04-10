@@ -992,7 +992,17 @@ export default function StoryDetailModal({
                   </div>
 
                   {/* 2. TITLE */}
-                  <h1 style={{ fontFamily: 'Sora, sans-serif', fontSize: 20, fontWeight: 700, color: '#101828', lineHeight: 1.3, letterSpacing: '-0.01em', margin: '0 0 4px' }}>{issue?.summary ?? '—'}</h1>
+                  <h1
+                    contentEditable
+                    suppressContentEditableWarning
+                    onBlur={e => {
+                      const newTitle = e.currentTarget.textContent?.trim() ?? '';
+                      if (newTitle && newTitle !== issue?.summary) {
+                        updateFieldMutation.mutate({ field: 'summary', value: newTitle, oldValue: issue?.summary ?? '' });
+                      }
+                    }}
+                    style={{ fontFamily: 'Sora, sans-serif', fontSize: 20, fontWeight: 700, color: '#101828', lineHeight: 1.3, letterSpacing: '-0.01em', margin: '0 0 4px', outline: 'none', cursor: 'text', borderRadius: 4 }}
+                  >{issue?.summary ?? '—'}</h1>
 
                   {/* 3. ARABIC SUBTITLE */}
                   {issue?.description_text && (
