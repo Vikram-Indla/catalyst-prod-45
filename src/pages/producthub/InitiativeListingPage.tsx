@@ -22,6 +22,7 @@ import { ColumnManager, DEFAULT_COLUMNS, type ColumnConfig } from '@/components/
 import type { GroupByField } from '@/components/producthub/listing/ListingToolbar';
 import { ExportDropdown } from '@/components/producthub/listing/ExportDropdown';
 import { catalystToast } from '@/lib/catalystToast';
+import { JiraBulkActionBar } from '@/components/shared/JiraBulkActionBar';
 
 import type { Initiative, InitiativeStatus, Density } from '@/types/initiative';
 import { getPriorityLevel } from '@/types/initiative';
