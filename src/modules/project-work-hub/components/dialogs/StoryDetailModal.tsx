@@ -1586,6 +1586,25 @@ export default function StoryDetailModal({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const descriptionRef = useRef<HTMLDivElement>(null);
 
+  // AI Improve Story state
+  const [aiPanelOpen, setAiPanelOpen] = useState(false);
+  const [aiImproveType, setAiImproveType] = useState<AIImproveType>('improve_clarify');
+  const [aiDropOpen, setAiDropOpen] = useState(false);
+  const [aiFocusHint, setAiFocusHint] = useState('');
+  const [aiGenerating, setAiGenerating] = useState(false);
+  const [aiOutput, setAiOutput] = useState<AIOutput | null>(null);
+  const [aiError, setAiError] = useState<string | null>(null);
+  const [aiEdited, setAiEdited] = useState(false);
+  const aiDropRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const h = (e: MouseEvent) => {
+      if (aiDropRef.current && !aiDropRef.current.contains(e.target as Node)) setAiDropOpen(false);
+    };
+    document.addEventListener('mousedown', h);
+    return () => document.removeEventListener('mousedown', h);
+  }, []);
+
   useEffect(() => {
     if (issue) {
       setLocalStatus(issue.status);
