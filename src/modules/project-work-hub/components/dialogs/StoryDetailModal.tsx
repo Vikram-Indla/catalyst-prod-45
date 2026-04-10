@@ -483,10 +483,10 @@ export default function StoryDetailModal({
     queryFn: async () => {
       const { data } = await supabase
         .from('ph_activity_log')
-        .select('*, actor:profiles!ph_activity_log_user_id_fkey(id, full_name, avatar_url, email)')
+        .select('id, work_item_id, action, field_name, old_value, new_value, user_id, metadata, created_at')
         .eq('work_item_id', itemId)
         .order('created_at', { ascending: false });
-      return (data ?? []) as PhActivityLog[];
+      return (data ?? []) as unknown as PhActivityLog[];
     },
   });
 
