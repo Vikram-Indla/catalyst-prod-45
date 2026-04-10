@@ -10,8 +10,8 @@ import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 import {
   X, ChevronDown, ChevronRight, Plus, Paperclip,
-  ExternalLink, Share2, Pencil, Search, MessageSquare, Clock,
-  GripVertical, Edit2, Link2, Trash2, Check,
+  ExternalLink, Share2, Search, MessageSquare, Clock,
+  GripVertical, Link2, Trash2, Check,
   Eye, EyeOff, Sparkles, Loader2, RotateCcw, Settings2, AlertTriangle,
 } from 'lucide-react';
 
