@@ -322,15 +322,6 @@ export default function StoryDetailModal({
     toast.success('Acceptance criteria updated by AI');
   }, [itemId, queryClient]);
 
-  const handleAiGenerate = useCallback(async () => {
-    if (aiGenerating) return;
-    if (aiEdited && aiOutput) {
-      setShowAiRegenConfirm(true);
-      return;
-    }
-    doAiGenerate();
-  }, [aiGenerating, aiEdited, aiOutput]);
-
   const doAiGenerate = useCallback(async () => {
     setAiGenerating(true); setAiError(null); setAiOutput(null); setAiEdited(false); setShowAiRegenConfirm(false);
     try {
@@ -350,7 +341,16 @@ export default function StoryDetailModal({
     } catch {
       setAiError('AI features temporarily unavailable. Try again.');
     } finally { setAiGenerating(false); }
-  }, [aiGenerating, aiEdited, aiOutput, aiImproveType, aiFocusHint, itemId, issue, acceptanceCriteria]);
+  }, [aiImproveType, aiFocusHint, itemId, issue, acceptanceCriteria]);
+
+  const handleAiGenerate = useCallback(async () => {
+    if (aiGenerating) return;
+    if (aiEdited && aiOutput) {
+      setShowAiRegenConfirm(true);
+      return;
+    }
+    doAiGenerate();
+  }, [aiGenerating, aiEdited, aiOutput, doAiGenerate]);
 
   const handleParentChange = useCallback(async (newParentKey: string | null) => {
     await supabase.from('ph_issues').update({ parent_key: newParentKey }).eq('id', itemId);
