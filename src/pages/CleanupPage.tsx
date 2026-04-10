@@ -17,6 +17,7 @@ import {
   CheckCircle, Bell, MessageSquare, Ghost, User, UserCheck, Folder, Tag,
   LayoutGrid, List as ListIcon,
 } from 'lucide-react';
+import { JiraIssueTypeIcon } from '@/components/shared/JiraIssueTypeIcon';
 import {
   Dialog, DialogContent,
 } from '@/components/ui/dialog';
