@@ -88,36 +88,16 @@ export function useAgeingItems() {
     queryFn: async (): Promise<AgeingItem[]> => {
       if (!myJiraId) return [];
 
-      // Q1 + Q2: base queries in parallel
-      const [assigneeResult, reporterResult] = await Promise.all([
-        supabase
-          .from("ph_issues")
-          .select(BASE_SELECT)
-          .eq("assignee_account_id", myJiraId)
-          .is("deleted_at", null),
-        supabase
-          .from("ph_issues")
-          .select(BASE_SELECT)
-          .eq("reporter_account_id", myJiraId)
-          .neq("assignee_account_id", myJiraId)
-          .is("deleted_at", null),
-      ]);
+      // Single ownership query — assignee only, no reporter fallback
+      const { data: rawItems, error } = await supabase
+        .from("ph_issues")
+        .select(BASE_SELECT)
+        .eq("assignee_account_id", myJiraId)
+        .is("deleted_at", null);
 
-      const q1Items = (assigneeResult.data ?? []).map(i => ({ ...i, my_role: 'assignee' as const }));
-      const q2Items = (reporterResult.data ?? []).map(i => ({ ...i, my_role: 'reporter' as const }));
+      if (error) throw error;
 
-      console.log('[useAgeingItems] Q1 assignee items:', q1Items.length);
-      console.log('[useAgeingItems] Q2 reporter items:', q2Items.length);
-
-      // Dedup — assignee wins over reporter
-      const seen = new Set<string>();
-      const deduped = [...q1Items, ...q2Items].filter(item => {
-        if (seen.has(item.id)) return false;
-        seen.add(item.id);
-        return true;
-      });
-
-      console.log('[useAgeingItems] Total after dedup:', deduped.length);
+      const deduped = (rawItems ?? []).map(i => ({ ...i, my_role: 'assignee' as const }));
 
       if (deduped.length === 0) return [];
 
