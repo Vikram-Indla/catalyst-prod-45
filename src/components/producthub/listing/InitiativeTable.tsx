@@ -330,14 +330,20 @@ export function InitiativeTable({
                             onTouchStart={header.getResizeHandler()}
                             onDoubleClick={() => header.column.resetSize()}
                             onClick={(e) => e.stopPropagation()}
+                            className="group/resize"
                             style={{
-                              position: 'absolute', right: -4, top: 0, bottom: 0, width: 10,
+                              position: 'absolute', right: -3, top: 0, bottom: 0, width: 7,
                               cursor: 'col-resize', userSelect: 'none', touchAction: 'none',
-                              background: header.column.getIsResizing() ? 'var(--pb-primary)' : undefined,
                               zIndex: 20,
                             }}
-                            className="hover:bg-blue-400"
-                          />
+                          >
+                            <div style={{
+                              position: 'absolute', left: 3, top: 4, bottom: 4,
+                              width: 1, borderRadius: 1,
+                              background: header.column.getIsResizing() ? '#93C5FD' : 'transparent',
+                              transition: 'background 120ms',
+                            }} className="group-hover/resize:!bg-slate-300" />
+                          </div>
                         )}
                       </th>
                     );
