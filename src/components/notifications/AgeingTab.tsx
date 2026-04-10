@@ -564,6 +564,43 @@ export default function AgeingTab() {
         </div>
       )}
 
+      {/* Dynamic Governance Caution Banner */}
+      {!loading && govData && govData.ragStatus === 'amber' && (
+        <div style={{
+          display: 'flex', alignItems: 'flex-start', gap: 8,
+          padding: '8px 14px',
+          background: '#FFFBEB', borderBottom: '1px solid #FDE68A',
+          fontSize: 11, color: '#92400E', fontFamily: 'Inter, sans-serif',
+          lineHeight: 1.5,
+        }}>
+          <span style={{ flexShrink: 0 }}>⚠</span>
+          <span>
+            <strong>{govData.staleCount} aging items</strong> assigned to you.
+            Address them before they reach governance breach.
+          </span>
+        </div>
+      )}
+      {!loading && govData && govData.ragStatus === 'red' && (
+        <div style={{
+          display: 'flex', alignItems: 'flex-start', gap: 8,
+          padding: '8px 14px',
+          background: '#FFF1F2', borderBottom: '1px solid #FECDD3',
+          fontSize: 11, color: '#9F1239', fontFamily: 'Inter, sans-serif',
+          lineHeight: 1.5,
+        }}>
+          <span style={{ flexShrink: 0 }}>⚑</span>
+          <span>
+            Governance breach — <strong>{govData.staleCount} aging items</strong>, {govData.breachStreak} day streak.{' '}
+            <span
+              onClick={() => navigate('/cleanup')}
+              style={{ color: '#2563EB', cursor: 'pointer', fontWeight: 650 }}
+            >
+              Open AI Cleanup →
+            </span>
+          </span>
+        </div>
+      )}
+
       {/* Table */}
       <div
         ref={scrollRef}
