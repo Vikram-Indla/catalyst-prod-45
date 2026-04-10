@@ -534,7 +534,7 @@ export default function AgeingTab({ onClose }: { onClose?: () => void }) {
         }}>
           <span style={{ flexShrink: 0, fontSize: 14, color: '#92400E' }}>!</span>
           <span>
-            <strong>{govData.staleCount} aging items</strong> assigned to you.
+            <strong>{items.length} aging items</strong> assigned to you.
             Address them before they reach governance breach.
           </span>
         </div>
@@ -549,7 +549,7 @@ export default function AgeingTab({ onClose }: { onClose?: () => void }) {
         }}>
           <span style={{ flexShrink: 0, fontSize: 14, color: '#9F1239' }}>!</span>
           <span>
-            Governance breach — <strong>{govData.staleCount} aging items</strong>, {govData.breachStreak} day streak.{' '}
+            Governance breach — <strong>{items.length} aging items</strong>, {govData.breachStreak} day streak.{' '}
             <span
               onClick={handleGoToCleanup}
               style={{ color: '#2563EB', cursor: 'pointer', fontWeight: 650 }}
