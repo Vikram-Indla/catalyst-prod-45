@@ -13,7 +13,7 @@ import { useAgeingItems, type AgeingItem } from '@/hooks/useAgeingItems';
 import { toast } from 'sonner';
 import {
   ChevronDown, ChevronUp, ChevronRight,
-  AlertTriangle, GitBranch, UserX, Link2, ShieldOff, Copy, AlertCircle,
+  AlertTriangle, Clock, GitBranch, UserX, Link2, ShieldOff, Copy, AlertCircle,
   CheckCircle, Bell, MessageSquare, Ghost,
   LayoutGrid, List as ListIcon,
 } from 'lucide-react';
