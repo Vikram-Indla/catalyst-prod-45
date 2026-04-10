@@ -254,7 +254,7 @@ export default function StoryDetailView({ projectId, projectKey, itemId }: Story
                             </button>
                           </>
                         ) : (
-                          <span style={{ fontStyle: 'italic', color: '#6B6E76' }}>None — Add parent</span>
+                          <span style={{ color: '#6B6E76' }}>None</span>
                         )}
                         <ChevronDown size={14} style={{ marginLeft: story.parentEpic ? 0 : 'auto', color: '#6B6E76', flexShrink: 0 }} />
                       </button>
