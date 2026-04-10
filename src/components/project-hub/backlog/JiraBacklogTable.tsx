@@ -122,7 +122,7 @@ export function JiraBacklogTable({ issues, title, showParent = false }: Props) {
             ) : filtered.map(issue => {
               const statusStyle = getStatusStyle(issue.status_category);
               return (
-                <tr key={issue.issue_key} className="border-b border-border/50 hover:bg-muted/30 transition-colors h-[44px]">
+                <tr key={issue.issue_key} className="group border-b border-border/50 hover:bg-muted/30 transition-colors h-[44px]">
                   <td className="px-3 py-1.5">
                     <span className="text-xs font-mono font-medium text-primary">{issue.issue_key}</span>
                   </td>
