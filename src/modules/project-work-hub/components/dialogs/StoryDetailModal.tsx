@@ -13,7 +13,9 @@ import {
   ExternalLink, Share2, Search, MessageSquare, Clock,
   GripVertical, Link2, Trash2, Check,
   Eye, EyeOff, Sparkles, Loader2, RotateCcw, Settings2, AlertTriangle,
+  SquarePen,
 } from 'lucide-react';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 // Ring-fenced CSS for extension components
 import './story-detail-extensions.css';
@@ -104,6 +106,23 @@ export default function StoryDetailModal({
     },
   });
 
+  // Epic candidates for "Add parent" breadcrumb dropdown
+  const { data: recentEpics = [] } = useQuery({
+    queryKey: ['ph-recent-epics', issue?.project_key],
+    enabled: !!issue?.project_key && !issue?.parent_key,
+    queryFn: async () => {
+      const { data } = await supabase.from('ph_issues')
+        .select('id, issue_key, summary, issue_type, status_category')
+        .eq('project_key', issue!.project_key)
+        .in('issue_type', ['Epic', 'epic', 'Feature', 'feature'])
+        .not('status_category', 'eq', 'done')
+        .order('summary')
+        .limit(5);
+      return data || [];
+    },
+    staleTime: 60000,
+  });
+
   // Fetch reporter avatar — resolve via jira_identity_map (assignee_account_id is a Jira ID, not a Catalyst UUID)
   const { data: reporterProfile } = useQuery({
     queryKey: ['profile-avatar-jira', issue?.reporter_account_id],
@@ -183,6 +202,7 @@ export default function StoryDetailModal({
   const [showAddMenu, setShowAddMenu] = useState(false);
   const [showAiMenu, setShowAiMenu] = useState(false);
   const [showDotsMenu, setShowDotsMenu] = useState(false);
+  const [addParentBreadcrumbOpen, setAddParentBreadcrumbOpen] = useState(false);
   const [acceptanceCriteria, setAcceptanceCriteria] = useState('');
   const [titleFocused, setTitleFocused] = useState(false);
   const [commentSummary, setCommentSummary] = useState<string | null>(null);
@@ -519,7 +539,62 @@ export default function StoryDetailModal({
                   >{issue.parent_key}</span>
                 </>
               ) : (
-                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 500, color: '#5E6C84' }}>{issue?.project_key ?? projectKey}</span>
+                <Popover open={addParentBreadcrumbOpen} onOpenChange={setAddParentBreadcrumbOpen}>
+                  <PopoverTrigger asChild>
+                    <button
+                      style={{
+                        background: 'none', border: '1px solid transparent', borderRadius: 4, cursor: 'pointer',
+                        padding: '2px 6px', display: 'inline-flex', alignItems: 'center', gap: 4,
+                        fontSize: 13, fontWeight: 500, color: '#1868DB', transition: 'border-color 150ms, background 150ms',
+                      }}
+                      onMouseEnter={e => { e.currentTarget.style.borderColor = '#DEEBFF'; e.currentTarget.style.background = '#F4F5F7'; }}
+                      onMouseLeave={e => { e.currentTarget.style.borderColor = 'transparent'; e.currentTarget.style.background = 'none'; }}
+                    >
+                      <SquarePen size={13} />
+                      Add parent
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent align="start" sideOffset={4} style={{ width: 380, padding: 0, borderRadius: 8, boxShadow: '0 8px 16px rgba(0,0,0,0.12), 0 0 1px rgba(0,0,0,0.12)' }}>
+                    <div style={{ padding: '10px 16px 6px', fontSize: 11, fontWeight: 700, color: '#6B778C', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
+                      Recent epics
+                    </div>
+                    <div style={{ maxHeight: 260, overflowY: 'auto' }}>
+                      {recentEpics.map((epic: any) => (
+                        <button
+                          key={epic.id}
+                          onClick={() => { handleParentChange(epic.issue_key); setAddParentBreadcrumbOpen(false); }}
+                          style={{
+                            width: '100%', padding: '8px 16px', border: 'none', background: 'transparent',
+                            textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
+                            fontSize: 14, color: '#172B4D', transition: 'background 100ms',
+                          }}
+                          onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
+                          onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                        >
+                          <IssueIcon type="Epic" size={16} />
+                          <span>{epic.issue_key} {epic.summary}</span>
+                        </button>
+                      ))}
+                      {recentEpics.length === 0 && (
+                        <div style={{ padding: '12px 16px', fontSize: 13, color: '#6B778C' }}>No epics found</div>
+                      )}
+                    </div>
+                    <div style={{ borderTop: '1px solid #EBECF0' }}>
+                      <button
+                        onClick={() => { setAddParentBreadcrumbOpen(false); /* scroll to parent field */ }}
+                        style={{
+                          width: '100%', padding: '10px 16px', border: 'none', background: 'transparent',
+                          textAlign: 'left', cursor: 'pointer', fontSize: 14, color: '#172B4D', fontWeight: 500,
+                          transition: 'background 100ms',
+                        }}
+                        onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
+                        onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                      >
+                        View all epics
+                      </button>
+                    </div>
+                  </PopoverContent>
+                </Popover>
               )}
               <span style={{ color: '#C1C7D0', fontSize: 12 }}>/</span>
               <IssueIcon type={issue?.issue_type ?? 'Story'} size={14} />
