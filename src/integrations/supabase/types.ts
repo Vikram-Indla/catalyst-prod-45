@@ -1473,9 +1473,14 @@ export type Database = {
       catalyst_issues: {
         Row: {
           assignee_id: string | null
+          closure_method: string | null
           created_at: string | null
           description: string | null
           description_adf_raw: Json | null
+          force_close_reason: string | null
+          force_closed_at: string | null
+          force_closed_by: string | null
+          governance_category: number | null
           id: string
           issue_key: string
           issue_type: string
@@ -1485,6 +1490,7 @@ export type Database = {
           project_id: string
           release_id: string | null
           reporter_id: string | null
+          restore_deadline: string | null
           sprint_name: string | null
           status: string
           story_points: number | null
@@ -1495,9 +1501,14 @@ export type Database = {
         }
         Insert: {
           assignee_id?: string | null
+          closure_method?: string | null
           created_at?: string | null
           description?: string | null
           description_adf_raw?: Json | null
+          force_close_reason?: string | null
+          force_closed_at?: string | null
+          force_closed_by?: string | null
+          governance_category?: number | null
           id?: string
           issue_key: string
           issue_type?: string
@@ -1507,6 +1518,7 @@ export type Database = {
           project_id: string
           release_id?: string | null
           reporter_id?: string | null
+          restore_deadline?: string | null
           sprint_name?: string | null
           status?: string
           story_points?: number | null
@@ -1517,9 +1529,14 @@ export type Database = {
         }
         Update: {
           assignee_id?: string | null
+          closure_method?: string | null
           created_at?: string | null
           description?: string | null
           description_adf_raw?: Json | null
+          force_close_reason?: string | null
+          force_closed_at?: string | null
+          force_closed_by?: string | null
+          governance_category?: number | null
           id?: string
           issue_key?: string
           issue_type?: string
@@ -1529,6 +1546,7 @@ export type Database = {
           project_id?: string
           release_id?: string | null
           reporter_id?: string | null
+          restore_deadline?: string | null
           sprint_name?: string | null
           status?: string
           story_points?: number | null
@@ -10369,6 +10387,95 @@ export type Database = {
           },
         ]
       }
+      governance_closure_log: {
+        Row: {
+          closed_at: string | null
+          closed_by: string | null
+          closure_reason: string | null
+          governance_category: number | null
+          id: string
+          issue_id: string | null
+          item_key: string
+          metadata: Json | null
+          reporter_notified: boolean | null
+          restore_deadline: string | null
+          restored_at: string | null
+          restored_by: string | null
+          stale_days: number | null
+        }
+        Insert: {
+          closed_at?: string | null
+          closed_by?: string | null
+          closure_reason?: string | null
+          governance_category?: number | null
+          id?: string
+          issue_id?: string | null
+          item_key: string
+          metadata?: Json | null
+          reporter_notified?: boolean | null
+          restore_deadline?: string | null
+          restored_at?: string | null
+          restored_by?: string | null
+          stale_days?: number | null
+        }
+        Update: {
+          closed_at?: string | null
+          closed_by?: string | null
+          closure_reason?: string | null
+          governance_category?: number | null
+          id?: string
+          issue_id?: string | null
+          item_key?: string
+          metadata?: Json | null
+          reporter_notified?: boolean | null
+          restore_deadline?: string | null
+          restored_at?: string | null
+          restored_by?: string | null
+          stale_days?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "governance_closure_log_issue_id_fkey"
+            columns: ["issue_id"]
+            isOneToOne: false
+            referencedRelation: "catalyst_issues"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      governance_score: {
+        Row: {
+          breach_streak_days: number | null
+          created_at: string | null
+          id: string
+          rag_status: string | null
+          scan_date: string
+          score_pct: number | null
+          stale_count: number | null
+          user_id: string | null
+        }
+        Insert: {
+          breach_streak_days?: number | null
+          created_at?: string | null
+          id?: string
+          rag_status?: string | null
+          scan_date: string
+          score_pct?: number | null
+          stale_count?: number | null
+          user_id?: string | null
+        }
+        Update: {
+          breach_streak_days?: number | null
+          created_at?: string | null
+          id?: string
+          rag_status?: string | null
+          scan_date?: string
+          score_pct?: number | null
+          stale_count?: number | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       hi_hierarchy_levels: {
         Row: {
           color: string
@@ -15582,6 +15689,35 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      issue_watchers: {
+        Row: {
+          id: string
+          issue_id: string
+          user_id: string
+          watched_at: string | null
+        }
+        Insert: {
+          id?: string
+          issue_id: string
+          user_id: string
+          watched_at?: string | null
+        }
+        Update: {
+          id?: string
+          issue_id?: string
+          user_id?: string
+          watched_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "issue_watchers_issue_id_fkey"
+            columns: ["issue_id"]
+            isOneToOne: false
+            referencedRelation: "catalyst_issues"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       iterations: {
         Row: {
@@ -60199,6 +60335,47 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "wh_sidebar_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      watch_activity: {
+        Row: {
+          activity_type: string
+          actor_id: string | null
+          comment_body: string | null
+          created_at: string | null
+          id: string
+          issue_id: string
+          new_value: string | null
+          old_value: string | null
+        }
+        Insert: {
+          activity_type: string
+          actor_id?: string | null
+          comment_body?: string | null
+          created_at?: string | null
+          id?: string
+          issue_id: string
+          new_value?: string | null
+          old_value?: string | null
+        }
+        Update: {
+          activity_type?: string
+          actor_id?: string | null
+          comment_body?: string | null
+          created_at?: string | null
+          id?: string
+          issue_id?: string
+          new_value?: string | null
+          old_value?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "watch_activity_issue_id_fkey"
+            columns: ["issue_id"]
+            isOneToOne: false
+            referencedRelation: "catalyst_issues"
             referencedColumns: ["id"]
           },
         ]
