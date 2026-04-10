@@ -1,5 +1,5 @@
 import React from 'react';
-import { getEpicChipColor } from '../../utils/backlog.utils';
+import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 
 interface ParentEpicChipProps {
   epicId: string;
@@ -7,31 +7,39 @@ interface ParentEpicChipProps {
   epicName: string;
 }
 
+/**
+ * ParentEpicChip — Jira-parity parent chip
+ * Purple lightning icon + "KEY Summary" in light blue (#DEEBFF) chip
+ */
 export const ParentEpicChip: React.FC<ParentEpicChipProps> = ({ epicId, epicKey, epicName }) => {
-  const colors = getEpicChipColor(epicId);
-  const label = epicKey ? `${epicKey} · ${epicName}` : epicName;
+  const label = epicKey ? `${epicKey} ${epicName}` : epicName;
 
   return (
     <span
       style={{
         display: 'inline-flex',
         alignItems: 'center',
-        height: 20,
-        padding: '0 6px',
+        gap: 6,
+        height: 24,
+        padding: '0 10px',
         borderRadius: 4,
-        fontSize: 11,
+        fontSize: 12,
         fontWeight: 500,
-        maxWidth: 212,
+        maxWidth: 230,
         overflow: 'hidden',
         whiteSpace: 'nowrap',
         textOverflow: 'ellipsis',
-        border: `1px solid ${colors.border}`,
-        background: colors.bg,
-        color: colors.text,
+        background: '#DEEBFF',
+        color: '#0747A6',
+        cursor: 'pointer',
+        transition: 'background 0.12s',
       }}
       title={label}
+      onMouseEnter={e => (e.currentTarget.style.background = '#B3D4FF')}
+      onMouseLeave={e => (e.currentTarget.style.background = '#DEEBFF')}
     >
-      {label}
+      <JiraIssueTypeIcon type="epic" size={14} />
+      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{label}</span>
     </span>
   );
 };
