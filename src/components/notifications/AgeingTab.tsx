@@ -437,6 +437,22 @@ export default function AgeingTab() {
     return () => { cancelled = true; };
   }, []);
 
+  // Sync ageing count into governance cache so RAG pill stays in sync
+  useEffect(() => {
+    if (!loading && user?.id && items.length >= 0) {
+      const totalCount = items.length;
+      queryClient.setQueryData(
+        ["governance-score", user.id],
+        (old: any) => ({
+          ...(old || {}),
+          staleCount: totalCount,
+          ragStatus: totalCount === 0 ? "green" : totalCount <= 20 ? "amber" : "red",
+          scorePct: Math.max(0, 100 - Math.min(totalCount * 2, 100)),
+        })
+      );
+    }
+  }, [loading, items.length, user?.id, queryClient]);
+
   // Filter + sort
   const filtered = useMemo(() => {
     let list = [...items];
