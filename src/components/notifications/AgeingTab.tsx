@@ -85,13 +85,16 @@ function TypeIcon({ type }: { type: ItemType }) {
 }
 
 function StatusLozenge({ status }: { status: StatusType }) {
-  const bg = status === 'TODO' ? '#42526E' : '#0052CC';
+  /* 3-color pale lozenge guardrail — Grey for TODO, Blue for IN PROGRESS */
+  const isActive = status === 'IN PROGRESS';
+  const bg = isActive ? '#DEEBFF' : '#DFE1E6';
+  const fg = isActive ? '#0747A6' : '#253858';
   return (
     <span style={{
       display: 'inline-block', height: 20, lineHeight: '20px',
       fontSize: 10, fontWeight: 700, textTransform: 'uppercase',
       letterSpacing: '0.03em', borderRadius: 3, padding: '0 7px',
-      background: bg, color: '#FFFFFF', whiteSpace: 'nowrap',
+      background: bg, color: fg, whiteSpace: 'nowrap',
       fontFamily: 'Inter, sans-serif',
     }}>
       {status}
@@ -125,38 +128,38 @@ function classifyTimeGroup(item: AgeingItem): TimeGroup {
   return 'older';
 }
 
-/* ── Filter Pill (Solid Jira Style) ── */
-const PILL_COLORS: Record<string, { bg: string; activeBg: string }> = {
-  All:      { bg: '#42526E', activeBg: '#0052CC' },
-  Story:    { bg: '#42526E', activeBg: '#14892C' },
-  Bug:      { bg: '#42526E', activeBg: '#E5493A' },
-  Incident: { bg: '#42526E', activeBg: '#E5493A' },
+/* ── Filter Pill (Outline at rest, subtle tint when active) ── */
+const PILL_ACTIVE: Record<string, { bg: string; border: string; text: string; countBg: string }> = {
+  All:      { bg: '#EFF6FF', border: '#2563EB', text: '#1E40AF', countBg: '#DBEAFE' },
+  Story:    { bg: '#F0FDF4', border: '#16A34A', text: '#166534', countBg: '#DCFCE7' },
+  Bug:      { bg: '#FEF2F2', border: '#DC2626', text: '#991B1B', countBg: '#FEE2E2' },
+  Incident: { bg: '#FEF2F2', border: '#DC2626', text: '#991B1B', countBg: '#FEE2E2' },
 };
 
 function FilterPill({ label, isActive, count, onClick }: {
   label: string; isActive: boolean; count: number; onClick: () => void;
 }) {
-  const cfg = PILL_COLORS[label] || PILL_COLORS.All;
+  const active = PILL_ACTIVE[label] || PILL_ACTIVE.All;
   return (
     <button
       onClick={onClick}
       style={{
-        border: 'none',
-        background: isActive ? cfg.activeBg : cfg.bg,
-        color: '#FFFFFF',
-        borderRadius: 4, padding: '4px 10px',
+        border: `1px solid ${isActive ? active.border : '#CBD5E1'}`,
+        background: isActive ? active.bg : 'transparent',
+        color: isActive ? active.text : '#64748B',
+        borderRadius: 16, padding: '3px 10px',
         fontSize: 11, fontWeight: 600, cursor: 'pointer',
         fontFamily: 'Inter, sans-serif',
         transition: 'all 120ms ease',
-        opacity: isActive ? 1 : 0.7,
         display: 'flex', alignItems: 'center', gap: 5,
       }}
     >
       {label}
       <span style={{
         fontSize: 10, fontWeight: 700,
-        background: 'rgba(255,255,255,0.25)',
-        borderRadius: 3, padding: '1px 5px',
+        background: isActive ? active.countBg : '#F1F5F9',
+        color: isActive ? active.text : '#64748B',
+        borderRadius: 8, padding: '1px 5px',
         minWidth: 18, textAlign: 'center',
       }}>
         {count}
