@@ -1,8 +1,9 @@
 import { useNavigate } from 'react-router-dom';
 import { MoreHorizontal, ExternalLink, UserRound, ChevronsUp, ChevronUp, Minus, ChevronDown, Star } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { StatusBadge } from '@/components/ui/StatusBadge';
+import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 import { Defect } from '@/types/defects';
 import { cn } from '@/lib/utils';
 
