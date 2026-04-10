@@ -60086,6 +60086,36 @@ export type Database = {
         }
         Relationships: []
       }
+      user_table_preferences: {
+        Row: {
+          column_order: string[] | null
+          column_widths: Json | null
+          created_at: string
+          id: string
+          table_key: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          column_order?: string[] | null
+          column_widths?: Json | null
+          created_at?: string
+          id?: string
+          table_key: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          column_order?: string[] | null
+          column_widths?: Json | null
+          created_at?: string
+          id?: string
+          table_key?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_test_scope: {
         Row: {
           assigned_at: string
