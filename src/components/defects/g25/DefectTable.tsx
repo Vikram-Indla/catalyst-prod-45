@@ -130,6 +130,7 @@ export function DefectTable({ defects, selectedIds, onSelectionChange, onDelete,
       <table className="pb-table">
         <colgroup>
           <col style={{ width: 40 }} />
+          <col style={{ width: 28 }} />
           <col style={{ width: 32 }} />
           <col style={{ width: 32 }} />
           <col style={{ width: 140 }} />
@@ -145,7 +146,8 @@ export function DefectTable({ defects, selectedIds, onSelectionChange, onDelete,
         <thead>
           <tr>
             <th><Checkbox checked={defects.length > 0 && selectedIds.size === defects.length} onCheckedChange={toggleAll} /></th>
-            <th>{/* Trash — no header label */}</th>
+            <th>{/* Star */}</th>
+            <th>{/* Trash */}</th>
             <th>Type</th>
             <th>Key</th>
             <th>Title</th>
