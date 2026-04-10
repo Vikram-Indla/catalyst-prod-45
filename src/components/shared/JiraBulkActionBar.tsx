@@ -32,9 +32,6 @@ export function JiraBulkActionBar({
   const [deleteConfirm, setDeleteConfirm] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const count = selectedIds.length;
-
-  if (count === 0) return null;
-
   const pluralLabel = count === 1 ? entityLabel : `${entityLabel}s`;
 
   // ── Copy to clipboard ──
