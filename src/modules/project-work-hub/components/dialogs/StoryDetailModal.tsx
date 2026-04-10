@@ -226,7 +226,7 @@ export default function StoryDetailModal({
       if (error) throw error;
       await supabase.from('jira_write_back_queue').insert({ ph_issue_id: itemId, field_name: 'status', new_value: newStatus, status: 'approved' });
     },
-    onSuccess: () => { toast.success('Status updated'); queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] }); queryClient.invalidateQueries({ queryKey: ['ph_issues'] }); },
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] }); queryClient.invalidateQueries({ queryKey: ['ph_issues'] }); },
     onError: () => toast.error('Failed to update status'),
   });
 
@@ -239,7 +239,7 @@ export default function StoryDetailModal({
         old_value: oldValue, new_value: value, user_id: user!.id,
       });
     },
-    onSuccess: () => { toast.success('Updated'); queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] }); },
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] }); },
     onError: () => toast.error('Failed to update'),
   });
 
@@ -249,7 +249,7 @@ export default function StoryDetailModal({
       if (error) throw error;
       await supabase.from('jira_write_back_queue').insert({ ph_issue_id: itemId, field_name: 'assignee', new_value: userId, status: 'approved' });
     },
-    onSuccess: () => { toast.success('Assignee updated'); queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] }); },
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] }); },
     onError: () => toast.error('Failed to update assignee'),
   });
 
@@ -322,7 +322,6 @@ export default function StoryDetailModal({
     setAcceptanceCriteria(newAC);
     await supabase.from('ph_issues').update({ acceptance_criteria: newAC }).eq('id', itemId);
     queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] });
-    toast.success('Acceptance criteria updated by AI');
   }, [itemId, queryClient]);
 
   const doAiGenerate = useCallback(async () => {
@@ -358,7 +357,7 @@ export default function StoryDetailModal({
   const handleParentChange = useCallback(async (newParentKey: string | null) => {
     await supabase.from('ph_issues').update({ parent_key: newParentKey }).eq('id', itemId);
     queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] });
-    toast.success('Parent updated');
+    queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] });
   }, [itemId, queryClient]);
 
   /* ── DERIVED ───────────────────────────────── */
