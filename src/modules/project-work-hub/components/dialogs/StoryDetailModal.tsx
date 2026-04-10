@@ -1416,6 +1416,26 @@ export default function StoryDetailModal({
   const addMenuRef = useRef<HTMLDivElement>(null);
   const descriptionRef = useRef<HTMLDivElement>(null);
 
+  // Resizable splitter state
+  const [rightPanelWidth, setRightPanelWidth] = useState(280);
+  const isDraggingRef = useRef(false);
+  const splitterRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const onMouseMove = (e: MouseEvent) => {
+      if (!isDraggingRef.current) return;
+      const modalEl = document.querySelector('[data-sdm-scope]') as HTMLElement;
+      if (!modalEl) return;
+      const rect = modalEl.getBoundingClientRect();
+      const newWidth = Math.max(220, Math.min(480, rect.right - e.clientX));
+      setRightPanelWidth(newWidth);
+    };
+    const onMouseUp = () => { isDraggingRef.current = false; document.body.style.cursor = ''; document.body.style.userSelect = ''; };
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
+    return () => { document.removeEventListener('mousemove', onMouseMove); document.removeEventListener('mouseup', onMouseUp); };
+  }, []);
+
   // AI Improve Story state
   const [aiPanelOpen, setAiPanelOpen] = useState(false);
   const [aiImproveType, setAiImproveType] = useState<AIImproveType>('improve_clarify');
