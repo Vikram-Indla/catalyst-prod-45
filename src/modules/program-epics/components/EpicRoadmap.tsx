@@ -32,7 +32,7 @@ import {
   ZoomIn,
   ZoomOut,
 } from 'lucide-react';
-import { EpicDrawer } from '@/components/items/epics/EpicDrawer';
+import { EpicDetailModal } from '@/components/items/epics/EpicDetailModal';
 
 /* ---------- types ---------- */
 interface EpicRow {
