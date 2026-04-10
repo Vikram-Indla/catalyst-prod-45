@@ -29,13 +29,55 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
   const tk = isDark ? DK : LK;
   const COL_HEADER: React.CSSProperties = { fontSize: 11, fontWeight: 650, textTransform: 'uppercase', letterSpacing: '0.06em', color: tk.t2 };
 
+  // ── Column definitions for drag reordering ──
+  type ColKey = 'key' | 'summary' | 'status' | 'parent' | 'assignee' | 'created' | 'updated' | 'due' | 'priority';
+  interface ColDef { key: ColKey; label: string; width: number; compactWidth?: number; flex?: boolean; compactHide?: boolean }
+  const ALL_COLS: ColDef[] = useMemo(() => [
+    { key: 'key' as ColKey, label: 'KEY', width: 110, compactWidth: 80 },
+    { key: 'summary' as ColKey, label: 'SUMMARY', width: 0, flex: true },
+    { key: 'status' as ColKey, label: 'STATUS', width: 138, compactWidth: 100 },
+    { key: 'parent' as ColKey, label: 'PARENT', width: 240, compactHide: true },
+    { key: 'assignee' as ColKey, label: 'ASSIGNEE', width: 160, compactWidth: 120 },
+    { key: 'created' as ColKey, label: 'CREATED', width: 90, compactHide: true },
+    { key: 'updated' as ColKey, label: 'UPDATED', width: 90, compactHide: true },
+    { key: 'due' as ColKey, label: 'DUE DATE', width: 90, compactHide: true },
+    { key: 'priority' as ColKey, label: 'PRIORITY', width: 78, compactHide: true },
+  ], []);
+
+  const [columnOrder, setColumnOrder] = useState<ColKey[]>(['key', 'summary', 'status', 'parent', 'assignee', 'created', 'updated', 'due', 'priority']);
+  const [dragCol, setDragCol] = useState<ColKey | null>(null);
+  const [dragOverCol, setDragOverCol] = useState<ColKey | null>(null);
+
+  const orderedCols = useMemo(() => columnOrder.map(k => ALL_COLS.find(c => c.key === k)!).filter(Boolean), [columnOrder, ALL_COLS]);
+
+  const handleColDragStart = useCallback((colKey: ColKey) => { setDragCol(colKey); }, []);
+  const handleColDragOver = useCallback((e: React.DragEvent, colKey: ColKey) => {
+    e.preventDefault();
+    if (dragCol && colKey !== dragCol) setDragOverCol(colKey);
+  }, [dragCol]);
+  const handleColDrop = useCallback((colKey: ColKey) => {
+    if (!dragCol || dragCol === colKey) { setDragCol(null); setDragOverCol(null); return; }
+    setColumnOrder(prev => {
+      const from = prev.indexOf(dragCol);
+      const to = prev.indexOf(colKey);
+      if (from === -1 || to === -1) return prev;
+      const next = [...prev];
+      next.splice(from, 1);
+      next.splice(to, 0, dragCol);
+      return next;
+    });
+    setDragCol(null);
+    setDragOverCol(null);
+  }, [dragCol]);
+  const handleColDragEnd = useCallback(() => { setDragCol(null); setDragOverCol(null); }, []);
+
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
   const [showCreate, setShowCreate] = useState(false);
   const [editStoryId, setEditStoryId] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<BacklogStory | null>(null);
   const [detailItemId, setDetailItemId] = useState<string | null>(null);
   const [panelMode, setPanelMode] = useState(false);
-  const [panelDividerWidth, setPanelDividerWidth] = useState(55); // % of total width for left panel
+  const [panelDividerWidth, setPanelDividerWidth] = useState(55);
 
   // Resizable panel divider
   const containerRef = useRef<HTMLDivElement>(null);
