@@ -1272,8 +1272,12 @@ function ParentFieldPicker({ storyKey, parentKey, projectKey, onParentChange }: 
       ) : (
         <div className="sdm-parent-field sdm-parent-field--empty" onClick={() => setOpen(o => !o)} role="button">None — Add parent</div>
       )}
-      {open && (
-        <div className="sdm-parent-popover" role="dialog" aria-label="Select parent issue">
+      {open && (() => {
+        const rect = containerRef.current?.getBoundingClientRect();
+        const top = (rect?.bottom ?? 0) + 4;
+        const right = window.innerWidth - (rect?.right ?? 0);
+        return (
+        <div className="sdm-parent-popover" role="dialog" aria-label="Select parent issue" style={{ top, right }}>
           <div className="sdm-popover-search">
             <input ref={searchInputRef} className="sdm-popover-input" type="text" placeholder="Search epics…" value={search} onChange={e => setSearch(e.target.value)} onKeyDown={e => { if (e.key === 'Escape') { setOpen(false); setSearch(''); } }} />
           </div>
