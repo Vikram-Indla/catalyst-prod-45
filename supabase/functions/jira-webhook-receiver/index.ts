@@ -326,6 +326,18 @@ Deno.serve(async (req) => {
       }
     }
 
+    // ── 2026 GUARDRAIL — skip issues created before 2026 ──
+    if (payload.issue?.fields?.created) {
+      const createdYear = new Date(payload.issue.fields.created).getFullYear();
+      if (createdYear < 2026) {
+        console.log(`[2026-GUARDRAIL] Webhook skipped pre-2026 issue: ${payload.issue.key} (created ${payload.issue.fields.created})`);
+        return new Response(
+          JSON.stringify({ status: 'skipped_pre_2026', key: payload.issue.key }),
+          { status: 200, headers: { 'Content-Type': 'application/json' } }
+        );
+      }
+    }
+
     // ── GOVERNANCE LOCK CHECK — skip sync for governance-closed items ──
     if (payload.issue?.key) {
       const { data: isLocked } = await supabase
