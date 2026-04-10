@@ -567,15 +567,13 @@
 
 /* Parent search popover */
 [data-sdm-scope] .sdm-parent-popover {
-  position: absolute;
-  top: calc(100% + 4px);
-  right: 0;
+  position: fixed;
   width: 360px;
   background: #FFFFFF;
   border: 1px solid rgba(9, 30, 66, 0.24);
   border-radius: 6px;
   box-shadow: 0 8px 24px rgba(9, 30, 66, 0.18);
-  z-index: 50;
+  z-index: 9999;
   overflow: hidden;
 }
 
