@@ -99,13 +99,17 @@ function StatusLozenge({ value }: { value: string }) {
     bg = '#E3FCEF'; color = '#006644';
   }
   return (
-    <span style={{
-      display: 'inline-block', height: 20, lineHeight: '20px',
-      fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
-      letterSpacing: '0.03em', borderRadius: 3, padding: '0 6px',
-      background: bg, color, fontFamily: 'Inter, sans-serif',
-      whiteSpace: 'nowrap',
-    }}>
+    <span
+      title={value}
+      style={{
+        display: 'inline-block', height: 20, lineHeight: '20px',
+        fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
+        letterSpacing: '0.03em', borderRadius: 3, padding: '0 6px',
+        background: bg, color, fontFamily: 'Inter, sans-serif',
+        whiteSpace: 'nowrap', maxWidth: 120, overflow: 'hidden',
+        textOverflow: 'ellipsis',
+      }}
+    >
       {value}
     </span>
   );
@@ -895,13 +899,16 @@ export default function CleanupPage() {
                 <Button
                   disabled={selected.size === 0}
                   onClick={() => setShowForceCloseDialog(true)}
+                  className="disabled:opacity-100"
                   style={{
                     height: 32, fontSize: 12, fontWeight: 700,
-                    background: selected.size > 0 ? '#DC2626' : '#DC2626',
-                    color: '#ffffff', border: 'none',
-                    opacity: selected.size === 0 ? 0.4 : 1,
-                    pointerEvents: selected.size === 0 ? 'none' : 'auto',
+                    background: selected.size > 0 ? '#DC2626' : '#F1F5F9',
+                    color: selected.size > 0 ? '#ffffff' : '#94A3B8',
+                    border: selected.size > 0 ? 'none' : '1px solid #E2E8F0',
+                    cursor: selected.size === 0 ? 'not-allowed' : 'pointer',
                   }}
+                  onMouseEnter={e => { if (selected.size > 0) e.currentTarget.style.background = '#B91C1C'; }}
+                  onMouseLeave={e => { if (selected.size > 0) e.currentTarget.style.background = '#DC2626'; }}
                 >
                   Force Close ({selected.size})
                 </Button>
