@@ -148,10 +148,13 @@ export default function StoryDetailModal({
   const [showAddMenu, setShowAddMenu] = useState(false);
   const [showDotsMenu, setShowDotsMenu] = useState(false);
   const [acceptanceCriteria, setAcceptanceCriteria] = useState('');
+  const [titleFocused, setTitleFocused] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const addMenuRef = useRef<HTMLDivElement>(null);
   const descriptionRef = useRef<HTMLDivElement>(null);
+  const statusDropdownRef = useRef<HTMLDivElement>(null);
+  const dotsMenuRef = useRef<HTMLDivElement>(null);
 
   // Resizable splitter state
   const [rightPanelWidth, setRightPanelWidth] = useState(280);
@@ -188,6 +191,8 @@ export default function StoryDetailModal({
     const h = (e: MouseEvent) => {
       if (aiDropRef.current && !aiDropRef.current.contains(e.target as Node)) setAiDropOpen(false);
       if (addMenuRef.current && !addMenuRef.current.contains(e.target as Node)) setShowAddMenu(false);
+      if (statusDropdownRef.current && !statusDropdownRef.current.contains(e.target as Node)) setShowStatusDropdown(false);
+      if (dotsMenuRef.current && !dotsMenuRef.current.contains(e.target as Node)) setShowDotsMenu(false);
     };
     document.addEventListener('mousedown', h);
     return () => document.removeEventListener('mousedown', h);
@@ -362,6 +367,18 @@ export default function StoryDetailModal({
     try { return JSON.parse(issue.labels as any); } catch { return []; }
   }, [issue?.labels]);
 
+  // Escape key to close modal
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && !showStatusDropdown && !showDotsMenu && !showAddMenu && !aiDropOpen && !showConfirmDelete && !showWorkflow && !showFigmaInput) {
+        onClose();
+      }
+    };
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [isOpen, showStatusDropdown, showDotsMenu, showAddMenu, aiDropOpen, showConfirmDelete, showWorkflow, showFigmaInput, onClose]);
+
   if (!isOpen) return null;
 
   /* ═════════════════════════════════════════════
@@ -427,7 +444,7 @@ export default function StoryDetailModal({
               >
                 <Share2 size={14} /> <span style={{ fontSize: 12 }}>Share</span>
               </button>
-              <div style={{ position: 'relative' }}>
+              <div ref={dotsMenuRef} style={{ position: 'relative' }}>
                 <button onClick={() => setShowDotsMenu(!showDotsMenu)} style={{
                   background: 'none', border: 'none', cursor: 'pointer', padding: '6px 8px',
                   borderRadius: 4, color: '#5E6C84', fontSize: 14, display: 'flex', alignItems: 'center',
@@ -472,15 +489,19 @@ export default function StoryDetailModal({
                 <>
                   {/* 1. TITLE */}
                   <h1 contentEditable suppressContentEditableWarning
-                    onBlur={e => { const newTitle = e.currentTarget.textContent?.trim() ?? ''; if (newTitle && newTitle !== issue?.summary) { updateFieldMutation.mutate({ field: 'summary', value: newTitle, oldValue: issue?.summary ?? '' }); } }}
+                    onFocus={() => setTitleFocused(true)}
+                    onBlur={e => { setTitleFocused(false); const newTitle = e.currentTarget.textContent?.trim() ?? ''; if (newTitle && newTitle !== issue?.summary) { updateFieldMutation.mutate({ field: 'summary', value: newTitle, oldValue: issue?.summary ?? '' }); } }}
+                    onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); e.currentTarget.blur(); } if (e.key === 'Escape') { e.currentTarget.textContent = issue?.summary ?? ''; e.currentTarget.blur(); } }}
                     style={{
                       fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
                       fontSize: 22, fontWeight: 700, color: '#172B4D', lineHeight: 1.3,
                       margin: '0 0 12px', outline: 'none', cursor: 'text', borderRadius: 3,
-                      padding: '2px 4px', wordBreak: 'break-word', transition: 'background 0.15s',
+                      padding: '4px 6px', wordBreak: 'break-word', transition: 'background 0.15s, box-shadow 0.15s',
+                      background: titleFocused ? '#FFFFFF' : 'transparent',
+                      boxShadow: titleFocused ? '0 0 0 2px #4C9AFF' : 'none',
                     }}
-                    onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
-                    onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                    onMouseEnter={e => { if (!titleFocused) e.currentTarget.style.background = '#F4F5F7'; }}
+                    onMouseLeave={e => { if (!titleFocused) e.currentTarget.style.background = 'transparent'; }}
                   >{issue?.summary ?? '—'}</h1>
 
                   {/* 2. Quick actions */}
@@ -850,7 +871,7 @@ export default function StoryDetailModal({
             }}>
               {/* Status */}
               <div style={{ marginBottom: 14, display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-                <div style={{ position: 'relative' }}>
+                <div ref={statusDropdownRef} style={{ position: 'relative' }}>
                   <button onClick={() => setShowStatusDropdown(!showStatusDropdown)} style={{
                     backgroundColor: statusStyle.bg, color: statusStyle.text,
                     padding: '6px 12px', borderRadius: 4, fontSize: 13, fontWeight: 700,
@@ -865,7 +886,7 @@ export default function StoryDetailModal({
                     <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 4L5 7L8 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
                   </button>
                   {showStatusDropdown && (
-                    <div style={{ position: 'absolute', left: 0, top: '100%', marginTop: 4, background: '#FFF', border: '1px solid #DFE1E6', borderRadius: 4, boxShadow: '0 4px 16px rgba(9,30,66,0.18)', padding: '8px 0', zIndex: 100, minWidth: 200, maxHeight: 300, overflowY: 'auto' }}>
+                    <div onKeyDown={e => { if (e.key === 'Escape') setShowStatusDropdown(false); }} style={{ position: 'absolute', left: 0, top: '100%', marginTop: 4, background: '#FFF', border: '1px solid #DFE1E6', borderRadius: 4, boxShadow: '0 4px 16px rgba(9,30,66,0.18)', padding: '8px 0', zIndex: 100, minWidth: 200, maxHeight: 300, overflowY: 'auto', animation: 'sdm-slide-down 0.15s ease-out' }}>
                       {STATUS_OPTION_GROUPS.map(group => (
                         <div key={group.category}>
                           <div style={{ padding: '6px 14px', fontSize: 10, fontWeight: 700, color: '#5E6C84', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{group.groupLabel}</div>
