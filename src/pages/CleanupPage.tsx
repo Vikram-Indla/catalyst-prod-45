@@ -557,7 +557,7 @@ export default function CleanupPage() {
           </span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, color: '#94A3B8' }}>Last scan: today 02:00 AST</span>
+          <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, color: '#64748B' }}>Last scan: today 02:00 AST</span>
           <span style={{
             display: 'inline-flex', alignItems: 'center', gap: 4,
             fontSize: 11, fontWeight: 500, padding: '2px 8px', borderRadius: 20,
@@ -661,7 +661,7 @@ export default function CleanupPage() {
                   {cell.value}
                 </div>
                 <div style={{
-                  fontSize: 11, fontWeight: 500, color: '#94A3B8',
+                  fontSize: 11, fontWeight: 600, color: '#64748B',
                   textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: 4,
                 }}>
                   {cell.label}
@@ -682,7 +682,7 @@ export default function CleanupPage() {
                   <span style={{ fontFamily: 'Sora, sans-serif', fontSize: 16, fontWeight: 700, color: '#065F46' }}>
                     Governance: GREEN
                   </span>
-                  <span style={{ fontSize: 13, color: '#94A3B8' }}>
+                  <span style={{ fontSize: 13, color: '#64748B' }}>
                     All items are in compliance. Check back tomorrow.
                   </span>
                 </div>
@@ -727,13 +727,13 @@ export default function CleanupPage() {
                              {cat.name}
                            </span>
                            <span style={{
-                             fontSize: 11, color: '#64748B',
+                             fontSize: 11, color: '#334155',
                              background: '#F1F5F9', border: '1px solid #E2E8F0',
                              padding: '2px 8px', borderRadius: 20,
                            }}>
                              {items.length}
                            </span>
-                           <span style={{ fontSize: 13, color: '#94A3B8', marginLeft: 4 }}>
+                           <span style={{ fontSize: 13, color: '#64748B', marginLeft: 4 }}>
                              {cat.subtitle}
                            </span>
                            <div style={{ flex: 1 }} />
@@ -851,16 +851,16 @@ export default function CleanupPage() {
                             display: 'flex', gap: 16, marginTop: 4,
                             paddingLeft: cat.isReporterOnus ? 0 : 28, flexWrap: 'wrap',
                           }}>
-                            <span style={{ fontSize: 13, color: '#64748B' }}>
+                            <span style={{ fontSize: 13, color: '#334155' }}>
                               Assignee: {item.reporter_name || '\u2014'}
                             </span>
-                            <span style={{ fontSize: 13, color: '#64748B' }}>
+                            <span style={{ fontSize: 13, color: '#334155' }}>
                               Reporter: {item.reporter_name || '\u2014'}
                             </span>
-                            <span style={{ fontSize: 13, color: '#64748B' }}>
+                            <span style={{ fontSize: 13, color: '#334155' }}>
                               Project: {item.project_key || '\u2014'}
                             </span>
-                            <span style={{ fontSize: 13, color: '#64748B' }}>
+                            <span style={{ fontSize: 13, color: '#334155' }}>
                               Fix ver: {item.fixed_versions || '\u2014'}
                             </span>
                           </div>
@@ -876,7 +876,7 @@ export default function CleanupPage() {
                                 <div style={{
                                   background: '#F8FAFC', borderLeft: '2px solid #CBD5E1',
                                   paddingLeft: 12, paddingTop: 6, paddingBottom: 6,
-                                  fontSize: 13, color: '#64748B',
+                                  fontSize: 13, color: '#334155',
                                 }}>
                                   {reason}
                                 </div>
@@ -887,7 +887,7 @@ export default function CleanupPage() {
                           {/* Reporter onus note */}
                           {cat.isReporterOnus && (
                             <div style={{
-                              fontSize: 13, color: '#94A3B8', marginTop: 4,
+                              fontSize: 13, color: '#64748B', marginTop: 4,
                               paddingLeft: cat.isReporterOnus ? 0 : 28,
                             }}>
                               Reporter must action — {item.reporter_name || 'Unknown'}
@@ -899,7 +899,7 @@ export default function CleanupPage() {
                       {isOpen && items.length === 0 && (
                         <div style={{
                           padding: '16px', textAlign: 'center',
-                          fontSize: 13, color: '#94A3B8', background: '#ffffff',
+                          fontSize: 13, color: '#64748B', background: '#ffffff',
                           borderBottom: '0.75px solid #F1F5F9',
                         }}>
                           No items in this category
@@ -995,7 +995,7 @@ export default function CleanupPage() {
                     justifyContent: 'center', padding: '64px 0', gap: 12,
                   }}>
                     <CheckCircle size={32} color="#CBD5E1" />
-                    <span style={{ fontSize: 14, color: '#94A3B8' }}>No items match this filter</span>
+                    <span style={{ fontSize: 14, color: '#64748B' }}>No items match this filter</span>
                     {(listCatFilter !== 'all' || listStatusFilter !== 'all') && (
                       <span
                         onClick={() => { setListCatFilter('all'); setListStatusFilter('all'); }}
@@ -1038,7 +1038,7 @@ export default function CleanupPage() {
                           <th key={i} style={{
                             height: 44, padding: '10px 12px',
                             background: '#F8FAFC', borderBottom: '1px solid #E2E8F0',
-                            fontSize: 11, fontWeight: 700, color: '#94A3B8',
+                            fontSize: 11, fontWeight: 700, color: '#64748B',
                             textTransform: 'uppercase', letterSpacing: '0.06em',
                             textAlign: (col.align || 'left') as any, whiteSpace: 'nowrap',
                             verticalAlign: 'middle', fontFamily: 'Inter, sans-serif',
@@ -1231,7 +1231,7 @@ export default function CleanupPage() {
                             {/* Category */}
                             <td style={{ padding: '8px 8px', width: 110 }}>
                               <span style={{
-                                display: 'inline-block', fontSize: 11, color: '#64748B',
+                                display: 'inline-block', fontSize: 11, color: '#334155',
                                 background: '#F1F5F9', border: '1px solid #E2E8F0',
                                 padding: '2px 8px', borderRadius: 20, whiteSpace: 'nowrap',
                                 maxWidth: 100, overflow: 'hidden', textOverflow: 'ellipsis',
@@ -1332,7 +1332,7 @@ export default function CleanupPage() {
             <tbody>
               {restoreData.length === 0 ? (
                 <tr>
-                  <td colSpan={6} style={{ padding: 40, textAlign: 'center', fontSize: 13, color: '#94A3B8' }}>
+                  <td colSpan={6} style={{ padding: 40, textAlign: 'center', fontSize: 13, color: '#64748B' }}>
                     No closed items found
                   </td>
                 </tr>
@@ -1357,11 +1357,11 @@ export default function CleanupPage() {
                     <td style={{ padding: '8px 12px', fontSize: 13, color: '#0F172A', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {entry.item_key}
                     </td>
-                    <td style={{ padding: '8px 12px', fontSize: 13, color: '#64748B' }}>
+                    <td style={{ padding: '8px 12px', fontSize: 13, color: '#334155' }}>
                       {catLabel}
                     </td>
                     <td style={{ padding: '8px 12px' }}>
-                      <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 13, color: '#64748B' }}>
+                      <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 13, color: '#334155' }}>
                         {entry.closed_at ? relativeTime(entry.closed_at) : '\u2014'}
                       </span>
                     </td>
@@ -1423,7 +1423,7 @@ export default function CleanupPage() {
           <div style={{ padding: '16px 24px', maxHeight: '60vh', overflowY: 'auto' }}>
             {/* Section 1 */}
             <div style={{
-              fontSize: 11, fontWeight: 500, color: '#94A3B8',
+              fontSize: 11, fontWeight: 600, color: '#64748B',
               textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 12,
             }}>
               WHAT WILL HAPPEN
@@ -1444,7 +1444,7 @@ export default function CleanupPage() {
 
             {/* Section 2 — Reporters */}
             <div style={{
-              fontSize: 11, fontWeight: 500, color: '#94A3B8',
+              fontSize: 11, fontWeight: 600, color: '#64748B',
               textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 12,
             }}>
               REPORTERS BEING NOTIFIED
@@ -1459,7 +1459,7 @@ export default function CleanupPage() {
               });
               const reporters = Array.from(reporterMap.values());
               if (reporters.length === 0) {
-                return <p style={{ fontSize: 13, color: '#94A3B8' }}>No reporters linked to selected items.</p>;
+                return <p style={{ fontSize: 13, color: '#64748B' }}>No reporters linked to selected items.</p>;
               }
               return (
                 <div style={{ maxHeight: 160, overflowY: 'auto' }}>
@@ -1473,7 +1473,7 @@ export default function CleanupPage() {
                       </div>
                       <div style={{ flex: 1 }}>
                         <div style={{ fontSize: 14, fontWeight: 600, color: '#0F172A' }}>{r.name}</div>
-                        <div style={{ fontSize: 13, color: '#64748B' }}>
+                        <div style={{ fontSize: 13, color: '#334155' }}>
                           {r.items.length} item{r.items.length !== 1 ? 's' : ''}
                         </div>
                       </div>
@@ -1487,7 +1487,7 @@ export default function CleanupPage() {
 
             {/* Section 3 — Closure reason */}
             <div style={{
-              fontSize: 11, fontWeight: 500, color: '#94A3B8',
+              fontSize: 11, fontWeight: 600, color: '#64748B',
               textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8,
             }}>
               CLOSURE REASON
