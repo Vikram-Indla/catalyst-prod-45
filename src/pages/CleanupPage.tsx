@@ -1030,7 +1030,9 @@ export default function CleanupPage() {
                         const isReporter = cat?.isReporterOnus ?? false;
                         const isSelected = selected.has(item.id);
                         const projectName = projectNameMap[item.project_key] || item.project_key || '\u2014';
-                        const parentTitle = item.parent_key ? (parentTitleMap[item.parent_key] || item.parent_key) : null;
+                        const parentInfo = item.parent_key ? parentInfoMap[item.parent_key] : null;
+                        const parentTitle = parentInfo?.title || (item.parent_key || null);
+                        const parentIssueType = parentInfo?.issueType || 'Task';
 
                         return (
                           <tr
@@ -1080,16 +1082,18 @@ export default function CleanupPage() {
                               {item.title}
                             </td>
 
-                            {/* Parent — full title */}
+                            {/* Parent — icon + full title */}
                             <td style={{ padding: '8px 12px', width: 180 }} title={parentTitle || undefined}>
-                              {parentTitle ? (
-                                <span style={{
-                                  fontSize: 13, fontWeight: 500, color: '#475569',
-                                  overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                                  display: 'block',
-                                }}>
-                                  {parentTitle}
-                                </span>
+                              {item.parent_key ? (
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 6, overflow: 'hidden' }}>
+                                  <JiraIssueTypeIcon issueType={parentIssueType} size={14} />
+                                  <span style={{
+                                    fontSize: 13, fontWeight: 500, color: '#475569',
+                                    overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                                  }}>
+                                    {parentTitle}
+                                  </span>
+                                </div>
                               ) : (
                                 <span style={{ fontSize: 13, color: '#CBD5E1' }}>{'\u2014'}</span>
                               )}
@@ -1162,9 +1166,33 @@ export default function CleanupPage() {
                               </div>
                             </td>
 
-                            {/* Status */}
-                            <td style={{ padding: '8px 8px', width: 130, textAlign: 'center' }}>
-                              <StatusLozenge value={item.status} />
+                            {/* Status — inline edit */}
+                            <td style={{ padding: '8px 8px', width: 130, textAlign: 'center' }} onClick={e => e.stopPropagation()}>
+                              {editingStatusId === item.id ? (
+                                <Select
+                                  value={item.status}
+                                  onValueChange={(val) => handleInlineStatusChange(item.id, val)}
+                                  onOpenChange={(open) => { if (!open) setEditingStatusId(null); }}
+                                  defaultOpen
+                                >
+                                  <SelectTrigger style={{ height: 28, fontSize: 11, border: '1px solid #2563EB', borderRadius: 4, background: '#ffffff', minWidth: 100 }}>
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                  <SelectContent style={{ background: '#ffffff', zIndex: 100 }}>
+                                    {distinctStatuses.map(s => (
+                                      <SelectItem key={s} value={s} style={{ fontSize: 11 }}>{s}</SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              ) : (
+                                <div
+                                  onClick={() => setEditingStatusId(item.id)}
+                                  style={{ cursor: 'pointer' }}
+                                  title="Click to change status"
+                                >
+                                  <StatusLozenge value={item.status} />
+                                </div>
+                              )}
                             </td>
 
                             {/* Days */}
