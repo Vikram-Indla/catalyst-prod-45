@@ -91,9 +91,9 @@ export function useAuditTrail(opts: UseAuditTrailOptions) {
 
       const entries: AuditEntry[] = rows.map((row: any) => ({
         id: row.id,
-        item_key: row.catalyst_issues?.issue_key ?? row.item_key,
-        title: row.catalyst_issues?.title ?? row.item_key,
-        closed_by_name: row.closed_by_profile?.full_name ?? 'Unknown',
+        item_key: issueMap[row.issue_id]?.issue_key ?? row.item_key,
+        title: issueMap[row.issue_id]?.title ?? row.item_key,
+        closed_by_name: profileMap[row.closed_by] ?? 'Unknown',
         closed_at: row.closed_at ?? '',
         closure_reason: row.closure_reason ?? '',
         governance_category: row.governance_category ?? 0,
@@ -101,7 +101,7 @@ export function useAuditTrail(opts: UseAuditTrailOptions) {
         reporter_notified: row.reporter_notified ?? false,
         restore_deadline: row.restore_deadline ?? '',
         restored_at: row.restored_at,
-        restored_by_name: row.restored_by_profile?.full_name ?? null,
+        restored_by_name: row.restored_by ? (profileMap[row.restored_by] ?? null) : null,
       }));
 
       return { entries, total: count ?? 0 };
