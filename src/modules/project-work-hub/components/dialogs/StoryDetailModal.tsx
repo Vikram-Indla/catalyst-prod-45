@@ -1,7 +1,12 @@
 /**
- * StoryDetailModal — V14 Rebuild · Full Integration
+ * StoryDetailModal — V15 Rebuild · Full v2 Integration
  * Jira-style two-panel detail modal with:
- *   - ChildIssuesSection (catalogue v2 extension)
+ *   - ChildIssuesSection v2 (ColumnPicker + date columns)
+ *   - DefectsSection (collapsible, inline create)
+ *   - IncidentsSection (collapsible)
+ *   - TestHubSection (tabbed: Test Cases | Test Executions)
+ *   - LinkedIssuesSection (ph_issue_links, link-type chips)
+ *   - EditableAssignee, EditablePriority, EditableLabels (right panel)
  *   - ParentField (searchable epic picker)
  *   - AIImprovePanel (AI-powered story improvement)
  *   - AcceptanceCriteria section (editable)
@@ -16,7 +21,7 @@ import {
   X, ChevronDown, ChevronRight, Plus, Paperclip,
   ExternalLink, Share2, Pencil, Search, MessageSquare, Clock,
   GripVertical, Edit2, Link2, Trash2, Check,
-  Eye, EyeOff, Sparkles, Loader2, RotateCcw,
+  Eye, EyeOff, Sparkles, Loader2, RotateCcw, Settings2, AlertTriangle,
 } from 'lucide-react';
 
 // Ring-fenced CSS for extension components
@@ -95,7 +100,8 @@ interface PhAttachment {
 interface TmTestCase {
   id: string; case_key: string; title: string; type?: string;
   status: string; assigned_to?: string | null; created_at: string;
-  assignee?: Profile;
+  assignee?: Profile; assignee_display_name?: string | null;
+  updated_at?: string;
 }
 
 interface TmTestCaseLink {
@@ -107,12 +113,7 @@ interface ThTestExecution {
   id?: string; test_case_id: string; cycle_scope_id?: string | null;
   test_cycle_id: string; execution_number?: number; result: string;
   executed_by: string; executed_at: string; cycle_name?: string;
-}
-
-interface TmTestCycle {
-  id: string; name: string; total_cases: number; passed_count: number;
-  failed_count: number; blocked_count?: number; skipped_count?: number;
-  not_run_count?: number; created_at: string; executions?: ThTestExecution[];
+  case_key?: string; case_title?: string;
 }
 
 interface RhRelease {
@@ -131,25 +132,39 @@ interface Profile {
 }
 
 interface ProjectMember {
-  user_id: string; role: string; profile?: Profile;
+  user_id: string; role: string; full_name: string; avatar_url: string | null;
 }
 
-// ── Extension component types ────────────────────
-type ChildIssueType = 'task' | 'bug' | 'Sub-task';
+// ── v2 Extension types ────────────────────────
+type StatusCategory = 'todo' | 'in_progress' | 'done';
+type PriorityLevel = 'Highest' | 'High' | 'Medium' | 'Low' | 'Lowest';
+type TestResult = 'passed' | 'failed' | 'blocked' | 'skipped' | 'not_run';
 
-interface ChildIssue {
+interface PhIssueRow {
   id: string;
   issue_key: string;
   summary: string;
   status: string;
-  status_category: 'todo' | 'in_progress' | 'done';
-  issue_type: ChildIssueType;
+  status_category: StatusCategory;
+  issue_type: string;
   assignee_account_id: string | null;
   assignee_display_name: string | null;
-  priority: 'Highest' | 'High' | 'Medium' | 'Low' | 'Lowest';
+  priority: string;
   position: number;
+  jira_created_at: string | null;
+  jira_updated_at: string | null;
   deleted_at: string | null;
 }
+
+interface ColumnConfig {
+  status: boolean;
+  assignee: boolean;
+  priority: boolean;
+  created: boolean;
+  updated: boolean;
+}
+
+type ChildIssueType = 'task' | 'bug' | 'Sub-task';
 
 interface ParentIssue {
   id: string;
@@ -177,6 +192,10 @@ interface AIOutput {
    CONSTANTS
    ═══════════════════════════════════════════════ */
 
+const DEFAULT_COLUMNS: ColumnConfig = {
+  status: true, assignee: true, priority: true, created: false, updated: true,
+};
+
 const STATUS_CATEGORIES: Record<string, string[]> = {
   todo: ['Backlog', 'To Do', 'In Requirements', 'In Design', 'Ready for Development', 'Technical Validation'],
   in_progress: ['In Development', 'In Progress', 'In Review', 'In QA', 'In Entity Integration', 'In UAT', 'In BETA', 'End to End Testing', 'On Hold', 'Analysis', 'Blocked', 'Awaiting Info'],
@@ -202,30 +221,6 @@ function getStatusStyle(status: string, category: string) {
   return STATUS_STYLES[category] ?? STATUS_STYLES.todo;
 }
 
-const PRIORITY_STYLES: Record<string, { color: string; symbol: string }> = {
-  Highest: { color: '#AE2A19', symbol: '▲▲' }, High: { color: '#DE350B', symbol: '▲' },
-  Medium: { color: '#D97706', symbol: '—' }, Low: { color: '#36B37E', symbol: '▼' },
-  Lowest: { color: '#6B778C', symbol: '▼▼' },
-};
-
-const LINK_TYPE_LABELS: Record<string, string> = {
-  relates_to: 'Relates to', blocks: 'Blocks', is_blocked_by: 'Is blocked by',
-  duplicates: 'Duplicates', is_duplicated_by: 'Is duplicated by',
-  implements: 'Implements', is_implemented_by: 'Is implemented by',
-  clones: 'Clones', is_cloned_by: 'Is cloned by',
-};
-
-const STATUS_OPTION_GROUPS = [
-  { groupLabel: 'TO DO', category: 'todo', statuses: STATUS_CATEGORIES.todo },
-  { groupLabel: 'IN PROGRESS', category: 'in_progress', statuses: STATUS_CATEGORIES.in_progress },
-  { groupLabel: 'DONE', category: 'done', statuses: STATUS_CATEGORIES.done },
-];
-
-const LINK_TYPES = [
-  'relates_to', 'blocks', 'is_blocked_by', 'duplicates',
-  'is_duplicated_by', 'implements', 'is_implemented_by', 'clones', 'is_cloned_by',
-] as const;
-
 /** StatusLozenge — IMMUTABLE 3-color (V12 guardrail) */
 const LOZENGE_STYLES: Record<'grey' | 'blue' | 'green', React.CSSProperties> = {
   grey:  { background: '#DFE1E6', color: '#253858' },
@@ -233,17 +228,77 @@ const LOZENGE_STYLES: Record<'grey' | 'blue' | 'green', React.CSSProperties> = {
   green: { background: '#E3FCEF', color: '#006644' },
 };
 
+const LOZENGE: Record<StatusCategory, React.CSSProperties> = {
+  todo:        { background: '#DFE1E6', color: '#253858' },
+  in_progress: { background: '#DEEBFF', color: '#0747A6' },
+  done:        { background: '#E3FCEF', color: '#006644' },
+};
+
 /** Priority → dot color */
 const PRIORITY_COLORS: Record<string, string> = {
   Highest: '#FF5630', High: '#FF5630', Medium: '#FFAB00', Low: '#36B37E', Lowest: '#8993A4',
 };
+
+const PRIORITY_STYLES: Record<string, { color: string; symbol: string }> = {
+  Highest: { color: '#AE2A19', symbol: '▲▲' }, High: { color: '#DE350B', symbol: '▲' },
+  Medium: { color: '#D97706', symbol: '—' }, Low: { color: '#36B37E', symbol: '▼' },
+  Lowest: { color: '#6B778C', symbol: '▼▼' },
+};
+
+const PRIORITY_ICONS: Record<string, string> = {
+  Highest: '⬆⬆', High: '⬆', Medium: '→', Low: '⬇', Lowest: '⬇⬇',
+};
+
+const PRIORITY_LIST: PriorityLevel[] = ['Highest', 'High', 'Medium', 'Low', 'Lowest'];
+
+const TEST_RESULT_STYLES: Record<TestResult, React.CSSProperties> = {
+  passed:  { background: '#E3FCEF', color: '#006644' },
+  failed:  { background: '#FFEDEB', color: '#BF2600' },
+  blocked: { background: '#FFF0B3', color: '#974F0C' },
+  skipped: { background: '#DFE1E6', color: '#253858' },
+  not_run: { background: '#F1F5F9', color: '#6B778C' },
+};
+
+const LINK_TYPE_LABELS: Record<string, string> = {
+  relates_to: 'Relates to', blocks: 'Blocks', is_blocked_by: 'Is blocked by',
+  duplicates: 'Duplicates', is_duplicated_by: 'Is duplicated by',
+  implements: 'Implements', is_implemented_by: 'Is implemented by',
+  clones: 'Clones', is_cloned_by: 'Is cloned by',
+  'relates to': 'Relates to', 'is blocked by': 'Is blocked by',
+  'is duplicated by': 'Is duplicated by', 'is cloned by': 'Is cloned by',
+};
+
+const LINK_TYPE_STYLES: Record<string, React.CSSProperties> = {
+  blocks:           { background: '#FFEDEB', color: '#BF2600' },
+  'is blocked by':  { background: '#FFEDEB', color: '#BF2600' },
+  'relates to':     { background: '#FFF0B3', color: '#974F0C' },
+  relates_to:       { background: '#FFF0B3', color: '#974F0C' },
+  duplicates:       { background: '#FFEDEB', color: '#BF2600' },
+  'is duplicated by': { background: '#F1F5F9', color: '#6B778C' },
+  clones:           { background: '#EFF6FF', color: '#1D4ED8' },
+  'is cloned by':   { background: '#EFF6FF', color: '#1D4ED8' },
+};
+
+const LINK_TYPE_OPTIONS = [
+  'blocks', 'is blocked by', 'relates to', 'duplicates', 'is duplicated by', 'clones',
+];
+
+const STATUS_OPTION_GROUPS = [
+  { groupLabel: 'TO DO', category: 'todo', statuses: STATUS_CATEGORIES.todo },
+  { groupLabel: 'IN PROGRESS', category: 'in_progress', statuses: STATUS_CATEGORIES.in_progress },
+  { groupLabel: 'DONE', category: 'done', statuses: STATUS_CATEGORIES.done },
+];
 
 /** Work item type icons — canonical SVG */
 const WORK_ITEM_ICONS: Record<string, string> = {
   task: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="#2684FF" fill-rule="evenodd" d="M3,0 L21,0 C22.6568542,-3.04359188e-16 24,1.34314575 24,3 L24,21 C24,22.6568542 22.6568542,24 21,24 L3,24 C1.34314575,24 2.02906125e-16,22.6568542 0,21 L0,3 C-2.02906125e-16,1.34314575 1.34314575,3.04359188e-16 3,0 Z M6,4 C4.8954305,4 4,4.8954305 4,6 L4,18 C4,19.1045695 4.8954305,20 6,20 L18,20 C19.1045695,20 20,19.1045695 20,18 L20,6 C20,4.8954305 19.1045695,4 18,4 L6,4 Z M6,6 L6,18 L18,18 L18,6 L6,6 Z"/></svg>`,
   'Sub-task': `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="#2684FF" fill-rule="evenodd" d="M13,11 L13,6 C13,5.44771525 12.5522847,5 12,5 L6,5 C5.44771525,5 5,5.44771525 5,6 L5,12 C5,12.5522847 5.44771525,13 6,13 L11,13 L11,18 C11,18.5522847 11.4477153,19 12,19 L18,19 C18.5522847,19 19,18.5522847 19,18 L19,12 C19,11.4477153 18.5522847,11 18,11 L13,11 Z M3,0 L21,0 C22.6568542,-3.04359188e-16 24,1.34314575 24,3 L24,21 C24,22.6568542 22.6568542,24 21,24 L3,24 C1.34314575,24 2.02906125e-16,22.6568542 0,21 L0,3 C-2.02906125e-16,1.34314575 1.34314575,3.04359188e-16 3,0 Z M7,7 L11,7 L11,11 L7,11 L7,7 Z M13,13 L17,13 L17,17 L13,17 L13,13 Z"/></svg>`,
   bug: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="#FF5630" fill-rule="evenodd" d="M3,0 L21,0 C22.6568542,-3.04359188e-16 24,1.34314575 24,3 L24,21 C24,22.6568542 22.6568542,24 21,24 L3,24 C1.34314575,24 2.02906125e-16,22.6568542 0,21 L0,3 C-2.02906125e-16,1.34314575 1.34314575,3.04359188e-16 3,0 Z M12,17 C14.7614237,17 17,14.7614237 17,12 C17,9.23857625 14.7614237,7 12,7 C9.23857625,7 7,9.23857625 7,12 C7,14.7614237 9.23857625,17 12,17 Z"/></svg>`,
+  'QA Bug': `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="#FF5630" fill-rule="evenodd" d="M3,0 L21,0 C22.6568542,-3.04359188e-16 24,1.34314575 24,3 L24,21 C24,22.6568542 22.6568542,24 21,24 L3,24 C1.34314575,24 2.02906125e-16,22.6568542 0,21 L0,3 C-2.02906125e-16,1.34314575 1.34314575,3.04359188e-16 3,0 Z M12,17 C14.7614237,17 17,14.7614237 17,12 C17,9.23857625 14.7614237,7 12,7 C9.23857625,7 7,9.23857625 7,12 C7,14.7614237 9.23857625,17 12,17 Z"/></svg>`,
+  Defect: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="#FF5630" fill-rule="evenodd" d="M3,0 L21,0 C22.6568542,-3.04359188e-16 24,1.34314575 24,3 L24,21 C24,22.6568542 22.6568542,24 21,24 L3,24 C1.34314575,24 2.02906125e-16,22.6568542 0,21 L0,3 C-2.02906125e-16,1.34314575 1.34314575,3.04359188e-16 3,0 Z M12,17 C14.7614237,17 17,14.7614237 17,12 C17,9.23857625 14.7614237,7 12,7 C9.23857625,7 7,9.23857625 7,12 C7,14.7614237 9.23857625,17 12,17 Z"/></svg>`,
+  'Production Incident': `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="#FF5630" fill-rule="evenodd" d="M8.82852964,12 L7.92252934,15 L16.0774707,15 L15.1714704,12 L8.82852964,12 Z M9.43252984,10 L14.5674702,10 L12.9572977,4.66830491 C12.8604893,4.34774733 12.6096616,4.09691963 12.289104,4.00011121 C11.7604031,3.84044348 11.20237,4.13960399 11.0427023,4.66830491 L9.43252984,10 Z M17,17 L7,17 L6,17 C5.44771525,17 5,17.4477153 5,18 L5,20 L19,20 L19,18 C19,17.4477153 18.5522847,17 18,17 L17,17 Z M3,0 L21,0 C22.6568542,-3.04359188e-16 24,1.34314575 24,3 L24,21 C24,22.6568542 22.6568542,24 21,24 L3,24 C1.34314575,24 2.02906125e-16,22.6568542 0,21 L0,3 C-2.02906125e-16,1.34314575 1.34314575,3.04359188e-16 3,0 Z"/></svg>`,
   epic: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="#6554C0" fill-rule="evenodd" d="M3,0 L21,0 C22.6568542,-3.04359188e-16 24,1.34314575 24,3 L24,21 C24,22.6568542 22.6568542,24 21,24 L3,24 C1.34314575,24 2.02906125e-16,22.6568542 0,21 L0,3 C-2.02906125e-16,1.34314575 1.34314575,3.04359188e-16 3,0 Z M18.1875,9.4 L15.125,9.4 L15.125,4.8 C15.125,3.80261507 14.3098441,3 13.3125,3 L9.875,14.5744 L9.875,19.2 C9.875,20.1973849 10.6901559,21 11.6875,21 L20,11.2 C20,10.2026151 19.1848441,9.4 18.1875,9.4 Z"/></svg>`,
+  story: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="#36B37E" fill-rule="evenodd" d="M3,0 L21,0 C22.6568542,-3.04359188e-16 24,1.34314575 24,3 L24,21 C24,22.6568542 22.6568542,24 21,24 L3,24 C1.34314575,24 2.02906125e-16,22.6568542 0,21 L0,3 C-2.02906125e-16,1.34314575 1.34314575,3.04359188e-16 3,0 Z M15.6470004,19.5152539 L16.9369996,17.9868881 L12.0001502,13.8199984 L7.06117589,17.98674 L7,18.1534919 L7,6.68807648 C7,6.34797522 7.41227423,6 8,6 L16,6 C16.5865377,6 17,6.34873697 17,6.68807648 L17,18.1534919 L15.6470004,19.5152539 Z"/></svg>`,
 };
 
 const AI_IMPROVE_OPTIONS: { value: AIImproveType; label: string }[] = [
@@ -262,6 +317,12 @@ const AI_IMPROVE_OPTIONS: { value: AIImproveType; label: string }[] = [
 function fmtDate(iso: string | null | undefined): string {
   if (!iso) return '—';
   return new Date(iso).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+}
+
+function formatDateShort(iso: string | null): string {
+  if (!iso) return '—';
+  const d = new Date(iso);
+  return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
 }
 
 function getStatusCategory(s: string): string {
@@ -293,16 +354,9 @@ function getLozengeVariant(statusCategory: 'todo' | 'in_progress' | 'done'): 'gr
   return 'grey';
 }
 
-function getSeverity(priority: string | null): { label: string; bg: string; color: string } {
-  if (!priority) return { label: 'SEV-3', bg: '#F1F5F9', color: '#475569' };
-  if (priority === 'Highest' || priority === 'High') return { label: 'SEV-1', bg: '#FFE2DD', color: '#AE2A19' };
-  if (priority === 'Medium') return { label: 'SEV-2', bg: '#FFF0E6', color: '#9E4C00' };
-  return { label: 'SEV-3', bg: '#F1F5F9', color: '#475569' };
-}
-
-function nextPosition(children: ChildIssue[]): number {
-  if (children.length === 0) return 1024;
-  return Math.max(...children.map(c => c.position)) + 1024;
+function nextPos(items: { position: number }[]): number {
+  if (!items.length) return 1024;
+  return Math.max(...items.map(i => i.position)) + 1024;
 }
 
 /* ── CANONICAL WORK ITEM SVGs ─────────────────── */
@@ -361,223 +415,790 @@ function Skel({ w, h = 14 }: { w: number | string; h?: number }) {
 }
 
 /* ═══════════════════════════════════════════════
-   PROPS & TYPES
+   V2 SHARED COMPONENTS
    ═══════════════════════════════════════════════ */
 
-interface StoryDetailModalProps {
-  isOpen: boolean; onClose: () => void; itemId: string;
-  projectId: string; projectKey: string; onOpenItem?: (itemId: string) => void;
+interface SectionBlockProps {
+  title: string;
+  count: number;
+  doneCount?: number;
+  defaultExpanded?: boolean;
+  headerRight?: React.ReactNode;
+  children: React.ReactNode;
 }
 
-type ChildTab = 'subtasks' | 'defects' | 'incidents' | 'testcases' | 'executions';
-type ActivityTab = 'comments' | 'history';
-
-const TC: React.CSSProperties = {
-  padding: '8px 12px', fontSize: 12, fontFamily: 'Inter, sans-serif',
-  borderBottom: '0.75px solid #E4E7EC', whiteSpace: 'nowrap', overflow: 'hidden',
-  textOverflow: 'ellipsis', maxWidth: 200, color: '#101828',
-};
-const TH: React.CSSProperties = {
-  ...TC, fontSize: 10, fontWeight: 700, textTransform: 'uppercase',
-  letterSpacing: '0.06em', color: '#98A2B3', background: '#F8FAFC',
-  position: 'sticky', top: 0, zIndex: 2, borderBottom: '0.75px solid #E4E7EC',
-};
-
-/* ═══════════════════════════════════════════════
-   EXTENSION COMPONENT 1 — ChildIssuesSection
-   ═══════════════════════════════════════════════ */
-
-function ChildIssuesSection({ storyKey, storyId, projectKey }: { storyKey: string; storyId: string; projectKey: string }) {
-  const queryClient = useQueryClient();
-  const { user } = useAuth();
-
-  const [expanded, setExpanded] = useState(true);
-  const [showDone, setShowDone] = useState(true);
-  const [creating, setCreating] = useState(false);
-  const [draftSummary, setDraftSummary] = useState('');
-  const [draftType, setDraftType] = useState<ChildIssueType>('task');
-  const createInputRef = useRef<HTMLInputElement>(null);
-
-  const { data: children = [], isLoading } = useQuery({
-    queryKey: ['childIssues', storyKey],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('ph_issues')
-        .select('id, issue_key, summary, status, status_category, issue_type, assignee_account_id, assignee_display_name, priority, position, deleted_at')
-        .eq('parent_key', storyKey)
-        .is('deleted_at', null)
-        .order('position', { ascending: true });
-      if (error) throw error;
-      return (data ?? []) as ChildIssue[];
-    },
-  });
-
-  const progress = useMemo(() => {
-    if (!children.length) return null;
-    const done = children.filter(c => c.status_category === 'done').length;
-    return { done, total: children.length, pct: Math.round((done / children.length) * 100) };
-  }, [children]);
-
-  const visibleChildren = useMemo(
-    () => showDone ? children : children.filter(c => c.status_category !== 'done'),
-    [children, showDone]
-  );
-
-  const createMutation = useMutation({
-    mutationFn: async (summary: string) => {
-      const tempKey = `${projectKey}-NEW-${Date.now()}`;
-      const { data, error } = await supabase
-        .from('ph_issues')
-        .insert({
-          issue_key: tempKey,
-          summary: summary.trim(),
-          issue_type: draftType,
-          parent_key: storyKey,
-          project_key: projectKey,
-          status: 'To Do',
-          status_category: 'todo',
-          priority: 'Medium',
-          position: nextPosition(children),
-          reporter_account_id: user?.id,
-          source: 'catalyst',
-        })
-        .select('id, issue_key, summary, status, status_category, issue_type, assignee_account_id, assignee_display_name, priority, position, deleted_at')
-        .single();
-      if (error) throw error;
-      return data as ChildIssue;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['childIssues', storyKey] });
-      setDraftSummary('');
-      setTimeout(() => createInputRef.current?.focus(), 50);
-    },
-  });
-
-  const handleCreateSubmit = useCallback(() => {
-    if (!draftSummary.trim()) return;
-    createMutation.mutate(draftSummary);
-  }, [draftSummary, createMutation]);
-
-  const handleCreateKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') { e.preventDefault(); handleCreateSubmit(); }
-    if (e.key === 'Escape') { setCreating(false); setDraftSummary(''); }
-  };
-
-  useEffect(() => {
-    if (creating) setTimeout(() => createInputRef.current?.focus(), 50);
-  }, [creating]);
-
-  const deleteMutation = useMutation({
-    mutationFn: async (childId: string) => {
-      const { error } = await supabase.from('ph_issues').update({ deleted_at: new Date().toISOString() }).eq('id', childId);
-      if (error) throw error;
-    },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['childIssues', storyKey] }),
-  });
-
+function SectionBlock({ title, count, doneCount, defaultExpanded = true, headerRight, children }: SectionBlockProps) {
+  const [expanded, setExpanded] = useState(defaultExpanded);
   return (
-    <div className="sdm-child-issues" style={{ marginTop: 20 }}>
+    <div className="sdm-child-issues">
       <div className="sdm-child-header">
         <div className="sdm-child-header-left">
           <button className="sdm-chevron-btn" onClick={() => setExpanded(e => !e)} aria-expanded={expanded}>
-            {expanded ? <ChevronDown size={12} strokeWidth={2.5} /> : <ChevronRight size={12} strokeWidth={2.5} />}
+            {expanded ? <ChevronDown size={11} strokeWidth={2.5} /> : <ChevronRight size={11} strokeWidth={2.5} />}
           </button>
-          <span className="sdm-child-title">Child Issues</span>
-          <span className="sdm-count-badge">{children.length}</span>
+          <span className="sdm-child-title">{title}</span>
+          <span className="sdm-count-badge">{count}</span>
         </div>
-        {expanded && progress && (
-          <div className="sdm-progress-block" title={`${progress.done} of ${progress.total} child issues done`}>
-            <div className="sdm-progress-track" role="progressbar" aria-valuenow={progress.done} aria-valuemax={progress.total}>
-              <div className="sdm-progress-fill" style={{ width: `${progress.pct}%` }} />
+        {expanded && doneCount !== undefined && count > 0 && (
+          <div className="sdm-progress-block" title={`${doneCount} of ${count} done`}>
+            <div className="sdm-progress-track">
+              <div className="sdm-progress-fill" style={{ width: `${count ? Math.round((doneCount / count) * 100) : 0}%` }} />
             </div>
-            <span className="sdm-progress-text">{progress.done} of {progress.total} done</span>
+            <span className="sdm-progress-text">{doneCount} / {count}</span>
           </div>
         )}
-        {expanded && (
-          <div className="sdm-child-header-right">
-            {children.some(c => c.status_category === 'done') && (
-              <button className="sdm-visibility-btn" onClick={() => setShowDone(s => !s)} title={showDone ? 'Hide completed' : 'Show completed'}>
-                {showDone ? <><Eye size={11} /> Hide completed</> : <><EyeOff size={11} /> Show completed ({children.filter(c => c.status_category === 'done').length} hidden)</>}
-              </button>
-            )}
-            <button className="sdm-create-btn" onClick={() => setCreating(true)}>
-              <Plus size={11} strokeWidth={2.5} /> Create child issue
-            </button>
-          </div>
+        {expanded && headerRight && (
+          <div className="sdm-child-header-right">{headerRight}</div>
         )}
       </div>
+      {expanded && <div>{children}</div>}
+    </div>
+  );
+}
 
-      {expanded && (
-        <div role="region" aria-label="Child issues">
-          {isLoading && (
-            <div>
-              {[1, 2, 3].map(i => (
-                <div key={i} className="sdm-skeleton-row">
-                  <div className="sdm-skeleton-pulse" style={{ width: 16, height: 16 }} />
-                  <div className="sdm-skeleton-pulse" style={{ width: 60, height: 12 }} />
-                  <div className="sdm-skeleton-pulse" style={{ flex: 1, height: 12 }} />
-                  <div className="sdm-skeleton-pulse" style={{ width: 60, height: 18 }} />
-                  <div className="sdm-skeleton-pulse" style={{ width: 24, height: 24, borderRadius: '50%' }} />
-                </div>
-              ))}
+interface IssueRowProps {
+  item: PhIssueRow;
+  columns: ColumnConfig;
+  onDelete: () => void;
+  onCopyLink: () => void;
+}
+
+function IssueRow({ item, columns, onDelete, onCopyLink }: IssueRowProps) {
+  const isDone = item.status_category === 'done';
+  const avatarColor = item.assignee_display_name ? getAvatarColor(item.assignee_display_name) : '#8993A4';
+  const avatarInitial = item.assignee_display_name?.charAt(0).toUpperCase() ?? '?';
+  return (
+    <div className="sdm-child-row" role="listitem">
+      <span className="sdm-drag-handle"><GripVertical size={12} /></span>
+      <span className="sdm-type-icon" dangerouslySetInnerHTML={{ __html: WORK_ITEM_ICONS[item.issue_type] ?? WORK_ITEM_ICONS.task }} />
+      <span className="sdm-child-key" style={isDone ? { color: 'rgba(9,30,66,0.4)' } : {}}>{item.issue_key}</span>
+      <span className={`sdm-child-summary${isDone ? ' sdm-child-summary--done' : ''}`}>{item.summary}</span>
+      {columns.status && (
+        <span className="sdm-status-lozenge" style={LOZENGE[item.status_category]}>{item.status}</span>
+      )}
+      {columns.assignee && (
+        <div className="sdm-child-avatar" style={{ background: avatarColor }} title={item.assignee_display_name ?? 'Unassigned'}>{avatarInitial}</div>
+      )}
+      {columns.priority && (
+        <div className="sdm-priority-dot" style={{ background: PRIORITY_COLORS[item.priority] ?? '#8993A4' }} title={item.priority} />
+      )}
+      {columns.created && (
+        <span className="sdm-date-col" title={item.jira_created_at ?? ''}>{formatDateShort(item.jira_created_at)}</span>
+      )}
+      {columns.updated && (
+        <span className="sdm-date-col" title={item.jira_updated_at ?? ''}>{formatDateShort(item.jira_updated_at)}</span>
+      )}
+      <div className="sdm-row-actions">
+        <button className="sdm-row-action-btn" title="Edit" onClick={e => e.stopPropagation()}><Edit2 size={11} /></button>
+        <button className="sdm-row-action-btn" title="Copy link" onClick={e => { e.stopPropagation(); onCopyLink(); }}><Link2 size={11} /></button>
+        <button className="sdm-row-action-btn sdm-row-action-btn--danger" title="Delete" onClick={e => { e.stopPropagation(); onDelete(); }}><Trash2 size={11} /></button>
+      </div>
+    </div>
+  );
+}
+
+function ColumnPicker({ columns, onChange }: { columns: ColumnConfig; onChange: (c: ColumnConfig) => void }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!open) return;
+    const h = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false); };
+    document.addEventListener('mousedown', h);
+    return () => document.removeEventListener('mousedown', h);
+  }, [open]);
+  const toggle = (key: keyof ColumnConfig) => onChange({ ...columns, [key]: !columns[key] });
+  const COLS: { key: keyof ColumnConfig; label: string }[] = [
+    { key: 'status', label: 'Status' }, { key: 'assignee', label: 'Assignee' },
+    { key: 'priority', label: 'Priority' }, { key: 'created', label: 'Created' },
+    { key: 'updated', label: 'Updated' },
+  ];
+  return (
+    <div ref={ref} style={{ position: 'relative' }}>
+      <button className="sdm-visibility-btn" onClick={() => setOpen(o => !o)} title="Configure visible columns">
+        <Settings2 size={11} /> Columns
+      </button>
+      {open && (
+        <div style={{ position: 'absolute', top: 'calc(100% + 4px)', right: 0, width: 200, background: '#fff', border: '1px solid rgba(9,30,66,.24)', borderRadius: 6, boxShadow: '0 6px 16px rgba(9,30,66,.15)', zIndex: 60, overflow: 'hidden', paddingBottom: 4 }}>
+          <div style={{ fontSize: 11, fontWeight: 700, color: '#6B778C', textTransform: 'uppercase', letterSpacing: '.05em', padding: '6px 12px 6px', borderBottom: '1px solid rgba(9,30,66,.1)' }}>Visible columns</div>
+          {COLS.map(col => (
+            <div key={col.key} onClick={() => toggle(col.key)} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 12px', cursor: 'pointer', transition: 'background .12s' }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'rgba(9,30,66,.04)')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+            >
+              <div style={{ width: 14, height: 14, borderRadius: 3, border: `1.5px solid ${columns[col.key] ? '#2563EB' : 'rgba(9,30,66,.24)'}`, background: columns[col.key] ? '#2563EB' : '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, transition: 'background .12s, border-color .12s' }}>
+                {columns[col.key] && <Check size={9} color="#fff" strokeWidth={3} />}
+              </div>
+              <span style={{ fontSize: 12, color: '#172B4D' }}>{col.label}</span>
             </div>
-          )}
-          {!isLoading && children.length === 0 && (
-            <section className="sdm-child-empty" aria-label="No child issues">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#8993A4" strokeWidth="1.5" className="sdm-child-empty-icon">
-                <rect x="3" y="3" width="18" height="18" rx="3"/><path d="M9 12h6M12 9v6"/>
-              </svg>
-              <div className="sdm-child-empty-heading">No child issues yet</div>
-              <div className="sdm-child-empty-sub">Break this story into tasks to track progress</div>
-              <button className="sdm-child-empty-cta" onClick={() => setCreating(true)}>+ Create child issue</button>
-            </section>
-          )}
-          {!isLoading && visibleChildren.length > 0 && (
-            <ul className="sdm-child-list" role="list">
-              {visibleChildren.map(child => {
-                const isDone = child.status_category === 'done';
-                const lozengeVariant = getLozengeVariant(child.status_category);
-                const avatarColor = child.assignee_display_name ? getAvatarColor(child.assignee_display_name) : '#8993A4';
-                const avatarInitial = child.assignee_display_name ? child.assignee_display_name.charAt(0).toUpperCase() : '?';
-                return (
-                  <li key={child.id} className="sdm-child-row" role="listitem">
-                    <span className="sdm-drag-handle"><GripVertical size={14} /></span>
-                    <span className="sdm-type-icon" dangerouslySetInnerHTML={{ __html: WORK_ITEM_ICONS[child.issue_type] ?? WORK_ITEM_ICONS.task }} />
-                    <span className="sdm-child-key">{child.issue_key}</span>
-                    <span className={`sdm-child-summary${isDone ? ' sdm-child-summary--done' : ''}`}>{child.summary}</span>
-                    <span className={`sdm-status-lozenge sdm-status-lozenge--${lozengeVariant}`} style={LOZENGE_STYLES[lozengeVariant]}>{child.status}</span>
-                    <div className="sdm-child-avatar" style={{ background: avatarColor }} title={child.assignee_display_name ?? 'Unassigned'}>{avatarInitial}</div>
-                    <div className="sdm-priority-dot" style={{ background: PRIORITY_COLORS[child.priority] ?? '#8993A4' }} title={`Priority: ${child.priority}`} />
-                    <div className="sdm-row-actions">
-                      <button className="sdm-row-action-btn" title="Edit summary" onClick={e => e.stopPropagation()}><Edit2 size={12} /></button>
-                      <button className="sdm-row-action-btn" title="Copy link" onClick={e => { e.stopPropagation(); navigator.clipboard.writeText(`${window.location.origin}/issues/${child.issue_key}`); }}><Link2 size={12} /></button>
-                      <button className="sdm-row-action-btn sdm-row-action-btn--danger" title="Delete" onClick={e => { e.stopPropagation(); if (confirm(`Delete ${child.issue_key}?`)) deleteMutation.mutate(child.id); }}><Trash2 size={12} /></button>
-                    </div>
-                  </li>
-                );
-              })}
-            </ul>
-          )}
-          {creating && (
-            <div className="sdm-create-row">
-              <button className="sdm-type-select-btn" title={`Issue type: ${draftType}`} onClick={() => setDraftType(t => t === 'task' ? 'bug' : 'task')}>
-                <span dangerouslySetInnerHTML={{ __html: WORK_ITEM_ICONS[draftType] }} />
-              </button>
-              <input ref={createInputRef} className="sdm-create-input" type="text" placeholder="What needs to be done?" value={draftSummary} onChange={e => setDraftSummary(e.target.value)} onKeyDown={handleCreateKeyDown} maxLength={255} />
-              <button className="sdm-confirm-btn" onClick={handleCreateSubmit} disabled={!draftSummary.trim() || createMutation.isPending}>
-                {createMutation.isPending ? <Loader2 size={14} className="animate-spin" /> : <Check size={14} />}
-              </button>
-              <button className="sdm-cancel-btn" onClick={() => { setCreating(false); setDraftSummary(''); }}><X size={14} /></button>
-            </div>
-          )}
+          ))}
         </div>
       )}
     </div>
   );
 }
 
+interface InlineCreateRowProps {
+  value: string;
+  onChange: (v: string) => void;
+  onSubmit: () => void;
+  onCancel: () => void;
+  pending: boolean;
+  typeIcon: string;
+  onTypeToggle?: () => void;
+  placeholder: string;
+}
+
+const InlineCreateRow = React.forwardRef<HTMLInputElement, InlineCreateRowProps>(
+  ({ value, onChange, onSubmit, onCancel, pending, typeIcon, onTypeToggle, placeholder }, ref) => (
+    <div className="sdm-create-row">
+      <button className="sdm-type-select-btn" onClick={onTypeToggle} title="Toggle type">
+        <span dangerouslySetInnerHTML={{ __html: typeIcon }} />
+      </button>
+      <input ref={ref} className="sdm-create-input" type="text" placeholder={placeholder} value={value}
+        onChange={e => onChange(e.target.value)}
+        onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); onSubmit(); } if (e.key === 'Escape') onCancel(); }}
+        maxLength={255} />
+      <button className="sdm-confirm-btn" onClick={onSubmit} disabled={!value.trim() || pending}>
+        {pending ? <Loader2 size={13} className="animate-spin" /> : <Check size={13} />}
+      </button>
+      <button className="sdm-cancel-btn" onClick={onCancel}><X size={13} /></button>
+    </div>
+  )
+);
+InlineCreateRow.displayName = 'InlineCreateRow';
+
+function SkeletonRows({ count = 3 }: { count?: number }) {
+  return (
+    <div>
+      {Array.from({ length: count }).map((_, i) => (
+        <div key={i} className="sdm-skeleton-row">
+          <div className="sdm-skeleton-pulse" style={{ width: 15, height: 15 }} />
+          <div className="sdm-skeleton-pulse" style={{ width: 55, height: 12 }} />
+          <div className="sdm-skeleton-pulse" style={{ flex: 1, height: 12 }} />
+          <div className="sdm-skeleton-pulse" style={{ width: 55, height: 18 }} />
+          <div className="sdm-skeleton-pulse" style={{ width: 22, height: 22, borderRadius: '50%' }} />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function EmptyState({ heading, sub, cta, onCta }: { heading: string; sub: string; cta?: string; onCta?: () => void }) {
+  return (
+    <div className="sdm-child-empty">
+      <AlertTriangle size={28} color="#8993A4" />
+      <div className="sdm-child-empty-heading">{heading}</div>
+      <div className="sdm-child-empty-sub">{sub}</div>
+      {cta && onCta && <button className="sdm-child-empty-cta" onClick={onCta}>{cta}</button>}
+    </div>
+  );
+}
+
 /* ═══════════════════════════════════════════════
-   EXTENSION COMPONENT 2 — ParentField
+   V2 SECTION: ChildIssuesSection
+   ═══════════════════════════════════════════════ */
+
+function ChildIssuesSection({ storyKey, storyId, projectKey }: { storyKey: string; storyId: string; projectKey: string }) {
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
+  const [columns, setColumns] = useState<ColumnConfig>(DEFAULT_COLUMNS);
+  const [showDone, setShowDone] = useState(true);
+  const [creating, setCreating] = useState(false);
+  const [draftSummary, setDraftSummary] = useState('');
+  const [draftType, setDraftType] = useState<'task' | 'bug'>('task');
+  const createRef = useRef<HTMLInputElement>(null);
+
+  const { data: children = [], isLoading } = useQuery({
+    queryKey: ['childIssues', storyKey],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('ph_issues')
+        .select('id,issue_key,summary,status,status_category,issue_type,assignee_account_id,assignee_display_name,priority,position,jira_created_at,jira_updated_at,deleted_at')
+        .eq('parent_key', storyKey).in('issue_type', ['task', 'Sub-task']).is('deleted_at', null)
+        .order('position', { ascending: true });
+      if (error) throw error;
+      return (data ?? []) as PhIssueRow[];
+    },
+  });
+
+  const visible = useMemo(() => showDone ? children : children.filter(c => c.status_category !== 'done'), [children, showDone]);
+  const doneCount = children.filter(c => c.status_category === 'done').length;
+
+  const createMutation = useMutation({
+    mutationFn: async (summary: string) => {
+      const tempKey = `${projectKey}-NEW-${Date.now()}`;
+      const { error } = await supabase.from('ph_issues').insert({
+        issue_key: tempKey, summary: summary.trim(), issue_type: draftType,
+        parent_key: storyKey, project_key: projectKey, status: 'To Do',
+        status_category: 'todo', priority: 'Medium', position: nextPos(children),
+        reporter_account_id: user?.id, source: 'catalyst',
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['childIssues', storyKey] }); setDraftSummary(''); setTimeout(() => createRef.current?.focus(), 50); },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => { const { error } = await supabase.from('ph_issues').update({ deleted_at: new Date().toISOString() }).eq('id', id); if (error) throw error; },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['childIssues', storyKey] }),
+  });
+
+  useEffect(() => { if (creating) setTimeout(() => createRef.current?.focus(), 50); }, [creating]);
+
+  return (
+    <SectionBlock title="Child Issues" count={children.length} doneCount={doneCount} defaultExpanded headerRight={
+      <>
+        {doneCount > 0 && (
+          <button className="sdm-visibility-btn" onClick={() => setShowDone(s => !s)}>
+            {showDone ? <><Eye size={11} /> Hide done</> : <><EyeOff size={11} /> Show done ({doneCount})</>}
+          </button>
+        )}
+        <ColumnPicker columns={columns} onChange={setColumns} />
+        <button className="sdm-create-btn" onClick={() => setCreating(true)}><Plus size={11} strokeWidth={2.5} /> Create child</button>
+      </>
+    }>
+      {isLoading && <SkeletonRows />}
+      {!isLoading && children.length === 0 && <EmptyState heading="No child issues yet" sub="Break this story into tasks to track progress" cta="+ Create child issue" onCta={() => setCreating(true)} />}
+      {!isLoading && visible.length > 0 && (
+        <div className="sdm-child-list" role="list">
+          {visible.map(item => (
+            <IssueRow key={item.id} item={item} columns={columns}
+              onDelete={() => { if (confirm(`Delete ${item.issue_key}?`)) deleteMutation.mutate(item.id); }}
+              onCopyLink={() => navigator.clipboard.writeText(`${window.location.origin}/issues/${item.issue_key}`)} />
+          ))}
+        </div>
+      )}
+      {creating && (
+        <InlineCreateRow ref={createRef} value={draftSummary} onChange={setDraftSummary}
+          onSubmit={() => { if (draftSummary.trim()) createMutation.mutate(draftSummary); }}
+          onCancel={() => { setCreating(false); setDraftSummary(''); }}
+          pending={createMutation.isPending} typeIcon={WORK_ITEM_ICONS[draftType]} onTypeToggle={() => setDraftType(t => t === 'task' ? 'bug' : 'task')} placeholder="What needs to be done?" />
+      )}
+    </SectionBlock>
+  );
+}
+
+/* ═══════════════════════════════════════════════
+   V2 SECTION: DefectsSection
+   ═══════════════════════════════════════════════ */
+
+function DefectsSection({ storyKey, projectKey }: { storyKey: string; projectKey: string }) {
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
+  const [columns, setColumns] = useState<ColumnConfig>(DEFAULT_COLUMNS);
+  const [creating, setCreating] = useState(false);
+  const [draftSummary, setDraftSummary] = useState('');
+  const createRef = useRef<HTMLInputElement>(null);
+
+  const { data: defects = [], isLoading } = useQuery({
+    queryKey: ['defects', storyKey],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('ph_issues')
+        .select('id,issue_key,summary,status,status_category,issue_type,assignee_account_id,assignee_display_name,priority,position,jira_created_at,jira_updated_at,deleted_at')
+        .eq('parent_key', storyKey).in('issue_type', ['QA Bug', 'Defect']).is('deleted_at', null)
+        .order('position', { ascending: true });
+      if (error) throw error;
+      return (data ?? []) as PhIssueRow[];
+    },
+  });
+
+  const createMutation = useMutation({
+    mutationFn: async (summary: string) => {
+      const tempKey = `${projectKey}-DEF-${Date.now()}`;
+      const { error } = await supabase.from('ph_issues').insert({
+        issue_key: tempKey, summary: summary.trim(), issue_type: 'Defect',
+        parent_key: storyKey, project_key: projectKey, status: 'To Do',
+        status_category: 'todo', priority: 'High', position: nextPos(defects),
+        reporter_account_id: user?.id, source: 'catalyst',
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['defects', storyKey] }); setDraftSummary(''); setTimeout(() => createRef.current?.focus(), 50); },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => { const { error } = await supabase.from('ph_issues').update({ deleted_at: new Date().toISOString() }).eq('id', id); if (error) throw error; },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['defects', storyKey] }),
+  });
+
+  useEffect(() => { if (creating) setTimeout(() => createRef.current?.focus(), 50); }, [creating]);
+  const doneCount = defects.filter(d => d.status_category === 'done').length;
+
+  return (
+    <SectionBlock title="Defects" count={defects.length} doneCount={doneCount} defaultExpanded={defects.length > 0} headerRight={
+      <>
+        <ColumnPicker columns={columns} onChange={setColumns} />
+        <button className="sdm-create-btn" onClick={() => setCreating(true)}><Plus size={11} strokeWidth={2.5} /> Log defect</button>
+      </>
+    }>
+      {isLoading && <SkeletonRows count={2} />}
+      {!isLoading && defects.length === 0 && <EmptyState heading="No defects logged" sub="Log defects found during testing" cta="+ Log defect" onCta={() => setCreating(true)} />}
+      {!isLoading && defects.length > 0 && (
+        <div className="sdm-child-list" role="list">
+          {defects.map(item => (
+            <IssueRow key={item.id} item={item} columns={columns}
+              onDelete={() => { if (confirm(`Delete ${item.issue_key}?`)) deleteMutation.mutate(item.id); }}
+              onCopyLink={() => navigator.clipboard.writeText(`${window.location.origin}/issues/${item.issue_key}`)} />
+          ))}
+        </div>
+      )}
+      {creating && (
+        <InlineCreateRow ref={createRef} value={draftSummary} onChange={setDraftSummary}
+          onSubmit={() => { if (draftSummary.trim()) createMutation.mutate(draftSummary); }}
+          onCancel={() => { setCreating(false); setDraftSummary(''); }}
+          pending={createMutation.isPending} typeIcon={WORK_ITEM_ICONS.Defect} placeholder="Describe the defect…" />
+      )}
+    </SectionBlock>
+  );
+}
+
+/* ═══════════════════════════════════════════════
+   V2 SECTION: IncidentsSection
+   ═══════════════════════════════════════════════ */
+
+function IncidentsSection({ storyKey }: { storyKey: string }) {
+  const queryClient = useQueryClient();
+  const [columns, setColumns] = useState<ColumnConfig>(DEFAULT_COLUMNS);
+
+  const { data: incidents = [], isLoading } = useQuery({
+    queryKey: ['incidents', storyKey],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('ph_issues')
+        .select('id,issue_key,summary,status,status_category,issue_type,assignee_account_id,assignee_display_name,priority,position,jira_created_at,jira_updated_at,deleted_at')
+        .eq('parent_key', storyKey).eq('issue_type', 'Production Incident').is('deleted_at', null)
+        .order('jira_created_at', { ascending: false });
+      if (error) throw error;
+      return (data ?? []) as PhIssueRow[];
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => { const { error } = await supabase.from('ph_issues').update({ deleted_at: new Date().toISOString() }).eq('id', id); if (error) throw error; },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['incidents', storyKey] }),
+  });
+
+  const doneCount = incidents.filter(i => i.status_category === 'done').length;
+
+  return (
+    <SectionBlock title="Production Incidents" count={incidents.length} doneCount={doneCount} defaultExpanded={incidents.length > 0} headerRight={
+      <>
+        <ColumnPicker columns={columns} onChange={setColumns} />
+        <button className="sdm-create-btn sdm-visibility-btn"><ExternalLink size={10} /> Link incident</button>
+      </>
+    }>
+      {isLoading && <SkeletonRows count={1} />}
+      {!isLoading && incidents.length === 0 && <EmptyState heading="No production incidents" sub="Incidents linked to this story will appear here" />}
+      {!isLoading && incidents.length > 0 && (
+        <div className="sdm-child-list" role="list">
+          {incidents.map(item => (
+            <IssueRow key={item.id} item={item} columns={columns}
+              onDelete={() => { if (confirm(`Unlink ${item.issue_key}?`)) deleteMutation.mutate(item.id); }}
+              onCopyLink={() => navigator.clipboard.writeText(`${window.location.origin}/issues/${item.issue_key}`)} />
+          ))}
+        </div>
+      )}
+    </SectionBlock>
+  );
+}
+
+/* ═══════════════════════════════════════════════
+   V2 SECTION: TestHubSection
+   ═══════════════════════════════════════════════ */
+
+function TestHubSection({ storyId }: { storyId: string }) {
+  const [activeTab, setActiveTab] = useState<'cases' | 'executions'>('cases');
+  const queryClient = useQueryClient();
+
+  const { data: testCases = [], isLoading: casesLoading } = useQuery({
+    queryKey: ['testCases', storyId],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('tm_test_case_links')
+        .select(`id, test_case:tm_test_cases ( id, case_key, title, status, priority, assigned_to, created_at )`)
+        .eq('linked_item_id', storyId).eq('linked_item_type', 'story');
+      if (error) throw error;
+      return (data?.map((r: any) => r.test_case).filter(Boolean) ?? []) as TmTestCase[];
+    },
+  });
+
+  const { data: executions = [], isLoading: execLoading } = useQuery({
+    queryKey: ['testExecutions', storyId],
+    queryFn: async () => {
+      const { data: links } = await supabase.from('tm_test_case_links')
+        .select('test_case_id:tm_test_cases(id,case_key,title)')
+        .eq('linked_item_id', storyId).eq('linked_item_type', 'story');
+      if (!links?.length) return [];
+      const caseIds = links.map((l: any) => l.test_case_id?.id).filter(Boolean);
+      const { data, error } = await supabase.from('th_test_executions')
+        .select('id,test_case_id,cycle_name,result,executed_by,executed_at')
+        .in('test_case_id', caseIds).order('executed_at', { ascending: false });
+      if (error) throw error;
+      return (data ?? []) as ThTestExecution[];
+    },
+    enabled: activeTab === 'executions',
+  });
+
+  const unlinkCase = useMutation({
+    mutationFn: async (caseId: string) => {
+      const { error } = await supabase.from('tm_test_case_links').delete()
+        .eq('linked_item_id', storyId).eq('test_case_id', caseId).eq('linked_item_type', 'story');
+      if (error) throw error;
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['testCases', storyId] }),
+  });
+
+  return (
+    <SectionBlock title="TestHub" count={testCases.length} defaultExpanded={testCases.length > 0} headerRight={
+      <>
+        <button className="sdm-visibility-btn" style={{ gap: 4 }}><ExternalLink size={10} /> Open TestHub</button>
+        <button className="sdm-create-btn sdm-visibility-btn"><Plus size={10} /> Link test</button>
+      </>
+    }>
+      <div style={{ display: 'flex', borderBottom: '1px solid rgba(9,30,66,.14)', background: '#F8FAFC' }}>
+        {([{ key: 'cases' as const, label: 'Test Cases', count: testCases.length }, { key: 'executions' as const, label: 'Test Executions', count: executions.length }]).map(tab => (
+          <button key={tab.key} onClick={() => setActiveTab(tab.key)} style={{
+            flex: 1, height: 33, fontSize: 12, fontWeight: 500, border: 'none', background: 'transparent', cursor: 'pointer',
+            color: activeTab === tab.key ? '#2563EB' : '#6B778C',
+            borderBottom: `2px solid ${activeTab === tab.key ? '#2563EB' : 'transparent'}`,
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5, transition: 'color .12s, border-color .12s',
+            fontFamily: 'var(--cp-font-ui, Inter, system-ui, sans-serif)',
+          }}>
+            {tab.label}
+            <span style={{ fontSize: 10, fontWeight: 700, padding: '1px 5px', borderRadius: 8, background: activeTab === tab.key ? '#DEEBFF' : '#DFE1E6', color: activeTab === tab.key ? '#0747A6' : '#42526E' }}>{tab.count}</span>
+          </button>
+        ))}
+      </div>
+      {activeTab === 'cases' && (
+        <>
+          {casesLoading && <SkeletonRows />}
+          {!casesLoading && testCases.length === 0 && <EmptyState heading="No test cases linked" sub="Link test cases from TestHub to track coverage" />}
+          {!casesLoading && testCases.length > 0 && (
+            <div className="sdm-child-list" role="list">
+              {testCases.map(tc => (
+                <div key={tc.id} className="sdm-child-row">
+                  <span className="sdm-type-icon">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#36B37E" strokeWidth="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                  </span>
+                  <span className="sdm-child-key" style={{ color: '#42526E' }}>{tc.case_key}</span>
+                  <span className="sdm-child-summary">{tc.title}</span>
+                  <span className="sdm-status-lozenge" style={LOZENGE[tc.status === 'active' ? 'in_progress' : 'todo']}>{tc.status}</span>
+                  <span className="sdm-date-col">{formatDateShort(tc.created_at)}</span>
+                  <div className="sdm-row-actions">
+                    <button className="sdm-row-action-btn" title="Open in TestHub"><ExternalLink size={11} /></button>
+                    <button className="sdm-row-action-btn sdm-row-action-btn--danger" title="Unlink" onClick={e => { e.stopPropagation(); unlinkCase.mutate(tc.id); }}><X size={11} /></button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </>
+      )}
+      {activeTab === 'executions' && (
+        <>
+          {execLoading && <SkeletonRows />}
+          {!execLoading && executions.length === 0 && <EmptyState heading="No test executions" sub="Run test cases from TestHub to see results here" />}
+          {!execLoading && executions.length > 0 && (
+            <div className="sdm-child-list" role="list">
+              {executions.map(ex => (
+                <div key={ex.id ?? ex.test_case_id} className="sdm-child-row">
+                  <span style={{
+                    ...TEST_RESULT_STYLES[ex.result as TestResult] ?? TEST_RESULT_STYLES.not_run,
+                    display: 'inline-flex', alignItems: 'center', height: 18, padding: '0 6px', borderRadius: 3,
+                    fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.03em', flexShrink: 0,
+                  }}>{ex.result?.replace('_', ' ') ?? 'N/A'}</span>
+                  <span className="sdm-child-key" style={{ color: '#42526E' }}>{ex.case_key ?? '—'}</span>
+                  <span className="sdm-child-summary">{ex.cycle_name ?? 'Manual execution'}</span>
+                  {ex.executed_by && (
+                    <div className="sdm-child-avatar" style={{ background: getAvatarColor(ex.executed_by) }}>{ex.executed_by.charAt(0).toUpperCase()}</div>
+                  )}
+                  <span className="sdm-date-col">{formatDateShort(ex.executed_at)}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </>
+      )}
+    </SectionBlock>
+  );
+}
+
+/* ═══════════════════════════════════════════════
+   V2 SECTION: LinkedIssuesSection
+   ═══════════════════════════════════════════════ */
+
+function LinkedIssuesSection({ issueId }: { issueId: string }) {
+  const queryClient = useQueryClient();
+  const [showAdd, setShowAdd] = useState(false);
+
+  const { data: links = [], isLoading } = useQuery({
+    queryKey: ['linkedIssues', issueId],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('ph_issue_links')
+        .select(`id, link_type, created_at, target:ph_issues!ph_issue_links_target_id_fkey (
+          id, issue_key, summary, status, status_category, issue_type, assignee_account_id, assignee_display_name, priority, jira_updated_at, deleted_at
+        )`)
+        .eq('source_id', issueId).order('created_at', { ascending: false });
+      if (error) throw error;
+      return (data ?? []).filter((l: any) => l.target && !l.target.deleted_at) as any[];
+    },
+  });
+
+  const removeMutation = useMutation({
+    mutationFn: async (linkId: string) => { const { error } = await supabase.from('ph_issue_links').delete().eq('id', linkId); if (error) throw error; },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['linkedIssues', issueId] }),
+  });
+
+  return (
+    <SectionBlock title="Linked Issues" count={links.length} defaultExpanded={links.length > 0} headerRight={
+      <button className="sdm-create-btn" onClick={() => setShowAdd(true)}><Plus size={11} strokeWidth={2.5} /> Link issue</button>
+    }>
+      {isLoading && <SkeletonRows />}
+      {!isLoading && links.length === 0 && <EmptyState heading="No linked issues" sub="Link related, blocking, or duplicate issues" cta="+ Link issue" onCta={() => setShowAdd(true)} />}
+      {!isLoading && links.length > 0 && (
+        <div className="sdm-child-list" role="list">
+          {links.map((link: any) => {
+            const target = link.target;
+            const avatarColor = target.assignee_display_name ? getAvatarColor(target.assignee_display_name) : '#8993A4';
+            const linkStyle = LINK_TYPE_STYLES[link.link_type] ?? { background: '#F1F5F9', color: '#6B778C' };
+            return (
+              <div key={link.id} className="sdm-child-row">
+                <span style={{ ...linkStyle, display: 'inline-flex', alignItems: 'center', height: 17, padding: '0 6px', borderRadius: 3, fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.04em', flexShrink: 0, whiteSpace: 'nowrap' }}>{link.link_type}</span>
+                <span className="sdm-type-icon" dangerouslySetInnerHTML={{ __html: WORK_ITEM_ICONS[target.issue_type?.toLowerCase()] ?? WORK_ITEM_ICONS.story }} />
+                <span className="sdm-child-key">{target.issue_key}</span>
+                <span className={`sdm-child-summary${target.status_category === 'done' ? ' sdm-child-summary--done' : ''}`}>{target.summary}</span>
+                <span className="sdm-status-lozenge" style={LOZENGE[target.status_category as StatusCategory] ?? LOZENGE.todo}>{target.status}</span>
+                {target.assignee_display_name && (
+                  <div className="sdm-child-avatar" style={{ background: avatarColor }}>{target.assignee_display_name.charAt(0).toUpperCase()}</div>
+                )}
+                <span className="sdm-date-col" title={`Linked: ${link.created_at}`}>{formatDateShort(link.created_at)}</span>
+                <div className="sdm-row-actions">
+                  <button className="sdm-row-action-btn sdm-row-action-btn--danger" title="Remove link" onClick={e => { e.stopPropagation(); removeMutation.mutate(link.id); }}><X size={11} /></button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+      {showAdd && <AddLinkRow issueId={issueId} onClose={() => setShowAdd(false)} onSuccess={() => { queryClient.invalidateQueries({ queryKey: ['linkedIssues', issueId] }); setShowAdd(false); }} />}
+    </SectionBlock>
+  );
+}
+
+function AddLinkRow({ issueId, onClose, onSuccess }: { issueId: string; onClose: () => void; onSuccess: () => void }) {
+  const [linkType, setLinkType] = useState(LINK_TYPE_OPTIONS[0]);
+  const [search, setSearch] = useState('');
+  const [selected, setSelected] = useState<{ id: string; issue_key: string; summary: string } | null>(null);
+
+  const { data: results = [] } = useQuery({
+    queryKey: ['linkSearch', search],
+    queryFn: async () => {
+      if (!search.trim()) return [];
+      const { data } = await supabase.from('ph_issues').select('id, issue_key, summary')
+        .or(`issue_key.ilike.${search}%,summary.ilike.%${search}%`)
+        .is('deleted_at', null).neq('id', issueId).limit(10);
+      return data ?? [];
+    },
+    enabled: search.length > 0,
+  });
+
+  const linkMutation = useMutation({
+    mutationFn: async () => {
+      if (!selected) return;
+      const { error } = await supabase.from('ph_issue_links').insert({ source_id: issueId, target_id: selected.id, link_type: linkType });
+      if (error) throw error;
+    },
+    onSuccess,
+  });
+
+  return (
+    <div style={{ padding: '8px 12px', background: '#EFF6FF', borderTop: '1px solid #BFDBFE', display: 'flex', flexDirection: 'column', gap: 6 }}>
+      <div style={{ display: 'flex', gap: 6 }}>
+        <select value={linkType} onChange={e => setLinkType(e.target.value)} style={{ height: 28, border: '1px solid rgba(9,30,66,.14)', borderRadius: 4, fontSize: 12, fontFamily: 'inherit', padding: '0 6px', background: '#fff', flex: '0 0 auto' }}>
+          {LINK_TYPE_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
+        </select>
+        <input autoFocus value={search} onChange={e => setSearch(e.target.value)} placeholder="Search by issue key or title…"
+          style={{ flex: 1, height: 28, padding: '0 7px', border: '1px solid #BFDBFE', borderRadius: 4, fontSize: 12, fontFamily: 'inherit', outline: 'none' }} />
+        <button className="sdm-confirm-btn" onClick={() => linkMutation.mutate()} disabled={!selected || linkMutation.isPending}>
+          {linkMutation.isPending ? <Loader2 size={13} className="animate-spin" /> : <Check size={13} />}
+        </button>
+        <button className="sdm-cancel-btn" onClick={onClose}><X size={13} /></button>
+      </div>
+      {results.length > 0 && (
+        <div style={{ maxHeight: 180, overflowY: 'auto', border: '1px solid rgba(9,30,66,.14)', borderRadius: 4, background: '#fff' }}>
+          {results.map((r: any) => (
+            <div key={r.id} onClick={() => setSelected(r)}
+              style={{ display: 'flex', alignItems: 'center', gap: 7, height: 34, padding: '0 10px', cursor: 'pointer', background: selected?.id === r.id ? '#EFF6FF' : 'transparent', fontSize: 12 }}
+              onMouseEnter={e => { if (selected?.id !== r.id) (e.currentTarget as HTMLElement).style.background = 'rgba(9,30,66,.04)'; }}
+              onMouseLeave={e => { if (selected?.id !== r.id) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
+            >
+              <span style={{ fontFamily: 'var(--cp-font-mono, monospace)', fontSize: 11, fontWeight: 600, color: '#2563EB', flexShrink: 0 }}>{r.issue_key}</span>
+              <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: '#172B4D' }}>{r.summary}</span>
+              {selected?.id === r.id && <Check size={12} color="#2563EB" />}
+            </div>
+          ))}
+        </div>
+      )}
+      {selected && <div style={{ fontSize: 11, color: '#6B778C' }}>Will link: <strong>{selected.issue_key}</strong> as &quot;{linkType}&quot;</div>}
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════
+   V2 EDITABLE RIGHT PANEL FIELDS
+   ═══════════════════════════════════════════════ */
+
+function EditableAssignee({ issueId, projectId, currentAssigneeId, currentAssigneeName, onUpdate }: {
+  issueId: string; projectId: string; currentAssigneeId: string | null; currentAssigneeName: string | null; onUpdate: () => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState('');
+  const ref = useRef<HTMLDivElement>(null);
+
+  const { data: members = [] } = useQuery({
+    queryKey: ['projectMembers-edit', projectId],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('ph_project_members').select('user_id, role').eq('project_id', projectId);
+      if (error) throw error;
+      if (!data?.length) return [];
+      const userIds = data.map(d => d.user_id);
+      const { data: profiles } = await supabase.from('profiles').select('id, full_name, avatar_url').in('id', userIds);
+      const profileMap = new Map((profiles ?? []).map(p => [p.id, p]));
+      return data.map(d => ({ user_id: d.user_id, full_name: profileMap.get(d.user_id)?.full_name ?? 'Unknown', avatar_url: profileMap.get(d.user_id)?.avatar_url ?? null, role: d.role })) as ProjectMember[];
+    },
+    enabled: open,
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: async (userId: string | null) => {
+      const { error } = await supabase.from('ph_issues').update({
+        assignee_account_id: userId,
+        assignee_display_name: members.find(m => m.user_id === userId)?.full_name ?? null,
+      }).eq('id', issueId);
+      if (error) throw error;
+    },
+    onSuccess: () => { onUpdate(); setOpen(false); },
+  });
+
+  useEffect(() => {
+    if (!open) return;
+    const h = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false); };
+    document.addEventListener('mousedown', h); return () => document.removeEventListener('mousedown', h);
+  }, [open]);
+
+  const filtered = members.filter(m => m.full_name.toLowerCase().includes(search.toLowerCase()));
+  const avatarColor = currentAssigneeName ? getAvatarColor(currentAssigneeName) : '#8993A4';
+
+  return (
+    <div ref={ref} style={{ flex: 1, position: 'relative' }}>
+      <div onClick={() => setOpen(o => !o)} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '2px 7px 2px 2px', borderRadius: 13, background: '#F8FAFC', border: '1px solid rgba(9,30,66,.14)', cursor: 'pointer', transition: 'background .12s' }}
+        onMouseEnter={e => (e.currentTarget.style.background = '#EFF6FF')} onMouseLeave={e => (e.currentTarget.style.background = '#F8FAFC')}>
+        <div style={{ width: 20, height: 20, borderRadius: '50%', background: avatarColor, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: '#fff' }}>{currentAssigneeName?.charAt(0).toUpperCase() ?? '?'}</div>
+        <span style={{ fontSize: 12, color: '#172B4D' }}>{currentAssigneeName ?? 'Unassigned'}</span>
+        <Edit2 size={10} color="#8993A4" />
+      </div>
+      {open && (
+        <div style={{ position: 'absolute', top: 'calc(100% + 4px)', left: 0, width: 220, background: '#fff', border: '1px solid rgba(9,30,66,.24)', borderRadius: 6, boxShadow: '0 6px 16px rgba(9,30,66,.15)', zIndex: 50, overflow: 'hidden' }}>
+          <div style={{ padding: 6, borderBottom: '1px solid rgba(9,30,66,.1)' }}>
+            <input autoFocus value={search} onChange={e => setSearch(e.target.value)} placeholder="Search members…" style={{ width: '100%', height: 28, padding: '0 7px', border: '1px solid rgba(9,30,66,.14)', borderRadius: 4, fontSize: 12, fontFamily: 'inherit', outline: 'none' }} />
+          </div>
+          <div style={{ maxHeight: 220, overflowY: 'auto' }}>
+            <div onClick={() => updateMutation.mutate(null)} style={{ display: 'flex', alignItems: 'center', gap: 7, height: 34, padding: '0 10px', cursor: 'pointer', fontSize: 13 }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'rgba(9,30,66,.04)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+              <div style={{ width: 22, height: 22, borderRadius: '50%', background: '#DFE1E6', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, color: '#6B778C' }}>?</div>
+              <span>Unassigned</span>
+              {!currentAssigneeId && <Check size={12} color="#2563EB" style={{ marginLeft: 'auto' }} />}
+            </div>
+            {filtered.map(m => (
+              <div key={m.user_id} onClick={() => updateMutation.mutate(m.user_id)}
+                style={{ display: 'flex', alignItems: 'center', gap: 7, height: 34, padding: '0 10px', cursor: 'pointer', fontSize: 13, background: m.user_id === currentAssigneeId ? '#EFF6FF' : 'transparent' }}
+                onMouseEnter={e => (e.currentTarget.style.background = m.user_id === currentAssigneeId ? '#DBEAFE' : 'rgba(9,30,66,.04)')}
+                onMouseLeave={e => (e.currentTarget.style.background = m.user_id === currentAssigneeId ? '#EFF6FF' : 'transparent')}>
+                <div style={{ width: 22, height: 22, borderRadius: '50%', background: getAvatarColor(m.full_name), display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: '#fff', flexShrink: 0 }}>{m.full_name.charAt(0).toUpperCase()}</div>
+                <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{m.full_name}</span>
+                {m.user_id === currentAssigneeId && <Check size={12} color="#2563EB" />}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function EditablePriority({ issueId, currentPriority, onUpdate }: { issueId: string; currentPriority: string; onUpdate: () => void }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const updateMutation = useMutation({
+    mutationFn: async (priority: string) => { const { error } = await supabase.from('ph_issues').update({ priority }).eq('id', issueId); if (error) throw error; },
+    onSuccess: () => { onUpdate(); setOpen(false); },
+  });
+  useEffect(() => {
+    if (!open) return;
+    const h = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false); };
+    document.addEventListener('mousedown', h); return () => document.removeEventListener('mousedown', h);
+  }, [open]);
+  return (
+    <div ref={ref} style={{ flex: 1, position: 'relative' }}>
+      <div onClick={() => setOpen(o => !o)} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, cursor: 'pointer', padding: '2px 4px', borderRadius: 4, transition: 'background .12s' }}
+        onMouseEnter={e => (e.currentTarget.style.background = 'rgba(9,30,66,.04)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+        <span style={{ color: PRIORITY_COLORS[currentPriority] ?? '#8993A4', fontSize: 12 }}>{PRIORITY_ICONS[currentPriority] ?? '—'}</span>
+        <span style={{ fontSize: 13, color: PRIORITY_COLORS[currentPriority] ?? '#8993A4' }}>{currentPriority}</span>
+        <Edit2 size={10} color="#8993A4" />
+      </div>
+      {open && (
+        <div style={{ position: 'absolute', top: 'calc(100% + 4px)', left: 0, width: 160, background: '#fff', border: '1px solid rgba(9,30,66,.24)', borderRadius: 6, boxShadow: '0 6px 16px rgba(9,30,66,.15)', zIndex: 50, overflow: 'hidden' }}>
+          {PRIORITY_LIST.map(p => (
+            <div key={p} onClick={() => updateMutation.mutate(p)}
+              style={{ display: 'flex', alignItems: 'center', gap: 7, height: 34, padding: '0 10px', cursor: 'pointer', fontSize: 13, background: p === currentPriority ? '#EFF6FF' : 'transparent' }}
+              onMouseEnter={e => (e.currentTarget.style.background = p === currentPriority ? '#DBEAFE' : 'rgba(9,30,66,.04)')}
+              onMouseLeave={e => (e.currentTarget.style.background = p === currentPriority ? '#EFF6FF' : 'transparent')}>
+              <span style={{ color: PRIORITY_COLORS[p], fontSize: 12, width: 16 }}>{PRIORITY_ICONS[p]}</span>
+              <span style={{ color: PRIORITY_COLORS[p], flex: 1 }}>{p}</span>
+              {p === currentPriority && <Check size={12} color="#2563EB" />}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function EditableLabels({ issueId, currentLabels, onUpdate }: { issueId: string; currentLabels: string[]; onUpdate: () => void }) {
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState('');
+  const updateMutation = useMutation({
+    mutationFn: async (labels: string[]) => { const { error } = await supabase.from('ph_issues').update({ labels: JSON.stringify(labels) as any }).eq('id', issueId); if (error) throw error; },
+    onSuccess: () => onUpdate(),
+  });
+  const addLabel = (label: string) => {
+    const trimmed = label.trim().toLowerCase().replace(/\s+/g, '-');
+    if (!trimmed || currentLabels.includes(trimmed)) return;
+    updateMutation.mutate([...currentLabels, trimmed]);
+    setDraft('');
+  };
+  const removeLabel = (label: string) => updateMutation.mutate(currentLabels.filter(l => l !== label));
+  return (
+    <div style={{ flex: 1, display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 3, padding: '2px 0' }}>
+      {currentLabels.map(label => (
+        <span key={label} style={{ display: 'inline-flex', alignItems: 'center', gap: 3, height: 18, padding: '0 6px', borderRadius: 3, background: '#DEEBFF', color: '#0747A6', fontSize: 11, fontWeight: 500 }}>
+          {label}
+          <button onClick={() => removeLabel(label)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#0747A6', padding: 0, display: 'flex', alignItems: 'center' }}><X size={10} /></button>
+        </span>
+      ))}
+      {editing ? (
+        <input autoFocus value={draft} onChange={e => setDraft(e.target.value)}
+          onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addLabel(draft); } if (e.key === 'Escape') { setEditing(false); setDraft(''); } }}
+          onBlur={() => { if (draft) addLabel(draft); setEditing(false); }}
+          placeholder="Type + Enter" style={{ height: 20, padding: '0 6px', border: '1px solid #2563EB', borderRadius: 3, fontSize: 11, fontFamily: 'inherit', outline: 'none', width: 90 }} />
+      ) : (
+        <button onClick={() => setEditing(true)} style={{ display: 'inline-flex', alignItems: 'center', gap: 3, height: 18, padding: '0 6px', borderRadius: 3, border: '1px dashed rgba(9,30,66,.24)', color: '#8993A4', fontSize: 11, background: 'none', cursor: 'pointer' }}>
+          <Plus size={9} /> Add label
+        </button>
+      )}
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════
+   EXTENSION: ParentFieldPicker
    ═══════════════════════════════════════════════ */
 
 function ParentFieldPicker({ storyKey, parentKey, projectKey, onParentChange }: {
@@ -623,18 +1244,13 @@ function ParentFieldPicker({ storyKey, parentKey, projectKey, onParentChange }: 
   useEffect(() => {
     if (!open) return;
     const handleClick = (e: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-        setOpen(false); setSearch('');
-      }
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) { setOpen(false); setSearch(''); }
     };
     document.addEventListener('mousedown', handleClick);
     return () => document.removeEventListener('mousedown', handleClick);
   }, [open]);
 
-  useEffect(() => {
-    if (open) setTimeout(() => searchInputRef.current?.focus(), 50);
-  }, [open]);
-
+  useEffect(() => { if (open) setTimeout(() => searchInputRef.current?.focus(), 50); }, [open]);
   const handleSelect = (key: string | null) => { onParentChange(key); setOpen(false); setSearch(''); };
 
   return (
@@ -647,9 +1263,7 @@ function ParentFieldPicker({ storyKey, parentKey, projectKey, onParentChange }: 
           <span className="sdm-parent-chevron"><ChevronRight size={10} /></span>
         </div>
       ) : (
-        <div className="sdm-parent-field sdm-parent-field--empty" onClick={() => setOpen(o => !o)} role="button">
-          None — Add parent
-        </div>
+        <div className="sdm-parent-field sdm-parent-field--empty" onClick={() => setOpen(o => !o)} role="button">None — Add parent</div>
       )}
       {open && (
         <div className="sdm-parent-popover" role="dialog" aria-label="Select parent issue">
@@ -657,9 +1271,7 @@ function ParentFieldPicker({ storyKey, parentKey, projectKey, onParentChange }: 
             <input ref={searchInputRef} className="sdm-popover-input" type="text" placeholder="Search epics…" value={search} onChange={e => setSearch(e.target.value)} onKeyDown={e => { if (e.key === 'Escape') { setOpen(false); setSearch(''); } }} />
           </div>
           <div className="sdm-popover-results">
-            {parentKey && (
-              <div className="sdm-popover-none-option" onClick={() => handleSelect(null)} role="button">✕ Remove parent</div>
-            )}
+            {parentKey && <div className="sdm-popover-none-option" onClick={() => handleSelect(null)} role="button">✕ Remove parent</div>}
             {searchResults.map(result => (
               <div key={result.id} className={`sdm-popover-result${result.issue_key === parentKey ? ' sdm-popover-result--active' : ''}`} onClick={() => handleSelect(result.issue_key)} role="button">
                 <span dangerouslySetInnerHTML={{ __html: WORK_ITEM_ICONS.epic }} />
@@ -668,9 +1280,7 @@ function ParentFieldPicker({ storyKey, parentKey, projectKey, onParentChange }: 
                 {result.issue_key === parentKey && <Check size={12} style={{ color: '#2563EB', flexShrink: 0 }} />}
               </div>
             ))}
-            {searchResults.length === 0 && search && (
-              <div style={{ padding: 12, fontSize: 12, color: '#6B778C', textAlign: 'center' }}>No epics found for "{search}"</div>
-            )}
+            {searchResults.length === 0 && search && <div style={{ padding: 12, fontSize: 12, color: '#6B778C', textAlign: 'center' }}>No epics found for "{search}"</div>}
           </div>
         </div>
       )}
@@ -679,14 +1289,12 @@ function ParentFieldPicker({ storyKey, parentKey, projectKey, onParentChange }: 
 }
 
 /* ═══════════════════════════════════════════════
-   EXTENSION COMPONENT 3 — AIImprovePanel
+   EXTENSION: AIImprovePanel
    ═══════════════════════════════════════════════ */
 
 function AIImprovePanel({ storyId, issueKey, currentDescription, currentAcceptanceCriteria, onApplyDescription, onApplyAcceptanceCriteria }: {
-  storyId: string; issueKey: string; currentDescription: string;
-  currentAcceptanceCriteria: string;
-  onApplyDescription: (text: string, prev: string) => void;
-  onApplyAcceptanceCriteria: (text: string, prev: string) => void;
+  storyId: string; issueKey: string; currentDescription: string; currentAcceptanceCriteria: string;
+  onApplyDescription: (text: string, prev: string) => void; onApplyAcceptanceCriteria: (text: string, prev: string) => void;
 }) {
   const [open, setOpen] = useState(false);
   const [improveType, setImproveType] = useState<AIImproveType>('improve_clarify');
@@ -696,13 +1304,10 @@ function AIImprovePanel({ storyId, issueKey, currentDescription, currentAcceptan
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [wasEdited, setWasEdited] = useState(false);
-
   const effectiveOutput = editedOutput ?? output;
 
   const handleGenerate = async () => {
-    if (wasEdited && output) {
-      if (!confirm('Regenerating will discard your edits. Continue?')) return;
-    }
+    if (wasEdited && output) { if (!confirm('Regenerating will discard your edits. Continue?')) return; }
     setLoading(true); setError(null); setOutput(null); setEditedOutput(null); setWasEdited(false);
     try {
       const { data, error: fnError } = await supabase.functions.invoke('ai-improve-story', {
@@ -713,16 +1318,12 @@ function AIImprovePanel({ storyId, issueKey, currentDescription, currentAcceptan
       setOutput({ description: data.description ?? '', acceptance_criteria: data.acceptance_criteria ?? '' });
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'AI features are temporarily unavailable. Try again later.');
-    } finally {
-      setLoading(false);
-    }
+    } finally { setLoading(false); }
   };
 
   return (
     <>
-      <button className="sdm-ai-trigger" onClick={() => setOpen(o => !o)} aria-expanded={open}>
-        <Sparkles size={12} /> AI Improve Story
-      </button>
+      <button className="sdm-ai-trigger" onClick={() => setOpen(o => !o)} aria-expanded={open}><Sparkles size={12} /> AI Improve Story</button>
       {open && (
         <div className="sdm-ai-panel" id="sdm-ai-panel" role="dialog" aria-label="AI Improve Story Requirements">
           <div className="sdm-ai-panel-header">
@@ -730,67 +1331,73 @@ function AIImprovePanel({ storyId, issueKey, currentDescription, currentAcceptan
             <button className="sdm-chevron-btn" onClick={() => setOpen(false)}><X size={12} /></button>
           </div>
           <div className="sdm-ai-panel-body">
-            <div className="sdm-ai-field">
-              <div className="sdm-ai-field-label">Improve type</div>
+            <div className="sdm-ai-field"><div className="sdm-ai-field-label">Improve type</div>
               <select className="sdm-ai-select" value={improveType} onChange={e => setImproveType(e.target.value as AIImproveType)}>
                 {AI_IMPROVE_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
               </select>
             </div>
-            <div className="sdm-ai-field">
-              <div className="sdm-ai-field-label">Focus area <span style={{ color: '#8993A4' }}>(optional)</span></div>
+            <div className="sdm-ai-field"><div className="sdm-ai-field-label">Focus area <span style={{ color: '#8993A4' }}>(optional)</span></div>
               <input className="sdm-ai-focus-input" type="text" placeholder='e.g. "focus on edge cases"' value={focusHint} onChange={e => setFocusHint(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') handleGenerate(); }} />
             </div>
-            <div className="sdm-ai-field">
-              <div className="sdm-ai-field-label">Context from story</div>
-              <div className="sdm-ai-context-box">
-                {currentDescription || <em style={{ color: '#8993A4' }}>No description yet — AI will generate from story title and context</em>}
-              </div>
+            <div className="sdm-ai-field"><div className="sdm-ai-field-label">Context from story</div>
+              <div className="sdm-ai-context-box">{currentDescription || <em style={{ color: '#8993A4' }}>No description yet — AI will generate from story title and context</em>}</div>
             </div>
             <button className="sdm-ai-generate-btn" onClick={handleGenerate} disabled={loading}>
               {loading ? <><Loader2 size={13} className="animate-spin" /> Generating…</> : <><Sparkles size={13} /> Generate</>}
             </button>
-            {error && (
-              <div style={{ marginTop: 8, padding: '8px 10px', background: '#FFF1EF', border: '1px solid #FFBDAD', borderRadius: 4, fontSize: 12, color: '#BF2600' }}>
-                ⚠ {error}
-                <button onClick={handleGenerate} style={{ marginLeft: 8, color: '#BF2600', textDecoration: 'underline', background: 'none', border: 'none', cursor: 'pointer', fontSize: 12 }}>Retry</button>
-              </div>
-            )}
-            {loading && (
-              <div className="sdm-ai-output" style={{ marginTop: 10 }}>
-                <div style={{ padding: 12 }}>
-                  <div className="sdm-ai-shimmer-line" style={{ width: '40%' }} />
-                  <div className="sdm-ai-shimmer-line" />
-                  <div className="sdm-ai-shimmer-line" style={{ width: '85%' }} />
-                  <div className="sdm-ai-shimmer-line" style={{ width: '60%' }} />
-                </div>
-              </div>
-            )}
+            {error && <div style={{ marginTop: 8, padding: '8px 10px', background: '#FFF1EF', border: '1px solid #FFBDAD', borderRadius: 4, fontSize: 12, color: '#BF2600' }}>⚠ {error} <button onClick={handleGenerate} style={{ marginLeft: 8, color: '#BF2600', textDecoration: 'underline', background: 'none', border: 'none', cursor: 'pointer', fontSize: 12 }}>Retry</button></div>}
+            {loading && <div className="sdm-ai-output" style={{ marginTop: 10 }}><div style={{ padding: 12 }}><div className="sdm-ai-shimmer-line" style={{ width: '40%' }} /><div className="sdm-ai-shimmer-line" /><div className="sdm-ai-shimmer-line" style={{ width: '85%' }} /><div className="sdm-ai-shimmer-line" style={{ width: '60%' }} /></div></div>}
             {!loading && effectiveOutput && (
               <div className="sdm-ai-output">
                 <div className="sdm-ai-output-content" contentEditable suppressContentEditableWarning onInput={() => setWasEdited(true)}>
-                  {effectiveOutput.description && (
-                    <><strong style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#6B778C' }}>Description</strong>
-                    <p style={{ marginTop: 6 }}>{effectiveOutput.description}</p></>
-                  )}
-                  {effectiveOutput.acceptance_criteria && (
-                    <><strong style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#6B778C', display: 'block', marginTop: 10 }}>Acceptance Criteria</strong>
-                    <pre style={{ fontFamily: 'inherit', whiteSpace: 'pre-wrap', marginTop: 6, fontSize: 12 }}>{effectiveOutput.acceptance_criteria}</pre></>
-                  )}
+                  {effectiveOutput.description && <><strong style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#6B778C' }}>Description</strong><p style={{ marginTop: 6 }}>{effectiveOutput.description}</p></>}
+                  {effectiveOutput.acceptance_criteria && <><strong style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#6B778C', display: 'block', marginTop: 10 }}>Acceptance Criteria</strong><pre style={{ fontFamily: 'inherit', whiteSpace: 'pre-wrap', marginTop: 6, fontSize: 12 }}>{effectiveOutput.acceptance_criteria}</pre></>}
                   {wasEdited && <div style={{ marginTop: 8, fontSize: 11, color: '#6B778C' }}>✏ Edited — your changes preserved on Apply</div>}
                 </div>
                 <div className="sdm-ai-actions-row">
                   <button className="sdm-ai-action-btn sdm-ai-action-btn--regen" onClick={handleGenerate}><RotateCcw size={11} style={{ marginRight: 4 }} /> Regenerate</button>
                   {effectiveOutput.description && <button className="sdm-ai-action-btn sdm-ai-action-btn--apply" onClick={() => { onApplyDescription(effectiveOutput.description, currentDescription); setOpen(false); }}>← Apply to Description</button>}
                   {effectiveOutput.acceptance_criteria && <button className="sdm-ai-action-btn sdm-ai-action-btn--apply" onClick={() => { onApplyAcceptanceCriteria(effectiveOutput.acceptance_criteria, currentAcceptanceCriteria); setOpen(false); }}>← Apply to AC</button>}
-                  {effectiveOutput.description && effectiveOutput.acceptance_criteria && (
-                    <button className="sdm-ai-action-btn sdm-ai-action-btn--apply-both" onClick={() => { onApplyDescription(effectiveOutput.description, currentDescription); onApplyAcceptanceCriteria(effectiveOutput.acceptance_criteria, currentAcceptanceCriteria); setOpen(false); }}>← Apply Both</button>
-                  )}
+                  {effectiveOutput.description && effectiveOutput.acceptance_criteria && <button className="sdm-ai-action-btn sdm-ai-action-btn--apply-both" onClick={() => { onApplyDescription(effectiveOutput.description, currentDescription); onApplyAcceptanceCriteria(effectiveOutput.acceptance_criteria, currentAcceptanceCriteria); setOpen(false); }}>← Apply Both</button>}
                 </div>
               </div>
             )}
           </div>
         </div>
       )}
+    </>
+  );
+}
+
+/* ═══════════════════════════════════════════════
+   PROPS & LAYOUT HELPERS
+   ═══════════════════════════════════════════════ */
+
+interface StoryDetailModalProps {
+  isOpen: boolean; onClose: () => void; itemId: string;
+  projectId: string; projectKey: string; onOpenItem?: (itemId: string) => void;
+}
+
+type ActivityTab = 'comments' | 'history';
+
+const menuItem: React.CSSProperties = {
+  display: 'flex', alignItems: 'center', gap: 6, width: '100%', padding: '7px 14px',
+  background: 'none', border: 'none', fontSize: 13, color: '#344054', cursor: 'pointer', fontFamily: 'Inter, sans-serif',
+  textAlign: 'left',
+};
+
+const detailLabel: React.CSSProperties = {
+  fontSize: 11, fontWeight: 600, color: '#98A2B3', padding: '8px 0', textTransform: 'uppercase', letterSpacing: '0.04em',
+};
+const detailValue: React.CSSProperties = {
+  fontSize: 13, color: '#101828', padding: '6px 0',
+};
+
+function DetailRow({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <>
+      <div style={detailLabel}>{label}</div>
+      <div style={detailValue}>{children}</div>
     </>
   );
 }
@@ -822,42 +1429,6 @@ export default function StoryDetailModal({
     },
   });
 
-  const { data: subtasks = [] } = useQuery({
-    queryKey: ['ph-subtasks', issue?.issue_key], enabled: !!issue?.issue_key,
-    queryFn: async () => {
-      const { data } = await supabase.from('ph_issues').select('*').eq('parent_key', issue!.issue_key).eq('issue_type', 'Sub-task').is('deleted_at', null).order('jira_created_at', { ascending: true });
-      return (data ?? []) as unknown as PhIssue[];
-    },
-  });
-
-  const { data: defects = [] } = useQuery({
-    queryKey: ['ph-defects', issue?.issue_key], enabled: !!issue?.issue_key,
-    queryFn: async () => {
-      const { data } = await supabase.from('ph_issues').select('*').eq('parent_key', issue!.issue_key).in('issue_type', ['QA Bug', 'Defect']).is('deleted_at', null).order('jira_created_at', { ascending: false });
-      return (data ?? []) as unknown as PhIssue[];
-    },
-  });
-
-  const { data: incidents = [] } = useQuery({
-    queryKey: ['ph-incidents', issue?.issue_key], enabled: !!issue?.issue_key,
-    queryFn: async () => {
-      const { data } = await supabase.from('ph_issues').select('*').eq('parent_key', issue!.issue_key).eq('issue_type', 'Production Incident').is('deleted_at', null).order('jira_created_at', { ascending: false });
-      return (data ?? []) as unknown as PhIssue[];
-    },
-  });
-
-  const { data: issueLinks = [] } = useQuery({
-    queryKey: ['ph-issue-links', itemId], enabled: !!itemId && isOpen,
-    queryFn: async () => {
-      const { data: links } = await supabase.from('ph_issue_links').select('id, source_id, target_id, link_type, created_by, created_at').or(`source_id.eq.${itemId},target_id.eq.${itemId}`).order('created_at', { ascending: false });
-      if (!links?.length) return [];
-      const targetIds = links.map(l => l.source_id === itemId ? l.target_id : l.source_id);
-      const { data: targets } = await supabase.from('ph_issues').select('id, issue_key, summary, issue_type, status, status_category').in('id', targetIds).is('deleted_at', null);
-      const targetMap = new Map((targets ?? []).map(t => [t.id, t]));
-      return links.map(l => ({ ...l, target_issue: targetMap.get(l.source_id === itemId ? l.target_id : l.source_id) })) as unknown as PhIssueLink[];
-    },
-  });
-
   const { data: comments = [] } = useQuery({
     queryKey: ['ph-comments', itemId], enabled: !!itemId && isOpen,
     queryFn: async () => {
@@ -874,41 +1445,6 @@ export default function StoryDetailModal({
     },
   });
 
-  const { data: testCases = [] } = useQuery({
-    queryKey: ['tm-test-cases', itemId], enabled: !!itemId && isOpen,
-    queryFn: async () => {
-      const { data: links } = await supabase.from('tm_test_case_links').select('test_case_id, linked_at').eq('linked_item_id', itemId).eq('linked_item_type', 'story');
-      if (!links?.length) return [];
-      const caseIds = links.map(l => l.test_case_id);
-      const { data: cases } = await supabase.from('tm_test_cases').select('id, case_key, title, status, assigned_to, created_at').in('id', caseIds);
-      return (cases ?? []) as unknown as TmTestCase[];
-    },
-  });
-
-  const { data: testCycles = [] } = useQuery({
-    queryKey: ['tm-test-cycles', itemId], enabled: testCases.length > 0,
-    queryFn: async () => {
-      const caseIds = testCases.map(tc => tc.id);
-      const { data: executions } = await supabase.from('th_test_executions').select('test_case_id, test_cycle_id, result, executed_by, executed_at, cycle_name').in('test_case_id', caseIds).order('executed_at', { ascending: false });
-      if (!executions?.length) return [];
-      const cycleMap = new Map<string, TmTestCycle>();
-      for (const exec of executions) {
-        if (!exec.test_cycle_id) continue;
-        if (!cycleMap.has(exec.test_cycle_id)) {
-          cycleMap.set(exec.test_cycle_id, { id: exec.test_cycle_id, name: exec.cycle_name ?? exec.test_cycle_id, total_cases: 0, passed_count: 0, failed_count: 0, blocked_count: 0, not_run_count: 0, created_at: exec.executed_at, executions: [] });
-        }
-        const c = cycleMap.get(exec.test_cycle_id)!;
-        c.total_cases++;
-        if (exec.result === 'passed') c.passed_count++;
-        else if (exec.result === 'failed') c.failed_count++;
-        else if (exec.result === 'blocked') c.blocked_count = (c.blocked_count ?? 0) + 1;
-        else c.not_run_count = (c.not_run_count ?? 0) + 1;
-        c.executions?.push(exec as ThTestExecution);
-      }
-      return Array.from(cycleMap.values());
-    },
-  });
-
   const { data: rhReleases = { linked: [] as string[], all: [] as RhRelease[] } } = useQuery({
     queryKey: ['rh-releases-for-issue', issue?.issue_key, projectId], enabled: !!issue?.issue_key,
     queryFn: async () => {
@@ -916,26 +1452,6 @@ export default function StoryDetailModal({
       const releaseIds = (releaseLinks ?? []).map(r => r.release_id);
       const { data: allReleases } = await supabase.from('rh_releases').select('id, name, key, status, target_date, project_id').eq('project_id', projectId).order('target_date', { ascending: false });
       return { linked: releaseIds, all: (allReleases ?? []) as RhRelease[] };
-    },
-  });
-
-  const { data: rhChanges = [] } = useQuery({
-    queryKey: ['rh-changes-active', projectId], enabled: !!projectId && isOpen,
-    queryFn: async () => {
-      const { data } = await supabase.from('rh_changes').select('id, chg_number, title, status, release_id').in('status', ['new', 'in_beta', 'in_uat']).order('chg_number', { ascending: false });
-      return (data ?? []) as RhChange[];
-    },
-  });
-
-  const { data: projectMembers = [] } = useQuery({
-    queryKey: ['project-members', projectId], enabled: !!projectId && isOpen,
-    queryFn: async () => {
-      const { data } = await supabase.from('ph_project_members').select('user_id, role').eq('project_id', projectId);
-      if (!data?.length) return [];
-      const userIds = data.map(d => d.user_id);
-      const { data: profiles } = await supabase.from('profiles').select('id, full_name, avatar_url, email').in('id', userIds);
-      const profileMap = new Map((profiles ?? []).map(p => [p.id, p]));
-      return data.map(d => ({ ...d, profile: profileMap.get(d.user_id) })) as unknown as ProjectMember[];
     },
   });
 
@@ -948,12 +1464,10 @@ export default function StoryDetailModal({
   });
 
   /* ── LOCAL STATE ───────────────────────────── */
-  const [activeChildTab, setActiveChildTab] = useState<ChildTab>('subtasks');
   const [activeActivityTab, setActiveActivityTab] = useState<ActivityTab>('comments');
   const [newComment, setNewComment] = useState('');
   const [showWorkflow, setShowWorkflow] = useState(false);
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
-  const [showLinkModal, setShowLinkModal] = useState(false);
   const [showFigmaInput, setShowFigmaInput] = useState(false);
   const [figmaUrl, setFigmaUrl] = useState('');
   const [figmaError, setFigmaError] = useState('');
@@ -963,10 +1477,6 @@ export default function StoryDetailModal({
   const [showStatusDropdown, setShowStatusDropdown] = useState(false);
   const [showAddMenu, setShowAddMenu] = useState(false);
   const [showDotsMenu, setShowDotsMenu] = useState(false);
-  const [showAssigneePicker, setShowAssigneePicker] = useState(false);
-  const [linkSearch, setLinkSearch] = useState('');
-  const [linkType, setLinkType] = useState<string>('relates_to');
-  const [selectedLinkTarget, setSelectedLinkTarget] = useState<PhIssue | null>(null);
   const [acceptanceCriteria, setAcceptanceCriteria] = useState('');
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -991,20 +1501,12 @@ export default function StoryDetailModal({
 
   const updateStatusMutation = useMutation({
     mutationFn: async (newStatus: string) => {
-      const { error } = await supabase.from('ph_issues')
-        .update({ status: newStatus, status_category: resolveStatusCategory(newStatus) })
-        .eq('id', itemId);
+      const { error } = await supabase.from('ph_issues').update({ status: newStatus, status_category: resolveStatusCategory(newStatus) }).eq('id', itemId);
       if (error) throw error;
-      await supabase.from('jira_write_back_queue').insert({
-        ph_issue_id: itemId, field_name: 'status', new_value: newStatus, status: 'approved',
-      });
+      await supabase.from('jira_write_back_queue').insert({ ph_issue_id: itemId, field_name: 'status', new_value: newStatus, status: 'approved' });
     },
-    onSuccess: () => {
-      toast.success('Status updated');
-      queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] });
-      queryClient.invalidateQueries({ queryKey: ['ph_issues'] });
-    },
-    onError: (err: Error) => toast.error('Failed to update status'),
+    onSuccess: () => { toast.success('Status updated'); queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] }); queryClient.invalidateQueries({ queryKey: ['ph_issues'] }); },
+    onError: () => toast.error('Failed to update status'),
   });
 
   const updateFieldMutation = useMutation({
@@ -1012,93 +1514,49 @@ export default function StoryDetailModal({
       const { error } = await supabase.from('ph_issues').update({ [field]: value }).eq('id', itemId);
       if (error) throw error;
       await supabase.from('ph_activity_log').insert({
-        work_item_id: itemId, action: 'updated', field_name: field,
+        work_item_id: itemId, action: 'field_updated', field_name: field,
         old_value: oldValue, new_value: value, user_id: user!.id,
       });
-      await supabase.from('jira_write_back_queue').insert({
-        ph_issue_id: itemId, field_name: field, new_value: value, status: 'approved',
-      });
     },
-    onSuccess: () => {
-      toast.success('Field updated');
-      queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] });
-      queryClient.invalidateQueries({ queryKey: ['ph-activity-log', itemId] });
-    },
+    onSuccess: () => { toast.success('Updated'); queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] }); },
     onError: () => toast.error('Failed to update'),
   });
 
   const updateAssigneeMutation = useMutation({
     mutationFn: async ({ userId, displayName }: { userId: string; displayName: string }) => {
-      const { error } = await supabase.from('ph_issues')
-        .update({ assignee_account_id: userId, assignee_display_name: displayName })
-        .eq('id', itemId);
+      const { error } = await supabase.from('ph_issues').update({ assignee_account_id: userId, assignee_display_name: displayName }).eq('id', itemId);
       if (error) throw error;
-      await supabase.from('ph_activity_log').insert({
-        work_item_id: itemId, action: 'updated', field_name: 'assignee',
-        old_value: issue?.assignee_display_name ?? 'Unassigned',
-        new_value: displayName, user_id: user!.id,
-      });
+      await supabase.from('jira_write_back_queue').insert({ ph_issue_id: itemId, field_name: 'assignee', new_value: userId, status: 'approved' });
     },
-    onSuccess: () => {
-      toast.success('Assignee updated');
-      queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] });
-    },
+    onSuccess: () => { toast.success('Assignee updated'); queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] }); },
     onError: () => toast.error('Failed to update assignee'),
   });
 
   const addCommentMutation = useMutation({
     mutationFn: async (body: string) => {
-      if (!body.trim()) throw new Error('Comment cannot be empty');
-      const { error } = await supabase.from('ph_comments')
-        .insert({ work_item_id: itemId, body: body.trim(), author_id: user!.id });
+      const { error } = await supabase.from('ph_comments').insert({ work_item_id: itemId, body, author_id: user!.id });
       if (error) throw error;
     },
-    onSuccess: () => {
-      setNewComment('');
-      toast.success('Comment added');
-      queryClient.invalidateQueries({ queryKey: ['ph-comments', itemId] });
-    },
+    onSuccess: () => { setNewComment(''); toast.success('Comment added'); queryClient.invalidateQueries({ queryKey: ['ph-comments', itemId] }); },
     onError: () => toast.error('Failed to add comment'),
   });
 
   const deleteCommentMutation = useMutation({
     mutationFn: async (commentId: string) => {
-      const { error } = await supabase.from('ph_comments').delete().eq('id', commentId).eq('author_id', user!.id);
+      const { error } = await supabase.from('ph_comments').delete().eq('id', commentId);
       if (error) throw error;
     },
-    onSuccess: () => {
-      toast.success('Comment deleted');
-      queryClient.invalidateQueries({ queryKey: ['ph-comments', itemId] });
-    },
-    onError: () => toast.error('Failed to delete comment'),
+    onSuccess: () => { toast.success('Comment deleted'); queryClient.invalidateQueries({ queryKey: ['ph-comments', itemId] }); },
+    onError: () => toast.error('Failed to delete'),
   });
 
   const deleteIssueMutation = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase.from('ph_issues')
-        .update({ deleted_at: new Date().toISOString() }).eq('id', itemId);
+      const { error } = await supabase.from('ph_issues').update({ deleted_at: new Date().toISOString() }).eq('id', itemId);
       if (error) throw error;
     },
-    onSuccess: () => {
-      toast.success(`${issue?.issue_key} deleted`);
-      queryClient.invalidateQueries({ queryKey: ['ph_issues'] });
-      onClose();
-    },
+    onSuccess: () => { toast.success('Ticket deleted'); onClose(); queryClient.invalidateQueries({ queryKey: ['ph_issues'] }); },
     onError: () => toast.error('Failed to delete'),
-  });
-
-  const addLinkMutation = useMutation({
-    mutationFn: async ({ targetId, linkTypeVal }: { targetId: string; linkTypeVal: string }) => {
-      const { error } = await supabase.from('ph_issue_links')
-        .insert({ source_id: itemId, target_id: targetId, link_type: linkTypeVal, created_by: user!.id });
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      setShowLinkModal(false); setSelectedLinkTarget(null); setLinkSearch('');
-      toast.success('Issue linked');
-      queryClient.invalidateQueries({ queryKey: ['ph-issue-links', itemId] });
-    },
-    onError: () => toast.error('Failed to link'),
   });
 
   const uploadAttachmentMutation = useMutation({
@@ -1107,25 +1565,15 @@ export default function StoryDetailModal({
       const path = `attachments/${itemId}/${Date.now()}.${ext}`;
       const { error: uploadError } = await supabase.storage.from('attachments').upload(path, file);
       if (uploadError) throw uploadError;
-      const { error: dbError } = await supabase.from('ph_attachments')
-        .insert({ work_item_id: itemId, file_name: file.name, file_size: file.size,
-                  mime_type: file.type, storage_path: path, uploaded_by: user!.id });
+      const { error: dbError } = await supabase.from('ph_attachments').insert({ work_item_id: itemId, file_name: file.name, file_size: file.size, mime_type: file.type, storage_path: path, uploaded_by: user!.id });
       if (dbError) throw dbError;
     },
-    onSuccess: () => {
-      toast.success('Attachment uploaded');
-      queryClient.invalidateQueries({ queryKey: ['ph-attachments', itemId] });
-    },
+    onSuccess: () => { toast.success('Attachment uploaded'); queryClient.invalidateQueries({ queryKey: ['ph-attachments', itemId] }); },
     onError: () => toast.error('Failed to upload'),
   });
 
-  const handleCommentSubmit = () => {
-    if (newComment.trim()) addCommentMutation.mutate(newComment);
-  };
-
-  const handleCommentKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); handleCommentSubmit(); }
-  };
+  const handleCommentSubmit = () => { if (newComment.trim()) addCommentMutation.mutate(newComment); };
+  const handleCommentKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => { if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); handleCommentSubmit(); } };
 
   const assignToMe = () => {
     if (!currentProfile || !user) return;
@@ -1135,29 +1583,13 @@ export default function StoryDetailModal({
   const saveFigmaLink = useCallback(() => {
     if (!/^https:\/\/(www\.)?figma\.com\//.test(figmaUrl)) { setFigmaError('Only Figma URLs accepted (figma.com)'); return; }
     setFigmaError('');
-    supabase.from('ph_attachments').insert({
-      work_item_id: itemId, file_name: figmaUrl, file_size: 0, mime_type: 'application/figma',
-      storage_path: figmaUrl, uploaded_by: user!.id,
-    }).then(({ error }) => {
+    supabase.from('ph_attachments').insert({ work_item_id: itemId, file_name: figmaUrl, file_size: 0, mime_type: 'application/figma', storage_path: figmaUrl, uploaded_by: user!.id }).then(({ error }) => {
       if (error) { toast.error(`Failed to save Figma link: ${error.message}`); return; }
       setFigmaUrl(''); setShowFigmaInput(false);
       toast.success('Figma design link added');
       queryClient.invalidateQueries({ queryKey: ['ph-attachments', itemId] });
     });
   }, [figmaUrl, itemId, user, queryClient]);
-
-  const { data: linkSearchData = [] } = useQuery({
-    queryKey: ['ph-link-search', linkSearch],
-    enabled: linkSearch.length >= 2 && showLinkModal,
-    queryFn: async () => {
-      const { data } = await supabase.from('ph_issues')
-        .select('id, issue_key, summary, issue_type, status, status_category')
-        .is('deleted_at', null).neq('id', itemId)
-        .or(`issue_key.ilike.%${linkSearch}%,summary.ilike.%${linkSearch}%`)
-        .limit(10);
-      return (data ?? []) as unknown as PhIssue[];
-    },
-  });
 
   /* ── AI Apply handlers ─────────────────────── */
   const handleApplyDescription = useCallback(async (newDesc: string, prev: string) => {
@@ -1181,7 +1613,6 @@ export default function StoryDetailModal({
   /* ── DERIVED ───────────────────────────────── */
   const statusCategory = issue?.status_category ?? 'todo';
   const statusStyle = getStatusStyle(localStatus || 'Backlog', statusCategory);
-  const doneSubtasks = subtasks.filter(s => getStatusCategory(s.status) === 'done').length;
 
   const fixVersionNames = useMemo(() => {
     if (!issue?.fix_versions) return [];
@@ -1196,241 +1627,13 @@ export default function StoryDetailModal({
     toast(`Link copied to clipboard · ${issue?.issue_key ?? ''}`);
   }, [issue?.issue_key]);
 
+  const labelsArray = useMemo(() => {
+    if (!issue?.labels) return [];
+    if (Array.isArray(issue.labels)) return issue.labels;
+    try { return JSON.parse(issue.labels as any); } catch { return []; }
+  }, [issue?.labels]);
+
   if (!isOpen) return null;
-
-  const childTabDefs: { key: ChildTab; label: string; count: number }[] = [
-    { key: 'subtasks', label: 'Subtasks', count: subtasks.length },
-    { key: 'defects', label: 'Defects', count: defects.length },
-    { key: 'incidents', label: 'Production Incidents', count: incidents.length },
-    { key: 'testcases', label: 'Test Cases', count: testCases.length },
-    { key: 'executions', label: 'Test Executions', count: testCycles.length },
-  ];
-
-  /* ── RENDER CHILD TABLE ────────────────────── */
-  function renderChildTable() {
-    if (activeChildTab === 'subtasks') return renderIssueTable(subtasks, ['key', 'title', 'status', 'priority', 'assignee', 'reporter', 'fixVersion', 'created', 'updated']);
-    if (activeChildTab === 'defects') return renderDefectTable();
-    if (activeChildTab === 'incidents') return renderIncidentTable();
-    if (activeChildTab === 'testcases') return renderTestCaseTable();
-    if (activeChildTab === 'executions') return renderTestExecutionTable();
-    return null;
-  }
-
-  function renderIssueTable(items: PhIssue[], cols: string[]) {
-    if (!items.length) return renderEmptyState('subtasks');
-    return (
-      <div style={{ overflowX: 'auto' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-          <thead><tr>
-            {cols.includes('key') && <th style={TH}>Key</th>}
-            {cols.includes('title') && <th style={{ ...TH, maxWidth: 280 }}>Title</th>}
-            {cols.includes('status') && <th style={TH}>Status</th>}
-            {cols.includes('priority') && <th style={TH}>Priority</th>}
-            {cols.includes('assignee') && <th style={TH}>Assignee</th>}
-            {cols.includes('reporter') && <th style={TH}>Reporter</th>}
-            {cols.includes('fixVersion') && <th style={TH}>Fix Version</th>}
-            {cols.includes('created') && <th style={TH}>Created</th>}
-            {cols.includes('updated') && <th style={TH}>Updated</th>}
-          </tr></thead>
-          <tbody>
-            {items.map(item => (
-              <tr key={item.id} style={{ cursor: 'pointer', height: 36 }}
-                onClick={() => onOpenItem?.(item.id)}
-                onMouseEnter={e => (e.currentTarget.style.background = 'rgba(0,0,0,0.04)')}
-                onMouseLeave={e => (e.currentTarget.style.background = '')}
-              >
-                {cols.includes('key') && <td style={TC}><span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><IssueIcon type={item.issue_type} size={14} /><span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, fontWeight: 600, color: '#0052CC' }}>{item.issue_key}</span></span></td>}
-                {cols.includes('title') && <td style={{ ...TC, maxWidth: 280, fontWeight: 500 }}>{item.summary}</td>}
-                {cols.includes('status') && <td style={TC}><JiraStatusPill status={item.status} category={item.status_category ?? getStatusCategory(item.status)} /></td>}
-                {cols.includes('priority') && <td style={TC}>{renderPriority(item.priority)}</td>}
-                {cols.includes('assignee') && <td style={TC}>{renderAvatar(item.assignee_display_name, item.assignee_account_id)}</td>}
-                {cols.includes('reporter') && <td style={TC}>{renderAvatar(item.reporter_display_name, item.reporter_account_id)}</td>}
-                {cols.includes('fixVersion') && <td style={TC}>{renderFixVersion(item.fix_versions)}</td>}
-                {cols.includes('created') && <td style={{ ...TC, fontFamily: 'JetBrains Mono, monospace', fontSize: 10.5, color: '#98A2B3' }}>{fmtDate(item.jira_created_at)}</td>}
-                {cols.includes('updated') && <td style={{ ...TC, fontFamily: 'JetBrains Mono, monospace', fontSize: 10.5, color: '#98A2B3' }}>{fmtDate(item.jira_updated_at)}</td>}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    );
-  }
-
-  function renderDefectTable() {
-    if (!defects.length) return renderEmptyState('defects');
-    return (
-      <div style={{ overflowX: 'auto' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-          <thead><tr>
-            <th style={TH}>Key</th><th style={{ ...TH, maxWidth: 280 }}>Title</th><th style={TH}>Status</th>
-            <th style={TH}>Severity</th><th style={TH}>Assignee</th><th style={TH}>Reporter</th>
-            <th style={TH}>Created</th><th style={TH}>Updated</th>
-          </tr></thead>
-          <tbody>
-            {defects.map(d => {
-              const sev = getSeverity(d.priority);
-              return (
-                <tr key={d.id} style={{ cursor: 'pointer', height: 36 }} onClick={() => onOpenItem?.(d.id)}
-                  onMouseEnter={e => (e.currentTarget.style.background = 'rgba(0,0,0,0.04)')}
-                  onMouseLeave={e => (e.currentTarget.style.background = '')}
-                >
-                  <td style={TC}><span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><IssueIcon type="Bug" size={14} /><span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, fontWeight: 600, color: '#0052CC' }}>{d.issue_key}</span></span></td>
-                  <td style={{ ...TC, maxWidth: 280, fontWeight: 500 }}>{d.summary}</td>
-                  <td style={TC}><JiraStatusPill status={d.status} category={d.status_category ?? getStatusCategory(d.status)} /></td>
-                  <td style={TC}><span style={{ fontSize: 10, fontWeight: 700, padding: '2px 6px', borderRadius: 3, background: sev.bg, color: sev.color }}>{sev.label}</span></td>
-                  <td style={TC}>{renderAvatar(d.assignee_display_name, d.assignee_account_id)}</td>
-                  <td style={TC}>{renderAvatar(d.reporter_display_name, d.reporter_account_id)}</td>
-                  <td style={{ ...TC, fontFamily: 'JetBrains Mono, monospace', fontSize: 10.5, color: '#98A2B3' }}>{fmtDate(d.jira_created_at)}</td>
-                  <td style={{ ...TC, fontFamily: 'JetBrains Mono, monospace', fontSize: 10.5, color: '#98A2B3' }}>{fmtDate(d.jira_updated_at)}</td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
-    );
-  }
-
-  function renderIncidentTable() {
-    if (!incidents.length) return renderEmptyState('incidents');
-    return (
-      <div style={{ overflowX: 'auto' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-          <thead><tr>
-            <th style={TH}>Key</th><th style={{ ...TH, maxWidth: 240 }}>Title</th><th style={TH}>Status</th>
-            <th style={TH}>Severity</th><th style={TH}>Environment</th><th style={TH}>Assignee</th>
-            <th style={TH}>Reporter</th><th style={TH}>Created</th><th style={TH}>Updated</th>
-          </tr></thead>
-          <tbody>
-            {incidents.map(inc => {
-              const sev = getSeverity(inc.priority);
-              return (
-                <tr key={inc.id} style={{ cursor: 'pointer', height: 36 }} onClick={() => onOpenItem?.(inc.id)}
-                  onMouseEnter={e => (e.currentTarget.style.background = 'rgba(0,0,0,0.04)')}
-                  onMouseLeave={e => (e.currentTarget.style.background = '')}
-                >
-                  <td style={TC}><span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><IssueIcon type="Incident" size={14} /><span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, fontWeight: 600, color: '#0052CC' }}>{inc.issue_key}</span></span></td>
-                  <td style={{ ...TC, maxWidth: 240, fontWeight: 500 }}>{inc.summary}</td>
-                  <td style={TC}><JiraStatusPill status={inc.status} category={inc.status_category ?? getStatusCategory(inc.status)} /></td>
-                  <td style={TC}><span style={{ fontSize: 10, fontWeight: 700, padding: '2px 6px', borderRadius: 3, background: sev.bg, color: sev.color }}>{sev.label}</span></td>
-                  <td style={TC}><span style={{ fontSize: 11, color: '#475569' }}>Production</span></td>
-                  <td style={TC}>{renderAvatar(inc.assignee_display_name, inc.assignee_account_id)}</td>
-                  <td style={TC}>{renderAvatar(inc.reporter_display_name, inc.reporter_account_id)}</td>
-                  <td style={{ ...TC, fontFamily: 'JetBrains Mono, monospace', fontSize: 10.5, color: '#98A2B3' }}>{fmtDate(inc.jira_created_at)}</td>
-                  <td style={{ ...TC, fontFamily: 'JetBrains Mono, monospace', fontSize: 10.5, color: '#98A2B3' }}>{fmtDate(inc.jira_updated_at)}</td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
-    );
-  }
-
-  function renderTestCaseTable() {
-    if (!testCases.length) return renderEmptyState('testcases');
-    return (
-      <div style={{ overflowX: 'auto' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-          <thead><tr>
-            <th style={TH}>Case Key</th><th style={{ ...TH, maxWidth: 280 }}>Title</th>
-            <th style={TH}>Type</th><th style={TH}>Status</th><th style={TH}>Created</th>
-          </tr></thead>
-          <tbody>
-            {testCases.map(tc => (
-              <tr key={tc.id} style={{ height: 36 }}
-                onMouseEnter={e => (e.currentTarget.style.background = 'rgba(0,0,0,0.04)')}
-                onMouseLeave={e => (e.currentTarget.style.background = '')}
-              >
-                <td style={TC}><span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, fontWeight: 600, color: '#2563EB' }}>{tc.case_key}</span></td>
-                <td style={{ ...TC, maxWidth: 280, fontWeight: 500 }}>{tc.title}</td>
-                <td style={TC}>{tc.type === 'Automated'
-                  ? <span style={{ fontSize: 10, fontWeight: 600, padding: '2px 6px', borderRadius: 3, background: '#F0FFF4', color: '#166534' }}>Automated</span>
-                  : <span style={{ fontSize: 10, fontWeight: 600, padding: '2px 6px', borderRadius: 3, background: '#EEF2FF', color: '#3730A3' }}>Manual</span>
-                }</td>
-                <td style={TC}><StatusLozenge status={tc.status} /></td>
-                <td style={{ ...TC, fontFamily: 'JetBrains Mono, monospace', fontSize: 10.5, color: '#98A2B3' }}>{fmtDate(tc.created_at)}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    );
-  }
-
-  function renderTestExecutionTable() {
-    if (!testCycles.length) return renderEmptyState('executions');
-    return (
-      <div style={{ overflowX: 'auto' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-          <thead><tr>
-            <th style={TH}>Cycle</th><th style={TH}>Cases</th><th style={TH}>Passed</th>
-            <th style={TH}>Failed</th><th style={TH}>Blocked</th><th style={TH}>Not Run</th>
-            <th style={TH}>Progress</th><th style={TH}>Last Run</th>
-          </tr></thead>
-          <tbody>
-            {testCycles.map(cyc => {
-              const total = cyc.total_cases || 1;
-              const latestExec = cyc.executions?.[0];
-              return (
-                <tr key={cyc.id} style={{ height: 36 }}>
-                  <td style={{ ...TC, fontWeight: 650 }}>{cyc.name}</td>
-                  <td style={TC}>{cyc.total_cases}</td>
-                  <td style={{ ...TC, color: '#16A34A', fontWeight: 600 }}>{cyc.passed_count}</td>
-                  <td style={{ ...TC, color: '#DC2626', fontWeight: 600 }}>{cyc.failed_count}</td>
-                  <td style={{ ...TC, color: '#9E4C00', fontWeight: 600 }}>{cyc.blocked_count ?? 0}</td>
-                  <td style={{ ...TC, color: '#98A2B3' }}>{cyc.not_run_count ?? 0}</td>
-                  <td style={TC}>
-                    <div style={{ width: 80, height: 6, borderRadius: 3, background: '#F1F5F9', display: 'flex', overflow: 'hidden' }}>
-                      <div style={{ width: `${(cyc.passed_count / total) * 100}%`, background: '#16A34A' }} />
-                      <div style={{ width: `${(cyc.failed_count / total) * 100}%`, background: '#DC2626' }} />
-                      <div style={{ width: `${((cyc.blocked_count ?? 0) / total) * 100}%`, background: '#9E4C00' }} />
-                    </div>
-                  </td>
-                  <td style={{ ...TC, fontFamily: 'JetBrains Mono, monospace', fontSize: 10.5, color: '#98A2B3' }}>{fmtDate(latestExec?.executed_at)}</td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
-    );
-  }
-
-  function renderEmptyState(tab: string) {
-    const labels: Record<string, string> = { subtasks: 'subtasks', defects: 'defects', incidents: 'production incidents', testcases: 'test cases', executions: 'test executions' };
-    return (
-      <div style={{ padding: '40px 20px', textAlign: 'center', color: '#98A2B3' }}>
-        <div style={{ fontSize: 13, marginBottom: 4 }}>No {labels[tab] ?? tab} found</div>
-        <button onClick={() => setShowAddMenu(true)} style={{ fontSize: 12, color: '#2563EB', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline' }}>Click + Add to create one</button>
-      </div>
-    );
-  }
-
-  function renderPriority(priority: string | null) {
-    const p = PRIORITY_STYLES[priority ?? 'Medium'] ?? PRIORITY_STYLES.Medium;
-    return <span style={{ fontSize: 11, fontWeight: 600, color: p.color }}>{p.symbol} {priority ?? 'Medium'}</span>;
-  }
-
-  function renderAvatar(name: string | null, id: string | null) {
-    if (!name) return <span style={{ color: '#98A2B3', fontSize: 11 }}>—</span>;
-    const bg = getAvatarColor(id ?? name);
-    return (
-      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}>
-        <span style={{ width: 20, height: 20, borderRadius: '50%', background: bg, color: '#FFF', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, flexShrink: 0 }}>{getInitials(name)}</span>
-        <span style={{ fontSize: 12, color: '#101828', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 100 }}>{name}</span>
-      </span>
-    );
-  }
-
-  function renderFixVersion(fv: any) {
-    if (!fv) return <span style={{ color: '#98A2B3' }}>—</span>;
-    const arr = Array.isArray(fv) ? fv : [];
-    const first = arr[0];
-    if (!first) return <span style={{ color: '#98A2B3' }}>—</span>;
-    const name = typeof first === 'string' ? first : first?.name ?? '—';
-    return <span style={{ fontSize: 10, fontWeight: 600, padding: '2px 6px', borderRadius: 3, background: '#F1F5F9', color: '#475569' }}>{name}</span>;
-  }
 
   /* ═════════════════════════════════════════════
      RENDER
@@ -1439,37 +1642,21 @@ export default function StoryDetailModal({
   return (
     <>
       {/* OVERLAY */}
-      <div
-        style={{ position: 'fixed', inset: 0, zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.5)', animation: 'sdm-overlay-in 200ms ease-out' }}
-        onClick={onClose}
-      >
-        {/* MODAL PANEL — data-sdm-scope enables ring-fenced CSS */}
-        <div
-          data-sdm-scope
-          style={{ width: 1100, maxWidth: '95vw', maxHeight: 'calc(100vh - 96px)', background: '#FFFFFF', borderRadius: 12, border: '1px solid #E4E7EC', display: 'flex', flexDirection: 'column', overflow: 'hidden', animation: 'sdm-card-in 250ms ease-out' }}
-          onClick={e => e.stopPropagation()}
-        >
+      <div style={{ position: 'fixed', inset: 0, zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.5)', animation: 'sdm-overlay-in 200ms ease-out' }} onClick={onClose}>
+        <div data-sdm-scope style={{ width: 1100, maxWidth: '95vw', maxHeight: 'calc(100vh - 96px)', background: '#FFFFFF', borderRadius: 12, border: '1px solid #E4E7EC', display: 'flex', flexDirection: 'column', overflow: 'hidden', animation: 'sdm-card-in 250ms ease-out' }} onClick={e => e.stopPropagation()}>
+
           {/* ── A. TOP BAR ─────────────────────── */}
           <div style={{ height: 44, minHeight: 44, background: '#F8FAFC', borderBottom: '1px solid #E4E7EC', display: 'flex', alignItems: 'center', padding: '0 16px', gap: 8 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, flex: 1, minWidth: 0 }}>
               {issue?.parent_key ? (
-                <>
-                  <IssueIcon type="Epic" size={14} />
-                  <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, fontWeight: 600, color: '#475467' }}>{issue.parent_key}</span>
-                  <span style={{ color: '#CBD5E1', fontSize: 11 }}>/</span>
-                </>
+                <><IssueIcon type="Epic" size={14} /><span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, fontWeight: 600, color: '#475467' }}>{issue.parent_key}</span><span style={{ color: '#CBD5E1', fontSize: 11 }}>/</span></>
               ) : (
-                <>
-                  <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, fontWeight: 600, color: '#98A2B3' }}>{issue?.project_key ?? projectKey}</span>
-                  <span style={{ color: '#CBD5E1', fontSize: 11 }}>/</span>
-                </>
+                <><span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, fontWeight: 600, color: '#98A2B3' }}>{issue?.project_key ?? projectKey}</span><span style={{ color: '#CBD5E1', fontSize: 11 }}>/</span></>
               )}
               <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, fontWeight: 700, color: '#475467', background: '#EEF2F7', padding: '2px 6px', borderRadius: 3 }}>{issue?.issue_key ?? '—'}</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-              <button onClick={handleShare} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '4px 8px', borderRadius: 6, border: '1px solid #E4E7EC', background: '#FFF', fontSize: 11, fontWeight: 500, color: '#475467', cursor: 'pointer' }}>
-                <Share2 size={13} /> Share
-              </button>
+              <button onClick={handleShare} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '4px 8px', borderRadius: 6, border: '1px solid #E4E7EC', background: '#FFF', fontSize: 11, fontWeight: 500, color: '#475467', cursor: 'pointer' }}><Share2 size={13} /> Share</button>
               <div style={{ position: 'relative' }}>
                 <button onClick={() => setShowDotsMenu(!showDotsMenu)} style={{ width: 28, height: 28, borderRadius: 6, border: '1px solid #E4E7EC', background: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: 14, color: '#475467' }}>···</button>
                 {showDotsMenu && (
@@ -1491,8 +1678,7 @@ export default function StoryDetailModal({
             <div style={{ flex: 1, overflowY: 'auto', padding: '24px 24px 40px', minWidth: 0 }}>
               {issueLoading ? (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                  <Skel w={120} /><Skel w="80%" h={24} /><Skel w="60%" h={16} />
-                  <div style={{ height: 20 }} /><Skel w="100%" h={200} />
+                  <Skel w={120} /><Skel w="80%" h={24} /><Skel w="60%" h={16} /><div style={{ height: 20 }} /><Skel w="100%" h={200} />
                 </div>
               ) : (
                 <>
@@ -1503,42 +1689,25 @@ export default function StoryDetailModal({
                   </div>
 
                   {/* 2. TITLE */}
-                  <h1
-                    contentEditable suppressContentEditableWarning
-                    onBlur={e => {
-                      const newTitle = e.currentTarget.textContent?.trim() ?? '';
-                      if (newTitle && newTitle !== issue?.summary) {
-                        updateFieldMutation.mutate({ field: 'summary', value: newTitle, oldValue: issue?.summary ?? '' });
-                      }
-                    }}
+                  <h1 contentEditable suppressContentEditableWarning
+                    onBlur={e => { const newTitle = e.currentTarget.textContent?.trim() ?? ''; if (newTitle && newTitle !== issue?.summary) { updateFieldMutation.mutate({ field: 'summary', value: newTitle, oldValue: issue?.summary ?? '' }); } }}
                     style={{ fontFamily: 'Sora, sans-serif', fontSize: 20, fontWeight: 700, color: '#101828', lineHeight: 1.3, letterSpacing: '-0.01em', margin: '0 0 4px', outline: 'none', cursor: 'text', borderRadius: 4 }}
                   >{issue?.summary ?? '—'}</h1>
 
                   {/* 3. TITLE TOOLBAR */}
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 20 }}>
                     <div style={{ position: 'relative' }}>
-                      <button onClick={() => setShowAddMenu(!showAddMenu)} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '5px 10px', borderRadius: 6, border: '1px solid #BFDBFE', background: '#EFF6FF', fontSize: 12, fontWeight: 600, color: '#2563EB', cursor: 'pointer' }}>
-                        <Plus size={13} /> Add
-                      </button>
+                      <button onClick={() => setShowAddMenu(!showAddMenu)} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '5px 10px', borderRadius: 6, border: '1px solid #BFDBFE', background: '#EFF6FF', fontSize: 12, fontWeight: 600, color: '#2563EB', cursor: 'pointer' }}><Plus size={13} /> Add</button>
                       {showAddMenu && (
                         <div style={{ position: 'absolute', left: 0, top: 34, background: '#FFF', border: '1px solid #E4E7EC', borderRadius: 8, boxShadow: '0 4px 12px rgba(0,0,0,0.1)', padding: '4px 0', zIndex: 50, minWidth: 200 }}>
-                          <button onClick={() => { setShowAddMenu(false); toast('Create Subtask — coming in Stage D'); }} style={menuItem}>Create Subtask</button>
-                          <button onClick={() => { setShowAddMenu(false); setShowLinkModal(true); }} style={menuItem}>Link Work Item</button>
+                          <button onClick={() => { setShowAddMenu(false); toast('Create Subtask — use Child Issues section below'); }} style={menuItem}>Create Subtask</button>
                           <button onClick={() => { setShowAddMenu(false); fileInputRef.current?.click(); }} style={menuItem}>Add Attachment</button>
                           <input ref={fileInputRef} type="file" style={{ display: 'none' }} onChange={e => { const f = e.target.files?.[0]; if (f) uploadAttachmentMutation.mutate(f); e.target.value = ''; }} />
                           <button onClick={() => { setShowAddMenu(false); setShowFigmaInput(true); }} style={menuItem}>Add Design (Figma)</button>
                         </div>
                       )}
                     </div>
-                    {/* AI Improve Story trigger */}
-                    <AIImprovePanel
-                      storyId={itemId}
-                      issueKey={issue?.issue_key ?? ''}
-                      currentDescription={issue?.description_text ?? ''}
-                      currentAcceptanceCriteria={acceptanceCriteria}
-                      onApplyDescription={handleApplyDescription}
-                      onApplyAcceptanceCriteria={handleApplyAC}
-                    />
+                    <AIImprovePanel storyId={itemId} issueKey={issue?.issue_key ?? ''} currentDescription={issue?.description_text ?? ''} currentAcceptanceCriteria={acceptanceCriteria} onApplyDescription={handleApplyDescription} onApplyAcceptanceCriteria={handleApplyAC} />
                     <button onClick={handleShare} style={{ width: 28, height: 28, borderRadius: 6, border: '1px solid #E4E7EC', background: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#98A2B3' }}><Share2 size={13} /></button>
                   </div>
 
@@ -1553,64 +1722,37 @@ export default function StoryDetailModal({
                     </div>
                   )}
 
-                  {/* 5. KEY DETAILS COLLAPSIBLE */}
+                  {/* 5. KEY DETAILS: Description */}
                   <div style={{ marginBottom: 20 }}>
                     <button onClick={() => setKeyDetailsOpen(!keyDetailsOpen)} style={{ display: 'flex', alignItems: 'center', gap: 4, background: 'none', border: 'none', cursor: 'pointer', padding: 0, marginBottom: 8 }}>
                       {keyDetailsOpen ? <ChevronDown size={14} color="#475467" /> : <ChevronRight size={14} color="#475467" />}
                       <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 700, color: '#475467' }}>Key Details</span>
                     </button>
                     {keyDetailsOpen && (
-                      <div style={{ display: 'grid', gridTemplateColumns: '110px 1fr', gap: 0 }}>
-                        <div style={detailLabel}>Parent</div>
-                        <div style={detailValue}>
-                          {issue?.parent_key ? (
-                            <button onClick={() => {}} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: '#F1F5F9', border: '1px solid #E4E7EC', borderRadius: 4, padding: '2px 8px', cursor: 'pointer', fontSize: 11, fontWeight: 600, fontFamily: 'JetBrains Mono, monospace', color: '#0052CC' }}>
-                              <IssueIcon type="Epic" size={12} /> {issue.parent_key} {issue.parent_summary ? `— ${issue.parent_summary}` : ''}
-                            </button>
-                          ) : <span style={{ color: '#98A2B3' }}>—</span>}
-                        </div>
-                        <div style={detailLabel}>Priority</div>
-                        <div style={detailValue}>{renderPriority(localPriority)}</div>
-                        <div style={{ ...detailLabel, alignSelf: 'start', paddingTop: 10 }}>Description</div>
-                        <div style={{ ...detailValue, paddingTop: 8, paddingBottom: 8 }}>
-                          <div style={{ border: '1px solid #E4E7EC', borderRadius: 8, overflow: 'hidden', transition: 'all 150ms' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 2, padding: '6px 8px', borderBottom: '1px solid #E4E7EC', background: '#F7F8FA', flexWrap: 'wrap' }}>
-                              {[
-                                { cmd: 'bold', label: 'B', fw: 'bold', fs: 'normal', td: 'none' },
-                                { cmd: 'italic', label: 'I', fw: 'normal', fs: 'italic', td: 'none' },
-                                { cmd: 'underline', label: 'U', fw: 'normal', fs: 'normal', td: 'underline' },
-                                { cmd: 'strikeThrough', label: 'S', fw: 'normal', fs: 'normal', td: 'line-through' },
-                              ].map(btn => (
-                                <button key={btn.cmd}
-                                  onMouseDown={(e) => { e.preventDefault(); document.execCommand(btn.cmd); }}
-                                  style={{ width: 24, height: 24, borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, color: '#475467', background: 'transparent', border: 'none', cursor: 'pointer', fontWeight: btn.fw as any, fontStyle: btn.fs as any, textDecoration: btn.td }}
-                                >{btn.label}</button>
-                              ))}
-                              <div style={{ width: 1, height: 16, background: '#E4E7EC', margin: '0 4px' }} />
-                              <button onMouseDown={(e) => { e.preventDefault(); document.execCommand('insertUnorderedList'); }}
-                                style={{ width: 24, height: 24, borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, color: '#475467', background: 'transparent', border: 'none', cursor: 'pointer' }}>•</button>
-                              <button onMouseDown={(e) => { e.preventDefault(); document.execCommand('insertOrderedList'); }}
-                                style={{ width: 24, height: 24, borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, color: '#475467', background: 'transparent', border: 'none', cursor: 'pointer' }}>1.</button>
-                            </div>
-                            <div
-                              ref={descriptionRef}
-                              contentEditable suppressContentEditableWarning
-                              onBlur={(e) => {
-                                const newText = e.currentTarget.innerText;
-                                if (newText !== (issue?.description_text ?? '')) {
-                                  updateFieldMutation.mutate({ field: 'description_text', value: newText, oldValue: issue?.description_text ?? '' });
-                                }
-                              }}
-                              data-placeholder="Add a description..."
-                              style={{ minHeight: 120, maxHeight: 260, overflowY: 'auto', padding: 12, fontSize: 13, color: '#101828', lineHeight: 1.6, outline: 'none', fontFamily: 'Inter, sans-serif' }}
-                              dangerouslySetInnerHTML={{ __html: issue?.description_text ?? '' }}
-                            />
-                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 10px', borderTop: '1px solid #F7F8FA' }}>
-                              <span style={{ fontSize: 10.5, color: '#98A2B3' }}>
-                                Tip: <kbd style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, background: '#F1F5F9', border: '1px solid #E4E7EC', borderRadius: 3, padding: '1px 4px' }}>Ctrl+B</kbd> bold
-                              </span>
-                              <span style={{ fontSize: 10.5, color: '#98A2B3' }}>Auto-saved</span>
-                            </div>
+                      <div>
+                        <div style={{ border: '1px solid #E4E7EC', borderRadius: 8, overflow: 'hidden' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 2, padding: '6px 8px', borderBottom: '1px solid #E4E7EC', background: '#F7F8FA', flexWrap: 'wrap' }}>
+                            {[
+                              { cmd: 'bold', label: 'B', fw: 'bold', fs: 'normal', td: 'none' },
+                              { cmd: 'italic', label: 'I', fw: 'normal', fs: 'italic', td: 'none' },
+                              { cmd: 'underline', label: 'U', fw: 'normal', fs: 'normal', td: 'underline' },
+                              { cmd: 'strikeThrough', label: 'S', fw: 'normal', fs: 'normal', td: 'line-through' },
+                            ].map(btn => (
+                              <button key={btn.cmd} onMouseDown={(e) => { e.preventDefault(); document.execCommand(btn.cmd); }}
+                                style={{ width: 24, height: 24, borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, color: '#475467', background: 'transparent', border: 'none', cursor: 'pointer', fontWeight: btn.fw as any, fontStyle: btn.fs as any, textDecoration: btn.td }}>{btn.label}</button>
+                            ))}
+                            <div style={{ width: 1, height: 16, background: '#E4E7EC', margin: '0 4px' }} />
+                            <button onMouseDown={(e) => { e.preventDefault(); document.execCommand('insertUnorderedList'); }} style={{ width: 24, height: 24, borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, color: '#475467', background: 'transparent', border: 'none', cursor: 'pointer' }}>•</button>
+                            <button onMouseDown={(e) => { e.preventDefault(); document.execCommand('insertOrderedList'); }} style={{ width: 24, height: 24, borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, color: '#475467', background: 'transparent', border: 'none', cursor: 'pointer' }}>1.</button>
+                          </div>
+                          <div ref={descriptionRef} contentEditable suppressContentEditableWarning
+                            onBlur={(e) => { const newText = e.currentTarget.innerText; if (newText !== (issue?.description_text ?? '')) { updateFieldMutation.mutate({ field: 'description_text', value: newText, oldValue: issue?.description_text ?? '' }); } }}
+                            data-placeholder="Add a description..."
+                            style={{ minHeight: 120, maxHeight: 260, overflowY: 'auto', padding: 12, fontSize: 13, color: '#101828', lineHeight: 1.6, outline: 'none', fontFamily: 'Inter, sans-serif' }}
+                            dangerouslySetInnerHTML={{ __html: issue?.description_text ?? '' }} />
+                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 10px', borderTop: '1px solid #F7F8FA' }}>
+                            <span style={{ fontSize: 10.5, color: '#98A2B3' }}>Tip: <kbd style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, background: '#F1F5F9', border: '1px solid #E4E7EC', borderRadius: 3, padding: '1px 4px' }}>Ctrl+B</kbd> bold</span>
+                            <span style={{ fontSize: 10.5, color: '#98A2B3' }}>Auto-saved</span>
                           </div>
                         </div>
                       </div>
@@ -1619,114 +1761,28 @@ export default function StoryDetailModal({
 
                   {/* 6. ACCEPTANCE CRITERIA */}
                   <div className="sdm-ac-section">
-                    <div className="sdm-ac-header">
-                      <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 700, color: '#475467' }}>Acceptance Criteria</span>
-                    </div>
-                    <div
-                      className="sdm-ac-body"
-                      contentEditable suppressContentEditableWarning
-                      onBlur={e => {
-                        const newAC = e.currentTarget.innerText.trim();
-                        if (newAC !== acceptanceCriteria) {
-                          setAcceptanceCriteria(newAC);
-                          supabase.from('ph_issues').update({ acceptance_criteria: newAC }).eq('id', itemId).then(() => {
-                            queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] });
-                          });
-                        }
-                      }}
-                    >
+                    <div className="sdm-ac-header"><span style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 700, color: '#475467' }}>Acceptance Criteria</span></div>
+                    <div className="sdm-ac-body" contentEditable suppressContentEditableWarning
+                      onBlur={e => { const newAC = e.currentTarget.innerText.trim(); if (newAC !== acceptanceCriteria) { setAcceptanceCriteria(newAC); supabase.from('ph_issues').update({ acceptance_criteria: newAC }).eq('id', itemId).then(() => { queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] }); }); } }}>
                       {acceptanceCriteria || <span className="sdm-ac-empty">No acceptance criteria defined · Add manually or use AI →</span>}
                     </div>
                   </div>
 
-                  {/* 7. CHILD ISSUES — Extension Component */}
+                  {/* 7. V2 COLLAPSIBLE SECTIONS */}
                   {issue && (
-                    <ChildIssuesSection
-                      storyKey={issue.issue_key}
-                      storyId={issue.id}
-                      projectKey={issue.project_key}
-                    />
+                    <>
+                      <ChildIssuesSection storyKey={issue.issue_key} storyId={issue.id} projectKey={issue.project_key} />
+                      <DefectsSection storyKey={issue.issue_key} projectKey={issue.project_key} />
+                      <IncidentsSection storyKey={issue.issue_key} />
+                      <TestHubSection storyId={issue.id} />
+                      <LinkedIssuesSection issueId={issue.id} />
+                    </>
                   )}
 
                   {/* 8. DIVIDER */}
                   <div style={{ height: 1, background: '#F7F8FA', margin: '20px 0' }} />
 
-                  {/* 9. CHILD ITEMS TABS SECTION (legacy 5-tab) */}
-                  <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-                      <span style={{ fontFamily: 'Sora, sans-serif', fontSize: 14, fontWeight: 700, color: '#101828' }}>Child Items</span>
-                      <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 6px', borderRadius: 10, background: '#F1F5F9', color: '#475467' }}>{subtasks.length + defects.length + incidents.length + testCases.length}</span>
-                    </div>
-                    {activeChildTab === 'subtasks' && subtasks.length > 0 && (
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-                        <div style={{ flex: 1, height: 6, borderRadius: 3, background: '#F1F5F9', overflow: 'hidden' }}>
-                          <div style={{ height: '100%', width: `${subtasks.length ? (doneSubtasks / subtasks.length) * 100 : 0}%`, background: '#16A34A', borderRadius: 3, transition: 'width 300ms' }} />
-                        </div>
-                        <span style={{ fontSize: 11, fontWeight: 500, color: '#475467', whiteSpace: 'nowrap' }}>{doneSubtasks} of {subtasks.length} done</span>
-                      </div>
-                    )}
-                    <div style={{ display: 'flex', gap: 0, borderBottom: '1px solid #E4E7EC', marginBottom: 0 }}>
-                      {childTabDefs.map(tab => {
-                        const isActive = activeChildTab === tab.key;
-                        return (
-                          <button key={tab.key} onClick={() => setActiveChildTab(tab.key)} style={{
-                            padding: '6px 12px', fontSize: 12.5, fontWeight: isActive ? 600 : 500,
-                            color: isActive ? '#0052CC' : '#98A2B3',
-                            background: 'none', border: 'none', borderBottom: isActive ? '2.5px solid #0052CC' : '2.5px solid transparent',
-                            cursor: 'pointer', marginBottom: -1, whiteSpace: 'nowrap', display: 'inline-flex', alignItems: 'center', gap: 5,
-                          }}>
-                            {tab.label}
-                            <span style={{ fontSize: 10, fontWeight: 700, padding: '1px 6px', borderRadius: 10, background: isActive ? '#DBEAFE' : '#F1F5F9', color: isActive ? '#0052CC' : '#475467' }}>{tab.count}</span>
-                          </button>
-                        );
-                      })}
-                    </div>
-                    {renderChildTable()}
-                  </div>
-
-                  {/* 10. DIVIDER */}
-                  <div style={{ height: 1, background: '#F7F8FA', margin: '20px 0' }} />
-
-                  {/* 11. LINKED WORK ITEMS */}
-                  <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-                      <span style={{ fontFamily: 'Sora, sans-serif', fontSize: 14, fontWeight: 700, color: '#101828' }}>Linked Work Items</span>
-                      <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 6px', borderRadius: 10, background: '#F1F5F9', color: '#475467' }}>{issueLinks.length}</span>
-                      <button onClick={() => setShowLinkModal(true)} style={{ width: 22, height: 22, borderRadius: 4, border: '1px solid #E4E7EC', background: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#98A2B3', fontSize: 14 }}><Plus size={12} /></button>
-                    </div>
-                    {issueLinks.length === 0 ? (
-                      <div style={{ padding: '24px 20px', textAlign: 'center', color: '#98A2B3', fontSize: 13 }}>No linked items</div>
-                    ) : (
-                      <div style={{ overflowX: 'auto' }}>
-                        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                          <thead><tr>
-                            <th style={TH}>Key</th><th style={{ ...TH, maxWidth: 260 }}>Title</th>
-                            <th style={TH}>Type</th><th style={TH}>Link Type</th><th style={TH}>Created</th>
-                          </tr></thead>
-                          <tbody>
-                            {issueLinks.map(link => (
-                              <tr key={link.id} style={{ height: 36, cursor: 'pointer' }}
-                                onClick={() => link.target_issue && onOpenItem?.(link.target_issue.id)}
-                                onMouseEnter={e => (e.currentTarget.style.background = 'rgba(0,0,0,0.04)')}
-                                onMouseLeave={e => (e.currentTarget.style.background = '')}
-                              >
-                                <td style={TC}><span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><IssueIcon type={link.target_issue?.issue_type ?? 'Story'} size={14} /><span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, fontWeight: 600, color: '#0052CC' }}>{link.target_issue?.issue_key ?? '—'}</span></span></td>
-                                <td style={{ ...TC, maxWidth: 260, fontWeight: 500 }}>{link.target_issue?.summary ?? '—'}</td>
-                                <td style={{ ...TC, fontSize: 11, color: '#98A2B3' }}>{link.target_issue?.issue_type ?? '—'}</td>
-                                <td style={TC}><span style={{ fontSize: 10, fontWeight: 600, padding: '2px 6px', borderRadius: 3, background: '#F1F5F9', color: '#475569' }}>{LINK_TYPE_LABELS[link.link_type] ?? link.link_type}</span></td>
-                                <td style={{ ...TC, fontFamily: 'JetBrains Mono, monospace', fontSize: 10.5, color: '#98A2B3' }}>{fmtDate(link.created_at)}</td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* 12. DIVIDER */}
-                  <div style={{ height: 1, background: '#F7F8FA', margin: '20px 0' }} />
-
-                  {/* 13. ACTIVITY SECTION */}
+                  {/* 9. ACTIVITY SECTION */}
                   <div>
                     <div style={{ fontFamily: 'Sora, sans-serif', fontSize: 14, fontWeight: 700, color: '#101828', marginBottom: 12 }}>Activity</div>
                     <div style={{ display: 'flex', gap: 0, borderBottom: '1px solid #E4E7EC', marginBottom: 16 }}>
@@ -1735,8 +1791,8 @@ export default function StoryDetailModal({
                         return (
                           <button key={tab} onClick={() => setActiveActivityTab(tab)} style={{
                             padding: '6px 12px', fontSize: 12.5, fontWeight: isActive ? 600 : 500,
-                            color: isActive ? '#0052CC' : '#98A2B3',
-                            background: 'none', border: 'none', borderBottom: isActive ? '2.5px solid #0052CC' : '2.5px solid transparent',
+                            color: isActive ? '#0052CC' : '#98A2B3', background: 'none', border: 'none',
+                            borderBottom: isActive ? '2.5px solid #0052CC' : '2.5px solid transparent',
                             cursor: 'pointer', marginBottom: -1, textTransform: 'capitalize', display: 'inline-flex', alignItems: 'center', gap: 4,
                           }}>
                             {tab === 'comments' ? <><MessageSquare size={12} />Comments</> : <><Clock size={12} />History</>}
@@ -1761,7 +1817,6 @@ export default function StoryDetailModal({
                                 <div style={{ display: 'flex', gap: 12, marginTop: 6 }}>
                                   <button style={{ fontSize: 11, color: '#98A2B3', background: 'none', border: 'none', cursor: 'pointer' }}>Edit</button>
                                   <button onClick={() => deleteCommentMutation.mutate(c.id)} style={{ fontSize: 11, color: '#98A2B3', background: 'none', border: 'none', cursor: 'pointer' }}>Delete</button>
-                                  <button style={{ fontSize: 11, color: '#98A2B3', background: 'none', border: 'none', cursor: 'pointer' }}>👍 0</button>
                                 </div>
                               </div>
                             </div>
@@ -1772,7 +1827,7 @@ export default function StoryDetailModal({
                           <div style={{ flex: 1 }}>
                             <textarea value={newComment} onChange={e => setNewComment(e.target.value)} onKeyDown={handleCommentKeyDown} placeholder="Add a comment…" style={{ width: '100%', minHeight: 40, borderRadius: 8, border: '1px solid #E4E7EC', padding: '8px 12px', fontSize: 13, resize: 'vertical', outline: 'none', fontFamily: 'Inter, sans-serif' }} />
                             <div style={{ fontSize: 10, color: '#C9CDD4', marginTop: 4 }}>
-                              <kbd style={{ padding: '1px 4px', borderRadius: 3, background: '#F1F5F9', border: '1px solid #E4E7EC', fontSize: 9 }}>M</kbd> to comment · <kbd style={{ padding: '1px 4px', borderRadius: 3, background: '#F1F5F9', border: '1px solid #E4E7EC', fontSize: 9 }}>Ctrl+Enter</kbd> to submit
+                              <kbd style={{ padding: '1px 4px', borderRadius: 3, background: '#F1F5F9', border: '1px solid #E4E7EC', fontSize: 9 }}>Ctrl+Enter</kbd> to submit
                             </div>
                           </div>
                         </div>
@@ -1787,8 +1842,7 @@ export default function StoryDetailModal({
                             <div style={{ flex: 1, minWidth: 0 }}>
                               <div style={{ fontSize: 12, color: '#344054', lineHeight: 1.5 }}>
                                 <span style={{ fontWeight: 650 }}>{entry.actor?.full_name ?? 'System'}</span>
-                                {' changed '}
-                                <span style={{ fontWeight: 500 }}>{entry.field_name ?? entry.action}</span>
+                                {' changed '}<span style={{ fontWeight: 500 }}>{entry.field_name ?? entry.action}</span>
                                 {entry.old_value && <> from <span style={{ textDecoration: 'line-through', color: '#98A2B3' }}>{entry.old_value}</span></>}
                                 {entry.new_value && <> to <span style={{ fontWeight: 600, color: '#2563EB' }}>{entry.new_value}</span></>}
                               </div>
@@ -1807,19 +1861,15 @@ export default function StoryDetailModal({
             <div style={{ width: 280, minWidth: 280, background: '#FFFFFF', borderLeft: '1px solid #E4E7EC', overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
               {/* 1. STATUS ZONE */}
               <div style={{ padding: '14px 16px', borderBottom: '1px solid #E4E7EC' }}>
-                <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.07em', color: '#98A2B3', marginBottom: 8, display: 'block' }}>STATUS</div>
+                <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.07em', color: '#98A2B3', marginBottom: 8 }}>STATUS</div>
                 <div style={{ position: 'relative' }}>
                   <button onClick={() => setShowStatusDropdown(!showStatusDropdown)} style={{
-                    backgroundColor: statusStyle.bg, color: statusStyle.text,
-                    padding: '6px 12px', borderRadius: 4, fontSize: 11.5, fontWeight: 700,
-                    letterSpacing: '0.05em', textTransform: 'uppercase' as const,
-                    border: 'none', cursor: 'pointer', display: 'inline-flex',
+                    backgroundColor: statusStyle.bg, color: statusStyle.text, padding: '6px 12px', borderRadius: 4, fontSize: 11.5, fontWeight: 700,
+                    letterSpacing: '0.05em', textTransform: 'uppercase' as const, border: 'none', cursor: 'pointer', display: 'inline-flex',
                     alignItems: 'center', gap: 6, fontFamily: 'inherit', opacity: 1, lineHeight: 1,
                   }}>
                     {localStatus || 'Backlog'}
-                    <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-                      <path d="M2 4L5 7L8 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
+                    <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 4L5 7L8 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
                   </button>
                   {showStatusDropdown && (
                     <div style={{ position: 'absolute', left: 0, top: '100%', marginTop: 4, background: '#FFF', border: '1px solid #E4E7EC', borderRadius: 8, boxShadow: '0 4px 16px rgba(0,0,0,0.12)', padding: '4px 0', zIndex: 50, width: '100%', maxHeight: 300, overflowY: 'auto' }}>
@@ -1854,56 +1904,49 @@ export default function StoryDetailModal({
               {/* 2. DETAILS SECTION */}
               <div style={{ padding: 14, borderBottom: '1px solid #E4E7EC' }}>
                 <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#98A2B3', marginBottom: 12 }}>DETAILS</div>
+                <div style={{ display: 'grid', gridTemplateColumns: '90px 1fr', gap: 0 }}>
+                  <DetailRow label="Parent">
+                    {issue && <ParentFieldPicker storyKey={issue.issue_key} parentKey={issue.parent_key} projectKey={issue.project_key} onParentChange={handleParentChange} />}
+                  </DetailRow>
 
-                <DetailRow label="Fix Version">
-                  {fixVersionNames.length > 0 ? (
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-                      {fixVersionNames.map((v: string, i: number) => (
-                        <span key={i} style={{ fontSize: 10, fontWeight: 600, padding: '2px 6px', borderRadius: 3, background: '#F1F5F9', color: '#475569' }}>{v}</span>
-                      ))}
+                  <DetailRow label="Assignee">
+                    {issue && (
+                      <EditableAssignee issueId={issue.id} projectId={projectId} currentAssigneeId={issue.assignee_account_id} currentAssigneeName={issue.assignee_display_name}
+                        onUpdate={() => queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] })} />
+                    )}
+                    <button onClick={assignToMe} style={{ fontSize: 11, color: '#0052CC', background: 'none', border: 'none', cursor: 'pointer', padding: 0, marginTop: 2 }}>Assign to me</button>
+                  </DetailRow>
+
+                  <DetailRow label="Reporter">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                      {issue?.reporter_display_name ? (
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}>
+                          <span style={{ width: 20, height: 20, borderRadius: '50%', background: getAvatarColor(issue.reporter_account_id ?? issue.reporter_display_name), color: '#FFF', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700 }}>{getInitials(issue.reporter_display_name)}</span>
+                          <span style={{ fontSize: 12, color: '#101828' }}>{issue.reporter_display_name}</span>
+                        </span>
+                      ) : <span style={{ color: '#98A2B3', fontSize: 12 }}>—</span>}
                     </div>
-                  ) : <span style={{ color: '#98A2B3', fontSize: 12 }}>—</span>}
-                </DetailRow>
+                    <span style={{ fontSize: 10, color: '#98A2B3' }}>(read-only)</span>
+                  </DetailRow>
 
-                <DetailRow label="Change No.">
-                  <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, fontWeight: 600, color: '#0052CC' }}>—</span>
-                </DetailRow>
+                  <DetailRow label="Priority">
+                    {issue && <EditablePriority issueId={issue.id} currentPriority={localPriority} onUpdate={() => queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] })} />}
+                  </DetailRow>
 
-                {/* Parent — Extension ParentField picker */}
-                <DetailRow label="Parent">
-                  {issue && (
-                    <ParentFieldPicker
-                      storyKey={issue.issue_key}
-                      parentKey={issue.parent_key}
-                      projectKey={issue.project_key}
-                      onParentChange={handleParentChange}
-                    />
-                  )}
-                </DetailRow>
+                  <DetailRow label="Labels">
+                    {issue && <EditableLabels issueId={issue.id} currentLabels={labelsArray} onUpdate={() => queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] })} />}
+                  </DetailRow>
 
-                <DetailRow label="Assignee">
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                    {issue?.assignee_display_name ? renderAvatar(issue.assignee_display_name, issue.assignee_account_id) : <span style={{ color: '#98A2B3', fontSize: 12 }}>Unassigned</span>}
-                  </div>
-                  <button onClick={assignToMe} style={{ fontSize: 11, color: '#0052CC', background: 'none', border: 'none', cursor: 'pointer', padding: 0, marginTop: 2 }}>Assign to me</button>
-                </DetailRow>
-
-                <DetailRow label="Reporter">
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                    {issue?.reporter_display_name ? renderAvatar(issue.reporter_display_name, issue.reporter_account_id) : <span style={{ color: '#98A2B3', fontSize: 12 }}>—</span>}
-                  </div>
-                  <span style={{ fontSize: 10, color: '#98A2B3' }}>(read-only)</span>
-                </DetailRow>
-
-                <DetailRow label="Labels">
-                  {issue?.labels?.length ? (
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-                      {issue.labels.map((l, i) => (
-                        <span key={i} style={{ fontSize: 11, padding: '2px 6px', borderRadius: 3, background: '#F1F5F9', border: '1px solid #E4E7EC', color: '#475569' }}>{l}</span>
-                      ))}
-                    </div>
-                  ) : <span style={{ color: '#98A2B3', fontSize: 12 }}>—</span>}
-                </DetailRow>
+                  <DetailRow label="Fix Version">
+                    {fixVersionNames.length > 0 ? (
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+                        {fixVersionNames.map((v: string, i: number) => (
+                          <span key={i} style={{ fontSize: 10, fontWeight: 600, padding: '2px 6px', borderRadius: 3, background: '#F1F5F9', color: '#475569' }}>{v}</span>
+                        ))}
+                      </div>
+                    ) : <span style={{ color: '#98A2B3', fontSize: 12 }}>—</span>}
+                  </DetailRow>
+                </div>
               </div>
 
               {/* 3. TIMESTAMPS */}
@@ -1920,13 +1963,12 @@ export default function StoryDetailModal({
         </div>
       </div>
 
-      {/* ── C. MODALS ────────────────────────── */}
-
+      {/* ── MODALS ────────────────────────── */}
       {showConfirmDelete && (
         <div style={{ position: 'fixed', inset: 0, zIndex: 10000, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(9,30,66,0.4)' }}>
           <div style={{ background: '#FFF', borderRadius: 12, padding: 28, width: 400, maxWidth: '95vw', animation: 'sdm-confirm-in 200ms ease-out' }}>
             <h3 style={{ fontFamily: 'Sora, sans-serif', fontSize: 16, fontWeight: 700, color: '#101828', marginBottom: 8 }}>Delete {issue?.issue_key}?</h3>
-            <p style={{ fontSize: 13, color: '#475467', lineHeight: 1.6, marginBottom: 20 }}>This ticket will be soft-deleted (deleted_at timestamp set). It can be restored from the admin panel within 30 days.</p>
+            <p style={{ fontSize: 13, color: '#475467', lineHeight: 1.6, marginBottom: 20 }}>This ticket will be soft-deleted. It can be restored from the admin panel within 30 days.</p>
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
               <button onClick={() => setShowConfirmDelete(false)} style={{ padding: '7px 16px', borderRadius: 6, background: '#FFF', border: '1px solid #E4E7EC', fontSize: 13, fontWeight: 500, cursor: 'pointer', color: '#475467' }}>Cancel</button>
               <button onClick={() => { setShowConfirmDelete(false); deleteIssueMutation.mutate(); }} style={{ padding: '7px 16px', borderRadius: 6, background: '#DC2626', color: '#FFF', border: 'none', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>Delete</button>
@@ -1945,74 +1987,10 @@ export default function StoryDetailModal({
             <div style={{ padding: '12px 20px', display: 'flex', gap: 16, borderBottom: '1px solid #E4E7EC', fontSize: 12 }}>
               <span><span style={{ color: '#98A2B3' }}>Issue Type</span> <span style={{ fontWeight: 600 }}>{issue?.issue_type}</span></span>
               <span><span style={{ color: '#98A2B3' }}>Current Status</span> <JiraStatusPill status={localStatus} category={statusCategory} /></span>
-              <span><span style={{ color: '#98A2B3' }}>Total Statuses</span> <span style={{ fontWeight: 600 }}>{STATUS_CATEGORIES.todo.length + STATUS_CATEGORIES.in_progress.length + STATUS_CATEGORIES.done.length}</span></span>
             </div>
-            <div style={{ padding: '8px 20px', fontSize: 11, color: '#98A2B3', borderBottom: '1px solid #E4E7EC' }}>Transitions are open — any status can move to any. Colours customisable in Admin Panel → Workflows.</div>
-            <div style={{ flex: 1, overflow: 'auto', padding: 20 }}>
-              <svg width="760" height="200" viewBox="0 0 760 200">
-                {STATUS_CATEGORIES.todo.map((st, i) => {
-                  const x = 20 + i * 120; const isActive = localStatus === st;
-                  return <g key={st}><rect x={x} y={10} width={110} height={32} rx={6} fill="#F4F5F7" stroke={isActive ? '#2563EB' : '#DFE1E6'} strokeWidth={isActive ? 2.5 : 1} /><text x={x + 55} y={30} textAnchor="middle" fontSize={9} fontWeight={600} fill="#42526E">{st}</text></g>;
-                })}
-                {STATUS_CATEGORIES.in_progress.map((st, i) => {
-                  const x = 20 + i * 75; const isActive = localStatus === st;
-                  return <g key={st}><rect x={x} y={75} width={70} height={32} rx={6} fill="#DEEBFF" stroke={isActive ? '#2563EB' : '#B3D4FF'} strokeWidth={isActive ? 2.5 : 1} /><text x={x + 35} y={95} textAnchor="middle" fontSize={7} fontWeight={600} fill="#0747A6">{st}</text></g>;
-                })}
-                {STATUS_CATEGORIES.done.map((st, i) => {
-                  const x = 20 + i * 130; const isActive = localStatus === st;
-                  return <g key={st}><rect x={x} y={140} width={120} height={32} rx={6} fill="#E3FCEF" stroke={isActive ? '#2563EB' : '#ABF5D1'} strokeWidth={isActive ? 2.5 : 1} /><text x={x + 60} y={160} textAnchor="middle" fontSize={9} fontWeight={600} fill="#006644">{st}</text></g>;
-                })}
-              </svg>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {showLinkModal && (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 10000, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(9,30,66,0.4)' }}>
-          <div style={{ background: '#FFF', borderRadius: 12, width: 520, maxWidth: '95vw', overflow: 'hidden', animation: 'sdm-confirm-in 200ms ease-out' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 20px', borderBottom: '1px solid #E4E7EC' }}>
-              <span style={{ fontFamily: 'Sora, sans-serif', fontSize: 15, fontWeight: 700, color: '#101828' }}>Link Work Item</span>
-              <button onClick={() => setShowLinkModal(false)} style={{ width: 28, height: 28, borderRadius: 6, border: 'none', background: 'transparent', cursor: 'pointer', color: '#98A2B3' }}><X size={16} /></button>
-            </div>
-            <div style={{ padding: 20 }}>
-              <div style={{ marginBottom: 14 }}>
-                <div style={{ fontSize: 12, fontWeight: 600, color: '#475467', marginBottom: 4 }}>Link Type</div>
-                <button style={{ width: '100%', height: 36, borderRadius: 4, border: '1px solid #E4E7EC', background: '#FFF', padding: '0 12px', fontSize: 12, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', color: '#101828' }}>
-                  {LINK_TYPE_LABELS[linkType] ?? linkType} <ChevronDown size={12} color="#98A2B3" />
-                </button>
-              </div>
-              <div style={{ marginBottom: 14 }}>
-                <div style={{ fontSize: 12, fontWeight: 600, color: '#475467', marginBottom: 4 }}>Search Issues</div>
-                <div style={{ position: 'relative' }}>
-                  <Search size={14} style={{ position: 'absolute', left: 10, top: 11, color: '#98A2B3' }} />
-                  <input value={linkSearch} onChange={e => setLinkSearch(e.target.value)} placeholder="Search by key or title…" style={{ width: '100%', height: 36, borderRadius: 4, border: '1px solid #E4E7EC', paddingLeft: 32, paddingRight: 12, fontSize: 12, outline: 'none' }} />
-                </div>
-              </div>
-              <div style={{ height: 160, overflow: 'auto', border: '1px solid #E4E7EC', borderRadius: 4, padding: 4 }}>
-                {linkSearch.length < 2 ? (
-                  <div style={{ padding: '16px 0', textAlign: 'center', color: '#98A2B3', fontSize: 12 }}>Type to search for issues…</div>
-                ) : linkSearchData.length === 0 ? (
-                  <div style={{ padding: '16px 0', textAlign: 'center', color: '#98A2B3', fontSize: 12 }}>No results found</div>
-                ) : (
-                  linkSearchData.map(item => (
-                    <button key={item.id} onClick={() => setSelectedLinkTarget(item)} style={{
-                      display: 'flex', alignItems: 'center', gap: 8, width: '100%', padding: '6px 8px', border: 'none',
-                      background: selectedLinkTarget?.id === item.id ? 'rgba(37,99,235,0.08)' : 'transparent',
-                      cursor: 'pointer', borderRadius: 4, fontSize: 12, textAlign: 'left',
-                    }}>
-                      <IssueIcon type={item.issue_type} size={14} />
-                      <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, fontWeight: 600, color: '#0052CC' }}>{item.issue_key}</span>
-                      <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: '#101828' }}>{item.summary}</span>
-                      <JiraStatusPill status={item.status} category={item.status_category ?? getStatusCategory(item.status)} />
-                    </button>
-                  ))
-                )}
-              </div>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, padding: '12px 20px', borderTop: '1px solid #E4E7EC' }}>
-              <button onClick={() => setShowLinkModal(false)} style={{ padding: '7px 16px', borderRadius: 6, background: '#FFF', border: '1px solid #E4E7EC', fontSize: 13, fontWeight: 500, cursor: 'pointer', color: '#475467' }}>Cancel</button>
-              <button onClick={() => { if (selectedLinkTarget) addLinkMutation.mutate({ targetId: selectedLinkTarget.id, linkTypeVal: linkType }); }} style={{ padding: '7px 16px', borderRadius: 6, background: '#2563EB', color: '#FFF', border: 'none', fontSize: 13, fontWeight: 600, cursor: 'pointer', opacity: selectedLinkTarget ? 1 : 0.5 }} disabled={!selectedLinkTarget}>Link</button>
+            <div style={{ padding: '8px 20px', fontSize: 11, color: '#98A2B3', borderBottom: '1px solid #E4E7EC' }}>Transitions are open — any status can move to any.</div>
+            <div style={{ flex: 1, overflow: 'auto', padding: 20, textAlign: 'center', color: '#98A2B3', fontSize: 13 }}>
+              Workflow visualization — coming soon
             </div>
           </div>
         </div>
@@ -2020,27 +1998,3 @@ export default function StoryDetailModal({
     </>
   );
 }
-
-/* ── DETAIL ROW HELPER ─────────────────────── */
-function DetailRow({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 2, paddingBottom: 10, marginBottom: 10, borderBottom: '1px solid #F7F8FA' }}>
-      <span style={{ fontSize: 11, fontWeight: 600, color: '#98A2B3' }}>{label}</span>
-      {children}
-    </div>
-  );
-}
-
-const menuItem: React.CSSProperties = {
-  display: 'block', width: '100%', padding: '7px 14px', background: 'none',
-  border: 'none', cursor: 'pointer', fontSize: 13, color: '#344054',
-  textAlign: 'left', fontFamily: 'Inter, sans-serif',
-};
-const detailLabel: React.CSSProperties = {
-  fontSize: 12, fontWeight: 600, color: '#98A2B3', padding: '8px 0',
-  borderBottom: '1px solid #F7F8FA',
-};
-const detailValue: React.CSSProperties = {
-  fontSize: 12, color: '#101828', padding: '8px 0',
-  borderBottom: '1px solid #F7F8FA', display: 'flex', flexDirection: 'column', gap: 2,
-};
