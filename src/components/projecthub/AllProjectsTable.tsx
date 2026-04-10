@@ -506,7 +506,8 @@ export function AllProjectsTable({
     <div className="overflow-x-auto" style={{ borderRadius: 0 }}>
       <table className="pb-table">
         <colgroup>
-          <col style={{ width: 48 }} />
+          <col style={{ width: 40 }} />
+          <col style={{ width: 36 }} />
           <col style={{ width: 100 }} />
           <col style={{ width: 'auto', minWidth: 260 }} />
           <col style={{ width: 110 }} />
@@ -518,6 +519,7 @@ export function AllProjectsTable({
         <thead>
           <tr>
             <th className="text-center">#</th>
+            <th />
             <th>PROJECT KEY</th>
             <th>PROJECT NAME</th>
             <th>STATUS</th>
