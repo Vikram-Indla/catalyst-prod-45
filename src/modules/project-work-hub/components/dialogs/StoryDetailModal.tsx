@@ -432,7 +432,7 @@ export default function StoryDetailModal({
               >
                 <Share2 size={14} /> <span style={{ fontSize: 12 }}>Share</span>
               </button>
-              <div style={{ position: 'relative' }}>
+              <div ref={dotsMenuRef} style={{ position: 'relative' }}>
                 <button onClick={() => setShowDotsMenu(!showDotsMenu)} style={{
                   background: 'none', border: 'none', cursor: 'pointer', padding: '6px 8px',
                   borderRadius: 4, color: '#5E6C84', fontSize: 14, display: 'flex', alignItems: 'center',
@@ -859,7 +859,7 @@ export default function StoryDetailModal({
             }}>
               {/* Status */}
               <div style={{ marginBottom: 14, display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-                <div style={{ position: 'relative' }}>
+                <div ref={statusDropdownRef} style={{ position: 'relative' }}>
                   <button onClick={() => setShowStatusDropdown(!showStatusDropdown)} style={{
                     backgroundColor: statusStyle.bg, color: statusStyle.text,
                     padding: '6px 12px', borderRadius: 4, fontSize: 13, fontWeight: 700,
