@@ -10,6 +10,7 @@ interface Props {
   filters: DefectFiltersType;
   onChange: (f: DefectFiltersType) => void;
   users: { id: string; full_name: string; avatar_url?: string | null }[];
+  projects: { id: string; name: string; key: string }[];
 }
 
 // ── Filter chip pill component ──
@@ -86,8 +87,8 @@ function FilterChip({
   );
 }
 
-export function DefectFilters({ filters, onChange, users }: Props) {
-  const hasFilters = !!(filters.search || filters.status?.length || filters.severity?.length || filters.priority?.length || filters.assignedTo);
+export function DefectFilters({ filters, onChange, users, projects }: Props) {
+  const hasFilters = !!(filters.search || (filters as any).projectId || filters.status?.length || filters.severity?.length || filters.priority?.length || filters.assignedTo);
 
   const statusOptions = [
     { value: '', label: 'All Status' },
@@ -140,6 +141,18 @@ export function DefectFilters({ filters, onChange, users }: Props) {
           className="pl-8 h-8 text-[13px] border-slate-200 rounded"
         />
       </div>
+
+      {/* Project */}
+      <FilterChip
+        label="Project"
+        value={(filters as any).projectId}
+        options={[
+          { value: '', label: 'All Projects' },
+          ...projects.map(p => ({ value: p.id, label: `${p.key} — ${p.name}` })),
+        ]}
+        onSelect={v => onChange({ ...filters, projectId: v } as any)}
+        searchable
+      />
 
       {/* Status */}
       <FilterChip
