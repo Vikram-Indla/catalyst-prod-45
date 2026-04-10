@@ -125,7 +125,7 @@ export function DefectTable({ defects, selectedIds, onSelectionChange, onDelete,
   const initials = (name: string) => name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
 
   return (
-    <div className="pb-table-wrap">
+    <div style={{ overflow: 'hidden' }}>
       <table className="pb-table">
         <colgroup>
           <col style={{ width: 40 }} />
