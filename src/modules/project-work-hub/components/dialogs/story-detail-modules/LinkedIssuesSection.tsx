@@ -1,14 +1,65 @@
 /**
  * LinkedIssuesSection + AddLinkRow — extracted from StoryDetailModal
+ * Uses custom dropdown instead of native <select> per design guardrails
  */
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Plus, X, Check, Loader2 } from 'lucide-react';
+import { Plus, X, Check, Loader2, ChevronDown } from 'lucide-react';
 import type { StatusCategory } from './types';
 import { LOZENGE, LINK_TYPE_STYLES, LINK_TYPE_OPTIONS, WORK_ITEM_ICONS } from './constants';
 import { getAvatarColor, formatDateShort } from './helpers';
 import { SectionBlock, SkeletonRows, EmptyState } from './shared-components';
+
+function LinkTypeDropdown({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const h = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false); };
+    document.addEventListener('mousedown', h);
+    return () => document.removeEventListener('mousedown', h);
+  }, [open]);
+
+  return (
+    <div ref={ref} style={{ position: 'relative', flexShrink: 0 }}>
+      <button onClick={() => setOpen(o => !o)} style={{
+        height: 28, padding: '0 8px', border: '1px solid rgba(9,30,66,.14)', borderRadius: 4,
+        fontSize: 12, fontFamily: 'inherit', background: '#fff', cursor: 'pointer',
+        display: 'flex', alignItems: 'center', gap: 4, color: '#172B4D',
+        transition: 'border-color 0.15s',
+      }}>
+        {value}
+        <ChevronDown size={10} color="#6B778C" />
+      </button>
+      {open && (
+        <div style={{
+          position: 'absolute', top: 'calc(100% + 2px)', left: 0, minWidth: 160,
+          background: '#fff', border: '1px solid rgba(9,30,66,.24)', borderRadius: 4,
+          boxShadow: '0 4px 12px rgba(9,30,66,.15)', zIndex: 60, overflow: 'hidden',
+          animation: 'sdm-slide-down 0.15s ease-out',
+        }}>
+          {LINK_TYPE_OPTIONS.map(opt => (
+            <div key={opt} onClick={() => { onChange(opt); setOpen(false); }}
+              style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                height: 32, padding: '0 10px', cursor: 'pointer', fontSize: 12, color: '#172B4D',
+                background: opt === value ? '#EFF6FF' : 'transparent',
+                transition: 'background 0.12s',
+              }}
+              onMouseEnter={e => { if (opt !== value) (e.currentTarget as HTMLElement).style.background = 'rgba(9,30,66,.04)'; }}
+              onMouseLeave={e => { if (opt !== value) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
+            >
+              <span>{opt}</span>
+              {opt === value && <Check size={11} color="#2563EB" />}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 function AddLinkRow({ issueId, onClose, onSuccess }: { issueId: string; onClose: () => void; onSuccess: () => void }) {
   const [linkType, setLinkType] = useState(LINK_TYPE_OPTIONS[0]);
@@ -39,9 +90,7 @@ function AddLinkRow({ issueId, onClose, onSuccess }: { issueId: string; onClose:
   return (
     <div style={{ padding: '8px 12px', background: '#EFF6FF', borderTop: '1px solid #BFDBFE', display: 'flex', flexDirection: 'column', gap: 6 }}>
       <div style={{ display: 'flex', gap: 6 }}>
-        <select value={linkType} onChange={e => setLinkType(e.target.value)} style={{ height: 28, border: '1px solid rgba(9,30,66,.14)', borderRadius: 4, fontSize: 12, fontFamily: 'inherit', padding: '0 6px', background: '#fff', flex: '0 0 auto' }}>
-          {LINK_TYPE_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
-        </select>
+        <LinkTypeDropdown value={linkType} onChange={setLinkType} />
         <input autoFocus value={search} onChange={e => setSearch(e.target.value)} placeholder="Search by issue key or title…"
           style={{ flex: 1, height: 28, padding: '0 7px', border: '1px solid #BFDBFE', borderRadius: 4, fontSize: 12, fontFamily: 'inherit', outline: 'none' }} />
         <button className="sdm-confirm-btn" onClick={() => linkMutation.mutate()} disabled={!selected || linkMutation.isPending}>
