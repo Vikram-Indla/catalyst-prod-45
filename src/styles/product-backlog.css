@@ -443,9 +443,13 @@
   text-align: start;
   white-space: nowrap;
   border-bottom: 1px solid rgba(11, 18, 14, 0.14);
+  border-right: 1px solid rgba(11, 18, 14, 0.08);
   cursor: pointer;
   user-select: none;
   transition: background var(--cp-duration-instant) var(--cp-easing-standard);
+}
+.pb-table thead th:last-child {
+  border-right: none;
 }
 .pb-table thead th:hover {
   color: #172B4D;
@@ -460,7 +464,7 @@
   height: 36px;
   max-height: 36px;
   min-height: 36px;
-  border-bottom: 0.75px solid var(--cp-border-subtle);
+  border-bottom: 1px solid rgba(11, 18, 14, 0.08);
   cursor: pointer;
   transition: background var(--cp-duration-instant) var(--cp-easing-standard);
 }
@@ -492,6 +496,10 @@
   text-overflow: ellipsis;
   line-height: 1.2;
   font-size: 13px;
+  border-right: 1px solid rgba(11, 18, 14, 0.08);
+}
+.pb-table tbody td:last-child {
+  border-right: none;
 }
 
 /* ═══ Status Lozenge — V12 GUARDRAIL: 3-color ONLY ═══ */
@@ -601,7 +609,7 @@
 /* ═══ Monospace Data Cells ═══ */
 .pb-id {
   font-family: var(--cp-font-mono);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 500;
   font-variant-numeric: tabular-nums;
   color: var(--cp-text-link);
