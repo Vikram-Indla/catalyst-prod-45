@@ -2096,14 +2096,13 @@ export default function StoryDetailModal({
               onMouseDown={() => { isDraggingRef.current = true; document.body.style.cursor = 'col-resize'; document.body.style.userSelect = 'none'; }}
               style={{
                 width: 6, minWidth: 6, cursor: 'col-resize', background: 'transparent',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                transition: 'background 0.15s', position: 'relative', zIndex: 5,
-                borderLeft: '1px solid #E4E7EC',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+                transition: 'background 0.15s',
               }}
-              onMouseEnter={e => (e.currentTarget.style.background = '#DBEAFE')}
+              onMouseEnter={e => (e.currentTarget.style.background = '#F1F5F9')}
               onMouseLeave={e => { if (!isDraggingRef.current) e.currentTarget.style.background = 'transparent'; }}
             >
-              <div style={{ width: 2, height: 32, borderRadius: 1, background: '#D0D5DD', transition: 'background 0.15s' }} />
+              <div style={{ width: 1.5, height: 32, borderRadius: 1, background: '#E2E8F0', transition: 'background 0.15s' }} />
             </div>
 
             {/* RIGHT PANEL */}
