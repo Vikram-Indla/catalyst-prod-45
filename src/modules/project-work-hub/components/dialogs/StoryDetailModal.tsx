@@ -107,6 +107,23 @@ export default function StoryDetailModal({
     },
   });
 
+  // Recent epics for breadcrumb "Add parent" dropdown
+  const { data: recentEpics = [] } = useQuery({
+    queryKey: ['ph-recent-epics', issue?.project_key],
+    enabled: !!issue?.project_key && !issue?.parent_key,
+    queryFn: async () => {
+      const { data } = await supabase.from('ph_issues')
+        .select('id, issue_key, summary, issue_type, status_category')
+        .eq('project_key', issue!.project_key)
+        .in('issue_type', ['Epic', 'epic', 'Feature', 'feature'])
+        .neq('status_category', 'done')
+        .order('jira_updated_at', { ascending: false })
+        .limit(5);
+      return data || [];
+    },
+    staleTime: 60000,
+  });
+
 
   // Fetch reporter avatar — resolve via jira_identity_map (assignee_account_id is a Jira ID, not a Catalyst UUID)
   const { data: reporterProfile } = useQuery({
