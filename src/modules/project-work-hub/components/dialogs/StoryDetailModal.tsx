@@ -79,6 +79,7 @@ if (typeof document !== 'undefined' && !document.getElementById(ANIM_STYLE_ID)) 
 
 export default function StoryDetailModal({
   isOpen, onClose, itemId, projectId, projectKey, onOpenItem,
+  panelMode, onTogglePanelMode, navigationItems, onNavigate,
 }: StoryDetailModalProps) {
   const queryClient = useQueryClient();
   const { user } = useAuth();
