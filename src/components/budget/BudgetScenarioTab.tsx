@@ -20,9 +20,8 @@ import {
   type BaselineBudget,
 } from '@/hooks/budget/useBudgetScenarios';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { ScenarioDetailsModal } from './ScenarioDetailsModal';
-import { ScenarioWizardModal } from './ScenarioWizardModal';
-import { ScenarioCompareModal } from './ScenarioCompareModal';
 import { ScenarioDetailPanel } from './ScenarioDetailPanel';
 
 interface BudgetScenarioTabProps {
@@ -539,15 +538,12 @@ export const BudgetScenarioTab = memo(function BudgetScenarioTab({ data, period,
         />
       </div>
 
-      {/* Create Wizard Modal */}
-      <ScenarioWizardModal
-        open={wizardOpen}
-        onOpenChange={setWizardOpen}
-        insourcedResources={insourcedResources}
-        allResources={data.resources}
-        baselineBudget={baselineBudget}
-        departments={departments}
-      />
+      {/* Create Wizard Modal — TODO: rebuild as extracted component */}
+      {wizardOpen && (
+        <Dialog open={wizardOpen} onOpenChange={setWizardOpen}>
+          <DialogContent><DialogHeader><DialogTitle>Create Scenario</DialogTitle></DialogHeader><p className="text-sm text-muted-foreground p-4">Scenario wizard coming soon.</p></DialogContent>
+        </Dialog>
+      )}
 
       {/* View Scenario Modal — Redesigned V2 */}
       <ScenarioDetailsModal
@@ -606,12 +602,12 @@ export const BudgetScenarioTab = memo(function BudgetScenarioTab({ data, period,
         }}
       />
 
-      {/* Compare Modal */}
-      <ScenarioCompareModal
-        open={compareModalOpen}
-        onOpenChange={setCompareModalOpen}
-        allScenarios={allScenarios}
-      />
+      {/* Compare Modal — TODO: rebuild as extracted component */}
+      {compareModalOpen && (
+        <Dialog open={compareModalOpen} onOpenChange={setCompareModalOpen}>
+          <DialogContent><DialogHeader><DialogTitle>Compare Scenarios</DialogTitle></DialogHeader><p className="text-sm text-muted-foreground p-4">Scenario comparison coming soon.</p></DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 });
