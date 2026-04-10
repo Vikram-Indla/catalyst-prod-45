@@ -29,6 +29,7 @@ const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const SubmitDemandRequest = lazy(() => import("./pages/SubmitDemandRequest"));
 const SlackOAuthCallback = lazy(() => import("./pages/SlackOAuthCallback"));
 const CleanupPage = lazy(() => import("./pages/CleanupPage"));
+const AuditTrailPage = lazy(() => import("./pages/AuditTrailPage"));
 
 // Full app routes — only imported when ENABLE_FULL_APP=true
 const FullAppRoutes = ENABLE_FULL_APP
@@ -86,6 +87,7 @@ const App = () => (
 
                   {/* AI Cleanup route */}
                   <Route path="/cleanup" element={<S><CleanupPage /></S>} />
+                  <Route path="/audit-trail" element={<S><AuditTrailPage /></S>} />
 
                   {/* All other routes — only when ENABLE_FULL_APP=true */}
                   {FullAppRoutes && (
