@@ -294,10 +294,10 @@ export function InitiativeTable({
     <DragDropContext onDragEnd={handleDragEnd}>
       <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column', border: '0.555556px solid rgba(11, 18, 14, 0.14)', borderRadius: 8, background: 'transparent', boxShadow: 'none' }}>
         <div style={{ overflowX: 'auto', overflowY: 'auto', flex: 1, scrollbarWidth: 'thin', scrollbarColor: 'var(--pb-border-strong) transparent' }}>
-          <table className="pb-table" style={{ tableLayout: 'auto', minWidth: totalSize }}>
+          <table className="pb-table" style={{ tableLayout: 'fixed', width: totalSize, minWidth: '100%' }}>
             <colgroup>
               {table.getVisibleFlatColumns().map(column => (
-                <col key={column.id} style={{ width: column.id === 'title' ? undefined : column.getSize(), minWidth: column.columnDef.minSize }} />
+                <col key={column.id} style={{ width: column.getSize(), minWidth: column.columnDef.minSize }} />
               ))}
             </colgroup>
 
@@ -308,10 +308,10 @@ export function InitiativeTable({
                     const sorted = header.column.getIsSorted();
                     const canSort = header.column.getCanSort();
                     return (
-                      <th key={header.id} style={{ width: header.getSize(), position: 'relative', color: sorted ? 'var(--pb-primary)' : undefined }}>
+                      <th key={header.id} style={{ width: header.getSize(), minWidth: header.getSize(), color: sorted ? 'var(--pb-primary)' : undefined }}>
                         {header.isPlaceholder ? null : (
                           <div
-                            style={{ display: 'flex', alignItems: 'center', gap: 4, cursor: canSort ? 'pointer' : undefined }}
+                            style={{ display: 'flex', alignItems: 'center', gap: 4, cursor: canSort ? 'pointer' : undefined, paddingRight: 8 }}
                             onClick={header.column.getToggleSortingHandler()}
                           >
                             {flexRender(header.column.columnDef.header, header.getContext())}
@@ -329,10 +329,12 @@ export function InitiativeTable({
                             onMouseDown={header.getResizeHandler()}
                             onTouchStart={header.getResizeHandler()}
                             onDoubleClick={() => header.column.resetSize()}
+                            onClick={(e) => e.stopPropagation()}
                             style={{
-                              position: 'absolute', right: 0, top: 0, bottom: 0, width: 4,
+                              position: 'absolute', right: -4, top: 0, bottom: 0, width: 10,
                               cursor: 'col-resize', userSelect: 'none', touchAction: 'none',
                               background: header.column.getIsResizing() ? 'var(--pb-primary)' : undefined,
+                              zIndex: 20,
                             }}
                             className="hover:bg-blue-400"
                           />

@@ -26,7 +26,7 @@ export function ResizableTableHeader({
 }: Props) {
   return (
     <th
-      style={{ width, minWidth: 50, position: 'relative' }}
+      style={{ width, minWidth: width, position: 'relative' }}
       className={cn(
         'select-none',
         isDragging && 'opacity-40',
@@ -35,6 +35,11 @@ export function ResizableTableHeader({
       )}
       draggable={!locked}
       onDragStart={e => {
+        const target = e.target as HTMLElement;
+        if (target.closest('[data-resize-handle="true"]')) {
+          e.preventDefault();
+          return;
+        }
         if (locked) { e.preventDefault(); return; }
         e.dataTransfer.effectAllowed = 'move';
         e.dataTransfer.setData('text/plain', colKey);
@@ -52,7 +57,7 @@ export function ResizableTableHeader({
       }}
       onDragEnd={onDragEnd}
     >
-      <div className="flex items-center gap-1">
+      <div className="flex items-center gap-1 pr-2">
         {!locked && (
           <GripVertical
             size={10}
@@ -62,13 +67,27 @@ export function ResizableTableHeader({
         {children || <span>{label}</span>}
       </div>
 
-      {/* Resize handle */}
       <div
+        data-resize-handle="true"
         style={{
-          position: 'absolute', right: 0, top: 0, bottom: 0, width: 4,
-          cursor: 'col-resize', zIndex: 10,
+          position: 'absolute',
+          right: -4,
+          top: 0,
+          bottom: 0,
+          width: 10,
+          cursor: 'col-resize',
+          zIndex: 20,
+          touchAction: 'none',
         }}
         className="hover:bg-blue-500/30"
+        onClick={e => {
+          e.preventDefault();
+          e.stopPropagation();
+        }}
+        onDragStart={e => {
+          e.preventDefault();
+          e.stopPropagation();
+        }}
         onMouseDown={e => {
           e.preventDefault();
           e.stopPropagation();
