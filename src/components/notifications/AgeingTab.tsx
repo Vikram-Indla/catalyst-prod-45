@@ -382,6 +382,10 @@ export default function AgeingTab() {
   });
   const [visibleCount, setVisibleCount] = useState(40);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
+  const { data: govData } = useGovernanceScore();
 
   // Fetch data
   useEffect(() => {
