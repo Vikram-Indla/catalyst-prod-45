@@ -2085,8 +2085,24 @@ export default function StoryDetailModal({
               )}
             </div>
 
+            {/* RESIZABLE SPLITTER */}
+            <div
+              ref={splitterRef}
+              onMouseDown={() => { isDraggingRef.current = true; document.body.style.cursor = 'col-resize'; document.body.style.userSelect = 'none'; }}
+              style={{
+                width: 6, minWidth: 6, cursor: 'col-resize', background: 'transparent',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                transition: 'background 0.15s', position: 'relative', zIndex: 5,
+                borderLeft: '1px solid #E4E7EC',
+              }}
+              onMouseEnter={e => (e.currentTarget.style.background = '#DBEAFE')}
+              onMouseLeave={e => { if (!isDraggingRef.current) e.currentTarget.style.background = 'transparent'; }}
+            >
+              <div style={{ width: 2, height: 32, borderRadius: 1, background: '#D0D5DD', transition: 'background 0.15s' }} />
+            </div>
+
             {/* RIGHT PANEL */}
-            <div style={{ width: 280, minWidth: 280, background: '#FFFFFF', borderLeft: '1px solid #E4E7EC', overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
+            <div style={{ width: rightPanelWidth, minWidth: 220, maxWidth: 480, background: '#FFFFFF', overflowY: 'auto', overflowX: 'visible', display: 'flex', flexDirection: 'column' }}>
               {/* 1. STATUS ZONE */}
               <div style={{ padding: '14px 16px', borderBottom: '1px solid #E4E7EC' }}>
                 <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.07em', color: '#98A2B3', marginBottom: 8 }}>STATUS</div>
