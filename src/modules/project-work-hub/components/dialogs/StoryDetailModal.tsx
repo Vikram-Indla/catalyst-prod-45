@@ -588,9 +588,16 @@ export default function StoryDetailModal({
     queryFn: async () => {
       const { data } = await supabase
         .from('ph_project_members')
-        .select('user_id, role, profile:profiles!ph_project_members_user_id_fkey(id, full_name, avatar_url, email)')
+        .select('user_id, role')
         .eq('project_id', projectId);
-      return (data ?? []) as ProjectMember[];
+      if (!data?.length) return [];
+      const userIds = data.map(d => d.user_id);
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('id, full_name, avatar_url, email')
+        .in('id', userIds);
+      const profileMap = new Map((profiles ?? []).map(p => [p.id, p]));
+      return data.map(d => ({ ...d, profile: profileMap.get(d.user_id) })) as unknown as ProjectMember[];
     },
   });
 
