@@ -200,7 +200,10 @@ function getInitials(name?: string | null): string {
 function getAvatarColor(id: string): string {
   const colors = ['#0052CC', '#6554C0', '#36B37E', '#FF5630', '#FF991F', '#00B8D9', '#166534', '#9E4C00'];
   let hash = 0;
-  for (let i = 0; i < id.length; i++) hash = id.charCodeAt(i) + ((hash << 5) - hash);
+  for (let i = 0; i < id.length; i++) {
+    hash = ((hash << 5) - hash) + id.charCodeAt(i);
+    hash = hash & hash;
+  }
   return colors[Math.abs(hash) % colors.length];
 }
 
@@ -1318,16 +1321,20 @@ export default function StoryDetailModal({
             {/* RIGHT PANEL */}
             <div style={{ width: 280, minWidth: 280, background: '#FFFFFF', borderLeft: '1px solid #E4E7EC', overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
               {/* 1. STATUS ZONE */}
-              <div style={{ padding: 16, borderBottom: '1px solid #E4E7EC' }}>
-                <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#98A2B3', marginBottom: 8 }}>STATUS</div>
+              <div style={{ padding: '14px 16px', borderBottom: '1px solid #E4E7EC' }}>
+                <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.07em', color: '#98A2B3', marginBottom: 8, display: 'block' }}>STATUS</div>
                 <div style={{ position: 'relative' }}>
                   <button onClick={() => setShowStatusDropdown(!showStatusDropdown)} style={{
-                    display: 'flex', alignItems: 'center', gap: 6, padding: '5px 10px', borderRadius: 4,
-                    background: statusStyle.bg, color: statusStyle.text, border: 'none', cursor: 'pointer',
-                    fontSize: 11.5, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', width: '100%', justifyContent: 'space-between',
+                    backgroundColor: statusStyle.bg, color: statusStyle.text,
+                    padding: '6px 12px', borderRadius: 4, fontSize: 11.5, fontWeight: 700,
+                    letterSpacing: '0.05em', textTransform: 'uppercase' as const,
+                    border: 'none', cursor: 'pointer', display: 'inline-flex',
+                    alignItems: 'center', gap: 6, fontFamily: 'inherit', opacity: 1, lineHeight: 1,
                   }}>
                     {localStatus || 'Backlog'}
-                    <ChevronDown size={12} />
+                    <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                      <path d="M2 4L5 7L8 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
                   </button>
                   {showStatusDropdown && (
                     <div style={{ position: 'absolute', left: 0, top: '100%', marginTop: 4, background: '#FFF', border: '1px solid #E4E7EC', borderRadius: 8, boxShadow: '0 4px 16px rgba(0,0,0,0.12)', padding: '4px 0', zIndex: 50, width: '100%', maxHeight: 300, overflowY: 'auto' }}>
