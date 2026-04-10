@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
-import { MoreHorizontal, ExternalLink, UserRound, ChevronsUp, ChevronUp, Minus, ChevronDown, Star } from 'lucide-react';
+import { MoreHorizontal, ExternalLink, UserRound, ChevronsUp, ChevronUp, Minus, ChevronDown, Star, Trash2 } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
+import '@/styles/product-backlog.css';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { StatusBadge } from '@/components/ui/StatusBadge';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
@@ -95,36 +96,7 @@ function JiraBadge() {
   );
 }
 
-// ── Header cell style ──
-const TH_STYLE: React.CSSProperties = {
-  height: 40,
-  padding: '0 12px',
-  backgroundColor: '#F7F8F9',
-  fontSize: 11,
-  fontWeight: 700,
-  textTransform: 'uppercase',
-  letterSpacing: '0.04em',
-  color: '#44546F',
-  textAlign: 'left',
-  whiteSpace: 'nowrap',
-  borderBottom: '2px solid #DFE1E6',
-  fontFamily: 'Inter, sans-serif',
-};
-
-// ── Row cell style ──
-const TD_STYLE: React.CSSProperties = {
-  height: 40,
-  maxHeight: 40,
-  padding: '0 12px',
-  fontSize: 14,
-  fontWeight: 400,
-  color: '#1E293B',
-  borderBottom: '1px solid rgba(11, 18, 14, 0.08)',
-  fontFamily: 'Inter, sans-serif',
-  whiteSpace: 'nowrap',
-  overflow: 'hidden',
-  textOverflow: 'ellipsis',
-};
+// Uses pb-table CSS classes from product-backlog.css — no inline TH/TD styles needed
 
 // ── Column definitions ──
 type ColumnKey = 'SEVERITY' | 'PRIORITY' | 'STATUS' | 'ASSIGNEE' | 'AGE';
@@ -153,8 +125,8 @@ export function DefectTable({ defects, selectedIds, onSelectionChange, onDelete,
   const initials = (name: string) => name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
 
   return (
-    <div style={{ border: '1px solid rgba(11, 18, 14, 0.14)', borderRadius: 8, overflow: 'hidden', background: '#FFFFFF' }}>
-      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+    <div style={{ overflow: 'hidden' }}>
+      <table className="pb-table">
         <colgroup>
           <col style={{ width: 40 }} />
           <col style={{ width: 32 }} />
@@ -171,24 +143,17 @@ export function DefectTable({ defects, selectedIds, onSelectionChange, onDelete,
 
         <thead>
           <tr>
-            <th style={{ ...TH_STYLE, width: 40 }}>
-              <Checkbox
-                checked={defects.length > 0 && selectedIds.size === defects.length}
-                onCheckedChange={toggleAll}
-              />
-            </th>
-            <th style={{ ...TH_STYLE, width: 32 }}>
-              {/* Star column — no header */}
-            </th>
-            <th style={{ ...TH_STYLE, width: 32 }}>Type</th>
-            <th style={TH_STYLE}>Key</th>
-            <th style={TH_STYLE}>Title</th>
-            {cols.has('SEVERITY') && <th style={TH_STYLE}>Severity</th>}
-            {cols.has('PRIORITY') && <th style={TH_STYLE}>Priority</th>}
-            {cols.has('STATUS') && <th style={TH_STYLE}>Status</th>}
-            {cols.has('ASSIGNEE') && <th style={TH_STYLE}>Assignee</th>}
-            {cols.has('AGE') && <th style={TH_STYLE}>Age</th>}
-            <th style={{ ...TH_STYLE, width: 40 }} />
+            <th><Checkbox checked={defects.length > 0 && selectedIds.size === defects.length} onCheckedChange={toggleAll} /></th>
+            <th>{/* Trash — no header label */}</th>
+            <th>Type</th>
+            <th>Key</th>
+            <th>Title</th>
+            {cols.has('SEVERITY') && <th>Severity</th>}
+            {cols.has('PRIORITY') && <th>Priority</th>}
+            {cols.has('STATUS') && <th>Status</th>}
+            {cols.has('ASSIGNEE') && <th>Assignee</th>}
+            {cols.has('AGE') && <th>Age</th>}
+            <th />
           </tr>
         </thead>
 
@@ -201,41 +166,32 @@ export function DefectTable({ defects, selectedIds, onSelectionChange, onDelete,
             return (
               <tr
                 key={d.id}
-                className="group"
-                style={{
-                  cursor: 'pointer',
-                  backgroundColor: isSelected ? 'rgba(37,99,235,0.08)' : '#FFFFFF',
-                  transition: 'background-color 80ms ease',
-                  borderLeft: isSelected ? '2px solid #2563EB' : '2px solid transparent',
-                }}
-                onMouseEnter={e => { if (!isSelected) (e.currentTarget.style.backgroundColor = 'rgba(15, 23, 42, 0.04)'); }}
-                onMouseLeave={e => { if (!isSelected) (e.currentTarget.style.backgroundColor = '#FFFFFF'); }}
+                className={cn('group', isSelected && 'pb-row-selected')}
+                style={{ cursor: 'pointer' }}
                 onClick={() => navigate(`/testhub/defects/${d.id}`)}
               >
                 {/* Checkbox */}
-                <td style={{ ...TD_STYLE, width: 40 }} onClick={e => e.stopPropagation()}>
+                <td onClick={e => e.stopPropagation()}>
                   <Checkbox checked={isSelected} onCheckedChange={() => toggleOne(d.id)} />
                 </td>
 
-                {/* Star */}
-                <td style={{ ...TD_STYLE, width: 32 }} onClick={e => e.stopPropagation()}>
-                  <Star size={14} style={{ color: '#C1C7D0' }} />
+                {/* Trash (matching ProductHub) */}
+                <td onClick={e => e.stopPropagation()}>
+                  <Trash2
+                    size={14}
+                    className="opacity-0 group-hover:opacity-100 transition-opacity duration-150"
+                    style={{ color: '#94A3B8', cursor: 'pointer' }}
+                    onClick={() => onDelete(d)}
+                  />
                 </td>
 
                 {/* Type icon */}
-                <td style={{ ...TD_STYLE, width: 32 }}>
-                  <BugTypeIcon />
-                </td>
+                <td><BugTypeIcon /></td>
 
                 {/* Key */}
-                <td style={TD_STYLE}>
+                <td>
                   <div className="flex items-center gap-1">
-                    <span style={{
-                      fontFamily: "'JetBrains Mono', monospace",
-                      fontSize: 13,
-                      fontWeight: 600,
-                      color: '#2563EB',
-                    }}>
+                    <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 600, color: '#2563EB' }}>
                       {keyText}
                     </span>
                     {isJira && <JiraBadge />}
@@ -253,20 +209,20 @@ export function DefectTable({ defects, selectedIds, onSelectionChange, onDelete,
                 </td>
 
                 {/* Title */}
-                <td style={{ ...TD_STYLE, fontWeight: 500 }}>{d.title}</td>
+                <td style={{ fontWeight: 500 }}>{d.title}</td>
 
                 {/* Severity */}
-                {cols.has('SEVERITY') && <td style={TD_STYLE}><SeverityPill severity={d.severity} /></td>}
+                {cols.has('SEVERITY') && <td><SeverityPill severity={d.severity} /></td>}
 
                 {/* Priority */}
-                {cols.has('PRIORITY') && <td style={TD_STYLE}><PriorityCell priority={d.priority} /></td>}
+                {cols.has('PRIORITY') && <td><PriorityCell priority={d.priority} /></td>}
 
                 {/* Status */}
-                {cols.has('STATUS') && <td style={TD_STYLE}><StatusBadge status={d.status} /></td>}
+                {cols.has('STATUS') && <td><StatusBadge status={d.status} /></td>}
 
                 {/* Assignee — matching /for-you avatar pattern */}
                 {cols.has('ASSIGNEE') && (
-                  <td style={TD_STYLE}>
+                  <td>
                     {(() => {
                       const assigneeName = d.assigneeName || d.assignee?.full_name;
                       if (!assigneeName || assigneeName === 'Unassigned') {
@@ -300,17 +256,17 @@ export function DefectTable({ defects, selectedIds, onSelectionChange, onDelete,
 
                 {/* Age */}
                 {cols.has('AGE') && (
-                  <td style={{ ...TD_STYLE, fontSize: 12, color: '#64748B' }}>
+                  <td style={{ fontSize: 12, color: '#64748B' }}>
                     {getRelativeAge(d.created_at)}
                   </td>
                 )}
 
                 {/* Actions */}
-                <td style={{ ...TD_STYLE, width: 40 }} onClick={e => e.stopPropagation()}>
+                <td onClick={e => e.stopPropagation()}>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <button
-                        className="opacity-0 group-hover:opacity-100 transition-opacity duration-150"
+                        className="pb-row-actions opacity-0 group-hover:opacity-100 transition-opacity duration-150"
                         style={{ height: 28, width: 28, borderRadius: 4, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', border: 'none', background: 'transparent', cursor: 'pointer' }}
                       >
                         <MoreHorizontal size={16} style={{ color: '#64748B' }} />
