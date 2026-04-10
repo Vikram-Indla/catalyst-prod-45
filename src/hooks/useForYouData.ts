@@ -479,16 +479,16 @@ export function useForYouData() {
         const ninetyDaysAgo = new Date();
         ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
 
-        const wave2Promises: Promise<any>[] = [
-          statusIds.length > 0 ? supabase.from('planner_statuses').select('id, name').in('id', statusIds).then(r => r) : Promise.resolve({ data: [] }),
-          wsIds.length > 0 ? supabase.from('planner_workstreams').select('id, name').in('id', wsIds).then(r => r) : Promise.resolve({ data: [] }),
+        const wave2Promises: PromiseLike<any>[] = [
+          statusIds.length > 0 ? supabase.from('planner_statuses').select('id, name').in('id', statusIds) : Promise.resolve({ data: [] }),
+          wsIds.length > 0 ? supabase.from('planner_workstreams').select('id, name').in('id', wsIds) : Promise.resolve({ data: [] }),
         ];
 
         // Jira queries (only if user has Jira mapping)
         if (jiraAccountIds.length > 0) {
           wave2Promises.push(
-            supabase.from('ph_issues').select(SELECT_FIELDS).in('assignee_account_id', jiraAccountIds).order('jira_updated_at', { ascending: false }).limit(200).then(r => r),
-            supabase.from('ph_issues').select(SELECT_FIELDS).in('assignee_account_id', jiraAccountIds).gte('jira_updated_at', ninetyDaysAgo.toISOString()).order('jira_updated_at', { ascending: false }).limit(200).then(r => r),
+            supabase.from('ph_issues').select(SELECT_FIELDS).in('assignee_account_id', jiraAccountIds).order('jira_updated_at', { ascending: false }).limit(200),
+            supabase.from('ph_issues').select(SELECT_FIELDS).in('assignee_account_id', jiraAccountIds).gte('jira_updated_at', ninetyDaysAgo.toISOString()).order('jira_updated_at', { ascending: false }).limit(200),
           );
         }
 
