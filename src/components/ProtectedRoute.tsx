@@ -4,12 +4,20 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useEffect } from 'react';
 
+// ⚠️ AUTH BYPASS — temporary for diagnostics. Remove when done.
+const AUTH_BYPASS = true;
+
 interface ProtectedRouteProps {
   children: React.ReactNode;
   requireAdmin?: boolean;
 }
 
 export function ProtectedRoute({ children, requireAdmin = false }: ProtectedRouteProps) {
+  // Bypass auth entirely when flag is on
+  if (AUTH_BYPASS) {
+    return <>{children}</>;
+  }
+
   const { user, loading, signOut } = useAuth();
 
   // Check approval status from profiles
@@ -32,7 +40,7 @@ export function ProtectedRoute({ children, requireAdmin = false }: ProtectedRout
       return data;
     },
     enabled: !!user,
-    staleTime: 30000, // Cache for 30 seconds
+    staleTime: 30000,
     retry: 1,
   });
 
@@ -55,17 +63,14 @@ export function ProtectedRoute({ children, requireAdmin = false }: ProtectedRout
     );
   }
 
-  // No user - redirect to auth
   if (!user) {
     return <Navigate to="/auth" replace />;
   }
 
-  // No profile or not approved - redirect to auth
   if (!profile || profile.approval_status !== 'APPROVED') {
     return <Navigate to="/auth" replace />;
   }
 
-  // Admin route but user is not admin
   if (requireAdmin && !['admin', 'super_admin'].includes(profile.role || '')) {
     return <Navigate to="/home" replace />;
   }
