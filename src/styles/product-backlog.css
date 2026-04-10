@@ -66,11 +66,11 @@
   --cp-shadow-focus: 0 0 0 2px rgba(37, 99, 235, 0.18);
 
   --cp-lozenge-grey-bg: #DFE1E6;
-  --cp-lozenge-grey-text: #42526E;
-  --cp-lozenge-blue-bg: #0C66E4;
-  --cp-lozenge-blue-text: #FFFFFF;
-  --cp-lozenge-green-bg: #1B7F37;
-  --cp-lozenge-green-text: #FFFFFF;
+  --cp-lozenge-grey-text: #253858;
+  --cp-lozenge-blue-bg: #DEEBFF;
+  --cp-lozenge-blue-text: #0747A6;
+  --cp-lozenge-green-bg: #E3FCEF;
+  --cp-lozenge-green-text: #006644;
 
   --cp-size-table-row: 36px;
   --cp-size-button: 36px;
@@ -432,8 +432,8 @@
   position: sticky;
   top: 0;
   z-index: 10;
-  height: 32px;
-  padding: 10px 12px;
+  height: 40px;
+  padding: 0 12px;
   background-color: var(--cp-bg-sunken) !important;
   font-size: 11px;
   font-weight: 700;
