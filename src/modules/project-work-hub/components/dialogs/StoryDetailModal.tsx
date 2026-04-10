@@ -1010,7 +1010,8 @@ export default function StoryDetailModal({
                         <div style={{ position: 'absolute', left: 0, top: 34, background: '#FFF', border: '1px solid #E4E7EC', borderRadius: 8, boxShadow: '0 4px 12px rgba(0,0,0,0.1)', padding: '4px 0', zIndex: 50, minWidth: 200 }}>
                           <button onClick={() => { setShowAddMenu(false); toast('Create Subtask — coming in Stage D'); }} style={menuItem}>Create Subtask</button>
                           <button onClick={() => { setShowAddMenu(false); setShowLinkModal(true); }} style={menuItem}>Link Work Item</button>
-                          <button onClick={() => { setShowAddMenu(false); toast('Add Attachment — coming in Stage D'); }} style={menuItem}>Add Attachment</button>
+                          <button onClick={() => { setShowAddMenu(false); fileInputRef.current?.click(); }} style={menuItem}>Add Attachment</button>
+                          <input ref={fileInputRef} type="file" style={{ display: 'none' }} onChange={e => { const f = e.target.files?.[0]; if (f) uploadAttachmentMutation.mutate(f); e.target.value = ''; }} />
                           <button onClick={() => { setShowAddMenu(false); setShowFigmaInput(true); }} style={menuItem}>Add Design (Figma)</button>
                         </div>
                       )}
@@ -1212,12 +1213,7 @@ export default function StoryDetailModal({
                             <textarea
                               value={newComment}
                               onChange={e => setNewComment(e.target.value)}
-                              onKeyDown={e => {
-                                if (e.key === 'Enter' && (e.ctrlKey || e.metaKey) && newComment.trim()) {
-                                  toast('Comment submitted — mutation wired in Stage D');
-                                  setNewComment('');
-                                }
-                              }}
+                              onKeyDown={handleCommentKeyDown}
                               placeholder="Add a comment…"
                               style={{ width: '100%', minHeight: 40, borderRadius: 8, border: '1px solid #E4E7EC', padding: '8px 12px', fontSize: 13, resize: 'vertical', outline: 'none', fontFamily: 'Inter, sans-serif' }}
                             />
@@ -1326,7 +1322,7 @@ export default function StoryDetailModal({
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                     {issue?.assignee_display_name ? renderAvatar(issue.assignee_display_name, issue.assignee_account_id) : <span style={{ color: '#98A2B3', fontSize: 12 }}>Unassigned</span>}
                   </div>
-                  <button onClick={() => { /* assign to me - Stage D */ toast('Assigned to me'); }} style={{ fontSize: 11, color: '#0052CC', background: 'none', border: 'none', cursor: 'pointer', padding: 0, marginTop: 2 }}>Assign to me</button>
+                  <button onClick={assignToMe} style={{ fontSize: 11, color: '#0052CC', background: 'none', border: 'none', cursor: 'pointer', padding: 0, marginTop: 2 }}>Assign to me</button>
                 </DetailRow>
 
                 {/* Reporter — READ ONLY */}
