@@ -81,14 +81,9 @@ Deno.serve(async (req) => {
         let isGovernanceLocked = false;
 
         if (govCheckKey) {
-          const { data: govLock } = await supabase
-            .from('governance_closure_log')
-            .select('id')
-            .eq('item_key', govCheckKey)
-            .is('restored_at', null)
-            .limit(1)
-            .maybeSingle();
-          isGovernanceLocked = !!govLock;
+          const { data: locked } = await supabase
+            .rpc('governance_exclusion_check', { p_item_key: govCheckKey });
+          isGovernanceLocked = !!locked;
         } else if (govCheckId) {
           const { data: govLock } = await supabase
             .from('governance_closure_log')
@@ -101,7 +96,11 @@ Deno.serve(async (req) => {
         }
 
         if (isGovernanceLocked) {
-          console.log(`[governance] Skipping write-back for locked item ${govCheckKey || govCheckId}`);
+          await supabase.from('governance_sync_skip_log').insert({
+            item_key:    govCheckKey || govCheckId || 'unknown',
+            skip_source: 'write_back',
+          });
+          console.log(`[GOVERNANCE] Write-back blocked for locked item ${govCheckKey || govCheckId}`);
           await supabase
             .from("jira_write_back_queue")
             .update({

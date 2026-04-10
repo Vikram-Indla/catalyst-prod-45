@@ -10,6 +10,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useGovernanceScore } from '@/hooks/useGovernanceScore';
 import { useAgeingItems, type AgeingItem } from '@/hooks/useAgeingItems';
+import { useForceClose } from '@/hooks/useForceClose';
+import { useRestore } from '@/hooks/useRestore';
 import { toast } from 'sonner';
 import {
   ChevronDown, ChevronUp, ChevronRight,
@@ -342,74 +344,63 @@ export default function CleanupPage() {
     }
   }, [allListChecked, listCheckableItems]);
 
+  const forceCloseMutation = useForceClose();
+  const restoreMutation = useRestore();
+
   // ── Force Close Handler ──
   const handleForceClose = useCallback(async () => {
     if (!user?.id || selected.size === 0) return;
     const ids = Array.from(selected);
     const closedItems = allFlatItems.filter(i => ids.includes(i.id));
-    const restoreDeadline = new Date(Date.now() + 90 * 86400_000).toISOString();
     const todayStr = new Date().toISOString().split('T')[0];
 
-    const { error } = await supabase
-      .from('catalyst_issues')
-      .update({
-        status: 'done',
-        closure_method: 'force_bypass',
-        force_closed_by: user.id,
-        force_closed_at: new Date().toISOString(),
-        force_close_reason: closureReason,
-        restore_deadline: restoreDeadline,
-      })
-      .in('id', ids);
+    try {
+      // Execute governance force close for each item
+      for (const item of closedItems) {
+        const catLabel = CATEGORIES.find(c => c.key === item.categoryKey)?.name ?? 'Unknown';
+        await forceCloseMutation.mutateAsync({
+          issueId:        item.id,
+          itemKey:        item.issue_key,
+          closedBy:       user.id,
+          category:       String(item.categoryKey),
+          staleDays:      item.days_stale,
+          closureReason:  closureReason,
+          originalStatus: item.status,
+        });
 
-    if (error) { toast.error('Force close failed: ' + error.message); return; }
+        // Add audit comment
+        await supabase.from('ph_comments').insert({
+          work_item_id: item.id,
+          author_id: user.id,
+          body: `[AI Cleanup] Force closed on ${todayStr}. Reason: ${closureReason}. Governance category: ${catLabel}. Restore window expires: ${new Date(Date.now() + 90 * 86400_000).toISOString().split('T')[0]}. Audit reference: governance closure log.`,
+        });
+      }
 
-    for (const item of closedItems) {
-      const catLabel = CATEGORIES.find(c => c.key === item.categoryKey)?.name ?? 'Unknown';
-      await supabase.from('ph_comments').insert({
-        work_item_id: item.id,
-        author_id: user.id,
-        body: `[AI Cleanup] Force closed on ${todayStr}. Reason: ${closureReason}. Governance category: ${catLabel}. Restore window expires: ${new Date(Date.now() + 90 * 86400_000).toISOString().split('T')[0]}. Audit reference: governance closure log.`,
-      });
+      // Notify reporters
+      const reporterIds = [...new Set(closedItems.map(i => i.reporter_account_id).filter(Boolean))] as string[];
+      for (const rid of reporterIds) {
+        const rItems = closedItems.filter(i => i.reporter_account_id === rid);
+        await supabase.from('notifications').insert({
+          recipient_user_id: rid,
+          notification_type: 'direct',
+          title: 'Items force-closed — action may be required',
+          message: rItems.map(i => `${i.issue_key} "${i.title}"`).join(', ') + ' — force-closed by governance cleanup. Restore within 90 days if needed.',
+          entity_type: 'issue',
+          entity_id: rItems[0].id,
+        });
+      }
+
+      qc.invalidateQueries({ queryKey: ['cleanup-categories'] });
+      qc.invalidateQueries({ queryKey: ['notifications'] });
+      qc.invalidateQueries({ queryKey: ['watching-tab'] });
+
+      setSelected(new Set());
+      setShowForceCloseDialog(false);
+      toast.success(`${ids.length} item${ids.length > 1 ? 's' : ''} force-closed. Comment added to each issue. Reporters notified.`);
+    } catch (err: unknown) {
+      toast.error('Force close failed: ' + (err instanceof Error ? err.message : 'Unknown error'));
     }
-
-    for (const item of closedItems) {
-      await supabase.from('governance_closure_log').insert({
-        item_key: item.issue_key,
-        issue_id: item.id,
-        closed_by: user.id,
-        governance_category: item.categoryKey,
-        stale_days: item.days_stale,
-        reporter_notified: !!item.reporter_account_id,
-        restore_deadline: restoreDeadline,
-        closure_reason: closureReason,
-        original_status: item.status,
-      } as any);
-    }
-
-    const reporterIds = [...new Set(closedItems.map(i => i.reporter_account_id).filter(Boolean))] as string[];
-    for (const rid of reporterIds) {
-      const rItems = closedItems.filter(i => i.reporter_account_id === rid);
-      await supabase.from('notifications').insert({
-        recipient_user_id: rid,
-        notification_type: 'direct',
-        title: 'Items force-closed — action may be required',
-        message: rItems.map(i => `${i.issue_key} "${i.title}"`).join(', ') + ' — force-closed by governance cleanup. Restore within 90 days if needed.',
-        entity_type: 'issue',
-        entity_id: rItems[0].id,
-      });
-    }
-
-    qc.invalidateQueries({ queryKey: ['ageing-items'] });
-    qc.invalidateQueries({ queryKey: ['governance-score'] });
-    qc.invalidateQueries({ queryKey: ['cleanup-categories'] });
-    qc.invalidateQueries({ queryKey: ['notifications'] });
-    qc.invalidateQueries({ queryKey: ['watching-tab'] });
-
-    setSelected(new Set());
-    setShowForceCloseDialog(false);
-    toast.success(`${ids.length} item${ids.length > 1 ? 's' : ''} force-closed. Comment added to each issue. Reporters notified.`);
-  }, [user, selected, closureReason, allFlatItems, qc]);
+  }, [user, selected, closureReason, allFlatItems, qc, forceCloseMutation]);
 
   // ── Notify Reporter ──
   const handleNotifyReporter = useCallback(async (item: CleanupItem) => {
@@ -502,42 +493,25 @@ export default function CleanupPage() {
   const handleRestore = useCallback(async (logEntry: any) => {
     if (!user?.id) return;
     const todayStr = new Date().toISOString().split('T')[0];
-    const originalStatus = (logEntry as any).original_status || 'To Do';
 
-    await supabase
-      .from('catalyst_issues')
-      .update({
-        status: originalStatus,
-        closure_method: 'normal',
-        force_closed_by: null,
-        force_closed_at: null,
-      })
-      .eq('id', logEntry.issue_id);
+    try {
+      await restoreMutation.mutateAsync(logEntry.id);
 
-    await supabase
-      .from('governance_closure_log')
-      .update({
-        restored_at: new Date().toISOString(),
-        restored_by: user.id,
-      })
-      .eq('id', logEntry.id);
+      // Add audit comment
+      if (logEntry.issue_id) {
+        await supabase.from('ph_comments').insert({
+          work_item_id: logEntry.issue_id,
+          author_id: user.id,
+          body: `[AI Cleanup] Restored on ${todayStr}. Original force closure reason: ${logEntry.closure_reason || 'Not specified'}.`,
+        });
+      }
 
-    if (logEntry.issue_id) {
-      await supabase.from('ph_comments').insert({
-        work_item_id: logEntry.issue_id,
-        author_id: user.id,
-        body: `[AI Cleanup] Restored on ${todayStr}. Original force closure reason: ${logEntry.closure_reason || 'Not specified'}.`,
-      });
+      toast.success('Item restored. Original status and assignee reinstated.');
+      refetchRestore();
+    } catch (err: unknown) {
+      toast.error('Restore failed: ' + (err instanceof Error ? err.message : 'Unknown error'));
     }
-
-    qc.invalidateQueries({ queryKey: ['ageing-items'] });
-    qc.invalidateQueries({ queryKey: ['governance-score'] });
-    qc.invalidateQueries({ queryKey: ['cleanup-categories'] });
-    qc.invalidateQueries({ queryKey: ['governance-restore'] });
-
-    toast.success('Item restored. Original status and assignee reinstated.');
-    refetchRestore();
-  }, [user, qc, refetchRestore]);
+  }, [user, restoreMutation, refetchRestore]);
 
   // ── First selected item category for "select all" in bulk bar ──
   const firstSelectedCatKey = useMemo(() => {

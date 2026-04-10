@@ -249,20 +249,19 @@ Deno.serve(async (req) => {
     }
 
     // 5. GOVERNANCE LOCK CHECK — skip processing for governance-closed items
-    const { data: govLock } = await supabase
-      .from('governance_closure_log')
-      .select('id')
-      .eq('item_key', jiraKey)
-      .is('restored_at', null)
-      .limit(1)
-      .maybeSingle();
+    const { data: isLocked } = await supabase
+      .rpc('governance_exclusion_check', { p_item_key: jiraKey });
 
-    if (govLock) {
-      console.log(`[governance] Skipping webhook for locked item ${jiraKey}`);
+    if (isLocked) {
+      await supabase.from('governance_sync_skip_log').insert({
+        item_key:    jiraKey,
+        skip_source: 'webhook',
+      });
+      console.log('[GOVERNANCE] Webhook blocked for locked key:', jiraKey);
       await writeLog("skipped", 0, `Governance-locked: ${jiraKey}`);
       await releaseLock();
       return new Response(
-        JSON.stringify({ status: "skipped", reason: "governance_locked", key: jiraKey }),
+        JSON.stringify({ status: "governance_locked", key: jiraKey }),
         { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
