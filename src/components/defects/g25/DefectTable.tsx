@@ -210,7 +210,7 @@ function ParentPickerCell({ defectId, currentParentKey, projectKey }: { defectId
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder="Search parent issue..."
-              className="flex-1 text-[13px] text-slate-900 placeholder:text-slate-400 bg-transparent outline-none border-none"
+              className="flex-1 text-[13px] text-slate-900 placeholder:text-slate-400 bg-transparent outline-none border-none focus:ring-0 focus:outline-none"
               autoFocus
             />
             {currentParentKey && (
@@ -237,7 +237,7 @@ function ParentPickerCell({ defectId, currentParentKey, projectKey }: { defectId
             <div className="py-6 text-center text-[13px] text-slate-400">No matching items</div>
           ) : filtered.map(opt => {
             const isSelected = currentParentKey === opt.key;
-            const dotColor = getStatusDotColor(opt.statusCategory);
+            
             return (
               <button
                 key={opt.key}
@@ -248,13 +248,12 @@ function ParentPickerCell({ defectId, currentParentKey, projectKey }: { defectId
                 )}
               >
                 <div className="flex items-center gap-2">
-                  <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: dotColor, flexShrink: 0 }} />
                   <WorkItemIcon type={opt.type} size={16} />
                   <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 500, color: '#42526E' }}>
                     {opt.key}
                   </span>
                 </div>
-                <div className="ml-[26px] mt-0.5">
+                <div className="ml-[24px] mt-0.5">
                   <span className="text-[13px] text-slate-900 font-medium leading-snug line-clamp-1">{opt.summary}</span>
                 </div>
               </button>
