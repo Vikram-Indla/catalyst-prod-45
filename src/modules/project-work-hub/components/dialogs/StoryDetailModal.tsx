@@ -931,13 +931,17 @@ function LinkedIssuesSection({ issueId }: { issueId: string }) {
   const { data: links = [], isLoading } = useQuery({
     queryKey: ['linkedIssues', issueId],
     queryFn: async () => {
-      const { data, error } = await supabase.from('ph_issue_links')
-        .select(`id, link_type, created_at, target:ph_issues!ph_issue_links_target_id_fkey (
-          id, issue_key, summary, status, status_category, issue_type, assignee_account_id, assignee_display_name, priority, jira_updated_at, deleted_at
-        )`)
+      const { data: rawLinks, error } = await supabase.from('ph_issue_links')
+        .select('id, link_type, created_at, source_id, target_id')
         .eq('source_id', issueId).order('created_at', { ascending: false });
       if (error) throw error;
-      return (data ?? []).filter((l: any) => l.target && !l.target.deleted_at) as any[];
+      if (!rawLinks?.length) return [];
+      const targetIds = rawLinks.map(l => l.target_id);
+      const { data: targets } = await supabase.from('ph_issues')
+        .select('id, issue_key, summary, status, status_category, issue_type, assignee_account_id, assignee_display_name, priority, jira_updated_at, deleted_at')
+        .in('id', targetIds).is('deleted_at', null);
+      const targetMap = new Map((targets ?? []).map((t: any) => [t.id, t]));
+      return rawLinks.map(l => ({ ...l, target: targetMap.get(l.target_id) })).filter(l => l.target) as any[];
     },
   });
 
