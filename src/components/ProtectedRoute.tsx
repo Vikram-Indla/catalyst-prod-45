@@ -4,6 +4,9 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useEffect } from 'react';
 
+// ⚠️ AUTH BYPASS — temporary for diagnostics. Remove when done.
+const AUTH_BYPASS = true;
+
 interface ProtectedRouteProps {
   children: React.ReactNode;
   requireAdmin?: boolean;
@@ -12,37 +15,38 @@ interface ProtectedRouteProps {
 export function ProtectedRoute({ children, requireAdmin = false }: ProtectedRouteProps) {
   const { user, loading, signOut } = useAuth();
 
-  // Check approval status from profiles
-  const { data: profile, isLoading: profileLoading, error } = useQuery({
+  const { data: profile, isLoading: profileLoading } = useQuery({
     queryKey: ['profile-approval-status', user?.id],
     queryFn: async () => {
       if (!user) return null;
-      
       const { data, error } = await supabase
         .from('profiles')
         .select('approval_status, role')
         .eq('id', user.id)
         .maybeSingle();
-      
       if (error) {
         console.error('Error fetching profile approval status:', error);
         return null;
       }
-      
       return data;
     },
-    enabled: !!user,
-    staleTime: 30000, // Cache for 30 seconds
+    enabled: !!user && !AUTH_BYPASS,
+    staleTime: 30000,
     retry: 1,
   });
 
-  // If user is not approved, sign them out
   useEffect(() => {
+    if (AUTH_BYPASS) return;
     if (!profileLoading && profile && profile.approval_status !== 'APPROVED') {
       console.log('[ProtectedRoute] User not approved, signing out:', profile.approval_status);
       signOut();
     }
   }, [profile, profileLoading, signOut]);
+
+  // Bypass auth entirely when flag is on
+  if (AUTH_BYPASS) {
+    return <>{children}</>;
+  }
 
   if (loading || profileLoading) {
     return (
@@ -55,17 +59,14 @@ export function ProtectedRoute({ children, requireAdmin = false }: ProtectedRout
     );
   }
 
-  // No user - redirect to auth
   if (!user) {
     return <Navigate to="/auth" replace />;
   }
 
-  // No profile or not approved - redirect to auth
   if (!profile || profile.approval_status !== 'APPROVED') {
     return <Navigate to="/auth" replace />;
   }
 
-  // Admin route but user is not admin
   if (requireAdmin && !['admin', 'super_admin'].includes(profile.role || '')) {
     return <Navigate to="/home" replace />;
   }
