@@ -169,19 +169,21 @@ export function ForYouTable({
                       }}
                     >
                       {/* Checkbox */}
-                      <td style={{ textAlign: 'center', overflow: 'visible', textOverflow: 'clip' }} onClick={e => e.stopPropagation()}>
-                        <Checkbox checked={isSelected} onCheckedChange={(v) => handleSelectItem(item.id, !!v)} />
+                      <td style={{ overflow: 'visible', textOverflow: 'clip' }} onClick={e => e.stopPropagation()}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Checkbox checked={isSelected} onCheckedChange={(v) => handleSelectItem(item.id, !!v)} /></div>
                       </td>
 
                       {/* Star */}
-                      <td style={{ textAlign: 'center', overflow: 'visible', textOverflow: 'clip' }} onClick={e => e.stopPropagation()}>
-                        <button
-                          onClick={() => onStarToggle?.(item.id)}
-                          style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 24, height: 24, border: 'none', background: 'transparent', cursor: 'pointer', borderRadius: 4, padding: 0 }}
-                          title={item.starred ? 'Unstar' : 'Star'}
-                        >
-                          <Star size={14} fill={item.starred ? '#FACC15' : 'none'} stroke={item.starred ? '#FACC15' : '#CBD5E1'} strokeWidth={2} />
-                        </button>
+                      <td style={{ overflow: 'visible', textOverflow: 'clip' }} onClick={e => e.stopPropagation()}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <button
+                            onClick={() => onStarToggle?.(item.id)}
+                            style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 24, height: 24, border: 'none', background: 'transparent', cursor: 'pointer', borderRadius: 4, padding: 0 }}
+                            title={item.starred ? 'Unstar' : 'Star'}
+                          >
+                            <Star size={14} fill={item.starred ? '#FACC15' : 'none'} stroke={item.starred ? '#FACC15' : '#CBD5E1'} strokeWidth={2} />
+                          </button>
+                        </div>
                       </td>
 
                       {/* Key */}
