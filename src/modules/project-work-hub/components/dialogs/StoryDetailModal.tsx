@@ -512,6 +512,51 @@ export default function StoryDetailModal({
                   </div>
                 )}
               </div>
+              {/* Expand/Collapse panel toggle */}
+              {onTogglePanelMode && (
+                <button onClick={onTogglePanelMode} title={panelMode ? 'Show as modal' : 'Show as side panel'} style={{
+                  background: 'none', border: 'none', cursor: 'pointer', padding: '6px 8px',
+                  borderRadius: 4, color: '#5E6C84', fontSize: 14, display: 'flex', alignItems: 'center',
+                  transition: 'background 0.15s',
+                }}
+                  onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
+                  onMouseLeave={e => (e.currentTarget.style.background = 'none')}
+                >
+                  {panelMode ? (
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+                  ) : (
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+                  )}
+                </button>
+              )}
+              {/* Panel navigation — prev/next */}
+              {panelMode && navigationItems && navigationItems.length > 1 && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                  <button onClick={navPrev} disabled={!canNavPrev} style={{
+                    background: 'none', border: 'none', cursor: canNavPrev ? 'pointer' : 'default',
+                    padding: '6px 6px', borderRadius: 4, color: canNavPrev ? '#5E6C84' : '#C1C7D0',
+                    display: 'flex', alignItems: 'center', transition: 'background 0.15s',
+                  }}
+                    onMouseEnter={e => { if (canNavPrev) e.currentTarget.style.background = '#F4F5F7'; }}
+                    onMouseLeave={e => (e.currentTarget.style.background = 'none')}
+                  >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+                  </button>
+                  <span style={{ fontSize: 11, color: '#5E6C84', fontFamily: "'JetBrains Mono', monospace", minWidth: 44, textAlign: 'center' }}>
+                    {currentNavIndex + 1} / {navigationItems.length}
+                  </span>
+                  <button onClick={navNext} disabled={!canNavNext} style={{
+                    background: 'none', border: 'none', cursor: canNavNext ? 'pointer' : 'default',
+                    padding: '6px 6px', borderRadius: 4, color: canNavNext ? '#5E6C84' : '#C1C7D0',
+                    display: 'flex', alignItems: 'center', transition: 'background 0.15s',
+                  }}
+                    onMouseEnter={e => { if (canNavNext) e.currentTarget.style.background = '#F4F5F7'; }}
+                    onMouseLeave={e => (e.currentTarget.style.background = 'none')}
+                  >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+                  </button>
+                </div>
+              )}
               <button onClick={onClose} style={{
                 background: 'none', border: 'none', cursor: 'pointer', padding: '6px 8px',
                 borderRadius: 4, color: '#5E6C84', fontSize: 16, display: 'flex', alignItems: 'center',
