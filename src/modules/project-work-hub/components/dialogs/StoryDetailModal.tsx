@@ -1010,13 +1010,17 @@ export default function StoryDetailModal({
                   )}
                 </div>
 
-                {/* Reporter — Jira parity: 28px avatar, 14px name */}
+                {/* Reporter — Jira parity: 28px avatar with real image, 14px name */}
                 <div style={{ marginBottom: 14 }}>
                   <div style={{ fontSize: 12, fontWeight: 600, color: '#172B4D', marginBottom: 4 }}>Reporter</div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 6px', borderRadius: 4 }}>
                     {issue?.reporter_display_name ? (
                       <>
-                        <span style={{ width: 28, height: 28, borderRadius: '50%', background: getAvatarColor(issue.reporter_account_id ?? issue.reporter_display_name), color: '#FFF', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, flexShrink: 0 }}>{getInitials(issue.reporter_display_name)}</span>
+                        {reporterProfile?.avatar_url ? (
+                          <img src={reporterProfile.avatar_url} alt={issue.reporter_display_name} style={{ width: 28, height: 28, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
+                        ) : (
+                          <span style={{ width: 28, height: 28, borderRadius: '50%', background: getAvatarColor(issue.reporter_account_id ?? issue.reporter_display_name), color: '#FFF', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, flexShrink: 0 }}>{getInitials(issue.reporter_display_name)}</span>
+                        )}
                         <span style={{ fontSize: 14, color: '#172B4D', fontWeight: 400 }}>{issue.reporter_display_name}</span>
                       </>
                     ) : <span style={{ color: '#42526E', fontSize: 14 }}>—</span>}
