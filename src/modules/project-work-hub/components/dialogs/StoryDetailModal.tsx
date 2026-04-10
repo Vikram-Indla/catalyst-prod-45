@@ -25,6 +25,7 @@ import {
   ChevronsUp, ChevronUp, Minus, ChevronsDown, Search,
   AlertTriangle, MessageSquare, Clock, Upload,
 } from 'lucide-react';
+import WatchButton from '@/components/shared/WatchButton';
 
 /* ═══════════════════════════════════════════════
    ANIMATIONS
