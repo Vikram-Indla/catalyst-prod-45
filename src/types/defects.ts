@@ -46,6 +46,8 @@ export interface Defect {
   // Joined
   assignee?: { id: string; full_name: string; avatar_url: string | null } | null;
   reporter?: { id: string; full_name: string; avatar_url: string | null } | null;
+  // Parent (from jira_parent_key or epic_link)
+  parent_key?: string | null;
 }
 
 export interface DefectStats {
