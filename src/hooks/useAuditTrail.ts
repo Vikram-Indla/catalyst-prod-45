@@ -37,24 +37,8 @@ export function useAuditTrail(opts: UseAuditTrailOptions) {
     queryFn: async () => {
       let query = supabase
         .from('governance_closure_log')
-        .select(`
-          id,
-          item_key,
-          closed_at,
-          closed_by,
-          closure_reason,
-          governance_category,
-          stale_days,
-          reporter_notified,
-          restore_deadline,
-          restored_at,
-          restored_by,
-          issue_id,
-          catalyst_issues!governance_closure_log_issue_id_fkey (issue_key, title),
-          closed_by_profile:profiles!governance_closure_log_closed_by_fkey (full_name),
-          restored_by_profile:profiles!governance_closure_log_restored_by_fkey (full_name)
-        `, { count: 'exact' })
-        .order('closed_at', { ascending: false });
+        .select('*', { count: 'exact' })
+        .order('closed_at', { ascending: false }) as any;
 
       // Filters
       if (opts.statusFilter === 'closed') {
@@ -79,7 +63,33 @@ export function useAuditTrail(opts: UseAuditTrailOptions) {
       const { data, error, count } = await query;
       if (error) throw error;
 
-      const entries: AuditEntry[] = (data ?? []).map((row: any) => ({
+      // Fetch related data
+      const rows = data ?? [];
+      const issueIds = [...new Set(rows.map((r: any) => r.issue_id).filter(Boolean))];
+      const userIds = [...new Set([
+        ...rows.map((r: any) => r.closed_by).filter(Boolean),
+        ...rows.map((r: any) => r.restored_by).filter(Boolean),
+      ])];
+
+      let issueMap: Record<string, { issue_key: string; title: string }> = {};
+      let profileMap: Record<string, string> = {};
+
+      if (issueIds.length > 0) {
+        const { data: issues } = await supabase
+          .from('catalyst_issues')
+          .select('id, issue_key, title')
+          .in('id', issueIds as string[]);
+        (issues ?? []).forEach((i: any) => { issueMap[i.id] = { issue_key: i.issue_key, title: i.title }; });
+      }
+      if (userIds.length > 0) {
+        const { data: profiles } = await supabase
+          .from('profiles')
+          .select('id, full_name')
+          .in('id', userIds as string[]);
+        (profiles ?? []).forEach((p: any) => { profileMap[p.id] = p.full_name; });
+      }
+
+      const entries: AuditEntry[] = rows.map((row: any) => ({
         id: row.id,
         item_key: row.catalyst_issues?.issue_key ?? row.item_key,
         title: row.catalyst_issues?.title ?? row.item_key,
