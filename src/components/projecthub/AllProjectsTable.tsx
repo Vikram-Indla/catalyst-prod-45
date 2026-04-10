@@ -556,7 +556,7 @@ export function AllProjectsTable({
 
   return (
     <div className="overflow-x-auto" style={{ borderRadius: 0 }}>
-      <table className="pb-table" style={{ width: Math.max(900, orderedColumns.reduce((s, c) => s + (columnWidths[c.key] || c.defaultWidth), 0)), tableLayout: 'fixed' }}>
+      <table className="pb-table" style={{ minWidth: 900, tableLayout: 'fixed' }}>
         <colgroup>
           {orderedColumns.map(c => (
             <col key={c.key} style={{ width: columnWidths[c.key] || c.defaultWidth }} />
