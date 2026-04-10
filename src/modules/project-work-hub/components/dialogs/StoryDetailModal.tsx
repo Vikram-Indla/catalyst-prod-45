@@ -409,7 +409,7 @@ export default function StoryDetailModal({
   };
 
   const MODAL: React.CSSProperties = {
-    width: 980, maxWidth: '95vw',
+    width: 1100, maxWidth: '95vw',
     minHeight: 600, maxHeight: 'calc(100vh - 80px)',
     background: '#FFFFFF', borderRadius: 8,
     display: 'flex', flexDirection: 'column',
@@ -937,25 +937,25 @@ export default function StoryDetailModal({
               {/* Details section */}
               <div style={{ marginBottom: 20 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', marginBottom: 12, userSelect: 'none' }}>
-                  <ChevronDown size={14} color="#5E6C84" />
-                  <span style={{ fontSize: 13, fontWeight: 700, color: '#172B4D' }}>Details</span>
+                  <ChevronDown size={14} color="#42526E" />
+                  <span style={{ fontSize: 14, fontWeight: 700, color: '#172B4D' }}>Details</span>
                 </div>
 
                 {/* Fix versions */}
                 <div style={{ marginBottom: 14 }}>
-                  <div style={{ fontSize: 12, fontWeight: 600, color: '#5E6C84', marginBottom: 4 }}>Fix versions</div>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: '#172B4D', marginBottom: 4 }}>Fix versions</div>
                   {fixVersionNames.length > 0 ? (
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
                       {fixVersionNames.map((v: string, i: number) => (
-                        <span key={i} style={{ fontSize: 11, fontWeight: 600, padding: '2px 6px', borderRadius: 3, background: '#F4F5F7', color: '#5E6C84' }}>{v}</span>
+                        <span key={i} style={{ fontSize: 11, fontWeight: 600, padding: '2px 6px', borderRadius: 3, background: '#F4F5F7', color: '#42526E' }}>{v}</span>
                       ))}
                     </div>
-                  ) : <span style={{ color: '#97A0AF', fontSize: 13, fontStyle: 'italic' }}>None</span>}
+                  ) : <span style={{ color: '#42526E', fontSize: 14 }}>None</span>}
                 </div>
 
                 {/* Assignee — Jira parity: avatar + name, no "Assign to me" link */}
                 <div style={{ marginBottom: 14 }}>
-                  <div style={{ fontSize: 12, fontWeight: 600, color: '#5E6C84', marginBottom: 4 }}>Assignee</div>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: '#172B4D', marginBottom: 4 }}>Assignee</div>
                   {issue && (
                     <EditableAssignee issueId={issue.id} projectId={projectId} currentAssigneeId={issue.assignee_account_id} currentAssigneeName={issue.assignee_display_name}
                       onUpdate={() => queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] })} />
@@ -964,31 +964,31 @@ export default function StoryDetailModal({
 
                 {/* Reporter — Jira parity: 28px avatar, 14px name */}
                 <div style={{ marginBottom: 14 }}>
-                  <div style={{ fontSize: 12, fontWeight: 600, color: '#5E6C84', marginBottom: 4 }}>Reporter</div>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: '#172B4D', marginBottom: 4 }}>Reporter</div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 6px', borderRadius: 4 }}>
                     {issue?.reporter_display_name ? (
                       <>
                         <span style={{ width: 28, height: 28, borderRadius: '50%', background: getAvatarColor(issue.reporter_account_id ?? issue.reporter_display_name), color: '#FFF', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, flexShrink: 0 }}>{getInitials(issue.reporter_display_name)}</span>
                         <span style={{ fontSize: 14, color: '#172B4D', fontWeight: 400 }}>{issue.reporter_display_name}</span>
                       </>
-                    ) : <span style={{ color: '#97A0AF', fontSize: 14 }}>—</span>}
+                    ) : <span style={{ color: '#42526E', fontSize: 14 }}>—</span>}
                   </div>
                 </div>
 
                 {/* Labels */}
                 <div style={{ marginBottom: 14 }}>
-                  <div style={{ fontSize: 12, fontWeight: 600, color: '#5E6C84', marginBottom: 4 }}>Labels</div>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: '#172B4D', marginBottom: 4 }}>Labels</div>
                   {issue && <EditableLabels issueId={issue.id} currentLabels={labelsArray} onUpdate={() => queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] })} />}
                 </div>
               </div>
 
               {/* Timestamps — bottom */}
               <div style={{ marginTop: 'auto', padding: '12px 0 0' }}>
-                <div style={{ fontSize: 11, color: '#97A0AF', marginBottom: 6, lineHeight: 1.6 }}>
-                  <span style={{ color: '#5E6C84' }}>Created</span> {fmtDate(issue?.jira_created_at)}
+                <div style={{ fontSize: 12, color: '#5E6C84', marginBottom: 4, lineHeight: 1.6 }}>
+                  <span style={{ color: '#42526E', fontWeight: 500 }}>Created</span> {fmtDate(issue?.jira_created_at)}
                 </div>
-                <div style={{ fontSize: 11, color: '#97A0AF', lineHeight: 1.6 }}>
-                  <span style={{ color: '#5E6C84' }}>Updated</span> {fmtDate(issue?.jira_updated_at)}
+                <div style={{ fontSize: 12, color: '#5E6C84', lineHeight: 1.6 }}>
+                  <span style={{ color: '#42526E', fontWeight: 500 }}>Updated</span> {fmtDate(issue?.jira_updated_at)}
                 </div>
               </div>
             </div>
