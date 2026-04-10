@@ -620,7 +620,6 @@ export function ParentFieldPicker({ storyKey, parentKey, projectKey, onParentCha
                       {result.summary}
                     </div>
                   </div>
-                  </div>
                 );
               })}
               {searchResults.length === 0 && search && (
