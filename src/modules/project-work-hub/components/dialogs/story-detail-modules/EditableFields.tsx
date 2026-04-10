@@ -284,10 +284,18 @@ export function EditableLabels({ issueId, currentLabels, onUpdate }: { issueId: 
   );
 }
 
-/* ── ParentFieldPicker ─────────────────────── */
+/* ── ParentFieldPicker — Jira-parity rebuild ── */
 
 /** Canonical epic icon — lightning bolt on purple rounded square */
 const EPIC_ICON_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><rect fill="#6554C0" width="16" height="16" rx="2"/><path fill="#FFF" d="M11.5 6.5H9.5V3.5C9.5 3.22 9.28 3 9 3H7C6.72 3 6.5 3.22 6.5 3.5V8H4.5C4.22 8 4.08 8.34 4.27 8.54L8.27 12.79C8.46 12.99 8.77 12.99 8.96 12.79L12.73 8.54C12.92 8.34 12.78 8 12.5 8H11.5V6.5Z"/></svg>`;
+
+/** Deterministic color palette for project dots */
+const DOT_COLORS = ['#4C9AFF', '#6554C0', '#36B37E', '#FFAB00', '#FF5630', '#00B8D9', '#FF7452', '#57D9A3'];
+function getDotColor(key: string) {
+  let hash = 0;
+  for (let i = 0; i < key.length; i++) hash = ((hash << 5) - hash + key.charCodeAt(i)) | 0;
+  return DOT_COLORS[Math.abs(hash) % DOT_COLORS.length];
+}
 
 export function ParentFieldPicker({ storyKey, parentKey, projectKey, onParentChange }: {
   storyKey: string; parentKey: string | null; projectKey: string;
@@ -295,6 +303,7 @@ export function ParentFieldPicker({ storyKey, parentKey, projectKey, onParentCha
 }) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
+  const [showDone, setShowDone] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
@@ -312,13 +321,16 @@ export function ParentFieldPicker({ storyKey, parentKey, projectKey, onParentCha
   });
 
   const { data: searchResults = [] } = useQuery({
-    queryKey: ['parentSearch', projectKey, search],
+    queryKey: ['parentSearch', projectKey, search, showDone],
     queryFn: async () => {
       let query = supabase.from('ph_issues')
         .select('id, issue_key, summary, issue_type, status, status_category')
         .eq('project_key', projectKey).eq('issue_type', 'Epic')
         .is('deleted_at', null).neq('issue_key', storyKey)
-        .order('jira_updated_at', { ascending: false }).limit(10);
+        .order('jira_updated_at', { ascending: false }).limit(20);
+      if (!showDone) {
+        query = query.neq('status_category', 'done');
+      }
       if (search.trim()) {
         query = query.or(`issue_key.ilike.${search}%,summary.ilike.%${search}%`);
       }
@@ -343,40 +355,113 @@ export function ParentFieldPicker({ storyKey, parentKey, projectKey, onParentCha
 
   return (
     <div ref={containerRef} style={{ position: 'relative', flex: 1 }}>
-      {parentKey && currentParent ? (
-        <div className="sdm-parent-field" onClick={() => setOpen(o => !o)}>
-          <span dangerouslySetInnerHTML={{ __html: EPIC_ICON_SVG }} style={{ display: 'flex', flexShrink: 0 }} />
-          <span className="sdm-parent-key">{currentParent.issue_key}</span>
-          <span className="sdm-parent-name">{currentParent.summary}</span>
-          <span className="sdm-parent-chevron"><ChevronRight size={10} /></span>
-        </div>
-      ) : (
-        <div className="sdm-parent-field sdm-parent-field--empty" onClick={() => setOpen(o => !o)} role="button">None — Add parent</div>
-      )}
+      {/* Trigger — Jira full-width input style */}
+      <div onClick={() => setOpen(o => !o)} style={{
+        display: 'flex', alignItems: 'center', gap: 8,
+        height: 40, padding: '0 12px',
+        border: open ? '2px solid #4C9AFF' : '1px solid #DFE1E6',
+        borderRadius: 3, cursor: 'pointer', background: '#fff',
+        transition: 'border-color 0.15s',
+      }}
+        onMouseEnter={e => { if (!open) e.currentTarget.style.borderColor = '#B3D4FF'; }}
+        onMouseLeave={e => { if (!open) e.currentTarget.style.borderColor = '#DFE1E6'; }}
+      >
+        {parentKey && currentParent ? (
+          <>
+            <span dangerouslySetInnerHTML={{ __html: EPIC_ICON_SVG }} style={{ display: 'flex', flexShrink: 0 }} />
+            <span style={{ flex: 1, fontSize: 14, color: '#172B4D', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {currentParent.issue_key} {currentParent.summary}
+            </span>
+            {/* Clear button */}
+            <button onClick={e => { e.stopPropagation(); handleSelect(null); }} style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              width: 20, height: 20, borderRadius: '50%', border: 'none',
+              background: '#DFE1E6', cursor: 'pointer', color: '#42526E', flexShrink: 0,
+            }}
+              onMouseEnter={e => (e.currentTarget.style.background = '#C1C7D0')}
+              onMouseLeave={e => (e.currentTarget.style.background = '#DFE1E6')}
+            >
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6B778C" strokeWidth="2" style={{ flexShrink: 0 }}><path d="M6 9l6 6 6-6"/></svg>
+          </>
+        ) : (
+          <>
+            <span style={{ flex: 1, fontSize: 14, color: '#6B778C', fontStyle: 'italic' }}>None — Add parent</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6B778C" strokeWidth="2" style={{ flexShrink: 0 }}><path d="M6 9l6 6 6-6"/></svg>
+          </>
+        )}
+      </div>
+
+      {/* Dropdown — Jira parity with two-line rows, color dots, "Show done" checkbox */}
       {open && (() => {
         const rect = containerRef.current?.getBoundingClientRect();
         const top = (rect?.bottom ?? 0) + 4;
-        const right = window.innerWidth - (rect?.right ?? 0);
+        const left = rect?.left ?? 0;
+        const width = Math.max(rect?.width ?? 420, 420);
         return (
-        <div className="sdm-parent-popover" role="dialog" aria-label="Select parent issue" style={{ top, right, ...ATLASSIAN_DROPDOWN, position: 'fixed' }}>
-          <div className="sdm-popover-search">
-            <input ref={searchInputRef} className="sdm-popover-input" type="text" placeholder="Search epics…" value={search} onChange={e => setSearch(e.target.value)} onKeyDown={e => { if (e.key === 'Escape') { setOpen(false); setSearch(''); } }} />
+          <div style={{
+            ...ATLASSIAN_DROPDOWN, position: 'fixed', top, left, width,
+            maxHeight: 440, display: 'flex', flexDirection: 'column', overflow: 'hidden',
+          }}>
+            {/* Search input */}
+            <div style={{ padding: '8px 8px 4px' }}>
+              <input ref={searchInputRef} value={search} onChange={e => setSearch(e.target.value)}
+                placeholder="Search epics..."
+                onKeyDown={e => { if (e.key === 'Escape') { setOpen(false); setSearch(''); } }}
+                style={{
+                  width: '100%', height: 40, padding: '0 12px',
+                  border: '2px solid #4C9AFF', borderRadius: 3,
+                  fontSize: 14, fontFamily: 'inherit', outline: 'none', color: '#172B4D',
+                }} />
+            </div>
+
+            {/* Show done checkbox */}
+            <div style={{ padding: '6px 12px', borderBottom: '1px solid #F4F5F7' }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: 14, color: '#172B4D' }}>
+                <input type="checkbox" checked={showDone} onChange={e => setShowDone(e.target.checked)}
+                  style={{ width: 16, height: 16, accentColor: '#0052CC', cursor: 'pointer' }} />
+                Show done work items
+              </label>
+            </div>
+
+            {/* Results — two-line layout like Jira */}
+            <div style={{ flex: 1, overflowY: 'auto' }}>
+              {searchResults.map(result => {
+                const dotColor = getDotColor(result.issue_key);
+                const isActive = result.issue_key === parentKey;
+                return (
+                  <div key={result.id} onClick={() => handleSelect(result.issue_key)}
+                    style={{
+                      padding: '10px 12px', cursor: 'pointer',
+                      borderBottom: '1px solid #F4F5F7',
+                      background: isActive ? '#DEEBFF' : 'transparent',
+                      transition: 'background 0.1s',
+                    }}
+                    onMouseEnter={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = '#F4F5F7'; }}
+                    onMouseLeave={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = isActive ? '#DEEBFF' : 'transparent'; }}
+                  >
+                    {/* Line 1: dot + icon + key */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2 }}>
+                      <div style={{ width: 10, height: 10, borderRadius: 2, background: dotColor, flexShrink: 0 }} />
+                      <span dangerouslySetInnerHTML={{ __html: EPIC_ICON_SVG }} style={{ display: 'flex', flexShrink: 0 }} />
+                      <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, color: '#6B778C', fontSize: 12 }}>{result.issue_key}</span>
+                    </div>
+                    {/* Line 2: summary */}
+                    <div style={{ fontSize: 14, color: '#172B4D', paddingLeft: 32, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {result.summary}
+                    </div>
+                  </div>
+                );
+              })}
+              {searchResults.length === 0 && search && (
+                <div style={{ padding: 16, fontSize: 13, color: '#6B778C', textAlign: 'center' }}>No epics found for "{search}"</div>
+              )}
+              {searchResults.length === 0 && !search && (
+                <div style={{ padding: 16, fontSize: 13, color: '#6B778C', textAlign: 'center' }}>No epics available</div>
+              )}
+            </div>
           </div>
-          <div className="sdm-popover-results">
-            {parentKey && <div className="sdm-popover-none-option" onClick={() => handleSelect(null)} role="button">✕ Remove parent</div>}
-            {searchResults.map(result => (
-              <div key={result.id} className={`sdm-popover-result${result.issue_key === parentKey ? ' sdm-popover-result--active' : ''}`} onClick={() => handleSelect(result.issue_key)} role="button"
-                style={{ height: 36, padding: '0 12px', display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: 14 }}
-              >
-                <span dangerouslySetInnerHTML={{ __html: EPIC_ICON_SVG }} style={{ display: 'flex', flexShrink: 0 }} />
-                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, color: '#6554C0', fontSize: 12, flexShrink: 0 }}>{result.issue_key}</span>
-                <span style={{ fontSize: 14, color: '#172B4D', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{result.summary}</span>
-                {result.issue_key === parentKey && <CheckmarkSVG />}
-              </div>
-            ))}
-            {searchResults.length === 0 && search && <div style={{ padding: 12, fontSize: 12, color: '#6B778C', textAlign: 'center' }}>No epics found for "{search}"</div>}
-          </div>
-        </div>
         );
       })()}
     </div>
