@@ -149,7 +149,7 @@ export function useParentCandidates(projectKey: string) {
     queryFn: async () => {
       const { data } = await supabase
         .from('ph_issues')
-        .select('id, issue_key, summary, issue_type')
+        .select('id, issue_key, summary, issue_type, status_category, status')
         .eq('project_key', projectKey)
         .in('issue_type', ['Epic', 'epic', 'Feature', 'feature'])
         .order('summary');
