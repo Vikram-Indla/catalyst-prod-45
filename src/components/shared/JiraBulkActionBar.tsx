@@ -108,6 +108,8 @@ export function JiraBulkActionBar({
     setDeleteConfirm(false);
   }, []);
 
+  if (count === 0) return null;
+
   const bar = (
     <div
       className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[9999]"
