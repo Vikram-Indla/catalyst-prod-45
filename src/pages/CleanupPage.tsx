@@ -188,19 +188,36 @@ export default function CleanupPage() {
     },
   });
 
-  // ── Resolve parent titles from parent_key ──
+  // ── Resolve parent info (title + issue_type) from parent_key ──
   const parentKeys = useMemo(() => [...new Set(sharedItems.map(i => i.parent_key).filter(Boolean))] as string[], [sharedItems]);
-  const { data: parentTitleMap = {} } = useQuery({
-    queryKey: ['cleanup-parent-titles', parentKeys],
+  const { data: parentInfoMap = {} } = useQuery({
+    queryKey: ['cleanup-parent-info', parentKeys],
     enabled: parentKeys.length > 0,
     staleTime: 300_000,
     queryFn: async () => {
-      const { data } = await supabase.from('ph_issues').select('issue_key, summary').in('issue_key', parentKeys);
-      const map: Record<string, string> = {};
-      (data ?? []).forEach((p: any) => { map[p.issue_key] = p.summary; });
+      const { data } = await supabase.from('ph_issues').select('issue_key, summary, issue_type').in('issue_key', parentKeys);
+      const map: Record<string, { title: string; issueType: string }> = {};
+      (data ?? []).forEach((p: any) => { map[p.issue_key] = { title: p.summary, issueType: p.issue_type || 'Task' }; });
       return map;
     },
   });
+
+  // ── Inline status edit state ──
+  const [editingStatusId, setEditingStatusId] = useState<string | null>(null);
+
+  const handleInlineStatusChange = useCallback(async (itemId: string, newStatus: string) => {
+    setEditingStatusId(null);
+    const { error } = await supabase
+      .from('catalyst_issues')
+      .update({ status: newStatus })
+      .eq('id', itemId);
+    if (error) {
+      toast.error('Status update failed: ' + error.message);
+      return;
+    }
+    qc.invalidateQueries({ queryKey: ['ageing-items'] });
+    toast.success(`Status updated to "${newStatus}"`);
+  }, [qc]);
 
   // ── Categorize items ──
   const catData = useMemo(() => {
@@ -772,7 +789,29 @@ export default function CleanupPage() {
                             }}>
                               {item.issue_key}
                             </span>
-                            <StatusLozenge value={item.status} />
+                            {editingStatusId === item.id ? (
+                              <div onClick={e => e.stopPropagation()} style={{ minWidth: 120 }}>
+                                <Select
+                                  value={item.status}
+                                  onValueChange={(val) => handleInlineStatusChange(item.id, val)}
+                                  onOpenChange={(open) => { if (!open) setEditingStatusId(null); }}
+                                  defaultOpen
+                                >
+                                  <SelectTrigger style={{ height: 24, fontSize: 11, border: '1px solid #2563EB', borderRadius: 4, background: '#ffffff' }}>
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                  <SelectContent style={{ background: '#ffffff', zIndex: 100 }}>
+                                    {distinctStatuses.map(s => (
+                                      <SelectItem key={s} value={s} style={{ fontSize: 11 }}>{s}</SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                            ) : (
+                              <div onClick={(e) => { e.stopPropagation(); setEditingStatusId(item.id); }} style={{ cursor: 'pointer' }} title="Click to change status">
+                                <StatusLozenge value={item.status} />
+                              </div>
+                            )}
                             <span style={{
                               fontFamily: 'JetBrains Mono, monospace',
                               fontSize: 13, fontWeight: 600, color: daysColor(item.days_stale),
@@ -1013,7 +1052,9 @@ export default function CleanupPage() {
                         const isReporter = cat?.isReporterOnus ?? false;
                         const isSelected = selected.has(item.id);
                         const projectName = projectNameMap[item.project_key] || item.project_key || '\u2014';
-                        const parentTitle = item.parent_key ? (parentTitleMap[item.parent_key] || item.parent_key) : null;
+                        const parentInfo = item.parent_key ? parentInfoMap[item.parent_key] : null;
+                        const parentTitle = parentInfo?.title || (item.parent_key || null);
+                        const parentIssueType = parentInfo?.issueType || 'Task';
 
                         return (
                           <tr
@@ -1063,16 +1104,18 @@ export default function CleanupPage() {
                               {item.title}
                             </td>
 
-                            {/* Parent — full title */}
+                            {/* Parent — icon + full title */}
                             <td style={{ padding: '8px 12px', width: 180 }} title={parentTitle || undefined}>
-                              {parentTitle ? (
-                                <span style={{
-                                  fontSize: 13, fontWeight: 500, color: '#475569',
-                                  overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                                  display: 'block',
-                                }}>
-                                  {parentTitle}
-                                </span>
+                              {item.parent_key ? (
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 6, overflow: 'hidden' }}>
+                                  <JiraIssueTypeIcon issueType={parentIssueType} size={14} />
+                                  <span style={{
+                                    fontSize: 13, fontWeight: 500, color: '#475569',
+                                    overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                                  }}>
+                                    {parentTitle}
+                                  </span>
+                                </div>
                               ) : (
                                 <span style={{ fontSize: 13, color: '#CBD5E1' }}>{'\u2014'}</span>
                               )}
@@ -1145,9 +1188,33 @@ export default function CleanupPage() {
                               </div>
                             </td>
 
-                            {/* Status */}
-                            <td style={{ padding: '8px 8px', width: 130, textAlign: 'center' }}>
-                              <StatusLozenge value={item.status} />
+                            {/* Status — inline edit */}
+                            <td style={{ padding: '8px 8px', width: 130, textAlign: 'center' }} onClick={e => e.stopPropagation()}>
+                              {editingStatusId === item.id ? (
+                                <Select
+                                  value={item.status}
+                                  onValueChange={(val) => handleInlineStatusChange(item.id, val)}
+                                  onOpenChange={(open) => { if (!open) setEditingStatusId(null); }}
+                                  defaultOpen
+                                >
+                                  <SelectTrigger style={{ height: 28, fontSize: 11, border: '1px solid #2563EB', borderRadius: 4, background: '#ffffff', minWidth: 100 }}>
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                  <SelectContent style={{ background: '#ffffff', zIndex: 100 }}>
+                                    {distinctStatuses.map(s => (
+                                      <SelectItem key={s} value={s} style={{ fontSize: 11 }}>{s}</SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              ) : (
+                                <div
+                                  onClick={() => setEditingStatusId(item.id)}
+                                  style={{ cursor: 'pointer' }}
+                                  title="Click to change status"
+                                >
+                                  <StatusLozenge value={item.status} />
+                                </div>
+                              )}
                             </td>
 
                             {/* Days */}
