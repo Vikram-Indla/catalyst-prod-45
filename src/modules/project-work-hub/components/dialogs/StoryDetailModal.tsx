@@ -1101,8 +1101,12 @@ function EditableAssignee({ issueId, projectId, currentAssigneeId, currentAssign
         <span style={{ fontSize: 12, color: '#172B4D' }}>{currentAssigneeName ?? 'Unassigned'}</span>
         <Edit2 size={10} color="#8993A4" />
       </div>
-      {open && (
-        <div style={{ position: 'absolute', top: 'calc(100% + 4px)', left: 0, width: 220, background: '#fff', border: '1px solid rgba(9,30,66,.24)', borderRadius: 6, boxShadow: '0 6px 16px rgba(9,30,66,.15)', zIndex: 50, overflow: 'hidden' }}>
+      {open && (() => {
+        const rect = ref.current?.getBoundingClientRect();
+        const dropTop = (rect?.bottom ?? 0) + 4;
+        const dropLeft = (rect?.left ?? 0);
+        return (
+        <div style={{ position: 'fixed', top: dropTop, left: dropLeft, width: 240, background: '#fff', border: '1px solid rgba(9,30,66,.24)', borderRadius: 6, boxShadow: '0 6px 16px rgba(9,30,66,.15)', zIndex: 9999, overflow: 'hidden' }}>
           <div style={{ padding: 6, borderBottom: '1px solid rgba(9,30,66,.1)' }}>
             <input autoFocus value={search} onChange={e => setSearch(e.target.value)} placeholder="Search members…" style={{ width: '100%', height: 28, padding: '0 7px', border: '1px solid rgba(9,30,66,.14)', borderRadius: 4, fontSize: 12, fontFamily: 'inherit', outline: 'none' }} />
           </div>
