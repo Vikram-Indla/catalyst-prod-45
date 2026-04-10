@@ -29,15 +29,15 @@ import { useTheme } from '@/hooks/useTheme';
  * dynamic import() that Vite will resolve to the same chunk as the lazy().
  */
 const ROUTE_PREFETCH_MAP: Record<string, () => Promise<unknown>> = {
-  '/project-hub/projects': () => import('../../pages/projecthub/AllProjectsPage'),
+  '/project-hub/projects': () => import('../../pages/project-hub/AllProjectsPage'),
   '/project-hub/resources': () => import('../../pages/ResourceListingPage'),
   '/producthub/kanban': () => import('../../components/producthub/kanban/KanbanBoard'),
-  '/releasehub': () => import('../../pages/Releases'),
-  '/testhub': () => import('../../pages/TestHub'),
+  '/releasehub': () => import('../../pages/releasehub/AllReleasesPage'),
+  '/testhub': () => import('../../pages/testhub/TestHubPage'),
   '/planhub': () => import('../../components/planhub/PlanHubShell'),
-  '/taskhub': () => import('../../pages/TaskHub'),
-  '/incidenthub': () => import('../../pages/IncidentHub'),
-  '/strategyhub': () => import('../../pages/StrategyHub'),
+  '/taskhub': () => import('../../modules/planner/PlannerPage'),
+  '/incidenthub': () => import('../../pages/incidenthub/IncidentListPage'),
+  '/strategyhub': () => import('../../pages/strategyhub/StrategicThemesPage'),
 };
 
 const prefetchedRoutes = new Set<string>();

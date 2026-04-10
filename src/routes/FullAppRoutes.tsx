@@ -32,7 +32,7 @@ const WorkItemsListPageLazy = lazy(() => import("../pages/project-hub/WorkItemsL
 const ProjectBoardPageLazy = lazy(() => import("../pages/project-hub/ProjectBoardPage"));
 const ProjectBoardManagerPageLazy = lazy(() => import("../pages/project-hub/ProjectBoardManagerPage"));
 const ProjectBoardCanvasPageLazy = lazy(() => import("../pages/project-hub/ProjectBoardCanvasPage"));
-const AllProjectsPageLazy = lazy(() => import("../pages/projecthub/AllProjectsPage"));
+const AllProjectsPageLazy = lazy(() => import("../pages/project-hub/AllProjectsPage"));
 const NativeEpicBacklogPageLazy = lazy(() => import("../pages/project-hub/NativeEpicBacklogPage"));
 const NativeFeatureBacklogPageLazy = lazy(() => import("../pages/project-hub/NativeFeatureBacklogPage"));
 const NativeStoryBacklogPageLazy = lazy(() => import("../pages/project-hub/NativeStoryBacklogPage"));
@@ -60,7 +60,7 @@ const RH21AllReleasesPage = lazy(() => import("../pages/releasehub/AllReleasesPa
 const RH21ReleaseComparePage = lazy(() => import("../pages/releasehub/ReleaseComparePage"));
 const RH21TriageQueuePage = lazy(() => import("../pages/releasehub/TriageQueuePage"));
 const RH21AllChangesPage = lazy(() => import("../pages/releasehub/AllChangesPage"));
-const RH21SignOffQueuePage = lazy(() => import("../pages/release-hub/SignOffQueuePage"));
+const RH21SignOffQueuePage = lazy(() => import("../pages/releasehub/SignOffQueuePage"));
 const RH21FreezeWindowsPage = lazy(() => import("../pages/releasehub/FreezeWindowsPage"));
 const SyncPrerequisitesPage = lazy(() => import("../pages/releasehub/SyncPrerequisitesPage"));
 const StrategicThemesPage = lazy(() => import("../pages/strategyhub/StrategicThemesPage"));

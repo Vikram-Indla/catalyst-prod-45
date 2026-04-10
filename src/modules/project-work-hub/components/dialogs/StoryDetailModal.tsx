@@ -3,110 +3,26 @@
  * Jira-style two-panel detail modal for work items.
  * Data: ph_issues + ph_issue_links + ph_comments + ph_activity_log + ph_attachments
  *
- * Enhancements over previous version:
- * - Key Details horizontal strip (always visible, not collapsed)
- * - Description as standalone section with save/cancel
- * - ConfirmDialog replacing window.confirm
- * - Custom dropdown replacing native <select> in LinkWorkItemModal
- * - Enhanced breadcrumb with parent name
- * - Richer empty states with icons
- * - Priority picker in sidebar
- * - Comment edit/delete
+ * Sub-components extracted to ./story-detail/
  */
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import { formatDistanceToNow } from 'date-fns';
 import { toast } from 'sonner';
 import {
   X, Eye, EyeOff, Link2, MoreHorizontal, Copy, Archive, Trash2,
-  ChevronDown, ChevronRight, Plus, Flag, Paperclip, FileText,
+  ChevronDown, Plus, Flag, Paperclip, FileText,
   ExternalLink, Maximize2, Minimize2, Share2, Pencil, ListFilter,
-  ChevronsUp, ChevronUp, Minus, ChevronsDown, Search,
   AlertTriangle, MessageSquare, Clock, Upload,
 } from 'lucide-react';
 
-/* ═══════════════════════════════════════════════
-   ANIMATIONS
-   ═══════════════════════════════════════════════ */
-const ANIM_STYLE_ID = 'story-modal-anims';
-if (typeof document !== 'undefined' && !document.getElementById(ANIM_STYLE_ID)) {
-  const s = document.createElement('style');
-  s.id = ANIM_STYLE_ID;
-  s.textContent = `
-    @keyframes sdm-overlay-in { from { opacity: 0; } to { opacity: 1; } }
-    @keyframes sdm-card-in { from { opacity: 0; transform: scale(0.97) translateY(8px); } to { opacity: 1; transform: scale(1) translateY(0); } }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    @keyframes sdm-confirm-in { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-  `;
-  document.head.appendChild(s);
-}
-
-/* ═══════════════════════════════════════════════
-   V12 DESIGN TOKENS
-   ═══════════════════════════════════════════════ */
-const V = {
-  overlay: 'rgba(0,0,0,0.5)',
-  white: '#FFFFFF',
-  headerBg: '#F4F5F7',
-  border: '#E2E8F0',
-  borderSubtle: '#DFE1E6',
-  insetBg: '#F1F5F9',
-  surfaceBg: '#F8FAFC',
-  textPrimary: '#0F172A',
-  textSecondary: '#475569',
-  textMuted: '#64748B',
-  textDisabled: '#CBD5E1',
-  linkBlue: '#0052CC',
-  primaryBlue: '#2563EB',
-  primaryBlueHover: '#1D4ED8',
-  successGreen: '#16A34A',
-  dangerRed: '#DE350B',
-  hoverRow: 'rgba(0,0,0,0.04)',
-  pressRow: 'rgba(0,0,0,0.08)',
-  selectedRow: 'rgba(37,99,235,0.08)',
-  lozengeGreyBg: '#DFE1E6', lozengeGreyText: '#253858',
-  lozengeBlueBg: '#DEEBFF', lozengeBlueText: '#0747A6',
-  lozengeGreenBg: '#E3FCEF', lozengeGreenText: '#006644',
-  statusBorder: 'rgba(9, 30, 66, 0.29)',
-};
-
-const STATUS_OPTION_GROUPS = [
-  { groupLabel: 'TO DO', category: 'todo', statuses: ['Backlog', 'In Requirements', 'In Design', 'Ready for Development', 'Technical Validation', 'To Do'] },
-  { groupLabel: 'IN PROGRESS', category: 'in_progress', statuses: ['In Development', 'On Hold', 'In QA', 'In Entity Integration', 'In UAT', 'In BETA', 'End to End Testing', 'In Progress', 'In Review'] },
-  { groupLabel: 'DONE', category: 'done', statuses: ['Production Ready', 'Beta Ready', 'In Production', 'Done', 'Closed'] },
-];
-
-const STATUS_OPTIONS = STATUS_OPTION_GROUPS.flatMap(g => g.statuses.map(s => ({ label: s, category: g.category })));
-
-const PRIORITY_OPTIONS = [
-  { label: 'Highest', value: 'Highest' },
-  { label: 'High', value: 'High' },
-  { label: 'Medium', value: 'Medium' },
-  { label: 'Low', value: 'Low' },
-  { label: 'Lowest', value: 'Lowest' },
-];
-
-const LINK_TYPES = [
-  { value: 'blocks', label: 'blocks' },
-  { value: 'is_blocked_by', label: 'is blocked by' },
-  { value: 'relates_to', label: 'relates to' },
-  { value: 'duplicates', label: 'duplicates' },
-  { value: 'is_duplicated_by', label: 'is duplicated by' },
-  { value: 'is_implemented_by', label: 'is implemented by' },
-  { value: 'implements', label: 'implements' },
-  { value: 'clones', label: 'clones' },
-  { value: 'is_cloned_by', label: 'is cloned by' },
-];
-
-const FIELD_LABELS: Record<string, string> = {
-  IssueParentAssociation: 'Parent', summary: 'Summary', assignee: 'Assignee',
-  status: 'Status', priority: 'Priority', description: 'Description',
-  Story_Points: 'Story Points', story_points: 'Story Points', labels: 'Labels',
-  fix_versions: 'Fix Versions', duedate: 'Due Date', due_date: 'Due Date',
-  issuetype: 'Issue Type', resolution: 'Resolution', Sprint: 'Sprint',
-  reporter: 'Reporter', Component: 'Component',
-};
+import {
+  V, STATUS_OPTION_GROUPS, LINK_TYPES, FILE_TYPE_COLORS,
+  getStatusCategory, getLozengeColors, relTime, formatFullDate, formatFileSize, humanFieldName, enqueueWriteBack,
+  useCurrentUserProfile,
+  StatusLozenge, AvatarCircle, PriorityIcon, IssueTypeIcon,
+  ConfirmDialog, Section, EmptyState, KeyDetailsStrip, LinkWorkItemModal, MenuBtn, SidebarField,
+} from './story-detail';
 
 /* ═══════════════════════════════════════════════
    PROPS

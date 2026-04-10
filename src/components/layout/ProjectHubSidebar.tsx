@@ -26,7 +26,7 @@ const preloaded = { done: false };
 function preloadProjectHubChunks() {
   if (preloaded.done) return;
   preloaded.done = true;
-  import('../../pages/projecthub/AllProjectsPage').catch(() => { preloaded.done = false; });
+  import('../../pages/project-hub/AllProjectsPage').catch(() => { preloaded.done = false; });
   import('../../pages/ResourceListingPage').catch(() => { preloaded.done = false; });
 }
 

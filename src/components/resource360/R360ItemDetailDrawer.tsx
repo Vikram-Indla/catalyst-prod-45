@@ -8,18 +8,13 @@ import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { initials } from './r360-helpers';
 import { useItemDetail } from '@/hooks/useItemDetail';
 import { calcDaysSitting } from '@/lib/r360/fetchItemDetail';
+import { deriveStatusCategory } from '@/lib/status-colors';
 
 // ─── HELPERS ───
 
 const getStatusColor = (status: string): 'grey' | 'blue' | 'green' => {
-  const s = status.toUpperCase();
-  const GREEN = ['DONE','APPROVED','COMPLETED','CLOSED','RESOLVED','RELEASED','VERIFIED','ACCEPTED'];
-  const BLUE  = ['IN PROGRESS','IN REVIEW','ACTIVE','UNDER REVIEW','IN DEVELOPMENT',
-                 'UNDER IMPLEMENTATION','IN TESTING','IN QA','DEPLOYED','IN DEPLOYMENT',
-                 'UNDER ANALYSIS','PENDING REVIEW','OPEN','RE-OPEN','REOPENED'];
-  if (GREEN.includes(s)) return 'green';
-  if (BLUE.includes(s))  return 'blue';
-  return 'grey';
+  const cat = deriveStatusCategory(status);
+  return cat === 'done' ? 'green' : cat === 'in_progress' ? 'blue' : 'grey';
 };
 
 const getDaysFillClass = (days: number) =>
