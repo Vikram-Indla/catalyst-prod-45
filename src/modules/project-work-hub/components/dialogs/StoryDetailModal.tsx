@@ -465,7 +465,6 @@ export default function StoryDetailModal({
   const [linkSearch, setLinkSearch] = useState('');
   const [linkType, setLinkType] = useState<string>('relates_to');
 
-  const [linkSearchResults, setLinkSearchResults] = useState<PhIssue[]>([]);
   const [selectedLinkTarget, setSelectedLinkTarget] = useState<PhIssue | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -501,7 +500,7 @@ export default function StoryDetailModal({
       queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] });
       queryClient.invalidateQueries({ queryKey: ['ph_issues'] });
     },
-    onError: (err: any) => { console.error('Mutation failed:', err); toast.error(`Failed to update status: ${err.message}`); },
+    onError: (err: Error) => { console.error('Mutation failed:', err); toast.error('Failed to update status'); },
   });
 
   const updateFieldMutation = useMutation({
@@ -522,7 +521,7 @@ export default function StoryDetailModal({
       queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] });
       queryClient.invalidateQueries({ queryKey: ['ph-activity-log', itemId] });
     },
-    onError: (err: any) => { console.error('Mutation failed:', err); toast.error(`Failed to update: ${err.message}`); },
+    onError: (err: Error) => { console.error('Mutation failed:', err); toast.error('Failed to update'); },
   });
 
   const updateAssigneeMutation = useMutation({
@@ -541,7 +540,7 @@ export default function StoryDetailModal({
       toast.success('Assignee updated');
       queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] });
     },
-    onError: (err: any) => { console.error('Mutation failed:', err); toast.error(`Failed to update assignee: ${err.message}`); },
+    onError: (err: Error) => { console.error('Mutation failed:', err); toast.error('Failed to update assignee'); },
   });
 
   const addCommentMutation = useMutation({
@@ -556,7 +555,7 @@ export default function StoryDetailModal({
       toast.success('Comment added');
       queryClient.invalidateQueries({ queryKey: ['ph-comments', itemId] });
     },
-    onError: (err: any) => { console.error('Mutation failed:', err); toast.error(`Failed to add comment: ${err.message}`); },
+    onError: (err: Error) => { console.error('Mutation failed:', err); toast.error('Failed to add comment'); },
   });
 
   const deleteCommentMutation = useMutation({
@@ -568,7 +567,7 @@ export default function StoryDetailModal({
       toast.success('Comment deleted');
       queryClient.invalidateQueries({ queryKey: ['ph-comments', itemId] });
     },
-    onError: (err: any) => { console.error('Mutation failed:', err); toast.error(`Failed to delete comment: ${err.message}`); },
+    onError: (err: Error) => { console.error('Mutation failed:', err); toast.error('Failed to delete comment'); },
   });
 
   const deleteIssueMutation = useMutation({
@@ -583,7 +582,7 @@ export default function StoryDetailModal({
       queryClient.invalidateQueries({ queryKey: ['ph_issues'] });
       onClose();
     },
-    onError: (err: any) => { console.error('Mutation failed:', err); toast.error(`Failed to delete: ${err.message}`); },
+    onError: (err: Error) => { console.error('Mutation failed:', err); toast.error('Failed to delete'); },
   });
 
   const addLinkMutation = useMutation({
@@ -599,7 +598,7 @@ export default function StoryDetailModal({
       toast.success('Issue linked');
       queryClient.invalidateQueries({ queryKey: ['ph-issue-links', itemId] });
     },
-    onError: (err: any) => { console.error('Mutation failed:', err); toast.error(`Failed to link: ${err.message}`); },
+    onError: (err: Error) => { console.error('Mutation failed:', err); toast.error('Failed to link'); },
   });
 
   const uploadAttachmentMutation = useMutation({
@@ -617,7 +616,7 @@ export default function StoryDetailModal({
       toast.success('Attachment uploaded');
       queryClient.invalidateQueries({ queryKey: ['ph-attachments', itemId] });
     },
-    onError: (err: any) => { console.error('Mutation failed:', err); toast.error(`Failed to upload: ${err.message}`); },
+    onError: (err: Error) => { console.error('Mutation failed:', err); toast.error('Failed to upload'); },
   });
 
   const handleCommentSubmit = () => {
