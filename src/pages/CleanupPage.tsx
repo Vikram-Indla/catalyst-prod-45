@@ -105,8 +105,8 @@ function StatusLozenge({ value }: { value: string }) {
 
 // ── Helpers ──────────────────────────────────────
 function daysColor(d: number): string {
-  if (d > 60) return '#DC2626';
-  if (d >= 30) return '#92400E';
+  if (d > 90) return '#DC2626';
+  if (d >= 60) return '#92400E';
   return '#64748B';
 }
 
@@ -511,14 +511,14 @@ export default function CleanupPage() {
             ].map(cell => (
               <div key={cell.label} style={{ textAlign: 'center' }}>
                 <div style={{
-                  fontFamily: 'JetBrains Mono, monospace', fontSize: 24,
+                  fontFamily: 'JetBrains Mono, monospace', fontSize: 26,
                   fontWeight: 600, color: '#0F172A',
                 }}>
                   {cell.value}
                 </div>
                 <div style={{
-                  fontSize: 11, fontWeight: 700, color: '#94A3B8',
-                  textTransform: 'uppercase', letterSpacing: '0.06em', marginTop: 4,
+                  fontSize: 11, fontWeight: 500, color: '#94A3B8',
+                  textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: 4,
                 }}>
                   {cell.label}
                 </div>
@@ -569,7 +569,7 @@ export default function CleanupPage() {
                     >
                       <CatIcon size={16} color="#64748B" />
                       <div style={{ flex: 1, textAlign: 'left' }}>
-                        <span style={{ fontSize: 13, fontWeight: 600, color: '#0F172A' }}>
+                      <span style={{ fontSize: 14, fontWeight: 600, color: '#0F172A' }}>
                           {cat.name}
                         </span>
                         <span style={{
@@ -614,7 +614,7 @@ export default function CleanupPage() {
                           <StatusLozenge value={item.status} />
                           <span style={{
                             fontFamily: 'JetBrains Mono, monospace',
-                            fontSize: 13, fontWeight: 500, color: daysColor(item.days_stale),
+                            fontSize: 13, fontWeight: 600, color: daysColor(item.days_stale),
                           }}>
                             {item.days_stale}d
                           </span>
