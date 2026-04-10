@@ -16,6 +16,7 @@ import EmptyState from "./EmptyState";
 import LoadingSkeleton from "./LoadingSkeleton";
 import AIRecapTabV2 from "./AIRecapTabV2";
 import AgeingTab, { useAgeingCount } from "./AgeingTab";
+import WatchingTab from "./WatchingTab";
 
 function useLastSyncTime() {
   return useQuery({
@@ -84,6 +85,7 @@ function groupByDate(items: Notification[]): { label: string; items: Notificatio
 
 const TABS: { key: NotificationTab; label: string; badge?: 'ageing' }[] = [
   { key: 'direct', label: 'Direct' },
+  { key: 'watching', label: 'Watching' },
   { key: 'ai', label: 'AI Recap' },
   { key: 'ageing', label: 'Ageing', badge: 'ageing' },
 ];
@@ -547,6 +549,8 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
               Retry
             </button>
           </div>
+        ) : activeTab === 'watching' ? (
+          <WatchingTab />
         ) : activeTab === 'ai' ? (
           <AIRecapTabV2 />
         ) : activeTab === 'ageing' ? (
