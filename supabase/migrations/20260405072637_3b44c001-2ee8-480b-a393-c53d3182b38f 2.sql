@@ -1,2 +1,0 @@
-CREATE UNIQUE INDEX IF NOT EXISTS jira_user_project_perms_identity_map_id_project_key_key
-ON public.jira_user_project_perms (identity_map_id, project_key);
