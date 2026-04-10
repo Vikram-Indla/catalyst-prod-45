@@ -225,6 +225,8 @@ export function WorkItemsTable({
       {/* Bulk actions bar */}
       <BulkActionsBar
         selectedCount={selectedIds.size}
+        selectedIds={[...selectedIds]}
+        items={allFlatRows}
         onClear={() => setSelectedIds(new Set())}
         onSetStatus={(statusId) => { onBulkUpdate([...selectedIds], { status_id: statusId }); setSelectedIds(new Set()); }}
         onSetPriority={(p) => { onBulkUpdate([...selectedIds], { priority: p }); setSelectedIds(new Set()); }}

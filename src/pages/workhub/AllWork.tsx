@@ -184,6 +184,7 @@ export default function AllWork() {
       {selectedIds.size > 0 && (
         <AllWorkBulkBar
           selectedIds={Array.from(selectedIds)}
+          items={items}
           totalCount={items.length}
           onSelectAll={handleSelectAll}
           onClear={() => setSelectedIds(new Set())}
