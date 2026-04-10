@@ -608,10 +608,10 @@ export default function StoryDetailModal({
     queryFn: async () => {
       const { data } = await supabase
         .from('ph_attachments')
-        .select('*, uploader:profiles!ph_attachments_uploaded_by_fkey(id, full_name, avatar_url, email)')
+        .select('id, work_item_id, file_name, file_size, mime_type, storage_path, uploaded_by, created_at')
         .eq('work_item_id', itemId)
         .order('created_at', { ascending: false });
-      return (data ?? []) as PhAttachment[];
+      return (data ?? []) as unknown as PhAttachment[];
     },
   });
 
