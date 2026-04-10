@@ -949,9 +949,18 @@ export default function StoryDetailModal({
           <div style={{ height: 44, minHeight: 44, background: '#F8FAFC', borderBottom: '1px solid #E4E7EC', display: 'flex', alignItems: 'center', padding: '0 16px', gap: 8 }}>
             {/* Breadcrumb */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, flex: 1, minWidth: 0 }}>
-              <IssueIcon type="Epic" size={14} />
-              <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, fontWeight: 600, color: '#475467' }}>{issue?.parent_key ?? '—'}</span>
-              <span style={{ color: '#C9CDD4', fontSize: 11 }}>/</span>
+              {issue?.parent_key ? (
+                <>
+                  <IssueIcon type="Epic" size={14} />
+                  <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, fontWeight: 600, color: '#475467' }}>{issue.parent_key}</span>
+                  <span style={{ color: '#CBD5E1', fontSize: 11 }}>/</span>
+                </>
+              ) : (
+                <>
+                  <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, fontWeight: 600, color: '#98A2B3' }}>{issue?.project_key ?? projectKey}</span>
+                  <span style={{ color: '#CBD5E1', fontSize: 11 }}>/</span>
+                </>
+              )}
               <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, fontWeight: 700, color: '#475467', background: '#EEF2F7', padding: '2px 6px', borderRadius: 3 }}>{issue?.issue_key ?? '—'}</span>
             </div>
             {/* Right actions */}
@@ -1004,10 +1013,7 @@ export default function StoryDetailModal({
                     style={{ fontFamily: 'Sora, sans-serif', fontSize: 20, fontWeight: 700, color: '#101828', lineHeight: 1.3, letterSpacing: '-0.01em', margin: '0 0 4px', outline: 'none', cursor: 'text', borderRadius: 4 }}
                   >{issue?.summary ?? '—'}</h1>
 
-                  {/* 3. ARABIC SUBTITLE */}
-                  {issue?.description_text && (
-                    <div style={{ direction: 'rtl', textAlign: 'right', fontSize: 15, color: '#98A2B3', marginBottom: 12, fontFamily: 'Inter, sans-serif' }}>{issue.description_text.substring(0, 80)}</div>
-                  )}
+                  {/* (subtitle removed — no Arabic title field on ph_issues) */}
 
                   {/* 4. TITLE TOOLBAR */}
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 20 }}>
