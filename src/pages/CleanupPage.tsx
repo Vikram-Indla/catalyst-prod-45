@@ -5,10 +5,11 @@
  */
 import React, { useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useGovernanceScore } from '@/hooks/useGovernanceScore';
+import { useAgeingItems, type AgeingItem as SharedAgeingItem } from '@/hooks/useAgeingItems';
 import { toast } from 'sonner';
 import {
   ChevronLeft, ChevronDown, Clock, AlertTriangle, Sparkles,
