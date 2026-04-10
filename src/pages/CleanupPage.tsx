@@ -13,6 +13,7 @@ import { useAgeingItems, type AgeingItem as SharedAgeingItem } from '@/hooks/use
 import { toast } from 'sonner';
 import {
   ChevronLeft, ChevronDown, Clock, AlertTriangle, Sparkles,
+  CheckCircle2, Shield, Bell, RotateCcw,
 } from 'lucide-react';
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
@@ -757,101 +758,182 @@ export default function CleanupPage() {
 
       {/* ═══ FORCE CLOSE CONFIRMATION DIALOG ═══ */}
       <Dialog open={showForceCloseDialog} onOpenChange={setShowForceCloseDialog}>
-        <DialogContent style={{ maxWidth: 460, backgroundColor: '#ffffff' }} className="!bg-white !text-slate-900">
-          <DialogHeader>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <DialogTitle style={{ fontFamily: 'Sora, sans-serif', fontSize: 14, fontWeight: 700 }}>
-                Confirm Force Closure
-              </DialogTitle>
-              <span style={{
-                fontSize: 7, fontWeight: 700, textTransform: 'uppercase',
-                borderRadius: 3, padding: '1px 4px',
-                background: '#FFF7ED', border: '1px solid #FED7AA', color: '#9E4B00',
-              }}>
-                FORCE CLOSE
-              </span>
-            </div>
-          </DialogHeader>
+        <DialogContent
+          style={{
+            maxWidth: 680,
+            width: '90vw',
+            borderRadius: 8,
+            backgroundColor: '#ffffff',
+            border: 'none',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.10)',
+            padding: 0,
+          }}
+          className="!bg-white !text-slate-900 !p-0"
+        >
+          {/* ── HEADER ── */}
+          <div style={{ padding: '24px 24px 0' }}>
+            <h2 style={{
+              fontFamily: 'Sora, sans-serif', fontSize: 20, fontWeight: 700,
+              color: '#0F172A', margin: 0, lineHeight: 1.3,
+            }}>
+              Force close {selected.size} item{selected.size !== 1 ? 's' : ''}?
+            </h2>
+            <p style={{
+              fontSize: 14, color: '#64748B', fontWeight: 400, marginTop: 6, marginBottom: 0,
+            }}>
+              {selected.size} item{selected.size !== 1 ? 's' : ''} will be permanently closed and reporters notified.
+            </p>
+            <div style={{ height: 1, background: '#E2E8F0', marginTop: 20 }} />
+          </div>
 
-          {/* Impact list */}
-          <div style={{
-            background: '#FEF2F2', border: '1px solid #FCA5A5',
-            borderRadius: 6, padding: 12, marginBottom: 12,
-          }}>
+          {/* ── BODY ── */}
+          <div style={{ padding: '20px 24px', maxHeight: '60vh', overflowY: 'auto' }}>
+            {/* Section 1 — What will happen */}
+            <div style={{
+              fontSize: 11, fontWeight: 700, color: '#94A3B8',
+              textTransform: 'uppercase' as const, letterSpacing: '0.06em', marginBottom: 12,
+            }}>
+              WHAT WILL HAPPEN
+            </div>
             {[
-              { dot: '#10B981', text: "Status → DONE · closure_method = 'force_bypass'" },
-              { dot: '#10B981', text: 'force_closed_by, force_closed_at, restore_deadline = today + 90d written to DB' },
-              { dot: '#F59E0B', text: 'All reporters receive Direct notification with restore link' },
-              { dot: '#F59E0B', text: 'Epic completion % recalculated for any de-linked stories' },
-              { dot: '#7C3AED', text: 'Governance Audit Trail record written — irrevocable' },
-              { dot: '#7C3AED', text: 'Your governance RAG status recalculates within 24h' },
+              { icon: CheckCircle2, text: 'Status set to Done on all selected items' },
+              { icon: Shield, text: 'Closure logged to Governance Audit Trail — cannot be undone' },
+              { icon: Bell, text: 'Reporters notified via Direct tab with a 90-day restore link' },
+              { icon: RotateCcw, text: 'You can restore any item within 90 days from the Audit Trail' },
             ].map((row, i) => (
-              <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginBottom: 6 }}>
-                <span style={{
-                  width: 8, height: 8, borderRadius: '50%',
-                  background: row.dot, flexShrink: 0, marginTop: 3,
-                }} />
-                <span style={{ fontSize: 11, color: '#1E293B', lineHeight: '16px' }}>
-                  {row.text}
-                </span>
+              <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 10 }}>
+                <row.icon size={16} color="#64748B" style={{ flexShrink: 0, marginTop: 1 }} />
+                <span style={{ fontSize: 14, color: '#1E293B', lineHeight: 1.5 }}>{row.text}</span>
               </div>
             ))}
-          </div>
 
-          {/* Notification preview */}
-          <div style={{ marginBottom: 12 }}>
-            <div style={{ fontSize: 10, fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase', marginBottom: 6 }}>
-              Reporter notifications ({selectedItems.length})
+            <div style={{ height: 1, background: '#F1F5F9', margin: '16px 0' }} />
+
+            {/* Section 2 — Reporter notifications */}
+            <div style={{
+              fontSize: 11, fontWeight: 700, color: '#94A3B8',
+              textTransform: 'uppercase' as const, letterSpacing: '0.06em', marginBottom: 12,
+            }}>
+              REPORTERS BEING NOTIFIED
             </div>
-            {selectedItems.slice(0, 3).map(item => (
-              <div key={item.id} style={{
-                background: '#EDE9FF', borderLeft: '2.5px solid #7C3AED',
-                borderRadius: '0 4px 4px 0', padding: 8, marginBottom: 6,
-                fontSize: 11, color: '#4C1D95',
-              }}>
-                {item.issue_key} "{item.title}" — force-closed. Restore within 90 days.
-              </div>
-            ))}
-          </div>
+            {(() => {
+              // Group selected items by reporter
+              const reporterMap = new Map<string, { name: string; items: typeof selectedItems }>();
+              selectedItems.forEach(item => {
+                const reporterId = item.reporter_id || item.reporter_name || 'unknown';
+                const reporterName = item.reporter_name || 'Unknown Reporter';
+                if (!reporterMap.has(reporterId)) {
+                  reporterMap.set(reporterId, { name: reporterName, items: [] });
+                }
+                reporterMap.get(reporterId)!.items.push(item);
+              });
+              const reporters = Array.from(reporterMap.values());
+              if (reporters.length === 0) {
+                return (
+                  <p style={{ fontSize: 13, color: '#94A3B8' }}>
+                    No reporters linked to selected items.
+                  </p>
+                );
+              }
+              return reporters.map((reporter, idx) => {
+                const initials = reporter.name
+                  .split(' ')
+                  .map(w => w[0])
+                  .join('')
+                  .slice(0, 2)
+                  .toUpperCase();
+                return (
+                  <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
+                    <div style={{
+                      width: 32, height: 32, borderRadius: '50%', background: '#F1F5F9',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+                    }}>
+                      <span style={{ fontSize: 12, fontWeight: 700, color: '#475569' }}>{initials}</span>
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: 14, fontWeight: 600, color: '#0F172A' }}>{reporter.name}</div>
+                      <div style={{ fontSize: 13, color: '#64748B' }}>
+                        {reporter.items.length} item{reporter.items.length !== 1 ? 's' : ''} being closed
+                        {reporter.items.length === 1 && reporter.items[0] && (
+                          <> — {reporter.items[0].issue_key} {reporter.items[0].title}</>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              });
+            })()}
 
-          {/* Closure reason */}
-          <div>
-            <label style={{ fontSize: 10, fontWeight: 700, color: '#64748B', display: 'block', marginBottom: 4 }}>
+            <div style={{ height: 1, background: '#F1F5F9', margin: '16px 0' }} />
+
+            {/* Section 3 — Closure reason */}
+            <div style={{
+              fontSize: 11, fontWeight: 700, color: '#94A3B8',
+              textTransform: 'uppercase' as const, letterSpacing: '0.06em', marginBottom: 8,
+            }}>
               CLOSURE REASON
-            </label>
+            </div>
             <Select value={closureReason} onValueChange={setClosureReason}>
               <SelectTrigger
                 style={{
-                  width: '100%', height: 28, border: '1px solid #E2E8F0',
-                  borderRadius: 4, fontSize: 11, color: '#0F172A',
-                  background: '#fff', fontFamily: 'Inter, sans-serif',
+                  width: '100%', height: 40, border: '1px solid #E2E8F0',
+                  borderRadius: 6, fontSize: 14, color: '#0F172A',
+                  background: '#ffffff', fontFamily: 'Inter, sans-serif', padding: '0 12px',
                 }}
               >
                 <SelectValue />
               </SelectTrigger>
               <SelectContent className="!bg-white !text-slate-900">
                 {CLOSURE_REASONS.map(r => (
-                  <SelectItem key={r} value={r} style={{ fontSize: 11 }}>{r}</SelectItem>
+                  <SelectItem key={r} value={r} style={{ fontSize: 14 }}>{r}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </div>
 
-          <DialogFooter style={{ marginTop: 16, gap: 8 }}>
-            <Button variant="ghost" size="sm" onClick={() => setShowForceCloseDialog(false)}>
-              Cancel
-            </Button>
-            <Button variant="ghost" size="sm" onClick={() => navigate('/audit')}>
-              Audit trail →
-            </Button>
-            <Button
-              size="sm"
-              onClick={handleForceClose}
-              style={{ background: '#DC2626', border: 'none', color: '#fff' }}
+          {/* ── FOOTER ── */}
+          <div style={{
+            padding: '16px 24px 20px',
+            borderTop: '1px solid #E2E8F0',
+            display: 'flex', justifyContent: 'flex-end', gap: 10,
+          }}>
+            <button
+              onClick={() => setShowForceCloseDialog(false)}
+              style={{
+                height: 40, padding: '0 20px', borderRadius: 6,
+                background: 'transparent', border: '1px solid #E2E8F0',
+                color: '#475569', fontSize: 14, fontWeight: 600, cursor: 'pointer',
+              }}
+              onMouseEnter={e => (e.currentTarget.style.background = '#F8FAFC')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
             >
-              Confirm →
-            </Button>
-          </DialogFooter>
+              Cancel
+            </button>
+            <button
+              onClick={() => { toast.info('Audit trail — coming soon'); }}
+              style={{
+                height: 40, padding: '0 20px', borderRadius: 6,
+                background: 'transparent', border: '1px solid #E2E8F0',
+                color: '#475569', fontSize: 14, fontWeight: 600, cursor: 'pointer',
+              }}
+              onMouseEnter={e => (e.currentTarget.style.background = '#F8FAFC')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+            >
+              Audit trail →
+            </button>
+            <button
+              onClick={handleForceClose}
+              style={{
+                height: 40, padding: '0 24px', borderRadius: 6,
+                background: '#DC2626', border: 'none',
+                color: '#ffffff', fontSize: 14, fontWeight: 700, cursor: 'pointer',
+              }}
+              onMouseEnter={e => (e.currentTarget.style.background = '#B91C1C')}
+              onMouseLeave={e => (e.currentTarget.style.background = '#DC2626')}
+            >
+              Close {selected.size} item{selected.size !== 1 ? 's' : ''}
+            </button>
+          </div>
         </DialogContent>
       </Dialog>
 
