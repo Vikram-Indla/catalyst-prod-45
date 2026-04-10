@@ -13,8 +13,8 @@ import { useAgeingItems, type AgeingItem } from '@/hooks/useAgeingItems';
 import { toast } from 'sonner';
 import {
   ChevronDown, ChevronUp, ChevronRight,
-  AlertTriangle, Clock, GitBranch, UserX, Link, Copy, AlertCircle,
-  CheckCircle, Bell, MessageSquare, Ghost, User, UserCheck, Folder, Tag,
+  AlertTriangle, Clock, GitBranch, UserX, Link2, ShieldOff, Copy, AlertCircle,
+  CheckCircle, Bell, MessageSquare, Ghost,
   LayoutGrid, List as ListIcon,
 } from 'lucide-react';
 import { JiraIssueTypeIcon } from '@/components/shared/JiraIssueTypeIcon';
@@ -63,8 +63,8 @@ const CATEGORIES: CategoryDef[] = [
   { key: 1, icon: Ghost, name: 'Ghost Tickets', shortLabel: 'Ghost', subtitle: 'No comments, no activity, 60+ days stale', isReporterOnus: false },
   { key: 2, icon: GitBranch, name: 'No Work Breakdown', shortLabel: 'No Breakdown', subtitle: 'Stories without breakdown, 30+ days open', isReporterOnus: false },
   { key: 3, icon: UserX, name: 'Inactive Assignee', shortLabel: 'Inactive', subtitle: 'Assignee inactive — reporter must action', isReporterOnus: true },
-  { key: 4, icon: Link, name: 'Epic-Linked Stale', shortLabel: 'Epic-Linked', subtitle: 'Epic-linked, 45+ days stale', isReporterOnus: false },
-  { key: 5, icon: Clock, name: 'Long-Stale Low Priority', shortLabel: 'Long Stale', subtitle: 'Low priority, 90+ days open', isReporterOnus: false },
+  { key: 4, icon: Link2, name: 'Epic-Linked Stale', shortLabel: 'Epic-Linked', subtitle: 'Epic-linked, 45+ days stale', isReporterOnus: false },
+  { key: 5, icon: ShieldOff, name: 'Long-Stale Low Priority', shortLabel: 'Long Stale', subtitle: 'Low priority, 90+ days open', isReporterOnus: false },
   { key: 6, icon: Copy, name: 'AI Duplicate', shortLabel: 'AI Dup', subtitle: 'Potential duplicates flagged by AI', isReporterOnus: false },
   { key: 7, icon: AlertCircle, name: 'Active Defect, Inactive Assignee', shortLabel: 'Active Defect', subtitle: 'Active defect, inactive assignee — reporter must action', isReporterOnus: true },
 ];
@@ -560,7 +560,7 @@ export default function CleanupPage() {
           </span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{ fontSize: 13, color: '#94A3B8' }}>Last scan: today 02:00 AST</span>
+          <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, color: '#94A3B8' }}>Last scan: today 02:00 AST</span>
           <span style={{
             display: 'inline-flex', alignItems: 'center', gap: 4,
             fontSize: 11, fontWeight: 500, padding: '2px 8px', borderRadius: 20,
@@ -658,9 +658,9 @@ export default function CleanupPage() {
             ].map(cell => (
               <div key={cell.label} style={{ textAlign: 'center' }}>
                 <div style={{
-                  fontFamily: 'JetBrains Mono, monospace', fontSize: 26,
-                  fontWeight: 600, color: '#0F172A',
-                }}>
+                   fontFamily: 'JetBrains Mono, monospace', fontSize: 24,
+                   fontWeight: 600, color: '#0F172A',
+                 }}>
                   {cell.value}
                 </div>
                 <div style={{
@@ -709,37 +709,38 @@ export default function CleanupPage() {
                     <div key={cat.key}>
                       {/* Section Header */}
                       <div
-                        style={{
-                          width: '100%', display: 'flex', alignItems: 'center', gap: 8,
-                          padding: '12px 16px',
-                          background: '#F8FAFC', borderBottom: '1px solid #E2E8F0',
-                          fontFamily: 'Inter, sans-serif',
-                        }}
-                      >
-                        <button
-                          onClick={() => toggleCat(cat.key)}
-                          style={{
-                            display: 'flex', alignItems: 'center', gap: 8, flex: 1,
-                            background: 'none', border: 'none', cursor: 'pointer',
-                            fontFamily: 'Inter, sans-serif', textAlign: 'left',
-                          }}
-                        >
-                          <CatIcon size={16} color="#64748B" />
-                          <div style={{ flex: 1 }}>
-                            <span style={{ fontSize: 14, fontWeight: 600, color: '#0F172A' }}>
-                              {cat.name}
-                            </span>
-                            <span style={{
-                              marginLeft: 8, fontSize: 11, color: '#64748B',
-                              background: '#F1F5F9', padding: '2px 8px', borderRadius: 20,
-                            }}>
-                              {items.length}
-                            </span>
-                            <div style={{ fontSize: 13, color: '#94A3B8', marginTop: 2 }}>
-                              {cat.subtitle}
-                            </div>
-                          </div>
-                          {isOpen ? <ChevronUp size={14} color="#94A3B8" /> : <ChevronDown size={14} color="#94A3B8" />}
+                         style={{
+                           width: '100%', display: 'flex', alignItems: 'center', gap: 8,
+                           height: 48, padding: '0 16px',
+                           background: '#F8FAFC', borderBottom: '1px solid #E2E8F0',
+                           fontFamily: 'Inter, sans-serif',
+                         }}
+                       >
+                         <button
+                           onClick={() => toggleCat(cat.key)}
+                           style={{
+                             display: 'flex', alignItems: 'center', gap: 8, flex: 1,
+                             background: 'none', border: 'none', cursor: 'pointer',
+                             fontFamily: 'Inter, sans-serif', textAlign: 'left',
+                             height: '100%',
+                           }}
+                         >
+                           <CatIcon size={16} color="#64748B" />
+                           <span style={{ fontSize: 14, fontWeight: 600, color: '#0F172A' }}>
+                             {cat.name}
+                           </span>
+                           <span style={{
+                             fontSize: 11, color: '#64748B',
+                             background: '#F1F5F9', border: '1px solid #E2E8F0',
+                             padding: '2px 8px', borderRadius: 20,
+                           }}>
+                             {items.length}
+                           </span>
+                           <span style={{ fontSize: 13, color: '#94A3B8', marginLeft: 4 }}>
+                             {cat.subtitle}
+                           </span>
+                           <div style={{ flex: 1 }} />
+                           {isOpen ? <ChevronUp size={14} color="#CBD5E1" /> : <ChevronDown size={14} color="#CBD5E1" />}
                         </button>
 
                         {/* Select all link in expanded header */}
@@ -841,7 +842,7 @@ export default function CleanupPage() {
 
                           {/* LINE 2 — Title */}
                           <div style={{
-                            fontSize: 14, fontWeight: 400, color: '#1E293B',
+                            fontSize: 13, fontWeight: 500, color: '#0F172A',
                             marginTop: 4, paddingLeft: cat.isReporterOnus ? 0 : 28,
                             overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                           }}>
@@ -853,21 +854,17 @@ export default function CleanupPage() {
                             display: 'flex', gap: 16, marginTop: 4,
                             paddingLeft: cat.isReporterOnus ? 0 : 28, flexWrap: 'wrap',
                           }}>
-                            <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, color: '#64748B' }}>
-                              <User size={12} color="#94A3B8" />
-                              {item.reporter_name || 'Unknown'}
+                            <span style={{ fontSize: 13, color: '#64748B' }}>
+                              Assignee: {item.reporter_name || '\u2014'}
                             </span>
-                            <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, color: '#64748B' }}>
-                              <UserCheck size={12} color="#94A3B8" />
-                              {item.reporter_name || 'Unknown'}
+                            <span style={{ fontSize: 13, color: '#64748B' }}>
+                              Reporter: {item.reporter_name || '\u2014'}
                             </span>
-                            <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, color: '#64748B' }}>
-                              <Folder size={12} color="#94A3B8" />
-                              {item.project_key || '\u2014'}
+                            <span style={{ fontSize: 13, color: '#64748B' }}>
+                              Project: {item.project_key || '\u2014'}
                             </span>
-                            <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, color: '#64748B' }}>
-                              <Tag size={12} color="#94A3B8" />
-                              {item.fixed_versions || '\u2014'}
+                            <span style={{ fontSize: 13, color: '#64748B' }}>
+                              Fix ver: {item.fixed_versions || '\u2014'}
                             </span>
                           </div>
 
@@ -878,7 +875,8 @@ export default function CleanupPage() {
                             }}>
                               <div style={{
                                 background: '#F8FAFC', borderLeft: '2px solid #CBD5E1',
-                                padding: '6px 12px', fontSize: 14, color: '#1E293B',
+                                paddingLeft: 12, paddingTop: 6, paddingBottom: 6,
+                                fontSize: 13, color: '#64748B',
                               }}>
                                 {AI_INSIGHTS[cat.key]}
                               </div>
@@ -889,6 +887,7 @@ export default function CleanupPage() {
                           {cat.isReporterOnus && (
                             <div style={{
                               fontSize: 13, color: '#94A3B8', marginTop: 4,
+                              paddingLeft: cat.isReporterOnus ? 0 : 28,
                             }}>
                               Reporter must action — {item.reporter_name || 'Unknown'}
                             </div>
@@ -908,8 +907,10 @@ export default function CleanupPage() {
                     </div>
                   );
                 })
-              )}
-            </div>
+               )}
+               {/* Spacer so bulk bar doesn't overlap */}
+               <div style={{ height: 120, flexShrink: 0 }} />
+             </div>
           ) : (
             /* ═══ LIST VIEW — ForYou-inherited <table> structure ═══ */
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
