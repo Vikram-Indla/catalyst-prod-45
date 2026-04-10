@@ -908,37 +908,35 @@ export default function StoryDetailModal({
                     </>
                   )}
 
-                  {/* 8. ACTIVITY */}
-                  <div style={{ marginTop: 24 }}>
-                    <div style={{ fontSize: 13, fontWeight: 700, color: '#172B4D', marginBottom: 14 }}>Activity</div>
-                    <div style={{ display: 'flex', gap: 4, marginBottom: 16, flexWrap: 'wrap' }}>
-                      {(['comments', 'history'] as ActivityTab[]).map(tab => {
+                  {/* 8. ACTIVITY — Jira-exact */}
+                  <div style={{ marginTop: 32 }}>
+                    <div style={{ fontSize: 15, fontWeight: 600, color: '#172B4D', marginBottom: 12 }}>Activity</div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 0, marginBottom: 20, borderBottom: '1px solid #EBECF0' }}>
+                      {(['all', 'comments', 'history'] as ActivityTab[]).map(tab => {
                         const isActive = activeActivityTab === tab;
+                        const label = tab === 'all' ? 'All' : tab === 'comments' ? 'Comments' : 'History';
                         return (
                           <button key={tab} onClick={() => setActiveActivityTab(tab)} style={{
-                            padding: '5px 12px', borderRadius: 20, border: 'none',
-                            background: isActive ? '#DEEBFF' : 'none',
-                            fontSize: 13, fontWeight: 500,
-                            color: isActive ? '#0052CC' : '#5E6C84',
-                            cursor: 'pointer', transition: 'background 0.15s, color 0.15s',
-                            display: 'inline-flex', alignItems: 'center', gap: 4,
+                            padding: '6px 14px', marginBottom: -1,
+                            border: isActive ? '2px solid #2563EB' : '2px solid transparent',
+                            borderBottom: isActive ? '2px solid #FFFFFF' : '2px solid transparent',
+                            borderRadius: isActive ? '4px 4px 0 0' : 4,
+                            background: 'transparent', fontSize: 14, fontWeight: isActive ? 500 : 400,
+                            color: isActive ? '#2563EB' : '#42526E', cursor: 'pointer', transition: 'color 0.12s',
                           }}
-                            onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = '#EBECF0'; }}
-                            onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = isActive ? '#DEEBFF' : 'none'; }}
-                          >
-                            {tab === 'comments' ? <><MessageSquare size={12} />Comments</> : <><Clock size={12} />History</>}
-                          </button>
+                            onMouseEnter={e => { if (!isActive) e.currentTarget.style.color = '#172B4D'; }}
+                            onMouseLeave={e => { if (!isActive) e.currentTarget.style.color = '#42526E'; }}
+                          >{label}</button>
                         );
                       })}
                     </div>
-                    {activeActivityTab === 'comments' && (
+
+                    {/* COMMENTS + ALL tabs share comment input */}
+                    {(activeActivityTab === 'comments' || activeActivityTab === 'all') && (
                       <div>
-                        {/* ── Jira-style Comments Summary Card ── */}
-                        {(commentSummary || commentSummaryLoading) && showCommentSummary && (
-                          <div style={{
-                            border: '1px solid #DFE1E6', borderRadius: 8, padding: '16px 20px',
-                            marginBottom: 20, background: '#FFFFFF',
-                          }}>
+                        {/* AI Summary */}
+                        {(commentSummary || commentSummaryLoading) && showCommentSummary && activeActivityTab === 'comments' && (
+                          <div style={{ border: '1px solid #DFE1E6', borderRadius: 8, padding: '16px 20px', marginBottom: 20 }}>
                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
                               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5E6C84" strokeWidth="1.8"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="17" y2="12"/><line x1="3" y1="18" x2="13" y2="18"/></svg>
@@ -948,21 +946,18 @@ export default function StoryDetailModal({
                                   Only visible to you
                                 </span>
                               </div>
-                              <button onClick={() => { setShowCommentSummary(false); setCommentSummary(null); }} style={{
-                                background: 'none', border: 'none', cursor: 'pointer', padding: 4,
-                                color: '#6B778C', display: 'flex', alignItems: 'center',
-                              }}>
+                              <button onClick={() => { setShowCommentSummary(false); setCommentSummary(null); }} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, color: '#6B778C', display: 'flex' }}>
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                               </button>
                             </div>
                             {commentSummaryLoading ? (
                               <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '12px 0', color: '#6B778C', fontSize: 14 }}>
-                                <div style={{ width: 16, height: 16, border: '2px solid #DFE1E6', borderTopColor: '#2563EB', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+                                <div style={{ width: 16, height: 16, border: '2px solid #DFE1E6', borderTopColor: '#2563EB', borderRadius: '50%', animation: 'sdm-spin 0.8s linear infinite' }} />
                                 Summarizing comments…
                               </div>
                             ) : (
                               <div style={{ fontSize: 14, color: '#172B4D', lineHeight: 1.7, whiteSpace: 'pre-wrap' }}
-                                dangerouslySetInnerHTML={{ __html: (commentSummary ?? '').replace(/^[-•]\s*/gm, '').split('\n').filter(l => l.trim()).map((line, i, arr) => {
+                                dangerouslySetInnerHTML={{ __html: (commentSummary ?? '').replace(/^[-•]\s*/gm, '').split('\n').filter(l => l.trim()).map((line, i) => {
                                   if (i === 0 && !line.startsWith('•')) return `<p style="margin:0 0 12px">${line}</p><ul style="margin:0;padding-left:20px">`;
                                   return `<li style="margin-bottom:6px;color:#172B4D">${line}</li>`;
                                 }).join('') + '</ul>' }}
@@ -970,63 +965,121 @@ export default function StoryDetailModal({
                             )}
                           </div>
                         )}
-                        {comments.length === 0 && <div style={{ padding: '20px 0', color: '#97A0AF', fontSize: 13, textAlign: 'center' }}>No comments yet</div>}
-                        {comments.map(c => {
-                          const bg = getAvatarColor(c.author_id);
-                          return (
-                            <div key={c.id} style={{ display: 'flex', gap: 10, marginBottom: 16 }}>
-                              <div style={{ width: 28, height: 28, borderRadius: '50%', background: bg, color: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, flexShrink: 0, marginTop: 2 }}>{getInitials(c.author?.full_name)}</div>
-                              <div style={{ flex: 1, minWidth: 0 }}>
-                                <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 4 }}>
-                                  <span style={{ fontSize: 12, fontWeight: 600, color: '#172B4D' }}>{c.author?.full_name ?? 'Unknown'}</span>
-                                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10.5, color: '#97A0AF' }}>{fmtDate(c.created_at)}</span>
-                                </div>
-                                <div style={{ background: '#F4F5F7', border: '1px solid #EBECF0', borderRadius: 4, padding: 12, fontSize: 13, color: '#172B4D', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>{c.body}</div>
-                                <div style={{ display: 'flex', gap: 12, marginTop: 6 }}>
-                                  <button style={{ fontSize: 11, color: '#97A0AF', background: 'none', border: 'none', cursor: 'pointer' }}>Edit</button>
-                                  <button onClick={() => deleteCommentMutation.mutate(c.id)} style={{ fontSize: 11, color: '#97A0AF', background: 'none', border: 'none', cursor: 'pointer' }}>Delete</button>
-                                </div>
-                              </div>
-                            </div>
-                          );
-                        })}
-                        {/* Comment input */}
-                        <div style={{ display: 'flex', gap: 10, marginTop: 8 }}>
-                          <div style={{ width: 28, height: 28, borderRadius: '50%', background: getAvatarColor(user?.id ?? ''), color: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, flexShrink: 0, marginTop: 2 }}>{getInitials(currentProfile?.full_name)}</div>
+
+                        {/* Comment input — Jira: 36px avatar + rounded pill quick-actions */}
+                        <div style={{ display: 'flex', gap: 12, marginBottom: 24 }}>
+                          {currentProfile?.avatar_url ? (
+                            <img src={currentProfile.avatar_url} alt="" style={{ width: 36, height: 36, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
+                          ) : (
+                            <div style={{ width: 36, height: 36, borderRadius: '50%', background: getAvatarColor(user?.id ?? ''), color: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700, flexShrink: 0 }}>{getInitials(currentProfile?.full_name)}</div>
+                          )}
                           <div style={{ flex: 1 }}>
-                            <div style={{ border: '1px solid #DFE1E6', borderRadius: 4, overflow: 'hidden', transition: 'border-color 0.15s, box-shadow 0.15s' }}
-                              onFocus={e => { e.currentTarget.style.borderColor = '#4C9AFF'; e.currentTarget.style.boxShadow = '0 0 0 2px rgba(76,154,255,0.2)'; }}
+                            <div style={{ border: '1px solid #DFE1E6', borderRadius: 6, overflow: 'hidden', transition: 'border-color 0.15s, box-shadow 0.15s' }}
+                              onFocus={e => { e.currentTarget.style.borderColor = '#4C9AFF'; e.currentTarget.style.boxShadow = '0 0 0 1px #4C9AFF'; }}
                               onBlur={e => { e.currentTarget.style.borderColor = '#DFE1E6'; e.currentTarget.style.boxShadow = 'none'; }}
                             >
                               <textarea value={newComment} onChange={e => setNewComment(e.target.value)} onKeyDown={handleCommentKeyDown}
                                 placeholder="Add a comment…"
-                                style={{ width: '100%', minHeight: 60, padding: '10px 12px', border: 'none', outline: 'none', fontSize: 14, color: '#172B4D', resize: 'none', fontFamily: 'inherit', background: '#FAFBFC' }} />
-                              <div style={{ display: 'flex', gap: 6, padding: '8px 12px', background: '#FAFBFC', borderTop: '1px solid #EBECF0', flexWrap: 'wrap' }}>
-                                <button onClick={() => setNewComment('Status update: ')} style={{ padding: '4px 10px', border: '1px solid #DFE1E6', borderRadius: 3, background: '#FFFFFF', fontSize: 12, color: '#5E6C84', cursor: 'pointer', transition: 'background 0.15s' }}>Status update...</button>
-                                <button onClick={() => setNewComment('Thanks! ')} style={{ padding: '4px 10px', border: '1px solid #DFE1E6', borderRadius: 3, background: '#FFFFFF', fontSize: 12, color: '#5E6C84', cursor: 'pointer', transition: 'background 0.15s' }}>Thanks...</button>
+                                style={{ width: '100%', minHeight: 48, padding: '12px 14px', border: 'none', outline: 'none', fontSize: 14, color: '#172B4D', resize: 'none', fontFamily: 'inherit', background: '#FFFFFF', lineHeight: 1.5 }} />
+                              <div style={{ display: 'flex', gap: 8, padding: '8px 14px', background: '#FAFBFC', borderTop: '1px solid #F4F5F7' }}>
+                                {['Can I get more info...?', 'Status update...', 'Thanks...'].map(txt => (
+                                  <button key={txt} onClick={() => setNewComment(txt.replace('...', ': '))} style={{ padding: '5px 14px', border: '1px solid #DFE1E6', borderRadius: 20, background: '#FFF', fontSize: 13, color: '#42526E', cursor: 'pointer', fontFamily: 'inherit', transition: 'background 0.12s' }}
+                                    onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
+                                    onMouseLeave={e => (e.currentTarget.style.background = '#FFF')}
+                                  >{txt}</button>
+                                ))}
                               </div>
                             </div>
-                            <div style={{ fontSize: 11, color: '#97A0AF', marginTop: 8 }}>
-                              <strong style={{ fontWeight: 700, color: '#5E6C84' }}>Pro tip:</strong> press <kbd style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10, background: '#F4F5F7', border: '1px solid #DFE1E6', borderRadius: 3, padding: '1px 4px' }}>Ctrl+Enter</kbd> to submit
+                            <div style={{ fontSize: 12, color: '#97A0AF', marginTop: 8 }}>
+                              <strong style={{ fontWeight: 600, color: '#42526E' }}>Pro tip:</strong> press <kbd style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, background: '#F4F5F7', border: '1px solid #DFE1E6', borderRadius: 3, padding: '2px 6px', fontWeight: 600 }}>M</kbd> to comment
                             </div>
                           </div>
                         </div>
+
+                        {/* Comments list */}
+                        {activeActivityTab === 'comments' && comments.length === 0 && <div style={{ padding: '24px 0', color: '#97A0AF', fontSize: 14, textAlign: 'center' }}>No comments yet</div>}
+                        {activeActivityTab === 'comments' && comments.map(c => (
+                          <div key={c.id} style={{ display: 'flex', gap: 12, marginBottom: 24 }}>
+                            {c.author?.avatar_url ? (
+                              <img src={c.author.avatar_url} alt="" style={{ width: 36, height: 36, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
+                            ) : (
+                              <div style={{ width: 36, height: 36, borderRadius: '50%', background: getAvatarColor(c.author_id), color: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700, flexShrink: 0 }}>{getInitials(c.author?.full_name)}</div>
+                            )}
+                            <div style={{ flex: 1, minWidth: 0 }}>
+                              <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 6 }}>
+                                <span style={{ fontSize: 14, fontWeight: 600, color: '#172B4D' }}>{c.author?.full_name ?? 'Unknown'}</span>
+                                <span style={{ fontSize: 13, color: '#6B778C' }}>{fmtDate(c.created_at)}</span>
+                              </div>
+                              <div style={{ fontSize: 14, color: '#172B4D', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>{c.body}</div>
+                              <div style={{ display: 'flex', gap: 16, marginTop: 8 }}>
+                                <button style={{ fontSize: 12, color: '#6B778C', background: 'none', border: 'none', cursor: 'pointer' }} onMouseEnter={e => (e.currentTarget.style.color = '#172B4D')} onMouseLeave={e => (e.currentTarget.style.color = '#6B778C')}>Edit</button>
+                                <button onClick={() => deleteCommentMutation.mutate(c.id)} style={{ fontSize: 12, color: '#6B778C', background: 'none', border: 'none', cursor: 'pointer' }} onMouseEnter={e => (e.currentTarget.style.color = '#DE350B')} onMouseLeave={e => (e.currentTarget.style.color = '#6B778C')}>Delete</button>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+
+                        {/* ALL — interleaved with HISTORY badges */}
+                        {activeActivityTab === 'all' && (() => {
+                          type ME = { type: 'comment'; data: (typeof comments)[number]; ts: string } | { type: 'history'; data: (typeof activityLog)[number]; ts: string };
+                          const merged: ME[] = [
+                            ...comments.map(c => ({ type: 'comment' as const, data: c, ts: c.created_at })),
+                            ...activityLog.map(e => ({ type: 'history' as const, data: e, ts: e.created_at })),
+                          ].sort((a, b) => new Date(b.ts).getTime() - new Date(a.ts).getTime());
+                          if (merged.length === 0) return <div style={{ padding: '24px 0', color: '#97A0AF', fontSize: 14, textAlign: 'center' }}>No activity yet</div>;
+                          return merged.map((item) => {
+                            if (item.type === 'comment') {
+                              const c = item.data;
+                              return (
+                                <div key={`c-${c.id}`} style={{ display: 'flex', gap: 12, marginBottom: 24 }}>
+                                  {c.author?.avatar_url ? <img src={c.author.avatar_url} alt="" style={{ width: 36, height: 36, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} /> : <div style={{ width: 36, height: 36, borderRadius: '50%', background: getAvatarColor(c.author_id), color: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700, flexShrink: 0 }}>{getInitials(c.author?.full_name)}</div>}
+                                  <div style={{ flex: 1, minWidth: 0 }}>
+                                    <div style={{ marginBottom: 4 }}><span style={{ fontSize: 14, fontWeight: 600, color: '#172B4D' }}>{c.author?.full_name ?? 'Unknown'}</span> <span style={{ fontSize: 13, color: '#6B778C' }}>{fmtDate(c.created_at)}</span></div>
+                                    <div style={{ fontSize: 14, color: '#172B4D', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>{c.body}</div>
+                                  </div>
+                                </div>
+                              );
+                            }
+                            const e = item.data;
+                            return (
+                              <div key={`h-${e.id}`} style={{ display: 'flex', gap: 12, marginBottom: 24 }}>
+                                {e.actor?.avatar_url ? <img src={e.actor.avatar_url} alt="" style={{ width: 36, height: 36, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} /> : <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#0052CC', color: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFF" strokeWidth="2"><rect x="8" y="2" width="8" height="4" rx="1"/><rect x="4" y="4" width="16" height="18" rx="2"/></svg></div>}
+                                <div style={{ flex: 1, minWidth: 0 }}>
+                                  <div style={{ fontSize: 14, color: '#172B4D', lineHeight: 1.5, marginBottom: 2 }}><span style={{ fontWeight: 600 }}>{e.actor?.full_name ?? 'System'}</span>{' '}{e.action === 'field_updated' ? <>changed the <span style={{ fontWeight: 600 }}>{e.field_name}</span></> : e.action}</div>
+                                  <div style={{ fontSize: 13, color: '#6B778C', marginBottom: 6 }}>{fmtDate(e.created_at)}</div>
+                                  <span style={{ display: 'inline-block', fontSize: 11, fontWeight: 700, color: '#172B4D', border: '1px solid #DFE1E6', borderRadius: 3, padding: '2px 6px', textTransform: 'uppercase', letterSpacing: '0.03em', background: '#F4F5F7' }}>HISTORY</span>
+                                  {(e.old_value || e.new_value) && (
+                                    <div style={{ marginTop: 8, fontSize: 14, color: '#172B4D', display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                                      <span style={{ color: '#6B778C' }}>{e.old_value || 'None'}</span>
+                                      <span style={{ color: '#97A0AF' }}>→</span>
+                                      {e.field_name === 'assignee_display_name' && e.new_value ? <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}><div style={{ width: 24, height: 24, borderRadius: '50%', background: getAvatarColor(e.new_value), color: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700 }}>{getInitials(e.new_value)}</div><span style={{ fontWeight: 500 }}>{e.new_value}</span></span> : <span style={{ fontWeight: 500 }}>{e.new_value || 'None'}</span>}
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            );
+                          });
+                        })()}
                       </div>
                     )}
+
+                    {/* HISTORY TAB */}
                     {activeActivityTab === 'history' && (
                       <div>
-                        {activityLog.length === 0 && <div style={{ padding: '20px 0', color: '#97A0AF', fontSize: 13, textAlign: 'center' }}>No activity recorded</div>}
+                        {activityLog.length === 0 && <div style={{ padding: '24px 0', color: '#97A0AF', fontSize: 14, textAlign: 'center' }}>No activity recorded</div>}
                         {activityLog.map(entry => (
-                          <div key={entry.id} style={{ display: 'flex', gap: 10, marginBottom: 12, alignItems: 'flex-start' }}>
-                            <div style={{ width: 7, height: 7, borderRadius: '50%', background: '#C1C7D0', flexShrink: 0, marginTop: 6 }} />
+                          <div key={entry.id} style={{ display: 'flex', gap: 12, marginBottom: 24 }}>
+                            {entry.actor?.avatar_url ? <img src={entry.actor.avatar_url} alt="" style={{ width: 36, height: 36, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} /> : <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#0052CC', color: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFF" strokeWidth="2"><rect x="8" y="2" width="8" height="4" rx="1"/><rect x="4" y="4" width="16" height="18" rx="2"/></svg></div>}
                             <div style={{ flex: 1, minWidth: 0 }}>
-                              <div style={{ fontSize: 12, color: '#172B4D', lineHeight: 1.5 }}>
-                                <span style={{ fontWeight: 600 }}>{entry.actor?.full_name ?? 'System'}</span>
-                                {' changed '}<span style={{ fontWeight: 500 }}>{entry.field_name ?? entry.action}</span>
-                                {entry.old_value && <> from <span style={{ textDecoration: 'line-through', color: '#97A0AF' }}>{entry.old_value}</span></>}
-                                {entry.new_value && <> to <span style={{ fontWeight: 600, color: '#0052CC' }}>{entry.new_value}</span></>}
-                              </div>
-                              <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10.5, color: '#97A0AF', marginTop: 2 }}>{fmtDate(entry.created_at)}</div>
+                              <div style={{ fontSize: 14, color: '#172B4D', lineHeight: 1.5, marginBottom: 2 }}><span style={{ fontWeight: 600 }}>{entry.actor?.full_name ?? 'System'}</span>{' '}{entry.action === 'field_updated' ? <>changed the <span style={{ fontWeight: 600 }}>{entry.field_name}</span></> : entry.action}</div>
+                              <div style={{ fontSize: 13, color: '#6B778C' }}>{fmtDate(entry.created_at)}</div>
+                              {(entry.old_value || entry.new_value) && (
+                                <div style={{ marginTop: 10, fontSize: 14, color: '#172B4D', display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                                  <span style={{ color: '#6B778C' }}>{entry.old_value || 'Unassigned'}</span>
+                                  <span style={{ color: '#97A0AF' }}>→</span>
+                                  {entry.field_name === 'assignee_display_name' && entry.new_value ? <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}><div style={{ width: 28, height: 28, borderRadius: '50%', background: getAvatarColor(entry.new_value), color: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700 }}>{getInitials(entry.new_value)}</div><span style={{ fontWeight: 500 }}>{entry.new_value}</span></span> : <span style={{ fontWeight: 500 }}>{entry.new_value || 'None'}</span>}
+                                </div>
+                              )}
                             </div>
                           </div>
                         ))}
