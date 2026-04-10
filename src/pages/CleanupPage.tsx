@@ -971,7 +971,7 @@ export default function CleanupPage() {
             display: 'flex', justifyContent: 'space-between', alignItems: 'center',
           }}>
             <span
-              onClick={() => setActiveTab('restore')}
+              onClick={() => { setShowForceCloseDialog(false); navigate('/audit-trail'); }}
               style={{ fontSize: 13, color: '#2563EB', textDecoration: 'underline', cursor: 'pointer' }}
             >
               Audit trail
