@@ -25107,6 +25107,7 @@ export type Database = {
       }
       ph_issues: {
         Row: {
+          acceptance_criteria: string | null
           assignee_account_id: string | null
           assignee_display_name: string | null
           baseline_date: string | null
@@ -25133,6 +25134,7 @@ export type Database = {
           parent_key: string | null
           parent_summary: string | null
           pending_write_back_at: string | null
+          position: number | null
           priority: string | null
           project_key: string
           project_name: string | null
@@ -25154,6 +25156,7 @@ export type Database = {
           type_icon_url: string | null
         }
         Insert: {
+          acceptance_criteria?: string | null
           assignee_account_id?: string | null
           assignee_display_name?: string | null
           baseline_date?: string | null
@@ -25180,6 +25183,7 @@ export type Database = {
           parent_key?: string | null
           parent_summary?: string | null
           pending_write_back_at?: string | null
+          position?: number | null
           priority?: string | null
           project_key: string
           project_name?: string | null
@@ -25201,6 +25205,7 @@ export type Database = {
           type_icon_url?: string | null
         }
         Update: {
+          acceptance_criteria?: string | null
           assignee_account_id?: string | null
           assignee_display_name?: string | null
           baseline_date?: string | null
@@ -25227,6 +25232,7 @@ export type Database = {
           parent_key?: string | null
           parent_summary?: string | null
           pending_write_back_at?: string | null
+          position?: number | null
           priority?: string | null
           project_key?: string
           project_name?: string | null
