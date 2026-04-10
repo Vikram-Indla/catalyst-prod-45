@@ -32,7 +32,7 @@ export function IssueIcon({ type, size = 16 }: { type: string; size?: number }) 
     <svg width={size} height={size} viewBox="0 0 16 16" fill="none"><rect width="16" height="16" rx="3" fill="#4BADE8"/><path d="M4.5 8.5L7 11L11.5 5.5" stroke="#FFF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
   );
   return (
-    <svg width={size} height={size} viewBox="0 0 16 16" fill="none"><path d="M4 1h6.5L14 4.5V13a2 2 0 01-2 2H4a2 2 0 01-2-2V3a2 2 0 012-2z" fill="#36B37E"/><path d="M10 1v4h4" fill="#2A9D3E"/></svg>
+    <svg width={size} height={size} viewBox="0 0 16 16" fill="none"><rect width="16" height="16" rx="3" fill="#36B37E"/><path d="M5 2h6v10.5L8 10l-3 2.5V2z" fill="#FFF"/></svg>
   );
 }
 
