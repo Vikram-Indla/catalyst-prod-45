@@ -1,10 +1,10 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { Loader2 } from 'lucide-react';
+import { Loader2, ChevronDown, ChevronRight } from 'lucide-react';
 
 /* ═══════════════════════════════════════
-   Ageing Tab — Live Data from ph_issues
-   Design: V12 Hybrid Precision
+   Ageing Tab — Grouped by Time Period
+   V12 Hybrid Precision + Jira Solid Pills
    ═══════════════════════════════════════ */
 
 type ItemType = 'Production Incident' | 'Story' | 'QA Bug' | 'Feature' | 'Sub-task';
@@ -18,6 +18,8 @@ interface AgeingItem {
   status: StatusType;
   days_assigned: number;
 }
+
+type TimeGroup = 'critical' | 'thisWeek' | 'thisMonth' | 'quarter' | 'older';
 
 const SLA_THRESHOLDS: Record<ItemType, number> = {
   'Production Incident': 1,
@@ -34,26 +36,15 @@ const TYPE_FILTER_MAP: Record<string, ItemType[]> = {
   Incident: ['Production Incident'],
 };
 
-const T = {
-  ink1: 'var(--cp-ink-1, #0F172A)',
-  ink3: 'var(--cp-ink-3, #64748B)',
-  ink4: 'var(--cp-ink-4, #94A3B8)',
-  surface: 'var(--cp-surface, #F8FAFC)',
-  border: 'var(--cp-border, #E2E8F0)',
-  borderLt: 'var(--cp-border-lt, #F1F5F9)',
-  primary: 'var(--cp-primary, #2563EB)',
-  primaryLight: 'var(--cp-primary-light, #EFF6FF)',
-  primaryBorder: 'var(--cp-primary-border, #BFDBFE)',
-  primaryHover: 'var(--cp-primary-hover, #1D4ED8)',
-  slTodoBg: 'var(--sl-todo-bg, #DFE1E6)',
-  slTodoText: 'var(--sl-todo-text, #253858)',
-  slInprogBg: 'var(--sl-inprog-bg, #DEEBFF)',
-  slInprogText: 'var(--sl-inprog-text, #0747A6)',
-  dangerLight: 'var(--cp-danger-light, #FEE2E2)',
-  dangerText: 'var(--cp-danger-text, #991B1B)',
-  warningLight: 'var(--cp-warning-light, #FEF3C7)',
-  warningText: 'var(--cp-warning-text, #92400E)',
+const GROUP_CONFIG: Record<TimeGroup, { label: string; defaultOpen: boolean }> = {
+  critical:  { label: 'CRITICAL — OVERDUE SLA', defaultOpen: true },
+  thisWeek:  { label: 'THIS WEEK (1–7 DAYS)', defaultOpen: true },
+  thisMonth: { label: 'THIS MONTH (8–30 DAYS)', defaultOpen: true },
+  quarter:   { label: '1–3 MONTHS', defaultOpen: false },
+  older:     { label: '3+ MONTHS', defaultOpen: false },
 };
+
+const GROUP_ORDER: TimeGroup[] = ['critical', 'thisWeek', 'thisMonth', 'quarter', 'older'];
 
 /* ── Canonical Jira Work Item SVG Icons ── */
 function TypeIcon({ type }: { type: ItemType }) {
@@ -94,14 +85,13 @@ function TypeIcon({ type }: { type: ItemType }) {
 }
 
 function StatusLozenge({ status }: { status: StatusType }) {
-  const bg = status === 'TODO' ? T.slTodoBg : T.slInprogBg;
-  const color = status === 'TODO' ? T.slTodoText : T.slInprogText;
+  const bg = status === 'TODO' ? '#42526E' : '#0052CC';
   return (
     <span style={{
       display: 'inline-block', height: 20, lineHeight: '20px',
       fontSize: 10, fontWeight: 700, textTransform: 'uppercase',
       letterSpacing: '0.03em', borderRadius: 3, padding: '0 7px',
-      background: bg, color, whiteSpace: 'nowrap',
+      background: bg, color: '#FFFFFF', whiteSpace: 'nowrap',
       fontFamily: 'Inter, sans-serif',
     }}>
       {status}
@@ -123,9 +113,162 @@ function mapStatusCategory(statusCategory: string): StatusType | null {
   if (v === 'todo' || v === 'new') return 'TODO';
   if (v === 'inprogress') return 'IN PROGRESS';
   if (v === 'done') return null;
-  return 'TODO'; // default open items to TODO
+  return 'TODO';
 }
 
+function classifyTimeGroup(item: AgeingItem): TimeGroup {
+  const burnPct = (item.days_assigned / SLA_THRESHOLDS[item.item_type]) * 100;
+  if (burnPct > 80) return 'critical';
+  if (item.days_assigned <= 7) return 'thisWeek';
+  if (item.days_assigned <= 30) return 'thisMonth';
+  if (item.days_assigned <= 90) return 'quarter';
+  return 'older';
+}
+
+/* ── Filter Pill (Solid Jira Style) ── */
+const PILL_COLORS: Record<string, { bg: string; activeBg: string }> = {
+  All:      { bg: '#42526E', activeBg: '#0052CC' },
+  Story:    { bg: '#42526E', activeBg: '#14892C' },
+  Bug:      { bg: '#42526E', activeBg: '#E5493A' },
+  Incident: { bg: '#42526E', activeBg: '#E5493A' },
+};
+
+function FilterPill({ label, isActive, count, onClick }: {
+  label: string; isActive: boolean; count: number; onClick: () => void;
+}) {
+  const cfg = PILL_COLORS[label] || PILL_COLORS.All;
+  return (
+    <button
+      onClick={onClick}
+      style={{
+        border: 'none',
+        background: isActive ? cfg.activeBg : cfg.bg,
+        color: '#FFFFFF',
+        borderRadius: 4, padding: '4px 10px',
+        fontSize: 11, fontWeight: 600, cursor: 'pointer',
+        fontFamily: 'Inter, sans-serif',
+        transition: 'all 120ms ease',
+        opacity: isActive ? 1 : 0.7,
+        display: 'flex', alignItems: 'center', gap: 5,
+      }}
+    >
+      {label}
+      <span style={{
+        fontSize: 10, fontWeight: 700,
+        background: 'rgba(255,255,255,0.25)',
+        borderRadius: 3, padding: '1px 5px',
+        minWidth: 18, textAlign: 'center',
+      }}>
+        {count}
+      </span>
+    </button>
+  );
+}
+
+/* ── Group Header (collapsible) ── */
+function GroupHeader({ label, count, isOpen, onToggle, accentColor }: {
+  label: string; count: number; isOpen: boolean; onToggle: () => void; accentColor: string;
+}) {
+  return (
+    <tr>
+      <td colSpan={5} style={{ padding: 0 }}>
+        <button
+          onClick={onToggle}
+          style={{
+            width: '100%', display: 'flex', alignItems: 'center', gap: 8,
+            padding: '8px 14px', border: 'none', cursor: 'pointer',
+            background: 'var(--cp-surface, #F8FAFC)',
+            borderBottom: '0.75px solid var(--cp-border, #E2E8F0)',
+            borderLeft: `3px solid ${accentColor}`,
+            fontFamily: 'Inter, sans-serif',
+          }}
+        >
+          {isOpen ? <ChevronDown size={13} color="#64748B" /> : <ChevronRight size={13} color="#64748B" />}
+          <span style={{
+            fontSize: 10, fontWeight: 700, color: '#475569',
+            textTransform: 'uppercase', letterSpacing: '0.05em',
+          }}>
+            {label}
+          </span>
+          <span style={{
+            fontSize: 10, fontWeight: 700, color: '#FFFFFF',
+            background: accentColor, borderRadius: 3,
+            padding: '1px 6px', minWidth: 20, textAlign: 'center',
+          }}>
+            {count}
+          </span>
+        </button>
+      </td>
+    </tr>
+  );
+}
+
+/* ── Ageing Item Row ── */
+function AgeingRow({ item }: { item: AgeingItem }) {
+  const sla = SLA_THRESHOLDS[item.item_type];
+  const burnPct = (item.days_assigned / sla) * 100;
+  const daysColor = burnPct > 80 ? '#EF4444' : burnPct >= 50 ? '#F59E0B' : '#22C55E';
+
+  return (
+    <tr
+      style={{
+        height: 36, maxHeight: 36,
+        borderBottom: '0.75px solid var(--cp-border-lt, #F1F5F9)',
+        transition: 'background 120ms ease',
+      }}
+      onMouseEnter={e => (e.currentTarget.style.background = 'rgba(0,0,0,0.02)')}
+      onMouseLeave={e => (e.currentTarget.style.background = '')}
+    >
+      <td style={{ ...tdStyle, paddingLeft: 14 }}>
+        <TypeIcon type={item.item_type} />
+      </td>
+      <td style={tdStyle}>
+        <span style={{
+          fontFamily: "'JetBrains Mono', monospace",
+          fontSize: 11.5, fontWeight: 700, color: 'var(--cp-primary, #2563EB)',
+          cursor: 'pointer',
+        }}>
+          {item.jira_key}
+        </span>
+      </td>
+      <td style={{
+        ...tdStyle, fontSize: 12, fontWeight: 500,
+        color: 'var(--cp-ink-1, #0F172A)',
+        whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+      }}>
+        {item.summary}
+      </td>
+      <td style={tdStyle}>
+        <StatusLozenge status={item.status} />
+      </td>
+      <td style={{ ...tdStyle, textAlign: 'right', paddingRight: 14, verticalAlign: 'middle' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 2 }}>
+          <span style={{ fontSize: 13, fontWeight: 700, color: daysColor }}>
+            {item.days_assigned}d
+          </span>
+          {burnPct > 80 && (
+            <span style={{
+              fontSize: 9, fontWeight: 700, borderRadius: 3, padding: '1px 5px',
+              background: '#FEE2E2', color: '#991B1B',
+            }}>
+              Overdue
+            </span>
+          )}
+          {burnPct >= 50 && burnPct <= 80 && (
+            <span style={{
+              fontSize: 9, fontWeight: 700, borderRadius: 3, padding: '1px 5px',
+              background: '#FEF3C7', color: '#92400E',
+            }}>
+              Watch
+            </span>
+          )}
+        </div>
+      </td>
+    </tr>
+  );
+}
+
+/* ── Count badge hook (exported) ── */
 export function useAgeingCount(): number {
   const [count, setCount] = useState(0);
   useEffect(() => {
@@ -133,24 +276,19 @@ export function useAgeingCount(): number {
     (async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user || cancelled) return;
-
-      // Resolve user → jira_account_id
       const { data: identityRows } = await supabase
         .from('jira_identity_map')
         .select('jira_account_id')
         .eq('catalyst_user_id', user.id)
         .limit(1);
-
       if (cancelled || !identityRows?.length) return;
       const jiraAccountId = identityRows[0].jira_account_id;
-
       const { count: total } = await supabase
         .from('ph_issues')
         .select('*', { count: 'exact', head: true })
         .eq('assignee_account_id', jiraAccountId)
         .neq('status_category', 'done')
         .is('deleted_at', null);
-
       if (!cancelled) setCount(total ?? 0);
     })();
     return () => { cancelled = true; };
@@ -158,12 +296,29 @@ export function useAgeingCount(): number {
   return count;
 }
 
+const GROUP_ACCENT: Record<TimeGroup, string> = {
+  critical:  '#EF4444',
+  thisWeek:  '#0052CC',
+  thisMonth: '#F59E0B',
+  quarter:   '#94A3B8',
+  older:     '#64748B',
+};
+
+/* ── Main Component ── */
 export default function AgeingTab() {
   const [activeFilter, setActiveFilter] = useState('All');
-  const [sortAsc, setSortAsc] = useState(false); // descending by default
+  const [sortAsc, setSortAsc] = useState(false);
   const [items, setItems] = useState<AgeingItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [openGroups, setOpenGroups] = useState<Record<TimeGroup, boolean>>(() => {
+    const initial: Record<string, boolean> = {};
+    GROUP_ORDER.forEach(g => { initial[g] = GROUP_CONFIG[g].defaultOpen; });
+    return initial as Record<TimeGroup, boolean>;
+  });
+  const [visibleCount, setVisibleCount] = useState(40);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
+  // Fetch data
   useEffect(() => {
     let cancelled = false;
     (async () => {
@@ -171,7 +326,6 @@ export default function AgeingTab() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user || cancelled) { setLoading(false); return; }
 
-      // Resolve user → jira_account_id via jira_identity_map
       const { data: identityRows } = await supabase
         .from('jira_identity_map')
         .select('jira_account_id')
@@ -181,7 +335,6 @@ export default function AgeingTab() {
       if (cancelled || !identityRows?.length) { setLoading(false); return; }
       const jiraAccountId = identityRows[0].jira_account_id;
 
-      // Fetch open issues assigned to this user from ph_issues
       const { data } = await supabase
         .from('ph_issues')
         .select('id, issue_key, issue_type, summary, status, status_category, jira_created_at')
@@ -215,6 +368,7 @@ export default function AgeingTab() {
     return () => { cancelled = true; };
   }, []);
 
+  // Filter + sort
   const filtered = useMemo(() => {
     let list = [...items];
     const typeFilter = TYPE_FILTER_MAP[activeFilter];
@@ -229,7 +383,50 @@ export default function AgeingTab() {
     return list;
   }, [items, activeFilter, sortAsc]);
 
+  // Group items
+  const grouped = useMemo(() => {
+    const groups: Record<TimeGroup, AgeingItem[]> = {
+      critical: [], thisWeek: [], thisMonth: [], quarter: [], older: [],
+    };
+    filtered.forEach(item => {
+      const g = classifyTimeGroup(item);
+      groups[g].push(item);
+    });
+    return groups;
+  }, [filtered]);
+
+  // Type counts for pills
+  const typeCounts = useMemo(() => {
+    const counts: Record<string, number> = { All: items.length };
+    Object.keys(TYPE_FILTER_MAP).forEach(key => {
+      if (key === 'All') return;
+      const types = TYPE_FILTER_MAP[key];
+      counts[key] = items.filter(i => types.includes(i.item_type)).length;
+    });
+    return counts;
+  }, [items]);
+
+  // Infinite scroll
+  const handleScroll = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    if (el.scrollTop + el.clientHeight >= el.scrollHeight - 100) {
+      setVisibleCount(prev => Math.min(prev + 30, filtered.length));
+    }
+  }, [filtered.length]);
+
+  const toggleGroup = (g: TimeGroup) => {
+    setOpenGroups(prev => ({ ...prev, [g]: !prev[g] }));
+  };
+
   const filters = ['All', 'Story', 'Bug', 'Incident'];
+
+  // Summary stats
+  const overduePct = useMemo(() => {
+    if (filtered.length === 0) return 0;
+    const overdue = filtered.filter(i => (i.days_assigned / SLA_THRESHOLDS[i.item_type]) * 100 > 80).length;
+    return Math.round((overdue / filtered.length) * 100);
+  }, [filtered]);
 
   return (
     <div style={{ fontFamily: 'Inter, sans-serif', display: 'flex', flexDirection: 'column', height: '100%' }}>
@@ -237,53 +434,62 @@ export default function AgeingTab() {
       <div style={{
         display: 'flex', justifyContent: 'space-between', alignItems: 'center',
         padding: '10px 14px',
-        borderBottom: `0.75px solid ${T.borderLt}`,
+        borderBottom: '0.75px solid var(--cp-border-lt, #F1F5F9)',
       }}>
         <span style={{
-          fontSize: 11, fontWeight: 700, color: T.ink3,
+          fontSize: 11, fontWeight: 700, color: 'var(--cp-ink-3, #64748B)',
           textTransform: 'uppercase', letterSpacing: '0.05em',
         }}>
           Ageing — Assigned to You
         </span>
         <div style={{ display: 'flex', gap: 5 }}>
-          {filters.map(f => {
-            const isActive = activeFilter === f;
-            return (
-              <button
-                key={f}
-                onClick={() => setActiveFilter(f)}
-                style={{
-                  border: `0.75px solid ${isActive ? T.primaryBorder : T.border}`,
-                  background: isActive ? T.primaryLight : '#FFFFFF',
-                  color: isActive ? T.primaryHover : T.ink3,
-                  borderRadius: 3, padding: '3px 9px',
-                  fontSize: 11, fontWeight: 500, cursor: 'pointer',
-                  fontFamily: 'Inter, sans-serif',
-                  transition: 'all 120ms ease',
-                }}
-              >
-                {f}
-              </button>
-            );
-          })}
+          {filters.map(f => (
+            <FilterPill
+              key={f}
+              label={f}
+              isActive={activeFilter === f}
+              count={typeCounts[f] || 0}
+              onClick={() => setActiveFilter(f)}
+            />
+          ))}
         </div>
       </div>
 
+      {/* Summary bar */}
+      {!loading && filtered.length > 0 && (
+        <div style={{
+          display: 'flex', gap: 16, padding: '8px 14px',
+          borderBottom: '0.75px solid var(--cp-border-lt, #F1F5F9)',
+          background: 'var(--cp-surface, #F8FAFC)',
+        }}>
+          <StatChip label="Total" value={filtered.length} color="#475569" />
+          <StatChip label="Critical" value={grouped.critical.length} color="#EF4444" />
+          <StatChip label="This Week" value={grouped.thisWeek.length} color="#0052CC" />
+          <StatChip label="This Month" value={grouped.thisMonth.length} color="#F59E0B" />
+          <StatChip label="Overdue" value={`${overduePct}%`} color={overduePct > 50 ? '#EF4444' : '#F59E0B'} />
+        </div>
+      )}
+
       {/* Table */}
-      <div style={{ flex: 1, overflowY: 'auto' }}>
+      <div
+        ref={scrollRef}
+        onScroll={handleScroll}
+        style={{ flex: 1, overflowY: 'auto' }}
+      >
         {loading ? (
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 40 }}>
-            <Loader2 size={20} style={{ color: T.ink4, animation: 'spin 1s linear infinite' }} />
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 40, gap: 8 }}>
+            <Loader2 size={20} style={{ color: 'var(--cp-ink-4, #94A3B8)', animation: 'spin 1s linear infinite' }} />
+            <span style={{ fontSize: 11, color: 'var(--cp-ink-4, #94A3B8)' }}>Loading ageing data…</span>
           </div>
         ) : filtered.length === 0 ? (
           <div style={{
             display: 'flex', flexDirection: 'column', alignItems: 'center',
             justifyContent: 'center', padding: '48px 24px', gap: 8,
           }}>
-            <span style={{ fontSize: 13, color: T.ink3, fontFamily: 'Inter, sans-serif' }}>
+            <span style={{ fontSize: 13, color: 'var(--cp-ink-3, #64748B)' }}>
               No ageing items assigned to you
             </span>
-            <span style={{ fontSize: 11, color: T.ink4, fontFamily: 'Inter, sans-serif' }}>
+            <span style={{ fontSize: 11, color: 'var(--cp-ink-4, #94A3B8)' }}>
               Open work items will appear here with SLA tracking
             </span>
           </div>
@@ -298,8 +504,8 @@ export default function AgeingTab() {
             </colgroup>
             <thead>
               <tr style={{
-                background: T.surface,
-                borderBottom: `0.75px solid ${T.border}`,
+                background: 'var(--cp-surface, #F8FAFC)',
+                borderBottom: '0.75px solid var(--cp-border, #E2E8F0)',
               }}>
                 <th style={{ ...thStyle, paddingLeft: 14 }} />
                 <th style={thStyle}>KEY</th>
@@ -314,72 +520,21 @@ export default function AgeingTab() {
               </tr>
             </thead>
             <tbody>
-              {filtered.map(item => {
-                const sla = SLA_THRESHOLDS[item.item_type];
-                const burnPct = (item.days_assigned / sla) * 100;
-                const daysColor = burnPct > 80 ? '#EF4444' : burnPct >= 50 ? '#F59E0B' : '#22C55E';
+              {GROUP_ORDER.map(groupKey => {
+                const groupItems = grouped[groupKey];
+                if (groupItems.length === 0) return null;
+                const isOpen = openGroups[groupKey];
+                const visibleItems = isOpen ? groupItems.slice(0, visibleCount) : [];
 
                 return (
-                  <tr
-                    key={item.id}
-                    style={{
-                      height: 36, maxHeight: 36,
-                      borderBottom: `0.75px solid ${T.borderLt}`,
-                      transition: 'background 120ms ease',
-                    }}
-                    onMouseEnter={e => (e.currentTarget.style.background = 'rgba(0,0,0,0.02)')}
-                    onMouseLeave={e => (e.currentTarget.style.background = '')}
-                  >
-                    <td style={{ ...tdStyle, paddingLeft: 14 }}>
-                      <TypeIcon type={item.item_type} />
-                    </td>
-                    <td style={tdStyle}>
-                      <span
-                        style={{
-                          fontFamily: "'JetBrains Mono', monospace",
-                          fontSize: 11.5, fontWeight: 700, color: T.primary,
-                          cursor: 'pointer',
-                        }}
-                      >
-                        {item.jira_key}
-                      </span>
-                    </td>
-                    <td style={{
-                      ...tdStyle,
-                      fontSize: 12, fontWeight: 500, color: T.ink1,
-                      whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
-                    }}>
-                      {item.summary}
-                    </td>
-                    <td style={tdStyle}>
-                      <StatusLozenge status={item.status} />
-                    </td>
-                    <td style={{ ...tdStyle, textAlign: 'right', paddingRight: 14, verticalAlign: 'middle' }}>
-                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 2 }}>
-                        <span style={{ fontSize: 13, fontWeight: 700, color: daysColor }}>
-                          {item.days_assigned}d
-                        </span>
-                        {burnPct > 80 && (
-                          <span style={{
-                            fontSize: 9, fontWeight: 700, borderRadius: 3,
-                            padding: '1px 5px',
-                            background: T.dangerLight, color: T.dangerText,
-                          }}>
-                            Overdue
-                          </span>
-                        )}
-                        {burnPct >= 50 && burnPct <= 80 && (
-                          <span style={{
-                            fontSize: 9, fontWeight: 700, borderRadius: 3,
-                            padding: '1px 5px',
-                            background: T.warningLight, color: T.warningText,
-                          }}>
-                            Watch
-                          </span>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
+                  <GroupSection
+                    key={groupKey}
+                    groupKey={groupKey}
+                    items={visibleItems}
+                    totalCount={groupItems.length}
+                    isOpen={isOpen}
+                    onToggle={() => toggleGroup(groupKey)}
+                  />
                 );
               })}
             </tbody>
@@ -390,7 +545,7 @@ export default function AgeingTab() {
       {/* Footer */}
       <div style={{
         padding: '8px 14px',
-        borderTop: `0.75px solid ${T.borderLt}`,
+        borderTop: '0.75px solid var(--cp-border-lt, #F1F5F9)',
         display: 'flex', justifyContent: 'space-between', alignItems: 'center',
         flexWrap: 'wrap', gap: 6,
       }}>
@@ -402,14 +557,52 @@ export default function AgeingTab() {
           ].map(l => (
             <div key={l.label} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
               <span style={{ width: 7, height: 7, borderRadius: '50%', background: l.color }} />
-              <span style={{ fontSize: 10, color: T.ink3 }}>{l.label}</span>
+              <span style={{ fontSize: 10, color: 'var(--cp-ink-3, #64748B)' }}>{l.label}</span>
             </div>
           ))}
         </div>
-        <span style={{ fontSize: 10, color: T.ink4 }}>
+        <span style={{ fontSize: 10, color: 'var(--cp-ink-4, #94A3B8)' }}>
           SLA: Incident 1d · Bug 3d · Story 10d · Feature 15d
         </span>
       </div>
+    </div>
+  );
+}
+
+/* ── Group Section ── */
+function GroupSection({ groupKey, items, totalCount, isOpen, onToggle }: {
+  groupKey: TimeGroup; items: AgeingItem[]; totalCount: number;
+  isOpen: boolean; onToggle: () => void;
+}) {
+  const cfg = GROUP_CONFIG[groupKey];
+  const accent = GROUP_ACCENT[groupKey];
+
+  return (
+    <>
+      <GroupHeader
+        label={cfg.label}
+        count={totalCount}
+        isOpen={isOpen}
+        onToggle={onToggle}
+        accentColor={accent}
+      />
+      {isOpen && items.map(item => (
+        <AgeingRow key={item.id} item={item} />
+      ))}
+    </>
+  );
+}
+
+/* ── Stat Chip ── */
+function StatChip({ label, value, color }: { label: string; value: string | number; color: string }) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
+      <span style={{ fontSize: 14, fontWeight: 700, color, fontVariantNumeric: 'tabular-nums' }}>
+        {value}
+      </span>
+      <span style={{ fontSize: 9, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+        {label}
+      </span>
     </div>
   );
 }
