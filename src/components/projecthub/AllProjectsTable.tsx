@@ -545,7 +545,7 @@ export function AllProjectsTable({
         <td key={colKey}>
           <div className="flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-[#A1A1A1]">
             <Tooltip><TooltipTrigger asChild><span className={cn("w-2 h-2 rounded-full flex-shrink-0 cursor-help", syncDotColor)} /></TooltipTrigger><TooltipContent side="top" className="text-xs whitespace-pre-line max-w-[220px]">{syncTooltipText}</TooltipContent></Tooltip>
-            <span className="font-medium">{syncAge ? `↔ ${syncAge}` : 'Not synced'} · {issueCount} issues</span>
+            <span className="font-medium">{syncAge ? `Synced ${issueCount} issues, ${syncAge} ago` : 'Not synced'}</span>
           </div>
         </td>
       );
