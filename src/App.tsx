@@ -28,6 +28,7 @@ const PublishDiagnosticsPage = lazy(() => import("./pages/admin/PublishDiagnosti
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const SubmitDemandRequest = lazy(() => import("./pages/SubmitDemandRequest"));
 const SlackOAuthCallback = lazy(() => import("./pages/SlackOAuthCallback"));
+const CleanupPage = lazy(() => import("./pages/CleanupPage"));
 
 // Full app routes — only imported when ENABLE_FULL_APP=true
 const FullAppRoutes = ENABLE_FULL_APP
@@ -82,6 +83,9 @@ const App = () => (
                     <Route path="deployment-health" element={<S><DeploymentHealthPage /></S>} />
                     <Route path="publish-diagnostics" element={<S><PublishDiagnosticsPage /></S>} />
                   </Route>
+
+                  {/* AI Cleanup route */}
+                  <Route path="/cleanup" element={<S><CleanupPage /></S>} />
 
                   {/* All other routes — only when ENABLE_FULL_APP=true */}
                   {FullAppRoutes && (
