@@ -77,13 +77,33 @@ const CLOSURE_REASONS = [
   'Other (see comment)',
 ];
 
-const AI_INSIGHTS: Record<number, string> = {
-  1: 'No comments or transitions in 60+ days. Safe to close.',
-  2: 'Story created 30+ days ago with no subtasks or work breakdown.',
-  4: 'Linked to an active epic but stale for 45+ days.',
-  5: 'Low priority item open for 90+ days with no recent activity.',
-  6: 'AI-detected duplicate or superseded item.',
-};
+// ── Dynamic reasoning text ──────────────────────
+function getReasoningText(item: CleanupItem, category: number, source: AgeingItem | undefined): string {
+  const daysOpen = item.days_stale;
+  const assigneeName = source?.assignee_display_name || 'unknown';
+  switch (category) {
+    case 1:
+      return `Open ${daysOpen} days with zero comments or activity. No evidence anyone is tracking this work.`;
+    case 2:
+      return `Story open ${daysOpen} days with no subtasks. Cannot be delivered or tracked without breakdown.`;
+    case 3: {
+      const inactiveDays = source && source.assignee_last_login_days < 999
+        ? `${source.assignee_last_login_days} days`
+        : 'an extended period';
+      return `Assigned to ${assigneeName} who has been inactive for ${inactiveDays}. Work is blocked with no active owner.`;
+    }
+    case 4:
+      return `Linked to epic ${item.parent_key} but untouched for ${daysOpen} days. Risk to epic delivery timeline.`;
+    case 5:
+      return `Low priority item open ${daysOpen} days. Likely superseded or no longer relevant.`;
+    case 6:
+      return `Gemini identified this as a likely duplicate. Verify and close the older item.`;
+    case 7:
+      return `Active ${item.issue_type} owned by ${assigneeName} who is inactive. Customer-facing risk with no active owner.`;
+    default:
+      return `Open ${daysOpen} days without resolution.`;
+  }
+}
 
 const CAT_SHORT: Record<number, string> = {
   1: 'Ghost', 2: 'No Breakdown', 3: 'Inactive',
@@ -236,19 +256,19 @@ export default function CleanupPage() {
       reporter_account_id: item.reporter_account_id,
       reporter_name: item.reporter_name,
       parent_key: item.parent_key,
-      days_stale: item.days_assigned,
+      days_stale: item.days_open,
       project_key: item.project_key,
       fixed_versions: item.fixed_versions,
       categoryKey: catKey,
     });
 
-    result[1] = sharedItems.filter(i => i.days_assigned >= 60).map(i => toCleanup(i, 1));
-    result[2] = sharedItems.filter(i => i.item_type === 'Story' && i.days_assigned >= 30).map(i => toCleanup(i, 2));
-    result[3] = [];
-    result[4] = sharedItems.filter(i => i.parent_key && i.days_assigned >= 45).map(i => toCleanup(i, 4));
-    result[5] = sharedItems.filter(i => i.days_assigned >= 90).map(i => toCleanup(i, 5));
+    result[1] = sharedItems.filter(i => i.comment_count === 0 && i.days_open >= 60).map(i => toCleanup(i, 1));
+    result[2] = sharedItems.filter(i => i.item_type === 'Story' && i.days_open >= 30 && i.child_issue_count === 0).map(i => toCleanup(i, 2));
+    result[3] = sharedItems.filter(i => !i.assignee_is_active || i.assignee_last_login_days > 60).map(i => toCleanup(i, 3));
+    result[4] = sharedItems.filter(i => i.parent_key != null && i.parent_issue_type === 'Epic' && i.days_open >= 45).map(i => toCleanup(i, 4));
+    result[5] = sharedItems.filter(i => i.days_open >= 90 && ['low', 'lowest'].includes((i.priority ?? '').toLowerCase())).map(i => toCleanup(i, 5));
     result[6] = [];
-    result[7] = sharedItems.filter(i => i.item_type === 'QA Bug').map(i => toCleanup(i, 7));
+    result[7] = sharedItems.filter(i => ['Bug', 'QA Bug', 'bug', 'qa bug'].includes(i.issue_type_raw ?? '') && (!i.assignee_is_active || i.assignee_last_login_days > 60)).map(i => toCleanup(i, 7));
 
     return result;
   }, [sharedItems]);
