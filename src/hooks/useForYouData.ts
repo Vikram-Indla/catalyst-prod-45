@@ -437,124 +437,117 @@ export function useForYouData() {
       if (!authUser?.id) { setIsLoading(false); return; }
       setIsLoading(true);
       try {
-        const { data: jiraProjects } = await supabase.from('ph_jira_projects').select('project_key, name');
-        const { data: catalystProjects } = await supabase.from('projects').select('id, key');
+        // ── Wave 1: All independent lookups in parallel ──
+        const [
+          { data: jiraProjects },
+          { data: catalystProjects },
+          { data: plannerAssigned },
+          { data: userProfileData },
+          { data: nativeStories },
+          { data: nativeFeatures },
+          { data: nativeEpics },
+          { data: nativeIncidents },
+          { data: stars },
+        ] = await Promise.all([
+          supabase.from('ph_jira_projects').select('project_key, name'),
+          supabase.from('projects').select('id, key'),
+          supabase.from('planner_tasks').select('task_key, title, priority, assignee_id, updated_at, created_at, status_id, workstream_id, reporter_id').eq('assignee_id', authUser.id).is('deleted_at', null).order('updated_at', { ascending: false }).limit(200),
+          supabase.from('profiles').select('id, full_name').eq('id', authUser.id).single(),
+          supabase.from('stories').select('id, story_key, title, name, status, state, priority, assignee_id, story_points, estimate_points, tags, description, updated_at, created_at, feature:features(id, name, display_id, project_id, project:projects(id, name, key))').eq('assignee_id', authUser.id).is('deleted_at', null).order('updated_at', { ascending: false }).limit(200),
+          supabase.from('features').select('id, display_id, name, status, priority, assignee_id, estimate_points, labels, components, description, updated_at, created_at, project_id, project:projects(id, name, key), epic:epics(id, name, epic_key)').eq('assignee_id', authUser.id).is('deleted_at', null).order('updated_at', { ascending: false }).limit(100),
+          supabase.from('epics').select('id, epic_key, name, status, state, assignee_id, owner_id, points_estimate, tags, description, updated_at, created_at').or(`assignee_id.eq.${authUser.id},owner_id.eq.${authUser.id}`).is('deleted_at', null).order('updated_at', { ascending: false }).limit(100),
+          supabase.from('incidents').select('id, incident_key, title, status, severity, priority, assignee_id, reporter_name, description, updated_at, created_at, project_id, project:projects!incidents_project_id_fkey(id, name, key)').eq('assignee_id', authUser.id).is('deleted_at', null).order('updated_at', { ascending: false }).limit(100),
+          supabase.from('user_starred_items').select('item_id, item_type').eq('user_id', authUser.id),
+        ]);
+
+        // Build project maps
         const projectIdMap = new Map<string, string>();
-        if (catalystProjects) {
-          catalystProjects.forEach(p => projectIdMap.set(p.key, p.id));
-        }
+        if (catalystProjects) catalystProjects.forEach(p => projectIdMap.set(p.key, p.id));
         if (jiraProjects) {
           const pMap = new Map<string, string>();
           jiraProjects.forEach(p => pMap.set(p.project_key, p.name));
           setProjectNameMap(pMap);
         }
 
-        // Planner tasks
-        const { data: plannerAssigned } = await supabase.from('planner_tasks').select('task_key, title, priority, assignee_id, updated_at, created_at, status_id, workstream_id, reporter_id').eq('assignee_id', authUser.id).is('deleted_at', null).order('updated_at', { ascending: false }).limit(200);
-        const plannerRows = plannerAssigned || [];
-        let plannerMapped: any[] = [];
-        if (plannerRows.length > 0) {
-          const statusIds = [...new Set(plannerRows.map(r => r.status_id).filter(Boolean))];
-          const { data: statuses } = statusIds.length > 0 ? await supabase.from('planner_statuses').select('id, name').in('id', statusIds) : { data: [] };
-          const statusMap = new Map((statuses || []).map(s => [s.id, s.name]));
-          const wsIds = [...new Set(plannerRows.map(r => r.workstream_id).filter(Boolean))];
-          const { data: workstreams } = wsIds.length > 0 ? await supabase.from('planner_workstreams').select('id, name').in('id', wsIds) : { data: [] };
-          const wsMap = new Map((workstreams || []).map(w => [w.id, w.name]));
-          const { data: profileData } = await supabase.from('profiles').select('id, full_name').eq('id', authUser.id).single();
-          plannerMapped = plannerRows.map(row => mapPlannerTaskToIssueRow({ ...row, assignee_name: profileData?.full_name || 'Unassigned', status_name: statusMap.get(row.status_id) || 'Backlog', workstream_name: wsMap.get(row.workstream_id) || null }));
-        }
-
-        // Jira issues
-        let jiraAssigned: any[] = [];
-        let jiraWorked: any[] = [];
-        if (jiraAccountIds.length > 0) {
-          const { data: assigned } = await supabase.from('ph_issues').select(SELECT_FIELDS).in('assignee_account_id', jiraAccountIds).order('jira_updated_at', { ascending: false }).limit(200);
-          jiraAssigned = (assigned || []).map(r => ({ ...r, project_id: projectIdMap.get(r.project_key) || null }));
-          const ninetyDaysAgo = new Date();
-          ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
-          const { data: worked } = await supabase.from('ph_issues').select(SELECT_FIELDS).in('assignee_account_id', jiraAccountIds).gte('jira_updated_at', ninetyDaysAgo.toISOString()).order('jira_updated_at', { ascending: false }).limit(200);
-          jiraWorked = (worked || []).map(r => ({ ...r, project_id: projectIdMap.get(r.project_key) || null }));
-        }
-
-        // Native Catalyst tables — stories, features, epics, incidents
-        // These always get queried so the Home page shows data even without Jira sync
-        const { data: userProfileData } = await supabase.from('profiles').select('id, full_name').eq('id', authUser.id).single();
         const userName = userProfileData?.full_name || 'Unassigned';
 
-        // Stories assigned to current user
-        const { data: nativeStories } = await supabase
-          .from('stories')
-          .select('id, story_key, title, name, status, state, priority, assignee_id, story_points, estimate_points, tags, description, updated_at, created_at, feature:features(id, name, display_id, project_id, project:projects(id, name, key))')
-          .eq('assignee_id', authUser.id)
-          .is('deleted_at', null)
-          .order('updated_at', { ascending: false })
-          .limit(200);
+        // ── Wave 2: Dependent lookups in parallel ──
+        const plannerRows = plannerAssigned || [];
+        const statusIds = [...new Set(plannerRows.map(r => r.status_id).filter(Boolean))];
+        const wsIds = [...new Set(plannerRows.map(r => r.workstream_id).filter(Boolean))];
+
+        const ninetyDaysAgo = new Date();
+        ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
+
+        const wave2Promises: Promise<any>[] = [
+          statusIds.length > 0 ? supabase.from('planner_statuses').select('id, name').in('id', statusIds) : Promise.resolve({ data: [] }),
+          wsIds.length > 0 ? supabase.from('planner_workstreams').select('id, name').in('id', wsIds) : Promise.resolve({ data: [] }),
+        ];
+
+        // Jira queries (only if user has Jira mapping)
+        if (jiraAccountIds.length > 0) {
+          wave2Promises.push(
+            supabase.from('ph_issues').select(SELECT_FIELDS).in('assignee_account_id', jiraAccountIds).order('jira_updated_at', { ascending: false }).limit(200),
+            supabase.from('ph_issues').select(SELECT_FIELDS).in('assignee_account_id', jiraAccountIds).gte('jira_updated_at', ninetyDaysAgo.toISOString()).order('jira_updated_at', { ascending: false }).limit(200),
+          );
+        }
+
+        const wave2Results = await Promise.all(wave2Promises);
+        const statuses = wave2Results[0]?.data || [];
+        const workstreams = wave2Results[1]?.data || [];
+        const jiraAssignedRaw = jiraAccountIds.length > 0 ? (wave2Results[2]?.data || []) : [];
+        const jiraWorkedRaw = jiraAccountIds.length > 0 ? (wave2Results[3]?.data || []) : [];
+
+        // Map planner tasks
+        const statusMap = new Map((statuses).map((s: any) => [s.id, s.name]));
+        const wsMap = new Map((workstreams).map((w: any) => [w.id, w.name]));
+        const plannerMapped = plannerRows.map(row => mapPlannerTaskToIssueRow({ ...row, assignee_name: userName, status_name: statusMap.get(row.status_id) || 'Backlog', workstream_name: wsMap.get(row.workstream_id) || null }));
+
+        // Map Jira issues
+        const jiraAssigned = jiraAssignedRaw.map((r: any) => ({ ...r, project_id: projectIdMap.get(r.project_key) || null }));
+        const jiraWorked = jiraWorkedRaw.map((r: any) => ({ ...r, project_id: projectIdMap.get(r.project_key) || null }));
+
+        // Map native items
         const nativeStoryRows = (nativeStories || []).map(s => {
-          const projName = s.feature?.project?.name || s.feature?.name || 'Backlog';
-          const projKey = s.feature?.project?.key || s.feature?.display_id || 'BKL';
+          const projName = (s as any).feature?.project?.name || (s as any).feature?.name || 'Backlog';
+          const projKey = (s as any).feature?.project?.key || (s as any).feature?.display_id || 'BKL';
           return mapStoryToIssueRow(s, userName, projName, projKey);
         });
-
-        // Features assigned to current user
-        const { data: nativeFeatures } = await supabase
-          .from('features')
-          .select('id, display_id, name, status, priority, assignee_id, estimate_points, labels, components, description, updated_at, created_at, project_id, project:projects(id, name, key), epic:epics(id, name, epic_key)')
-          .eq('assignee_id', authUser.id)
-          .is('deleted_at', null)
-          .order('updated_at', { ascending: false })
-          .limit(100);
         const nativeFeatureRows = (nativeFeatures || []).map(f => {
-          const projName = f.project?.name || 'Portfolio';
-          const projKey = f.project?.key || 'PRT';
+          const projName = (f as any).project?.name || 'Portfolio';
+          const projKey = (f as any).project?.key || 'PRT';
           return mapFeatureToIssueRow(f, userName, projName, projKey);
         });
-
-        // Epics assigned/owned by current user
-        const { data: nativeEpics } = await supabase
-          .from('epics')
-          .select('id, epic_key, name, status, state, assignee_id, owner_id, points_estimate, tags, description, updated_at, created_at')
-          .or(`assignee_id.eq.${authUser.id},owner_id.eq.${authUser.id}`)
-          .is('deleted_at', null)
-          .order('updated_at', { ascending: false })
-          .limit(100);
         const nativeEpicRows = (nativeEpics || []).map(e => mapEpicToIssueRow(e, userName));
-
-        // Incidents assigned to current user
-        const { data: nativeIncidents } = await supabase
-          .from('incidents')
-          .select('id, incident_key, title, status, severity, priority, assignee_id, reporter_name, description, updated_at, created_at, project_id, project:projects!incidents_project_id_fkey(id, name, key)')
-          .eq('assignee_id', authUser.id)
-          .is('deleted_at', null)
-          .order('updated_at', { ascending: false })
-          .limit(100);
         const nativeIncidentRows = (nativeIncidents || []).map(inc => {
-          const projName = inc.project?.name || 'Operations';
-          const projKey = inc.project?.key || 'OPS';
+          const projName = (inc as any).project?.name || 'Operations';
+          const projKey = (inc as any).project?.key || 'OPS';
           return mapIncidentToIssueRow(inc, userName, projName, projKey);
         });
 
         const allNativeItems = [...nativeStoryRows, ...nativeFeatureRows, ...nativeEpicRows, ...nativeIncidentRows];
 
-        // Deduplicate: Jira-synced issues take priority over native items (match by key)
-        const jiraKeys = new Set([...jiraAssigned, ...jiraWorked].map(r => r.issue_key));
+        // Deduplicate: Jira-synced issues take priority
+        const jiraKeys = new Set([...jiraAssigned, ...jiraWorked].map((r: any) => r.issue_key));
         const dedupedNativeItems = allNativeItems.filter(item => !jiraKeys.has(item.issue_key));
 
         setAssignedItems([...jiraAssigned, ...plannerMapped, ...dedupedNativeItems]);
-        const ninetyDaysAgo2 = new Date();
-        ninetyDaysAgo2.setDate(ninetyDaysAgo2.getDate() - 90);
-        const recentPlannerTasks = plannerMapped.filter(t => t.jira_updated_at && new Date(t.jira_updated_at) >= ninetyDaysAgo2);
-        const recentNativeItems = dedupedNativeItems.filter(item => item.jira_updated_at && new Date(item.jira_updated_at) >= ninetyDaysAgo2);
+        const recentPlannerTasks = plannerMapped.filter(t => t.jira_updated_at && new Date(t.jira_updated_at) >= ninetyDaysAgo);
+        const recentNativeItems = dedupedNativeItems.filter(item => item.jira_updated_at && new Date(item.jira_updated_at) >= ninetyDaysAgo);
         setWorkedOnItems([...jiraWorked, ...recentPlannerTasks, ...recentNativeItems]);
 
-        // Starred
-        const { data: stars } = await supabase.from('user_starred_items').select('item_id, item_type').eq('user_id', authUser.id);
+        // ── Starred items (parallel) ──
         if (stars && stars.length > 0) {
           const starredKeys = new Set(stars.map(s => s.item_id));
           setStarredItems(starredKeys as any);
           const itemIds = stars.map(s => s.item_id);
-          const { data: starredIssuesRaw } = await supabase.from('ph_issues').select(SELECT_FIELDS).in('issue_key', itemIds).order('jira_updated_at', { ascending: false });
-          const starredIssues = (starredIssuesRaw || []).map(r => ({ ...r, project_id: projectIdMap.get(r.project_key) || null }));
-          const { data: starredPlannerTasks } = await supabase.from('planner_tasks').select('task_key, title, priority, assignee_id, updated_at, created_at, status_id').in('task_key', itemIds).is('deleted_at', null);
+
+          const [{ data: starredIssuesRaw }, { data: starredPlannerTasks }] = await Promise.all([
+            supabase.from('ph_issues').select(SELECT_FIELDS).in('issue_key', itemIds).order('jira_updated_at', { ascending: false }),
+            supabase.from('planner_tasks').select('task_key, title, priority, assignee_id, updated_at, created_at, status_id').in('task_key', itemIds).is('deleted_at', null),
+          ]);
+
+          const starredIssues = (starredIssuesRaw || []).map((r: any) => ({ ...r, project_id: projectIdMap.get(r.project_key) || null }));
           let starredPlannerMapped: any[] = [];
           if (starredPlannerTasks && starredPlannerTasks.length > 0) {
             const stIds = [...new Set(starredPlannerTasks.map(r => r.status_id).filter(Boolean))];
@@ -562,11 +555,10 @@ export function useForYouData() {
             const stMap = new Map((sts || []).map(s => [s.id, s.name]));
             starredPlannerMapped = starredPlannerTasks.map(row => mapPlannerTaskToIssueRow({ ...row, assignee_name: 'Unassigned', status_name: stMap.get(row.status_id) || 'Backlog' }));
           }
-          // Also check native tables for starred items
           const starredNativeItems = allNativeItems.filter(item => starredKeys.has(item.issue_key));
-          const existingStarredKeys = new Set([...(starredIssues || []).map((r: any) => r.issue_key), ...starredPlannerMapped.map(r => r.issue_key)]);
+          const existingStarredKeys = new Set([...starredIssues.map((r: any) => r.issue_key), ...starredPlannerMapped.map(r => r.issue_key)]);
           const dedupedStarredNative = starredNativeItems.filter(item => !existingStarredKeys.has(item.issue_key));
-          setStarredData([...(starredIssues || []), ...starredPlannerMapped, ...dedupedStarredNative]);
+          setStarredData([...starredIssues, ...starredPlannerMapped, ...dedupedStarredNative]);
         }
       } catch (err) {
         console.error('Error fetching ForYou data:', err);
