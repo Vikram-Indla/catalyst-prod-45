@@ -2147,7 +2147,7 @@ export default function StoryDetailModal({
 
               {/* 2. DETAILS SECTION */}
               <div style={{ padding: 14, borderBottom: '1px solid #E4E7EC' }}>
-                <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#98A2B3', marginBottom: 12 }}>DETAILS</div>
+                <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#475467', marginBottom: 12 }}>DETAILS</div>
                 <div style={{ display: 'grid', gridTemplateColumns: '90px 1fr', gap: 0 }}>
                   <DetailRow label="Parent">
                     {issue && <ParentFieldPicker storyKey={issue.issue_key} parentKey={issue.parent_key} projectKey={issue.project_key} onParentChange={handleParentChange} />}
