@@ -3,7 +3,7 @@
  * Jira-style two-panel detail modal for work items.
  */
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
@@ -465,12 +465,213 @@ export default function StoryDetailModal({
   const [linkSearch, setLinkSearch] = useState('');
   const [linkType, setLinkType] = useState<string>('relates_to');
 
+  const [linkSearchResults, setLinkSearchResults] = useState<PhIssue[]>([]);
+  const [selectedLinkTarget, setSelectedLinkTarget] = useState<PhIssue | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   useEffect(() => {
     if (issue) {
       setLocalStatus(issue.status);
       setLocalPriority(issue.priority ?? 'Medium');
     }
   }, [issue?.id]);
+
+  /* ── MUTATIONS ─────────────────────────────── */
+
+  function resolveStatusCategory(status: string): string {
+    for (const [cat, statuses] of Object.entries(STATUS_CATEGORIES)) {
+      if (statuses.includes(status)) return cat;
+    }
+    return 'todo';
+  }
+
+  const updateStatusMutation = useMutation({
+    mutationFn: async (newStatus: string) => {
+      const { error } = await supabase.from('ph_issues')
+        .update({ status: newStatus, status_category: resolveStatusCategory(newStatus) })
+        .eq('id', itemId);
+      if (error) throw error;
+      await supabase.from('jira_write_back_queue').insert({
+        issue_id: itemId, issue_key: issue?.issue_key,
+        field: 'status', new_value: newStatus, status: 'approved',
+      });
+    },
+    onSuccess: () => {
+      toast.success('Status updated');
+      queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] });
+      queryClient.invalidateQueries({ queryKey: ['ph_issues'] });
+    },
+    onError: (err: any) => { console.error('Mutation failed:', err); toast.error(`Failed to update status: ${err.message}`); },
+  });
+
+  const updateFieldMutation = useMutation({
+    mutationFn: async ({ field, value, oldValue }: { field: string; value: string; oldValue: string }) => {
+      const { error } = await supabase.from('ph_issues').update({ [field]: value }).eq('id', itemId);
+      if (error) throw error;
+      await supabase.from('ph_activity_log').insert({
+        work_item_id: itemId, action: 'updated', field_name: field,
+        old_value: oldValue, new_value: value, user_id: user!.id,
+      });
+      await supabase.from('jira_write_back_queue').insert({
+        issue_id: itemId, issue_key: issue?.issue_key,
+        field, new_value: value, status: 'approved',
+      });
+    },
+    onSuccess: () => {
+      toast.success('Field updated');
+      queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] });
+      queryClient.invalidateQueries({ queryKey: ['ph-activity-log', itemId] });
+    },
+    onError: (err: any) => { console.error('Mutation failed:', err); toast.error(`Failed to update: ${err.message}`); },
+  });
+
+  const updateAssigneeMutation = useMutation({
+    mutationFn: async ({ userId, displayName }: { userId: string; displayName: string }) => {
+      const { error } = await supabase.from('ph_issues')
+        .update({ assignee_account_id: userId, assignee_display_name: displayName })
+        .eq('id', itemId);
+      if (error) throw error;
+      await supabase.from('ph_activity_log').insert({
+        work_item_id: itemId, action: 'updated', field_name: 'assignee',
+        old_value: issue?.assignee_display_name ?? 'Unassigned',
+        new_value: displayName, user_id: user!.id,
+      });
+    },
+    onSuccess: () => {
+      toast.success('Assignee updated');
+      queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] });
+    },
+    onError: (err: any) => { console.error('Mutation failed:', err); toast.error(`Failed to update assignee: ${err.message}`); },
+  });
+
+  const addCommentMutation = useMutation({
+    mutationFn: async (body: string) => {
+      if (!body.trim()) throw new Error('Comment cannot be empty');
+      const { error } = await supabase.from('ph_comments')
+        .insert({ work_item_id: itemId, body: body.trim(), author_id: user!.id });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      setNewComment('');
+      toast.success('Comment added');
+      queryClient.invalidateQueries({ queryKey: ['ph-comments', itemId] });
+    },
+    onError: (err: any) => { console.error('Mutation failed:', err); toast.error(`Failed to add comment: ${err.message}`); },
+  });
+
+  const deleteCommentMutation = useMutation({
+    mutationFn: async (commentId: string) => {
+      const { error } = await supabase.from('ph_comments').delete().eq('id', commentId).eq('author_id', user!.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success('Comment deleted');
+      queryClient.invalidateQueries({ queryKey: ['ph-comments', itemId] });
+    },
+    onError: (err: any) => { console.error('Mutation failed:', err); toast.error(`Failed to delete comment: ${err.message}`); },
+  });
+
+  const deleteIssueMutation = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase.from('ph_issues')
+        .update({ deleted_at: new Date().toISOString() })
+        .eq('id', itemId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success(`${issue?.issue_key} deleted`);
+      queryClient.invalidateQueries({ queryKey: ['ph_issues'] });
+      onClose();
+    },
+    onError: (err: any) => { console.error('Mutation failed:', err); toast.error(`Failed to delete: ${err.message}`); },
+  });
+
+  const addLinkMutation = useMutation({
+    mutationFn: async ({ targetId, linkTypeVal }: { targetId: string; linkTypeVal: string }) => {
+      const { error } = await supabase.from('ph_issue_links')
+        .insert({ source_id: itemId, target_id: targetId, link_type: linkTypeVal, created_by: user!.id });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      setShowLinkModal(false);
+      setSelectedLinkTarget(null);
+      setLinkSearch('');
+      toast.success('Issue linked');
+      queryClient.invalidateQueries({ queryKey: ['ph-issue-links', itemId] });
+    },
+    onError: (err: any) => { console.error('Mutation failed:', err); toast.error(`Failed to link: ${err.message}`); },
+  });
+
+  const uploadAttachmentMutation = useMutation({
+    mutationFn: async (file: File) => {
+      const ext = file.name.split('.').pop();
+      const path = `attachments/${itemId}/${Date.now()}.${ext}`;
+      const { error: uploadError } = await supabase.storage.from('attachments').upload(path, file);
+      if (uploadError) throw uploadError;
+      const { error: dbError } = await supabase.from('ph_attachments')
+        .insert({ work_item_id: itemId, file_name: file.name, file_size: file.size,
+                  mime_type: file.type, storage_path: path, uploaded_by: user!.id });
+      if (dbError) throw dbError;
+    },
+    onSuccess: () => {
+      toast.success('Attachment uploaded');
+      queryClient.invalidateQueries({ queryKey: ['ph-attachments', itemId] });
+    },
+    onError: (err: any) => { console.error('Mutation failed:', err); toast.error(`Failed to upload: ${err.message}`); },
+  });
+
+  const handleCommentSubmit = () => {
+    if (newComment.trim()) addCommentMutation.mutate(newComment);
+  };
+
+  const handleCommentKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+      e.preventDefault();
+      handleCommentSubmit();
+    }
+  };
+
+  const assignToMe = () => {
+    if (!currentProfile || !user) return;
+    updateAssigneeMutation.mutate({
+      userId: user.id,
+      displayName: currentProfile.full_name ?? user.email ?? 'Me',
+    });
+  };
+
+  const saveFigmaLink = useCallback(() => {
+    if (!/^https:\/\/(www\.)?figma\.com\//.test(figmaUrl)) {
+      setFigmaError('Only Figma URLs accepted (figma.com)');
+      return;
+    }
+    setFigmaError('');
+    supabase.from('ph_attachments').insert({
+      work_item_id: itemId, file_name: figmaUrl,
+      file_size: 0, mime_type: 'application/figma',
+      storage_path: figmaUrl, uploaded_by: user!.id,
+    }).then(({ error }) => {
+      if (error) { toast.error(`Failed to save Figma link: ${error.message}`); return; }
+      setFigmaUrl('');
+      setShowFigmaInput(false);
+      toast.success('Figma design link added');
+      queryClient.invalidateQueries({ queryKey: ['ph-attachments', itemId] });
+    });
+  }, [figmaUrl, itemId, user, queryClient]);
+
+  // Link search query
+  const { data: linkSearchData = [] } = useQuery({
+    queryKey: ['ph-link-search', linkSearch],
+    enabled: linkSearch.length >= 2 && showLinkModal,
+    queryFn: async () => {
+      const { data } = await supabase.from('ph_issues')
+        .select('id, issue_key, summary, issue_type, status, status_category')
+        .is('deleted_at', null)
+        .neq('id', itemId)
+        .or(`issue_key.ilike.%${linkSearch}%,summary.ilike.%${linkSearch}%`)
+        .limit(10);
+      return (data ?? []) as unknown as PhIssue[];
+    },
+  });
 
   /* ── DERIVED ───────────────────────────────── */
   const statusCategory = issue?.status_category ?? 'todo';
@@ -490,17 +691,6 @@ export default function StoryDetailModal({
     navigator.clipboard.writeText(url);
     toast(`Link copied to clipboard · ${issue?.issue_key ?? ''}`);
   }, [issue?.issue_key]);
-
-  const handleFigmaSubmit = useCallback(() => {
-    if (!/^https:\/\/(www\.)?figma\.com\//.test(figmaUrl)) {
-      setFigmaError('Only Figma URLs accepted (figma.com)');
-      return;
-    }
-    setFigmaError('');
-    setShowFigmaInput(false);
-    setFigmaUrl('');
-    toast('Figma design link added');
-  }, [figmaUrl]);
 
   if (!isOpen) return null;
 
