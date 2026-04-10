@@ -13,44 +13,40 @@ interface ProtectedRouteProps {
 }
 
 export function ProtectedRoute({ children, requireAdmin = false }: ProtectedRouteProps) {
-  // Bypass auth entirely when flag is on
-  if (AUTH_BYPASS) {
-    return <>{children}</>;
-  }
-
   const { user, loading, signOut } = useAuth();
 
-  // Check approval status from profiles
-  const { data: profile, isLoading: profileLoading, error } = useQuery({
+  const { data: profile, isLoading: profileLoading } = useQuery({
     queryKey: ['profile-approval-status', user?.id],
     queryFn: async () => {
       if (!user) return null;
-      
       const { data, error } = await supabase
         .from('profiles')
         .select('approval_status, role')
         .eq('id', user.id)
         .maybeSingle();
-      
       if (error) {
         console.error('Error fetching profile approval status:', error);
         return null;
       }
-      
       return data;
     },
-    enabled: !!user,
+    enabled: !!user && !AUTH_BYPASS,
     staleTime: 30000,
     retry: 1,
   });
 
-  // If user is not approved, sign them out
   useEffect(() => {
+    if (AUTH_BYPASS) return;
     if (!profileLoading && profile && profile.approval_status !== 'APPROVED') {
       console.log('[ProtectedRoute] User not approved, signing out:', profile.approval_status);
       signOut();
     }
   }, [profile, profileLoading, signOut]);
+
+  // Bypass auth entirely when flag is on
+  if (AUTH_BYPASS) {
+    return <>{children}</>;
+  }
 
   if (loading || profileLoading) {
     return (
