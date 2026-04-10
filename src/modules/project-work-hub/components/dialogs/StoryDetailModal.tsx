@@ -142,9 +142,12 @@ interface TmTestCase {
   id: string;
   case_key: string;
   title: string;
-  type: string;
+  type?: string;
   status: string;
-  assignee_id?: string | null;
+  assigned_to?: string | null;
+  created_at: string;
+  assignee?: Profile;
+}
   created_at: string;
   assignee?: Profile;
 }
@@ -469,10 +472,10 @@ export default function StoryDetailModal({
     queryFn: async () => {
       const { data } = await supabase
         .from('ph_comments')
-        .select('*, author:profiles!ph_comments_author_id_fkey(id, full_name, avatar_url, email)')
+        .select('id, work_item_id, body, author_id, created_at, updated_at')
         .eq('work_item_id', itemId)
         .order('created_at', { ascending: true });
-      return (data ?? []) as PhComment[];
+      return (data ?? []) as unknown as PhComment[];
     },
   });
 
@@ -506,7 +509,7 @@ export default function StoryDetailModal({
         .from('tm_test_cases')
         .select('id, case_key, title, status, assigned_to, created_at')
         .in('id', caseIds);
-      return (cases ?? []) as TmTestCase[];
+      return (cases ?? []) as unknown as TmTestCase[];
     },
   });
 
