@@ -467,6 +467,7 @@ export default function StoryDetailModal({
 
   const [selectedLinkTarget, setSelectedLinkTarget] = useState<PhIssue | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const descriptionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (issue) {
@@ -1088,7 +1089,48 @@ export default function StoryDetailModal({
                         {/* Description */}
                         <div style={{ ...detailLabel, alignSelf: 'start', paddingTop: 10 }}>Description</div>
                         <div style={{ ...detailValue, paddingTop: 8, paddingBottom: 8 }}>
-                          <div style={{ fontSize: 13, color: '#344054', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>{issue?.description_text || <span style={{ color: '#98A2B3', fontStyle: 'normal' }}>No description provided.</span>}</div>
+                          <div style={{ border: '1px solid #E4E7EC', borderRadius: 8, overflow: 'hidden', transition: 'all 150ms' }}>
+                            {/* Toolbar */}
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 2, padding: '6px 8px', borderBottom: '1px solid #E4E7EC', background: '#F7F8FA', flexWrap: 'wrap' }}>
+                              {[
+                                { cmd: 'bold', label: 'B', fw: 'bold', fs: 'normal', td: 'none' },
+                                { cmd: 'italic', label: 'I', fw: 'normal', fs: 'italic', td: 'none' },
+                                { cmd: 'underline', label: 'U', fw: 'normal', fs: 'normal', td: 'underline' },
+                                { cmd: 'strikeThrough', label: 'S', fw: 'normal', fs: 'normal', td: 'line-through' },
+                              ].map(btn => (
+                                <button key={btn.cmd}
+                                  onMouseDown={(e) => { e.preventDefault(); document.execCommand(btn.cmd); }}
+                                  style={{ width: 24, height: 24, borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, color: '#475467', background: 'transparent', border: 'none', cursor: 'pointer', fontWeight: btn.fw as any, fontStyle: btn.fs as any, textDecoration: btn.td }}
+                                >{btn.label}</button>
+                              ))}
+                              <div style={{ width: 1, height: 16, background: '#E4E7EC', margin: '0 4px' }} />
+                              <button onMouseDown={(e) => { e.preventDefault(); document.execCommand('insertUnorderedList'); }}
+                                style={{ width: 24, height: 24, borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, color: '#475467', background: 'transparent', border: 'none', cursor: 'pointer' }}>•</button>
+                              <button onMouseDown={(e) => { e.preventDefault(); document.execCommand('insertOrderedList'); }}
+                                style={{ width: 24, height: 24, borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, color: '#475467', background: 'transparent', border: 'none', cursor: 'pointer' }}>1.</button>
+                            </div>
+                            {/* Editable content */}
+                            <div
+                              ref={descriptionRef}
+                              contentEditable
+                              suppressContentEditableWarning
+                              onBlur={(e) => {
+                                const newText = e.currentTarget.innerText;
+                                if (newText !== (issue?.description_text ?? '')) {
+                                  updateFieldMutation.mutate({ field: 'description_text', value: newText, oldValue: issue?.description_text ?? '' });
+                                }
+                              }}
+                              data-placeholder="Add a description..."
+                              style={{ minHeight: 120, maxHeight: 260, overflowY: 'auto', padding: 12, fontSize: 13, color: '#101828', lineHeight: 1.6, outline: 'none', fontFamily: 'Inter, sans-serif' }}
+                              dangerouslySetInnerHTML={{ __html: issue?.description_text ?? '' }}
+                            />
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 10px', borderTop: '1px solid #F7F8FA' }}>
+                              <span style={{ fontSize: 10.5, color: '#98A2B3' }}>
+                                Tip: <kbd style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, background: '#F1F5F9', border: '1px solid #E4E7EC', borderRadius: 3, padding: '1px 4px' }}>Ctrl+B</kbd> bold
+                              </span>
+                              <span style={{ fontSize: 10.5, color: '#98A2B3' }}>Auto-saved</span>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     )}
@@ -1116,16 +1158,20 @@ export default function StoryDetailModal({
 
                     {/* TABS */}
                     <div style={{ display: 'flex', gap: 0, borderBottom: '1px solid #E4E7EC', marginBottom: 0 }}>
-                      {childTabDefs.map(tab => (
-                        <button key={tab.key} onClick={() => setActiveChildTab(tab.key)} style={{
-                          padding: '8px 14px', fontSize: 12, fontWeight: activeChildTab === tab.key ? 650 : 500,
-                          color: activeChildTab === tab.key ? '#2563EB' : '#98A2B3',
-                          background: 'none', border: 'none', borderBottom: activeChildTab === tab.key ? '2.5px solid #2563EB' : '2.5px solid transparent',
-                          cursor: 'pointer', marginBottom: -1, whiteSpace: 'nowrap',
-                        }}>
-                          {tab.label} ({tab.count})
-                        </button>
-                      ))}
+                      {childTabDefs.map(tab => {
+                        const isActive = activeChildTab === tab.key;
+                        return (
+                          <button key={tab.key} onClick={() => setActiveChildTab(tab.key)} style={{
+                            padding: '6px 12px', fontSize: 12.5, fontWeight: isActive ? 600 : 500,
+                            color: isActive ? '#0052CC' : '#98A2B3',
+                            background: 'none', border: 'none', borderBottom: isActive ? '2.5px solid #0052CC' : '2.5px solid transparent',
+                            cursor: 'pointer', marginBottom: -1, whiteSpace: 'nowrap', display: 'inline-flex', alignItems: 'center', gap: 5,
+                          }}>
+                            {tab.label}
+                            <span style={{ fontSize: 10, fontWeight: 700, padding: '1px 6px', borderRadius: 10, background: isActive ? '#DBEAFE' : '#F1F5F9', color: isActive ? '#0052CC' : '#475467' }}>{tab.count}</span>
+                          </button>
+                        );
+                      })}
                     </div>
 
                     {/* TABLE */}
@@ -1179,16 +1225,19 @@ export default function StoryDetailModal({
                     <div style={{ fontFamily: 'Sora, sans-serif', fontSize: 14, fontWeight: 700, color: '#101828', marginBottom: 12 }}>Activity</div>
                     {/* TABS */}
                     <div style={{ display: 'flex', gap: 0, borderBottom: '1px solid #E4E7EC', marginBottom: 16 }}>
-                      {(['comments', 'history'] as ActivityTab[]).map(tab => (
-                        <button key={tab} onClick={() => setActiveActivityTab(tab)} style={{
-                          padding: '8px 14px', fontSize: 12, fontWeight: activeActivityTab === tab ? 650 : 500,
-                          color: activeActivityTab === tab ? '#2563EB' : '#98A2B3',
-                          background: 'none', border: 'none', borderBottom: activeActivityTab === tab ? '2.5px solid #2563EB' : '2.5px solid transparent',
-                          cursor: 'pointer', marginBottom: -1, textTransform: 'capitalize',
-                        }}>
-                          {tab === 'comments' ? <><MessageSquare size={12} style={{ marginRight: 4, verticalAlign: 'middle' }} />Comments</> : <><Clock size={12} style={{ marginRight: 4, verticalAlign: 'middle' }} />History</>}
-                        </button>
-                      ))}
+                      {(['comments', 'history'] as ActivityTab[]).map(tab => {
+                        const isActive = activeActivityTab === tab;
+                        return (
+                          <button key={tab} onClick={() => setActiveActivityTab(tab)} style={{
+                            padding: '6px 12px', fontSize: 12.5, fontWeight: isActive ? 600 : 500,
+                            color: isActive ? '#0052CC' : '#98A2B3',
+                            background: 'none', border: 'none', borderBottom: isActive ? '2.5px solid #0052CC' : '2.5px solid transparent',
+                            cursor: 'pointer', marginBottom: -1, textTransform: 'capitalize', display: 'inline-flex', alignItems: 'center', gap: 4,
+                          }}>
+                            {tab === 'comments' ? <><MessageSquare size={12} />Comments</> : <><Clock size={12} />History</>}
+                          </button>
+                        );
+                      })}
                     </div>
 
                     {/* COMMENTS TAB */}
