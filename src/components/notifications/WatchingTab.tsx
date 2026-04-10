@@ -193,7 +193,8 @@ export default function WatchingTab() {
           Nothing watched yet
         </span>
         <span style={{ fontSize: 12, color: "#CBD5E1", fontFamily: "Inter, sans-serif" }}>
-          Use the 👁 icon on any issue to watch it
+          Tap 👁 on any issue to start watching it
+        </span>
         </span>
       </div>
     );
