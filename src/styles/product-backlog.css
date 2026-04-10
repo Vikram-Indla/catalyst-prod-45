@@ -380,7 +380,7 @@
   display: flex;
   align-items: center;
   gap: 16px;
-  padding: 6px 12px;
+  padding: 6px 32px;
   background: var(--cp-bg-surface);
   border-bottom: 0.75px solid var(--cp-border-subtle);
 }
