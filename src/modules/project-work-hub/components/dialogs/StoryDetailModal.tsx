@@ -500,7 +500,7 @@ export default function StoryDetailModal({
       queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] });
       queryClient.invalidateQueries({ queryKey: ['ph_issues'] });
     },
-    onError: (err: any) => { console.error('Mutation failed:', err); toast.error(`Failed to update status: ${err.message}`); },
+    onError: (_err: Error) => { console.error('Mutation failed:', err); toast.error("Failed to update status"); },
   });
 
   const updateFieldMutation = useMutation({
@@ -521,7 +521,7 @@ export default function StoryDetailModal({
       queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] });
       queryClient.invalidateQueries({ queryKey: ['ph-activity-log', itemId] });
     },
-    onError: (err: any) => { console.error('Mutation failed:', err); toast.error(`Failed to update: ${err.message}`); },
+    onError: (_err: Error) => { console.error('Mutation failed:', err); toast.error(`Failed to update: ${err.message}`); },
   });
 
   const updateAssigneeMutation = useMutation({
@@ -540,7 +540,7 @@ export default function StoryDetailModal({
       toast.success('Assignee updated');
       queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] });
     },
-    onError: (err: any) => { console.error('Mutation failed:', err); toast.error(`Failed to update assignee: ${err.message}`); },
+    onError: (_err: Error) => { console.error('Mutation failed:', err); toast.error(`Failed to update assignee: ${err.message}`); },
   });
 
   const addCommentMutation = useMutation({
@@ -555,7 +555,7 @@ export default function StoryDetailModal({
       toast.success('Comment added');
       queryClient.invalidateQueries({ queryKey: ['ph-comments', itemId] });
     },
-    onError: (err: any) => { console.error('Mutation failed:', err); toast.error(`Failed to add comment: ${err.message}`); },
+    onError: (_err: Error) => { console.error('Mutation failed:', err); toast.error(`Failed to add comment: ${err.message}`); },
   });
 
   const deleteCommentMutation = useMutation({
@@ -567,7 +567,7 @@ export default function StoryDetailModal({
       toast.success('Comment deleted');
       queryClient.invalidateQueries({ queryKey: ['ph-comments', itemId] });
     },
-    onError: (err: any) => { console.error('Mutation failed:', err); toast.error(`Failed to delete comment: ${err.message}`); },
+    onError: (_err: Error) => { console.error('Mutation failed:', err); toast.error(`Failed to delete comment: ${err.message}`); },
   });
 
   const deleteIssueMutation = useMutation({
@@ -582,7 +582,7 @@ export default function StoryDetailModal({
       queryClient.invalidateQueries({ queryKey: ['ph_issues'] });
       onClose();
     },
-    onError: (err: any) => { console.error('Mutation failed:', err); toast.error(`Failed to delete: ${err.message}`); },
+    onError: (_err: Error) => { console.error('Mutation failed:', err); toast.error(`Failed to delete: ${err.message}`); },
   });
 
   const addLinkMutation = useMutation({
@@ -598,7 +598,7 @@ export default function StoryDetailModal({
       toast.success('Issue linked');
       queryClient.invalidateQueries({ queryKey: ['ph-issue-links', itemId] });
     },
-    onError: (err: any) => { console.error('Mutation failed:', err); toast.error(`Failed to link: ${err.message}`); },
+    onError: (_err: Error) => { console.error('Mutation failed:', err); toast.error(`Failed to link: ${err.message}`); },
   });
 
   const uploadAttachmentMutation = useMutation({
@@ -616,7 +616,7 @@ export default function StoryDetailModal({
       toast.success('Attachment uploaded');
       queryClient.invalidateQueries({ queryKey: ['ph-attachments', itemId] });
     },
-    onError: (err: any) => { console.error('Mutation failed:', err); toast.error(`Failed to upload: ${err.message}`); },
+    onError: (_err: Error) => { console.error('Mutation failed:', err); toast.error(`Failed to upload: ${err.message}`); },
   });
 
   const handleCommentSubmit = () => {
