@@ -874,7 +874,7 @@ export default function StoryDetailModal({
                     <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 4L5 7L8 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
                   </button>
                   {showStatusDropdown && (
-                    <div style={{ position: 'absolute', left: 0, top: '100%', marginTop: 4, background: '#FFF', border: '1px solid #DFE1E6', borderRadius: 4, boxShadow: '0 4px 16px rgba(9,30,66,0.18)', padding: '8px 0', zIndex: 100, minWidth: 200, maxHeight: 300, overflowY: 'auto' }}>
+                    <div onKeyDown={e => { if (e.key === 'Escape') setShowStatusDropdown(false); }} style={{ position: 'absolute', left: 0, top: '100%', marginTop: 4, background: '#FFF', border: '1px solid #DFE1E6', borderRadius: 4, boxShadow: '0 4px 16px rgba(9,30,66,0.18)', padding: '8px 0', zIndex: 100, minWidth: 200, maxHeight: 300, overflowY: 'auto', animation: 'sdm-slide-down 0.15s ease-out' }}>
                       {STATUS_OPTION_GROUPS.map(group => (
                         <div key={group.category}>
                           <div style={{ padding: '6px 14px', fontSize: 10, fontWeight: 700, color: '#5E6C84', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{group.groupLabel}</div>
