@@ -1035,6 +1035,20 @@ export default function StoryDetailModal({
           </div>
         </div>
       )}
+
+      {/* AI Regen Confirm */}
+      {showAiRegenConfirm && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 10000, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(9,30,66,0.4)' }} onClick={() => setShowAiRegenConfirm(false)}>
+          <div onClick={e => e.stopPropagation()} style={{ background: '#FFF', borderRadius: 8, padding: 28, width: 400, maxWidth: '95vw', animation: 'sdm-confirm-in 200ms ease-out' }}>
+            <h3 style={{ fontFamily: "'Sora', sans-serif", fontSize: 16, fontWeight: 700, color: '#172B4D', marginBottom: 8 }}>Regenerate AI output?</h3>
+            <p style={{ fontSize: 13, color: '#5E6C84', lineHeight: 1.6, marginBottom: 20 }}>Your edits will be discarded. This cannot be undone.</p>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
+              <button onClick={() => setShowAiRegenConfirm(false)} style={{ padding: '7px 16px', borderRadius: 4, background: '#FFF', border: '1px solid #DFE1E6', fontSize: 13, fontWeight: 500, cursor: 'pointer', color: '#5E6C84' }}>Cancel</button>
+              <button onClick={() => doAiGenerate()} style={{ padding: '7px 16px', borderRadius: 4, background: '#2563EB', color: '#FFF', border: 'none', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>Regenerate</button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
