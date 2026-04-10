@@ -202,6 +202,7 @@ export default function StoryDetailModal({
   const [showAddMenu, setShowAddMenu] = useState(false);
   const [showAiMenu, setShowAiMenu] = useState(false);
   const [showDotsMenu, setShowDotsMenu] = useState(false);
+  const [addParentBreadcrumbOpen, setAddParentBreadcrumbOpen] = useState(false);
   const [acceptanceCriteria, setAcceptanceCriteria] = useState('');
   const [titleFocused, setTitleFocused] = useState(false);
   const [commentSummary, setCommentSummary] = useState<string | null>(null);
