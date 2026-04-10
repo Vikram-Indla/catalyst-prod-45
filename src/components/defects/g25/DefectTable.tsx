@@ -7,6 +7,7 @@ import { StatusBadge } from '@/components/ui/StatusBadge';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 import { Defect } from '@/types/defects';
 import { cn } from '@/lib/utils';
+import { WorkItemStarButton } from '@/components/shared/WorkItemStarButton';
 
 // ── Bug type icon (Jira canonical red rounded-square with dot) ──
 function BugTypeIcon() {
