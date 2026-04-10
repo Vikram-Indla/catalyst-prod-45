@@ -500,7 +500,7 @@ export default function StoryDetailModal({
       queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] });
       queryClient.invalidateQueries({ queryKey: ['ph_issues'] });
     },
-    onError: (_err: Error) => { console.error('Mutation failed:', err); toast.error("Failed to update status"); },
+    onError: (err: Error) => { console.error('Mutation failed:', err); toast.error('Failed to update status'); },
   });
 
   const updateFieldMutation = useMutation({
