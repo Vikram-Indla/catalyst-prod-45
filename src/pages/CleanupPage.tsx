@@ -877,7 +877,7 @@ export default function CleanupPage() {
               )}
             </div>
           ) : (
-            /* ═══ LIST VIEW ═══ */
+            /* ═══ LIST VIEW — ForYou-inherited <table> structure ═══ */
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
               {/* Toolbar */}
               <div style={{
@@ -943,30 +943,8 @@ export default function CleanupPage() {
                 </Button>
               </div>
 
-              {/* Table Header */}
-              <div style={{
-                display: 'flex', alignItems: 'center', height: 32,
-                background: '#F8FAFC', borderBottom: '1px solid #E2E8F0',
-                padding: '0 12px', flexShrink: 0,
-                fontSize: 10, fontWeight: 500, textTransform: 'uppercase',
-                letterSpacing: '0.06em', color: '#94A3B8',
-                fontFamily: 'Inter, sans-serif',
-              }}>
-                <div style={{ width: COL.check, flexShrink: 0 }} />
-                <div style={{ width: COL.key, flexShrink: 0 }}>KEY</div>
-                <div style={{ flex: 1, minWidth: 0 }}>SUMMARY</div>
-                <div style={{ width: COL.parent, flexShrink: 0 }}>PARENT</div>
-                <div style={{ width: COL.project, flexShrink: 0 }}>PROJECT</div>
-                <div style={{ width: COL.reporter, flexShrink: 0 }}>REPORTER</div>
-                <div style={{ width: COL.assignee, flexShrink: 0 }}>ASSIGNEE</div>
-                <div style={{ width: COL.status, flexShrink: 0 }}>STATUS</div>
-                <div style={{ width: COL.days, flexShrink: 0, textAlign: 'right' }}>DAYS</div>
-                <div style={{ width: COL.category, flexShrink: 0, paddingLeft: 8 }}>CATEGORY</div>
-                <div style={{ width: COL.detail, flexShrink: 0 }} />
-              </div>
-
-              {/* Table Body */}
-              <div style={{ flex: 1, overflowY: 'auto', paddingBottom: selected.size > 0 ? 70 : 0 }}>
+              {/* Table */}
+              <div style={{ flex: 1, overflowY: 'auto', overflowX: 'auto', paddingBottom: selected.size > 0 ? 70 : 0 }}>
                 {isLoading ? (
                   <div style={{ display: 'flex', justifyContent: 'center', padding: 40 }}>
                     <div style={{
@@ -992,156 +970,221 @@ export default function CleanupPage() {
                     )}
                   </div>
                 ) : (
-                  listFilteredItems.map((item, idx) => {
-                    const cat = CATEGORIES.find(c => c.key === item.categoryKey);
-                    const isReporter = cat?.isReporterOnus ?? false;
-                    const isSelected = selected.has(item.id);
-
-                    return (
-                      <div
-                        key={item.id}
-                        style={{
-                          display: 'flex', alignItems: 'center', height: 40, maxHeight: 40,
-                          padding: '0 12px', borderBottom: '0.75px solid #F1F5F9',
-                          background: isSelected ? 'rgba(37,99,235,0.04)' : '#ffffff',
-                          borderLeft: isSelected ? '2px solid #2563EB' : '2px solid transparent',
-                          transition: 'background 100ms',
-                          overflow: 'hidden',
-                          fontFamily: 'Inter, sans-serif', fontSize: 13,
-                        }}
-                        onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = '#F8FAFC'; }}
-                        onMouseLeave={e => { if (!isSelected) e.currentTarget.style.background = '#ffffff'; }}
-                      >
-                        {/* Checkbox */}
-                        <div style={{ width: COL.check, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                          {isReporter ? (
-                            <span style={{ color: '#CBD5E1', fontSize: 13 }}>{'\u2014'}</span>
-                          ) : (
-                            <Checkbox
-                              checked={isSelected}
-                              onCheckedChange={() => toggleItem(item.id)}
-                              style={{ width: 16, height: 16 }}
-                            />
-                          )}
-                        </div>
-
-                        {/* Key */}
-                        <div style={{
-                          width: COL.key, flexShrink: 0,
-                          fontFamily: 'JetBrains Mono, monospace', fontSize: 12, fontWeight: 500, color: '#2563EB',
-                          overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                        }}>
-                          {item.issue_key}
-                        </div>
-
-                        {/* Summary */}
-                        <div style={{
-                          flex: 1, minWidth: 0, color: '#0F172A',
-                          overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                          paddingRight: 8,
-                        }}>
-                          {item.title}
-                        </div>
-
-                        {/* Parent */}
-                        <div style={{
-                          width: COL.parent, flexShrink: 0,
-                          fontFamily: item.parent_key ? 'JetBrains Mono, monospace' : 'Inter, sans-serif',
-                          fontSize: item.parent_key ? 11 : 12,
-                          color: item.parent_key ? '#64748B' : '#CBD5E1',
-                          overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                        }}>
-                          {item.parent_key || '\u2014'}
-                        </div>
-
-                        {/* Project */}
-                        <div style={{
-                          width: COL.project, flexShrink: 0,
-                          fontSize: 12, fontWeight: 500, color: '#475569',
-                          overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                        }}>
-                          {item.project_key || '\u2014'}
-                        </div>
-
-                        {/* Reporter */}
-                        <div style={{
-                          width: COL.reporter, flexShrink: 0, display: 'flex', alignItems: 'center', gap: 6,
-                          overflow: 'hidden',
-                        }}>
-                          <div style={{
-                            width: 20, height: 20, borderRadius: '50%', background: '#E2E8F0',
-                            display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+                  <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed' }}>
+                    <colgroup>
+                      <col style={{ width: 36 }} />
+                      <col style={{ width: 120 }} />
+                      <col />
+                      <col style={{ width: 180 }} />
+                      <col style={{ width: 160 }} />
+                      <col style={{ width: 150 }} />
+                      <col style={{ width: 150 }} />
+                      <col style={{ width: 130 }} />
+                      <col style={{ width: 60 }} />
+                      <col style={{ width: 110 }} />
+                      <col style={{ width: 32 }} />
+                    </colgroup>
+                    <thead>
+                      <tr>
+                        {[
+                          { label: '', width: 36 },
+                          { label: 'KEY', width: 120 },
+                          { label: 'SUMMARY' },
+                          { label: 'PARENT', width: 180 },
+                          { label: 'PROJECT', width: 160 },
+                          { label: 'REPORTER', width: 150 },
+                          { label: 'ASSIGNEE', width: 150 },
+                          { label: 'STATUS', width: 130, align: 'center' as const },
+                          { label: 'DAYS', width: 60, align: 'right' as const },
+                          { label: 'CATEGORY', width: 110 },
+                          { label: '', width: 32 },
+                        ].map((col, i) => (
+                          <th key={i} style={{
+                            height: 44, padding: '10px 12px',
+                            background: '#F8FAFC', borderBottom: '1px solid #E2E8F0',
+                            fontSize: 11, fontWeight: 700, color: '#94A3B8',
+                            textTransform: 'uppercase', letterSpacing: '0.06em',
+                            textAlign: (col.align || 'left') as any, whiteSpace: 'nowrap',
+                            verticalAlign: 'middle', fontFamily: 'Inter, sans-serif',
                           }}>
-                            <span style={{ fontSize: 10, fontWeight: 600, color: '#64748B', fontFamily: 'Inter, sans-serif' }}>
-                              {initials(item.reporter_name || '??')}
-                            </span>
-                          </div>
-                          <span style={{
-                            fontSize: 12, color: '#475569',
-                            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                          }}>
-                            {item.reporter_name || 'Unknown'}
-                          </span>
-                        </div>
+                            {col.label}
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {listFilteredItems.map((item, idx) => {
+                        const cat = CATEGORIES.find(c => c.key === item.categoryKey);
+                        const isReporter = cat?.isReporterOnus ?? false;
+                        const isSelected = selected.has(item.id);
+                        const projectName = projectNameMap[item.project_key] || item.project_key || '\u2014';
+                        const parentTitle = item.parent_key ? (parentTitleMap[item.parent_key] || item.parent_key) : null;
 
-                        {/* Assignee */}
-                        <div style={{
-                          width: COL.assignee, flexShrink: 0, display: 'flex', alignItems: 'center', gap: 6,
-                          overflow: 'hidden',
-                        }}>
-                          <div style={{
-                            width: 20, height: 20, borderRadius: '50%', background: '#E2E8F0',
-                            display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-                          }}>
-                            <span style={{ fontSize: 10, fontWeight: 600, color: '#64748B', fontFamily: 'Inter, sans-serif' }}>
-                              {initials(item.reporter_name || '??')}
-                            </span>
-                          </div>
-                          <span style={{
-                            fontSize: 12, color: '#475569',
-                            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                          }}>
-                            {item.reporter_name || 'Unknown'}
-                          </span>
-                        </div>
-
-                        {/* Status */}
-                        <div style={{ width: COL.status, flexShrink: 0 }}>
-                          <StatusLozenge value={item.status} />
-                        </div>
-
-                        {/* Days */}
-                        <div style={{
-                          width: COL.days, flexShrink: 0, textAlign: 'right',
-                          fontFamily: 'JetBrains Mono, monospace', fontSize: 12, fontWeight: 600,
-                          color: daysColor(item.days_stale),
-                        }}>
-                          {item.days_stale}d
-                        </div>
-
-                        {/* Category */}
-                        <div style={{ width: COL.category, flexShrink: 0, paddingLeft: 8 }}>
-                          <span style={{
-                            fontSize: 11, color: '#64748B', background: '#F1F5F9',
-                            border: '1px solid #E2E8F0', padding: '2px 8px', borderRadius: 20,
-                            whiteSpace: 'nowrap',
-                          }}>
-                            {CAT_SHORT[item.categoryKey] || 'Other'}
-                          </span>
-                        </div>
-
-                        {/* Detail chevron */}
-                        <div style={{ width: COL.detail, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                          <button
+                        return (
+                          <tr
+                            key={item.id}
                             onClick={() => handleOpenDetailList(item, idx)}
-                            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, display: 'flex' }}
+                            style={{
+                              height: 44, borderBottom: '1px solid #F1F5F9', cursor: 'pointer',
+                              background: isSelected ? 'rgba(37,99,235,0.04)' : '#ffffff',
+                              borderLeft: isSelected ? '2px solid #2563EB' : '2px solid transparent',
+                              transition: 'background .1s',
+                            }}
+                            onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = '#F8FAFC'; }}
+                            onMouseLeave={e => { if (!isSelected) e.currentTarget.style.background = '#ffffff'; }}
                           >
-                            <ChevronRight size={14} color="#CBD5E1" />
-                          </button>
-                        </div>
-                      </div>
-                    );
-                  })
+                            {/* Checkbox */}
+                            <td style={{ padding: '8px 12px', width: 36 }} onClick={e => e.stopPropagation()}>
+                              {isReporter ? (
+                                <span style={{ color: '#CBD5E1', fontSize: 13 }}>{'\u2014'}</span>
+                              ) : (
+                                <Checkbox
+                                  checked={isSelected}
+                                  onCheckedChange={() => toggleItem(item.id)}
+                                  style={{ width: 16, height: 16 }}
+                                />
+                              )}
+                            </td>
+
+                            {/* Key + Type icon */}
+                            <td style={{ padding: '8px 12px', width: 120 }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                                <JiraIssueTypeIcon issueType={item.issue_type} size={16} />
+                                <span style={{
+                                  fontFamily: "'JetBrains Mono', monospace", fontSize: 12,
+                                  fontWeight: 600, color: '#2563EB',
+                                }}>
+                                  {item.issue_key}
+                                </span>
+                              </div>
+                            </td>
+
+                            {/* Summary */}
+                            <td style={{
+                              padding: '8px 12px', fontSize: 13, fontWeight: 500,
+                              color: '#0F172A', maxWidth: 0,
+                              overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                            }}>
+                              {item.title}
+                            </td>
+
+                            {/* Parent — full title */}
+                            <td style={{ padding: '8px 12px', width: 180 }} title={parentTitle || undefined}>
+                              {parentTitle ? (
+                                <span style={{
+                                  fontSize: 13, fontWeight: 500, color: '#475569',
+                                  overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                                  display: 'block',
+                                }}>
+                                  {parentTitle}
+                                </span>
+                              ) : (
+                                <span style={{ fontSize: 13, color: '#CBD5E1' }}>{'\u2014'}</span>
+                              )}
+                            </td>
+
+                            {/* Project — full name */}
+                            <td style={{ padding: '8px 12px', width: 160 }} title={projectName}>
+                              <span style={{
+                                fontSize: 13, fontWeight: 500, color: '#475569',
+                                overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                                display: 'block',
+                              }}>
+                                {projectName}
+                              </span>
+                            </td>
+
+                            {/* Reporter */}
+                            <td style={{ padding: '8px 12px', width: 150 }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                                {(() => {
+                                  const name = item.reporter_name || 'Unknown';
+                                  const ini = initials(name);
+                                  const clr = ['#2563EB', '#0D9488', '#0284C7', '#DC2626', '#DB2777'][ini.charCodeAt(0) % 5];
+                                  return (
+                                    <>
+                                      <div style={{
+                                        width: 24, height: 24, borderRadius: '50%', background: clr,
+                                        color: '#ffffff', display: 'flex', alignItems: 'center',
+                                        justifyContent: 'center', fontSize: 10, fontWeight: 700, flexShrink: 0,
+                                      }}>
+                                        {ini}
+                                      </div>
+                                      <span style={{
+                                        fontSize: 13, fontWeight: 500, color: '#475569',
+                                        overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                                      }}>
+                                        {name}
+                                      </span>
+                                    </>
+                                  );
+                                })()}
+                              </div>
+                            </td>
+
+                            {/* Assignee */}
+                            <td style={{ padding: '8px 12px', width: 150 }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                                {(() => {
+                                  const name = item.reporter_name || 'Unknown';
+                                  const ini = initials(name);
+                                  const clr = ['#2563EB', '#0D9488', '#0284C7', '#DC2626', '#DB2777'][ini.charCodeAt(0) % 5];
+                                  return (
+                                    <>
+                                      <div style={{
+                                        width: 24, height: 24, borderRadius: '50%', background: clr,
+                                        color: '#ffffff', display: 'flex', alignItems: 'center',
+                                        justifyContent: 'center', fontSize: 10, fontWeight: 700, flexShrink: 0,
+                                      }}>
+                                        {ini}
+                                      </div>
+                                      <span style={{
+                                        fontSize: 13, fontWeight: 500, color: '#475569',
+                                        overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                                      }}>
+                                        {name}
+                                      </span>
+                                    </>
+                                  );
+                                })()}
+                              </div>
+                            </td>
+
+                            {/* Status */}
+                            <td style={{ padding: '8px 8px', width: 130, textAlign: 'center' }}>
+                              <StatusLozenge value={item.status} />
+                            </td>
+
+                            {/* Days */}
+                            <td style={{
+                              padding: '8px 12px', width: 60, textAlign: 'right',
+                              fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600,
+                              color: daysColor(item.days_stale),
+                            }}>
+                              {item.days_stale}d
+                            </td>
+
+                            {/* Category */}
+                            <td style={{ padding: '8px 8px', width: 110 }}>
+                              <span style={{
+                                display: 'inline-block', fontSize: 11, color: '#64748B',
+                                background: '#F1F5F9', border: '1px solid #E2E8F0',
+                                padding: '2px 8px', borderRadius: 20, whiteSpace: 'nowrap',
+                                maxWidth: 100, overflow: 'hidden', textOverflow: 'ellipsis',
+                              }}>
+                                {CAT_SHORT[item.categoryKey] || 'Other'}
+                              </span>
+                            </td>
+
+                            {/* Detail chevron */}
+                            <td style={{ padding: '4px', width: 32, textAlign: 'center' }}>
+                              <ChevronRight size={14} color="#CBD5E1" />
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
                 )}
               </div>
             </div>
