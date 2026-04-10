@@ -154,17 +154,17 @@ export function DefectTable({ defects, selectedIds, onSelectionChange, onDelete,
 
   return (
     <div style={{ border: '1px solid rgba(11, 18, 14, 0.14)', borderRadius: 8, overflow: 'hidden', background: '#FFFFFF' }}>
-      <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed' }}>
+      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
         <colgroup>
           <col style={{ width: 40 }} />
           <col style={{ width: 32 }} />
           <col style={{ width: 32 }} />
-          <col style={{ width: 120 }} />
+          <col style={{ width: 140 }} />
           <col />
           {cols.has('SEVERITY') && <col style={{ width: 100 }} />}
           {cols.has('PRIORITY') && <col style={{ width: 100 }} />}
-          {cols.has('STATUS') && <col style={{ width: 120 }} />}
-          {cols.has('ASSIGNEE') && <col style={{ width: 160 }} />}
+          {cols.has('STATUS') && <col style={{ width: 130 }} />}
+          {cols.has('ASSIGNEE') && <col style={{ width: 170 }} />}
           {cols.has('AGE') && <col style={{ width: 90 }} />}
           <col style={{ width: 40 }} />
         </colgroup>
