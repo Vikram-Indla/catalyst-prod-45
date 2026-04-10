@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ChevronRight, Check, Loader2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import AIRecapSkeleton from './AIRecapSkeleton';
 
 /* ═══════════════════════════════════════
    AI Recap Tab V2 — Live Data

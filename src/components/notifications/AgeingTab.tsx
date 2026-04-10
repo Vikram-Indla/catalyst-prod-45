@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Loader2, ChevronDown, ChevronRight } from 'lucide-react';
+import AgeingSkeleton from './AgeingSkeleton';
 
 /* ═══════════════════════════════════════
    Ageing Tab — Grouped by Time Period
