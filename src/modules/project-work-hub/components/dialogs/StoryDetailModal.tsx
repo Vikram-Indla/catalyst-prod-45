@@ -148,9 +148,6 @@ interface TmTestCase {
   created_at: string;
   assignee?: Profile;
 }
-  created_at: string;
-  assignee?: Profile;
-}
 
 interface TmTestCaseLink {
   test_case_id: string;
