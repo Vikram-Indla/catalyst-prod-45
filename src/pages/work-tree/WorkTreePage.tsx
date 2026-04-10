@@ -14,7 +14,7 @@ import { WorkTreeLegend } from './components/WorkTreeLegend';
 import { useWorkTreeData } from './hooks/useWorkTreeData';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { EpicDrawer } from '@/components/items/epics/EpicDrawer';
+import { EpicDetailModal } from '@/components/items/epics/EpicDetailModal';
 import { FeatureDetailsPanel } from '@/components/items/features/FeatureDetailsPanel';
 import { ProgramPageLayout } from '@/components/program/ProgramPageLayout';
 import type { Feature } from '@/types/feature.types';
@@ -279,8 +279,8 @@ export function WorkTreePage() {
           onClose={() => setLegendOpen(false)}
         />
 
-        {/* Epic Drawer */}
-        <EpicDrawer
+        {/* Epic Detail Modal */}
+        <EpicDetailModal
           isOpen={!!selectedEpicId}
           onClose={() => setSelectedEpicId(null)}
           epicId={selectedEpicId}

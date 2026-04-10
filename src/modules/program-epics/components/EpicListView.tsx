@@ -25,7 +25,7 @@ import {
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
-import { EpicDrawer } from '@/components/items/epics/EpicDrawer';
+import { EpicDetailModal } from '@/components/items/epics/EpicDetailModal';
 
 interface Epic {
   id: string;
@@ -473,8 +473,8 @@ export function EpicListView({ programId }: EpicListViewProps) {
         </div>
       </div>
 
-      {/* Epic Drawer */}
-      <EpicDrawer 
+      {/* Epic Detail Modal */}
+      <EpicDetailModal 
         epicId={selectedEpic?.id || null}
         isOpen={!!selectedEpic}
         onClose={() => setSelectedEpic(null)} 
