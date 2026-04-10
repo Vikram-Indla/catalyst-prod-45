@@ -195,7 +195,6 @@ export default function WatchingTab() {
         <span style={{ fontSize: 12, color: "#CBD5E1", fontFamily: "Inter, sans-serif" }}>
           Tap 👁 on any issue to start watching it
         </span>
-        </span>
       </div>
     );
   }
