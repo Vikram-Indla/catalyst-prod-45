@@ -1062,7 +1062,7 @@ function EditableAssignee({ issueId, projectId, currentAssigneeId, currentAssign
   const { data: members = [] } = useQuery({
     queryKey: ['projectMembers-edit', projectId],
     queryFn: async () => {
-      const { data, error } = await supabase.from('ph_project_members').select('user_id, role').eq('project_id', projectId);
+      const { data, error } = await supabase.from('project_members').select('user_id, role').eq('project_id', projectId);
       if (error) throw error;
       if (!data?.length) return [];
       const userIds = data.map(d => d.user_id);
