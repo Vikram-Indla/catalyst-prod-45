@@ -180,24 +180,33 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
         </div>
       ) : (
         <div style={{ minWidth: compact ? 400 : 1440 }}>
-          {/* Column headers */}
+          {/* Column headers — draggable */}
           <div className="flex items-center h-[32px] px-2 border-b" style={{ borderColor: tk.border, background: tk.tableHeaderBg }}>
             <div style={{ width: 38, flexShrink: 0 }} />
             {!compact && <div style={{ width: 26, flexShrink: 0 }} />}
             <div style={{ width: compact ? 20 : 38, flexShrink: 0 }} />
-            <div style={{ width: compact ? 80 : 110, flexShrink: 0, ...COL_HEADER }}>KEY</div>
-            <div style={{ flex: 1, minWidth: 0, ...COL_HEADER }}>SUMMARY</div>
-            <div style={{ width: compact ? 100 : 138, flexShrink: 0, ...COL_HEADER }}>STATUS</div>
-            {!compact && <div style={{ width: 240, flexShrink: 0, ...COL_HEADER }}>PARENT</div>}
-            <div style={{ width: compact ? 120 : 160, flexShrink: 0, ...COL_HEADER }}>ASSIGNEE</div>
-            {!compact && (
-              <>
-                <div style={{ width: 90, flexShrink: 0, ...COL_HEADER }}>CREATED</div>
-                <div style={{ width: 90, flexShrink: 0, ...COL_HEADER }}>UPDATED</div>
-                <div style={{ width: 90, flexShrink: 0, ...COL_HEADER }}>DUE DATE</div>
-                <div style={{ width: 78, flexShrink: 0, ...COL_HEADER }}>PRIORITY</div>
-              </>
-            )}
+            {orderedCols.filter(c => !(compact && c.compactHide)).map(col => (
+              <div
+                key={col.key}
+                draggable
+                onDragStart={() => handleColDragStart(col.key)}
+                onDragOver={(e) => handleColDragOver(e, col.key)}
+                onDrop={() => handleColDrop(col.key)}
+                onDragEnd={handleColDragEnd}
+                style={{
+                  ...(col.flex ? { flex: 1, minWidth: 0 } : { width: compact && col.compactWidth ? col.compactWidth : col.width, flexShrink: 0 }),
+                  ...COL_HEADER,
+                  cursor: 'grab',
+                  userSelect: 'none',
+                  borderLeft: dragOverCol === col.key ? '2px solid #4C9AFF' : '2px solid transparent',
+                  opacity: dragCol === col.key ? 0.4 : 1,
+                  transition: 'opacity 0.15s',
+                  padding: '0 4px',
+                }}
+              >
+                {col.label}
+              </div>
+            ))}
           </div>
 
           {groups.map(group => (
