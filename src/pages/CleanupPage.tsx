@@ -20,6 +20,9 @@ import {
   Sheet, SheetContent, SheetHeader, SheetTitle,
 } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from '@/components/ui/select';
 
 // ── Types ────────────────────────────────────────
 interface CleanupItem {
@@ -836,20 +839,22 @@ export default function CleanupPage() {
             <label style={{ fontSize: 10, fontWeight: 700, color: '#64748B', display: 'block', marginBottom: 4 }}>
               CLOSURE REASON
             </label>
-            <select
-              value={closureReason}
-              onChange={e => setClosureReason(e.target.value)}
-              style={{
-                width: '100%', height: 28, border: '1px solid #E2E8F0',
-                borderRadius: 4, fontSize: 11, padding: '0 8px',
-                color: '#0F172A', background: '#fff',
-                fontFamily: 'Inter, sans-serif',
-              }}
-            >
-              {CLOSURE_REASONS.map(r => (
-                <option key={r} value={r}>{r}</option>
-              ))}
-            </select>
+            <Select value={closureReason} onValueChange={setClosureReason}>
+              <SelectTrigger
+                style={{
+                  width: '100%', height: 28, border: '1px solid #E2E8F0',
+                  borderRadius: 4, fontSize: 11, color: '#0F172A',
+                  background: '#fff', fontFamily: 'Inter, sans-serif',
+                }}
+              >
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="!bg-white !text-slate-900">
+                {CLOSURE_REASONS.map(r => (
+                  <SelectItem key={r} value={r} style={{ fontSize: 11 }}>{r}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <DialogFooter style={{ marginTop: 16, gap: 8 }}>
