@@ -53,6 +53,14 @@ const FIELD_LABEL: React.CSSProperties = {
   width: 120, flexShrink: 0, fontSize: 13, fontWeight: 400, color: '#6B6E76',
 };
 
+// Deterministic epic color from issue_key
+const EPIC_COLORS = ['#0052CC', '#6554C0', '#00875A', '#36B37E', '#FF8B00', '#FF5630', '#00B8D9', '#8777D9'];
+function getEpicColor(key: string): string {
+  let hash = 0;
+  for (let i = 0; i < key.length; i++) hash = key.charCodeAt(i) + ((hash << 5) - hash);
+  return EPIC_COLORS[Math.abs(hash) % EPIC_COLORS.length];
+}
+
 interface StoryDetailViewProps {
   projectId: string;
   projectKey: string;
