@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Loader2, ChevronDown, ChevronRight } from 'lucide-react';
+import AgeingSkeleton from './AgeingSkeleton';
 
 /* ═══════════════════════════════════════
    Ageing Tab — Grouped by Time Period
@@ -480,10 +481,7 @@ export default function AgeingTab() {
         style={{ flex: 1, overflowY: 'auto' }}
       >
         {loading ? (
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 40, gap: 8 }}>
-            <Loader2 size={20} style={{ color: 'var(--cp-ink-4, #94A3B8)', animation: 'spin 1s linear infinite' }} />
-            <span style={{ fontSize: 11, color: 'var(--cp-ink-4, #94A3B8)' }}>Loading ageing data…</span>
-          </div>
+          <AgeingSkeleton />
         ) : filtered.length === 0 ? (
           <div style={{
             display: 'flex', flexDirection: 'column', alignItems: 'center',
