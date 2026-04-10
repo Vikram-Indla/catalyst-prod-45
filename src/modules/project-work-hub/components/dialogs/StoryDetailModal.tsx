@@ -101,13 +101,22 @@ export default function StoryDetailModal({
     },
   });
 
-  // Fetch reporter avatar
+  // Fetch reporter avatar — resolve via jira_identity_map (assignee_account_id is a Jira ID, not a Catalyst UUID)
   const { data: reporterProfile } = useQuery({
-    queryKey: ['profile-avatar', issue?.reporter_account_id],
+    queryKey: ['profile-avatar-jira', issue?.reporter_account_id],
     queryFn: async () => {
       if (!issue?.reporter_account_id) return null;
-      const { data } = await supabase.from('profiles').select('avatar_url').eq('id', issue.reporter_account_id).single();
-      return data;
+      // First try jira_identity_map (Jira account ID → avatar_url)
+      const { data: jiraRow } = await supabase.from('jira_identity_map').select('avatar_url, catalyst_user_id').eq('jira_account_id', issue.reporter_account_id).maybeSingle();
+      if (jiraRow?.avatar_url) return { avatar_url: jiraRow.avatar_url };
+      // Fallback: try catalyst_user_id → profiles
+      if (jiraRow?.catalyst_user_id) {
+        const { data: profile } = await supabase.from('profiles').select('avatar_url').eq('id', jiraRow.catalyst_user_id).single();
+        if (profile?.avatar_url) return profile;
+      }
+      // Final fallback: try profiles directly (for catalyst-native users)
+      const { data: profile } = await supabase.from('profiles').select('avatar_url').eq('id', issue.reporter_account_id).maybeSingle();
+      return profile;
     },
     enabled: !!issue?.reporter_account_id,
     staleTime: 60000,

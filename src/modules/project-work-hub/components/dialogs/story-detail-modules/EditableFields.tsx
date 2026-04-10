@@ -90,13 +90,22 @@ export function EditableAssignee({ issueId, projectId, currentAssigneeId, curren
     enabled: open,
   });
 
-  // Fetch current assignee's avatar_url for the trigger display
+  // Fetch current assignee's avatar_url — resolve via jira_identity_map (account_id is a Jira ID, not a Catalyst UUID)
   const { data: assigneeProfile } = useQuery({
-    queryKey: ['profile-avatar', currentAssigneeId],
+    queryKey: ['profile-avatar-jira', currentAssigneeId],
     queryFn: async () => {
       if (!currentAssigneeId) return null;
-      const { data } = await supabase.from('profiles').select('avatar_url').eq('id', currentAssigneeId).single();
-      return data;
+      // First try jira_identity_map (Jira account ID → avatar_url)
+      const { data: jiraRow } = await supabase.from('jira_identity_map').select('avatar_url, catalyst_user_id').eq('jira_account_id', currentAssigneeId).maybeSingle();
+      if (jiraRow?.avatar_url) return { avatar_url: jiraRow.avatar_url };
+      // Fallback: try catalyst_user_id → profiles
+      if (jiraRow?.catalyst_user_id) {
+        const { data: profile } = await supabase.from('profiles').select('avatar_url').eq('id', jiraRow.catalyst_user_id).single();
+        if (profile?.avatar_url) return profile;
+      }
+      // Final fallback: try profiles directly (for catalyst-native users)
+      const { data: profile } = await supabase.from('profiles').select('avatar_url').eq('id', currentAssigneeId).maybeSingle();
+      return profile;
     },
     enabled: !!currentAssigneeId,
     staleTime: 60000,
