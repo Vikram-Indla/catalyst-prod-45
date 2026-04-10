@@ -1425,6 +1425,7 @@ export default function StoryDetailModal({
   useEffect(() => {
     const h = (e: MouseEvent) => {
       if (aiDropRef.current && !aiDropRef.current.contains(e.target as Node)) setAiDropOpen(false);
+      if (addMenuRef.current && !addMenuRef.current.contains(e.target as Node)) setShowAddMenu(false);
     };
     document.addEventListener('mousedown', h);
     return () => document.removeEventListener('mousedown', h);
