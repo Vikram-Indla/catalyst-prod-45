@@ -169,12 +169,12 @@ export function ForYouTable({
                       }}
                     >
                       {/* Checkbox */}
-                      <td style={{ textAlign: 'center' }} onClick={e => e.stopPropagation()}>
+                      <td style={{ textAlign: 'center', overflow: 'visible', textOverflow: 'clip' }} onClick={e => e.stopPropagation()}>
                         <Checkbox checked={isSelected} onCheckedChange={(v) => handleSelectItem(item.id, !!v)} />
                       </td>
 
                       {/* Star */}
-                      <td style={{ textAlign: 'center' }} onClick={e => e.stopPropagation()}>
+                      <td style={{ textAlign: 'center', overflow: 'visible', textOverflow: 'clip' }} onClick={e => e.stopPropagation()}>
                         <button
                           onClick={() => onStarToggle?.(item.id)}
                           style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 24, height: 24, border: 'none', background: 'transparent', cursor: 'pointer', borderRadius: 4, padding: 0 }}
