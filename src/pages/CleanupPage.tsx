@@ -10,6 +10,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useGovernanceScore } from '@/hooks/useGovernanceScore';
 import { useAgeingItems, type AgeingItem } from '@/hooks/useAgeingItems';
+import { useForceClose } from '@/hooks/useForceClose';
+import { useRestore } from '@/hooks/useRestore';
 import { toast } from 'sonner';
 import {
   ChevronDown, ChevronUp, ChevronRight,
