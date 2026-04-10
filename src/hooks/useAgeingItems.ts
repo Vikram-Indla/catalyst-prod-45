@@ -22,6 +22,9 @@ export interface AgeingItem {
   parent_key: string | null;
   created_at: string;
   jira_updated_at: string | null;
+  fixed_versions: string | null;
+  reporter_name: string | null;
+  project_key: string;
 }
 
 function mapIssueType(raw: string): string {
@@ -54,7 +57,7 @@ export function useAgeingItems() {
 
       const { data } = await supabase
         .from("ph_issues")
-        .select("id, issue_key, issue_type, summary, status, status_category, jira_created_at, jira_updated_at, parent_key, reporter_account_id, reporter_display_name, assignee_account_id")
+        .select("id, issue_key, issue_type, summary, status, status_category, jira_created_at, jira_updated_at, parent_key, reporter_account_id, reporter_display_name, assignee_account_id, fixed_versions")
         .eq("assignee_account_id", jiraAccountId)
         .neq("status_category", "done")
         .is("deleted_at", null)
@@ -69,9 +72,11 @@ export function useAgeingItems() {
         .map(row => {
           const createdAt = row.jira_created_at ? new Date(row.jira_created_at).getTime() : now;
           const daysAssigned = Math.max(1, Math.floor((now - createdAt) / 86400_000));
+          const issueKey = row.issue_key || "";
+          const projectKey = issueKey.includes("-") ? issueKey.split("-")[0] : "";
           return {
             id: row.id,
-            jira_key: row.issue_key,
+            jira_key: issueKey,
             item_type: mapIssueType(row.issue_type),
             summary: row.summary,
             status: row.status,
@@ -84,6 +89,9 @@ export function useAgeingItems() {
             parent_key: row.parent_key,
             created_at: row.jira_created_at || "",
             jira_updated_at: row.jira_updated_at,
+            fixed_versions: (row as any).fixed_versions ?? null,
+            reporter_name: row.reporter_display_name ?? null,
+            project_key: projectKey,
           } as AgeingItem;
         });
     },

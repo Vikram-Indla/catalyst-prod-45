@@ -91,14 +91,13 @@ function TypeIcon({ type }: { type: ItemType }) {
 }
 
 function StatusLozenge({ status }: { status: StatusType }) {
-  /* 3-color pale lozenge guardrail — Grey for TODO, Blue for IN PROGRESS */
   const isActive = status === 'IN PROGRESS';
   const bg = isActive ? '#DEEBFF' : '#DFE1E6';
   const fg = isActive ? '#0747A6' : '#253858';
   return (
     <span style={{
       display: 'inline-block', height: 20, lineHeight: '20px',
-      fontSize: 10, fontWeight: 700, textTransform: 'uppercase',
+      fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
       letterSpacing: '0.03em', borderRadius: 3, padding: '0 7px',
       background: bg, color: fg, whiteSpace: 'nowrap',
       fontFamily: 'Inter, sans-serif',
@@ -134,7 +133,7 @@ function classifyTimeGroup(item: AgeingItem): TimeGroup {
   return 'older';
 }
 
-/* ── Filter Pill (Outline at rest, subtle tint when active) ── */
+/* ── Filter Pill ── */
 const PILL_ACTIVE: Record<string, { bg: string; border: string; text: string; countBg: string }> = {
   All:      { bg: '#EFF6FF', border: '#2563EB', text: '#1E40AF', countBg: '#DBEAFE' },
   Story:    { bg: '#F0FDF4', border: '#16A34A', text: '#166534', countBg: '#DCFCE7' },
@@ -154,7 +153,7 @@ function FilterPill({ label, isActive, count, onClick }: {
         background: isActive ? active.bg : 'transparent',
         color: isActive ? active.text : '#64748B',
         borderRadius: 16, padding: '3px 10px',
-        fontSize: 11, fontWeight: 600, cursor: 'pointer',
+        fontSize: 13, fontWeight: 600, cursor: 'pointer',
         fontFamily: 'Inter, sans-serif',
         transition: 'all 120ms ease',
         display: 'flex', alignItems: 'center', gap: 5,
@@ -162,7 +161,7 @@ function FilterPill({ label, isActive, count, onClick }: {
     >
       {label}
       <span style={{
-        fontSize: 10, fontWeight: 700,
+        fontSize: 11, fontWeight: 700,
         background: isActive ? active.countBg : '#F1F5F9',
         color: isActive ? active.text : '#64748B',
         borderRadius: 8, padding: '1px 5px',
@@ -174,7 +173,7 @@ function FilterPill({ label, isActive, count, onClick }: {
   );
 }
 
-/* ── Group Header (collapsible) ── */
+/* ── Group Header ── */
 function GroupHeader({ label, count, isOpen, onToggle, accentColor }: {
   label: string; count: number; isOpen: boolean; onToggle: () => void; accentColor: string;
 }) {
@@ -186,21 +185,21 @@ function GroupHeader({ label, count, isOpen, onToggle, accentColor }: {
           style={{
             width: '100%', display: 'flex', alignItems: 'center', gap: 8,
             padding: '8px 14px', border: 'none', cursor: 'pointer',
-            background: 'var(--cp-surface, #F8FAFC)',
-            borderBottom: '0.75px solid var(--cp-border, #E2E8F0)',
+            background: '#F8FAFC',
+            borderBottom: '0.75px solid #E2E8F0',
             borderLeft: `3px solid ${accentColor}`,
             fontFamily: 'Inter, sans-serif',
           }}
         >
           {isOpen ? <ChevronDown size={13} color="#64748B" /> : <ChevronRight size={13} color="#64748B" />}
           <span style={{
-            fontSize: 10, fontWeight: 700, color: '#475569',
+            fontSize: 11, fontWeight: 700, color: '#475569',
             textTransform: 'uppercase', letterSpacing: '0.05em',
           }}>
             {label}
           </span>
           <span style={{
-            fontSize: 10, fontWeight: 700, color: '#FFFFFF',
+            fontSize: 11, fontWeight: 700, color: '#FFFFFF',
             background: accentColor, borderRadius: 3,
             padding: '1px 6px', minWidth: 20, textAlign: 'center',
           }}>
@@ -222,7 +221,7 @@ function AgeingRow({ item }: { item: AgeingItem }) {
     <tr
       style={{
         height: 36, maxHeight: 36,
-        borderBottom: '0.75px solid var(--cp-border-lt, #F1F5F9)',
+        borderBottom: '0.75px solid #F1F5F9',
         transition: 'background 120ms ease',
       }}
       onMouseEnter={e => (e.currentTarget.style.background = 'rgba(0,0,0,0.02)')}
@@ -234,15 +233,15 @@ function AgeingRow({ item }: { item: AgeingItem }) {
       <td style={tdStyle}>
         <span style={{
           fontFamily: "'JetBrains Mono', monospace",
-          fontSize: 11.5, fontWeight: 700, color: 'var(--cp-primary, #2563EB)',
+          fontSize: 13, fontWeight: 700, color: '#2563EB',
           cursor: 'pointer',
         }}>
           {item.jira_key}
         </span>
       </td>
       <td style={{
-        ...tdStyle, fontSize: 12, fontWeight: 500,
-        color: 'var(--cp-ink-1, #0F172A)',
+        ...tdStyle, fontSize: 13, fontWeight: 500,
+        color: '#0F172A',
         whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
       }}>
         {item.summary}
@@ -257,7 +256,7 @@ function AgeingRow({ item }: { item: AgeingItem }) {
           </span>
           {burnPct > 80 && (
             <span style={{
-              fontSize: 9, fontWeight: 700, borderRadius: 3, padding: '1px 5px',
+              fontSize: 11, fontWeight: 700, borderRadius: 3, padding: '1px 5px',
               background: '#FEE2E2', color: '#991B1B',
             }}>
               Overdue
@@ -265,7 +264,7 @@ function AgeingRow({ item }: { item: AgeingItem }) {
           )}
           {burnPct >= 50 && burnPct <= 80 && (
             <span style={{
-              fontSize: 9, fontWeight: 700, borderRadius: 3, padding: '1px 5px',
+              fontSize: 11, fontWeight: 700, borderRadius: 3, padding: '1px 5px',
               background: '#FEF3C7', color: '#92400E',
             }}>
               Watch
@@ -314,9 +313,8 @@ const GROUP_ACCENT: Record<TimeGroup, string> = {
 };
 
 /* ── Governance RAG Pill ── */
-function GovernanceRagPill() {
+function GovernanceRagPill({ onCleanupClick }: { onCleanupClick: () => void }) {
   const { data } = useGovernanceScore();
-  const navigate = useNavigate();
   const ragStatus = data?.ragStatus ?? 'green';
 
   const cfg = {
@@ -329,11 +327,11 @@ function GovernanceRagPill() {
     <>
       <style>{`@keyframes rag-pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }`}</style>
       <button
-        onClick={() => navigate('/cleanup')}
+        onClick={onCleanupClick}
         style={{
           display: 'inline-flex', alignItems: 'center', gap: 4,
           borderRadius: 20, padding: '3px 9px',
-          fontSize: 10, fontWeight: 700,
+          fontSize: 11, fontWeight: 700,
           background: cfg.bg, border: `1.5px solid ${cfg.border}`, color: cfg.color,
           cursor: 'pointer', fontFamily: 'Inter, sans-serif',
         }}
@@ -350,15 +348,14 @@ function GovernanceRagPill() {
 }
 
 /* ── AI Cleanup Button ── */
-function AICleanupButton() {
-  const navigate = useNavigate();
+function AICleanupButton({ onClick }: { onClick: () => void }) {
   return (
     <button
-      onClick={() => navigate('/cleanup')}
+      onClick={onClick}
       style={{
         height: 26, padding: '0 10px', borderRadius: 6,
         background: '#1E293B', color: '#fff',
-        fontSize: 10, fontWeight: 700, border: 'none',
+        fontSize: 13, fontWeight: 700, border: 'none',
         cursor: 'pointer', display: 'inline-flex',
         alignItems: 'center', gap: 5,
         fontFamily: 'Inter, sans-serif',
@@ -371,7 +368,7 @@ function AICleanupButton() {
 }
 
 /* ── Main Component ── */
-export default function AgeingTab() {
+export default function AgeingTab({ onClose }: { onClose?: () => void }) {
   const [activeFilter, setActiveFilter] = useState('All');
   const [sortAsc, setSortAsc] = useState(false);
   const [items, setItems] = useState<AgeingItem[]>([]);
@@ -428,6 +425,12 @@ export default function AgeingTab() {
       );
     }
   }, [loading, items.length, user?.id, queryClient]);
+
+  // Navigate to cleanup — close panel first
+  const handleGoToCleanup = useCallback(() => {
+    if (onClose) onClose();
+    setTimeout(() => navigate('/cleanup'), 50);
+  }, [onClose, navigate]);
 
   // Filter + sort
   const filtered = useMemo(() => {
@@ -494,14 +497,14 @@ export default function AgeingTab() {
       {/* Toolbar */}
       <div style={{
         padding: '10px 14px',
-        borderBottom: '0.75px solid var(--cp-border-lt, #F1F5F9)',
+        borderBottom: '0.75px solid #F1F5F9',
       }}>
         <div style={{
           display: 'flex', alignItems: 'center', gap: 8,
           flexWrap: 'wrap',
         }}>
           <span style={{
-            fontSize: 11, fontWeight: 700, color: 'var(--cp-ink-3, #64748B)',
+            fontSize: 11, fontWeight: 700, color: '#64748B',
             textTransform: 'uppercase', letterSpacing: '0.05em',
             flexShrink: 0,
           }}>
@@ -519,8 +522,8 @@ export default function AgeingTab() {
             ))}
           </div>
           <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
-            <GovernanceRagPill />
-            <AICleanupButton />
+            <GovernanceRagPill onCleanupClick={handleGoToCleanup} />
+            <AICleanupButton onClick={handleGoToCleanup} />
           </div>
         </div>
       </div>
@@ -529,8 +532,8 @@ export default function AgeingTab() {
       {!loading && filtered.length > 0 && (
         <div style={{
           display: 'flex', gap: 16, padding: '8px 14px',
-          borderBottom: '0.75px solid var(--cp-border-lt, #F1F5F9)',
-          background: 'var(--cp-surface, #F8FAFC)',
+          borderBottom: '0.75px solid #F1F5F9',
+          background: '#F8FAFC',
         }}>
           <StatChip label="Total" value={filtered.length} color="#475569" />
           <StatChip label="Critical" value={grouped.critical.length} color="#EF4444" />
@@ -546,10 +549,10 @@ export default function AgeingTab() {
           display: 'flex', alignItems: 'flex-start', gap: 8,
           padding: '8px 14px',
           background: '#FFFBEB', borderBottom: '1px solid #FDE68A',
-          fontSize: 11, color: '#92400E', fontFamily: 'Inter, sans-serif',
+          fontSize: 13, color: '#92400E', fontFamily: 'Inter, sans-serif',
           lineHeight: 1.5,
         }}>
-          <span style={{ flexShrink: 0 }}>⚠</span>
+          <span style={{ flexShrink: 0, fontSize: 14, color: '#92400E' }}>!</span>
           <span>
             <strong>{govData.staleCount} aging items</strong> assigned to you.
             Address them before they reach governance breach.
@@ -561,17 +564,17 @@ export default function AgeingTab() {
           display: 'flex', alignItems: 'flex-start', gap: 8,
           padding: '8px 14px',
           background: '#FFF1F2', borderBottom: '1px solid #FECDD3',
-          fontSize: 11, color: '#9F1239', fontFamily: 'Inter, sans-serif',
+          fontSize: 13, color: '#9F1239', fontFamily: 'Inter, sans-serif',
           lineHeight: 1.5,
         }}>
-          <span style={{ flexShrink: 0 }}>⚑</span>
+          <span style={{ flexShrink: 0, fontSize: 14, color: '#9F1239' }}>!</span>
           <span>
             Governance breach — <strong>{govData.staleCount} aging items</strong>, {govData.breachStreak} day streak.{' '}
             <span
-              onClick={() => navigate('/cleanup')}
+              onClick={handleGoToCleanup}
               style={{ color: '#2563EB', cursor: 'pointer', fontWeight: 650 }}
             >
-              Open AI Cleanup →
+              Open AI Cleanup
             </span>
           </span>
         </div>
@@ -590,10 +593,10 @@ export default function AgeingTab() {
             display: 'flex', flexDirection: 'column', alignItems: 'center',
             justifyContent: 'center', padding: '48px 24px', gap: 8,
           }}>
-            <span style={{ fontSize: 13, color: 'var(--cp-ink-3, #64748B)' }}>
+            <span style={{ fontSize: 13, color: '#64748B' }}>
               No ageing items assigned to you
             </span>
-            <span style={{ fontSize: 11, color: 'var(--cp-ink-4, #94A3B8)' }}>
+            <span style={{ fontSize: 13, color: '#94A3B8' }}>
               Open work items will appear here with SLA tracking
             </span>
           </div>
@@ -608,8 +611,8 @@ export default function AgeingTab() {
             </colgroup>
             <thead>
               <tr style={{
-                background: 'var(--cp-surface, #F8FAFC)',
-                borderBottom: '0.75px solid var(--cp-border, #E2E8F0)',
+                background: '#F8FAFC',
+                borderBottom: '0.75px solid #E2E8F0',
               }}>
                 <th style={{ ...thStyle, paddingLeft: 14 }} />
                 <th style={thStyle}>KEY</th>
@@ -649,23 +652,23 @@ export default function AgeingTab() {
       {/* Footer */}
       <div style={{
         padding: '8px 14px',
-        borderTop: '0.75px solid var(--cp-border-lt, #F1F5F9)',
+        borderTop: '0.75px solid #F1F5F9',
         display: 'flex', justifyContent: 'space-between', alignItems: 'center',
         flexWrap: 'wrap', gap: 6,
       }}>
         <div style={{ display: 'flex', gap: 10 }}>
           {[
             { color: '#22C55E', label: 'Safe <50% SLA' },
-            { color: '#F59E0B', label: 'Watch 50–80%' },
+            { color: '#F59E0B', label: 'Watch 50-80%' },
             { color: '#EF4444', label: 'Overdue >80%' },
           ].map(l => (
             <div key={l.label} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
               <span style={{ width: 7, height: 7, borderRadius: '50%', background: l.color }} />
-              <span style={{ fontSize: 10, color: 'var(--cp-ink-3, #64748B)' }}>{l.label}</span>
+              <span style={{ fontSize: 13, color: '#64748B' }}>{l.label}</span>
             </div>
           ))}
         </div>
-        <span style={{ fontSize: 10, color: 'var(--cp-ink-4, #94A3B8)' }}>
+        <span style={{ fontSize: 13, color: '#94A3B8' }}>
           SLA: Incident 1d · Bug 3d · Story 10d · Feature 15d
         </span>
       </div>
@@ -704,7 +707,7 @@ function StatChip({ label, value, color }: { label: string; value: string | numb
       <span style={{ fontSize: 14, fontWeight: 700, color, fontVariantNumeric: 'tabular-nums' }}>
         {value}
       </span>
-      <span style={{ fontSize: 9, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+      <span style={{ fontSize: 11, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
         {label}
       </span>
     </div>
@@ -713,11 +716,11 @@ function StatChip({ label, value, color }: { label: string; value: string | numb
 
 const thStyle: React.CSSProperties = {
   padding: '10px 12px',
-  fontSize: 10,
+  fontSize: 11,
   fontWeight: 700,
   textTransform: 'uppercase',
   letterSpacing: '0.04em',
-  color: 'var(--cp-ink-3, #64748B)',
+  color: '#64748B',
   textAlign: 'left',
   fontFamily: 'Inter, sans-serif',
 };
