@@ -39,6 +39,9 @@ if (typeof document !== 'undefined' && !document.getElementById(ANIM_STYLE_ID)) 
     @keyframes sdm-card-in { from { opacity: 0; transform: scale(0.97) translateY(8px); } to { opacity: 1; transform: scale(1) translateY(0); } }
     @keyframes sdm-pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
     @keyframes sdm-confirm-in { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+    @keyframes sdm-slide-down { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes sdm-shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+    @keyframes sdm-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
   `;
   document.head.appendChild(s);
 }
