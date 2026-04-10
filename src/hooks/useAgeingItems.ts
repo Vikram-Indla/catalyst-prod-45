@@ -57,7 +57,7 @@ export function useAgeingItems() {
 
       const { data } = await supabase
         .from("ph_issues")
-        .select("id, issue_key, issue_type, summary, status, status_category, jira_created_at, jira_updated_at, parent_key, reporter_account_id, reporter_display_name, assignee_account_id, fixed_versions")
+        .select("id, issue_key, issue_type, summary, status, status_category, jira_created_at, jira_updated_at, parent_key, reporter_account_id, reporter_display_name, assignee_account_id")
         .eq("assignee_account_id", jiraAccountId)
         .neq("status_category", "done")
         .is("deleted_at", null)
