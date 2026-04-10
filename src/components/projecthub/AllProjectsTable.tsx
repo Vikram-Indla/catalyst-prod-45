@@ -293,7 +293,7 @@ function MemberManagePopover({ project }: { project: ProjectListItem }) {
       <PopoverTrigger asChild>
         <button onClick={e => e.stopPropagation()} className="flex items-center cursor-pointer bg-transparent border-none p-0 focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 outline-none rounded">
           {memberIds.length > 0 ? (
-            <MemberStack memberIds={memberIds} memberCount={project.member_count} max={3} />
+            <MemberStack memberIds={memberIds} memberCount={project.member_count} max={10} />
           ) : (
             <span className="text-[13px] text-slate-400 dark:text-[#878787]">—</span>
           )}
