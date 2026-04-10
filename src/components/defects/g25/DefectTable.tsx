@@ -96,36 +96,7 @@ function JiraBadge() {
   );
 }
 
-// ── Header cell style ──
-const TH_STYLE: React.CSSProperties = {
-  height: 40,
-  padding: '0 12px',
-  backgroundColor: '#F7F8F9',
-  fontSize: 11,
-  fontWeight: 700,
-  textTransform: 'uppercase',
-  letterSpacing: '0.04em',
-  color: '#44546F',
-  textAlign: 'left',
-  whiteSpace: 'nowrap',
-  borderBottom: '2px solid #DFE1E6',
-  fontFamily: 'Inter, sans-serif',
-};
-
-// ── Row cell style ──
-const TD_STYLE: React.CSSProperties = {
-  height: 40,
-  maxHeight: 40,
-  padding: '0 12px',
-  fontSize: 14,
-  fontWeight: 400,
-  color: '#1E293B',
-  borderBottom: '1px solid rgba(11, 18, 14, 0.08)',
-  fontFamily: 'Inter, sans-serif',
-  whiteSpace: 'nowrap',
-  overflow: 'hidden',
-  textOverflow: 'ellipsis',
-};
+// Uses pb-table CSS classes from product-backlog.css — no inline TH/TD styles needed
 
 // ── Column definitions ──
 type ColumnKey = 'SEVERITY' | 'PRIORITY' | 'STATUS' | 'ASSIGNEE' | 'AGE';
