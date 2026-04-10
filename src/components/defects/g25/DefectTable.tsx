@@ -1,8 +1,9 @@
 import { useNavigate } from 'react-router-dom';
 import { MoreHorizontal, ExternalLink, UserRound, ChevronsUp, ChevronUp, Minus, ChevronDown, Star } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { StatusBadge } from '@/components/ui/StatusBadge';
+import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 import { Defect } from '@/types/defects';
 import { cn } from '@/lib/utils';
 
@@ -38,32 +39,7 @@ function SeverityPill({ severity }: { severity: string }) {
   );
 }
 
-// ── Status Lozenge (3-color guardrail — intentional inline hex) ──
-const STATUS_MAP: Record<string, { label: string; bg: string; text: string }> = {
-  open:        { label: 'OPEN',        bg: '#DEEBFF', text: '#0747A6' },
-  new:         { label: 'NEW',         bg: '#DEEBFF', text: '#0747A6' },
-  in_progress: { label: 'IN PROGRESS', bg: '#DEEBFF', text: '#0747A6' },
-  resolved:    { label: 'RESOLVED',    bg: '#E3FCEF', text: '#006644' },
-  fixed:       { label: 'FIXED',       bg: '#E3FCEF', text: '#006644' },
-  verified:    { label: 'VERIFIED',    bg: '#E3FCEF', text: '#006644' },
-  closed:      { label: 'CLOSED',      bg: '#E3FCEF', text: '#006644' },
-  reopened:    { label: 'REOPENED',    bg: '#FFFAE6', text: '#974F0C' },
-  deferred:    { label: 'DEFERRED',    bg: '#DFE1E6', text: '#253858' },
-};
-
-function StatusPill({ status }: { status: string }) {
-  const s = STATUS_MAP[status] || { label: status.toUpperCase(), bg: '#DFE1E6', text: '#253858' };
-  return (
-    <span style={{
-      display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-      height: 20, padding: '0 6px', borderRadius: 3,
-      backgroundColor: s.bg, color: s.text,
-      fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em', lineHeight: '20px',
-    }}>
-      {s.label}
-    </span>
-  );
-}
+// Status now uses the shared StatusBadge (3-color solid lozenge from /for-you)
 
 // ── Priority chevron icon (matching ProjectHub) ──
 const PRIORITY_ICONS: Record<string, { Icon: typeof ChevronsUp; color: string; label: string }> = {
@@ -86,22 +62,8 @@ function PriorityCell({ priority }: { priority: string | null }) {
   );
 }
 
-// ── Avatar colours (deterministic per name) ──
-const AVATAR_COLOURS = [
-  { bg: '#DBEAFE', text: '#1D4ED8' },
-  { bg: '#D1FAE5', text: '#065F46' },
-  { bg: '#FEE2E2', text: '#991B1B' },
-  { bg: '#FEF3C7', text: '#92400E' },
-  { bg: '#E0E7FF', text: '#3730A3' },
-  { bg: '#FCE7F3', text: '#9D174D' },
-  { bg: '#CCFBF1', text: '#065F46' },
-  { bg: '#F3E8FF', text: '#6B21A8' },
-];
-
-function getAvatarColour(name: string) {
-  const idx = name.charCodeAt(0) % AVATAR_COLOURS.length;
-  return AVATAR_COLOURS[idx];
-}
+// ── Avatar colours (matching /for-you 5-color palette) ──
+const AVATAR_COLOURS = ['#2563EB', '#0D9488', '#0284C7', '#DC2626', '#DB2777'];
 
 // ── Age formatter ──
 function getRelativeAge(createdAt: string): string {
@@ -178,6 +140,7 @@ interface Props {
 export function DefectTable({ defects, selectedIds, onSelectionChange, onDelete, visibleColumns }: Props) {
   const navigate = useNavigate();
   const cols = visibleColumns || new Set<ColumnKey>(['SEVERITY', 'PRIORITY', 'STATUS', 'ASSIGNEE', 'AGE']);
+  const nameAvatarMap = useProfileAvatarsByName();
 
   const toggleAll = () => {
     onSelectionChange(selectedIds.size === defects.length ? new Set() : new Set(defects.map(d => d.id)));
@@ -299,53 +262,39 @@ export function DefectTable({ defects, selectedIds, onSelectionChange, onDelete,
                 {cols.has('PRIORITY') && <td style={TD_STYLE}><PriorityCell priority={d.priority} /></td>}
 
                 {/* Status */}
-                {cols.has('STATUS') && <td style={TD_STYLE}><StatusPill status={d.status} /></td>}
+                {cols.has('STATUS') && <td style={TD_STYLE}><StatusBadge status={d.status} /></td>}
 
-                {/* Assignee */}
+                {/* Assignee — matching /for-you avatar pattern */}
                 {cols.has('ASSIGNEE') && (
                   <td style={TD_STYLE}>
-                    {d.assignee ? (
-                      <div className="flex items-center gap-2">
-                        <Avatar className="h-6 w-6 flex-shrink-0">
-                          <AvatarFallback
-                            style={{
-                              fontSize: 10, fontWeight: 700,
-                              backgroundColor: getAvatarColour(d.assignee.full_name).bg,
-                              color: getAvatarColour(d.assignee.full_name).text,
-                            }}
-                          >
-                            {initials(d.assignee.full_name)}
-                          </AvatarFallback>
-                        </Avatar>
-                        <span style={{ fontSize: 13, fontWeight: 500, color: '#1E293B' }} className="truncate">
-                          {d.assigneeName || d.assignee.full_name}
-                        </span>
-                      </div>
-                    ) : d.assigneeName && d.assigneeName !== 'Unassigned' ? (
-                      <div className="flex items-center gap-2">
-                        <Avatar className="h-6 w-6 flex-shrink-0">
-                          <AvatarFallback
-                            style={{
-                              fontSize: 10, fontWeight: 700,
-                              backgroundColor: getAvatarColour(d.assigneeName).bg,
-                              color: getAvatarColour(d.assigneeName).text,
-                            }}
-                          >
-                            {initials(d.assigneeName)}
-                          </AvatarFallback>
-                        </Avatar>
-                        <span style={{ fontSize: 13, fontWeight: 500, color: '#1E293B' }} className="truncate">
-                          {d.assigneeName}
-                        </span>
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-2">
-                        <div style={{ width: 24, height: 24, borderRadius: '50%', backgroundColor: '#F1F5F9', border: '1px solid rgba(15,23,42,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                          <UserRound size={12} style={{ color: '#94A3B8' }} />
+                    {(() => {
+                      const assigneeName = d.assigneeName || d.assignee?.full_name;
+                      if (!assigneeName || assigneeName === 'Unassigned') {
+                        return (
+                          <div className="flex items-center gap-2">
+                            <div style={{ width: 24, height: 24, borderRadius: '50%', backgroundColor: '#F1F5F9', border: '1px solid rgba(15,23,42,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                              <UserRound size={12} style={{ color: '#94A3B8' }} />
+                            </div>
+                            <span style={{ fontSize: 13, color: '#94A3B8' }}>Unassigned</span>
+                          </div>
+                        );
+                      }
+                      const avatarUrl = d.assignee?.avatar_url || nameAvatarMap.get(assigneeName.toLowerCase());
+                      const ini = initials(assigneeName);
+                      const clr = AVATAR_COLOURS[ini.charCodeAt(0) % AVATAR_COLOURS.length];
+                      return (
+                        <div className="flex items-center gap-2">
+                          {avatarUrl ? (
+                            <img src={avatarUrl} alt={assigneeName} style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover', flexShrink: 0, border: '1px solid rgba(15,23,42,0.12)' }} />
+                          ) : (
+                            <div style={{ width: 24, height: 24, borderRadius: '50%', background: clr, color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, flexShrink: 0 }}>{ini}</div>
+                          )}
+                          <span style={{ fontSize: 13, fontWeight: 500, color: '#1E293B', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                            {assigneeName}
+                          </span>
                         </div>
-                        <span style={{ fontSize: 13, color: '#94A3B8' }}>Unassigned</span>
-                      </div>
-                    )}
+                      );
+                    })()}
                   </td>
                 )}
 
