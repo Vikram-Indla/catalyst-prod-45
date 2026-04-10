@@ -146,6 +146,7 @@ export default function StoryDetailModal({
   const [newComment, setNewComment] = useState('');
   const [showWorkflow, setShowWorkflow] = useState(false);
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
+  const [showAiRegenConfirm, setShowAiRegenConfirm] = useState(false);
   const [showFigmaInput, setShowFigmaInput] = useState(false);
   const [figmaUrl, setFigmaUrl] = useState('');
   const [figmaError, setFigmaError] = useState('');
