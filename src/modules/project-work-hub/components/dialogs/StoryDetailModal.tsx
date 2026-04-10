@@ -1727,6 +1727,31 @@ export default function StoryDetailModal({
     toast.success('Acceptance criteria updated by AI');
   }, [itemId, queryClient]);
 
+  const handleAiGenerate = useCallback(async () => {
+    if (aiGenerating) return;
+    if (aiEdited && aiOutput) {
+      if (!confirm('Regenerating will discard your edits. Continue?')) return;
+    }
+    setAiGenerating(true); setAiError(null); setAiOutput(null); setAiEdited(false);
+    try {
+      const { data, error: fnError } = await supabase.functions.invoke('ai-improve-story', {
+        body: {
+          issue_id: itemId,
+          improve_type: aiImproveType,
+          focus_hint: aiFocusHint.trim() || null,
+          current_description: issue?.description_text || issue?.description || '(empty)',
+          current_ac: acceptanceCriteria || '(none)',
+          issue_summary: issue?.summary ?? '',
+        },
+      });
+      if (fnError) throw fnError;
+      if (!data?.description && !data?.acceptance_criteria) throw new Error('No content returned');
+      setAiOutput({ description: data.description ?? '', acceptance_criteria: data.acceptance_criteria ?? '' });
+    } catch {
+      setAiError('AI features temporarily unavailable. Try again.');
+    } finally { setAiGenerating(false); }
+  }, [aiGenerating, aiEdited, aiOutput, aiImproveType, aiFocusHint, itemId, issue, acceptanceCriteria]);
+
   const handleParentChange = useCallback(async (newParentKey: string | null) => {
     await supabase.from('ph_issues').update({ parent_key: newParentKey }).eq('id', itemId);
     queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] });
