@@ -1101,8 +1101,12 @@ function EditableAssignee({ issueId, projectId, currentAssigneeId, currentAssign
         <span style={{ fontSize: 12, color: '#172B4D' }}>{currentAssigneeName ?? 'Unassigned'}</span>
         <Edit2 size={10} color="#8993A4" />
       </div>
-      {open && (
-        <div style={{ position: 'absolute', top: 'calc(100% + 4px)', left: 0, width: 220, background: '#fff', border: '1px solid rgba(9,30,66,.24)', borderRadius: 6, boxShadow: '0 6px 16px rgba(9,30,66,.15)', zIndex: 50, overflow: 'hidden' }}>
+      {open && (() => {
+        const rect = ref.current?.getBoundingClientRect();
+        const dropTop = (rect?.bottom ?? 0) + 4;
+        const dropLeft = (rect?.left ?? 0);
+        return (
+        <div style={{ position: 'fixed', top: dropTop, left: dropLeft, width: 240, background: '#fff', border: '1px solid rgba(9,30,66,.24)', borderRadius: 6, boxShadow: '0 6px 16px rgba(9,30,66,.15)', zIndex: 9999, overflow: 'hidden' }}>
           <div style={{ padding: 6, borderBottom: '1px solid rgba(9,30,66,.1)' }}>
             <input autoFocus value={search} onChange={e => setSearch(e.target.value)} placeholder="Search members…" style={{ width: '100%', height: 28, padding: '0 7px', border: '1px solid rgba(9,30,66,.14)', borderRadius: 4, fontSize: 12, fontFamily: 'inherit', outline: 'none' }} />
           </div>
@@ -1125,7 +1129,8 @@ function EditableAssignee({ issueId, projectId, currentAssigneeId, currentAssign
             ))}
           </div>
         </div>
-      )}
+        );
+      })()}
     </div>
   );
 }
@@ -1320,7 +1325,7 @@ const menuItem: React.CSSProperties = {
 };
 
 const detailLabel: React.CSSProperties = {
-  fontSize: 11, fontWeight: 600, color: '#98A2B3', padding: '8px 0', textTransform: 'uppercase', letterSpacing: '0.04em',
+  fontSize: 11, fontWeight: 650, color: '#475467', padding: '8px 0', textTransform: 'uppercase', letterSpacing: '0.04em',
 };
 const detailValue: React.CSSProperties = {
   fontSize: 13, color: '#101828', padding: '6px 0',
@@ -1415,6 +1420,26 @@ export default function StoryDetailModal({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const addMenuRef = useRef<HTMLDivElement>(null);
   const descriptionRef = useRef<HTMLDivElement>(null);
+
+  // Resizable splitter state
+  const [rightPanelWidth, setRightPanelWidth] = useState(280);
+  const isDraggingRef = useRef(false);
+  const splitterRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const onMouseMove = (e: MouseEvent) => {
+      if (!isDraggingRef.current) return;
+      const modalEl = document.querySelector('[data-sdm-scope]') as HTMLElement;
+      if (!modalEl) return;
+      const rect = modalEl.getBoundingClientRect();
+      const newWidth = Math.max(220, Math.min(480, rect.right - e.clientX));
+      setRightPanelWidth(newWidth);
+    };
+    const onMouseUp = () => { isDraggingRef.current = false; document.body.style.cursor = ''; document.body.style.userSelect = ''; };
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
+    return () => { document.removeEventListener('mousemove', onMouseMove); document.removeEventListener('mouseup', onMouseUp); };
+  }, []);
 
   // AI Improve Story state
   const [aiPanelOpen, setAiPanelOpen] = useState(false);
@@ -1654,7 +1679,7 @@ export default function StoryDetailModal({
           {/* ── B. BODY ────────────────────────── */}
           <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
             {/* LEFT PANEL */}
-            <div style={{ flex: 1, overflowY: 'auto', padding: '24px 24px 40px', minWidth: 0 }}>
+            <div style={{ flex: 1, overflowY: 'auto', padding: '24px 28px 40px', minWidth: 0 }}>
               {issueLoading ? (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                   <Skel w={120} /><Skel w="80%" h={24} /><Skel w="60%" h={16} /><div style={{ height: 20 }} /><Skel w="100%" h={200} />
@@ -1918,36 +1943,49 @@ export default function StoryDetailModal({
                   )}
 
                   {/* 5. KEY DETAILS: Description */}
-                  <div style={{ marginBottom: 20 }}>
-                    <button onClick={() => setKeyDetailsOpen(!keyDetailsOpen)} style={{ display: 'flex', alignItems: 'center', gap: 4, background: 'none', border: 'none', cursor: 'pointer', padding: 0, marginBottom: 8 }}>
-                      {keyDetailsOpen ? <ChevronDown size={14} color="#475467" /> : <ChevronRight size={14} color="#475467" />}
-                      <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 700, color: '#475467' }}>Key Details</span>
+                  <div style={{ marginBottom: 24 }}>
+                    <button onClick={() => setKeyDetailsOpen(!keyDetailsOpen)} style={{ display: 'flex', alignItems: 'center', gap: 5, background: 'none', border: 'none', cursor: 'pointer', padding: 0, marginBottom: 10 }}>
+                      {keyDetailsOpen ? <ChevronDown size={14} color="#344054" /> : <ChevronRight size={14} color="#344054" />}
+                      <span style={{ fontFamily: 'Sora, sans-serif', fontSize: 14, fontWeight: 700, color: '#101828' }}>Key Details</span>
                     </button>
                     {keyDetailsOpen && (
                       <div>
-                        <div style={{ border: '1px solid #E4E7EC', borderRadius: 8, overflow: 'hidden' }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 2, padding: '6px 8px', borderBottom: '1px solid #E4E7EC', background: '#F7F8FA', flexWrap: 'wrap' }}>
+                        <div style={{ border: '1px solid #D0D5DD', borderRadius: 8, overflow: 'hidden' }}>
+                          {/* Toolbar */}
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 1, padding: '5px 10px', borderBottom: '1px solid #E4E7EC', background: '#F9FAFB', flexWrap: 'wrap' }}>
                             {[
-                              { cmd: 'bold', label: 'B', fw: 'bold', fs: 'normal', td: 'none' },
-                              { cmd: 'italic', label: 'I', fw: 'normal', fs: 'italic', td: 'none' },
-                              { cmd: 'underline', label: 'U', fw: 'normal', fs: 'normal', td: 'underline' },
-                              { cmd: 'strikeThrough', label: 'S', fw: 'normal', fs: 'normal', td: 'line-through' },
+                              { cmd: 'bold', label: 'B', fw: 'bold' as const, fs: 'normal' as const, td: 'none' },
+                              { cmd: 'italic', label: 'I', fw: 'normal' as const, fs: 'italic' as const, td: 'none' },
+                              { cmd: 'underline', label: 'U', fw: 'normal' as const, fs: 'normal' as const, td: 'underline' },
+                              { cmd: 'strikeThrough', label: 'S', fw: 'normal' as const, fs: 'normal' as const, td: 'line-through' },
                             ].map(btn => (
                               <button key={btn.cmd} onMouseDown={(e) => { e.preventDefault(); document.execCommand(btn.cmd); }}
-                                style={{ width: 24, height: 24, borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, color: '#475467', background: 'transparent', border: 'none', cursor: 'pointer', fontWeight: btn.fw as any, fontStyle: btn.fs as any, textDecoration: btn.td }}>{btn.label}</button>
+                                style={{ width: 28, height: 28, borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, color: '#344054', background: 'transparent', border: 'none', cursor: 'pointer', fontWeight: btn.fw, fontStyle: btn.fs, textDecoration: btn.td, transition: 'background 0.12s' }}
+                                onMouseEnter={e => (e.currentTarget.style.background = '#E4E7EC')}
+                                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                              >{btn.label}</button>
                             ))}
-                            <div style={{ width: 1, height: 16, background: '#E4E7EC', margin: '0 4px' }} />
-                            <button onMouseDown={(e) => { e.preventDefault(); document.execCommand('insertUnorderedList'); }} style={{ width: 24, height: 24, borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, color: '#475467', background: 'transparent', border: 'none', cursor: 'pointer' }}>•</button>
-                            <button onMouseDown={(e) => { e.preventDefault(); document.execCommand('insertOrderedList'); }} style={{ width: 24, height: 24, borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, color: '#475467', background: 'transparent', border: 'none', cursor: 'pointer' }}>1.</button>
+                            <div style={{ width: 1, height: 18, background: '#D0D5DD', margin: '0 6px' }} />
+                            <button onMouseDown={(e) => { e.preventDefault(); document.execCommand('insertUnorderedList'); }}
+                              style={{ width: 28, height: 28, borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, color: '#344054', background: 'transparent', border: 'none', cursor: 'pointer' }}
+                              onMouseEnter={e => (e.currentTarget.style.background = '#E4E7EC')}
+                              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                            >•</button>
+                            <button onMouseDown={(e) => { e.preventDefault(); document.execCommand('insertOrderedList'); }}
+                              style={{ width: 28, height: 28, borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, color: '#344054', background: 'transparent', border: 'none', cursor: 'pointer' }}
+                              onMouseEnter={e => (e.currentTarget.style.background = '#E4E7EC')}
+                              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                            >1.</button>
                           </div>
+                          {/* Description content area — supports 5000+ words */}
                           <div ref={descriptionRef} contentEditable suppressContentEditableWarning
                             onBlur={(e) => { const newText = e.currentTarget.innerText; if (newText !== (issue?.description_text ?? '')) { updateFieldMutation.mutate({ field: 'description_text', value: newText, oldValue: issue?.description_text ?? '' }); } }}
                             data-placeholder="Add a description..."
-                            style={{ minHeight: 120, maxHeight: 260, overflowY: 'auto', padding: 12, fontSize: 13, color: '#101828', lineHeight: 1.6, outline: 'none', fontFamily: 'Inter, sans-serif' }}
+                            style={{ minHeight: 200, maxHeight: 500, overflowY: 'auto', padding: '14px 16px', fontSize: 13.5, color: '#101828', lineHeight: 1.7, outline: 'none', fontFamily: 'Inter, sans-serif', wordBreak: 'break-word' }}
                             dangerouslySetInnerHTML={{ __html: issue?.description_text ?? '' }} />
-                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 10px', borderTop: '1px solid #F7F8FA' }}>
-                            <span style={{ fontSize: 10.5, color: '#98A2B3' }}>Tip: <kbd style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, background: '#F1F5F9', border: '1px solid #E4E7EC', borderRadius: 3, padding: '1px 4px' }}>Ctrl+B</kbd> bold</span>
-                            <span style={{ fontSize: 10.5, color: '#98A2B3' }}>Auto-saved</span>
+                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 12px', borderTop: '1px solid #E4E7EC', background: '#F9FAFB' }}>
+                            <span style={{ fontSize: 10.5, color: '#667085' }}>Tip: <kbd style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, background: '#F1F5F9', border: '1px solid #D0D5DD', borderRadius: 3, padding: '1px 4px' }}>Ctrl+B</kbd> bold</span>
+                            <span style={{ fontSize: 10.5, color: '#667085' }}>Auto-saved</span>
                           </div>
                         </div>
                       </div>
@@ -2052,11 +2090,27 @@ export default function StoryDetailModal({
               )}
             </div>
 
+            {/* RESIZABLE SPLITTER */}
+            <div
+              ref={splitterRef}
+              onMouseDown={() => { isDraggingRef.current = true; document.body.style.cursor = 'col-resize'; document.body.style.userSelect = 'none'; }}
+              style={{
+                width: 6, minWidth: 6, cursor: 'col-resize', background: 'transparent',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                transition: 'background 0.15s', position: 'relative', zIndex: 5,
+                borderLeft: '1px solid #E4E7EC',
+              }}
+              onMouseEnter={e => (e.currentTarget.style.background = '#DBEAFE')}
+              onMouseLeave={e => { if (!isDraggingRef.current) e.currentTarget.style.background = 'transparent'; }}
+            >
+              <div style={{ width: 2, height: 32, borderRadius: 1, background: '#D0D5DD', transition: 'background 0.15s' }} />
+            </div>
+
             {/* RIGHT PANEL */}
-            <div style={{ width: 280, minWidth: 280, background: '#FFFFFF', borderLeft: '1px solid #E4E7EC', overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
+            <div style={{ width: rightPanelWidth, minWidth: 220, maxWidth: 480, background: '#FFFFFF', overflowY: 'auto', overflowX: 'visible', display: 'flex', flexDirection: 'column' }}>
               {/* 1. STATUS ZONE */}
               <div style={{ padding: '14px 16px', borderBottom: '1px solid #E4E7EC' }}>
-                <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.07em', color: '#98A2B3', marginBottom: 8 }}>STATUS</div>
+                <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.07em', color: '#475467', marginBottom: 8 }}>STATUS</div>
                 <div style={{ position: 'relative' }}>
                   <button onClick={() => setShowStatusDropdown(!showStatusDropdown)} style={{
                     backgroundColor: statusStyle.bg, color: statusStyle.text, padding: '6px 12px', borderRadius: 4, fontSize: 11.5, fontWeight: 700,
@@ -2098,7 +2152,7 @@ export default function StoryDetailModal({
 
               {/* 2. DETAILS SECTION */}
               <div style={{ padding: 14, borderBottom: '1px solid #E4E7EC' }}>
-                <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#98A2B3', marginBottom: 12 }}>DETAILS</div>
+                <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#475467', marginBottom: 12 }}>DETAILS</div>
                 <div style={{ display: 'grid', gridTemplateColumns: '90px 1fr', gap: 0 }}>
                   <DetailRow label="Parent">
                     {issue && <ParentFieldPicker storyKey={issue.issue_key} parentKey={issue.parent_key} projectKey={issue.project_key} onParentChange={handleParentChange} />}
