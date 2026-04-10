@@ -278,9 +278,7 @@ export default function AIRecapTabV2() {
       </div>
 
       {loading ? (
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 48 }}>
-          <Loader2 size={20} style={{ color: T.ink4, animation: 'spin 1s linear infinite' }} />
-        </div>
+        <AIRecapSkeleton />
       ) : items.length === 0 ? (
         <div style={{
           display: 'flex', flexDirection: 'column', alignItems: 'center',
