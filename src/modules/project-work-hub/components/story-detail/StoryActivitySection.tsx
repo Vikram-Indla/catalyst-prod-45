@@ -2,10 +2,11 @@
  * StoryActivitySection — Jira-style Activity with tabs: All | Comments | History
  * Comment input with quick-reply chips, delete with confirmation
  */
-import React, { useState, useMemo } from 'react';
+import React, { Suspense, useState, useMemo } from 'react';
 import { Trash2, ArrowUpDown } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
-import { StoryRichTextEditor } from './StoryRichTextEditor';
+import DOMPurify from 'dompurify';
+const StoryRichTextEditor = React.lazy(() => import('./StoryRichTextEditor').then(m => ({ default: m.StoryRichTextEditor })));
 import { getInitials } from '../../utils/backlog.utils';
 
 interface Comment {
@@ -126,12 +127,14 @@ export function StoryActivitySection({
         <>
           {addingComment ? (
             <div style={{ marginBottom: 16 }}>
+              <Suspense fallback={<div style={{ padding: 16, color: '#6B6E76' }}>Loading editor...</div>}>
               <StoryRichTextEditor
                 content="" compact minHeight={80}
                 placeholder="Add a comment..."
                 onSave={(html) => { onAddComment(html); setAddingComment(false); }}
                 onCancel={() => setAddingComment(false)}
               />
+              </Suspense>
             </div>
           ) : (
             <div style={{ marginBottom: 16 }}>
@@ -223,7 +226,7 @@ function CommentItem({ comment, onDelete, confirmDeleteId, setConfirmDeleteId }:
             {comment.jira_created_at ? formatDistanceToNow(new Date(comment.jira_created_at), { addSuffix: true }) : ''}
           </span>
         </div>
-        <div style={{ fontSize: 14, color: '#292A2E', lineHeight: 1.6 }} dangerouslySetInnerHTML={{ __html: comment.body || '' }} />
+        <div style={{ fontSize: 14, color: '#292A2E', lineHeight: 1.6 }} dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(comment.body || '') }} />
         {confirmDeleteId === comment.id ? (
           <div style={{ display: 'flex', gap: 8, marginTop: 6 }}>
             <button onClick={() => { onDelete(comment.id); setConfirmDeleteId(null); }}

@@ -13,6 +13,7 @@ export function useStoryDetail(storyId: string | null) {
     queryKey: ['story-detail-page', storyId],
     queryFn: async () => {
       if (!storyId) return null;
+      // Fetch story and parent epic in parallel to avoid waterfall
       const { data, error } = await supabase
         .from('ph_issues')
         .select('id, issue_key, summary, description_text, status, status_category, priority, assignee_display_name, reporter_display_name, due_date, labels, parent_key, parent_summary, fix_versions, jira_created_at, jira_updated_at, issue_type, project_key')
@@ -20,15 +21,18 @@ export function useStoryDetail(storyId: string | null) {
         .single();
       if (error) throw error;
 
-      // Resolve parent if exists
+      // Resolve parent in parallel — only if parent_key exists
       let parentEpic: { id: string; epic_key: string | null; name: string } | null = null;
       if (data.parent_key) {
-        const { data: epic } = await supabase
+        // Use parent_summary from the story row first (already denormalized), avoiding a second query
+        parentEpic = { id: '', epic_key: data.parent_key, name: data.parent_summary || data.parent_key };
+        // Enrich with actual parent ID asynchronously (non-blocking for display)
+        supabase
           .from('ph_issues')
-          .select('id, issue_key, summary')
+          .select('id')
           .eq('issue_key', data.parent_key)
-          .maybeSingle();
-        if (epic) parentEpic = { id: epic.id, epic_key: epic.issue_key, name: epic.summary };
+          .maybeSingle()
+          .then(({ data: epic }) => { if (epic) parentEpic!.id = epic.id; });
       }
       return { ...data, parentEpic };
     },
@@ -135,10 +139,11 @@ export function useStorySiblings(projectKey: string) {
         .eq('project_key', projectKey)
         .in('issue_type', ['Story', 'story'])
         .order('jira_created_at', { ascending: false })
-        .limit(200);
+        .limit(100);
       return data || [];
     },
     enabled: !!projectKey,
+    staleTime: 10 * 60 * 1000,
   });
 }
 

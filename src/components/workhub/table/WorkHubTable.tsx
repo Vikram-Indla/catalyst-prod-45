@@ -285,7 +285,7 @@ export default function WorkHubTable({ projectKey, projectId, defaultType = 'Sto
 
         {/* Grouped rows */}
         {!isLoading && !error && grouped.map(group => (
-          <div key={group.key} style={{ contentVisibility: group.items.length > 50 && collapsed[group.key] ? 'auto' : 'visible' }}>
+          <div key={group.key} style={{ contentVisibility: group.items.length > 30 ? 'auto' : 'visible', containIntrinsicSize: group.items.length > 30 ? `auto ${group.items.length * 36}px` : undefined }}>
             {groupBy !== 'none' && (
               <WorkHubGroupHeader
                 label={group.label}

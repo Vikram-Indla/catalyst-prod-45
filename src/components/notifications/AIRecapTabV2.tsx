@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { ChevronRight, Check, Loader2 } from 'lucide-react';
+import DOMPurify from 'dompurify';
 import { supabase } from '@/integrations/supabase/client';
 
 /* ═══════════════════════════════════════
@@ -102,7 +103,7 @@ function RecapCard({ item, borderColor }: { item: RecapItem; borderColor: string
             fontSize: 12.5, color: T.ink2, lineHeight: 1.6,
             margin: '0 0 10px', fontFamily: 'Inter, sans-serif',
           }}
-          dangerouslySetInnerHTML={{ __html: item.ai_body_text }}
+          dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(item.ai_body_text) }}
         />
       )}
 

@@ -3,8 +3,9 @@
  * Matches Jira's layout: Key Details, Description, Child Issues, Linked Items, Activity
  * Right sidebar: Status, Details (fix versions, assignee, reporter, labels), Metadata
  */
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { Suspense, useState, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import DOMPurify from 'dompurify';
 import {
   ChevronDown, ChevronRight, Minus, ChevronUp, ChevronsUp, ChevronsDown,
   Plus, MoreHorizontal,
@@ -15,7 +16,7 @@ import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { StoryDetailHeader } from '../components/story-detail/StoryDetailHeader';
 import { StoryDetailSidebar } from '../components/story-detail/StoryDetailSidebar';
 import { StoryActivitySection } from '../components/story-detail/StoryActivitySection';
-import { StoryRichTextEditor } from '../components/story-detail/StoryRichTextEditor';
+const StoryRichTextEditor = React.lazy(() => import('../components/story-detail/StoryRichTextEditor').then(m => ({ default: m.StoryRichTextEditor })));
 import {
   useStoryDetail, useStoryComments, useStoryHistory,
   useStorySiblings, useParentCandidates, useTeamMembers,
@@ -272,17 +273,19 @@ export default function StoryDetailView({ projectId, projectKey, itemId }: Story
           <div style={{ padding: '0 32px 24px' }}>
             <div style={{ ...SECTION_HEADING, marginBottom: 8 }}>Description</div>
             {editingDesc ? (
+              <Suspense fallback={<div style={{ padding: 16, color: '#6B6E76' }}>Loading editor...</div>}>
               <StoryRichTextEditor
                 content={story.description_text || ''}
                 onSave={handleDescSave}
                 onCancel={() => setEditingDesc(false)}
                 placeholder="Add a description..."
               />
+              </Suspense>
             ) : (
               <div onClick={() => setEditingDesc(true)}
                 style={{ fontSize: 14, lineHeight: 1.6, color: story.description_text ? '#292A2E' : '#6B6E76', fontStyle: story.description_text ? 'normal' : 'italic', cursor: 'text', minHeight: 40, padding: '8px 0' }}>
                 {story.description_text ? (
-                  <div dangerouslySetInnerHTML={{ __html: story.description_text }} />
+                  <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(story.description_text) }} />
                 ) : 'Add a description...'}
               </div>
             )}

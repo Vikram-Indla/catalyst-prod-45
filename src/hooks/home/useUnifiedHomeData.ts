@@ -258,8 +258,9 @@ export function useUnifiedHomeSummary(mode: HomeRoleMode, userId?: string) {
           return { workedOn: 0, assigned: 0, starred: 0, total: 0 };
       }
     },
-    staleTime: 1000 * 15, // 15 seconds
-    refetchInterval: 1000 * 15, // Poll every 15 seconds
+    staleTime: 1000 * 30, // 30 seconds
+    refetchInterval: 1000 * 30, // Poll every 30 seconds (reduced from 15s)
+    refetchIntervalInBackground: false,
     refetchOnWindowFocus: true,
   });
 }

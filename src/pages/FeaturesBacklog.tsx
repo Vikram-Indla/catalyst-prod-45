@@ -1,16 +1,16 @@
-import { useState, useEffect } from 'react';
+import { lazy, Suspense, useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useSearchParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { FeaturesBacklogHeader } from '@/components/features/FeaturesBacklogHeader';
 import { FeaturesListView } from '@/components/features/FeaturesListView';
 import { FeaturesKanbanView } from '@/components/features/FeaturesKanbanView';
-import { FeaturesColumnsDialog } from '@/components/features/FeaturesColumnsDialog';
-import { FeaturesFiltersDialog } from '@/components/features/FeaturesFiltersDialog';
+const FeaturesColumnsDialog = lazy(() => import('@/components/features/FeaturesColumnsDialog').then(m => ({ default: m.FeaturesColumnsDialog })));
+const FeaturesFiltersDialog = lazy(() => import('@/components/features/FeaturesFiltersDialog').then(m => ({ default: m.FeaturesFiltersDialog })));
 import { FeatureDetailsPanel } from '@/components/items/features/FeatureDetailsPanel';
-import { FeatureDialog } from '@/components/forms/FeatureDialog';
-import { ApplyWSJFToRankDialog } from '@/components/prioritization/ApplyWSJFToRankDialog';
-import { PullRankDialog } from '@/components/backlog/PullRankDialog';
+const FeatureDialog = lazy(() => import('@/components/forms/FeatureDialog').then(m => ({ default: m.FeatureDialog })));
+const ApplyWSJFToRankDialog = lazy(() => import('@/components/prioritization/ApplyWSJFToRankDialog').then(m => ({ default: m.ApplyWSJFToRankDialog })));
+const PullRankDialog = lazy(() => import('@/components/backlog/PullRankDialog').then(m => ({ default: m.PullRankDialog })));
 import { exportToCSV } from '@/lib/exportUtils';
 import { toast } from 'sonner';
 

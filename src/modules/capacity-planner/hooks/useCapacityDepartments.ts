@@ -20,10 +20,11 @@ export function useCapacityDepartments() {
 
   const { data: departments = [], isLoading } = useQuery({
     queryKey: ['capacity-departments'],
+    staleTime: 30 * 60 * 1000, // 30 minutes — reference data changes rarely
     queryFn: async () => {
       const { data, error } = await supabase
         .from('capacity_departments')
-        .select('*')
+        .select('id, department_id, name, description, color, is_active, sort_order, created_at, updated_at')
         .eq('is_active', true)
         .order('sort_order');
       
