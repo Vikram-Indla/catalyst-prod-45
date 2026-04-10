@@ -493,8 +493,6 @@ export function useResourceAllocationTimeline({ resource, onClose }: UseResource
       // If this bar was merged from multiple DB records, delete all except the first
       if (originalIds && originalIds.length > 1) {
         const idsToDelete = originalIds.slice(1); // Keep first, delete rest
-        console.log(`[updateAllocation] Deleting ${idsToDelete.length} merged records:`, idsToDelete);
-        
         const { error: deleteError } = await supabase
           .from('resource_allocations')
           .delete()
@@ -512,7 +510,6 @@ export function useResourceAllocationTimeline({ resource, onClose }: UseResource
       if (updates.startDate !== undefined) updateData.start_date = updates.startDate;
       if (updates.endDate !== undefined) updateData.end_date = updates.endDate;
       
-      console.log(`[updateAllocation] Updating primary record ${id}:`, updateData);
       const { error } = await supabase
         .from('resource_allocations')
         .update(updateData)

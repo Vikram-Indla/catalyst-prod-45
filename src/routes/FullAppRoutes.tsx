@@ -217,7 +217,7 @@ const DependenciesPage = lazy(() => import("../pages/work/Dependencies"));
 const ProgramRoom = lazy(() => import("../pages/ProgramRoom"));
 const ProgramBoardHistory = lazy(() => import("../pages/ProgramBoardHistory"));
 const PIObjectives = lazy(() => import("../pages/PIObjectives"));
-const CapacityPlanning = lazy(() => import("../pages/CapacityPlanning"));
+
 const Forecast = lazy(() => import("../pages/Forecast"));
 const WorkSpendGrid = lazy(() => import("../pages/WorkSpendGrid"));
 const RisksGridPage = lazy(() => import("../pages/risks/RisksGridPage"));
@@ -682,7 +682,7 @@ export default function FullAppRoutes() {
         <Route path="/pis" element={<S><PlaceholderPage /></S>} />
         <Route path="/program-board" element={<Navigate to="/for-you" replace />} />
         <Route path="/pi-objectives" element={<S><PIObjectives /></S>} />
-        <Route path="/capacity" element={<S><CapacityPlanning /></S>} />
+        <Route path="/capacity" element={<S><CapacityPlanningPage /></S>} />
         <Route path="/risks" element={<S><RisksGridPage /></S>} />
         <Route path="/risk-roam-report" element={<S><RiskRoamReportPage /></S>} />
         <Route path="/release-train-calendar" element={<div className="p-8"><h1 className="text-2xl font-bold">Release Calendar</h1><p className="text-muted-foreground">Coming soon</p></div>} />
