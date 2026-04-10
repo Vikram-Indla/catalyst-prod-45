@@ -199,7 +199,7 @@ export interface AIOutput {
   acceptance_criteria: string;
 }
 
-export type ActivityTab = 'comments' | 'history';
+export type ActivityTab = 'all' | 'comments' | 'history';
 
 export interface StoryDetailModalProps {
   isOpen: boolean;
