@@ -86,7 +86,12 @@ export const LINK_TYPE_STYLES: Record<string, React.CSSProperties> = {
 };
 
 export const LINK_TYPE_OPTIONS = [
-  'blocks', 'is blocked by', 'relates to', 'duplicates', 'is duplicated by', 'clones',
+  'is blocked by', 'blocks',
+  'is BRD of', 'BRD',
+  'is cloned by', 'clones',
+  'is duplicated by', 'duplicates',
+  'is implemented by', 'implements',
+  'relates to',
 ];
 
 export const STATUS_OPTION_GROUPS = [
