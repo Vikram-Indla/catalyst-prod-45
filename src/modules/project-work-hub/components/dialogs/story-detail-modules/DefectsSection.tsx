@@ -2,10 +2,11 @@
  * DefectsSection — extracted from StoryDetailModal
  */
 import React, { useState, useEffect, useRef } from 'react';
+import { CornerDownLeft, Loader2, Plus } from 'lucide-react';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-import { Plus } from 'lucide-react';
+import {} from 'lucide-react';
 import type { ColumnConfig, PhIssueRow } from './types';
 import { DEFAULT_COLUMNS, WORK_ITEM_ICONS } from './constants';
 import { nextPos } from './helpers';
