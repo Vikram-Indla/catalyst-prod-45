@@ -326,6 +326,24 @@ Deno.serve(async (req) => {
       }
     }
 
+    // ── GOVERNANCE LOCK CHECK — skip sync for governance-closed items ──
+    if (payload.issue?.key) {
+      const { data: govLock } = await supabase
+        .from('governance_closure_log')
+        .select('id')
+        .eq('item_key', payload.issue.key)
+        .is('restored_at', null)
+        .limit(1)
+        .maybeSingle();
+      if (govLock) {
+        console.log(`[governance] Skipping event for locked item ${payload.issue.key}`);
+        return new Response(JSON.stringify({ received: true, event: webhookEvent, governance_locked: true }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        });
+      }
+    }
+
     // ── Existing issue/sprint/comment event queuing ──
     let idempotencyKey: string;
     let entityType: string;
@@ -345,7 +363,6 @@ Deno.serve(async (req) => {
       entityId = payload.comment.id;
       idempotencyKey = `jira:comment:${entityId}:${payload.timestamp}`;
     } else if (payload.version) {
-      // Version events already handled above; queue for audit trail
       entityType = 'version';
       entityId = payload.version.id?.toString() || 'unknown';
       idempotencyKey = `jira:version:${entityId}:${payload.timestamp || Date.now()}`;

@@ -321,11 +321,26 @@ serve(async (req) => {
           }
         })
 
-        // Upsert this page immediately
-        if (rows.length > 0) {
-          const { error } = await supabase.from('ph_issues').upsert(rows, { onConflict: 'issue_key' })
+        // ── GOVERNANCE LOCK CHECK — filter out governance-closed items ──
+        const rowKeys = rows.map((r: any) => r.issue_key)
+        const { data: govLocked } = await supabase
+          .from('governance_closure_log')
+          .select('item_key')
+          .in('item_key', rowKeys)
+          .is('restored_at', null)
+        const lockedKeys = new Set((govLocked ?? []).map((g: any) => g.item_key))
+        const filteredRows = lockedKeys.size > 0
+          ? rows.filter((r: any) => !lockedKeys.has(r.issue_key))
+          : rows
+        if (lockedKeys.size > 0) {
+          console.log(`[governance] Skipping ${lockedKeys.size} governance-locked items in ${projectKey}`)
+        }
+
+        // Upsert this page immediately (excluding governance-locked)
+        if (filteredRows.length > 0) {
+          const { error } = await supabase.from('ph_issues').upsert(filteredRows, { onConflict: 'issue_key' })
           if (error) console.error(`[sync] upsert error for ${projectKey}: ${error.message}`)
-          else totalUpserted += rows.length
+          else totalUpserted += filteredRows.length
         }
 
         // Track fetched keys for pruning

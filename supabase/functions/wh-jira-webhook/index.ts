@@ -248,7 +248,26 @@ Deno.serve(async (req) => {
       });
     }
 
-    // 5. Process by event type
+    // 5. GOVERNANCE LOCK CHECK — skip processing for governance-closed items
+    const { data: govLock } = await supabase
+      .from('governance_closure_log')
+      .select('id')
+      .eq('item_key', jiraKey)
+      .is('restored_at', null)
+      .limit(1)
+      .maybeSingle();
+
+    if (govLock) {
+      console.log(`[governance] Skipping webhook for locked item ${jiraKey}`);
+      await writeLog("skipped", 0, `Governance-locked: ${jiraKey}`);
+      await releaseLock();
+      return new Response(
+        JSON.stringify({ status: "skipped", reason: "governance_locked", key: jiraKey }),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // 6. Process by event type
     const fields = issue.fields || {};
 
     if (eventType === "jira:issue_created" || eventType === "jira:issue_updated") {
