@@ -178,6 +178,17 @@ export function DefectTable({ defects, selectedIds, onSelectionChange, onDelete,
                   <Checkbox checked={isSelected} onCheckedChange={() => toggleOne(d.id)} />
                 </td>
 
+                {/* Star */}
+                <td onClick={e => e.stopPropagation()}>
+                  <WorkItemStarButton
+                    itemId={d.id}
+                    itemType="defect"
+                    size="sm"
+                    showTooltip={false}
+                    alwaysVisibleWhenStarred
+                  />
+                </td>
+
                 {/* Trash (matching ProductHub) */}
                 <td onClick={e => e.stopPropagation()}>
                   <Trash2
