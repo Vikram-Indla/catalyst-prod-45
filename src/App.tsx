@@ -84,6 +84,9 @@ const App = () => (
                     <Route path="publish-diagnostics" element={<S><PublishDiagnosticsPage /></S>} />
                   </Route>
 
+                  {/* AI Cleanup route */}
+                  <Route path="/cleanup" element={<S><CleanupPage /></S>} />
+
                   {/* All other routes — only when ENABLE_FULL_APP=true */}
                   {FullAppRoutes && (
                     <Route path="/*" element={<S><FullAppRoutes /></S>} />
