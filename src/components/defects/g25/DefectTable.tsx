@@ -140,6 +140,7 @@ interface Props {
 export function DefectTable({ defects, selectedIds, onSelectionChange, onDelete, visibleColumns }: Props) {
   const navigate = useNavigate();
   const cols = visibleColumns || new Set<ColumnKey>(['SEVERITY', 'PRIORITY', 'STATUS', 'ASSIGNEE', 'AGE']);
+  const nameAvatarMap = useProfileAvatarsByName();
 
   const toggleAll = () => {
     onSelectionChange(selectedIds.size === defects.length ? new Set() : new Set(defects.map(d => d.id)));
