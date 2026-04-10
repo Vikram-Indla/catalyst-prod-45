@@ -900,35 +900,32 @@ export default function StoryDetailModal({
                     <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 4L5 7L8 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
                   </button>
                   {showStatusDropdown && (
-                    <div onKeyDown={e => { if (e.key === 'Escape') setShowStatusDropdown(false); }} style={{ position: 'absolute', left: 0, top: '100%', marginTop: 4, background: '#FFF', border: '1px solid #DFE1E6', borderRadius: 4, boxShadow: '0 4px 16px rgba(9,30,66,0.18)', padding: '8px 0', zIndex: 100, minWidth: 200, maxHeight: 300, overflowY: 'auto', animation: 'sdm-slide-down 0.15s ease-out' }}>
+                    <div onKeyDown={e => { if (e.key === 'Escape') setShowStatusDropdown(false); }} style={{ position: 'absolute', left: 0, top: '100%', marginTop: 4, background: '#FFFFFF', borderRadius: 4, border: 'none', boxShadow: '0 8px 12px rgba(30,31,33,0.15), 0 0 1px rgba(30,31,33,0.31)', padding: '4px 0', zIndex: 9999, minWidth: 220, maxHeight: 340, overflowY: 'auto', animation: 'sdm-slide-down 0.15s ease-out' }}>
                       {STATUS_OPTION_GROUPS.map(group => (
                         <div key={group.category}>
-                          <div style={{ padding: '6px 14px', fontSize: 10, fontWeight: 700, color: '#5E6C84', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{group.groupLabel}</div>
+                          <div style={{ fontSize: 11, fontWeight: 700, color: '#6B778C', textTransform: 'uppercase', letterSpacing: '0.06em', padding: '8px 12px 4px', marginTop: 4 }}>{group.groupLabel}</div>
                           {group.statuses.map(st => {
                             const isActive = localStatus === st;
-                            const stStyle = getStatusStyle(st, group.category);
+                            const cat = group.category as 'todo' | 'in_progress' | 'done';
+                            const lozengeStyle = cat === 'done' ? { background: '#E3FCEF', color: '#006644' } : cat === 'in_progress' ? { background: '#DEEBFF', color: '#0747A6' } : { background: '#DFE1E6', color: '#253858' };
                             return (
-                              <button key={st} onClick={() => { setLocalStatus(st); setShowStatusDropdown(false); updateStatusMutation.mutate(st); }} style={{
-                                display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', padding: '8px 14px',
-                                background: isActive ? '#F4F5F7' : 'transparent', border: 'none', cursor: 'pointer', fontSize: 13, color: '#172B4D',
-                                transition: 'background 0.15s',
+                              <div key={st} onClick={() => { setLocalStatus(st); setShowStatusDropdown(false); updateStatusMutation.mutate(st); }} style={{
+                                height: 36, padding: '0 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                                cursor: 'pointer', background: isActive ? '#DEEBFF' : 'transparent', transition: 'background 80ms',
                               }}
-                                onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = '#F4F5F7'; }}
-                                onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = isActive ? '#F4F5F7' : 'transparent'; }}
+                                onMouseEnter={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = '#F4F5F7'; }}
+                                onMouseLeave={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
                               >
-                                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-                                  <span style={{ width: 8, height: 8, borderRadius: '50%', background: stStyle.bg, border: stStyle.bg === '#F4F5F7' ? '1px solid #C1C7D0' : 'none' }} />
-                                  <span style={{ fontWeight: isActive ? 600 : 400 }}>{st}</span>
-                                </span>
-                                {isActive && <span style={{ color: '#0052CC', fontWeight: 700 }}>✓</span>}
-                              </button>
+                                <span style={{ ...lozengeStyle, display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px', borderRadius: 3, fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em' }}>{st}</span>
+                                {isActive && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0052CC" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>}
+                              </div>
                             );
                           })}
                         </div>
                       ))}
-                      <div style={{ height: 1, background: '#EBECF0', margin: '6px 0' }} />
+                      <div style={{ height: 1, background: '#EBECF0', margin: '4px 0' }} />
                       <div onClick={() => { setShowStatusDropdown(false); setShowWorkflow(true); }}
-                        style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 14px', cursor: 'pointer', fontSize: 13, color: '#5E6C84', transition: 'background 0.15s' }}
+                        style={{ height: 36, padding: '0 12px', display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', fontSize: 14, fontWeight: 400, color: '#172B4D', transition: 'background 80ms' }}
                         onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
                         onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                       >View workflow</div>
