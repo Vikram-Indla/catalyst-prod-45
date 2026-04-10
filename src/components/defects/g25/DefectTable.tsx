@@ -15,6 +15,8 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { EpicIcon, StoryIcon, TaskIcon, BugIcon } from '@/components/boards/WorkItemTypeIcons';
+import { useTableColumns, type ColumnDef as TColDef } from '@/hooks/useTableColumns';
+import { ResizableTableHeader } from '@/components/shared/ResizableTableHeader';
 
 // ── Bug type icon (Jira canonical red rounded-square with dot) ──
 function BugTypeIcon() {
@@ -303,6 +305,26 @@ function AssigneeCell({ defect, nameAvatarMap }: { defect: Defect; nameAvatarMap
 // ── Column definitions ──
 type ColumnKey = 'SEVERITY' | 'PRIORITY' | 'STATUS' | 'ASSIGNEE' | 'AGE';
 
+// ── Resizable column config for the dynamic portion ──
+const DEFECT_COLUMNS: TColDef[] = [
+  { key: 'checkbox', label: '', defaultWidth: 40, minWidth: 40, locked: true },
+  { key: 'star', label: '', defaultWidth: 28, minWidth: 28, locked: true },
+  { key: 'type', label: 'TYPE', defaultWidth: 32, minWidth: 32, locked: true },
+  { key: 'key', label: 'KEY', defaultWidth: 140, minWidth: 80 },
+  { key: 'title', label: 'TITLE', defaultWidth: 320, minWidth: 150 },
+  { key: 'parent', label: 'PARENT', defaultWidth: 120, minWidth: 80 },
+  { key: 'severity', label: 'SEVERITY', defaultWidth: 100, minWidth: 70 },
+  { key: 'priority', label: 'PRIORITY', defaultWidth: 100, minWidth: 70 },
+  { key: 'status', label: 'STATUS', defaultWidth: 130, minWidth: 80 },
+  { key: 'assignee', label: 'ASSIGNEE', defaultWidth: 170, minWidth: 100 },
+  { key: 'age', label: 'AGE', defaultWidth: 90, minWidth: 60 },
+  { key: 'actions', label: '', defaultWidth: 40, minWidth: 40, locked: true },
+];
+
+const COL_KEY_MAP: Record<string, ColumnKey | null> = {
+  severity: 'SEVERITY', priority: 'PRIORITY', status: 'STATUS', assignee: 'ASSIGNEE', age: 'AGE',
+};
+
 interface Props {
   defects: Defect[];
   selectedIds: Set<string>;
@@ -315,6 +337,17 @@ export function DefectTable({ defects, selectedIds, onSelectionChange, onDelete,
   const navigate = useNavigate();
   const cols = visibleColumns || new Set<ColumnKey>(['SEVERITY', 'PRIORITY', 'STATUS', 'ASSIGNEE', 'AGE']);
   const nameAvatarMap = useProfileAvatarsByName();
+  const {
+    orderedColumns, columnWidths, dragKey, dragOverKey,
+    onResizeStart, onDragStart, onDragOver, onDragEnd,
+  } = useTableColumns('defects', DEFECT_COLUMNS);
+
+  // Filter out hidden optional columns
+  const visibleOrderedCols = orderedColumns.filter(c => {
+    const mappedKey = COL_KEY_MAP[c.key];
+    if (mappedKey && !cols.has(mappedKey)) return false;
+    return true;
+  });
 
   const toggleAll = () => {
     onSelectionChange(selectedIds.size === defects.length ? new Set() : new Set(defects.map(d => d.id)));
@@ -324,160 +357,112 @@ export function DefectTable({ defects, selectedIds, onSelectionChange, onDelete,
     s.has(id) ? s.delete(id) : s.add(id);
     onSelectionChange(s);
   };
-  
 
   const handleBulkAction = (action: string) => {
     toast.info(`${action} action for ${selectedIds.size} items — coming soon`);
   };
 
+  // Cell renderer map
+  const renderCell = (colKey: string, d: Defect, isSelected: boolean) => {
+    const keyText = d.displayKey || d.defect_key;
+    const isJira = d.isJiraSource ?? d.jira_source;
+    switch (colKey) {
+      case 'checkbox':
+        return <td key={colKey} style={{ width: columnWidths.checkbox }} onClick={e => e.stopPropagation()}><Checkbox checked={isSelected} onCheckedChange={() => toggleOne(d.id)} /></td>;
+      case 'star':
+        return <td key={colKey} style={{ width: columnWidths.star }} onClick={e => e.stopPropagation()}><WorkItemStarButton itemId={d.id} itemType="defect" size="sm" showTooltip={false} alwaysVisibleWhenStarred /></td>;
+      case 'type':
+        return <td key={colKey} style={{ width: columnWidths.type }}><BugTypeIcon /></td>;
+      case 'key':
+        return (
+          <td key={colKey} style={{ width: columnWidths.key }}>
+            <div className="flex items-center gap-1">
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 600, color: '#2563EB' }}>{keyText}</span>
+              {isJira && <JiraBadge />}
+              {isJira && d.external_url && (
+                <button className="opacity-0 group-hover:opacity-100 transition-opacity duration-150" style={{ marginLeft: 2, padding: 2, borderRadius: 3, border: 'none', background: 'transparent', cursor: 'pointer' }} title="Open in Jira" onClick={e => { e.stopPropagation(); window.open(d.external_url!, '_blank'); }}>
+                  <ExternalLink size={13} style={{ color: '#94A3B8' }} />
+                </button>
+              )}
+            </div>
+          </td>
+        );
+      case 'title':
+        return <td key={colKey} style={{ fontWeight: 500, width: columnWidths.title }}>{d.title}</td>;
+      case 'parent':
+        return <td key={colKey} style={{ width: columnWidths.parent }} onClick={e => e.stopPropagation()}><ParentPickerCell defectId={d.id} currentParentKey={d.parent_key || null} projectKey={d.jira_project_key || null} /></td>;
+      case 'severity':
+        return <td key={colKey} style={{ width: columnWidths.severity }}><SeverityPill severity={d.severity} /></td>;
+      case 'priority':
+        return <td key={colKey} style={{ width: columnWidths.priority }}><PriorityCell priority={d.priority} /></td>;
+      case 'status':
+        return <td key={colKey} style={{ width: columnWidths.status }}><StatusBadge status={d.status} /></td>;
+      case 'assignee':
+        return <td key={colKey} style={{ width: columnWidths.assignee }}><AssigneeCell defect={d} nameAvatarMap={nameAvatarMap} /></td>;
+      case 'age':
+        return <td key={colKey} style={{ fontSize: 12, color: '#64748B', width: columnWidths.age }}>{getRelativeAge(d.created_at)}</td>;
+      case 'actions':
+        return (
+          <td key={colKey} style={{ width: columnWidths.actions }} onClick={e => e.stopPropagation()}>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="pb-row-actions opacity-0 group-hover:opacity-100 transition-opacity duration-150" style={{ height: 28, width: 28, borderRadius: 4, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', border: 'none', background: 'transparent', cursor: 'pointer' }}>
+                  <MoreHorizontal size={16} style={{ color: '#64748B' }} />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => navigate(`/testhub/defects/${d.id}`)}>View Details</DropdownMenuItem>
+                {d.external_url && <DropdownMenuItem onClick={() => window.open(d.external_url!, '_blank')}><ExternalLink className="h-4 w-4 mr-2" />Open External</DropdownMenuItem>}
+                <DropdownMenuItem className="text-destructive" onClick={() => onDelete(d)}>Delete</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </td>
+        );
+      default:
+        return <td key={colKey} />;
+    }
+  };
+
   return (
     <div className="flex flex-col">
-      {/* Bulk action bar — appears when items selected */}
-      <BulkActionBar
-        selectedCount={selectedIds.size}
-        onAction={handleBulkAction}
-        onCancel={() => onSelectionChange(new Set())}
-      />
-
+      <BulkActionBar selectedCount={selectedIds.size} onAction={handleBulkAction} onCancel={() => onSelectionChange(new Set())} />
       <div style={{ overflowX: 'auto' }}>
-        <table className="pb-table" style={{ minWidth: 1200 }}>
+        <table className="pb-table" style={{ minWidth: 1200, tableLayout: 'fixed' }}>
           <colgroup>
-            <col style={{ width: 40 }} />
-            <col style={{ width: 28 }} />
-            <col style={{ width: 32 }} />
-            <col style={{ width: 140 }} />
-            <col />
-            <col style={{ width: 120 }} />
-            {cols.has('SEVERITY') && <col style={{ width: 100 }} />}
-            {cols.has('PRIORITY') && <col style={{ width: 100 }} />}
-            {cols.has('STATUS') && <col style={{ width: 130 }} />}
-            {cols.has('ASSIGNEE') && <col style={{ width: 170 }} />}
-            {cols.has('AGE') && <col style={{ width: 90 }} />}
-            <col style={{ width: 40 }} />
+            {visibleOrderedCols.map(c => (
+              <col key={c.key} style={{ width: columnWidths[c.key] || c.defaultWidth }} />
+            ))}
           </colgroup>
-
           <thead>
-            <tr>
-              <th><Checkbox checked={defects.length > 0 && selectedIds.size === defects.length} onCheckedChange={toggleAll} /></th>
-              <th>{/* Star */}</th>
-              <th>TYPE</th>
-              <th>KEY</th>
-              <th>TITLE</th>
-              <th>PARENT</th>
-              {cols.has('SEVERITY') && <th>SEVERITY</th>}
-              {cols.has('PRIORITY') && <th>PRIORITY</th>}
-              {cols.has('STATUS') && <th>STATUS</th>}
-              {cols.has('ASSIGNEE') && <th>ASSIGNEE</th>}
-              {cols.has('AGE') && <th>AGE</th>}
-              <th />
+            <tr className="group/thead">
+              {visibleOrderedCols.map(c => {
+                if (c.key === 'checkbox') {
+                  return <th key={c.key} style={{ width: columnWidths.checkbox }}><Checkbox checked={defects.length > 0 && selectedIds.size === defects.length} onCheckedChange={toggleAll} /></th>;
+                }
+                return (
+                  <ResizableTableHeader
+                    key={c.key}
+                    colKey={c.key}
+                    label={c.label}
+                    width={columnWidths[c.key] || c.defaultWidth}
+                    locked={c.locked}
+                    isDragging={dragKey === c.key}
+                    isDragOver={dragOverKey === c.key}
+                    onResizeStart={onResizeStart}
+                    onDragStart={onDragStart}
+                    onDragOver={onDragOver}
+                    onDragEnd={onDragEnd}
+                  />
+                );
+              })}
             </tr>
           </thead>
-
           <tbody>
             {defects.map(d => {
-              const keyText = d.displayKey || d.defect_key;
-              const isJira = d.isJiraSource ?? d.jira_source;
               const isSelected = selectedIds.has(d.id);
-
               return (
-                <tr
-                  key={d.id}
-                  className={cn('group', isSelected && 'pb-row-selected')}
-                  style={{ cursor: 'pointer' }}
-                  onClick={() => navigate(`/testhub/defects/${d.id}`)}
-                >
-                  {/* Checkbox */}
-                  <td onClick={e => e.stopPropagation()}>
-                    <Checkbox checked={isSelected} onCheckedChange={() => toggleOne(d.id)} />
-                  </td>
-
-                  {/* Star */}
-                  <td onClick={e => e.stopPropagation()}>
-                    <WorkItemStarButton
-                      itemId={d.id}
-                      itemType="defect"
-                      size="sm"
-                      showTooltip={false}
-                      alwaysVisibleWhenStarred
-                    />
-                  </td>
-
-                  {/* Type icon */}
-                  <td><BugTypeIcon /></td>
-
-                  {/* Key */}
-                  <td>
-                    <div className="flex items-center gap-1">
-                      <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 600, color: '#2563EB' }}>
-                        {keyText}
-                      </span>
-                      {isJira && <JiraBadge />}
-                      {isJira && d.external_url && (
-                        <button
-                          className="opacity-0 group-hover:opacity-100 transition-opacity duration-150"
-                          style={{ marginLeft: 2, padding: 2, borderRadius: 3, border: 'none', background: 'transparent', cursor: 'pointer' }}
-                          title="Open in Jira"
-                          onClick={e => { e.stopPropagation(); window.open(d.external_url!, '_blank'); }}
-                        >
-                          <ExternalLink size={13} style={{ color: '#94A3B8' }} />
-                        </button>
-                      )}
-                    </div>
-                  </td>
-
-                  {/* Title */}
-                  <td style={{ fontWeight: 500 }}>{d.title}</td>
-
-                  {/* Parent — inline editable */}
-                  <td onClick={e => e.stopPropagation()}>
-                    <ParentPickerCell defectId={d.id} currentParentKey={d.parent_key || null} projectKey={d.jira_project_key || null} />
-                  </td>
-
-                  {/* Severity */}
-                  {cols.has('SEVERITY') && <td><SeverityPill severity={d.severity} /></td>}
-
-                  {/* Priority */}
-                  {cols.has('PRIORITY') && <td><PriorityCell priority={d.priority} /></td>}
-
-                  {/* Status */}
-                  {cols.has('STATUS') && <td><StatusBadge status={d.status} /></td>}
-
-                  {/* Assignee — Jira-style with face avatars */}
-                  {cols.has('ASSIGNEE') && (
-                    <td>
-                      <AssigneeCell defect={d} nameAvatarMap={nameAvatarMap} />
-                    </td>
-                  )}
-
-                  {/* Age */}
-                  {cols.has('AGE') && (
-                    <td style={{ fontSize: 12, color: '#64748B' }}>
-                      {getRelativeAge(d.created_at)}
-                    </td>
-                  )}
-
-                  {/* Actions */}
-                  <td onClick={e => e.stopPropagation()}>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <button
-                          className="pb-row-actions opacity-0 group-hover:opacity-100 transition-opacity duration-150"
-                          style={{ height: 28, width: 28, borderRadius: 4, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', border: 'none', background: 'transparent', cursor: 'pointer' }}
-                        >
-                          <MoreHorizontal size={16} style={{ color: '#64748B' }} />
-                        </button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => navigate(`/testhub/defects/${d.id}`)}>View Details</DropdownMenuItem>
-                        {d.external_url && (
-                          <DropdownMenuItem onClick={() => window.open(d.external_url!, '_blank')}>
-                            <ExternalLink className="h-4 w-4 mr-2" />Open External
-                          </DropdownMenuItem>
-                        )}
-                        <DropdownMenuItem className="text-destructive" onClick={() => onDelete(d)}>Delete</DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </td>
+                <tr key={d.id} className={cn('group', isSelected && 'pb-row-selected')} style={{ cursor: 'pointer' }} onClick={() => navigate(`/testhub/defects/${d.id}`)}>
+                  {visibleOrderedCols.map(c => renderCell(c.key, d, isSelected))}
                 </tr>
               );
             })}
