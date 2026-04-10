@@ -437,7 +437,7 @@ function SortIcon({ col, sortCol, sortDir }: { col: SortColumn; sortCol: SortCol
 const PROJECT_COLUMNS: TColDef[] = [
   { key: 'num', label: '#', defaultWidth: 40, minWidth: 40, locked: true },
   { key: 'star', label: '', defaultWidth: 36, minWidth: 36, locked: true },
-  { key: 'project_key', label: 'PROJECT KEY', defaultWidth: 100, minWidth: 70 },
+  { key: 'project_key', label: 'KEY', defaultWidth: 100, minWidth: 70 },
   { key: 'project_name', label: 'PROJECT NAME', defaultWidth: 280, minWidth: 150 },
   { key: 'status', label: 'STATUS', defaultWidth: 110, minWidth: 80 },
   { key: 'lead', label: 'LEAD', defaultWidth: 200, minWidth: 120 },
