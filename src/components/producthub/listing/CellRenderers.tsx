@@ -5,6 +5,7 @@
 import { format, differenceInDays } from 'date-fns';
 import type { InitiativeStatus } from '@/types/initiative';
 import { STATUS_DISPLAY, getPriorityLevel, getAvatarColor, getInitials } from '@/types/initiative';
+import { StatusBadge } from '@/components/ui/StatusBadge';
 
 /* ── Canonical Jira SVG Icons (16×16) ── */
 const TYPE_SVG_MAP: Record<string, { svg: JSX.Element; label: string }> = {
@@ -61,11 +62,8 @@ const DEFAULT_TYPE_SVG = (
 /* ── Status Cell ── */
 export function StatusCell({ status }: { status: InitiativeStatus }) {
   const s = STATUS_DISPLAY[status];
-  const lozengeClass = `pb-lozenge pb-lozenge-${s.lozenge}`;
   return (
-    <span className={lozengeClass}>
-      {s.label}
-    </span>
+    <StatusBadge status={s.label} />
   );
 }
 
