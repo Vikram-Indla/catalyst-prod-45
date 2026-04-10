@@ -433,6 +433,19 @@ function SortIcon({ col, sortCol, sortDir }: { col: SortColumn; sortCol: SortCol
   return sortDir === 'asc' ? <ChevronUp size={12} /> : <ChevronDown size={12} />;
 }
 
+// ── Resizable column config ──
+const PROJECT_COLUMNS: TColDef[] = [
+  { key: 'num', label: '#', defaultWidth: 40, minWidth: 40, locked: true },
+  { key: 'star', label: '', defaultWidth: 36, minWidth: 36, locked: true },
+  { key: 'project_key', label: 'PROJECT KEY', defaultWidth: 100, minWidth: 70 },
+  { key: 'project_name', label: 'PROJECT NAME', defaultWidth: 280, minWidth: 150 },
+  { key: 'status', label: 'STATUS', defaultWidth: 110, minWidth: 80 },
+  { key: 'lead', label: 'LEAD', defaultWidth: 200, minWidth: 120 },
+  { key: 'members', label: 'MEMBERS', defaultWidth: 150, minWidth: 80 },
+  { key: 'sync', label: 'SYNC', defaultWidth: 200, minWidth: 100 },
+  { key: 'actions', label: '', defaultWidth: 48, minWidth: 48, locked: true },
+];
+
 // ── Props ──────────────────────────────────────────────
 interface Props {
   projects: ProjectListItem[];
@@ -454,6 +467,10 @@ export function AllProjectsTable({
   selectedRows, onToggleRow, pageOffset = 0,
 }: Props) {
   const navigate = useNavigate();
+  const {
+    orderedColumns, columnWidths, dragKey, dragOverKey,
+    onResizeStart, onDragStart, onDragOver, onDragEnd,
+  } = useTableColumns('projects', PROJECT_COLUMNS);
 
   // Per-project sync data
   const { data: syncData } = useQuery({
