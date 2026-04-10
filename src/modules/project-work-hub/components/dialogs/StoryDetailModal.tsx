@@ -15,6 +15,7 @@ import {
   Eye, EyeOff, Sparkles, Loader2, RotateCcw, Settings2, AlertTriangle,
   SquarePen,
 } from 'lucide-react';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 
 // Ring-fenced CSS for extension components
@@ -104,6 +105,23 @@ export default function StoryDetailModal({
       const { data } = await supabase.from('ph_issues').select('*').eq('id', itemId).is('deleted_at', null).single();
       return data as unknown as PhIssue | null;
     },
+  });
+
+  // Recent epics for breadcrumb "Add parent" dropdown
+  const { data: recentEpics = [] } = useQuery({
+    queryKey: ['ph-recent-epics', issue?.project_key],
+    enabled: !!issue?.project_key && !issue?.parent_key,
+    queryFn: async () => {
+      const { data } = await supabase.from('ph_issues')
+        .select('id, issue_key, summary, issue_type, status_category')
+        .eq('project_key', issue!.project_key)
+        .in('issue_type', ['Epic', 'epic', 'Feature', 'feature'])
+        .neq('status_category', 'done')
+        .order('jira_updated_at', { ascending: false })
+        .limit(5);
+      return data || [];
+    },
+    staleTime: 60000,
   });
 
 
@@ -523,19 +541,62 @@ export default function StoryDetailModal({
                   >{issue.parent_key}</span>
                 </>
               ) : (
-                <button
-                  onClick={() => setParentPickerTrigger(n => n + 1)}
-                  style={{
-                    background: 'none', border: '1px solid transparent', borderRadius: 4, cursor: 'pointer',
-                    padding: '2px 6px', display: 'inline-flex', alignItems: 'center', gap: 4,
-                    fontSize: 13, fontWeight: 500, color: '#1868DB', transition: 'border-color 150ms, background 150ms',
-                  }}
-                  onMouseEnter={e => { e.currentTarget.style.borderColor = '#DEEBFF'; e.currentTarget.style.background = '#F4F5F7'; }}
-                  onMouseLeave={e => { e.currentTarget.style.borderColor = 'transparent'; e.currentTarget.style.background = 'none'; }}
-                >
-                  <SquarePen size={13} />
-                  Add parent
-                </button>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <button
+                      style={{
+                        background: 'none', border: '1px solid transparent', borderRadius: 4, cursor: 'pointer',
+                        padding: '2px 6px', display: 'inline-flex', alignItems: 'center', gap: 4,
+                        fontSize: 13, fontWeight: 500, color: '#1868DB', transition: 'border-color 150ms, background 150ms',
+                      }}
+                      onMouseEnter={e => { e.currentTarget.style.borderColor = '#DEEBFF'; e.currentTarget.style.background = '#F4F5F7'; }}
+                      onMouseLeave={e => { e.currentTarget.style.borderColor = 'transparent'; e.currentTarget.style.background = 'none'; }}
+                    >
+                      <SquarePen size={13} />
+                      Add parent
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent align="start" sideOffset={4} className="p-0 w-[380px]" style={{ borderRadius: 8, boxShadow: '0 8px 16px rgba(0,0,0,0.12), 0 0 1px rgba(0,0,0,0.12)' }}>
+                    <div style={{ padding: '10px 16px 6px', fontSize: 11, fontWeight: 700, color: '#6B778C', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
+                      Recent epics
+                    </div>
+                    <div style={{ maxHeight: 300, overflowY: 'auto' }}>
+                      {recentEpics.map((epic: any) => (
+                        <button
+                          key={epic.id}
+                          onClick={() => handleParentChange(epic.issue_key)}
+                          style={{
+                            width: '100%', padding: '10px 16px', border: 'none', background: 'transparent',
+                            textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10,
+                            fontSize: 14, color: '#172B4D', transition: 'background 100ms',
+                          }}
+                          onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
+                          onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                        >
+                          <IssueIcon type="Epic" size={16} />
+                          <span>{epic.issue_key} {epic.summary}</span>
+                        </button>
+                      ))}
+                      {recentEpics.length === 0 && (
+                        <div style={{ padding: '12px 16px', fontSize: 13, color: '#6B778C' }}>No epics found</div>
+                      )}
+                    </div>
+                    <div style={{ borderTop: '1px solid #EBECF0' }}>
+                      <button
+                        onClick={() => setParentPickerTrigger(n => n + 1)}
+                        style={{
+                          width: '100%', padding: '10px 16px', border: 'none', background: 'transparent',
+                          textAlign: 'left', cursor: 'pointer', fontSize: 14, color: '#172B4D', fontWeight: 500,
+                          transition: 'background 100ms',
+                        }}
+                        onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
+                        onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                      >
+                        View all epics
+                      </button>
+                    </div>
+                  </PopoverContent>
+                </Popover>
               )}
               <span style={{ color: '#C1C7D0', fontSize: 12 }}>/</span>
               <IssueIcon type={issue?.issue_type ?? 'Story'} size={14} />
