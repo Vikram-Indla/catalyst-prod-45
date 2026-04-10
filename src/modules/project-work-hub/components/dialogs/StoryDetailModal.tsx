@@ -1294,7 +1294,8 @@ function ParentFieldPicker({ storyKey, parentKey, projectKey, onParentChange }: 
             {searchResults.length === 0 && search && <div style={{ padding: 12, fontSize: 12, color: '#6B778C', textAlign: 'center' }}>No epics found for "{search}"</div>}
           </div>
         </div>
-      )}
+        );
+      })()}
     </div>
   );
 }
