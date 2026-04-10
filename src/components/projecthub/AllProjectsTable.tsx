@@ -521,141 +521,76 @@ export function AllProjectsTable({
     staleTime: 15_000,
   });
 
+  const renderProjectCell = (colKey: string, p: ProjectListItem, idx: number) => {
+    const isFav = favoriteIds.has(p.id);
+    const active = isActiveStatus(p.status);
+    const badgeColor = getBadgeColor(p.id);
+    const rowNum = pageOffset + idx + 1;
+    const issueCount = syncData?.countMap?.[p.project_key] ?? p.total_issues ?? 0;
+    const wasSynced = syncData?.syncedProjectKeys?.has(p.project_key) || !!p.last_synced_at || issueCount > 0;
+    const syncTs = wasSynced ? (syncData?.lastSyncAt || p.last_synced_at) : null;
+    const syncAge = syncTs ? formatDistanceToNowStrict(new Date(syncTs), { addSuffix: false }) : null;
+    const syncDotColor = getSyncDotColor(syncTs, null);
+    const syncTooltipText = getSyncTooltip(syncTs, null);
+
+    switch (colKey) {
+      case 'num': return <td key={colKey} className="text-center"><span className="text-xs text-slate-400 dark:text-[#878787] tabular-nums">{rowNum}</span></td>;
+      case 'star': return <td key={colKey} className="text-center"><button onClick={e => { e.stopPropagation(); onToggleFav(p.id, isFav); }} className="bg-transparent border-none cursor-pointer p-0 outline-none rounded flex-shrink-0" style={{ pointerEvents: 'auto' }}><Star size={14} fill={isFav ? '#F59E0B' : 'none'} className={isFav ? 'text-amber-500' : 'text-slate-300 dark:text-[#878787]'} /></button></td>;
+      case 'project_key': return <td key={colKey}><span className="font-mono text-[11px] font-bold tracking-wide text-white px-1.5 py-0.5 rounded" style={{ background: badgeColor }}>{p.project_key}</span></td>;
+      case 'project_name': return <td key={colKey}><span onClick={() => navigate(`/project-hub/${p.project_key}/dashboard`)} className="font-semibold text-[13px] truncate hover:text-blue-600 hover:underline cursor-pointer text-slate-900 dark:text-white" title={p.name} style={{ pointerEvents: 'auto' }}>{p.name}</span></td>;
+      case 'status': return <td key={colKey} className="text-center">{active ? <StatusChangePopover project={p} /> : <ProjectStatusBadge status={p.status} />}</td>;
+      case 'lead': return <td key={colKey}><LeadReassignPopover project={p} /></td>;
+      case 'members': return <td key={colKey}><MemberManagePopover project={p} /></td>;
+      case 'sync': return (
+        <td key={colKey}>
+          <div className="flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-[#A1A1A1]">
+            <Tooltip><TooltipTrigger asChild><span className={cn("w-2 h-2 rounded-full flex-shrink-0 cursor-help", syncDotColor)} /></TooltipTrigger><TooltipContent side="top" className="text-xs whitespace-pre-line max-w-[220px]">{syncTooltipText}</TooltipContent></Tooltip>
+            <span className="font-medium">{syncAge ? `↔ ${syncAge}` : 'Not synced'} · {issueCount} issues</span>
+          </div>
+        </td>
+      );
+      case 'actions': return <td key={colKey} className="text-center" style={{ pointerEvents: 'auto' }}>{active ? <RowActionMenu project={p} /> : <Lock size={14} className="text-slate-300 dark:text-[#878787]" />}</td>;
+      default: return <td key={colKey} />;
+    }
+  };
+
   return (
     <div className="overflow-x-auto" style={{ borderRadius: 0 }}>
-      <table className="pb-table">
+      <table className="pb-table" style={{ tableLayout: 'fixed' }}>
         <colgroup>
-          <col style={{ width: 40 }} />
-          <col style={{ width: 36 }} />
-          <col style={{ width: 100 }} />
-          <col style={{ width: 'auto', minWidth: 260 }} />
-          <col style={{ width: 110 }} />
-          <col style={{ width: 200 }} />
-          <col style={{ width: 150 }} />
-          <col style={{ width: 200 }} />
-          <col style={{ width: 48 }} />
+          {orderedColumns.map(c => (
+            <col key={c.key} style={{ width: columnWidths[c.key] || c.defaultWidth }} />
+          ))}
         </colgroup>
         <thead>
-          <tr>
-            <th className="text-center">#</th>
-            <th />
-            <th>PROJECT KEY</th>
-            <th>PROJECT NAME</th>
-            <th>STATUS</th>
-            <th>LEAD</th>
-            <th>MEMBERS</th>
-            <th>SYNC</th>
-            <th />
+          <tr className="group/thead">
+            {orderedColumns.map(c => {
+              if (c.key === 'num') return <th key={c.key} className="text-center" style={{ width: columnWidths.num }}>#</th>;
+              return (
+                <ResizableTableHeader
+                  key={c.key}
+                  colKey={c.key}
+                  label={c.label}
+                  width={columnWidths[c.key] || c.defaultWidth}
+                  locked={c.locked}
+                  isDragging={dragKey === c.key}
+                  isDragOver={dragOverKey === c.key}
+                  onResizeStart={onResizeStart}
+                  onDragStart={onDragStart}
+                  onDragOver={onDragOver}
+                  onDragEnd={onDragEnd}
+                />
+              );
+            })}
           </tr>
         </thead>
         <tbody>
           {projects.map((p, idx) => {
-            const isFav = favoriteIds.has(p.id);
             const checked = selectedRows.has(p.id);
             const active = isActiveStatus(p.status);
-            const badgeColor = getBadgeColor(p.id);
-            const badgeText = p.project_key;
-            const rowNum = pageOffset + idx + 1;
-
-            const issueCount = syncData?.countMap?.[p.project_key] ?? p.total_issues ?? 0;
-            const wasSynced = syncData?.syncedProjectKeys?.has(p.project_key) || !!p.last_synced_at || issueCount > 0;
-            const syncTs = wasSynced ? (syncData?.lastSyncAt || p.last_synced_at) : null;
-            const syncAge = syncTs
-              ? formatDistanceToNowStrict(new Date(syncTs), { addSuffix: false })
-              : null;
-            const syncDotColor = getSyncDotColor(syncTs, null);
-            const syncTooltipText = getSyncTooltip(syncTs, null);
-
             return (
-              <tr
-                key={p.id}
-                className={cn('group', checked && 'pb-row-selected')}
-                style={{
-                  opacity: active ? 1 : 0.45,
-                  pointerEvents: active ? 'auto' : 'none',
-                }}
-              >
-                {/* # */}
-                <td className="text-center">
-                  <span className="text-xs text-slate-400 dark:text-[#878787] tabular-nums">
-                    {rowNum}
-                  </span>
-                </td>
-
-                {/* Star */}
-                <td className="text-center">
-                  <button
-                    onClick={e => { e.stopPropagation(); onToggleFav(p.id, isFav); }}
-                    className="bg-transparent border-none cursor-pointer p-0 outline-none rounded flex-shrink-0"
-                    style={{ pointerEvents: 'auto' }}
-                  >
-                    <Star size={14} fill={isFav ? '#F59E0B' : 'none'} className={isFav ? 'text-amber-500' : 'text-slate-300 dark:text-[#878787]'} />
-                  </button>
-                </td>
-
-                {/* PROJECT KEY */}
-                <td>
-                  <span className="font-mono text-[11px] font-bold tracking-wide text-white px-1.5 py-0.5 rounded" style={{ background: badgeColor }}>
-                    {badgeText}
-                  </span>
-                </td>
-
-                {/* PROJECT NAME */}
-                <td>
-                  <span
-                    onClick={() => navigate(`/project-hub/${p.project_key}/dashboard`)}
-                    className="font-semibold text-[13px] truncate hover:text-blue-600 hover:underline cursor-pointer text-slate-900 dark:text-white"
-                    title={p.name}
-                    style={{ pointerEvents: 'auto' }}
-                  >
-                    {p.name}
-                  </span>
-                </td>
-
-                {/* STATUS */}
-                <td className="text-center">
-                  {active ? (
-                    <StatusChangePopover project={p} />
-                  ) : (
-                    <ProjectStatusBadge status={p.status} />
-                  )}
-                </td>
-
-                {/* LEAD */}
-                <td>
-                  <LeadReassignPopover project={p} />
-                </td>
-
-                {/* MEMBERS */}
-                <td>
-                  <MemberManagePopover project={p} />
-                </td>
-
-                {/* SYNC */}
-                <td>
-                  <div className="flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-[#A1A1A1]">
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <span className={cn("w-2 h-2 rounded-full flex-shrink-0 cursor-help", syncDotColor)} />
-                      </TooltipTrigger>
-                      <TooltipContent side="top" className="text-xs whitespace-pre-line max-w-[220px]">
-                        {syncTooltipText}
-                      </TooltipContent>
-                    </Tooltip>
-                    <span className="font-medium">
-                      {syncAge ? `↔ ${syncAge}` : 'Not synced'} · {issueCount} issues
-                    </span>
-                  </div>
-                </td>
-
-                {/* Actions */}
-                <td className="text-center" style={{ pointerEvents: 'auto' }}>
-                  {active ? (
-                    <RowActionMenu project={p} />
-                  ) : (
-                    <Lock size={14} className="text-slate-300 dark:text-[#878787]" />
-                  )}
-                </td>
+              <tr key={p.id} className={cn('group', checked && 'pb-row-selected')} style={{ opacity: active ? 1 : 0.45, pointerEvents: active ? 'auto' : 'none' }}>
+                {orderedColumns.map(c => renderProjectCell(c.key, p, idx))}
               </tr>
             );
           })}
