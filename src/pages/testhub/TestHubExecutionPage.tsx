@@ -125,24 +125,7 @@ const statusConfigDark: Record<string, { icon: any; color: string; bg: string; l
 const statusConfig = statusConfigLight;
 function getStatusConfig(isDark: boolean) { return isDark ? statusConfigDark : statusConfigLight; }
 
-const formatTime = (seconds: number) => {
-  const h = Math.floor(seconds / 3600);
-  const m = Math.floor((seconds % 3600) / 60);
-  const s = seconds % 60;
-  if (h > 0) return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-  return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-};
-
-const highlightVariables = (text: string) => {
-  if (!text) return null;
-  const parts = text.split(/(\{\{[^}]+\}\})/g);
-  return parts.map((part, i) => {
-    if (part.match(/^\{\{[^}]+\}\}$/)) {
-      return <span key={i} style={{ backgroundColor: 'rgba(37,99,235,0.15)', color: '#2563EB', padding: '2px 6px', borderRadius: 4, fontFamily: 'monospace', fontSize: '0.9em' }}>{part}</span>;
-    }
-    return part;
-  });
-};
+// formatTime and highlightVariables moved to ExecutionHeader.tsx and ExecutionRunMode.tsx
 
 // ── Main Component ─────────────────────────────────────────────────────────
 export default function TestHubExecutionPage() {
@@ -660,188 +643,34 @@ export default function TestHubExecutionPage() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', backgroundColor: 'hsl(var(--background))' }}>
       {/* ── Header ────────────────────────────────────────────────────── */}
-      <div style={{
-        height: 56, padding: '0 20px', backgroundColor: 'hsl(var(--card))',
-        borderBottom: '1px solid hsl(var(--border))', display: 'flex',
-        alignItems: 'center', justifyContent: 'space-between', flexShrink: 0,
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <button onClick={handleExit} style={{
-            display: 'flex', alignItems: 'center', gap: 4, padding: '6px 10px',
-            border: '1px solid hsl(var(--border))', borderRadius: 6,
-            backgroundColor: 'hsl(var(--card))', color: 'hsl(var(--muted-foreground))',
-            fontSize: 13, fontWeight: 500, cursor: 'pointer',
-          }}>
-            <ArrowLeft size={16} /> Exit
-          </button>
-          <div style={{ height: 20, width: 1, backgroundColor: 'hsl(var(--border))' }} />
-          <Play size={18} style={{ color: '#10B981' }} />
-          <span style={{ fontSize: 12, fontWeight: 600, color: 'hsl(var(--primary))', backgroundColor: 'hsl(var(--primary) / 0.1)', padding: '2px 8px', borderRadius: 4 }}>
-            {cycle.cycle_key}
-          </span>
-          <span style={{ fontSize: 14, fontWeight: 600, color: 'hsl(var(--foreground))' }}>{cycle.name}</span>
-        </div>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          {/* FastTrack toggle */}
-          <button
-            onClick={() => setFastTrackMode(!fastTrackMode)}
-            title={fastTrackMode ? 'FastTrack ON: Simple pass/fail, auto-advance' : 'Enable FastTrack mode'}
-            style={{
-              display: 'flex', alignItems: 'center', gap: 4, padding: '6px 10px',
-              border: fastTrackMode ? 'none' : '1px solid hsl(var(--border))',
-              borderRadius: 6, fontSize: 12, fontWeight: 600, cursor: 'pointer',
-              backgroundColor: fastTrackMode ? '#FEF3C7' : 'hsl(var(--card))',
-              color: fastTrackMode ? '#D97706' : 'hsl(var(--muted-foreground))',
-            }}
-          >
-            <Zap size={14} /> {fastTrackMode ? 'FastTrack ON' : 'FastTrack'}
-          </button>
-
-          {/* Stats badges */}
-          <div style={{ display: 'flex', gap: 6 }}>
-            {[
-              { count: cycle.passed_count, color: '#059669', bg: isDark ? 'rgba(34,197,94,0.12)' : '#ECFDF5', Icon: CheckCircle2 },
-              { count: cycle.failed_count, color: '#DC2626', bg: isDark ? 'rgba(248,113,113,0.12)' : '#FEF2F2', Icon: XCircle },
-              { count: cycle.blocked_count, color: '#D97706', bg: isDark ? 'rgba(251,191,36,0.12)' : '#FFFBEB', Icon: AlertTriangle },
-            ].map((s, i) => (
-              <span key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: 3, padding: '4px 8px', backgroundColor: s.bg, borderRadius: 6, fontSize: 11, fontWeight: 600, color: s.color }}>
-                <s.Icon size={12} /> {s.count}
-              </span>
-            ))}
-          </div>
-
-          {/* Session timer */}
-          <div style={{
-            display: 'flex', alignItems: 'center', gap: 5, padding: '5px 10px',
-            backgroundColor: 'hsl(var(--muted) / 0.3)', borderRadius: 6,
-          }}>
-            <Timer size={14} style={{ color: 'hsl(var(--muted-foreground))' }} />
-            <span style={{ fontSize: 13, fontWeight: 600, fontFamily: 'monospace', color: 'hsl(var(--foreground))' }}>
-              {formatTime(sessionElapsed)}
-            </span>
-          </div>
-
-          {/* Progress */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <div style={{ width: 100, height: 6, backgroundColor: 'hsl(var(--muted))', borderRadius: 4, overflow: 'hidden' }}>
-              <div style={{ height: '100%', width: `${cycle.progress_percent}%`, background: 'linear-gradient(90deg, #10B981 0%, #059669 100%)', borderRadius: 4, transition: 'width 0.3s' }} />
-            </div>
-            <span style={{ fontSize: 13, fontWeight: 700, color: '#059669' }}>{cycle.progress_percent}%</span>
-          </div>
-
-          {/* Sidebar toggle */}
-          <button onClick={() => setShowSidebar(!showSidebar)} title="Toggle sidebar" style={{
-            padding: 6, border: '1px solid hsl(var(--border))', borderRadius: 6,
-            backgroundColor: 'hsl(var(--card))', color: 'hsl(var(--muted-foreground))', cursor: 'pointer',
-            display: 'flex', alignItems: 'center',
-          }}>
-            {showSidebar ? <PanelRightClose size={16} /> : <PanelRightOpen size={16} />}
-          </button>
-
-          {/* Shortcuts help */}
-          <button onClick={() => setShowShortcuts(true)} title="Keyboard shortcuts (?)" style={{
-            padding: 6, border: '1px solid hsl(var(--border))', borderRadius: 6,
-            backgroundColor: 'hsl(var(--card))', color: 'hsl(var(--muted-foreground))', cursor: 'pointer',
-            display: 'flex', alignItems: 'center',
-          }}>
-            <Keyboard size={16} />
-          </button>
-        </div>
-      </div>
+      <ExecutionHeader
+        cycle={cycle}
+        isDark={isDark}
+        fastTrackMode={fastTrackMode}
+        setFastTrackMode={setFastTrackMode}
+        sessionElapsed={sessionElapsed}
+        showSidebar={showSidebar}
+        setShowSidebar={setShowSidebar}
+        setShowShortcuts={setShowShortcuts}
+        onExit={handleExit}
+      />
 
       {/* ── Three-Pane Body ───────────────────────────────────────────── */}
       <div style={{ flex: 1, overflow: 'hidden' }}>
         <ResizablePanelGroup direction="horizontal">
           {/* ── Panel 1: Test List ──────────────────────────────────────── */}
           <ResizablePanel defaultSize={22} minSize={15} maxSize={35}>
-            <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: 'hsl(var(--card))', borderRight: '1px solid hsl(var(--border))' }}>
-              <div style={{ padding: 12, borderBottom: '1px solid hsl(var(--border))' }}>
-                <h3 style={{ fontSize: 11, fontWeight: 700, color: 'hsl(var(--muted-foreground))', margin: '0 0 10px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                  Test Queue ({filteredTestCases.length})
-                </h3>
-                <div style={{ display: 'flex', gap: 6 }}>
-                  <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)}
-                    style={{ flex: 1, height: 30, padding: '0 6px', border: '1px solid hsl(var(--border))', borderRadius: 6, fontSize: 11, color: 'hsl(var(--foreground))', backgroundColor: 'hsl(var(--background))' }}>
-                    <option value="all">All</option>
-                    <option value="not_run">Not Run</option>
-                    <option value="passed">Passed</option>
-                    <option value="failed">Failed</option>
-                    <option value="blocked">Blocked</option>
-                    <option value="skipped">Skipped</option>
-                  </select>
-                  <button onClick={() => setShowMyTestsOnly(!showMyTestsOnly)}
-                    style={{
-                      height: 30, padding: '0 8px', border: `1px solid ${showMyTestsOnly ? 'hsl(var(--primary))' : 'hsl(var(--border))'}`,
-                      borderRadius: 6, backgroundColor: showMyTestsOnly ? 'hsl(var(--primary) / 0.1)' : 'hsl(var(--background))',
-                      color: showMyTestsOnly ? 'hsl(var(--primary))' : 'hsl(var(--muted-foreground))', fontSize: 11, cursor: 'pointer',
-                      display: 'flex', alignItems: 'center', gap: 3,
-                    }}>
-                    <User size={12} /> Mine
-                  </button>
-                </div>
-              </div>
-
-              <div style={{ flex: 1, overflowY: 'auto', padding: 6 }}>
-                {filteredTestCases.length === 0 ? (
-                  <div style={{ padding: 20, textAlign: 'center', color: 'hsl(var(--muted-foreground))', fontSize: 12 }}>No tests match filter</div>
-                ) : (
-                  filteredTestCases.map(tc => {
-                    const st = statusConfig[tc.current_status] || statusConfig.not_run;
-                    const StatusIcon = st.icon;
-                    const isSelected = tc.id === selectedTestCaseId;
-                    return (
-                      <button key={tc.id} onClick={() => selectTest(tc.id)}
-                        style={{
-                          width: '100%', padding: '10px 10px', marginBottom: 2, border: isSelected ? '2px solid hsl(var(--primary))' : '1px solid transparent',
-                          borderRadius: 6, backgroundColor: isSelected ? 'hsl(var(--primary) / 0.05)' : 'transparent',
-                          cursor: 'pointer', textAlign: 'left', transition: 'all 0.1s',
-                        }}>
-                        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
-                          <div style={{
-                            width: 24, height: 24, borderRadius: 6, backgroundColor: st.bg,
-                            display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1,
-                          }}>
-                            <StatusIcon size={13} style={{ color: st.color }} />
-                          </div>
-                          <div style={{ flex: 1, minWidth: 0 }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 2 }}>
-                              <span style={{ fontSize: 10, fontWeight: 600, color: 'hsl(var(--primary))' }}>{tc.test_case?.case_key}</span>
-                            </div>
-                            <p style={{
-                              fontSize: 12, fontWeight: isSelected ? 600 : 400,
-                              color: isSelected ? 'hsl(var(--primary))' : 'hsl(var(--foreground))',
-                              margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                            }}>
-                              {tc.test_case?.title}
-                            </p>
-                            {tc.current_status !== 'not_run' && tc.executed_at && (
-                              <p style={{ fontSize: 10, color: '#94A3B8', margin: '2px 0 0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                {new Date(tc.executed_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                                {tc.assignee?.full_name ? ` · ${tc.assignee.full_name.split(' ')[0]}` : ''}
-                              </p>
-                            )}
-                          </div>
-                        </div>
-                      </button>
-                    );
-                  })
-                )}
-              </div>
-
-              {/* Bottom progress */}
-              <div style={{ padding: 12, borderTop: '1px solid hsl(var(--border))', backgroundColor: 'hsl(var(--muted) / 0.2)' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-                  <span style={{ fontSize: 11, color: 'hsl(var(--muted-foreground))' }}>Progress</span>
-                  <span style={{ fontSize: 11, fontWeight: 600, color: 'hsl(var(--foreground))' }}>
-                    {cycle.total_cases - cycle.not_run_count}/{cycle.total_cases}
-                  </span>
-                </div>
-                <div style={{ height: 5, backgroundColor: 'hsl(var(--muted))', borderRadius: 4, overflow: 'hidden' }}>
-                  <div style={{ height: '100%', width: `${cycle.progress_percent}%`, background: 'linear-gradient(90deg, #10B981 0%, #059669 100%)', borderRadius: 3 }} />
-                </div>
-              </div>
-            </div>
+            <ExecutionTestList
+              cycle={cycle}
+              filteredTestCases={filteredTestCases}
+              selectedTestCaseId={selectedTestCaseId}
+              statusFilter={statusFilter}
+              setStatusFilter={setStatusFilter}
+              showMyTestsOnly={showMyTestsOnly}
+              setShowMyTestsOnly={setShowMyTestsOnly}
+              onSelectTest={selectTest}
+              statusConfig={statusConfig}
+            />
           </ResizablePanel>
 
           <ResizableHandle withHandle />
@@ -850,453 +679,55 @@ export default function TestHubExecutionPage() {
           <ResizablePanel defaultSize={showSidebar ? 56 : 78} minSize={40}>
             {currentTestCase && testCase ? (
               viewMode && executionHistory ? (
-                /* ═══ VIEW MODE — Read-only execution history ═══ */
-                <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-                  {/* Header */}
-                  <div style={{ padding: '16px 24px', borderBottom: '1px solid hsl(var(--border))', backgroundColor: 'hsl(var(--card))' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-                        <span style={{ fontSize: 12, fontWeight: 600, color: 'hsl(var(--primary))', backgroundColor: 'hsl(var(--primary) / 0.1)', padding: '3px 10px', borderRadius: 5 }}>
-                          {testCase.case_key}
-                        </span>
-                        <span style={{
-                          fontSize: 11, fontWeight: 600, padding: '3px 8px', borderRadius: 6,
-                          color: statusConfig[currentTestCase.current_status]?.color,
-                          backgroundColor: statusConfig[currentTestCase.current_status]?.bg,
-                        }}>
-                          {statusConfig[currentTestCase.current_status]?.label}
-                        </span>
-                        <span style={{ fontSize: 11, color: 'hsl(var(--muted-foreground))', padding: '3px 8px', backgroundColor: 'hsl(var(--muted) / 0.3)', borderRadius: 6, textTransform: 'capitalize' }}>
-                          {testCase.priority?.name || 'Medium'}
-                        </span>
-                      </div>
-                      <div style={{ display: 'flex', gap: 8 }}>
-                        <button onClick={() => { setViewMode(false); setExecutionHistory(null); }} style={{
-                          height: 34, padding: '8px 12px', border: '1px solid hsl(var(--border))', borderRadius: 6,
-                          backgroundColor: 'hsl(var(--card))', color: 'hsl(var(--foreground))',
-                          fontSize: 12, fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4,
-                        }}>
-                          <ArrowLeft size={14} /> Back
-                        </button>
-                        <button onClick={handleRerun} style={{
-                          height: 34, padding: '0 14px', border: 'none', borderRadius: 6,
-                          background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
-                          color: '#FFFFFF', fontSize: 12, fontWeight: 600, cursor: 'pointer',
-                          display: 'flex', alignItems: 'center', gap: 5,
-                        }}>
-                          <Play size={13} /> Re-run
-                        </button>
-                      </div>
-                    </div>
-                    <h2 style={{ fontSize: 18, fontWeight: 700, color: 'hsl(var(--foreground))', margin: 0, lineHeight: 1.3 }}>{testCase.title}</h2>
-                    {testCase.description && <p style={{ fontSize: 13, color: 'hsl(var(--muted-foreground))', margin: '6px 0 0', lineHeight: 1.4 }}>{testCase.description}</p>}
-                    <p style={{ fontSize: 11, color: '#94A3B8', margin: '8px 0 0' }}>
-                      Run #{executionHistory.execution_number} · Executed {new Date(executionHistory.executed_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                      {executionHistory.executor?.full_name ? ` · ${executionHistory.executor.full_name}` : ''}
-                    </p>
-                    {isVersionDrifted && (
-                      <div style={{
-                        marginTop: 10, padding: '8px 12px', borderRadius: 6,
-                        backgroundColor: isDark ? 'rgba(251,191,36,0.12)' : '#FFFBEB',
-                        border: `1px solid ${isDark ? 'rgba(251,191,36,0.2)' : '#FDE68A'}`,
-                        display: 'flex', alignItems: 'center', gap: 6,
-                        fontSize: 12, color: isDark ? '#FBBF24' : '#92400E',
-                      }}>
-                        <AlertTriangle size={14} style={{ color: '#D97706', flexShrink: 0 }} />
-                        <span>
-                          This test case has been updated since it was added to this cycle
-                          (locked v{currentTestCase?.locked_version} → current v{currentTestCase?.test_case?.current_version}).
-                          Execution continues against the original scoped version.
-                        </span>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Read-only step list */}
-                  <div style={{ flex: 1, overflowY: 'auto', padding: 24 }}>
-                    <div style={{ maxWidth: 720, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 8 }}>
-                      {/* Preconditions */}
-                      {testCase.preconditions && (
-                        <div style={{ marginBottom: 12, padding: 14, backgroundColor: isDark ? 'rgba(251,191,36,0.12)' : '#FFFBEB', border: `1px solid ${isDark ? 'rgba(251,191,36,0.2)' : '#FDE68A'}`, borderRadius: 8 }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
-                            <AlertTriangle size={14} style={{ color: '#D97706' }} />
-                            <span style={{ fontSize: 12, fontWeight: 600, color: '#92400E' }}>Preconditions</span>
-                          </div>
-                          <p style={{ fontSize: 13, color: '#92400E', margin: 0, lineHeight: 1.4 }}>{testCase.preconditions}</p>
-                        </div>
-                      )}
-
-                      {executionHistory.step_results.length === 0 ? (
-                        <div style={{ padding: 32, textAlign: 'center', color: 'hsl(var(--muted-foreground))' }}>
-                          No step data recorded for this run.
-                        </div>
-                      ) : (
-                        executionHistory.step_results.map((step, i) => {
-                          const stepColors: Record<string, { text: string; bg: string; border: string }> = isDark ? {
-                            passed:  { text: '#16A34A', bg: 'rgba(34,197,94,0.12)', border: 'rgba(34,197,94,0.3)' },
-                            failed:  { text: '#DC2626', bg: 'rgba(248,113,113,0.12)', border: 'rgba(248,113,113,0.3)' },
-                            blocked: { text: '#D97706', bg: 'rgba(251,191,36,0.12)', border: 'rgba(251,191,36,0.3)' },
-                            skipped: { text: '#878787', bg: '#1A1A1A', border: '#2E2E2E' },
-                            not_run: { text: '#878787', bg: '#1A1A1A', border: '#2E2E2E' },
-                          } : {
-                            passed:  { text: '#16A34A', bg: '#F0FDF4', border: '#BBF7D0' },
-                            failed:  { text: '#DC2626', bg: '#FEF2F2', border: '#FECACA' },
-                            blocked: { text: '#D97706', bg: '#FFFBEB', border: '#FED7AA' },
-                            skipped: { text: '#475569', bg: '#F8FAFC', border: '#E2E8F0' },
-                            not_run: { text: '#64748B', bg: '#F1F5F9', border: '#E2E8F0' },
-                          };
-                          const colors = stepColors[step.status] || stepColors.not_run;
-                          return (
-                            <div key={i} style={{
-                              padding: '12px 16px', backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF',
-                              border: `0.75px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 6,
-                              borderLeft: `3px solid ${colors.border}`,
-                            }}>
-                              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-                                <span style={{ fontSize: 13, fontWeight: 600, color: 'hsl(var(--foreground))' }}>
-                                  Step {step.step_number}
-                                </span>
-                                <span style={{
-                                  fontSize: 11, fontWeight: 600, padding: '2px 8px', borderRadius: 4,
-                                  color: colors.text, backgroundColor: colors.bg, border: `1px solid ${colors.border}`,
-                                  textTransform: 'uppercase',
-                                }}>
-                                  {step.status.replace('_', ' ')}
-                                </span>
-                              </div>
-                              <div style={{ marginBottom: 4 }}>
-                                <span style={{ fontSize: 10, fontWeight: 700, color: 'hsl(var(--muted-foreground))', textTransform: 'uppercase', letterSpacing: '0.06em' }}>ACTION</span>
-                                <p style={{ fontSize: 13, color: 'hsl(var(--foreground))', margin: '4px 0 0', lineHeight: 1.5 }}>{step.title}</p>
-                              </div>
-                              {step.notes ? (
-                                <div style={{ marginTop: 8, padding: '6px 10px', backgroundColor: isDark ? '#1A1A1A' : '#F8FAFC', borderRadius: 4 }}>
-                                  <span style={{ fontSize: 10, fontWeight: 700, color: 'hsl(var(--muted-foreground))', textTransform: 'uppercase', letterSpacing: '0.06em' }}>NOTES</span>
-                                  <p style={{ fontSize: 12, color: 'hsl(var(--foreground))', margin: '2px 0 0' }}>{step.notes}</p>
-                                </div>
-                              ) : (
-                                <p style={{ fontSize: 11, color: '#94A3B8', margin: '8px 0 0', fontStyle: 'italic' }}>No notes</p>
-                              )}
-                            </div>
-                          );
-                        })
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Bottom bar — view mode */}
-                  <div style={{
-                    padding: '12px 20px', backgroundColor: 'hsl(var(--card))',
-                    borderTop: '1px solid hsl(var(--border))', display: 'flex',
-                    alignItems: 'center', justifyContent: 'space-between',
-                  }}>
-                    <button onClick={() => { setViewMode(false); setExecutionHistory(null); }} style={{
-                      height: 50, padding: '0 14px', border: '1px solid hsl(var(--border))', borderRadius: 6,
-                      backgroundColor: 'hsl(var(--card))', color: 'hsl(var(--foreground))',
-                      fontSize: 12, fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4,
-                    }}>
-                      <ArrowLeft size={14} /> Back to Queue
-                    </button>
-                    <button onClick={handleRerun} style={{
-                      height: 50, padding: '0 16px', border: 'none', borderRadius: 6,
-                      background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
-                      color: '#FFFFFF', fontSize: 13, fontWeight: 600, cursor: 'pointer',
-                      display: 'flex', alignItems: 'center', gap: 6,
-                    }}>
-                      <Play size={14} /> Re-run
-                    </button>
-                  </div>
-                </div>
+                <ExecutionViewMode
+                  testCase={testCase}
+                  currentStatus={currentTestCase.current_status}
+                  isVersionDrifted={isVersionDrifted}
+                  lockedVersion={currentTestCase.locked_version}
+                  currentVersion={currentTestCase.test_case?.current_version}
+                  executionHistory={executionHistory}
+                  isDark={isDark}
+                  statusConfig={statusConfig}
+                  onBack={() => { setViewMode(false); setExecutionHistory(null); }}
+                  onRerun={handleRerun}
+                />
               ) : (
-              /* ═══ EXECUTION MODE — Normal step-by-step ═══ */
-              <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-                {/* Test case header */}
-                <div style={{ padding: '16px 24px', borderBottom: '1px solid hsl(var(--border))', backgroundColor: 'hsl(var(--card))' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8, flexWrap: 'wrap' }}>
-                    <span style={{ fontSize: 12, fontWeight: 600, color: 'hsl(var(--primary))', backgroundColor: 'hsl(var(--primary) / 0.1)', padding: '3px 10px', borderRadius: 5 }}>
-                      {testCase.case_key}
-                    </span>
-                    <span style={{
-                      fontSize: 11, fontWeight: 500, padding: '3px 8px', borderRadius: 6,
-                      color: statusConfig[currentTestCase.current_status]?.color,
-                      backgroundColor: statusConfig[currentTestCase.current_status]?.bg,
-                    }}>
-                      {statusConfig[currentTestCase.current_status]?.label}
-                    </span>
-                    <span style={{ fontSize: 11, color: 'hsl(var(--muted-foreground))', padding: '3px 8px', backgroundColor: 'hsl(var(--muted) / 0.3)', borderRadius: 6, textTransform: 'capitalize' }}>
-                      {testCase.priority?.name || 'Medium'}
-                    </span>
-                    {fastTrackMode && (
-                      <span style={{ fontSize: 10, fontWeight: 700, color: '#D97706', backgroundColor: '#FEF3C7', padding: '3px 8px', borderRadius: 6, display: 'flex', alignItems: 'center', gap: 3 }}>
-                        <Zap size={10} /> FAST TRACK
-                      </span>
-                    )}
-                    {previousRunData && (
-                      <span style={{ fontSize: 10, fontWeight: 600, color: '#2563EB', backgroundColor: '#EFF6FF', padding: '3px 8px', borderRadius: 5 }}>
-                        RE-RUN (prev: Run #{previousRunData.execution_number})
-                      </span>
-                    )}
-                  </div>
-                  <h2 style={{ fontSize: 18, fontWeight: 700, color: 'hsl(var(--foreground))', margin: 0, lineHeight: 1.3 }}>{testCase.title}</h2>
-                  {testCase.description && <p style={{ fontSize: 13, color: 'hsl(var(--muted-foreground))', margin: '6px 0 0', lineHeight: 1.4 }}>{testCase.description}</p>}
-                  {isVersionDrifted && (
-                    <div style={{
-                      marginTop: 10, padding: '8px 12px', borderRadius: 6,
-                      backgroundColor: isDark ? 'rgba(251,191,36,0.12)' : '#FFFBEB',
-                      border: `1px solid ${isDark ? 'rgba(251,191,36,0.2)' : '#FDE68A'}`,
-                      display: 'flex', alignItems: 'center', gap: 6,
-                      fontSize: 12, color: isDark ? '#FBBF24' : '#92400E',
-                    }}>
-                      <AlertTriangle size={14} style={{ color: '#D97706', flexShrink: 0 }} />
-                      <span>
-                        This test case has been updated since it was added to this cycle
-                        (locked v{currentTestCase?.locked_version} → current v{currentTestCase?.test_case?.current_version}).
-                        Execution continues against the original scoped version.
-                      </span>
-                    </div>
-                  )}
-                </div>
-
-                {/* Step progress indicator */}
-                {steps.length > 0 && !fastTrackMode && (
-                  <div style={{ padding: '10px 24px', borderBottom: '1px solid hsl(var(--border))', backgroundColor: 'hsl(var(--card))' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-                      <span style={{ fontSize: 12, fontWeight: 600, color: 'hsl(var(--muted-foreground))' }}>
-                        Step {currentStepIndex + 1} of {steps.length}
-                      </span>
-                    </div>
-                    <StepProgressIndicator
-                      steps={currentStepStatuses.map((s, i) => ({ step_number: i + 1, status: s.status }))}
-                      currentIndex={currentStepIndex}
-                      onStepClick={setCurrentStepIndex}
-                    />
-                  </div>
-                )}
-
-                {/* Step content area */}
-                <div style={{ flex: 1, overflowY: 'auto', padding: 24 }}>
-                  <div style={{ maxWidth: 720, margin: '0 auto' }}>
-                    {/* Preconditions */}
-                    {testCase.preconditions && (
-                      <div style={{ marginBottom: 20, padding: 14, backgroundColor: isDark ? 'rgba(251,191,36,0.12)' : '#FFFBEB', border: `1px solid ${isDark ? 'rgba(251,191,36,0.2)' : '#FDE68A'}`, borderRadius: 8 }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
-                          <AlertTriangle size={14} style={{ color: '#D97706' }} />
-                          <span style={{ fontSize: 12, fontWeight: 600, color: '#92400E' }}>Preconditions</span>
-                        </div>
-                        <p style={{ fontSize: 13, color: '#92400E', margin: 0, lineHeight: 1.4 }}>{highlightVariables(testCase.preconditions)}</p>
-                      </div>
-                    )}
-
-                    {/* Current step card or FastTrack view */}
-                    {fastTrackMode || steps.length === 0 ? (
-                      /* FastTrack: show all steps as read-only, whole-test P/F */
-                      <div>
-                        {steps.length > 0 ? (
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                            {steps.map((step, i) => (
-                              <div key={i} style={{ padding: '10px 14px', backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: 8 }}>
-                                <div style={{ display: 'flex', gap: 10 }}>
-                                  <span style={{ width: 22, height: 22, borderRadius: '50%', backgroundColor: 'hsl(var(--primary))', color: 'hsl(var(--primary-foreground))', fontSize: 11, fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                                    {step.step_number || i + 1}
-                                  </span>
-                                  <div style={{ flex: 1 }}>
-                                    <p style={{ fontSize: 13, color: 'hsl(var(--foreground))', margin: 0 }}>{highlightVariables(step.action)}</p>
-                                    {step.expected_result && (
-                                      <p style={{ fontSize: 12, color: '#059669', margin: '6px 0 0', paddingLeft: 10, borderLeft: '2px solid #A7F3D0' }}>{highlightVariables(step.expected_result)}</p>
-                                    )}
-                                  </div>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        ) : (
-                          <div style={{ padding: 32, textAlign: 'center', color: 'hsl(var(--muted-foreground))' }}>
-                            No steps defined — mark test result directly.
-                          </div>
-                        )}
-                      </div>
-                     ) : currentStep ? (
-                       /* Step-by-step mode: show current step */
-                       <div id={`step-card-${currentStepIndex}`} style={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: 12, overflow: 'hidden', transition: 'background-color 0.2s' }}>
-                         <div style={{ padding: '12px 16px', backgroundColor: 'hsl(var(--muted) / 0.3)', borderBottom: '1px solid hsl(var(--border))', display: 'flex', alignItems: 'center', gap: 10 }}>
-                           <span style={{ width: 28, height: 28, borderRadius: '50%', backgroundColor: 'hsl(var(--primary))', color: 'hsl(var(--primary-foreground))', fontSize: 13, fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                             {currentStep.step_number || currentStepIndex + 1}
-                           </span>
-                           <span style={{ fontSize: 14, fontWeight: 600, color: 'hsl(var(--foreground))' }}>
-                             Step {currentStep.step_number || currentStepIndex + 1}
-                           </span>
-                           {currentStepStatuses[currentStepIndex]?.status !== 'not_run' && (
-                             <span style={{
-                               fontSize: 11, fontWeight: 600, padding: '2px 8px', borderRadius: 4,
-                               color: statusConfig[currentStepStatuses[currentStepIndex].status]?.color,
-                               backgroundColor: statusConfig[currentStepStatuses[currentStepIndex].status]?.bg,
-                             }}>
-                               {statusConfig[currentStepStatuses[currentStepIndex].status]?.label}
-                             </span>
-                           )}
-                         </div>
-                         <div style={{ padding: 20 }}>
-                           <div style={{ marginBottom: 4 }}>
-                             <span style={{ fontSize: 10, fontWeight: 700, color: 'hsl(var(--muted-foreground))', textTransform: 'uppercase', letterSpacing: '0.06em' }}>ACTION</span>
-                           </div>
-                           <p style={{ fontSize: 15, color: 'hsl(var(--foreground))', margin: '6px 0 0', lineHeight: 1.6 }}>
-                             {highlightVariables(currentStep.action)}
-                           </p>
-
-                           {currentStep.expected_result && (
-                             <div style={{ marginTop: 16, padding: 14, backgroundColor: isDark ? 'rgba(34,197,94,0.12)' : '#ECFDF5', borderRadius: 8, borderLeft: '3px solid #10B981' }}>
-                               <span style={{ fontSize: 10, fontWeight: 700, color: '#059669', textTransform: 'uppercase', letterSpacing: '0.06em' }}>EXPECTED</span>
-                               <p style={{ fontSize: 14, color: isDark ? '#A1A1A1' : '#065F46', margin: '4px 0 0', lineHeight: 1.5 }}>
-                                 {highlightVariables(currentStep.expected_result)}
-                               </p>
-                             </div>
-                           )}
-                         </div>
-                       </div>
-                    ) : null}
-
-                    {/* Notes */}
-                     <div style={{ marginTop: 20 }}>
-                       <textarea
-                         id="notes-textarea"
-                         value={notes}
-                         onChange={e => setNotes(e.target.value)}
-                         placeholder="Add execution notes... (C to focus)"
-                         style={{
-                           width: '100%', minHeight: 80, padding: 12, border: '1px solid hsl(var(--border))',
-                           borderRadius: 8, fontSize: 13, color: 'hsl(var(--foreground))',
-                           backgroundColor: 'hsl(var(--background))', resize: 'vertical', fontFamily: 'inherit',
-                         }}
-                       />
-                     </div>
-                  </div>
-                </div>
-
-                {/* ── Action bar ───────────────────────────────────────────── */}
-                <div style={{
-                  padding: '12px 20px', backgroundColor: 'hsl(var(--card))',
-                  borderTop: '1px solid hsl(var(--border))', display: 'flex',
-                  alignItems: 'center', justifyContent: 'center', gap: 8, position: 'relative',
-                }}>
-                  <div style={{ position: 'absolute', left: 20, fontSize: 12, color: 'hsl(var(--muted-foreground))' }}>
-                    Test {currentIndex + 1} of {filteredTestCases.length}
-                  </div>
-
-                  {/* Navigation */}
-                  <button onClick={handlePrevious} disabled={!canGoPrev || isSubmitting} style={{
-                    height: 38, padding: '8px 12px', border: '1px solid hsl(var(--border))', borderRadius: 6,
-                    backgroundColor: 'hsl(var(--card))', color: canGoPrev ? 'hsl(var(--foreground))' : 'hsl(var(--muted-foreground))',
-                    fontSize: 12, fontWeight: 500, cursor: canGoPrev ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center', gap: 4, opacity: canGoPrev ? 1 : 0.5,
-                  }}>
-                    <ChevronLeft size={16} /> Prev
-                  </button>
-
-                  {/* Status buttons */}
-                  {[
-                    { key: 'passed', label: 'Pass', shortcut: 'P', icon: CheckCircle2, onClick: handlePass, color: '#059669', bg: isDark ? 'rgba(34,197,94,0.12)' : '#ECFDF5', activeBg: 'linear-gradient(135deg, #10B981, #059669)' },
-                    { key: 'failed', label: 'Fail', shortcut: 'F', icon: XCircle, onClick: handleFail, color: '#DC2626', bg: isDark ? 'rgba(248,113,113,0.12)' : '#FEF2F2', activeBg: 'linear-gradient(135deg, #EF4444, #DC2626)' },
-                    { key: 'blocked', label: 'Block', shortcut: 'B', icon: AlertTriangle, onClick: handleBlocked, color: '#D97706', bg: isDark ? 'rgba(251,191,36,0.12)' : '#FFFBEB', activeBg: 'linear-gradient(135deg, #F59E0B, #D97706)' },
-                    { key: 'skipped', label: 'Skip', shortcut: 'S', icon: SkipForward, onClick: handleSkip, color: isDark ? '#878787' : '#64748B', bg: 'hsl(var(--muted) / 0.3)', activeBg: 'linear-gradient(135deg, #64748B, #475569)' },
-                  ].map(btn => {
-                    const Icon = btn.icon;
-                    const isActive = currentTestCase.current_status === btn.key;
-                    return (
-                      <button key={btn.key} onClick={btn.onClick} disabled={isSubmitting} title={`${btn.label} (${btn.shortcut})`} style={{
-                        height: 38, padding: '0 16px', border: isActive ? 'none' : `1px solid ${btn.color}30`,
-                        borderRadius: 6, background: isActive ? btn.activeBg : btn.bg,
-                        color: isActive ? '#FFFFFF' : btn.color, fontSize: 13, fontWeight: 600,
-                        cursor: isSubmitting ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: 6,
-                        opacity: isSubmitting ? 0.7 : 1, boxShadow: isActive ? `0 2px 8px ${btn.color}40` : 'none',
-                      }}>
-                        <Icon size={15} /> {btn.label}
-                        <kbd style={{ fontSize: 10, opacity: 0.7, padding: '1px 5px', backgroundColor: isActive ? 'rgba(255,255,255,0.2)' : `${btn.color}10`, borderRadius: 4, fontFamily: 'monospace' }}>
-                          {btn.shortcut}
-                        </kbd>
-                      </button>
-                    );
-                  })}
-
-                  {/* Reset */}
-                  {currentTestCase.current_status !== 'not_run' && (
-                    <button onClick={handleReset} disabled={isSubmitting} title="Reset (Ctrl+R)" style={{
-                      height: 38, padding: '0 10px', border: '1px solid hsl(var(--border))', borderRadius: 6,
-                      backgroundColor: 'hsl(var(--card))', color: 'hsl(var(--muted-foreground))',
-                      cursor: isSubmitting ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center',
-                    }}>
-                      <RotateCcw size={14} />
-                    </button>
-                  )}
-
-                  <button onClick={handleNext} disabled={!canGoNext || isSubmitting} style={{
-                    height: 38, padding: '8px 12px', border: '1px solid hsl(var(--border))', borderRadius: 6,
-                    backgroundColor: 'hsl(var(--card))', color: canGoNext ? 'hsl(var(--foreground))' : 'hsl(var(--muted-foreground))',
-                    fontSize: 12, fontWeight: 500, cursor: canGoNext ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center', gap: 4, opacity: canGoNext ? 1 : 0.5,
-                  }}>
-                    Next <ChevronRight size={16} />
-                  </button>
-
-                  <div style={{ position: 'absolute', right: 20, display: 'flex', gap: 8 }}>
-                    {steps.length > 0 && !fastTrackMode && (() => {
-                      const isDisabled = !anyStepMarked || isSubmitting;
-                      const statusColors: Record<string, { bg: string; text: string }> = {
-                        passed:  { bg: '#16A34A', text: '#FFFFFF' },
-                        failed:  { bg: '#DC2626', text: '#FFFFFF' },
-                        blocked: { bg: '#D97706', text: '#FFFFFF' },
-                        skipped: { bg: '#475569', text: '#FFFFFF' },
-                        not_run: { bg: isDark ? '#1A1A1A' : '#E2E8F0', text: isDark ? '#878787' : '#64748B' },
-                      };
-                      const colors = statusColors[derivedStatus] || statusColors.not_run;
-                      const label = derivedStatus !== 'not_run'
-                        ? `Complete → ${derivedStatus.toUpperCase()}`
-                        : 'Complete Execution';
-                      return (
-                        <button
-                          onClick={handleCompleteExecution}
-                          disabled={isDisabled}
-                          title={!anyStepMarked ? 'Mark all steps before completing' : `Complete with status: ${derivedStatus}`}
-                          style={{
-                            height: 34, padding: '0 14px', border: isDisabled ? `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}` : 'none',
-                            borderRadius: 6, backgroundColor: isDisabled ? (isDark ? '#1A1A1A' : '#F8FAFC') : colors.bg,
-                            color: isDisabled ? (isDark ? '#878787' : '#94A3B8') : colors.text, fontSize: 12, fontWeight: 700,
-                            cursor: isDisabled ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: 5,
-                            opacity: isDisabled ? 0.7 : 1, transition: 'all 150ms ease',
-                            boxShadow: isDisabled ? 'none' : `0 2px 8px ${colors.bg}40`,
-                            letterSpacing: '0.01em',
-                          }}
-                        >
-                          <CheckCircle2 size={13} /> {label}
-                        </button>
-                      );
-                    })()}
-                  </div>
-                </div>
-
-                {/* Step navigation (only in step mode) */}
-                {steps.length > 1 && !fastTrackMode && (
-                  <div style={{
-                    padding: '8px 20px', backgroundColor: 'hsl(var(--muted) / 0.15)',
-                    borderTop: '1px solid hsl(var(--border))', display: 'flex',
-                    alignItems: 'center', justifyContent: 'center', gap: 16,
-                  }}>
-                    <button onClick={handlePrevStep} disabled={!canGoPrevStep} style={{
-                      fontSize: 12, color: canGoPrevStep ? 'hsl(var(--foreground))' : 'hsl(var(--muted-foreground))',
-                      border: 'none', backgroundColor: 'transparent', cursor: canGoPrevStep ? 'pointer' : 'default',
-                      display: 'flex', alignItems: 'center', gap: 4, opacity: canGoPrevStep ? 1 : 0.4,
-                    }}>
-                      ← Prev Step
-                    </button>
-                    <span style={{ fontSize: 11, color: 'hsl(var(--muted-foreground))' }}>
-                      Step {currentStepIndex + 1} / {steps.length}
-                    </span>
-                    <button onClick={handleNextStep} disabled={!canGoNextStep} style={{
-                      fontSize: 12, color: canGoNextStep ? 'hsl(var(--foreground))' : 'hsl(var(--muted-foreground))',
-                      border: 'none', backgroundColor: 'transparent', cursor: canGoNextStep ? 'pointer' : 'default',
-                      display: 'flex', alignItems: 'center', gap: 4, opacity: canGoNextStep ? 1 : 0.4,
-                    }}>
-                      Next Step →
-                    </button>
-                  </div>
-                )}
-              </div>
+                <ExecutionRunMode
+                  testCase={testCase}
+                  currentStatus={currentTestCase.current_status}
+                  isVersionDrifted={isVersionDrifted}
+                  lockedVersion={currentTestCase.locked_version}
+                  currentVersion={currentTestCase.test_case?.current_version}
+                  isDark={isDark}
+                  statusConfig={statusConfig}
+                  fastTrackMode={fastTrackMode}
+                  previousRunData={previousRunData}
+                  steps={steps}
+                  currentStepIndex={currentStepIndex}
+                  setCurrentStepIndex={setCurrentStepIndex}
+                  currentStepStatuses={currentStepStatuses}
+                  notes={notes}
+                  setNotes={setNotes}
+                  currentIndex={currentIndex}
+                  filteredCount={filteredTestCases.length}
+                  canGoPrev={canGoPrev}
+                  canGoNext={canGoNext}
+                  canGoPrevStep={canGoPrevStep}
+                  canGoNextStep={canGoNextStep}
+                  isSubmitting={isSubmitting}
+                  onPass={handlePass}
+                  onFail={handleFail}
+                  onBlocked={handleBlocked}
+                  onSkip={handleSkip}
+                  onReset={handleReset}
+                  onPrevious={handlePrevious}
+                  onNext={handleNext}
+                  onPrevStep={handlePrevStep}
+                  onNextStep={handleNextStep}
+                  onCompleteExecution={handleCompleteExecution}
+                  derivedStatus={derivedStatus}
+                  anyStepMarked={anyStepMarked}
+                />
               )
             ) : (
               <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'hsl(var(--muted-foreground))' }}>
