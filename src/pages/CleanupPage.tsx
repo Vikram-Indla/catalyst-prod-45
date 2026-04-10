@@ -789,7 +789,29 @@ export default function CleanupPage() {
                             }}>
                               {item.issue_key}
                             </span>
-                            <StatusLozenge value={item.status} />
+                            {editingStatusId === item.id ? (
+                              <div onClick={e => e.stopPropagation()} style={{ minWidth: 120 }}>
+                                <Select
+                                  value={item.status}
+                                  onValueChange={(val) => handleInlineStatusChange(item.id, val)}
+                                  onOpenChange={(open) => { if (!open) setEditingStatusId(null); }}
+                                  defaultOpen
+                                >
+                                  <SelectTrigger style={{ height: 24, fontSize: 11, border: '1px solid #2563EB', borderRadius: 4, background: '#ffffff' }}>
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                  <SelectContent style={{ background: '#ffffff', zIndex: 100 }}>
+                                    {distinctStatuses.map(s => (
+                                      <SelectItem key={s} value={s} style={{ fontSize: 11 }}>{s}</SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                            ) : (
+                              <div onClick={(e) => { e.stopPropagation(); setEditingStatusId(item.id); }} style={{ cursor: 'pointer' }} title="Click to change status">
+                                <StatusLozenge value={item.status} />
+                              </div>
+                            )}
                             <span style={{
                               fontFamily: 'JetBrains Mono, monospace',
                               fontSize: 13, fontWeight: 600, color: daysColor(item.days_stale),
