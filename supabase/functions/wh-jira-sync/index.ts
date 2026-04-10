@@ -323,18 +323,24 @@ serve(async (req) => {
 
         // ── GOVERNANCE LOCK CHECK — filter out governance-closed items ──
         const rowKeys = rows.map((r: any) => r.issue_key)
-        const { data: govLocked } = await supabase
-          .from('governance_closure_log')
-          .select('item_key')
-          .in('item_key', rowKeys)
-          .is('restored_at', null)
-        const lockedKeys = new Set((govLocked ?? []).map((g: any) => g.item_key))
+        const { data: lockedRows } = await supabase
+          .rpc('governance_locked_keys', { p_item_keys: rowKeys })
+        const lockedKeys = new Set((lockedRows ?? []).map((r: any) => r.locked_key))
+
+        if (lockedKeys.size > 0) {
+          // Log skipped items
+          await supabase.from('governance_sync_skip_log').insert(
+            [...lockedKeys].map(key => ({
+              item_key:    key,
+              skip_source: 'cron_batch',
+            }))
+          )
+          console.log(`[GOVERNANCE] Batch sync skipped ${lockedKeys.size} locked items in ${projectKey}`)
+        }
+
         const filteredRows = lockedKeys.size > 0
           ? rows.filter((r: any) => !lockedKeys.has(r.issue_key))
           : rows
-        if (lockedKeys.size > 0) {
-          console.log(`[governance] Skipping ${lockedKeys.size} governance-locked items in ${projectKey}`)
-        }
 
         // Upsert this page immediately (excluding governance-locked)
         if (filteredRows.length > 0) {
