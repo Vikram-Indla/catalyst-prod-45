@@ -6,11 +6,10 @@ import { CornerDownLeft, Loader2, Plus } from 'lucide-react';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-import {} from 'lucide-react';
 import type { ColumnConfig, PhIssueRow } from './types';
-import { DEFAULT_COLUMNS, WORK_ITEM_ICONS } from './constants';
+import { DEFAULT_COLUMNS } from './constants';
 import { nextPos } from './helpers';
-import { SectionBlock, IssueRow, ColumnPicker, InlineCreateRow, SkeletonRows, EmptyState } from './shared-components';
+import { SectionBlock, IssueRow, ColumnPicker, SkeletonRows, EmptyState } from './shared-components';
 import { ConfirmDialog } from './ConfirmDialog';
 
 export function DefectsSection({ storyKey, projectKey }: { storyKey: string; projectKey: string }) {
