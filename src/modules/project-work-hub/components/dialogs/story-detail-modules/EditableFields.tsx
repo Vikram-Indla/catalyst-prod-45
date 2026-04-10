@@ -1,13 +1,13 @@
 /**
  * EditableFields — EditableAssignee, EditablePriority, EditableLabels, ParentFieldPicker
- * Rebuilt to Atlassian Design System spec
+ * Rebuilt to exact Jira parity — no pencil icons, Jira-native priority SVGs, 28px avatars, 14px names
  */
 import React, { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Edit2, Plus, X, Check, ChevronRight } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 import type { ProjectMember, ParentIssue } from './types';
-import { PRIORITY_COLORS, PRIORITY_ICONS, PRIORITY_LIST, WORK_ITEM_ICONS } from './constants';
+import { PRIORITY_LIST, WORK_ITEM_ICONS } from './constants';
 import { getAvatarColor } from './helpers';
 
 /** Atlassian-spec dropdown container styles */
@@ -23,6 +23,38 @@ const CheckmarkSVG = () => (
     <polyline points="20 6 9 17 4 12"/>
   </svg>
 );
+
+/** Jira-native priority SVG icons — exact parity */
+const PRIORITY_SVG: Record<string, React.ReactNode> = {
+  Highest: (
+    <svg width="16" height="16" viewBox="0 0 16 16">
+      <path d="M3 8l5-5 5 5" fill="none" stroke="#FF5630" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M3 12l5-5 5 5" fill="none" stroke="#FF5630" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  ),
+  High: (
+    <svg width="16" height="16" viewBox="0 0 16 16">
+      <path d="M3 10l5-5 5 5" fill="none" stroke="#FF5630" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  ),
+  Medium: (
+    <svg width="16" height="16" viewBox="0 0 16 16">
+      <path d="M3 6h10" fill="none" stroke="#FFAB00" strokeWidth="2" strokeLinecap="round"/>
+      <path d="M3 10h10" fill="none" stroke="#FFAB00" strokeWidth="2" strokeLinecap="round"/>
+    </svg>
+  ),
+  Low: (
+    <svg width="16" height="16" viewBox="0 0 16 16">
+      <path d="M3 6l5 5 5-5" fill="none" stroke="#2684FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  ),
+  Lowest: (
+    <svg width="16" height="16" viewBox="0 0 16 16">
+      <path d="M3 4l5 5 5-5" fill="none" stroke="#2684FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M3 8l5 5 5-5" fill="none" stroke="#2684FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  ),
+};
 
 /* ── EditableAssignee ──────────────────────── */
 export function EditableAssignee({ issueId, projectId, currentAssigneeId, currentAssigneeName, onUpdate }: {
@@ -64,22 +96,33 @@ export function EditableAssignee({ issueId, projectId, currentAssigneeId, curren
   }, [open]);
 
   const filtered = members.filter(m => m.full_name.toLowerCase().includes(search.toLowerCase()));
-  const avatarColor = currentAssigneeName ? getAvatarColor(currentAssigneeName) : '#8993A4';
+  const avatarColor = currentAssigneeId ? getAvatarColor(currentAssigneeId) : '#8993A4';
 
   return (
     <div ref={ref} style={{ flex: 1, position: 'relative' }}>
-      <div onClick={() => setOpen(o => !o)} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '2px 7px 2px 2px', borderRadius: 13, background: '#F8FAFC', border: '1px solid rgba(9,30,66,.14)', cursor: 'pointer', transition: 'background .12s' }}
-        onMouseEnter={e => (e.currentTarget.style.background = '#EFF6FF')} onMouseLeave={e => (e.currentTarget.style.background = '#F8FAFC')}>
-        <div style={{ width: 20, height: 20, borderRadius: '50%', background: avatarColor, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: '#fff' }}>{currentAssigneeName?.charAt(0).toUpperCase() ?? '?'}</div>
-        <span style={{ fontSize: 12, color: '#172B4D' }}>{currentAssigneeName ?? 'Unassigned'}</span>
-        <Edit2 size={10} color="#8993A4" />
+      {/* Jira-style trigger — avatar + name, no chip/border/pencil */}
+      <div onClick={() => setOpen(o => !o)} style={{
+        display: 'flex', alignItems: 'center', gap: 8, padding: '4px 6px',
+        borderRadius: 4, cursor: 'pointer', transition: 'background .12s',
+      }}
+        onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
+        onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+      >
+        {currentAssigneeName ? (
+          <>
+            <div style={{ width: 28, height: 28, borderRadius: '50%', background: avatarColor, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, color: '#fff', flexShrink: 0 }}>{currentAssigneeName.charAt(0).toUpperCase()}</div>
+            <span style={{ fontSize: 14, color: '#172B4D', fontWeight: 400 }}>{currentAssigneeName}</span>
+          </>
+        ) : (
+          <span style={{ fontSize: 14, color: '#97A0AF' }}>Unassigned</span>
+        )}
       </div>
       {open && (() => {
         const rect = ref.current?.getBoundingClientRect();
         const dropTop = (rect?.bottom ?? 0) + 4;
         const dropLeft = (rect?.left ?? 0);
         return (
-        <div style={{ ...ATLASSIAN_DROPDOWN, position: 'fixed', top: dropTop, left: dropLeft, width: 260, overflow: 'hidden' }}>
+        <div style={{ ...ATLASSIAN_DROPDOWN, position: 'fixed', top: dropTop, left: dropLeft, width: 280, overflow: 'hidden' }}>
           {/* Search input */}
           <div style={{ padding: '8px 8px 4px' }}>
             <input autoFocus value={search} onChange={e => setSearch(e.target.value)} placeholder="Search members..."
@@ -87,7 +130,7 @@ export function EditableAssignee({ issueId, projectId, currentAssigneeId, curren
               onFocus={e => (e.target.style.border = '2px solid #2563EB')}
               onBlur={e => (e.target.style.border = '1px solid rgba(9,30,66,0.14)')} />
           </div>
-          <div style={{ maxHeight: 260, overflowY: 'auto' }}>
+          <div style={{ maxHeight: 280, overflowY: 'auto' }}>
             {/* Unassigned option */}
             <div onClick={() => updateMutation.mutate(null)} style={{
               height: 40, padding: '0 12px', display: 'flex', alignItems: 'center', gap: 10,
@@ -98,8 +141,8 @@ export function EditableAssignee({ issueId, projectId, currentAssigneeId, curren
               onMouseLeave={e => { if (currentAssigneeId) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
             >
               <div style={{ width: 28, height: 28, borderRadius: '50%', flexShrink: 0, border: '1px dashed #C1C7D0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, color: '#C1C7D0' }}>?</div>
-              <span style={{ fontSize: 14, color: '#6B778C' }}>Unassigned</span>
-              {!currentAssigneeId && <span style={{ marginLeft: 'auto' }}><CheckmarkSVG /></span>}
+              <span style={{ fontSize: 14, color: '#6B778C', flex: 1 }}>Unassigned</span>
+              {!currentAssigneeId && <CheckmarkSVG />}
             </div>
             {/* Members */}
             {filtered.map(m => (
@@ -111,10 +154,9 @@ export function EditableAssignee({ issueId, projectId, currentAssigneeId, curren
                 onMouseEnter={e => { if (m.user_id !== currentAssigneeId) (e.currentTarget as HTMLElement).style.background = '#F4F5F7'; }}
                 onMouseLeave={e => { if (m.user_id !== currentAssigneeId) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
               >
-                <div style={{ width: 28, height: 28, borderRadius: '50%', flexShrink: 0, background: getAvatarColor(m.full_name), display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, color: '#FFFFFF' }}>{m.full_name.charAt(0).toUpperCase()}</div>
+                <div style={{ width: 28, height: 28, borderRadius: '50%', flexShrink: 0, background: getAvatarColor(m.user_id), display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, color: '#FFFFFF' }}>{m.full_name.charAt(0).toUpperCase()}</div>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: 14, fontWeight: 500, color: '#172B4D', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{m.full_name}</div>
-                  {m.role && <div style={{ fontSize: 12, color: '#6B778C', marginTop: 1 }}>{m.role}</div>}
+                  <div style={{ fontSize: 14, fontWeight: 400, color: '#172B4D', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{m.full_name}</div>
                 </div>
                 {m.user_id === currentAssigneeId && <CheckmarkSVG />}
               </div>
@@ -142,14 +184,19 @@ export function EditablePriority({ issueId, currentPriority, onUpdate }: { issue
   }, [open]);
   return (
     <div ref={ref} style={{ flex: 1, position: 'relative' }}>
-      <div onClick={() => setOpen(o => !o)} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, cursor: 'pointer', padding: '2px 4px', borderRadius: 4, transition: 'background .12s' }}
-        onMouseEnter={e => (e.currentTarget.style.background = 'rgba(9,30,66,.04)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-        <span style={{ color: PRIORITY_COLORS[currentPriority] ?? '#8993A4', fontSize: 12 }}>{PRIORITY_ICONS[currentPriority] ?? '—'}</span>
-        <span style={{ fontSize: 13, color: PRIORITY_COLORS[currentPriority] ?? '#8993A4' }}>{currentPriority}</span>
-        <Edit2 size={10} color="#8993A4" />
+      {/* Jira-style trigger — SVG icon + dark text, no pencil, no colored text */}
+      <div onClick={() => setOpen(o => !o)} style={{
+        display: 'inline-flex', alignItems: 'center', gap: 6, cursor: 'pointer',
+        padding: '4px 6px', borderRadius: 4, transition: 'background .12s',
+      }}
+        onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
+        onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+      >
+        <span style={{ display: 'flex', flexShrink: 0 }}>{PRIORITY_SVG[currentPriority] ?? PRIORITY_SVG.Medium}</span>
+        <span style={{ fontSize: 14, color: '#172B4D', fontWeight: 400 }}>{currentPriority}</span>
       </div>
       {open && (
-        <div style={{ ...ATLASSIAN_DROPDOWN, position: 'absolute', top: 'calc(100% + 4px)', left: 0, width: 180, overflow: 'hidden' }}>
+        <div style={{ ...ATLASSIAN_DROPDOWN, position: 'absolute', top: 'calc(100% + 4px)', left: 0, width: 200, overflow: 'hidden' }}>
           {PRIORITY_LIST.map(p => (
             <div key={p} onClick={() => updateMutation.mutate(p)}
               style={{
@@ -160,8 +207,8 @@ export function EditablePriority({ issueId, currentPriority, onUpdate }: { issue
               onMouseEnter={e => { if (p !== currentPriority) (e.currentTarget as HTMLElement).style.background = '#F4F5F7'; }}
               onMouseLeave={e => { if (p !== currentPriority) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
             >
-              <span style={{ color: PRIORITY_COLORS[p], fontSize: 12, width: 16 }}>{PRIORITY_ICONS[p]}</span>
-              <span style={{ color: PRIORITY_COLORS[p], flex: 1 }}>{p}</span>
+              <span style={{ display: 'flex', flexShrink: 0 }}>{PRIORITY_SVG[p]}</span>
+              <span style={{ flex: 1 }}>{p}</span>
               {p === currentPriority && <CheckmarkSVG />}
             </div>
           ))}
@@ -189,6 +236,9 @@ export function EditableLabels({ issueId, currentLabels, onUpdate }: { issueId: 
 
   return (
     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, alignItems: 'center', padding: '2px 0' }}>
+      {currentLabels.length === 0 && !editing && (
+        <span style={{ color: '#97A0AF', fontSize: 14, fontStyle: 'normal' }}>None</span>
+      )}
       {currentLabels.map(label => (
         <span key={label} style={{
           display: 'inline-flex', alignItems: 'center', gap: 4,
