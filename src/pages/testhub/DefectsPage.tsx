@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { useDefects, useDefectStats, useDeleteDefect } from '@/hooks/test-management/useDefects';
+import { useDefects, useDeleteDefect } from '@/hooks/test-management/useDefects';
 import { DefectFilters } from '@/components/defects/g25/DefectFilters';
 import { DefectTable } from '@/components/defects/g25/DefectTable';
 import { CreateDefectModalG25 } from '@/components/defects/g25/CreateDefectModal';
@@ -70,8 +70,15 @@ export default function DefectsPage() {
   const tmDefects = defectsResult?.data || [];
   const totalCount = defectsResult?.total || 0;
 
-  const { data: stats, isLoading: loadingStats } = useDefectStats(DEFAULT_PROJECT_ID);
   const deleteDefect = useDeleteDefect();
+
+  const { data: projects } = useQuery({
+    queryKey: ['projects-list-for-filter'],
+    queryFn: async () => {
+      const { data } = await supabase.from('projects').select('id, name, key').order('name');
+      return data || [];
+    },
+  });
 
   const { data: users } = useQuery({
     queryKey: ['profiles-list'],
@@ -154,14 +161,7 @@ export default function DefectsPage() {
 
   const totalPages = Math.ceil(totalCount / pageSize);
 
-  // Stats bar data
-  const statsBar = stats ? {
-    total: totalCount,
-    open: stats.by_status.OPEN || 0,
-    in_progress: stats.by_status.IN_PROGRESS || 0,
-    resolved: stats.by_status.FIXED || 0,
-    closed: stats.by_status.CLOSED || 0,
-  } : null;
+
 
   return (
     <div className={cn("flex flex-col h-full", isDark && "bg-[#0A0A0A]")}>
@@ -199,35 +199,9 @@ export default function DefectsPage() {
       </TestHubPageHeader>
 
       <div className={cn("p-6 space-y-4 flex-1 overflow-auto", isDark && "bg-[#0A0A0A]")}>
-        {/* Row 2 — Stats bar */}
-        {loadingStats ? <Skeleton className="h-10 w-full" /> : statsBar && (
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-1.5">
-              <span className="font-['Sora'] text-[15px] font-bold text-slate-900">
-                {statsBar.total.toLocaleString()}
-              </span>
-              <span className="text-[13px] text-slate-500">defects</span>
-            </div>
-            <span className="w-px h-4 bg-slate-200" />
-            {[
-              { count: statsBar.open, label: 'Open', color: 'text-[#0747A6]' },
-              { count: statsBar.in_progress, label: 'In Progress', color: 'text-[#0747A6]' },
-              { count: statsBar.resolved, label: 'Resolved', color: 'text-[#006644]' },
-              { count: statsBar.closed, label: 'Closed', color: 'text-[#006644]' },
-            ].map(item => (
-              <div key={item.label} className="flex flex-col items-center">
-                <span className={cn('text-[13px] font-semibold', item.color)}>
-                  {item.count.toLocaleString()}
-                </span>
-                <span className="text-[11px] text-slate-500">{item.label}</span>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Row 3 — Filters + results count + column configurator */}
+        {/* Filters + results count + column configurator */}
         <div className="flex items-center justify-between gap-4">
-          <DefectFilters filters={filters as any} onChange={setFilters as any} users={users || []} />
+          <DefectFilters filters={filters as any} onChange={setFilters as any} users={users || []} projects={projects || []} />
           <div className="flex items-center gap-3 flex-shrink-0">
             <span className="text-[13px] text-slate-500">
               Showing {tmDefects.length} of {totalCount.toLocaleString()}
