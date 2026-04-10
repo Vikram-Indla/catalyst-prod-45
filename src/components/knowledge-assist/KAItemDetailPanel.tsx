@@ -7,7 +7,7 @@ import {
   ArrowLeft, ExternalLink, Copy, Zap, Target, Layers, User, Calendar, Clock,
   Tag, GitBranch, MessageSquare, CornerDownLeft,
 } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { JiraIssueTypeIcon } from '@/components/shared/JiraIssueTypeIcon';
 import { StatusLozenge } from '@/components/ui/StatusLozenge';
 
@@ -139,8 +139,7 @@ export function KAItemDetailPanel({ issueKey, onClose }: KAItemDetailPanelProps)
       setLoading(true);
       setItem(null);
       try {
-        const { data, error } = await (supabase as any)
-          .from('ph_issues')
+        const { data, error } = await typedQuery('ph_issues')
           .select('issue_key, summary, status, priority, issue_type, project_key, project_name, assignee_display_name, reporter_display_name, description_text, jira_created_at, jira_updated_at, labels, fix_versions, components, sprint_name, story_points, parent_key, parent_summary')
           .eq('issue_key', issueKey.trim())
           .maybeSingle();
@@ -149,8 +148,7 @@ export function KAItemDetailPanel({ issueKey, onClose }: KAItemDetailPanelProps)
           setItem({ ...data, description: data.description_text });
         } else {
           // Fallback: ilike match
-          const { data: fallback } = await (supabase as any)
-            .from('ph_issues')
+          const { data: fallback } = await typedQuery('ph_issues')
             .select('issue_key, summary, status, priority, issue_type, project_key, project_name, assignee_display_name, reporter_display_name, description_text, jira_created_at, jira_updated_at, labels, fix_versions, components, sprint_name, story_points, parent_key, parent_summary')
             .ilike('issue_key', issueKey.trim())
             .maybeSingle();
@@ -167,8 +165,7 @@ export function KAItemDetailPanel({ issueKey, onClose }: KAItemDetailPanelProps)
   useEffect(() => {
     async function fetchHistory() {
       try {
-        const { data } = await (supabase as any)
-          .from('jira_sync_changelog')
+        const { data } = await typedQuery('jira_sync_changelog')
           .select('id, author_display_name, field_name, from_string, to_string, jira_created_at')
           .eq('issue_key', issueKey)
           .order('jira_created_at', { ascending: false })

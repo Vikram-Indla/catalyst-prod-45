@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Search, Loader2, CheckCircle2 } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { RA_KEYS } from '@/hooks/useReqAssist';
@@ -65,7 +65,7 @@ export default function RAPublishEpicsModal({ brdId, epics, onClose, onPublished
       // ra_tag stored in description suffix for traceability
       const results = await Promise.allSettled(
         epics.map(epic =>
-          (supabase as any).from('epics').insert({
+          typedQuery('epics').insert({
             name: epic.title,
             program_id: selectedProject.id,
             status: 'funnel',
@@ -92,8 +92,7 @@ export default function RAPublishEpicsModal({ brdId, epics, onClose, onPublished
       }
 
       // Update brd_epics.publish_status = 'published'
-      await (supabase as any)
-        .from('brd_epics')
+      await typedQuery('brd_epics')
         .update({
           publish_status: 'published',
           project_id: selectedProject.id,

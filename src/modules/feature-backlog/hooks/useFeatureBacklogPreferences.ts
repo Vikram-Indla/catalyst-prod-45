@@ -4,7 +4,7 @@
  * "program:{programId}:feature-backlog:columns"
  */
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 
 interface FeatureBacklogPreferences {
   visible_columns: string[];
@@ -28,8 +28,7 @@ export function useFeatureBacklogPreferences(programId: string) {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return DEFAULT_PREFERENCES;
 
-      const { data, error } = await (supabase as any)
-        .from('user_preferences')
+      const { data, error } = await typedQuery('user_preferences')
         .select('value')
         .eq('user_id', user.id)
         .eq('scope', scope)
@@ -54,8 +53,7 @@ export function useFeatureBacklogPreferences(programId: string) {
 
       const newValue = { ...preferences, ...updates };
 
-      const { error } = await (supabase as any)
-        .from('user_preferences')
+      const { error } = await typedQuery('user_preferences')
         .upsert({
           user_id: user.id,
           scope,

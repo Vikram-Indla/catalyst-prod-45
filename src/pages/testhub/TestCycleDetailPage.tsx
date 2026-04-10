@@ -8,7 +8,7 @@ import {
   ArrowLeft, Pencil, Play, CheckCircle2, XCircle, AlertTriangle,
   Clock, Plus, User, Calendar, RefreshCw, Trash2, Download, Users, BarChart3, Server
 } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
 import { AddTestCasesModal } from '@/components/testhub/AddTestCasesModal';
 import { CreateTestCycleModal } from '@/components/testhub/CreateTestCycleModal';
@@ -97,7 +97,7 @@ export default function TestCycleDetailPage() {
   const fetchCycle = async () => {
     if (!cycleId) return;
     try {
-      const { data, error } = await (supabase as any).from('tm_test_cycles')
+      const { data, error } = await typedQuery('tm_test_cycles')
         .select('id, cycle_key, name, description, status, planned_start, planned_end, environment_id, environment, project_id, total_cases, passed_count, failed_count, blocked_count, skipped_count, not_run_count, in_progress_count, created_at, updated_at')
         .eq('id', cycleId).maybeSingle();
       if (error) throw error;
@@ -106,8 +106,7 @@ export default function TestCycleDetailPage() {
       // Resolve environment name from tm_environments if environment_id exists
       let resolvedName: string | null = null;
       if (data.environment_id) {
-        const { data: envData } = await (supabase as any)
-          .from('tm_environments')
+        const { data: envData } = await typedQuery('tm_environments')
           .select('name')
           .eq('id', data.environment_id)
           .maybeSingle();
@@ -120,7 +119,7 @@ export default function TestCycleDetailPage() {
   const fetchTestCases = async () => {
     if (!cycleId) return;
     try {
-      const { data, error } = await (supabase as any).from('tm_cycle_scope')
+      const { data, error } = await typedQuery('tm_cycle_scope')
         .select(`id, cycle_id, test_case_id, assigned_to, current_status, sort_order, priority, due_date, added_at, updated_at, assignee:profiles!assigned_to ( id, full_name, avatar_url ), test_case:tm_test_cases ( id, case_key, title, priority_id, case_type_id, priority:tm_case_priorities ( id, name, color ), case_type:tm_case_types ( id, name ) )`)
         .eq('cycle_id', cycleId).order('sort_order');
       if (error) throw error;
@@ -199,8 +198,7 @@ export default function TestCycleDetailPage() {
     if (selectedTestCaseIds.size === 0) return;
     try {
       const idsToRemove = Array.from(selectedTestCaseIds);
-      const { error } = await (supabase as any)
-        .from('tm_cycle_scope')
+      const { error } = await typedQuery('tm_cycle_scope')
         .delete()
         .in('id', idsToRemove);
 
@@ -282,7 +280,7 @@ export default function TestCycleDetailPage() {
             {/* FSM Status Transition Button */}
             {cycle.status === 'draft' && (
               <button onClick={async () => {
-                const { error } = await (supabase as any).from('tm_test_cycles').update({ status: 'active', updated_at: new Date().toISOString() }).eq('id', cycleId);
+                const { error } = await typedQuery('tm_test_cycles').update({ status: 'active', updated_at: new Date().toISOString() }).eq('id', cycleId);
                 if (error) { catalystToast.error(error.message); return; }
                 catalystToast.success('Cycle activated successfully'); fetchCycle();
               }} style={{ height: 40, padding: '0 16px', background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)', border: 'none', borderRadius: 8, color: '#FFFFFF', fontSize: 14, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -291,7 +289,7 @@ export default function TestCycleDetailPage() {
             )}
             {cycle.status === 'active' && (
               <button onClick={async () => {
-                const { error } = await (supabase as any).from('tm_test_cycles').update({ status: 'completed', updated_at: new Date().toISOString() }).eq('id', cycleId);
+                const { error } = await typedQuery('tm_test_cycles').update({ status: 'completed', updated_at: new Date().toISOString() }).eq('id', cycleId);
                 if (error) { catalystToast.error(error.message); return; }
                 catalystToast.success('Cycle completed'); fetchCycle();
               }} style={{ height: 40, padding: '0 16px', background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)', border: 'none', borderRadius: 8, color: '#FFFFFF', fontSize: 14, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -300,7 +298,7 @@ export default function TestCycleDetailPage() {
             )}
             {cycle.status === 'completed' && (
               <button onClick={async () => {
-                const { error } = await (supabase as any).from('tm_test_cycles').update({ status: 'archived', updated_at: new Date().toISOString() }).eq('id', cycleId);
+                const { error } = await typedQuery('tm_test_cycles').update({ status: 'archived', updated_at: new Date().toISOString() }).eq('id', cycleId);
                 if (error) { catalystToast.error(error.message); return; }
                 catalystToast.success('Cycle archived'); fetchCycle();
               }} style={{ height: 40, padding: '0 16px', border: `1.5px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 8, backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#A1A1A1' : '#334155', fontSize: 14, fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>

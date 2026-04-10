@@ -5,7 +5,7 @@
 
 import { useState, useEffect, Fragment } from 'react';
 import { X, Plus, Trash2, Variable, AlertCircle } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
 
 interface StepVariable {
@@ -113,13 +113,13 @@ export function CreateSharedStepModal({ isOpen, onClose, onSuccess, categories, 
       };
 
       if (mode === 'edit' && sharedStep) {
-        const { error } = await (supabase as any).from('tm_shared_steps')
+        const { error } = await typedQuery('tm_shared_steps')
           .update({ ...stepData, updated_at: new Date().toISOString() })
           .eq('id', sharedStep.id);
         if (error) { catalystToast.error(error.message || 'Failed to update', { title: 'Update Failed' }); return; }
         catalystToast.success('Shared step updated successfully', { title: 'Updated' });
       } else {
-        const { error } = await (supabase as any).from('tm_shared_steps')
+        const { error } = await typedQuery('tm_shared_steps')
           .insert({ ...stepData, usage_count: 0, is_active: true, project_id: '00000000-0000-0000-0000-000000000001' });
         if (error) { catalystToast.error(error.message || 'Failed to create', { title: 'Creation Failed' }); return; }
         catalystToast.success('Shared step created successfully', { title: 'Created' });

@@ -22,7 +22,7 @@ import { JiraSyncPanel, SyncCTALabel } from '@/components/projecthub/JiraSyncPan
 import { toast } from 'sonner';
 import { CommandCenterHeader } from '@/components/shared/CommandCenterHeader';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 const WiringAuditLazy = lazy(() => import('@/components/project-hub/WiringAudit').then(m => ({ default: m.WiringAudit })));
 import {
   Select,
@@ -62,8 +62,7 @@ export default function AllProjectsPage() {
     queryKey: ['project-sync-counts'],
     queryFn: async () => {
       const map: Record<string, number> = {};
-      const { data: rows } = await (supabase as any)
-        .from('v_issue_counts')
+      const { data: rows } = await typedQuery('v_issue_counts')
         .select('project_key, cnt');
       if (rows) {
         rows.forEach((r: any) => {

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { X, ClipboardList, Calendar, User, Tag, FileText, Target, AlertCircle } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
 
 interface CreatePlanModalProps {
@@ -69,8 +69,7 @@ export function CreatePlanModal({ isOpen, onClose, onCreated }: CreatePlanModalP
 
     setIsSubmitting(true);
     try {
-      const { data, error } = await (supabase as any)
-        .from('tm_test_plans')
+      const { data, error } = await typedQuery('tm_test_plans')
         .insert({
           name: name.trim(),
           description: description.trim() || null,

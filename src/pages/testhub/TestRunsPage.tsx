@@ -10,7 +10,7 @@ import {
   Beaker, Search, Filter, Clock, CheckCircle2, XCircle,
   AlertTriangle, SkipForward, ChevronRight, Calendar, User, Timer,
 } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { EmptyState } from '@/components/ui/EmptyState';
 
 interface ExecutionRecord {
@@ -61,15 +61,13 @@ export default function TestRunsPage() {
     setIsLoading(true);
     try {
       const [execRes, cycleRes] = await Promise.all([
-        (supabase as any)
-          .from('tm_cycle_scope')
+        typedQuery('tm_cycle_scope')
            .select(`
             id, cycle_id, test_case_id, assigned_to, current_status, sort_order, priority, due_date, added_at, updated_at,
             test_case:tm_test_cases ( id, case_key, title, priority_id, priority:tm_case_priorities ( id, name, color ) )
           `)
           .order('updated_at', { ascending: false, nullsFirst: false }),
-        (supabase as any)
-          .from('tm_test_cycles')
+        typedQuery('tm_test_cycles')
           .select('id, cycle_key, name')
           .order('created_at', { ascending: false }),
       ]);

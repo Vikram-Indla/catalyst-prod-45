@@ -5,7 +5,7 @@
 
 import { useState, useEffect } from 'react';
 import { X, Clock, FileCheck, CheckCircle, Archive, Loader2 } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
 interface ChangeStatusModalProps {
@@ -49,8 +49,7 @@ export function ChangeStatusModal({
 
     setIsUpdating(true);
     try {
-      const { error } = await (supabase as any)
-        .from('tm_test_cases')
+      const { error } = await typedQuery('tm_test_cases')
         .update({ status: selectedStatus, updated_at: new Date().toISOString() })
         .in('id', testCaseIds);
 

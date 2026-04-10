@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { AdminGuard } from '@/components/admin/AdminGuard';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -22,8 +22,7 @@ export default function TeamSettings() {
   useQuery({
     queryKey: ['team-settings'],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from('general_settings')
+      const { data, error } = await typedQuery('general_settings')
         .select('key, value')
         .in('key', ['team_point_system', 'team_points_per_week']);
       if (error) throw error;
@@ -41,8 +40,7 @@ export default function TeamSettings() {
         { key: 'team_points_per_week', value: pointsPerWeek },
       ];
       for (const s of settings) {
-        const { error } = await (supabase as any)
-          .from('general_settings')
+        const { error } = await typedQuery('general_settings')
           .upsert({ key: s.key, value: s.value }, { onConflict: 'key' });
         if (error) throw error;
       }

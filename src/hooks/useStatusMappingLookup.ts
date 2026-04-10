@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 
 export type CatalystCategory = 'To Do' | 'In Progress' | 'Blocked' | 'In Review' | 'Done';
 export type StatusBucket = 'todo' | 'progress' | 'done';
@@ -63,8 +63,7 @@ export function useStatusMappingLookup() {
   const { data: mapping } = useQuery({
     queryKey: ['wh', 'config', 'status_mapping'],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from('wh_config')
+      const { data, error } = await typedQuery('wh_config')
         .select('value')
         .eq('key', 'status_mapping')
         .single();

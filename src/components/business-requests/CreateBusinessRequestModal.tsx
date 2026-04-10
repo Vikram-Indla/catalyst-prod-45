@@ -6,7 +6,7 @@ import { useCreateBusinessRequest } from '@/hooks/useBusinessRequests';
 import { catalystToast } from '@/lib/catalystToast';
 import { CatalystCreateDemand } from './create-tabs/CatalystCreateDemand';
 import { cn } from '@/lib/utils';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { ProgressRing, KeyboardShortcuts, AutoSaveIndicator, AutoSaveStatus } from './create-form';
 
 interface CreateBusinessRequestModalProps {
@@ -84,8 +84,7 @@ async function uploadAttachments(requestId: string, attachments: File[]) {
       .from('attachments')
       .getPublicUrl(fileName);
 
-    const { error: insertError } = await (supabase as any)
-      .from('business_request_links')
+    const { error: insertError } = await typedQuery('business_request_links')
       .insert({
         business_request_id: requestId,
         title: file.name,

@@ -9,7 +9,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Calendar as CalendarPicker } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import {
   X, Pencil, Copy, Star, Trash2,
@@ -131,8 +131,7 @@ export function RoadmapDetailPanel({ item, isOpen, onClose }: RoadmapDetailPanel
   const saveField = useCallback(async (updates: Record<string, any>, fieldName: string) => {
     if (!item) return;
     try {
-      const { error } = await (supabase as any)
-        .from('ph_initiatives')
+      const { error } = await typedQuery('ph_initiatives')
         .update(updates)
         .eq('id', item.rawDbId);
       if (error) throw error;
@@ -148,8 +147,7 @@ export function RoadmapDetailPanel({ item, isOpen, onClose }: RoadmapDetailPanel
     if (!item || typeKey === item.type) return;
     setUpdatingType(true);
     try {
-      const { data: typeRow, error: lookupErr } = await (supabase as any)
-        .from('initiative_types')
+      const { data: typeRow, error: lookupErr } = await typedQuery('initiative_types')
         .select('id')
         .eq('key', typeKey)
         .single();

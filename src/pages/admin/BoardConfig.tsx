@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
@@ -12,7 +12,7 @@ export default function BoardConfig() {
   const { data: boardConfigs } = useQuery({
     queryKey: ['board-configs', boardTypeFilter],
     queryFn: async () => {
-      let query = (supabase as any).from('board_configs').select('*').order('board_type');
+      let query = typedQuery('board_configs').select('*').order('board_type');
       
       if (boardTypeFilter) {
         query = query.eq('board_type', boardTypeFilter);

@@ -8,7 +8,7 @@ import { MemberStack } from './MemberStack';
 import { formatDistanceToNowStrict, format } from 'date-fns';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -457,8 +457,7 @@ export function AllProjectsTable({
     queryKey: ['project-sync-data'],
     queryFn: async () => {
       const countMap: Record<string, number> = {};
-      const { data: viewRows, error: viewError } = await (supabase as any)
-        .from('v_issue_counts')
+      const { data: viewRows, error: viewError } = await typedQuery('v_issue_counts')
         .select('project_key, cnt');
 
       if (!viewError && viewRows) {
@@ -469,8 +468,7 @@ export function AllProjectsTable({
         });
       }
 
-      const { data: lastSync } = await (supabase as any)
-        .from('ph_sync_log')
+      const { data: lastSync } = await typedQuery('ph_sync_log')
         .select('completed_at, projects_synced')
         .in('status', ['success', 'warning', 'running'])
         .not('completed_at', 'is', null)
@@ -480,8 +478,7 @@ export function AllProjectsTable({
 
       let fallbackSyncAt: string | null = null;
       if (!lastSync?.completed_at) {
-        const { data: recentIssue } = await (supabase as any)
-          .from('ph_issues')
+        const { data: recentIssue } = await typedQuery('ph_issues')
           .select('last_synced_at')
           .not('last_synced_at', 'is', null)
           .order('last_synced_at', { ascending: false })

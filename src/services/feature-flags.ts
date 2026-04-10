@@ -3,7 +3,7 @@
  * All queries go through Supabase. Zero mock data.
  */
 
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import type {
   FeatureFlag,
   FeatureFlagTogglePayload,
@@ -46,8 +46,7 @@ function toFeatureFlag(row: Record<string, unknown>): FeatureFlag {
 
 export const featureFlagService = {
   async getAll(environment: EnvironmentScope = 'production'): Promise<FeatureFlag[]> {
-    const { data, error } = await (supabase as any)
-      .from('feature_flags')
+    const { data, error } = await typedQuery('feature_flags')
       .select(`
         *,
         dependencies:feature_flag_dependencies(
@@ -77,8 +76,7 @@ export const featureFlagService = {
     };
     if (userId) updatePayload.updated_by = userId;
 
-    const { data, error } = await (supabase as any)
-      .from('feature_flags')
+    const { data, error } = await typedQuery('feature_flags')
       .update(updatePayload)
       .eq('id', payload.id)
       .eq('environment', payload.environment)
@@ -103,15 +101,14 @@ export const featureFlagService = {
     };
     if (userId) updatePayload.updated_by = userId;
 
-    const { error } = await (supabase as any)
-      .from('feature_flags')
+    const { error } = await typedQuery('feature_flags')
       .update(updatePayload)
       .eq('environment', environment);
 
     if (error) throw error;
 
     // Manual audit entry for bulk action
-    await (supabase as any).from('feature_flag_audit').insert({
+    await typedQuery('feature_flag_audit').insert({
       flag_module_key: '_all_modules',
       action: enabled ? 'bulk_enabled' : 'bulk_disabled',
       environment,
@@ -121,8 +118,7 @@ export const featureFlagService = {
   },
 
   async getAuditLog(flagId?: string, limit = 50): Promise<FeatureFlagAuditEntry[]> {
-    let query = (supabase as any)
-      .from('feature_flag_audit')
+    let query = typedQuery('feature_flag_audit')
       .select('*')
       .order('performed_at', { ascending: false })
       .limit(limit);
@@ -145,8 +141,7 @@ export const featureFlagService = {
   },
 
   async getStats(environment: EnvironmentScope = 'production'): Promise<FeatureFlagStats> {
-    const { data, error } = await (supabase as any)
-      .from('feature_flags')
+    const { data, error } = await typedQuery('feature_flags')
       .select('category, enabled')
       .eq('environment', environment);
 
@@ -171,8 +166,7 @@ export const featureFlagService = {
   },
 
   async getDependents(moduleKey: string): Promise<string[]> {
-    const { data, error } = await (supabase as any)
-      .from('feature_flag_dependencies')
+    const { data, error } = await typedQuery('feature_flag_dependencies')
       .select('flag_id, depends_on_key')
       .eq('depends_on_key', moduleKey)
       .eq('dependency_type', 'requires');
@@ -181,8 +175,7 @@ export const featureFlagService = {
     if (!data?.length) return [];
 
     const flagIds = (data as { flag_id: string }[]).map((d) => d.flag_id);
-    const { data: flags, error: flagsErr } = await (supabase as any)
-      .from('feature_flags')
+    const { data: flags, error: flagsErr } = await typedQuery('feature_flags')
       .select('module_name')
       .in('id', flagIds);
 

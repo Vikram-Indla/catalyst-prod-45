@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { RefreshCw, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
@@ -59,8 +59,7 @@ export function useSyncHealthLatest() {
     queryKey: ['sync-health-latest'],
     queryFn: async () => {
       // Try ph_sync_log first (authoritative sync history)
-      const { data: syncLog } = await (supabase as any)
-        .from('ph_sync_log')
+      const { data: syncLog } = await typedQuery('ph_sync_log')
         .select('completed_at, status, issues_upserted, duration_ms')
         .in('status', ['success', 'warning'])
         .order('completed_at', { ascending: false })
@@ -133,8 +132,8 @@ export function JiraSyncPanel() {
         // Read from authoritative tables — direct queries, no RPCs
         const [phConnRes, issuesRes, syncLogRes, writeBackRes] = await Promise.all([
           supabase.from('ph_jira_connection').select('project_count, total_issue_count, last_tested_at').single(),
-          (supabase as any).from('ph_issues').select('id', { count: 'exact', head: true }),
-          (supabase as any).from('ph_sync_log').select('completed_at, status').order('completed_at', { ascending: false }).limit(1).maybeSingle(),
+          typedQuery('ph_issues').select('id', { count: 'exact', head: true }),
+          typedQuery('ph_sync_log').select('completed_at, status').order('completed_at', { ascending: false }).limit(1).maybeSingle(),
           supabase.from('jira_write_back_queue').select('id', { count: 'exact', head: true }).in('status', ['queued', 'approved']),
         ]);
         results.projectCount = phConnRes.data?.project_count || 0;
@@ -152,8 +151,7 @@ export function JiraSyncPanel() {
     setSyncing(true);
     try {
       // Read configured projects from wh_config so the edge function knows what to sync
-      const { data: configRows } = await (supabase as any)
-        .from('wh_config')
+      const { data: configRows } = await typedQuery('wh_config')
         .select('key, value')
         .in('key', ['sync_projects', 'sync_project_config', 'sync_lookback_months']);
       const cfg: Record<string, any> = {};

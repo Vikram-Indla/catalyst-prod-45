@@ -1,4 +1,4 @@
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery, typedQuery, typedQuery } from '@/integrations/supabase/client';
 import type { TestFolderWithCount, CreateFolderInput, UpdateFolderInput } from '@/types/test-folders';
 
 // ============================================================
@@ -16,8 +16,7 @@ export async function getFolderTree(projectId: string): Promise<TestFolderWithCo
   }
 
   // First, get all folders for this project
-  const { data: folders, error: foldersError } = await (supabase as any)
-    .from('tm_folders')
+  const { data: folders, error: foldersError } = await typedQuery('tm_folders')
     .select('*')
     .eq('project_id', projectId)
     .order('sort_order', { ascending: true });
@@ -32,8 +31,7 @@ export async function getFolderTree(projectId: string): Promise<TestFolderWithCo
   }
 
   // Get test case counts per folder
-  const { data: counts, error: countsError } = await (supabase as any)
-    .from('tm_test_cases')
+  const { data: counts, error: countsError } = await typedQuery('tm_test_cases')
     .select('folder_id')
     .eq('project_id', projectId)
     .not('folder_id', 'is', null);
@@ -84,8 +82,7 @@ export async function getFolderTree(projectId: string): Promise<TestFolderWithCo
  * Get a single folder by ID
  */
 export async function getFolderById(folderId: string): Promise<TestFolderWithCount | null> {
-  const { data, error } = await (supabase as any)
-    .from('tm_folders')
+  const { data, error } = await typedQuery('tm_folders')
     .select('*')
     .eq('id', folderId)
     .single();
@@ -117,8 +114,7 @@ export async function getFolderById(folderId: string): Promise<TestFolderWithCou
  */
 export async function createFolder(input: CreateFolderInput): Promise<TestFolderWithCount> {
   // Get the next sort order for siblings
-  const { data: siblings } = await (supabase as any)
-    .from('tm_folders')
+  const { data: siblings } = await typedQuery('tm_folders')
     .select('sort_order')
     .eq('project_id', input.projectId)
     .is('parent_id', input.parentId ?? null)
@@ -129,8 +125,7 @@ export async function createFolder(input: CreateFolderInput): Promise<TestFolder
     ? (siblings[0].sort_order + 1) 
     : 0;
 
-  const { data, error } = await (supabase as any)
-    .from('tm_folders')
+  const { data, error } = await typedQuery('tm_folders')
     .insert({
       name: input.name.trim(),
       description: input.description?.trim() || null,
@@ -175,8 +170,7 @@ export async function updateFolder(
     updateData.description = input.description?.trim() || null;
   }
 
-  const { data, error } = await (supabase as any)
-    .from('tm_folders')
+  const { data, error } = await typedQuery('tm_folders')
     .update(updateData)
     .eq('id', folderId)
     .select()
@@ -206,8 +200,7 @@ export async function updateFolder(
  * Child folders will be cascade deleted
  */
 export async function deleteFolder(folderId: string): Promise<void> {
-  const { error } = await (supabase as any)
-    .from('tm_folders')
+  const { error } = await typedQuery('tm_folders')
     .delete()
     .eq('id', folderId);
 
@@ -237,8 +230,7 @@ export async function moveTestCasesToFolder(
     return 0;
   }
 
-  const { data, error } = await (supabase as any)
-    .from('tm_test_cases')
+  const { data, error } = await typedQuery('tm_test_cases')
     .update({ folder_id: folderId })
     .in('id', validUUIDs)
     .select('id');
@@ -255,8 +247,7 @@ export async function moveTestCasesToFolder(
  * Get count of unassigned test cases (no folder)
  */
 export async function getUnassignedTestCaseCount(projectId: string): Promise<number> {
-  const { count, error } = await (supabase as any)
-    .from('tm_test_cases')
+  const { count, error } = await typedQuery('tm_test_cases')
     .select('id', { count: 'exact', head: true })
     .eq('project_id', projectId)
     .is('folder_id', null);

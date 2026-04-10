@@ -3,7 +3,7 @@
  */
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import type { AssignmentLicenseAllocation, SoftwareLicense } from '../types';
 
@@ -13,8 +13,7 @@ export function useAssignmentLicenseAllocations(assignmentId: string | undefined
     queryFn: async () => {
       if (!assignmentId) return [];
       
-      const { data, error } = await (supabase as any)
-        .from('assignment_license_allocations')
+      const { data, error } = await typedQuery('assignment_license_allocations')
         .select(`
           *,
           software_licenses (*)
@@ -34,8 +33,7 @@ export function useLicenseAllocationsByLicense(licenseId: string | undefined) {
     queryFn: async () => {
       if (!licenseId) return [];
       
-      const { data, error } = await (supabase as any)
-        .from('assignment_license_allocations')
+      const { data, error } = await typedQuery('assignment_license_allocations')
         .select(`
           *,
           assignments (id, name)
@@ -63,8 +61,7 @@ export function useUpdateLicenseAllocation() {
       allocationPercent: number;
     }) => {
       // Upsert the allocation
-      const { data, error } = await (supabase as any)
-        .from('assignment_license_allocations')
+      const { data, error } = await typedQuery('assignment_license_allocations')
         .upsert({
           assignment_id: assignmentId,
           license_id: licenseId,
@@ -104,8 +101,7 @@ export function useBulkUpdateAllocations() {
       allocations: { license_id: string; allocation_percent: number }[];
     }) => {
       // Delete existing allocations for this assignment
-      await (supabase as any)
-        .from('assignment_license_allocations')
+      await typedQuery('assignment_license_allocations')
         .delete()
         .eq('assignment_id', assignmentId);
 
@@ -114,8 +110,7 @@ export function useBulkUpdateAllocations() {
       
       if (nonZeroAllocations.length === 0) return [];
 
-      const { data, error } = await (supabase as any)
-        .from('assignment_license_allocations')
+      const { data, error } = await typedQuery('assignment_license_allocations')
         .insert(
           nonZeroAllocations.map(a => ({
             assignment_id: assignmentId,
@@ -152,8 +147,7 @@ export function useDeleteAllocation() {
       assignmentId: string; 
       licenseId: string;
     }) => {
-      const { error } = await (supabase as any)
-        .from('assignment_license_allocations')
+      const { error } = await typedQuery('assignment_license_allocations')
         .delete()
         .eq('assignment_id', assignmentId)
         .eq('license_id', licenseId);

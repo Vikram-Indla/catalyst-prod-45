@@ -30,7 +30,7 @@ import {
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { AdminGuard } from '@/components/admin/AdminGuard';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
@@ -66,8 +66,7 @@ export default function IncidentCAPPolicy() {
   const { data: policy, isLoading: policyLoading } = useQuery({
     queryKey: ['cap-committee-policy'],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from('cap_committee_policy')
+      const { data, error } = await typedQuery('cap_committee_policy')
         .select('*')
         .limit(1)
         .single();
@@ -80,8 +79,7 @@ export default function IncidentCAPPolicy() {
   const { data: defaultMembers = [], isLoading: membersLoading } = useQuery({
     queryKey: ['cap-committee-default-members'],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from('cap_committee_default_members')
+      const { data, error } = await typedQuery('cap_committee_default_members')
         .select('*')
         .order('created_at');
 
@@ -107,8 +105,7 @@ export default function IncidentCAPPolicy() {
     if (!policy) return;
 
     try {
-      const { error } = await (supabase as any)
-        .from('cap_committee_policy')
+      const { error } = await typedQuery('cap_committee_policy')
         .update({ [field]: value, updated_at: new Date().toISOString() })
         .eq('id', policy.id);
 
@@ -124,8 +121,7 @@ export default function IncidentCAPPolicy() {
     if (!selectedUserId) return;
 
     try {
-      const { error } = await (supabase as any)
-        .from('cap_committee_default_members')
+      const { error } = await typedQuery('cap_committee_default_members')
         .insert({
           user_id: selectedUserId,
           role: memberRole || null,
@@ -147,8 +143,7 @@ export default function IncidentCAPPolicy() {
 
   const handleRemoveMember = async (memberId: string) => {
     try {
-      const { error } = await (supabase as any)
-        .from('cap_committee_default_members')
+      const { error } = await typedQuery('cap_committee_default_members')
         .delete()
         .eq('id', memberId);
 
@@ -162,8 +157,7 @@ export default function IncidentCAPPolicy() {
 
   const handleToggleMemberVeto = async (member: DefaultMember) => {
     try {
-      const { error } = await (supabase as any)
-        .from('cap_committee_default_members')
+      const { error } = await typedQuery('cap_committee_default_members')
         .update({ has_veto: !member.has_veto })
         .eq('id', member.id);
 

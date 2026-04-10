@@ -5,7 +5,7 @@
 
 import { useState, useEffect } from 'react';
 import { X, FileCheck, Tag, User, FileText, AlertCircle, ExternalLink } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
 import { useTheme } from '@/hooks/useTheme';
 
@@ -80,8 +80,7 @@ export function CreateRequirementModal({ isOpen, onClose, onCreated }: CreateReq
     if (!validate()) return;
     setIsSubmitting(true);
     try {
-      const { data, error } = await (supabase as any)
-        .from('tm_requirements')
+      const { data, error } = await typedQuery('tm_requirements')
         .insert({
           title: title.trim(),
           description: description.trim() || null,

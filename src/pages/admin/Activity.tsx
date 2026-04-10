@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
 import { Search, Download } from 'lucide-react';
 
@@ -42,8 +42,7 @@ export default function Activity() {
   const { data: announcements } = useQuery({
     queryKey: ['announcements-active'],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from('announcements')
+      const { data, error } = await typedQuery('announcements')
         .select('*')
         .eq('is_active', true)
         .limit(5);

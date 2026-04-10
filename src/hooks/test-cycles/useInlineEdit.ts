@@ -3,7 +3,7 @@
  */
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import type { CycleAssignment, InlineEditParams } from '@/types/assignment-table.types';
 import { cycleListKeys } from './useTestCycleList';
@@ -45,8 +45,7 @@ export function useInlineEdit(cycleId: string) {
         dbValue = null;
       }
 
-      const { data, error } = await (supabase as any)
-        .from('tm_cycle_scope')
+      const { data, error } = await typedQuery('tm_cycle_scope')
         .update({ [dbColumn]: dbValue })
         .eq('id', assignmentId)
         .select()

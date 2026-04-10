@@ -4,7 +4,7 @@
 
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import type { 
   CycleAssignment, 
   TableFilters, 
@@ -95,8 +95,7 @@ export function useAssignmentTable(cycleId: string) {
     queryFn: async () => {
       try {
         // Fetch cycle scope with test case and assignee details
-        const { data: cycleScope, error } = await (supabase as any)
-          .from('tm_cycle_scope')
+        const { data: cycleScope, error } = await typedQuery('tm_cycle_scope')
           .select(`
             id,
             cycle_id,

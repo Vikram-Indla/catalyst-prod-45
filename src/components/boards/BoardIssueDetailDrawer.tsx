@@ -7,7 +7,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { ArrowLeft, X, ExternalLink, Copy, Loader2 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { toast } from 'sonner';
 import '@/styles/initiative-detail-panel.css';
@@ -48,8 +48,7 @@ export function BoardIssueDetailDrawer({ issueId, onClose }: BoardIssueDetailDra
   const { data: issue, isLoading } = useQuery({
     queryKey: ['board-issue-detail', issueId],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from('ph_issues')
+      const { data, error } = await typedQuery('ph_issues')
         .select('*')
         .eq('id', issueId)
         .single();

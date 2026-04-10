@@ -5,7 +5,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import type { LucideIcon } from 'lucide-react';
 import {
   Pencil, CheckCircle2, AlertTriangle, Wallet, Paperclip, BarChart3,
@@ -92,8 +92,7 @@ export const DetailTabActivity: React.FC<DetailTabActivityProps> = ({ initiative
   const { data: entries = [] } = useQuery({
     queryKey: ['idp-activity', initiativeId],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from('ph_initiative_audit_log')
+      const { data, error } = await typedQuery('ph_initiative_audit_log')
         .select('*, user:profiles!user_id(full_name)')
         .eq('initiative_id', initiativeId)
         .order('created_at', { ascending: false })

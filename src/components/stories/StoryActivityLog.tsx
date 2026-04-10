@@ -1,7 +1,7 @@
 // Story Activity Log - track changes and history
 // Citation: Catalyst_Stories_PRD_v2.pdf
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { formatDistanceToNow } from 'date-fns';
 import { Activity, User, Calendar, Flag } from 'lucide-react';
 
@@ -13,8 +13,7 @@ export function StoryActivityLog({ storyId }: StoryActivityLogProps) {
   const { data: activities, isLoading } = useQuery({
     queryKey: ['story-activity', storyId],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from('activity_logs')
+      const { data, error } = await typedQuery('activity_logs')
         .select('*, profiles:actor_id(full_name, email)')
         .eq('entity_type', 'stories')
         .eq('entity_id', storyId)

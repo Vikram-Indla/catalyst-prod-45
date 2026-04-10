@@ -10,7 +10,7 @@ import {
   Play, CheckCircle2, XCircle, AlertTriangle, Clock,
   RefreshCw, ChevronRight, Zap, BarChart3, Target,
 } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { EmptyState } from '@/components/ui/EmptyState';
 
 interface CycleWithStats {
@@ -54,8 +54,7 @@ export default function ExecutionHubPage() {
   const fetchCycles = async () => {
     setIsLoading(true);
     try {
-      const { data, error } = await (supabase as any)
-        .from('tm_test_cycles')
+      const { data, error } = await typedQuery('tm_test_cycles')
         .select('id, cycle_key, name, description, status, planned_start, planned_end, environment_id, project_id, total_cases, passed_count, failed_count, blocked_count, skipped_count, not_run_count, in_progress_count, created_at, updated_at')
         .eq('project_id', '00000000-0000-0000-0000-000000000001')
         .order('created_at', { ascending: false });

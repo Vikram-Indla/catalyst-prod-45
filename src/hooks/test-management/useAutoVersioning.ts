@@ -2,7 +2,7 @@
  * Auto-versioning helper - creates version snapshots on test case changes
  */
 
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { useCallback } from 'react';
 
@@ -47,8 +47,7 @@ export async function createVersionSnapshot(params: CreateVersionParams): Promis
     }
 
     // Get next version number
-    const { data: existingVersions } = await (supabase as any)
-      .from('tm_test_case_versions')
+    const { data: existingVersions } = await typedQuery('tm_test_case_versions')
       .select('version_number')
       .eq('test_case_id', testCaseId)
       .order('version_number', { ascending: false })
@@ -75,8 +74,7 @@ export async function createVersionSnapshot(params: CreateVersionParams): Promis
     };
 
     // Insert version
-    const { error: insertError } = await (supabase as any)
-      .from('tm_test_case_versions')
+    const { error: insertError } = await typedQuery('tm_test_case_versions')
       .insert({
         test_case_id: testCaseId,
         version_number: nextVersion,

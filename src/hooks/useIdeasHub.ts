@@ -4,7 +4,7 @@
  * ZERO hardcoded data. ALL from ph_ideas / ph_idea_comments / profiles.
  */
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 // ═══ TYPES ═══
@@ -82,8 +82,7 @@ export function useIdeasHub(filters?: {
   return useQuery({
     queryKey: ideasHubKeys.ideas(filters),
     queryFn: async (): Promise<IdeaRow[]> => {
-      let query = (supabase as any)
-        .from('ph_ideas_listing')
+      let query = typedQuery('ph_ideas_listing')
         .select('*')
         .eq('is_deleted', false);
 
@@ -120,8 +119,7 @@ export function useIdeaByKey(ideaKey: string | null) {
   return useQuery({
     queryKey: ideasHubKeys.ideaByKey(ideaKey!),
     queryFn: async (): Promise<IdeaRow | null> => {
-      const { data, error } = await (supabase as any)
-        .from('ph_ideas_listing')
+      const { data, error } = await typedQuery('ph_ideas_listing')
         .select('*')
         .eq('idea_key', ideaKey)
         .single();
@@ -148,8 +146,7 @@ export function useIdeaStats() {
   return useQuery({
     queryKey: ideasHubKeys.stats(),
     queryFn: async (): Promise<IdeaStats> => {
-      const { data, error } = await (supabase as any)
-        .from('ph_ideas')
+      const { data, error } = await typedQuery('ph_ideas')
         .select('status, priority, theme, roadmap_quarter')
         .eq('is_deleted', false);
       if (error) throw error;

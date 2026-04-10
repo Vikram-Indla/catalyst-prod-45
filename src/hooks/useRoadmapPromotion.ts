@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { catalystToast } from '@/lib/catalystToast';
 
 export function usePromoteToRoadmap() {
@@ -11,7 +11,7 @@ export function usePromoteToRoadmap() {
       initiative_type_key?: string;
       roadmap_priority?: number;
     }) => {
-      const { data, error } = await (supabase as any).rpc('promote_to_roadmap', {
+      const { data, error } = await typedRpc('promote_to_roadmap', {
         p_initiative_id: initiative_id,
         p_user_id: null,
         p_initiative_type_key: initiative_type_key || null,
@@ -38,7 +38,7 @@ export function useRemoveFromRoadmap() {
 
   return useMutation({
     mutationFn: async (initiative_id: string) => {
-      const { data, error } = await (supabase as any).rpc('remove_from_roadmap', {
+      const { data, error } = await typedRpc('remove_from_roadmap', {
         p_initiative_id: initiative_id,
       });
       if (error) throw error;

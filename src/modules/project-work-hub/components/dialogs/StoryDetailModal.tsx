@@ -15,7 +15,7 @@
  */
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { formatDistanceToNow } from 'date-fns';
 import { toast } from 'sonner';
 import {
@@ -972,7 +972,7 @@ export default function StoryDetailModal({
 
   const handleFixVersionSearch = useCallback(async (q: string) => {
     setFixVersionSearch(q);
-    let query = (supabase as any).from('wh_fix_versions').select('id, name').eq('project_id', projectId).is('deleted_at', null).order('sort_order', { ascending: true }).limit(20);
+    let query = typedQuery('wh_fix_versions').select('id, name').eq('project_id', projectId).is('deleted_at', null).order('sort_order', { ascending: true }).limit(20);
     if (q.length >= 1) query = query.ilike('name', `%${q}%`);
     const { data } = await query;
     setFixVersionResults(data ?? []);

@@ -7,7 +7,7 @@ import { Loader2, Map, FolderKanban, Zap, Wrench, Link, type LucideIcon } from '
 import { cn } from '@/lib/utils';
 import { usePromoteToRoadmap } from '@/hooks/useRoadmapPromotion';
 import { INITIATIVE_TYPE_COLORS, type InitiativeTypeKey } from '@/types/initiative-enhancements';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 
 const TYPE_OPTIONS: { key: InitiativeTypeKey; label: string; Icon: LucideIcon }[] = [
@@ -61,8 +61,7 @@ export function PromoteToRoadmapDialog({ open, onClose, initiative }: Props) {
     // For Jira-sourced items (non-UUID id), ensure a ph_initiatives record exists
     if (!isUuid(initiative.id)) {
       const issueKey = initiative.initiative_key || initiative.id;
-      const { data: existing } = await (supabase as any)
-        .from('ph_initiatives')
+      const { data: existing } = await typedQuery('ph_initiatives')
         .select('id')
         .eq('initiative_key', issueKey)
         .maybeSingle();
@@ -70,8 +69,7 @@ export function PromoteToRoadmapDialog({ open, onClose, initiative }: Props) {
       if (existing) {
         initiativeId = existing.id;
       } else {
-        const { data: inserted, error: insertError } = await (supabase as any)
-          .from('ph_initiatives')
+        const { data: inserted, error: insertError } = await typedQuery('ph_initiatives')
           .insert({
             initiative_key: issueKey,
             title: initiative.title,

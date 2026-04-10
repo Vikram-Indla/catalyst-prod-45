@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { supabase } from '@/integrations/supabase/client'
+import { supabase, typedQuery, typedQuery, typedQuery } from '@/integrations/supabase/client'
 
 export interface SyncLogEntry {
   id: string
@@ -34,8 +34,7 @@ export function useIsSyncRunning() {
   return useQuery({
     queryKey: ['wh', 'sync-running'],
     queryFn: async () => {
-      const { data } = await (supabase as any)
-        .from('ph_sync_log')
+      const { data } = await typedQuery('ph_sync_log')
         .select('id')
         .eq('status', 'running')
         .limit(1)
@@ -50,20 +49,17 @@ export function useSyncHealth() {
   return useQuery({
     queryKey: ['wh', 'sync-health'],
     queryFn: async (): Promise<SyncHealth> => {
-      const { data: lastSync } = await (supabase as any)
-        .from('ph_sync_log')
+      const { data: lastSync } = await typedQuery('ph_sync_log')
         .select('*')
         .in('status', ['success', 'warning'])
         .order('started_at', { ascending: false })
         .limit(1)
         .maybeSingle()
 
-      const { count: issueCount } = await (supabase as any)
-        .from('ph_issues')
+      const { count: issueCount } = await typedQuery('ph_issues')
         .select('*', { count: 'exact', head: true })
 
-      const { count: versionCount } = await (supabase as any)
-        .from('ph_versions')
+      const { count: versionCount } = await typedQuery('ph_versions')
         .select('*', { count: 'exact', head: true })
 
       const { data: conn } = await supabase
@@ -87,8 +83,7 @@ export function useSyncLogs(limit: number = 10) {
   return useQuery({
     queryKey: ['wh', 'sync-logs', limit],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from('ph_sync_log')
+      const { data, error } = await typedQuery('ph_sync_log')
         .select('*')
         .order('started_at', { ascending: false })
         .limit(limit)
@@ -135,8 +130,7 @@ export function useSyncConfig() {
   return useQuery({
     queryKey: ['wh', 'sync-config'],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from('wh_config')
+      const { data, error } = await typedQuery('wh_config')
         .select('key, value')
         .in('key', ['sync_interval_minutes', 'sync_full_time_utc', 'sync_max_months', 'sync_lookback_months', 'sync_issue_types', 'sync_fix_versions', 'sync_projects', 'sync_project_config'])
       if (error) throw new Error(error.message)
@@ -163,8 +157,7 @@ export function useAvailableProjects() {
   return useQuery({
     queryKey: ['wh', 'available-projects'],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from('ph_jira_connection')
+      const { data, error } = await typedQuery('ph_jira_connection')
         .select('accessible_projects')
         .single()
       if (error) throw new Error(error.message)
@@ -191,8 +184,7 @@ export function useAvailableIssueTypes() {
       let from = 0
       const pageSize = 1000
       while (true) {
-        const { data, error } = await (supabase as any)
-          .from('ph_issues')
+        const { data, error } = await typedQuery('ph_issues')
           .select('issue_type')
           .range(from, from + pageSize - 1)
         if (error) throw new Error(error.message)
@@ -211,8 +203,7 @@ export function useAvailableFixVersions() {
   return useQuery({
     queryKey: ['wh', 'available-fix-versions'],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from('ph_versions')
+      const { data, error } = await typedQuery('ph_versions')
         .select('name, project_key, released')
         .order('name')
         .limit(5000)
@@ -233,13 +224,13 @@ export function useUpdateSyncSchedule() {
       const updates = []
       if (input.sync_interval_minutes !== undefined) {
         updates.push(
-          (supabase as any).from('wh_config').update({ value: input.sync_interval_minutes })
+          typedQuery('wh_config').update({ value: input.sync_interval_minutes })
             .eq('key', 'sync_interval_minutes')
         )
       }
       if (input.sync_full_time_utc !== undefined) {
         updates.push(
-          (supabase as any).from('wh_config').update({ value: input.sync_full_time_utc })
+          typedQuery('wh_config').update({ value: input.sync_full_time_utc })
             .eq('key', 'sync_full_time_utc')
         )
       }
@@ -264,27 +255,27 @@ export function useSaveFilterSettings() {
       const updates = []
       if (input.sync_projects !== undefined) {
         updates.push(
-          (supabase as any).from('wh_config').upsert({ key: 'sync_projects', value: input.sync_projects }, { onConflict: 'key' })
+          typedQuery('wh_config').upsert({ key: 'sync_projects', value: input.sync_projects }, { onConflict: 'key' })
         )
       }
       if (input.sync_issue_types !== undefined) {
         updates.push(
-          (supabase as any).from('wh_config').upsert({ key: 'sync_issue_types', value: input.sync_issue_types }, { onConflict: 'key' })
+          typedQuery('wh_config').upsert({ key: 'sync_issue_types', value: input.sync_issue_types }, { onConflict: 'key' })
         )
       }
       if (input.sync_fix_versions !== undefined) {
         updates.push(
-          (supabase as any).from('wh_config').upsert({ key: 'sync_fix_versions', value: input.sync_fix_versions }, { onConflict: 'key' })
+          typedQuery('wh_config').upsert({ key: 'sync_fix_versions', value: input.sync_fix_versions }, { onConflict: 'key' })
         )
       }
       if (input.sync_lookback_months !== undefined) {
         updates.push(
-          (supabase as any).from('wh_config').upsert({ key: 'sync_lookback_months', value: input.sync_lookback_months }, { onConflict: 'key' })
+          typedQuery('wh_config').upsert({ key: 'sync_lookback_months', value: input.sync_lookback_months }, { onConflict: 'key' })
         )
       }
       if (input.sync_project_config !== undefined) {
         updates.push(
-          (supabase as any).from('wh_config').upsert({ key: 'sync_project_config', value: input.sync_project_config }, { onConflict: 'key' })
+          typedQuery('wh_config').upsert({ key: 'sync_project_config', value: input.sync_project_config }, { onConflict: 'key' })
         )
       }
       await Promise.all(updates)

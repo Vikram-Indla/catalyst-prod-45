@@ -8,7 +8,7 @@ import { useCallback, useEffect, useState, useRef } from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { catalystToast } from '@/lib/catalystToast';
 import { X, Link2, Maximize2, MoreHorizontal, Copy, Trash2, Loader2, Check } from 'lucide-react';
@@ -61,8 +61,7 @@ function useTaskDetail(taskId: string | null) {
     queryFn: async () => {
       if (!taskId) return null;
       
-      const { data, error } = await (supabase as any)
-        .from('planner_tasks')
+      const { data, error } = await typedQuery('planner_tasks')
         .select(`
           *,
           status:planner_statuses(*),

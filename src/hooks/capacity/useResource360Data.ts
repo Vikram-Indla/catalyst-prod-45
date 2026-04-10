@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useEffect, useMemo } from 'react';
 import { toast } from 'sonner';
 import type { Resource360Data, WorkItemAssignment, HierarchyNode, SunburstNode, SunburstMetrics } from '@/types/resource360';
@@ -60,8 +60,7 @@ export function useResource360Data(resourceId: string | null) {
       const items: WorkItemAssignment[] = [];
 
       // Fetch stories assigned to user
-      const { data: stories } = await (supabase as any)
-        .from('stories')
+      const { data: stories } = await typedQuery('stories')
         .select(`
           id, item_id, title, status, story_points, owner_id,
           feature:feature_id(id, item_id, title, 
@@ -127,8 +126,7 @@ export function useResource360Data(resourceId: string | null) {
       });
 
       // Fetch epics owned by user
-      const { data: epics } = await (supabase as any)
-        .from('epics')
+      const { data: epics } = await typedQuery('epics')
         .select(`
           id, item_id, title, status, owner_id,
           project:project_id(id, name)

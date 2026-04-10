@@ -19,7 +19,7 @@ import { useCapacityDepartments, useResourceAssignments } from '@/modules/capaci
 import { Loader2, AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { cn } from '@/lib/utils';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
 import { ResourceCostSection } from '@/modules/budget';
@@ -200,7 +200,7 @@ export function ResourceModal({
         const startDate = new Date().toISOString().split('T')[0];
 
         // Create assignments
-        const { error: assignmentError } = await (supabase as any).from('assignments').insert(
+        const { error: assignmentError } = await typedQuery('assignments').insert(
           selectedUserIds.map((userId) => ({
             user_id: userId,
             project_id: null,

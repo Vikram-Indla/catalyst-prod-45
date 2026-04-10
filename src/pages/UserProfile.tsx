@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -63,8 +63,7 @@ export default function UserProfile() {
     queryKey: ['user-role-history', user?.id],
     queryFn: async () => {
       if (!user?.id) return [];
-      const { data, error } = await (supabase as any)
-        .from('user_role_history')
+      const { data, error } = await typedQuery('user_role_history')
         .select('*, changed_by_profile:profiles!user_role_history_changed_by_fkey(full_name, email)')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false })

@@ -2,7 +2,7 @@
  * useReleases — Data hooks for TestHub Release Management (Group 15)
  */
 import { useState, useEffect, useCallback } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
 
 export interface Release {
@@ -144,8 +144,7 @@ export function useReleaseCycles(releaseId: string | undefined) {
     const fetch = async () => {
       setIsLoading(true);
       try {
-        const { data, error } = await (supabase as any)
-          .from('release_test_cycles')
+        const { data, error } = await typedQuery('release_test_cycles')
           .select(`
             id,
             cycle_id,

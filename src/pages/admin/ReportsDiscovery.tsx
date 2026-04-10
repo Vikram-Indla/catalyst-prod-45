@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase, typedQuery } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -76,8 +76,7 @@ export default function ReportsDiscovery() {
   const { data: customReports } = useQuery({
     queryKey: ["report-definitions"],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from("report_definitions")
+      const { data, error } = await typedQuery("report_definitions")
         .select("*")
         .eq("enabled", true)
         .order("name");

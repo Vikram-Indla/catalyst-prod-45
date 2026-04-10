@@ -2,11 +2,11 @@
  * useWikiAdminData — All hooks for the Wiki Admin Panel.
  */
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 // Helper: typed query on tables/views not yet in generated types
-const fromAny = (table: string) => (supabase as any).from(table);
+const fromAny = (table: string) => typedQuery(table);
 
 /* ─── Types ─── */
 export interface WikiAdminStats {

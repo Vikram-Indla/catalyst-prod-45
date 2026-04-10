@@ -4,7 +4,7 @@ import type { Initiative } from '@/types/initiative';
 import { STATUS_DISPLAY, getAvatarColor, getInitials } from '@/types/initiative';
 import { InitiativeMetrics } from '@/components/backlog/MetricBars';
 import { formatDistanceToNow, format } from 'date-fns';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { useTheme } from '@/hooks/useTheme';
@@ -74,9 +74,9 @@ export const PCInitiativeCard: React.FC<PCInitiativeCardProps> = ({ initiative, 
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
       if (initiative.is_favorited) {
-        await (supabase as any).from('ph_user_favorites').delete().eq('user_id', user.id).eq('initiative_id', initiative.id);
+        await typedQuery('ph_user_favorites').delete().eq('user_id', user.id).eq('initiative_id', initiative.id);
       } else {
-        await (supabase as any).from('ph_user_favorites').insert({ user_id: user.id, initiative_id: initiative.id });
+        await typedQuery('ph_user_favorites').insert({ user_id: user.id, initiative_id: initiative.id });
       }
       queryClient.invalidateQueries({ queryKey: ['mdt-backlog'] });
     } catch {

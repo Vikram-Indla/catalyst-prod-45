@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { X, Copy, CheckSquare, Square } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
 
 interface TestCycle {
@@ -40,8 +40,7 @@ export function CloneTestCycleModal({
   const generateCycleKey = async (): Promise<string> => {
     const { data, error } = await supabase.rpc('generate_cycle_key');
     if (error) {
-      const { data: lastCycle } = await (supabase as any)
-        .from('tm_test_cycles')
+      const { data: lastCycle } = await typedQuery('tm_test_cycles')
         .select('cycle_key')
         .order('created_at', { ascending: false })
         .limit(1);
@@ -78,8 +77,7 @@ export function CloneTestCycleModal({
         project_id: '00000000-0000-0000-0000-000000000001',
       };
 
-      const { data: newCycle, error: cycleError } = await (supabase as any)
-        .from('tm_test_cycles')
+      const { data: newCycle, error: cycleError } = await typedQuery('tm_test_cycles')
         .insert(newCycleData)
         .select()
         .single();
@@ -92,8 +90,7 @@ export function CloneTestCycleModal({
       }
 
       if (includeTestCases && cycle.total_cases > 0) {
-        const { data: originalTestCases, error: fetchError } = await (supabase as any)
-          .from('tm_cycle_scope')
+        const { data: originalTestCases, error: fetchError } = await typedQuery('tm_cycle_scope')
           .select('test_case_id, assigned_to')
           .eq('cycle_id', cycle.id);
 
@@ -105,8 +102,7 @@ export function CloneTestCycleModal({
             current_status: 'not_run',
           }));
 
-          const { error: testCasesError } = await (supabase as any)
-            .from('tm_cycle_scope')
+          const { error: testCasesError } = await typedQuery('tm_cycle_scope')
             .insert(newTestCaseRecords);
 
           if (testCasesError) {

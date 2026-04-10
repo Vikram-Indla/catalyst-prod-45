@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import { useTheme } from '@/hooks/useTheme';
 import { useNavigate } from 'react-router-dom';
 import { X, FileText, Zap, BookOpen, FlaskConical, Copy, Check, Paperclip, ArrowDownToLine, ExternalLink, Loader2, FileUp, ChevronRight, RefreshCw } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery, typedQuery, typedQuery } from '@/integrations/supabase/client';
 import type { RADocumentWithArtifacts } from '@/types/reqAssistV2';
 import { formatTimestamp } from '@/lib/formatTimestamp';
 import toast from 'react-hot-toast';
@@ -78,8 +78,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
       const jiraKey = doc.jira_ticket_key;
       if (!jiraKey) return;
 
-      const { data: brdRow } = await (supabase as any)
-        .from('brd_documents')
+      const { data: brdRow } = await typedQuery('brd_documents')
         .select('id, pipeline_stage, raw_text, parent_jira_key, ticket_type, raw_text_source')
         .eq('jira_key', jiraKey)
         .maybeSingle();
@@ -90,10 +89,10 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
       }
 
       const [epicRes, pubRes, wikiRes, uatRes] = await Promise.all([
-        (supabase as any).from('brd_epics').select('id', { count: 'exact', head: true }).eq('brd_id', brdRow.id),
-        (supabase as any).from('brd_epics').select('id', { count: 'exact', head: true }).eq('brd_id', brdRow.id).not('ra_tag', 'is', null),
-        (supabase as any).from('kb_embeddings').select('id', { count: 'exact', head: true }).eq('source_id', brdRow.id),
-        (supabase as any).from('brd_uat_scenarios').select('id', { count: 'exact', head: true }).eq('brd_id', brdRow.id),
+        typedQuery('brd_epics').select('id', { count: 'exact', head: true }).eq('brd_id', brdRow.id),
+        typedQuery('brd_epics').select('id', { count: 'exact', head: true }).eq('brd_id', brdRow.id).not('ra_tag', 'is', null),
+        typedQuery('kb_embeddings').select('id', { count: 'exact', head: true }).eq('source_id', brdRow.id),
+        typedQuery('brd_uat_scenarios').select('id', { count: 'exact', head: true }).eq('brd_id', brdRow.id),
       ]);
 
       let finalWikiCount = wikiRes.count ?? 0;
@@ -116,8 +115,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
 
       // Fetch UAT scenarios if they exist
       if ((uatRes.count ?? 0) > 0) {
-        const { data: scenarios } = await (supabase as any)
-          .from('brd_uat_scenarios')
+        const { data: scenarios } = await typedQuery('brd_uat_scenarios')
           .select('*')
           .eq('brd_id', brdRow.id)
           .order('created_at', { ascending: true });
@@ -140,8 +138,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
     if (syncing) return;
     setSyncing(true);
     try {
-      const { data: brdRow, error: brdError } = await (supabase as any)
-        .from('brd_documents')
+      const { data: brdRow, error: brdError } = await typedQuery('brd_documents')
         .select('id')
         .eq('jira_key', doc.jira_ticket_key)
         .maybeSingle();
@@ -163,7 +160,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
       }
 
       // Log activity
-      await (supabase as any).from('ra_activity_log').insert({
+      await typedQuery('ra_activity_log').insert({
         brd_id: brdRow.id,
         event_type: 'index_start',
         message: `Indexing started for ${doc.jira_ticket_key}`,
@@ -198,11 +195,11 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
         status: 'draft',
       }));
 
-      const { error } = await (supabase as any).from('brd_uat_scenarios').insert(inserts);
+      const { error } = await typedQuery('brd_uat_scenarios').insert(inserts);
       if (error) throw error;
 
       // Log activity
-      await (supabase as any).from('ra_activity_log').insert({
+      await typedQuery('ra_activity_log').insert({
         brd_id: brdData.id,
         event_type: 'uat_generated',
         message: `UAT scenarios generated for ${doc.jira_ticket_key}`,
@@ -234,7 +231,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
 
       const { data: urlData } = supabase.storage.from('brd-attachments').getPublicUrl(path);
       
-      await (supabase as any).from('brd_documents').update({ pdf_url: urlData.publicUrl }).eq('id', brdData.id);
+      await typedQuery('brd_documents').update({ pdf_url: urlData.publicUrl }).eq('id', brdData.id);
       toast.success('PDF attached successfully');
     } catch (err: any) {
       toast.error('Upload failed: ' + (err.message || 'Unknown error'));
@@ -384,8 +381,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                   if (data?.error) throw new Error(data.message || data.error);
                   toast.success(`Re-imported ${doc.jira_ticket_key} (source: ${data.raw_text_source}${data.pdf_attached ? ', PDF attached' : ''})`);
                   // Reload brd data
-                  const { data: brdRow } = await (supabase as any)
-                    .from('brd_documents')
+                  const { data: brdRow } = await typedQuery('brd_documents')
                     .select('id, pipeline_stage, raw_text, parent_jira_key, ticket_type, raw_text_source')
                     .eq('jira_key', doc.jira_ticket_key)
                     .maybeSingle();

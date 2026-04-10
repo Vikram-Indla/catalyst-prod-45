@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Sparkles, Check, X, BookOpen, Flag, RefreshCw, Loader2, FileText, AlertTriangle, Eye, RotateCcw } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
 import { RA_KEYS } from '@/hooks/useReqAssist';
@@ -87,8 +87,7 @@ export default function ReqAssistGenerate() {
   useEffect(() => {
     if (!savedDocId) { setHasEpics(false); setEpicCount(0); return; }
     (async () => {
-      const { count } = await (supabase as any)
-        .from('brd_epics')
+      const { count } = await typedQuery('brd_epics')
         .select('id', { count: 'exact', head: true })
         .eq('brd_id', savedDocId);
       if (count && count > 0) { setHasEpics(true); setEpicCount(count); }
@@ -127,8 +126,7 @@ export default function ReqAssistGenerate() {
 
       // Check for duplicate via content_hash
       const contentHash = await hashText(text);
-      const { data: existing } = await (supabase as any)
-        .from('brd_documents')
+      const { data: existing } = await typedQuery('brd_documents')
         .select('id, title')
         .eq('content_hash', contentHash)
         .limit(1)
@@ -165,8 +163,7 @@ export default function ReqAssistGenerate() {
       const title = baseTitle + titleSuffix;
       const contentHash = await hashText(text);
 
-      const { data, error } = await (supabase as any)
-        .from('brd_documents')
+      const { data, error } = await typedQuery('brd_documents')
         .insert({
           title,
           raw_text: text.trim(),
@@ -199,8 +196,7 @@ export default function ReqAssistGenerate() {
     if (!duplicateDoc || !genResult) return;
     setSaving(true);
     try {
-      const { error } = await (supabase as any)
-        .from('brd_documents')
+      const { error } = await typedQuery('brd_documents')
         .update({
           raw_text: text.trim(),
           pipeline_stage: 'process',
@@ -211,7 +207,7 @@ export default function ReqAssistGenerate() {
       if (error) throw error;
 
       // Delete existing epics
-      await (supabase as any).from('brd_epics').delete().eq('brd_id', duplicateDoc.id);
+      await typedQuery('brd_epics').delete().eq('brd_id', duplicateDoc.id);
 
       setSavedDocId(duplicateDoc.id);
       setShowSavedBanner(true);
@@ -470,7 +466,7 @@ export default function ReqAssistGenerate() {
         <RAEpicGenerationModalWrapper
           savedDocId={savedDocId}
           fallbackTitle={text.trim().slice(0, 60) || 'Untitled BRD'}
-          onClose={() => { setEpicModalOpen(false); if (savedDocId) { (async () => { const { count } = await (supabase as any).from('brd_epics').select('id', { count: 'exact', head: true }).eq('brd_id', savedDocId); if (count && count > 0) { setHasEpics(true); setEpicCount(count); } })(); } }}
+          onClose={() => { setEpicModalOpen(false); if (savedDocId) { (async () => { const { count } = await typedQuery('brd_epics').select('id', { count: 'exact', head: true }).eq('brd_id', savedDocId); if (count && count > 0) { setHasEpics(true); setEpicCount(count); } })(); } }}
         />
       )}
 
@@ -501,7 +497,7 @@ export default function ReqAssistGenerate() {
                   // Auto-save as copy
                   const baseTitle = text.trim().slice(0, 60).replace(/[^\w\s\-.,]/g, '').trim() || 'Untitled BRD';
                   const contentHash = await hashText(text + Date.now()); // unique hash for copy
-                  const { data, error } = await (supabase as any).from('brd_documents').insert({
+                  const { data, error } = await typedQuery('brd_documents').insert({
                     title: baseTitle + ' (Copy)', raw_text: text.trim(), source_type: 'ai_generated', pipeline_stage: 'complete',
                     language: gData.language || 'en', domain_tag: gData.domain || null, quality_score: qualifyResult?.score || null,
                     content_hash: contentHash, json_data: { sections: gData.sections, total_requirements: gData.total_requirements },
@@ -565,7 +561,7 @@ export default function ReqAssistGenerate() {
               <BtnAI onClick={async () => {
                 setRegenConfirmOpen(false);
                 if (savedDocId) {
-                  await (supabase as any).from('brd_epics').delete().eq('brd_id', savedDocId);
+                  await typedQuery('brd_epics').delete().eq('brd_id', savedDocId);
                   setHasEpics(false);
                   setEpicCount(0);
                   setEpicModalOpen(true);
@@ -691,8 +687,7 @@ function RAEpicGenerationModalWrapper({ savedDocId, fallbackTitle, onClose }: { 
   const [doc, setDoc] = useState<any>(null);
   useEffect(() => {
     (async () => {
-      const { data } = await (supabase as any)
-        .from('brd_documents')
+      const { data } = await typedQuery('brd_documents')
         .select('id, title, jira_key, language, pipeline_stage')
         .eq('id', savedDocId)
         .single();

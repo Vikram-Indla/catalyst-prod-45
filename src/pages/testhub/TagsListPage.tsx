@@ -4,7 +4,7 @@
  */
 import { useState, useEffect } from 'react';
 import { Tags, Plus, Search, X, Edit2, Trash2, RefreshCw, Hash } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
 import { useTheme } from '@/hooks/useTheme';
 import { TestHubPageHeader } from '@/components/testhub/TestHubPageHeader';
@@ -41,8 +41,7 @@ export default function TagsListPage() {
   const fetchTags = async () => {
     setIsLoading(true);
     try {
-      let query = (supabase as any)
-        .from('tm_labels')
+      let query = typedQuery('tm_labels')
         .select('*')
         .order('category', { ascending: true, nullsFirst: false })
         .order('name', { ascending: true });
@@ -55,7 +54,7 @@ export default function TagsListPage() {
       if (error) throw error;
       setTags(data || []);
 
-      const { data: statsData } = await (supabase as any).rpc('get_tag_stats');
+      const { data: statsData } = await typedRpc('get_tag_stats');
       if (statsData && statsData.length > 0) {
         setStats(statsData[0]);
       }
@@ -87,7 +86,7 @@ export default function TagsListPage() {
   const deleteTag = async (id: string, name: string) => {
     if (!confirm(`Delete tag "${name}"? This will remove it from all items.`)) return;
     try {
-      const { error } = await (supabase as any).from('tm_labels').delete().eq('id', id);
+      const { error } = await typedQuery('tm_labels').delete().eq('id', id);
       if (error) throw error;
       catalystToast.success('Tag deleted');
       fetchTags();

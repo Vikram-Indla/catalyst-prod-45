@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 // NOTE: Function names reference WSJF for legacy/internal reasons
@@ -10,8 +10,7 @@ export function useApplyWSJFToRankEpics(piId?: string) {
   return useMutation({
     mutationFn: async () => {
       // Fetch epics with technical scores (stored in epic_wsjf table)
-      let query = (supabase as any)
-        .from('epic_wsjf')
+      let query = typedQuery('epic_wsjf')
         .select('epic_id, wsjf_score, pi_id')
         .order('wsjf_score', { ascending: false });
 
@@ -36,8 +35,7 @@ export function useApplyWSJFToRankEpics(piId?: string) {
 
       // Batch update epics
       for (const update of updates) {
-        const { error } = await (supabase as any)
-          .from('epics')
+        const { error } = await typedQuery('epics')
           .update({ global_rank: update.global_rank })
           .eq('id', update.id);
 

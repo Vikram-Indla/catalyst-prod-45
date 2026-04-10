@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -329,8 +329,7 @@ export function LinksViewTab({ requestId, onNavigateToEpic, onNavigateToFeature,
   const { data: legacyLinks = [], isLoading: linksLoading } = useQuery({
     queryKey: ['business-request-links', requestId],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from('business_request_links')
+      const { data, error } = await typedQuery('business_request_links')
         .select('*')
         .eq('business_request_id', requestId)
         .order('created_at', { ascending: false });
@@ -430,8 +429,7 @@ export function LinksViewTab({ requestId, onNavigateToEpic, onNavigateToFeature,
         .eq('id', user?.id)
         .single();
       
-      const { error } = await (supabase as any)
-        .from('business_request_links')
+      const { error } = await typedQuery('business_request_links')
         .insert({ 
           title: link.title,
           url: link.url,
@@ -478,8 +476,7 @@ export function LinksViewTab({ requestId, onNavigateToEpic, onNavigateToFeature,
           .from('attachments')
           .getPublicUrl(fileName);
 
-        const { error: insertError } = await (supabase as any)
-          .from('business_request_links')
+        const { error: insertError } = await typedQuery('business_request_links')
           .insert({
             business_request_id: requestId,
             title: title || file.name,
@@ -518,8 +515,7 @@ export function LinksViewTab({ requestId, onNavigateToEpic, onNavigateToFeature,
         .eq('id', user?.id)
         .single();
       
-      const { error } = await (supabase as any)
-        .from('business_request_links')
+      const { error } = await typedQuery('business_request_links')
         .insert({ 
           title: doc.title,
           url: `/knowledge-hub/documents/${doc.id}`,
@@ -554,8 +550,7 @@ export function LinksViewTab({ requestId, onNavigateToEpic, onNavigateToFeature,
         .eq('id', user?.id)
         .single();
       
-      const { error } = await (supabase as any)
-        .from('business_request_links')
+      const { error } = await typedQuery('business_request_links')
         .insert({ 
           title: `${workItem.key} – ${workItem.title}`,
           url: `/${workItem.type}s/${workItem.id}`,
@@ -588,8 +583,7 @@ export function LinksViewTab({ requestId, onNavigateToEpic, onNavigateToFeature,
         await supabase.storage.from('attachments').remove([link.file_path]);
       }
       
-      const { error } = await (supabase as any)
-        .from('business_request_links')
+      const { error } = await typedQuery('business_request_links')
         .delete()
         .eq('id', link.id);
       

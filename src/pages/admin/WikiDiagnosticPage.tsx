@@ -3,7 +3,7 @@
  * Runs live health checks against all wiki-related tables and displays results.
  */
 import React, { useState, useEffect, useCallback } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import {
   RefreshCw, Database, Layers, FileText, FolderOpen,
   CheckCircle2, XCircle, BookOpen, Activity, BarChart3,
@@ -13,8 +13,8 @@ import StatusLozenge from '@/components/ui/StatusLozenge';
 import toast from 'react-hot-toast';
 
 /* ─── helpers ─── */
-const fromAny = (t: string) => (supabase as any).from(t);
-const rpc = (fn: string) => (supabase as any).rpc(fn);
+const fromAny = (t: string) => typedQuery(t);
+const rpc = (fn: string) => typedRpc(fn);
 
 interface DiagnosticResult {
   summary: Record<string, any> | null;

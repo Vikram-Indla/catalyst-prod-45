@@ -33,7 +33,7 @@ import {
   ChevronLeft, ChevronRight, RotateCcw, PanelRightClose, PanelRightOpen,
 } from 'lucide-react';
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
 import { FailureReasonModal } from '@/components/testhub/FailureReasonModal';
 import { KeyboardShortcutsGuide } from '@/components/testhub/execution/KeyboardShortcutsGuide';
@@ -191,14 +191,13 @@ export default function TestHubExecutionPage() {
 
   const fetchCycle = useCallback(async () => {
     if (!cycleId) return;
-    const { data, error } = await (supabase as any).from('tm_test_cycles').select('*').eq('id', cycleId).single();
+    const { data, error } = await typedQuery('tm_test_cycles').select('*').eq('id', cycleId).single();
     if (!error && data) setCycle(data as any);
   }, [cycleId]);
 
   const fetchTestCases = useCallback(async () => {
     if (!cycleId) return;
-    const { data, error } = await (supabase as any)
-      .from('tm_cycle_scope')
+    const { data, error } = await typedQuery('tm_cycle_scope')
       .select(`*, test_case:tm_test_cases ( id, case_key, title, description, preconditions, priority_id, case_type_id, current_version, priority:tm_case_priorities ( id, name, color ), case_type:tm_case_types ( id, name ) ), assignee:profiles!assigned_to ( id, full_name )`)
       .eq('cycle_id', cycleId)
       .order('added_at');
@@ -345,7 +344,7 @@ export default function TestHubExecutionPage() {
         current_status: status,
         updated_at: new Date().toISOString(),
       };
-      const { error } = await (supabase as any).from('tm_cycle_scope').update(updateData).eq('id', selectedTestCaseId);
+      const { error } = await typedQuery('tm_cycle_scope').update(updateData).eq('id', selectedTestCaseId);
       if (error) { catalystToast.error('Failed to update test result'); return; }
 
       // 2. INSERT execution history record (skip for reset)
@@ -575,7 +574,7 @@ export default function TestHubExecutionPage() {
     setCurrentStepIndex(0);
     
     // Reset cycle scope status to not_run so execution flow works
-    await (supabase as any).from('tm_cycle_scope').update({
+    await typedQuery('tm_cycle_scope').update({
       current_status: 'not_run',
       updated_at: new Date().toISOString(),
     }).eq('id', selectedTestCaseId);

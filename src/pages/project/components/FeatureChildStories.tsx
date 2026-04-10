@@ -5,7 +5,7 @@
 
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { Link2, Plus, AlertTriangle, X, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import {
@@ -93,8 +93,7 @@ export function FeatureChildStories({ stories, featureId, projectId, totalCount,
   const { data: storiesWithAssignees = [] } = useQuery({
     queryKey: ['feature-stories-with-assignees', featureId],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from('stories')
+      const { data, error } = await typedQuery('stories')
         .select(`
           id,
           name,

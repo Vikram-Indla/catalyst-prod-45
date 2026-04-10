@@ -6,7 +6,7 @@
 
 import React, { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { Plus, Link as LinkIcon, ExternalLink, Trash2 } from 'lucide-react';
 import { logInitiativeAudit } from '@/lib/initiativeAudit';
 import { toast } from 'sonner';
@@ -38,8 +38,7 @@ function AddLinkForm({ initiativeId, onClose }: { initiativeId: string; onClose:
     setSubmitting(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      const { data: rows, error } = await (supabase as any)
-        .from('ph_initiative_links')
+      const { data: rows, error } = await typedQuery('ph_initiative_links')
         .insert({
           initiative_id: initiativeId,
           title: title.trim(),
@@ -122,8 +121,7 @@ export function InitiativeLinksTab({ initiativeId }: InitiativeLinksTabProps) {
   const { data: links = [], isLoading, isError } = useQuery({
     queryKey: ['ph-links', initiativeId],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from('ph_initiative_links')
+      const { data, error } = await typedQuery('ph_initiative_links')
         .select('*')
         .eq('initiative_id', initiativeId)
         .order('created_at', { ascending: false });
@@ -134,8 +132,7 @@ export function InitiativeLinksTab({ initiativeId }: InitiativeLinksTabProps) {
 
   const handleDelete = async (id: string, linkTitle: string) => {
     try {
-      const { error } = await (supabase as any)
-        .from('ph_initiative_links')
+      const { error } = await typedQuery('ph_initiative_links')
         .delete()
         .eq('id', id);
       if (error) throw error;

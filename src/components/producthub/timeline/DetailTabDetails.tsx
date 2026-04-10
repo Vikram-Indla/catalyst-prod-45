@@ -9,7 +9,7 @@ import type { TimelineInitiative } from '@/types/producthub/initiative';
 import { format } from 'date-fns';
 import { Check, Pencil, Trash2 } from 'lucide-react';
 import { useQueryClient, useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { usePromoteToRoadmap, useRemoveFromRoadmap } from '@/hooks/useRoadmapPromotion';
 import { getInitialsFromName, hashColor } from '@/types/producthub/initiative';
@@ -190,7 +190,7 @@ function DeptSelect({ value, onChange }: { value: string | null | undefined; onC
   const { data: depts = [] } = useQuery({
     queryKey: ['ph-departments-list'],
     queryFn: async () => {
-      const { data } = await (supabase as any).from('ph_departments').select('id, name');
+      const { data } = await typedQuery('ph_departments').select('id, name');
       return (data || []).map((d: any) => ({ id: d.id, name: d.name }));
     },
     staleTime: 5 * 60_000,
@@ -231,7 +231,7 @@ function CommentsSection({ initiativeId }: { initiativeId: string }) {
   const { data: comments = [], isLoading } = useQuery({
     queryKey: ['pk-comments', initiativeId],
     queryFn: async () => {
-      const { data, error } = await (supabase as any).from('ph_comments')
+      const { data, error } = await typedQuery('ph_comments')
         .select('id, body, author_id, created_at')
         .eq('work_item_id', initiativeId)
         .order('created_at', { ascending: true });
@@ -252,7 +252,7 @@ function CommentsSection({ initiativeId }: { initiativeId: string }) {
     setSubmitting(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      await (supabase as any).from('ph_comments').insert({
+      await typedQuery('ph_comments').insert({
         work_item_id: initiativeId,
         work_item_type: 'initiative',
         body: newComment.trim(),
@@ -269,7 +269,7 @@ function CommentsSection({ initiativeId }: { initiativeId: string }) {
   };
 
   const handleDelete = async (id: string) => {
-    await (supabase as any).from('ph_comments').delete().eq('id', id);
+    await typedQuery('ph_comments').delete().eq('id', id);
     queryClient.invalidateQueries({ queryKey: ['pk-comments', initiativeId] });
     // Silent auto-save
   };
@@ -403,8 +403,7 @@ export const DetailTabDetails: React.FC<DetailTabDetailsProps> = ({ initiative }
     if (typeKey === initiative.initiative_type_key) return;
     setUpdatingType(true);
     try {
-      const { data: typeRow, error: lookupErr } = await (supabase as any)
-        .from('initiative_types').select('id').eq('key', typeKey).single();
+      const { data: typeRow, error: lookupErr } = await typedQuery('initiative_types').select('id').eq('key', typeKey).single();
       if (lookupErr || !typeRow) throw lookupErr || new Error('Type not found');
 
       let query = supabase

@@ -11,7 +11,7 @@ import { SuperAdminGuard } from '@/components/admin/SuperAdminGuard';
 import { useUsers, UserProfile } from '@/hooks/useUsers';
 import { UserDrawer } from './components/UserDrawer';
 import { BulkEditModal } from './components/BulkEditModal';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { loadXLSX } from '@/lib/exportLoaders';
 import { toast } from 'sonner';
 import { Search, X, Download, Plus, ChevronLeft, ChevronRight, Edit3, Trash2 } from 'lucide-react';
@@ -296,8 +296,7 @@ export default function UsersManagement() {
       if (Object.keys(inventoryUpdates).length > 0) {
         // For profile-linked users, update via profile_id
         if (profileUserIds.length > 0) {
-          const { error: invError } = await (supabase as any)
-            .from('resource_inventory')
+          const { error: invError } = await typedQuery('resource_inventory')
             .update({ ...inventoryUpdates, updated_at: new Date().toISOString() })
             .in('profile_id', profileUserIds);
           if (invError) throw invError;
@@ -305,8 +304,7 @@ export default function UsersManagement() {
         
         // For inventory-only users, update via id (resource_inventory.id)
         if (inventoryOnlyIds.length > 0) {
-          const { error: invOnlyError } = await (supabase as any)
-            .from('resource_inventory')
+          const { error: invOnlyError } = await typedQuery('resource_inventory')
             .update({ ...inventoryUpdates, updated_at: new Date().toISOString() })
             .in('id', inventoryOnlyIds);
           if (invOnlyError) throw invOnlyError;

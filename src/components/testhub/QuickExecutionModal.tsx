@@ -7,7 +7,7 @@ import {
   X, Play, CheckCircle2, XCircle, AlertTriangle,
   SkipForward, Clock, FileText, ChevronRight
 } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
 
 interface TestStep {
@@ -93,8 +93,7 @@ export function QuickExecutionModal({
     setIsSubmitting(true);
 
     try {
-      const { error } = await (supabase as any)
-        .from('tm_cycle_scope')
+      const { error } = await typedQuery('tm_cycle_scope')
         .update({
           current_status: status,
           updated_at: new Date().toISOString(),

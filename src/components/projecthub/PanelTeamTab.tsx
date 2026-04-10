@@ -4,7 +4,7 @@ import type { ProjectTeamMember } from '@/types/projecthub';
 import { Search, UserPlus, Trash2, Loader2 } from 'lucide-react';
 import { AddMemberDialog } from './AddMemberDialog';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 const AVATAR_COLORS = ['#2563EB', '#7C3AED', '#0D9488', '#D97706', '#DC2626', '#16A34A', '#0284C7', '#6366F1'];
@@ -68,7 +68,7 @@ export function PanelTeamTab({ members, isLoading, projectId }: Props) {
   const removeMember = useMutation({
     mutationFn: async (userId: string) => {
       if (!projectId) throw new Error('No project');
-      const { error } = await (supabase as any).from('project_members').delete().eq('project_id', projectId).eq('user_id', userId);
+      const { error } = await typedQuery('project_members').delete().eq('project_id', projectId).eq('user_id', userId);
       if (error) throw error;
     },
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['project-team'] }); queryClient.invalidateQueries({ queryKey: ['projects'] }); toast.success('Member removed'); },
@@ -79,7 +79,7 @@ export function PanelTeamTab({ members, isLoading, projectId }: Props) {
     mutationFn: async ({ userId, profileId, roleName }: { userId: string; profileId: string | null; roleName: string | null }) => {
       const { data: { user } } = await supabase.auth.getUser();
       const memberUserId = profileId || userId;
-      const { error } = await (supabase as any).from('project_members').insert({ project_id: projectId, user_id: memberUserId, role: roleName || 'viewer', status: 'active', added_by: user?.id || null });
+      const { error } = await typedQuery('project_members').insert({ project_id: projectId, user_id: memberUserId, role: roleName || 'viewer', status: 'active', added_by: user?.id || null });
       if (error) throw error;
     },
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['project-team'] }); queryClient.invalidateQueries({ queryKey: ['projects'] }); toast.success('Member added to project'); },

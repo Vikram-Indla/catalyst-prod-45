@@ -6,7 +6,7 @@ import {
   Activity, FileText, Play, Bug, CheckCircle2, XCircle, 
   Plus, Edit2, Trash2, RefreshCw, User, Clock
 } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 
 interface ActivityItem {
   id: string;
@@ -51,7 +51,7 @@ export function ActivityLog({ limit = 20, showHeader = true }: ActivityLogProps)
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      const { data, error } = await (supabase as any).rpc('get_user_recent_activity', {
+      const { data, error } = await typedRpc('get_user_recent_activity', {
         p_user_id: user.id,
         p_limit: limit,
       });

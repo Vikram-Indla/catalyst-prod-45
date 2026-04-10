@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { RA_KEYS } from '@/hooks/useReqAssist';
 
 /* ── Constants ── */
@@ -17,8 +17,7 @@ export function useConnectedProjects() {
   return useQuery({
     queryKey: JIRA_KEYS.connections,
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from('ra_jira_connections')
+      const { data, error } = await typedQuery('ra_jira_connections')
         .select('*')
         .order('created_at', { ascending: true });
       if (error) throw error;
@@ -43,8 +42,7 @@ export function useProjectTickets(projectKey: string | null, pdfOnly = false) {
   return useQuery({
     queryKey: JIRA_KEYS.tickets(projectKey ?? '', pdfOnly),
     queryFn: async () => {
-      let q = (supabase as any)
-        .from('ra_jira_tickets')
+      let q = typedQuery('ra_jira_tickets')
         .select('ticket_key, ticket_summary, ticket_type, has_pdf, attachment_count, status, project_key, project_name, jira_issue_id, synced_at')
         .eq('project_key', projectKey);
       if (pdfOnly) q = q.eq('has_pdf', true);
@@ -60,8 +58,7 @@ export function useProjectTickets(projectKey: string | null, pdfOnly = false) {
       const ticketKeys = data.map((t: any) => t.ticket_key);
       let importedMap: Record<string, string> = {};
       if (ticketKeys.length > 0) {
-        const { data: docs } = await (supabase as any)
-          .from('ra_documents')
+        const { data: docs } = await typedQuery('ra_documents')
           .select('jira_ticket_key, status')
           .in('jira_ticket_key', ticketKeys);
         if (docs) {
@@ -101,8 +98,7 @@ export function useProjectTicketCount(projectKey: string | null) {
   return useQuery({
     queryKey: JIRA_KEYS.ticketCount(projectKey ?? ''),
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from('ra_jira_tickets')
+      const { data, error } = await typedQuery('ra_jira_tickets')
         .select('status')
         .eq('project_key', projectKey);
       if (error) throw error;
@@ -168,8 +164,7 @@ export function useImportTickets() {
   return useMutation({
     mutationFn: async (ticketKeys: string[]) => {
       // Fetch full ticket rows
-      const { data: tickets, error: fetchErr } = await (supabase as any)
-        .from('ra_jira_tickets')
+      const { data: tickets, error: fetchErr } = await typedQuery('ra_jira_tickets')
         .select('*')
         .in('ticket_key', ticketKeys);
       if (fetchErr) throw fetchErr;
@@ -193,13 +188,11 @@ export function useImportTickets() {
         pipeline_stage: 'intake',
       }));
 
-      const { error: insertErr } = await (supabase as any)
-        .from('ra_documents')
+      const { error: insertErr } = await typedQuery('ra_documents')
         .upsert(docs, { onConflict: 'jira_ticket_key' });
       if (insertErr) throw insertErr;
 
-      const { error: brdErr } = await (supabase as any)
-        .from('brd_documents')
+      const { error: brdErr } = await typedQuery('brd_documents')
         .upsert(brdDocs, { onConflict: 'jira_key', ignoreDuplicates: false });
       if (brdErr) throw brdErr;
 
@@ -208,8 +201,7 @@ export function useImportTickets() {
       let pdfCount = 0;
       if (pdfTickets.length > 0) {
         // Get the just-inserted doc IDs
-        const { data: insertedDocs } = await (supabase as any)
-          .from('ra_documents')
+        const { data: insertedDocs } = await typedQuery('ra_documents')
           .select('id, jira_ticket_key')
           .in('jira_ticket_key', pdfTickets.map((t: any) => t.ticket_key));
 
@@ -219,7 +211,7 @@ export function useImportTickets() {
             job_type: 'pdf_extract',
             status: 'queued',
           }));
-          await (supabase as any).from('ra_processing_jobs').insert(jobs);
+          await typedQuery('ra_processing_jobs').insert(jobs);
           pdfCount = jobs.length;
         }
       }

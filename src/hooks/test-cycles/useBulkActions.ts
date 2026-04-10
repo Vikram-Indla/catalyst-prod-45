@@ -3,7 +3,7 @@
  */
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import type { BulkUpdateParams, CycleAssignment } from '@/types/assignment-table.types';
 import { cycleListKeys } from './useTestCycleList';
@@ -39,8 +39,7 @@ export function useBulkActions(cycleId: string) {
         dbUpdates.due_date = updates.dueDate;
       }
 
-      const { data, error } = await (supabase as any)
-        .from('tm_cycle_scope')
+      const { data, error } = await typedQuery('tm_cycle_scope')
         .update(dbUpdates)
         .in('id', ids)
         .select();
@@ -87,8 +86,7 @@ export function useBulkActions(cycleId: string) {
 
   const bulkRemove = useMutation({
     mutationFn: async (ids: string[]) => {
-      const { error } = await (supabase as any)
-        .from('tm_cycle_scope')
+      const { error } = await typedQuery('tm_cycle_scope')
         .delete()
         .in('id', ids);
 

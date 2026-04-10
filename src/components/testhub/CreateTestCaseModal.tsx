@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { X, Library } from 'lucide-react';
 import { StepsEditor, Step, StepAttachment } from './StepsEditor';
 import { SharedStepsModal } from './SharedStepsModal';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useTestHubProject } from '@/hooks/useTestHubProject';
 
@@ -91,8 +91,8 @@ export function CreateTestCaseModal({
     const fetchLookups = async () => {
       const [usersRes, prioritiesRes, caseTypesRes] = await Promise.all([
         supabase.from('profiles').select('id, full_name, avatar_url').order('full_name'),
-        (supabase as any).from('tm_case_priorities').select('id, name, color').order('sort_order'),
-        (supabase as any).from('tm_case_types').select('id, name').order('name'),
+        typedQuery('tm_case_priorities').select('id, name, color').order('sort_order'),
+        typedQuery('tm_case_types').select('id, name').order('name'),
       ]);
       if (usersRes.data) setUsers(usersRes.data);
       if (prioritiesRes.data) setPriorities(prioritiesRes.data);
@@ -196,8 +196,7 @@ export function CreateTestCaseModal({
 
   const handleCreate = async () => {
     // 1. Generate case_key - get ALL keys and find the MAX number to avoid duplicates
-    const { data: allCases } = await (supabase as any)
-      .from('tm_test_cases')
+    const { data: allCases } = await typedQuery('tm_test_cases')
       .select('case_key');
 
     let maxNum = 0;
@@ -213,8 +212,7 @@ export function CreateTestCaseModal({
     const caseKey = `TC-${String(maxNum + 1).padStart(3, '0')}`;
 
     // 2. Insert test case
-    const { data: newCase, error } = await (supabase as any)
-      .from('tm_test_cases')
+    const { data: newCase, error } = await typedQuery('tm_test_cases')
       .insert({
         case_key: caseKey,
         title: title.trim(),
@@ -273,7 +271,7 @@ export function CreateTestCaseModal({
               continue;
             }
             
-            await (supabase as any).from('th_step_attachments').insert({
+            await typedQuery('th_step_attachments').insert({
               test_case_id: newCase.id,
               step_number: i + 1,
               file_name: attachment.name,
@@ -303,8 +301,7 @@ export function CreateTestCaseModal({
     const newVersion = (testCase.version || 1) + 1;
 
     // 1. Update test case
-    const { error: tcError } = await (supabase as any)
-      .from('tm_test_cases')
+    const { error: tcError } = await typedQuery('tm_test_cases')
       .update({
         title: title.trim(),
         description: description.trim() || null,
@@ -351,7 +348,7 @@ export function CreateTestCaseModal({
 
     // 4. Create version history entry (non-fatal)
     try {
-      await (supabase as any).from('tm_test_case_versions').insert({
+      await typedQuery('tm_test_case_versions').insert({
         test_case_id: testCase.id,
         version: newVersion,
         changes: JSON.stringify({ updated: 'Test case updated' }),

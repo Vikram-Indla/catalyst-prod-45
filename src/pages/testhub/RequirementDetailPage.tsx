@@ -11,7 +11,7 @@ import {
   CheckCircle2, XCircle, Clock, AlertTriangle, User, Tag,
   ExternalLink, RefreshCw, FileText, ChevronRight
 } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
 import { LinkTestCaseModal } from '@/components/testhub/requirements/LinkTestCaseModal';
 import {
@@ -81,8 +81,7 @@ export default function RequirementDetailPage() {
     if (!requirementId) return;
     setIsLoading(true);
     try {
-      const { data: reqData, error: reqErr } = await (supabase as any)
-        .from('tm_requirements')
+      const { data: reqData, error: reqErr } = await typedQuery('tm_requirements')
         .select('id, req_key, title, description, type, priority, status, source, external_id, release_version, created_at')
         .eq('id', requirementId)
         .single();
@@ -90,8 +89,7 @@ export default function RequirementDetailPage() {
       if (reqData) setRequirement(reqData);
 
       // Fetch linked tests via tm_requirement_tests joined to tm_test_cases
-      const { data: linksData } = await (supabase as any)
-        .from('tm_requirement_tests')
+      const { data: linksData } = await typedQuery('tm_requirement_tests')
         .select('id, test_case_id, coverage_status, test_case:tm_test_cases(id, case_key, title, priority_id, priority:tm_case_priorities(id, name, color))')
         .eq('requirement_id', requirementId);
       
@@ -120,7 +118,7 @@ export default function RequirementDetailPage() {
   const updateStatus = async (newStatus: string) => {
     if (!requirement) return;
     try {
-      const { error } = await (supabase as any).from('tm_requirements').update({ status: newStatus }).eq('id', requirement.id);
+      const { error } = await typedQuery('tm_requirements').update({ status: newStatus }).eq('id', requirement.id);
       if (error) throw error;
       catalystToast.success(`Status changed to ${STATUS_CONFIG[newStatus]?.label || newStatus}`);
       fetchRequirement();
@@ -130,7 +128,7 @@ export default function RequirementDetailPage() {
   const unlinkTest = async (linkId: string) => {
     if (!confirm('Remove this test case from the requirement?')) return;
     try {
-      const { error } = await (supabase as any).from('tm_requirement_tests').delete().eq('id', linkId);
+      const { error } = await typedQuery('tm_requirement_tests').delete().eq('id', linkId);
       if (error) throw error;
       catalystToast.success('Test case unlinked');
       fetchRequirement();
@@ -141,7 +139,7 @@ export default function RequirementDetailPage() {
     if (!requirement) return;
     if (!confirm(`Delete ${requirement.req_key}? This cannot be undone.`)) return;
     try {
-      const { error } = await (supabase as any).from('tm_requirements').delete().eq('id', requirement.id);
+      const { error } = await typedQuery('tm_requirements').delete().eq('id', requirement.id);
       if (error) throw error;
       catalystToast.success('Requirement deleted');
       navigate('/testhub/requirements');

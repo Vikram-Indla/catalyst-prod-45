@@ -4,7 +4,7 @@
  * Real Supabase implementation only - no mock data
  */
 
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import type {
   Incident,
   CreateIncidentFormData,
@@ -259,7 +259,7 @@ export const incidentApi = {
   },
 
   async getBusinessProcesses(): Promise<BusinessProcess[]> {
-    const { data, error } = await (supabase as any).from('business_processes').select('*').eq('active', true).order('sort_order');
+    const { data, error } = await typedQuery('business_processes').select('*').eq('active', true).order('sort_order');
     if (error) throw error;
     return (data || []) as unknown as BusinessProcess[];
   },

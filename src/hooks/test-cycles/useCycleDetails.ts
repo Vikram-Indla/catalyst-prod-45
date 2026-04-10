@@ -7,7 +7,7 @@
  */
 
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import type { CycleStatus } from '@/features/test-cycles/types/cycle-config';
 
 export interface CycleStats {
@@ -77,8 +77,7 @@ export function useCycleDetails(cycleId: string) {
       // DERIVE STATS FROM tm_cycle_scope (SOURCE OF TRUTH)
       // This ensures counts always match actual scope records, not stale counters.
       // =========================================================================
-      const { data: scopeData, error: scopeError } = await (supabase as any)
-        .from('tm_cycle_scope')
+      const { data: scopeData, error: scopeError } = await typedQuery('tm_cycle_scope')
         .select('id, current_status, assigned_to')
         .eq('cycle_id', cycleId);
 

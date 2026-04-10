@@ -5,7 +5,7 @@
 
 import React, { useState, useCallback, useMemo, useRef } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { logInitiativeAudit } from '@/lib/initiativeAudit';
 import { Upload, Paperclip, Download, Pin, PinOff, Trash2 } from 'lucide-react';
@@ -65,8 +65,7 @@ export const DetailTabAttachments: React.FC<DetailTabAttachmentsProps> = ({ init
   const { data: files = [], refetch } = useQuery({
     queryKey: ['idp-attachments', initiativeId],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from('ph_initiative_attachments')
+      const { data, error } = await typedQuery('ph_initiative_attachments')
         .select('*, uploader:profiles!uploaded_by(full_name)')
         .eq('initiative_id', initiativeId)
         .order('created_at', { ascending: false });
@@ -105,7 +104,7 @@ export const DetailTabAttachments: React.FC<DetailTabAttachmentsProps> = ({ init
       const { error: uploadErr } = await supabase.storage.from('initiative-attachments').upload(path, file);
       if (uploadErr) { toast.error(`Upload failed: ${file.name}`); continue; }
 
-      const { error: dbErr } = await (supabase as any).from('ph_initiative_attachments').insert({
+      const { error: dbErr } = await typedQuery('ph_initiative_attachments').insert({
         initiative_id: initiativeId,
         file_name: file.name,
         file_path: path,
@@ -137,7 +136,7 @@ export const DetailTabAttachments: React.FC<DetailTabAttachmentsProps> = ({ init
   };
 
   const handlePin = async (f: any) => {
-    await (supabase as any).from('ph_initiative_attachments').update({ is_pinned: !f.is_pinned }).eq('id', f.id);
+    await typedQuery('ph_initiative_attachments').update({ is_pinned: !f.is_pinned }).eq('id', f.id);
     logInitiativeAudit({ initiative_id: initiativeId, action: f.is_pinned ? 'unpinned' : 'pinned', entity_type: 'attachment', new_value: f.file_name });
     // Silent auto-save
     refetch();
@@ -145,7 +144,7 @@ export const DetailTabAttachments: React.FC<DetailTabAttachmentsProps> = ({ init
 
   const handleDelete = async (f: any) => {
     await supabase.storage.from('initiative-attachments').remove([f.file_path]);
-    await (supabase as any).from('ph_initiative_attachments').delete().eq('id', f.id);
+    await typedQuery('ph_initiative_attachments').delete().eq('id', f.id);
     logInitiativeAudit({ initiative_id: initiativeId, action: 'deleted', entity_type: 'attachment', new_value: f.file_name });
     toast.success(`Deleted ${f.file_name}`, TOAST_OPTS);
     refetch();

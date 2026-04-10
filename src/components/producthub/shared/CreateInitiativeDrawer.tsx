@@ -7,7 +7,7 @@ import { createPortal } from 'react-dom';
 import { X, Loader2, FileText, Tag, Users, Calendar, RefreshCw, GitMerge } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTheme } from '@/hooks/useTheme';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { catalystToast } from '@/lib/catalystToast';
 import { useDepartmentOptions, useProfileOptions } from '@/hooks/useInitiativeLookups';
@@ -45,7 +45,7 @@ function useNextInitiativeKey() {
   return useQuery({
     queryKey: ['next-initiative-key'],
     queryFn: async () => {
-      const { data } = await (supabase as any).from('ph_initiatives').select('initiative_key');
+      const { data } = await typedQuery('ph_initiatives').select('initiative_key');
       if (data && data.length > 0) {
         let maxNum = 0;
         for (const row of data) {
@@ -64,8 +64,7 @@ function useCreateInitiative() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (newInit: Record<string, any>) => {
-      const { data, error } = await (supabase as any)
-        .from('ph_initiatives')
+      const { data, error } = await typedQuery('ph_initiatives')
         .insert({
           title: newInit.title,
           description: newInit.description || null,

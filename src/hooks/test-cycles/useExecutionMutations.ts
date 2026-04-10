@@ -6,7 +6,7 @@
  */
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { cycleExecutionKeys, type ExecutionStatus, mapUiToDbStatus, type UIStatus } from './useCycleExecutionItems';
 import { cycleListKeys } from './useTestCycleList';
@@ -49,8 +49,7 @@ export function useUpdateExecutionStatus(cycleId: string) {
       const dbStatus = mapUiToDbStatus(status);
       
       // Get current status for audit logging
-      const { data: currentScope } = await (supabase as any)
-        .from('tm_cycle_scope')
+      const { data: currentScope } = await typedQuery('tm_cycle_scope')
         .select('current_status, cycle_id')
         .eq('id', scopeId)
         .single();
@@ -58,8 +57,7 @@ export function useUpdateExecutionStatus(cycleId: string) {
       const oldStatus = currentScope?.current_status || 'not_run';
       
       // Update scope status
-      const { error: scopeError } = await (supabase as any)
-        .from('tm_cycle_scope')
+      const { error: scopeError } = await typedQuery('tm_cycle_scope')
         .update({ current_status: dbStatus })
         .eq('id', scopeId);
       
@@ -71,8 +69,7 @@ export function useUpdateExecutionStatus(cycleId: string) {
       if (createRun && ['passed', 'failed', 'blocked', 'skipped'].includes(status)) {
         const { data: user } = await supabase.auth.getUser();
         
-        await (supabase as any)
-          .from('tm_test_runs')
+        await typedQuery('tm_test_runs')
           .insert({
             cycle_scope_id: scopeId,
             status: dbStatus,
@@ -121,8 +118,7 @@ export function useUpdateExecutionField(cycleId: string) {
   
   return useMutation({
     mutationFn: async ({ scopeId, field, value }: UpdateFieldPayload) => {
-      const { error } = await (supabase as any)
-        .from('tm_cycle_scope')
+      const { error } = await typedQuery('tm_cycle_scope')
         .update({ [field]: value })
         .eq('id', scopeId);
       
@@ -152,8 +148,7 @@ export function useBulkUpdateExecution(cycleId: string) {
   
   return useMutation({
     mutationFn: async ({ scopeIds, patch }: BulkUpdatePayload) => {
-      const { error } = await (supabase as any)
-        .from('tm_cycle_scope')
+      const { error } = await typedQuery('tm_cycle_scope')
         .update(patch)
         .in('id', scopeIds);
       
@@ -184,8 +179,7 @@ export function useRemoveFromExecution(cycleId: string) {
   
   return useMutation({
     mutationFn: async (scopeIds: string[]) => {
-      const { error } = await (supabase as any)
-        .from('tm_cycle_scope')
+      const { error } = await typedQuery('tm_cycle_scope')
         .delete()
         .in('id', scopeIds);
       

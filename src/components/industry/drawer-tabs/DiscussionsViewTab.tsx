@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Send, MessageSquare, Bot } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useAuth } from '@/lib/auth';
 import { format } from 'date-fns';
 import { BusinessRequest } from '@/types/business-request';
@@ -56,8 +56,7 @@ export function DiscussionsViewTab({ data }: DiscussionsViewTabProps) {
     queryKey: ['business-request-discussions', requestId],
     queryFn: async () => {
       if (!requestId) return [];
-      const { data, error } = await (supabase as any)
-        .from('business_request_discussions')
+      const { data, error } = await typedQuery('business_request_discussions')
         .select('*')
         .eq('business_request_id', requestId)
         .order('created_at', { ascending: true });
@@ -73,8 +72,7 @@ export function DiscussionsViewTab({ data }: DiscussionsViewTabProps) {
     mutationFn: async (message: string) => {
       if (!requestId || !user?.id) throw new Error('Missing data');
       
-      const { data, error } = await (supabase as any)
-        .from('business_request_discussions')
+      const { data, error } = await typedQuery('business_request_discussions')
         .insert({
           business_request_id: requestId,
           user_id: user.id,

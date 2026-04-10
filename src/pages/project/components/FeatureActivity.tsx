@@ -5,7 +5,7 @@
 
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { formatDistanceToNow } from 'date-fns';
 import { Loader2, Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -63,8 +63,7 @@ export function FeatureActivity({ featureId }: FeatureActivityProps) {
     queryKey: ['feature-activity', featureId],
     queryFn: async (): Promise<ActivityItem[]> => {
       // Fetch discussions for this feature with user profiles
-      const { data: discussions, error } = await (supabase as any)
-        .from('discussions')
+      const { data: discussions, error } = await typedQuery('discussions')
         .select(`
           id, 
           message, 

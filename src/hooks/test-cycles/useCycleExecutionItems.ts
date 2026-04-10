@@ -15,7 +15,7 @@
 
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useCallback } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 
 // Execution status directly from tm_cycle_scope.current_status
 export type ExecutionStatus = 'not_run' | 'in_progress' | 'passed' | 'failed' | 'blocked' | 'skipped';
@@ -195,8 +195,7 @@ export function useCycleExecutionItems(cycleId: string, filters?: ExecutionFilte
       if (!cycleId) return [];
       
       // Query tm_cycle_scope with test case details
-      const { data: scopeData, error: scopeError } = await (supabase as any)
-        .from('tm_cycle_scope')
+      const { data: scopeData, error: scopeError } = await typedQuery('tm_cycle_scope')
         .select(`
           id,
           cycle_id,
@@ -232,8 +231,7 @@ export function useCycleExecutionItems(cycleId: string, filters?: ExecutionFilte
       let runsByScope: Record<string, any> = {};
       
       if (scopeIds.length > 0) {
-        const { data: runs, error: runsError } = await (supabase as any)
-          .from('tm_test_runs')
+        const { data: runs, error: runsError } = await typedQuery('tm_test_runs')
           .select('id, cycle_scope_id, status, completed_at, executed_by, duration_seconds')
           .in('cycle_scope_id', scopeIds)
           .order('completed_at', { ascending: false });

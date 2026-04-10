@@ -1,6 +1,6 @@
 // useBoards — fetch board list for a project
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import type { BoardListItem } from '@/types/board';
 
 export function useBoards(projectId: string | undefined) {
@@ -12,8 +12,7 @@ export function useBoards(projectId: string | undefined) {
 
       console.log('[useBoards] projectId:', projectId, 'userId:', uid);
 
-      const { data, error } = await (supabase as any)
-        .from('boards')
+      const { data, error } = await typedQuery('boards')
         .select(`
           *,
           board_columns(id),

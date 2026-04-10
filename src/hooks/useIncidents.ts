@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import type { Incident, IncidentFormData, IncidentFilters, IncidentComment, CommentType } from '@/types/incident';
 
 // Fetch all incidents with optional filters
@@ -54,8 +54,7 @@ export function useIncident(id: string) {
   return useQuery({
     queryKey: ['incident', id],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from('incidents')
+      const { data, error } = await typedQuery('incidents')
         .select(`
           *,
           release_version:release_versions(*),

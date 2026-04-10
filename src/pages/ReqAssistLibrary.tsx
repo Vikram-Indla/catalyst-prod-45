@@ -1,6 +1,6 @@
 import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { FileText, FileSearch, Download, Loader2, Zap, RotateCcw, Eye, ArrowRight, Sparkles, FileUp } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery, typedQuery, typedQuery } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useRADocuments, useRAStats, RA_KEYS } from '@/hooks/useReqAssist';
 import { syncSingleBrdToKb, fetchDocumentEpicCounts } from '@/services/reqAssistService';
@@ -46,18 +46,17 @@ export default function ReqAssistLibrary() {
 
   const handleGenerateClick = useCallback(async (doc: RADocumentWithArtifacts) => {
     let brdId: string | null = null;
-    const { data: direct } = await (supabase as any).from('brd_documents').select('id').eq('id', doc.id).maybeSingle();
+    const { data: direct } = await typedQuery('brd_documents').select('id').eq('id', doc.id).maybeSingle();
     if (direct?.id) brdId = direct.id;
     if (!brdId) {
       const jiraKey = (doc as any).jira_ticket_key;
       if (jiraKey) {
-        const { data: jiraMatch } = await (supabase as any).from('brd_documents').select('id').eq('jira_key', jiraKey).maybeSingle();
+        const { data: jiraMatch } = await typedQuery('brd_documents').select('id').eq('jira_key', jiraKey).maybeSingle();
         if (jiraMatch?.id) brdId = jiraMatch.id;
       }
     }
     if (brdId) {
-      const { count, data: epicRows } = await (supabase as any)
-        .from('brd_epics')
+      const { count, data: epicRows } = await typedQuery('brd_epics')
         .select('id, generated_at', { count: 'exact' })
         .eq('brd_id', brdId)
         .limit(1);
@@ -71,11 +70,11 @@ export default function ReqAssistLibrary() {
   }, []);
 
   const resolveBrdId = useCallback(async (doc: RADocumentWithArtifacts): Promise<string | null> => {
-    const { data: direct } = await (supabase as any).from('brd_documents').select('id').eq('id', doc.id).maybeSingle();
+    const { data: direct } = await typedQuery('brd_documents').select('id').eq('id', doc.id).maybeSingle();
     if (direct?.id) return direct.id;
     const jiraKey = (doc as any).jira_ticket_key;
     if (jiraKey) {
-      const { data: jiraMatch } = await (supabase as any).from('brd_documents').select('id').eq('jira_key', jiraKey).maybeSingle();
+      const { data: jiraMatch } = await typedQuery('brd_documents').select('id').eq('jira_key', jiraKey).maybeSingle();
       if (jiraMatch?.id) return jiraMatch.id;
     }
     return null;
@@ -133,15 +132,15 @@ export default function ReqAssistLibrary() {
       const doc = documents?.find(d => d.id === docId);
       const jiraKey = (doc as any)?.jira_ticket_key;
       let brdId: string | null = null;
-      const { data: direct } = await (supabase as any).from('brd_documents').select('id').eq('id', docId).maybeSingle();
+      const { data: direct } = await typedQuery('brd_documents').select('id').eq('id', docId).maybeSingle();
       if (direct?.id) brdId = direct.id;
       if (!brdId && jiraKey) {
-        const { data: jiraMatch } = await (supabase as any).from('brd_documents').select('id').eq('jira_key', jiraKey).maybeSingle();
+        const { data: jiraMatch } = await typedQuery('brd_documents').select('id').eq('jira_key', jiraKey).maybeSingle();
         if (jiraMatch?.id) brdId = jiraMatch.id;
       }
       if (!brdId) { toast.error('Document not yet processed — generate BRDs first'); return; }
       await syncSingleBrdToKb(brdId);
-      await (supabase as any).from('ra_documents').update({ kb_synced: true, kb_synced_at: new Date().toISOString() }).eq('id', docId);
+      await typedQuery('ra_documents').update({ kb_synced: true, kb_synced_at: new Date().toISOString() }).eq('id', docId);
       qc.invalidateQueries({ queryKey: RA_KEYS.all });
       qc.invalidateQueries({ queryKey: ['req-assist-stats-bar'] });
       toast.success('Document indexed for Knowledge Assistant');
@@ -165,15 +164,15 @@ export default function ReqAssistLibrary() {
       try {
         const jiraKey = (doc as any)?.jira_ticket_key;
         let brdId: string | null = null;
-        const { data: direct } = await (supabase as any).from('brd_documents').select('id').eq('id', doc.id).maybeSingle();
+        const { data: direct } = await typedQuery('brd_documents').select('id').eq('id', doc.id).maybeSingle();
         if (direct?.id) brdId = direct.id;
         if (!brdId && jiraKey) {
-          const { data: jiraMatch } = await (supabase as any).from('brd_documents').select('id').eq('jira_key', jiraKey).maybeSingle();
+          const { data: jiraMatch } = await typedQuery('brd_documents').select('id').eq('jira_key', jiraKey).maybeSingle();
           if (jiraMatch?.id) brdId = jiraMatch.id;
         }
         if (!brdId) { failed++; continue; }
         await syncSingleBrdToKb(brdId);
-        await (supabase as any).from('ra_documents').update({ kb_synced: true, kb_synced_at: new Date().toISOString() }).eq('id', doc.id);
+        await typedQuery('ra_documents').update({ kb_synced: true, kb_synced_at: new Date().toISOString() }).eq('id', doc.id);
         success++;
       } catch (err: unknown) {
         failed++;
@@ -716,7 +715,7 @@ function PdfUploadCell({ brdId: initialBrdId, jiraKey }: { brdId: string | null;
     // Resolve brd_id from jira_key if not provided
     let brdId = initialBrdId;
     if (!brdId && jiraKey) {
-      const { data } = await (supabase as any).from('brd_documents').select('id').eq('jira_key', jiraKey).maybeSingle();
+      const { data } = await typedQuery('brd_documents').select('id').eq('jira_key', jiraKey).maybeSingle();
       brdId = data?.id ?? null;
     }
     if (!brdId) {
@@ -735,7 +734,7 @@ function PdfUploadCell({ brdId: initialBrdId, jiraKey }: { brdId: string | null;
         .upload(path, file, { upsert: true });
       if (uploadErr) throw uploadErr;
 
-      await (supabase as any).from('brd_documents').update({
+      await typedQuery('brd_documents').update({
         pdf_url: path,
         pdf_filename: file.name,
         pdf_attached_at: new Date().toISOString(),

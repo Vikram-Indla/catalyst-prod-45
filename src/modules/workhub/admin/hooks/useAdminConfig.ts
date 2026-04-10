@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { supabase } from '@/integrations/supabase/client'
+import { supabase, typedQuery, typedQuery, typedQuery } from '@/integrations/supabase/client'
 import type { ConfigKey, JiraUserMapping } from '../types/admin-config.types'
 
 const CONFIG_KEY = ['wh', 'config'] as const
@@ -11,8 +11,7 @@ export function useWhConfig() {
   return useQuery({
     queryKey: [...CONFIG_KEY],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from('wh_config')
+      const { data, error } = await typedQuery('wh_config')
         .select('key, value')
       if (error) throw error
       const map: Record<string, any> = {}
@@ -35,8 +34,7 @@ export function useUpdateConfig() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async ({ key, value }: { key: ConfigKey; value: any }) => {
-      const { error } = await (supabase as any)
-        .from('wh_config')
+      const { error } = await typedQuery('wh_config')
         .update({ value: typeof value === 'string' ? value : JSON.stringify(value) })
         .eq('key', key)
       if (error) throw error
@@ -50,7 +48,7 @@ export function useBatchUpdateConfig() {
   return useMutation({
     mutationFn: async (updates: Array<{ key: ConfigKey; value: any }>) => {
       const promises = updates.map(({ key, value }) =>
-        (supabase as any).from('wh_config')
+        typedQuery('wh_config')
           .update({ value: typeof value === 'string' ? value : JSON.stringify(value) })
           .eq('key', key)
       )
@@ -86,8 +84,7 @@ export function useUserMappings() {
   return useQuery({
     queryKey: [...USER_MAP_KEY],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from('ph_user_mapping')
+      const { data, error } = await typedQuery('ph_user_mapping')
         .select('*')
         .order('is_mapped', { ascending: false })
         .order('jira_display_name')
@@ -105,8 +102,7 @@ export function useUpdateUserMapping() {
       id: string
       catalyst_profile_id: string | null
     }) => {
-      const { error } = await (supabase as any)
-        .from('ph_user_mapping')
+      const { error } = await typedQuery('ph_user_mapping')
         .update({
           catalyst_profile_id,
           is_mapped: catalyst_profile_id !== null,
@@ -124,7 +120,7 @@ export function useBatchSaveUserMappings() {
     mutationFn: async (mappings: Array<{ id: string; catalyst_profile_id: string | null }>) => {
       // 1. Save the mappings
       const promises = mappings.map(m =>
-        (supabase as any).from('ph_user_mapping')
+        typedQuery('ph_user_mapping')
           .update({
             catalyst_profile_id: m.catalyst_profile_id,
             is_mapped: m.catalyst_profile_id !== null,
@@ -138,8 +134,7 @@ export function useBatchSaveUserMappings() {
         .filter(m => m.catalyst_profile_id)
         .map(m => m.id)
       if (mappedIds.length > 0) {
-        const { data: jiraRecords } = await (supabase as any)
-          .from('ph_user_mapping')
+        const { data: jiraRecords } = await typedQuery('ph_user_mapping')
           .select('catalyst_profile_id, jira_avatar_url')
           .in('id', mappedIds)
           .not('jira_avatar_url', 'eq', '')
@@ -167,8 +162,7 @@ export function useAutoMatchUsers() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async () => {
-      const { data: unmapped } = await (supabase as any)
-        .from('ph_user_mapping')
+      const { data: unmapped } = await typedQuery('ph_user_mapping')
         .select('id, jira_email, jira_avatar_url')
         .eq('is_mapped', false)
         .neq('jira_email', '')
@@ -187,7 +181,7 @@ export function useAutoMatchUsers() {
           (p: any) => p.email?.toLowerCase() === u.jira_email?.toLowerCase()
         )
         if (match) {
-          await (supabase as any).from('ph_user_mapping')
+          await typedQuery('ph_user_mapping')
             .update({
               catalyst_profile_id: match.id,
               is_mapped: true,
@@ -264,15 +258,13 @@ export function useCatalystProfilesWithDept() {
     queryFn: async () => {
       // Use resource_inventory as primary source of truth
       const [riRes, profilesRes, deptsRes] = await Promise.all([
-        (supabase as any)
-          .from('resource_inventory')
+        typedQuery('resource_inventory')
           .select('id, profile_id, name, email, department_id, role_name')
           .eq('is_active', true),
         supabase
           .from('profiles')
           .select('id, full_name, email, role, avatar_url'),
-        (supabase as any)
-          .from('capacity_departments')
+        typedQuery('capacity_departments')
           .select('id, name')
           .eq('is_active', true),
       ])
@@ -334,8 +326,7 @@ export function useCapacityDepartments() {
   return useQuery({
     queryKey: ['wh', 'capacity-departments'],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from('capacity_departments')
+      const { data, error } = await typedQuery('capacity_departments')
         .select('id, name')
         .eq('is_active', true)
         .order('name')

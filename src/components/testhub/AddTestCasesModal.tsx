@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { X, Search, Plus, Check, Folder, FolderOpen } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
 
 interface TestCaseItem {
@@ -56,7 +56,7 @@ export function AddTestCasesModal({ isOpen, cycleId, existingTestCaseIds, onClos
     try {
       const [foldersRes, casesRes] = await Promise.all([
         supabase.from('tm_folders').select('id, name, parent_id').order('name'),
-        (supabase as any).from('tm_test_cases').select('id, case_key, title, priority_id, case_type_id, folder_id').order('case_key'),
+        typedQuery('tm_test_cases').select('id, case_key, title, priority_id, case_type_id, folder_id').order('case_key'),
       ]);
       setFolders((foldersRes.data as any[]) || []);
       setTestCases((casesRes.data || []).map((tc: any) => ({ id: tc.id, case_key: tc.case_key, title: tc.title, priority: 'medium', type: 'functional', folder_id: tc.folder_id })));
@@ -96,7 +96,7 @@ export function AddTestCasesModal({ isOpen, cycleId, existingTestCaseIds, onClos
       const insertData = Array.from(selectedIds).map(testCaseId => ({
         cycle_id: cycleId, test_case_id: testCaseId, current_status: 'not_run',
       }));
-      const { error } = await (supabase as any).from('tm_cycle_scope').insert(insertData);
+      const { error } = await typedQuery('tm_cycle_scope').insert(insertData);
       if (error) { catalystToast.error(error.message || 'Failed to add test cases'); return; }
       // Note: tm_test_cycles counters (total_cases, not_run_count, etc.) are automatically
       // updated by the DB trigger trg_tm_cycle_scope_insert — no manual update needed.

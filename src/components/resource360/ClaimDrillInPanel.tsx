@@ -4,7 +4,7 @@
  */
 import { useState, useEffect } from 'react';
 import { X, ExternalLink, Clock } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -86,16 +86,14 @@ export default function ClaimDrillInPanel({ resourceName, claimText, weekStart, 
       weekEnd.setDate(weekEnd.getDate() + 5);
 
       // First resolve assignee_account_id from display name
-      const { data: mappings } = await (supabase as any)
-        .from('ph_user_mapping')
+      const { data: mappings } = await typedQuery('ph_user_mapping')
         .select('jira_account_id')
         .ilike('jira_display_name', `%${resourceName}%`);
 
       const accountIds = (mappings || []).map((m: any) => m.jira_account_id).filter(Boolean);
 
       // Build query
-      let query = (supabase as any)
-        .from('ph_issues')
+      let query = typedQuery('ph_issues')
         .select('issue_key, summary, status, status_category, issue_type, priority, project_key, jira_updated_at, parent_key')
         .gte('jira_updated_at', weekStart.toISOString())
         .lte('jira_updated_at', weekEnd.toISOString())

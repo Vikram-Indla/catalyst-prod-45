@@ -6,7 +6,7 @@
  * ═══════════════════════════════════════════════════════════════════
  */
 
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery, typedQuery, typedQuery } from '@/integrations/supabase/client';
 import type {
   NotificationTriggerConfig,
   NotificationScheme,
@@ -29,8 +29,7 @@ import type { HubSource } from '@/constants/notificationEvents';
 export const triggerConfigService = {
   /** Fetch all trigger configs (global scope) */
   async getAll(): Promise<NotificationTriggerConfig[]> {
-    const { data, error } = await (supabase as any)
-      .from('notification_trigger_config')
+    const { data, error } = await typedQuery('notification_trigger_config')
       .select('*')
       .is('project_id', null)
       .order('hub_source', { ascending: true })
@@ -42,8 +41,7 @@ export const triggerConfigService = {
 
   /** Fetch trigger configs for a specific project (overrides) */
   async getByProject(projectId: string): Promise<NotificationTriggerConfig[]> {
-    const { data, error } = await (supabase as any)
-      .from('notification_trigger_config')
+    const { data, error } = await typedQuery('notification_trigger_config')
       .select('*')
       .eq('project_id', projectId)
       .order('hub_source', { ascending: true });
@@ -54,8 +52,7 @@ export const triggerConfigService = {
 
   /** Fetch a single trigger config by key and hub */
   async getByKey(triggerKey: string, hubSource: HubSource, projectId?: string): Promise<NotificationTriggerConfig | null> {
-    let query = (supabase as any)
-      .from('notification_trigger_config')
+    let query = typedQuery('notification_trigger_config')
       .select('*')
       .eq('trigger_key', triggerKey)
       .eq('hub_source', hubSource);
@@ -78,8 +75,7 @@ export const triggerConfigService = {
       updated_at: new Date().toISOString(),
     };
 
-    const { data, error } = await (supabase as any)
-      .from('notification_trigger_config')
+    const { data, error } = await typedQuery('notification_trigger_config')
       .upsert(payload, { onConflict: 'trigger_key,hub_source,project_id' })
       .select()
       .single();
@@ -90,8 +86,7 @@ export const triggerConfigService = {
 
   /** Update channels for a specific trigger */
   async updateChannels(id: string, channels: ChannelsConfig): Promise<void> {
-    const { error } = await (supabase as any)
-      .from('notification_trigger_config')
+    const { error } = await typedQuery('notification_trigger_config')
       .update({ channels_config: channels, updated_at: new Date().toISOString() })
       .eq('id', id);
 
@@ -100,8 +95,7 @@ export const triggerConfigService = {
 
   /** Update recipients for a specific trigger */
   async updateRecipients(id: string, recipients: RecipientsConfig): Promise<void> {
-    const { error } = await (supabase as any)
-      .from('notification_trigger_config')
+    const { error } = await typedQuery('notification_trigger_config')
       .update({ recipients_config: recipients, updated_at: new Date().toISOString() })
       .eq('id', id);
 
@@ -110,8 +104,7 @@ export const triggerConfigService = {
 
   /** Toggle a trigger enabled/disabled */
   async toggleEnabled(id: string, enabled: boolean): Promise<void> {
-    const { error } = await (supabase as any)
-      .from('notification_trigger_config')
+    const { error } = await typedQuery('notification_trigger_config')
       .update({ default_enabled: enabled, updated_at: new Date().toISOString() })
       .eq('id', id);
 
@@ -125,8 +118,7 @@ export const triggerConfigService = {
     switch (type) {
       case 'enable_all':
         for (const key of triggerKeys) {
-          await (supabase as any)
-            .from('notification_trigger_config')
+          await typedQuery('notification_trigger_config')
             .update({ default_enabled: true, updated_at: new Date().toISOString() })
             .eq('trigger_key', key);
         }
@@ -134,8 +126,7 @@ export const triggerConfigService = {
 
       case 'disable_all':
         for (const key of triggerKeys) {
-          await (supabase as any)
-            .from('notification_trigger_config')
+          await typedQuery('notification_trigger_config')
             .update({ default_enabled: false, updated_at: new Date().toISOString() })
             .eq('trigger_key', key);
         }
@@ -144,16 +135,14 @@ export const triggerConfigService = {
       case 'set_channel':
         if (action.channel && action.channelValue !== undefined) {
           for (const key of triggerKeys) {
-            const { data: existing } = await (supabase as any)
-              .from('notification_trigger_config')
+            const { data: existing } = await typedQuery('notification_trigger_config')
               .select('channels_config')
               .eq('trigger_key', key)
               .maybeSingle();
 
             if (existing) {
               const updated = { ...existing.channels_config, [action.channel]: action.channelValue };
-              await (supabase as any)
-                .from('notification_trigger_config')
+              await typedQuery('notification_trigger_config')
                 .update({ channels_config: updated, updated_at: new Date().toISOString() })
                 .eq('trigger_key', key);
             }
@@ -164,16 +153,14 @@ export const triggerConfigService = {
       case 'set_recipients':
         if (action.recipientType && action.recipientValue !== undefined) {
           for (const key of triggerKeys) {
-            const { data: existing } = await (supabase as any)
-              .from('notification_trigger_config')
+            const { data: existing } = await typedQuery('notification_trigger_config')
               .select('recipients_config')
               .eq('trigger_key', key)
               .maybeSingle();
 
             if (existing) {
               const updated = { ...existing.recipients_config, [action.recipientType]: action.recipientValue };
-              await (supabase as any)
-                .from('notification_trigger_config')
+              await typedQuery('notification_trigger_config')
                 .update({ recipients_config: updated, updated_at: new Date().toISOString() })
                 .eq('trigger_key', key);
             }
@@ -184,8 +171,7 @@ export const triggerConfigService = {
       case 'reset_defaults':
         // Delete project-level overrides to fall back to global defaults
         for (const key of triggerKeys) {
-          await (supabase as any)
-            .from('notification_trigger_config')
+          await typedQuery('notification_trigger_config')
             .delete()
             .eq('trigger_key', key)
             .not('project_id', 'is', null);
@@ -196,8 +182,7 @@ export const triggerConfigService = {
 
   /** Delete a trigger config (used for removing project-level overrides) */
   async delete(id: string): Promise<void> {
-    const { error } = await (supabase as any)
-      .from('notification_trigger_config')
+    const { error } = await typedQuery('notification_trigger_config')
       .delete()
       .eq('id', id);
 
@@ -212,8 +197,7 @@ export const triggerConfigService = {
 export const schemeService = {
   /** Fetch all notification schemes */
   async getAll(): Promise<NotificationScheme[]> {
-    const { data, error } = await (supabase as any)
-      .from('notification_scheme')
+    const { data, error } = await typedQuery('notification_scheme')
       .select('*')
       .order('is_default', { ascending: false })
       .order('name', { ascending: true });
@@ -224,8 +208,7 @@ export const schemeService = {
 
   /** Fetch a single scheme by ID */
   async getById(id: string): Promise<NotificationScheme | null> {
-    const { data, error } = await (supabase as any)
-      .from('notification_scheme')
+    const { data, error } = await typedQuery('notification_scheme')
       .select('*')
       .eq('id', id)
       .maybeSingle();
@@ -238,8 +221,7 @@ export const schemeService = {
   async create(input: CreateSchemeInput): Promise<NotificationScheme> {
     const { data: { user } } = await supabase.auth.getUser();
 
-    const { data, error } = await (supabase as any)
-      .from('notification_scheme')
+    const { data, error } = await typedQuery('notification_scheme')
       .insert({
         ...input,
         created_by: user?.id,
@@ -253,8 +235,7 @@ export const schemeService = {
 
   /** Update a notification scheme */
   async update(id: string, input: UpdateSchemeInput): Promise<NotificationScheme> {
-    const { data, error } = await (supabase as any)
-      .from('notification_scheme')
+    const { data, error } = await typedQuery('notification_scheme')
       .update({ ...input, updated_at: new Date().toISOString() })
       .eq('id', id)
       .select()
@@ -266,8 +247,7 @@ export const schemeService = {
 
   /** Delete a notification scheme */
   async delete(id: string): Promise<void> {
-    const { error } = await (supabase as any)
-      .from('notification_scheme')
+    const { error } = await typedQuery('notification_scheme')
       .delete()
       .eq('id', id);
 
@@ -280,8 +260,7 @@ export const schemeService = {
     const newScheme = await schemeService.create({ name: newName, description: `Cloned from scheme` });
 
     // 2. Copy all rules from the source scheme
-    const { data: sourceRules, error: rulesError } = await (supabase as any)
-      .from('notification_scheme_rules')
+    const { data: sourceRules, error: rulesError } = await typedQuery('notification_scheme_rules')
       .select('*')
       .eq('scheme_id', sourceId);
 
@@ -297,8 +276,7 @@ export const schemeService = {
         recipients: rule.recipients,
       }));
 
-      const { error: insertError } = await (supabase as any)
-        .from('notification_scheme_rules')
+      const { error: insertError } = await typedQuery('notification_scheme_rules')
         .insert(newRules);
 
       if (insertError) throw insertError;
@@ -315,8 +293,7 @@ export const schemeService = {
 export const schemeRuleService = {
   /** Fetch all rules for a scheme */
   async getByScheme(schemeId: string): Promise<NotificationSchemeRule[]> {
-    const { data, error } = await (supabase as any)
-      .from('notification_scheme_rules')
+    const { data, error } = await typedQuery('notification_scheme_rules')
       .select('*')
       .eq('scheme_id', schemeId)
       .order('hub_source', { ascending: true });
@@ -327,8 +304,7 @@ export const schemeRuleService = {
 
   /** Create a new scheme rule */
   async create(input: CreateSchemeRuleInput): Promise<NotificationSchemeRule> {
-    const { data, error } = await (supabase as any)
-      .from('notification_scheme_rules')
+    const { data, error } = await typedQuery('notification_scheme_rules')
       .insert(input)
       .select()
       .single();
@@ -339,8 +315,7 @@ export const schemeRuleService = {
 
   /** Update a scheme rule */
   async update(id: string, input: UpdateSchemeRuleInput): Promise<NotificationSchemeRule> {
-    const { data, error } = await (supabase as any)
-      .from('notification_scheme_rules')
+    const { data, error } = await typedQuery('notification_scheme_rules')
       .update(input)
       .eq('id', id)
       .select()
@@ -352,8 +327,7 @@ export const schemeRuleService = {
 
   /** Delete a scheme rule */
   async delete(id: string): Promise<void> {
-    const { error } = await (supabase as any)
-      .from('notification_scheme_rules')
+    const { error } = await typedQuery('notification_scheme_rules')
       .delete()
       .eq('id', id);
 
@@ -362,8 +336,7 @@ export const schemeRuleService = {
 
   /** Upsert a rule (create if not exists, update if exists) */
   async upsert(input: CreateSchemeRuleInput): Promise<NotificationSchemeRule> {
-    const { data, error } = await (supabase as any)
-      .from('notification_scheme_rules')
+    const { data, error } = await typedQuery('notification_scheme_rules')
       .upsert(input, { onConflict: 'scheme_id,trigger_key,hub_source' })
       .select()
       .single();
@@ -374,8 +347,7 @@ export const schemeRuleService = {
 
   /** Toggle enabled for a rule */
   async toggleEnabled(id: string, enabled: boolean): Promise<void> {
-    const { error } = await (supabase as any)
-      .from('notification_scheme_rules')
+    const { error } = await typedQuery('notification_scheme_rules')
       .update({ enabled })
       .eq('id', id);
 
@@ -386,8 +358,7 @@ export const schemeRuleService = {
   async bulkCreate(rules: CreateSchemeRuleInput[]): Promise<void> {
     if (rules.length === 0) return;
 
-    const { error } = await (supabase as any)
-      .from('notification_scheme_rules')
+    const { error } = await typedQuery('notification_scheme_rules')
       .insert(rules);
 
     if (error) throw error;
@@ -395,8 +366,7 @@ export const schemeRuleService = {
 
   /** Delete all rules for a scheme */
   async deleteAllForScheme(schemeId: string): Promise<void> {
-    const { error } = await (supabase as any)
-      .from('notification_scheme_rules')
+    const { error } = await typedQuery('notification_scheme_rules')
       .delete()
       .eq('scheme_id', schemeId);
 
@@ -411,8 +381,7 @@ export const schemeRuleService = {
 export const projectSchemeService = {
   /** Fetch all project-scheme assignments */
   async getAll(): Promise<ProjectNotificationScheme[]> {
-    const { data, error } = await (supabase as any)
-      .from('project_notification_scheme')
+    const { data, error } = await typedQuery('project_notification_scheme')
       .select('*')
       .order('project_id', { ascending: true });
 
@@ -422,8 +391,7 @@ export const projectSchemeService = {
 
   /** Get the scheme assigned to a specific project */
   async getByProject(projectId: string): Promise<ProjectNotificationScheme | null> {
-    const { data, error } = await (supabase as any)
-      .from('project_notification_scheme')
+    const { data, error } = await typedQuery('project_notification_scheme')
       .select('*')
       .eq('project_id', projectId)
       .maybeSingle();
@@ -434,8 +402,7 @@ export const projectSchemeService = {
 
   /** Assign a scheme to a project (upsert) */
   async assign(projectId: string, schemeId: string): Promise<ProjectNotificationScheme> {
-    const { data, error } = await (supabase as any)
-      .from('project_notification_scheme')
+    const { data, error } = await typedQuery('project_notification_scheme')
       .upsert({ project_id: projectId, scheme_id: schemeId }, { onConflict: 'project_id' })
       .select()
       .single();
@@ -446,8 +413,7 @@ export const projectSchemeService = {
 
   /** Remove a project's scheme assignment (falls back to default) */
   async unassign(projectId: string): Promise<void> {
-    const { error } = await (supabase as any)
-      .from('project_notification_scheme')
+    const { error } = await typedQuery('project_notification_scheme')
       .delete()
       .eq('project_id', projectId);
 

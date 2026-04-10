@@ -4,7 +4,7 @@
  */
 
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, subDays } from 'date-fns';
 
 export function useWeeklyInsightsData() {
@@ -63,7 +63,7 @@ export function useMonthlyInsightsData() {
           .select('id, title, status, severity')
           .is('deleted_at', null)
           .gte('created_at', monthStart.toISOString()),
-        (supabase as any).from('business_requests')
+        typedQuery('business_requests')
           .select('id, title, process_step, created_at')
           .is('deleted_at', null)
           .gte('created_at', monthStart.toISOString()),

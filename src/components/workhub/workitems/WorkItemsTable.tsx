@@ -12,7 +12,7 @@ import type { JiraIssue } from '@/hooks/workhub/useWorkItems';
 import { buildTree, flattenTree } from '@/hooks/workhub/useWorkItems';
 import { useWHThemes } from '@/hooks/workhub/useThemes';
 import { AlertCircle, FileStack } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 
 interface WorkItemsTableProps {
   items: JiraIssue[];
@@ -39,8 +39,7 @@ function useAssigneeAvatars() {
   return useQuery({
     queryKey: ['workhub', 'assignee-avatars'],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from('ph_user_mapping')
+      const { data, error } = await typedQuery('ph_user_mapping')
         .select('jira_account_id, jira_avatar_url, catalyst_profile_id')
         .eq('is_mapped', true);
 
@@ -89,8 +88,7 @@ function useIssueThemeMap(issueKeys: string[]) {
       const map = new Map<string, string>();
       for (let i = 0; i < issueKeys.length; i += 500) {
         const batch = issueKeys.slice(i, i + 500);
-        const { data } = await (supabase as any)
-          .from('wh_issues')
+        const { data } = await typedQuery('wh_issues')
           .select('issue_key, theme_id')
           .in('issue_key', batch)
           .not('theme_id', 'is', null);

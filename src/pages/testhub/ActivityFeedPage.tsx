@@ -8,7 +8,7 @@ import {
   Play, UserPlus, ArrowRight, FileText, Bug, RefreshCcw,
   ClipboardList, FileCheck, Server, Tags
 } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
 import { useTheme } from '@/hooks/useTheme';
 import { TestHubPageHeader } from '@/components/testhub/TestHubPageHeader';
@@ -66,7 +66,7 @@ export default function ActivityFeedPage() {
   const fetchActivities = async () => {
     setIsLoading(true);
     try {
-      const { data, error } = await (supabase as any).rpc('get_recent_activity', {
+      const { data, error } = await typedRpc('get_recent_activity', {
         p_user_id: null,
         p_entity_type: entityFilter === 'all' ? null : entityFilter,
         p_limit: 100,
@@ -81,7 +81,7 @@ export default function ActivityFeedPage() {
       
       setActivities(filtered);
 
-      const { data: statsData } = await (supabase as any).rpc('get_audit_stats', { p_days: 30 });
+      const { data: statsData } = await typedRpc('get_audit_stats', { p_days: 30 });
       if (statsData && statsData.length > 0) {
         setStats(statsData[0]);
       }

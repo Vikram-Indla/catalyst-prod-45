@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { FileText, CheckCircle, Zap, Send, Database } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
 import { sanitiseError } from '@/lib/errorUtils';
 import { formatTimeAbbreviated } from '@/lib/formatTimeAgo';
@@ -35,10 +35,10 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, loading }: S
         epicRowsRes,
         runningRes,
       ] = await Promise.all([
-        (supabase as any).from('brd_documents').select('id', { count: 'exact', head: true }).like('jira_key', 'MDT-%').eq('pipeline_stage', 'complete'),
-        (supabase as any).from('brd_documents').select('id', { count: 'exact', head: true }).like('jira_key', 'MDT-%'),
-        (supabase as any).from('brd_epics').select('publish_status').limit(1000),
-        (supabase as any).from('brd_processing_queue').select('id', { count: 'exact', head: true }).eq('status', 'processing'),
+        typedQuery('brd_documents').select('id', { count: 'exact', head: true }).like('jira_key', 'MDT-%').eq('pipeline_stage', 'complete'),
+        typedQuery('brd_documents').select('id', { count: 'exact', head: true }).like('jira_key', 'MDT-%'),
+        typedQuery('brd_epics').select('publish_status').limit(1000),
+        typedQuery('brd_processing_queue').select('id', { count: 'exact', head: true }).eq('status', 'processing'),
       ]);
 
       const epics = epicRowsRes.data ?? [];
@@ -63,8 +63,7 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, loading }: S
   // D09: Fetch activity log + realtime subscription
   useEffect(() => {
     const fetchActivity = async () => {
-      const { data } = await (supabase as any)
-        .from('ra_activity_log')
+      const { data } = await typedQuery('ra_activity_log')
         .select('id, brd_id, event_type, message, created_at')
         .order('created_at', { ascending: false })
         .limit(10);

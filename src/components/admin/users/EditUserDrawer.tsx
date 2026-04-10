@@ -36,7 +36,7 @@ import {
 import { Loader2, Save, X, User, Building, MapPin, Briefcase, Check, ChevronsUpDown } from 'lucide-react';
 import { UserProfile } from '@/hooks/useUsers';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { getCountryInfo } from '@/lib/countryLookup';
 import { format } from 'date-fns';
@@ -481,7 +481,7 @@ export const EditUserDrawer = memo(function EditUserDrawer({ isOpen, onClose, us
       if ((selectedAssignmentId || '') !== (initialAssignmentId || '')) changedFields.push('assignment');
       
       if (changedFields.length > 0) {
-        await (supabase as any).from('auth_audit_log').insert({
+        await typedQuery('auth_audit_log').insert({
           user_id: user.id,
           event_type: 'user_profile_updated',
           actor_id: currentUser?.id,

@@ -5,7 +5,7 @@
 
 import { useState, useCallback, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { generateRankBetween, compareRanks } from '../utils/lexorank';
 import type { Issue, Sprint, BoardConfig, KanbanColumn, StatusCategory } from '../types';
 import { toast } from 'sonner';
@@ -53,8 +53,7 @@ export function useBoardData(boardId: string, projectId: string) {
   const boardQuery = useQuery({
     queryKey: ['injira-board', boardId],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from('injira_boards')
+      const { data, error } = await typedQuery('injira_boards')
         .select(`
           *,
           columns:injira_board_columns(*)
@@ -105,8 +104,7 @@ export function useBoardData(boardId: string, projectId: string) {
   const sprintsQuery = useQuery({
     queryKey: ['injira-sprints', boardId],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from('injira_sprints')
+      const { data, error } = await typedQuery('injira_sprints')
         .select('*')
         .eq('board_id', boardId)
         .order('start_date', { ascending: false });
@@ -218,8 +216,7 @@ export function useSprintManagement(boardId: string, tenantId: string) {
       startDate?: string;
       endDate?: string;
     }) => {
-      const { data: sprint, error } = await (supabase as any)
-        .from('injira_sprints')
+      const { data: sprint, error } = await typedQuery('injira_sprints')
         .insert({
           board_id: boardId,
           tenant_id: tenantId,
@@ -244,14 +241,12 @@ export function useSprintManagement(boardId: string, tenantId: string) {
   const startSprintMutation = useMutation({
     mutationFn: async (sprintId: string) => {
       // Close any currently active sprint first
-      await (supabase as any)
-        .from('injira_sprints')
+      await typedQuery('injira_sprints')
         .update({ state: 'closed' })
         .eq('board_id', boardId)
         .eq('state', 'active');
 
-      const { data, error } = await (supabase as any)
-        .from('injira_sprints')
+      const { data, error } = await typedQuery('injira_sprints')
         .update({
           state: 'active',
           start_date: new Date().toISOString(),
@@ -286,8 +281,7 @@ export function useSprintManagement(boardId: string, tenantId: string) {
           .neq('status_id', 'done');
       }
 
-      const { data, error } = await (supabase as any)
-        .from('injira_sprints')
+      const { data, error } = await typedQuery('injira_sprints')
         .update({
           state: 'closed',
           complete_date: new Date().toISOString(),

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { AdminGuard } from '@/components/admin/AdminGuard';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -21,8 +21,7 @@ export default function PortfolioSettings() {
   useQuery({
     queryKey: ['portfolio-settings'],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from('general_settings')
+      const { data, error } = await typedQuery('general_settings')
         .select('key, value')
         .in('key', ['program_estimation_system', 'program_display_weeks_in']);
       if (error) throw error;
@@ -40,8 +39,7 @@ export default function PortfolioSettings() {
         { key: 'program_display_weeks_in', value: displayWeeksIn },
       ];
       for (const s of settings) {
-        const { error } = await (supabase as any)
-          .from('general_settings')
+        const { error } = await typedQuery('general_settings')
           .upsert({ key: s.key, value: s.value }, { onConflict: 'key' });
         if (error) throw error;
       }

@@ -3,7 +3,7 @@ import { X, FileText, Search, Inbox, Loader2, CheckCircle, XCircle, AlertTriangl
 import { Sheet, SheetPortal, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import * as SheetPrimitive from "@radix-ui/react-dialog";
 // Checkbox replaced with native <input type="checkbox"> to avoid Radix Dialog event interception
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import {
   useConnectedProjects,
@@ -99,7 +99,7 @@ export default function ImportJiraDrawer({ open, onOpenChange }: Props) {
     try {
       const result = await verifyMutation.mutateAsync(key);
       // Insert into ra_jira_connections
-      await (supabase as any).from('ra_jira_connections').upsert({
+      await typedQuery('ra_jira_connections').upsert({
         project_key: result.project_key,
         project_name: result.project_name,
         project_avatar: result.avatar_url,

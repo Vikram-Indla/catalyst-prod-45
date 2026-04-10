@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
 interface TestCase {
@@ -62,8 +62,7 @@ export function CloneTestCaseModal({
       const newCaseKey = `TC-${String(nextNum).padStart(3, '0')}`;
 
       // 2. Insert cloned test case
-      const { data: newCase, error } = await (supabase as any)
-        .from('tm_test_cases')
+      const { data: newCase, error } = await typedQuery('tm_test_cases')
         .insert([{
           case_key: newCaseKey,
           title: newTitle.trim(),

@@ -9,7 +9,7 @@ import {
   RefreshCw, CheckCircle2, AlertCircle, FileText,
   BarChart3, TrendingUp, Shield, Calendar
 } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
 import { useTheme } from '@/hooks/useTheme';
 import { TestHubPageHeader } from '@/components/testhub/TestHubPageHeader';
@@ -66,8 +66,7 @@ export default function ReportsListPage() {
   const fetchReports = async () => {
     setIsLoading(true);
     try {
-      let query = (supabase as any)
-        .from('th_reports')
+      let query = typedQuery('th_reports')
         .select(`
           *,
           cycle:tm_test_cycles!th_reports_cycle_id_fkey(cycle_key, name),
@@ -87,7 +86,7 @@ export default function ReportsListPage() {
       if (error) throw error;
       setReports(data || []);
 
-      const { data: statsData } = await (supabase as any).rpc('get_report_stats');
+      const { data: statsData } = await typedRpc('get_report_stats');
       if (statsData && statsData.length > 0) {
         setStats(statsData[0]);
       }
@@ -113,7 +112,7 @@ export default function ReportsListPage() {
     e.stopPropagation();
     if (!confirm('Delete this report?')) return;
     try {
-      const { error } = await (supabase as any).from('th_reports').delete().eq('id', id);
+      const { error } = await typedQuery('th_reports').delete().eq('id', id);
       if (error) throw error;
       catalystToast.success('Report deleted');
       fetchReports();

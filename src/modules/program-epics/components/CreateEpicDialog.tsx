@@ -11,7 +11,7 @@
  */
 import React, { useState, useCallback } from 'react';
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import {
   Dialog,
   DialogContent,
@@ -230,8 +230,7 @@ export function CreateEpicDialog({
   const { data: businessRequests = [] } = useQuery({
     queryKey: ['business-requests-for-epic-link'],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from('business_requests')
+      const { data, error } = await typedQuery('business_requests')
         .select('id, request_key, title, rank, business_score')
         .is('deleted_at', null)
         .order('request_key');

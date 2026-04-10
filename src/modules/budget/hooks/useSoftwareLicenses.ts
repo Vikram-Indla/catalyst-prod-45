@@ -3,7 +3,7 @@
  */
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { addDays, differenceInDays } from 'date-fns';
 import type { 
@@ -18,8 +18,7 @@ export function useSoftwareLicenses() {
     queryKey: ['software-licenses'],
     queryFn: async () => {
       // Get licenses
-      const { data: licenses, error: licensesError } = await (supabase as any)
-        .from('software_licenses')
+      const { data: licenses, error: licensesError } = await typedQuery('software_licenses')
         .select('*')
         .eq('is_active', true)
         .order('name');
@@ -27,8 +26,7 @@ export function useSoftwareLicenses() {
       if (licensesError) throw licensesError;
 
       // Get allocation totals
-      const { data: allocations, error: allocationsError } = await (supabase as any)
-        .from('license_allocation_totals')
+      const { data: allocations, error: allocationsError } = await typedQuery('license_allocation_totals')
         .select('*');
 
       if (allocationsError) throw allocationsError;
@@ -58,8 +56,7 @@ export function useSoftwareLicense(licenseId: string | undefined) {
     queryFn: async () => {
       if (!licenseId) return null;
       
-      const { data, error } = await (supabase as any)
-        .from('software_licenses')
+      const { data, error } = await typedQuery('software_licenses')
         .select('*')
         .eq('id', licenseId)
         .single();
@@ -102,8 +99,7 @@ export function useCreateLicense() {
 
   return useMutation({
     mutationFn: async (data: SoftwareLicenseFormData) => {
-      const { data: result, error } = await (supabase as any)
-        .from('software_licenses')
+      const { data: result, error } = await typedQuery('software_licenses')
         .insert({
           name: data.name,
           vendor: data.vendor,
@@ -145,8 +141,7 @@ export function useUpdateLicense() {
       id: string; 
       data: Partial<SoftwareLicenseFormData> 
     }) => {
-      const { data: result, error } = await (supabase as any)
-        .from('software_licenses')
+      const { data: result, error } = await typedQuery('software_licenses')
         .update({
           ...data,
           updated_at: new Date().toISOString(),
@@ -176,8 +171,7 @@ export function useDeleteLicense() {
   return useMutation({
     mutationFn: async (id: string) => {
       // Soft delete by setting is_active to false
-      const { error } = await (supabase as any)
-        .from('software_licenses')
+      const { error } = await typedQuery('software_licenses')
         .update({ is_active: false, updated_at: new Date().toISOString() })
         .eq('id', id);
 

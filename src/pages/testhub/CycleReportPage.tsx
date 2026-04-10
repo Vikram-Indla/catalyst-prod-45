@@ -12,7 +12,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell,
 } from 'recharts';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
 
 interface TestCycle {
@@ -110,8 +110,7 @@ export default function CycleReportPage() {
     setIsLoading(true);
     try {
       const [cycleRes, testerRes, priorityRes, failureRes, dailyRes] = await Promise.all([
-        (supabase as any)
-          .from('tm_test_cycles')
+        typedQuery('tm_test_cycles')
           .select('*, owner:profiles!tm_test_cycles_owner_id_fkey(full_name)')
           .eq('id', cycleId)
           .single(),

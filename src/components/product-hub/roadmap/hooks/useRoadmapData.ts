@@ -3,7 +3,7 @@
  * All data from ph_roadmap_initiatives_view, ph_roadmap_summary_view, ph_initiative_milestones
  */
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery, typedQuery, typedQuery } from '@/integrations/supabase/client';
 import type { RoadmapInitiative, RoadmapStats, RoadmapMilestone } from '../types/roadmap.types';
 
 // ── Status mapping: DB enum → UI label ──
@@ -72,8 +72,7 @@ function getDefaultDates(index: number): { startDate: string; endDate: string } 
 async function fetchFavoriteIds(): Promise<Set<string>> {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return new Set();
-  const { data } = await (supabase as any)
-    .from('ph_user_favorites')
+  const { data } = await typedQuery('ph_user_favorites')
     .select('initiative_id')
     .eq('user_id', user.id);
   return new Set((data || []).map((r: any) => r.initiative_id));
@@ -81,7 +80,7 @@ async function fetchFavoriteIds(): Promise<Set<string>> {
 
 // ── Fetch profiles for owner resolution ──
 async function fetchProfiles(): Promise<Map<string, { name: string; avatar: string | null }>> {
-  const { data } = await (supabase as any).from('profiles').select('id, full_name, avatar_url');
+  const { data } = await typedQuery('profiles').select('id, full_name, avatar_url');
   const map = new Map<string, { name: string; avatar: string | null }>();
   if (data) {
     for (const p of data) {
@@ -93,8 +92,7 @@ async function fetchProfiles(): Promise<Map<string, { name: string; avatar: stri
 
 // ── Fetch milestones for all roadmap initiatives ──
 async function fetchMilestones(): Promise<Map<string, RoadmapMilestone[]>> {
-  const { data } = await (supabase as any)
-    .from('ph_initiative_milestones')
+  const { data } = await typedQuery('ph_initiative_milestones')
     .select('id, initiative_id, title, planned_date, status, sort_order')
     .order('sort_order', { ascending: true });
 
@@ -117,8 +115,7 @@ async function fetchMilestones(): Promise<Map<string, RoadmapMilestone[]>> {
 // ── Try to resolve owner name from the Jira title or issue data ──
 async function fetchIssueOwners(): Promise<Map<string, string>> {
   // Fetch all issue owners — must override default 1000-row limit
-  const { data } = await (supabase as any)
-    .from('ph_issues')
+  const { data } = await typedQuery('ph_issues')
     .select('issue_key, assignee_display_name')
     .not('assignee_display_name', 'is', null)
     .limit(5000);
@@ -139,8 +136,7 @@ export function useRoadmapInitiatives() {
     queryKey: ['roadmap-initiatives'],
     queryFn: async (): Promise<RoadmapInitiative[]> => {
       const [{ data, error }, profiles, milestones, issueOwners, favoriteIds] = await Promise.all([
-        (supabase as any)
-          .from('ph_roadmap_initiatives_view')
+        typedQuery('ph_roadmap_initiatives_view')
           .select('*')
           .eq('on_roadmap', true)
           .eq('is_deleted', false)
@@ -241,8 +237,7 @@ export function useRoadmapStats() {
   return useQuery({
     queryKey: ['roadmap-stats'],
     queryFn: async (): Promise<RoadmapStats> => {
-      const { data, error } = await (supabase as any)
-        .from('ph_roadmap_summary_view')
+      const { data, error } = await typedQuery('ph_roadmap_summary_view')
         .select('*')
         .single();
 
@@ -273,16 +268,14 @@ export function useBacklogItemsNotOnRoadmap() {
   return useQuery({
     queryKey: ['backlog-not-on-roadmap'],
     queryFn: async () => {
-      const { data: issues, error: issuesErr } = await (supabase as any)
-        .from('ph_issues')
+      const { data: issues, error: issuesErr } = await typedQuery('ph_issues')
         .select('issue_key, summary, status, priority, assignee_display_name')
         .eq('issue_type', 'Business Request')
         .order('issue_key', { ascending: true });
 
       if (issuesErr) throw issuesErr;
 
-      const { data: onRoadmap, error: rmErr } = await (supabase as any)
-        .from('ph_initiatives')
+      const { data: onRoadmap, error: rmErr } = await typedQuery('ph_initiatives')
         .select('initiative_key')
         .eq('on_roadmap', true)
         .eq('is_deleted', false);
@@ -316,22 +309,19 @@ export function useAddToRoadmap() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (issueKey: string) => {
-      const { data: existing } = await (supabase as any)
-        .from('ph_initiatives')
+      const { data: existing } = await typedQuery('ph_initiatives')
         .select('id')
         .eq('initiative_key', issueKey)
         .eq('is_deleted', false)
         .maybeSingle();
 
       if (existing) {
-        const { error } = await (supabase as any)
-          .from('ph_initiatives')
+        const { error } = await typedQuery('ph_initiatives')
           .update({ on_roadmap: true, roadmap_added_at: new Date().toISOString() })
           .eq('id', existing.id);
         if (error) throw error;
       } else {
-        const { data: issue, error: fetchErr } = await (supabase as any)
-          .from('ph_issues')
+        const { data: issue, error: fetchErr } = await typedQuery('ph_issues')
           .select('issue_key, summary, status, assignee_display_name')
           .eq('issue_key', issueKey)
           .maybeSingle();
@@ -339,8 +329,7 @@ export function useAddToRoadmap() {
         if (fetchErr) throw fetchErr;
         if (!issue) throw new Error('Issue not found');
 
-        const { error: insertErr } = await (supabase as any)
-          .from('ph_initiatives')
+        const { error: insertErr } = await typedQuery('ph_initiatives')
           .insert({
             initiative_key: issue.issue_key,
             title: issue.summary,
@@ -369,8 +358,7 @@ export function useRemoveFromRoadmap() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (initiativeId: string) => {
-      const { error } = await (supabase as any)
-        .from('ph_initiatives')
+      const { error } = await typedQuery('ph_initiatives')
         .update({ on_roadmap: false })
         .eq('id', initiativeId);
       if (error) throw error;
@@ -390,8 +378,7 @@ export function useUpdateInitiative() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({ id, updates }: { id: string; updates: Record<string, any> }) => {
-      const { error } = await (supabase as any)
-        .from('ph_initiatives')
+      const { error } = await typedQuery('ph_initiatives')
         .update(updates)
         .eq('id', id);
       if (error) throw error;
@@ -414,15 +401,13 @@ export function useToggleRoadmapStar() {
       if (!user) throw new Error('Not authenticated');
 
       if (isCurrentlyStarred) {
-        const { error } = await (supabase as any)
-          .from('ph_user_favorites')
+        const { error } = await typedQuery('ph_user_favorites')
           .delete()
           .eq('user_id', user.id)
           .eq('initiative_id', initiativeId);
         if (error) throw error;
       } else {
-        const { error } = await (supabase as any)
-          .from('ph_user_favorites')
+        const { error } = await typedQuery('ph_user_favorites')
           .insert({ user_id: user.id, initiative_id: initiativeId });
         if (error) throw error;
       }

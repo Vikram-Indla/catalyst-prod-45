@@ -11,7 +11,7 @@ import DOMPurify from 'dompurify';
 
 import { useState, useEffect } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { 
   CheckCircle2, 
   AlertTriangle, 
@@ -107,8 +107,7 @@ export function FeatureOverviewTab({ feature }: FeatureOverviewTabProps) {
   const { data: attachments = [], isLoading: attachmentsLoading } = useQuery({
     queryKey: ['feature-attachments', feature.id],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from('attachments')
+      const { data, error } = await typedQuery('attachments')
         .select('*')
         .eq('entity_id', feature.id)
         .eq('entity_type', 'features')
@@ -158,8 +157,7 @@ export function FeatureOverviewTab({ feature }: FeatureOverviewTabProps) {
 
       if (uploadError) throw uploadError;
 
-      const { error: dbError } = await (supabase as any)
-        .from('attachments')
+      const { error: dbError } = await typedQuery('attachments')
         .insert({
           entity_id: feature.id,
           entity_type: 'features',
@@ -190,8 +188,7 @@ export function FeatureOverviewTab({ feature }: FeatureOverviewTabProps) {
 
       if (storageError) throw storageError;
 
-      const { error: dbError } = await (supabase as any)
-        .from('attachments')
+      const { error: dbError } = await typedQuery('attachments')
         .delete()
         .eq('id', attachment.id);
 

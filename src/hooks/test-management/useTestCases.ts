@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { TMTestCase, TMCaseStep, CaseFilters, CreateCaseInput, UpdateCaseInput } from '@/types/test-management';
 import { catalystToast } from '@/lib/catalystToast';
 import { auditTestCaseCreate, auditTestCaseUpdate, auditTestCaseDelete } from '@/lib/tmAuditLogger';
@@ -496,8 +496,7 @@ export function useUpdateTestCase() {
         })),
       };
 
-      await (supabase as any)
-        .from('tm_test_case_versions')
+      await typedQuery('tm_test_case_versions')
         .insert({
           test_case_id: id,
           version_number: newVersion,

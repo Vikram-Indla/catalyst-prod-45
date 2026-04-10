@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -56,8 +56,7 @@ export default function EpicEstimationPage() {
   const { data: epics, isLoading } = useQuery({
     queryKey: ['epics-estimation', portfolioId, selectedProgram],
     queryFn: async () => {
-      let query = (supabase as any)
-        .from('epics')
+      let query = typedQuery('epics')
         .select(`
           id,
           name,
@@ -99,8 +98,7 @@ export default function EpicEstimationPage() {
   // Update Technical Scoring field mutation
   const updateScoringMutation = useMutation({
     mutationFn: async ({ epicId, field, value }: { epicId: string; field: ScoringField; value: number }) => {
-      const { data: existing } = await (supabase as any)
-        .from('epic_wsjf')
+      const { data: existing } = await typedQuery('epic_wsjf')
         .select('id, business_value, time_value, rroe_value, job_size')
         .eq('epic_id', epicId)
         .maybeSingle();
@@ -119,14 +117,12 @@ export default function EpicEstimationPage() {
         : null;
 
       if (existingTyped) {
-        const { error } = await (supabase as any)
-          .from('epic_wsjf')
+        const { error } = await typedQuery('epic_wsjf')
           .update({ [field]: value, wsjf_score: techScore })
           .eq('id', existingTyped.id);
         if (error) throw error;
       } else {
-        const { error } = await (supabase as any)
-          .from('epic_wsjf')
+        const { error } = await typedQuery('epic_wsjf')
           .insert({ epic_id: epicId, [field]: value, wsjf_score: techScore });
         if (error) throw error;
       }

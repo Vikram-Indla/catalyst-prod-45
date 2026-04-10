@@ -13,7 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from '@/components/ui/checkbox';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useCapacityDepartments, useResourceAssignments } from '@/modules/capacity-planner';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
 import { Loader2, Users } from 'lucide-react';
@@ -119,8 +119,7 @@ export function BulkEditModal({ isOpen, onClose, resources }: BulkEditModalProps
       
       // Update allocation if selected
       if (editAllocation) {
-        const { error: allocationError } = await (supabase as any)
-          .from('assignments')
+        const { error: allocationError } = await typedQuery('assignments')
           .update({
             allocation_percentage: allocationPercentage,
             updated_at: new Date().toISOString()

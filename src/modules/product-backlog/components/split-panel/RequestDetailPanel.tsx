@@ -30,7 +30,7 @@ import {
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { format, parseISO } from 'date-fns';
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useDepartments, useBusinessOwners, useDepartmentOwnerMappings, getOwnerIdForDepartment } from '@/hooks/useDepartmentsAndOwners';
 import { useActiveDemandProcessSteps } from '@/hooks/useDemandProcessSteps';
 import { useActiveUsers } from '@/hooks/useActiveUsers';
@@ -327,8 +327,7 @@ export function RequestDetailPanel({
     queryKey: ['business-request-attachments-count', request?._dbId],
     queryFn: async () => {
       if (!request?._dbId) return 0;
-      const { count, error } = await (supabase as any)
-        .from('attachments')
+      const { count, error } = await typedQuery('attachments')
         .select('*', { count: 'exact', head: true })
         .eq('entity_type', 'business_request')
         .eq('entity_id', request._dbId);

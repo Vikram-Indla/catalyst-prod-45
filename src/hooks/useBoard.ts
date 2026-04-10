@@ -1,14 +1,13 @@
 // useBoard — fetch single board + columns
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import type { Board, BoardColumn } from '@/types/board';
 
 export function useBoard(boardId: string | undefined) {
   return useQuery<{ board: Board; columns: BoardColumn[] } | null>({
     queryKey: ['board', boardId],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from('boards')
+      const { data, error } = await typedQuery('boards')
         .select('*, board_columns(*)')
         .eq('id', boardId)
         .is('deleted_at', null)

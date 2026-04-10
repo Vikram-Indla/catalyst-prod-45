@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import {
   fetchRADocuments, fetchRAStats, createRADocument,
   queueProcessingJob, fetchJiraProjectTickets, fetchRADocumentById,
@@ -61,8 +61,7 @@ export function useJiraProjects() {
   return useQuery({
     queryKey: ['ra', 'jira_projects'],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from('ra_jira_tickets')
+      const { data, error } = await typedQuery('ra_jira_tickets')
         .select('project_key, project_name');
       if (error) throw error;
       // Deduplicate by project_key
@@ -81,8 +80,7 @@ export function useJiraProjectTickets(projectKey: string | null) {
   return useQuery({
     queryKey: ['ra', 'jira_tickets', projectKey],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from('ra_jira_tickets')
+      const { data, error } = await typedQuery('ra_jira_tickets')
         .select('id, ticket_key, ticket_summary, ticket_type, has_pdf, pdf_filename, page_count, project_key, project_name, priority, status')
         .eq('project_key', projectKey)
         .order('ticket_key', { ascending: true });

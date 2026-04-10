@@ -4,7 +4,7 @@
  */
 
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { CheckCircle2, XCircle, Clock, Shield, AlertTriangle, User, MinusCircle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
@@ -83,8 +83,7 @@ export function FeatureAuditTab({ featureId }: FeatureAuditTabProps) {
           .single();
 
         if (epic?.linked_business_request_id) {
-          const { data: businessRequest } = await (supabase as any)
-            .from('business_requests')
+          const { data: businessRequest } = await typedQuery('business_requests')
             .select('process_step, assignee')
             .eq('id', epic.linked_business_request_id)
             .single();

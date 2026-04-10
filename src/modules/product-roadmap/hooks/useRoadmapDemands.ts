@@ -4,7 +4,7 @@
  */
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import type { RoadmapDemand, RoadmapFilters } from '../types/roadmap';
 
 export function useRoadmapDemands(filters: RoadmapFilters) {
@@ -12,8 +12,7 @@ export function useRoadmapDemands(filters: RoadmapFilters) {
     queryKey: ['roadmap-demands', filters],
     queryFn: async () => {
       // Use ph_roadmap_initiatives_view which filters on_roadmap = true
-      let query = (supabase as any)
-        .from('ph_roadmap_initiatives_view')
+      let query = typedQuery('ph_roadmap_initiatives_view')
         .select('*')
         .order('roadmap_priority', { ascending: true, nullsFirst: false });
 
@@ -88,8 +87,7 @@ export function useUpdateDemandDates() {
       start_date: string | null;
       end_date: string | null;
     }) => {
-      const { data, error } = await (supabase as any)
-        .from('ph_initiatives')
+      const { data, error } = await typedQuery('ph_initiatives')
         .update({
           kickoff_date: start_date,
           target_complete: end_date,
@@ -114,8 +112,7 @@ export function useReorderDemands() {
   return useMutation({
     mutationFn: async (reorderedItems: { id: string; rank: number }[]) => {
       const updates = reorderedItems.map((item) =>
-        (supabase as any)
-          .from('ph_initiatives')
+        typedQuery('ph_initiatives')
           .update({ roadmap_priority: item.rank })
           .eq('id', item.id)
       );
@@ -133,8 +130,7 @@ export function useUpdateDemandProgress() {
 
   return useMutation({
     mutationFn: async ({ id, progress }: { id: string; progress: number }) => {
-      const { data, error } = await (supabase as any)
-        .from('ph_initiatives')
+      const { data, error } = await typedQuery('ph_initiatives')
         .update({
           progress,
           updated_at: new Date().toISOString(),

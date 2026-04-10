@@ -5,7 +5,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ChevronLeft, Edit, MoreVertical, Trash2, Bug, Play } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -39,8 +39,7 @@ export default function DefectDetailPage() {
   useEffect(() => {
     if (!defect?.id) return;
     (async () => {
-      const { data } = await (supabase as any)
-        .from('tm_defect_links')
+      const { data } = await typedQuery('tm_defect_links')
         .select('test_run_id')
         .eq('defect_id', defect.id)
         .not('test_run_id', 'is', null)

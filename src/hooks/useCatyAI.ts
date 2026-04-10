@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery, typedQuery, typedQuery } from '@/integrations/supabase/client';
 import { CatyConversation, CatyMessage } from '@/types/caty-ai';
 import { toast } from 'sonner';
 
@@ -9,8 +9,7 @@ export function useCatyConversations(userId: string, projectId?: string) {
   return useQuery({
     queryKey: ['caty-conversations', userId, projectId],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from('caty_conversations')
+      const { data, error } = await typedQuery('caty_conversations')
         .select('*')
         .eq('user_id', userId)
         .eq('project_id', projectId || DEFAULT_PROJECT_ID)
@@ -27,8 +26,7 @@ export function useCatyMessages(conversationId: string) {
   return useQuery({
     queryKey: ['caty-messages', conversationId],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from('caty_messages')
+      const { data, error } = await typedQuery('caty_messages')
         .select('*')
         .eq('conversation_id', conversationId)
         .order('sequence_number', { ascending: true });
@@ -43,15 +41,14 @@ export function useCreateCatyConversation() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({ userId, projectId, type = 'chat' }: { userId: string; projectId: string; type?: string }) => {
-      const { data, error } = await (supabase as any)
-        .from('caty_conversations')
+      const { data, error } = await typedQuery('caty_conversations')
         .insert({ user_id: userId, project_id: projectId, conversation_type: type })
         .select()
         .single();
       if (error) throw new Error(error.message);
 
       // Log conversation_started analytics
-      await (supabase as any).from('caty_analytics').insert({
+      await typedQuery('caty_analytics').insert({
         project_id: projectId,
         user_id: userId,
         conversation_id: data.id,
@@ -69,7 +66,7 @@ export function useDeleteCatyConversation() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (conversationId: string) => {
-      const { error } = await (supabase as any).from('caty_conversations').delete().eq('id', conversationId);
+      const { error } = await typedQuery('caty_conversations').delete().eq('id', conversationId);
       if (error) throw new Error(error.message);
     },
     onSuccess: () => {
@@ -84,11 +81,10 @@ export function useSendCatyMessage() {
   return useMutation({
     mutationFn: async ({ conversationId, content }: { conversationId: string; content: string }) => {
       // Get next sequence
-      const { data: seqData } = await (supabase as any).rpc('get_next_caty_message_sequence', { p_conversation_id: conversationId });
+      const { data: seqData } = await typedRpc('get_next_caty_message_sequence', { p_conversation_id: conversationId });
 
       // Insert user message
-      const { data: userMsg, error: userError } = await (supabase as any)
-        .from('caty_messages')
+      const { data: userMsg, error: userError } = await typedQuery('caty_messages')
         .insert({ conversation_id: conversationId, role: 'user', content, sequence_number: seqData || 1, status: 'complete' })
         .select()
         .single();
@@ -116,8 +112,7 @@ export function useSendCatyMessage() {
 export function useCatyFeedback() {
   return useMutation({
     mutationFn: async ({ messageId, rating }: { messageId: string; rating: -1 | 1 }) => {
-      const { error } = await (supabase as any)
-        .from('caty_messages')
+      const { error } = await typedQuery('caty_messages')
         .update({ feedback_rating: rating, feedback_at: new Date().toISOString() })
         .eq('id', messageId);
       if (error) throw new Error(error.message);
@@ -131,8 +126,7 @@ export function useGenerateCatyTestCases() {
   return useMutation({
     mutationFn: async ({ projectId, userId, input, options }: { projectId: string; userId: string; input: string; options: any }) => {
       // Create conversation
-      const { data: conversation, error: convError } = await (supabase as any)
-        .from('caty_conversations')
+      const { data: conversation, error: convError } = await typedQuery('caty_conversations')
         .insert({ user_id: userId, project_id: projectId, conversation_type: 'generation', title: `Test Generation - ${new Date().toLocaleDateString()}` })
         .select()
         .single();
@@ -156,15 +150,14 @@ export function useSaveCatyGeneratedTests() {
     mutationFn: async ({ projectId, folderId, testCases, suggestionIds }: { projectId: string; folderId?: string; testCases: any[]; suggestionIds: string[] }) => {
       const savedIds: string[] = [];
       for (const tc of testCases) {
-        const { data: testCase, error: tcError } = await (supabase as any)
-          .from('tm_test_cases')
+        const { data: testCase, error: tcError } = await typedQuery('tm_test_cases')
           .insert({ project_id: projectId, folder_id: folderId || null, title: tc.title, description: tc.description, preconditions: tc.preconditions, status: 'draft', automation_status: 'manual', case_key: `TC-AI-${Date.now()}` })
           .select()
           .single();
         if (tcError) throw new Error(tcError.message);
 
         if (tc.steps?.length > 0) {
-          await (supabase as any).from('tm_test_steps').insert(
+          await typedQuery('tm_test_steps').insert(
             tc.steps.map((s: any) => ({ test_case_id: testCase.id, step_number: s.step_number, action: s.action, expected_result: s.expected_result, test_data: s.test_data }))
           );
         }
@@ -172,7 +165,7 @@ export function useSaveCatyGeneratedTests() {
       }
 
       if (suggestionIds.length > 0) {
-        await (supabase as any).from('caty_suggestions').update({ status: 'accepted', processed_at: new Date().toISOString() }).in('id', suggestionIds);
+        await typedQuery('caty_suggestions').update({ status: 'accepted', processed_at: new Date().toISOString() }).in('id', suggestionIds);
       }
       return savedIds;
     },

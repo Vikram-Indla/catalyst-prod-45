@@ -4,7 +4,7 @@ import {
   CheckCircle2, XCircle, Clock, AlertTriangle, FileText, Bug,
   FileCheck, Layers, Tags, Database, Trash2
 } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
 import { useTheme } from '@/hooks/useTheme';
 import { TestHubPageHeader } from '@/components/testhub/TestHubPageHeader';
@@ -83,9 +83,9 @@ export default function ImportExportPage() {
     setIsLoading(true);
     try {
       const [importsRes, exportsRes, statsRes] = await Promise.all([
-        (supabase as any).from('th_import_jobs').select('*').order('created_at', { ascending: false }).limit(50),
-        (supabase as any).from('th_export_jobs').select('*').order('created_at', { ascending: false }).limit(50),
-        (supabase as any).rpc('get_import_export_stats'),
+        typedQuery('th_import_jobs').select('*').order('created_at', { ascending: false }).limit(50),
+        typedQuery('th_export_jobs').select('*').order('created_at', { ascending: false }).limit(50),
+        typedRpc('get_import_export_stats'),
       ]);
 
       if (importsRes.data) setImportJobs(importsRes.data);
@@ -106,7 +106,7 @@ export default function ImportExportPage() {
   const deleteImportJob = async (id: string) => {
     if (!confirm('Delete this import job?')) return;
     try {
-      await (supabase as any).from('th_import_jobs').delete().eq('id', id);
+      await typedQuery('th_import_jobs').delete().eq('id', id);
       catalystToast.success('Import job deleted');
       fetchData();
     } catch (err) {
@@ -117,7 +117,7 @@ export default function ImportExportPage() {
   const deleteExportJob = async (id: string) => {
     if (!confirm('Delete this export job?')) return;
     try {
-      await (supabase as any).from('th_export_jobs').delete().eq('id', id);
+      await typedQuery('th_export_jobs').delete().eq('id', id);
       catalystToast.success('Export job deleted');
       fetchData();
     } catch (err) {

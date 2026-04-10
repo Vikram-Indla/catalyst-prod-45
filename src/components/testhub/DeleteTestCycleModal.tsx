@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { X, AlertTriangle, Trash2, Calendar } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
 
 interface TestCycle {
@@ -38,8 +38,7 @@ export function DeleteTestCycleModal({
     setIsDeleting(true);
 
     try {
-      const { error } = await (supabase as any)
-        .from('tm_test_cycles')
+      const { error } = await typedQuery('tm_test_cycles')
         .delete()
         .eq('id', cycle.id);
 

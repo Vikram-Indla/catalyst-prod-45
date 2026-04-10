@@ -12,7 +12,7 @@ import {
   AlertTriangle, Clock, RefreshCw, FileText, Target, Download,
   Flame, Search, Filter, Plus, ArrowRight, ExternalLink,
 } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery, typedRpc } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
 import { TestHubPageHeader } from '@/components/testhub/TestHubPageHeader';
 import { Button } from '@/components/ui/button';
@@ -143,8 +143,7 @@ export default function CoverageMatrixPage() {
   const fetchData = async () => {
     setIsLoading(true);
     try {
-      let query = (supabase as any)
-        .from('tm_requirements')
+      let query = typedQuery('tm_requirements')
         .select('id, req_key, title, type, priority, status, release_version')
         .neq('status', 'deprecated')
         .order('req_key');
@@ -152,8 +151,7 @@ export default function CoverageMatrixPage() {
       if (error) throw error;
       const enriched = await Promise.all(
         ((data as any[]) || []).map(async (r: any) => {
-          const { data: tests } = await (supabase as any)
-            .rpc('get_requirement_tests', { p_requirement_id: r.id });
+          const { data: tests } = await typedRpc('get_requirement_tests', { p_requirement_id: r.id });
           const linked = tests || [];
           const total = linked.length;
           const passed = linked.filter((t: any) => t.latest_status === 'pass').length;

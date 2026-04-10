@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 interface RealtimePayload {
@@ -16,8 +16,7 @@ async function fetchUserName(userId: string | null | undefined): Promise<string 
   if (!userId) return null;
   
   try {
-    const { data, error } = await (supabase as any)
-      .from('profiles')
+    const { data, error } = await typedQuery('profiles')
       .select('full_name')
       .eq('id', userId)
       .single();

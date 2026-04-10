@@ -6,7 +6,7 @@ import {
   ExternalLink, Settings, Activity, ChevronRight, Key,
   Eye, EyeOff, Copy, FileText
 } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
 import { useTheme } from '@/hooks/useTheme';
 
@@ -82,21 +82,19 @@ export default function EnvironmentDetailPage() {
     if (!environmentId) return;
     setIsLoading(true);
     try {
-      const { data: envData } = await (supabase as any)
-        .from('tm_environments')
+      const { data: envData } = await typedQuery('tm_environments')
         .select(`*, owner:profiles!tm_environments_owner_id_fkey(full_name)`)
         .eq('id', environmentId)
         .single();
       if (envData) setEnvironment(envData);
 
-      const { data: varsData } = await (supabase as any)
-        .from('th_environment_variables')
+      const { data: varsData } = await typedQuery('th_environment_variables')
         .select('*')
         .eq('environment_id', environmentId)
         .order('key');
       if (varsData) setVariables(varsData);
 
-      const { data: cyclesData } = await (supabase as any).rpc('get_environment_cycles', { p_environment_id: environmentId });
+      const { data: cyclesData } = await typedRpc('get_environment_cycles', { p_environment_id: environmentId });
       if (cyclesData) setLinkedCycles(cyclesData);
     } catch (err) {
       console.error('Fetch environment error:', err);
@@ -111,7 +109,7 @@ export default function EnvironmentDetailPage() {
   const updateStatus = async (newStatus: string) => {
     if (!environment) return;
     try {
-      const { error } = await (supabase as any).from('tm_environments').update({ status: newStatus }).eq('id', environment.id);
+      const { error } = await typedQuery('tm_environments').update({ status: newStatus }).eq('id', environment.id);
       if (error) throw error;
       catalystToast.success(`Status changed to ${STATUS_CONFIG[newStatus]?.label || newStatus}`);
       fetchEnvironment();
@@ -121,7 +119,7 @@ export default function EnvironmentDetailPage() {
   const updateHealthStatus = async (newHealth: string) => {
     if (!environment) return;
     try {
-      const { error } = await (supabase as any).from('tm_environments').update({ health_status: newHealth, last_health_check: new Date().toISOString() }).eq('id', environment.id);
+      const { error } = await typedQuery('tm_environments').update({ health_status: newHealth, last_health_check: new Date().toISOString() }).eq('id', environment.id);
       if (error) throw error;
       catalystToast.success(`Health status updated to ${HEALTH_CONFIG[newHealth]?.label || newHealth}`);
       fetchEnvironment();
@@ -132,7 +130,7 @@ export default function EnvironmentDetailPage() {
     if (!environment) return;
     if (!confirm(`Delete ${environment.name}? This cannot be undone.`)) return;
     try {
-      const { error } = await (supabase as any).from('tm_environments').delete().eq('id', environment.id);
+      const { error } = await typedQuery('tm_environments').delete().eq('id', environment.id);
       if (error) throw error;
       catalystToast.success('Environment deleted');
       navigate('/testhub/environments');

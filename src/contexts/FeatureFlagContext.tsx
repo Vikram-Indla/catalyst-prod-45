@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 
 export interface FeatureFlag {
   id: string;
@@ -86,8 +86,7 @@ export function FeatureFlagProvider({ children }: { children: React.ReactNode })
 
   const fetchFlags = useCallback(async () => {
     try {
-      const { data, error } = await (supabase as any)
-        .from('feature_flags')
+      const { data, error } = await typedQuery('feature_flags')
         .select('*')
         .order('sort_order');
 
@@ -153,8 +152,7 @@ export function FeatureFlagProvider({ children }: { children: React.ReactNode })
         )
       );
 
-      const { error } = await (supabase as any)
-        .from('feature_flags')
+      const { error } = await typedQuery('feature_flags')
         .update({
           enabled,
           is_enabled: enabled,

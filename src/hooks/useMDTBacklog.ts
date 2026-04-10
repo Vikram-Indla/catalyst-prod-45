@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import type { Initiative, InitiativeStatus } from '@/types/initiative';
 
 /**
@@ -58,15 +58,15 @@ export function useMDTBacklog() {
 
       // Fetch initiatives, profiles, departments, scores, favorites, BRD tasks in parallel
       const [initResult, profilesResult, deptsResult, scoresResult, favsResult, brdTasksResult] = await Promise.all([
-        (supabase as any).from('ph_backlog_initiatives_view').select('*').limit(5000),
+        typedQuery('ph_backlog_initiatives_view').select('*').limit(5000),
         supabase.from('profiles').select('id, full_name, avatar_url'),
-        (supabase as any).from('ph_departments').select('id, name'),
-        (supabase as any).from('ph_initiative_scores').select('initiative_id, strategic_alignment, business_impact, time_urgency, resource_feasibility, computed_score'),
+        typedQuery('ph_departments').select('id, name'),
+        typedQuery('ph_initiative_scores').select('initiative_id, strategic_alignment, business_impact, time_urgency, resource_feasibility, computed_score'),
         currentUserId
-          ? (supabase as any).from('ph_user_favorites').select('initiative_id').eq('user_id', currentUserId)
+          ? typedQuery('ph_user_favorites').select('initiative_id').eq('user_id', currentUserId)
           : Promise.resolve({ data: [] }),
         // Fetch BRD Tasks (sub-tasks of Business Requests) from ph_issues
-        (supabase as any).from('ph_issues')
+        typedQuery('ph_issues')
           .select('issue_key, summary, status, assignee_display_name, priority, jira_created_at, jira_updated_at, parent_key')
           .eq('project_key', 'MDT')
           .in('issue_type', ['BRD Task', 'Sub-task'])

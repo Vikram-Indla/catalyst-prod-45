@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import type { RaDocument, RaDocumentType, RaMethodology } from '@/types/requirement-assist';
 
 export function useRaDocuments(filters?: {
@@ -10,8 +10,7 @@ export function useRaDocuments(filters?: {
   return useQuery({
     queryKey: ['ra-documents', filters],
     queryFn: async () => {
-      let query = (supabase as any)
-        .from('ra_documents')
+      let query = typedQuery('ra_documents')
         .select('*')
         .order('created_at', { ascending: false });
 
@@ -31,8 +30,7 @@ export function useRaDocument(id: string | undefined) {
     queryKey: ['ra-document', id],
     queryFn: async () => {
       if (!id) return null;
-      const { data, error } = await (supabase as any)
-        .from('ra_documents')
+      const { data, error } = await typedQuery('ra_documents')
         .select('*')
         .eq('id', id)
         .single();
@@ -47,8 +45,7 @@ export function useRaSourceBrds() {
   return useQuery({
     queryKey: ['ra-source-brds'],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from('ra_documents')
+      const { data, error } = await typedQuery('ra_documents')
         .select('id, brd_number, title, quality_score')
         .eq('type', 'brd')
         .eq('status', 'complete')
@@ -73,8 +70,7 @@ export function useCreateRaDocument() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const { data, error } = await (supabase as any)
-        .from('ra_documents')
+      const { data, error } = await typedQuery('ra_documents')
         .insert({
           ...doc,
           status: 'pending',

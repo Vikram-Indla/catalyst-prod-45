@@ -1,5 +1,5 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useEffect } from 'react';
 import type { CapacityResource, CapacityAssignment, CapacityProject, CapacityScenario, ResourceMetric, CapacitySummary } from '../types';
 
@@ -147,8 +147,7 @@ export function useCapacityData() {
   const { data: assignments = [], isLoading: assignmentsLoading, isError: assignmentsError } = useQuery({
     queryKey: ['capacity-planner-assignments'],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from('assignments')
+      const { data, error } = await typedQuery('assignments')
         .select('id, user_id, project_id, allocation_percentage, role, status, start_date, end_date, created_at')
         .in('status', ['active', 'paused'])
         .order('created_at', { ascending: false });
@@ -161,8 +160,7 @@ export function useCapacityData() {
   const { data: scenarios = [], isLoading: scenariosLoading, isError: scenariosError } = useQuery({
     queryKey: ['capacity-planner-scenarios'],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from('capacity_scenarios')
+      const { data, error } = await typedQuery('capacity_scenarios')
         .select('*')
         .order('created_at', { ascending: false });
       if (error) throw error;

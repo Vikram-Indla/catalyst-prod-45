@@ -5,7 +5,7 @@
 
 import { useState, useEffect } from 'react';
 import { X, Search, Plus } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { CreateSharedStepModal } from './CreateSharedStepModal';
 
 interface SharedStep {
@@ -39,8 +39,7 @@ export function SharedStepsModal({ isOpen, onClose, onInsert }: SharedStepsModal
 
   const fetchCategories = async () => {
     try {
-      const result = await (supabase as any)
-        .from('th_shared_step_categories')
+      const result = await typedQuery('th_shared_step_categories')
         .select('id, name, color, icon')
         .eq('is_active', true)
         .order('sort_order');
@@ -50,8 +49,7 @@ export function SharedStepsModal({ isOpen, onClose, onInsert }: SharedStepsModal
 
   const fetchSharedSteps = async () => {
     setLoading(true);
-    const { data, error } = await (supabase as any)
-      .from('tm_shared_steps')
+    const { data, error } = await typedQuery('tm_shared_steps')
       .select('*')
       .order('usage_count', { ascending: false });
 
@@ -72,8 +70,7 @@ export function SharedStepsModal({ isOpen, onClose, onInsert }: SharedStepsModal
 
     // Increment usage count after — non-blocking, best effort
     try {
-      await (supabase as any)
-        .from('tm_shared_steps')
+      await typedQuery('tm_shared_steps')
         .update({ usage_count: (step.usage_count || 0) + 1 })
         .eq('id', step.id);
     } catch (err) {

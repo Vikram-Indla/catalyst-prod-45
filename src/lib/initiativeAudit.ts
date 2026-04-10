@@ -2,7 +2,7 @@
  * Shared audit logger for ph_initiative_audit_log.
  * Fire-and-forget — never blocks the calling mutation.
  */
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 
 interface AuditEntry {
   initiative_id: string;
@@ -18,7 +18,7 @@ interface AuditEntry {
 export async function logInitiativeAudit(entry: AuditEntry) {
   try {
     const { data: { user } } = await supabase.auth.getUser();
-    await (supabase as any).from('ph_initiative_audit_log').insert({
+    await typedQuery('ph_initiative_audit_log').insert({
       ...entry,
       user_id: user?.id || null,
     });

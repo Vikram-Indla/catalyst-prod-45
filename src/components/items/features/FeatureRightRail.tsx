@@ -5,7 +5,7 @@
 
 import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -142,7 +142,7 @@ export function FeatureRightRail({ featureId, featureData, onRefresh }: FeatureR
   const { data: businessOwners } = useQuery({
     queryKey: ['business-owners-list'],
     queryFn: async () => {
-      const { data, error } = await (supabase as any).from('business_owners').select('id, name').eq('is_active', true).order('sort_order');
+      const { data, error } = await typedQuery('business_owners').select('id, name').eq('is_active', true).order('sort_order');
       if (error) throw error;
       return (data || []) as any[];
     },

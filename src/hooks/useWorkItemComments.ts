@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 export interface Comment {
@@ -165,8 +165,7 @@ async function saveMentions(commentId: string, usernames: string[]) {
       comment_id: commentId,
       mentioned_user_id: p.id,
     }));
-    await (supabase as any)
-      .from('comment_mentions')
+    await typedQuery('comment_mentions')
       .insert(mentions)
       .select();
   }

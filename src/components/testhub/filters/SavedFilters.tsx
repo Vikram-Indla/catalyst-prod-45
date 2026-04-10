@@ -3,7 +3,7 @@
  */
 import { useState, useEffect } from 'react';
 import { Filter, Plus, Star, Trash2, Save, X } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
 
 interface SavedFilter {
@@ -33,8 +33,7 @@ export function SavedFilters({ entityType, currentFilters, onApplyFilter }: Save
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      const { data, error } = await (supabase as any)
-        .from('th_saved_filters')
+      const { data, error } = await typedQuery('th_saved_filters')
         .select('*')
         .eq('user_id', user.id)
         .eq('entity_type', entityType)
@@ -60,8 +59,7 @@ export function SavedFilters({ entityType, currentFilters, onApplyFilter }: Save
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      const { error } = await (supabase as any)
-        .from('th_saved_filters')
+      const { error } = await typedQuery('th_saved_filters')
         .insert({
           user_id: user.id,
           name: newFilterName.trim(),
@@ -88,14 +86,12 @@ export function SavedFilters({ entityType, currentFilters, onApplyFilter }: Save
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      await (supabase as any)
-        .from('th_saved_filters')
+      await typedQuery('th_saved_filters')
         .update({ is_default: false })
         .eq('user_id', user.id)
         .eq('entity_type', entityType);
 
-      await (supabase as any)
-        .from('th_saved_filters')
+      await typedQuery('th_saved_filters')
         .update({ is_default: true })
         .eq('id', filterId);
 
@@ -109,8 +105,7 @@ export function SavedFilters({ entityType, currentFilters, onApplyFilter }: Save
   const deleteFilter = async (filterId: string) => {
     if (!confirm('Delete this saved filter?')) return;
     try {
-      const { error } = await (supabase as any)
-        .from('th_saved_filters')
+      const { error } = await typedQuery('th_saved_filters')
         .delete()
         .eq('id', filterId);
 

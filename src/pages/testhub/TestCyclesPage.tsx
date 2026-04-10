@@ -9,7 +9,7 @@ import {
   Plus, RefreshCw, Search, Filter, ArrowUpDown,
   Calendar, ChevronDown
 } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
 import { TestHubPageHeader } from '@/components/testhub/TestHubPageHeader';
 import { TestCycleCard } from '@/components/testhub/TestCycleCard';
@@ -81,8 +81,7 @@ export default function TestCyclesPage() {
     setIsLoading(true);
     try {
       const safeSortField = ['created_at', 'name', 'status', 'cycle_key', 'planned_start', 'planned_end', 'updated_at'].includes(sortField) ? sortField : 'created_at';
-      let query = (supabase as any)
-        .from('tm_test_cycles')
+      let query = typedQuery('tm_test_cycles')
         .select('id, cycle_key, name, description, status, planned_start, planned_end, environment_id, project_id, total_cases, passed_count, failed_count, blocked_count, skipped_count, not_run_count, in_progress_count, created_at, updated_at')
         .eq('project_id', '00000000-0000-0000-0000-000000000001')
         .order(safeSortField, { ascending: sortDirection === 'asc' });
@@ -138,7 +137,7 @@ export default function TestCyclesPage() {
 
   const handleStatusChange = async (cycleId: string, newStatus: string, label: string) => {
     try {
-      const { error } = await (supabase as any).from('tm_test_cycles').update({ status: newStatus, updated_at: new Date().toISOString() }).eq('id', cycleId);
+      const { error } = await typedQuery('tm_test_cycles').update({ status: newStatus, updated_at: new Date().toISOString() }).eq('id', cycleId);
       if (error) throw error;
       catalystToast.success(`Cycle ${label.toLowerCase()}`, { title: `Cycle ${label}` });
       fetchCycles();

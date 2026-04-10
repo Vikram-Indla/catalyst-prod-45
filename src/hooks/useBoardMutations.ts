@@ -1,6 +1,6 @@
 // useBoardMutations — create, update, delete, star board
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery, typedQuery, typedQuery } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import type { CreateBoardInput, BoardVisibility, SwimlaneType } from '@/types/board';
 
@@ -8,7 +8,7 @@ export function useCreateBoard() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (input: CreateBoardInput) => {
-      const { data, error } = await (supabase as any).rpc('create_board', {
+      const { data, error } = await typedRpc('create_board', {
         p_name: input.name,
         p_project_id: input.projectId ?? null,
         p_is_personal: input.isPersonal ?? false,
@@ -52,8 +52,7 @@ export function useUpdateBoard() {
       if (fields.swimlane_type !== undefined) update.swimlane_type = fields.swimlane_type;
       if (fields.show_swimlanes !== undefined) update.show_swimlanes = fields.show_swimlanes;
 
-      const { error } = await (supabase as any)
-        .from('boards')
+      const { error } = await typedQuery('boards')
         .update(update)
         .eq('id', boardId);
       if (error) throw error;
@@ -74,8 +73,7 @@ export function useDeleteBoard() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async ({ boardId, projectId }: { boardId: string; projectId: string }) => {
-      const { error } = await (supabase as any)
-        .from('boards')
+      const { error } = await typedQuery('boards')
         .update({ deleted_at: new Date().toISOString() })
         .eq('id', boardId);
       if (error) throw error;
@@ -99,8 +97,7 @@ export function useToggleBoardStar() {
       if (!user) throw new Error('Not authenticated');
 
       // Upsert board_members row
-      const { error } = await (supabase as any)
-        .from('board_members')
+      const { error } = await typedQuery('board_members')
         .upsert({
           board_id: boardId,
           user_id: user.id,
@@ -135,8 +132,7 @@ export function useUpdateBoardLastViewed() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
       // Update board_members last_viewed_at
-      await (supabase as any)
-        .from('board_members')
+      await typedQuery('board_members')
         .upsert({
           board_id: boardId,
           user_id: user.id,
@@ -144,8 +140,7 @@ export function useUpdateBoardLastViewed() {
           role: 'viewer',
         }, { onConflict: 'board_id,user_id' });
       // Also update boards.last_viewed_at
-      await (supabase as any)
-        .from('boards')
+      await typedQuery('boards')
         .update({ last_viewed_at: new Date().toISOString() })
         .eq('id', boardId);
     },
@@ -157,8 +152,7 @@ export function useAddColumn() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async ({ boardId, name, position }: { boardId: string; name: string; position: number }) => {
-      const { error } = await (supabase as any)
-        .from('board_columns')
+      const { error } = await typedQuery('board_columns')
         .insert({ board_id: boardId, name, position, status_ids: [] });
       if (error) throw error;
       return { boardId };
@@ -182,8 +176,7 @@ export function useUpdateColumn() {
       if (fields.name !== undefined) update.name = fields.name;
       if (fields.position !== undefined) update.position = fields.position;
       if (fields.status_ids !== undefined) update.status_ids = fields.status_ids;
-      const { error } = await (supabase as any)
-        .from('board_columns')
+      const { error } = await typedQuery('board_columns')
         .update(update)
         .eq('id', columnId);
       if (error) throw error;
@@ -198,8 +191,7 @@ export function useDeleteColumn() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async ({ columnId, boardId }: { columnId: string; boardId: string }) => {
-      const { error } = await (supabase as any)
-        .from('board_columns')
+      const { error } = await typedQuery('board_columns')
         .delete()
         .eq('id', columnId);
       if (error) throw error;
@@ -220,8 +212,7 @@ export function useUpdateCardRank() {
     mutationFn: async ({ boardId, workItemId, columnId, rankValue }: {
       boardId: string; workItemId: string; columnId: string; rankValue: string;
     }) => {
-      const { error } = await (supabase as any)
-        .from('board_issue_rank')
+      const { error } = await typedQuery('board_issue_rank')
         .upsert({
           board_id: boardId,
           work_item_id: workItemId,

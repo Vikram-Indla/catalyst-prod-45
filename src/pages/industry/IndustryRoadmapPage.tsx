@@ -12,7 +12,7 @@ import { Search, Layers, Filter, Info, ChevronDown, Check, X, Home } from 'lucid
 import { cn } from '@/lib/utils';
 import GlobalPageHeader from '@/components/layout/GlobalPageHeader';
 import { TimelineFilterPopover, TimelineFilterState, DEFAULT_TIMELINE_FILTER } from '@/components/roadmap/TimelineFilterPopover';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { BusinessRequestDrawer } from '@/components/business-requests/BusinessRequestDrawer';
 import { IndustryRoadmapFiltersDialog, IndustryFilters, DEFAULT_INDUSTRY_FILTERS, getCurrentQuarterDates, getNextQuarterDates } from '@/components/industry/IndustryRoadmapFiltersDialog';
 
@@ -293,8 +293,7 @@ export default function IndustryRoadmapPage() {
   const { data: requestsData, isLoading } = useQuery({
     queryKey: ['industry-roadmap-requests'],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from('business_requests')
+      const { data, error } = await typedQuery('business_requests')
         .select(`
           id,
           request_key,
@@ -360,8 +359,7 @@ export default function IndustryRoadmapPage() {
   const { data: ownersData } = useQuery({
     queryKey: ['industry-roadmap-owners'],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from('business_owners')
+      const { data, error } = await typedQuery('business_owners')
         .select('id, name')
         .eq('is_active', true)
         .order('name');

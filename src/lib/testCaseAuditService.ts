@@ -6,7 +6,7 @@
  * consistent audit logging and versioning.
  */
 
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { catalystToast } from '@/lib/catalystToast';
 
 export type AuditAction = 'create' | 'update' | 'delete' | 'assign' | 'execute' | 'clone';
@@ -58,8 +58,7 @@ export async function logAuditEntry(params: AuditLogParams): Promise<boolean> {
       return false;
     }
 
-    const { error } = await (supabase as any)
-      .from('tm_audit_log')
+    const { error } = await typedQuery('tm_audit_log')
       .insert({
         project_id: params.projectId || null,
         entity_type: params.entityType,
@@ -124,8 +123,7 @@ export async function createVersionSnapshot(params: VersionSnapshotParams): Prom
     }
 
     // Get next version number atomically
-    const { data: existingVersions, error: versionError } = await (supabase as any)
-      .from('tm_test_case_versions')
+    const { data: existingVersions, error: versionError } = await typedQuery('tm_test_case_versions')
       .select('version_number')
       .eq('test_case_id', testCaseId)
       .order('version_number', { ascending: false })
@@ -155,8 +153,7 @@ export async function createVersionSnapshot(params: VersionSnapshotParams): Prom
     };
 
     // Insert version with conflict handling
-    const { data: insertedVersion, error: insertError } = await (supabase as any)
-      .from('tm_test_case_versions')
+    const { data: insertedVersion, error: insertError } = await typedQuery('tm_test_case_versions')
       .insert({
         test_case_id: testCaseId,
         version_number: nextVersion,
@@ -173,8 +170,7 @@ export async function createVersionSnapshot(params: VersionSnapshotParams): Prom
         console.warn('Version conflict detected, retrying with incremented number');
         // Retry with incremented version
         const retryVersion = nextVersion + 1;
-        const { data: retryData, error: retryError } = await (supabase as any)
-          .from('tm_test_case_versions')
+        const { data: retryData, error: retryError } = await typedQuery('tm_test_case_versions')
           .insert({
             test_case_id: testCaseId,
             version_number: retryVersion,

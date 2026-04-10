@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useNavigation } from '@/contexts/NavigationContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -46,8 +46,7 @@ export default function PIObjectives() {
   const { data: pi } = useQuery({
     queryKey: ['program-increment', selectedPIId],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from('program_increments')
+      const { data, error } = await typedQuery('program_increments')
         .select('*, portfolios(name)')
         .eq('id', selectedPIId!)
         .single();

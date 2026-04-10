@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import DOMPurify from 'dompurify';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -52,8 +52,7 @@ export function DiscussionsViewTab({ requestId }: DiscussionsViewTabProps) {
   const { data: discussions = [], isLoading } = useQuery({
     queryKey: ['business-request-discussions', requestId],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from('business_request_discussions')
+      const { data, error } = await typedQuery('business_request_discussions')
         .select('id, message, user_id, created_at')
         .eq('business_request_id', requestId)
         .order('created_at', { ascending: true });
@@ -76,8 +75,7 @@ export function DiscussionsViewTab({ requestId }: DiscussionsViewTabProps) {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const { error } = await (supabase as any)
-        .from('business_request_discussions')
+      const { error } = await typedQuery('business_request_discussions')
         .insert({
           business_request_id: requestId,
           message,

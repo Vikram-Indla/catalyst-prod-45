@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Search } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { catalystToast } from '@/lib/catalystToast';
 import { useQueryClient, useQuery } from '@tanstack/react-query';
 import { 
@@ -227,8 +227,7 @@ export function CreateEntityDialog({
       let result: { id: string; name: string } | null = null;
 
       if (entityType === 'product') {
-        const { data, error } = await (supabase as any)
-          .from('business_lines')
+        const { data, error } = await typedQuery('business_lines')
           .insert({
             name: name.trim(),
             key: key.trim(),

@@ -9,7 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import { 
   FileCheck, Plus, Search, X, Link2, RefreshCw, ChevronRight
 } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
 import { useTheme } from '@/hooks/useTheme';
 import { TestHubPageHeader } from '@/components/testhub/TestHubPageHeader';
@@ -71,8 +71,7 @@ export default function RequirementsListPage() {
   const fetchRequirements = async () => {
     setIsLoading(true);
     try {
-      let query = (supabase as any)
-        .from('tm_requirements')
+      let query = typedQuery('tm_requirements')
         .select('id, req_key, title, description, type, priority, status, external_id, source, release_version, created_at')
         .order('created_at', { ascending: false });
 
@@ -92,8 +91,7 @@ export default function RequirementsListPage() {
       const reqIds = reqs.map((r: any) => r.id);
       let linkCounts: Record<string, number> = {};
       if (reqIds.length > 0) {
-        const { data: links } = await (supabase as any)
-          .from('tm_requirement_tests')
+        const { data: links } = await typedQuery('tm_requirement_tests')
           .select('requirement_id')
           .in('requirement_id', reqIds);
         if (links) {

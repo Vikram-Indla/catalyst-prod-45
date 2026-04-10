@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 interface PrioritizationDialogProps {
@@ -42,15 +42,13 @@ export function PrioritizationDialog({
       // Don't include wsjf_score - it's a computed column
       const updates = selectedItems.map(async (id) => {
         // Check if record exists
-        const { data: existing } = await (supabase as any)
-          .from('epic_wsjf')
+        const { data: existing } = await typedQuery('epic_wsjf')
           .select('id')
           .eq('epic_id', id)
           .maybeSingle();
         
         if (existing) {
-          return (supabase as any)
-            .from('epic_wsjf')
+          return typedQuery('epic_wsjf')
             .update({
               business_value: businessValue,
               time_value: timeCriticality,
@@ -59,8 +57,7 @@ export function PrioritizationDialog({
             })
             .eq('epic_id', id);
         } else {
-          return (supabase as any)
-            .from('epic_wsjf')
+          return typedQuery('epic_wsjf')
             .insert({
               epic_id: id,
               business_value: businessValue,

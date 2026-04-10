@@ -6,7 +6,7 @@ import React, { useState, useMemo, useCallback, useEffect, memo } from 'react';
 import { useTheme } from '@/hooks/useTheme';
 import { ChevronLeft, X, AlertTriangle, Info, BookOpen, ChevronRight, ChevronLeft as ChevronLeftIcon, RefreshCw, CalendarX, Inbox } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { R360_STATUS_MAP, R360_STATUS_DEFAULT } from '@/constants/r360';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { fetchItemDetail, calcDaysSitting } from '@/lib/r360/fetchItemDetail';
@@ -95,7 +95,7 @@ function useR360Resource(resourceId: string) {
   return useQuery({
     queryKey: ['r360-profile-resource', resourceId],
     queryFn: async () => {
-      const { data: resource } = await (supabase as any).from('resource_inventory')
+      const { data: resource } = await typedQuery('resource_inventory')
         .select('id, rid, name, role_name, department_name, vendor_name, resource_type, profile_id, jira_account_id')
         .eq('id', resourceId)
         .maybeSingle();
@@ -104,7 +104,7 @@ function useR360Resource(resourceId: string) {
       let avatar_url: string | null = null;
       let skills: string[] = [];
       if (resource.profile_id) {
-        const { data: profile } = await (supabase as any).from('profiles')
+        const { data: profile } = await typedQuery('profiles')
           .select('avatar_url, skills')
           .eq('id', resource.profile_id)
           .maybeSingle();
@@ -136,13 +136,13 @@ function useR360ProfileWorkItems(resourceId: string) {
   return useQuery({
     queryKey: ['r360-profile-work-items', resourceId],
     queryFn: async () => {
-      const { data: resource } = await (supabase as any).from('resource_inventory')
+      const { data: resource } = await typedQuery('resource_inventory')
         .select('name, jira_account_id')
         .eq('id', resourceId)
         .maybeSingle();
       if (!resource) return [];
 
-      let query = (supabase as any).from('ph_issues')
+      let query = typedQuery('ph_issues')
         .select('issue_key, project_key, summary, issue_type, status, priority, assignee_display_name, jira_created_at, jira_updated_at');
       if (resource.jira_account_id) {
         query = query.eq('assignee_account_id', resource.jira_account_id);

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { X, Calendar, User, AlertCircle, Server, ChevronDown } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useTheme } from '@/hooks/useTheme';
 
 const CYCLE_STATUS_OPTIONS = [
@@ -80,8 +80,7 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
     const loadModalData = async () => {
       const [profilesResult, environmentsResult] = await Promise.all([
         supabase.from('profiles').select('id, full_name').order('full_name'),
-        (supabase as any)
-          .from('tm_environments')
+        typedQuery('tm_environments')
           .select('id, name, type, health_status')
           .eq('status', 'active')
           .order('name'),
@@ -95,8 +94,7 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
       if (mode === 'edit' && cycle?.id) {
         let sourceCycle = cycle;
 
-        const { data: latestCycle, error: cycleError } = await (supabase as any)
-          .from('tm_test_cycles')
+        const { data: latestCycle, error: cycleError } = await typedQuery('tm_test_cycles')
           .select('id, cycle_key, name, description, planned_start, planned_end, environment_id, status')
           .eq('id', cycle.id)
           .maybeSingle();
@@ -150,8 +148,7 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
   const generateCycleKey = async (): Promise<string> => {
     const { data, error } = await supabase.rpc('generate_cycle_key');
     if (error) {
-      const { data: lastCycle } = await (supabase as any)
-        .from('tm_test_cycles').select('cycle_key').order('created_at', { ascending: false }).limit(1);
+      const { data: lastCycle } = await typedQuery('tm_test_cycles').select('cycle_key').order('created_at', { ascending: false }).limit(1);
       if (lastCycle && lastCycle.length > 0) {
         const lastNum = parseInt(lastCycle[0].cycle_key.replace('CYCLE-', ''));
         return `CYCLE-${String(lastNum + 1).padStart(3, '0')}`;
@@ -180,8 +177,7 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
           updated_at: new Date().toISOString(),
         };
 
-        const { error } = await (supabase as any)
-          .from('tm_test_cycles')
+        const { error } = await typedQuery('tm_test_cycles')
           .update(updateData)
           .eq('id', cycle.id);
 
@@ -206,7 +202,7 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
           blocked_count: 0, skipped_count: 0, not_run_count: 0,
           project_id: '00000000-0000-0000-0000-000000000001',
         };
-        const { error } = await (supabase as any).from('tm_test_cycles').insert(insertData).select().single();
+        const { error } = await typedQuery('tm_test_cycles').insert(insertData).select().single();
 
         if (error) {
           catalystToast.error(error.message || 'Failed to create test cycle', { title: 'Creation Failed' });

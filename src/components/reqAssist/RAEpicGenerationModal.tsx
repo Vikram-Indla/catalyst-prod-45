@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { RA_KEYS } from '@/hooks/useReqAssist';
 import { CheckCircle2, XCircle, Sparkles, Check, Loader2 } from 'lucide-react';
@@ -60,8 +60,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
       || (doc as any).jiraKey;
 
     if (jiraKey) {
-      const { data } = await (supabase as any)
-        .from('brd_documents')
+      const { data } = await typedQuery('brd_documents')
         .select('id')
         .eq('jira_key', jiraKey)
         .maybeSingle();
@@ -74,8 +73,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
       || (doc as any).content_raw
       || doc.title + ' — placeholder content for epic generation';
 
-    const { data: inserted, error } = await (supabase as any)
-      .from('brd_documents')
+    const { data: inserted, error } = await typedQuery('brd_documents')
       .insert({
         jira_key: jiraKey || null,
         title: doc.title,

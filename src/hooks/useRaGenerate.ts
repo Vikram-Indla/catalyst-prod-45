@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import type { RaDocumentType } from '@/types/requirement-assist';
 
 export function useRaGenerate() {
@@ -12,8 +12,7 @@ export function useRaGenerate() {
       input?: { text?: string; methodology?: string; language?: string; source_doc_id?: string };
     }) => {
       // Update document status to 'generating'
-      await (supabase as any)
-        .from('ra_documents')
+      await typedQuery('ra_documents')
         .update({ status: 'generating' })
         .eq('id', params.documentId);
 

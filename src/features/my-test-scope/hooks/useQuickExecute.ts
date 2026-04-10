@@ -4,7 +4,7 @@
  */
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { myTestScopeKeys } from './useMyTestScope';
 
@@ -25,8 +25,7 @@ async function executeQuickAction({ cycleTestCaseId, action, reason }: QuickExec
     updated_at: new Date().toISOString(),
   };
 
-  const { error } = await (supabase as any)
-    .from('tm_cycle_scope')
+  const { error } = await typedQuery('tm_cycle_scope')
     .update(updateData)
     .eq('id', cycleTestCaseId);
 

@@ -5,7 +5,7 @@
 
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { useQueryClient, useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import type { TimelineInitiative } from '@/types/producthub/initiative';
 import { toast } from 'sonner';
 import { logInitiativeAudit } from '@/lib/initiativeAudit';
@@ -81,8 +81,7 @@ export const DetailTabScore: React.FC<DetailTabScoreProps> = ({ initiative }) =>
   const { data: dbScores } = useQuery({
     queryKey: ['idp-scores', initiative.id],
     queryFn: async () => {
-      const { data } = await (supabase as any)
-        .from('ph_initiative_scores')
+      const { data } = await typedQuery('ph_initiative_scores')
         .select('strategic_alignment, business_impact, time_urgency, resource_feasibility')
         .eq('initiative_id', initiative.id)
         .maybeSingle();
@@ -123,8 +122,7 @@ export const DetailTabScore: React.FC<DetailTabScoreProps> = ({ initiative }) =>
     setSaving(true);
     try {
       // Upsert into ph_initiative_scores
-      const { error } = await (supabase as any)
-        .from('ph_initiative_scores')
+      const { error } = await typedQuery('ph_initiative_scores')
         .upsert({
           initiative_id: initiative.id,
           strategic_alignment: scores.sa,

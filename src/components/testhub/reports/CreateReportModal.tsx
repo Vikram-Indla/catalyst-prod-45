@@ -3,7 +3,7 @@
  */
 import { useState, useEffect } from 'react';
 import { X, FileBarChart, Calendar, FileText, BarChart3, Shield, TrendingUp, AlertCircle } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
 
 interface CreateReportModalProps {
@@ -41,8 +41,8 @@ export function CreateReportModal({ isOpen, onClose, onCreated, preselectedCycle
   useEffect(() => {
     const fetchData = async () => {
       const [cyclesRes, plansRes] = await Promise.all([
-        (supabase as any).from('tm_test_cycles').select('id, cycle_key, name').order('created_at', { ascending: false }),
-        (supabase as any).from('tm_test_plans').select('id, plan_key, name').neq('status', 'archived').order('created_at', { ascending: false }),
+        typedQuery('tm_test_cycles').select('id, cycle_key, name').order('created_at', { ascending: false }),
+        typedQuery('tm_test_plans').select('id, plan_key, name').neq('status', 'archived').order('created_at', { ascending: false }),
       ]);
       if (cyclesRes.data) setCycles(cyclesRes.data);
       if (plansRes.data) setPlans(plansRes.data);
@@ -80,8 +80,7 @@ export function CreateReportModal({ isOpen, onClose, onCreated, preselectedCycle
     try {
       const { data: { user } } = await supabase.auth.getUser();
 
-      const { data: report, error } = await (supabase as any)
-        .from('th_reports')
+      const { data: report, error } = await typedQuery('th_reports')
         .insert({
           name: name.trim(),
           description: description.trim() || null,
@@ -100,18 +99,17 @@ export function CreateReportModal({ isOpen, onClose, onCreated, preselectedCycle
 
       let reportData = {};
       if (reportType === 'cycle_summary' && cycleId) {
-        const { data } = await (supabase as any).rpc('generate_cycle_report_data', { p_cycle_id: cycleId });
+        const { data } = await typedRpc('generate_cycle_report_data', { p_cycle_id: cycleId });
         reportData = data || {};
       } else if (reportType === 'defect') {
-        const { data } = await (supabase as any).rpc('generate_defect_report_data', {
+        const { data } = await typedRpc('generate_defect_report_data', {
           p_date_from: dateFrom || null,
           p_date_to: dateTo || null,
         });
         reportData = data || {};
       }
 
-      await (supabase as any)
-        .from('th_reports')
+      await typedQuery('th_reports')
         .update({ report_data: reportData, status: 'ready', generated_at: new Date().toISOString() })
         .eq('id', report.id);
 

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { Loader2 } from 'lucide-react';
 import { findByHistoricalKey } from '@/hooks/useWorkItemKeyHistory';
 
@@ -69,8 +69,7 @@ export default function BrowsePage() {
           .select('id, story_key')
           .ilike('story_key', normalizedKey)
           .maybeSingle(),
-        (supabase as any)
-          .from('business_requests')
+        typedQuery('business_requests')
           .select('id, request_key')
           .ilike('request_key', normalizedKey)
           .maybeSingle(),
