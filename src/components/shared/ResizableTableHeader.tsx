@@ -26,7 +26,7 @@ export function ResizableTableHeader({
 }: Props) {
   return (
     <th
-      style={{ width, minWidth: width, maxWidth: width, position: 'relative' }}
+      style={{ width, minWidth: 50, position: 'relative' }}
       className={cn(
         'select-none',
         isDragging && 'opacity-40',
