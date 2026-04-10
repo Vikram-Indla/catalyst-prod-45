@@ -409,7 +409,7 @@ export default function StoryDetailModal({
   };
 
   const MODAL: React.CSSProperties = {
-    width: 980, maxWidth: '95vw',
+    width: 1100, maxWidth: '95vw',
     minHeight: 600, maxHeight: 'calc(100vh - 80px)',
     background: '#FFFFFF', borderRadius: 8,
     display: 'flex', flexDirection: 'column',
@@ -937,8 +937,8 @@ export default function StoryDetailModal({
               {/* Details section */}
               <div style={{ marginBottom: 20 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', marginBottom: 12, userSelect: 'none' }}>
-                  <ChevronDown size={14} color="#5E6C84" />
-                  <span style={{ fontSize: 13, fontWeight: 700, color: '#172B4D' }}>Details</span>
+                  <ChevronDown size={14} color="#42526E" />
+                  <span style={{ fontSize: 14, fontWeight: 700, color: '#172B4D' }}>Details</span>
                 </div>
 
                 {/* Fix versions */}
