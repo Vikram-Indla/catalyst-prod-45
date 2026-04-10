@@ -465,7 +465,6 @@ export default function StoryDetailModal({
   const [linkSearch, setLinkSearch] = useState('');
   const [linkType, setLinkType] = useState<string>('relates_to');
 
-  const [linkSearchResults, setLinkSearchResults] = useState<PhIssue[]>([]);
   const [selectedLinkTarget, setSelectedLinkTarget] = useState<PhIssue | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
