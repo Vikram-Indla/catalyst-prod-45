@@ -927,12 +927,40 @@
 }
 
 /* ════════════════════════════════════════════════════════════════
+   DATE COLUMN
+   ════════════════════════════════════════════════════════════════ */
+
+[data-sdm-scope] .sdm-date-col {
+  font-family: var(--cp-font-mono, 'JetBrains Mono', monospace);
+  font-size: 11px;
+  color: #8993A4;
+  flex-shrink: 0;
+  white-space: nowrap;
+  user-select: none;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   GHOST BUTTON (link incident, open testhub)
+   ════════════════════════════════════════════════════════════════ */
+
+[data-sdm-scope] .sdm-create-btn.sdm-visibility-btn {
+  background: transparent;
+  border-color: rgba(9, 30, 66, 0.14);
+  color: #6B778C;
+}
+[data-sdm-scope] .sdm-create-btn.sdm-visibility-btn:hover {
+  background: rgba(9, 30, 66, 0.04);
+  color: #42526E;
+  border-color: rgba(9, 30, 66, 0.24);
+}
+
+/* ════════════════════════════════════════════════════════════════
    RESPONSIVE ADJUSTMENTS
    ════════════════════════════════════════════════════════════════ */
 
 @media (max-width: 900px) {
   [data-sdm-scope] .sdm-progress-block {
-    display: none; /* hide progress on small modals */
+    display: none;
   }
   [data-sdm-scope] .sdm-visibility-btn {
     display: none;
