@@ -418,7 +418,17 @@ export default function StoryDetailModal({
      RENDER — Jira-parity layout
      ═════════════════════════════════════════════ */
 
-  const OVERLAY: React.CSSProperties = {
+  // Panel nav helpers
+  const currentNavIndex = navigationItems?.findIndex(n => n.id === itemId) ?? -1;
+  const canNavPrev = currentNavIndex > 0;
+  const canNavNext = navigationItems ? currentNavIndex < navigationItems.length - 1 : false;
+  const navPrev = () => { if (canNavPrev && navigationItems) onNavigate?.(navigationItems[currentNavIndex - 1].id); };
+  const navNext = () => { if (canNavNext && navigationItems) onNavigate?.(navigationItems[currentNavIndex + 1].id); };
+
+  const OVERLAY: React.CSSProperties = panelMode ? {
+    position: 'relative', width: '100%', height: '100%',
+    display: 'flex', flexDirection: 'column',
+  } : {
     position: 'fixed', inset: 0, zIndex: 1000,
     display: 'flex', alignItems: 'flex-start', justifyContent: 'center',
     background: 'rgba(9, 30, 66, 0.54)',
@@ -427,7 +437,14 @@ export default function StoryDetailModal({
     animation: 'sdm-overlay-in 200ms ease-out',
   };
 
-  const MODAL: React.CSSProperties = {
+  const MODAL: React.CSSProperties = panelMode ? {
+    width: '100%', height: '100%',
+    background: '#FFFFFF',
+    display: 'flex', flexDirection: 'column',
+    overflow: 'hidden',
+    animation: 'sdm-panel-in 200ms ease-out',
+    borderLeft: '1px solid #DFE1E6',
+  } : {
     width: 1100, maxWidth: '95vw',
     minHeight: 600, maxHeight: 'calc(100vh - 80px)',
     background: '#FFFFFF', borderRadius: 8,
@@ -440,7 +457,7 @@ export default function StoryDetailModal({
   return (
     <>
       {/* OVERLAY */}
-      <div style={OVERLAY} onClick={onClose}>
+      <div style={OVERLAY} onClick={panelMode ? undefined : onClose}>
         <div data-sdm-scope style={MODAL} onClick={e => e.stopPropagation()}>
 
           {/* ── A. TOP BAR — Jira breadcrumb + actions ─────── */}
