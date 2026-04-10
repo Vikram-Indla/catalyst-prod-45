@@ -188,19 +188,36 @@ export default function CleanupPage() {
     },
   });
 
-  // ── Resolve parent titles from parent_key ──
+  // ── Resolve parent info (title + issue_type) from parent_key ──
   const parentKeys = useMemo(() => [...new Set(sharedItems.map(i => i.parent_key).filter(Boolean))] as string[], [sharedItems]);
-  const { data: parentTitleMap = {} } = useQuery({
-    queryKey: ['cleanup-parent-titles', parentKeys],
+  const { data: parentInfoMap = {} } = useQuery({
+    queryKey: ['cleanup-parent-info', parentKeys],
     enabled: parentKeys.length > 0,
     staleTime: 300_000,
     queryFn: async () => {
-      const { data } = await supabase.from('ph_issues').select('issue_key, summary').in('issue_key', parentKeys);
-      const map: Record<string, string> = {};
-      (data ?? []).forEach((p: any) => { map[p.issue_key] = p.summary; });
+      const { data } = await supabase.from('ph_issues').select('issue_key, summary, issue_type').in('issue_key', parentKeys);
+      const map: Record<string, { title: string; issueType: string }> = {};
+      (data ?? []).forEach((p: any) => { map[p.issue_key] = { title: p.summary, issueType: p.issue_type || 'Task' }; });
       return map;
     },
   });
+
+  // ── Inline status edit state ──
+  const [editingStatusId, setEditingStatusId] = useState<string | null>(null);
+
+  const handleInlineStatusChange = useCallback(async (itemId: string, newStatus: string) => {
+    setEditingStatusId(null);
+    const { error } = await supabase
+      .from('catalyst_issues')
+      .update({ status: newStatus })
+      .eq('id', itemId);
+    if (error) {
+      toast.error('Status update failed: ' + error.message);
+      return;
+    }
+    qc.invalidateQueries({ queryKey: ['ageing-items'] });
+    toast.success(`Status updated to "${newStatus}"`);
+  }, [qc]);
 
   // ── Categorize items ──
   const catData = useMemo(() => {
