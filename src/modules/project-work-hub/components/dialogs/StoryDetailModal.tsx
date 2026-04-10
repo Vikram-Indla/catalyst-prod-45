@@ -1320,7 +1320,7 @@ const menuItem: React.CSSProperties = {
 };
 
 const detailLabel: React.CSSProperties = {
-  fontSize: 11, fontWeight: 600, color: '#98A2B3', padding: '8px 0', textTransform: 'uppercase', letterSpacing: '0.04em',
+  fontSize: 11, fontWeight: 650, color: '#475467', padding: '8px 0', textTransform: 'uppercase', letterSpacing: '0.04em',
 };
 const detailValue: React.CSSProperties = {
   fontSize: 13, color: '#101828', padding: '6px 0',
