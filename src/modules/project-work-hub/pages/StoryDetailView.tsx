@@ -67,7 +67,7 @@ export default function StoryDetailView({ projectId, projectKey, itemId }: Story
   const { data: comments = [], isLoading: commentsLoading } = useStoryComments(story?.issue_key || null);
   const { data: history = [], isLoading: historyLoading } = useStoryHistory(story?.issue_key || null);
   const { data: siblings = [] } = useStorySiblings(projectId);
-  const { data: parentCandidates = [] } = useParentCandidates(projectId);
+  const { data: parentCandidates = [] } = useParentCandidates(projectKey);
   const { data: teamMembers = [] } = useTeamMembers();
   const { data: childIssues = [] } = useChildIssues(story?.issue_key || null);
   const { data: linkedIssues = [] } = useLinkedIssues(story?.issue_key || null);
