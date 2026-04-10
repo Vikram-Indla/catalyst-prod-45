@@ -467,11 +467,17 @@ const EpicIconInline = ({ size = 16 }: { size?: number }) => (
   </svg>
 );
 
-export function ParentFieldPicker({ storyKey, parentKey, projectKey, onParentChange }: {
+export function ParentFieldPicker({ storyKey, parentKey, projectKey, onParentChange, triggerOpen }: {
   storyKey: string; parentKey: string | null; projectKey: string;
   onParentChange: (newParentKey: string | null) => void;
+  triggerOpen?: number; // increment to open externally
 }) {
   const [open, setOpen] = useState(false);
+
+  // Allow external trigger (e.g. from breadcrumb "Add parent")
+  useEffect(() => {
+    if (triggerOpen && triggerOpen > 0) setOpen(true);
+  }, [triggerOpen]);
   const [search, setSearch] = useState('');
   const [showDone, setShowDone] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
