@@ -161,14 +161,7 @@ export default function DefectsPage() {
 
   const totalPages = Math.ceil(totalCount / pageSize);
 
-  // Stats bar data
-  const statsBar = stats ? {
-    total: totalCount,
-    open: stats.by_status.OPEN || 0,
-    in_progress: stats.by_status.IN_PROGRESS || 0,
-    resolved: stats.by_status.FIXED || 0,
-    closed: stats.by_status.CLOSED || 0,
-  } : null;
+
 
   return (
     <div className={cn("flex flex-col h-full", isDark && "bg-[#0A0A0A]")}>
