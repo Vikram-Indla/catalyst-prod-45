@@ -3,7 +3,7 @@
  * Jira-style two-panel detail modal for work items.
  */
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
@@ -465,12 +465,213 @@ export default function StoryDetailModal({
   const [linkSearch, setLinkSearch] = useState('');
   const [linkType, setLinkType] = useState<string>('relates_to');
 
+  const [linkSearchResults, setLinkSearchResults] = useState<PhIssue[]>([]);
+  const [selectedLinkTarget, setSelectedLinkTarget] = useState<PhIssue | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   useEffect(() => {
     if (issue) {
       setLocalStatus(issue.status);
       setLocalPriority(issue.priority ?? 'Medium');
     }
   }, [issue?.id]);
+
+  /* ── MUTATIONS ─────────────────────────────── */
+
+  function resolveStatusCategory(status: string): string {
+    for (const [cat, statuses] of Object.entries(STATUS_CATEGORIES)) {
+      if (statuses.includes(status)) return cat;
+    }
+    return 'todo';
+  }
+
+  const updateStatusMutation = useMutation({
+    mutationFn: async (newStatus: string) => {
+      const { error } = await supabase.from('ph_issues')
+        .update({ status: newStatus, status_category: resolveStatusCategory(newStatus) })
+        .eq('id', itemId);
+      if (error) throw error;
+      await supabase.from('jira_write_back_queue').insert({
+        ph_issue_id: itemId,
+        field_name: 'status', new_value: newStatus, status: 'approved',
+      });
+    },
+    onSuccess: () => {
+      toast.success('Status updated');
+      queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] });
+      queryClient.invalidateQueries({ queryKey: ['ph_issues'] });
+    },
+    onError: (err: any) => { console.error('Mutation failed:', err); toast.error(`Failed to update status: ${err.message}`); },
+  });
+
+  const updateFieldMutation = useMutation({
+    mutationFn: async ({ field, value, oldValue }: { field: string; value: string; oldValue: string }) => {
+      const { error } = await supabase.from('ph_issues').update({ [field]: value }).eq('id', itemId);
+      if (error) throw error;
+      await supabase.from('ph_activity_log').insert({
+        work_item_id: itemId, action: 'updated', field_name: field,
+        old_value: oldValue, new_value: value, user_id: user!.id,
+      });
+      await supabase.from('jira_write_back_queue').insert({
+        ph_issue_id: itemId,
+        field_name: field, new_value: value, status: 'approved',
+      });
+    },
+    onSuccess: () => {
+      toast.success('Field updated');
+      queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] });
+      queryClient.invalidateQueries({ queryKey: ['ph-activity-log', itemId] });
+    },
+    onError: (err: any) => { console.error('Mutation failed:', err); toast.error(`Failed to update: ${err.message}`); },
+  });
+
+  const updateAssigneeMutation = useMutation({
+    mutationFn: async ({ userId, displayName }: { userId: string; displayName: string }) => {
+      const { error } = await supabase.from('ph_issues')
+        .update({ assignee_account_id: userId, assignee_display_name: displayName })
+        .eq('id', itemId);
+      if (error) throw error;
+      await supabase.from('ph_activity_log').insert({
+        work_item_id: itemId, action: 'updated', field_name: 'assignee',
+        old_value: issue?.assignee_display_name ?? 'Unassigned',
+        new_value: displayName, user_id: user!.id,
+      });
+    },
+    onSuccess: () => {
+      toast.success('Assignee updated');
+      queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] });
+    },
+    onError: (err: any) => { console.error('Mutation failed:', err); toast.error(`Failed to update assignee: ${err.message}`); },
+  });
+
+  const addCommentMutation = useMutation({
+    mutationFn: async (body: string) => {
+      if (!body.trim()) throw new Error('Comment cannot be empty');
+      const { error } = await supabase.from('ph_comments')
+        .insert({ work_item_id: itemId, body: body.trim(), author_id: user!.id });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      setNewComment('');
+      toast.success('Comment added');
+      queryClient.invalidateQueries({ queryKey: ['ph-comments', itemId] });
+    },
+    onError: (err: any) => { console.error('Mutation failed:', err); toast.error(`Failed to add comment: ${err.message}`); },
+  });
+
+  const deleteCommentMutation = useMutation({
+    mutationFn: async (commentId: string) => {
+      const { error } = await supabase.from('ph_comments').delete().eq('id', commentId).eq('author_id', user!.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success('Comment deleted');
+      queryClient.invalidateQueries({ queryKey: ['ph-comments', itemId] });
+    },
+    onError: (err: any) => { console.error('Mutation failed:', err); toast.error(`Failed to delete comment: ${err.message}`); },
+  });
+
+  const deleteIssueMutation = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase.from('ph_issues')
+        .update({ deleted_at: new Date().toISOString() })
+        .eq('id', itemId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success(`${issue?.issue_key} deleted`);
+      queryClient.invalidateQueries({ queryKey: ['ph_issues'] });
+      onClose();
+    },
+    onError: (err: any) => { console.error('Mutation failed:', err); toast.error(`Failed to delete: ${err.message}`); },
+  });
+
+  const addLinkMutation = useMutation({
+    mutationFn: async ({ targetId, linkTypeVal }: { targetId: string; linkTypeVal: string }) => {
+      const { error } = await supabase.from('ph_issue_links')
+        .insert({ source_id: itemId, target_id: targetId, link_type: linkTypeVal, created_by: user!.id });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      setShowLinkModal(false);
+      setSelectedLinkTarget(null);
+      setLinkSearch('');
+      toast.success('Issue linked');
+      queryClient.invalidateQueries({ queryKey: ['ph-issue-links', itemId] });
+    },
+    onError: (err: any) => { console.error('Mutation failed:', err); toast.error(`Failed to link: ${err.message}`); },
+  });
+
+  const uploadAttachmentMutation = useMutation({
+    mutationFn: async (file: File) => {
+      const ext = file.name.split('.').pop();
+      const path = `attachments/${itemId}/${Date.now()}.${ext}`;
+      const { error: uploadError } = await supabase.storage.from('attachments').upload(path, file);
+      if (uploadError) throw uploadError;
+      const { error: dbError } = await supabase.from('ph_attachments')
+        .insert({ work_item_id: itemId, file_name: file.name, file_size: file.size,
+                  mime_type: file.type, storage_path: path, uploaded_by: user!.id });
+      if (dbError) throw dbError;
+    },
+    onSuccess: () => {
+      toast.success('Attachment uploaded');
+      queryClient.invalidateQueries({ queryKey: ['ph-attachments', itemId] });
+    },
+    onError: (err: any) => { console.error('Mutation failed:', err); toast.error(`Failed to upload: ${err.message}`); },
+  });
+
+  const handleCommentSubmit = () => {
+    if (newComment.trim()) addCommentMutation.mutate(newComment);
+  };
+
+  const handleCommentKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+      e.preventDefault();
+      handleCommentSubmit();
+    }
+  };
+
+  const assignToMe = () => {
+    if (!currentProfile || !user) return;
+    updateAssigneeMutation.mutate({
+      userId: user.id,
+      displayName: currentProfile.full_name ?? user.email ?? 'Me',
+    });
+  };
+
+  const saveFigmaLink = useCallback(() => {
+    if (!/^https:\/\/(www\.)?figma\.com\//.test(figmaUrl)) {
+      setFigmaError('Only Figma URLs accepted (figma.com)');
+      return;
+    }
+    setFigmaError('');
+    supabase.from('ph_attachments').insert({
+      work_item_id: itemId, file_name: figmaUrl,
+      file_size: 0, mime_type: 'application/figma',
+      storage_path: figmaUrl, uploaded_by: user!.id,
+    }).then(({ error }) => {
+      if (error) { toast.error(`Failed to save Figma link: ${error.message}`); return; }
+      setFigmaUrl('');
+      setShowFigmaInput(false);
+      toast.success('Figma design link added');
+      queryClient.invalidateQueries({ queryKey: ['ph-attachments', itemId] });
+    });
+  }, [figmaUrl, itemId, user, queryClient]);
+
+  // Link search query
+  const { data: linkSearchData = [] } = useQuery({
+    queryKey: ['ph-link-search', linkSearch],
+    enabled: linkSearch.length >= 2 && showLinkModal,
+    queryFn: async () => {
+      const { data } = await supabase.from('ph_issues')
+        .select('id, issue_key, summary, issue_type, status, status_category')
+        .is('deleted_at', null)
+        .neq('id', itemId)
+        .or(`issue_key.ilike.%${linkSearch}%,summary.ilike.%${linkSearch}%`)
+        .limit(10);
+      return (data ?? []) as unknown as PhIssue[];
+    },
+  });
 
   /* ── DERIVED ───────────────────────────────── */
   const statusCategory = issue?.status_category ?? 'todo';
@@ -490,17 +691,6 @@ export default function StoryDetailModal({
     navigator.clipboard.writeText(url);
     toast(`Link copied to clipboard · ${issue?.issue_key ?? ''}`);
   }, [issue?.issue_key]);
-
-  const handleFigmaSubmit = useCallback(() => {
-    if (!/^https:\/\/(www\.)?figma\.com\//.test(figmaUrl)) {
-      setFigmaError('Only Figma URLs accepted (figma.com)');
-      return;
-    }
-    setFigmaError('');
-    setShowFigmaInput(false);
-    setFigmaUrl('');
-    toast('Figma design link added');
-  }, [figmaUrl]);
 
   if (!isOpen) return null;
 
@@ -802,7 +992,17 @@ export default function StoryDetailModal({
                   </div>
 
                   {/* 2. TITLE */}
-                  <h1 style={{ fontFamily: 'Sora, sans-serif', fontSize: 20, fontWeight: 700, color: '#101828', lineHeight: 1.3, letterSpacing: '-0.01em', margin: '0 0 4px' }}>{issue?.summary ?? '—'}</h1>
+                  <h1
+                    contentEditable
+                    suppressContentEditableWarning
+                    onBlur={e => {
+                      const newTitle = e.currentTarget.textContent?.trim() ?? '';
+                      if (newTitle && newTitle !== issue?.summary) {
+                        updateFieldMutation.mutate({ field: 'summary', value: newTitle, oldValue: issue?.summary ?? '' });
+                      }
+                    }}
+                    style={{ fontFamily: 'Sora, sans-serif', fontSize: 20, fontWeight: 700, color: '#101828', lineHeight: 1.3, letterSpacing: '-0.01em', margin: '0 0 4px', outline: 'none', cursor: 'text', borderRadius: 4 }}
+                  >{issue?.summary ?? '—'}</h1>
 
                   {/* 3. ARABIC SUBTITLE */}
                   {issue?.description_text && (
@@ -820,7 +1020,8 @@ export default function StoryDetailModal({
                         <div style={{ position: 'absolute', left: 0, top: 34, background: '#FFF', border: '1px solid #E4E7EC', borderRadius: 8, boxShadow: '0 4px 12px rgba(0,0,0,0.1)', padding: '4px 0', zIndex: 50, minWidth: 200 }}>
                           <button onClick={() => { setShowAddMenu(false); toast('Create Subtask — coming in Stage D'); }} style={menuItem}>Create Subtask</button>
                           <button onClick={() => { setShowAddMenu(false); setShowLinkModal(true); }} style={menuItem}>Link Work Item</button>
-                          <button onClick={() => { setShowAddMenu(false); toast('Add Attachment — coming in Stage D'); }} style={menuItem}>Add Attachment</button>
+                          <button onClick={() => { setShowAddMenu(false); fileInputRef.current?.click(); }} style={menuItem}>Add Attachment</button>
+                          <input ref={fileInputRef} type="file" style={{ display: 'none' }} onChange={e => { const f = e.target.files?.[0]; if (f) uploadAttachmentMutation.mutate(f); e.target.value = ''; }} />
                           <button onClick={() => { setShowAddMenu(false); setShowFigmaInput(true); }} style={menuItem}>Add Design (Figma)</button>
                         </div>
                       )}
@@ -841,7 +1042,7 @@ export default function StoryDetailModal({
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16, padding: '8px 12px', background: '#F8FAFC', borderRadius: 8, border: '1px solid #E4E7EC' }}>
                       <span style={{ fontSize: 12, fontWeight: 500, color: '#475467', whiteSpace: 'nowrap' }}>Figma URL</span>
                       <input value={figmaUrl} onChange={e => { setFigmaUrl(e.target.value); setFigmaError(''); }} placeholder="https://figma.com/..." style={{ flex: 1, height: 32, borderRadius: 4, border: figmaError ? '1px solid #DC2626' : '1px solid #E4E7EC', padding: '0 8px', fontSize: 12, outline: 'none' }} />
-                      <button onClick={handleFigmaSubmit} style={{ padding: '5px 12px', borderRadius: 6, background: '#2563EB', color: '#FFF', border: 'none', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>Add</button>
+                      <button onClick={saveFigmaLink} style={{ padding: '5px 12px', borderRadius: 6, background: '#2563EB', color: '#FFF', border: 'none', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>Add</button>
                       <button onClick={() => { setShowFigmaInput(false); setFigmaUrl(''); setFigmaError(''); }} style={{ padding: '5px 12px', borderRadius: 6, background: '#FFF', border: '1px solid #E4E7EC', fontSize: 12, cursor: 'pointer', color: '#475467' }}>Cancel</button>
                       {figmaError && <span style={{ fontSize: 11, color: '#DC2626' }}>{figmaError}</span>}
                     </div>
@@ -1008,7 +1209,7 @@ export default function StoryDetailModal({
                                 <div style={{ background: '#F7F8FA', border: '1px solid #E4E7EC', borderRadius: 8, padding: 12, fontSize: 13, color: '#344054', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>{c.body}</div>
                                 <div style={{ display: 'flex', gap: 12, marginTop: 6 }}>
                                   <button style={{ fontSize: 11, color: '#98A2B3', background: 'none', border: 'none', cursor: 'pointer' }}>Edit</button>
-                                  <button style={{ fontSize: 11, color: '#98A2B3', background: 'none', border: 'none', cursor: 'pointer' }}>Delete</button>
+                                  <button onClick={() => deleteCommentMutation.mutate(c.id)} style={{ fontSize: 11, color: '#98A2B3', background: 'none', border: 'none', cursor: 'pointer' }}>Delete</button>
                                   <button style={{ fontSize: 11, color: '#98A2B3', background: 'none', border: 'none', cursor: 'pointer' }}>👍 0</button>
                                 </div>
                               </div>
@@ -1022,12 +1223,7 @@ export default function StoryDetailModal({
                             <textarea
                               value={newComment}
                               onChange={e => setNewComment(e.target.value)}
-                              onKeyDown={e => {
-                                if (e.key === 'Enter' && (e.ctrlKey || e.metaKey) && newComment.trim()) {
-                                  toast('Comment submitted — mutation wired in Stage D');
-                                  setNewComment('');
-                                }
-                              }}
+                              onKeyDown={handleCommentKeyDown}
                               placeholder="Add a comment…"
                               style={{ width: '100%', minHeight: 40, borderRadius: 8, border: '1px solid #E4E7EC', padding: '8px 12px', fontSize: 13, resize: 'vertical', outline: 'none', fontFamily: 'Inter, sans-serif' }}
                             />
@@ -1088,7 +1284,7 @@ export default function StoryDetailModal({
                             const isActive = localStatus === st;
                             const stStyle = getStatusStyle(st, group.category);
                             return (
-                              <button key={st} onClick={() => { setLocalStatus(st); setShowStatusDropdown(false); }} style={{
+                              <button key={st} onClick={() => { setLocalStatus(st); setShowStatusDropdown(false); updateStatusMutation.mutate(st); }} style={{
                                 display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', padding: '6px 12px',
                                 background: isActive ? 'rgba(37,99,235,0.08)' : 'transparent', border: 'none', cursor: 'pointer', fontSize: 12,
                               }}>
@@ -1136,7 +1332,7 @@ export default function StoryDetailModal({
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                     {issue?.assignee_display_name ? renderAvatar(issue.assignee_display_name, issue.assignee_account_id) : <span style={{ color: '#98A2B3', fontSize: 12 }}>Unassigned</span>}
                   </div>
-                  <button onClick={() => { /* assign to me - Stage D */ toast('Assigned to me'); }} style={{ fontSize: 11, color: '#0052CC', background: 'none', border: 'none', cursor: 'pointer', padding: 0, marginTop: 2 }}>Assign to me</button>
+                  <button onClick={assignToMe} style={{ fontSize: 11, color: '#0052CC', background: 'none', border: 'none', cursor: 'pointer', padding: 0, marginTop: 2 }}>Assign to me</button>
                 </DetailRow>
 
                 {/* Reporter — READ ONLY */}
@@ -1183,7 +1379,7 @@ export default function StoryDetailModal({
             <p style={{ fontSize: 13, color: '#475467', lineHeight: 1.6, marginBottom: 20 }}>This ticket will be soft-deleted (deleted_at timestamp set). It can be restored from the admin panel within 30 days.</p>
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
               <button onClick={() => setShowConfirmDelete(false)} style={{ padding: '7px 16px', borderRadius: 6, background: '#FFF', border: '1px solid #E4E7EC', fontSize: 13, fontWeight: 500, cursor: 'pointer', color: '#475467' }}>Cancel</button>
-              <button onClick={() => { setShowConfirmDelete(false); toast(`${issue?.issue_key} deleted`); onClose(); }} style={{ padding: '7px 16px', borderRadius: 6, background: '#DC2626', color: '#FFF', border: 'none', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>Delete</button>
+              <button onClick={() => { setShowConfirmDelete(false); deleteIssueMutation.mutate(); }} style={{ padding: '7px 16px', borderRadius: 6, background: '#DC2626', color: '#FFF', border: 'none', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>Delete</button>
             </div>
           </div>
         </div>
@@ -1255,13 +1451,30 @@ export default function StoryDetailModal({
                   <input value={linkSearch} onChange={e => setLinkSearch(e.target.value)} placeholder="Search by key or title…" style={{ width: '100%', height: 36, borderRadius: 4, border: '1px solid #E4E7EC', paddingLeft: 32, paddingRight: 12, fontSize: 12, outline: 'none' }} />
                 </div>
               </div>
-              <div style={{ height: 120, overflow: 'auto', border: '1px solid #E4E7EC', borderRadius: 4, padding: 4 }}>
-                <div style={{ padding: '16px 0', textAlign: 'center', color: '#98A2B3', fontSize: 12 }}>Type to search for issues…</div>
+              <div style={{ height: 160, overflow: 'auto', border: '1px solid #E4E7EC', borderRadius: 4, padding: 4 }}>
+                {linkSearch.length < 2 ? (
+                  <div style={{ padding: '16px 0', textAlign: 'center', color: '#98A2B3', fontSize: 12 }}>Type to search for issues…</div>
+                ) : linkSearchData.length === 0 ? (
+                  <div style={{ padding: '16px 0', textAlign: 'center', color: '#98A2B3', fontSize: 12 }}>No results found</div>
+                ) : (
+                  linkSearchData.map(item => (
+                    <button key={item.id} onClick={() => setSelectedLinkTarget(item)} style={{
+                      display: 'flex', alignItems: 'center', gap: 8, width: '100%', padding: '6px 8px', border: 'none',
+                      background: selectedLinkTarget?.id === item.id ? 'rgba(37,99,235,0.08)' : 'transparent',
+                      cursor: 'pointer', borderRadius: 4, fontSize: 12, textAlign: 'left',
+                    }}>
+                      <IssueIcon type={item.issue_type} size={14} />
+                      <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, fontWeight: 600, color: '#0052CC' }}>{item.issue_key}</span>
+                      <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: '#101828' }}>{item.summary}</span>
+                      <JiraStatusPill status={item.status} category={item.status_category ?? getStatusCategory(item.status)} />
+                    </button>
+                  ))
+                )}
               </div>
             </div>
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, padding: '12px 20px', borderTop: '1px solid #E4E7EC' }}>
               <button onClick={() => setShowLinkModal(false)} style={{ padding: '7px 16px', borderRadius: 6, background: '#FFF', border: '1px solid #E4E7EC', fontSize: 13, fontWeight: 500, cursor: 'pointer', color: '#475467' }}>Cancel</button>
-              <button style={{ padding: '7px 16px', borderRadius: 6, background: '#2563EB', color: '#FFF', border: 'none', fontSize: 13, fontWeight: 600, cursor: 'pointer', opacity: 0.5 }} disabled>Link</button>
+              <button onClick={() => { if (selectedLinkTarget) addLinkMutation.mutate({ targetId: selectedLinkTarget.id, linkTypeVal: linkType }); }} style={{ padding: '7px 16px', borderRadius: 6, background: '#2563EB', color: '#FFF', border: 'none', fontSize: 13, fontWeight: 600, cursor: 'pointer', opacity: selectedLinkTarget ? 1 : 0.5 }} disabled={!selectedLinkTarget}>Link</button>
             </div>
           </div>
         </div>
