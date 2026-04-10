@@ -186,7 +186,7 @@ export function InitiativeTable({
     }),
     col.display({
       id: 'type_icon', size: 28, minSize: 28, maxSize: 28, enableResizing: false,
-      header: () => null,
+      header: () => <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--cp-text-muted)' }}>Type</span>,
       cell: ({ row }) => <TypeIconCell typeKey={row.original.initiative_type_key} />,
     }),
     col.accessor('initiative_key', {
