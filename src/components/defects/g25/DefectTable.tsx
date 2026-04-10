@@ -17,7 +17,6 @@ import { toast } from 'sonner';
 import { EpicIcon, StoryIcon, TaskIcon, BugIcon } from '@/components/boards/WorkItemTypeIcons';
 import { useTableColumns, type ColumnDef as TColDef } from '@/hooks/useTableColumns';
 import { ResizableTableHeader } from '@/components/shared/ResizableTableHeader';
-import { EpicIcon, StoryIcon, TaskIcon, BugIcon } from '@/components/boards/WorkItemTypeIcons';
 
 // ── Bug type icon (Jira canonical red rounded-square with dot) ──
 function BugTypeIcon() {
