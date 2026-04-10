@@ -367,6 +367,18 @@ export default function StoryDetailModal({
     try { return JSON.parse(issue.labels as any); } catch { return []; }
   }, [issue?.labels]);
 
+  // Escape key to close modal
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && !showStatusDropdown && !showDotsMenu && !showAddMenu && !aiDropOpen && !showConfirmDelete && !showWorkflow && !showFigmaInput) {
+        onClose();
+      }
+    };
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [isOpen, showStatusDropdown, showDotsMenu, showAddMenu, aiDropOpen, showConfirmDelete, showWorkflow, showFigmaInput, onClose]);
+
   if (!isOpen) return null;
 
   /* ═════════════════════════════════════════════
@@ -392,22 +404,11 @@ export default function StoryDetailModal({
     animation: 'sdm-card-in 250ms ease-out',
   };
 
-  // Escape key to close modal
-  useEffect(() => {
-    if (!isOpen) return;
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && !showStatusDropdown && !showDotsMenu && !showAddMenu && !aiDropOpen && !showConfirmDelete && !showWorkflow && !showFigmaInput) {
-        onClose();
-      }
-    };
-    document.addEventListener('keydown', handleEscape);
-    return () => document.removeEventListener('keydown', handleEscape);
-  }, [isOpen, showStatusDropdown, showDotsMenu, showAddMenu, aiDropOpen, showConfirmDelete, showWorkflow, showFigmaInput, onClose]);
-
   return (
     <>
       {/* OVERLAY */}
       <div style={OVERLAY} onClick={onClose}>
+        <div data-sdm-scope style={MODAL} onClick={e => e.stopPropagation()}>
 
           {/* ── A. TOP BAR — Jira breadcrumb + actions ─────── */}
           <div style={{
