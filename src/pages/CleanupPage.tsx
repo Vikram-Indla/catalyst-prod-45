@@ -167,7 +167,10 @@ export default function CleanupPage() {
   const [closureReason, setClosureReason] = useState(CLOSURE_REASONS[0]);
   const [showPreviewSheet, setShowPreviewSheet] = useState(false);
 
-  const toggleCat = (key: number) => setOpenCats(p => ({ ...p, [key]: !p[key] }));
+  const toggleCat = (key: number, count: number) => {
+    if (count === 0) return;
+    setOpenCats(p => ({ ...p, [key]: !p[key] }));
+  };
 
   const toggleItem = (id: string) => {
     setSelected(prev => {
@@ -351,7 +354,10 @@ export default function CleanupPage() {
       display: 'flex', flexDirection: 'column', height: '100vh',
       background: '#F8FAFC', fontFamily: 'Inter, sans-serif',
     }}>
-      <style>{`@keyframes rag-pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }`}</style>
+      <style>{`
+        @keyframes rag-pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+        @keyframes spin { to { transform: rotate(360deg); } }
+      `}</style>
 
       {/* ═══ TOPBAR ═══ */}
       <div style={{
@@ -465,7 +471,23 @@ export default function CleanupPage() {
 
       {/* ═══ CATEGORY CARDS ═══ */}
       <div style={{ flex: 1, overflowY: 'auto', padding: '12px 12px 70px' }}>
-        {isLoading ? (
+        {!isLoading && stats.total === 0 ? (
+          <div style={{
+            display: 'flex', flexDirection: 'column', alignItems: 'center',
+            justifyContent: 'center', marginTop: 64, gap: 12,
+          }}>
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#10B981" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              <path d="m9 12 2 2 4-4"/>
+            </svg>
+            <span style={{ fontFamily: 'Sora, sans-serif', fontSize: 16, fontWeight: 700, color: '#065F46' }}>
+              Governance: GREEN
+            </span>
+            <span style={{ fontSize: 12, color: '#94A3B8' }}>
+              All items are in compliance. Check back tomorrow.
+            </span>
+          </div>
+        ) : isLoading ? (
           <div style={{ display: 'flex', justifyContent: 'center', padding: 40 }}>
             <div style={{
               width: 24, height: 24,
@@ -488,11 +510,13 @@ export default function CleanupPage() {
                 }}>
                   {/* Card Header */}
                   <button
-                    onClick={() => toggleCat(cat.key)}
+                    onClick={() => toggleCat(cat.key, items.length)}
                     style={{
                       width: '100%', display: 'flex', alignItems: 'center',
                       gap: 10, padding: '10px 14px', border: 'none',
-                      cursor: 'pointer', background: 'transparent',
+                      cursor: items.length === 0 ? 'default' : 'pointer',
+                      background: 'transparent',
+                      opacity: items.length === 0 ? 0.5 : 1,
                       fontFamily: 'Inter, sans-serif',
                       transition: 'background 120ms',
                     }}
