@@ -437,7 +437,7 @@ export function DefectTable({ defects, selectedIds, onSelectionChange, onDelete,
             <tr className="group/thead">
               {visibleOrderedCols.map(c => {
                 if (c.key === 'checkbox') {
-                  return <th key={c.key} style={{ width: columnWidths.checkbox }}><Checkbox checked={defects.length > 0 && selectedIds.size === defects.length} onCheckedChange={toggleAll} /></th>;
+                  return <th key={c.key} style={{ width: columnWidths.checkbox, textAlign: 'center' }}><Checkbox checked={defects.length > 0 && selectedIds.size === defects.length} onCheckedChange={toggleAll} /></th>;
                 }
                 return (
                   <ResizableTableHeader
