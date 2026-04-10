@@ -456,9 +456,9 @@ export function EpicRoadmap({ programId }: EpicRoadmapProps) {
         </div>
       </div>
 
-      {/* Epic Drawer */}
+      {/* Epic Detail Modal */}
       {selectedEpic && (
-        <EpicDrawer
+        <EpicDetailModal
           epicId={selectedEpic.id}
           isOpen={!!selectedEpic}
           onClose={() => setSelectedEpicId(null)}
