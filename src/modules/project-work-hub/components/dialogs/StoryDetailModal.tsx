@@ -162,6 +162,7 @@ export default function StoryDetailModal({
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const addMenuRef = useRef<HTMLDivElement>(null);
+  const aiMenuRef = useRef<HTMLDivElement>(null);
   const descriptionRef = useRef<HTMLDivElement>(null);
   const statusDropdownRef = useRef<HTMLDivElement>(null);
   const dotsMenuRef = useRef<HTMLDivElement>(null);
