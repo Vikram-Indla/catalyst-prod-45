@@ -1322,7 +1322,7 @@ function AIImprovePanel({ storyId, issueKey, currentDescription, currentAcceptan
     setLoading(true); setError(null); setOutput(null); setEditedOutput(null); setWasEdited(false);
     try {
       const { data, error: fnError } = await supabase.functions.invoke('ai-improve-story', {
-        body: { issue_id: storyId, improve_type: improveType, focus_hint: focusHint.trim() || null, current_description: currentDescription || '(empty)', current_ac: currentAcceptanceCriteria || '(none)' },
+        body: { issue_id: storyId, improve_type: improveType, focus_hint: focusHint.trim() || null, current_description: currentDescription || '(empty)', current_ac: currentAcceptanceCriteria || '(none)', issue_summary: issueKey },
       });
       if (fnError) throw fnError;
       if (!data?.description && !data?.acceptance_criteria) throw new Error('AI returned empty response');
@@ -1337,10 +1337,11 @@ function AIImprovePanel({ storyId, issueKey, currentDescription, currentAcceptan
       <button className="sdm-ai-trigger" onClick={() => setOpen(o => !o)} aria-expanded={open}><Sparkles size={12} /> AI Improve Story</button>
       {open && (
         <div className="sdm-ai-panel" id="sdm-ai-panel" role="dialog" aria-label="AI Improve Story Requirements">
-          <div className="sdm-ai-panel-header">
-            <div className="sdm-ai-panel-title"><Sparkles size={11} /> AI Improve Story Requirements</div>
-            <button className="sdm-chevron-btn" onClick={() => setOpen(false)}><X size={12} /></button>
-          </div>
+           <div className="sdm-ai-panel-header" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+             <div className="sdm-ai-panel-title" style={{ flex: 1 }}><Sparkles size={11} /> AI Improve Story Requirements</div>
+             <span style={{ fontSize: 10, color: '#1D4ED8', background: '#DBEAFE', padding: '1px 6px', borderRadius: 3, fontFamily: 'monospace', fontWeight: 600, letterSpacing: '0.02em' }}>gemini-flash</span>
+             <button className="sdm-chevron-btn" onClick={() => setOpen(false)}><X size={12} /></button>
+           </div>
           <div className="sdm-ai-panel-body">
             <div className="sdm-ai-field"><div className="sdm-ai-field-label">Improve type</div>
               <Select value={improveType} onValueChange={(val) => setImproveType(val as AIImproveType)}>
