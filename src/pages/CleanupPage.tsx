@@ -607,7 +607,7 @@ export default function CleanupPage() {
                           )}
                           <span style={{
                             fontFamily: 'JetBrains Mono, monospace',
-                            fontSize: 13, fontWeight: 500, color: '#2563EB',
+                            fontSize: 12, fontWeight: 500, color: '#2563EB',
                           }}>
                             {item.issue_key}
                           </span>
@@ -641,7 +641,7 @@ export default function CleanupPage() {
 
                         {/* LINE 2 — Title */}
                         <div style={{
-                          fontSize: 13, fontWeight: 500, color: '#0F172A',
+                          fontSize: 14, fontWeight: 400, color: '#1E293B',
                           marginTop: 4, paddingLeft: cat.isReporterOnus ? 0 : 28,
                           overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                         }}>
@@ -678,8 +678,7 @@ export default function CleanupPage() {
                           }}>
                             <div style={{
                               background: '#F8FAFC', borderLeft: '2px solid #CBD5E1',
-                              padding: '6px 12px', fontSize: 13, color: '#64748B',
-                              fontStyle: 'italic',
+                              padding: '6px 12px', fontSize: 14, color: '#1E293B',
                             }}>
                               {AI_INSIGHTS[cat.key]}
                             </div>
@@ -881,8 +880,8 @@ export default function CleanupPage() {
           <div style={{ padding: '16px 24px', maxHeight: '60vh', overflowY: 'auto' }}>
             {/* Section 1 */}
             <div style={{
-              fontSize: 11, fontWeight: 700, color: '#94A3B8',
-              textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 12,
+              fontSize: 11, fontWeight: 500, color: '#94A3B8',
+              textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 12,
             }}>
               WHAT WILL HAPPEN
             </div>
@@ -902,8 +901,8 @@ export default function CleanupPage() {
 
             {/* Section 2 — Reporters */}
             <div style={{
-              fontSize: 11, fontWeight: 700, color: '#94A3B8',
-              textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 12,
+              fontSize: 11, fontWeight: 500, color: '#94A3B8',
+              textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 12,
             }}>
               REPORTERS BEING NOTIFIED
             </div>
@@ -945,8 +944,8 @@ export default function CleanupPage() {
 
             {/* Section 3 — Closure reason */}
             <div style={{
-              fontSize: 11, fontWeight: 700, color: '#94A3B8',
-              textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8,
+              fontSize: 11, fontWeight: 500, color: '#94A3B8',
+              textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8,
             }}>
               CLOSURE REASON
             </div>
