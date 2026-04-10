@@ -525,16 +525,16 @@ export function ParentFieldPicker({ storyKey, parentKey, projectKey, onParentCha
 
   return (
     <div ref={containerRef} style={{ position: 'relative', flex: 1 }}>
-      {/* Trigger — Jira full-width input style */}
+      {/* Trigger — Jira click-to-edit style (no border when idle) */}
       <div onClick={() => setOpen(o => !o)} style={{
         display: 'flex', alignItems: 'center', gap: 8,
-        height: 40, padding: '0 12px',
-        border: open ? '2px solid #4C9AFF' : '1px solid #DFE1E6',
-        borderRadius: 3, cursor: 'pointer', background: '#fff',
-        transition: 'border-color 0.15s',
+        minHeight: 32, padding: '4px 8px',
+        border: 'none',
+        borderRadius: 3, cursor: 'pointer', background: 'transparent',
+        transition: 'background 0.15s',
       }}
-        onMouseEnter={e => { if (!open) e.currentTarget.style.borderColor = '#B3D4FF'; }}
-        onMouseLeave={e => { if (!open) e.currentTarget.style.borderColor = '#DFE1E6'; }}
+        onMouseEnter={e => { e.currentTarget.style.background = '#F4F5F7'; }}
+        onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
       >
         {parentKey && currentParent ? (
           <>
