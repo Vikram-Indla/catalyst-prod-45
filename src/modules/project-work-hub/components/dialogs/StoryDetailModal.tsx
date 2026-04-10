@@ -18,6 +18,13 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
   X, ChevronDown, ChevronRight, Plus, Paperclip,
   ExternalLink, Share2, Pencil, Search, MessageSquare, Clock,
   GripVertical, Edit2, Link2, Trash2, Check,
@@ -1336,9 +1343,16 @@ function AIImprovePanel({ storyId, issueKey, currentDescription, currentAcceptan
           </div>
           <div className="sdm-ai-panel-body">
             <div className="sdm-ai-field"><div className="sdm-ai-field-label">Improve type</div>
-              <select className="sdm-ai-select" value={improveType} onChange={e => setImproveType(e.target.value as AIImproveType)}>
-                {AI_IMPROVE_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-              </select>
+              <Select value={improveType} onValueChange={(val) => setImproveType(val as AIImproveType)}>
+                <SelectTrigger className="w-full h-8 bg-white border-[rgba(9,30,66,0.14)] text-[13px] focus:border-[#2563EB]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-white border border-[rgba(9,30,66,0.24)] shadow-[0_6px_16px_rgba(9,30,66,0.15)] rounded-md">
+                  {AI_IMPROVE_OPTIONS.map(o => (
+                    <SelectItem key={o.value} value={o.value} className="text-[13px] hover:bg-[rgba(9,30,66,0.04)]">{o.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div className="sdm-ai-field"><div className="sdm-ai-field-label">Focus area <span style={{ color: '#8993A4' }}>(optional)</span></div>
               <input className="sdm-ai-focus-input" type="text" placeholder='e.g. "focus on edge cases"' value={focusHint} onChange={e => setFocusHint(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') handleGenerate(); }} />
