@@ -7,7 +7,7 @@ import React, { useState, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   ChevronDown, ChevronRight, Minus, ChevronUp, ChevronsUp, ChevronsDown,
-  Plus, MoreHorizontal,
+  Plus, MoreHorizontal, X, Search,
 } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
@@ -53,6 +53,14 @@ const FIELD_LABEL: React.CSSProperties = {
   width: 120, flexShrink: 0, fontSize: 13, fontWeight: 400, color: '#6B6E76',
 };
 
+// Deterministic epic color from issue_key
+const EPIC_COLORS = ['#0052CC', '#6554C0', '#00875A', '#36B37E', '#FF8B00', '#FF5630', '#00B8D9', '#8777D9'];
+function getEpicColor(key: string): string {
+  let hash = 0;
+  for (let i = 0; i < key.length; i++) hash = key.charCodeAt(i) + ((hash << 5) - hash);
+  return EPIC_COLORS[Math.abs(hash) % EPIC_COLORS.length];
+}
+
 interface StoryDetailViewProps {
   projectId: string;
   projectKey: string;
@@ -67,7 +75,7 @@ export default function StoryDetailView({ projectId, projectKey, itemId }: Story
   const { data: comments = [], isLoading: commentsLoading } = useStoryComments(story?.issue_key || null);
   const { data: history = [], isLoading: historyLoading } = useStoryHistory(story?.issue_key || null);
   const { data: siblings = [] } = useStorySiblings(projectId);
-  const { data: parentCandidates = [] } = useParentCandidates(projectId);
+  const { data: parentCandidates = [] } = useParentCandidates(projectKey);
   const { data: teamMembers = [] } = useTeamMembers();
   const { data: childIssues = [] } = useChildIssues(story?.issue_key || null);
   const { data: linkedIssues = [] } = useLinkedIssues(story?.issue_key || null);
@@ -83,6 +91,8 @@ export default function StoryDetailView({ projectId, projectKey, itemId }: Story
   const [subtasksOpen, setSubtasksOpen] = useState(true);
   const [linkedOpen, setLinkedOpen] = useState(true);
   const [parentPickerOpen, setParentPickerOpen] = useState(false);
+  const [parentSearch, setParentSearch] = useState('');
+  const [showDoneParents, setShowDoneParents] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   // ─── Prev/Next navigation ─────────────────────────────────
@@ -216,30 +226,88 @@ export default function StoryDetailView({ projectId, projectKey, itemId }: Story
                 {/* Parent */}
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                   <span style={FIELD_LABEL}>Parent</span>
-                  <Popover open={parentPickerOpen} onOpenChange={setParentPickerOpen}>
+                  <Popover open={parentPickerOpen} onOpenChange={(o) => { setParentPickerOpen(o); if (!o) { setParentSearch(''); } }}>
                     <PopoverTrigger asChild>
-                      <button style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: story.parentEpic ? '#292A2E' : '#6B6E76', padding: 0, textAlign: 'left', display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <button style={{
+                        background: 'none', border: '1px solid transparent', borderRadius: 4, cursor: 'pointer',
+                        fontSize: 14, color: story.parentEpic ? '#172B4D' : '#6B6E76', padding: '4px 8px', textAlign: 'left',
+                        display: 'flex', alignItems: 'center', gap: 6, flex: 1, minWidth: 0,
+                        transition: 'border-color 150ms',
+                      }}
+                        onMouseEnter={e => (e.currentTarget.style.borderColor = '#DFE1E6')}
+                        onMouseLeave={e => (e.currentTarget.style.borderColor = 'transparent')}
+                      >
                         {story.parentEpic ? (
                           <>
+                            <span style={{ width: 10, height: 10, borderRadius: '50%', background: getEpicColor(story.parentEpic.epic_key), flexShrink: 0 }} />
                             <JiraIssueTypeIcon type="epic" size={16} />
-                            <span style={{ background: '#403294', color: '#FFFFFF', padding: '2px 8px', borderRadius: 3, fontSize: 12, fontWeight: 600 }}>
+                            <span style={{ fontSize: 13, fontWeight: 500, color: '#172B4D', truncate: true, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' } as React.CSSProperties}>
                               {story.parentEpic.epic_key} {story.parentEpic.name}
                             </span>
+                            <button
+                              onClick={(e) => { e.stopPropagation(); handleUpdateField('parent_key', null); }}
+                              style={{ marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer', padding: 2, color: '#6B6E76', flexShrink: 0 }}
+                            >
+                              <X size={14} />
+                            </button>
                           </>
-                        ) : 'None'}
+                        ) : (
+                          <span style={{ fontStyle: 'italic', color: '#6B6E76' }}>None — Add parent</span>
+                        )}
+                        <ChevronDown size={14} style={{ marginLeft: story.parentEpic ? 0 : 'auto', color: '#6B6E76', flexShrink: 0 }} />
                       </button>
                     </PopoverTrigger>
-                    <PopoverContent align="start" style={{ width: 320, padding: 0, maxHeight: 300, overflowY: 'auto' }}>
-                      <div style={{ padding: '8px 12px', borderBottom: '1px solid #E0E0E0', fontSize: 11, fontWeight: 600, color: '#505258', textTransform: 'uppercase' }}>Select Parent</div>
-                      <button onClick={() => { handleUpdateField('parent_key', null); setParentPickerOpen(false); }}
-                        style={{ width: '100%', padding: '8px 12px', fontSize: 13, border: 'none', background: 'transparent', textAlign: 'left', cursor: 'pointer', color: '#6B6E76' }}>None</button>
-                      {parentCandidates.map(p => (
-                        <button key={p.id} onClick={() => { handleUpdateField('parent_key', p.issue_key); setParentPickerOpen(false); }}
-                          style={{ width: '100%', padding: '8px 12px', fontSize: 13, border: 'none', background: story.parent_key === p.issue_key ? 'rgba(37,99,235,0.08)' : 'transparent', textAlign: 'left', cursor: 'pointer', color: '#292A2E' }}>
-                          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: '#505258', marginRight: 8 }}>{p.issue_key}</span>
-                          {p.summary}
-                        </button>
-                      ))}
+                    <PopoverContent align="start" style={{ width: 420, padding: 0, maxHeight: 400, display: 'flex', flexDirection: 'column' }} sideOffset={4}>
+                      {/* Search */}
+                      <div style={{ padding: '8px 12px', borderBottom: '1px solid #E0E0E0', position: 'relative' }}>
+                        <Search size={14} style={{ position: 'absolute', left: 20, top: '50%', transform: 'translateY(-50%)', color: '#94A3B8' }} />
+                        <input
+                          placeholder="Search epics..."
+                          value={parentSearch}
+                          onChange={e => setParentSearch(e.target.value)}
+                          autoFocus
+                          style={{
+                            width: '100%', height: 32, paddingLeft: 30, paddingRight: 8, border: '2px solid #2563EB',
+                            borderRadius: 4, fontSize: 13, outline: 'none', background: '#FFFFFF', color: '#172B4D',
+                          }}
+                        />
+                      </div>
+                      {/* Show done filter */}
+                      <label style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', fontSize: 13, color: '#505258', cursor: 'pointer', borderBottom: '1px solid #F0F0F0' }}>
+                        <input type="checkbox" checked={showDoneParents} onChange={e => setShowDoneParents(e.target.checked)} style={{ accentColor: '#2563EB' }} />
+                        Show done work items
+                      </label>
+                      {/* List */}
+                      <div style={{ overflowY: 'auto', maxHeight: 300 }}>
+                        {parentCandidates
+                          .filter(p => {
+                            const matchesSearch = !parentSearch || p.summary?.toLowerCase().includes(parentSearch.toLowerCase()) || p.issue_key?.toLowerCase().includes(parentSearch.toLowerCase());
+                            const isDone = p.status_category?.toLowerCase() === 'done';
+                            return matchesSearch && (showDoneParents || !isDone);
+                          })
+                          .map(p => {
+                            const isSelected = story.parent_key === p.issue_key;
+                            return (
+                              <button
+                                key={p.id}
+                                onClick={() => { handleUpdateField('parent_key', p.issue_key); setParentPickerOpen(false); setParentSearch(''); }}
+                                style={{
+                                  width: '100%', padding: '8px 12px', border: 'none', cursor: 'pointer', textAlign: 'left',
+                                  background: isSelected ? '#DEEBFF' : 'transparent', display: 'flex', alignItems: 'flex-start', gap: 8,
+                                }}
+                                onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = '#F4F5F7'; }}
+                                onMouseLeave={e => { if (!isSelected) e.currentTarget.style.background = 'transparent'; }}
+                              >
+                                <span style={{ width: 10, height: 10, borderRadius: '50%', background: getEpicColor(p.issue_key), flexShrink: 0, marginTop: 4 }} />
+                                <JiraIssueTypeIcon type="epic" size={16} />
+                                <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+                                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 500, color: '#505258' }}>{p.issue_key}</span>
+                                  <span style={{ fontSize: 13, color: '#172B4D', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{p.summary}</span>
+                                </div>
+                              </button>
+                            );
+                          })}
+                      </div>
                     </PopoverContent>
                   </Popover>
                 </div>
