@@ -557,7 +557,7 @@ export function ParentFieldPicker({ storyKey, parentKey, projectKey, onParentCha
           </>
         ) : (
           <>
-            <span style={{ flex: 1, fontSize: 14, color: '#6B778C', fontStyle: 'italic' }}>None — Add parent</span>
+            <span style={{ flex: 1, fontSize: 14, color: '#6B778C' }}>None</span>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6B778C" strokeWidth="2" style={{ flexShrink: 0 }}><path d="M6 9l6 6 6-6"/></svg>
           </>
         )}
