@@ -889,19 +889,23 @@ export default function CleanupPage() {
                           </div>
 
                           {/* LINE 4 — AI reasoning */}
-                          {!cat.isReporterOnus && AI_INSIGHTS[cat.key] && (
-                            <div style={{
-                              marginTop: 8, paddingLeft: cat.isReporterOnus ? 0 : 28,
-                            }}>
+                          {(() => {
+                            const sourceItem = sharedItems.find(s => s.id === item.id);
+                            const reason = getReasoningText(item, cat.key, sourceItem);
+                            return (
                               <div style={{
-                                background: '#F8FAFC', borderLeft: '2px solid #CBD5E1',
-                                paddingLeft: 12, paddingTop: 6, paddingBottom: 6,
-                                fontSize: 13, color: '#64748B',
+                                marginTop: 8, paddingLeft: cat.isReporterOnus ? 0 : 28,
                               }}>
-                                {AI_INSIGHTS[cat.key]}
+                                <div style={{
+                                  background: '#F8FAFC', borderLeft: '2px solid #CBD5E1',
+                                  paddingLeft: 12, paddingTop: 6, paddingBottom: 6,
+                                  fontSize: 13, color: '#64748B',
+                                }}>
+                                  {reason}
+                                </div>
                               </div>
-                            </div>
-                          )}
+                            );
+                          })()}
 
                           {/* Reporter onus note */}
                           {cat.isReporterOnus && (
