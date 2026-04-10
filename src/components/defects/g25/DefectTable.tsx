@@ -367,11 +367,11 @@ export function DefectTable({ defects, selectedIds, onSelectionChange, onDelete,
     const isJira = d.isJiraSource ?? d.jira_source;
     switch (colKey) {
       case 'checkbox':
-        return <td key={colKey} style={{ width: columnWidths.checkbox, textAlign: 'center' }} onClick={e => e.stopPropagation()}><Checkbox checked={isSelected} onCheckedChange={() => toggleOne(d.id)} /></td>;
+        return <td key={colKey} style={{ width: columnWidths.checkbox, overflow: 'visible', textOverflow: 'clip' }} onClick={e => e.stopPropagation()}><div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Checkbox checked={isSelected} onCheckedChange={() => toggleOne(d.id)} /></div></td>;
       case 'star':
-        return <td key={colKey} style={{ width: columnWidths.star, textAlign: 'center' }} onClick={e => e.stopPropagation()}><WorkItemStarButton itemId={d.id} itemType="defect" size="sm" showTooltip={false} alwaysVisibleWhenStarred /></td>;
+        return <td key={colKey} style={{ width: columnWidths.star, overflow: 'visible', textOverflow: 'clip' }} onClick={e => e.stopPropagation()}><div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><WorkItemStarButton itemId={d.id} itemType="defect" size="sm" showTooltip={false} alwaysVisibleWhenStarred /></div></td>;
       case 'type':
-        return <td key={colKey} style={{ width: columnWidths.type, textAlign: 'center' }}><BugTypeIcon /></td>;
+        return <td key={colKey} style={{ width: columnWidths.type, overflow: 'visible', textOverflow: 'clip' }}><div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><BugTypeIcon /></div></td>;
       case 'key':
         return (
           <td key={colKey} style={{ width: columnWidths.key }}>
