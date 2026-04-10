@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { MoreHorizontal, ExternalLink, UserRound, ChevronsUp, ChevronUp, Minus, ChevronDown, Star, Trash2 } from 'lucide-react';
+import { MoreHorizontal, ExternalLink, UserRound, ChevronsUp, ChevronUp, Minus, ChevronDown, Trash2 } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import '@/styles/product-backlog.css';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
