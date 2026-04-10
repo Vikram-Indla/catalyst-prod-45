@@ -477,15 +477,19 @@ export default function StoryDetailModal({
                 <>
                   {/* 1. TITLE */}
                   <h1 contentEditable suppressContentEditableWarning
-                    onBlur={e => { const newTitle = e.currentTarget.textContent?.trim() ?? ''; if (newTitle && newTitle !== issue?.summary) { updateFieldMutation.mutate({ field: 'summary', value: newTitle, oldValue: issue?.summary ?? '' }); } }}
+                    onFocus={() => setTitleFocused(true)}
+                    onBlur={e => { setTitleFocused(false); const newTitle = e.currentTarget.textContent?.trim() ?? ''; if (newTitle && newTitle !== issue?.summary) { updateFieldMutation.mutate({ field: 'summary', value: newTitle, oldValue: issue?.summary ?? '' }); } }}
+                    onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); e.currentTarget.blur(); } if (e.key === 'Escape') { e.currentTarget.textContent = issue?.summary ?? ''; e.currentTarget.blur(); } }}
                     style={{
                       fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
                       fontSize: 22, fontWeight: 700, color: '#172B4D', lineHeight: 1.3,
                       margin: '0 0 12px', outline: 'none', cursor: 'text', borderRadius: 3,
-                      padding: '2px 4px', wordBreak: 'break-word', transition: 'background 0.15s',
+                      padding: '4px 6px', wordBreak: 'break-word', transition: 'background 0.15s, box-shadow 0.15s',
+                      background: titleFocused ? '#FFFFFF' : 'transparent',
+                      boxShadow: titleFocused ? '0 0 0 2px #4C9AFF' : 'none',
                     }}
-                    onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
-                    onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                    onMouseEnter={e => { if (!titleFocused) e.currentTarget.style.background = '#F4F5F7'; }}
+                    onMouseLeave={e => { if (!titleFocused) e.currentTarget.style.background = 'transparent'; }}
                   >{issue?.summary ?? '—'}</h1>
 
                   {/* 2. Quick actions */}
