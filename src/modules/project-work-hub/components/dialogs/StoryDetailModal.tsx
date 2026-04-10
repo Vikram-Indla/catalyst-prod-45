@@ -2105,7 +2105,7 @@ export default function StoryDetailModal({
             <div style={{ width: rightPanelWidth, minWidth: 220, maxWidth: 480, background: '#FFFFFF', overflowY: 'auto', overflowX: 'visible', display: 'flex', flexDirection: 'column' }}>
               {/* 1. STATUS ZONE */}
               <div style={{ padding: '14px 16px', borderBottom: '1px solid #E4E7EC' }}>
-                <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.07em', color: '#98A2B3', marginBottom: 8 }}>STATUS</div>
+                <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.07em', color: '#475467', marginBottom: 8 }}>STATUS</div>
                 <div style={{ position: 'relative' }}>
                   <button onClick={() => setShowStatusDropdown(!showStatusDropdown)} style={{
                     backgroundColor: statusStyle.bg, color: statusStyle.text, padding: '6px 12px', borderRadius: 4, fontSize: 11.5, fontWeight: 700,
