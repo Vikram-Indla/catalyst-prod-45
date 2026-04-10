@@ -1,11 +1,10 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MoreHorizontal, ExternalLink, UserRound, ChevronsUp, ChevronUp, Minus, ChevronDown, Search, Check } from 'lucide-react';
+import { MoreHorizontal, ExternalLink, UserRound, ChevronsUp, ChevronUp, Minus, ChevronDown, Search, X } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import '@/styles/product-backlog.css';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Command, CommandInput, CommandList, CommandItem, CommandEmpty } from '@/components/ui/command';
 import { StatusBadge } from '@/components/ui/StatusBadge';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 import { Defect } from '@/types/defects';
@@ -15,6 +14,7 @@ import { BulkActionBar } from '@/components/producthub/listing/BulkActionBar';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { EpicIcon, StoryIcon, TaskIcon, BugIcon } from '@/components/boards/WorkItemTypeIcons';
 
 // ── Bug type icon (Jira canonical red rounded-square with dot) ──
 function BugTypeIcon() {
@@ -69,8 +69,8 @@ function PriorityCell({ priority }: { priority: string | null }) {
   );
 }
 
-// ── Avatar colours (matching /for-you 5-color palette) ──
-const AVATAR_COLOURS = ['#2563EB', '#0D9488', '#0284C7', '#DC2626', '#DB2777'];
+// ── Avatar colours (deterministic) ──
+const AVATAR_COLOURS = ['#2563EB', '#0D9488', '#0284C7', '#DC2626', '#DB2777', '#7C3AED', '#059669', '#D97706'];
 
 // ── Age formatter ──
 function getRelativeAge(createdAt: string): string {
@@ -102,35 +102,61 @@ function JiraBadge() {
   );
 }
 
-// ── Work item type icons for parent picker ──
-const PARENT_TYPE_ICONS: Record<string, { color: string; label: string }> = {
-  story:   { color: '#36B37E', label: 'Story' },
-  epic:    { color: '#6554C0', label: 'Epic' },
-  feature: { color: '#2684FF', label: 'Feature' },
-  task:    { color: '#4BADE8', label: 'Task' },
-};
+// ── Status dot color for parent items ──
+function getStatusDotColor(statusCategory: string | null): string {
+  const cat = (statusCategory || '').toLowerCase();
+  if (cat === 'done' || cat === 'closed' || cat === 'resolved') return '#36B37E';
+  if (cat === 'in progress' || cat === 'indeterminate' || cat === 'active') return '#0065FF';
+  return '#DFE1E6';
+}
 
-// ── Inline Parent Picker ──
-function ParentPickerCell({ defectId, currentParentKey }: { defectId: string; currentParentKey: string | null }) {
+// ── Work item type icon component ──
+function WorkItemIcon({ type, size = 16 }: { type: string; size?: number }) {
+  const t = (type || '').toLowerCase();
+  if (t.includes('epic')) return <EpicIcon size={size} />;
+  if (t.includes('story')) return <StoryIcon size={size} />;
+  if (t.includes('bug')) return <BugIcon size={size} />;
+  return <TaskIcon size={size} />;
+}
+
+// ── Jira-style Parent Picker (two-line layout with canonical icons) ──
+function ParentPickerCell({ defectId, currentParentKey, projectKey }: { defectId: string; currentParentKey: string | null; projectKey: string | null }) {
   const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState('');
+  const [showDone, setShowDone] = useState(false);
 
-  // Fetch potential parent issues (stories, epics, features)
   const { data: parentOptions = [] } = useQuery({
-    queryKey: ['parent-issues-for-defects'],
+    queryKey: ['parent-issues-for-defects', projectKey],
     queryFn: async () => {
-      const { data } = await supabase
+      let query = supabase
         .from('ph_issues')
-        .select('issue_key, summary, issue_type')
-        .in('issue_type', ['Story', 'Epic', 'Feature', 'Task', 'Bug'])
-        .order('issue_key', { ascending: false })
-        .limit(200);
+        .select('issue_key, summary, issue_type, status, status_category, updated_at, created_at')
+        .in('issue_type', ['Story', 'Epic', 'Feature', 'Task']);
+      if (projectKey) {
+        query = query.like('issue_key', `${projectKey}-%`);
+      }
+      const { data } = await query.order('updated_at', { ascending: false }).limit(500);
       return (data || []).map(d => ({
         key: d.issue_key,
         summary: d.summary || '',
         type: (d.issue_type || 'task').toLowerCase(),
+        status: d.status || '',
+        statusCategory: d.status_category || '',
       }));
     },
     staleTime: 60_000,
+  });
+
+  const filtered = parentOptions.filter(opt => {
+    if (!showDone) {
+      const cat = (opt.statusCategory || '').toLowerCase();
+      if (cat === 'done' || cat === 'closed' || cat === 'resolved') return false;
+    }
+    if (search) {
+      const q = search.toLowerCase();
+      return opt.key.toLowerCase().includes(q) || opt.summary.toLowerCase().includes(q);
+    }
+    return true;
   });
 
   const handleSelect = async (parentKey: string | null) => {
@@ -144,14 +170,13 @@ function ParentPickerCell({ defectId, currentParentKey }: { defectId: string; cu
       toast.success(parentKey ? `Parent set to ${parentKey}` : 'Parent removed');
     }
     setOpen(false);
+    setSearch('');
   };
 
-  const typeInfo = currentParentKey
-    ? parentOptions.find(p => p.key === currentParentKey)
-    : null;
+  const currentParent = currentParentKey ? parentOptions.find(p => p.key === currentParentKey) : null;
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={o => { setOpen(o); if (!o) setSearch(''); }}>
       <PopoverTrigger asChild>
         <button
           onClick={e => e.stopPropagation()}
@@ -159,15 +184,7 @@ function ParentPickerCell({ defectId, currentParentKey }: { defectId: string; cu
         >
           {currentParentKey ? (
             <div className="flex items-center gap-1.5">
-              <span style={{
-                width: 14, height: 14, borderRadius: 3, display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                backgroundColor: PARENT_TYPE_ICONS[typeInfo?.type || 'task']?.color || '#4BADE8',
-                flexShrink: 0,
-              }}>
-                <span style={{ fontSize: 8, color: '#FFFFFF', fontWeight: 700 }}>
-                  {(typeInfo?.type || 'T')[0].toUpperCase()}
-                </span>
-              </span>
+              <WorkItemIcon type={currentParent?.type || 'task'} size={14} />
               <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600, color: '#2563EB' }}>
                 {currentParentKey}
               </span>
@@ -178,65 +195,108 @@ function ParentPickerCell({ defectId, currentParentKey }: { defectId: string; cu
         </button>
       </PopoverTrigger>
       <PopoverContent
-        className="w-[360px] p-0 bg-white border border-slate-900/[0.12] rounded-md shadow-[0_4px_6px_-1px_rgba(0,0,0,0.07)]"
+        className="w-[420px] p-0 bg-white border border-slate-200 rounded-lg shadow-lg"
         align="start"
         sideOffset={4}
         onClick={e => e.stopPropagation()}
       >
-        <Command>
-          <CommandInput placeholder="Search parent issue..." className="h-8 text-[13px]" />
-          <CommandList className="max-h-[240px]">
-            <CommandEmpty className="py-3 text-center text-[13px] text-slate-500">No results</CommandEmpty>
-            {/* Clear parent */}
+        {/* Search bar */}
+        <div className="border-b border-slate-100">
+          <div className="flex items-center px-3 py-2.5 gap-2">
+            <Search size={14} className="text-slate-400 flex-shrink-0" />
+            <input
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder="Search parent issue..."
+              className="flex-1 text-[13px] text-slate-900 placeholder:text-slate-400 bg-transparent outline-none border-none"
+              autoFocus
+            />
             {currentParentKey && (
-              <CommandItem
-                value="__clear__"
-                onSelect={() => handleSelect(null)}
-                className="h-8 px-3 text-[13px] text-slate-500 cursor-pointer"
+              <button
+                onClick={e => { e.stopPropagation(); handleSelect(null); }}
+                className="text-slate-400 hover:text-slate-600 bg-transparent border-none cursor-pointer p-0.5 rounded"
+                title="Remove parent"
+              >
+                <X size={14} />
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Show done toggle */}
+        <div className="flex items-center gap-2 px-3 py-2 border-b border-slate-100">
+          <Checkbox checked={showDone} onCheckedChange={(v) => setShowDone(!!v)} className="h-3.5 w-3.5" />
+          <span className="text-[12px] text-slate-500">Show done work items</span>
+        </div>
+
+        {/* Results — Jira two-line style */}
+        <div className="max-h-[320px] overflow-y-auto">
+          {filtered.length === 0 ? (
+            <div className="py-6 text-center text-[13px] text-slate-400">No matching items</div>
+          ) : filtered.map(opt => {
+            const isSelected = currentParentKey === opt.key;
+            const dotColor = getStatusDotColor(opt.statusCategory);
+            return (
+              <button
+                key={opt.key}
+                onClick={() => handleSelect(opt.key)}
+                className={cn(
+                  "w-full text-left px-3 py-2.5 border-none cursor-pointer transition-colors block",
+                  isSelected ? "bg-[#DEEBFF]" : "bg-white hover:bg-[#F4F5F7]"
+                )}
               >
                 <div className="flex items-center gap-2">
-                  <span className="w-3.5 flex-shrink-0" />
-                  Remove parent
+                  <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: dotColor, flexShrink: 0 }} />
+                  <WorkItemIcon type={opt.type} size={16} />
+                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 500, color: '#42526E' }}>
+                    {opt.key}
+                  </span>
                 </div>
-              </CommandItem>
-            )}
-            {parentOptions.map(opt => {
-              const isSelected = currentParentKey === opt.key;
-              const ti = PARENT_TYPE_ICONS[opt.type] || PARENT_TYPE_ICONS.task;
-              return (
-                <CommandItem
-                  key={opt.key}
-                  value={`${opt.key} ${opt.summary}`}
-                  onSelect={() => handleSelect(opt.key)}
-                  className="h-9 px-3 text-[13px] text-slate-900 cursor-pointer"
-                >
-                  <div className="flex items-center gap-2 w-full min-w-0">
-                    {isSelected ? (
-                      <Check className="h-3.5 w-3.5 text-blue-600 flex-shrink-0" />
-                    ) : (
-                      <span className="w-3.5 flex-shrink-0" />
-                    )}
-                    <span style={{
-                      width: 14, height: 14, borderRadius: 3, display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                      backgroundColor: ti?.color || '#4BADE8',
-                      flexShrink: 0,
-                    }}>
-                      <span style={{ fontSize: 8, color: '#FFFFFF', fontWeight: 700 }}>
-                        {opt.type[0].toUpperCase()}
-                      </span>
-                    </span>
-                    <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 600, color: '#42526E', flexShrink: 0 }}>
-                      {opt.key}
-                    </span>
-                    <span className="truncate text-[12px] text-slate-600">{opt.summary}</span>
-                  </div>
-                </CommandItem>
-              );
-            })}
-          </CommandList>
-        </Command>
+                <div className="ml-[26px] mt-0.5">
+                  <span className="text-[13px] text-slate-900 font-medium leading-snug line-clamp-1">{opt.summary}</span>
+                </div>
+              </button>
+            );
+          })}
+        </div>
       </PopoverContent>
     </Popover>
+  );
+}
+
+// ── Jira-style Assignee cell with face avatar ──
+function AssigneeCell({ defect, nameAvatarMap }: { defect: Defect; nameAvatarMap: Map<string, string> }) {
+  const assigneeName = defect.assigneeName || defect.assignee?.full_name;
+  if (!assigneeName || assigneeName === 'Unassigned') {
+    return (
+      <div className="flex items-center gap-2.5">
+        <div style={{ width: 28, height: 28, borderRadius: '50%', backgroundColor: '#F1F5F9', border: '1px solid rgba(15,23,42,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <UserRound size={14} style={{ color: '#94A3B8' }} />
+        </div>
+        <span style={{ fontSize: 13, color: '#94A3B8' }}>Unassigned</span>
+      </div>
+    );
+  }
+  const avatarUrl = defect.assignee?.avatar_url || nameAvatarMap.get(assigneeName.toLowerCase());
+  const ini = assigneeName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+  const clr = AVATAR_COLOURS[ini.charCodeAt(0) % AVATAR_COLOURS.length];
+  return (
+    <div className="flex items-center gap-2.5">
+      {avatarUrl ? (
+        <img
+          src={avatarUrl}
+          alt={assigneeName}
+          style={{ width: 28, height: 28, borderRadius: '50%', objectFit: 'cover', flexShrink: 0, border: '1px solid rgba(15,23,42,0.08)' }}
+        />
+      ) : (
+        <div style={{ width: 28, height: 28, borderRadius: '50%', background: clr, color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, flexShrink: 0 }}>
+          {ini}
+        </div>
+      )}
+      <span style={{ fontSize: 13, fontWeight: 500, color: '#1E293B', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+        {assigneeName}
+      </span>
+    </div>
   );
 }
 
