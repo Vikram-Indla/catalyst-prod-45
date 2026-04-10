@@ -39,32 +39,7 @@ function SeverityPill({ severity }: { severity: string }) {
   );
 }
 
-// ── Status Lozenge (3-color guardrail — intentional inline hex) ──
-const STATUS_MAP: Record<string, { label: string; bg: string; text: string }> = {
-  open:        { label: 'OPEN',        bg: '#DEEBFF', text: '#0747A6' },
-  new:         { label: 'NEW',         bg: '#DEEBFF', text: '#0747A6' },
-  in_progress: { label: 'IN PROGRESS', bg: '#DEEBFF', text: '#0747A6' },
-  resolved:    { label: 'RESOLVED',    bg: '#E3FCEF', text: '#006644' },
-  fixed:       { label: 'FIXED',       bg: '#E3FCEF', text: '#006644' },
-  verified:    { label: 'VERIFIED',    bg: '#E3FCEF', text: '#006644' },
-  closed:      { label: 'CLOSED',      bg: '#E3FCEF', text: '#006644' },
-  reopened:    { label: 'REOPENED',    bg: '#FFFAE6', text: '#974F0C' },
-  deferred:    { label: 'DEFERRED',    bg: '#DFE1E6', text: '#253858' },
-};
-
-function StatusPill({ status }: { status: string }) {
-  const s = STATUS_MAP[status] || { label: status.toUpperCase(), bg: '#DFE1E6', text: '#253858' };
-  return (
-    <span style={{
-      display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-      height: 20, padding: '0 6px', borderRadius: 3,
-      backgroundColor: s.bg, color: s.text,
-      fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em', lineHeight: '20px',
-    }}>
-      {s.label}
-    </span>
-  );
-}
+// Status now uses the shared StatusBadge (3-color solid lozenge from /for-you)
 
 // ── Priority chevron icon (matching ProjectHub) ──
 const PRIORITY_ICONS: Record<string, { Icon: typeof ChevronsUp; color: string; label: string }> = {
