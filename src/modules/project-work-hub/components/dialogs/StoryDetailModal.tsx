@@ -984,11 +984,11 @@ export default function StoryDetailModal({
 
               {/* Timestamps — bottom */}
               <div style={{ marginTop: 'auto', padding: '12px 0 0' }}>
-                <div style={{ fontSize: 11, color: '#97A0AF', marginBottom: 6, lineHeight: 1.6 }}>
-                  <span style={{ color: '#5E6C84' }}>Created</span> {fmtDate(issue?.jira_created_at)}
+                <div style={{ fontSize: 12, color: '#5E6C84', marginBottom: 4, lineHeight: 1.6 }}>
+                  <span style={{ color: '#42526E', fontWeight: 500 }}>Created</span> {fmtDate(issue?.jira_created_at)}
                 </div>
-                <div style={{ fontSize: 11, color: '#97A0AF', lineHeight: 1.6 }}>
-                  <span style={{ color: '#5E6C84' }}>Updated</span> {fmtDate(issue?.jira_updated_at)}
+                <div style={{ fontSize: 12, color: '#5E6C84', lineHeight: 1.6 }}>
+                  <span style={{ color: '#42526E', fontWeight: 500 }}>Updated</span> {fmtDate(issue?.jira_updated_at)}
                 </div>
               </div>
             </div>
