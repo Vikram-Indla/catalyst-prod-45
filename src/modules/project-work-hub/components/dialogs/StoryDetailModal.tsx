@@ -1348,9 +1348,9 @@ function AIImprovePanel({ storyId, issueKey, currentDescription, currentAcceptan
                 <SelectTrigger className="w-full h-8 bg-white border-[rgba(9,30,66,0.14)] text-[13px] focus:border-[#2563EB]">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-white border border-[rgba(9,30,66,0.24)] shadow-[0_6px_16px_rgba(9,30,66,0.15)] rounded-md">
+                <SelectContent className="bg-white border border-[rgba(9,30,66,0.14)] rounded-md shadow-md z-50">
                   {AI_IMPROVE_OPTIONS.map(o => (
-                    <SelectItem key={o.value} value={o.value} className="text-[13px] hover:bg-[rgba(9,30,66,0.04)]">{o.label}</SelectItem>
+                    <SelectItem key={o.value} value={o.value} className="text-[13px] text-[#172B4D] focus:bg-[#EFF6FF] focus:text-[#1D4ED8] data-[state=checked]:bg-[#EFF6FF] data-[state=checked]:text-[#1D4ED8] cursor-pointer">{o.label}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
