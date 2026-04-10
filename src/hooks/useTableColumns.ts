@@ -49,7 +49,6 @@ export function useTableColumns(tableKey: string, defaultColumns: ColumnDef[]) {
   useEffect(() => {
     if (savedPrefs) {
       if (savedPrefs.column_order?.length) {
-        // Merge: keep any new columns not in saved order, remove deleted ones
         const validKeys = new Set(defaultOrder);
         const saved = savedPrefs.column_order.filter(k => validKeys.has(k));
         const missing = defaultOrder.filter(k => !saved.includes(k));
@@ -97,10 +96,7 @@ export function useTableColumns(tableKey: string, defaultColumns: ColumnDef[]) {
     const onMouseMove = (e: MouseEvent) => {
       const delta = e.clientX - startX;
       const newWidth = Math.max(minW, startWidth + delta);
-      setColumnWidths(prev => {
-        const next = { ...prev, [colKey]: newWidth };
-        return next;
-      });
+      setColumnWidths(prev => ({ ...prev, [colKey]: newWidth }));
     };
 
     const onMouseUp = (e: MouseEvent) => {
@@ -165,28 +161,26 @@ export function useTableColumns(tableKey: string, defaultColumns: ColumnDef[]) {
 
   // ── Ordered column defs — locked columns pinned to default positions ──
   const orderedColumns = (() => {
-    // Separate locked from unlocked, preserving default positions for locked
-    const lockedMap = new Map<number, ColumnDef>();
-    const unlockedOrder: string[] = [];
+    const lockedPositions = new Map<number, ColumnDef>();
+    const unlockedKeys: string[] = [];
 
     defaultColumns.forEach((c, i) => {
-      if (c.locked) lockedMap.set(i, c);
+      if (c.locked) lockedPositions.set(i, c);
     });
 
-    // Get the reordered unlocked keys
+    // Collect unlocked keys in their reordered sequence
     columnOrder.forEach(key => {
       const col = defaultColumns.find(c => c.key === key);
-      if (col && !col.locked) unlockedOrder.push(key);
+      if (col && !col.locked) unlockedKeys.push(key);
     });
 
-    // Build final array: insert locked at their default indices, fill rest with unlocked
     const result: ColumnDef[] = [];
     let unlockedIdx = 0;
     for (let i = 0; i < defaultColumns.length; i++) {
-      if (lockedMap.has(i)) {
-        result.push(lockedMap.get(i)!);
-      } else if (unlockedIdx < unlockedOrder.length) {
-        const col = defaultColumns.find(c => c.key === unlockedOrder[unlockedIdx]);
+      if (lockedPositions.has(i)) {
+        result.push(lockedPositions.get(i)!);
+      } else if (unlockedIdx < unlockedKeys.length) {
+        const col = defaultColumns.find(c => c.key === unlockedKeys[unlockedIdx]);
         if (col) result.push(col);
         unlockedIdx++;
       }

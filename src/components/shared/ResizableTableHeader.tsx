@@ -40,7 +40,7 @@ export function ResizableTableHeader({
       onDragOver={e => {
         e.preventDefault();
         e.dataTransfer.dropEffect = 'move';
-        onDragOver(colKey);
+        if (!locked) onDragOver(colKey);
       }}
       onDrop={e => {
         e.preventDefault();
@@ -48,10 +48,10 @@ export function ResizableTableHeader({
       }}
       onDragEnd={onDragEnd}
     >
-      {/* Subtle drop indicator — thin 2px left line */}
+      {/* Subtle drop indicator — thin 2px left accent */}
       {isDragOver && (
         <div style={{
-          position: 'absolute', left: 0, top: 4, bottom: 4,
+          position: 'absolute', left: 0, top: 6, bottom: 6,
           width: 2, borderRadius: 1, background: '#93C5FD', zIndex: 15,
         }} />
       )}
@@ -61,9 +61,9 @@ export function ResizableTableHeader({
           <span
             draggable
             onDragStart={e => {
+              e.stopPropagation();
               e.dataTransfer.effectAllowed = 'move';
               e.dataTransfer.setData('text/plain', colKey);
-              // Set a minimal drag image
               if (thRef.current) {
                 e.dataTransfer.setDragImage(thRef.current, 0, 0);
               }
@@ -82,31 +82,25 @@ export function ResizableTableHeader({
 
       {/* Resize handle — right edge */}
       <div
-        data-resize-handle="true"
         style={{
           position: 'absolute',
-          right: -3,
+          right: 0,
           top: 0,
           bottom: 0,
-          width: 7,
+          width: 6,
           cursor: 'col-resize',
           zIndex: 20,
-          touchAction: 'none',
         }}
-        className="group/resize"
         onMouseDown={e => {
           e.preventDefault();
           e.stopPropagation();
           onResizeStart(colKey, e.clientX);
         }}
       >
-        {/* Visible thin line on hover */}
         <div style={{
-          position: 'absolute', left: 3, top: 4, bottom: 4,
-          width: 1, borderRadius: 1,
-          background: 'transparent',
-          transition: 'background 120ms',
-        }} className="group-hover/resize:!bg-slate-300" />
+          position: 'absolute', right: 2, top: 6, bottom: 6,
+          width: 1, background: 'transparent', transition: 'background 120ms',
+        }} className="group-hover/thead:bg-slate-300" />
       </div>
     </th>
   );
