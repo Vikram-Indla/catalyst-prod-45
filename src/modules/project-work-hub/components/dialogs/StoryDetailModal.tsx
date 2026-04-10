@@ -36,58 +36,6 @@ interface StoryDetailModalProps {
   onOpenItem?: (itemId: string) => void;
 }
 
-/* ═══════════════════════════════════════════════
-   HELPERS
-   ═══════════════════════════════════════════════ */
-function getStatusCategory(s: string): string {
-  const lower = s.toLowerCase();
-  if (['done', 'completed', 'approved', 'closed', 'released'].some(k => lower.includes(k))) return 'done';
-  if (['progress', 'review', 'beta', 'active', 'development', 'requirements'].some(k => lower.includes(k))) return 'in_progress';
-  return 'todo';
-}
-
-function getLozengeColors(status: string, category?: string | null) {
-  const cat = category?.toLowerCase() || getStatusCategory(status);
-  if (cat === 'done' || cat === 'complete') return { bg: V.lozengeGreenBg, color: V.lozengeGreenText };
-  if (cat === 'in_progress' || cat === 'inprogress') return { bg: V.lozengeBlueBg, color: V.lozengeBlueText };
-  return { bg: V.lozengeGreyBg, color: V.lozengeGreyText };
-}
-
-function StatusLozenge({ status, category }: { status: string; category?: string | null }) {
-  const s = getLozengeColors(status, category);
-  return (
-    <span style={{
-      display: 'inline-block', height: 20, lineHeight: '20px', fontSize: 11,
-      fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em',
-      borderRadius: 3, padding: '0 6px', whiteSpace: 'nowrap',
-      background: s.bg, color: s.color,
-    }}>{status}</span>
-  );
-}
-
-function getInitials(name?: string | null): string {
-  if (!name?.trim()) return '?';
-  const p = name.trim().split(/\s+/);
-  return p.length === 1 ? p[0].slice(0, 2).toUpperCase() : (p[0][0] + p[p.length - 1][0]).toUpperCase();
-}
-
-function AvatarCircle({ name, size = 24 }: { name?: string | null; size?: number }) {
-  let hash = 0;
-  const n = name || '';
-  for (let i = 0; i < n.length; i++) hash = n.charCodeAt(i) + ((hash << 5) - hash);
-  const colors = ['#2563EB', '#0D9488', '#7C3AED', '#D97706', '#DC2626', '#16A34A'];
-  const bg = colors[Math.abs(hash) % colors.length];
-  return (
-    <div title={name || undefined} style={{
-      width: size, height: size, borderRadius: '50%', background: bg,
-      color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center',
-      fontSize: size * 0.42, fontWeight: 600, flexShrink: 0,
-    }}>
-      {getInitials(name)}
-    </div>
-  );
-}
-
 function PriorityIcon({ priority, size = 16 }: { priority?: string | null; size?: number }) {
   const p = (priority || 'medium').toLowerCase();
   if (p === 'highest' || p === 'critical') return <ChevronsUp size={size} color="#AE2A19" strokeWidth={2.5} style={{ flexShrink: 0 }} />;
