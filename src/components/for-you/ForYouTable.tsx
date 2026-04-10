@@ -149,13 +149,18 @@ export function ForYouTable({
             </div>
           </td>
         );
+      case 'type':
+        return (
+          <td key={colKey} style={{ width: columnWidths.type, overflow: 'visible', textOverflow: 'clip' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <JiraIssueTypeIcon issueType={item.issueType} size={16} />
+            </div>
+          </td>
+        );
       case 'key':
         return (
           <td key={colKey} style={{ width: columnWidths.key }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <JiraIssueTypeIcon issueType={item.issueType} size={16} />
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 600, color: '#2563EB' }}>{item.key}</span>
-            </div>
+            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 600, color: '#2563EB' }}>{item.key}</span>
           </td>
         );
       case 'summary':
