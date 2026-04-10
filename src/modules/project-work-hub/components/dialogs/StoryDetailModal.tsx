@@ -906,6 +906,7 @@ export default function StoryDetailModal({
                             )}
                           </div>
                         )}
+                        {comments.length === 0 && <div style={{ padding: '20px 0', color: '#97A0AF', fontSize: 13, textAlign: 'center' }}>No comments yet</div>}
                         {comments.map(c => {
                           const bg = getAvatarColor(c.author_id);
                           return (
