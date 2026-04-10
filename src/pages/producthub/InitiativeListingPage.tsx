@@ -513,20 +513,15 @@ export default function InitiativeListingPage() {
         ))}
       </div>
 
-      {/* ── FIX 1 & 12: Light bulk action bar ── */}
+      {/* ── Jira-style bulk action bar ── */}
       {selectedIds.length > 0 && (
-        <div className="pb-bulk-bar">
-          <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--pb-ink)', fontFamily: 'var(--pb-font-body)' }}>
-            {selectedIds.length} item{selectedIds.length !== 1 ? 's' : ''} selected
-          </span>
-          <div style={{ width: 1, height: 20, background: 'var(--pb-border)' }} />
-          <div style={{ display: 'flex', gap: 8 }}>
-            <button className="pb-bulk-btn" onClick={() => handleBulkAction('archive')}>Archive</button>
-            <button className="pb-bulk-btn pb-bulk-btn-danger" onClick={() => handleBulkAction('delete')}>Delete</button>
-          </div>
-          <div style={{ flex: 1 }} />
-          <button className="pb-bulk-cancel" onClick={() => setSelectedIds([])}>Clear selection</button>
-        </div>
+        <JiraBulkActionBar
+          selectedIds={selectedIds}
+          items={paginatedData.map(d => ({ id: d.id, issue_key: d.initiative_key, title: d.title, status: d.status, priority: d.priority ?? undefined, assignee_name: d.assignee_name ?? undefined }))}
+          onClear={() => setSelectedIds([])}
+          onDelete={(ids) => handleBulkAction('delete')}
+          entityLabel="initiative"
+        />
       )}
 
       {/* ── Table ── */}
