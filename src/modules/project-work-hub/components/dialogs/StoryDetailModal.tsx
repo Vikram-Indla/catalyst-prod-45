@@ -1674,7 +1674,7 @@ export default function StoryDetailModal({
           {/* ── B. BODY ────────────────────────── */}
           <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
             {/* LEFT PANEL */}
-            <div style={{ flex: 1, overflowY: 'auto', padding: '24px 24px 40px', minWidth: 0 }}>
+            <div style={{ flex: 1, overflowY: 'auto', padding: '24px 28px 40px', minWidth: 0 }}>
               {issueLoading ? (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                   <Skel w={120} /><Skel w="80%" h={24} /><Skel w="60%" h={16} /><div style={{ height: 20 }} /><Skel w="100%" h={200} />
@@ -1938,36 +1938,49 @@ export default function StoryDetailModal({
                   )}
 
                   {/* 5. KEY DETAILS: Description */}
-                  <div style={{ marginBottom: 20 }}>
-                    <button onClick={() => setKeyDetailsOpen(!keyDetailsOpen)} style={{ display: 'flex', alignItems: 'center', gap: 4, background: 'none', border: 'none', cursor: 'pointer', padding: 0, marginBottom: 8 }}>
-                      {keyDetailsOpen ? <ChevronDown size={14} color="#475467" /> : <ChevronRight size={14} color="#475467" />}
-                      <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 700, color: '#475467' }}>Key Details</span>
+                  <div style={{ marginBottom: 24 }}>
+                    <button onClick={() => setKeyDetailsOpen(!keyDetailsOpen)} style={{ display: 'flex', alignItems: 'center', gap: 5, background: 'none', border: 'none', cursor: 'pointer', padding: 0, marginBottom: 10 }}>
+                      {keyDetailsOpen ? <ChevronDown size={14} color="#344054" /> : <ChevronRight size={14} color="#344054" />}
+                      <span style={{ fontFamily: 'Sora, sans-serif', fontSize: 14, fontWeight: 700, color: '#101828' }}>Key Details</span>
                     </button>
                     {keyDetailsOpen && (
                       <div>
-                        <div style={{ border: '1px solid #E4E7EC', borderRadius: 8, overflow: 'hidden' }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 2, padding: '6px 8px', borderBottom: '1px solid #E4E7EC', background: '#F7F8FA', flexWrap: 'wrap' }}>
+                        <div style={{ border: '1px solid #D0D5DD', borderRadius: 8, overflow: 'hidden' }}>
+                          {/* Toolbar */}
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 1, padding: '5px 10px', borderBottom: '1px solid #E4E7EC', background: '#F9FAFB', flexWrap: 'wrap' }}>
                             {[
-                              { cmd: 'bold', label: 'B', fw: 'bold', fs: 'normal', td: 'none' },
-                              { cmd: 'italic', label: 'I', fw: 'normal', fs: 'italic', td: 'none' },
-                              { cmd: 'underline', label: 'U', fw: 'normal', fs: 'normal', td: 'underline' },
-                              { cmd: 'strikeThrough', label: 'S', fw: 'normal', fs: 'normal', td: 'line-through' },
+                              { cmd: 'bold', label: 'B', fw: 'bold' as const, fs: 'normal' as const, td: 'none' },
+                              { cmd: 'italic', label: 'I', fw: 'normal' as const, fs: 'italic' as const, td: 'none' },
+                              { cmd: 'underline', label: 'U', fw: 'normal' as const, fs: 'normal' as const, td: 'underline' },
+                              { cmd: 'strikeThrough', label: 'S', fw: 'normal' as const, fs: 'normal' as const, td: 'line-through' },
                             ].map(btn => (
                               <button key={btn.cmd} onMouseDown={(e) => { e.preventDefault(); document.execCommand(btn.cmd); }}
-                                style={{ width: 24, height: 24, borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, color: '#475467', background: 'transparent', border: 'none', cursor: 'pointer', fontWeight: btn.fw as any, fontStyle: btn.fs as any, textDecoration: btn.td }}>{btn.label}</button>
+                                style={{ width: 28, height: 28, borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, color: '#344054', background: 'transparent', border: 'none', cursor: 'pointer', fontWeight: btn.fw, fontStyle: btn.fs, textDecoration: btn.td, transition: 'background 0.12s' }}
+                                onMouseEnter={e => (e.currentTarget.style.background = '#E4E7EC')}
+                                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                              >{btn.label}</button>
                             ))}
-                            <div style={{ width: 1, height: 16, background: '#E4E7EC', margin: '0 4px' }} />
-                            <button onMouseDown={(e) => { e.preventDefault(); document.execCommand('insertUnorderedList'); }} style={{ width: 24, height: 24, borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, color: '#475467', background: 'transparent', border: 'none', cursor: 'pointer' }}>•</button>
-                            <button onMouseDown={(e) => { e.preventDefault(); document.execCommand('insertOrderedList'); }} style={{ width: 24, height: 24, borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, color: '#475467', background: 'transparent', border: 'none', cursor: 'pointer' }}>1.</button>
+                            <div style={{ width: 1, height: 18, background: '#D0D5DD', margin: '0 6px' }} />
+                            <button onMouseDown={(e) => { e.preventDefault(); document.execCommand('insertUnorderedList'); }}
+                              style={{ width: 28, height: 28, borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, color: '#344054', background: 'transparent', border: 'none', cursor: 'pointer' }}
+                              onMouseEnter={e => (e.currentTarget.style.background = '#E4E7EC')}
+                              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                            >•</button>
+                            <button onMouseDown={(e) => { e.preventDefault(); document.execCommand('insertOrderedList'); }}
+                              style={{ width: 28, height: 28, borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, color: '#344054', background: 'transparent', border: 'none', cursor: 'pointer' }}
+                              onMouseEnter={e => (e.currentTarget.style.background = '#E4E7EC')}
+                              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                            >1.</button>
                           </div>
+                          {/* Description content area — supports 5000+ words */}
                           <div ref={descriptionRef} contentEditable suppressContentEditableWarning
                             onBlur={(e) => { const newText = e.currentTarget.innerText; if (newText !== (issue?.description_text ?? '')) { updateFieldMutation.mutate({ field: 'description_text', value: newText, oldValue: issue?.description_text ?? '' }); } }}
                             data-placeholder="Add a description..."
-                            style={{ minHeight: 120, maxHeight: 260, overflowY: 'auto', padding: 12, fontSize: 13, color: '#101828', lineHeight: 1.6, outline: 'none', fontFamily: 'Inter, sans-serif' }}
+                            style={{ minHeight: 200, maxHeight: 500, overflowY: 'auto', padding: '14px 16px', fontSize: 13.5, color: '#101828', lineHeight: 1.7, outline: 'none', fontFamily: 'Inter, sans-serif', wordBreak: 'break-word' }}
                             dangerouslySetInnerHTML={{ __html: issue?.description_text ?? '' }} />
-                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 10px', borderTop: '1px solid #F7F8FA' }}>
-                            <span style={{ fontSize: 10.5, color: '#98A2B3' }}>Tip: <kbd style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, background: '#F1F5F9', border: '1px solid #E4E7EC', borderRadius: 3, padding: '1px 4px' }}>Ctrl+B</kbd> bold</span>
-                            <span style={{ fontSize: 10.5, color: '#98A2B3' }}>Auto-saved</span>
+                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 12px', borderTop: '1px solid #E4E7EC', background: '#F9FAFB' }}>
+                            <span style={{ fontSize: 10.5, color: '#667085' }}>Tip: <kbd style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, background: '#F1F5F9', border: '1px solid #D0D5DD', borderRadius: 3, padding: '1px 4px' }}>Ctrl+B</kbd> bold</span>
+                            <span style={{ fontSize: 10.5, color: '#667085' }}>Auto-saved</span>
                           </div>
                         </div>
                       </div>
