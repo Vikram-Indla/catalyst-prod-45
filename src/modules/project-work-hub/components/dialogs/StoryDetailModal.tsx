@@ -10,8 +10,8 @@ import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 import {
   X, ChevronDown, ChevronRight, Plus, Paperclip,
-  ExternalLink, Share2, Pencil, Search, MessageSquare, Clock,
-  GripVertical, Edit2, Link2, Trash2, Check,
+  ExternalLink, Share2, Search, MessageSquare, Clock,
+  GripVertical, Link2, Trash2, Check,
   Eye, EyeOff, Sparkles, Loader2, RotateCcw, Settings2, AlertTriangle,
 } from 'lucide-react';
 
@@ -953,29 +953,25 @@ export default function StoryDetailModal({
                   ) : <span style={{ color: '#97A0AF', fontSize: 13, fontStyle: 'italic' }}>None</span>}
                 </div>
 
-                {/* Assignee */}
+                {/* Assignee — Jira parity: avatar + name, no "Assign to me" link */}
                 <div style={{ marginBottom: 14 }}>
                   <div style={{ fontSize: 12, fontWeight: 600, color: '#5E6C84', marginBottom: 4 }}>Assignee</div>
                   {issue && (
                     <EditableAssignee issueId={issue.id} projectId={projectId} currentAssigneeId={issue.assignee_account_id} currentAssigneeName={issue.assignee_display_name}
                       onUpdate={() => queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] })} />
                   )}
-                  <button onClick={assignToMe} style={{ display: 'inline-block', fontSize: 12, color: '#0052CC', cursor: 'pointer', textDecoration: 'none', background: 'none', border: 'none', padding: '2px 0', marginTop: 4 }}
-                    onMouseEnter={e => (e.currentTarget.style.textDecoration = 'underline')}
-                    onMouseLeave={e => (e.currentTarget.style.textDecoration = 'none')}
-                  >Assign to me</button>
                 </div>
 
-                {/* Reporter */}
+                {/* Reporter — Jira parity: 28px avatar, 14px name */}
                 <div style={{ marginBottom: 14 }}>
                   <div style={{ fontSize: 12, fontWeight: 600, color: '#5E6C84', marginBottom: 4 }}>Reporter</div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '3px 6px', borderRadius: 3 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 6px', borderRadius: 4 }}>
                     {issue?.reporter_display_name ? (
                       <>
-                        <span style={{ width: 24, height: 24, borderRadius: '50%', background: getAvatarColor(issue.reporter_account_id ?? issue.reporter_display_name), color: '#FFF', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700 }}>{getInitials(issue.reporter_display_name)}</span>
-                        <span style={{ fontSize: 13, color: '#172B4D', fontWeight: 500 }}>{issue.reporter_display_name}</span>
+                        <span style={{ width: 28, height: 28, borderRadius: '50%', background: getAvatarColor(issue.reporter_account_id ?? issue.reporter_display_name), color: '#FFF', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, flexShrink: 0 }}>{getInitials(issue.reporter_display_name)}</span>
+                        <span style={{ fontSize: 14, color: '#172B4D', fontWeight: 400 }}>{issue.reporter_display_name}</span>
                       </>
-                    ) : <span style={{ color: '#97A0AF', fontSize: 13 }}>—</span>}
+                    ) : <span style={{ color: '#97A0AF', fontSize: 14 }}>—</span>}
                   </div>
                 </div>
 
