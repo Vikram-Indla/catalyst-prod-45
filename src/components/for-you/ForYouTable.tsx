@@ -47,6 +47,7 @@ const AVATAR_COLOURS = ['#2563EB', '#0D9488', '#0284C7', '#DC2626', '#DB2777'];
 const FORYOU_COLUMNS: TColDef[] = [
   { key: 'checkbox', label: '', defaultWidth: 40, minWidth: 40, locked: true },
   { key: 'star', label: '', defaultWidth: 36, minWidth: 36, locked: true },
+  { key: 'type', label: 'TYPE', defaultWidth: 32, minWidth: 32, locked: true },
   { key: 'key', label: 'KEY', defaultWidth: 120, minWidth: 80 },
   { key: 'summary', label: 'SUMMARY', defaultWidth: 400, minWidth: 150 },
   { key: 'status', label: 'STATUS', defaultWidth: 130, minWidth: 80 },
