@@ -1278,7 +1278,7 @@ export default function StoryDetailModal({
                             const isActive = localStatus === st;
                             const stStyle = getStatusStyle(st, group.category);
                             return (
-                              <button key={st} onClick={() => { setLocalStatus(st); setShowStatusDropdown(false); }} style={{
+                              <button key={st} onClick={() => { setLocalStatus(st); setShowStatusDropdown(false); updateStatusMutation.mutate(st); }} style={{
                                 display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', padding: '6px 12px',
                                 background: isActive ? 'rgba(37,99,235,0.08)' : 'transparent', border: 'none', cursor: 'pointer', fontSize: 12,
                               }}>
