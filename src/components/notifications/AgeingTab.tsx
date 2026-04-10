@@ -277,31 +277,11 @@ function AgeingRow({ item }: { item: AgeingItem }) {
 }
 
 /* ── Count badge hook (exported) ── */
+/* Derives count from the same useAgeingItems hook so badge = panel total */
 export function useAgeingCount(): number {
-  const [count, setCount] = useState(0);
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user || cancelled) return;
-      const { data: identityRows } = await supabase
-        .from('jira_identity_map')
-        .select('jira_account_id')
-        .eq('catalyst_user_id', user.id)
-        .limit(1);
-      if (cancelled || !identityRows?.length) return;
-      const jiraAccountId = identityRows[0].jira_account_id;
-      const { count: total } = await supabase
-        .from('ph_issues')
-        .select('*', { count: 'exact', head: true })
-        .eq('assignee_account_id', jiraAccountId)
-        .neq('status_category', 'done')
-        .is('deleted_at', null);
-      if (!cancelled) setCount(total ?? 0);
-    })();
-    return () => { cancelled = true; };
-  }, []);
-  return count;
+  const { data: sharedItems, isLoading } = useAgeingItems();
+  if (isLoading || !sharedItems) return 0;
+  return sharedItems.length;
 }
 
 const GROUP_ACCENT: Record<TimeGroup, string> = {
