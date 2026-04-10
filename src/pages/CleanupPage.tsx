@@ -493,42 +493,25 @@ export default function CleanupPage() {
   const handleRestore = useCallback(async (logEntry: any) => {
     if (!user?.id) return;
     const todayStr = new Date().toISOString().split('T')[0];
-    const originalStatus = (logEntry as any).original_status || 'To Do';
 
-    await supabase
-      .from('catalyst_issues')
-      .update({
-        status: originalStatus,
-        closure_method: 'normal',
-        force_closed_by: null,
-        force_closed_at: null,
-      })
-      .eq('id', logEntry.issue_id);
+    try {
+      await restoreMutation.mutateAsync(logEntry.id);
 
-    await supabase
-      .from('governance_closure_log')
-      .update({
-        restored_at: new Date().toISOString(),
-        restored_by: user.id,
-      })
-      .eq('id', logEntry.id);
+      // Add audit comment
+      if (logEntry.issue_id) {
+        await supabase.from('ph_comments').insert({
+          work_item_id: logEntry.issue_id,
+          author_id: user.id,
+          body: `[AI Cleanup] Restored on ${todayStr}. Original force closure reason: ${logEntry.closure_reason || 'Not specified'}.`,
+        });
+      }
 
-    if (logEntry.issue_id) {
-      await supabase.from('ph_comments').insert({
-        work_item_id: logEntry.issue_id,
-        author_id: user.id,
-        body: `[AI Cleanup] Restored on ${todayStr}. Original force closure reason: ${logEntry.closure_reason || 'Not specified'}.`,
-      });
+      toast.success('Item restored. Original status and assignee reinstated.');
+      refetchRestore();
+    } catch (err: unknown) {
+      toast.error('Restore failed: ' + (err instanceof Error ? err.message : 'Unknown error'));
     }
-
-    qc.invalidateQueries({ queryKey: ['ageing-items'] });
-    qc.invalidateQueries({ queryKey: ['governance-score'] });
-    qc.invalidateQueries({ queryKey: ['cleanup-categories'] });
-    qc.invalidateQueries({ queryKey: ['governance-restore'] });
-
-    toast.success('Item restored. Original status and assignee reinstated.');
-    refetchRestore();
-  }, [user, qc, refetchRestore]);
+  }, [user, restoreMutation, refetchRestore]);
 
   // ── First selected item category for "select all" in bulk bar ──
   const firstSelectedCatKey = useMemo(() => {
