@@ -17,6 +17,7 @@ import {
 
 // Ring-fenced CSS for extension components
 import './story-detail-extensions.css';
+import { useFixVersions } from '../../hooks/useFixVersions';
 
 // ── Module imports ────────────────────────────────
 import type {
@@ -176,6 +177,8 @@ export default function StoryDetailModal({
   const [commentSummary, setCommentSummary] = useState<string | null>(null);
   const [commentSummaryLoading, setCommentSummaryLoading] = useState(false);
   const [showCommentSummary, setShowCommentSummary] = useState(true);
+  const [showFixVersionDropdown, setShowFixVersionDropdown] = useState(false);
+  const [fixVersionSearch, setFixVersionSearch] = useState('');
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const addMenuRef = useRef<HTMLDivElement>(null);
