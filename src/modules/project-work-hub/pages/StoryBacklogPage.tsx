@@ -243,43 +243,71 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
                     <div style={{ width: compact ? 20 : 38, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       <JiraIssueTypeIcon type="story" size={compact ? 14 : undefined} />
                     </div>
-                    <div style={{ width: compact ? 80 : 110, flexShrink: 0, fontFamily: "'JetBrains Mono', monospace", fontSize: compact ? 12 : 13, fontWeight: 500, color: story.story_key ? tk.blueKey : tk.t3 }}>
-                      {story.story_key || '—'}
-                    </div>
-                    <div style={{ flex: 1, minWidth: 0, fontSize: 13, fontWeight: 400, color: tk.t1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{story.title}</div>
-                    <div style={{ width: compact ? 100 : 138, flexShrink: 0 }}>
-                      {sc && ls && <span style={{ display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px', borderRadius: 4, fontSize: 11, fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.03em', background: ls.bg, color: ls.text }}>{sc.label}</span>}
-                    </div>
-                    {!compact && (
-                      <div style={{ width: 240, flexShrink: 0, overflow: 'hidden' }}>
-                        {story.feature?.epic ? (
-                          <ParentEpicChip epicId={story.feature.epic.id} epicKey={story.feature.epic.epic_key} epicName={story.feature.epic.name} />
-                        ) : (
-                          <span style={{ color: tk.t3, fontSize: 12 }}>—</span>
-                        )}
-                      </div>
-                    )}
-                    <div style={{ width: compact ? 120 : 160, flexShrink: 0, fontSize: 13, color: story.assignee_name ? tk.t1 : tk.t3, fontStyle: story.assignee_name ? 'normal' : 'italic', display: 'flex', alignItems: 'center', gap: 6, overflow: 'hidden' }}>
-                      {avatarUrl ? (
-                        <img src={avatarUrl} style={{ width: 20, height: 20, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} alt="" />
-                      ) : (
-                        <div style={{ width: 20, height: 20, borderRadius: '50%', background: tk.chipBg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 8, fontWeight: 700, color: tk.t2, flexShrink: 0 }}>{getInitials(story.assignee_name || null)}</div>
-                      )}
-                      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{story.assignee_name || 'Unassigned'}</span>
-                    </div>
-                    {!compact && (
-                      <>
-                        <div style={{ width: 90, flexShrink: 0, fontSize: 12, color: tk.t2, fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: 'tabular-nums' }}>{formatDueDate(story.jira_created_at ?? null)}</div>
-                        <div style={{ width: 90, flexShrink: 0, fontSize: 12, color: tk.t2, fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: 'tabular-nums' }}>{formatDueDate(story.jira_updated_at ?? null)}</div>
-                        <div style={{ width: 90, flexShrink: 0, fontSize: 12, color: tk.t2, fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: 'tabular-nums' }}>{formatDueDate(story.start_date)}</div>
-                        <div style={{ width: 78, flexShrink: 0, fontSize: 12, position: 'relative' }}>
-                          <span style={{ color: getPriorityColor(story.priority) }}>{getPriorityLabel(story.priority)}</span>
-                          <div className="absolute right-0 top-1/2 -translate-y-1/2 hidden group-hover:flex items-center gap-1" style={{ background: isDark ? 'rgba(10,10,10,0.95)' : '#EDEDED' }}>
-                            <button onClick={(e) => { e.stopPropagation(); setEditStoryId(story.id); }} className="p-1 rounded" onMouseEnter={(e) => (e.currentTarget.style.background = tk.hoverBg)} onMouseLeave={(e) => (e.currentTarget.style.background = '')} title="Edit"><Pencil className="h-3.5 w-3.5" style={{ color: tk.t2 }} /></button>
-                            <button onClick={(e) => { e.stopPropagation(); setDeleteTarget(story); }} className="p-1 rounded" onMouseEnter={(e) => (e.currentTarget.style.background = tk.hoverBg)} onMouseLeave={(e) => (e.currentTarget.style.background = '')} title="Delete"><Trash2 className="h-3.5 w-3.5" style={{ color: '#DC2626' }} /></button>
-                          </div>
+                    {/* Dynamic ordered columns */}
+                    {orderedCols.filter(c => !(compact && c.compactHide)).map((col, colIdx) => {
+                      const w = compact && col.compactWidth ? col.compactWidth : col.width;
+                      const baseStyle: React.CSSProperties = col.flex
+                        ? { flex: 1, minWidth: 0 }
+                        : { width: w, flexShrink: 0 };
+
+                      switch (col.key) {
+                        case 'key':
+                          return <div key={col.key} style={{ ...baseStyle, fontFamily: "'JetBrains Mono', monospace", fontSize: compact ? 12 : 13, fontWeight: 500, color: story.story_key ? tk.blueKey : tk.t3 }}>{story.story_key || '—'}</div>;
+                        case 'summary':
+                          return <div key={col.key} style={{ ...baseStyle, fontSize: 13, fontWeight: 400, color: tk.t1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{story.title}</div>;
+                        case 'status':
+                          return <div key={col.key} style={baseStyle}>{sc && ls && <span style={{ display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px', borderRadius: 4, fontSize: 11, fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.03em', background: ls.bg, color: ls.text }}>{sc.label}</span>}</div>;
+                        case 'parent':
+                          return (
+                            <div key={col.key} style={{ ...baseStyle, overflow: 'hidden' }}>
+                              {story.feature?.epic ? (
+                                <ParentEpicChip epicId={story.feature.epic.id} epicKey={story.feature.epic.epic_key} epicName={story.feature.epic.name} />
+                              ) : (
+                                <span style={{ color: tk.t3, fontSize: 12 }}>—</span>
+                              )}
+                            </div>
+                          );
+                        case 'assignee':
+                          return (
+                            <div key={col.key} style={{ ...baseStyle, fontSize: 13, color: story.assignee_name ? tk.t1 : tk.t3, fontStyle: story.assignee_name ? 'normal' : 'italic', display: 'flex', alignItems: 'center', gap: 6, overflow: 'hidden' }}>
+                              {avatarUrl ? (
+                                <img src={avatarUrl} style={{ width: 20, height: 20, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} alt="" />
+                              ) : (
+                                <div style={{ width: 20, height: 20, borderRadius: '50%', background: tk.chipBg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 8, fontWeight: 700, color: tk.t2, flexShrink: 0 }}>{getInitials(story.assignee_name || null)}</div>
+                              )}
+                              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{story.assignee_name || 'Unassigned'}</span>
+                            </div>
+                          );
+                        case 'created':
+                          return <div key={col.key} style={{ ...baseStyle, fontSize: 12, color: tk.t2, fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: 'tabular-nums' }}>{formatDueDate(story.jira_created_at ?? null)}</div>;
+                        case 'updated':
+                          return <div key={col.key} style={{ ...baseStyle, fontSize: 12, color: tk.t2, fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: 'tabular-nums' }}>{formatDueDate(story.jira_updated_at ?? null)}</div>;
+                        case 'due':
+                          return <div key={col.key} style={{ ...baseStyle, fontSize: 12, color: tk.t2, fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: 'tabular-nums' }}>{formatDueDate(story.start_date)}</div>;
+                        case 'priority':
+                          return (
+                            <div key={col.key} style={{ ...baseStyle, fontSize: 12, position: 'relative' }}>
+                              <span style={{ color: getPriorityColor(story.priority) }}>{getPriorityLabel(story.priority)}</span>
+                              {colIdx === orderedCols.filter(c => !(compact && c.compactHide)).length - 1 && (
+                                <div className="absolute right-0 top-1/2 -translate-y-1/2 hidden group-hover:flex items-center gap-1" style={{ background: isDark ? 'rgba(10,10,10,0.95)' : '#EDEDED' }}>
+                                  <button onClick={(e) => { e.stopPropagation(); setEditStoryId(story.id); }} className="p-1 rounded" onMouseEnter={(e) => (e.currentTarget.style.background = tk.hoverBg)} onMouseLeave={(e) => (e.currentTarget.style.background = '')} title="Edit"><Pencil className="h-3.5 w-3.5" style={{ color: tk.t2 }} /></button>
+                                  <button onClick={(e) => { e.stopPropagation(); setDeleteTarget(story); }} className="p-1 rounded" onMouseEnter={(e) => (e.currentTarget.style.background = tk.hoverBg)} onMouseLeave={(e) => (e.currentTarget.style.background = '')} title="Delete"><Trash2 className="h-3.5 w-3.5" style={{ color: '#DC2626' }} /></button>
+                                </div>
+                              )}
+                            </div>
+                          );
+                        default:
+                          return null;
+                      }
+                    })}
+                    {/* Row actions always at the end if priority isn't last */}
+                    {orderedCols.filter(c => !(compact && c.compactHide)).at(-1)?.key !== 'priority' && !compact && (
+                      <div style={{ width: 60, flexShrink: 0, position: 'relative' }}>
+                        <div className="absolute right-0 top-1/2 -translate-y-1/2 hidden group-hover:flex items-center gap-1" style={{ background: isDark ? 'rgba(10,10,10,0.95)' : '#EDEDED' }}>
+                          <button onClick={(e) => { e.stopPropagation(); setEditStoryId(story.id); }} className="p-1 rounded" onMouseEnter={(e) => (e.currentTarget.style.background = tk.hoverBg)} onMouseLeave={(e) => (e.currentTarget.style.background = '')} title="Edit"><Pencil className="h-3.5 w-3.5" style={{ color: tk.t2 }} /></button>
+                          <button onClick={(e) => { e.stopPropagation(); setDeleteTarget(story); }} className="p-1 rounded" onMouseEnter={(e) => (e.currentTarget.style.background = tk.hoverBg)} onMouseLeave={(e) => (e.currentTarget.style.background = '')} title="Delete"><Trash2 className="h-3.5 w-3.5" style={{ color: '#DC2626' }} /></button>
                         </div>
-                      </>
+                      </div>
                     )}
                   </div>
                 );
