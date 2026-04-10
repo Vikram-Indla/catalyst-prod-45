@@ -4,94 +4,47 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { PageChrome } from '@/components/layout/PageChrome';
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { AnimatePresence, motion } from 'framer-motion';
-import { 
-  Users, CheckCircle2, BarChart3, AlertTriangle, TrendingUp, Download, Plus, 
-  Search, LayoutGrid, Table2, CalendarDays, GanttChart, FileStack, Bot,
-  ChevronLeft, ChevronRight, ChevronUp, ChevronDown, Clock, Eye, Copy, Check, RotateCcw, Play,
-  Pencil, Trash2, Cloud, Settings2, ArrowLeftRight, Building2, X, RefreshCw, AlertCircle
+import {
+  Users, Plus, X, RefreshCw, AlertCircle
 } from 'lucide-react';
-import { useCapacityData, useAssignments, useAiRecommendations, useCapacityDepartments, useResourceManagement, useResourceAssignments, useResourceAllocations, exportCapacityToPdf } from '@/modules/capacity-planner';
+import { useCapacityData, useAssignments, useAiRecommendations, useResourceManagement, useResourceAssignments, useResourceAllocations, exportCapacityToPdf } from '@/modules/capacity-planner';
 import { AllocationModal } from '@/components/resource-allocation';
 import type { AllocationResource } from '@/types/resource-allocation.types';
 import { getDefaultForecastBoundary } from '@/utils/allocation.utils';
 
-import type { ViewType, ResourceMetric, CapacityProject, AiRecommendation, ResourceAllocation, AllocationBookingInput } from '@/modules/capacity-planner';
+import type { ViewType, ResourceMetric, ResourceAllocation, AllocationBookingInput } from '@/modules/capacity-planner';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
-import { Avatar360 } from '@/components/capacity/Avatar360';
 import { Resource360Drawer } from '@/components/capacity/resource360/Resource360Drawer';
 import { ResourceWorkDrawer } from '@/components/capacity/ResourceWorkDrawer';
 import { CapacityAIDrawer } from '@/components/capacity/CapacityAIDrawer';
-import { CatalystEnterpriseTable, CatalystColumn } from '@/components/industry/CatalystEnterpriseTable';
 import { BulkEditModal } from '@/components/capacity/BulkEditModal';
-import { DraggableCardsView } from '@/components/capacity/DraggableCardsView';
-import { Logo } from '@/components/brand/Logo';
 
-type PeriodType = 'weekly' | 'monthly' | 'quarterly';
-type ProjectPeriodType = 'weekly' | 'monthly';
-type GroupByType = 'none' | 'assignment' | 'department';
-
-import { 
-  CATALYST,
-  getAssignmentColor,
-  getAssignmentTheme,
-  getAllocationColors,
-  getAllocationTheme,
-  getAllocationBarColor, 
-  getTimelineCellColors, 
-  getUtilizationColor,
-  getInitials,
-} from '@/lib/catalyst-colors';
 import { SleekCapacityHeader, PrimaryView, ResourceViewMode, ProjectViewMode } from '@/components/capacity/SleekCapacityHeader';
-import { CompactGroupHeader } from '@/components/capacity/CompactGroupHeader';
-import { CompactResourceCard } from '@/components/capacity/CompactResourceCard';
-import { CapacityHeatmap } from '@/components/capacity-heatmap';
-import { CapacityAnalyticsView, AnalyticsDepartmentTabs } from '@/components/capacity/CapacityAnalyticsView';
+import { CapacityAnalyticsView } from '@/components/capacity/CapacityAnalyticsView';
 
 import { ProjectCapacityView } from '@/components/capacity/ProjectCapacityView';
 import { getPeriodRange, navigatePeriod } from '@/components/capacity/ProjectCapacityView/utils';
 import { ContractHorizonView } from '@/components/contract-horizon';
-import { GroupedTableView } from '@/components/capacity/GroupedTableView';
-import { ScaleWarningBanner } from '@/components/capacity/ScaleWarningBanner';
-import { VirtualizedCardsView } from '@/components/capacity/VirtualizedCardsView';
-import { HierarchicalHeatmap } from '@/components/capacity/HierarchicalHeatmap';
-import { EnhancedSearch } from '@/components/capacity/EnhancedSearch';
-import { EnhancedTimelineView } from '@/components/capacity/timeline';
 import { CapacityPlannerGantt } from '@/components/capacity-planner';
-import { UndoRedoControls } from '@/components/capacity/UndoRedoControls';
 import { CapacityPlannerSkeleton } from '@/components/capacity/CapacityPlannerSkeleton';
-import { UndoRedoProvider } from '@/contexts/UndoRedoContext';
-import { RESOURCE_COLUMN_WIDTH, WEEK_COLUMN_WIDTH, MONTH_COLUMN_WIDTH, QUARTER_COLUMN_WIDTH } from '@/lib/capacity/timeline-columns';
-import { useResourceProfiles } from '@/hooks/useResourceProfiles';
 import { useCapacityViewStore } from '@/stores/capacityViewStore';
 import { CapacityPresentationShell } from '@/components/capacity/CapacityPresentationShell';
 
-// Department colors - Catalyst V5 compliant
-const departmentColors: Record<string, { bg: string; text: string; badge: string }> = {
-  Product: { bg: 'bg-[#3b82f6]', text: 'text-white', badge: 'bg-[#3b82f6]/15 text-[#2563eb]' },
-  Delivery: { bg: 'bg-[#0d9488]', text: 'text-white', badge: 'bg-[#2563eb]/10 text-[#2563eb]' },
-  Support: { bg: 'bg-[#10b981]', text: 'text-white', badge: 'bg-[#10b981]/15 text-[#10b981]' },
-  default: { bg: 'bg-muted', text: 'text-muted-foreground', badge: 'bg-muted text-muted-foreground' },
-};
-
-const projectColors = [
-  '#2563eb', // Blue
-  '#0d9488', // Teal  
-  '#10b981', // Green
-  '#3b82f6', // Light Blue
-  '#0f766e', // Teal Dark
-  '#14b8a6', // Teal Light
-];
+// Extracted sub-components
+import {
+  CardsView,
+  TableView,
+  EditResourceForm,
+  ResourceDrawerContent,
+  BookResourceModal,
+} from './capacity-planner';
+import type { PeriodType, ProjectPeriodType, GroupByType } from './capacity-planner';
 
 export default function CapacityPlannerPage() {
   const queryClient = useQueryClient();
@@ -271,42 +224,10 @@ export default function CapacityPlannerPage() {
   const [allocationModalOpen, setAllocationModalOpen] = useState(false);
   const [allocationModalResource, setAllocationModalResource] = useState<ResourceMetric | null>(null);
 
-  // Add resource form state (simplified - no longer need assignment/allocation, configured via booking modal)
-  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
-  const [selectedDepartmentId, setSelectedDepartmentId] = useState<string>('');
-  const [isAddingResources, setIsAddingResources] = useState(false);
-  
-  // Booking allocations state for the new modal
-  const [bookingAllocations, setBookingAllocations] = useState<{
-    id: string;
-    assignmentId: string;
-    percent: number;
-    startDate: string;
-    endDate: string;
-  }[]>([{
-    id: `alloc-${Date.now()}`,
-    assignmentId: '',
-    percent: 50,
-    startDate: new Date().toISOString().split('T')[0],
-    endDate: (() => { const d = new Date(); d.setMonth(d.getMonth() + 3); return d.toISOString().split('T')[0]; })()
-  }]);
-  const [resourceSearchQuery, setResourceSearchQuery] = useState('');
-
-  // Fetch departments and assignments for the modal
-  const { departments } = useCapacityDepartments();
+  // Fetch assignments and allocations for views
   const { assignments: resourceAssignments = [] } = useResourceAssignments();
   const { allocations, saveAllocations, getAllocationsForResource } = useResourceAllocations();
   const { updateResourceAssignmentType } = useResourceManagement();
-
-  // Auto-select default department when modal opens
-  useEffect(() => {
-    if (!resourceModalOpen) return;
-
-    if (!selectedDepartmentId && (departments?.length ?? 0) > 0) {
-      const delivery = departments?.find((d) => d.name?.toLowerCase() === 'delivery');
-      if (delivery) setSelectedDepartmentId(delivery.id);
-    }
-  }, [resourceModalOpen, departments, selectedDepartmentId]);
 
   // Get users already assigned in capacity planner
   const assignedUserIds = useMemo(() => {
