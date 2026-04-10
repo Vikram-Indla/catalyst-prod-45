@@ -53,6 +53,7 @@ import { IncidentsSection } from './story-detail-modules';
 import { TestHubSection } from './story-detail-modules';
 import { LinkedIssuesSection } from './story-detail-modules';
 import { EditableAssignee, EditablePriority, EditableLabels, ParentFieldPicker } from './story-detail-modules';
+import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 
 /* ═══════════════════════════════════════════════
    ANIMATIONS
@@ -84,6 +85,7 @@ export default function StoryDetailModal({
 }: StoryDetailModalProps) {
   const queryClient = useQueryClient();
   const { user } = useAuth();
+  const avatarsByName = useProfileAvatarsByName();
 
   /* ── QUERIES ───────────────────────────────── */
   const { data: currentProfile } = useQuery({
@@ -102,13 +104,22 @@ export default function StoryDetailModal({
     },
   });
 
-  // Fetch reporter avatar
+  // Fetch reporter avatar — resolve via jira_identity_map (assignee_account_id is a Jira ID, not a Catalyst UUID)
   const { data: reporterProfile } = useQuery({
-    queryKey: ['profile-avatar', issue?.reporter_account_id],
+    queryKey: ['profile-avatar-jira', issue?.reporter_account_id],
     queryFn: async () => {
       if (!issue?.reporter_account_id) return null;
-      const { data } = await supabase.from('profiles').select('avatar_url').eq('id', issue.reporter_account_id).single();
-      return data;
+      // First try jira_identity_map (Jira account ID → avatar_url)
+      const { data: jiraRow } = await supabase.from('jira_identity_map').select('avatar_url, catalyst_user_id').eq('jira_account_id', issue.reporter_account_id).maybeSingle();
+      if (jiraRow?.avatar_url) return { avatar_url: jiraRow.avatar_url };
+      // Fallback: try catalyst_user_id → profiles
+      if (jiraRow?.catalyst_user_id) {
+        const { data: profile } = await supabase.from('profiles').select('avatar_url').eq('id', jiraRow.catalyst_user_id).single();
+        if (profile?.avatar_url) return profile;
+      }
+      // Final fallback: try profiles directly (for catalyst-native users)
+      const { data: profile } = await supabase.from('profiles').select('avatar_url').eq('id', issue.reporter_account_id).maybeSingle();
+      return profile;
     },
     enabled: !!issue?.reporter_account_id,
     staleTime: 60000,
@@ -1085,7 +1096,7 @@ export default function StoryDetailModal({
                                     <div style={{ marginTop: 8, fontSize: 14, color: '#172B4D', display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
                                       <span style={{ color: '#6B778C' }}>{e.old_value || 'None'}</span>
                                       <span style={{ color: '#97A0AF' }}>→</span>
-                                      {e.field_name === 'assignee_display_name' && e.new_value ? <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}><div style={{ width: 24, height: 24, borderRadius: '50%', background: getAvatarColor(e.new_value), color: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700 }}>{getInitials(e.new_value)}</div><span style={{ fontWeight: 500 }}>{e.new_value}</span></span> : <span style={{ fontWeight: 500 }}>{e.new_value || 'None'}</span>}
+                                      {e.field_name === 'assignee_display_name' && e.new_value ? <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>{(() => { const avu = avatarsByName.get(e.new_value.toLowerCase()); return avu ? <img src={avu} alt="" style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} /> : <div style={{ width: 24, height: 24, borderRadius: '50%', background: getAvatarColor(e.new_value), color: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700 }}>{getInitials(e.new_value)}</div>; })()}<span style={{ fontWeight: 500 }}>{e.new_value}</span></span> : <span style={{ fontWeight: 500 }}>{e.new_value || 'None'}</span>}
                                     </div>
                                   )}
                                 </div>
@@ -1110,7 +1121,7 @@ export default function StoryDetailModal({
                                 <div style={{ marginTop: 10, fontSize: 14, color: '#172B4D', display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
                                   <span style={{ color: '#6B778C' }}>{entry.old_value || 'Unassigned'}</span>
                                   <span style={{ color: '#97A0AF' }}>→</span>
-                                  {entry.field_name === 'assignee_display_name' && entry.new_value ? <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}><div style={{ width: 28, height: 28, borderRadius: '50%', background: getAvatarColor(entry.new_value), color: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700 }}>{getInitials(entry.new_value)}</div><span style={{ fontWeight: 500 }}>{entry.new_value}</span></span> : <span style={{ fontWeight: 500 }}>{entry.new_value || 'None'}</span>}
+                                  {entry.field_name === 'assignee_display_name' && entry.new_value ? <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>{(() => { const avu = avatarsByName.get(entry.new_value.toLowerCase()); return avu ? <img src={avu} alt="" style={{ width: 28, height: 28, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} /> : <div style={{ width: 28, height: 28, borderRadius: '50%', background: getAvatarColor(entry.new_value), color: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700 }}>{getInitials(entry.new_value)}</div>; })()}<span style={{ fontWeight: 500 }}>{entry.new_value}</span></span> : <span style={{ fontWeight: 500 }}>{entry.new_value || 'None'}</span>}
                                 </div>
                               )}
                             </div>
