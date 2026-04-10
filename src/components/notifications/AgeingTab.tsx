@@ -398,7 +398,7 @@ export default function AgeingTab({ onClose }: { onClose?: () => void }) {
           item_type: row.item_type as ItemType,
           summary: row.summary,
           status: status || 'TODO' as StatusType,
-          days_assigned: row.days_assigned,
+          days_assigned: row.days_open,
         } as AgeingItem;
       });
       setItems(mapped);

@@ -14,17 +14,25 @@ export interface AgeingItem {
   summary: string;
   status: string;
   status_category: string;
-  days_assigned: number;
+  days_open: number;
   issue_type_raw: string;
   assignee_account_id: string | null;
+  assignee_display_name: string | null;
   reporter_account_id: string | null;
   reporter_display_name: string | null;
   parent_key: string | null;
+  parent_issue_type: string | null;
   created_at: string;
   jira_updated_at: string | null;
   fixed_versions: string | null;
   reporter_name: string | null;
   project_key: string;
+  priority: string;
+  comment_count: number;
+  child_issue_count: number;
+  assignee_is_active: boolean;
+  assignee_last_login: string | null;
+  assignee_last_login_days: number;
 }
 
 function mapIssueType(raw: string): string {
@@ -57,7 +65,7 @@ export function useAgeingItems() {
 
       const { data } = await supabase
         .from("ph_issues")
-        .select("id, issue_key, issue_type, summary, status, status_category, jira_created_at, jira_updated_at, parent_key, reporter_account_id, reporter_display_name, assignee_account_id")
+        .select("id, issue_key, issue_type, summary, status, status_category, priority, jira_created_at, jira_updated_at, parent_key, reporter_account_id, reporter_display_name, assignee_account_id, assignee_display_name, comments, fix_versions, project_key")
         .eq("assignee_account_id", jiraAccountId)
         .neq("status_category", "done")
         .is("deleted_at", null)
@@ -71,9 +79,18 @@ export function useAgeingItems() {
         })
         .map(row => {
           const createdAt = row.jira_created_at ? new Date(row.jira_created_at).getTime() : now;
-          const daysAssigned = Math.max(1, Math.floor((now - createdAt) / 86400_000));
+          const daysOpen = Math.max(1, Math.floor((now - createdAt) / 86400_000));
           const issueKey = row.issue_key || "";
-          const projectKey = issueKey.includes("-") ? issueKey.split("-")[0] : "";
+          const projectKey = row.project_key || (issueKey.includes("-") ? issueKey.split("-")[0] : "");
+
+          // comment_count: derive from comments JSON array if available
+          const commentCount = Array.isArray(row.comments) ? row.comments.length : 0;
+
+          // fix_versions: extract name from JSON array
+          const fixVer = Array.isArray(row.fix_versions) && row.fix_versions.length > 0
+            ? (row.fix_versions as any[]).map((v: any) => typeof v === 'string' ? v : v?.name || '').filter(Boolean).join(', ')
+            : null;
+
           return {
             id: row.id,
             jira_key: issueKey,
@@ -81,17 +98,25 @@ export function useAgeingItems() {
             summary: row.summary,
             status: row.status,
             status_category: row.status_category ?? "",
-            days_assigned: daysAssigned,
+            days_open: daysOpen,
             issue_type_raw: row.issue_type,
             assignee_account_id: row.assignee_account_id,
+            assignee_display_name: row.assignee_display_name ?? null,
             reporter_account_id: row.reporter_account_id,
             reporter_display_name: row.reporter_display_name,
             parent_key: row.parent_key,
+            parent_issue_type: null, // not available in ph_issues schema
             created_at: row.jira_created_at || "",
             jira_updated_at: row.jira_updated_at,
-            fixed_versions: null,
+            fixed_versions: fixVer,
             reporter_name: row.reporter_display_name ?? null,
             project_key: projectKey,
+            priority: row.priority ?? "medium",
+            comment_count: commentCount,
+            child_issue_count: 0, // not available — will be enriched later if needed
+            assignee_is_active: true, // not available — default active
+            assignee_last_login: null, // not available
+            assignee_last_login_days: 999, // treat unknown as very long inactive
           } as AgeingItem;
         });
     },
