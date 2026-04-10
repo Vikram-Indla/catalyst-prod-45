@@ -1,19 +1,61 @@
 /**
- * CellRenderers — LINEAR PRECISION Design with pb-* classes
+ * CellRenderers — V12 Hybrid Precision with canonical Jira SVG icons
  */
 
 import { format, differenceInDays } from 'date-fns';
-import { Lightbulb, FolderKanban, Zap, Wrench, Link, CircleDashed, type LucideIcon } from 'lucide-react';
 import type { InitiativeStatus } from '@/types/initiative';
 import { STATUS_DISPLAY, getPriorityLevel, getAvatarColor, getInitials } from '@/types/initiative';
 
-const TYPE_ICON_MAP: Record<string, { Icon: LucideIcon; color: string }> = {
-  business_request: { Icon: Lightbulb, color: '#B45309' },
-  project: { Icon: FolderKanban, color: '#2563EB' },
-  enhancement: { Icon: Zap, color: '#0EA5E9' },
-  improvement: { Icon: Wrench, color: '#D97706' },
-  entity_integration: { Icon: Link, color: '#64748B' },
+/* ── Canonical Jira SVG Icons (16×16) ── */
+const TYPE_SVG_MAP: Record<string, { svg: JSX.Element; label: string }> = {
+  project: {
+    label: 'Project',
+    svg: (
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+        <path fill="#2684FF" fillRule="evenodd" d="M3,0 L21,0 C22.6568542,-3.04359188e-16 24,1.34314575 24,3 L24,21 C24,22.6568542 22.6568542,24 21,24 L3,24 C1.34314575,24 2.02906125e-16,22.6568542 0,21 L0,3 C-2.02906125e-16,1.34314575 1.34314575,3.04359188e-16 3,0 Z M6,4 C4.8954305,4 4,4.8954305 4,6 L4,18 C4,19.1045695 4.8954305,20 6,20 L18,20 C19.1045695,20 20,19.1045695 20,18 L20,6 C20,4.8954305 19.1045695,4 18,4 L6,4 Z M6,6 L6,18 L18,18 L18,6 L6,6 Z"/>
+      </svg>
+    ),
+  },
+  enhancement: {
+    label: 'Enhancement',
+    svg: (
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+        <path fill="#6554C0" fillRule="evenodd" d="M3,0 L21,0 C22.6568542,-3.04359188e-16 24,1.34314575 24,3 L24,21 C24,22.6568542 22.6568542,24 21,24 L3,24 C1.34314575,24 2.02906125e-16,22.6568542 0,21 L0,3 C-2.02906125e-16,1.34314575 1.34314575,3.04359188e-16 3,0 Z M18.1875,9.4 L15.125,9.4 L15.125,4.8 C15.125,3.80261507 14.3098441,3 13.3125,3 C12.786559,3 12.3057802,3.22820418 11.9641282,3.60847767 L11.7684218,3.8182425 C9.18052942,7.02081922 5.18814094,12.029567 5,12.8 C5,13.8104178 5.81859781,14.3985043 6.7700213,14.5602545 L6.937625,14.5744 L9.875,14.5744 L9.875,19.2 C9.875,20.1973849 10.6901559,21 11.6875,21 C12.1186864,21 12.6506353,20.7635783 13.2071068,20.2071068 L19.527288,12.1937646 C19.8846996,11.712293 20,11.2 20,11.2 C20,10.2026151 19.1848441,9.4 18.1875,9.4 Z"/>
+      </svg>
+    ),
+  },
+  improvement: {
+    label: 'Improvement',
+    svg: (
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+        <path fill="#36B37E" fillRule="evenodd" d="M13,7.42194829 L16.2836227,10.7069575 C16.6740646,11.0975642 17.3072295,11.0976979 17.6978362,10.707256 C18.0884429,10.3168142 18.0885766,9.68364921 17.6981347,9.29304249 L12.7002451,4.29304249 C12.3096867,3.90231917 11.6762915,3.90231917 11.2857331,4.29304249 L6.28784344,9.29304249 C5.89740159,9.68364921 5.89753524,10.3168142 6.28814196,10.707256 C6.67874867,11.0976979 7.31191364,11.0975642 7.70235549,10.7069575 L11,7.40792056 L11,19 C11,19.5522847 11.4477153,20 12,20 C12.5522847,20 13,19.5522847 13,19 L13,7.42194829 Z M3,0 L21,0 C22.6568542,-3.04359188e-16 24,1.34314575 24,3 L24,21 C24,22.6568542 22.6568542,24 21,24 L3,24 C1.34314575,24 2.02906125e-16,22.6568542 0,21 L0,3 C-2.02906125e-16,1.34314575 1.34314575,3.04359188e-16 3,0 Z"/>
+      </svg>
+    ),
+  },
+  entity_integration: {
+    label: 'Integration',
+    svg: (
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+        <path fill="#2684FF" fillRule="evenodd" d="M3,0 L21,0 C22.6568542,-3.04359188e-16 24,1.34314575 24,3 L24,21 C24,22.6568542 22.6568542,24 21,24 L3,24 C1.34314575,24 2.02906125e-16,22.6568542 0,21 L0,3 C-2.02906125e-16,1.34314575 1.34314575,3.04359188e-16 3,0 Z M6,4 C4.8954305,4 4,4.8954305 4,6 L4,18 C4,19.1045695 4.8954305,20 6,20 L18,20 C19.1045695,20 20,19.1045695 20,18 L20,6 C20,4.8954305 19.1045695,4 18,4 L6,4 Z M6,6 L6,18 L18,18 L18,6 L6,6 Z"/>
+      </svg>
+    ),
+  },
+  business_request: {
+    label: 'Business Request',
+    svg: (
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+        <path fill="#36B37E" fillRule="evenodd" d="M3,0 L21,0 C22.6568542,-3.04359188e-16 24,1.34314575 24,3 L24,21 C24,22.6568542 22.6568542,24 21,24 L3,24 C1.34314575,24 2.02906125e-16,22.6568542 0,21 L0,3 C-2.02906125e-16,1.34314575 1.34314575,3.04359188e-16 3,0 Z M15.6470004,19.5152539 L16.9369996,17.9868881 L12.0001502,13.8199984 L7.06117589,17.98674 C7.03905703,18.0054091 7,17.9917347 7,18.1534919 L7,6.68807648 C7,6.34797522 7.41227423,6 8,6 L16,6 C16.5865377,6 17,6.34873697 17,6.68807648 L17,18.1534919 C17,17.9913444 16.9591854,18.0056137 16.9369996,17.9868881 L15.6470004,19.5152539 C16.8851842,20.5603283 19,19.8209625 19,18.1534919 L19,6.68807648 C19,5.16156919 17.6228445,4 16,4 L8,4 C6.37572577,4 5,5.16116515 5,6.68807648 L5,18.1534919 C5,19.8207306 7.11270618,20.5604209 8.3509996,19.5152539 L11.9998498,16.4369193 L15.6470004,19.5152539 Z"/>
+      </svg>
+    ),
+  },
 };
+
+const DEFAULT_TYPE_SVG = (
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+    <path fill="#94A3B8" fillRule="evenodd" d="M3,0 L21,0 C22.6568542,-3.04359188e-16 24,1.34314575 24,3 L24,21 C24,22.6568542 22.6568542,24 21,24 L3,24 C1.34314575,24 2.02906125e-16,22.6568542 0,21 L0,3 C-2.02906125e-16,1.34314575 1.34314575,3.04359188e-16 3,0 Z M12,17 C14.7614237,17 17,14.7614237 17,12 C17,9.23857625 14.7614237,7 12,7 C9.23857625,7 7,9.23857625 7,12 C7,14.7614237 9.23857625,17 12,17 Z"/>
+  </svg>
+);
+
 /* ── Status Cell ── */
 export function StatusCell({ status }: { status: InitiativeStatus }) {
   const s = STATUS_DISPLAY[status];
@@ -25,29 +67,34 @@ export function StatusCell({ status }: { status: InitiativeStatus }) {
   );
 }
 
-/* ── Priority Cell — FIX 3: Monochrome horizontal bars, no dashes ── */
+/* ── Priority Cell — V12: Colored horizontal bars ── */
 export function PriorityCell({ score }: { score: number | null }) {
   const filled = score === null ? 0 : score >= 4.0 ? 4 : score >= 3.0 ? 3 : score >= 2.0 ? 2 : score >= 1.0 ? 1 : 0;
+  const colors = ['#4ADE80', '#FBBF24', '#F97316', '#EF4444'];
+  const fillColor = filled === 0 ? '#E2E8F0' : colors[Math.min(filled - 1, 3)];
   return (
-    <div className="pb-priority-bars">
+    <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
       {[1, 2, 3, 4].map(i => (
-        <span key={i} className={`pb-priority-bar ${i <= filled ? 'pb-priority-bar-filled' : ''}`} />
+        <span key={i} style={{
+          width: 14, height: 3, borderRadius: 2,
+          background: i <= filled ? fillColor : '#E2E8F0',
+        }} />
       ))}
     </div>
   );
 }
 
-/* ── Score Cell — FIX 4: Monochrome vertical bars, equal height, no em dash ── */
+/* ── Score Cell — V12: Green vertical bars ── */
 export function ScoreCell({ score }: { score: number | null }) {
   const filled = score === null ? 0 : Math.min(5, Math.max(0, Math.round(score)));
+  const heights = [4, 6, 8, 10, 13, 16];
   return (
-    <div className="pb-score-bars">
-      {[1, 2, 3, 4, 5].map(i => (
-        <span
-          key={i}
-          className={`pb-score-bar ${i <= filled ? 'pb-score-bar-filled' : ''}`}
-          style={{ height: 12 }}
-        />
+    <div style={{ display: 'inline-flex', alignItems: 'flex-end', gap: 2, height: 16 }}>
+      {[1, 2, 3, 4, 5, 6].map(i => (
+        <span key={i} style={{
+          width: 4, height: heights[i - 1], borderRadius: '2px 2px 0 0',
+          background: i <= filled ? '#22C55E' : '#E2E8F0',
+        }} />
       ))}
     </div>
   );
@@ -57,9 +104,9 @@ export function ScoreCell({ score }: { score: number | null }) {
 export function AssigneeCell({ name, avatarUrl }: { name: string | null; avatarUrl?: string }) {
   if (!name) {
     return (
-      <div className="pb-assignee">
-        <div style={{ width: 24, height: 24, borderRadius: '50%', border: '1.5px dashed var(--pb-border-strong)' }} />
-        <span style={{ fontSize: 13, fontStyle: 'italic', color: 'var(--pb-ink-muted)' }}>Unassigned</span>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+        <div style={{ width: 22, height: 22, borderRadius: '50%', border: '1.5px dashed #CBD5E1', background: 'transparent', flexShrink: 0 }} />
+        <span style={{ fontSize: 13, color: '#94A3B8' }}>Unassigned</span>
       </div>
     );
   }
@@ -79,9 +126,9 @@ export function AssigneeCell({ name, avatarUrl }: { name: string | null; avatarU
 
 /* ── Date Cell ── */
 export function DateCell({ date, status }: { date: string | null; status?: InitiativeStatus }) {
-  if (!date) return <span className="pb-date" style={{ color: 'var(--pb-ink-muted)' }}>—</span>;
+  if (!date) return <span style={{ color: '#94A3B8', fontSize: 14 }}>—</span>;
   const parsed = new Date(date);
-  if (isNaN(parsed.getTime())) return <span className="pb-date" style={{ color: 'var(--pb-ink-muted)' }}>—</span>;
+  if (isNaN(parsed.getTime())) return <span style={{ color: '#94A3B8', fontSize: 14 }}>—</span>;
   const formatted = format(parsed, 'MMM dd, yyyy');
 
   const terminalStatuses: InitiativeStatus[] = ['done', 'cancelled'];
@@ -129,7 +176,7 @@ export function EACell({ value }: { value?: boolean | null }) {
 
 /* ── Quarter Cell ── */
 export function QuarterCell({ value }: { value: string | null }) {
-  if (!value) return <span className="pb-date" style={{ color: 'var(--pb-ink-muted)' }}>—</span>;
+  if (!value) return <span style={{ color: '#94A3B8', fontSize: 14 }}>—</span>;
   return <span className="pb-quarter">{value}</span>;
 }
 
@@ -138,13 +185,12 @@ export function IDCell({ value }: { value: string }) {
   return <span className="pb-id">{value}</span>;
 }
 
-/* ── Type Icon Cell — icon only, no text, transparent bg ── */
+/* ── Type Icon Cell — canonical Jira SVGs ── */
 export function TypeIconCell({ typeKey }: { typeKey?: string | null }) {
-  const iconConfig = TYPE_ICON_MAP[typeKey || ''] || { Icon: CircleDashed, color: '#94A3B8' };
-  const { Icon, color } = iconConfig;
+  const config = TYPE_SVG_MAP[typeKey || ''];
   return (
-    <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }} title={typeKey?.replace(/_/g, ' ') || 'Unknown'}>
-      <Icon size={16} style={{ color }} />
+    <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, width: 16, height: 16 }} title={config?.label || typeKey?.replace(/_/g, ' ') || 'Unknown'}>
+      {config?.svg || DEFAULT_TYPE_SVG}
     </span>
   );
 }
