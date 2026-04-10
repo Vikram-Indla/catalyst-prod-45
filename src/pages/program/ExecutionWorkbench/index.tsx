@@ -15,7 +15,7 @@ import { TableView } from './views/TableView';
 import { PageChrome } from '@/components/layout/PageChrome';
 import { useWorkbenchData } from './useWorkbenchData';
 import { startOfQuarter, endOfQuarter, addQuarters } from 'date-fns';
-import { EpicDrawer } from '@/components/items/epics/EpicDrawer';
+import { EpicDetailModal } from '@/components/items/epics/EpicDetailModal';
 import { FeatureDetailsPanel } from '@/components/items/features/FeatureDetailsPanel';
 import { supabase } from '@/integrations/supabase/client';
 import type { Feature } from '@/types/feature.types';
@@ -228,8 +228,8 @@ export default function ExecutionWorkbenchPage() {
         onOpenFullDrawer={handleOpenFullDrawer}
       />
 
-      {/* Epic Drawer */}
-      <EpicDrawer
+      {/* Epic Detail Modal */}
+      <EpicDetailModal
         isOpen={!!selectedEpicId}
         onClose={() => setSelectedEpicId(null)}
         epicId={selectedEpicId}

@@ -32,7 +32,7 @@ import {
   ZoomIn,
   ZoomOut,
 } from 'lucide-react';
-import { EpicDrawer } from '@/components/items/epics/EpicDrawer';
+import { EpicDetailModal } from '@/components/items/epics/EpicDetailModal';
 
 /* ---------- types ---------- */
 interface EpicRow {
@@ -456,9 +456,9 @@ export function EpicRoadmap({ programId }: EpicRoadmapProps) {
         </div>
       </div>
 
-      {/* Epic Drawer */}
+      {/* Epic Detail Modal */}
       {selectedEpic && (
-        <EpicDrawer
+        <EpicDetailModal
           epicId={selectedEpic.id}
           isOpen={!!selectedEpic}
           onClose={() => setSelectedEpicId(null)}

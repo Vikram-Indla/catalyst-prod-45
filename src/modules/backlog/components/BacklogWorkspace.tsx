@@ -13,7 +13,7 @@ import { EpicListPanel, EpicListItem } from './split-panel/EpicListPanel';
 import { EpicDetailPanel, EpicDetailItem } from './split-panel/EpicDetailPanel';
 import { EpicKanbanBoard } from './EpicKanbanBoard';
 import { EpicTableView } from './EpicTableView';
-import { EpicDrawer } from '@/components/items/epics/EpicDrawer';
+import { EpicDetailModal } from '@/components/items/epics/EpicDetailModal';
 import { EpicFiltersDialog } from './EpicFiltersDialog';
 import { BacklogColumnsDialog } from './BacklogColumnsDialog';
 import { CreateEpicModal } from './CreateEpicModal';
@@ -477,8 +477,8 @@ export function BacklogWorkspace() {
         )}
       </div>
 
-      {/* Epic Drawer - for full details */}
-      <EpicDrawer
+      {/* Epic Detail Modal */}
+      <EpicDetailModal
         epicId={drawerEpicId}
         isOpen={!!drawerEpicId}
         onClose={() => setDrawerEpicId(null)}
