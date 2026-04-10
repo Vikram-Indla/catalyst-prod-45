@@ -1373,7 +1373,7 @@ export default function StoryDetailModal({
             <p style={{ fontSize: 13, color: '#475467', lineHeight: 1.6, marginBottom: 20 }}>This ticket will be soft-deleted (deleted_at timestamp set). It can be restored from the admin panel within 30 days.</p>
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
               <button onClick={() => setShowConfirmDelete(false)} style={{ padding: '7px 16px', borderRadius: 6, background: '#FFF', border: '1px solid #E4E7EC', fontSize: 13, fontWeight: 500, cursor: 'pointer', color: '#475467' }}>Cancel</button>
-              <button onClick={() => { setShowConfirmDelete(false); toast(`${issue?.issue_key} deleted`); onClose(); }} style={{ padding: '7px 16px', borderRadius: 6, background: '#DC2626', color: '#FFF', border: 'none', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>Delete</button>
+              <button onClick={() => { setShowConfirmDelete(false); deleteIssueMutation.mutate(); }} style={{ padding: '7px 16px', borderRadius: 6, background: '#DC2626', color: '#FFF', border: 'none', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>Delete</button>
             </div>
           </div>
         </div>
