@@ -3,7 +3,7 @@
  * Full page for managing stale work items.
  * Light mode only. Page bg #F8FAFC, cards #ffffff.
  */
-import React, { useState, useMemo, useCallback, lazy, Suspense } from 'react';
+import React, { useState, useMemo, useCallback, useRef, useEffect, lazy, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -12,9 +12,10 @@ import { useGovernanceScore } from '@/hooks/useGovernanceScore';
 import { useAgeingItems, type AgeingItem } from '@/hooks/useAgeingItems';
 import { toast } from 'sonner';
 import {
-  ChevronLeft, ChevronDown, ChevronUp, ChevronRight,
+  ChevronDown, ChevronUp, ChevronRight,
   AlertTriangle, Clock, GitBranch, UserX, Link, Copy, AlertCircle,
   CheckCircle, Bell, MessageSquare, Ghost, User, UserCheck, Folder, Tag,
+  LayoutGrid, List as ListIcon,
 } from 'lucide-react';
 import {
   Dialog, DialogContent,
@@ -52,18 +53,19 @@ interface CategoryDef {
   key: number;
   icon: React.ElementType;
   name: string;
+  shortLabel: string;
   subtitle: string;
   isReporterOnus: boolean;
 }
 
 const CATEGORIES: CategoryDef[] = [
-  { key: 1, icon: Ghost, name: 'Ghost Tickets', subtitle: 'No comments, no activity, 60+ days stale', isReporterOnus: false },
-  { key: 2, icon: GitBranch, name: 'No Work Breakdown', subtitle: 'Stories without breakdown, 30+ days open', isReporterOnus: false },
-  { key: 3, icon: UserX, name: 'Inactive Assignee', subtitle: 'Assignee inactive — reporter must action', isReporterOnus: true },
-  { key: 4, icon: Link, name: 'Epic-Linked Stale', subtitle: 'Epic-linked, 45+ days stale', isReporterOnus: false },
-  { key: 5, icon: Clock, name: 'Long-Stale Low Priority', subtitle: 'Low priority, 90+ days open', isReporterOnus: false },
-  { key: 6, icon: Copy, name: 'AI Duplicate', subtitle: 'Potential duplicates flagged by AI', isReporterOnus: false },
-  { key: 7, icon: AlertCircle, name: 'Active Defect, Inactive Assignee', subtitle: 'Active defect, inactive assignee — reporter must action', isReporterOnus: true },
+  { key: 1, icon: Ghost, name: 'Ghost Tickets', shortLabel: 'Ghost', subtitle: 'No comments, no activity, 60+ days stale', isReporterOnus: false },
+  { key: 2, icon: GitBranch, name: 'No Work Breakdown', shortLabel: 'No Breakdown', subtitle: 'Stories without breakdown, 30+ days open', isReporterOnus: false },
+  { key: 3, icon: UserX, name: 'Inactive Assignee', shortLabel: 'Inactive', subtitle: 'Assignee inactive — reporter must action', isReporterOnus: true },
+  { key: 4, icon: Link, name: 'Epic-Linked Stale', shortLabel: 'Epic-Linked', subtitle: 'Epic-linked, 45+ days stale', isReporterOnus: false },
+  { key: 5, icon: Clock, name: 'Long-Stale Low Priority', shortLabel: 'Long Stale', subtitle: 'Low priority, 90+ days open', isReporterOnus: false },
+  { key: 6, icon: Copy, name: 'AI Duplicate', shortLabel: 'AI Dup', subtitle: 'Potential duplicates flagged by AI', isReporterOnus: false },
+  { key: 7, icon: AlertCircle, name: 'Active Defect, Inactive Assignee', shortLabel: 'Active Defect', subtitle: 'Active defect, inactive assignee — reporter must action', isReporterOnus: true },
 ];
 
 const CLOSURE_REASONS = [
@@ -82,11 +84,16 @@ const AI_INSIGHTS: Record<number, string> = {
   6: 'AI-detected duplicate or superseded item.',
 };
 
+const CAT_SHORT: Record<number, string> = {
+  1: 'Ghost', 2: 'No Breakdown', 3: 'Inactive',
+  4: 'Epic-Linked', 5: 'Long Stale', 6: 'AI Dup', 7: 'Active Defect',
+};
+
 // ── Status Lozenge ──────────────────────────────
 function StatusLozenge({ value }: { value: string }) {
   const lower = (value || '').toLowerCase();
   let bg = '#DFE1E6', color = '#253858';
-  if (lower.includes('progress') || lower.includes('review') || lower.includes('active')) {
+  if (lower.includes('progress') || lower.includes('review') || lower.includes('active') || lower.includes('integration') || lower.includes('ready for development')) {
     bg = '#DEEBFF'; color = '#0747A6';
   } else if (lower.includes('done') || lower.includes('approved') || lower.includes('complete')) {
     bg = '#E3FCEF'; color = '#006644';
@@ -97,6 +104,7 @@ function StatusLozenge({ value }: { value: string }) {
       fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
       letterSpacing: '0.03em', borderRadius: 3, padding: '0 6px',
       background: bg, color, fontFamily: 'Inter, sans-serif',
+      whiteSpace: 'nowrap',
     }}>
       {value}
     </span>
@@ -130,6 +138,7 @@ export default function CleanupPage() {
   const { data: govScore } = useGovernanceScore();
 
   const [activeTab, setActiveTab] = useState<'cleanup' | 'restore'>('cleanup');
+  const [viewMode, setViewMode] = useState<'group' | 'list'>('group');
   const [openCats, setOpenCats] = useState<Record<number, boolean>>(() => {
     const init: Record<number, boolean> = {};
     CATEGORIES.forEach(c => { init[c.key] = true; });
@@ -140,6 +149,10 @@ export default function CleanupPage() {
   const [closureReason, setClosureReason] = useState(CLOSURE_REASONS[0]);
   const [detailItem, setDetailItem] = useState<{ id: string; catKey: number } | null>(null);
   const [detailNavIndex, setDetailNavIndex] = useState(0);
+
+  // List view filters
+  const [listCatFilter, setListCatFilter] = useState('all');
+  const [listStatusFilter, setListStatusFilter] = useState('all');
 
   const toggleCat = (key: number) => {
     setOpenCats(p => ({ ...p, [key]: !p[key] }));
@@ -202,6 +215,60 @@ export default function CleanupPage() {
   const allFlatItems = useMemo(() => Object.values(catData).flat(), [catData]);
   const selectedItems = useMemo(() => allFlatItems.filter(i => selected.has(i.id)), [allFlatItems, selected]);
 
+  // ── List view: filtered items ──
+  const listFilteredItems = useMemo(() => {
+    let items = allFlatItems;
+    if (listCatFilter !== 'all') {
+      const catKey = parseInt(listCatFilter);
+      items = items.filter(i => i.categoryKey === catKey);
+    }
+    if (listStatusFilter !== 'all') {
+      items = items.filter(i => i.status === listStatusFilter);
+    }
+    return items;
+  }, [allFlatItems, listCatFilter, listStatusFilter]);
+
+  const distinctStatuses = useMemo(() => {
+    const s = new Set(allFlatItems.map(i => i.status));
+    return Array.from(s).sort();
+  }, [allFlatItems]);
+
+  // Checkable items in list (exclude cat3/cat7)
+  const listCheckableItems = useMemo(() =>
+    listFilteredItems.filter(i => !CATEGORIES.find(c => c.key === i.categoryKey)?.isReporterOnus),
+    [listFilteredItems]
+  );
+
+  const allListChecked = listCheckableItems.length > 0 && listCheckableItems.every(i => selected.has(i.id));
+  const someListChecked = listCheckableItems.some(i => selected.has(i.id));
+
+  // Master checkbox ref for indeterminate
+  const masterCheckRef = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    if (masterCheckRef.current) {
+      const input = masterCheckRef.current.querySelector('input');
+      if (input) input.indeterminate = someListChecked && !allListChecked;
+    }
+  }, [someListChecked, allListChecked]);
+
+  const handleMasterCheck = useCallback(() => {
+    if (allListChecked) {
+      // Deselect all filtered
+      setSelected(prev => {
+        const next = new Set(prev);
+        listCheckableItems.forEach(i => next.delete(i.id));
+        return next;
+      });
+    } else {
+      // Select all filtered checkable
+      setSelected(prev => {
+        const next = new Set(prev);
+        listCheckableItems.forEach(i => next.add(i.id));
+        return next;
+      });
+    }
+  }, [allListChecked, listCheckableItems]);
+
   // ── Force Close Handler ──
   const handleForceClose = useCallback(async () => {
     if (!user?.id || selected.size === 0) return;
@@ -210,7 +277,6 @@ export default function CleanupPage() {
     const restoreDeadline = new Date(Date.now() + 90 * 86400_000).toISOString();
     const todayStr = new Date().toISOString().split('T')[0];
 
-    // 1. Update catalyst_issues
     const { error } = await supabase
       .from('catalyst_issues')
       .update({
@@ -225,7 +291,6 @@ export default function CleanupPage() {
 
     if (error) { toast.error('Force close failed: ' + error.message); return; }
 
-    // 2. Insert comment for each issue
     for (const item of closedItems) {
       const catLabel = CATEGORIES.find(c => c.key === item.categoryKey)?.name ?? 'Unknown';
       await supabase.from('ph_comments').insert({
@@ -235,7 +300,6 @@ export default function CleanupPage() {
       });
     }
 
-    // 3. Governance closure log
     for (const item of closedItems) {
       await supabase.from('governance_closure_log').insert({
         item_key: item.issue_key,
@@ -250,7 +314,6 @@ export default function CleanupPage() {
       } as any);
     }
 
-    // 4. Notify reporters
     const reporterIds = [...new Set(closedItems.map(i => i.reporter_account_id).filter(Boolean))] as string[];
     for (const rid of reporterIds) {
       const rItems = closedItems.filter(i => i.reporter_account_id === rid);
@@ -264,14 +327,12 @@ export default function CleanupPage() {
       });
     }
 
-    // 5. Invalidate queries
     qc.invalidateQueries({ queryKey: ['ageing-items'] });
     qc.invalidateQueries({ queryKey: ['governance-score'] });
     qc.invalidateQueries({ queryKey: ['cleanup-categories'] });
     qc.invalidateQueries({ queryKey: ['notifications'] });
     qc.invalidateQueries({ queryKey: ['watching-tab'] });
 
-    // 6. Toast + reset
     setSelected(new Set());
     setShowForceCloseDialog(false);
     toast.success(`${ids.length} item${ids.length > 1 ? 's' : ''} force-closed. Comment added to each issue. Reporters notified.`);
@@ -313,6 +374,15 @@ export default function CleanupPage() {
     });
   }, [catData]);
 
+  const handleDeselectAllInCategory = useCallback((catKey: number) => {
+    const items = catData[catKey] ?? [];
+    setSelected(prev => {
+      const next = new Set(prev);
+      items.forEach(i => next.delete(i.id));
+      return next;
+    });
+  }, [catData]);
+
   const handleDeselectAll = useCallback(() => {
     setSelected(new Set());
   }, []);
@@ -329,6 +399,12 @@ export default function CleanupPage() {
     setDetailItem({ id: item.id, catKey: item.categoryKey });
     setDetailNavIndex(idx >= 0 ? idx : 0);
   }, [catData]);
+
+  // For list view detail — use filtered list as navigation context
+  const handleOpenDetailList = useCallback((item: CleanupItem, idx: number) => {
+    setDetailItem({ id: item.id, catKey: item.categoryKey });
+    setDetailNavIndex(idx);
+  }, []);
 
   const handleDetailNavigate = useCallback((idx: number) => {
     if (idx < 0 || idx >= detailCatItems.length) return;
@@ -355,7 +431,6 @@ export default function CleanupPage() {
     const todayStr = new Date().toISOString().split('T')[0];
     const originalStatus = (logEntry as any).original_status || 'To Do';
 
-    // 1. Restore catalyst_issues
     await supabase
       .from('catalyst_issues')
       .update({
@@ -366,7 +441,6 @@ export default function CleanupPage() {
       })
       .eq('id', logEntry.issue_id);
 
-    // 2. Update governance log
     await supabase
       .from('governance_closure_log')
       .update({
@@ -375,7 +449,6 @@ export default function CleanupPage() {
       })
       .eq('id', logEntry.id);
 
-    // 3. Add comment
     if (logEntry.issue_id) {
       await supabase.from('ph_comments').insert({
         work_item_id: logEntry.issue_id,
@@ -384,7 +457,6 @@ export default function CleanupPage() {
       });
     }
 
-    // 4. Invalidate
     qc.invalidateQueries({ queryKey: ['ageing-items'] });
     qc.invalidateQueries({ queryKey: ['governance-score'] });
     qc.invalidateQueries({ queryKey: ['cleanup-categories'] });
@@ -394,13 +466,37 @@ export default function CleanupPage() {
     refetchRestore();
   }, [user, qc, refetchRestore]);
 
-  // ── First selected item category for "select all" ──
+  // ── First selected item category for "select all" in bulk bar ──
   const firstSelectedCatKey = useMemo(() => {
     if (selected.size === 0) return null;
     const firstId = Array.from(selected)[0];
     const item = allFlatItems.find(i => i.id === firstId);
     return item?.categoryKey ?? null;
   }, [selected, allFlatItems]);
+
+  // ── Preview reporter notifications ──
+  const handlePreviewReporterNotifications = useCallback(() => {
+    if (selectedItems.length === 0) {
+      toast.error('No items selected');
+      return;
+    }
+    const reporterMap = new Map<string, { name: string; count: number }>();
+    selectedItems.forEach(item => {
+      const rid = item.reporter_account_id || 'unknown';
+      const rname = item.reporter_name || 'Unknown Reporter';
+      if (!reporterMap.has(rid)) reporterMap.set(rid, { name: rname, count: 0 });
+      reporterMap.get(rid)!.count++;
+    });
+    const reporters = Array.from(reporterMap.values());
+    const msg = reporters.map(r => `${r.name} (${r.count} item${r.count > 1 ? 's' : ''})`).join(', ');
+    toast.info(`Reporters to be notified: ${msg}`);
+  }, [selectedItems]);
+
+  // Column widths for list view
+  const COL = {
+    check: 32, key: 110, summary: 0, parent: 160, project: 100,
+    reporter: 140, assignee: 140, status: 130, days: 64, category: 120, detail: 32,
+  };
 
   return (
     <div style={{
@@ -414,31 +510,9 @@ export default function CleanupPage() {
         flexShrink: 0,
       }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4, flex: 1 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <button
-              onClick={() => navigate(-1)}
-              style={{
-                display: 'flex', alignItems: 'center', gap: 2,
-                background: 'none', border: 'none', cursor: 'pointer',
-                fontSize: 13, color: '#475569', fontFamily: 'Inter, sans-serif',
-              }}
-            >
-              <ChevronLeft size={14} color="#475569" />
-              Back to Notifications
-            </button>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ fontFamily: 'Sora, sans-serif', fontSize: 20, fontWeight: 700, color: '#0F172A' }}>
-              AI Cleanup
-            </span>
-            <span style={{
-              fontSize: 11, color: '#64748B', background: '#F1F5F9',
-              border: '1px solid #E2E8F0', padding: '2px 8px', borderRadius: 20,
-              fontFamily: 'Inter, sans-serif',
-            }}>
-              Gemini · daily scan
-            </span>
-          </div>
+          <span style={{ fontFamily: 'Sora, sans-serif', fontSize: 20, fontWeight: 700, color: '#0F172A' }}>
+            AI Cleanup
+          </span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <span style={{ fontSize: 13, color: '#94A3B8' }}>Last scan: today 02:00 AST</span>
@@ -470,29 +544,57 @@ export default function CleanupPage() {
         </div>
       )}
 
-      {/* ═══ TABS ═══ */}
+      {/* ═══ TABS + VIEW TOGGLE ═══ */}
       <div style={{
-        display: 'flex', gap: 0, background: '#ffffff',
-        borderBottom: '1px solid #E2E8F0', flexShrink: 0,
+        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+        background: '#ffffff', borderBottom: '1px solid #E2E8F0', flexShrink: 0,
+        padding: '0 16px 0 0',
       }}>
-        {[
-          { key: 'cleanup' as const, label: 'Active Cleanup' },
-          { key: 'restore' as const, label: 'Closed — Restore' },
-        ].map(tab => (
-          <button
-            key={tab.key}
-            onClick={() => setActiveTab(tab.key)}
-            style={{
-              padding: '10px 24px', border: 'none', cursor: 'pointer',
-              background: 'transparent', fontFamily: 'Inter, sans-serif',
-              fontSize: 13, fontWeight: activeTab === tab.key ? 700 : 500,
-              color: activeTab === tab.key ? '#0F172A' : '#64748B',
-              borderBottom: activeTab === tab.key ? '2px solid #2563EB' : '2px solid transparent',
-            }}
-          >
-            {tab.label}
-          </button>
-        ))}
+        <div style={{ display: 'flex', gap: 0 }}>
+          {[
+            { key: 'cleanup' as const, label: 'Active Cleanup' },
+            { key: 'restore' as const, label: 'Closed — Restore' },
+          ].map(tab => (
+            <button
+              key={tab.key}
+              onClick={() => setActiveTab(tab.key)}
+              style={{
+                padding: '10px 24px', border: 'none', cursor: 'pointer',
+                background: 'transparent', fontFamily: 'Inter, sans-serif',
+                fontSize: 13, fontWeight: activeTab === tab.key ? 700 : 500,
+                color: activeTab === tab.key ? '#0F172A' : '#64748B',
+                borderBottom: activeTab === tab.key ? '2px solid #2563EB' : '2px solid transparent',
+              }}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        {activeTab === 'cleanup' && (
+          <div style={{ display: 'flex', gap: 0, borderRadius: 6, overflow: 'hidden', border: '1px solid #E2E8F0' }}>
+            {[
+              { key: 'group' as const, icon: LayoutGrid, label: 'Group' },
+              { key: 'list' as const, icon: ListIcon, label: 'List' },
+            ].map(v => (
+              <button
+                key={v.key}
+                onClick={() => setViewMode(v.key)}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 4,
+                  height: 32, padding: '0 12px', border: 'none', cursor: 'pointer',
+                  fontFamily: 'Inter, sans-serif', fontSize: 12, fontWeight: 500,
+                  background: viewMode === v.key ? '#0F172A' : '#ffffff',
+                  color: viewMode === v.key ? '#ffffff' : '#64748B',
+                  transition: 'background 100ms, color 100ms',
+                }}
+              >
+                <v.icon size={14} />
+                {v.label}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       {activeTab === 'cleanup' ? (
@@ -526,190 +628,488 @@ export default function CleanupPage() {
             ))}
           </div>
 
-          {/* ═══ CATEGORY SECTIONS ═══ */}
-          <div style={{ flex: 1, overflowY: 'auto', paddingBottom: selected.size > 0 ? 70 : 16 }}>
-            {!isLoading && sharedItems.length === 0 ? (
-              <div style={{
-                display: 'flex', flexDirection: 'column', alignItems: 'center',
-                justifyContent: 'center', marginTop: 64, gap: 12,
-              }}>
-                <CheckCircle size={48} color="#10B981" strokeWidth={1.5} />
-                <span style={{ fontFamily: 'Sora, sans-serif', fontSize: 16, fontWeight: 700, color: '#065F46' }}>
-                  Governance: GREEN
-                </span>
-                <span style={{ fontSize: 13, color: '#94A3B8' }}>
-                  All items are in compliance. Check back tomorrow.
-                </span>
-              </div>
-            ) : isLoading ? (
-              <div style={{ display: 'flex', justifyContent: 'center', padding: 40 }}>
+          {viewMode === 'group' ? (
+            /* ═══ GROUP VIEW (existing accordion) ═══ */
+            <div style={{ flex: 1, overflowY: 'auto', paddingBottom: selected.size > 0 ? 70 : 16 }}>
+              {!isLoading && sharedItems.length === 0 ? (
                 <div style={{
-                  width: 24, height: 24,
-                  border: '2.5px solid #E2E8F0', borderTopColor: '#2563EB',
-                  borderRadius: '50%', animation: 'spin 0.7s linear infinite',
-                }} />
-              </div>
-            ) : (
-              CATEGORIES.map(cat => {
-                const items = catData[cat.key] ?? [];
-                const isOpen = openCats[cat.key] ?? true;
-                const CatIcon = cat.icon;
+                  display: 'flex', flexDirection: 'column', alignItems: 'center',
+                  justifyContent: 'center', marginTop: 64, gap: 12,
+                }}>
+                  <CheckCircle size={48} color="#10B981" strokeWidth={1.5} />
+                  <span style={{ fontFamily: 'Sora, sans-serif', fontSize: 16, fontWeight: 700, color: '#065F46' }}>
+                    Governance: GREEN
+                  </span>
+                  <span style={{ fontSize: 13, color: '#94A3B8' }}>
+                    All items are in compliance. Check back tomorrow.
+                  </span>
+                </div>
+              ) : isLoading ? (
+                <div style={{ display: 'flex', justifyContent: 'center', padding: 40 }}>
+                  <div style={{
+                    width: 24, height: 24,
+                    border: '2.5px solid #E2E8F0', borderTopColor: '#2563EB',
+                    borderRadius: '50%', animation: 'spin 0.7s linear infinite',
+                  }} />
+                </div>
+              ) : (
+                CATEGORIES.map(cat => {
+                  const items = catData[cat.key] ?? [];
+                  const isOpen = openCats[cat.key] ?? true;
+                  const CatIcon = cat.icon;
+                  const checkableItems = items.filter(() => !cat.isReporterOnus);
+                  const allCatSelected = checkableItems.length > 0 && checkableItems.every(i => selected.has(i.id));
 
-                return (
-                  <div key={cat.key}>
-                    {/* Section Header */}
-                    <button
-                      onClick={() => toggleCat(cat.key)}
-                      style={{
-                        width: '100%', display: 'flex', alignItems: 'center', gap: 8,
-                        padding: '12px 16px', border: 'none', cursor: 'pointer',
-                        background: '#F8FAFC', borderBottom: '1px solid #E2E8F0',
-                        fontFamily: 'Inter, sans-serif',
-                      }}
-                    >
-                      <CatIcon size={16} color="#64748B" />
-                      <div style={{ flex: 1, textAlign: 'left' }}>
-                      <span style={{ fontSize: 14, fontWeight: 600, color: '#0F172A' }}>
-                          {cat.name}
-                        </span>
-                        <span style={{
-                          marginLeft: 8, fontSize: 11, color: '#64748B',
-                          background: '#F1F5F9', padding: '2px 8px', borderRadius: 20,
-                        }}>
-                          {items.length}
-                        </span>
-                        <div style={{ fontSize: 13, color: '#94A3B8', marginTop: 2 }}>
-                          {cat.subtitle}
-                        </div>
+                  return (
+                    <div key={cat.key}>
+                      {/* Section Header */}
+                      <div
+                        style={{
+                          width: '100%', display: 'flex', alignItems: 'center', gap: 8,
+                          padding: '12px 16px',
+                          background: '#F8FAFC', borderBottom: '1px solid #E2E8F0',
+                          fontFamily: 'Inter, sans-serif',
+                        }}
+                      >
+                        <button
+                          onClick={() => toggleCat(cat.key)}
+                          style={{
+                            display: 'flex', alignItems: 'center', gap: 8, flex: 1,
+                            background: 'none', border: 'none', cursor: 'pointer',
+                            fontFamily: 'Inter, sans-serif', textAlign: 'left',
+                          }}
+                        >
+                          <CatIcon size={16} color="#64748B" />
+                          <div style={{ flex: 1 }}>
+                            <span style={{ fontSize: 14, fontWeight: 600, color: '#0F172A' }}>
+                              {cat.name}
+                            </span>
+                            <span style={{
+                              marginLeft: 8, fontSize: 11, color: '#64748B',
+                              background: '#F1F5F9', padding: '2px 8px', borderRadius: 20,
+                            }}>
+                              {items.length}
+                            </span>
+                            <div style={{ fontSize: 13, color: '#94A3B8', marginTop: 2 }}>
+                              {cat.subtitle}
+                            </div>
+                          </div>
+                          {isOpen ? <ChevronUp size={14} color="#94A3B8" /> : <ChevronDown size={14} color="#94A3B8" />}
+                        </button>
+
+                        {/* Select all link in expanded header */}
+                        {isOpen && !cat.isReporterOnus && checkableItems.length > 0 && (
+                          <span
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (allCatSelected) {
+                                handleDeselectAllInCategory(cat.key);
+                              } else {
+                                handleSelectAllInCategory(cat.key);
+                              }
+                            }}
+                            style={{
+                              fontSize: 12, color: '#2563EB', cursor: 'pointer',
+                              whiteSpace: 'nowrap', flexShrink: 0,
+                            }}
+                          >
+                            {allCatSelected ? 'Deselect all' : `Select all ${checkableItems.length}`}
+                          </span>
+                        )}
                       </div>
-                      {isOpen ? <ChevronUp size={14} color="#94A3B8" /> : <ChevronDown size={14} color="#94A3B8" />}
-                    </button>
 
-                    {/* Items */}
-                    {isOpen && items.length > 0 && items.map(item => (
+                      {/* Items */}
+                      {isOpen && items.length > 0 && items.map(item => (
+                        <div
+                          key={item.id}
+                          style={{
+                            padding: '12px 16px', borderBottom: '0.75px solid #F1F5F9',
+                            background: '#ffffff', transition: 'background 150ms',
+                          }}
+                          onMouseEnter={e => (e.currentTarget.style.background = '#F8FAFC')}
+                          onMouseLeave={e => (e.currentTarget.style.background = '#ffffff')}
+                        >
+                          {/* LINE 1 */}
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                            {!cat.isReporterOnus && (
+                              <Checkbox
+                                checked={selected.has(item.id)}
+                                onCheckedChange={() => toggleItem(item.id)}
+                                style={{ width: 16, height: 16 }}
+                              />
+                            )}
+                            <span style={{
+                              fontFamily: 'JetBrains Mono, monospace',
+                              fontSize: 12, fontWeight: 500, color: '#2563EB',
+                            }}>
+                              {item.issue_key}
+                            </span>
+                            <StatusLozenge value={item.status} />
+                            <span style={{
+                              fontFamily: 'JetBrains Mono, monospace',
+                              fontSize: 13, fontWeight: 600, color: daysColor(item.days_stale),
+                            }}>
+                              {item.days_stale}d
+                            </span>
+                            {cat.isReporterOnus && (
+                              <span style={{
+                                fontSize: 11, fontWeight: 600,
+                                background: '#FEF2F2', color: '#991B1B', border: '1px solid #FCA5A5',
+                                padding: '2px 8px', borderRadius: 4,
+                              }}>
+                                REPORTER
+                              </span>
+                            )}
+                            <div style={{ flex: 1 }} />
+                            <button
+                              onClick={() => handleOpenDetail(item)}
+                              style={{
+                                background: 'none', border: 'none', cursor: 'pointer',
+                                padding: 4, display: 'flex',
+                              }}
+                            >
+                              <ChevronRight size={14} color="#CBD5E1" />
+                            </button>
+                          </div>
+
+                          {/* LINE 2 — Title */}
+                          <div style={{
+                            fontSize: 14, fontWeight: 400, color: '#1E293B',
+                            marginTop: 4, paddingLeft: cat.isReporterOnus ? 0 : 28,
+                            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                          }}>
+                            {item.title}
+                          </div>
+
+                          {/* LINE 3 — Metadata */}
+                          <div style={{
+                            display: 'flex', gap: 16, marginTop: 4,
+                            paddingLeft: cat.isReporterOnus ? 0 : 28, flexWrap: 'wrap',
+                          }}>
+                            <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, color: '#64748B' }}>
+                              <User size={12} color="#94A3B8" />
+                              {item.reporter_name || 'Unknown'}
+                            </span>
+                            <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, color: '#64748B' }}>
+                              <UserCheck size={12} color="#94A3B8" />
+                              {item.reporter_name || 'Unknown'}
+                            </span>
+                            <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, color: '#64748B' }}>
+                              <Folder size={12} color="#94A3B8" />
+                              {item.project_key || '\u2014'}
+                            </span>
+                            <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, color: '#64748B' }}>
+                              <Tag size={12} color="#94A3B8" />
+                              {item.fixed_versions || '\u2014'}
+                            </span>
+                          </div>
+
+                          {/* LINE 4 — AI reasoning */}
+                          {!cat.isReporterOnus && AI_INSIGHTS[cat.key] && (
+                            <div style={{
+                              marginTop: 8, paddingLeft: cat.isReporterOnus ? 0 : 28,
+                            }}>
+                              <div style={{
+                                background: '#F8FAFC', borderLeft: '2px solid #CBD5E1',
+                                padding: '6px 12px', fontSize: 14, color: '#1E293B',
+                              }}>
+                                {AI_INSIGHTS[cat.key]}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Reporter onus note */}
+                          {cat.isReporterOnus && (
+                            <div style={{
+                              fontSize: 13, color: '#94A3B8', marginTop: 4,
+                            }}>
+                              Reporter must action — {item.reporter_name || 'Unknown'}
+                            </div>
+                          )}
+                        </div>
+                      ))}
+
+                      {isOpen && items.length === 0 && (
+                        <div style={{
+                          padding: '16px', textAlign: 'center',
+                          fontSize: 13, color: '#94A3B8', background: '#ffffff',
+                          borderBottom: '0.75px solid #F1F5F9',
+                        }}>
+                          No items in this category
+                        </div>
+                      )}
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          ) : (
+            /* ═══ LIST VIEW ═══ */
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+              {/* Toolbar */}
+              <div style={{
+                display: 'flex', alignItems: 'center', gap: 12, padding: '8px 16px',
+                background: '#ffffff', borderBottom: '1px solid #E2E8F0', flexShrink: 0,
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <Checkbox
+                    ref={masterCheckRef as any}
+                    checked={allListChecked}
+                    onCheckedChange={handleMasterCheck}
+                    style={{ width: 16, height: 16 }}
+                  />
+                  <span style={{ fontSize: 13, color: '#0F172A', whiteSpace: 'nowrap' }}>
+                    {someListChecked
+                      ? `${listCheckableItems.filter(i => selected.has(i.id)).length} of ${listCheckableItems.length} selected`
+                      : `Select all ${listCheckableItems.length}`
+                    }
+                  </span>
+                </div>
+
+                <Select value={listCatFilter} onValueChange={setListCatFilter}>
+                  <SelectTrigger style={{ height: 32, width: 180, fontSize: 12, border: '1px solid #E2E8F0', borderRadius: 6, background: '#ffffff' }}>
+                    <SelectValue placeholder="All categories" />
+                  </SelectTrigger>
+                  <SelectContent style={{ background: '#ffffff' }}>
+                    <SelectItem value="all" style={{ fontSize: 12 }}>All categories</SelectItem>
+                    {CATEGORIES.map(c => (
+                      <SelectItem key={c.key} value={String(c.key)} style={{ fontSize: 12 }}>{c.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                <Select value={listStatusFilter} onValueChange={setListStatusFilter}>
+                  <SelectTrigger style={{ height: 32, width: 160, fontSize: 12, border: '1px solid #E2E8F0', borderRadius: 6, background: '#ffffff' }}>
+                    <SelectValue placeholder="All statuses" />
+                  </SelectTrigger>
+                  <SelectContent style={{ background: '#ffffff' }}>
+                    <SelectItem value="all" style={{ fontSize: 12 }}>All statuses</SelectItem>
+                    {distinctStatuses.map(s => (
+                      <SelectItem key={s} value={s} style={{ fontSize: 12 }}>{s}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                <div style={{ flex: 1 }} />
+
+                <Button
+                  disabled={selected.size === 0}
+                  onClick={() => setShowForceCloseDialog(true)}
+                  style={{
+                    height: 32, fontSize: 12, fontWeight: 700,
+                    background: selected.size > 0 ? '#DC2626' : '#DC2626',
+                    color: '#ffffff', border: 'none',
+                    opacity: selected.size === 0 ? 0.4 : 1,
+                    pointerEvents: selected.size === 0 ? 'none' : 'auto',
+                  }}
+                >
+                  Force Close ({selected.size})
+                </Button>
+              </div>
+
+              {/* Table Header */}
+              <div style={{
+                display: 'flex', alignItems: 'center', height: 32,
+                background: '#F8FAFC', borderBottom: '1px solid #E2E8F0',
+                padding: '0 12px', flexShrink: 0,
+                fontSize: 10, fontWeight: 500, textTransform: 'uppercase',
+                letterSpacing: '0.06em', color: '#94A3B8',
+                fontFamily: 'Inter, sans-serif',
+              }}>
+                <div style={{ width: COL.check, flexShrink: 0 }} />
+                <div style={{ width: COL.key, flexShrink: 0 }}>KEY</div>
+                <div style={{ flex: 1, minWidth: 0 }}>SUMMARY</div>
+                <div style={{ width: COL.parent, flexShrink: 0 }}>PARENT</div>
+                <div style={{ width: COL.project, flexShrink: 0 }}>PROJECT</div>
+                <div style={{ width: COL.reporter, flexShrink: 0 }}>REPORTER</div>
+                <div style={{ width: COL.assignee, flexShrink: 0 }}>ASSIGNEE</div>
+                <div style={{ width: COL.status, flexShrink: 0 }}>STATUS</div>
+                <div style={{ width: COL.days, flexShrink: 0, textAlign: 'right' }}>DAYS</div>
+                <div style={{ width: COL.category, flexShrink: 0, paddingLeft: 8 }}>CATEGORY</div>
+                <div style={{ width: COL.detail, flexShrink: 0 }} />
+              </div>
+
+              {/* Table Body */}
+              <div style={{ flex: 1, overflowY: 'auto', paddingBottom: selected.size > 0 ? 70 : 0 }}>
+                {isLoading ? (
+                  <div style={{ display: 'flex', justifyContent: 'center', padding: 40 }}>
+                    <div style={{
+                      width: 24, height: 24,
+                      border: '2.5px solid #E2E8F0', borderTopColor: '#2563EB',
+                      borderRadius: '50%', animation: 'spin 0.7s linear infinite',
+                    }} />
+                  </div>
+                ) : listFilteredItems.length === 0 ? (
+                  <div style={{
+                    display: 'flex', flexDirection: 'column', alignItems: 'center',
+                    justifyContent: 'center', padding: '64px 0', gap: 12,
+                  }}>
+                    <CheckCircle size={32} color="#CBD5E1" />
+                    <span style={{ fontSize: 14, color: '#94A3B8' }}>No items match this filter</span>
+                    {(listCatFilter !== 'all' || listStatusFilter !== 'all') && (
+                      <span
+                        onClick={() => { setListCatFilter('all'); setListStatusFilter('all'); }}
+                        style={{ fontSize: 13, color: '#2563EB', textDecoration: 'underline', cursor: 'pointer' }}
+                      >
+                        Clear filters
+                      </span>
+                    )}
+                  </div>
+                ) : (
+                  listFilteredItems.map((item, idx) => {
+                    const cat = CATEGORIES.find(c => c.key === item.categoryKey);
+                    const isReporter = cat?.isReporterOnus ?? false;
+                    const isSelected = selected.has(item.id);
+
+                    return (
                       <div
                         key={item.id}
                         style={{
-                          padding: '12px 16px', borderBottom: '0.75px solid #F1F5F9',
-                          background: '#ffffff', transition: 'background 150ms',
+                          display: 'flex', alignItems: 'center', height: 40, maxHeight: 40,
+                          padding: '0 12px', borderBottom: '0.75px solid #F1F5F9',
+                          background: isSelected ? 'rgba(37,99,235,0.04)' : '#ffffff',
+                          borderLeft: isSelected ? '2px solid #2563EB' : '2px solid transparent',
+                          transition: 'background 100ms',
+                          overflow: 'hidden',
+                          fontFamily: 'Inter, sans-serif', fontSize: 13,
                         }}
-                        onMouseEnter={e => (e.currentTarget.style.background = '#F8FAFC')}
-                        onMouseLeave={e => (e.currentTarget.style.background = '#ffffff')}
+                        onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = '#F8FAFC'; }}
+                        onMouseLeave={e => { if (!isSelected) e.currentTarget.style.background = '#ffffff'; }}
                       >
-                        {/* LINE 1 */}
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                          {!cat.isReporterOnus && (
+                        {/* Checkbox */}
+                        <div style={{ width: COL.check, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          {isReporter ? (
+                            <span style={{ color: '#CBD5E1', fontSize: 13 }}>{'\u2014'}</span>
+                          ) : (
                             <Checkbox
-                              checked={selected.has(item.id)}
+                              checked={isSelected}
                               onCheckedChange={() => toggleItem(item.id)}
                               style={{ width: 16, height: 16 }}
                             />
                           )}
-                          <span style={{
-                            fontFamily: 'JetBrains Mono, monospace',
-                            fontSize: 12, fontWeight: 500, color: '#2563EB',
-                          }}>
-                            {item.issue_key}
-                          </span>
-                          <StatusLozenge value={item.status} />
-                          <span style={{
-                            fontFamily: 'JetBrains Mono, monospace',
-                            fontSize: 13, fontWeight: 600, color: daysColor(item.days_stale),
-                          }}>
-                            {item.days_stale}d
-                          </span>
-                          {cat.isReporterOnus && (
-                            <span style={{
-                              fontSize: 11, fontWeight: 600,
-                              background: '#FEF2F2', color: '#991B1B', border: '1px solid #FCA5A5',
-                              padding: '2px 8px', borderRadius: 4,
-                            }}>
-                              REPORTER
-                            </span>
-                          )}
-                          <div style={{ flex: 1 }} />
-                          <button
-                            onClick={() => handleOpenDetail(item)}
-                            style={{
-                              background: 'none', border: 'none', cursor: 'pointer',
-                              padding: 4, display: 'flex',
-                            }}
-                          >
-                            <ChevronRight size={14} color="#CBD5E1" />
-                          </button>
                         </div>
 
-                        {/* LINE 2 — Title */}
+                        {/* Key */}
                         <div style={{
-                          fontSize: 14, fontWeight: 400, color: '#1E293B',
-                          marginTop: 4, paddingLeft: cat.isReporterOnus ? 0 : 28,
+                          width: COL.key, flexShrink: 0,
+                          fontFamily: 'JetBrains Mono, monospace', fontSize: 12, fontWeight: 500, color: '#2563EB',
                           overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                        }}>
+                          {item.issue_key}
+                        </div>
+
+                        {/* Summary */}
+                        <div style={{
+                          flex: 1, minWidth: 0, color: '#0F172A',
+                          overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                          paddingRight: 8,
                         }}>
                           {item.title}
                         </div>
 
-                        {/* LINE 3 — Metadata */}
+                        {/* Parent */}
                         <div style={{
-                          display: 'flex', gap: 16, marginTop: 4,
-                          paddingLeft: cat.isReporterOnus ? 0 : 28, flexWrap: 'wrap',
+                          width: COL.parent, flexShrink: 0,
+                          fontFamily: item.parent_key ? 'JetBrains Mono, monospace' : 'Inter, sans-serif',
+                          fontSize: item.parent_key ? 11 : 12,
+                          color: item.parent_key ? '#64748B' : '#CBD5E1',
+                          overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                         }}>
-                          <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, color: '#64748B' }}>
-                            <User size={12} color="#94A3B8" />
+                          {item.parent_key || '\u2014'}
+                        </div>
+
+                        {/* Project */}
+                        <div style={{
+                          width: COL.project, flexShrink: 0,
+                          fontSize: 12, fontWeight: 500, color: '#475569',
+                          overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                        }}>
+                          {item.project_key || '\u2014'}
+                        </div>
+
+                        {/* Reporter */}
+                        <div style={{
+                          width: COL.reporter, flexShrink: 0, display: 'flex', alignItems: 'center', gap: 6,
+                          overflow: 'hidden',
+                        }}>
+                          <div style={{
+                            width: 20, height: 20, borderRadius: '50%', background: '#E2E8F0',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+                          }}>
+                            <span style={{ fontSize: 10, fontWeight: 600, color: '#64748B', fontFamily: 'Inter, sans-serif' }}>
+                              {initials(item.reporter_name || '??')}
+                            </span>
+                          </div>
+                          <span style={{
+                            fontSize: 12, color: '#475569',
+                            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                          }}>
                             {item.reporter_name || 'Unknown'}
-                          </span>
-                          <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, color: '#64748B' }}>
-                            <UserCheck size={12} color="#94A3B8" />
-                            {item.reporter_name || 'Unknown'}
-                          </span>
-                          <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, color: '#64748B' }}>
-                            <Folder size={12} color="#94A3B8" />
-                            {item.project_key || '\u2014'}
-                          </span>
-                          <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, color: '#64748B' }}>
-                            <Tag size={12} color="#94A3B8" />
-                            {item.fixed_versions || '\u2014'}
                           </span>
                         </div>
 
-                        {/* LINE 4 — AI reasoning */}
-                        {!cat.isReporterOnus && AI_INSIGHTS[cat.key] && (
+                        {/* Assignee */}
+                        <div style={{
+                          width: COL.assignee, flexShrink: 0, display: 'flex', alignItems: 'center', gap: 6,
+                          overflow: 'hidden',
+                        }}>
                           <div style={{
-                            marginTop: 8, paddingLeft: cat.isReporterOnus ? 0 : 28,
+                            width: 20, height: 20, borderRadius: '50%', background: '#E2E8F0',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
                           }}>
-                            <div style={{
-                              background: '#F8FAFC', borderLeft: '2px solid #CBD5E1',
-                              padding: '6px 12px', fontSize: 14, color: '#1E293B',
-                            }}>
-                              {AI_INSIGHTS[cat.key]}
-                            </div>
+                            <span style={{ fontSize: 10, fontWeight: 600, color: '#64748B', fontFamily: 'Inter, sans-serif' }}>
+                              {initials(item.reporter_name || '??')}
+                            </span>
                           </div>
-                        )}
-
-                        {/* Reporter onus note */}
-                        {cat.isReporterOnus && (
-                          <div style={{
-                            fontSize: 13, color: '#94A3B8', marginTop: 4,
+                          <span style={{
+                            fontSize: 12, color: '#475569',
+                            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                           }}>
-                            Reporter must action — {item.reporter_name || 'Unknown'}
-                          </div>
-                        )}
-                      </div>
-                    ))}
+                            {item.reporter_name || 'Unknown'}
+                          </span>
+                        </div>
 
-                    {isOpen && items.length === 0 && (
-                      <div style={{
-                        padding: '16px', textAlign: 'center',
-                        fontSize: 13, color: '#94A3B8', background: '#ffffff',
-                        borderBottom: '0.75px solid #F1F5F9',
-                      }}>
-                        No items in this category
+                        {/* Status */}
+                        <div style={{ width: COL.status, flexShrink: 0 }}>
+                          <StatusLozenge value={item.status} />
+                        </div>
+
+                        {/* Days */}
+                        <div style={{
+                          width: COL.days, flexShrink: 0, textAlign: 'right',
+                          fontFamily: 'JetBrains Mono, monospace', fontSize: 12, fontWeight: 600,
+                          color: daysColor(item.days_stale),
+                        }}>
+                          {item.days_stale}d
+                        </div>
+
+                        {/* Category */}
+                        <div style={{ width: COL.category, flexShrink: 0, paddingLeft: 8 }}>
+                          <span style={{
+                            fontSize: 11, color: '#64748B', background: '#F1F5F9',
+                            border: '1px solid #E2E8F0', padding: '2px 8px', borderRadius: 20,
+                            whiteSpace: 'nowrap',
+                          }}>
+                            {CAT_SHORT[item.categoryKey] || 'Other'}
+                          </span>
+                        </div>
+
+                        {/* Detail chevron */}
+                        <div style={{ width: COL.detail, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <button
+                            onClick={() => handleOpenDetailList(item, idx)}
+                            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, display: 'flex' }}
+                          >
+                            <ChevronRight size={14} color="#CBD5E1" />
+                          </button>
+                        </div>
                       </div>
-                    )}
-                  </div>
-                );
-              })
-            )}
-          </div>
+                    );
+                  })
+                )}
+              </div>
+            </div>
+          )}
 
           {/* ═══ BULK ACTION BAR ═══ */}
           {selected.size > 0 && (
@@ -723,12 +1123,12 @@ export default function CleanupPage() {
                 <span style={{ fontSize: 13, color: '#0F172A' }}>
                   {selected.size} selected
                 </span>
-                {firstSelectedCatKey !== null && (
+                {firstSelectedCatKey !== null && viewMode === 'group' && (
                   <span
                     onClick={() => {
                       const allInCat = (catData[firstSelectedCatKey] ?? []).every(i => selected.has(i.id));
                       if (allInCat) {
-                        handleDeselectAll();
+                        handleDeselectAllInCategory(firstSelectedCatKey);
                       } else {
                         handleSelectAllInCategory(firstSelectedCatKey);
                       }
@@ -743,7 +1143,7 @@ export default function CleanupPage() {
                 <Button
                   variant="outline"
                   style={{ height: 36, fontSize: 14 }}
-                  onClick={() => toast.info('Preview reporter notifications — coming soon')}
+                  onClick={handlePreviewReporterNotifications}
                 >
                   Preview reporter notifications
                 </Button>
@@ -1005,14 +1405,22 @@ export default function CleanupPage() {
       </Dialog>
 
       {/* ═══ STORY DETAIL MODAL ═══ */}
-      {detailItem && detailCatItems.length > 0 && (
+      {detailItem && (viewMode === 'group' ? detailCatItems.length > 0 : listFilteredItems.length > 0) && (
         <Suspense fallback={null}>
           <StoryDetailModal
             isOpen={true}
             onClose={() => setDetailItem(null)}
-            itemId={detailCatItems[detailNavIndex]?.id ?? detailItem.id}
+            itemId={
+              viewMode === 'group'
+                ? (detailCatItems[detailNavIndex]?.id ?? detailItem.id)
+                : (listFilteredItems[detailNavIndex]?.id ?? detailItem.id)
+            }
             projectId=""
-            projectKey={detailCatItems[detailNavIndex]?.project_key ?? ''}
+            projectKey={
+              viewMode === 'group'
+                ? (detailCatItems[detailNavIndex]?.project_key ?? '')
+                : (listFilteredItems[detailNavIndex]?.project_key ?? '')
+            }
           />
         </Suspense>
       )}
