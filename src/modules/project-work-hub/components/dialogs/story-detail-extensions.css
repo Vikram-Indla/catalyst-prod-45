@@ -607,8 +607,8 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  height: 40px;
-  padding: 0 12px;
+  min-height: 40px;
+  padding: 8px 12px;
   cursor: pointer;
   border-bottom: 1px solid rgba(9, 30, 66, 0.04);
   transition: background 0.12s;
