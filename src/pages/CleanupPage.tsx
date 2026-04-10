@@ -105,8 +105,8 @@ function StatusLozenge({ value }: { value: string }) {
 
 // ── Helpers ──────────────────────────────────────
 function daysColor(d: number): string {
-  if (d > 60) return '#DC2626';
-  if (d >= 30) return '#92400E';
+  if (d > 90) return '#DC2626';
+  if (d >= 60) return '#92400E';
   return '#64748B';
 }
 
@@ -511,14 +511,14 @@ export default function CleanupPage() {
             ].map(cell => (
               <div key={cell.label} style={{ textAlign: 'center' }}>
                 <div style={{
-                  fontFamily: 'JetBrains Mono, monospace', fontSize: 24,
+                  fontFamily: 'JetBrains Mono, monospace', fontSize: 26,
                   fontWeight: 600, color: '#0F172A',
                 }}>
                   {cell.value}
                 </div>
                 <div style={{
-                  fontSize: 11, fontWeight: 700, color: '#94A3B8',
-                  textTransform: 'uppercase', letterSpacing: '0.06em', marginTop: 4,
+                  fontSize: 11, fontWeight: 500, color: '#94A3B8',
+                  textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: 4,
                 }}>
                   {cell.label}
                 </div>
@@ -569,7 +569,7 @@ export default function CleanupPage() {
                     >
                       <CatIcon size={16} color="#64748B" />
                       <div style={{ flex: 1, textAlign: 'left' }}>
-                        <span style={{ fontSize: 13, fontWeight: 600, color: '#0F172A' }}>
+                      <span style={{ fontSize: 14, fontWeight: 600, color: '#0F172A' }}>
                           {cat.name}
                         </span>
                         <span style={{
@@ -607,14 +607,14 @@ export default function CleanupPage() {
                           )}
                           <span style={{
                             fontFamily: 'JetBrains Mono, monospace',
-                            fontSize: 13, fontWeight: 500, color: '#2563EB',
+                            fontSize: 12, fontWeight: 500, color: '#2563EB',
                           }}>
                             {item.issue_key}
                           </span>
                           <StatusLozenge value={item.status} />
                           <span style={{
                             fontFamily: 'JetBrains Mono, monospace',
-                            fontSize: 13, fontWeight: 500, color: daysColor(item.days_stale),
+                            fontSize: 13, fontWeight: 600, color: daysColor(item.days_stale),
                           }}>
                             {item.days_stale}d
                           </span>
@@ -641,7 +641,7 @@ export default function CleanupPage() {
 
                         {/* LINE 2 — Title */}
                         <div style={{
-                          fontSize: 13, fontWeight: 500, color: '#0F172A',
+                          fontSize: 14, fontWeight: 400, color: '#1E293B',
                           marginTop: 4, paddingLeft: cat.isReporterOnus ? 0 : 28,
                           overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                         }}>
@@ -678,8 +678,7 @@ export default function CleanupPage() {
                           }}>
                             <div style={{
                               background: '#F8FAFC', borderLeft: '2px solid #CBD5E1',
-                              padding: '6px 12px', fontSize: 13, color: '#64748B',
-                              fontStyle: 'italic',
+                              padding: '6px 12px', fontSize: 14, color: '#1E293B',
                             }}>
                               {AI_INSIGHTS[cat.key]}
                             </div>
@@ -881,8 +880,8 @@ export default function CleanupPage() {
           <div style={{ padding: '16px 24px', maxHeight: '60vh', overflowY: 'auto' }}>
             {/* Section 1 */}
             <div style={{
-              fontSize: 11, fontWeight: 700, color: '#94A3B8',
-              textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 12,
+              fontSize: 11, fontWeight: 500, color: '#94A3B8',
+              textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 12,
             }}>
               WHAT WILL HAPPEN
             </div>
@@ -902,8 +901,8 @@ export default function CleanupPage() {
 
             {/* Section 2 — Reporters */}
             <div style={{
-              fontSize: 11, fontWeight: 700, color: '#94A3B8',
-              textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 12,
+              fontSize: 11, fontWeight: 500, color: '#94A3B8',
+              textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 12,
             }}>
               REPORTERS BEING NOTIFIED
             </div>
@@ -945,8 +944,8 @@ export default function CleanupPage() {
 
             {/* Section 3 — Closure reason */}
             <div style={{
-              fontSize: 11, fontWeight: 700, color: '#94A3B8',
-              textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8,
+              fontSize: 11, fontWeight: 500, color: '#94A3B8',
+              textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8,
             }}>
               CLOSURE REASON
             </div>
