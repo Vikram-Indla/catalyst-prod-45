@@ -87,7 +87,7 @@ function getReasoningText(item: CleanupItem, category: number, source: AgeingIte
     case 2:
       return `Story open ${daysOpen} days with no subtasks. Cannot be delivered or tracked without breakdown.`;
     case 3: {
-      const inactiveDays = source && source.assignee_last_login_days < 999
+      const inactiveDays = source && source.assignee_last_login_days > 0
         ? `${source.assignee_last_login_days} days`
         : 'an extended period';
       return `Assigned to ${assigneeName} who has been inactive for ${inactiveDays}. Work is blocked with no active owner.`;
