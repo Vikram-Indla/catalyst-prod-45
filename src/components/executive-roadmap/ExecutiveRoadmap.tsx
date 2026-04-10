@@ -4,275 +4,32 @@
 import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
-import { BusinessRequestRoadmapItem, RoadmapStatus, PLATFORM_INFO, STAGE_NAMES, STAGE_NAMES_AR } from '@/types/roadmapTypes';
+import { BusinessRequestRoadmapItem, PLATFORM_INFO, STAGE_NAMES, STAGE_NAMES_AR } from '@/types/roadmapTypes';
 import { RoadmapLegend } from './RoadmapLegend';
 import { RoadmapFiltersDialog, type RoadmapFilters } from './RoadmapFiltersDialog';
-import { RoadmapEngine } from '@/components/roadmap/RoadmapEngine';
-import { demandRoadmapConfig } from '@/config/roadmaps/demandRoadmapConfig';
 import { BusinessRequestDrawer } from '@/components/business-requests/BusinessRequestDrawer';
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
 import { useRoadmapBusinessRequests } from '@/hooks/useRoadmapBusinessRequests';
-import { RoadmapItem } from '@/config/roadmaps/types';
-import { Input } from '@/components/ui/input';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { 
-  Search, 
-  Clock, 
-  Filter, 
-  Calendar, 
-  Download, 
-  Info, 
-  Minimize2, 
-  Maximize2, 
-  ChevronUp, 
-  ChevronDown,
-  Lock,
-  ZoomIn,
-  ZoomOut,
-  X,
-  Check,
-  AlertTriangle,
-  Circle,
-  Milestone,
-  ChevronLeft,
-  ChevronRight,
-  Target
-} from 'lucide-react';
-
-type TimeScale = 'weekly' | 'monthly' | 'quarterly' | 'yearly';
-type Language = 'en' | 'ar';
-type SortField = 'rank' | 'platform' | 'submission' | 'score' | 'target' | 'quarter' | 'owner';
-type SortOrder = 'asc' | 'desc';
-
-// Constants
-const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-const MONTH_NAMES_AR = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
-const QUARTER_NAMES = ['Q1', 'Q2', 'Q3', 'Q4'];
-const WEEK_NUMBERS = Array.from({ length: 52 }, (_, i) => i + 1);
-
-const currentYear = new Date().getFullYear();
-const currentMonth = new Date().getMonth();
-const currentQuarter = Math.floor(currentMonth / 3);
-const currentWeek = Math.ceil((new Date().getTime() - new Date(currentYear, 0, 1).getTime()) / (7 * 24 * 60 * 60 * 1000));
-const AVAILABLE_YEARS = [currentYear - 1, currentYear, currentYear + 1, currentYear + 2];
-
-// Helper to format display key - use item.key if available, otherwise format UUID
-function formatDisplayKey(item: RoadmapItem): string {
-  if (item.key) return item.key;
-  // Fallback: format UUID as short key (first 4 chars uppercase)
-  return item.id.slice(0, 8).toUpperCase();
-}
-
-// Time period selection - adapts based on view scale
-interface TimePeriodSelection {
-  years: number[];
-  months: number[]; // 0-11 for monthly
-  quarters: number[]; // 0-3 for quarterly
-  weeks: number[]; // 1-52 for weekly
-  weeklyMonth: number | null; // 0-11 for weekly view month filter
-}
-
-// Helper to get weeks for a specific month in a year
-function getWeeksForMonth(year: number, month: number): { week: number; startDate: Date; label: string }[] {
-  const weeks: { week: number; startDate: Date; label: string }[] = [];
-  const firstDayOfMonth = new Date(year, month, 1);
-  const lastDayOfMonth = new Date(year, month + 1, 0);
-  
-  // Find the first day of the year to calculate week numbers
-  const firstDayOfYear = new Date(year, 0, 1);
-  
-  // Find all weeks that overlap with this month
-  let currentDate = new Date(firstDayOfMonth);
-  
-  // Go back to the start of the week containing the first day of month
-  const dayOfWeek = currentDate.getDay();
-  currentDate.setDate(currentDate.getDate() - dayOfWeek);
-  
-  while (currentDate <= lastDayOfMonth) {
-    // Calculate week number (ISO-style, week 1 starts Jan 1)
-    const daysSinceYearStart = Math.floor((currentDate.getTime() - firstDayOfYear.getTime()) / (24 * 60 * 60 * 1000));
-    const weekNum = Math.ceil((daysSinceYearStart + firstDayOfYear.getDay() + 1) / 7);
-    
-    // Only include if week overlaps with the selected month
-    const weekEnd = new Date(currentDate);
-    weekEnd.setDate(weekEnd.getDate() + 6);
-    
-    if (weekEnd >= firstDayOfMonth && currentDate <= lastDayOfMonth) {
-      weeks.push({
-        week: weekNum,
-        startDate: new Date(currentDate),
-        label: `W${weekNum}`
-      });
-    }
-    
-    currentDate.setDate(currentDate.getDate() + 7);
-  }
-  
-  return weeks;
-}
-
-// Compute visible date range based on selection AND scale
-function getVisibleDateRange(selection: TimePeriodSelection, scale: TimeScale): { start: Date; end: Date } {
-  const sortedYears = selection.years.length > 0 
-    ? [...selection.years].sort((a, b) => a - b)
-    : [currentYear];
-  
-  const startYear = sortedYears[0];
-  const endYear = sortedYears[sortedYears.length - 1];
-
-  if (scale === 'yearly') {
-    return {
-      start: new Date(startYear, 0, 1),
-      end: new Date(endYear, 11, 31)
-    };
-  }
-
-  if (scale === 'quarterly') {
-    const sortedQuarters = selection.quarters.length > 0
-      ? [...selection.quarters].sort((a, b) => a - b)
-      : [0, 1, 2, 3];
-    const startQ = sortedQuarters[0];
-    const endQ = sortedQuarters[sortedQuarters.length - 1];
-    return {
-      start: new Date(startYear, startQ * 3, 1),
-      end: new Date(endYear, endQ * 3 + 3, 0)
-    };
-  }
-
-  if (scale === 'weekly') {
-    // Weekly view: use weeklyMonth to determine the range
-    if (selection.weeklyMonth !== null) {
-      const month = selection.weeklyMonth;
-      const weeksInMonth = getWeeksForMonth(startYear, month);
-      
-      if (selection.weeks.length > 0 && weeksInMonth.length > 0) {
-        // Filter to only selected weeks within the month
-        const selectedWeeksInMonth = weeksInMonth.filter(w => selection.weeks.includes(w.week));
-        if (selectedWeeksInMonth.length > 0) {
-          const firstWeek = selectedWeeksInMonth[0];
-          const lastWeek = selectedWeeksInMonth[selectedWeeksInMonth.length - 1];
-          const endDate = new Date(lastWeek.startDate);
-          endDate.setDate(endDate.getDate() + 6);
-          return { start: firstWeek.startDate, end: endDate };
-        }
-      }
-      
-      // If no weeks selected but month is selected, show all weeks of that month
-      if (weeksInMonth.length > 0) {
-        const firstWeek = weeksInMonth[0];
-        const lastWeek = weeksInMonth[weeksInMonth.length - 1];
-        const endDate = new Date(lastWeek.startDate);
-        endDate.setDate(endDate.getDate() + 6);
-        return { start: firstWeek.startDate, end: endDate };
-      }
-    }
-    
-    // Fallback: show current month's weeks if no month selected
-    const weeksInCurrentMonth = getWeeksForMonth(startYear, currentMonth);
-    if (weeksInCurrentMonth.length > 0) {
-      const firstWeek = weeksInCurrentMonth[0];
-      const lastWeek = weeksInCurrentMonth[weeksInCurrentMonth.length - 1];
-      const endDate = new Date(lastWeek.startDate);
-      endDate.setDate(endDate.getDate() + 6);
-      return { start: firstWeek.startDate, end: endDate };
-    }
-    
-    // Ultimate fallback
-    return {
-      start: new Date(startYear, currentMonth, 1),
-      end: new Date(startYear, currentMonth + 1, 0)
-    };
-  }
-
-  // Monthly - use months
-  const sortedMonths = selection.months.length > 0
-    ? [...selection.months].sort((a, b) => a - b)
-    : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
-  const startMonth = sortedMonths[0];
-  const endMonth = sortedMonths[sortedMonths.length - 1];
-
-  return {
-    start: new Date(startYear, startMonth, 1),
-    end: new Date(endYear, endMonth + 1, 0)
-  };
-}
-
-const MIN_FIRST_COLUMN_WIDTH = 280;
-const MAX_FIRST_COLUMN_WIDTH = 420;
-const DEFAULT_FIRST_COLUMN_WIDTH = 340;
-const ROW_HEIGHT = 76; // Increased for 3-line content without overlap
-const HEADER_HEIGHT = 52;
-
-const TRANSLATIONS = {
-  en: {
-    executiveRoadmap: 'EXECUTIVE ROADMAP',
-    industryRequests: 'Industry Requests Portfolio',
-    newRequest: 'New',
-    analyse: 'Analyse',
-    approved: 'Approved',
-    implement: 'Implement',
-    closed: 'Closed',
-    platform: 'PLATFORM',
-    status: 'STATUS',
-    owner: 'OWNER',
-    sortBy: 'SORT BY',
-    milestones: 'MILESTONES',
-    rank: 'Rank',
-    businessRequest: 'BUSINESS REQUEST',
-    weekly: 'Weekly',
-    monthly: 'Monthly',
-    quarterly: 'Quarterly',
-    yearly: 'Yearly',
-    viewScale: 'View Scale',
-    selectYears: 'Select Years',
-    selectMonths: 'Select Months',
-    selectQuarters: 'Select Quarters',
-    selectWeeks: 'Select Weeks',
-    allMonths: 'All',
-    allQuarters: 'All',
-    allWeeks: 'All',
-    continues: 'continues',
-  },
-  ar: {
-    executiveRoadmap: 'خارطة الطريق التنفيذية',
-    industryRequests: 'محفظة الطلبات الصناعية',
-    newRequest: 'جديد',
-    analyse: 'تحليل',
-    approved: 'موافق',
-    implement: 'تنفيذ',
-    closed: 'مغلق',
-    platform: 'المنصة',
-    status: 'الحالة',
-    owner: 'المالك',
-    sortBy: 'ترتيب حسب',
-    milestones: 'المراحل',
-    rank: 'الترتيب',
-    businessRequest: 'طلب العمل',
-    weekly: 'أسبوعي',
-    monthly: 'شهري',
-    quarterly: 'ربع سنوي',
-    yearly: 'سنوي',
-    viewScale: 'مقياس العرض',
-    selectYears: 'اختر السنوات',
-    selectMonths: 'اختر الأشهر',
-    selectQuarters: 'اختر الأرباع',
-    selectWeeks: 'اختر الأسابيع',
-    allMonths: 'الكل',
-    allQuarters: 'الكل',
-    allWeeks: 'الكل',
-    continues: 'يستمر',
-  }
-};
-
-const STATUS_BAR_GRADIENTS: Record<RoadmapStatus, string> = {
-  'NEW': 'linear-gradient(90deg, hsl(var(--roadmap-status-new)), hsl(var(--roadmap-status-new) / 0.8))',
-  'ANALYSE': 'linear-gradient(90deg, hsl(var(--roadmap-status-analyse)), hsl(var(--roadmap-status-analyse) / 0.8))',
-  'APPROVED': 'linear-gradient(90deg, hsl(var(--roadmap-status-approved)), hsl(var(--roadmap-status-approved) / 0.8))',
-  'IMPLEMENT': 'linear-gradient(90deg, hsl(var(--roadmap-status-implement)), hsl(var(--roadmap-status-implement) / 0.8))',
-  'CLOSED': 'linear-gradient(90deg, hsl(var(--roadmap-status-closed)), hsl(var(--roadmap-status-closed) / 0.8))',
-};
+import {
+  TimeScale,
+  Language,
+  SortField,
+  SortOrder,
+  TimePeriodSelection,
+  MONTH_NAMES,
+  MONTH_NAMES_AR,
+  QUARTER_NAMES,
+  TRANSLATIONS,
+  currentYear,
+  currentMonth,
+  AVAILABLE_YEARS,
+  MIN_FIRST_COLUMN_WIDTH,
+  MAX_FIRST_COLUMN_WIDTH,
+  DEFAULT_FIRST_COLUMN_WIDTH,
+} from './roadmapConstants';
+import { getWeeksForMonth, getVisibleDateRange, formatDisplayKey } from './roadmapTimeUtils';
+import { RoadmapToolbar } from './RoadmapToolbar';
+import { RoadmapLeftPanel } from './RoadmapLeftPanel';
+import { RoadmapTimelinePanel } from './RoadmapTimelinePanel';
 
 interface ExecutiveRoadmapProps {
   className?: string;
@@ -317,10 +74,10 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
   const containerRef = useRef<HTMLDivElement>(null);
   const timelineScrollRef = useRef<HTMLDivElement>(null);
   const leftPanelRef = useRef<HTMLDivElement>(null);
-  
+
   // Dynamic today tracking - recalculates when day changes
   const [todayKey, setTodayKey] = useState(() => format(new Date(), 'yyyy-MM-dd'));
-  
+
   useEffect(() => {
     // Check if day has changed every minute
     const interval = setInterval(() => {
@@ -329,7 +86,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
         setTodayKey(currentDay);
       }
     }, 60000); // Check every minute
-    
+
     return () => clearInterval(interval);
   }, [todayKey]);
 
@@ -347,7 +104,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
 
     let ticking = false;
     let lastScrollSource: 'left' | 'timeline' | null = null;
-    
+
     const handleLeftScroll = () => {
       if (lastScrollSource === 'timeline') {
         lastScrollSource = null;
@@ -445,7 +202,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
     }
     if (searchQuery.trim()) {
       const query = searchQuery.trim().toLowerCase();
-      result = result.filter(item => 
+      result = result.filter(item =>
         item.id.toLowerCase().includes(query) ||
         item.titleEn.toLowerCase().includes(query) ||
         item.titleAr.toLowerCase().includes(query)
@@ -496,21 +253,21 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
       for (let year = startYear; year <= endYear; year++) {
         cols.push({ label: String(year), date: new Date(year, 0, 1) });
       }
-    } 
+    }
     // QUARTERLY: Only show quarters (no months!)
     else if (timeScale === 'quarterly') {
       for (let year = startYear; year <= endYear; year++) {
         const qStart = year === startYear ? Math.floor(startMonth / 3) : 0;
         const qEnd = year === endYear ? Math.floor(endMonth / 3) : 3;
         for (let q = qStart; q <= qEnd; q++) {
-          cols.push({ 
-            label: `Q${q + 1}`, 
-            subLabel: String(year), 
-            date: new Date(year, q * 3, 1) 
+          cols.push({
+            label: `Q${q + 1}`,
+            subLabel: String(year),
+            date: new Date(year, q * 3, 1)
           });
         }
       }
-    } 
+    }
     // MONTHLY: Only show months (no quarters!)
     else if (timeScale === 'monthly') {
       for (let year = startYear; year <= endYear; year++) {
@@ -524,7 +281,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
           });
         }
       }
-    } 
+    }
     // WEEKLY: Only show weeks
     else if (timeScale === 'weekly') {
       const weekStart = new Date(visibleRange.start);
@@ -572,8 +329,8 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
     const left = (startOffset / totalDays) * 100;
     const width = ((endOffset - startOffset) / totalDays) * 100;
 
-    return { 
-      left: `${left}%`, 
+    return {
+      left: `${left}%`,
       width: `${Math.max(width, 3)}%`,
       continuesLeft,
       continuesRight,
@@ -591,11 +348,6 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
     const offset = milestone.getTime() - start.getTime();
     return Math.min(100, Math.max(0, (offset / duration) * 100));
   }, []);
-
-  // Format date label compactly
-  const formatDateLabel = (date: Date) => {
-    return date.toLocaleDateString(isRTL ? 'ar-SA' : 'en-US', { month: 'short', year: '2-digit' }).replace(' ', " '");
-  };
 
   // Toggle year selection
   const toggleYear = (year: number) => {
@@ -698,7 +450,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
   };
 
   return (
-    <div 
+    <div
       ref={containerRef}
       className={cn(
         "flex flex-col overflow-hidden print:bg-white",
@@ -706,7 +458,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
         isFullscreen ? "fixed inset-0 z-50" : "h-full",
         className
       )}
-      style={{ 
+      style={{
         direction: isRTL ? 'rtl' : 'ltr',
         fontFamily: 'Inter, sans-serif',
         backgroundColor: 'hsl(var(--roadmap-ivory))'
@@ -725,833 +477,76 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
         </div>
       </div>
 
-
       {/* Toolbar Row */}
-      <div 
-        className="h-[52px] flex items-center justify-between px-6 print:hidden shrink-0 relative z-[100]"
-        style={{ 
-          backgroundColor: 'var(--bg-app)',
-          borderBottom: '1px solid var(--divider)'
-        }}
-      >
-        {/* Left - Search Input */}
-        <div className="relative flex items-center">
-          <Search className="absolute left-3 w-4 h-4 text-muted-foreground pointer-events-none" />
-          <Input
-            ref={searchInputRef}
-            type="text"
-            placeholder={isRTL ? 'بحث...' : 'Search...'}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="h-9 w-[200px] text-xs bg-white dark:bg-[#1A1A1A] dark:text-[#EDEDED] pl-9 pr-3"
-            style={{ border: '1px solid hsl(var(--roadmap-sandstone))', borderRadius: '12px' }}
-            onKeyDown={(e) => {
-              if (e.key === 'Escape') {
-                setSearchQuery('');
-              }
-            }}
-          />
-        </div>
-
-        {/* Right - Toolbar */}
-        <div className="inline-flex items-center gap-1.5 relative z-[100]" style={{ direction: 'ltr' }}>
-
-          {/* Milestones Toggle */}
-          <TooltipProvider delayDuration={200}>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button
-                  onClick={() => setShowMilestones(!showMilestones)}
-                  className={cn(
-                    "w-9 h-9 flex items-center justify-center rounded-[10px] cursor-pointer transition-all shadow-sm hover:shadow-md",
-                    showMilestones ? "text-white" : "bg-white dark:bg-[#1A1A1A] text-[hsl(var(--roadmap-charcoal))]"
-                  )}
-                  style={{ 
-                    backgroundColor: showMilestones ? 'hsl(var(--roadmap-status-new))' : undefined,
-                    border: showMilestones ? 'none' : '1px solid hsl(var(--roadmap-sandstone))'
-                  }}
-                >
-                  <Clock className="w-[18px] h-[18px]" />
-                </button>
-              </TooltipTrigger>
-              <TooltipContent side="bottom" className="text-xs">Milestones</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-
-          <div className="w-px h-6 mx-1" style={{ backgroundColor: 'hsl(var(--roadmap-driftwood))' }} />
-
-          {/* Filter */}
-          <TooltipProvider delayDuration={200}>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button
-                  onClick={() => setFiltersDialogOpen(true)}
-                  className="w-9 h-9 flex items-center justify-center rounded-[10px] cursor-pointer transition-all bg-white dark:bg-[#1A1A1A] shadow-sm hover:shadow-md"
-                  style={{ border: '1px solid hsl(var(--roadmap-sandstone))', color: 'hsl(var(--roadmap-charcoal))' }}
-                >
-                  <Filter className="w-[18px] h-[18px]" />
-                </button>
-              </TooltipTrigger>
-              <TooltipContent side="bottom" className="text-xs">Filters</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-
-          {/* Time Period Selector - NO Quick Select */}
-          <Popover>
-            <TooltipProvider delayDuration={200}>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <PopoverTrigger asChild>
-                    <button
-                      className="w-9 h-9 flex items-center justify-center rounded-[10px] cursor-pointer transition-all bg-white dark:bg-[#1A1A1A] shadow-sm hover:shadow-md"
-                      style={{ border: '1px solid hsl(var(--roadmap-sandstone))', color: 'hsl(var(--roadmap-charcoal))' }}
-                    >
-                      <Calendar className="w-[18px] h-[18px]" />
-                    </button>
-                  </PopoverTrigger>
-                </TooltipTrigger>
-                <TooltipContent side="bottom" className="text-xs">Time Period</TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-            <PopoverContent 
-              align="end" 
-              className="w-[360px] p-0 bg-white dark:bg-[#1A1A1A] shadow-xl rounded-xl z-[400]"
-              style={{ border: '1px solid hsl(var(--roadmap-sandstone))' }}
-            >
-              {/* View Scale Section */}
-              <div className="p-4 border-b" style={{ borderColor: 'hsl(var(--roadmap-sandstone))' }}>
-                <div className="text-xs font-semibold mb-3" style={{ color: 'hsl(var(--roadmap-graphite))' }}>
-                  {t.viewScale}
-                </div>
-                <div className="grid grid-cols-4 gap-1.5">
-                  {(['weekly', 'monthly', 'quarterly', 'yearly'] as TimeScale[]).map((scale) => (
-                    <button
-                      key={scale}
-                      onClick={() => setTimeScale(scale)}
-                      className={cn(
-                        "px-2 py-2.5 text-xs font-medium rounded-lg transition-all",
-                        timeScale === scale 
-                          ? "text-white" 
-                          : "bg-[hsl(var(--roadmap-parchment))] hover:bg-[hsl(var(--roadmap-sandstone))]"
-                      )}
-                      style={{ 
-                        backgroundColor: timeScale === scale ? 'hsl(var(--roadmap-status-new))' : undefined,
-                        color: timeScale === scale ? 'white' : 'hsl(var(--roadmap-charcoal))'
-                      }}
-                    >
-                      {t[scale]}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Year Selection - Always Visible */}
-              <div className="p-4 border-b" style={{ borderColor: 'hsl(var(--roadmap-sandstone))' }}>
-                <div className="text-xs font-semibold mb-3" style={{ color: 'hsl(var(--roadmap-graphite))' }}>
-                  {t.selectYears}
-                </div>
-                <div className="grid grid-cols-4 gap-1.5">
-                  {AVAILABLE_YEARS.map(year => (
-                    <button
-                      key={year}
-                      onClick={() => toggleYear(year)}
-                      className={cn(
-                        "px-2 py-2 text-xs font-medium rounded-lg transition-all",
-                        timePeriodSelection.years.includes(year)
-                          ? "text-white"
-                          : "bg-[hsl(var(--roadmap-parchment))] hover:bg-[hsl(var(--roadmap-sandstone))]"
-                      )}
-                      style={{
-                        backgroundColor: timePeriodSelection.years.includes(year) ? 'hsl(var(--roadmap-status-new))' : undefined,
-                        color: timePeriodSelection.years.includes(year) ? 'white' : 'hsl(var(--roadmap-charcoal))'
-                      }}
-                    >
-                      {year}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* MONTHLY Scale: Show Months ONLY */}
-              {timeScale === 'monthly' && (
-                <div className="p-4">
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="text-xs font-semibold" style={{ color: 'hsl(var(--roadmap-graphite))' }}>
-                      {t.selectMonths}
-                    </div>
-                    <button onClick={toggleAllMonths} className="text-xs font-medium hover:underline" style={{ color: 'hsl(var(--roadmap-status-new))' }}>
-                      {timePeriodSelection.months.length === 12 ? 'Clear' : t.allMonths}
-                    </button>
-                  </div>
-                  <div className="grid grid-cols-6 gap-1.5">
-                    {MONTH_NAMES.map((month, index) => {
-                      const isSelected = timePeriodSelection.months.length === 0 || timePeriodSelection.months.includes(index);
-                      return (
-                        <button
-                          key={month}
-                          onClick={() => toggleMonth(index)}
-                          className={cn(
-                            "px-1 py-2 text-xs font-medium rounded-lg transition-all",
-                            isSelected ? "text-white" : "bg-[hsl(var(--roadmap-parchment))] hover:bg-[hsl(var(--roadmap-sandstone))]"
-                          )}
-                          style={{
-                            backgroundColor: isSelected ? 'hsl(var(--roadmap-status-new))' : undefined,
-                            color: isSelected ? 'white' : 'hsl(var(--roadmap-fossil))'
-                          }}
-                        >
-                          {month}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-
-              {/* QUARTERLY Scale: Show Quarters ONLY */}
-              {timeScale === 'quarterly' && (
-                <div className="p-4">
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="text-xs font-semibold" style={{ color: 'hsl(var(--roadmap-graphite))' }}>
-                      {t.selectQuarters}
-                    </div>
-                    <button onClick={toggleAllQuarters} className="text-xs font-medium hover:underline" style={{ color: 'hsl(var(--roadmap-status-new))' }}>
-                      {timePeriodSelection.quarters.length === 4 ? 'Clear' : t.allQuarters}
-                    </button>
-                  </div>
-                  <div className="grid grid-cols-4 gap-1.5">
-                    {QUARTER_NAMES.map((quarter, index) => {
-                      const isSelected = timePeriodSelection.quarters.length === 0 || timePeriodSelection.quarters.includes(index);
-                      return (
-                        <button
-                          key={quarter}
-                          onClick={() => toggleQuarter(index)}
-                          className={cn(
-                            "px-3 py-2.5 text-xs font-medium rounded-lg transition-all",
-                            isSelected ? "text-white" : "bg-[hsl(var(--roadmap-parchment))] hover:bg-[hsl(var(--roadmap-sandstone))]"
-                          )}
-                          style={{
-                            backgroundColor: isSelected ? 'hsl(var(--roadmap-status-new))' : undefined,
-                            color: isSelected ? 'white' : 'hsl(var(--roadmap-charcoal))'
-                          }}
-                        >
-                          {quarter}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-
-              {/* WEEKLY Scale: Show Months FIRST, then Weeks AFTER month selection */}
-              {timeScale === 'weekly' && (
-                <div className="p-4">
-                  {/* Step 1: Select Month */}
-                  <div className="mb-4">
-                    <div className="text-xs font-semibold mb-3" style={{ color: 'hsl(var(--roadmap-graphite))' }}>
-                      {t.selectMonths}
-                    </div>
-                    <div className="grid grid-cols-6 gap-1.5">
-                      {MONTH_NAMES.map((month, index) => {
-                        const isSelected = timePeriodSelection.weeklyMonth === index;
-                        return (
-                          <button
-                            key={month}
-                            onClick={() => selectWeeklyMonth(index)}
-                            className={cn(
-                              "px-1 py-2 text-xs font-medium rounded-lg transition-all",
-                              isSelected ? "text-white" : "bg-[hsl(var(--roadmap-parchment))] hover:bg-[hsl(var(--roadmap-sandstone))]"
-                            )}
-                            style={{
-                              backgroundColor: isSelected ? 'hsl(var(--roadmap-status-new))' : undefined,
-                              color: isSelected ? 'white' : 'hsl(var(--roadmap-fossil))'
-                            }}
-                          >
-                            {month}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-
-                  {/* Step 2: Select Weeks (only visible after month is selected) */}
-                  {timePeriodSelection.weeklyMonth !== null && availableWeeksForSelectedMonth.length > 0 && (
-                    <div className="pt-3 border-t" style={{ borderColor: 'hsl(var(--roadmap-sandstone))' }}>
-                      <div className="flex items-center justify-between mb-3">
-                        <div className="text-xs font-semibold" style={{ color: 'hsl(var(--roadmap-graphite))' }}>
-                          {t.selectWeeks} ({MONTH_NAMES[timePeriodSelection.weeklyMonth]})
-                        </div>
-                        <button 
-                          onClick={toggleAllWeeksInMonth} 
-                          className="text-xs font-medium hover:underline" 
-                          style={{ color: 'hsl(var(--roadmap-status-new))' }}
-                        >
-                          {timePeriodSelection.weeks.length === availableWeeksForSelectedMonth.length ? 'Clear' : t.allWeeks}
-                        </button>
-                      </div>
-                      <div className="grid grid-cols-4 gap-1.5">
-                        {availableWeeksForSelectedMonth.map((weekInfo) => {
-                          const isSelected = timePeriodSelection.weeks.includes(weekInfo.week);
-                          return (
-                            <button
-                              key={weekInfo.week}
-                              onClick={() => toggleWeek(weekInfo.week)}
-                              className={cn(
-                                "px-2 py-2 text-xs font-medium rounded-lg transition-all",
-                                isSelected ? "text-white" : "bg-[hsl(var(--roadmap-parchment))] hover:bg-[hsl(var(--roadmap-sandstone))]"
-                              )}
-                              style={{
-                                backgroundColor: isSelected ? 'hsl(var(--roadmap-status-new))' : undefined,
-                                color: isSelected ? 'white' : 'hsl(var(--roadmap-fossil))'
-                              }}
-                            >
-                              {weekInfo.label}
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Hint when no month selected */}
-                  {timePeriodSelection.weeklyMonth === null && (
-                    <div className="text-xs text-center py-2" style={{ color: 'hsl(var(--roadmap-fossil))' }}>
-                      Select a month to view its weeks
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* YEARLY Scale: No additional selection needed */}
-              {timeScale === 'yearly' && (
-                <div className="p-4">
-                  <div className="text-xs text-center py-4" style={{ color: 'hsl(var(--roadmap-fossil))' }}>
-                    Showing selected year(s) only
-                  </div>
-                </div>
-              )}
-            </PopoverContent>
-          </Popover>
-
-          {/* Language Toggle */}
-          <button
-            onClick={() => setLanguage(language === 'en' ? 'ar' : 'en')}
-            className="h-9 px-2 flex items-center gap-1 rounded-[10px] cursor-pointer transition-all bg-white dark:bg-[#1A1A1A] shadow-sm hover:shadow-md"
-            style={{ border: '1px solid hsl(var(--roadmap-sandstone))' }}
-          >
-            <span className={cn("text-xs font-semibold px-1 py-0.5 rounded", language === 'en' ? "text-white" : "")} style={{ backgroundColor: language === 'en' ? 'hsl(var(--roadmap-status-new))' : 'transparent', color: language === 'en' ? 'white' : 'hsl(var(--roadmap-charcoal))' }}>EN</span>
-            <span className={cn("text-xs font-semibold px-1 py-0.5 rounded", language === 'ar' ? "text-white" : "")} style={{ backgroundColor: language === 'ar' ? 'hsl(var(--roadmap-status-new))' : 'transparent', color: language === 'ar' ? 'white' : 'hsl(var(--roadmap-charcoal))' }}>ع</span>
-          </button>
-
-          <div className="w-px h-6 mx-1" style={{ backgroundColor: 'hsl(var(--roadmap-driftwood))' }} />
-
-          {/* Export */}
-          <TooltipProvider delayDuration={200}>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button
-                  onClick={handleExport}
-                  className="w-9 h-9 flex items-center justify-center rounded-[10px] cursor-pointer transition-all bg-white dark:bg-[#1A1A1A] shadow-sm hover:shadow-md"
-                  style={{ border: '1px solid hsl(var(--roadmap-sandstone))', color: 'hsl(var(--roadmap-charcoal))' }}
-                >
-                  <Download className="w-[18px] h-[18px]" />
-                </button>
-              </TooltipTrigger>
-              <TooltipContent side="bottom" className="text-xs">Export</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-
-          {/* Legend Toggle - Info Icon as per Production */}
-          <TooltipProvider delayDuration={200}>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button
-                  onClick={() => setShowLegend(!showLegend)}
-                  className={cn(
-                    "w-9 h-9 flex items-center justify-center rounded-[10px] cursor-pointer transition-all shadow-sm hover:shadow-md",
-                    showLegend ? "text-white" : "bg-white dark:bg-[#1A1A1A] text-[hsl(var(--roadmap-charcoal))]"
-                  )}
-                  style={{ 
-                    backgroundColor: showLegend ? 'hsl(var(--roadmap-status-new))' : undefined,
-                    border: showLegend ? 'none' : '1px solid hsl(var(--roadmap-sandstone))'
-                  }}
-                >
-                  <Info className="w-[18px] h-[18px]" />
-                </button>
-              </TooltipTrigger>
-              <TooltipContent side="bottom" className="text-xs">Legend</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-
-          {/* Fullscreen Toggle */}
-          <TooltipProvider delayDuration={200}>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button
-                  onClick={toggleFullscreen}
-                  className="w-9 h-9 flex items-center justify-center rounded-[10px] cursor-pointer transition-all bg-white dark:bg-[#1A1A1A] shadow-sm hover:shadow-md"
-                  style={{ border: '1px solid hsl(var(--roadmap-sandstone))', color: 'hsl(var(--roadmap-charcoal))' }}
-                >
-                  {isFullscreen ? <Minimize2 className="w-[18px] h-[18px]" /> : <Maximize2 className="w-[18px] h-[18px]" />}
-                </button>
-              </TooltipTrigger>
-              <TooltipContent side="bottom" className="text-xs">{isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </div>
-      </div>
+      <RoadmapToolbar
+        language={language}
+        setLanguage={setLanguage}
+        timeScale={timeScale}
+        setTimeScale={setTimeScale}
+        timePeriodSelection={timePeriodSelection}
+        showMilestones={showMilestones}
+        setShowMilestones={setShowMilestones}
+        isFullscreen={isFullscreen}
+        toggleFullscreen={toggleFullscreen}
+        showLegend={showLegend}
+        setShowLegend={setShowLegend}
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+        searchInputRef={searchInputRef}
+        isRTL={isRTL}
+        setFiltersDialogOpen={setFiltersDialogOpen}
+        handleExport={handleExport}
+        toggleYear={toggleYear}
+        toggleMonth={toggleMonth}
+        toggleQuarter={toggleQuarter}
+        toggleWeek={toggleWeek}
+        selectWeeklyMonth={selectWeeklyMonth}
+        toggleAllMonths={toggleAllMonths}
+        toggleAllQuarters={toggleAllQuarters}
+        toggleAllWeeksInMonth={toggleAllWeeksInMonth}
+        availableWeeksForSelectedMonth={availableWeeksForSelectedMonth}
+      />
 
       {/* Main Content Area - Sticky Left Panel + Scrollable Timeline */}
-      <div 
+      <div
         className="flex-1 flex overflow-hidden print:overflow-visible"
         style={{ borderTop: '1px solid var(--divider)' }}
       >
-        {/* STICKY LEFT PANEL - Never scrolls horizontally */}
-        <div 
-          ref={leftPanelRef}
-          className="shrink-0 flex flex-col border-r overflow-y-auto overflow-x-hidden"
-          style={{ 
-            width: firstColumnWidth, 
-            minWidth: firstColumnWidth,
-            backgroundColor: 'white', 
-            borderColor: 'hsl(var(--roadmap-sandstone))',
-            position: 'sticky',
-            left: 0,
-            zIndex: 15
-          }}
-        >
-          {/* Left Panel Header */}
-          <div 
-            className="flex items-center justify-between px-4 border-b relative shrink-0 sticky top-0 z-10"
-            style={{ 
-              backgroundColor: 'white', 
-              borderColor: 'hsl(var(--roadmap-sandstone))',
-              height: `${HEADER_HEIGHT}px`,
-              minHeight: `${HEADER_HEIGHT}px`
-            }}
-          >
-            <span className="text-xs font-semibold tracking-wider" style={{ color: 'hsl(var(--roadmap-charcoal))' }}>
-              {t.businessRequest}
-            </span>
-            <button 
-              onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')} 
-              className="flex items-center gap-1 text-[10px] font-medium hover:underline"
-              style={{ color: 'hsl(var(--roadmap-status-new))' }}
-            >
-              {sortOrder === 'asc' ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
-              {t.rank}
-            </button>
-            {/* Resize Handle */}
-            <div
-              className={cn("absolute right-0 top-0 h-full w-1 cursor-col-resize z-20 transition-colors hover:bg-[hsl(var(--roadmap-status-new))]", isResizing && "bg-[hsl(var(--roadmap-status-new))]")}
-              onMouseDown={handleResizeMouseDown}
-              onClick={(e) => e.stopPropagation()}
-            />
-          </div>
-
-          {/* Left Panel Rows */}
-          {filteredItems.map((item) => {
-            const isSelected = selectedRow === item.id;
-            return (
-              <div 
-                key={item.id}
-                className={cn("border-b cursor-pointer transition-colors shrink-0")}
-                style={{ 
-                  height: `${ROW_HEIGHT}px`,
-                  minHeight: `${ROW_HEIGHT}px`,
-                  borderColor: 'hsl(var(--roadmap-sandstone))',
-                  backgroundColor: isSelected ? 'hsla(var(--roadmap-status-new) / 0.08)' : hoveredItem === item.id ? 'hsla(var(--roadmap-status-new) / 0.04)' : 'white',
-                  borderLeft: isSelected ? '3px solid hsl(var(--roadmap-status-new))' : 'none'
-                }}
-                onClick={() => setSelectedRow(isSelected ? null : item.id)}
-                onMouseEnter={() => setHoveredItem(item.id)}
-                onMouseLeave={() => setHoveredItem(null)}
-              >
-                <div className="h-full px-4 py-2.5 flex flex-col justify-center overflow-hidden">
-                  <div className="flex items-center gap-1.5 min-w-0">
-                    <span className="text-xs font-bold shrink-0" style={{ color: 'hsl(var(--roadmap-charcoal))' }}>#{item.rank}</span>
-                    {(item.rank === 1 || item.rank === 3 || item.rank === 9) && (
-                      <Lock className="h-3 w-3 shrink-0" style={{ color: 'hsl(var(--roadmap-status-new))' }} />
-                    )}
-                    <button 
-                      onClick={(e) => { e.stopPropagation(); setSelectedRequestId(item.id); }}
-                      className="text-xs font-medium hover:underline cursor-pointer bg-transparent border-none p-0 shrink-0"
-                      style={{ color: 'hsl(var(--roadmap-status-new))' }}
-                    >
-                      {formatDisplayKey(item)}
-                    </button>
-                  </div>
-                  <TooltipProvider delayDuration={300}>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <div className="text-sm font-medium truncate leading-tight mt-1 cursor-default" style={{ color: 'hsl(var(--roadmap-charcoal))' }}>
-                          {isRTL ? item.titleAr : item.titleEn}
-                        </div>
-                      </TooltipTrigger>
-                      <TooltipContent 
-                        side="top" 
-                        align="start"
-                        sideOffset={8}
-                        className="max-w-[400px] px-4 py-3 text-sm leading-relaxed rounded-xl shadow-2xl z-[9999] animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95"
-                        style={{ 
-                          backgroundColor: 'hsl(var(--roadmap-charcoal))',
-                          color: 'white',
-                          border: '1px solid rgba(184,148,79,0.3)',
-                          boxShadow: '0 20px 40px -12px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(184,148,79,0.15)'
-                        }}
-                      >
-                        <div className="font-semibold mb-1.5 text-xs uppercase tracking-wider" style={{ color: '#C5A86E' }}>
-                          {formatDisplayKey(item)}
-                        </div>
-                        <div className="font-medium" style={{ color: 'white' }}>
-                          {isRTL ? item.titleAr : item.titleEn}
-                        </div>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                  <div className="text-[11px] mt-1 truncate" style={{ color: 'hsl(var(--roadmap-fossil))' }}>
-                    {isRTL ? item.ownerAr : item.ownerEn}
-                    <span className="mx-1.5">·</span>
-                    <span style={{ color: 'hsl(var(--roadmap-status-new))' }}>{isRTL ? PLATFORM_INFO[item.platform]?.nameAr : item.platform}</span>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
+        {/* STICKY LEFT PANEL */}
+        <RoadmapLeftPanel
+          leftPanelRef={leftPanelRef}
+          firstColumnWidth={firstColumnWidth}
+          filteredItems={filteredItems}
+          selectedRow={selectedRow}
+          setSelectedRow={setSelectedRow}
+          hoveredItem={hoveredItem}
+          setHoveredItem={setHoveredItem}
+          setSelectedRequestId={setSelectedRequestId}
+          sortOrder={sortOrder}
+          setSortOrder={setSortOrder}
+          isRTL={isRTL}
+          isResizing={isResizing}
+          handleResizeMouseDown={handleResizeMouseDown}
+          t={{ businessRequest: t.businessRequest, rank: t.rank }}
+        />
 
         {/* SCROLLABLE TIMELINE PANEL */}
-        <div ref={timelineScrollRef} className="flex-1 overflow-x-auto overflow-y-auto" style={{ scrollBehavior: 'smooth' }}>
-          <div style={{ minWidth: Math.max(600, timelineColumns.length * getColumnMinWidth()) }}>
-            {/* Timeline Header */}
-            <div 
-              className="sticky top-0 z-30 border-b"
-              style={{ 
-                backgroundColor: 'white', 
-                borderColor: 'hsl(var(--roadmap-sandstone))', 
-                height: `${HEADER_HEIGHT}px`, 
-                minHeight: `${HEADER_HEIGHT}px` 
-              }}
-            >
-              {/* Today indicator in header */}
-              {todayPosition !== null && (
-                <div className="absolute pointer-events-none z-20" style={{ left: `${todayPosition}%`, top: '6px', transform: 'translateX(-50%)' }}>
-                  <div className="px-2 py-0.5 text-[10px] font-semibold rounded-full whitespace-nowrap" style={{ backgroundColor: 'rgba(184,148,79,0.2)', color: 'hsl(var(--roadmap-status-new))', border: '1px solid rgba(184,148,79,0.4)' }}>
-                    {isRTL ? 'اليوم' : 'Today'}
-                  </div>
-                </div>
-              )}
-              <div className="flex h-full">
-                {timelineColumns.map((col, i) => (
-                  <div 
-                    key={i} 
-                    className={cn(
-                      "flex-1 px-2 text-center flex flex-col justify-center",
-                      i < timelineColumns.length - 1 && "border-r"
-                    )}
-                    style={{ borderColor: 'hsl(var(--roadmap-driftwood))', minWidth: getColumnMinWidth(), backgroundColor: 'white' }}
-                  >
-                    <div className="text-xs font-semibold" style={{ color: 'hsl(var(--roadmap-charcoal))' }}>{col.label}</div>
-                    {col.subLabel && <div className="text-[10px] mt-0.5" style={{ color: 'hsl(var(--roadmap-fossil))' }}>{col.subLabel}</div>}
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Timeline Rows */}
-            {filteredItems.map((item) => {
-              const barPos = getBarPosition(item);
-              const isSelected = selectedRow === item.id;
-
-              return (
-                <div 
-                  key={item.id}
-                  className="relative border-b shrink-0"
-                  style={{ 
-                    height: `${ROW_HEIGHT}px`,
-                    minHeight: `${ROW_HEIGHT}px`,
-                    borderColor: 'hsl(var(--roadmap-sandstone))',
-                    backgroundColor: isSelected ? 'hsla(var(--roadmap-status-new) / 0.08)' : hoveredItem === item.id ? 'hsla(var(--roadmap-status-new) / 0.04)' : 'white'
-                  }}
-                  onMouseEnter={() => setHoveredItem(item.id)}
-                  onMouseLeave={() => setHoveredItem(null)}
-                >
-                  {/* Vertical grid lines */}
-                  <div className="absolute inset-0 flex pointer-events-none">
-                    {timelineColumns.map((_, i) => (
-                      <div 
-                        key={i} 
-                        className={cn("flex-1", i < timelineColumns.length - 1 && "border-r")}
-                        style={{ borderColor: 'hsl(var(--roadmap-sandstone) / 0.4)', minWidth: getColumnMinWidth() }} 
-                      />
-                    ))}
-                  </div>
-                  
-                  {/* Today line */}
-                  {todayPosition !== null && (
-                    <div className="absolute top-0 bottom-0 pointer-events-none" style={{ left: `${todayPosition}%`, width: '1px', borderLeft: '1px dashed rgba(184,148,79,0.6)', zIndex: 5 }} />
-                  )}
-                  
-                  {/* Timeline Bar - Centered vertically with dates */}
-                  {barPos && (() => {
-                    // Format short date labels (e.g., "13 Jan")
-                    const formatShortDate = (date: Date) => {
-                      const day = date.getDate();
-                      const monthShort = isRTL 
-                        ? MONTH_NAMES_AR[date.getMonth()].slice(0, 3)
-                        : MONTH_NAMES[date.getMonth()];
-                      return `${day} ${monthShort}`;
-                    };
-
-                    const startDate = new Date(item.startDate);
-                    const endDate = new Date(item.endDate);
-                    const displayStartDate = barPos.continuesLeft ? visibleRange.start : startDate;
-                    const displayEndDate = barPos.continuesRight ? visibleRange.end : endDate;
-
-                    // Calculate if bar is narrow (less than ~120px effective width)
-                    const barWidthPercent = parseFloat(barPos.width);
-                    const isNarrowBar = barWidthPercent < 15; // Less than 15% of timeline width
-                    const isVeryNarrowBar = barWidthPercent < 8; // Very narrow, show minimal info
-
-                    return (
-                      <TooltipProvider delayDuration={200}>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <div 
-                              className="absolute flex flex-col cursor-pointer"
-                              style={{ 
-                                left: barPos.left, 
-                                width: barPos.width, 
-                                top: '50%', 
-                                transform: 'translateY(-50%)',
-                                zIndex: 10
-                              }}
-                              onClick={(e) => { e.stopPropagation(); setSelectedRequestId(item.id); }}
-                            >
-                              {/* Labels Row - Adaptive based on bar width */}
-                              <div 
-                                className={cn(
-                                  "mb-1 px-1 relative",
-                                  isVeryNarrowBar ? "flex justify-center" : "flex justify-between items-center"
-                                )}
-                                style={{ zIndex: 20 }}
-                              >
-                                {isVeryNarrowBar ? (
-                                  // Very narrow: show only combined date range
-                                  <span 
-                                    className="text-[9px] font-bold whitespace-nowrap"
-                                    style={{ color: 'hsl(var(--roadmap-charcoal))' }}
-                                  >
-                                    {formatShortDate(displayStartDate)}
-                                  </span>
-                                ) : isNarrowBar ? (
-                                  // Narrow: show only start and end dates, no status
-                                  <>
-                                    <span 
-                                      className="text-[10px] font-bold whitespace-nowrap"
-                                      style={{ color: 'hsl(var(--roadmap-charcoal))' }}
-                                    >
-                                      {formatShortDate(displayStartDate)}
-                                    </span>
-                                    <span 
-                                      className="text-[10px] font-bold whitespace-nowrap"
-                                      style={{ color: 'hsl(var(--roadmap-charcoal))' }}
-                                    >
-                                      {formatShortDate(displayEndDate)}
-                                    </span>
-                                  </>
-                                ) : (
-                                  // Normal width: show all three elements
-                                  <>
-                                    <span 
-                                      className="text-[10px] font-bold whitespace-nowrap"
-                                      style={{ color: 'hsl(var(--roadmap-charcoal))' }}
-                                    >
-                                      {formatShortDate(displayStartDate)}
-                                    </span>
-                                    <span 
-                                      className="text-[10px] font-semibold whitespace-nowrap truncate px-2 max-w-[60px]"
-                                      style={{ color: 'hsl(var(--roadmap-charcoal))' }}
-                                    >
-                                      {isRTL ? STAGE_NAMES_AR[item.status] : STAGE_NAMES[item.status]}
-                                    </span>
-                                    <span 
-                                      className="text-[10px] font-bold whitespace-nowrap"
-                                      style={{ color: 'hsl(var(--roadmap-charcoal))' }}
-                                    >
-                                      {formatShortDate(displayEndDate)}
-                                    </span>
-                                  </>
-                                )}
-                              </div>
-
-                              {/* The Bar - No text, just color - lower z-index */}
-                              <div 
-                                className={cn(
-                                  "h-5 w-full overflow-hidden transition-all hover:shadow-md",
-                                  barPos.continuesLeft ? "rounded-l-none" : "rounded-l-full",
-                                  barPos.continuesRight ? "rounded-r-none" : "rounded-r-full"
-                                )}
-                                style={{ background: STATUS_BAR_GRADIENTS[item.status] || 'linear-gradient(90deg, var(--cp-blue), color-mix(in srgb, var(--cp-blue) 70%, transparent))', position: 'relative', zIndex: 5 }}
-                              >
-
-                                {/* Milestones - Properly centered on bar */}
-                                {showMilestones && item.milestones.length > 0 && item.milestones.map((ms, index) => {
-                                  const pos = getMilestonePosition(ms.date, item.startDate, item.endDate);
-                                  // Only show if milestone is within clipped bar range
-                                  const msDate = new Date(ms.date);
-                                  if (msDate < displayStartDate || msDate > displayEndDate) return null;
-                                  
-                                  return (
-                                    <div
-                                      key={`${item.id}-ms-${index}`}
-                                      className="absolute w-5 h-5 rounded-full border-2 flex items-center justify-center text-[8px] font-bold shadow-sm"
-                                      style={{ 
-                                        left: `${pos}%`, 
-                                        top: '50%', 
-                                        transform: 'translate(-50%, -50%)',
-                                        backgroundColor: ms.state === 'complete' ? 'hsl(var(--roadmap-milestone-complete))' : 'white',
-                                        borderColor: ms.state === 'complete' ? 'hsl(var(--roadmap-milestone-complete))' : ms.state === 'current' ? 'hsl(var(--roadmap-milestone-current))' : 'hsl(var(--roadmap-milestone-pending))',
-                                        color: ms.state === 'complete' ? 'white' : ms.state === 'current' ? 'hsl(var(--roadmap-milestone-current))' : 'hsl(var(--roadmap-fossil))',
-                                        zIndex: 15
-                                      }}
-                                      onClick={(e) => e.stopPropagation()}
-                                    >
-                                      {ms.state === 'complete' ? <Check className="w-2.5 h-2.5" /> : (index + 1)}
-                                    </div>
-                                  );
-                                })}
-                              </div>
-
-                            </div>
-                          </TooltipTrigger>
-                          <TooltipContent 
-                            side="top" 
-                            align="center"
-                            sideOffset={12}
-                            className="max-w-[380px] px-4 py-3.5 rounded-lg shadow-2xl z-[9999] animate-in fade-in-0 zoom-in-95"
-                            style={{ 
-                              backgroundColor: '#373432',
-                              color: 'white',
-                              border: 'none',
-                              boxShadow: '0 20px 40px -12px rgba(0, 0, 0, 0.4)'
-                            }}
-                          >
-                            {/* Header - ID */}
-                            <div 
-                              className="text-xs font-medium mb-1.5"
-                              style={{ color: '#B5A48A' }}
-                            >
-                              {formatDisplayKey(item)}
-                            </div>
-                            
-                            {/* Title/Summary */}
-                            <div 
-                              className="font-medium text-sm mb-3 leading-snug"
-                              style={{ color: 'white' }}
-                            >
-                              {isRTL ? item.titleAr : item.titleEn}
-                            </div>
-                            
-                            {/* Status Row */}
-                            <div className="flex items-center gap-2 mb-3">
-                              <span 
-                                className="text-[10px] font-medium uppercase tracking-wide"
-                                style={{ color: '#A89778' }}
-                              >
-                                STATUS:
-                              </span>
-                              <span 
-                                className="text-xs font-medium px-2 py-0.5 rounded"
-                                style={{ 
-                                  backgroundColor: 'rgba(166,144,94,0.3)',
-                                  color: '#DED6CA'
-                                }}
-                              >
-                                {isRTL ? STAGE_NAMES_AR[item.status] : STAGE_NAMES[item.status]}
-                              </span>
-                            </div>
-                            
-                            {/* Date Range */}
-                            <div 
-                              className="flex items-center gap-2 py-2 px-3 rounded-md mb-3"
-                              style={{ backgroundColor: 'rgba(166,144,94,0.15)' }}
-                            >
-                              <Calendar className="w-3.5 h-3.5" style={{ color: '#A89778' }} />
-                              <span className="text-xs" style={{ color: '#D4CABC' }}>
-                                {startDate.toLocaleDateString(isRTL ? 'ar-SA' : 'en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                              </span>
-                              <span style={{ color: '#A6905E' }}>→</span>
-                              <span className="text-xs" style={{ color: '#D4CABC' }}>
-                                {endDate.toLocaleDateString(isRTL ? 'ar-SA' : 'en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                              </span>
-                            </div>
-                            
-                            {/* Milestones Section - Only show when milestones mode is ON and item has milestones */}
-                            {showMilestones && item.milestones.length > 0 && (
-                              <div>
-                                <div 
-                                  className="text-[10px] font-semibold uppercase tracking-wide mb-2"
-                                  style={{ color: '#A89778' }}
-                                >
-                                  MILESTONES ({item.milestones.length})
-                                </div>
-                                <div className="space-y-1.5">
-                                  {item.milestones.slice(0, 5).map((ms, idx) => (
-                                    <div key={idx} className="flex items-center gap-2 text-xs">
-                                      <div 
-                                        className="w-4 h-4 rounded-full border flex items-center justify-center text-[8px] font-bold shrink-0"
-                                        style={{
-                                          backgroundColor: ms.state === 'complete' ? 'hsl(var(--roadmap-milestone-complete))' : 'transparent',
-                                          borderColor: ms.state === 'complete' 
-                                            ? 'hsl(var(--roadmap-milestone-complete))' 
-                                            : ms.state === 'current' 
-                                              ? 'hsl(var(--roadmap-milestone-current))' 
-                                              : '#957F51',
-                                          color: ms.state === 'complete' ? 'white' : '#BFB097'
-                                        }}
-                                      >
-                                        {ms.state === 'complete' ? <Check className="w-2 h-2" /> : (idx + 1)}
-                                      </div>
-                                      <span style={{ color: '#D4CABC' }}>
-                                        {new Date(ms.date).toLocaleDateString(isRTL ? 'ar-SA' : 'en-US', { month: 'short', day: 'numeric' })}
-                                      </span>
-                                      <span 
-                                        className="text-[10px] px-1.5 py-0.5 rounded capitalize"
-                                        style={{ 
-                                          backgroundColor: ms.state === 'complete' 
-                                            ? 'rgba(59,163,98,0.25)' 
-                                            : ms.state === 'current' 
-                                              ? 'rgba(191,149,64,0.25)' 
-                                              : 'rgba(166,144,94,0.2)',
-                                          color: ms.state === 'complete' 
-                                            ? '#6BC98F' 
-                                            : ms.state === 'current' 
-                                              ? '#CCB27A' 
-                                              : '#B5A48A'
-                                        }}
-                                      >
-                                        {ms.state === 'complete' ? 'Complete' : ms.state === 'current' ? 'Current' : 'Pending'}
-                                      </span>
-                                    </div>
-                                  ))}
-                                  {item.milestones.length > 5 && (
-                                    <div className="text-[10px] italic" style={{ color: '#A6905E' }}>
-                                      +{item.milestones.length - 5} more milestones
-                                    </div>
-                                  )}
-                                </div>
-                              </div>
-                            )}
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    );
-                  })()}
-                </div>
-              );
-            })}
-          </div>
-        </div>
+        <RoadmapTimelinePanel
+          timelineScrollRef={timelineScrollRef}
+          filteredItems={filteredItems}
+          timelineColumns={timelineColumns}
+          getColumnMinWidth={getColumnMinWidth}
+          getBarPosition={getBarPosition}
+          getMilestonePosition={getMilestonePosition}
+          todayPosition={todayPosition}
+          visibleRange={visibleRange}
+          selectedRow={selectedRow}
+          hoveredItem={hoveredItem}
+          setHoveredItem={setHoveredItem}
+          setSelectedRequestId={setSelectedRequestId}
+          showMilestones={showMilestones}
+          isRTL={isRTL}
+        />
       </div>
 
       {/* Legend */}
