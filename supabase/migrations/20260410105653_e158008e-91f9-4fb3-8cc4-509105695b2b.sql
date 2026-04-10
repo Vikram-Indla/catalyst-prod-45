@@ -1,0 +1,1 @@
+ALTER TABLE public.governance_closure_log ADD COLUMN IF NOT EXISTS original_status TEXT DEFAULT NULL;

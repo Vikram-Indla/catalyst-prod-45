@@ -10397,6 +10397,7 @@ export type Database = {
           issue_id: string | null
           item_key: string
           metadata: Json | null
+          original_status: string | null
           reporter_notified: boolean | null
           restore_deadline: string | null
           restored_at: string | null
@@ -10412,6 +10413,7 @@ export type Database = {
           issue_id?: string | null
           item_key: string
           metadata?: Json | null
+          original_status?: string | null
           reporter_notified?: boolean | null
           restore_deadline?: string | null
           restored_at?: string | null
@@ -10427,6 +10429,7 @@ export type Database = {
           issue_id?: string | null
           item_key?: string
           metadata?: Json | null
+          original_status?: string | null
           reporter_notified?: boolean | null
           restore_deadline?: string | null
           restored_at?: string | null
