@@ -99,6 +99,18 @@ export default function StoryDetailModal({
     },
   });
 
+  // Fetch reporter avatar
+  const { data: reporterProfile } = useQuery({
+    queryKey: ['profile-avatar', issue?.reporter_account_id],
+    queryFn: async () => {
+      if (!issue?.reporter_account_id) return null;
+      const { data } = await supabase.from('profiles').select('avatar_url').eq('id', issue.reporter_account_id).single();
+      return data;
+    },
+    enabled: !!issue?.reporter_account_id,
+    staleTime: 60000,
+  });
+
   const { data: comments = [] } = useQuery({
     queryKey: ['ph-comments', itemId], enabled: !!itemId && isOpen,
     queryFn: async () => {
