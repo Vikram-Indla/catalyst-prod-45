@@ -1,7 +1,7 @@
 /**
  * useAgeingItems — Shared hook for ageing/governance data.
- * Single source of truth for both AgeingTab and CleanupPage.
- * Runs 2 base queries (assignee + reporter) + 4 enrichment queries in parallel.
+ * Two-step: resolve myJiraId from profiles, then fetch items.
+ * 2 base queries (assignee + reporter) + 4 enrichment queries.
  */
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -35,8 +35,7 @@ export interface AgeingItem {
   assignee_is_inactive: boolean;
   my_role: 'assignee' | 'reporter';
   days_open: number;
-
-  // ── Compat aliases used by AgeingTab / CleanupPage ──
+  // Compat aliases
   jira_key: string;
   item_type: string;
   issue_type_raw: string;
@@ -46,14 +45,7 @@ export interface AgeingItem {
   assignee_is_active: boolean;
 }
 
-const BASE_SELECT = `
-  id, issue_key, issue_type, summary, status,
-  status_category, priority, jira_created_at,
-  jira_updated_at, parent_key, parent_summary,
-  project_key, project_name, reporter_account_id,
-  reporter_display_name, assignee_account_id,
-  assignee_display_name, fix_versions
-`;
+const BASE_SELECT = `id, issue_key, issue_type, summary, status, status_category, priority, jira_created_at, jira_updated_at, parent_key, parent_summary, project_key, project_name, reporter_account_id, reporter_display_name, assignee_account_id, assignee_display_name, fix_versions, hierarchy_level, labels, story_points, sprint_name, resolution, deleted_at`;
 
 function mapIssueType(raw: string): string {
   const v = (raw || '').toLowerCase();
@@ -67,50 +59,73 @@ function mapIssueType(raw: string): string {
 export function useAgeingItems() {
   const { user } = useAuth();
 
+  // Step A: resolve myJiraId from profiles table
+  const { data: myJiraId } = useQuery({
+    queryKey: ["my-jira-id", user?.id],
+    enabled: !!user?.id,
+    staleTime: 300_000,
+    queryFn: async () => {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("jira_account_id")
+        .eq("id", user!.id)
+        .single();
+      const jiraId = profile?.jira_account_id ?? null;
+      console.log('[useAgeingItems] myJiraId:', jiraId);
+      if (!jiraId) {
+        console.warn('[useAgeingItems] No jira_account_id on profile — aborting');
+      }
+      return jiraId;
+    },
+  });
+
+  // Step B: fetch ageing items only when myJiraId is confirmed
   return useQuery({
-    queryKey: ["ageing-items", user?.id],
+    queryKey: ["ageing-items", user?.id, myJiraId],
     staleTime: 0,
     refetchOnWindowFocus: true,
-    enabled: !!user?.id,
+    enabled: !!user?.id && !!myJiraId,
     queryFn: async (): Promise<AgeingItem[]> => {
-      // ── STEP 1: Get my Jira account ID ──
-      const { data: identity } = await supabase
-        .from("jira_identity_map")
-        .select("jira_account_id")
-        .eq("catalyst_user_id", user!.id)
-        .single();
-
-      const myJiraId = identity?.jira_account_id;
       if (!myJiraId) return [];
 
-      // ── STEP 2: Fetch base items (assignee + reporter) in parallel ──
+      // Q1 + Q2: base queries in parallel
       const [assigneeResult, reporterResult] = await Promise.all([
         supabase
           .from("ph_issues")
           .select(BASE_SELECT)
           .eq("assignee_account_id", myJiraId)
-          .neq("status_category", "done")
           .is("deleted_at", null),
         supabase
           .from("ph_issues")
           .select(BASE_SELECT)
           .eq("reporter_account_id", myJiraId)
           .neq("assignee_account_id", myJiraId)
-          .neq("status_category", "done")
           .is("deleted_at", null),
       ]);
 
-      const rawAssignee = (assigneeResult.data ?? []).map(i => ({ ...i, my_role: 'assignee' as const }));
-      const rawReporter = (reporterResult.data ?? []).map(i => ({ ...i, my_role: 'reporter' as const }));
+      const q1Items = (assigneeResult.data ?? []).map(i => ({ ...i, my_role: 'assignee' as const }));
+      const q2Items = (reporterResult.data ?? []).map(i => ({ ...i, my_role: 'reporter' as const }));
 
+      console.log('[useAgeingItems] Q1 assignee items:', q1Items.length);
+      console.log('[useAgeingItems] Q2 reporter items:', q2Items.length);
+
+      // Dedup — assignee wins over reporter
       const seen = new Set<string>();
-      const baseItems = [...rawAssignee, ...rawReporter].filter(i => {
-        if (seen.has(i.id)) return false;
-        seen.add(i.id);
+      const deduped = [...q1Items, ...q2Items].filter(item => {
+        if (seen.has(item.id)) return false;
+        seen.add(item.id);
         return true;
       });
 
-      if (baseItems.length === 0) return [];
+      console.log('[useAgeingItems] Total after dedup:', deduped.length);
+
+      if (deduped.length === 0) return [];
+
+      // Filter out done items
+      const baseItems = deduped.filter(row => {
+        const sc = (row.status_category || '').toLowerCase().replace(/[\s_-]/g, '');
+        return sc !== 'done';
+      });
 
       const issueIds = baseItems.map(i => i.id);
       const issueKeys = baseItems.map(i => i.issue_key);
@@ -121,36 +136,19 @@ export function useAgeingItems() {
         baseItems.map(i => i.parent_key).filter(Boolean)
       )] as string[];
 
-      // ── STEP 3: Enrichment queries (all parallel) ──
+      // Q3–Q6: enrichment queries in parallel
       const [commentsResult, childrenResult, profilesResult, parentsResult] = await Promise.all([
-        // Comment counts per issue
-        supabase
-          .from("ph_comments")
-          .select("work_item_id")
-          .in("work_item_id", issueIds),
-        // Child issue counts
-        supabase
-          .from("ph_issues")
-          .select("parent_key")
-          .in("parent_key", issueKeys)
-          .is("deleted_at", null),
-        // Assignee profile data
+        supabase.from("ph_comments").select("work_item_id").in("work_item_id", issueIds),
+        supabase.from("ph_issues").select("parent_key").in("parent_key", issueKeys).is("deleted_at", null),
         assigneeJiraIds.length > 0
-          ? supabase
-              .from("profiles")
-              .select("jira_account_id, status, last_login_at")
-              .in("jira_account_id", assigneeJiraIds)
+          ? supabase.from("profiles").select("jira_account_id, status, last_login_at").in("jira_account_id", assigneeJiraIds)
           : Promise.resolve({ data: [] as any[] }),
-        // Parent issue types
         parentKeys.length > 0
-          ? supabase
-              .from("ph_issues")
-              .select("issue_key, issue_type")
-              .in("issue_key", parentKeys)
+          ? supabase.from("ph_issues").select("issue_key, issue_type").in("issue_key", parentKeys)
           : Promise.resolve({ data: [] as any[] }),
       ]);
 
-      // ── STEP 4: Build lookup maps ──
+      // Build lookup maps
       const commentMap: Record<string, number> = {};
       for (const row of (commentsResult.data ?? [])) {
         commentMap[row.work_item_id] = (commentMap[row.work_item_id] ?? 0) + 1;
@@ -158,9 +156,7 @@ export function useAgeingItems() {
 
       const childMap: Record<string, number> = {};
       for (const row of (childrenResult.data ?? [])) {
-        if (row.parent_key) {
-          childMap[row.parent_key] = (childMap[row.parent_key] ?? 0) + 1;
-        }
+        if (row.parent_key) childMap[row.parent_key] = (childMap[row.parent_key] ?? 0) + 1;
       }
 
       const profileMap: Record<string, { status: string; last_login_at: string | null }> = {};
@@ -178,19 +174,15 @@ export function useAgeingItems() {
         parentTypeMap[row.issue_key] = row.issue_type;
       }
 
-      // ── STEP 5: Assemble final items ──
+      // Assemble final items
       const now = Date.now();
 
       return baseItems.map(item => {
-        const profile = item.assignee_account_id
-          ? profileMap[item.assignee_account_id]
-          : undefined;
-
+        const profile = item.assignee_account_id ? profileMap[item.assignee_account_id] : undefined;
         const assignee_last_login_at = profile?.last_login_at ?? null;
         const assignee_last_login_days = assignee_last_login_at
           ? Math.floor((now - new Date(assignee_last_login_at).getTime()) / 86400000)
           : 0;
-
         const assignee_is_inactive =
           (profile?.status != null && profile.status.toLowerCase() !== 'active') ||
           (assignee_last_login_days > 0 && assignee_last_login_days > 60);
@@ -203,9 +195,7 @@ export function useAgeingItems() {
           ? (item.fix_versions as any[]).map((v: any) => typeof v === 'string' ? v : v?.name || '').filter(Boolean).join(', ')
           : (typeof item.fix_versions === 'string' ? item.fix_versions : null);
 
-        const parentIssueType = item.parent_key
-          ? (parentTypeMap[item.parent_key] ?? null)
-          : null;
+        const parentIssueType = item.parent_key ? (parentTypeMap[item.parent_key] ?? null) : null;
 
         return {
           id: item.id,
