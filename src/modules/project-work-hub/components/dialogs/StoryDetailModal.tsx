@@ -1202,16 +1202,135 @@ export default function StoryDetailModal({
                   <span style={{ fontSize: 14, fontWeight: 700, color: '#172B4D' }}>Details</span>
                 </div>
 
-                {/* Fix versions */}
-                <div style={{ marginBottom: 14 }}>
+                {/* Fix versions — Jira-parity editable dropdown */}
+                <div style={{ marginBottom: 14, position: 'relative' }} ref={fixVersionDropdownRef}>
                   <div style={{ fontSize: 12, fontWeight: 600, color: '#172B4D', marginBottom: 4 }}>Fix versions</div>
-                  {fixVersionNames.length > 0 ? (
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-                      {fixVersionNames.map((v: string, i: number) => (
-                        <span key={i} style={{ fontSize: 11, fontWeight: 600, padding: '2px 6px', borderRadius: 3, background: '#F4F5F7', color: '#42526E' }}>{v}</span>
-                      ))}
+                  {/* Selected versions + trigger */}
+                  <div
+                    onClick={() => setShowFixVersionDropdown(!showFixVersionDropdown)}
+                    style={{
+                      display: 'flex', flexWrap: 'wrap', gap: 4, alignItems: 'center',
+                      padding: '4px 8px', borderRadius: 4, cursor: 'pointer',
+                      minHeight: 32, transition: 'background 0.12s',
+                      border: showFixVersionDropdown ? '2px solid #4C9AFF' : '2px solid transparent',
+                      background: showFixVersionDropdown ? '#FFFFFF' : 'transparent',
+                    }}
+                    onMouseEnter={e => { if (!showFixVersionDropdown) e.currentTarget.style.background = '#F4F5F7'; }}
+                    onMouseLeave={e => { if (!showFixVersionDropdown) e.currentTarget.style.background = 'transparent'; }}
+                  >
+                    {fixVersionNames.length > 0 ? (
+                      fixVersionNames.map((v: string, i: number) => (
+                        <span key={i} style={{
+                          display: 'inline-flex', alignItems: 'center', gap: 4,
+                          fontSize: 12, fontWeight: 500, padding: '2px 8px', borderRadius: 3,
+                          background: '#DEEBFF', color: '#0747A6',
+                        }}>
+                          {v}
+                          <button onClick={e => { e.stopPropagation(); handleToggleFixVersion(v); }} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', color: '#0747A6' }}>
+                            <X size={10} />
+                          </button>
+                        </span>
+                      ))
+                    ) : (
+                      <span style={{ color: '#6B778C', fontSize: 14 }}>None</span>
+                    )}
+                  </div>
+
+                  {/* Dropdown */}
+                  {showFixVersionDropdown && (
+                    <div style={{
+                      position: 'absolute', top: '100%', left: 0, right: 0,
+                      background: '#FFFFFF', border: '1px solid #DFE1E6', borderRadius: 4,
+                      boxShadow: '0 4px 12px rgba(0,0,0,0.15)', zIndex: 100,
+                      maxHeight: 320, overflow: 'hidden',
+                    }}>
+                      {/* Search */}
+                      <div style={{ padding: '8px 12px', borderBottom: '1px solid #F4F5F7' }}>
+                        <input
+                          autoFocus
+                          value={fixVersionSearch}
+                          onChange={e => setFixVersionSearch(e.target.value)}
+                          placeholder="Search versions..."
+                          style={{
+                            width: '100%', border: '1px solid #DFE1E6', borderRadius: 4,
+                            padding: '6px 10px', fontSize: 13, color: '#172B4D', outline: 'none',
+                            fontFamily: 'inherit',
+                          }}
+                          onFocus={e => { e.currentTarget.style.borderColor = '#4C9AFF'; }}
+                          onBlur={e => { e.currentTarget.style.borderColor = '#DFE1E6'; }}
+                        />
+                      </div>
+                      <div style={{ maxHeight: 260, overflowY: 'auto' }}>
+                        {versionsLoading && <div style={{ padding: '12px 16px', fontSize: 13, color: '#6B778C' }}>Loading...</div>}
+
+                        {/* Unreleased */}
+                        {(() => {
+                          const filtered = unreleasedVersions.filter(v => v.name.toLowerCase().includes(fixVersionSearch.toLowerCase()));
+                          if (filtered.length === 0) return null;
+                          return (
+                            <>
+                              <div style={{ padding: '8px 16px 4px', fontSize: 11, fontWeight: 700, color: '#6B778C', textTransform: 'uppercase', letterSpacing: '0.03em' }}>Unreleased</div>
+                              {filtered.map(v => {
+                                const isSelected = fixVersionNames.includes(v.name);
+                                return (
+                                  <div
+                                    key={v.name}
+                                    onClick={() => handleToggleFixVersion(v.name)}
+                                    style={{
+                                      padding: '8px 16px', fontSize: 14, color: '#172B4D',
+                                      cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                                      background: isSelected ? '#DEEBFF' : 'transparent',
+                                      transition: 'background 0.1s',
+                                    }}
+                                    onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = '#F4F5F7'; }}
+                                    onMouseLeave={e => { e.currentTarget.style.background = isSelected ? '#DEEBFF' : 'transparent'; }}
+                                  >
+                                    <span>{v.name}</span>
+                                    {isSelected && <Check size={14} color="#0747A6" />}
+                                  </div>
+                                );
+                              })}
+                            </>
+                          );
+                        })()}
+
+                        {/* Released */}
+                        {(() => {
+                          const filtered = releasedVersions.filter(v => v.name.toLowerCase().includes(fixVersionSearch.toLowerCase()));
+                          if (filtered.length === 0) return null;
+                          return (
+                            <>
+                              <div style={{ padding: '8px 16px 4px', fontSize: 11, fontWeight: 700, color: '#6B778C', textTransform: 'uppercase', letterSpacing: '0.03em', borderTop: '1px solid #F4F5F7' }}>Released</div>
+                              {filtered.map(v => {
+                                const isSelected = fixVersionNames.includes(v.name);
+                                return (
+                                  <div
+                                    key={v.name}
+                                    onClick={() => handleToggleFixVersion(v.name)}
+                                    style={{
+                                      padding: '8px 16px', fontSize: 14, color: '#172B4D',
+                                      cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                                      background: isSelected ? '#DEEBFF' : 'transparent',
+                                      transition: 'background 0.1s',
+                                    }}
+                                    onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = '#F4F5F7'; }}
+                                    onMouseLeave={e => { e.currentTarget.style.background = isSelected ? '#DEEBFF' : 'transparent'; }}
+                                  >
+                                    <span>{v.name}</span>
+                                    {isSelected && <Check size={14} color="#0747A6" />}
+                                  </div>
+                                );
+                              })}
+                            </>
+                          );
+                        })()}
+
+                        {!versionsLoading && unreleasedVersions.length === 0 && releasedVersions.length === 0 && (
+                          <div style={{ padding: '16px', fontSize: 13, color: '#6B778C', textAlign: 'center' }}>No versions found for this project</div>
+                        )}
+                      </div>
                     </div>
-                  ) : <span style={{ color: '#42526E', fontSize: 14 }}>None</span>}
+                  )}
                 </div>
 
                 {/* Assignee — Jira parity: avatar + name, no "Assign to me" link */}
