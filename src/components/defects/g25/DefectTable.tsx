@@ -62,22 +62,8 @@ function PriorityCell({ priority }: { priority: string | null }) {
   );
 }
 
-// ── Avatar colours (deterministic per name) ──
-const AVATAR_COLOURS = [
-  { bg: '#DBEAFE', text: '#1D4ED8' },
-  { bg: '#D1FAE5', text: '#065F46' },
-  { bg: '#FEE2E2', text: '#991B1B' },
-  { bg: '#FEF3C7', text: '#92400E' },
-  { bg: '#E0E7FF', text: '#3730A3' },
-  { bg: '#FCE7F3', text: '#9D174D' },
-  { bg: '#CCFBF1', text: '#065F46' },
-  { bg: '#F3E8FF', text: '#6B21A8' },
-];
-
-function getAvatarColour(name: string) {
-  const idx = name.charCodeAt(0) % AVATAR_COLOURS.length;
-  return AVATAR_COLOURS[idx];
-}
+// ── Avatar colours (matching /for-you 5-color palette) ──
+const AVATAR_COLOURS = ['#2563EB', '#0D9488', '#0284C7', '#DC2626', '#DB2777'];
 
 // ── Age formatter ──
 function getRelativeAge(createdAt: string): string {
@@ -275,7 +261,7 @@ export function DefectTable({ defects, selectedIds, onSelectionChange, onDelete,
                 {cols.has('PRIORITY') && <td style={TD_STYLE}><PriorityCell priority={d.priority} /></td>}
 
                 {/* Status */}
-                {cols.has('STATUS') && <td style={TD_STYLE}><StatusPill status={d.status} /></td>}
+                {cols.has('STATUS') && <td style={TD_STYLE}><StatusBadge status={d.status} /></td>}
 
                 {/* Assignee */}
                 {cols.has('ASSIGNEE') && (
