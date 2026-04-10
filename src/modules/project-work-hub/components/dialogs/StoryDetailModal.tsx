@@ -391,6 +391,36 @@ export default function StoryDetailModal({
     return [];
   }, [issue?.fix_versions]);
 
+  const { unreleased: unreleasedVersions, released: releasedVersions, isLoading: versionsLoading } = useFixVersions(issue?.project_key);
+  const fixVersionDropdownRef = useRef<HTMLDivElement>(null);
+
+  const handleToggleFixVersion = useCallback((versionName: string) => {
+    const current = fixVersionNames;
+    let updated: string[];
+    if (current.includes(versionName)) {
+      updated = current.filter(v => v !== versionName);
+    } else {
+      updated = [...current, versionName];
+    }
+    // Save as array of {name} objects to match Jira JSONB format
+    const jsonValue = updated.map(n => ({ name: n }));
+    supabase.from('ph_issues').update({ fix_versions: jsonValue } as any).eq('id', itemId).then(() => {
+      queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] });
+    });
+  }, [fixVersionNames, itemId, queryClient]);
+
+  // Close fix version dropdown on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (fixVersionDropdownRef.current && !fixVersionDropdownRef.current.contains(e.target as Node)) {
+        setShowFixVersionDropdown(false);
+        setFixVersionSearch('');
+      }
+    };
+    if (showFixVersionDropdown) document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [showFixVersionDropdown]);
+
   const handleShare = useCallback(() => {
     const url = `${window.location.origin}${window.location.pathname}?issue=${issue?.issue_key ?? ''}`;
     navigator.clipboard.writeText(url);
