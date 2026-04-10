@@ -1739,7 +1739,7 @@ export default function StoryDetailModal({
           issue_id: itemId,
           improve_type: aiImproveType,
           focus_hint: aiFocusHint.trim() || null,
-          current_description: issue?.description_text || issue?.description || '(empty)',
+          current_description: issue?.description_text || '(empty)',
           current_ac: acceptanceCriteria || '(none)',
           issue_summary: issue?.summary ?? '',
         },
