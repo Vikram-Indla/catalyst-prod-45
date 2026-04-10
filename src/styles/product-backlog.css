@@ -426,7 +426,7 @@
 }
 .pb-table thead,
 .pb-table thead tr {
-  background-color: var(--cp-bg-page) !important;
+  background-color: #F7F8F9 !important;
 }
 .pb-table thead th {
   position: sticky;
@@ -434,16 +434,16 @@
   z-index: 10;
   height: 40px;
   padding: 0 12px;
-  background-color: var(--cp-bg-page) !important;
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: none;
-  letter-spacing: normal;
+  background-color: #F7F8F9 !important;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
   color: #44546F;
   text-align: start;
   white-space: nowrap;
-  border-bottom: 1px solid rgba(11, 18, 14, 0.14);
-  border-right: 1px solid rgba(11, 18, 14, 0.08);
+  border-bottom: 2px solid #DFE1E6;
+  border-right: none;
   cursor: pointer;
   user-select: none;
   transition: background var(--cp-duration-instant) var(--cp-easing-standard);
