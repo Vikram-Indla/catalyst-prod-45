@@ -128,15 +128,15 @@ function ParentPickerCell({ defectId, currentParentKey, projectKey }: { defectId
   const { data: parentOptions = [] } = useQuery({
     queryKey: ['parent-issues-for-defects', projectKey],
     queryFn: async () => {
-      let query = supabase
+      let query = (supabase as any)
         .from('ph_issues')
-        .select('issue_key, summary, issue_type, status, status_category, updated_at, created_at')
+        .select('issue_key, summary, issue_type, status, status_category, jira_updated_at, jira_created_at')
         .in('issue_type', ['Story', 'Epic', 'Feature', 'Task']);
       if (projectKey) {
         query = query.like('issue_key', `${projectKey}-%`);
       }
-      const { data } = await query.order('updated_at', { ascending: false }).limit(500);
-      return (data || []).map(d => ({
+      const { data } = await query.order('jira_updated_at', { ascending: false }).limit(500);
+      return (data || []).map((d: any) => ({
         key: d.issue_key,
         summary: d.summary || '',
         type: (d.issue_type || 'task').toLowerCase(),
