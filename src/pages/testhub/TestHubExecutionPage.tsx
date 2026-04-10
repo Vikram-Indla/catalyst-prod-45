@@ -1,10 +1,16 @@
 /**
  * G19: Three-Pane Execution Page
  * Route: /testhub/cycles/:cycleId/execute
- * 
+ *
  * Three-pane layout: Test List | Step Runner | Sidebar (Attachments/Defects)
  * Features: Step-level execution, keyboard shortcuts (P/F/B/S/1-9/?),
  * resizable panels, FastTrack mode, execution history, view/re-run modes.
+ *
+ * Sub-components extracted to:
+ *   ExecutionHeader.tsx   — top header bar
+ *   ExecutionTestList.tsx — left panel test queue
+ *   ExecutionViewMode.tsx — read-only execution history view
+ *   ExecutionRunMode.tsx  — step-by-step execution mode
  */
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
@@ -28,17 +34,18 @@ interface ExecutionHistoryRecord {
 }
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import {
-  ArrowLeft, Play, Clock, CheckCircle2, XCircle,
-  AlertTriangle, SkipForward, User, Timer, Keyboard, Zap,
-  ChevronLeft, ChevronRight, RotateCcw, PanelRightClose, PanelRightOpen,
+  Clock,
 } from 'lucide-react';
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
 import { FailureReasonModal } from '@/components/testhub/FailureReasonModal';
 import { KeyboardShortcutsGuide } from '@/components/testhub/execution/KeyboardShortcutsGuide';
-import { StepProgressIndicator } from '@/components/testhub/execution/StepProgressIndicator';
 import { ExecutionSidebar } from '@/components/testhub/execution/ExecutionSidebar';
+import { ExecutionHeader } from '@/components/testhub/execution/ExecutionHeader';
+import { ExecutionTestList } from '@/components/testhub/execution/ExecutionTestList';
+import { ExecutionViewMode } from '@/components/testhub/execution/ExecutionViewMode';
+import { ExecutionRunMode } from '@/components/testhub/execution/ExecutionRunMode';
 
 // ── Types ──────────────────────────────────────────────────────────────────
 interface TestCycle {
