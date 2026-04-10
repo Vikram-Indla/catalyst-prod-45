@@ -360,8 +360,275 @@ type ActivityTab = 'comments' | 'history';
 export default function StoryDetailModal({
   isOpen, onClose, itemId, projectId, projectKey, onOpenItem,
 }: StoryDetailModalProps) {
-  const qc = useQueryClient();
+  const queryClient = useQueryClient();
   const { user } = useAuth();
+
+  /* ── CURRENT USER PROFILE ─────────────────────── */
+  const { data: currentProfile } = useQuery({
+    queryKey: ['profile', user?.id],
+    enabled: !!user?.id,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('profiles')
+        .select('id, full_name, avatar_url, email')
+        .eq('id', user!.id)
+        .single();
+      return data as Profile | null;
+    },
+  });
+
+  /* ── ISSUE DETAIL ─────────────────────────────── */
+  const { data: issue, isLoading: issueLoading } = useQuery({
+    queryKey: ['ph-issue-detail', itemId],
+    enabled: !!itemId && isOpen,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('ph_issues')
+        .select('*')
+        .eq('id', itemId)
+        .is('deleted_at', null)
+        .single();
+      return data as PhIssue | null;
+    },
+  });
+
+  /* ── SUBTASKS (parent_key text FK) ────────────── */
+  const { data: subtasks = [] } = useQuery({
+    queryKey: ['ph-subtasks', issue?.issue_key],
+    enabled: !!issue?.issue_key,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('ph_issues')
+        .select('*')
+        .eq('parent_key', issue!.issue_key)
+        .eq('issue_type', 'Sub-task')
+        .is('deleted_at', null)
+        .order('sort_order', { ascending: true });
+      return (data ?? []) as PhIssue[];
+    },
+  });
+
+  /* ── DEFECTS ──────────────────────────────────── */
+  const { data: defects = [] } = useQuery({
+    queryKey: ['ph-defects', issue?.issue_key],
+    enabled: !!issue?.issue_key,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('ph_issues')
+        .select('*')
+        .eq('parent_key', issue!.issue_key)
+        .in('issue_type', ['QA Bug', 'Defect'])
+        .is('deleted_at', null)
+        .order('jira_created_at', { ascending: false });
+      return (data ?? []) as PhIssue[];
+    },
+  });
+
+  /* ── PRODUCTION INCIDENTS ─────────────────────── */
+  const { data: incidents = [] } = useQuery({
+    queryKey: ['ph-incidents', issue?.issue_key],
+    enabled: !!issue?.issue_key,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('ph_issues')
+        .select('*')
+        .eq('parent_key', issue!.issue_key)
+        .eq('issue_type', 'Production Incident')
+        .is('deleted_at', null)
+        .order('jira_created_at', { ascending: false });
+      return (data ?? []) as PhIssue[];
+    },
+  });
+
+  /* ── LINKED ITEMS (ph_issue_links) ────────────── */
+  const { data: issueLinks = [] } = useQuery({
+    queryKey: ['ph-issue-links', itemId],
+    enabled: !!itemId && isOpen,
+    queryFn: async () => {
+      const { data: links } = await supabase
+        .from('ph_issue_links')
+        .select('id, source_id, target_id, link_type, created_by, created_at')
+        .eq('source_id', itemId)
+        .order('created_at', { ascending: false });
+      if (!links?.length) return [];
+      const targetIds = links.map(l => l.target_id);
+      const { data: targets } = await supabase
+        .from('ph_issues')
+        .select('id, issue_key, summary, issue_type, status, status_category')
+        .in('id', targetIds)
+        .is('deleted_at', null);
+      const targetMap = new Map((targets ?? []).map(t => [t.id, t]));
+      return links.map(l => ({ ...l, target_issue: targetMap.get(l.target_id) })) as PhIssueLink[];
+    },
+  });
+
+  /* ── COMMENTS ─────────────────────────────────── */
+  const { data: comments = [] } = useQuery({
+    queryKey: ['ph-comments', itemId],
+    enabled: !!itemId && isOpen,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('ph_comments')
+        .select('*, author:profiles!ph_comments_author_id_fkey(id, full_name, avatar_url, email)')
+        .eq('work_item_id', itemId)
+        .order('created_at', { ascending: true });
+      return (data ?? []) as PhComment[];
+    },
+  });
+
+  /* ── ACTIVITY LOG ─────────────────────────────── */
+  const { data: activityLog = [] } = useQuery({
+    queryKey: ['ph-activity-log', itemId],
+    enabled: !!itemId && isOpen,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('ph_activity_log')
+        .select('*, actor:profiles!ph_activity_log_user_id_fkey(id, full_name, avatar_url, email)')
+        .eq('work_item_id', itemId)
+        .order('created_at', { ascending: false });
+      return (data ?? []) as PhActivityLog[];
+    },
+  });
+
+  /* ── TEST CASES (via tm_test_case_links) ──────── */
+  const { data: testCases = [] } = useQuery({
+    queryKey: ['tm-test-cases', itemId],
+    enabled: !!itemId && isOpen,
+    queryFn: async () => {
+      const { data: links } = await supabase
+        .from('tm_test_case_links')
+        .select('test_case_id, linked_at')
+        .eq('linked_item_id', itemId)
+        .eq('linked_item_type', 'story');
+      if (!links?.length) return [];
+      const caseIds = links.map(l => l.test_case_id);
+      const { data: cases } = await supabase
+        .from('tm_test_cases')
+        .select('id, case_key, title, type, status, assignee_id, created_at')
+        .in('id', caseIds);
+      return (cases ?? []) as TmTestCase[];
+    },
+  });
+
+  /* ── TEST CYCLES ──────────────────────────────── */
+  const { data: testCycles = [] } = useQuery({
+    queryKey: ['tm-test-cycles', itemId],
+    enabled: testCases.length > 0,
+    queryFn: async () => {
+      if (!testCases.length) return [];
+      const caseIds = testCases.map(tc => tc.id);
+      const { data: executions } = await supabase
+        .from('th_test_executions')
+        .select('test_case_id, test_cycle_id, result, executed_by, executed_at, cycle_name')
+        .in('test_case_id', caseIds)
+        .order('executed_at', { ascending: false });
+      if (!executions?.length) return [];
+      const cycleMap = new Map<string, TmTestCycle>();
+      for (const exec of executions) {
+        if (!exec.test_cycle_id) continue;
+        if (!cycleMap.has(exec.test_cycle_id)) {
+          cycleMap.set(exec.test_cycle_id, {
+            id: exec.test_cycle_id,
+            name: exec.cycle_name ?? exec.test_cycle_id,
+            total_cases: 0, passed_count: 0, failed_count: 0,
+            blocked_count: 0, not_run_count: 0,
+            created_at: exec.executed_at,
+            executions: [],
+          });
+        }
+        const cycle = cycleMap.get(exec.test_cycle_id)!;
+        cycle.total_cases++;
+        if (exec.result === 'passed') cycle.passed_count++;
+        else if (exec.result === 'failed') cycle.failed_count++;
+        else if (exec.result === 'blocked') cycle.blocked_count = (cycle.blocked_count ?? 0) + 1;
+        else cycle.not_run_count = (cycle.not_run_count ?? 0) + 1;
+        cycle.executions?.push(exec as ThTestExecution);
+      }
+      return Array.from(cycleMap.values()) as TmTestCycle[];
+    },
+  });
+
+  /* ── FIX VERSIONS — ReleaseHub ────────────────── */
+  const { data: rhReleases = { linked: [] as string[], all: [] as RhRelease[] } } = useQuery({
+    queryKey: ['rh-releases-for-issue', issue?.issue_key, projectId],
+    enabled: !!issue?.issue_key,
+    queryFn: async () => {
+      const { data: releaseLinks } = await supabase
+        .from('rh_release_issues')
+        .select('release_id')
+        .eq('issue_key', issue!.issue_key);
+      const releaseIds = (releaseLinks ?? []).map(r => r.release_id);
+      const { data: allReleases } = await supabase
+        .from('rh_releases')
+        .select('id, name, key, status, target_date, project_id')
+        .eq('project_id', projectId)
+        .order('target_date', { ascending: false });
+      return { linked: releaseIds, all: (allReleases ?? []) as RhRelease[] };
+    },
+  });
+
+  /* ── CHANGE NUMBERS ───────────────────────────── */
+  const { data: rhChanges = [] } = useQuery({
+    queryKey: ['rh-changes-active', projectId],
+    enabled: !!projectId && isOpen,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('rh_changes')
+        .select('id, chg_number, title, status, release_id')
+        .in('status', ['new', 'in_beta', 'in_uat'])
+        .order('chg_number', { ascending: false });
+      return (data ?? []) as RhChange[];
+    },
+  });
+
+  /* ── PROJECT MEMBERS ──────────────────────────── */
+  const { data: projectMembers = [] } = useQuery({
+    queryKey: ['project-members', projectId],
+    enabled: !!projectId && isOpen,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('ph_project_members')
+        .select('user_id, role, profile:profiles!ph_project_members_user_id_fkey(id, full_name, avatar_url, email)')
+        .eq('project_id', projectId);
+      return (data ?? []) as ProjectMember[];
+    },
+  });
+
+  /* ── ATTACHMENTS ──────────────────────────────── */
+  const { data: attachments = [] } = useQuery({
+    queryKey: ['ph-attachments', itemId],
+    enabled: !!itemId && isOpen,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('ph_attachments')
+        .select('*, uploader:profiles!ph_attachments_uploaded_by_fkey(id, full_name, avatar_url, email)')
+        .eq('work_item_id', itemId)
+        .order('created_at', { ascending: false });
+      return (data ?? []) as PhAttachment[];
+    },
+  });
+
+  /* ── LOCAL STATE ──────────────────────────────── */
+  const [activeChildTab, setActiveChildTab] = useState<ChildTab>('subtasks');
+  const [activeActivityTab, setActiveActivityTab] = useState<ActivityTab>('comments');
+  const [newComment, setNewComment] = useState('');
+  const [showAiImprove, setShowAiImprove] = useState(false);
+  const [showWorkflow, setShowWorkflow] = useState(false);
+  const [showConfirmDelete, setShowConfirmDelete] = useState(false);
+  const [showLinkModal, setShowLinkModal] = useState(false);
+  const [showFigmaInput, setShowFigmaInput] = useState(false);
+  const [figmaUrl, setFigmaUrl] = useState('');
+  const [keyDetailsOpen, setKeyDetailsOpen] = useState(true);
+  const [localStatus, setLocalStatus] = useState<string>('');
+  const [localPriority, setLocalPriority] = useState<string>('');
+
+  /* ── SYNC LOCAL STATE FROM ISSUE ──────────────── */
+  useEffect(() => {
+    if (issue) {
+      setLocalStatus(issue.status);
+      setLocalPriority(issue.priority ?? 'Medium');
+    }
+  }, [issue?.id]);
 
   if (!isOpen) return null;
 
@@ -386,7 +653,7 @@ export default function StoryDetailModal({
         }}
         onClick={e => e.stopPropagation()}
       >
-        {/* Stage B+ will render content here */}
+        {/* Stage C+ will render content here */}
       </div>
     </div>
   );
