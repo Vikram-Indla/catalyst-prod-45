@@ -1269,10 +1269,7 @@ export default function StoryDetailModal({
 
             {/* Right actions */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-              <button onClick={handleToggleWatch} style={{ ...btnBase, color: isWatching ? V.primaryBlue : V.textMuted }} title={isWatching ? 'Stop watching' : 'Watch'}>
-                {isWatching ? <EyeOff size={15} /> : <Eye size={15} />}
-              </button>
-              <span style={{ fontSize: 11, color: V.textMuted, minWidth: 12 }}>{watcherCount}</span>
+              <WatchButton issueId={itemId} size="md" showCount={true} />
               <button style={btnBase} title="Copy link" onClick={() => {
                 navigator.clipboard.writeText(window.location.href);
                 toast.success('Link copied');
