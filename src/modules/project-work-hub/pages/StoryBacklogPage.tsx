@@ -1,4 +1,4 @@
-import React, { useState, useMemo, lazy, Suspense } from 'react';
+import React, { useState, useMemo, useRef, useEffect, useCallback, lazy, Suspense } from 'react';
 import { useParams } from 'react-router-dom';
 import { useQueryClient, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -34,8 +34,53 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
   const [editStoryId, setEditStoryId] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<BacklogStory | null>(null);
   const [detailItemId, setDetailItemId] = useState<string | null>(null);
+  const [panelMode, setPanelMode] = useState(false);
+  const [panelDividerWidth, setPanelDividerWidth] = useState(55); // % of total width for left panel
+
+  // Resizable panel divider
+  const containerRef = useRef<HTMLDivElement>(null);
+  const isDraggingPanel = useRef(false);
+
+  const handlePanelMouseDown = useCallback(() => {
+    isDraggingPanel.current = true;
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+  }, []);
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!isDraggingPanel.current || !containerRef.current) return;
+      const rect = containerRef.current.getBoundingClientRect();
+      const pct = ((e.clientX - rect.left) / rect.width) * 100;
+      setPanelDividerWidth(Math.max(25, Math.min(75, pct)));
+    };
+    const handleMouseUp = () => {
+      if (isDraggingPanel.current) {
+        isDraggingPanel.current = false;
+        document.body.style.cursor = '';
+        document.body.style.userSelect = '';
+      }
+    };
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, []);
 
   const groups = useMemo(() => groupByStatus(stories || [], STORY_GROUP_ORDER), [stories]);
+
+  // Flat list of all visible stories for navigation
+  const flatStories = useMemo(() => {
+    const result: { id: string; summary: string; issue_key?: string }[] = [];
+    groups.forEach(group => {
+      if (!collapsed[group.status]) {
+        group.items.forEach(s => result.push({ id: s.id, summary: s.title, issue_key: s.story_key || undefined }));
+      }
+    });
+    return result;
+  }, [groups, collapsed]);
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
@@ -51,6 +96,17 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
   });
 
   const toggleGroup = (status: string) => setCollapsed(prev => ({ ...prev, [status]: !prev[status] }));
+
+  const handleTogglePanelMode = useCallback(() => {
+    setPanelMode(p => !p);
+  }, []);
+
+  const handleCloseDetail = useCallback(() => {
+    if (panelMode) {
+      setPanelMode(false);
+    }
+    setDetailItemId(null);
+  }, [panelMode]);
 
   if (isLoading) {
     return (
@@ -69,8 +125,123 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
 
   const total = stories?.length || 0;
 
+  const renderBacklogList = (compact?: boolean) => (
+    <>
+      {total === 0 ? (
+        <div className="h-full flex flex-col items-center justify-center">
+          <BookOpen className="h-12 w-12 mb-4" style={{ color: tk.t3 }} />
+          <p className="text-base font-medium" style={{ color: tk.t1 }}>No stories yet</p>
+          <p className="text-sm mt-1 mb-4" style={{ color: tk.t3 }}>Create the first story to get started</p>
+          <Button onClick={() => setShowCreate(true)} size="sm" style={{ backgroundColor: '#2563EB', color: '#FFFFFF', borderRadius: 6 }}>
+            <Plus className="h-3.5 w-3.5 mr-1" /> Create Story
+          </Button>
+        </div>
+      ) : (
+        <div style={{ minWidth: compact ? 400 : 1440 }}>
+          {/* Column headers */}
+          <div className="flex items-center h-[32px] px-2 border-b" style={{ borderColor: tk.border, background: tk.tableHeaderBg }}>
+            <div style={{ width: 38, flexShrink: 0 }} />
+            {!compact && <div style={{ width: 26, flexShrink: 0 }} />}
+            <div style={{ width: compact ? 20 : 38, flexShrink: 0 }} />
+            <div style={{ width: compact ? 80 : 110, flexShrink: 0, ...COL_HEADER }}>KEY</div>
+            <div style={{ flex: 1, minWidth: 0, ...COL_HEADER }}>SUMMARY</div>
+            <div style={{ width: compact ? 100 : 138, flexShrink: 0, ...COL_HEADER }}>STATUS</div>
+            {!compact && <div style={{ width: 240, flexShrink: 0, ...COL_HEADER }}>PARENT</div>}
+            <div style={{ width: compact ? 120 : 160, flexShrink: 0, ...COL_HEADER }}>ASSIGNEE</div>
+            {!compact && (
+              <>
+                <div style={{ width: 90, flexShrink: 0, ...COL_HEADER }}>CREATED</div>
+                <div style={{ width: 90, flexShrink: 0, ...COL_HEADER }}>UPDATED</div>
+                <div style={{ width: 90, flexShrink: 0, ...COL_HEADER }}>DUE DATE</div>
+                <div style={{ width: 78, flexShrink: 0, ...COL_HEADER }}>PRIORITY</div>
+              </>
+            )}
+          </div>
+
+          {groups.map(group => (
+            <div key={group.status}>
+              <div className="flex items-center h-[32px] px-2 cursor-pointer select-none" style={{ background: tk.tableHeaderBg, borderBottom: `0.75px solid ${tk.border}` }} onClick={() => toggleGroup(group.status)}>
+                {collapsed[group.status] ? <ChevronRight className="h-3.5 w-3.5 mr-2" style={{ color: tk.t2 }} /> : <ChevronDown className="h-3.5 w-3.5 mr-2" style={{ color: tk.t2 }} />}
+                <span style={{ fontSize: 11, fontWeight: 600, color: tk.t2, textTransform: 'uppercase', letterSpacing: '0.03em' }}>{group.label}</span>
+                <span className="ml-2 inline-flex items-center justify-center rounded-full" style={{ fontSize: 10, fontWeight: 600, color: tk.t2, background: tk.chipBg, minWidth: 20, height: 18, padding: '0 6px' }}>{group.items.length}</span>
+              </div>
+
+              {!collapsed[group.status] && group.items.map((story) => {
+                const sc = story.status ? STORY_STATUS_LOZENGE[story.status] : null;
+                const ls = sc ? getLozengeStyle(sc.color) : null;
+                const avatarUrl = story.assignee_name ? avatarsByName.get(story.assignee_name.toLowerCase()) : null;
+                const isSelected = panelMode && detailItemId === story.id;
+                return (
+                  <div key={story.id} className="group flex items-center h-[50px] px-2 border-b cursor-pointer" style={{
+                    borderColor: tk.divider, maxHeight: 50, transition: 'background 120ms',
+                    background: isSelected ? '#DEEBFF' : undefined,
+                  }}
+                    onMouseEnter={(e) => { if (!isSelected) e.currentTarget.style.background = tk.hoverBg; }}
+                    onMouseLeave={(e) => { if (!isSelected) e.currentTarget.style.background = ''; }}
+                    onClick={() => setDetailItemId(story.id)}>
+                    <div style={{ width: 38, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <input type="checkbox" onClick={(e) => e.stopPropagation()} className="opacity-0 group-hover:opacity-100 transition-opacity" style={{ width: 14, height: 14 }} />
+                    </div>
+                    {!compact && (
+                      <div style={{ width: 26, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <button onClick={(e) => { e.stopPropagation(); setDetailItemId(story.id); }} className="opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+                          <ChevronRight className="h-3.5 w-3.5" style={{ color: tk.t3 }} />
+                        </button>
+                      </div>
+                    )}
+                    <div style={{ width: compact ? 20 : 38, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <JiraIssueTypeIcon type="story" size={compact ? 14 : undefined} />
+                    </div>
+                    <div style={{ width: compact ? 80 : 110, flexShrink: 0, fontFamily: "'JetBrains Mono', monospace", fontSize: compact ? 12 : 13, fontWeight: 500, color: story.story_key ? tk.blueKey : tk.t3 }}>
+                      {story.story_key || '—'}
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0, fontSize: 13, fontWeight: 400, color: tk.t1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{story.title}</div>
+                    <div style={{ width: compact ? 100 : 138, flexShrink: 0 }}>
+                      {sc && ls && <span style={{ display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px', borderRadius: 4, fontSize: 11, fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.03em', background: ls.bg, color: ls.text }}>{sc.label}</span>}
+                    </div>
+                    {!compact && (
+                      <div style={{ width: 240, flexShrink: 0, overflow: 'hidden' }}>
+                        {story.feature?.epic ? (
+                          <ParentEpicChip epicId={story.feature.epic.id} epicKey={story.feature.epic.epic_key} epicName={story.feature.epic.name} />
+                        ) : (
+                          <span style={{ color: tk.t3, fontSize: 12 }}>—</span>
+                        )}
+                      </div>
+                    )}
+                    <div style={{ width: compact ? 120 : 160, flexShrink: 0, fontSize: 13, color: story.assignee_name ? tk.t1 : tk.t3, fontStyle: story.assignee_name ? 'normal' : 'italic', display: 'flex', alignItems: 'center', gap: 6, overflow: 'hidden' }}>
+                      {avatarUrl ? (
+                        <img src={avatarUrl} style={{ width: 20, height: 20, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} alt="" />
+                      ) : (
+                        <div style={{ width: 20, height: 20, borderRadius: '50%', background: tk.chipBg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 8, fontWeight: 700, color: tk.t2, flexShrink: 0 }}>{getInitials(story.assignee_name || null)}</div>
+                      )}
+                      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{story.assignee_name || 'Unassigned'}</span>
+                    </div>
+                    {!compact && (
+                      <>
+                        <div style={{ width: 90, flexShrink: 0, fontSize: 12, color: tk.t2, fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: 'tabular-nums' }}>{formatDueDate(story.jira_created_at ?? null)}</div>
+                        <div style={{ width: 90, flexShrink: 0, fontSize: 12, color: tk.t2, fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: 'tabular-nums' }}>{formatDueDate(story.jira_updated_at ?? null)}</div>
+                        <div style={{ width: 90, flexShrink: 0, fontSize: 12, color: tk.t2, fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: 'tabular-nums' }}>{formatDueDate(story.start_date)}</div>
+                        <div style={{ width: 78, flexShrink: 0, fontSize: 12, position: 'relative' }}>
+                          <span style={{ color: getPriorityColor(story.priority) }}>{getPriorityLabel(story.priority)}</span>
+                          <div className="absolute right-0 top-1/2 -translate-y-1/2 hidden group-hover:flex items-center gap-1" style={{ background: isDark ? 'rgba(10,10,10,0.95)' : '#EDEDED' }}>
+                            <button onClick={(e) => { e.stopPropagation(); setEditStoryId(story.id); }} className="p-1 rounded" onMouseEnter={(e) => (e.currentTarget.style.background = tk.hoverBg)} onMouseLeave={(e) => (e.currentTarget.style.background = '')} title="Edit"><Pencil className="h-3.5 w-3.5" style={{ color: tk.t2 }} /></button>
+                            <button onClick={(e) => { e.stopPropagation(); setDeleteTarget(story); }} className="p-1 rounded" onMouseEnter={(e) => (e.currentTarget.style.background = tk.hoverBg)} onMouseLeave={(e) => (e.currentTarget.style.background = '')} title="Delete"><Trash2 className="h-3.5 w-3.5" style={{ color: '#DC2626' }} /></button>
+                          </div>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          ))}
+        </div>
+      )}
+    </>
+  );
+
   return (
-    <div className="h-full flex flex-col" style={{ background: tk.pageBg }}>
+    <div ref={containerRef} className="h-full flex flex-col" style={{ background: tk.pageBg }}>
       <div className="flex items-center justify-between px-6 py-3 border-b" style={{ borderColor: tk.border }}>
         <div className="flex items-center gap-3">
           <JiraIssueTypeIcon type="story" size={20} />
@@ -82,111 +253,58 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
         </Button>
       </div>
 
-      <div className="flex-1 overflow-auto">
-        {total === 0 ? (
-          <div className="h-full flex flex-col items-center justify-center">
-            <BookOpen className="h-12 w-12 mb-4" style={{ color: tk.t3 }} />
-            <p className="text-base font-medium" style={{ color: tk.t1 }}>No stories yet</p>
-            <p className="text-sm mt-1 mb-4" style={{ color: tk.t3 }}>Create the first story to get started</p>
-            <Button onClick={() => setShowCreate(true)} size="sm" style={{ backgroundColor: '#2563EB', color: '#FFFFFF', borderRadius: 6 }}>
-              <Plus className="h-3.5 w-3.5 mr-1" /> Create Story
-            </Button>
+      {panelMode && detailItemId ? (
+        /* ═══ PANEL MODE — split layout ═══ */
+        <div style={{ flex: 1, display: 'flex', overflow: 'hidden', minHeight: 0 }}>
+          {/* Left: compact backlog list */}
+          <div style={{
+            width: `${panelDividerWidth}%`, flexShrink: 0,
+            overflow: 'auto', transition: isDraggingPanel.current ? 'none' : 'width 0.15s ease',
+          }}>
+            {renderBacklogList(true)}
           </div>
-        ) : (
-          <div style={{ minWidth: 1440 }}>
-            {/* Column headers — SRC column REMOVED */}
-            <div className="flex items-center h-[32px] px-2 border-b" style={{ borderColor: tk.border, background: tk.tableHeaderBg }}>
-              <div style={{ width: 38, flexShrink: 0 }} />
-              <div style={{ width: 26, flexShrink: 0 }} />
-              <div style={{ width: 38, flexShrink: 0 }} />
-              <div style={{ width: 110, flexShrink: 0, ...COL_HEADER }}>KEY</div>
-              <div style={{ flex: 1, minWidth: 0, ...COL_HEADER }}>SUMMARY</div>
-              <div style={{ width: 138, flexShrink: 0, ...COL_HEADER }}>STATUS</div>
-              <div style={{ width: 240, flexShrink: 0, ...COL_HEADER }}>PARENT</div>
-              <div style={{ width: 160, flexShrink: 0, ...COL_HEADER }}>ASSIGNEE</div>
-              <div style={{ width: 90, flexShrink: 0, ...COL_HEADER }}>CREATED</div>
-              <div style={{ width: 90, flexShrink: 0, ...COL_HEADER }}>UPDATED</div>
-              <div style={{ width: 90, flexShrink: 0, ...COL_HEADER }}>DUE DATE</div>
-              <div style={{ width: 78, flexShrink: 0, ...COL_HEADER }}>PRIORITY</div>
-            </div>
 
-            {groups.map(group => (
-              <div key={group.status}>
-                <div className="flex items-center h-[32px] px-2 cursor-pointer select-none" style={{ background: tk.tableHeaderBg, borderBottom: `0.75px solid ${tk.border}` }} onClick={() => toggleGroup(group.status)}>
-                  {collapsed[group.status] ? <ChevronRight className="h-3.5 w-3.5 mr-2" style={{ color: tk.t2 }} /> : <ChevronDown className="h-3.5 w-3.5 mr-2" style={{ color: tk.t2 }} />}
-                  <span style={{ fontSize: 11, fontWeight: 600, color: tk.t2, textTransform: 'uppercase', letterSpacing: '0.03em' }}>{group.label}</span>
-                  <span className="ml-2 inline-flex items-center justify-center rounded-full" style={{ fontSize: 10, fontWeight: 600, color: tk.t2, background: tk.chipBg, minWidth: 20, height: 18, padding: '0 6px' }}>{group.items.length}</span>
-                </div>
-
-                {!collapsed[group.status] && group.items.map((story) => {
-                  const sc = story.status ? STORY_STATUS_LOZENGE[story.status] : null;
-                  const ls = sc ? getLozengeStyle(sc.color) : null;
-                  const avatarUrl = story.assignee_name ? avatarsByName.get(story.assignee_name.toLowerCase()) : null;
-                  return (
-                    <div key={story.id} className="group flex items-center h-[50px] px-2 border-b cursor-pointer" style={{ borderColor: tk.divider, maxHeight: 50, transition: 'background 120ms' }}
-                      onMouseEnter={(e) => (e.currentTarget.style.background = tk.hoverBg)}
-                      onMouseLeave={(e) => (e.currentTarget.style.background = '')}
-                      onClick={() => setDetailItemId(story.id)}>
-                      <div style={{ width: 38, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <input type="checkbox" onClick={(e) => e.stopPropagation()} className="opacity-0 group-hover:opacity-100 transition-opacity" style={{ width: 14, height: 14 }} />
-                      </div>
-                      <div style={{ width: 26, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <button onClick={(e) => { e.stopPropagation(); setDetailItemId(story.id); }} className="opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
-                          <ChevronRight className="h-3.5 w-3.5" style={{ color: tk.t3 }} />
-                        </button>
-                      </div>
-                      <div style={{ width: 38, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <JiraIssueTypeIcon type="story" />
-                      </div>
-                      {/* KEY — blue, monospace */}
-                      <div style={{ width: 110, flexShrink: 0, fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 500, color: story.story_key ? tk.blueKey : tk.t3 }}>
-                        {story.story_key || '—'}
-                      </div>
-                      {/* SUMMARY — high contrast */}
-                      <div style={{ flex: 1, minWidth: 0, fontSize: 13, fontWeight: 400, color: tk.t1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{story.title}</div>
-                      {/* STATUS — 3-color guardrail */}
-                      <div style={{ width: 138, flexShrink: 0 }}>
-                        {sc && ls && <span style={{ display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px', borderRadius: 4, fontSize: 11, fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.03em', background: ls.bg, color: ls.text }}>{sc.label}</span>}
-                      </div>
-                      {/* PARENT */}
-                      <div style={{ width: 240, flexShrink: 0, overflow: 'hidden' }}>
-                        {story.feature?.epic ? (
-                          <ParentEpicChip epicId={story.feature.epic.id} epicKey={story.feature.epic.epic_key} epicName={story.feature.epic.name} />
-                        ) : (
-                          <span style={{ color: tk.t3, fontSize: 12 }}>—</span>
-                        )}
-                      </div>
-                      {/* ASSIGNEE — real name or italic Unassigned */}
-                      <div style={{ width: 160, flexShrink: 0, fontSize: 13, color: story.assignee_name ? tk.t1 : tk.t3, fontStyle: story.assignee_name ? 'normal' : 'italic', display: 'flex', alignItems: 'center', gap: 6, overflow: 'hidden' }}>
-                        {avatarUrl ? (
-                          <img src={avatarUrl} style={{ width: 20, height: 20, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} alt="" />
-                        ) : (
-                          <div style={{ width: 20, height: 20, borderRadius: '50%', background: tk.chipBg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 8, fontWeight: 700, color: tk.t2, flexShrink: 0 }}>{getInitials(story.assignee_name || null)}</div>
-                        )}
-                        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{story.assignee_name || 'Unassigned'}</span>
-                      </div>
-                      {/* CREATED — monospace */}
-                      <div style={{ width: 90, flexShrink: 0, fontSize: 12, color: tk.t2, fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: 'tabular-nums' }}>{formatDueDate(story.jira_created_at ?? null)}</div>
-                      {/* UPDATED — monospace */}
-                      <div style={{ width: 90, flexShrink: 0, fontSize: 12, color: tk.t2, fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: 'tabular-nums' }}>{formatDueDate(story.jira_updated_at ?? null)}</div>
-                      {/* DUE DATE */}
-                      <div style={{ width: 90, flexShrink: 0, fontSize: 12, color: tk.t2, fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: 'tabular-nums' }}>{formatDueDate(story.start_date)}</div>
-                      {/* PRIORITY */}
-                      <div style={{ width: 78, flexShrink: 0, fontSize: 12, position: 'relative' }}>
-                        <span style={{ color: getPriorityColor(story.priority) }}>{getPriorityLabel(story.priority)}</span>
-                        <div className="absolute right-0 top-1/2 -translate-y-1/2 hidden group-hover:flex items-center gap-1" style={{ background: isDark ? 'rgba(10,10,10,0.95)' : '#EDEDED' }}>
-                          <button onClick={(e) => { e.stopPropagation(); setEditStoryId(story.id); }} className="p-1 rounded" onMouseEnter={(e) => (e.currentTarget.style.background = tk.hoverBg)} onMouseLeave={(e) => (e.currentTarget.style.background = '')} title="Edit"><Pencil className="h-3.5 w-3.5" style={{ color: tk.t2 }} /></button>
-                          <button onClick={(e) => { e.stopPropagation(); setDeleteTarget(story); }} className="p-1 rounded" onMouseEnter={(e) => (e.currentTarget.style.background = tk.hoverBg)} onMouseLeave={(e) => (e.currentTarget.style.background = '')} title="Delete"><Trash2 className="h-3.5 w-3.5" style={{ color: '#DC2626' }} /></button>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            ))}
+          {/* Resizable divider */}
+          <div
+            onMouseDown={handlePanelMouseDown}
+            style={{
+              width: 6, minWidth: 6, cursor: 'col-resize', flexShrink: 0,
+              background: 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center',
+              transition: 'background 0.15s', position: 'relative', zIndex: 10,
+            }}
+            onMouseEnter={e => (e.currentTarget.style.background = '#F1F5F9')}
+            onMouseLeave={e => { if (!isDraggingPanel.current) e.currentTarget.style.background = 'transparent'; }}
+          >
+            <div style={{ width: 1.5, height: 40, borderRadius: 1, background: '#E2E8F0' }} />
           </div>
-        )}
-      </div>
+
+          {/* Right: detail panel */}
+          <div style={{
+            flex: 1, minWidth: 0, overflow: 'hidden',
+            transition: isDraggingPanel.current ? 'none' : 'flex 0.15s ease',
+          }}>
+            <Suspense fallback={<div style={{ padding: 24, color: '#97A0AF' }}>Loading…</div>}>
+              <StoryDetailModal
+                isOpen={true}
+                onClose={handleCloseDetail}
+                itemId={detailItemId}
+                projectId={projectId || ''}
+                projectKey={projectKey || ''}
+                onOpenItem={(id) => setDetailItemId(id)}
+                panelMode={true}
+                onTogglePanelMode={handleTogglePanelMode}
+                navigationItems={flatStories}
+                onNavigate={(id) => setDetailItemId(id)}
+              />
+            </Suspense>
+          </div>
+        </div>
+      ) : (
+        /* ═══ NORMAL MODE — full-width list ═══ */
+        <div className="flex-1 overflow-auto">
+          {renderBacklogList(false)}
+        </div>
+      )}
 
       <CreateStoryDialog
         isOpen={showCreate}
@@ -215,7 +333,8 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
         isPending={deleteMutation.isPending}
       />
 
-      {detailItemId && (
+      {/* Modal mode — standard centered modal */}
+      {!panelMode && detailItemId && (
         <Suspense fallback={null}>
           <StoryDetailModal
             isOpen={!!detailItemId}
@@ -224,6 +343,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
             projectId={projectId || ''}
             projectKey={projectKey || ''}
             onOpenItem={(id) => setDetailItemId(id)}
+            onTogglePanelMode={handleTogglePanelMode}
           />
         </Suspense>
       )}

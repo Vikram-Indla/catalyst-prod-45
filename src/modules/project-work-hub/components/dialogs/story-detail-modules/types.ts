@@ -208,4 +208,10 @@ export interface StoryDetailModalProps {
   projectId: string;
   projectKey: string;
   onOpenItem?: (itemId: string) => void;
+  /** Panel mode — renders as side panel instead of centered modal */
+  panelMode?: boolean;
+  onTogglePanelMode?: () => void;
+  /** Navigation items for prev/next in panel mode */
+  navigationItems?: { id: string; summary: string; issue_key?: string }[];
+  onNavigate?: (itemId: string) => void;
 }
