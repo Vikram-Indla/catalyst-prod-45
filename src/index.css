@@ -27,20 +27,20 @@
    GREEN = Done / Approved / Completed
    ───────────────────────────────────────────────────────────── */
 :root {
-  --status-todo-bg: #DFE1E6;
-  --status-todo-text: #253858;
-  --status-inprogress-bg: #DEEBFF;
-  --status-inprogress-text: #0747A6;
-  --status-done-bg: #E3FCEF;
-  --status-done-text: #006644;
+  --status-todo-bg: #42526E;
+  --status-todo-text: #FFFFFF;
+  --status-inprogress-bg: #0052CC;
+  --status-inprogress-text: #FFFFFF;
+  --status-done-bg: #14892C;
+  --status-done-text: #FFFFFF;
 }
 .dark {
-  --status-todo-bg: #2E2E2E;
-  --status-todo-text: #A1A1A1;
-  --status-inprogress-bg: rgba(59,130,246,0.10);
-  --status-inprogress-text: #7DB8FC;
-  --status-done-bg: rgba(74,222,128,0.10);
-  --status-done-text: #4ADE80;
+  --status-todo-bg: #42526E;
+  --status-todo-text: #FFFFFF;
+  --status-inprogress-bg: #0052CC;
+  --status-inprogress-text: #FFFFFF;
+  --status-done-bg: #14892C;
+  --status-done-text: #FFFFFF;
 }
 .status-badge-base {
   display: inline-flex;
