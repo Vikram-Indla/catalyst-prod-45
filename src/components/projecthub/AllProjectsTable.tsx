@@ -501,8 +501,8 @@ export function AllProjectsTable({
     staleTime: 15_000,
   });
 
-  const headerLabels = ['#', 'PROJECT', 'STATUS', 'LEAD', 'ISSUES', 'MEMBERS', 'UPDATED', ''];
-  const sortableMap: Record<number, SortColumn> = { 1: 'name', 2: 'status', 4: 'total_issues' };
+  const headerLabels = ['#', 'PROJECT', 'STATUS', 'LEAD', 'MEMBERS', ''];
+  const sortableMap: Record<number, SortColumn> = { 1: 'name', 2: 'status' };
 
   return (
     <div className="overflow-x-auto">
@@ -513,9 +513,7 @@ export function AllProjectsTable({
           <col style={{ width: 'auto', minWidth: 280 }} />
           <col className="w-[110px] min-w-[110px] max-w-[110px]" />
           <col className="w-[200px] min-w-[200px] max-w-[200px]" />
-          <col className="w-[90px] min-w-[90px] max-w-[90px]" />
-          <col className="w-[130px] min-w-[130px] max-w-[130px]" />
-          <col className="w-[130px] min-w-[130px] max-w-[130px]" />
+          <col className="w-[150px] min-w-[150px] max-w-[150px]" />
           <col className="w-[48px] min-w-[48px] max-w-[48px]" />
         </colgroup>
         <thead>
@@ -656,25 +654,9 @@ export function AllProjectsTable({
                   <LeadReassignPopover project={p} />
                 </td>
 
-                {/* Cell 5: Issues */}
-                <td className="px-2 py-2 text-center border-b border-slate-100 dark:border-[#2E2E2E] overflow-hidden">
-                  <IssueBreakdownPopover
-                    projectKey={p.project_key}
-                    projectName={p.name}
-                    issueCount={issueCount}
-                  />
-                </td>
-
-                {/* Cell 6: Members */}
+                {/* Cell 5: Members */}
                 <td className="px-2 py-2 border-b border-slate-100 dark:border-[#2E2E2E] overflow-hidden">
                   <MemberManagePopover project={p} />
-                </td>
-
-                {/* Cell 7: Updated */}
-                <td className="px-2 py-2 text-xs text-slate-500 dark:text-[#A1A1A1] border-b border-slate-100 dark:border-[#2E2E2E] overflow-hidden truncate">
-                  {(syncTs || p.updated_at)
-                    ? formatDistanceToNowStrict(new Date(syncTs || p.updated_at), { addSuffix: true })
-                    : '—'}
                 </td>
 
                 {/* Cell 8: Actions */}
