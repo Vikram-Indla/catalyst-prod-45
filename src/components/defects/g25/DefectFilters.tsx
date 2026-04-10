@@ -1,5 +1,5 @@
-import { useState, useRef } from 'react';
-import { Search, X, ChevronDown, Check } from 'lucide-react';
+import { useState } from 'react';
+import { Search, X, ChevronDown, Check, UserRound } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Command, CommandInput, CommandList, CommandItem, CommandEmpty } from '@/components/ui/command';
@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils';
 interface Props {
   filters: DefectFiltersType;
   onChange: (f: DefectFiltersType) => void;
-  users: { id: string; full_name: string }[];
+  users: { id: string; full_name: string; avatar_url?: string | null }[];
 }
 
 // ── Filter chip pill component ──
@@ -117,11 +117,16 @@ export function DefectFilters({ filters, onChange, users }: Props) {
     { value: 'low', label: 'Low' },
   ];
 
-  const assigneeOptions = [
-    { value: '', label: 'All Assignees' },
-    { value: 'unassigned', label: 'Unassigned' },
-    ...users.map(u => ({ value: u.id, label: u.full_name })),
-  ];
+  const AVATAR_COLOURS = ['#2563EB', '#0D9488', '#0284C7', '#DC2626', '#DB2777'];
+  const getInitials = (name: string) => name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+
+  // Assignee label for chip display
+  const assigneeLabel = filters.assignedTo
+    ? filters.assignedTo === 'unassigned'
+      ? 'Unassigned'
+      : users.find(u => u.id === filters.assignedTo)?.full_name || 'Assignee'
+    : 'Assignee';
+  const assigneeActive = !!filters.assignedTo;
 
   return (
     <div className="flex items-center gap-2 flex-wrap">
@@ -160,14 +165,83 @@ export function DefectFilters({ filters, onChange, users }: Props) {
         onSelect={v => onChange({ ...filters, priority: v ? [v as any] : undefined })}
       />
 
-      {/* Assignee */}
-      <FilterChip
-        label="Assignee"
-        value={filters.assignedTo}
-        options={assigneeOptions}
-        onSelect={v => onChange({ ...filters, assignedTo: v || undefined })}
-        searchable
-      />
+      {/* Assignee — with avatars */}
+      <Popover>
+        <PopoverTrigger asChild>
+          <button
+            className={cn(
+              'inline-flex items-center gap-1 h-7 px-2.5 rounded-md border text-[13px] font-medium transition-colors',
+              assigneeActive
+                ? 'bg-blue-50 border-blue-600 text-blue-600'
+                : 'bg-white border-slate-900/[0.14] text-slate-900 hover:bg-slate-900/[0.04]'
+            )}
+          >
+            {assigneeLabel}
+            <ChevronDown className={cn('h-3 w-3', assigneeActive ? 'text-blue-600' : 'text-slate-500')} />
+          </button>
+        </PopoverTrigger>
+        <PopoverContent
+          className="w-56 p-0 bg-white border border-slate-900/[0.12] rounded-md shadow-[0_4px_6px_-1px_rgba(0,0,0,0.07)]"
+          align="start"
+          sideOffset={4}
+        >
+          <Command>
+            <CommandInput placeholder="Search assignee..." className="h-8 text-[13px]" />
+            <CommandList>
+              <CommandEmpty className="py-3 text-center text-[13px] text-slate-500">No results</CommandEmpty>
+              {/* All Assignees */}
+              <CommandItem
+                value="All Assignees"
+                onSelect={() => onChange({ ...filters, assignedTo: undefined })}
+                className="h-9 px-3 text-[13px] text-slate-900 cursor-pointer"
+              >
+                <div className="flex items-center gap-2 w-full">
+                  {!filters.assignedTo ? <Check className="h-3.5 w-3.5 text-blue-600 flex-shrink-0" /> : <span className="w-3.5 flex-shrink-0" />}
+                  All Assignees
+                </div>
+              </CommandItem>
+              {/* Unassigned */}
+              <CommandItem
+                value="Unassigned"
+                onSelect={() => { onChange({ ...filters, assignedTo: 'unassigned' }); }}
+                className="h-9 px-3 text-[13px] text-slate-900 cursor-pointer"
+              >
+                <div className="flex items-center gap-2 w-full">
+                  {filters.assignedTo === 'unassigned' ? <Check className="h-3.5 w-3.5 text-blue-600 flex-shrink-0" /> : <span className="w-3.5 flex-shrink-0" />}
+                  <div style={{ width: 24, height: 24, borderRadius: '50%', backgroundColor: '#F1F5F9', border: '1px solid rgba(15,23,42,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <UserRound size={12} style={{ color: '#94A3B8' }} />
+                  </div>
+                  Unassigned
+                </div>
+              </CommandItem>
+              {/* Users with avatars */}
+              {users.map(u => {
+                const isSelected = filters.assignedTo === u.id;
+                const ini = getInitials(u.full_name);
+                const clr = AVATAR_COLOURS[ini.charCodeAt(0) % AVATAR_COLOURS.length];
+                return (
+                  <CommandItem
+                    key={u.id}
+                    value={u.full_name}
+                    onSelect={() => { onChange({ ...filters, assignedTo: u.id }); }}
+                    className="h-9 px-3 text-[13px] text-slate-900 cursor-pointer"
+                  >
+                    <div className="flex items-center gap-2 w-full">
+                      {isSelected ? <Check className="h-3.5 w-3.5 text-blue-600 flex-shrink-0" /> : <span className="w-3.5 flex-shrink-0" />}
+                      {u.avatar_url ? (
+                        <img src={u.avatar_url} alt={u.full_name} style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover', flexShrink: 0, border: '1px solid rgba(15,23,42,0.12)' }} />
+                      ) : (
+                        <div style={{ width: 24, height: 24, borderRadius: '50%', background: clr, color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, flexShrink: 0 }}>{ini}</div>
+                      )}
+                      {u.full_name}
+                    </div>
+                  </CommandItem>
+                );
+              })}
+            </CommandList>
+          </Command>
+        </PopoverContent>
+      </Popover>
 
       {/* Clear */}
       {hasFilters && (
