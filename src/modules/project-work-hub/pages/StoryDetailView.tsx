@@ -185,9 +185,11 @@ export default function StoryDetailView({ projectId, projectKey, itemId }: Story
         issueKey={story.issue_key}
         issueType={story.issue_type}
         parentEpic={story.parentEpic}
+        parentCandidates={parentCandidates}
         onPrev={handlePrev}
         onNext={handleNext}
         onAddParent={() => setParentPickerOpen(true)}
+        onSelectParent={(key) => handleUpdateField('parent_key', key)}
       />
 
       {/* Two-panel layout */}
