@@ -83,6 +83,8 @@ export default function StoryDetailView({ projectId, projectKey, itemId }: Story
   const [subtasksOpen, setSubtasksOpen] = useState(true);
   const [linkedOpen, setLinkedOpen] = useState(true);
   const [parentPickerOpen, setParentPickerOpen] = useState(false);
+  const [parentSearch, setParentSearch] = useState('');
+  const [showDoneParents, setShowDoneParents] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   // ─── Prev/Next navigation ─────────────────────────────────
