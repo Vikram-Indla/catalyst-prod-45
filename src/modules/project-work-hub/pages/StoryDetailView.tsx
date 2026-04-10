@@ -7,7 +7,7 @@ import React, { useState, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   ChevronDown, ChevronRight, Minus, ChevronUp, ChevronsUp, ChevronsDown,
-  Plus, MoreHorizontal,
+  Plus, MoreHorizontal, X, Search,
 } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
