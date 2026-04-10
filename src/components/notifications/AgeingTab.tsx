@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useAgeingItems } from '@/hooks/useAgeingItems';
 import { Loader2, ChevronDown, ChevronRight, Sparkles } from 'lucide-react';
 import AgeingSkeleton from './AgeingSkeleton';
 import { useGovernanceScore } from '@/hooks/useGovernanceScore';
@@ -356,7 +357,7 @@ function AICleanupButton() {
       onClick={() => navigate('/cleanup')}
       style={{
         height: 26, padding: '0 10px', borderRadius: 6,
-        background: '#7C3AED', color: '#fff',
+        background: '#1E293B', color: '#fff',
         fontSize: 10, fontWeight: 700, border: 'none',
         cursor: 'pointer', display: 'inline-flex',
         alignItems: 'center', gap: 5,
@@ -387,55 +388,30 @@ export default function AgeingTab() {
   const { user } = useAuth();
   const { data: govData } = useGovernanceScore();
 
-  // Fetch data
+  // Use shared hook — single source of truth
+  const { data: sharedItems, isLoading: sharedLoading } = useAgeingItems();
+
   useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      setLoading(true);
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user || cancelled) { setLoading(false); return; }
-
-      const { data: identityRows } = await supabase
-        .from('jira_identity_map')
-        .select('jira_account_id')
-        .eq('catalyst_user_id', user.id)
-        .limit(1);
-
-      if (cancelled || !identityRows?.length) { setLoading(false); return; }
-      const jiraAccountId = identityRows[0].jira_account_id;
-
-      const { data } = await supabase
-        .from('ph_issues')
-        .select('id, issue_key, issue_type, summary, status, status_category, jira_created_at')
-        .eq('assignee_account_id', jiraAccountId)
-        .neq('status_category', 'done')
-        .is('deleted_at', null)
-        .order('jira_created_at', { ascending: false });
-
-      if (cancelled) return;
-
-      const mapped: AgeingItem[] = (data ?? [])
-        .map(row => {
-          const status = mapStatusCategory(row.status_category ?? '');
-          if (!status) return null;
-          const createdAt = row.jira_created_at ? new Date(row.jira_created_at).getTime() : Date.now();
-          const daysAssigned = Math.max(1, Math.floor((Date.now() - createdAt) / (1000 * 60 * 60 * 24)));
-          return {
-            id: row.id,
-            jira_key: row.issue_key,
-            item_type: mapIssueType(row.issue_type),
-            summary: row.summary,
-            status,
-            days_assigned: daysAssigned,
-          } as AgeingItem;
-        })
-        .filter(Boolean) as AgeingItem[];
-
+    if (sharedItems) {
+      const mapped: AgeingItem[] = sharedItems.map(row => {
+        const status = mapStatusCategory(row.status_category ?? '');
+        return {
+          id: row.id,
+          jira_key: row.jira_key,
+          item_type: row.item_type as ItemType,
+          summary: row.summary,
+          status: status || 'TODO' as StatusType,
+          days_assigned: row.days_assigned,
+        } as AgeingItem;
+      });
       setItems(mapped);
       setLoading(false);
-    })();
-    return () => { cancelled = true; };
-  }, []);
+    }
+  }, [sharedItems]);
+
+  useEffect(() => {
+    if (sharedLoading) setLoading(true);
+  }, [sharedLoading]);
 
   // Sync ageing count into governance cache so RAG pill stays in sync
   useEffect(() => {

@@ -5,10 +5,11 @@
  */
 import React, { useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useGovernanceScore } from '@/hooks/useGovernanceScore';
+import { useAgeingItems, type AgeingItem as SharedAgeingItem } from '@/hooks/useAgeingItems';
 import { toast } from 'sonner';
 import {
   ChevronLeft, ChevronDown, Clock, AlertTriangle, Sparkles,
@@ -183,77 +184,56 @@ export default function CleanupPage() {
     });
   };
 
-  // ── Fetch cleanup items per category ──────────
-  const { data: catData = {} as Record<number, CleanupItem[]>, isLoading } = useQuery({
-    queryKey: ['cleanup-categories', user?.id],
-    enabled: !!user?.id,
-    queryFn: async () => {
-      const result: Record<number, CleanupItem[]> = {};
-      const now = Date.now();
-      const mapItems = (data: any[] | null): CleanupItem[] =>
-        (data ?? []).map(i => ({
-          ...i,
-          days_stale: Math.floor((now - new Date(i.updated_at || i.created_at || '').getTime()) / 86400_000),
-        }));
+  // ── Use shared ageing items (same source as AgeingTab) ──
+  const { data: sharedItems = [], isLoading } = useAgeingItems();
 
-      // Cat 1: Ghost Tickets
-      const { data: d1 } = await supabase
-        .from('catalyst_issues')
-        .select('id, issue_key, title, status, issue_type, updated_at, created_at, assignee_id, reporter_id, parent_id')
-        .eq('assignee_id', user!.id)
-        .neq('status', 'done')
-        .lt('updated_at', new Date(now - 60 * 86400_000).toISOString())
-        .limit(50);
-      result[1] = mapItems(d1);
+  // ── Categorize items client-side ──────────
+  const catData = useMemo(() => {
+    const result: Record<number, CleanupItem[]> = {};
+    const now = Date.now();
 
-      // Cat 2: No Work Breakdown
-      const { data: d2 } = await supabase
-        .from('catalyst_issues')
-        .select('id, issue_key, title, status, issue_type, updated_at, created_at, assignee_id, reporter_id, parent_id')
-        .eq('assignee_id', user!.id)
-        .eq('issue_type', 'Story')
-        .neq('status', 'done')
-        .lt('created_at', new Date(now - 30 * 86400_000).toISOString())
-        .limit(50);
-      result[2] = mapItems(d2);
+    const toCleanup = (item: SharedAgeingItem): CleanupItem => ({
+      id: item.id,
+      issue_key: item.jira_key,
+      title: item.summary,
+      status: item.status,
+      issue_type: item.issue_type_raw,
+      updated_at: item.jira_updated_at || item.created_at,
+      created_at: item.created_at,
+      assignee_id: item.assignee_account_id,
+      reporter_id: item.reporter_account_id,
+      parent_id: item.parent_key,
+      days_stale: item.days_assigned,
+      reporter_name: item.reporter_display_name || undefined,
+    });
 
-      // Cat 3: Inactive Assignee (simplified — fetch all non-done, filter client-side)
-      const { data: d3 } = await supabase
-        .from('catalyst_issues')
-        .select('id, issue_key, title, status, issue_type, updated_at, created_at, assignee_id, reporter_id, parent_id')
-        .neq('status', 'done')
-        .not('reporter_id', 'is', null)
-        .limit(20);
-      result[3] = mapItems(d3).slice(0, 10);
+    // Cat 1: Ghost Tickets — 60+ days stale
+    result[1] = sharedItems.filter(i => i.days_assigned >= 60).map(toCleanup);
 
-      // Cat 4: Epic-Linked Stale
-      const { data: d4 } = await supabase
-        .from('catalyst_issues')
-        .select('id, issue_key, title, status, issue_type, updated_at, created_at, assignee_id, reporter_id, parent_id')
-        .eq('assignee_id', user!.id)
-        .neq('status', 'done')
-        .not('parent_id', 'is', null)
-        .lt('updated_at', new Date(now - 45 * 86400_000).toISOString())
-        .limit(50);
-      result[4] = mapItems(d4);
+    // Cat 2: No Work Breakdown — Story type, 30+ days old
+    result[2] = sharedItems.filter(i =>
+      i.item_type === 'Story' && i.days_assigned >= 30
+    ).map(toCleanup);
 
-      // Cat 5, 6: Empty for now
-      result[5] = [];
-      result[6] = [];
+    // Cat 3: Inactive / Departed Assignee (simplified — all items for now)
+    result[3] = [];
 
-      // Cat 7: Active Defect Inactive Assignee
-      const { data: d7 } = await supabase
-        .from('catalyst_issues')
-        .select('id, issue_key, title, status, issue_type, updated_at, created_at, assignee_id, reporter_id, parent_id')
-        .eq('issue_type', 'Bug')
-        .neq('status', 'done')
-        .limit(20);
-      result[7] = mapItems(d7).slice(0, 10);
+    // Cat 4: Epic-Linked Stale — has parent, 45+ days stale
+    result[4] = sharedItems.filter(i =>
+      i.parent_key && i.days_assigned >= 45
+    ).map(toCleanup);
 
-      return result;
-    },
-    staleTime: 60_000,
-  });
+    // Cat 5, 6: Empty for now
+    result[5] = [];
+    result[6] = [];
+
+    // Cat 7: Active Defect — Bug type
+    result[7] = sharedItems.filter(i =>
+      i.item_type === 'QA Bug'
+    ).map(toCleanup);
+
+    return result;
+  }, [sharedItems]);
 
   // ── Stats ─────────────────────────────────────
   const stats = useMemo(() => {
