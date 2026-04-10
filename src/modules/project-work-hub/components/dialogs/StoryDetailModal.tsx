@@ -1129,7 +1129,9 @@ function EditableAssignee({ issueId, projectId, currentAssigneeId, currentAssign
             ))}
           </div>
         </div>
-      )}
+        );
+      })()}
+    </div>
     </div>
   );
 }
