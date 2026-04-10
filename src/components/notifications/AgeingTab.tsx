@@ -1,9 +1,11 @@
 import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Loader2, ChevronDown, ChevronRight, Sparkles } from 'lucide-react';
 import AgeingSkeleton from './AgeingSkeleton';
 import { useGovernanceScore } from '@/hooks/useGovernanceScore';
+import { useAuth } from '@/hooks/useAuth';
 
 /* ═══════════════════════════════════════
    Ageing Tab — Grouped by Time Period
@@ -380,6 +382,10 @@ export default function AgeingTab() {
   });
   const [visibleCount, setVisibleCount] = useState(40);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
+  const { data: govData } = useGovernanceScore();
 
   // Fetch data
   useEffect(() => {
@@ -430,6 +436,22 @@ export default function AgeingTab() {
     })();
     return () => { cancelled = true; };
   }, []);
+
+  // Sync ageing count into governance cache so RAG pill stays in sync
+  useEffect(() => {
+    if (!loading && user?.id && items.length >= 0) {
+      const totalCount = items.length;
+      queryClient.setQueryData(
+        ["governance-score", user.id],
+        (old: any) => ({
+          ...(old || {}),
+          staleCount: totalCount,
+          ragStatus: totalCount === 0 ? "green" : totalCount <= 20 ? "amber" : "red",
+          scorePct: Math.max(0, 100 - Math.min(totalCount * 2, 100)),
+        })
+      );
+    }
+  }, [loading, items.length, user?.id, queryClient]);
 
   // Filter + sort
   const filtered = useMemo(() => {
@@ -539,6 +561,43 @@ export default function AgeingTab() {
           <StatChip label="This Week" value={grouped.thisWeek.length} color="#0052CC" />
           <StatChip label="This Month" value={grouped.thisMonth.length} color="#F59E0B" />
           <StatChip label="Overdue" value={`${overduePct}%`} color={overduePct > 50 ? '#EF4444' : '#F59E0B'} />
+        </div>
+      )}
+
+      {/* Dynamic Governance Caution Banner */}
+      {!loading && govData && govData.ragStatus === 'amber' && (
+        <div style={{
+          display: 'flex', alignItems: 'flex-start', gap: 8,
+          padding: '8px 14px',
+          background: '#FFFBEB', borderBottom: '1px solid #FDE68A',
+          fontSize: 11, color: '#92400E', fontFamily: 'Inter, sans-serif',
+          lineHeight: 1.5,
+        }}>
+          <span style={{ flexShrink: 0 }}>⚠</span>
+          <span>
+            <strong>{govData.staleCount} aging items</strong> assigned to you.
+            Address them before they reach governance breach.
+          </span>
+        </div>
+      )}
+      {!loading && govData && govData.ragStatus === 'red' && (
+        <div style={{
+          display: 'flex', alignItems: 'flex-start', gap: 8,
+          padding: '8px 14px',
+          background: '#FFF1F2', borderBottom: '1px solid #FECDD3',
+          fontSize: 11, color: '#9F1239', fontFamily: 'Inter, sans-serif',
+          lineHeight: 1.5,
+        }}>
+          <span style={{ flexShrink: 0 }}>⚑</span>
+          <span>
+            Governance breach — <strong>{govData.staleCount} aging items</strong>, {govData.breachStreak} day streak.{' '}
+            <span
+              onClick={() => navigate('/cleanup')}
+              style={{ color: '#2563EB', cursor: 'pointer', fontWeight: 650 }}
+            >
+              Open AI Cleanup →
+            </span>
+          </span>
         </div>
       )}
 
