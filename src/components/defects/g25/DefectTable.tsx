@@ -368,11 +368,11 @@ export function DefectTable({ defects, selectedIds, onSelectionChange, onDelete,
     const isJira = d.isJiraSource ?? d.jira_source;
     switch (colKey) {
       case 'checkbox':
-        return <td key={colKey} style={{ width: columnWidths.checkbox }} onClick={e => e.stopPropagation()}><Checkbox checked={isSelected} onCheckedChange={() => toggleOne(d.id)} /></td>;
+        return <td key={colKey} style={{ width: columnWidths.checkbox, textAlign: 'center' }} onClick={e => e.stopPropagation()}><Checkbox checked={isSelected} onCheckedChange={() => toggleOne(d.id)} /></td>;
       case 'star':
-        return <td key={colKey} style={{ width: columnWidths.star }} onClick={e => e.stopPropagation()}><WorkItemStarButton itemId={d.id} itemType="defect" size="sm" showTooltip={false} alwaysVisibleWhenStarred /></td>;
+        return <td key={colKey} style={{ width: columnWidths.star, textAlign: 'center' }} onClick={e => e.stopPropagation()}><WorkItemStarButton itemId={d.id} itemType="defect" size="sm" showTooltip={false} alwaysVisibleWhenStarred /></td>;
       case 'type':
-        return <td key={colKey} style={{ width: columnWidths.type }}><BugTypeIcon /></td>;
+        return <td key={colKey} style={{ width: columnWidths.type, textAlign: 'center' }}><BugTypeIcon /></td>;
       case 'key':
         return (
           <td key={colKey} style={{ width: columnWidths.key }}>
