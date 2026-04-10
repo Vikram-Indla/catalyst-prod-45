@@ -84,6 +84,7 @@ export default function StoryDetailModal({
 }: StoryDetailModalProps) {
   const queryClient = useQueryClient();
   const { user } = useAuth();
+  const avatarsByName = useProfileAvatarsByName();
 
   /* ── QUERIES ───────────────────────────────── */
   const { data: currentProfile } = useQuery({
