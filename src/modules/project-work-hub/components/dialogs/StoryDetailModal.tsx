@@ -1441,13 +1441,30 @@ export default function StoryDetailModal({
                   <input value={linkSearch} onChange={e => setLinkSearch(e.target.value)} placeholder="Search by key or title…" style={{ width: '100%', height: 36, borderRadius: 4, border: '1px solid #E4E7EC', paddingLeft: 32, paddingRight: 12, fontSize: 12, outline: 'none' }} />
                 </div>
               </div>
-              <div style={{ height: 120, overflow: 'auto', border: '1px solid #E4E7EC', borderRadius: 4, padding: 4 }}>
-                <div style={{ padding: '16px 0', textAlign: 'center', color: '#98A2B3', fontSize: 12 }}>Type to search for issues…</div>
+              <div style={{ height: 160, overflow: 'auto', border: '1px solid #E4E7EC', borderRadius: 4, padding: 4 }}>
+                {linkSearch.length < 2 ? (
+                  <div style={{ padding: '16px 0', textAlign: 'center', color: '#98A2B3', fontSize: 12 }}>Type to search for issues…</div>
+                ) : linkSearchData.length === 0 ? (
+                  <div style={{ padding: '16px 0', textAlign: 'center', color: '#98A2B3', fontSize: 12 }}>No results found</div>
+                ) : (
+                  linkSearchData.map(item => (
+                    <button key={item.id} onClick={() => setSelectedLinkTarget(item)} style={{
+                      display: 'flex', alignItems: 'center', gap: 8, width: '100%', padding: '6px 8px', border: 'none',
+                      background: selectedLinkTarget?.id === item.id ? 'rgba(37,99,235,0.08)' : 'transparent',
+                      cursor: 'pointer', borderRadius: 4, fontSize: 12, textAlign: 'left',
+                    }}>
+                      <IssueIcon type={item.issue_type} size={14} />
+                      <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, fontWeight: 600, color: '#0052CC' }}>{item.issue_key}</span>
+                      <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: '#101828' }}>{item.summary}</span>
+                      <JiraStatusPill status={item.status} category={item.status_category ?? getStatusCategory(item.status)} />
+                    </button>
+                  ))
+                )}
               </div>
             </div>
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, padding: '12px 20px', borderTop: '1px solid #E4E7EC' }}>
               <button onClick={() => setShowLinkModal(false)} style={{ padding: '7px 16px', borderRadius: 6, background: '#FFF', border: '1px solid #E4E7EC', fontSize: 13, fontWeight: 500, cursor: 'pointer', color: '#475467' }}>Cancel</button>
-              <button style={{ padding: '7px 16px', borderRadius: 6, background: '#2563EB', color: '#FFF', border: 'none', fontSize: 13, fontWeight: 600, cursor: 'pointer', opacity: 0.5 }} disabled>Link</button>
+              <button onClick={() => { if (selectedLinkTarget) addLinkMutation.mutate({ targetId: selectedLinkTarget.id, linkTypeVal: linkType }); }} style={{ padding: '7px 16px', borderRadius: 6, background: '#2563EB', color: '#FFF', border: 'none', fontSize: 13, fontWeight: 600, cursor: 'pointer', opacity: selectedLinkTarget ? 1 : 0.5 }} disabled={!selectedLinkTarget}>Link</button>
             </div>
           </div>
         </div>
