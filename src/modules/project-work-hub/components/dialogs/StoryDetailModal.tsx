@@ -492,8 +492,8 @@ export default function StoryDetailModal({
         .eq('id', itemId);
       if (error) throw error;
       await supabase.from('jira_write_back_queue').insert({
-        issue_id: itemId, issue_key: issue?.issue_key,
-        field: 'status', new_value: newStatus, status: 'approved',
+        ph_issue_id: itemId,
+        field_name: 'status', new_value: newStatus, status: 'approved',
       });
     },
     onSuccess: () => {
@@ -513,8 +513,8 @@ export default function StoryDetailModal({
         old_value: oldValue, new_value: value, user_id: user!.id,
       });
       await supabase.from('jira_write_back_queue').insert({
-        issue_id: itemId, issue_key: issue?.issue_key,
-        field, new_value: value, status: 'approved',
+        ph_issue_id: itemId,
+        field_name: field, new_value: value, status: 'approved',
       });
     },
     onSuccess: () => {
@@ -1031,7 +1031,7 @@ export default function StoryDetailModal({
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16, padding: '8px 12px', background: '#F8FAFC', borderRadius: 8, border: '1px solid #E4E7EC' }}>
                       <span style={{ fontSize: 12, fontWeight: 500, color: '#475467', whiteSpace: 'nowrap' }}>Figma URL</span>
                       <input value={figmaUrl} onChange={e => { setFigmaUrl(e.target.value); setFigmaError(''); }} placeholder="https://figma.com/..." style={{ flex: 1, height: 32, borderRadius: 4, border: figmaError ? '1px solid #DC2626' : '1px solid #E4E7EC', padding: '0 8px', fontSize: 12, outline: 'none' }} />
-                      <button onClick={handleFigmaSubmit} style={{ padding: '5px 12px', borderRadius: 6, background: '#2563EB', color: '#FFF', border: 'none', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>Add</button>
+                      <button onClick={saveFigmaLink} style={{ padding: '5px 12px', borderRadius: 6, background: '#2563EB', color: '#FFF', border: 'none', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>Add</button>
                       <button onClick={() => { setShowFigmaInput(false); setFigmaUrl(''); setFigmaError(''); }} style={{ padding: '5px 12px', borderRadius: 6, background: '#FFF', border: '1px solid #E4E7EC', fontSize: 12, cursor: 'pointer', color: '#475467' }}>Cancel</button>
                       {figmaError && <span style={{ fontSize: 11, color: '#DC2626' }}>{figmaError}</span>}
                     </div>
