@@ -425,9 +425,11 @@ function ChildIssuesSection({ storyKey, storyId, projectKey }: { storyKey: strin
 
   const createMutation = useMutation({
     mutationFn: async (summary: string) => {
+      const tempKey = `${projectKey}-NEW-${Date.now()}`;
       const { data, error } = await supabase
         .from('ph_issues')
         .insert({
+          issue_key: tempKey,
           summary: summary.trim(),
           issue_type: draftType,
           parent_key: storyKey,
@@ -437,6 +439,7 @@ function ChildIssuesSection({ storyKey, storyId, projectKey }: { storyKey: strin
           priority: 'Medium',
           position: nextPosition(children),
           reporter_account_id: user?.id,
+          source: 'catalyst',
         })
         .select('id, issue_key, summary, status, status_category, issue_type, assignee_account_id, assignee_display_name, priority, position, deleted_at')
         .single();
