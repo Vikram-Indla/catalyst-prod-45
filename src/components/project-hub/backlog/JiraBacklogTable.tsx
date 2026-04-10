@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { Search, ChevronDown, ChevronUp, ExternalLink } from 'lucide-react';
 import { JiraBacklogIssue } from '@/hooks/useJiraBacklogIssues';
+import WatchButton from '@/components/shared/WatchButton';
 
 const STATUS_COLORS: Record<string, { bg: string; text: string }> = {
   'done':        { bg: 'rgba(16,185,129,0.1)', text: '#059669' },
@@ -108,12 +109,13 @@ export function JiraBacklogTable({ issues, title, showParent = false }: Props) {
               <th className={`${thClass} w-[110px]`} onClick={() => toggleSort('jira_updated_at')}>
                 <span className="flex items-center gap-1">Updated <SortIcon col="jira_updated_at" /></span>
               </th>
+              <th className={`${thClass} w-[40px]`}></th>
             </tr>
           </thead>
           <tbody>
             {filtered.length === 0 ? (
               <tr>
-                <td colSpan={showParent ? 8 : 7} className="text-center py-12 text-muted-foreground text-sm">
+                <td colSpan={showParent ? 9 : 8} className="text-center py-12 text-muted-foreground text-sm">
                   No issues found
                 </td>
               </tr>
@@ -159,6 +161,13 @@ export function JiraBacklogTable({ issues, title, showParent = false }: Props) {
                     <span className="text-xs text-muted-foreground">
                       {issue.jira_updated_at ? new Date(issue.jira_updated_at).toLocaleDateString() : '—'}
                     </span>
+                  </td>
+                  <td className="px-3 py-1.5">
+                    {(issue as any).id && (
+                      <span className="opacity-0 group-hover:opacity-100 transition-opacity">
+                        <WatchButton issueId={(issue as any).id} size="sm" />
+                      </span>
+                    )}
                   </td>
                 </tr>
               );
