@@ -148,10 +148,13 @@ export default function StoryDetailModal({
   const [showAddMenu, setShowAddMenu] = useState(false);
   const [showDotsMenu, setShowDotsMenu] = useState(false);
   const [acceptanceCriteria, setAcceptanceCriteria] = useState('');
+  const [titleFocused, setTitleFocused] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const addMenuRef = useRef<HTMLDivElement>(null);
   const descriptionRef = useRef<HTMLDivElement>(null);
+  const statusDropdownRef = useRef<HTMLDivElement>(null);
+  const dotsMenuRef = useRef<HTMLDivElement>(null);
 
   // Resizable splitter state
   const [rightPanelWidth, setRightPanelWidth] = useState(280);
