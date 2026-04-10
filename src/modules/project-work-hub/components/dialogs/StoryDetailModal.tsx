@@ -877,7 +877,7 @@ export default function StoryDetailModal({
                         <div style={{ display: 'flex', alignItems: 'flex-start', marginBottom: 12, minHeight: 28 }}>
                           <span style={{ width: 100, flexShrink: 0, fontSize: 13, color: '#5E6C84', paddingTop: 4 }}>Parent</span>
                           <div style={{ flex: 1, fontSize: 13, color: '#172B4D' }}>
-                            {issue && <ParentFieldPicker storyKey={issue.issue_key} parentKey={issue.parent_key} projectKey={issue.project_key} onParentChange={handleParentChange} />}
+                            {issue && <ParentFieldPicker storyKey={issue.issue_key} parentKey={issue.parent_key} projectKey={issue.project_key} onParentChange={handleParentChange} triggerOpen={parentPickerTrigger} />}
                           </div>
                         </div>
                         {/* Priority field */}
