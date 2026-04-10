@@ -427,7 +427,7 @@ export function DefectTable({ defects, selectedIds, onSelectionChange, onDelete,
     <div className="flex flex-col">
       <BulkActionBar selectedCount={selectedIds.size} onAction={handleBulkAction} onCancel={() => onSelectionChange(new Set())} />
       <div style={{ overflowX: 'auto' }}>
-        <table className="pb-table" style={{ minWidth: 1200, width: Math.max(1200, visibleOrderedCols.reduce((s, c) => s + (columnWidths[c.key] || c.defaultWidth), 0)), tableLayout: 'fixed' }}>
+        <table className="pb-table" style={{ minWidth: 1200, tableLayout: 'fixed' }}>
           <colgroup>
             {visibleOrderedCols.map(c => (
               <col key={c.key} style={{ width: columnWidths[c.key] || c.defaultWidth }} />

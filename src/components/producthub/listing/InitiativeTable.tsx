@@ -294,7 +294,7 @@ export function InitiativeTable({
     <DragDropContext onDragEnd={handleDragEnd}>
       <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column', border: '0.555556px solid rgba(11, 18, 14, 0.14)', borderRadius: 8, background: 'transparent', boxShadow: 'none' }}>
         <div style={{ overflowX: 'auto', overflowY: 'auto', flex: 1, scrollbarWidth: 'thin', scrollbarColor: 'var(--pb-border-strong) transparent' }}>
-          <table className="pb-table" style={{ tableLayout: 'fixed', width: totalSize, minWidth: '100%' }}>
+          <table className="pb-table" style={{ tableLayout: 'fixed', minWidth: totalSize }}>
             <colgroup>
               {table.getVisibleFlatColumns().map(column => (
                 <col key={column.id} style={{ width: column.getSize(), minWidth: column.columnDef.minSize }} />
