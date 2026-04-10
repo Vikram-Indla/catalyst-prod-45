@@ -174,6 +174,34 @@ export default function CleanupPage() {
   // ── Use shared ageing items ──
   const { data: sharedItems = [], isLoading } = useAgeingItems();
 
+  // ── Resolve project names from project keys ──
+  const projectKeys = useMemo(() => [...new Set(sharedItems.map(i => i.project_key).filter(Boolean))], [sharedItems]);
+  const { data: projectNameMap = {} } = useQuery({
+    queryKey: ['cleanup-project-names', projectKeys],
+    enabled: projectKeys.length > 0,
+    staleTime: 300_000,
+    queryFn: async () => {
+      const { data } = await supabase.from('projects').select('key, name').in('key', projectKeys);
+      const map: Record<string, string> = {};
+      (data ?? []).forEach((p: any) => { map[p.key] = p.name; });
+      return map;
+    },
+  });
+
+  // ── Resolve parent titles from parent_key ──
+  const parentKeys = useMemo(() => [...new Set(sharedItems.map(i => i.parent_key).filter(Boolean))] as string[], [sharedItems]);
+  const { data: parentTitleMap = {} } = useQuery({
+    queryKey: ['cleanup-parent-titles', parentKeys],
+    enabled: parentKeys.length > 0,
+    staleTime: 300_000,
+    queryFn: async () => {
+      const { data } = await supabase.from('ph_issues').select('issue_key, summary').in('issue_key', parentKeys);
+      const map: Record<string, string> = {};
+      (data ?? []).forEach((p: any) => { map[p.issue_key] = p.summary; });
+      return map;
+    },
+  });
+
   // ── Categorize items ──
   const catData = useMemo(() => {
     const result: Record<number, CleanupItem[]> = {};
