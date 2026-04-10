@@ -218,68 +218,209 @@ export function EditablePriority({ issueId, currentPriority, onUpdate }: { issue
   );
 }
 
-/* ── EditableLabels ────────────────────────── */
+/* ── EditableLabels — Jira-parity dropdown ── */
+
+/** Deterministic label border colors from Jira's palette */
+const LABEL_COLORS = ['#4C9AFF', '#00B8D9', '#36B37E', '#FFAB00', '#FF5630', '#6554C0', '#FF7452', '#57D9A3', '#FFC400', '#998DD9', '#79E2F2', '#FF8F73'];
+function getLabelColor(name: string) {
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) hash = ((hash << 5) - hash + name.charCodeAt(i)) | 0;
+  return LABEL_COLORS[Math.abs(hash) % LABEL_COLORS.length];
+}
+
 export function EditableLabels({ issueId, currentLabels, onUpdate }: { issueId: string; currentLabels: string[]; onUpdate: () => void }) {
-  const [editing, setEditing] = useState(false);
-  const [draft, setDraft] = useState('');
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState('');
+  const containerRef = useRef<HTMLDivElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
   const updateMutation = useMutation({
-    mutationFn: async (labels: string[]) => { const { error } = await supabase.from('ph_issues').update({ labels: JSON.stringify(labels) as any }).eq('id', issueId); if (error) throw error; },
+    mutationFn: async (labels: string[]) => {
+      const { error } = await supabase.from('ph_issues').update({ labels: JSON.stringify(labels) as any }).eq('id', issueId);
+      if (error) throw error;
+    },
     onSuccess: () => onUpdate(),
   });
-  const addLabel = (label: string) => {
-    const trimmed = label.trim().toLowerCase().replace(/\s+/g, '-');
+
+  // Fetch all unique labels from project issues for the "All labels" list
+  const { data: allLabels = [] } = useQuery({
+    queryKey: ['ph-all-labels'],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('ph_issues')
+        .select('labels').is('deleted_at', null).not('labels', 'is', null);
+      if (error) throw error;
+      const labelSet = new Set<string>();
+      (data ?? []).forEach(row => {
+        if (Array.isArray(row.labels)) {
+          (row.labels as string[]).forEach(l => { if (typeof l === 'string' && l.trim()) labelSet.add(l.trim()); });
+        }
+      });
+      return Array.from(labelSet).sort((a, b) => a.localeCompare(b));
+    },
+    staleTime: 30000,
+  });
+
+  const filteredLabels = search.trim()
+    ? allLabels.filter(l => l.toLowerCase().includes(search.toLowerCase()))
+    : allLabels;
+
+  const toggleLabel = (label: string) => {
+    const next = currentLabels.includes(label)
+      ? currentLabels.filter(l => l !== label)
+      : [...currentLabels, label];
+    updateMutation.mutate(next);
+  };
+
+  const addNewLabel = () => {
+    const trimmed = search.trim();
     if (!trimmed || currentLabels.includes(trimmed)) return;
     updateMutation.mutate([...currentLabels, trimmed]);
-    setDraft('');
+    setSearch('');
   };
-  const removeLabel = (label: string) => updateMutation.mutate(currentLabels.filter(l => l !== label));
+
+  useEffect(() => {
+    if (!open) return;
+    const handleClick = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) { setOpen(false); setSearch(''); }
+    };
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [open]);
+
+  useEffect(() => { if (open) setTimeout(() => searchInputRef.current?.focus(), 50); }, [open]);
+
+  const removeLabel = (label: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    updateMutation.mutate(currentLabels.filter(l => l !== label));
+  };
 
   return (
-    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, alignItems: 'center', padding: '2px 0' }}>
-      {currentLabels.length === 0 && !editing && (
-        <span style={{ color: '#97A0AF', fontSize: 14, fontStyle: 'normal' }}>None</span>
+    <div ref={containerRef} style={{ position: 'relative' }}>
+      {/* Selected label chips */}
+      {currentLabels.length > 0 && (
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginBottom: 6 }}>
+          {currentLabels.map(label => {
+            const color = getLabelColor(label);
+            return (
+              <span key={label} style={{
+                display: 'inline-flex', alignItems: 'center', gap: 4,
+                height: 22, padding: '0 8px', background: '#fff',
+                border: `1px solid ${color}`, borderRadius: 3,
+                fontSize: 12, fontWeight: 500, color: '#172B4D',
+              }}>
+                {label}
+                <button onClick={(e) => removeLabel(label, e)} style={{
+                  background: 'none', border: 'none', cursor: 'pointer', color: '#6B778C',
+                  padding: 0, marginLeft: 2, display: 'flex', alignItems: 'center', lineHeight: 1,
+                }}
+                  onMouseEnter={e => (e.currentTarget.style.color = '#172B4D')}
+                  onMouseLeave={e => (e.currentTarget.style.color = '#6B778C')}
+                >
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                  </svg>
+                </button>
+              </span>
+            );
+          })}
+        </div>
       )}
-      {currentLabels.map(label => (
-        <span key={label} style={{
-          display: 'inline-flex', alignItems: 'center', gap: 4,
-          height: 20, padding: '0 8px', background: '#DEEBFF', color: '#0052CC',
-          borderRadius: 3, fontSize: 12, fontWeight: 500,
-        }}>
-          {label}
-          <button onClick={() => removeLabel(label)} style={{
-            background: 'none', border: 'none', cursor: 'pointer', color: '#0052CC',
-            padding: 0, marginLeft: 2, display: 'flex', alignItems: 'center', lineHeight: 1, opacity: 0.7,
-          }}
-            onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
-            onMouseLeave={e => (e.currentTarget.style.opacity = '0.7')}
-          >
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-            </svg>
-          </button>
+
+      {/* Trigger — "Select label" with chevron, Jira style */}
+      <div onClick={() => setOpen(o => !o)} style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        height: 40, padding: '0 12px',
+        border: open ? '2px solid #4C9AFF' : '1px solid #DFE1E6',
+        borderRadius: 3, cursor: 'pointer', background: '#fff',
+        transition: 'border-color 0.15s',
+      }}
+        onMouseEnter={e => { if (!open) e.currentTarget.style.borderColor = '#B3D4FF'; }}
+        onMouseLeave={e => { if (!open) e.currentTarget.style.borderColor = open ? '#4C9AFF' : '#DFE1E6'; }}
+      >
+        <span style={{ fontSize: 14, color: currentLabels.length > 0 ? '#172B4D' : '#7A869A' }}>
+          {currentLabels.length > 0 ? `${currentLabels.length} selected` : 'Select label'}
         </span>
-      ))}
-      {!editing ? (
-        <button onClick={() => setEditing(true)} style={{
-          height: 20, padding: '0 7px', border: '1px dashed #C1C7D0', borderRadius: 3,
-          background: 'transparent', color: '#6B778C', fontSize: 12, cursor: 'pointer',
-          fontFamily: 'inherit', display: 'inline-flex', alignItems: 'center', gap: 3,
-        }}
-          onMouseEnter={e => { (e.currentTarget.style.borderColor = '#2563EB'); (e.currentTarget.style.color = '#2563EB'); }}
-          onMouseLeave={e => { (e.currentTarget.style.borderColor = '#C1C7D0'); (e.currentTarget.style.color = '#6B778C'); }}
-        >
-          + Add label
-        </button>
-      ) : (
-        <input autoFocus value={draft} onChange={e => setDraft(e.target.value)}
-          onKeyDown={e => {
-            if (e.key === 'Enter' && draft.trim()) { addLabel(draft); setEditing(false); }
-            if (e.key === 'Escape') { setDraft(''); setEditing(false); }
-          }}
-          onBlur={() => { if (draft.trim()) addLabel(draft); setDraft(''); setEditing(false); }}
-          placeholder="Label name..."
-          style={{ height: 22, padding: '0 6px', width: 110, border: '1px solid #2563EB', borderRadius: 3, fontSize: 12, fontFamily: 'inherit', outline: 'none' }} />
-      )}
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6B778C" strokeWidth="2" style={{ flexShrink: 0 }}><path d="M6 9l6 6 6-6"/></svg>
+      </div>
+
+      {/* Dropdown — Jira "All labels" style */}
+      {open && (() => {
+        const rect = containerRef.current?.getBoundingClientRect();
+        const top = (rect?.bottom ?? 0) + 4;
+        const left = rect?.left ?? 0;
+        const width = Math.max(rect?.width ?? 280, 280);
+        return (
+          <div style={{
+            ...ATLASSIAN_DROPDOWN, position: 'fixed', top, left, width,
+            maxHeight: 380, display: 'flex', flexDirection: 'column', overflow: 'hidden',
+          }}>
+            {/* Search input */}
+            <div style={{ padding: '8px 8px 4px' }}>
+              <input ref={searchInputRef} value={search} onChange={e => setSearch(e.target.value)}
+                placeholder="Search labels..."
+                onKeyDown={e => {
+                  if (e.key === 'Enter' && search.trim() && filteredLabels.length === 0) addNewLabel();
+                  if (e.key === 'Escape') { setOpen(false); setSearch(''); }
+                }}
+                style={{
+                  width: '100%', height: 36, padding: '0 12px',
+                  border: '2px solid #4C9AFF', borderRadius: 3,
+                  fontSize: 14, fontFamily: 'inherit', outline: 'none', color: '#172B4D',
+                }} />
+            </div>
+
+            {/* "All labels" header */}
+            <div style={{ padding: '8px 12px 4px', fontSize: 11, fontWeight: 700, color: '#6B778C', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              All labels
+            </div>
+
+            {/* Label list */}
+            <div style={{ flex: 1, overflowY: 'auto' }}>
+              {filteredLabels.map(label => {
+                const isSelected = currentLabels.includes(label);
+                const color = getLabelColor(label);
+                return (
+                  <div key={label} onClick={() => toggleLabel(label)}
+                    style={{
+                      padding: '8px 12px', cursor: 'pointer',
+                      display: 'flex', alignItems: 'center', gap: 8,
+                      background: isSelected ? '#F4F5F7' : 'transparent',
+                      borderLeft: isSelected ? '3px solid #4C9AFF' : '3px solid transparent',
+                      transition: 'background 0.1s',
+                    }}
+                    onMouseEnter={e => { if (!isSelected) (e.currentTarget as HTMLElement).style.background = '#F4F5F7'; }}
+                    onMouseLeave={e => { if (!isSelected) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
+                  >
+                    <span style={{
+                      display: 'inline-flex', alignItems: 'center',
+                      height: 22, padding: '0 10px',
+                      border: `1px solid ${color}`, borderRadius: 3,
+                      fontSize: 13, fontWeight: 500, color: '#172B4D', background: '#fff',
+                    }}>
+                      {label}
+                    </span>
+                  </div>
+                );
+              })}
+              {filteredLabels.length === 0 && search.trim() && (
+                <div onClick={addNewLabel} style={{
+                  padding: '10px 12px', cursor: 'pointer', fontSize: 13, color: '#0052CC',
+                  display: 'flex', alignItems: 'center', gap: 6,
+                }}
+                  onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
+                  onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                  Create "{search.trim()}"
+                </div>
+              )}
+              {filteredLabels.length === 0 && !search.trim() && (
+                <div style={{ padding: 16, fontSize: 13, color: '#6B778C', textAlign: 'center' }}>No labels available</div>
+              )}
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 }
