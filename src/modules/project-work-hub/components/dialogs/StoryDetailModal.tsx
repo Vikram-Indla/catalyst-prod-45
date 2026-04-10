@@ -1199,7 +1199,7 @@ export default function StoryDetailModal({
                                 <div style={{ background: '#F7F8FA', border: '1px solid #E4E7EC', borderRadius: 8, padding: 12, fontSize: 13, color: '#344054', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>{c.body}</div>
                                 <div style={{ display: 'flex', gap: 12, marginTop: 6 }}>
                                   <button style={{ fontSize: 11, color: '#98A2B3', background: 'none', border: 'none', cursor: 'pointer' }}>Edit</button>
-                                  <button style={{ fontSize: 11, color: '#98A2B3', background: 'none', border: 'none', cursor: 'pointer' }}>Delete</button>
+                                  <button onClick={() => deleteCommentMutation.mutate(c.id)} style={{ fontSize: 11, color: '#98A2B3', background: 'none', border: 'none', cursor: 'pointer' }}>Delete</button>
                                   <button style={{ fontSize: 11, color: '#98A2B3', background: 'none', border: 'none', cursor: 'pointer' }}>👍 0</button>
                                 </div>
                               </div>
