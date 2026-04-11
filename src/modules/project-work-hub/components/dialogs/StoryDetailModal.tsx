@@ -1144,15 +1144,16 @@ export default function StoryDetailModal({
                             onClick={() => setDescEditMode(true)}
                             onKeyDown={(e) => { if (e.key === 'Escape') { setDescEditMode(false); if (issue?.description_text) setDescUnsaved(true); } }}
                             style={{
-                              border: descUnsaved ? '1.667px solid rgb(24, 104, 219)' : '1.667px solid rgba(0,0,0,0)',
+                              border: descUnsaved ? '1.667px solid rgb(24, 104, 219)' : 'none',
                               borderRadius: 3,
-                              padding: '0 6px 0 0',
+                              padding: '8px 6px',
                               minHeight: 32,
                               cursor: 'text',
-                              transition: 'border-color 0.15s',
+                              outline: 'none',
+                              transition: 'background-color 0.2s ease-in-out, border-color 0.2s ease-in-out',
                             }}
-                            onMouseEnter={e => { if (!descUnsaved) e.currentTarget.style.borderColor = 'rgb(140, 143, 151)'; }}
-                            onMouseLeave={e => { if (!descUnsaved) e.currentTarget.style.borderColor = 'rgba(0,0,0,0)'; }}
+                            onMouseEnter={e => { if (!descUnsaved) e.currentTarget.style.backgroundColor = '#F8F8F8'; }}
+                            onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'transparent'; }}
                           >
                             {(() => {
                               const descHtml = adfToHtml(issue?.description_adf) || issue?.description_text || '';
@@ -1214,15 +1215,16 @@ export default function StoryDetailModal({
                             <div
                               onClick={() => setAcEditMode(true)}
                               style={{
-                                border: acUnsaved ? '1.667px solid rgb(24, 104, 219)' : '1.667px solid rgba(0,0,0,0)',
+                                border: acUnsaved ? '1.667px solid rgb(24, 104, 219)' : 'none',
                                 borderRadius: 3,
-                                padding: '0 6px 0 0',
+                                padding: '8px 6px',
                                 minHeight: 32,
                                 cursor: 'text',
-                                transition: 'border-color 0.15s',
+                                outline: 'none',
+                                transition: 'background-color 0.2s ease-in-out, border-color 0.2s ease-in-out',
                               }}
-                              onMouseEnter={e => { if (!acUnsaved) e.currentTarget.style.borderColor = 'rgb(140, 143, 151)'; }}
-                              onMouseLeave={e => { if (!acUnsaved) e.currentTarget.style.borderColor = 'rgba(0,0,0,0)'; }}
+                              onMouseEnter={e => { if (!acUnsaved) e.currentTarget.style.backgroundColor = '#F8F8F8'; }}
+                              onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'transparent'; }}
                             >
                               {(() => {
                                 const acHtml = tryAdfStringToHtml(acceptanceCriteria) ?? acceptanceCriteria ?? '';
