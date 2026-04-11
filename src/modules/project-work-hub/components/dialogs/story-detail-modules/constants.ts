@@ -100,20 +100,32 @@ export const STATUS_OPTION_GROUPS = [
   { groupLabel: 'DONE', category: 'done', statuses: STATUS_CATEGORIES.done },
 ];
 
-export const WORK_ITEM_ICONS: Record<string, string> = {
-  task: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="#2684FF" fill-rule="evenodd" d="M3,0 L21,0 C22.6568542,-3.04359188e-16 24,1.34314575 24,3 L24,21 C24,22.6568542 22.6568542,24 21,24 L3,24 C1.34314575,24 2.02906125e-16,22.6568542 0,21 L0,3 C-2.02906125e-16,1.34314575 1.34314575,3.04359188e-16 3,0 Z M6,4 C4.8954305,4 4,4.8954305 4,6 L4,18 C4,19.1045695 4.8954305,20 6,20 L18,20 C19.1045695,20 20,19.1045695 20,18 L20,6 C20,4.8954305 19.1045695,4 18,4 L6,4 Z M6,6 L6,18 L18,18 L18,6 L6,6 Z"/></svg>`,
-  'Sub-task': `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="#2684FF" fill-rule="evenodd" d="M13,11 L13,6 C13,5.44771525 12.5522847,5 12,5 L6,5 C5.44771525,5 5,5.44771525 5,6 L5,12 C5,12.5522847 5.44771525,13 6,13 L11,13 L11,18 C11,18.5522847 11.4477153,19 12,19 L18,19 C18.5522847,19 19,18.5522847 19,18 L19,12 C19,11.4477153 18.5522847,11 18,11 L13,11 Z M3,0 L21,0 C22.6568542,-3.04359188e-16 24,1.34314575 24,3 L24,21 C24,22.6568542 22.6568542,24 21,24 L3,24 C1.34314575,24 2.02906125e-16,22.6568542 0,21 L0,3 C-2.02906125e-16,1.34314575 1.34314575,3.04359188e-16 3,0 Z M7,7 L11,7 L11,11 L7,11 L7,7 Z M13,13 L17,13 L17,17 L13,17 L13,13 Z"/></svg>`,
-  Frontend: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><rect fill="#2684FF" width="16" height="16" rx="2"/><g transform="translate(2.5,3)" fill="none" stroke="#FFF" stroke-width="1.2" stroke-linecap="round"><rect x="0.5" y="0.5" width="10" height="9" rx="1"/><line x1="0.5" y1="3" x2="10.5" y2="3"/><circle cx="2.5" cy="1.8" r="0.5" fill="#FFF" stroke="none"/><circle cx="4.2" cy="1.8" r="0.5" fill="#FFF" stroke="none"/></g></svg>`,
-  Backend: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><rect fill="#2684FF" width="16" height="16" rx="2"/><g transform="translate(3,2.5)" fill="none" stroke="#FFF" stroke-width="1.2"><rect x="0.5" y="0.5" width="9" height="3" rx="1"/><rect x="0.5" y="5" width="9" height="3" rx="1"/><circle cx="2.5" cy="2" r="0.6" fill="#FFF" stroke="none"/><circle cx="2.5" cy="6.5" r="0.6" fill="#FFF" stroke="none"/><line x1="5" y1="8.5" x2="5" y2="10.5" stroke-linecap="round"/><line x1="3" y1="10.5" x2="7" y2="10.5" stroke-linecap="round"/></g></svg>`,
-  Figma: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><rect fill="#A259FF" width="16" height="16" rx="2"/><g transform="translate(4,2)"><rect x="0" y="0" width="3.5" height="3.5" rx="1.75" fill="#FF7262"/><rect x="4.5" y="0" width="3.5" height="3.5" rx="1.75" fill="#F24E1E"/><rect x="0" y="4.5" width="3.5" height="3.5" rx="1.75" fill="#A259FF"/><circle cx="6.25" cy="6.25" r="1.75" fill="#1ABCFE"/><rect x="0" y="9" width="3.5" height="3.5" rx="1.75" fill="#0ACF83"/></g></svg>`,
-  Integration: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><rect fill="#2684FF" width="16" height="16" rx="2"/><g transform="translate(3,3)" fill="none" stroke="#FFF" stroke-width="1.3" stroke-linecap="round"><circle cx="2" cy="2" r="1.5"/><circle cx="8" cy="2" r="1.5"/><circle cx="5" cy="8" r="1.5"/><line x1="3.2" y1="3" x2="4.2" y2="6.5"/><line x1="6.8" y1="3" x2="5.8" y2="6.5"/></g></svg>`,
-  bug: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="#FF5630" fill-rule="evenodd" d="M3,0 L21,0 C22.6568542,-3.04359188e-16 24,1.34314575 24,3 L24,21 C24,22.6568542 22.6568542,24 21,24 L3,24 C1.34314575,24 2.02906125e-16,22.6568542 0,21 L0,3 C-2.02906125e-16,1.34314575 1.34314575,3.04359188e-16 3,0 Z M12,17 C14.7614237,17 17,14.7614237 17,12 C17,9.23857625 14.7614237,7 12,7 C9.23857625,7 7,9.23857625 7,12 C7,14.7614237 9.23857625,17 12,17 Z"/></svg>`,
-  'QA Bug': `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="#FF5630" fill-rule="evenodd" d="M3,0 L21,0 C22.6568542,-3.04359188e-16 24,1.34314575 24,3 L24,21 C24,22.6568542 22.6568542,24 21,24 L3,24 C1.34314575,24 2.02906125e-16,22.6568542 0,21 L0,3 C-2.02906125e-16,1.34314575 1.34314575,3.04359188e-16 3,0 Z M12,17 C14.7614237,17 17,14.7614237 17,12 C17,9.23857625 14.7614237,7 12,7 C9.23857625,7 7,9.23857625 7,12 C7,14.7614237 9.23857625,17 12,17 Z"/></svg>`,
-  Defect: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="#FF5630" fill-rule="evenodd" d="M3,0 L21,0 C22.6568542,-3.04359188e-16 24,1.34314575 24,3 L24,21 C24,22.6568542 22.6568542,24 21,24 L3,24 C1.34314575,24 2.02906125e-16,22.6568542 0,21 L0,3 C-2.02906125e-16,1.34314575 1.34314575,3.04359188e-16 3,0 Z M12,17 C14.7614237,17 17,14.7614237 17,12 C17,9.23857625 14.7614237,7 12,7 C9.23857625,7 7,9.23857625 7,12 C7,14.7614237 9.23857625,17 12,17 Z"/></svg>`,
-  'Production Incident': `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="#FF5630" fill-rule="evenodd" d="M8.82852964,12 L7.92252934,15 L16.0774707,15 L15.1714704,12 L8.82852964,12 Z M9.43252984,10 L14.5674702,10 L12.9572977,4.66830491 C12.8604893,4.34774733 12.6096616,4.09691963 12.289104,4.00011121 C11.7604031,3.84044348 11.20237,4.13960399 11.0427023,4.66830491 L9.43252984,10 Z M17,17 L7,17 L6,17 C5.44771525,17 5,17.4477153 5,18 L5,20 L19,20 L19,18 C19,17.4477153 18.5522847,17 18,17 L17,17 Z M3,0 L21,0 C22.6568542,-3.04359188e-16 24,1.34314575 24,3 L24,21 C24,22.6568542 22.6568542,24 21,24 L3,24 C1.34314575,24 2.02906125e-16,22.6568542 0,21 L0,3 C-2.02906125e-16,1.34314575 1.34314575,3.04359188e-16 3,0 Z"/></svg>`,
-  epic: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><rect fill="#6554C0" width="16" height="16" rx="2"/><path fill="#FFF" d="M11.5 6.5H9.5V3.5C9.5 3.22 9.28 3 9 3H7C6.72 3 6.5 3.22 6.5 3.5V8H4.5C4.22 8 4.08 8.34 4.27 8.54L8.27 12.79C8.46 12.99 8.77 12.99 8.96 12.79L12.73 8.54C12.92 8.34 12.78 8 12.5 8H11.5V6.5Z"/></svg>`,
-  story: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="#36B37E" fill-rule="evenodd" d="M3,0 L21,0 C22.6568542,-3.04359188e-16 24,1.34314575 24,3 L24,21 C24,22.6568542 22.6568542,24 21,24 L3,24 C1.34314575,24 2.02906125e-16,22.6568542 0,21 L0,3 C-2.02906125e-16,1.34314575 1.34314575,3.04359188e-16 3,0 Z M15.6470004,19.5152539 L16.9369996,17.9868881 L12.0001502,13.8199984 L7.06117589,17.98674 L7,18.1534919 L7,6.68807648 C7,6.34797522 7.41227423,6 8,6 L16,6 C16.5865377,6 17,6.34873697 17,6.68807648 L17,18.1534919 L15.6470004,19.5152539 Z"/></svg>`,
-};
+const jiraIconImg = (file: string, label: string) =>
+  `<img src="/admin/icons/jira/${file}-16.svg" width="16" height="16" alt="${label}" title="${label}" draggable="false" style="display:block;width:16px;height:16px;flex-shrink:0" />`;
+
+const WORK_ITEM_ICON_ALIASES: Array<[string, string, string[]]> = [
+  ['task', 'Task', ['task', 'Task']],
+  ['subtask', 'Sub-task', ['sub-task', 'subtask', 'Sub-task', 'Subtask']],
+  ['new-feature', 'Feature', ['feature', 'Feature', 'new feature', 'New Feature']],
+  ['story', 'Story', ['story', 'Story', 'business request', 'Business Request']],
+  ['bug', 'Bug', ['bug', 'Bug', 'qa bug', 'QA Bug', 'defect', 'Defect']],
+  ['incident', 'Production Incident', ['incident', 'Incident', 'production incident', 'Production Incident', 'business gap', 'Business Gap']],
+  ['epic', 'Epic', ['epic', 'Epic']],
+  ['improvement', 'Improvement', ['improvement', 'Improvement']],
+  ['question', 'Question', ['question', 'Question']],
+  ['issue', 'Issue', ['issue', 'Issue']],
+  ['problem', 'Problem', ['problem', 'Problem']],
+  ['changes', 'Change Request', ['changes', 'Changes', 'change request', 'Change Request']],
+  ['task', 'API Requirement', ['api requirement', 'API Requirement']],
+  ['subtask', 'Backend', ['backend', 'Backend']],
+  ['subtask', 'Frontend', ['frontend', 'Frontend']],
+  ['subtask', 'Figma', ['figma', 'Figma', 'entity figma', 'Entity FIGMA']],
+  ['subtask', 'Integration', ['integration', 'Integration']],
+];
+
+export const WORK_ITEM_ICONS: Record<string, string> = Object.fromEntries(
+  WORK_ITEM_ICON_ALIASES.flatMap(([file, label, aliases]) => aliases.map((alias) => [alias, jiraIconImg(file, label)]))
+) as Record<string, string>;
 
 export const AI_IMPROVE_OPTIONS: { value: AIImproveType; label: string }[] = [
   { value: 'improve_clarify', label: 'Improve & Clarify' },
