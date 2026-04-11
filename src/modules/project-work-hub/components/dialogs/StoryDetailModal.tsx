@@ -562,7 +562,7 @@ export default function StoryDetailModal({
                   >{issue.parent_key}</span>
                 </>
               ) : (
-                <Popover>
+                <Popover onOpenChange={(open) => { if (!open) { setShowAddEpicPanel(false); setEpicSearchTerm(''); } }}>
                   <PopoverTrigger asChild>
                     <button
                       style={{
@@ -577,45 +577,102 @@ export default function StoryDetailModal({
                       Add parent
                     </button>
                   </PopoverTrigger>
-                  <PopoverContent align="start" sideOffset={4} className="p-0 w-[380px] z-[10001]" style={{ borderRadius: 8, boxShadow: '0 8px 16px rgba(0,0,0,0.12), 0 0 1px rgba(0,0,0,0.12)' }}>
-                    <div style={{ padding: '10px 16px 6px', fontSize: 11, fontWeight: 700, color: '#6B778C', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
-                      Recent epics
-                    </div>
-                    <div style={{ maxHeight: 300, overflowY: 'auto' }}>
-                      {recentEpics.map((epic: any) => (
-                        <button
-                          key={epic.id}
-                          onClick={() => handleParentChange(epic.issue_key)}
-                          style={{
-                            width: '100%', padding: '10px 16px', border: 'none', background: 'transparent',
-                            textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10,
-                            fontSize: 14, color: '#172B4D', transition: 'background 100ms',
-                          }}
-                          onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
-                          onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-                        >
-                          <IssueIcon type="Epic" size={16} />
-                          <span>{epic.issue_key} {epic.summary}</span>
-                        </button>
-                      ))}
-                      {recentEpics.length === 0 && (
-                        <div style={{ padding: '12px 16px', fontSize: 13, color: '#6B778C' }}>No epics found</div>
-                      )}
-                    </div>
-                    <div style={{ borderTop: '1px solid #EBECF0' }}>
-                      <button
-                        onClick={() => setParentPickerTrigger(n => n + 1)}
-                        style={{
-                          width: '100%', padding: '10px 16px', border: 'none', background: 'transparent',
-                          textAlign: 'left', cursor: 'pointer', fontSize: 14, color: '#172B4D', fontWeight: 500,
-                          transition: 'background 100ms',
-                        }}
-                        onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
-                        onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-                      >
-                        View all epics
-                      </button>
-                    </div>
+                  <PopoverContent align="start" sideOffset={4} className="p-0 z-[10001]" style={{ borderRadius: 8, boxShadow: '0 8px 16px rgba(0,0,0,0.12), 0 0 1px rgba(0,0,0,0.12)', width: showAddEpicPanel ? 480 : 380 }}>
+                    {!showAddEpicPanel ? (
+                      <>
+                        <div style={{ padding: '10px 16px 6px', fontSize: 11, fontWeight: 700, color: '#6B778C', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
+                          Recent epics
+                        </div>
+                        <div style={{ maxHeight: 300, overflowY: 'auto' }}>
+                          {recentEpics.map((epic: any) => (
+                            <button
+                              key={epic.id}
+                              onClick={() => handleParentChange(epic.issue_key)}
+                              style={{
+                                width: '100%', padding: '10px 16px', border: 'none', background: 'transparent',
+                                textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10,
+                                fontSize: 14, color: '#172B4D', transition: 'background 100ms',
+                              }}
+                              onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
+                              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                            >
+                              <IssueIcon type="Epic" size={16} />
+                              <span>{epic.issue_key} {epic.summary}</span>
+                            </button>
+                          ))}
+                          {recentEpics.length === 0 && (
+                            <div style={{ padding: '12px 16px', fontSize: 13, color: '#6B778C' }}>No epics found</div>
+                          )}
+                        </div>
+                        <div style={{ borderTop: '1px solid #EBECF0' }}>
+                          <button
+                            onClick={() => setShowAddEpicPanel(true)}
+                            style={{
+                              width: '100%', padding: '10px 16px', border: 'none', background: 'transparent',
+                              textAlign: 'left', cursor: 'pointer', fontSize: 14, color: '#172B4D', fontWeight: 500,
+                              transition: 'background 100ms',
+                            }}
+                            onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
+                            onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                          >
+                            View all epics
+                          </button>
+                        </div>
+                      </>
+                    ) : (
+                      <div style={{ padding: '20px 24px' }}>
+                        <div style={{ fontSize: 18, fontWeight: 700, color: '#172B4D', marginBottom: 8 }}>Add epic</div>
+                        <div style={{ fontSize: 13, color: '#6B778C', marginBottom: 16 }}>
+                          Select a parent work item. Work items can only belong to one parent at a time.
+                        </div>
+                        <div style={{ fontSize: 12, fontWeight: 600, color: '#172B4D', marginBottom: 6 }}>Epic</div>
+                        <div style={{ position: 'relative' }}>
+                          <input
+                            type="text"
+                            placeholder="Choose parent"
+                            value={epicSearchTerm}
+                            onChange={e => setEpicSearchTerm(e.target.value)}
+                            autoFocus
+                            style={{
+                              width: '100%', padding: '8px 12px', border: '2px solid #4C9AFF', borderRadius: 4,
+                              fontSize: 14, color: '#172B4D', outline: 'none', background: '#FFF',
+                              boxSizing: 'border-box',
+                            }}
+                          />
+                          <div style={{ maxHeight: 320, overflowY: 'auto', border: '1px solid #DFE1E6', borderTop: 'none', borderRadius: '0 0 4px 4px', background: '#FFF' }}>
+                            {(allEpics as any[])
+                              .filter((epic: any) => {
+                                if (!epicSearchTerm) return true;
+                                const term = epicSearchTerm.toLowerCase();
+                                return epic.issue_key?.toLowerCase().includes(term) || epic.summary?.toLowerCase().includes(term);
+                              })
+                              .map((epic: any) => (
+                                <button
+                                  key={epic.id}
+                                  onClick={() => {
+                                    handleParentChange(epic.issue_key);
+                                    setShowAddEpicPanel(false);
+                                    setEpicSearchTerm('');
+                                  }}
+                                  style={{
+                                    width: '100%', padding: '10px 14px', border: 'none', background: 'transparent',
+                                    textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10,
+                                    fontSize: 14, color: '#172B4D', transition: 'background 100ms',
+                                  }}
+                                  onMouseEnter={e => (e.currentTarget.style.background = '#DEEBFF')}
+                                  onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                                >
+                                  <IssueIcon type="Epic" size={16} />
+                                  <span>{epic.issue_key} {epic.summary}</span>
+                                </button>
+                              ))}
+                            {allEpics.length === 0 && (
+                              <div style={{ padding: '12px 14px', fontSize: 13, color: '#6B778C' }}>No epics found</div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </PopoverContent>
                 </Popover>
               )}
