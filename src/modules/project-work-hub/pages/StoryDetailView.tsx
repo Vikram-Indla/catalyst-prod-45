@@ -7,7 +7,7 @@ import React, { useState, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   ChevronDown, ChevronRight, Minus, ChevronUp, ChevronsUp, ChevronsDown,
-  Plus, MoreHorizontal, X, Search,
+  Plus, X, Search,
 } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
@@ -17,11 +17,12 @@ import { StoryDetailSidebar } from '../components/story-detail/StoryDetailSideba
 import { StoryActivitySection } from '../components/story-detail/StoryActivitySection';
 import { StoryRichTextEditor } from '../components/story-detail/StoryRichTextEditor';
 import { resolveDisplayHtml } from '../components/story-detail/adf-utils';
+import { SubtasksPanel } from '../components/SubtasksPanel';
 import {
   useStoryDetail, useStoryComments, useStoryHistory,
   useStorySiblings, useParentCandidates, useTeamMembers,
   useUpdateStoryField, useAddStoryComment, useDeleteStoryComment,
-  useChildIssues, useLinkedIssues,
+  useLinkedIssues,
 } from '../components/story-detail/useStoryDetailData';
 import { getInitials, STORY_STATUS_LOZENGE, getLozengeStyle } from '../utils/backlog.utils';
 
@@ -78,7 +79,6 @@ export default function StoryDetailView({ projectId, projectKey, itemId }: Story
   const { data: siblings = [] } = useStorySiblings(projectId);
   const { data: parentCandidates = [] } = useParentCandidates(projectKey);
   const { data: teamMembers = [] } = useTeamMembers();
-  const { data: childIssues = [] } = useChildIssues(story?.issue_key || null);
   const { data: linkedIssues = [] } = useLinkedIssues(story?.issue_key || null);
   const updateField = useUpdateStoryField(itemId);
   const addComment = useAddStoryComment(story?.issue_key || null);
@@ -90,7 +90,6 @@ export default function StoryDetailView({ projectId, projectKey, itemId }: Story
   const [editingDesc, setEditingDesc] = useState(false);
   const [editingAC, setEditingAC] = useState(false);
   const [keyDetailsOpen, setKeyDetailsOpen] = useState(true);
-  const [subtasksOpen, setSubtasksOpen] = useState(true);
   const [linkedOpen, setLinkedOpen] = useState(true);
   const [parentPickerOpen, setParentPickerOpen] = useState(false);
   const [parentSearch, setParentSearch] = useState('');
@@ -151,11 +150,6 @@ export default function StoryDetailView({ projectId, projectKey, itemId }: Story
   const currentPriority = PRIORITY_OPTIONS.find(
     p => p.value.toLowerCase() === (story?.priority || '').toLowerCase()
   ) || PRIORITY_OPTIONS[2];
-
-  // ─── Subtask progress ─────────────────────────────────────
-  const subtasksDone = childIssues.filter(c => c.status_category === 'Done' || c.status_category === 'done').length;
-  const subtasksTotal = childIssues.length;
-  const subtasksPct = subtasksTotal > 0 ? Math.round((subtasksDone / subtasksTotal) * 100) : 0;
 
   // ─── Loading / Error states ────────────────────────────────
   if (isLoading) {
@@ -386,84 +380,15 @@ export default function StoryDetailView({ projectId, projectKey, itemId }: Story
             )}
           </div>
 
-          {/* ── Subtasks / Child Issues ── */}
-          {childIssues.length > 0 && (
-            <div style={{ padding: '0 32px 24px' }}>
-              <button onClick={() => setSubtasksOpen(!subtasksOpen)}
-                style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', cursor: 'pointer', ...SECTION_HEADING, padding: '4px 0', marginBottom: 8, width: '100%' }}>
-                {subtasksOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
-                Subtasks
-                <span style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <MoreHorizontal size={14} color="#94A3B8" />
-                  <Plus size={14} color="#94A3B8" />
-                </span>
-              </button>
-
-              {subtasksOpen && (
-                <>
-                  {/* Progress bar */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-                    <div style={{ flex: 1, height: 6, background: '#E2E8F0', borderRadius: 3, overflow: 'hidden' }}>
-                      <div style={{ width: `${subtasksPct}%`, height: '100%', background: subtasksPct === 100 ? '#22C55E' : '#2563EB', borderRadius: 3, transition: 'width 300ms' }} />
-                    </div>
-                    <span style={{ fontSize: 12, color: '#505258', fontWeight: 500, whiteSpace: 'nowrap' }}>{subtasksPct}% Done</span>
-                  </div>
-
-                  {/* Subtask table */}
-                  <div style={{ border: '1px solid #E2E8F0', borderRadius: 6, overflow: 'hidden' }}>
-                    {/* Header */}
-                    <div style={{ display: 'flex', alignItems: 'center', height: 32, padding: '0 12px', background: '#F8FAFC', borderBottom: '1px solid #E2E8F0', fontSize: 11, fontWeight: 650, textTransform: 'uppercase', letterSpacing: '0.04em', color: '#64748B' }}>
-                      <div style={{ flex: 1 }}>Work</div>
-                      <div style={{ width: 70 }}>Priority</div>
-                      <div style={{ width: 80 }}>Points</div>
-                      <div style={{ width: 100 }}>Assignee</div>
-                      <div style={{ width: 120 }}>Status</div>
-                    </div>
-                    {/* Rows */}
-                    {childIssues.map(child => {
-                      const badge = getStatusBadge(child.status);
-                      const childPriority = PRIORITY_OPTIONS.find(p => p.value.toLowerCase() === (child.priority || '').toLowerCase());
-                      return (
-                        <div key={child.id}
-                          onClick={() => navigate(`/project-hub/${projectKey}/story/${child.id}`)}
-                          className="group"
-                          style={{ display: 'flex', alignItems: 'center', height: 36, padding: '0 12px', borderBottom: '1px solid #F1F5F9', cursor: 'pointer', fontSize: 13 }}
-                          onMouseEnter={e => (e.currentTarget.style.background = 'rgba(0,0,0,0.02)')}
-                          onMouseLeave={e => (e.currentTarget.style.background = '')}>
-                          <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 6, overflow: 'hidden' }}>
-                            <JiraIssueTypeIcon type={child.issue_type || 'subtask'} size={16} />
-                            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: '#1868DB', fontWeight: 500 }}>{child.issue_key}</span>
-                            <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: '#292A2E' }}>{child.summary}</span>
-                          </div>
-                          <div style={{ width: 70, display: 'flex', alignItems: 'center' }}>
-                            {childPriority && <childPriority.Icon size={14} color={childPriority.color} />}
-                          </div>
-                          <div style={{ width: 80, fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: '#505258' }}>
-                            {child.story_points ?? '—'}
-                          </div>
-                          <div style={{ width: 100, display: 'flex', alignItems: 'center', gap: 4, overflow: 'hidden' }}>
-                            <div style={{ width: 20, height: 20, borderRadius: '50%', background: '#E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 8, fontWeight: 700, color: '#64748B', flexShrink: 0 }}>
-                              {getInitials(child.assignee_display_name)}
-                            </div>
-                            <span style={{ fontSize: 12, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: '#505258' }}>
-                              {child.assignee_display_name ? child.assignee_display_name.split(' ')[0]?.[0] + '..' : '—'}
-                            </span>
-                          </div>
-                          <div style={{ width: 120 }}>
-                            {badge && (
-                              <span style={{ display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px', borderRadius: 3, fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em', background: badge.bg, color: badge.text }}>
-                                {badge.label}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </>
-              )}
-            </div>
-          )}
+          {/* ── Subtasks / Child Issues (Jira native-issue-table parity) ── */}
+          <div style={{ padding: '0 32px 24px' }}>
+            <SubtasksPanel
+              storyKey={story.issue_key}
+              storyId={story.id}
+              projectKey={projectKey}
+              onSubtaskClick={(id) => navigate(`/project-hub/${projectKey}/story/${id}`)}
+            />
+          </div>
 
           {/* ── Linked Work Items ── */}
           {linkedIssues.length > 0 && (
