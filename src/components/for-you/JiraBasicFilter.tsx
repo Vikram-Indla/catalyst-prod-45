@@ -122,17 +122,11 @@ export function JiraBasicFilter({
     <div className="jf-panel" ref={panelRef} role="dialog" aria-modal="false" aria-label="Filter issues">
       <div className="jf-panel-inner">
         <div className="jf-content">
-          {/* Tab switcher */}
+          {/* Tab label — Basic only */}
           <div className="jf-tabs-wrapper">
             <div className="jf-tabs-container" role="tablist">
               <div role="presentation">
                 <button role="tab" aria-selected={true} className="jf-tab jf-tab--active">Basic</button>
-              </div>
-              <div role="presentation">
-                <button role="tab" aria-selected={false} className="jf-tab" disabled>Advanced</button>
-              </div>
-              <div role="presentation">
-                <button role="tab" aria-selected={false} className="jf-tab" disabled>JQL</button>
               </div>
             </div>
           </div>
@@ -245,10 +239,6 @@ export function JiraBasicFilter({
 
         {/* Footer */}
         <div className="jf-footer">
-          <button className="jf-feedback-btn">
-            <MegaphoneIcon />
-            Give feedback
-          </button>
           <div className="jf-shortcut">
             Press <kbd className="jf-kbd">Shift</kbd> + <kbd className="jf-kbd">F</kbd> to open and close
           </div>
