@@ -1106,59 +1106,144 @@ export default function StoryDetailModal({
                           </div>
                         </div>
 
-                        {/* Description — ADF auto-save editor */}
-                        <h2 style={{ fontSize: 14, fontWeight: 500, color: '#505258', lineHeight: '18.67px', margin: '0 0 8px 0', padding: 0 }}>Description</h2>
-                        <StoryRichTextEditor
-                          content={adfToHtml(issue?.description_adf) || issue?.description_text || ''}
-                          onSave={(html) => { updateFieldMutation.mutate({ field: 'description_text', value: html, oldValue: issue?.description_text ?? '' }); }}
-                          placeholder="Add a description..."
-                          minHeight={200}
-                          autoSave
-                          aiLabel="Improve description"
-                          onAiImprove={async () => {
-                            const { data, error: fnError } = await supabase.functions.invoke('ai-improve-story', {
-                              body: {
-                                issue_id: itemId,
-                                improve_type: 'improve_clarify',
-                                current_description: issue?.description_text || '(empty)',
-                                current_ac: acceptanceCriteria || '(none)',
-                                issue_summary: issue?.summary ?? '',
-                              },
-                            });
-                            if (fnError || !data?.description) {
-                              toast.error('AI improve failed. Try again.');
-                              return null;
-                            }
-                            return data.description;
-                          }}
-                        />
-                        {/* Acceptance Criteria — inside Key Details */}
-                        <div style={{ marginTop: 16 }}>
-                          <h2 style={{ fontSize: 14, fontWeight: 500, color: '#505258', lineHeight: '18.67px', margin: '0 0 8px 0', padding: 0 }}>Acceptance Criteria</h2>
+                        {/* Description — Jira view/edit mode */}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, margin: '0 0 4px 0' }}>
+                          <h2 style={{ fontSize: 14, fontWeight: 500, color: 'rgb(80, 82, 88)', lineHeight: '18.67px', margin: 0, padding: 0, fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif' }}>Description</h2>
+                          {descUnsaved && <span style={{ fontSize: 12, fontWeight: 653, color: 'rgb(41, 42, 46)' }}>• Unsaved changes</span>}
+                        </div>
+                        {descEditMode ? (
                           <StoryRichTextEditor
-                            content={tryAdfStringToHtml(acceptanceCriteria) ?? acceptanceCriteria ?? ''}
-                            onSave={(adfJson) => { setAcceptanceCriteria(adfJson); supabase.from('ph_issues').update({ acceptance_criteria: adfJson }).eq('id', itemId).then(() => { queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] }); }); }}
-                            placeholder="No acceptance criteria defined · Add manually or use AI →"
-                            minHeight={80}
-                            autoSave
-                            aiLabel="Improve criteria"
+                            content={adfToHtml(issue?.description_adf) || issue?.description_text || ''}
+                            onSave={(html) => {
+                              updateFieldMutation.mutate({ field: 'description_text', value: html, oldValue: issue?.description_text ?? '' });
+                              setDescEditMode(false);
+                              setDescUnsaved(false);
+                            }}
+                            onCancel={() => { setDescEditMode(false); }}
+                            placeholder="Add a description..."
+                            minHeight={150}
+                            aiLabel="Improve description"
                             onAiImprove={async () => {
                               const { data, error: fnError } = await supabase.functions.invoke('ai-improve-story', {
                                 body: {
                                   issue_id: itemId,
-                                  improve_type: 'add_acceptance_criteria',
+                                  improve_type: 'improve_clarify',
                                   current_description: issue?.description_text || '(empty)',
                                   current_ac: acceptanceCriteria || '(none)',
                                   issue_summary: issue?.summary ?? '',
                                 },
                               });
-                              if (fnError || !data?.acceptance_criteria) {
+                              if (fnError || !data?.description) {
                                 toast.error('AI improve failed. Try again.');
                                 return null;
                               }
-                              return data.acceptance_criteria;
+                              return data.description;
                             }}
                           />
+                        ) : (
+                          <div
+                            onClick={() => setDescEditMode(true)}
+                            onKeyDown={(e) => { if (e.key === 'Escape') { setDescEditMode(false); if (issue?.description_text) setDescUnsaved(true); } }}
+                            style={{
+                              border: descUnsaved ? '1.667px solid rgb(24, 104, 219)' : '1.667px solid rgba(0,0,0,0)',
+                              borderRadius: 3,
+                              padding: '0 6px 0 0',
+                              minHeight: 32,
+                              cursor: 'text',
+                              transition: 'border-color 0.15s',
+                            }}
+                            onMouseEnter={e => { if (!descUnsaved) e.currentTarget.style.borderColor = 'rgb(140, 143, 151)'; }}
+                            onMouseLeave={e => { if (!descUnsaved) e.currentTarget.style.borderColor = 'rgba(0,0,0,0)'; }}
+                          >
+                            {(() => {
+                              const descHtml = adfToHtml(issue?.description_adf) || issue?.description_text || '';
+                              if (!descHtml || descHtml === '<p></p>' || descHtml.trim() === '') {
+                                return <span style={{ fontSize: 14, color: 'rgb(140, 143, 151)', fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif', padding: '4px 0' }}>Add a description…</span>;
+                              }
+                              return (
+                                <div
+                                  dangerouslySetInnerHTML={{ __html: descHtml }}
+                                  style={{
+                                    fontSize: 14, fontWeight: 400, lineHeight: '24px', color: 'rgb(41, 42, 46)',
+                                    fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif',
+                                    padding: 0, margin: 0, background: 'transparent',
+                                  }}
+                                  className="jira-desc-view"
+                                />
+                              );
+                            })()}
+                          </div>
+                        )}
+
+                        {/* Acceptance Criteria — Jira view/edit mode */}
+                        <div style={{ marginTop: 16 }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 6, margin: '0 0 4px 0' }}>
+                            <h2 style={{ fontSize: 14, fontWeight: 500, color: 'rgb(80, 82, 88)', lineHeight: '18.67px', margin: 0, padding: 0, fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif' }}>Acceptance Criteria</h2>
+                            {acUnsaved && <span style={{ fontSize: 12, fontWeight: 653, color: 'rgb(41, 42, 46)' }}>• Unsaved changes</span>}
+                          </div>
+                          {acEditMode ? (
+                            <StoryRichTextEditor
+                              content={tryAdfStringToHtml(acceptanceCriteria) ?? acceptanceCriteria ?? ''}
+                              onSave={(adfJson) => {
+                                setAcceptanceCriteria(adfJson);
+                                supabase.from('ph_issues').update({ acceptance_criteria: adfJson }).eq('id', itemId).then(() => { queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] }); });
+                                setAcEditMode(false);
+                                setAcUnsaved(false);
+                              }}
+                              onCancel={() => { setAcEditMode(false); }}
+                              placeholder="No acceptance criteria defined · Add manually or use AI →"
+                              minHeight={80}
+                              aiLabel="Improve criteria"
+                              onAiImprove={async () => {
+                                const { data, error: fnError } = await supabase.functions.invoke('ai-improve-story', {
+                                  body: {
+                                    issue_id: itemId,
+                                    improve_type: 'add_acceptance_criteria',
+                                    current_description: issue?.description_text || '(empty)',
+                                    current_ac: acceptanceCriteria || '(none)',
+                                    issue_summary: issue?.summary ?? '',
+                                  },
+                                });
+                                if (fnError || !data?.acceptance_criteria) {
+                                  toast.error('AI improve failed. Try again.');
+                                  return null;
+                                }
+                                return data.acceptance_criteria;
+                              }}
+                            />
+                          ) : (
+                            <div
+                              onClick={() => setAcEditMode(true)}
+                              style={{
+                                border: acUnsaved ? '1.667px solid rgb(24, 104, 219)' : '1.667px solid rgba(0,0,0,0)',
+                                borderRadius: 3,
+                                padding: '0 6px 0 0',
+                                minHeight: 32,
+                                cursor: 'text',
+                                transition: 'border-color 0.15s',
+                              }}
+                              onMouseEnter={e => { if (!acUnsaved) e.currentTarget.style.borderColor = 'rgb(140, 143, 151)'; }}
+                              onMouseLeave={e => { if (!acUnsaved) e.currentTarget.style.borderColor = 'rgba(0,0,0,0)'; }}
+                            >
+                              {(() => {
+                                const acHtml = tryAdfStringToHtml(acceptanceCriteria) ?? acceptanceCriteria ?? '';
+                                if (!acHtml || acHtml === '<p></p>' || acHtml.trim() === '') {
+                                  return <span style={{ fontSize: 14, color: 'rgb(140, 143, 151)', fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif', padding: '4px 0' }}>No acceptance criteria defined · Click to add</span>;
+                                }
+                                return (
+                                  <div
+                                    dangerouslySetInnerHTML={{ __html: acHtml }}
+                                    style={{
+                                      fontSize: 14, fontWeight: 400, lineHeight: '24px', color: 'rgb(41, 42, 46)',
+                                      fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif',
+                                      padding: 0, margin: 0, background: 'transparent',
+                                    }}
+                                    className="jira-desc-view"
+                                  />
+                                );
+                              })()}
+                            </div>
+                          )}
                         </div>
                       </div>
                     )}
