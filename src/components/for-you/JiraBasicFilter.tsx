@@ -213,12 +213,14 @@ export function JiraBasicFilter({
                                   {(option.iconNode || option.avatarUrl || option.avatarInitials || option.avatarType) && (
                                     <div className="jf-avatar-wrap"><OptionAvatar option={option} /></div>
                                   )}
-                                  <span className="jf-option-label">
-                                    {option.label}
-                                    {option.labelExtra && (
-                                      <span className="jf-option-label-extra"> {option.labelExtra}</span>
-                                    )}
-                                  </span>
+                                  {!option.hideLabel && (
+                                    <span className="jf-option-label">
+                                      {option.label}
+                                      {option.labelExtra && (
+                                        <span className="jf-option-label-extra"> {option.labelExtra}</span>
+                                      )}
+                                    </span>
+                                  )}
                                 </div>
                               </div>
                             </div>
