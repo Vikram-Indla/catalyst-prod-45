@@ -1113,16 +1113,7 @@ export default function StoryDetailModal({
                         {descEditMode ? (
                           <div style={{
                             position: 'relative', borderRadius: 3, backgroundColor: '#FFFFFF',
-                            border: '1px solid #8C8F97',
-                            transition: 'background-color 0.2s ease-in-out, border-color 0.2s ease-in-out',
                           }}
-                            ref={(el) => {
-                              if (!el) return;
-                              const handler = () => { el.style.borderColor = '#4688EC'; el.style.outline = '2px solid #4688EC'; el.style.outlineOffset = '2px'; };
-                              const blurHandler = () => { el.style.borderColor = '#8C8F97'; el.style.outline = 'none'; };
-                              el.addEventListener('focusin', handler);
-                              el.addEventListener('focusout', blurHandler);
-                            }}
                           >
                             <StoryRichTextEditor
                               content={adfToHtml(issue?.description_adf) || issue?.description_text || ''}
@@ -1198,16 +1189,7 @@ export default function StoryDetailModal({
                           {acEditMode ? (
                             <div style={{
                               position: 'relative', borderRadius: 3, backgroundColor: '#FFFFFF',
-                              border: '1px solid #8C8F97',
-                              transition: 'background-color 0.2s ease-in-out, border-color 0.2s ease-in-out',
                             }}
-                              ref={(el) => {
-                                if (!el) return;
-                                const handler = () => { el.style.borderColor = '#4688EC'; el.style.outline = '2px solid #4688EC'; el.style.outlineOffset = '2px'; };
-                                const blurHandler = () => { el.style.borderColor = '#8C8F97'; el.style.outline = 'none'; };
-                                el.addEventListener('focusin', handler);
-                                el.addEventListener('focusout', blurHandler);
-                              }}
                             >
                               <StoryRichTextEditor
                                 content={tryAdfStringToHtml(acceptanceCriteria) ?? acceptanceCriteria ?? ''}
