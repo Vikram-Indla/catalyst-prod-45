@@ -1,9 +1,9 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { X, Edit2, Copy, FileText, ClipboardList, Paperclip, Link2, History, Play, Plus, Trash2, Download, Upload, Bug, BookOpen, ImageIcon, Table, File, MessageSquare, Search, Loader2, GitBranch, RefreshCw, Tag } from 'lucide-react';
+import { useState, useEffect, useCallback } from 'react';
+import { X, Edit2, Copy, FileText, ClipboardList, Paperclip, Link2, History, Play, Plus, Trash2, Bug, BookOpen, MessageSquare, Search, Loader2, GitBranch, ChevronDown, ChevronRight } from 'lucide-react';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { EntityCommentsPanel } from '@/components/testhub/EntityCommentsPanel';
+import { EntityAttachmentsPanel } from '@/components/testhub/EntityAttachmentsPanel';
 import { formatDistanceToNow } from 'date-fns';
-import { useDropzone } from 'react-dropzone';
 import { useQuery } from '@tanstack/react-query';
 
 interface TestCase {
@@ -54,16 +54,6 @@ interface Execution {
       name: string;
     } | null;
   } | null;
-}
-
-interface Attachment {
-  id: string;
-  file_name: string;
-  file_url: string;
-  file_size: number;
-  file_type: string;
-  step_id?: string | null;
-  uploaded_at?: string;
 }
 
 interface ViewTestCaseModalProps {
@@ -240,6 +230,110 @@ function AddLinkModal({
   );
 }
 
+// --- LINK ACCORDION SECTION ---
+function LinkAccordionSection({
+  label,
+  icon: Icon,
+  links,
+  onAdd,
+  onDelete,
+}: {
+  label: string;
+  icon: React.ElementType;
+  links: Link[];
+  onAdd: () => void;
+  onDelete: (id: string) => void;
+}) {
+  const [expanded, setExpanded] = useState(links.length > 0);
+
+  useEffect(() => {
+    if (links.length > 0) setExpanded(true);
+  }, [links.length]);
+
+  return (
+    <div style={{ borderRadius: 4, border: '0.75px solid var(--divider, #E2E8F0)', overflow: 'hidden' }}>
+      {/* Section header */}
+      <div
+        onClick={() => setExpanded(p => !p)}
+        style={{
+          display: 'flex', alignItems: 'center', gap: 8, height: 36, padding: '0 12px',
+          background: 'var(--bg-1, #F8F9FA)', cursor: 'pointer', userSelect: 'none',
+        }}
+      >
+        {expanded
+          ? <ChevronDown style={{ width: 14, height: 14, color: 'var(--fg-3, #64748B)', flexShrink: 0 }} />
+          : <ChevronRight style={{ width: 14, height: 14, color: 'var(--fg-3, #64748B)', flexShrink: 0 }} />
+        }
+        <Icon style={{ width: 14, height: 14, color: 'var(--fg-3, #64748B)', flexShrink: 0 }} />
+        <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, fontWeight: 500, color: 'var(--fg-2, #475569)', flex: 1 }}>{label}</span>
+        {/* Count badge — grey lozenge */}
+        <span style={{
+          display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+          height: 20, minWidth: 20, padding: '0 6px', borderRadius: 3,
+          fontSize: 11, fontWeight: 700, background: '#DFE1E6', color: '#253858',
+        }}>{links.length}</span>
+        {/* + Add button */}
+        <button
+          onClick={(e) => { e.stopPropagation(); onAdd(); }}
+          style={{
+            border: 'none', background: 'transparent', cursor: 'pointer',
+            fontSize: 12, fontWeight: 500, color: '#2563EB',
+            display: 'flex', alignItems: 'center', gap: 4, padding: '2px 6px',
+          }}
+        >
+          <Plus style={{ width: 12, height: 12 }} /> Add
+        </button>
+      </div>
+
+      {/* Expanded content */}
+      {expanded && links.length > 0 && (
+        <div>
+          {links.map(link => (
+            <div
+              key={link.id}
+              className="group"
+              style={{
+                display: 'flex', alignItems: 'center', gap: 10, height: 36, padding: '0 12px 0 36px',
+                borderTop: '0.75px solid var(--divider, #E2E8F0)',
+                transition: 'background 120ms',
+              }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--cp-interact-hover, rgba(0,0,0,0.04))')}
+              onMouseLeave={e => (e.currentTarget.style.background = '')}
+            >
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 500, color: '#2563EB' }}>
+                {link.linked_item_key}
+              </span>
+              <span style={{
+                flex: 1, fontFamily: 'Inter, sans-serif', fontSize: 12, fontWeight: 400, color: 'var(--fg-1, #0F172A)',
+                overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+              }}>
+                {link.linked_item_title}
+              </span>
+              <button
+                onClick={() => onDelete(link.id)}
+                style={{
+                  border: 'none', background: 'transparent', cursor: 'pointer', padding: 2,
+                  color: 'var(--fg-4, #94A3B8)', opacity: 0, transition: 'opacity 120ms',
+                }}
+                className="group-hover:!opacity-100"
+              >
+                <X style={{ width: 12, height: 12 }} />
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Empty expanded state */}
+      {expanded && links.length === 0 && (
+        <div style={{ padding: '12px 36px', borderTop: '0.75px solid var(--divider, #E2E8F0)' }}>
+          <span style={{ fontSize: 12, color: 'var(--fg-4, #94A3B8)' }}>No {label.toLowerCase()} linked</span>
+        </div>
+      )}
+    </div>
+  );
+}
+
 // --- MAIN COMPONENT ---
 export function ViewTestCaseModal({
   isOpen,
@@ -253,10 +347,7 @@ export function ViewTestCaseModal({
   const [links, setLinks] = useState<Link[]>([]);
   const [history, setHistory] = useState<VersionHistory[]>([]);
   const [runs, setRuns] = useState<Execution[]>([]);
-  const [attachments, setAttachments] = useState<Attachment[]>([]);
   const [loading, setLoading] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [addLinkOpen, setAddLinkOpen] = useState(false);
   const [addLinkType, setAddLinkType] = useState<'requirement' | 'defect' | 'story'>('requirement');
@@ -274,13 +365,12 @@ export function ViewTestCaseModal({
     setLoading(true);
 
     try {
-      const [stepsRes, reqStoryLinksRes, defectLinksRes, historyRes, runsRes, attachmentsRes] = await Promise.all([
+      const [stepsRes, reqStoryLinksRes, defectLinksRes, historyRes, runsRes] = await Promise.all([
         supabase.from('tm_test_steps').select('*').eq('test_case_id', testCase.id).order('step_number'),
         typedQuery('tm_test_case_links').select('*').eq('test_case_id', testCase.id).in('linked_item_type', ['requirement', 'story']),
         typedQuery('tm_defect_links').select('*').eq('link_type', 'test_case').eq('linked_id', testCase.id),
         typedQuery('tm_test_case_versions').select('*').eq('test_case_id', testCase.id).order('version_number', { ascending: false }),
         typedQuery('th_test_executions').select(`*, tm_cycle_scope!cycle_scope_id(id, tm_test_cycles!test_cycle_id(id, name))`).eq('test_case_id', testCase.id).order('executed_at', { ascending: false }),
-        typedQuery('th_test_case_attachments').select('*').eq('test_case_id', testCase.id),
       ]);
 
       setSteps(stepsRes.data || []);
@@ -314,7 +404,6 @@ export function ViewTestCaseModal({
       }));
       setHistory(historyData);
       setRuns(runsRes.data || []);
-      setAttachments(attachmentsRes.data || []);
     } catch (err) {
       console.error('Error fetching related data:', err);
     } finally {
@@ -380,46 +469,16 @@ export function ViewTestCaseModal({
     setLinks(links.filter(l => l.id !== linkId));
   };
 
-  const handleUploadFiles = useCallback(async (files: File[]) => {
-    if (!testCase || files.length === 0) return;
-    setIsUploading(true);
-    try {
-      for (const file of files) {
-        if (file.size > 10 * 1024 * 1024) { console.error(`${file.name} is too large (max 10MB)`); continue; }
-        const filePath = `test-cases/${testCase.id}/attachments/${Date.now()}-${file.name}`;
-        const { error: uploadError } = await supabase.storage.from('testhub-attachments').upload(filePath, file);
-        if (uploadError) { console.error('Upload error:', uploadError); continue; }
-        const { data: urlData } = supabase.storage.from('testhub-attachments').getPublicUrl(filePath);
-        const { data: insertedAtt, error: dbError } = await typedQuery('th_test_case_attachments').insert({
-          test_case_id: testCase.id, file_name: file.name, file_url: urlData.publicUrl, file_size: file.size, file_type: file.type,
-        }).select().single();
-        if (!dbError && insertedAtt) { setAttachments(prev => [insertedAtt, ...prev]); }
-      }
-    } catch (err) { console.error('Upload error:', err); }
-    finally { setIsUploading(false); }
-  }, [testCase]);
-
-  const handleDeleteAttachment = async (attId: string) => {
-    const att = attachments.find(a => a.id === attId);
-    if (!att) return;
-    try {
-      const url = new URL(att.file_url);
-      const pathMatch = url.pathname.match(/\/object\/public\/testhub-attachments\/(.*)/);
-      if (pathMatch) { await supabase.storage.from('testhub-attachments').remove([pathMatch[1]]); }
-    } catch {}
-    await typedQuery('th_test_case_attachments').delete().eq('id', attId);
-    setAttachments(attachments.filter(a => a.id !== attId));
-  };
-
-  const onDrop = useCallback((acceptedFiles: File[]) => { handleUploadFiles(acceptedFiles); }, [handleUploadFiles]);
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
-
   if (!isOpen || !testCase) return null;
+
+  const requirementLinks = links.filter(l => l.link_type === 'requirement');
+  const defectLinks = links.filter(l => l.link_type === 'defect');
+  const storyLinks = links.filter(l => l.link_type === 'story');
 
   const tabs: { key: TabKey; label: string; icon: any; count?: number }[] = [
     { key: 'details', label: 'Details', icon: FileText },
     { key: 'steps', label: 'Steps', icon: ClipboardList, count: steps.length },
-    { key: 'attachments', label: 'Attachments', icon: Paperclip, count: attachments.length },
+    { key: 'attachments', label: 'Attachments', icon: Paperclip },
     { key: 'links', label: 'Links', icon: Link2, count: links.length },
     { key: 'history', label: 'History', icon: History },
     { key: 'runs', label: 'Runs', icon: Play, count: runs.length },
@@ -446,7 +505,7 @@ export function ViewTestCaseModal({
               {testCase.description ? (
                 <p style={{ fontFamily: 'Inter', fontSize: 14, color: 'var(--fg-1)', lineHeight: 1.6 }}>{testCase.description}</p>
               ) : (
-                <p style={{ fontFamily: 'Inter', fontSize: 14, color: 'var(--fg-4)', fontStyle: 'italic' }}>No description defined</p>
+                <p style={{ fontFamily: 'Inter', fontSize: 14, color: 'var(--fg-4)' }}>No description defined</p>
               )}
             </div>
             <div>
@@ -454,7 +513,7 @@ export function ViewTestCaseModal({
               {testCase.preconditions ? (
                 <p style={{ fontFamily: 'Inter', fontSize: 14, color: 'var(--fg-1)', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>{testCase.preconditions}</p>
               ) : (
-                <p style={{ fontFamily: 'Inter', fontSize: 14, color: 'var(--fg-4)', fontStyle: 'italic' }}>No preconditions defined</p>
+                <p style={{ fontFamily: 'Inter', fontSize: 14, color: 'var(--fg-4)' }}>No preconditions defined</p>
               )}
             </div>
           </div>
@@ -488,75 +547,32 @@ export function ViewTestCaseModal({
         );
 
       case 'attachments':
-        return (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-              <button onClick={() => fileInputRef.current?.click()}
-                style={{ height: 50, padding: '0 16px', backgroundColor: 'transparent', border: 'none', fontSize: 13, fontWeight: 600, color: 'var(--cp-blue)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
-                <Plus style={{ width: 14, height: 14 }} /> Upload
-              </button>
-            </div>
-            {attachments.length > 0 ? (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                {attachments.map((att) => {
-                  const getFileIcon = () => {
-                    if (att.file_type?.startsWith('image/')) return ImageIcon;
-                    if (att.file_type === 'application/pdf') return FileText;
-                    if (att.file_type?.includes('spreadsheet') || att.file_type?.includes('excel')) return Table;
-                    return File;
-                  };
-                  const FileIcon = getFileIcon();
-                  const fileSizeKb = Math.round((att.file_size || 0) / 1024);
-                  return (
-                    <div key={att.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 14px', backgroundColor: 'var(--bg-1)', borderRadius: 8, border: '1px solid var(--divider)' }}>
-                      <FileIcon style={{ width: 20, height: 20, color: 'var(--fg-3)', flexShrink: 0 }} />
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg-1)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{att.file_name}</p>
-                        <p style={{ fontSize: 11, color: 'var(--fg-4)', margin: 0 }}>{fileSizeKb} KB</p>
-                      </div>
-                      <a href={att.file_url} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--cp-blue)' }}><Download style={{ width: 16, height: 16 }} /></a>
-                      <button onClick={() => handleDeleteAttachment(att.id)} style={{ border: 'none', backgroundColor: 'transparent', color: 'var(--sem-danger)', cursor: 'pointer', padding: 4 }}><Trash2 style={{ width: 14, height: 14 }} /></button>
-                    </div>
-                  );
-                })}
-              </div>
-            ) : (
-              <div {...getRootProps()} style={{ padding: 40, border: '2px dashed var(--divider)', borderRadius: 12, textAlign: 'center', cursor: 'pointer', backgroundColor: isDragActive ? 'color-mix(in srgb, var(--cp-blue) 5%, transparent)' : 'var(--bg-1)' }}>
-                <input {...getInputProps()} />
-                <Upload style={{ width: 32, height: 32, color: 'var(--fg-4)', marginBottom: 8 }} />
-                <p style={{ fontSize: 14, color: 'var(--fg-3)', margin: 0 }}>Drag files here or click to browse</p>
-                <p style={{ fontSize: 12, color: 'var(--fg-4)', margin: '4px 0 0' }}>Max 10MB per file</p>
-              </div>
-            )}
-            <input ref={fileInputRef} type="file" multiple onChange={(e) => e.target.files && handleUploadFiles(Array.from(e.target.files))} style={{ display: 'none' }} />
-          </div>
-        );
+        return <EntityAttachmentsPanel entityType="test_case" entityId={testCase.id} />;
 
       case 'links':
         return (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-            <div style={{ display: 'flex', gap: 8 }}>
-              {(['requirement', 'defect', 'story'] as const).map(lt => (
-                <button key={lt} onClick={() => { setAddLinkType(lt); setAddLinkOpen(true); }}
-                  style={{ height: 32, padding: '8px 12px', backgroundColor: 'var(--cp-float)', border: '1px solid var(--divider)', borderRadius: 6, fontSize: 12, fontWeight: 500, color: 'var(--fg-2)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}>
-                  <Plus style={{ width: 12, height: 12 }} /> {lt === 'requirement' ? 'Requirement' : lt === 'defect' ? 'Defect' : 'Story'}
-                </button>
-              ))}
-            </div>
-            {links.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: 40, color: 'var(--fg-4)' }}>No links added yet</div>
-            ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                {links.map(link => (
-                  <div key={link.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 14px', backgroundColor: 'var(--bg-1)', borderRadius: 8, border: '1px solid var(--divider)' }}>
-                    {link.link_type === 'defect' ? <Bug style={{ width: 16, height: 16, color: 'var(--sem-danger)' }} /> : <BookOpen style={{ width: 16, height: 16, color: 'var(--cp-blue)' }} />}
-                    <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--cp-blue)', backgroundColor: 'color-mix(in srgb, var(--cp-blue) 8%, transparent)', padding: '2px 8px', borderRadius: 4 }}>{link.linked_item_key}</span>
-                    <span style={{ flex: 1, fontSize: 13, color: 'var(--fg-2)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{link.linked_item_title}</span>
-                    <button onClick={() => handleDeleteLink(link.id)} style={{ border: 'none', backgroundColor: 'transparent', color: 'var(--fg-4)', cursor: 'pointer', padding: 4 }}><Trash2 style={{ width: 14, height: 14 }} /></button>
-                  </div>
-                ))}
-              </div>
-            )}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <LinkAccordionSection
+              label="Requirements"
+              icon={GitBranch}
+              links={requirementLinks}
+              onAdd={() => { setAddLinkType('requirement'); setAddLinkOpen(true); }}
+              onDelete={handleDeleteLink}
+            />
+            <LinkAccordionSection
+              label="Defects"
+              icon={Bug}
+              links={defectLinks}
+              onAdd={() => { setAddLinkType('defect'); setAddLinkOpen(true); }}
+              onDelete={handleDeleteLink}
+            />
+            <LinkAccordionSection
+              label="Stories"
+              icon={BookOpen}
+              links={storyLinks}
+              onAdd={() => { setAddLinkType('story'); setAddLinkOpen(true); }}
+              onDelete={handleDeleteLink}
+            />
             <AddLinkModal isOpen={addLinkOpen} onClose={() => setAddLinkOpen(false)} linkType={addLinkType} projectId={testCase?.project_id} onAdd={handleAddLink} />
           </div>
         );
