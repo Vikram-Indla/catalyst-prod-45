@@ -205,9 +205,6 @@ function AddLinkModal({
       if (projectId && ['tm_requirements', 'tm_defects'].includes(config.table)) {
         query = query.eq('project_id', projectId);
       }
-      if (projectId && config.table === 'ph_issues') {
-        query = query.eq('project_id', projectId);
-      }
 
       const { data } = await query;
       return ((data || []) as any[]).map(row => ({
