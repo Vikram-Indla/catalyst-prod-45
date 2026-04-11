@@ -318,10 +318,10 @@ export function useDefectLinksG25(defectId: string | undefined) {
 export function useCreateDefectLinkG25() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async ({ defectId, linkType, linkedId }: { defectId: string; linkType: string; linkedId: string }) => {
+    mutationFn: async ({ defectId, linkType, linkedId, entityLabel }: { defectId: string; linkType: string; linkedId: string; entityLabel?: string }) => {
       const { data: { user } } = await supabase.auth.getUser();
       const { data, error } = await typedQuery('tm_defect_links')
-        .insert({ defect_id: defectId, link_type: linkType, linked_id: linkedId, created_by: user?.id } as any)
+        .insert({ defect_id: defectId, link_type: linkType, linked_id: linkedId, entity_label: entityLabel || null, link_source: 'manual', created_by: user?.id } as any)
         .select()
         .single();
       if (error) throw new Error(error.message);
