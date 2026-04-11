@@ -1330,17 +1330,22 @@ export default function StoryDetailModal({
                         {/* Comments list */}
                         {activeActivityTab === 'comments' && comments.length === 0 && <div style={{ padding: '24px 0', color: '#97A0AF', fontSize: 14, textAlign: 'center' }}>No comments yet</div>}
                         {activeActivityTab === 'comments' && comments.map(c => (
-                          <div key={c.id} style={{ display: 'flex', gap: 12, marginBottom: 24 }}>
+                          <div key={c.id} style={{ display: 'flex', gap: 8, margin: '8px 0 32px 0', minHeight: 40 }}>
                             {c.author?.avatar_url ? (
-                              <img src={c.author.avatar_url} alt="" style={{ width: 36, height: 36, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
-                            ) : (
-                              <div style={{ width: 36, height: 36, borderRadius: '50%', background: getAvatarColor(c.author_id), color: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700, flexShrink: 0 }}>{getInitials(c.author?.full_name)}</div>
-                            )}
-                            <div style={{ flex: 1, minWidth: 0 }}>
-                              <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 6 }}>
-                                <span style={{ fontSize: 14, fontWeight: 600, color: '#172B4D' }}>{c.author?.full_name ?? 'Unknown'}</span>
-                                <span style={{ fontSize: 13, color: '#6B778C' }}>{fmtDate(c.created_at)}</span>
+                              <div style={{ width: 36, height: 36, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <img src={c.author.avatar_url} alt="" style={{ width: 32, height: 32, borderRadius: 9999, objectFit: 'cover', border: '2px solid #FFFFFF' }} />
                               </div>
+                            ) : (
+                              <div style={{ width: 36, height: 36, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <div style={{ width: 32, height: 32, borderRadius: '50%', background: getAvatarColor(c.author_id), color: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, border: '2px solid #FFFFFF' }}>{getInitials(c.author?.full_name)}</div>
+                              </div>
+                            )}
+                            <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 2 }}>
+                              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, alignItems: 'baseline' }}>
+                                <span style={{ fontSize: 14, fontWeight: 700, color: '#292A2E' }}>{c.author?.full_name ?? 'Unknown'}</span>
+                                <span style={{ fontSize: 14, fontWeight: 400, color: '#292A2E' }}>commented</span>
+                              </div>
+                              <div style={{ fontSize: 12, fontWeight: 400, color: '#292A2E', lineHeight: '16px' }}>{fmtDate(c.created_at)}</div>
 
                               {editingCommentId === c.id ? (
                                 <RichTextCommentEditor
