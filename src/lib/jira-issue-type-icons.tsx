@@ -3,31 +3,42 @@
  * JIRA ISSUE TYPE ICONS — CANONICAL GUARDRAIL ("RESET ICONS" REFERENCE)
  * ═══════════════════════════════════════════════════════════════════════
  *
- * THIS IS THE SINGLE SOURCE OF TRUTH for all Jira issue type icons
- * across the entire Catalyst platform. Every component that renders an
- * issue type icon MUST import from this file.
+ * ⚠️  GUARDRAIL: THIS IS THE SINGLE SOURCE OF TRUTH FOR ALL WORK ITEM
+ *     TYPE ICONS IN CATALYST. NEVER create competing icon components
+ *     with inline SVGs. All other files MUST delegate to this module.
+ *
+ * PROTECTED ICON REGISTRY (from Jira project type configuration):
+ * ─────────────────────────────────────────────────────────────────
+ *   API Requirement   → #2684FF  Blue     → task SVG
+ *   Backend           → #2684FF  Blue     → subtask SVG       [SUB-TASK]
+ *   Bug / QA Bug      → #FF5630  Red      → bug SVG (filled circle)
+ *   Business Gap      → #FF5630  Red      → incident SVG
+ *   Change Request    → #FFAB00  Amber    → changes SVG (arrows)
+ *   Epic              → #6554C0  Purple   → epic SVG (lightning bolt)
+ *   Feature           → #36B37E  Green    → new-feature SVG (plus)
+ *   Figma             → #2684FF  Blue     → subtask SVG       [SUB-TASK]
+ *   Frontend          → #2684FF  Blue     → subtask SVG       [SUB-TASK]
+ *   Improvement       → #36B37E  Green    → improvement SVG (up arrow)
+ *   Incident          → #FF5630  Red      → incident SVG (beacon)
+ *   Integration       → #2684FF  Blue     → subtask SVG       [SUB-TASK]
+ *   Issue             → #2684FF  Blue     → issue SVG (checkmark square)
+ *   New Feature       → #36B37E  Green    → new-feature SVG (plus)
+ *   Problem           → #FF5630  Red      → problem SVG (circle slash)
+ *   Prod. Incident    → #FF5630  Red      → incident SVG
+ *   Question          → #6554C0  Purple   → question SVG (circle ?)
+ *   Story             → #36B37E  Green    → story SVG (bookmark)
+ *   Sub-task          → #2684FF  Blue     → subtask SVG       [SUB-TASK]
+ *   Task              → #2684FF  Blue     → task SVG (empty square)
+ *
+ * FILES THAT DELEGATE TO THIS MODULE (guardrail chain):
+ *   src/components/shared/JiraIssueTypeIcon.tsx          → re-export w/ tooltip
+ *   src/components/project-hub/sdlc/PHIssueTypeIcon.tsx  → re-export
+ *   src/modules/.../story-detail/IssueTypeIcon.tsx       → re-export
+ *
+ * SVG FILES: /admin/icons/jira/*.svg (16px and 24px variants)
+ * To change an icon globally: replace the SVG file. No code changes.
  *
  * CODE WORD: "RESET ICONS"
- * When the user says "reset icons" + screenshot, all issue type icons
- * must match this file exactly. No exceptions.
- *
- * ICON SOURCE: SVG files in /admin/icons/jira/
- * Icons are loaded as <img> from static SVG files, making them
- * dynamically swappable by replacing files in public/admin/icons/jira/.
- *
- * CANONICAL ICON SPEC (12 types, from Jira Atlassian reference):
- *   Epic             → #6554C0  Purple   (lightning bolt)
- *   Task             → #2684FF  Blue     (empty square)
- *   Story            → #36B37E  Green    (bookmark)
- *   Incident         → #FF5630  Red      (beacon/triangle)
- *   Bug              → #FF5630  Red      (filled circle)
- *   Problem          → #FF5630  Red      (circle with slash)
- *   Question         → #6554C0  Purple   (circle with ?)
- *   Changes          → #FFAB00  Amber    (bidirectional arrows)
- *   Issue            → #2684FF  Blue     (square with checkmark)
- *   New Feature      → #36B37E  Green    (plus sign)
- *   Improvement      → #36B37E  Green    (up arrow)
- *   Subtask          → #2684FF  Blue     (two overlapping squares)
  */
 
 import React from 'react';
