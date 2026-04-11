@@ -451,8 +451,11 @@ export default function StoryDetailModal({
 
   const handleParentChange = useCallback(async (newParentKey: string | null) => {
     await supabase.from('ph_issues').update({ parent_key: newParentKey }).eq('id', itemId);
+    // Write-back to Jira
+    await supabase.from('jira_write_back_queue').insert({ ph_issue_id: itemId, field_name: 'parent', new_value: newParentKey ?? '', status: 'approved' });
+    // Refresh detail + all table views across Catalyst
     queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] });
-    queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] });
+    queryClient.invalidateQueries({ queryKey: ['ph_issues'] });
   }, [itemId, queryClient]);
 
   /* ── DERIVED ───────────────────────────────── */
