@@ -1038,7 +1038,7 @@ export default function StoryDetailModal({
                         </div>
 
                         {/* Description — ADF auto-save editor */}
-                        <div style={{ fontSize: 13, fontWeight: 700, color: '#172B4D', marginBottom: 10 }}>Description</div>
+                        <h2 style={{ fontSize: 14, fontWeight: 500, color: '#505258', lineHeight: '18.67px', margin: '0 0 8px 0', padding: 0 }}>Description</h2>
                         <StoryRichTextEditor
                           content={adfToHtml(issue?.description_adf) || issue?.description_text || ''}
                           onSave={(html) => { updateFieldMutation.mutate({ field: 'description_text', value: html, oldValue: issue?.description_text ?? '' }); }}
@@ -1224,25 +1224,36 @@ export default function StoryDetailModal({
 
                   {/* 8. ACTIVITY — Jira-exact */}
                   <div style={{ marginTop: 32 }}>
-                    <div style={{ fontSize: 15, fontWeight: 600, color: '#172B4D', marginBottom: 12 }}>Activity</div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 0, marginBottom: 20, borderBottom: '1px solid #EBECF0' }}>
+                    <h2 style={{ fontSize: 16, fontWeight: 700, color: '#292A2E', lineHeight: '20px', margin: 0, padding: 0, marginBottom: 12 }}>Activity</h2>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 16 }}>
                       {(['all', 'comments', 'history'] as ActivityTab[]).map(tab => {
                         const isActive = activeActivityTab === tab;
                         const label = tab === 'all' ? 'All' : tab === 'comments' ? 'Comments' : 'History';
                         return (
                           <button key={tab} onClick={() => setActiveActivityTab(tab)} style={{
-                            padding: '6px 14px', marginBottom: -1,
-                            border: 'none',
-                            borderBottom: isActive ? '2px solid #2563EB' : '2px solid transparent',
-                            borderRadius: 0,
-                            background: 'transparent', fontSize: 14, fontWeight: isActive ? 500 : 400,
-                            color: isActive ? '#2563EB' : '#42526E', cursor: 'pointer', transition: 'color 0.12s',
+                            height: 26, padding: '0 12px',
+                            border: isActive ? '0.556px solid #1868DB' : '0.556px solid transparent',
+                            borderRadius: 2,
+                            background: isActive ? '#E9F2FE' : 'transparent',
+                            fontSize: 13.33, fontWeight: 500,
+                            color: isActive ? '#1868DB' : '#505258',
+                            cursor: 'pointer', transition: 'background 150ms, border-color 150ms, color 150ms',
+                            lineHeight: 'normal',
                           }}
-                            onMouseEnter={e => { if (!isActive) e.currentTarget.style.color = '#172B4D'; }}
-                            onMouseLeave={e => { if (!isActive) e.currentTarget.style.color = '#42526E'; }}
+                            onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = '#F0F1F2'; }}
+                            onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = 'transparent'; }}
                           >{label}</button>
                         );
                       })}
+                      {/* Sort toggle — right-aligned */}
+                      <button type="button" onClick={() => {/* toggle sort placeholder */}}
+                        style={{
+                          marginLeft: 'auto', fontSize: 14, fontWeight: 500, color: '#505258',
+                          background: 'transparent', border: 'none', borderRadius: 3, padding: '2px 0',
+                          height: 24, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4,
+                        }}>
+                        Newest first
+                      </button>
                     </div>
 
                     {/* COMMENTS + ALL tabs share comment input */}
