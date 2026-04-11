@@ -149,6 +149,36 @@ export default function PlanDetailPage() {
   const handleStatusChange = async (newStatus: PlanStatus) => {
     if (!plan) return;
     await updatePlan.mutateAsync({ id: plan.id, status: newStatus } as any);
+
+    if (newStatus === 'active') {
+      const { data: linkedCycleRows } = await supabase
+        .from('plan_test_cycles' as any)
+        .select('test_cycle_id')
+        .eq('plan_id', plan.id);
+
+      if (linkedCycleRows && linkedCycleRows.length > 0) {
+        const cycleIds = linkedCycleRows.map((lc: any) => lc.test_cycle_id);
+        const { data: cycles } = await supabase
+          .from('tm_test_cycles' as any)
+          .select('id, status')
+          .in('id', cycleIds);
+
+        const eligibleIds = (cycles || [])
+          .filter((c: any) => c.status === 'draft' || c.status === 'planned')
+          .map((c: any) => c.id);
+
+        if (eligibleIds.length > 0) {
+          await supabase
+            .from('tm_test_cycles' as any)
+            .update({ status: 'planned' })
+            .in('id', eligibleIds);
+        }
+
+        toast.success(`Plan approved — ${eligibleIds.length} linked cycle(s) set to Planned.`);
+      }
+
+      queryClient.invalidateQueries({ queryKey: ['plan-cycles', plan.id] });
+    }
   };
 
   const handleDelete = async () => {
