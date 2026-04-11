@@ -11,7 +11,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import {
   ArrowLeft, Save, ClipboardList, SendHorizontal, Loader2,
   FileText, Target, Users, Calendar, ShieldCheck, BookCopy, MoreVertical, Trash2,
-  Link2, Plus, PlayCircle, X, ExternalLink, Bug
+  Link2, Plus, PlayCircle, X, ExternalLink, Bug, MessageSquare
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
@@ -25,7 +25,7 @@ import { TeamTab } from '@/components/test-plans/TeamTab';
 import { ScheduleTab } from '@/components/test-plans/ScheduleTab';
 import { ApprovalsTab } from '@/components/test-plans/ApprovalsTab';
 import { SaveAsTemplateModal } from '@/components/test-plans/SaveAsTemplateModal';
-import { AddToCycleModal } from '@/components/test-sets/AddToCycleModal';
+import { EntityCommentsPanel } from '@/components/testhub/EntityCommentsPanel';
 import { CreateTestCycleModal } from '@/components/testhub/CreateTestCycleModal';
 import {
   useTestPlan, useUpdateTestPlan, useDeleteTestPlan,
@@ -311,6 +311,7 @@ export default function PlanDetailPage() {
           <TabsTrigger value="schedule" className="gap-2"><Calendar className="h-4 w-4" />Schedule</TabsTrigger>
           <TabsTrigger value="approvals" className="gap-2"><ShieldCheck className="h-4 w-4" />Approvals</TabsTrigger>
           <TabsTrigger value="defects" className="gap-2"><Bug className="h-4 w-4" />Defects</TabsTrigger>
+          <TabsTrigger value="comments" className="gap-2"><MessageSquare className="h-4 w-4" />Comments</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="mt-6">
@@ -442,6 +443,10 @@ export default function PlanDetailPage() {
 
         <TabsContent value="defects" className="mt-6">
           <PlanDefectsPanel planId={plan.id} />
+        </TabsContent>
+
+        <TabsContent value="comments" className="mt-6">
+          <EntityCommentsPanel entityType="test_plan" entityId={plan.id} title="Plan Comments" />
         </TabsContent>
       </Tabs>
 

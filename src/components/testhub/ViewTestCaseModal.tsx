@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { X, Edit2, Copy, FileText, ClipboardList, Paperclip, Link2, History, Play, Plus, Trash2, Download, Upload, Bug, BookOpen, ImageIcon, Table, File } from 'lucide-react';
+import { X, Edit2, Copy, FileText, ClipboardList, Paperclip, Link2, History, Play, Plus, Trash2, Download, Upload, Bug, BookOpen, ImageIcon, Table, File, MessageSquare } from 'lucide-react';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
+import { EntityCommentsPanel } from '@/components/testhub/EntityCommentsPanel';
 import { formatDistanceToNow } from 'date-fns';
 import { useDropzone } from 'react-dropzone';
 
@@ -64,7 +65,7 @@ interface ViewTestCaseModalProps {
   onClone: () => void;
 }
 
-type TabKey = 'details' | 'steps' | 'attachments' | 'links' | 'history' | 'runs';
+type TabKey = 'details' | 'steps' | 'attachments' | 'links' | 'history' | 'runs' | 'comments';
 
 const STATUS_STYLES: Record<string, { bg: string; color: string }> = {
   draft: { bg: 'var(--cp-bd-zone)', color: 'var(--fg-3)' },
@@ -305,6 +306,7 @@ export function ViewTestCaseModal({
     { key: 'links', label: 'Links', icon: Link2, count: links.length },
     { key: 'history', label: 'History', icon: History },
     { key: 'runs', label: 'Runs', icon: Play, count: runs.length },
+    { key: 'comments', label: 'Comments', icon: MessageSquare },
   ];
 
   const statusStyle = STATUS_STYLES[testCase.status] || STATUS_STYLES.draft;
@@ -471,6 +473,9 @@ export function ViewTestCaseModal({
             ))}
           </div>
         );
+
+      case 'comments':
+        return <EntityCommentsPanel entityType="test_case" entityId={testCase.id} />;
 
       default:
         return null;
