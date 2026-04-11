@@ -21,7 +21,6 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { AllWorkTicketList } from '../components/AllWorkTicketList';
 import { CreateVersionDialog } from '../components/CreateVersionDialog';
 const StoryDetailModal = lazy(() => import('@/modules/project-work-hub/components/dialogs/StoryDetailModal'));
-import { CreateVersionDialog } from '../components/CreateVersionDialog';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
