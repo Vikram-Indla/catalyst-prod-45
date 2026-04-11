@@ -84,7 +84,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
   const [filterPanelOpen, setFilterPanelOpen] = useState(false);
   const [advancedFilters, setAdvancedFilters] = useState<Record<string, string[]>>({});
   const [searchQuery, setSearchQuery] = useState('');
-  const [searchFocused, setSearchFocused] = useState(false);
+  
 
   // ── Build filter categories from story data ──
   const filterCategories = useMemo<FilterCategory[]>(() => {
@@ -465,8 +465,6 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
           <Input
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            onFocus={() => setSearchFocused(true)}
-            onBlur={() => setSearchFocused(false)}
             placeholder="Search by title, key, Jira ID..."
             className="h-9 pl-9 pr-3 text-sm"
             style={{ borderColor: tk.border, background: tk.pageBg, color: tk.t1 }}
