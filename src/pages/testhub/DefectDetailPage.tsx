@@ -23,6 +23,7 @@ import { DefectLinks } from '@/components/defects/g25/DefectLinks';
 import { DefectAttachments } from '@/components/defects/g25/DefectAttachments';
 import { AddLinkModal } from '@/components/defects/g25/AddLinkModal';
 import { EditDefectModalG25 } from '@/components/defects/g25/EditDefectModal';
+import { EntityCommentsPanel } from '@/components/testhub/EntityCommentsPanel';
 import { useDefectG25, useDeleteDefectG25 } from '@/hooks/useDefectsG25';
 import { format, formatDistanceToNow } from 'date-fns';
 
@@ -258,7 +259,7 @@ export default function DefectDetailPage() {
           <TabsTrigger value="links">Linked Items</TabsTrigger>
           <TabsTrigger value="history">History</TabsTrigger>
         </TabsList>
-        <TabsContent value="comments" className="mt-4"><DefectComments defectId={defect.id} /></TabsContent>
+        <TabsContent value="comments" className="mt-4"><EntityCommentsPanel entityType="defect" entityId={defect.id} entityLabel={defect.defect_key ?? defect.id} /></TabsContent>
         <TabsContent value="attachments" className="mt-4"><DefectAttachments defectId={defect.id} /></TabsContent>
         <TabsContent value="links" className="mt-4"><DefectLinks defectId={defect.id} onAddLink={() => setShowAddLink(true)} /></TabsContent>
         <TabsContent value="history" className="mt-4"><DefectHistory defectId={defect.id} /></TabsContent>
