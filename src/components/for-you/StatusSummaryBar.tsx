@@ -30,6 +30,7 @@ function getStatusCategory(status: string): StatusCategory {
 
 interface StatusSummaryBarProps {
   items: Array<{ status: string; project?: string }>;
+  filterSlot?: React.ReactNode;
 }
 
 const CATEGORIES: Array<{ key: StatusCategory; label: string; bgVar: string; textVar: string }> = [
@@ -38,7 +39,7 @@ const CATEGORIES: Array<{ key: StatusCategory; label: string; bgVar: string; tex
   { key: 'done',       label: 'Done',        bgVar: 'var(--cp-lz-gn-bg)', textVar: 'var(--cp-lz-gn-t)' },
 ];
 
-export function StatusSummaryBar({ items }: StatusSummaryBarProps) {
+export function StatusSummaryBar({ items, filterSlot }: StatusSummaryBarProps) {
   if (items.length === 0) return null;
 
   const counts: Record<StatusCategory, number> = { todo: 0, inprogress: 0, done: 0 };
@@ -64,6 +65,7 @@ export function StatusSummaryBar({ items }: StatusSummaryBarProps) {
           </span>
         </div>
       ))}
+      {filterSlot}
       <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--cp-t3)', marginLeft: 8 }}>
         <strong style={{ color: 'var(--cp-t1)', fontWeight: 600 }}>{total}</strong>{' '}
         items across{' '}

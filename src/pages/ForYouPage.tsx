@@ -195,41 +195,33 @@ export default function ForYouPage() {
           <ForYouSubTabs activeTab={activeTab} counts={tabCounts} onTabChange={setActiveTab} />
         </div>
 
-        {/* Status Summary + Filters — single row */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 0', marginBottom: 12, borderBottom: '1px solid var(--cp-bd)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-            <StatusSummaryBar items={[
+        {/* Status Summary + Filter — single row */}
+        <div style={{ display: 'flex', alignItems: 'center', padding: '10px 0', marginBottom: 12, borderBottom: '1px solid var(--cp-bd)', gap: 16 }}>
+          <StatusSummaryBar
+            items={[
               ...filteredGroupedItems.YESTERDAY,
               ...filteredGroupedItems.THIS_WEEK,
               ...filteredGroupedItems.EARLIER,
-            ]} />
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <ForYouInlineFilters
-              filters={inlineFilters}
-              onFiltersChange={setInlineFilters}
-              projectOptions={projectOptions}
-              hubOptions={hubOptions}
-              reportedByOptions={reportedByOptions}
-            />
-            {/* Jira-style advanced filter */}
-            <div style={{ position: 'relative' }}>
-              <FilterTriggerButton
-                count={advancedFilterCount}
-                onClick={() => setFilterPanelOpen(v => !v)}
-                isOpen={filterPanelOpen}
-              />
-              {filterPanelOpen && (
-                <JiraBasicFilter
-                  categories={filterCategories}
-                  selected={advancedFilters}
-                  onSelectionChange={handleAdvancedFilterChange}
-                  onClearAll={handleClearAllFilters}
-                  onClose={() => setFilterPanelOpen(false)}
+            ]}
+            filterSlot={
+              <div style={{ position: 'relative' }}>
+                <FilterTriggerButton
+                  count={advancedFilterCount}
+                  onClick={() => setFilterPanelOpen(v => !v)}
+                  isOpen={filterPanelOpen}
                 />
-              )}
-            </div>
-          </div>
+                {filterPanelOpen && (
+                  <JiraBasicFilter
+                    categories={filterCategories}
+                    selected={advancedFilters}
+                    onSelectionChange={handleAdvancedFilterChange}
+                    onClearAll={handleClearAllFilters}
+                    onClose={() => setFilterPanelOpen(false)}
+                  />
+                )}
+              </div>
+            }
+          />
         </div>
 
         {/* Table */}
