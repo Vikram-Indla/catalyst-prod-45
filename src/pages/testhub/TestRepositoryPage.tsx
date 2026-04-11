@@ -515,7 +515,7 @@ export function TestRepositoryPage() {
     const ids = [...selectedIds];
     const { error } = await supabase
       .from('tm_test_cases')
-      .update({ created_by: userId } as any)
+      .update({ assigned_to: userId } as any)
       .in('id', ids);
     if (error) {
       toast({ title: 'Assign failed', description: error.message, variant: 'destructive' });
