@@ -318,10 +318,10 @@ export function useDefectLinksG25(defectId: string | undefined) {
 export function useCreateDefectLinkG25() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async ({ defectId, linkType, linkedId }: { defectId: string; linkType: string; linkedId: string }) => {
+    mutationFn: async ({ defectId, linkType, linkedId, entityLabel }: { defectId: string; linkType: string; linkedId: string; entityLabel?: string }) => {
       const { data: { user } } = await supabase.auth.getUser();
       const { data, error } = await typedQuery('tm_defect_links')
-        .insert({ defect_id: defectId, link_type: linkType, linked_id: linkedId, created_by: user?.id } as any)
+        .insert({ defect_id: defectId, link_type: linkType, linked_id: linkedId, entity_label: entityLabel || null, link_source: 'manual', created_by: user?.id } as any)
         .select()
         .single();
       if (error) throw new Error(error.message);
@@ -348,3 +348,105 @@ export function useDeleteDefectLinkG25() {
     },
   });
 }
+
+// ─── Defects by Cycle ────────────────────────────────────────────
+export const useDefectsByCycleId = (cycleId: string | undefined) => {
+  return useQuery({
+    queryKey: ['defects-by-cycle', cycleId],
+    enabled: !!cycleId,
+    queryFn: async () => {
+      if (!cycleId) return [];
+      const { data, error } = await supabase
+        .from('tm_defect_links')
+        .select(`
+          id,
+          link_source,
+          entity_label,
+          defect:tm_defects(
+            id,
+            defect_key,
+            title,
+            status,
+            severity,
+            priority
+          )
+        `)
+        .eq('linked_id', cycleId)
+        .eq('link_type', 'test_cycle');
+      if (error) throw error;
+      return (data ?? []).map((row: any) => ({
+        ...row.defect,
+        link_source: row.link_source,
+        entity_label: row.entity_label,
+      }));
+    },
+  });
+};
+
+// ─── Defects by Plan ─────────────────────────────────────────────
+export const useDefectsByPlanId = (planId: string | undefined) => {
+  return useQuery({
+    queryKey: ['defects-by-plan', planId],
+    enabled: !!planId,
+    queryFn: async () => {
+      if (!planId) return [];
+      const { data, error } = await supabase
+        .from('tm_defect_links')
+        .select(`
+          id,
+          link_source,
+          entity_label,
+          defect:tm_defects(
+            id,
+            defect_key,
+            title,
+            status,
+            severity,
+            priority
+          )
+        `)
+        .eq('linked_id', planId)
+        .eq('link_type', 'test_plan');
+      if (error) throw error;
+      return (data ?? []).map((row: any) => ({
+        ...row.defect,
+        link_source: row.link_source,
+        entity_label: row.entity_label,
+      }));
+    },
+  });
+};
+
+// ─── Defects by Requirement ─────────────────────────────────────
+export const useDefectsByRequirementId = (requirementId: string | undefined) => {
+  return useQuery({
+    queryKey: ['defects-by-requirement', requirementId],
+    enabled: !!requirementId,
+    queryFn: async () => {
+      if (!requirementId) return [];
+      const { data, error } = await supabase
+        .from('tm_defect_links')
+        .select(`
+          id,
+          link_source,
+          entity_label,
+          defect:tm_defects(
+            id,
+            defect_key,
+            title,
+            status,
+            severity,
+            priority
+          )
+        `)
+        .eq('linked_id', requirementId)
+        .eq('link_type', 'requirement');
+      if (error) throw error;
+      return (data ?? []).map((row: any) => ({
+        ...row.defect,
+        link_source: row.link_source,
+        entity_label: row.entity_label,
+      }));
+    },
+  });
+};

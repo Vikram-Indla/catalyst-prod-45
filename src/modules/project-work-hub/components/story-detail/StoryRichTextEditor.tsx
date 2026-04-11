@@ -20,6 +20,154 @@ import {
   List, ListOrdered, Code2, Link2, Undo2, Redo2, Sparkles, Loader2,
 } from 'lucide-react';
 import { tiptapJsonToAdf, resolveEditorContent } from './adf-utils';
+import { Extension } from '@tiptap/core';
+import { Plugin, PluginKey } from '@tiptap/pm/state';
+
+// ─── Custom drag handle extension (compatible with TipTap 3.13) ─────
+const DRAG_HANDLE_SVG = `<svg viewBox="-8 -8 32 32" width="24" height="24" fill="currentColor"><path d="M7 2.75a1.75 1.75 0 1 1-3.5 0 1.75 1.75 0 0 1 3.5 0m5.5 0a1.75 1.75 0 1 1-3.5 0 1.75 1.75 0 0 1 3.5 0M7 8a1.75 1.75 0 1 1-3.5 0A1.75 1.75 0 0 1 7 8m5.5 0A1.75 1.75 0 1 1 9 8a1.75 1.75 0 0 1 3.5 0M7 13.25a1.75 1.75 0 1 1-3.5 0 1.75 1.75 0 0 1 3.5 0m5.5 0a1.75 1.75 0 1 1-3.5 0 1.75 1.75 0 0 1 3.5 0"/></svg>`;
+
+const DragHandleExtension = Extension.create({
+  name: 'customDragHandle',
+  addProseMirrorPlugins() {
+    let handle: HTMLButtonElement | null = null;
+    let currentNodePos: number | null = null;
+    let draggedSlice: any = null;
+
+    const createHandle = () => {
+      const el = document.createElement('button');
+      el.type = 'button';
+      el.className = 'catalyst-drag-handle';
+      el.setAttribute('aria-label', 'Drag to reorder');
+      el.setAttribute('draggable', 'true');
+      el.contentEditable = 'false';
+      Object.assign(el.style, {
+        position: 'absolute', width: '12px', height: '24px', padding: '2px 0',
+        display: 'none', flexDirection: 'column', justifyContent: 'center', alignItems: 'center',
+        border: 'none', background: 'transparent', borderRadius: '4px',
+        cursor: 'grab', color: 'rgb(41, 42, 46)', zIndex: '100',
+        transition: 'background 0.15s ease, opacity 0.15s ease', boxSizing: 'border-box',
+        opacity: '0', pointerEvents: 'auto',
+      });
+      el.innerHTML = DRAG_HANDLE_SVG;
+      el.addEventListener('mouseenter', () => { el.style.background = 'rgba(5, 21, 36, 0.06)'; });
+      el.addEventListener('mouseleave', () => { el.style.background = 'transparent'; });
+      el.addEventListener('mousedown', () => { el.style.background = 'rgba(11, 18, 14, 0.14)'; el.style.cursor = 'grabbing'; });
+      el.addEventListener('mouseup', () => { el.style.background = 'rgba(5, 21, 36, 0.06)'; el.style.cursor = 'grab'; });
+      return el;
+    };
+
+    return [
+      new Plugin({
+        key: new PluginKey('customDragHandle'),
+        view(editorView) {
+          handle = createHandle();
+          // Attach to the editor DOM's parent and ensure it can show the handle
+          const wrapper = editorView.dom.parentElement;
+          if (wrapper) {
+            wrapper.style.position = 'relative';
+            wrapper.style.overflow = 'visible';
+          }
+          wrapper?.appendChild(handle);
+
+          const showHandle = (blockDom: HTMLElement, pos: number) => {
+            if (!handle) return;
+            currentNodePos = pos;
+            const parentRect = editorView.dom.parentElement!.getBoundingClientRect();
+            const blockRect = blockDom.getBoundingClientRect();
+            handle.style.display = 'flex';
+            handle.style.opacity = '1';
+            handle.style.left = `${blockRect.left - parentRect.left - 20}px`;
+            handle.style.top = `${blockRect.top - parentRect.top + (blockRect.height / 2) - 12}px`;
+          };
+
+          const hideHandle = () => {
+            if (!handle) return;
+            handle.style.opacity = '0';
+            setTimeout(() => { if (handle && handle.style.opacity === '0') handle.style.display = 'none'; }, 150);
+          };
+
+          const handleMouseMove = (e: MouseEvent) => {
+            const pos = editorView.posAtCoords({ left: e.clientX, top: e.clientY });
+            if (!pos) { hideHandle(); return; }
+            try {
+              const resolved = editorView.state.doc.resolve(pos.pos);
+              // Find top-level block
+              const depth = Math.max(1, resolved.depth);
+              const nodePos = resolved.before(1);
+              const node = editorView.state.doc.nodeAt(nodePos);
+              if (!node) { hideHandle(); return; }
+              const dom = editorView.nodeDOM(nodePos);
+              if (dom && dom instanceof HTMLElement) {
+                showHandle(dom, nodePos);
+              }
+            } catch { hideHandle(); }
+          };
+
+          const handleMouseLeave = (e: MouseEvent) => {
+            const related = e.relatedTarget as HTMLElement | null;
+            if (related && handle?.contains(related)) return;
+            hideHandle();
+          };
+
+          // Drag events on the handle
+          handle.addEventListener('dragstart', (e) => {
+            if (currentNodePos === null) return;
+            const { state } = editorView;
+            const node = state.doc.nodeAt(currentNodePos);
+            if (!node) return;
+            draggedSlice = { pos: currentNodePos, size: node.nodeSize };
+            e.dataTransfer?.setData('text/plain', '');
+            e.dataTransfer!.effectAllowed = 'move';
+          });
+
+          handle.addEventListener('dragend', () => {
+            draggedSlice = null;
+            if (handle) { handle.style.cursor = 'grab'; handle.style.background = 'transparent'; }
+          });
+
+          editorView.dom.addEventListener('mousemove', handleMouseMove);
+          editorView.dom.addEventListener('mouseleave', handleMouseLeave);
+          handle.addEventListener('mouseleave', (e) => {
+            const related = e.relatedTarget as HTMLElement | null;
+            if (related && editorView.dom.contains(related)) return;
+            hideHandle();
+          });
+
+          // Handle drop for reordering
+          editorView.dom.addEventListener('drop', (e) => {
+            if (!draggedSlice) return;
+            const dropPos = editorView.posAtCoords({ left: e.clientX, top: e.clientY });
+            if (!dropPos) return;
+            e.preventDefault();
+            const { state, dispatch } = editorView;
+            const { pos: fromPos, size } = draggedSlice;
+            const node = state.doc.nodeAt(fromPos);
+            if (!node) return;
+            const tr = state.tr;
+            // Delete old node, insert at drop position
+            const resolvedDrop = tr.doc.resolve(dropPos.pos);
+            const insertPos = resolvedDrop.before(1);
+            tr.delete(fromPos, fromPos + size);
+            // Adjust insert position if it's after the deleted range
+            const adjustedPos = insertPos > fromPos ? insertPos - size : insertPos;
+            tr.insert(Math.max(0, adjustedPos), node);
+            dispatch(tr);
+            draggedSlice = null;
+          });
+
+          return {
+            destroy() {
+              editorView.dom.removeEventListener('mousemove', handleMouseMove);
+              editorView.dom.removeEventListener('mouseleave', handleMouseLeave);
+              handle?.remove();
+              handle = null;
+            },
+          };
+        },
+      }),
+    ];
+  },
+});
 
 interface StoryRichTextEditorProps {
   /** Raw content from DB — can be ADF JSON string or legacy HTML */

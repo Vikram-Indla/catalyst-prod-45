@@ -138,6 +138,7 @@ export default function DefectsPage() {
       source_test_run_id: (d as any).source_test_run_id || null,
       source_test_plan_id: (d as any).source_test_plan_id || null,
       parent_key: (d as any).jira_parent_key || (d as any).epic_link || null,
+      project_id: (d as any).project_id || null,
       // Source-aware display fields
       displayKey: isJira && jiraKey ? jiraKey : d.key,
       isJiraSource: isJira,

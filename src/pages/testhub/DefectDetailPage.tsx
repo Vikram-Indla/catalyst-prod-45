@@ -236,7 +236,7 @@ export default function DefectDetailPage() {
       {/* Modals */}
       <StatusChangeModal open={showStatusModal} onClose={() => setShowStatusModal(false)} defectId={defect.id} currentStatus={defect.status} />
       {showEditModal && <EditDefectModalG25 open={showEditModal} onClose={() => setShowEditModal(false)} defect={defect} />}
-      {showAddLink && <AddLinkModal open={showAddLink} onClose={() => setShowAddLink(false)} defectId={defect.id} />}
+      {showAddLink && <AddLinkModal open={showAddLink} onClose={() => setShowAddLink(false)} defectId={defect.id} projectId={defect.project_id} />}
     </div>
   );
 }

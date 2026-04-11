@@ -291,17 +291,125 @@ export function useCreateDefect() {
 
       if (error) throw error;
 
-      // If there's a run_id or step_id, create a link
-      if (input.run_id || input.step_id) {
-        const { error: linkError } = await supabase.from('tm_defect_links').insert({
+      // Build auto-execution link rows
+      const linkRows: Array<{
+        defect_id: string;
+        link_type: string;
+        linked_id: string;
+        entity_label: string | null;
+        link_source: string;
+        test_run_id?: string | null;
+        step_result_id?: string | null;
+        created_by: string;
+      }> = [];
+
+      // Row 1 — Test case link
+      if (input.source_test_case_id) {
+        linkRows.push({
           defect_id: data.id,
-          test_run_id: input.run_id || null,
-          test_case_id: input.source_test_case_id ?? null,
+          link_type: 'test_case',
+          linked_id: input.source_test_case_id,
+          entity_label: input.title || null,
+          link_source: 'auto_execution',
+          created_by: user.id,
+        });
+      }
+
+      // Row 2 — Execution run link
+      if (input.run_id) {
+        linkRows.push({
+          defect_id: data.id,
+          link_type: 'test_run',
+          linked_id: input.run_id,
+          entity_label: null,
+          link_source: 'auto_execution',
+          test_run_id: input.run_id,
           step_result_id: input.step_id || null,
           created_by: user.id,
         });
+      }
+
+      // Row 3 — Test cycle link (derive plan + release from cycle)
+      if (input.cycle_id) {
+        const { data: cycleRow } = await supabase
+          .from('tm_test_cycles')
+          .select('id, name, plan_id:plan_test_cycles(plan_id, tm_test_plans(id, name, release_id, releases(id, name)))')
+          .eq('id', input.cycle_id)
+          .single();
+
+        if (cycleRow) {
+          // Cycle row
+          linkRows.push({
+            defect_id: data.id,
+            link_type: 'test_cycle',
+            linked_id: cycleRow.id,
+            entity_label: cycleRow.name || null,
+            link_source: 'auto_execution',
+            created_by: user.id,
+          });
+
+          // Plan row — derive from cycle via plan_test_cycles join
+          const planLink = Array.isArray(cycleRow.plan_id) ? cycleRow.plan_id[0] : null;
+          const planRow = planLink?.tm_test_plans;
+          if (planRow?.id) {
+            linkRows.push({
+              defect_id: data.id,
+              link_type: 'test_plan',
+              linked_id: planRow.id,
+              entity_label: planRow.name || null,
+              link_source: 'auto_execution',
+              created_by: user.id,
+            });
+
+            // Release row — derive from plan
+            const releaseRow = Array.isArray(planRow.releases)
+              ? planRow.releases[0]
+              : planRow.releases;
+            if (releaseRow?.id) {
+              linkRows.push({
+                defect_id: data.id,
+                link_type: 'release',
+                linked_id: releaseRow.id,
+                entity_label: releaseRow.name || null,
+                link_source: 'auto_execution',
+                created_by: user.id,
+              });
+            }
+          }
+        }
+      }
+
+      // Row — Requirement link (derive from test case via tm_requirement_tests)
+      if (input.source_test_case_id) {
+        const { data: reqLink } = await supabase
+          .from('tm_requirement_tests')
+          .select('requirement_id, tm_requirements(id, title)')
+          .eq('test_case_id', input.source_test_case_id)
+          .limit(1)
+          .single();
+
+        if (reqLink?.requirement_id) {
+          const reqRow = Array.isArray(reqLink.tm_requirements)
+            ? reqLink.tm_requirements[0]
+            : reqLink.tm_requirements;
+          linkRows.push({
+            defect_id: data.id,
+            link_type: 'requirement',
+            linked_id: reqLink.requirement_id,
+            entity_label: reqRow?.title || null,
+            link_source: 'auto_execution',
+            created_by: user.id,
+          });
+        }
+      }
+
+      // Write all link rows in one batch
+      if (linkRows.length > 0) {
+        const { error: linkError } = await supabase
+          .from('tm_defect_links')
+          .insert(linkRows);
         if (linkError) {
-          console.error('[useCreateDefect] tm_defect_links insert failed:', linkError);
+          console.error('[useCreateDefect] tm_defect_links batch insert failed:', linkError);
           throw linkError;
         }
       }

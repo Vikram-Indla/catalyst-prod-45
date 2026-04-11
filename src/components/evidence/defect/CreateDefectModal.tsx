@@ -149,16 +149,47 @@ export const CreateDefectModal: React.FC<CreateDefectModalProps> = ({
 
       if (error) throw error;
 
-      // Link evidence attachment to defect
-      if (linkedEvidence.attachmentId) {
-        await supabase
+      // Link evidence to defect using polymorphic pattern
+      const evidenceLinkRows: Array<{
+        defect_id: string;
+        link_type: string;
+        linked_id: string;
+        entity_label: string | null;
+        link_source: string;
+        step_result_id?: string | null;
+        created_by: string;
+      }> = [];
+
+      if (linkedEvidence.stepResultId) {
+        evidenceLinkRows.push({
+          defect_id: defect.id,
+          link_type: 'step_result',
+          linked_id: linkedEvidence.stepResultId,
+          entity_label: null,
+          link_source: 'auto_execution',
+          step_result_id: linkedEvidence.stepResultId,
+          created_by: user.id,
+        });
+      }
+
+      if (testCaseId) {
+        evidenceLinkRows.push({
+          defect_id: defect.id,
+          link_type: 'test_case',
+          linked_id: testCaseId,
+          entity_label: testCaseName || null,
+          link_source: 'auto_execution',
+          created_by: user.id,
+        });
+      }
+
+      if (evidenceLinkRows.length > 0) {
+        const { error: linkError } = await supabase
           .from('tm_defect_links')
-          .insert({
-            defect_id: defect.id,
-            attachment_id: linkedEvidence.attachmentId,
-            step_result_id: linkedEvidence.stepResultId || null,
-            created_by: user.id,
-          });
+          .insert(evidenceLinkRows);
+        if (linkError) {
+          console.error('[EvidenceCreateDefect] tm_defect_links insert failed:', linkError);
+        }
       }
 
       toast.success(`Defect ${defect.defect_key} created successfully`);

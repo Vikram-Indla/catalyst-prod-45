@@ -11,7 +11,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import {
   ArrowLeft, Save, ClipboardList, SendHorizontal, Loader2,
   FileText, Target, Users, Calendar, ShieldCheck, BookCopy, MoreVertical, Trash2,
-  Link2, Plus, PlayCircle, X, ExternalLink
+  Link2, Plus, PlayCircle, X, ExternalLink, Bug
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
@@ -34,7 +34,86 @@ import {
 } from '@/hooks/useTestPlansG26';
 import { TestPlan, PlanStatus } from '@/types/testPlans';
 import { toast } from 'sonner';
+import { useDefectsByPlanId } from '@/hooks/useDefectsG25';
 import { formatDistanceToNow } from 'date-fns';
+
+const defectStatusColors: Record<string, { bg: string; color: string }> = {
+  open:        { bg: '#DFE1E6', color: '#253858' },
+  new:         { bg: '#DFE1E6', color: '#253858' },
+  deferred:    { bg: '#DFE1E6', color: '#253858' },
+  in_progress: { bg: '#DEEBFF', color: '#0747A6' },
+  reopened:    { bg: '#DEEBFF', color: '#0747A6' },
+  fixed:       { bg: '#E3FCEF', color: '#006644' },
+  resolved:    { bg: '#E3FCEF', color: '#006644' },
+  verified:    { bg: '#E3FCEF', color: '#006644' },
+  closed:      { bg: '#E3FCEF', color: '#006644' },
+};
+
+const PlanDefectsPanel = ({ planId }: { planId?: string }) => {
+  const { data: defects = [], isLoading } = useDefectsByPlanId(planId);
+  const navigate = useNavigate();
+
+  if (isLoading) {
+    return <p className="text-sm text-muted-foreground py-6">Loading defects...</p>;
+  }
+
+  if (defects.length === 0) {
+    return (
+      <div className="text-center py-12">
+        <Bug className="h-10 w-10 text-muted-foreground/40 mx-auto mb-3" />
+        <p className="text-sm text-muted-foreground">No defects linked to this plan.</p>
+      </div>
+    );
+  }
+
+  return (
+    <Card>
+      <CardContent className="p-0">
+        <table className="w-full" style={{ borderCollapse: 'collapse' }}>
+          <thead>
+            <tr className="border-b">
+              {['Defect Key', 'Title', 'Status', 'Severity', 'Source'].map(h => (
+                <th key={h} className="text-left text-xs font-medium text-muted-foreground uppercase tracking-wider px-4 py-3">{h}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {defects.map((d: any) => {
+              const sc = defectStatusColors[d.status] ?? { bg: '#DFE1E6', color: '#253858' };
+              return (
+                <tr key={d.id} className="border-b last:border-b-0" style={{ height: 36, maxHeight: 36 }}>
+                  <td className="px-4 py-0">
+                    <span
+                      onClick={() => navigate(`/testhub/defects/${d.id}`)}
+                      style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 13, fontWeight: 500, color: '#2563EB', cursor: 'pointer' }}
+                    >
+                      {d.defect_key}
+                    </span>
+                  </td>
+                  <td className="px-4 py-0 text-sm">{d.title}</td>
+                  <td className="px-4 py-0">
+                    <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em', padding: '2px 8px', borderRadius: 3, backgroundColor: sc.bg, color: sc.color }}>
+                      {d.status?.replace(/_/g, ' ')}
+                    </span>
+                  </td>
+                  <td className="px-4 py-0 text-sm text-muted-foreground capitalize">{d.severity ?? '—'}</td>
+                  <td className="px-4 py-0">
+                    {d.link_source === 'auto_execution' && (
+                      <span className="text-[11px] font-semibold px-1.5 py-0.5 rounded bg-muted text-muted-foreground">Auto</span>
+                    )}
+                    {d.link_source === 'auto_jira' && (
+                      <span style={{ fontSize: 11, fontWeight: 600, padding: '2px 6px', borderRadius: 3, backgroundColor: '#DEEBFF', color: '#0747A6' }}>Jira</span>
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </CardContent>
+    </Card>
+  );
+};
 
 export default function PlanDetailPage() {
   const { planId } = useParams<{ planId: string }>();
@@ -231,6 +310,7 @@ export default function PlanDetailPage() {
           <TabsTrigger value="team" className="gap-2"><Users className="h-4 w-4" />Team</TabsTrigger>
           <TabsTrigger value="schedule" className="gap-2"><Calendar className="h-4 w-4" />Schedule</TabsTrigger>
           <TabsTrigger value="approvals" className="gap-2"><ShieldCheck className="h-4 w-4" />Approvals</TabsTrigger>
+          <TabsTrigger value="defects" className="gap-2"><Bug className="h-4 w-4" />Defects</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="mt-6">
@@ -358,6 +438,10 @@ export default function PlanDetailPage() {
 
         <TabsContent value="approvals" className="mt-6">
           <ApprovalsTab planId={plan.id} planStatus={plan.status} />
+        </TabsContent>
+
+        <TabsContent value="defects" className="mt-6">
+          <PlanDefectsPanel planId={plan.id} />
         </TabsContent>
       </Tabs>
 
