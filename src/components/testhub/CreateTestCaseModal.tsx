@@ -350,8 +350,8 @@ export function CreateTestCaseModal({
     try {
       await typedQuery('tm_test_case_versions').insert({
         test_case_id: testCase.id,
-        version: newVersion,
-        changes: JSON.stringify({ updated: 'Test case updated' }),
+        version_number: newVersion,
+        change_summary: JSON.stringify({ updated: 'Test case updated' }),
       });
     } catch (versionErr) {
       console.warn('Version history not saved:', versionErr);
