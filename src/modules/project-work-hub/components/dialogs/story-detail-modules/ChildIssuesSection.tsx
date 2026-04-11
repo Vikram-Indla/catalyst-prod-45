@@ -24,6 +24,10 @@ const STATUS_CAT_ORDER: Record<string, number> = { done: 0, in_progress: 1, todo
 /* ── Type selector dropdown ── */
 const TYPE_OPTIONS = [
   { key: 'Sub-task', label: 'Sub-task', icon: WORK_ITEM_ICONS['Sub-task'] },
+  { key: 'Frontend', label: 'Frontend', icon: WORK_ITEM_ICONS['Frontend'] },
+  { key: 'Backend', label: 'Backend', icon: WORK_ITEM_ICONS['Backend'] },
+  { key: 'Figma', label: 'Figma', icon: WORK_ITEM_ICONS['Figma'] },
+  { key: 'Integration', label: 'Integration', icon: WORK_ITEM_ICONS['Integration'] },
   { key: 'bug', label: 'Bug', icon: WORK_ITEM_ICONS.bug },
   { key: 'task', label: 'Task', icon: WORK_ITEM_ICONS.task },
 ];
@@ -292,7 +296,7 @@ export function ChildIssuesSection({ storyKey, storyId, projectKey, onOpenItem }
     queryFn: async () => {
       const { data, error } = await supabase.from('ph_issues')
         .select('id,issue_key,summary,status,status_category,issue_type,assignee_account_id,assignee_display_name,priority,position,jira_created_at,jira_updated_at,deleted_at')
-        .eq('parent_key', storyKey).in('issue_type', ['task', 'Sub-task']).is('deleted_at', null)
+        .eq('parent_key', storyKey).in('issue_type', ['task', 'Sub-task', 'Frontend', 'Backend', 'Figma', 'Integration']).is('deleted_at', null)
         .order('position', { ascending: true });
       if (error) throw error;
       return (data ?? []) as PhIssueRow[];

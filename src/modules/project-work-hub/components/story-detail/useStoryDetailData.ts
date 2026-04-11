@@ -80,6 +80,7 @@ export function useChildIssues(parentKey: string | null) {
         .from('ph_issues')
         .select('id, issue_key, summary, status, status_category, priority, assignee_display_name, story_points, issue_type')
         .eq('parent_key', parentKey)
+        .is('deleted_at', null)
         .order('issue_key');
       return data || [];
     },
