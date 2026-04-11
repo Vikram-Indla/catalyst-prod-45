@@ -80,6 +80,94 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
   const [detailItemId, setDetailItemId] = useState<string | null>(null);
   const [panelMode, setPanelMode] = useState(false);
   const [panelDividerWidth, setPanelDividerWidth] = useState(55);
+  const [filterPanelOpen, setFilterPanelOpen] = useState(false);
+  const [advancedFilters, setAdvancedFilters] = useState<Record<string, string[]>>({});
+
+  // ── Build filter categories from story data ──
+  const filterCategories = useMemo<FilterCategory[]>(() => {
+    const allStories = stories || [];
+
+    // Status — dedupe from actual data
+    const statusSet = new Map<string, string>();
+    allStories.forEach(s => {
+      if (s.status) {
+        const cfg = STORY_STATUS_LOZENGE[s.status];
+        statusSet.set(s.status, cfg?.label || s.status);
+      }
+    });
+    const statusOptions = Array.from(statusSet.entries()).map(([value, label]) => ({
+      id: value,
+      label,
+      iconNode: (() => {
+        const cfg = STORY_STATUS_LOZENGE[value];
+        if (!cfg) return undefined;
+        const ls = getLozengeStyle(cfg.color);
+        return (
+          <span style={{
+            display: 'inline-flex', alignItems: 'center', height: 18, padding: '0 5px',
+            borderRadius: 3, fontSize: 10, fontWeight: 700, textTransform: 'uppercase' as const,
+            letterSpacing: '0.03em', background: ls.bg, color: ls.text, lineHeight: 1,
+          }}>{cfg.label}</span>
+        );
+      })(),
+      hideLabel: true,
+    }));
+
+    // Priority
+    const prioritySet = new Set<string>();
+    allStories.forEach(s => { if (s.priority) prioritySet.add(s.priority); });
+    const PRIORITY_ORDER = ['critical', 'highest', 'high', 'medium', 'low', 'lowest'];
+    const priorityOptions = PRIORITY_ORDER
+      .filter(p => prioritySet.has(p))
+      .map(p => ({ id: p, label: getPriorityLabel(p) }));
+
+    // Assignee
+    const assigneeMap = new Map<string, { name: string; avatarUrl?: string }>();
+    allStories.forEach(s => {
+      const name = s.assignee_name;
+      if (name && !assigneeMap.has(name)) {
+        assigneeMap.set(name, { name, avatarUrl: avatarsByName.get(name.toLowerCase()) || undefined });
+      }
+    });
+    const assigneeOptions = Array.from(assigneeMap.values())
+      .sort((a, b) => a.name.localeCompare(b.name))
+      .map(a => ({
+        id: a.name,
+        label: a.name,
+        avatarUrl: a.avatarUrl,
+        avatarInitials: !a.avatarUrl ? getInitials(a.name) : undefined,
+        avatarType: (a.avatarUrl ? 'photo' : 'initials') as 'photo' | 'initials',
+      }));
+
+    // Parent Epic
+    const epicMap = new Map<string, { key: string; name: string }>();
+    allStories.forEach(s => {
+      const epic = s.feature?.epic;
+      if (epic && !epicMap.has(epic.id)) {
+        epicMap.set(epic.id, { key: epic.epic_key || '', name: epic.name });
+      }
+    });
+    const parentOptions = Array.from(epicMap.entries())
+      .sort((_, b) => b[1].name.localeCompare(b[1].name))
+      .map(([id, e]) => ({ id, label: e.name, labelExtra: e.key || undefined }));
+
+    return [
+      { id: 'status', label: 'Status', options: statusOptions, searchPlaceholder: 'Search statuses' },
+      { id: 'priority', label: 'Priority', options: priorityOptions, searchPlaceholder: 'Search priorities' },
+      { id: 'assignee', label: 'Assignee', options: assigneeOptions, searchPlaceholder: 'Search people' },
+      { id: 'parent', label: 'Parent (Epic)', options: parentOptions, searchPlaceholder: 'Search epics' },
+    ];
+  }, [stories, avatarsByName]);
+
+  const advancedFilterCount = useMemo(() => Object.values(advancedFilters).flat().length, [advancedFilters]);
+
+  const handleFilterChange = useCallback((categoryId: string, optionIds: string[]) => {
+    setAdvancedFilters(prev => ({ ...prev, [categoryId]: optionIds }));
+  }, []);
+
+  const handleClearAllFilters = useCallback(() => {
+    setAdvancedFilters({});
+  }, []);
 
   // Resizable panel divider
   const containerRef = useRef<HTMLDivElement>(null);
