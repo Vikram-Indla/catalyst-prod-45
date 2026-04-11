@@ -16,7 +16,7 @@ import { SeverityBadge } from '@/components/defects/g25/SeverityBadge';
 import { StatusBadge } from '@/components/defects/g25/StatusBadge';
 import { PriorityBadge } from '@/components/defects/g25/PriorityBadge';
 import { StatusChangeModal } from '@/components/defects/g25/StatusChangeModal';
-import { DefectComments } from '@/components/defects/g25/DefectComments';
+import { EntityCommentsPanel } from '@/components/testhub/EntityCommentsPanel';
 import { DefectHistory } from '@/components/defects/g25/DefectHistory';
 import { DefectLinks } from '@/components/defects/g25/DefectLinks';
 import { DefectAttachments } from '@/components/defects/g25/DefectAttachments';
@@ -257,7 +257,7 @@ export default function DefectDetailPage() {
           <TabsTrigger value="links">Linked Items</TabsTrigger>
           <TabsTrigger value="history">History</TabsTrigger>
         </TabsList>
-        <TabsContent value="comments" className="mt-4"><DefectComments defectId={defect.id} /></TabsContent>
+        <TabsContent value="comments" className="mt-4"><EntityCommentsPanel entityType="defect" entityId={defect.id} /></TabsContent>
         <TabsContent value="attachments" className="mt-4"><DefectAttachments defectId={defect.id} /></TabsContent>
         <TabsContent value="links" className="mt-4"><DefectLinks defectId={defect.id} onAddLink={() => setShowAddLink(true)} /></TabsContent>
         <TabsContent value="history" className="mt-4"><DefectHistory defectId={defect.id} /></TabsContent>
