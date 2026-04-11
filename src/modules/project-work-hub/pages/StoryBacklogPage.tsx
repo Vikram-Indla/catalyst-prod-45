@@ -877,7 +877,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
       </div>
 
       {/* ── Search + Group + Filter bar ── */}
-      <div className="flex items-center gap-3 px-6 py-2.5 border-b" style={{ borderColor: tk.border }}>
+      <div className="flex items-center gap-3 px-6 py-2.5" style={{ borderColor: tk.border }}>
         {/* Search */}
         <div className="relative w-80">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: '#94A3B8' }} />
