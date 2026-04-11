@@ -5,7 +5,7 @@ import {
   HelpCircle, RefreshCw, ExternalLink, ChevronRight,
   Wrench, Power
 } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
 import { useTheme } from '@/hooks/useTheme';
 import { CreateEnvironmentModal } from '@/components/testhub/environments/CreateEnvironmentModal';
@@ -71,8 +71,7 @@ export default function EnvironmentsListPage() {
   const fetchEnvironments = async () => {
     setIsLoading(true);
     try {
-      let query = (supabase as any)
-        .from('tm_environments')
+      let query = typedQuery('tm_environments')
         .select(`*, owner:profiles!tm_environments_owner_id_fkey(full_name)`)
         .eq('project_id', '00000000-0000-0000-0000-000000000001')
         .order('created_at', { ascending: true });
@@ -88,7 +87,7 @@ export default function EnvironmentsListPage() {
       if (error) throw error;
       setEnvironments(data || []);
 
-      const { data: summaryData } = await (supabase as any).rpc('get_environment_summary');
+      const { data: summaryData } = await typedRpc('get_environment_summary');
       if (summaryData && summaryData.length > 0) {
         setSummary(summaryData[0]);
       }

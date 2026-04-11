@@ -39,7 +39,7 @@ export function useMyTasks(filters: FilterConfig = {}) {
       // The view already filters by auth.uid() for user involvement
       let query = supabase
         .from('planner_my_tasks')
-        .select('*')
+        .select('id, task_key, title, status_slug, priority, due_date, sort_order, time_section, workstream_slug, involvement_type, assignee_id, workstream_id, status_id, created_at')
         .order('due_date', { ascending: true, nullsFirst: false })
         .order('sort_order', { ascending: true });
 
@@ -63,7 +63,7 @@ export function useMyTasks(filters: FilterConfig = {}) {
         query = query.eq('involvement_type', filters.involvement);
       }
 
-      const { data, error } = await query;
+      const { data, error } = await query.limit(100);
       if (error) throw error;
       return (data || []) as MyTask[];
     },

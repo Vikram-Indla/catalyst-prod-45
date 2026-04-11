@@ -5,7 +5,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import DOMPurify from 'dompurify';
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { ChevronLeft, ChevronRight, Sparkles, X, FileText, Trophy, Code, CheckSquare, BookOpen, PenTool, Users, Server, ChevronRightIcon } from 'lucide-react';
 import { useDeptIntelligenceAI, type DigestEvent, type ExecSummaryV5, type Recommendation, type RoleContribution, type ProjectActivity } from '@/hooks/useDeptIntelligenceAI';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
@@ -425,8 +425,7 @@ export default function DepartmentIntelligenceOverlay({ departmentName, onClose 
   const { data: roleMap = new Map<string, string>() } = useQuery({
     queryKey: ['di-resource-roles'],
     queryFn: async () => {
-      const { data } = await (supabase as any)
-        .from('resource_inventory')
+      const { data } = await typedQuery('resource_inventory')
         .select('name, role_name')
         .not('role_name', 'is', null);
       const map = new Map<string, string>();

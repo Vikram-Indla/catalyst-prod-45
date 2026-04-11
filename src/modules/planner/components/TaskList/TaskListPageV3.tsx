@@ -4,6 +4,7 @@
  */
 
 import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
+import { useVirtualizer } from '@tanstack/react-virtual';
 import { useSearchParams } from 'react-router-dom';
 import { 
   Search, 
@@ -73,6 +74,49 @@ const ALL_COLUMNS = [
   { id: 'progress', label: 'Progress', width: 100, minWidth: 80 },
   { id: 'actions', label: '', width: 60, minWidth: 40 },
 ];
+
+// Virtualized tbody — renders only visible rows for large task lists
+const TASK_ROW_HEIGHT = 44;
+const VIRTUALIZE_THRESHOLD = 50;
+
+function VirtualizedTaskBody({ tasks, parentRef, selectedIds, focusedIndex, onSelect, onClick, onUpdate, visibleColumns, columnWidths, statuses, users, labelsMap }: {
+  tasks: any[]; parentRef: React.RefObject<HTMLDivElement>; selectedIds: Set<string>; focusedIndex: number;
+  onSelect: (id: string, checked: boolean) => void; onClick: (id: string) => void; onUpdate: (id: string, updates: any) => void;
+  visibleColumns: string[]; columnWidths: Record<string, number>; statuses: any[]; users: any[]; labelsMap: Record<string, any[]>;
+}) {
+  const virtualizer = useVirtualizer({
+    count: tasks.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => TASK_ROW_HEIGHT,
+    overscan: 10,
+  });
+
+  // Skip virtualization for small lists
+  if (tasks.length < VIRTUALIZE_THRESHOLD) {
+    return (
+      <tbody>
+        {tasks.map((task, index) => (
+          <TaskListRowV3 key={task.id} task={task} index={index} isSelected={selectedIds.has(task.id)} isFocused={focusedIndex === index}
+            onSelect={onSelect} onClick={onClick} onUpdate={onUpdate} visibleColumns={visibleColumns} columnWidths={columnWidths}
+            statuses={statuses} users={users} labels={labelsMap[task.id] || []} />
+        ))}
+      </tbody>
+    );
+  }
+
+  return (
+    <tbody style={{ height: virtualizer.getTotalSize(), position: 'relative' }}>
+      {virtualizer.getVirtualItems().map(virtualRow => {
+        const task = tasks[virtualRow.index];
+        return (
+          <TaskListRowV3 key={task.id} task={task} index={virtualRow.index} isSelected={selectedIds.has(task.id)} isFocused={focusedIndex === virtualRow.index}
+            onSelect={onSelect} onClick={onClick} onUpdate={onUpdate} visibleColumns={visibleColumns} columnWidths={columnWidths}
+            statuses={statuses} users={users} labels={labelsMap[task.id] || []} />
+        );
+      })}
+    </tbody>
+  );
+}
 
 export function TaskListPageV3({ onTaskClick, onCreateTask }: TaskListPageV3Props) {
   const [searchParams] = useSearchParams();
@@ -598,25 +642,20 @@ export function TaskListPageV3({ onTaskClick, onCreateTask }: TaskListPageV3Prop
                   ))}
                 </tr>
               </thead>
-              <tbody>
-                {filteredTasks.map((task, index) => (
-                  <TaskListRowV3
-                    key={task.id}
-                    task={task}
-                    index={index}
-                    isSelected={selectedIds.has(task.id)}
-                    isFocused={focusedIndex === index}
-                    onSelect={handleSelectOne}
-                    onClick={onTaskClick}
-                    onUpdate={handleTaskUpdate}
-                    visibleColumns={visibleColumns}
-                    columnWidths={columnWidths}
-                    statuses={statuses}
-                    users={users}
-                    labels={labelsMap[task.id] || []}
-                  />
-                ))}
-              </tbody>
+              <VirtualizedTaskBody
+                tasks={filteredTasks}
+                parentRef={tableRef}
+                selectedIds={selectedIds}
+                focusedIndex={focusedIndex}
+                onSelect={handleSelectOne}
+                onClick={onTaskClick}
+                onUpdate={handleTaskUpdate}
+                visibleColumns={visibleColumns}
+                columnWidths={columnWidths}
+                statuses={statuses}
+                users={users}
+                labelsMap={labelsMap}
+              />
             </table>
           )}
         </div>

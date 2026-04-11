@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { toast } from 'sonner';
 import { Link2 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { EpicBalancingEpic } from '../types';
 
 interface EpicDetailsDrawerProps {
@@ -46,8 +46,7 @@ export function EpicDetailsDrawer({ epic, open, onClose, onSave }: EpicDetailsDr
   const { data: businessRequests = [] } = useQuery({
     queryKey: ['business-requests'],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from('business_requests')
+      const { data, error } = await typedQuery('business_requests')
         .select('id, title, request_key')
         .order('request_key');
       if (error) throw error;

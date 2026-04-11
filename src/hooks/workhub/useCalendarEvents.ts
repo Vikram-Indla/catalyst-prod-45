@@ -4,7 +4,7 @@
 
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import type { CalendarEvent } from '@/types/workhub.types';
 
 /** Fetch all calendar events from the view */
@@ -13,8 +13,7 @@ export function useCalendarEvents(year: number, month: number) {
     queryKey: ['workhub', 'calendar-events', year, month],
     queryFn: async () => {
       // Use raw query since vw_wh_calendar_events may not be in auto-generated types
-      const { data, error } = await (supabase as any)
-        .from('vw_wh_calendar_events')
+      const { data, error } = await typedQuery('vw_wh_calendar_events')
         .select('*');
       if (error) throw error;
       return (data ?? []) as CalendarEvent[];

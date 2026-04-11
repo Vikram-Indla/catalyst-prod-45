@@ -4,7 +4,7 @@
  */
 import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import BoardCanvasPage from '@/components/boards/BoardCanvasPage';
 
 export default function ProjectBoardCanvasPage() {
@@ -20,8 +20,7 @@ export default function ProjectBoardCanvasPage() {
         .eq('key', key.toUpperCase())
         .maybeSingle();
       if (phErr || !phProject) { console.warn(phErr?.message ?? 'ph_project not found'); return null; }
-      const { data: project } = await (supabase as any)
-        .from('projects')
+      const { data: project } = await typedQuery('projects')
         .select('id, name')
         .ilike('name', phProject.name)
         .maybeSingle();

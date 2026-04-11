@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { Demand, DemandOwner, DemandAssignee, DemandMilestone, PriorityTier, HealthStatus, PlannedQuarter } from '@/types/product-roadmap';
 import { useProcessSteps } from '@/modules/kanban/hooks/useProcessSteps';
 
@@ -75,8 +75,7 @@ export function useProductRoadmapData() {
   const { data: demandsData = [], isLoading: demandsLoading } = useQuery({
     queryKey: ['product-roadmap-demands'],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from('business_requests')
+      const { data, error } = await typedQuery('business_requests')
         .select(`
           id,
           request_key,

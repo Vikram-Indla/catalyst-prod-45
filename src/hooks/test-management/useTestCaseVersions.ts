@@ -4,7 +4,7 @@
  */
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { catalystToast } from '@/lib/catalystToast';
 
 export interface TestCaseVersionSnapshot {
@@ -49,8 +49,7 @@ export function useTestCaseVersions(testCaseId: string | undefined) {
     queryFn: async (): Promise<TestCaseVersion[]> => {
       if (!testCaseId) return [];
 
-      const { data, error } = await (supabase as any)
-        .from('tm_test_case_versions')
+      const { data, error } = await typedQuery('tm_test_case_versions')
         .select(`
           id,
           test_case_id,
@@ -69,8 +68,7 @@ export function useTestCaseVersions(testCaseId: string | undefined) {
       if (error) {
         console.error('Error fetching versions:', error);
         // If the join fails, try without profile
-        const { data: fallbackData, error: fallbackError } = await (supabase as any)
-          .from('tm_test_case_versions')
+        const { data: fallbackData, error: fallbackError } = await typedQuery('tm_test_case_versions')
           .select('*')
           .eq('test_case_id', testCaseId)
           .order('version_number', { ascending: false });
@@ -108,8 +106,7 @@ export function useTestCaseVersionsCount(testCaseId: string | undefined) {
     queryFn: async (): Promise<number> => {
       if (!testCaseId) return 0;
 
-      const { count, error } = await (supabase as any)
-        .from('tm_test_case_versions')
+      const { count, error } = await typedQuery('tm_test_case_versions')
         .select('*', { count: 'exact', head: true })
         .eq('test_case_id', testCaseId);
 
@@ -161,8 +158,7 @@ export function useCreateTestCaseVersion() {
       if (stepsError) throw stepsError;
 
       // Get next version number
-      const { data: existingVersions } = await (supabase as any)
-        .from('tm_test_case_versions')
+      const { data: existingVersions } = await typedQuery('tm_test_case_versions')
         .select('version_number')
         .eq('test_case_id', input.testCaseId)
         .order('version_number', { ascending: false })
@@ -188,8 +184,7 @@ export function useCreateTestCaseVersion() {
       };
 
       // Insert version
-      const { data, error } = await (supabase as any)
-        .from('tm_test_case_versions')
+      const { data, error } = await typedQuery('tm_test_case_versions')
         .insert({
           test_case_id: input.testCaseId,
           version_number: nextVersion,
@@ -228,8 +223,7 @@ export function useRestoreTestCaseVersion() {
   return useMutation({
     mutationFn: async (input: RestoreVersionInput) => {
       // Fetch the version to restore
-      const { data: version, error: versionError } = await (supabase as any)
-        .from('tm_test_case_versions')
+      const { data: version, error: versionError } = await typedQuery('tm_test_case_versions')
         .select('snapshot')
         .eq('test_case_id', input.testCaseId)
         .eq('version_number', input.versionNumber)

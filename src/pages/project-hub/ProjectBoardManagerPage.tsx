@@ -4,7 +4,7 @@
  */
 import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import BoardManagerPage from '@/components/boards/BoardManagerPage';
 
 export default function ProjectBoardManagerPage() {
@@ -22,8 +22,7 @@ export default function ProjectBoardManagerPage() {
         .maybeSingle();
       if (phErr || !phProject) { console.warn(phErr?.message ?? 'ph_project not found'); return null; }
       // Try to resolve to projects table ID (boards FK references projects)
-      const { data: project } = await (supabase as any)
-        .from('projects')
+      const { data: project } = await typedQuery('projects')
         .select('id, name')
         .ilike('name', phProject.name)
         .maybeSingle();

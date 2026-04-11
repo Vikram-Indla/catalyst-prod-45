@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { exportToCSV } from '@/lib/exportUtils';
 import { ImportDialog } from '@/components/shared/ImportDialog';
@@ -29,8 +29,7 @@ export default function Initiatives() {
   const { data: items, isLoading } = useQuery({
     queryKey: ['initiatives', searchQuery],
     queryFn: async () => {
-      let query = (supabase as any)
-        .from('initiatives')
+      let query = typedQuery('initiatives')
         .select('*, strategic_themes(name)')
         .order('name');
 
@@ -68,7 +67,7 @@ export default function Initiatives() {
 
   const importMutation = useMutation({
     mutationFn: async (data: any[]) => {
-      const { error } = await (supabase as any).from('initiatives').insert(data.map(row => ({
+      const { error } = await typedQuery('initiatives').insert(data.map(row => ({
         name: row.name,
         description: row.description || null,
         status: row.status || 'proposed',

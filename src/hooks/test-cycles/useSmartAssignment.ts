@@ -5,7 +5,7 @@
 
 import { useState, useCallback, useEffect, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import {
   DEFAULT_WEIGHTS,
   distributeTests,
@@ -46,8 +46,7 @@ export function useSmartAssignment(cycleId: string, testCaseIds: string[]) {
       if (error || !profiles || profiles.length === 0) return [];
 
       // Get workload counts from tm_cycle_scope
-      const { data: workloadData } = await (supabase as any)
-        .from('tm_cycle_scope')
+      const { data: workloadData } = await typedQuery('tm_cycle_scope')
         .select('assigned_to');
 
       const workloadMap: Record<string, number> = {};
@@ -85,8 +84,7 @@ export function useSmartAssignment(cycleId: string, testCaseIds: string[]) {
   const { data: tests = [] } = useQuery({
     queryKey: ['smart-assignment-tests', cycleId, testCaseIds],
     queryFn: async (): Promise<TestCaseForAssignment[]> => {
-      const { data, error } = await (supabase as any)
-        .from('tm_cycle_scope')
+      const { data, error } = await typedQuery('tm_cycle_scope')
         .select('id, test_case_id, test_case:tm_test_cases(id, case_key, title, priority_id, priority:tm_case_priorities(id, name, color))')
         .eq('cycle_id', cycleId);
       

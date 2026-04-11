@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 export type ApprovalStatus = 'PENDING_APPROVAL' | 'APPROVED' | 'REJECTED' | 'DISABLED';
@@ -92,8 +92,7 @@ export function useUsers() {
       if (profilesError) throw profilesError;
 
       // Fetch ALL resource_inventory records (including those without profile_id)
-      const { data: resourceInventory } = await (supabase as any)
-        .from('resource_inventory')
+      const { data: resourceInventory } = await typedQuery('resource_inventory')
         .select('id, rid, profile_id, name, contract_start_date, contract_end_date, vendor_name, role_name, assignment_id, department_id, department_name, vendor_id, country_id, location_id, resource_type, ctc')
         .limit(1000);
       
@@ -449,7 +448,7 @@ export function useApproveUser() {
       if (error) throw error;
 
       // Log the approval
-      await (supabase as any).from('auth_audit_log').insert({
+      await typedQuery('auth_audit_log').insert({
         user_id: userId,
         event_type: 'user_approved',
         actor_id: currentUser?.id,
@@ -490,7 +489,7 @@ export function useRejectUser() {
       if (error) throw error;
 
       // Log the rejection
-      await (supabase as any).from('auth_audit_log').insert({
+      await typedQuery('auth_audit_log').insert({
         user_id: userId,
         event_type: 'user_rejected',
         actor_id: currentUser?.id,
@@ -530,7 +529,7 @@ export function useDisableUser() {
       if (error) throw error;
 
       // Log the action
-      await (supabase as any).from('auth_audit_log').insert({
+      await typedQuery('auth_audit_log').insert({
         user_id: userId,
         event_type: 'user_disabled',
         actor_id: currentUser?.id,

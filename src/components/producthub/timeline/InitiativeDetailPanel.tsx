@@ -19,7 +19,7 @@ import { DetailTabRisks } from './DetailTabRisks';
 import { DetailTabMilestones } from './DetailTabMilestones';
 import { DetailTabAttachments } from './DetailTabAttachments';
 import { DetailTabActivity } from './DetailTabActivity';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useQueryClient, useMutation } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { useTheme } from '@/hooks/useTheme';
@@ -158,7 +158,7 @@ export const InitiativeDetailPanel: React.FC<InitiativeDetailPanelProps> = ({
     const trimmed = titleDraft.trim();
     if (!trimmed || trimmed === initiative.title) return;
     try {
-      const { error } = await (supabase as any).from('ph_initiatives')
+      const { error } = await typedQuery('ph_initiatives')
         .update({ title: trimmed, updated_at: new Date().toISOString() })
         .eq('id', initiative.id);
       if (error) throw error;
@@ -171,7 +171,7 @@ export const InitiativeDetailPanel: React.FC<InitiativeDetailPanelProps> = ({
   // Delete mutation
   const deleteMutation = useMutation({
     mutationFn: async () => {
-      const { error } = await (supabase as any).from('ph_initiatives')
+      const { error } = await typedQuery('ph_initiatives')
         .update({ is_deleted: true, updated_at: new Date().toISOString() })
         .eq('id', initiative.id);
       if (error) throw error;
@@ -188,14 +188,14 @@ export const InitiativeDetailPanel: React.FC<InitiativeDetailPanelProps> = ({
   // Clone
   const handleClone = async () => {
     try {
-      const { data: existing } = await (supabase as any).from('ph_initiatives')
+      const { data: existing } = await typedQuery('ph_initiatives')
         .select('initiative_key').order('created_at', { ascending: false }).limit(1);
       let nextNum = 19;
       if (existing?.[0]) {
         const match = existing[0].initiative_key?.match(/MIM-(\d+)/);
         if (match) nextNum = parseInt(match[1], 10) + 1;
       }
-      const { error } = await (supabase as any).from('ph_initiatives').insert({
+      const { error } = await typedQuery('ph_initiatives').insert({
         title: `${initiative.title} (Copy)`,
         description: initiative.description,
         status: 'new_demand',
@@ -237,7 +237,7 @@ export const InitiativeDetailPanel: React.FC<InitiativeDetailPanelProps> = ({
             <button className="idp-action-btn idp-action-btn--archive" onClick={() => {
               (async () => {
                 try {
-                  const { error } = await (supabase as any).from('ph_initiatives')
+                  const { error } = await typedQuery('ph_initiatives')
                     .update({ is_archived: !initiative.is_archived, updated_at: new Date().toISOString() })
                     .eq('id', initiative.id);
                   if (error) throw error;

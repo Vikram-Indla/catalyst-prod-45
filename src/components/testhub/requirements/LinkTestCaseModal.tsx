@@ -5,7 +5,7 @@
 
 import { useState, useEffect } from 'react';
 import { X, Link2, Search, CheckSquare, Square } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
 import { useTheme } from '@/hooks/useTheme';
 
@@ -42,7 +42,7 @@ export function LinkTestCaseModal({ isOpen, onClose, requirementId, onLinked, al
     const fetchTestCases = async () => {
       setIsLoading(true);
       try {
-        let query = (supabase as any).from('tm_test_cases').select('id, case_key, title, priority_id, priority:tm_case_priorities ( id, name, color )').order('case_key');
+        let query = typedQuery('tm_test_cases').select('id, case_key, title, priority_id, priority:tm_case_priorities ( id, name, color )').order('case_key');
         if (alreadyLinkedIds.length > 0) {
           query = query.not('id', 'in', `(${alreadyLinkedIds.join(',')})`);
         }
@@ -93,7 +93,7 @@ export function LinkTestCaseModal({ isOpen, onClose, requirementId, onLinked, al
         test_case_id,
         created_by: user?.id || null,
       }));
-      const { error } = await (supabase as any).from('tm_requirement_tests').insert(rows);
+      const { error } = await typedQuery('tm_requirement_tests').insert(rows);
       if (error) throw error;
       catalystToast.success(`${selectedIds.size} test case${selectedIds.size > 1 ? 's' : ''} linked`);
       onLinked();

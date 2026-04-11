@@ -6,7 +6,7 @@
 import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { logInitiativeAudit } from '@/lib/initiativeAudit';
 import { Pencil, Trash2, FolderOpen, X } from 'lucide-react';
@@ -86,8 +86,7 @@ export const DetailTabBudget: React.FC<DetailTabBudgetProps> = ({ initiativeId }
   const { data: items = [], refetch } = useQuery({
     queryKey: ['idp-budget-items', initiativeId],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from('ph_initiative_budget_items')
+      const { data, error } = await typedQuery('ph_initiative_budget_items')
         .select('*')
         .eq('initiative_id', initiativeId)
         .order('created_at', { ascending: true });
@@ -100,8 +99,7 @@ export const DetailTabBudget: React.FC<DetailTabBudgetProps> = ({ initiativeId }
   useQuery({
     queryKey: ['idp-budget-total', initiativeId],
     queryFn: async () => {
-      const { data } = await (supabase as any)
-        .from('ph_initiatives')
+      const { data } = await typedQuery('ph_initiatives')
         .select('budget_allocated')
         .eq('id', initiativeId)
         .single();
@@ -116,7 +114,7 @@ export const DetailTabBudget: React.FC<DetailTabBudgetProps> = ({ initiativeId }
   const utilPct = totalBudget > 0 ? Math.min(100, Math.round((totalActual / totalBudget) * 100)) : 0;
 
   const saveTotalBudget = useCallback(async () => {
-    await (supabase as any).from('ph_initiatives').update({ budget_allocated: totalBudget, updated_at: new Date().toISOString() }).eq('id', initiativeId);
+    await typedQuery('ph_initiatives').update({ budget_allocated: totalBudget, updated_at: new Date().toISOString() }).eq('id', initiativeId);
     logInitiativeAudit({ initiative_id: initiativeId, action: 'updated', entity_type: 'budget', field_name: 'budget_allocated', new_value: `SAR ${totalBudget.toLocaleString('en-US')}` });
     // Silent auto-save
   }, [totalBudget, initiativeId]);
@@ -149,13 +147,13 @@ export const DetailTabBudget: React.FC<DetailTabBudgetProps> = ({ initiativeId }
       actual_amount: form.actual_amount ? parseFloat(form.actual_amount) : 0,
     };
     if (editingItem) {
-      const { error } = await (supabase as any).from('ph_initiative_budget_items').update(payload).eq('id', editingItem.id);
+      const { error } = await typedQuery('ph_initiative_budget_items').update(payload).eq('id', editingItem.id);
       if (error) { toast.error('Failed to update'); return; }
       logInitiativeAudit({ initiative_id: initiativeId, action: 'updated', entity_type: 'budget_item', new_value: form.description });
       // Silent auto-save
     } else {
       payload.created_by = (await supabase.auth.getUser()).data.user?.id;
-      const { error } = await (supabase as any).from('ph_initiative_budget_items').insert(payload);
+      const { error } = await typedQuery('ph_initiative_budget_items').insert(payload);
       if (error) { toast.error('Failed to add'); return; }
       logInitiativeAudit({ initiative_id: initiativeId, action: 'created', entity_type: 'budget_item', new_value: form.description });
       toast.success('Item added', { duration: 2200, style: { background: '#18181B', color: '#fff' }, position: 'bottom-center' });
@@ -165,7 +163,7 @@ export const DetailTabBudget: React.FC<DetailTabBudgetProps> = ({ initiativeId }
   };
 
   const handleDelete = async (id: string) => {
-    await (supabase as any).from('ph_initiative_budget_items').delete().eq('id', id);
+    await typedQuery('ph_initiative_budget_items').delete().eq('id', id);
     logInitiativeAudit({ initiative_id: initiativeId, action: 'deleted', entity_type: 'budget_item' });
     toast.success('Item deleted', { duration: 2200, style: { background: '#18181B', color: '#fff' }, position: 'bottom-center' });
     refetch();

@@ -15,7 +15,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { catalystToast as toast } from '@/lib/catalystToast';
 
@@ -39,7 +39,7 @@ export function DeleteIncidentDialog({
     setIsDeleting(true);
     try {
       // Soft delete via RPC (avoids RLS edge cases)
-      const { error } = await (supabase as any).rpc('soft_delete_incident', {
+      const { error } = await typedRpc('soft_delete_incident', {
         p_incident_id: incidentId,
       });
 

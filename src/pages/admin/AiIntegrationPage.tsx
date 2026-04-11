@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Bot, Key, TestTube, Sparkles } from 'lucide-react';
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 export default function AiIntegrationPage() {
@@ -18,8 +18,7 @@ export default function AiIntegrationPage() {
   const { data: settings, isLoading } = useQuery({
     queryKey: ['ai-integration-settings'],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from('ai_integration_settings')
+      const { data, error } = await typedQuery('ai_integration_settings')
         .select('*')
         .limit(1)
         .maybeSingle();
@@ -36,8 +35,7 @@ export default function AiIntegrationPage() {
       const isActive = formData.get('is_active') === 'on';
 
       if (settings?.id) {
-        const { error } = await (supabase as any)
-          .from('ai_integration_settings')
+        const { error } = await typedQuery('ai_integration_settings')
           .update({
             provider,
             api_key_encrypted: apiKey || null,
@@ -47,8 +45,7 @@ export default function AiIntegrationPage() {
           .eq('id', settings.id);
         if (error) throw error;
       } else {
-        const { error } = await (supabase as any)
-          .from('ai_integration_settings')
+        const { error } = await typedQuery('ai_integration_settings')
           .insert({
             provider,
             api_key_encrypted: apiKey || null,

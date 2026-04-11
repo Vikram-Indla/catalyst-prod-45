@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import type { Team, TeamFilters, CreateTeamInput, UpdateTeamInput } from '@/types/team.types';
 
@@ -7,8 +7,7 @@ export function useTeams(filters?: TeamFilters) {
   return useQuery({
     queryKey: ['teams', filters],
     queryFn: async () => {
-      let query = (supabase as any)
-        .from('teams')
+      let query = typedQuery('teams')
         .select('*, projects:projects!project_id(id, name), programs:programs!parent_program_id(id, name)')
         .order('name');
 
@@ -50,8 +49,7 @@ export function useTeam(teamId?: string) {
     queryFn: async () => {
       if (!teamId) return null;
 
-      const { data, error } = await (supabase as any)
-        .from('teams')
+      const { data, error } = await typedQuery('teams')
         .select('*, projects:projects!project_id(id, name), programs:programs!parent_program_id(id, name)')
         .eq('id', teamId)
         .single();

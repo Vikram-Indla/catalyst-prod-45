@@ -11,7 +11,7 @@
  */
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import type { BudgetResource } from '@/lib/budget/types';
 
@@ -102,8 +102,7 @@ export function useBudgetScenarios() {
   return useQuery({
     queryKey: ['budget-scenarios'],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from('budget_scenarios')
+      const { data, error } = await typedQuery('budget_scenarios')
         .select('*')
         .eq('is_active', true)
         .order('created_at', { ascending: false });
@@ -120,8 +119,7 @@ export function useBudgetScenario(scenarioId: string | null) {
     queryFn: async () => {
       if (!scenarioId) return null;
       
-      const { data, error } = await (supabase as any)
-        .from('budget_scenarios')
+      const { data, error } = await typedQuery('budget_scenarios')
         .select('*')
         .eq('id', scenarioId)
         .single();
@@ -149,8 +147,7 @@ export function useCreateScenario() {
       const newTotal = input.baselineBudget.total + totalDelta;
       const insourcedWithDelta = input.baselineBudget.insourced + totalDelta;
 
-      const { data, error } = await (supabase as any)
-        .from('budget_scenarios')
+      const { data, error } = await typedQuery('budget_scenarios')
         .insert({
           name: input.name,
           description: input.description || null,
@@ -191,8 +188,7 @@ export function useDeleteScenario() {
 
   return useMutation({
     mutationFn: async (scenarioId: string) => {
-      const { error } = await (supabase as any)
-        .from('budget_scenarios')
+      const { error } = await typedQuery('budget_scenarios')
         .update({ is_active: false })
         .eq('id', scenarioId);
 

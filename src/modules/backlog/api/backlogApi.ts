@@ -1,4 +1,4 @@
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { 
   BacklogQueryParams, 
   BacklogResponse, 
@@ -32,12 +32,12 @@ export async function fetchBacklogItems(params: BacklogQueryParams): Promise<Bac
   
   // For epics, include theme relation (no FK for profiles on epics table)
   if (type === 'epic') {
-    query = (supabase as any).from(tableName).select(`
+    query = typedQuery(tableName).select(`
       *,
       strategic_themes:theme_id(id, name)
     `);
   } else {
-    query = (supabase as any).from(tableName).select('*');
+    query = typedQuery(tableName).select('*');
   }
 
   // CRITICAL: Filter by programId for program-scoped queries
@@ -176,7 +176,7 @@ export async function fetchUnassignedItems(params: BacklogQueryParams): Promise<
   }
 
   const tableName = getTableName(type);
-  let query: any = (supabase as any).from(tableName).select('*');
+  let query: any = typedQuery(tableName).select('*');
 
   // CRITICAL: Filter by programId for program-scoped queries
   if (programId && type === 'epic') {

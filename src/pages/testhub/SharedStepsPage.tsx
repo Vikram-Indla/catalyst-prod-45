@@ -13,7 +13,7 @@ import {
   ArrowUp, ArrowDown, Settings, Users, FileText, Zap,
   Globe, Lock, Bell, Heart, Star,
 } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
 import { useTheme } from '@/hooks/useTheme';
 import { TestHubPageHeader } from '@/components/testhub/TestHubPageHeader';
@@ -152,8 +152,7 @@ export default function SharedStepsPage() {
 
       if (catError) { console.error('Categories fetch error:', catError); return; }
 
-      const { data: countsData } = await (supabase as any)
-        .from('tm_shared_steps')
+      const { data: countsData } = await typedQuery('tm_shared_steps')
         .select('category_id')
         .eq('is_active', true);
 
@@ -235,8 +234,7 @@ export default function SharedStepsPage() {
   };
 
   const handleDuplicate = async (step: SharedStep) => {
-    const { data, error } = await (supabase as any)
-      .from('tm_shared_steps')
+    const { data, error } = await typedQuery('tm_shared_steps')
       .insert({
         name: `${step.name} (Copy)`,
         description: step.description,

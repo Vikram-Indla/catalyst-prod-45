@@ -10,7 +10,7 @@ import {
   GitBranch, Search, CheckCircle2, XCircle, AlertTriangle, Clock,
   ChevronRight, ChevronDown, Target, FileText, ArrowRight,
 } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { TestHubPageHeader } from '@/components/testhub/TestHubPageHeader';
 import { EmptyState } from '@/components/ui/EmptyState';
 
@@ -67,8 +67,7 @@ export default function TraceabilityPage() {
   const fetchRequirements = async () => {
     setIsLoading(true);
     try {
-      const { data, error } = await (supabase as any)
-        .from('tm_requirements')
+      const { data, error } = await typedQuery('tm_requirements')
         .select('id, req_key, title, type, status')
         .neq('status', 'deprecated')
         .order('req_key');

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -48,8 +48,7 @@ export default function EnterpriseEpics() {
   const { data: epics, isLoading } = useQuery({
     queryKey: ['enterprise-epics', searchQuery],
     queryFn: async () => {
-      let query = (supabase as any)
-        .from('epics')
+      let query = typedQuery('epics')
         .select(`
           *,
           strategic_themes(name),

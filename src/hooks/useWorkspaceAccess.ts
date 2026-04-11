@@ -75,7 +75,6 @@ export function useWorkspaceAccess() {
         .neq('id', DEFAULT_PROGRAM_ID)
         .order('name');
       if (error) throw error;
-      console.log('[useWorkspaceAccess] Loaded programs:', data?.length, data?.map(p => p.name));
       return data || [];
     },
     staleTime: 10 * 1000, // Cache for 10 seconds for quicker refresh

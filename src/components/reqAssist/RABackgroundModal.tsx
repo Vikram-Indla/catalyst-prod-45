@@ -4,7 +4,7 @@ import type { RADocumentWithArtifacts } from '@/types/reqAssistV2';
 import { toast } from 'sonner';
 import { useQueueJob, useRAJobPolling, RA_KEYS } from '@/hooks/useReqAssist';
 import { useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 
 interface Props {
   type: string;
@@ -47,10 +47,10 @@ export default function RABackgroundModal({ type, doc, onClose }: Props) {
   useEffect(() => {
     const resolve = async () => {
       const jiraKey = (doc as any)?.jira_ticket_key;
-      const { data: direct } = await (supabase as any).from('brd_documents').select('id').eq('id', doc.id).maybeSingle();
+      const { data: direct } = await typedQuery('brd_documents').select('id').eq('id', doc.id).maybeSingle();
       if (direct?.id) { setResolvedBrdId(direct.id); return; }
       if (jiraKey) {
-        const { data: jiraMatch } = await (supabase as any).from('brd_documents').select('id').eq('jira_key', jiraKey).maybeSingle();
+        const { data: jiraMatch } = await typedQuery('brd_documents').select('id').eq('jira_key', jiraKey).maybeSingle();
         if (jiraMatch?.id) { setResolvedBrdId(jiraMatch.id); return; }
       }
     };

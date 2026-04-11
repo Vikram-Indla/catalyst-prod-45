@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { X, Upload, FileText, Download, AlertCircle } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 interface ImportTestCasesModalProps {
@@ -115,8 +115,7 @@ export function ImportTestCasesModal({ isOpen, onClose, onSuccess, folders }: Im
           if (match) nextNum = parseInt(match[1]) + 1;
         }
         
-        const { data: newCase, error: tcError } = await (supabase as any)
-          .from('tm_test_cases')
+        const { data: newCase, error: tcError } = await typedQuery('tm_test_cases')
           .insert([{
             case_key: `TC-${String(nextNum).padStart(3, '0')}`,
             title: tc.title,

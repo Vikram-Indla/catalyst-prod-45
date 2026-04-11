@@ -5,7 +5,7 @@
 
 import { useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery, typedRpc } from '@/integrations/supabase/client';
 import type {
   ProjectListItem,
   ProjectTeamMember,
@@ -29,8 +29,7 @@ export function useProjects() {
   return useQuery({
     queryKey: QUERY_KEYS.projects,
     queryFn: async (): Promise<ProjectListItem[]> => {
-      const { data, error } = await (supabase as any)
-        .from('v_project_list')
+      const { data, error } = await typedQuery('v_project_list')
         .select('*')
         .order('name', { ascending: true });
 
@@ -52,8 +51,7 @@ export function useProjectTeam(projectId: string | null) {
     queryFn: async (): Promise<ProjectTeamMember[]> => {
       if (!projectId) return [];
 
-      const { data, error } = await (supabase as any)
-        .rpc('get_project_team', { p_project_id: projectId });
+      const { data, error } = await typedRpc('get_project_team', { p_project_id: projectId });
 
       if (error) throw new Error(`Failed to fetch team: ${error.message}`);
       return (data ?? []) as ProjectTeamMember[];
@@ -73,8 +71,7 @@ export function useProjectFavorites() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return new Set<string>();
 
-      const { data, error } = await (supabase as any)
-        .from('project_favorites')
+      const { data, error } = await typedQuery('project_favorites')
         .select('project_id')
         .eq('user_id', user.id);
 
@@ -96,15 +93,13 @@ export function useToggleFavorite() {
       if (!user) throw new Error('Not authenticated');
 
       if (isFavorited) {
-        const { error } = await (supabase as any)
-          .from('project_favorites')
+        const { error } = await typedQuery('project_favorites')
           .delete()
           .eq('project_id', projectId)
           .eq('user_id', user.id);
         if (error) throw error;
       } else {
-        const { error } = await (supabase as any)
-          .from('project_favorites')
+        const { error } = await typedQuery('project_favorites')
           .insert({ project_id: projectId, user_id: user.id });
         if (error) throw error;
       }
@@ -144,8 +139,7 @@ export function useCreateProject() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const { data, error } = await (supabase as any)
-        .from('projects')
+      const { data, error } = await typedQuery('projects')
         .insert({
           name: input.name,
           key: input.project_key.toUpperCase(),
@@ -173,7 +167,7 @@ export function useCreateProject() {
       if (error) throw new Error(`Failed to create project: ${error.message}`);
 
       // Auto-add creator as admin member
-      await (supabase as any).from('project_members').insert({
+      await typedQuery('project_members').insert({
         project_id: data.id,
         user_id: user.id,
         role: 'admin',
@@ -182,7 +176,7 @@ export function useCreateProject() {
 
       // If lead is different from creator, add lead as member too
       if (input.lead_id && input.lead_id !== user.id) {
-        await (supabase as any).from('project_members').insert({
+        await typedQuery('project_members').insert({
           project_id: data.id,
           user_id: input.lead_id,
           role: 'lead',
@@ -192,7 +186,7 @@ export function useCreateProject() {
 
       // If Jira key provided, create sync entity map entry
       if (input.jira_key) {
-        await (supabase as any).from('sync_entity_map').insert({
+        await typedQuery('sync_entity_map').insert({
           catalyst_entity_type: 'project',
           catalyst_entity_id: data.id,
           jira_entity_type: 'project',

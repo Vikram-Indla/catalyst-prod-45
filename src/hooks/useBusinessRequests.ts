@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery, typedQuery, typedQuery } from '@/integrations/supabase/client';
 import { BusinessRequest, CreateBusinessRequestFormData, ReadinessChecklist } from '@/types/business-request';
 import { useToast } from '@/hooks/use-toast';
 import { Json } from '@/integrations/supabase/types';
@@ -8,8 +8,7 @@ import { Json } from '@/integrations/supabase/types';
 // Helper to generate MIM-XXX format request key
 const generateRequestKey = async (): Promise<string> => {
   // Get all existing request keys to find the max number
-  const { data, error } = await (supabase as any)
-    .from('business_requests')
+  const { data, error } = await typedQuery('business_requests')
     .select('request_key')
     .not('request_key', 'is', null)
     .limit(1000);
@@ -80,8 +79,7 @@ export function useBusinessRequests(searchQuery?: string) {
     queryKey: ['business-requests', searchQuery],
     queryFn: async () => {
       // Performance optimization: limit to 200 rows for fast initial load
-      let query = (supabase as any)
-        .from('business_requests')
+      let query = typedQuery('business_requests')
         .select('*')
         .is('deleted_at', null)
         .order('created_at', { ascending: false })
@@ -173,8 +171,7 @@ export function useBusinessRequest(id: string | null) {
     queryKey: ['business-request', id],
     queryFn: async () => {
       if (!id) return null;
-      const { data, error } = await (supabase as any)
-        .from('business_requests')
+      const { data, error } = await typedQuery('business_requests')
         .select('*')
         .eq('id', id)
         .single();
@@ -225,8 +222,7 @@ export function useCreateBusinessRequest() {
       // Generate request key in MIM-XXX format
       const requestKey = await generateRequestKey();
       
-      const { data: result, error } = await (supabase as any)
-        .from('business_requests')
+      const { data: result, error } = await typedQuery('business_requests')
         .insert([{
           title: data.title,
           description: data.description || null,
@@ -261,7 +257,7 @@ export function useCreateBusinessRequest() {
       if (error) throw error;
 
       // Create audit log for creation
-      await (supabase as any).from('business_request_audit_logs').insert({
+      await typedQuery('business_request_audit_logs').insert({
         business_request_id: (result as any).id,
         actor_id: user?.id || null,
         actor_name: actorName,
@@ -304,8 +300,7 @@ export function useUpdateBusinessRequest() {
       }
 
       // Get the current data before update for audit logging
-      const { data: currentData } = await (supabase as any)
-        .from('business_requests')
+      const { data: currentData } = await typedQuery('business_requests')
         .select('*')
         .eq('id', id)
         .single();
@@ -341,8 +336,7 @@ export function useUpdateBusinessRequest() {
         
         if (newRank !== null) {
           // Get current item's old rank
-          const { data: currentItem } = await (supabase as any)
-            .from('business_requests')
+          const { data: currentItem } = await typedQuery('business_requests')
             .select('rank')
             .eq('id', id)
             .single();
@@ -351,8 +345,7 @@ export function useUpdateBusinessRequest() {
           const oldRank = currentItemTyped?.rank;
           
           // Get all items that need to be shifted
-          const { data: allItems } = await (supabase as any)
-            .from('business_requests')
+          const { data: allItems } = await typedQuery('business_requests')
             .select('id, rank')
             .not('id', 'eq', id)
             .not('rank', 'is', null)
@@ -374,8 +367,7 @@ export function useUpdateBusinessRequest() {
             
             // Update shifted items
             for (const item of itemsToUpdate) {
-              await (supabase as any)
-                .from('business_requests')
+              await typedQuery('business_requests')
                 .update({ rank: item.rank })
                 .eq('id', item.id);
             }
@@ -383,8 +375,7 @@ export function useUpdateBusinessRequest() {
         }
       }
       
-      const { data: result, error } = await (supabase as any)
-        .from('business_requests')
+      const { data: result, error } = await typedQuery('business_requests')
         .update(updateData)
         .eq('id', id)
         .select()
@@ -416,7 +407,7 @@ export function useUpdateBusinessRequest() {
         
         // Insert all audit logs
         if (auditLogs.length > 0) {
-          await (supabase as any).from('business_request_audit_logs').insert(auditLogs);
+          await typedQuery('business_request_audit_logs').insert(auditLogs);
         }
       }
 
@@ -442,15 +433,13 @@ export function useDeleteBusinessRequest() {
   return useMutation({
     mutationFn: async (id: string) => {
       // Get the request_key before soft deleting for the success message
-      const { data: request } = await (supabase as any)
-        .from('business_requests')
+      const { data: request } = await typedQuery('business_requests')
         .select('request_key')
         .eq('id', id)
         .single();
       
       // Soft delete by setting deleted_at timestamp
-      const { error } = await (supabase as any)
-        .from('business_requests')
+      const { error } = await typedQuery('business_requests')
         .update({ deleted_at: new Date().toISOString() })
         .eq('id', id);
       if (error) throw error;
@@ -477,8 +466,7 @@ export function useDuplicateBusinessRequest() {
       const { data: { user } } = await supabase.auth.getUser();
       
       // Get the original request (only need the title)
-      const { data: original, error: fetchError } = await (supabase as any)
-        .from('business_requests')
+      const { data: original, error: fetchError } = await typedQuery('business_requests')
         .select('title, request_key')
         .eq('id', id)
         .single();
@@ -492,8 +480,7 @@ export function useDuplicateBusinessRequest() {
       const requestKey = await generateRequestKey();
 
       // Create new request with only title copied, status reset to New Demand (new_request), and scoring reset to unscored
-      const { data: newRequest, error: insertError } = await (supabase as any)
-        .from('business_requests')
+      const { data: newRequest, error: insertError } = await typedQuery('business_requests')
         .insert({
           title: `${originalTyped.title} (Copy)`,
           request_key: requestKey,
@@ -531,7 +518,7 @@ export function useDuplicateBusinessRequest() {
         actorName = profile?.full_name || profile?.email || 'Unknown User';
       }
 
-      await (supabase as any).from('business_request_audit_logs').insert({
+      await typedQuery('business_request_audit_logs').insert({
         business_request_id: newRequestTyped.id,
         actor_id: user?.id || null,
         actor_name: actorName,

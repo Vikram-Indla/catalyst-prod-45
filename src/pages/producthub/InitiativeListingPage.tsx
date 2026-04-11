@@ -8,7 +8,7 @@ import { useMDTBacklog } from '@/hooks/useMDTBacklog';
 import type { BRDTask } from '@/hooks/useMDTBacklog';
 import { useSyncMDTToInitiatives } from '@/hooks/useSyncMDTToInitiatives';
 import { useProfileOptions, useDepartmentOptions } from '@/hooks/useInitiativeLookups';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery, typedQuery } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { InitiativeTable } from '@/components/producthub/listing/InitiativeTable';
 import { Pagination } from '@/components/producthub/listing/Pagination';
@@ -300,7 +300,7 @@ export default function InitiativeListingPage() {
 
   const handleStatusChange = useCallback(async (id: string, newStatus: InitiativeStatus) => {
     if (isNative(id)) {
-      await (supabase as any).from('ph_initiatives').update({ status: newStatus, updated_at: new Date().toISOString() }).eq('id', id);
+      await typedQuery('ph_initiatives').update({ status: newStatus, updated_at: new Date().toISOString() }).eq('id', id);
       invalidateAll();
     }
     catalystToast.success(`Status updated to ${newStatus.replace(/_/g, ' ')}`);
@@ -308,7 +308,7 @@ export default function InitiativeListingPage() {
 
   const handleFavoriteToggle = useCallback(async (id: string, isFavorited: boolean) => {
     if (isNative(id)) {
-      await (supabase as any).from('ph_initiatives').update({ is_favorited: !isFavorited, updated_at: new Date().toISOString() }).eq('id', id);
+      await typedQuery('ph_initiatives').update({ is_favorited: !isFavorited, updated_at: new Date().toISOString() }).eq('id', id);
       invalidateAll();
     }
     catalystToast.success(isFavorited ? 'Removed from favorites' : 'Added to favorites');
@@ -334,7 +334,7 @@ export default function InitiativeListingPage() {
         break;
       case 'assign':
         if (isNative(init.id)) {
-          await (supabase as any).from('ph_initiatives').update({ assignee_id: value as string, updated_at: new Date().toISOString() }).eq('id', init.id);
+          await typedQuery('ph_initiatives').update({ assignee_id: value as string, updated_at: new Date().toISOString() }).eq('id', init.id);
           invalidateAll();
           catalystToast.success('Assignee updated');
         }
@@ -345,18 +345,18 @@ export default function InitiativeListingPage() {
         break;
       case 'clone':
         if (isNative(init.id)) {
-          const { data: existing } = await (supabase as any).from('ph_initiatives').select('initiative_key').order('created_at', { ascending: false }).limit(100);
+          const { data: existing } = await typedQuery('ph_initiatives').select('initiative_key').order('created_at', { ascending: false }).limit(100);
           const maxNum = (existing || []).reduce((max: number, r: any) => { const num = parseInt(r.initiative_key?.replace(/[A-Z]+-/, '') || '0'); return num > max ? num : max; }, 0);
           const prefix = init.initiative_key?.replace(/-\d+$/, '') || 'MIM';
           const nextKey = `${prefix}-${String(maxNum + 1).padStart(3, '0')}`;
-          await (supabase as any).from('ph_initiatives').insert({ title: `${init.title} (Copy)`, initiative_key: nextKey, description: init.description, status: 'new_demand', progress: 0, department_id: init.department_id, assignee_id: init.assignee_id });
+          await typedQuery('ph_initiatives').insert({ title: `${init.title} (Copy)`, initiative_key: nextKey, description: init.description, status: 'new_demand', progress: 0, department_id: init.department_id, assignee_id: init.assignee_id });
           invalidateAll();
           catalystToast.success(`Cloned as ${nextKey}`);
         }
         break;
       case 'archive':
         if (isNative(init.id)) {
-          await (supabase as any).from('ph_initiatives').update({ is_archived: true }).eq('id', init.id);
+          await typedQuery('ph_initiatives').update({ is_archived: true }).eq('id', init.id);
           invalidateAll();
           catalystToast.success('Archived');
         }
@@ -364,7 +364,7 @@ export default function InitiativeListingPage() {
       case 'delete':
         if (confirm(`Delete ${init.initiative_key}? This cannot be undone.`)) {
           if (isNative(init.id)) {
-            await (supabase as any).from('ph_initiatives').update({ is_deleted: true }).eq('id', init.id);
+            await typedQuery('ph_initiatives').update({ is_deleted: true }).eq('id', init.id);
             invalidateAll();
           }
           catalystToast.success('Deleted');
@@ -375,7 +375,7 @@ export default function InitiativeListingPage() {
 
   const handleInlineEdit = useCallback(async (id: string, field: string, value: string | number | null) => {
     if (isNative(id)) {
-      await (supabase as any).from('ph_initiatives').update({ [field]: value, updated_at: new Date().toISOString() }).eq('id', id);
+      await typedQuery('ph_initiatives').update({ [field]: value, updated_at: new Date().toISOString() }).eq('id', id);
       invalidateAll();
     }
     catalystToast.success('Updated');
@@ -386,7 +386,7 @@ export default function InitiativeListingPage() {
     switch (action) {
       case 'archive':
         if (nativeIds.length) {
-          await (supabase as any).from('ph_initiatives').update({ is_archived: true }).in('id', nativeIds);
+          await typedQuery('ph_initiatives').update({ is_archived: true }).in('id', nativeIds);
           invalidateAll();
         }
         catalystToast.success(`${selectedIds.length} items archived`);
@@ -394,7 +394,7 @@ export default function InitiativeListingPage() {
         break;
       case 'delete':
         if (nativeIds.length) {
-          await (supabase as any).from('ph_initiatives').update({ is_deleted: true }).in('id', nativeIds);
+          await typedQuery('ph_initiatives').update({ is_deleted: true }).in('id', nativeIds);
           invalidateAll();
         }
         catalystToast.success(`${selectedIds.length} items deleted`);
@@ -412,7 +412,7 @@ export default function InitiativeListingPage() {
 
   const handleRoadmapToggle = useCallback(async (id: string, currentValue: boolean) => {
     if (isNative(id)) {
-      await (supabase as any).from('ph_initiatives').update({ on_roadmap: !currentValue, updated_at: new Date().toISOString() }).eq('id', id);
+      await typedQuery('ph_initiatives').update({ on_roadmap: !currentValue, updated_at: new Date().toISOString() }).eq('id', id);
       invalidateAll();
     }
     catalystToast.success(currentValue ? 'Removed from roadmap' : 'Added to roadmap');

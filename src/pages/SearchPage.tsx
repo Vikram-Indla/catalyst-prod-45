@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Search, Save, Star, ChevronDown, Loader2, ExternalLink, Trash2, StarOff } from 'lucide-react';
 import { Input } from '@/components/ui/input';
@@ -240,8 +240,7 @@ export default function SearchPage() {
 
     // Search business requests (demands)
     if (type === 'all' || type === 'demand') {
-      const { data: demands } = await (supabase as any)
-        .from('business_requests')
+      const { data: demands } = await typedQuery('business_requests')
         .select('id, request_key, title, process_step, assignee, updated_at')
         .or(`title.ilike.${searchPattern},request_key.ilike.${searchPattern}`)
         .is('deleted_at', null)

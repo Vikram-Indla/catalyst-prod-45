@@ -76,7 +76,7 @@ const getAvatarColor = (name: string) => AVATAR_COLORS[name.charCodeAt(0) % AVAT
 
 const Avatar = ({ name, url, size = 24 }: { name: string; url?: string | null; size?: number }) => (
   url ? (
-    <img src={url} alt={name} style={{ width: size, height: size, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
+    <img src={url} alt={name} loading="lazy" style={{ width: size, height: size, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
   ) : (
     <span style={{
       width: size, height: size, borderRadius: '50%', display: 'inline-flex',

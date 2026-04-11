@@ -12,7 +12,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
 
 interface SearchResult {
@@ -105,8 +105,7 @@ export function GlobalSearch() {
         .limit(5);
 
       // Search business requests
-      const businessRequestsQuery = (supabase as any)
-        .from('business_requests')
+      const businessRequestsQuery = typedQuery('business_requests')
         .select('id, title, request_key, process_step')
         .or(isKeySearch
           ? `request_key.ilike.%${searchTerm}%,title.ilike.%${searchTerm}%`

@@ -1,4 +1,4 @@
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery, typedQuery } from '@/integrations/supabase/client';
 import { R360_STATUS_MAP, R360_STATUS_DEFAULT } from '@/constants/r360';
 import { isContributorRole } from '@/constants/r360RoleClassification';
 import type { R360WorkItem } from '@/types/r360';
@@ -48,7 +48,7 @@ async function fetchAssignmentDates(issueKeys: string[], resourceName: string, j
   if (!issueKeys.length) return {};
   
   // Fetch assignee changelog entries for these issues
-  const { data, error } = await (supabase as any).from('jira_sync_changelog')
+  const { data, error } = await typedQuery('jira_sync_changelog')
     .select('issue_key, to_string, to_value, jira_created_at')
     .in('issue_key', issueKeys)
     .eq('field_name', 'assignee')
@@ -80,7 +80,7 @@ async function fetchAssignmentDates(issueKeys: string[], resourceName: string, j
 
 export const r360Service = {
   async getResources() {
-    const { data, error } = await (supabase as any).from('resource_inventory')
+    const { data, error } = await typedQuery('resource_inventory')
       .select('id, rid, name, role_name, department_name, vendor_name, resource_type, profile_id, is_active')
       .eq('is_active', true)
       .order('name');
@@ -99,7 +99,7 @@ export const r360Service = {
   },
 
   async getMemberOverview(resourceId: string) {
-    const { data: resource } = await (supabase as any).from('resource_inventory')
+    const { data: resource } = await typedQuery('resource_inventory')
       .select('id, rid, name, role_name, department_name, vendor_name, resource_type, profile_id, jira_account_id')
       .eq('id', resourceId)
       .single();
@@ -107,7 +107,7 @@ export const r360Service = {
 
     let avatar_url: string | null = null;
     if (resource.profile_id) {
-      const { data: profile } = await (supabase as any).from('profiles')
+      const { data: profile } = await typedQuery('profiles')
         .select('avatar_url')
         .eq('id', resource.profile_id)
         .maybeSingle();
@@ -115,7 +115,7 @@ export const r360Service = {
     }
 
     // Count assigned work items — prefer jira_account_id for accurate matching
-    let overviewAssigneeQuery = (supabase as any).from('ph_issues')
+    let overviewAssigneeQuery = typedQuery('ph_issues')
       .select('issue_key, status, jira_created_at');
     if (resource.jira_account_id) {
       overviewAssigneeQuery = overviewAssigneeQuery.eq('assignee_account_id', resource.jira_account_id);
@@ -131,7 +131,7 @@ export const r360Service = {
     // Count contributed items for non-developer roles
     let contributedItems: any[] = [];
     if (isContributorRole(resource.role_name || '')) {
-      let contribQuery = (supabase as any).from('ph_issues')
+      let contribQuery = typedQuery('ph_issues')
         .select('issue_key, status, jira_created_at, assignee_account_id, reporter_account_id');
       if (resource.jira_account_id) {
         contribQuery = contribQuery.eq('reporter_account_id', resource.jira_account_id);
@@ -174,7 +174,7 @@ export const r360Service = {
   },
 
   async getMemberWorkItems(resourceId: string, filters?: any): Promise<R360WorkItem[]> {
-    const { data: resource } = await (supabase as any).from('resource_inventory')
+    const { data: resource } = await typedQuery('resource_inventory')
       .select('name, role_name, jira_account_id')
       .eq('id', resourceId)
       .single();
@@ -183,7 +183,7 @@ export const r360Service = {
     const ISSUE_FIELDS = 'issue_key, project_key, project_name, summary, issue_type, status, priority, assignee_display_name, reporter_display_name, parent_key, parent_summary, sprint_name, story_points, fix_versions, due_date, jira_created_at, jira_updated_at, resolution, labels, assignee_account_id, reporter_account_id';
 
     // Fetch assigned items — prefer jira_account_id for accurate matching
-    let assigneeQuery = (supabase as any).from('ph_issues')
+    let assigneeQuery = typedQuery('ph_issues')
       .select(ISSUE_FIELDS);
     if (resource.jira_account_id) {
       assigneeQuery = assigneeQuery.eq('assignee_account_id', resource.jira_account_id);
@@ -205,7 +205,7 @@ export const r360Service = {
     // Fetch contributor items (reported-by) for non-developer roles
     let contributedData: any[] = [];
     if (isContributorRole(resource.role_name || '')) {
-      let contribQuery = (supabase as any).from('ph_issues')
+      let contribQuery = typedQuery('ph_issues')
         .select(ISSUE_FIELDS);
       if (resource.jira_account_id) {
         contribQuery = contribQuery.eq('reporter_account_id', resource.jira_account_id);
@@ -289,7 +289,7 @@ export const r360Service = {
 
   async getSiblings(parentKey: string) {
     // Only show siblings when the parent is a Story (not Epics or other types)
-    const { data: parentData } = await (supabase as any).from('ph_issues')
+    const { data: parentData } = await typedQuery('ph_issues')
       .select('issue_type')
       .eq('issue_key', parentKey)
       .limit(1)
@@ -299,7 +299,7 @@ export const r360Service = {
       return [];
     }
 
-    const { data, error } = await (supabase as any).from('ph_issues')
+    const { data, error } = await typedQuery('ph_issues')
       .select('issue_key, summary, status, assignee_display_name, jira_created_at')
       .eq('parent_key', parentKey)
       .order('issue_key');

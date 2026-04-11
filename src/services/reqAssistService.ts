@@ -1,4 +1,4 @@
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery, typedQuery, typedQuery } from '@/integrations/supabase/client';
 import type { RADocumentWithArtifacts, RAProcessingJob } from '@/types/reqAssistV2';
 
 // ── LIBRARY QUERIES ──
@@ -7,8 +7,7 @@ export async function fetchRADocuments(params?: {
   status?: string;
   search?: string;
 }): Promise<RADocumentWithArtifacts[]> {
-  let query = (supabase as any)
-    .from('ra_documents')
+  let query = typedQuery('ra_documents')
     .select(`
       *,
       ra_artifacts(id, artifact_type, status),
@@ -57,8 +56,7 @@ function computeSlot(doc: any, type: string): 'done' | 'processing' | 'pending' 
 }
 
 export async function fetchRADocumentById(id: string) {
-  const { data, error } = await (supabase as any)
-    .from('ra_documents')
+  const { data, error } = await typedQuery('ra_documents')
     .select(`*, ra_artifacts(*), ra_processing_jobs(*)`)
     .eq('id', id)
     .single();
@@ -68,10 +66,10 @@ export async function fetchRADocumentById(id: string) {
 
 export async function fetchRAStats() {
   const [docs, artifacts, jobs, sync] = await Promise.all([
-    (supabase as any).from('ra_documents').select('id, status, wikihub_synced, wikihub_chunk_count').limit(2000),
-    (supabase as any).from('ra_artifacts').select('id, artifact_type').eq('status', 'ready').limit(1000),
-    (supabase as any).from('ra_processing_jobs').select('id').eq('status', 'processing').limit(100),
-    (supabase as any).from('ra_jira_sync_log').select('synced_at, project_key').order('synced_at', { ascending: false }).limit(1),
+    typedQuery('ra_documents').select('id, status, wikihub_synced, wikihub_chunk_count').limit(2000),
+    typedQuery('ra_artifacts').select('id, artifact_type').eq('status', 'ready').limit(1000),
+    typedQuery('ra_processing_jobs').select('id').eq('status', 'processing').limit(100),
+    typedQuery('ra_jira_sync_log').select('synced_at, project_key').order('synced_at', { ascending: false }).limit(1),
   ]);
   const total = docs.data?.length ?? 0;
   const wikis = docs.data?.filter((d: any) => d.wikihub_synced) ?? [];
@@ -89,8 +87,7 @@ export async function fetchRAStats() {
 // ── JOB POLLING ──
 
 export async function fetchRAJobById(jobId: string) {
-  const { data, error } = await (supabase as any)
-    .from('ra_processing_jobs')
+  const { data, error } = await typedQuery('ra_processing_jobs')
     .select('*')
     .eq('id', jobId)
     .single();
@@ -99,8 +96,7 @@ export async function fetchRAJobById(jobId: string) {
 }
 
 export async function fetchRAJobsByDocId(docId: string) {
-  const { data, error } = await (supabase as any)
-    .from('ra_processing_jobs')
+  const { data, error } = await typedQuery('ra_processing_jobs')
     .select('*')
     .eq('ra_document_id', docId)
     .in('status', ['queued', 'processing'])
@@ -122,8 +118,7 @@ export async function createRADocument(payload: {
   content_raw?: string;
   status?: string;
 }) {
-  const { data, error } = await (supabase as any)
-    .from('ra_documents')
+  const { data, error } = await typedQuery('ra_documents')
     .insert({
       ...payload,
       jira_ticket_key: payload.jira_ticket_key ?? `GEN-${Date.now()}`,
@@ -142,8 +137,7 @@ export async function queueProcessingJob(params: {
   job_type: string;
   eta_seconds?: number;
 }) {
-  const { data, error } = await (supabase as any)
-    .from('ra_processing_jobs')
+  const { data, error } = await typedQuery('ra_processing_jobs')
     .insert({
       ra_document_id: params.ra_document_id,
       job_type: params.job_type,
@@ -159,8 +153,7 @@ export async function queueProcessingJob(params: {
 
 export async function fetchJiraProjectTickets(projectKey: string) {
   // Query the Jira ticket cache table (ra_jira_tickets) for import candidates
-  const { data, error } = await (supabase as any)
-    .from('ra_jira_tickets')
+  const { data, error } = await typedQuery('ra_jira_tickets')
     .select('ticket_key, ticket_summary, ticket_type, has_pdf, pdf_filename, page_count, project_key, project_name')
     .eq('project_key', projectKey)
     .order('ticket_key', { ascending: true });
@@ -181,8 +174,7 @@ export async function fetchJiraProjectTickets(projectKey: string) {
 
 export async function syncSingleBrdToKb(brdDocumentId: string): Promise<void> {
   // 1. Fetch the document
-  const { data: doc, error: fetchErr } = await (supabase as any)
-    .from('brd_documents')
+  const { data: doc, error: fetchErr } = await typedQuery('brd_documents')
     .select('id, raw_text, jira_key, language')
     .eq('id', brdDocumentId)
     .single();
@@ -191,7 +183,7 @@ export async function syncSingleBrdToKb(brdDocumentId: string): Promise<void> {
   if (!doc.raw_text || doc.raw_text.trim() === '') throw new Error('Document has no content to index');
 
   // 2. Upsert processing queue job (upsert to handle zombie re-runs)
-  await (supabase as any).from('brd_processing_queue').upsert({
+  await typedQuery('brd_processing_queue').upsert({
     brd_id: brdDocumentId,
     status: 'processing',
     started_at: new Date().toISOString(),
@@ -221,8 +213,7 @@ export async function syncSingleBrdToKb(brdDocumentId: string): Promise<void> {
 
   if (invokeErr) {
     // Mark queue as failed
-    await (supabase as any)
-      .from('brd_processing_queue')
+    await typedQuery('brd_processing_queue')
       .update({ status: 'failed', error_message: invokeErr.message?.substring(0, 500) })
       .eq('brd_id', brdDocumentId);
     throw invokeErr;
@@ -230,21 +221,18 @@ export async function syncSingleBrdToKb(brdDocumentId: string): Promise<void> {
 
   // Check if EF returned an error in the body
   if (responseData?.error) {
-    await (supabase as any)
-      .from('brd_processing_queue')
+    await typedQuery('brd_processing_queue')
       .update({ status: 'failed', error_message: String(responseData.error).substring(0, 500) })
       .eq('brd_id', brdDocumentId);
     throw new Error(responseData.error);
   }
 
   // 4. On success: update pipeline_stage and queue
-  await (supabase as any)
-    .from('brd_documents')
+  await typedQuery('brd_documents')
     .update({ pipeline_stage: 'complete' })
     .eq('id', brdDocumentId);
 
-  await (supabase as any)
-    .from('brd_processing_queue')
+  await typedQuery('brd_processing_queue')
     .update({ status: 'completed', completed_at: new Date().toISOString() })
     .eq('brd_id', brdDocumentId);
 }
@@ -256,8 +244,7 @@ export async function fetchDocumentEpicCounts(
 ): Promise<Record<string, { epicCount: number; published: number; reviewed: number; draft: number; pipelineStage: string | null; parentJiraKey: string | null; ticketType: string | null; rawTextSource: string | null }>> {
   if (!jiraKeys.length) return {};
 
-  const { data: brdDocs } = await (supabase as any)
-    .from('brd_documents')
+  const { data: brdDocs } = await typedQuery('brd_documents')
     .select('id, jira_key, pipeline_stage, parent_jira_key, ticket_type, raw_text_source')
     .in('jira_key', jiraKeys);
 
@@ -277,8 +264,7 @@ export async function fetchDocumentEpicCounts(
     sourceByKey[d.jira_key] = d.raw_text_source;
   });
 
-  const { data: epics } = await (supabase as any)
-    .from('brd_epics')
+  const { data: epics } = await typedQuery('brd_epics')
     .select('brd_id, publish_status')
     .in('brd_id', brdIds);
 

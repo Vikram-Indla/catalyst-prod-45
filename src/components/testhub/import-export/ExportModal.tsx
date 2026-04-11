@@ -3,7 +3,7 @@ import {
   X, Download, FileText, Bug, FileCheck, Layers, Tags,
   RefreshCcw, Database, Filter
 } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
 
 interface ExportModalProps {
@@ -41,7 +41,7 @@ export function ExportModal({ isOpen, onClose, onExported }: ExportModalProps) {
       const typeConfig = EXPORT_TYPES.find(t => t.value === exportType);
       if (!typeConfig) return;
 
-      let query = (supabase as any).from(typeConfig.table).select('id', { count: 'exact', head: true });
+      let query = typedQuery(typeConfig.table).select('id', { count: 'exact', head: true });
       
       if (!includeAll) {
         if (statusFilter !== 'all') {
@@ -73,8 +73,7 @@ export function ExportModal({ isOpen, onClose, onExported }: ExportModalProps) {
       const { data: { user } } = await supabase.auth.getUser();
       const typeConfig = EXPORT_TYPES.find(t => t.value === exportType)!;
 
-      const { data: job, error: jobError } = await (supabase as any)
-        .from('th_export_jobs')
+      const { data: job, error: jobError } = await typedQuery('th_export_jobs')
         .insert({
           name: exportName || `Export ${new Date().toLocaleDateString()}`,
           type: exportType,
@@ -90,7 +89,7 @@ export function ExportModal({ isOpen, onClose, onExported }: ExportModalProps) {
 
       if (jobError) throw jobError;
 
-      let query = (supabase as any).from(typeConfig.table).select('*');
+      let query = typedQuery(typeConfig.table).select('*');
       
       if (!includeAll) {
         if (statusFilter !== 'all') {
@@ -145,8 +144,7 @@ export function ExportModal({ isOpen, onClose, onExported }: ExportModalProps) {
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
 
-      await (supabase as any)
-        .from('th_export_jobs')
+      await typedQuery('th_export_jobs')
         .update({
           status: 'completed',
           processed_items: exportData?.length || 0,

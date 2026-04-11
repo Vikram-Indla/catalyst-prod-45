@@ -25,7 +25,7 @@ import {
 } from '@/components/ui/select';
 import { useReleases } from '@/hooks/test-management/useReleases';
 import { useTeamMembers } from '@/hooks/test-management';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 
 interface CreateCycleModalEnhancedProps {
   open: boolean;
@@ -74,7 +74,7 @@ export function CreateCycleModalEnhanced({
 
   useEffect(() => {
     if (open) {
-      (supabase as any).from('th_environments').select('id, name, type, health_status').eq('status', 'active').order('name').then(({ data }: any) => {
+      typedQuery('th_environments').select('id, name, type, health_status').eq('status', 'active').order('name').then(({ data }: any) => {
         if (data) setEnvironments(data);
       });
     }

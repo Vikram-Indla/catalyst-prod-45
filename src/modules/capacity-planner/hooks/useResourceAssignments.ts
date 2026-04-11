@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 export interface ProjectInfo {
@@ -44,8 +44,7 @@ export function useResourceAssignments() {
     queryKey: ['resource-assignments'],
     queryFn: async () => {
       // Fetch assignments without project join first (avoids RLS recursion issue)
-      const { data, error } = await (supabase as any)
-        .from('resource_assignments')
+      const { data, error } = await typedQuery('resource_assignments')
         .select('*')
         .eq('is_active', true)
         .order('sort_order', { ascending: true });
@@ -59,8 +58,7 @@ export function useResourceAssignments() {
       let vendorsMap: Record<string, VendorInfo> = {};
       
       if (projectIds.length > 0) {
-        const { data: projects } = await (supabase as any)
-          .from('projects')
+        const { data: projects } = await typedQuery('projects')
           .select('id, name, status')
           .in('id', projectIds);
         
@@ -72,8 +70,7 @@ export function useResourceAssignments() {
       }
 
       if (vendorIds.length > 0) {
-        const { data: vendors } = await (supabase as any)
-          .from('resource_vendors')
+        const { data: vendors } = await typedQuery('resource_vendors')
           .select('id, name')
           .in('id', vendorIds);
         
@@ -97,8 +94,7 @@ export function useResourceAssignments() {
     queryKey: ['resource-assignments-all'],
     queryFn: async () => {
       // Fetch assignments without project join first (avoids RLS recursion issue)
-      const { data, error } = await (supabase as any)
-        .from('resource_assignments')
+      const { data, error } = await typedQuery('resource_assignments')
         .select('*')
         .order('sort_order', { ascending: true });
 
@@ -111,8 +107,7 @@ export function useResourceAssignments() {
       let vendorsMap: Record<string, VendorInfo> = {};
       
       if (projectIds.length > 0) {
-        const { data: projects } = await (supabase as any)
-          .from('projects')
+        const { data: projects } = await typedQuery('projects')
           .select('id, name, status')
           .in('id', projectIds);
         
@@ -124,8 +119,7 @@ export function useResourceAssignments() {
       }
 
       if (vendorIds.length > 0) {
-        const { data: vendors } = await (supabase as any)
-          .from('resource_vendors')
+        const { data: vendors } = await typedQuery('resource_vendors')
           .select('id, name')
           .in('id', vendorIds);
         

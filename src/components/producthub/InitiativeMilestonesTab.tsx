@@ -6,7 +6,7 @@
 
 import React, { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { Plus, Flag, Trash2, Check } from 'lucide-react';
 import { logInitiativeAudit } from '@/lib/initiativeAudit';
 import { toast } from 'sonner';
@@ -31,8 +31,7 @@ export function InitiativeMilestonesTab({ initiativeId }: InitiativeMilestonesTa
   const { data: milestones = [], isLoading, isError } = useQuery({
     queryKey: ['ph-milestones', initiativeId],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from('ph_initiative_milestones')
+      const { data, error } = await typedQuery('ph_initiative_milestones')
         .select('*')
         .eq('initiative_id', initiativeId)
         .order('planned_date', { ascending: true });
@@ -50,8 +49,7 @@ export function InitiativeMilestonesTab({ initiativeId }: InitiativeMilestonesTa
     setSubmitting(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      const { data: rows, error } = await (supabase as any)
-        .from('ph_initiative_milestones')
+      const { data: rows, error } = await typedQuery('ph_initiative_milestones')
         .insert({
           initiative_id: initiativeId,
           title: newTitle.trim(),
@@ -88,8 +86,7 @@ export function InitiativeMilestonesTab({ initiativeId }: InitiativeMilestonesTa
     const newStatus = currentStatus === 'completed' ? 'not_started' : 'completed';
     const actualDate = newStatus === 'completed' ? new Date().toISOString().slice(0, 10) : null;
     try {
-      const { data: rows, error } = await (supabase as any)
-        .from('ph_initiative_milestones')
+      const { data: rows, error } = await typedQuery('ph_initiative_milestones')
         .update({ status: newStatus, actual_date: actualDate, updated_at: new Date().toISOString() })
         .eq('id', id)
         .select();
@@ -116,8 +113,7 @@ export function InitiativeMilestonesTab({ initiativeId }: InitiativeMilestonesTa
 
   const handleDelete = async (id: string) => {
     try {
-      const { error } = await (supabase as any)
-        .from('ph_initiative_milestones')
+      const { error } = await typedQuery('ph_initiative_milestones')
         .delete()
         .eq('id', id);
       if (error) throw error;

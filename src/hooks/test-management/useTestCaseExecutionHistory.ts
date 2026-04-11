@@ -2,7 +2,7 @@
  * Hook for fetching test case execution history from DB
  */
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 
 export interface ExecutionHistoryRecord {
   id: number;
@@ -21,8 +21,7 @@ export function useTestCaseExecutionHistory(caseId: string | undefined) {
       if (!caseId) return [];
 
       // Fetch executions for this test case
-      const { data: executions, error } = await (supabase as any)
-        .from('test_cycle_executions')
+      const { data: executions, error } = await typedQuery('test_cycle_executions')
         .select(`
           id,
           status,

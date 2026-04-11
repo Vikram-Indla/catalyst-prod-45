@@ -16,7 +16,7 @@ import { TestSet, TEST_SET_TYPE_CONFIG, TestSetType, TestSetMembership, DynamicC
 import { useCreateTestSet, useUpdateTestSet } from '@/hooks/useTestSets';
 import { useFolders } from '@/hooks/test-management/useFolders';
 import { useAuth } from '@/lib/auth';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
 
 interface Props {
@@ -38,7 +38,7 @@ export function CreateTestSetModal({ open, onClose, editingSet, projectId }: Pro
   const { data: allTags } = useQuery({
     queryKey: ['th-tags-all'],
     queryFn: async () => {
-      const { data, error } = await (supabase as any).from('th_tags').select('id, name, slug, color, category').order('name');
+      const { data, error } = await typedQuery('th_tags').select('id, name, slug, color, category').order('name');
       if (error) throw new Error(error.message);
       return data as { id: string; name: string; slug: string; color: string; category: string | null }[];
     },

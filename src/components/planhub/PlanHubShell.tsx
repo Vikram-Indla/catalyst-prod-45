@@ -1,20 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import { 
-  LayoutGrid, FolderOpen, GitCompare, Layers, Users, 
-  Bot, FileBarChart, ChevronLeft 
+import React, { lazy, Suspense, useState, useEffect } from 'react';
+import {
+  LayoutGrid, FolderOpen, GitCompare, Layers, Users,
+  Bot, FileBarChart, ChevronLeft
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useSettingsSubscription } from '@/hooks/usePlanHubSubscriptions';
 import '@/styles/planhub.css';
 
-// Import views
-import PlanLibrary from './views/PlanLibrary';
-import PlanEditor from './views/PlanEditor';
-import ScenarioCompare from './views/ScenarioCompare';
-import MasterPlan from './views/MasterPlan';
-import ResourcesView from './views/ResourcesView';
-import AIAssistant from './views/AIAssistant';
-import ReportCenter from './views/ReportCenter';
+// Lazy-load views — only the active view's chunk loads
+const PlanLibrary = lazy(() => import('./views/PlanLibrary'));
+const PlanEditor = lazy(() => import('./views/PlanEditor'));
+const ScenarioCompare = lazy(() => import('./views/ScenarioCompare'));
+const MasterPlan = lazy(() => import('./views/MasterPlan'));
+const ResourcesView = lazy(() => import('./views/ResourcesView'));
+const AIAssistant = lazy(() => import('./views/AIAssistant'));
+const ReportCenter = lazy(() => import('./views/ReportCenter'));
 
 import type { PlanHubView, FeatureSettings, AIFeatures } from '@/types/planhub.types';
 
@@ -179,7 +179,9 @@ export default function PlanHubShell() {
 
         {/* Main Content */}
         <main className="ph-main">
-          {renderView()}
+          <Suspense fallback={<div className="ph-flex ph-items-center ph-justify-center" style={{ flex: 1 }}><div className="ph-spinner"></div></div>}>
+            {renderView()}
+          </Suspense>
         </main>
       </div>
     </div>

@@ -10,7 +10,7 @@ import {
   RefreshCw, Download, AlertTriangle, ChevronRight, Plus, Play, FileText,
 } from 'lucide-react';
 import { TestHubPageHeader } from '@/components/testhub/TestHubPageHeader';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
 import { useTheme } from '@/hooks/useTheme';
 import type { ActiveCycle } from '@/components/testhub/dashboard/ActiveCyclesList';
@@ -80,7 +80,7 @@ export default function TestHubDashboardPage() {
         // Total test cases
         supabase.from('tm_test_cases').select('*', { count: 'exact', head: true }),
         // Execution status counts
-        (supabase as any).from('tm_cycle_scope').select('current_status'),
+        typedQuery('tm_cycle_scope').select('current_status'),
         // Active cycle count
         supabase.from('tm_test_cycles').select('*', { count: 'exact', head: true }).in('status', ['active', 'in_progress']),
         // Completed cycle count
@@ -88,31 +88,27 @@ export default function TestHubDashboardPage() {
         // Total cycles
         supabase.from('tm_test_cycles').select('*', { count: 'exact', head: true }),
         // Active cycles list (DO NOT TOUCH this query)
-        (supabase as any)
-          .from('tm_test_cycles')
+        typedQuery('tm_test_cycles')
           .select('id, cycle_key, name, status, total_cases, passed_count, failed_count, blocked_count, not_run_count, in_progress_count')
           .in('status', ['active', 'in_progress'])
           .order('created_at', { ascending: false })
           .limit(5),
         // Recent activity from th_test_executions
-        (supabase as any)
-          .from('th_test_executions')
+        typedQuery('th_test_executions')
           .select('id, result, executed_at, executed_by, cycle_scope_id, tm_cycle_scope!inner(cycle_id, test_case_id, tm_test_cycles!inner(cycle_key, name), tm_test_cases!inner(case_key, title))')
           .not('executed_at', 'is', null)
           .order('executed_at', { ascending: false })
           .limit(10),
         // Top failing tests
-        (supabase as any)
-          .from('tm_cycle_scope')
+        typedQuery('tm_cycle_scope')
           .select('test_case_id, tm_test_cases!inner(id, case_key, title, priority)')
           .eq('current_status', 'failed'),
         // Defect stats (DO NOT TOUCH)
         supabase.rpc('get_defect_stats', { p_project_id: null }),
-        (supabase as any).from('tm_defects').select('status'),
+        typedQuery('tm_defects').select('status'),
         supabase.from('tm_test_cases').select('automation_status'),
         currentUserId
-          ? (supabase as any)
-              .from('th_test_executions')
+          ? typedQuery('th_test_executions')
               .select('id, result')
               .eq('executed_by', currentUserId)
               .gte('executed_at', new Date().toISOString().slice(0, 10))
@@ -161,8 +157,7 @@ export default function TestHubDashboardPage() {
         // Fix 3: Batch query for live cycle stats from tm_cycle_scope
         const cycleIds = (cyclesRes.data as any[]).map((c: any) => c.id);
         if (cycleIds.length > 0) {
-          const { data: allScopeRows } = await (supabase as any)
-            .from('tm_cycle_scope')
+          const { data: allScopeRows } = await typedQuery('tm_cycle_scope')
             .select('cycle_id, current_status')
             .in('cycle_id', cycleIds);
 

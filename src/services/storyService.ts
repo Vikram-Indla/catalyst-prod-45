@@ -2,7 +2,7 @@
  * Story Service - CRUD operations for Stories
  */
 
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import type { CreateStoryInput } from '@/types/story';
 
 export async function createStory(input: CreateStoryInput) {
@@ -78,8 +78,7 @@ export async function createStory(input: CreateStoryInput) {
 }
 
 export async function getStoriesByFeature(featureId: string) {
-  const { data, error } = await (supabase as any)
-    .from('stories')
+  const { data, error } = await typedQuery('stories')
     .select(`
       *,
       owner:profiles!stories_owner_id_fkey(id, full_name, avatar_url),

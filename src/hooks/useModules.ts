@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 export interface Module {
@@ -98,8 +98,7 @@ export function useActivePackage() {
   return useQuery({
     queryKey: ['active-package'],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from('active_package')
+      const { data, error } = await typedQuery('active_package')
         .select('*')
         .limit(1)
         .single();
@@ -134,8 +133,7 @@ export function useUpdateModuleSettings() {
       }
       
       // Update active_package
-      const { error: packageError } = await (supabase as any)
-        .from('active_package')
+      const { error: packageError } = await typedQuery('active_package')
         .update({ 
           package_code: packageCode === 'CUSTOM' ? null : packageCode,
           is_custom: isCustom,

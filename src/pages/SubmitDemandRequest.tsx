@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { format, startOfDay, endOfDay } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { useDepartments, useBusinessOwners, useDepartmentOwnerMappings, getOwnerIdForDepartment } from '@/hooks/useDepartmentsAndOwners';
@@ -210,8 +210,7 @@ export default function SubmitDemandRequest() {
     const dayStart = startOfDay(today).toISOString();
     const dayEnd = endOfDay(today).toISOString();
     
-    const { count, error } = await (supabase as any)
-      .from('business_requests')
+    const { count, error } = await typedQuery('business_requests')
       .select('*', { count: 'exact', head: true })
       .ilike('requestor', `%${fullEmail}%`)
       .gte('created_at', dayStart)
@@ -249,8 +248,7 @@ export default function SubmitDemandRequest() {
       
       const fullEmail = `${formData.email}${EMAIL_DOMAIN}`;
       // Insert business request
-      const { data: requestData, error: requestError } = await (supabase as any)
-        .from('business_requests')
+      const { data: requestData, error: requestError } = await typedQuery('business_requests')
         .insert([{
           title: formData.summary,
           description: formData.description,
@@ -282,7 +280,7 @@ export default function SubmitDemandRequest() {
             console.error('Failed to upload attachment:', uploadError);
           } else {
             // Save attachment reference
-            await (supabase as any).from('attachments').insert({
+            await typedQuery('attachments').insert({
               entity_type: 'business_request',
               entity_id: requestDataTyped.id,
               file_name: attachment.name,

@@ -8,7 +8,7 @@ import {
   Settings, Bell, Palette, Layout, Clock, Save,
   Sun, Moon, Monitor, Check, RefreshCw, Activity
 } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
 import { TestHubPageHeader } from '@/components/testhub/TestHubPageHeader';
 import { ActivityLog } from '@/components/testhub/settings/ActivityLog';
@@ -96,7 +96,7 @@ export default function SettingsPage() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      const { data, error } = await (supabase as any).rpc('get_user_preferences', { p_user_id: user.id });
+      const { data, error } = await typedRpc('get_user_preferences', { p_user_id: user.id });
       if (error) throw error;
       // RPC returns array, take first item
       const prefs = Array.isArray(data) ? data[0] : data;
@@ -124,7 +124,7 @@ export default function SettingsPage() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      const { error } = await (supabase as any).rpc('update_user_preferences', {
+      const { error } = await typedRpc('update_user_preferences', {
         p_user_id: user.id,
         p_updates: preferences,
       });

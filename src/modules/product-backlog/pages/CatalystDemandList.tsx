@@ -12,7 +12,7 @@ import { BusinessRequestDrawer } from '@/components/business-requests/BusinessRe
 import { CreateBusinessRequestModal } from '@/components/business-requests/CreateBusinessRequestModal';
 import { ProductBacklogFiltersDialog, ProductBacklogFilters } from '../components/ProductBacklogFiltersDialog';
 import { RequestListPanel, RequestDetailPanel, AttachmentUploadModal } from '../components/split-panel';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
 import { PageChrome } from '@/components/layout/PageChrome';
@@ -93,8 +93,7 @@ export default function CatalystDemandList() {
     queryKey: ['business-request-attachments', requestIds],
     queryFn: async () => {
       if (requestIds.length === 0) return {};
-      const { data: links } = await (supabase as any)
-        .from('business_request_links')
+      const { data: links } = await typedQuery('business_request_links')
         .select('business_request_id')
         .in('business_request_id', requestIds);
       const map: Record<string, boolean> = {};
@@ -320,8 +319,7 @@ export default function CatalystDemandList() {
         localUpdates[key] = val;
       }
 
-      const { error } = await (supabase as any)
-        .from('business_requests')
+      const { error } = await typedQuery('business_requests')
         .update(updatePayload)
         .eq('id', selectedRequest._dbId);
 
@@ -351,8 +349,7 @@ export default function CatalystDemandList() {
       updatePayload = { end_date: dbValue, impl_target_end_date: dbValue };
     }
     
-    const { error } = await (supabase as any)
-      .from('business_requests')
+    const { error } = await typedQuery('business_requests')
       .update(updatePayload)
       .eq('id', selectedRequest._dbId);
 
@@ -384,8 +381,7 @@ export default function CatalystDemandList() {
     const { data: { user } } = await supabase.auth.getUser();
 
     // Fetch original (only need title)
-    const { data: original, error: fetchError } = await (supabase as any)
-      .from('business_requests')
+    const { data: original, error: fetchError } = await typedQuery('business_requests')
       .select('title, id')
       .eq('id', selectedRequest._dbId)
       .maybeSingle();
@@ -397,8 +393,7 @@ export default function CatalystDemandList() {
     }
 
     // Create a fresh demand: only copy the summary/title, reset status + scoring
-    const { data: newRequest, error: insertError } = await (supabase as any)
-      .from('business_requests')
+    const { data: newRequest, error: insertError } = await typedQuery('business_requests')
       .insert({
         title: `${originalTyped.title} (Copy)`,
         process_step: 'new_request',
@@ -438,8 +433,7 @@ export default function CatalystDemandList() {
   const handleDelete = async () => {
     if (!selectedRequest) return;
 
-    const { error } = await (supabase as any)
-      .from('business_requests')
+    const { error } = await typedQuery('business_requests')
       .update({ deleted_at: new Date().toISOString() })
       .eq('id', selectedRequest._dbId);
 

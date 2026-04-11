@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 
 interface WSJFData {
   epic_id: string;
@@ -16,8 +16,7 @@ export const useWSJF = (epicId: string, piId: string) => {
   return useQuery({
     queryKey: ['wsjf', epicId, piId],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from('epic_wsjf')
+      const { data, error } = await typedQuery('epic_wsjf')
         .select('*')
         .eq('epic_id', epicId)
         .eq('pi_id', piId)
@@ -39,8 +38,7 @@ export const useUpdateWSJF = () => {
       field: string; 
       value: number; 
     }) => {
-      const { data, error } = await (supabase as any)
-        .from('epic_wsjf')
+      const { data, error } = await typedQuery('epic_wsjf')
         .upsert({ 
           epic_id: epicId, 
           pi_id: piId, 

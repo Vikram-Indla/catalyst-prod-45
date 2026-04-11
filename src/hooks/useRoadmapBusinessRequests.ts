@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { BusinessRequestRoadmapItem, RoadmapStatus, MilestoneState } from '@/types/roadmapTypes';
 
 // Map process_step to RoadmapStatus
@@ -73,8 +73,7 @@ export function useRoadmapBusinessRequests() {
     queryFn: async () => {
       // Fetch business requests
       // Use impl_start_date (Kickoff) for bar start, impl_target_end_date (Target Complete) for bar end
-      const { data: requests, error: reqError } = await (supabase as any)
-        .from('business_requests')
+      const { data: requests, error: reqError } = await typedQuery('business_requests')
         .select('id, request_key, title, business_owner, process_step, start_date, end_date, impl_start_date, impl_target_end_date, rank, delivery_platform, health')
         .is('deleted_at', null)
         .order('rank', { ascending: true, nullsFirst: false });

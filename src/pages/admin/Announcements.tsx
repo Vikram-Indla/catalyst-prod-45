@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
 import { Plus, Megaphone, Edit, Trash2 } from 'lucide-react';
 
@@ -16,8 +16,7 @@ export default function Announcements() {
   const { data: announcements, isLoading } = useQuery({
     queryKey: ['admin-announcements'],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from('announcements')
+      const { data, error } = await typedQuery('announcements')
         .select('*')
         .order('created_at', { ascending: false });
       

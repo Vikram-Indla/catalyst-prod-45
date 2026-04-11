@@ -105,7 +105,21 @@ export default defineConfig(({ mode, command }) => {
     reportCompressedSize: false,
     rollupOptions: {
       output: {
-        // Let Vite handle chunking automatically to avoid cross-chunk React resolution issues
+        manualChunks(id) {
+          // Stable vendor chunks for better long-term caching
+          if (id.includes('node_modules/react/') || id.includes('node_modules/react-dom/') || id.includes('node_modules/react-router')) {
+            return 'vendor-react';
+          }
+          if (id.includes('node_modules/@radix-ui/')) {
+            return 'vendor-ui';
+          }
+          if (id.includes('node_modules/@tanstack/')) {
+            return 'vendor-query';
+          }
+          if (id.includes('node_modules/recharts') || id.includes('node_modules/d3')) {
+            return 'vendor-charts';
+          }
+        },
       },
     },
   },

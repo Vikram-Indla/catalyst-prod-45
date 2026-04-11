@@ -40,7 +40,7 @@ import {
   DeliveryTrackSelect, 
   PlannedQuarterSelect 
 } from '@/components/ui/lookup-select';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import {
   Popover,
   PopoverContent,
@@ -83,8 +83,7 @@ export function EpicDetailsViewTab({ data, onChange }: EpicDetailsViewTabProps) 
   const { data: businessRequests = [] } = useQuery({
     queryKey: ['business-requests-for-epic-drawer'],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from('business_requests')
+      const { data, error } = await typedQuery('business_requests')
         .select('id, request_key, title, rank, business_score')
         .is('deleted_at', null)
         .order('request_key');

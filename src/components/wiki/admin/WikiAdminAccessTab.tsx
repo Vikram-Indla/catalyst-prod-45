@@ -4,13 +4,13 @@
  */
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useWikiAccessMatrix, useUpdateAccess } from '@/hooks/useWikiAdminData';
 import { SkeletonBlock } from '@/components/wiki/WikiTokens';
 import { EmptyState } from './WikiAdminSyncTab';
 import { ShieldCheck } from 'lucide-react';
 
-const fromAny = (t: string) => (supabase as any).from(t);
+const fromAny = (t: string) => typedQuery(t);
 
 const ROLES = ['admin', 'program_manager', 'team_lead', 'user'] as const;
 

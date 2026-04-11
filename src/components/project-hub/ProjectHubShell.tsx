@@ -1,12 +1,12 @@
-import { useState, useEffect } from 'react';
+import { lazy, Suspense, useState, useEffect } from 'react';
 import { Outlet, useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { TopNav } from './shell/TopNav';
 import { Sidebar } from './shell/Sidebar';
 import { ProjectEntry } from './shell/ProjectSwitcher';
-import { CreateProjectModal } from './CreateProjectModal';
-import { CreateWorkItemModal } from './work-items/CreateWorkItemModal';
+const CreateProjectModal = lazy(() => import('./CreateProjectModal').then(m => ({ default: m.CreateProjectModal })));
+const CreateWorkItemModal = lazy(() => import('./work-items/CreateWorkItemModal').then(m => ({ default: m.CreateWorkItemModal })));
 import { toast } from 'sonner';
 
 export function ProjectHubShell() {

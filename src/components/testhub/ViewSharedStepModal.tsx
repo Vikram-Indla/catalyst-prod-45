@@ -9,7 +9,7 @@ import {
   Variable, Link2, CheckCircle, ExternalLink,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { formatTimestamp } from '@/lib/formatTimestamp';
 
 interface SharedStepVariable {
@@ -70,8 +70,7 @@ export function ViewSharedStepModal({ isOpen, sharedStep, onClose, onEdit, onDel
   useEffect(() => {
     if (isOpen && sharedStep) {
       setIsLoadingLinks(true);
-      (supabase as any)
-        .from('th_shared_step_usage')
+      typedQuery('th_shared_step_usage')
         .select('test_case_id, test_case:tm_test_cases (id, case_key, title)')
         .eq('shared_step_id', sharedStep.id)
         .limit(10)

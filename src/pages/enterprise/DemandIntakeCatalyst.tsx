@@ -42,7 +42,7 @@ import { BusinessRequestDrawer } from '@/components/business-requests/BusinessRe
 import { StatusSummaryKanbanView } from '@/components/business-requests/StatusSummaryKanbanView';
 import { useProcessStepOptions, useProcessStepInfo } from '@/contexts/ProcessStepsContext';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';
 
 type ViewMode = 'list' | 'kanban';
@@ -215,8 +215,7 @@ export default function DemandIntakeCatalyst() {
   // Bulk action mutations
   const bulkUpdateStatusMutation = useMutation({
     mutationFn: async (status: string) => {
-      const { error } = await (supabase as any)
-        .from('business_requests')
+      const { error } = await typedQuery('business_requests')
         .update({ process_step: status })
         .in('id', selectedRows);
       if (error) throw error;
@@ -230,8 +229,7 @@ export default function DemandIntakeCatalyst() {
 
   const bulkAssignMutation = useMutation({
     mutationFn: async (assignee: string) => {
-      const { error } = await (supabase as any)
-        .from('business_requests')
+      const { error } = await typedQuery('business_requests')
         .update({ assignee })
         .in('id', selectedRows);
       if (error) throw error;
@@ -245,8 +243,7 @@ export default function DemandIntakeCatalyst() {
 
   const bulkDeleteMutation = useMutation({
     mutationFn: async () => {
-      const { error } = await (supabase as any)
-        .from('business_requests')
+      const { error } = await typedQuery('business_requests')
         .delete()
         .in('id', selectedRows);
       if (error) throw error;
@@ -260,8 +257,7 @@ export default function DemandIntakeCatalyst() {
 
   // Handle row update from EnterpriseTable inline editing
   const handleRowUpdate = async (rowId: string, columnId: string, newValue: any) => {
-    const { error } = await (supabase as any)
-      .from('business_requests')
+    const { error } = await typedQuery('business_requests')
       .update({ [columnId]: newValue })
       .eq('id', rowId);
     
@@ -276,8 +272,7 @@ export default function DemandIntakeCatalyst() {
 
   // Handle row delete from EnterpriseTable
   const handleRowDelete = async (rowId: string) => {
-    const { error } = await (supabase as any)
-      .from('business_requests')
+    const { error } = await typedQuery('business_requests')
       .delete()
       .eq('id', rowId);
     

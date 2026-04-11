@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { X, Edit2, Copy, FileText, ClipboardList, Paperclip, Link2, History, Play, Plus, Trash2, Download, Upload, Bug, BookOpen, ImageIcon, Table, File } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { formatDistanceToNow } from 'date-fns';
 import { useDropzone } from 'react-dropzone';
 
@@ -206,10 +206,10 @@ export function ViewTestCaseModal({
     try {
       const [stepsRes, linksRes, historyRes, runsRes, attachmentsRes] = await Promise.all([
         supabase.from('tm_test_steps').select('*').eq('test_case_id', testCase.id).order('step_number'),
-        (supabase as any).from('tm_test_case_links').select('*').eq('test_case_id', testCase.id),
-        (supabase as any).from('tm_test_case_versions').select('*').eq('test_case_id', testCase.id).order('version_number', { ascending: false }),
-        (supabase as any).from('th_test_executions').select('*').eq('test_case_id', testCase.id).order('executed_at', { ascending: false }),
-        (supabase as any).from('th_test_case_attachments').select('*').eq('test_case_id', testCase.id),
+        typedQuery('tm_test_case_links').select('*').eq('test_case_id', testCase.id),
+        typedQuery('tm_test_case_versions').select('*').eq('test_case_id', testCase.id).order('version_number', { ascending: false }),
+        typedQuery('th_test_executions').select('*').eq('test_case_id', testCase.id).order('executed_at', { ascending: false }),
+        typedQuery('th_test_case_attachments').select('*').eq('test_case_id', testCase.id),
       ]);
 
       setSteps(stepsRes.data || []);
@@ -241,7 +241,7 @@ export function ViewTestCaseModal({
   const handleAddLink = async (key: string, title: string) => {
     if (!testCase) return;
     const { data: { user } } = await supabase.auth.getUser();
-    const { data, error } = await (supabase as any).from('tm_test_case_links').insert({
+    const { data, error } = await typedQuery('tm_test_case_links').insert({
       test_case_id: testCase.id,
       linked_item_type: addLinkType,
       linked_item_id: key,
@@ -258,7 +258,7 @@ export function ViewTestCaseModal({
   };
 
   const handleDeleteLink = async (linkId: string) => {
-    await (supabase as any).from('tm_test_case_links').delete().eq('id', linkId);
+    await typedQuery('tm_test_case_links').delete().eq('id', linkId);
     setLinks(links.filter(l => l.id !== linkId));
   };
 
@@ -272,7 +272,7 @@ export function ViewTestCaseModal({
         const { error: uploadError } = await supabase.storage.from('testhub-attachments').upload(filePath, file);
         if (uploadError) { console.error('Upload error:', uploadError); continue; }
         const { data: urlData } = supabase.storage.from('testhub-attachments').getPublicUrl(filePath);
-        const { data: insertedAtt, error: dbError } = await (supabase as any).from('th_test_case_attachments').insert({
+        const { data: insertedAtt, error: dbError } = await typedQuery('th_test_case_attachments').insert({
           test_case_id: testCase.id, file_name: file.name, file_url: urlData.publicUrl, file_size: file.size, file_type: file.type,
         }).select().single();
         if (!dbError && insertedAtt) { setAttachments(prev => [insertedAtt, ...prev]); }
@@ -289,7 +289,7 @@ export function ViewTestCaseModal({
       const pathMatch = url.pathname.match(/\/object\/public\/testhub-attachments\/(.*)/);
       if (pathMatch) { await supabase.storage.from('testhub-attachments').remove([pathMatch[1]]); }
     } catch {}
-    await (supabase as any).from('th_test_case_attachments').delete().eq('id', attId);
+    await typedQuery('th_test_case_attachments').delete().eq('id', attId);
     setAttachments(attachments.filter(a => a.id !== attId));
   };
 

@@ -2,7 +2,7 @@
 // Citation: Catalyst_Stories_PRD_v2.pdf
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
@@ -39,8 +39,7 @@ export function StoryAttachments({ storyId }: StoryAttachmentsProps) {
   const { data: attachments, isLoading } = useQuery({
     queryKey: ['story-attachments', storyId],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from('attachments')
+      const { data, error } = await typedQuery('attachments')
         .select('*')
         .eq('entity_type', 'stories')
         .eq('entity_id', storyId)
@@ -65,8 +64,7 @@ export function StoryAttachments({ storyId }: StoryAttachmentsProps) {
       if (uploadError) throw uploadError;
 
       // Create attachment record
-      const { error: recordError } = await (supabase as any)
-        .from('attachments')
+      const { error: recordError } = await typedQuery('attachments')
         .insert({
           entity_type: 'stories',
           entity_id: storyId,
@@ -98,8 +96,7 @@ export function StoryAttachments({ storyId }: StoryAttachmentsProps) {
       if (storageError) throw storageError;
 
       // Delete record
-      const { error: recordError } = await (supabase as any)
-        .from('attachments')
+      const { error: recordError } = await typedQuery('attachments')
         .delete()
         .eq('id', attachment.id);
 

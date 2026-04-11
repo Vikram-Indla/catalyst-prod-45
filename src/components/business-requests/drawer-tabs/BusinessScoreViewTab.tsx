@@ -9,7 +9,7 @@ import { ChevronDown, Lock, Save, AlertCircle, RefreshCw, X } from 'lucide-react
 import { cn } from '@/lib/utils';
 import { BusinessRequest } from '@/types/business-request';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { 
   usePrioritizationConfig, 
@@ -180,8 +180,7 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
   const { data: allRequests } = useQuery({
     queryKey: ['all-business-requests-for-rank'],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from('business_requests')
+      const { data, error } = await typedQuery('business_requests')
         .select('id, business_score, is_force_ranked, rank, priority_tier')
         .is('deleted_at', null)
         .not('priority_tier', 'is', null)
@@ -323,8 +322,7 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
         updateData.process_step = 'on_hold';
       }
 
-      const { error } = await (supabase as any)
-        .from('business_requests')
+      const { error } = await typedQuery('business_requests')
         .update(updateData)
         .eq('id', requestId);
 
@@ -350,7 +348,7 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
         .eq('id', user?.id)
         .single();
 
-      await (supabase as any).from('business_request_audit_logs').insert({
+      await typedQuery('business_request_audit_logs').insert({
         business_request_id: requestId,
         actor_id: user?.id,
         actor_name: profile?.full_name || user?.email || 'Unknown User',
@@ -361,7 +359,7 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
       });
 
       if (tier === 'rejected') {
-        await (supabase as any).from('business_request_audit_logs').insert({
+        await typedQuery('business_request_audit_logs').insert({
           business_request_id: requestId,
           actor_id: user?.id,
           actor_name: profile?.full_name || user?.email || 'Unknown User',
@@ -436,8 +434,7 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
       setIsSavingRank(true);
       skipNextResetRef.current = true;
       try {
-        await (supabase as any)
-          .from('business_requests')
+        await typedQuery('business_requests')
           .update({ 
             rank: null, 
             is_force_ranked: false,
@@ -454,7 +451,7 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
           .eq('id', user?.id)
           .single();
 
-        await (supabase as any).from('business_request_audit_logs').insert({
+        await typedQuery('business_request_audit_logs').insert({
           business_request_id: requestId,
           actor_id: user?.id,
           actor_name: profile?.full_name || user?.email || 'Unknown User',
@@ -507,8 +504,7 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
       setIsSavingRank(true);
       skipNextResetRef.current = true;
       try {
-        await (supabase as any)
-          .from('business_requests')
+        await typedQuery('business_requests')
           .update({ 
             rank: pendingRank, 
             is_force_ranked: true,
@@ -524,7 +520,7 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
           .eq('id', user?.id)
           .single();
 
-        await (supabase as any).from('business_request_audit_logs').insert({
+        await typedQuery('business_request_audit_logs').insert({
           business_request_id: requestId,
           actor_id: user?.id,
           actor_name: profile?.full_name || user?.email || 'Unknown User',

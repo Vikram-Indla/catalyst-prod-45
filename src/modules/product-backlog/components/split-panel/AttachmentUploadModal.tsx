@@ -5,7 +5,7 @@
 import React, { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import {
   Dialog,
@@ -60,8 +60,7 @@ export function AttachmentUploadModal({
   const { data: attachments = [], isLoading } = useQuery({
     queryKey: ['business-request-attachments', requestId],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from('business_request_links')
+      const { data, error } = await typedQuery('business_request_links')
         .select('*')
         .eq('business_request_id', requestId)
         .eq('kind', 'document')
@@ -98,8 +97,7 @@ export function AttachmentUploadModal({
         .getPublicUrl(fileName);
 
       // Create link record in business_request_links (same as LinksViewTab)
-      const { error: dbError } = await (supabase as any)
-        .from('business_request_links')
+      const { error: dbError } = await typedQuery('business_request_links')
         .insert({
           business_request_id: requestId,
           title: file.name,
@@ -139,8 +137,7 @@ export function AttachmentUploadModal({
       }
 
       // Delete from database
-      const { error: dbError } = await (supabase as any)
-        .from('business_request_links')
+      const { error: dbError } = await typedQuery('business_request_links')
         .delete()
         .eq('id', attachment.id);
 

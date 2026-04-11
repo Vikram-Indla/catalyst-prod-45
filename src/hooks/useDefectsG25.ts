@@ -3,7 +3,7 @@
  * Queries tm_defects schema (TestHub isolated defect tables)
  */
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery, typedQuery, typedQuery } from '@/integrations/supabase/client';
 import { Defect, DefectStats, DefectFilters, DefectHistoryEntry, DefectComment, DefectLink } from '@/types/defects';
 import { toast } from 'sonner';
 
@@ -12,8 +12,7 @@ export function useDefectsG25(filters?: DefectFilters) {
   return useQuery({
     queryKey: ['g25-defects', filters],
     queryFn: async (): Promise<Defect[]> => {
-      let query = (supabase as any)
-        .from('tm_defects')
+      let query = typedQuery('tm_defects')
         .select(`
           *,
           reporter:profiles!tm_defects_reporter_id_fkey(id, full_name, avatar_url),
@@ -57,8 +56,7 @@ export function useDefectG25(defectId: string | undefined) {
     queryKey: ['g25-defect', defectId],
     queryFn: async (): Promise<Defect | null> => {
       if (!defectId) return null;
-      const { data, error } = await (supabase as any)
-        .from('tm_defects')
+      const { data, error } = await typedQuery('tm_defects')
         .select(`
           *,
           reporter:profiles!tm_defects_reporter_id_fkey(id, full_name, avatar_url),
@@ -81,16 +79,14 @@ export function useCreateDefectG25() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
       const { run_id, ...defectPayload } = input;
-      const { data, error } = await (supabase as any)
-        .from('tm_defects')
+      const { data, error } = await typedQuery('tm_defects')
         .insert({ ...defectPayload, reported_by: user.id } as any)
         .select()
         .single();
       if (error) throw new Error(error.message);
       // Link defect to execution run if run_id was provided
       if (run_id && data?.id) {
-        const { error: linkError } = await (supabase as any)
-          .from('tm_defect_links')
+        const { error: linkError } = await typedQuery('tm_defect_links')
           .insert({ defect_id: data.id, test_run_id: run_id, created_by: user.id });
         if (linkError) {
           console.error('[useCreateDefectG25] tm_defect_links insert failed:', linkError.message);
@@ -112,8 +108,7 @@ export function useUpdateDefectG25() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async ({ id, ...updates }: { id: string } & Record<string, any>) => {
-      const { data, error } = await (supabase as any)
-        .from('tm_defects')
+      const { data, error } = await typedQuery('tm_defects')
         .update(updates as any)
         .eq('id', id)
         .select()
@@ -144,7 +139,7 @@ export function useChangeDefectStatusG25() {
       if (['new', 'open', 'in_progress', 'reopened'].includes(status)) {
         updates.resolved_at = null; updates.verified_at = null; updates.closed_at = null;
       }
-      const { data, error } = await (supabase as any).from('tm_defects').update(updates as any).eq('id', defectId).select().single();
+      const { data, error } = await typedQuery('tm_defects').update(updates as any).eq('id', defectId).select().single();
       if (error) throw new Error(error.message);
       return data;
     },
@@ -164,7 +159,7 @@ export function useDeleteDefectG25() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (defectId: string) => {
-      const { error } = await (supabase as any).from('tm_defects').delete().eq('id', defectId);
+      const { error } = await typedQuery('tm_defects').delete().eq('id', defectId);
       if (error) throw new Error(error.message);
     },
     onSuccess: () => {
@@ -183,8 +178,7 @@ export function useDefectHistoryG25(defectId: string | undefined) {
     queryFn: async () => {
       if (!defectId) return [];
       // 1. Get linked execution run IDs
-      const { data: links, error: linkErr } = await (supabase as any)
-        .from('tm_defect_links')
+      const { data: links, error: linkErr } = await typedQuery('tm_defect_links')
         .select('id, test_run_id, step_result_id, created_at')
         .eq('defect_id', defectId);
       if (linkErr || !links?.length) return [];
@@ -298,8 +292,7 @@ export function useDefectLinksG25(defectId: string | undefined) {
     queryKey: ['g25-defect-links', defectId],
     queryFn: async (): Promise<DefectLink[]> => {
       if (!defectId) return [];
-      const { data, error } = await (supabase as any)
-        .from('tm_defect_links')
+      const { data, error } = await typedQuery('tm_defect_links')
         .select('*')
         .eq('defect_id', defectId)
         .order('created_at', { ascending: false });
@@ -309,8 +302,7 @@ export function useDefectLinksG25(defectId: string | undefined) {
       // Resolve test case links
       for (const link of links) {
         if (link.link_type === 'test_case') {
-          const { data: tc } = await (supabase as any)
-            .from('tm_test_cases')
+          const { data: tc } = await typedQuery('tm_test_cases')
             .select('id, case_key, title')
             .eq('id', link.linked_id)
             .single();
@@ -328,8 +320,7 @@ export function useCreateDefectLinkG25() {
   return useMutation({
     mutationFn: async ({ defectId, linkType, linkedId }: { defectId: string; linkType: string; linkedId: string }) => {
       const { data: { user } } = await supabase.auth.getUser();
-      const { data, error } = await (supabase as any)
-        .from('tm_defect_links')
+      const { data, error } = await typedQuery('tm_defect_links')
         .insert({ defect_id: defectId, link_type: linkType, linked_id: linkedId, created_by: user?.id } as any)
         .select()
         .single();
@@ -347,7 +338,7 @@ export function useDeleteDefectLinkG25() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async ({ linkId, defectId }: { linkId: string; defectId: string }) => {
-      const { error } = await (supabase as any).from('tm_defect_links').delete().eq('id', linkId);
+      const { error } = await typedQuery('tm_defect_links').delete().eq('id', linkId);
       if (error) throw new Error(error.message);
       return defectId;
     },

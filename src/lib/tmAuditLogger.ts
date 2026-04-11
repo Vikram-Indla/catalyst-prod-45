@@ -3,7 +3,7 @@
  * Logs create/update/delete actions to tm_audit_log table
  */
 
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 
 export type TMAuditAction = 'create' | 'update' | 'delete' | 'assign' | 'execute' | 'clone';
 export type TMAuditEntityType = 'test_case' | 'test_cycle' | 'test_run' | 'test_step' | 'defect' | 'scope' | 'folder';
@@ -24,8 +24,7 @@ export async function logTMAuditEntry(entry: TMAuditLogEntry): Promise<void> {
   try {
     const { data: { user } } = await supabase.auth.getUser();
     
-    const { error } = await (supabase as any)
-      .from('tm_audit_log')
+    const { error } = await typedQuery('tm_audit_log')
       .insert({
         project_id: entry.projectId,
         entity_type: entry.entityType,

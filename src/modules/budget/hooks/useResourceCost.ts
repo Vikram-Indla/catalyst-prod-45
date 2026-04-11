@@ -3,7 +3,7 @@
  */
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import type { ResourceCostHistory, ResourceCurrentCost, ResourceCostFormData } from '../types';
 
@@ -13,8 +13,7 @@ export function useResourceCostHistory(resourceId: string | undefined) {
     queryFn: async () => {
       if (!resourceId) return [];
       
-      const { data, error } = await (supabase as any)
-        .from('resource_cost_history')
+      const { data, error } = await typedQuery('resource_cost_history')
         .select('*')
         .eq('resource_id', resourceId)
         .order('effective_from', { ascending: false });
@@ -32,8 +31,7 @@ export function useResourceCurrentCost(resourceId: string | undefined) {
     queryFn: async () => {
       if (!resourceId) return null;
       
-      const { data, error } = await (supabase as any)
-        .from('resource_current_cost')
+      const { data, error } = await typedQuery('resource_current_cost')
         .select('*')
         .eq('resource_id', resourceId)
         .maybeSingle();
@@ -56,8 +54,7 @@ export function useAddResourceCost() {
       resourceId: string; 
       data: ResourceCostFormData 
     }) => {
-      const { data: result, error } = await (supabase as any)
-        .from('resource_cost_history')
+      const { data: result, error } = await typedQuery('resource_cost_history')
         .insert({
           resource_id: resourceId,
           resource_type: data.resource_type,
@@ -95,8 +92,7 @@ export function useUpdateResourceType() {
       resourceType: 'fixed' | 'variable' 
     }) => {
       // Update the current active cost record's resource type
-      const { data, error } = await (supabase as any)
-        .from('resource_cost_history')
+      const { data, error } = await typedQuery('resource_cost_history')
         .update({ resource_type: resourceType })
         .eq('resource_id', resourceId)
         .is('effective_to', null)

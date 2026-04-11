@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { X, Clock, Pencil, Archive, Loader2, ChevronLeft } from 'lucide-react';
 import { useTheme } from '@/hooks/useTheme';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { RA_KEYS } from '@/hooks/useReqAssist';
 import { toast } from 'sonner';
@@ -63,8 +63,7 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
 
   const fetchEpics = async () => {
     setLoading(true);
-    const { data, error } = await (supabase as any)
-      .from('brd_epics')
+    const { data, error } = await typedQuery('brd_epics')
       .select('id, title, description, ra_tag, publish_status, complexity, created_at, generated_at')
       .eq('brd_id', brdId)
       .neq('publish_status', 'archived')
@@ -80,8 +79,7 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
 
   const handleMarkReviewed = async () => {
     setMarkingReviewed(true);
-    await (supabase as any)
-      .from('brd_epics')
+    await typedQuery('brd_epics')
       .update({ publish_status: 'reviewed' })
       .eq('brd_id', brdId)
       .in('publish_status', ['draft', null]);
@@ -106,8 +104,7 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
   const saveEdit = async () => {
     if (!editingId) return;
     setSavingEdit(true);
-    const { error } = await (supabase as any)
-      .from('brd_epics')
+    const { error } = await typedQuery('brd_epics')
       .update({ title: editTitle, description: editDesc || null })
       .eq('id', editingId);
     if (error) {
@@ -121,8 +118,7 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
   };
 
   const handleArchiveEpic = async (epicId: string) => {
-    await (supabase as any)
-      .from('brd_epics')
+    await typedQuery('brd_epics')
       .update({ publish_status: 'archived' })
       .eq('id', epicId);
     setEpics(prev => prev.filter(e => e.id !== epicId));

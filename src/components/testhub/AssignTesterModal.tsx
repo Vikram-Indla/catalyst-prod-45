@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { X, User, Users, Check, Search } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
 
 interface Profile {
@@ -62,8 +62,7 @@ export function AssignTesterModal({
     setIsSubmitting(true);
 
     try {
-      const { error } = await (supabase as any)
-        .from('tm_cycle_scope')
+      const { error } = await typedQuery('tm_cycle_scope')
         .update({ 
           assigned_to: selectedProfileId,
           updated_at: new Date().toISOString(),

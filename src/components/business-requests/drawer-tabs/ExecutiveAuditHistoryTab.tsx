@@ -5,7 +5,7 @@
 
 import { useState } from 'react';
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { format, isSameMinute, parseISO } from 'date-fns';
 import { History, ArrowRight, Loader2, Eye, EyeOff, ChevronDown, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -87,8 +87,7 @@ export function ExecutiveAuditHistoryTab({ requestId }: ExecutiveAuditHistoryTab
       const to = from + PAGE_SIZE - 1;
 
       // Query audit logs directly (no FK to profiles)
-      const { data, error, count } = await (supabase as any)
-        .from('business_request_audit_logs')
+      const { data, error, count } = await typedQuery('business_request_audit_logs')
         .select('*', { count: 'exact' })
         .eq('business_request_id', requestId)
         .order('created_at', { ascending: false })

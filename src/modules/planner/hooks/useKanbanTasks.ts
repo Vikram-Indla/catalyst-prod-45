@@ -4,7 +4,7 @@
 // ============================================================
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import type { KanbanTask, KanbanTaskFilters } from '../types/kanban';
 import { toast } from 'sonner';
 import { useEffect } from 'react';
@@ -18,8 +18,7 @@ export function useKanbanTasks(filters?: KanbanTaskFilters) {
   return useQuery({
     queryKey: [...QUERY_KEY, filters],
     queryFn: async () => {
-      let query = (supabase as any)
-        .from('planner_tasks')
+      let query = typedQuery('planner_tasks')
         .select(`
           *,
           status:planner_statuses(*),
@@ -116,8 +115,7 @@ export function useCreateKanbanTask() {
       // Generate a temporary key - the DB trigger will override with proper PLN-XXX
       const tempKey = `PLN-${Date.now()}`;
       
-      const { data, error } = await (supabase as any)
-        .from('planner_tasks')
+      const { data, error } = await typedQuery('planner_tasks')
         .insert([{
           key: tempKey,
           task_key: tempKey,
@@ -176,8 +174,7 @@ export function useUpdateKanbanTask() {
   
   return useMutation({
     mutationFn: async ({ id, ...updates }: Partial<KanbanTask> & { id: string }) => {
-      const { data, error } = await (supabase as any)
-        .from('planner_tasks')
+      const { data, error } = await typedQuery('planner_tasks')
         .update(updates as any)
         .eq('id', id)
         .select(`

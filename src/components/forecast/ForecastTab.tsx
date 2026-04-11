@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
@@ -102,8 +102,7 @@ export function ForecastTab({ workItemId, workItemType, estimationSystem = 'poin
     queryFn: async () => {
       if (!selectedPiId) return [];
       
-      const { data, error } = await (supabase as any)
-        .from('forecast_entries')
+      const { data, error } = await typedQuery('forecast_entries')
         .select('*, program_increments(name), programs(name), teams(name)')
         .eq('work_item_id', workItemId)
         .eq('work_item_type', workItemType)

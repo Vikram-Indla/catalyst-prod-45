@@ -7,7 +7,7 @@
 
 import { useState, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -177,8 +177,7 @@ export function EpicFeaturesViewTab({ epicId }: EpicFeaturesViewTabProps) {
         link_type: workItem.type,
       };
       
-      const { error } = await (supabase as any)
-        .from('epic_links')
+      const { error } = await typedQuery('epic_links')
         .insert(insertData);
       
       if (error) throw error;

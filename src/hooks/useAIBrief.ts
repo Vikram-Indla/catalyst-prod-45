@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase, typedQuery } from "@/integrations/supabase/client";
 
 export interface AIBriefRecord {
   id: string;
@@ -23,8 +23,7 @@ export function usePublishedBrief(scope: string, entityId?: string) {
   return useQuery({
     queryKey: ['ai-brief', scope, entityId || 'global'],
     queryFn: async (): Promise<AIBriefRecord | null> => {
-      let query = (supabase as any)
-        .from('ai_briefs')
+      let query = typedQuery('ai_briefs')
         .select('*')
         .eq('scope', scope)
         .eq('status', 'published')
@@ -55,8 +54,7 @@ export function useDraftBrief(scope: string, entityId?: string) {
   return useQuery({
     queryKey: ['ai-brief-draft', scope, entityId || 'global'],
     queryFn: async (): Promise<AIBriefRecord | null> => {
-      let query = (supabase as any)
-        .from('ai_briefs')
+      let query = typedQuery('ai_briefs')
         .select('*')
         .eq('scope', scope)
         .eq('status', 'draft')
@@ -119,8 +117,7 @@ export function useGenerateBrief() {
     }) => {
       const briefJson = await generateFn(metricsJson);
 
-      const { data, error } = await (supabase as any)
-        .from('ai_briefs')
+      const { data, error } = await typedQuery('ai_briefs')
         .insert({
           scope,
           scope_entity_id: entityId || null,
@@ -149,8 +146,7 @@ export function useDiscardBrief() {
 
   return useMutation({
     mutationFn: async (briefId: string) => {
-      const { error } = await (supabase as any)
-        .from('ai_briefs')
+      const { error } = await typedQuery('ai_briefs')
         .update({ status: 'discarded', updated_at: new Date().toISOString() })
         .eq('id', briefId);
       if (error) throw error;
@@ -168,8 +164,7 @@ export function useBriefHistory(scope: string, entityId?: string) {
   return useQuery({
     queryKey: ['ai-brief-history', scope, entityId || 'global'],
     queryFn: async (): Promise<AIBriefRecord[]> => {
-      let query = (supabase as any)
-        .from('ai_briefs')
+      let query = typedQuery('ai_briefs')
         .select('*')
         .eq('scope', scope)
         .in('status', ['published', 'archived'])

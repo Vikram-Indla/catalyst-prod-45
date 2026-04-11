@@ -4,7 +4,7 @@
 
 import { useState, useCallback } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import type { ImportMode, ParsedRow, ImportPreviewRow, ValidationError, ImportField } from './types';
 import { RESOURCE_IMPORT_FIELDS, UNIQUE_KEY_FIELD } from './fieldConfig';
@@ -168,8 +168,7 @@ export function useCapacityImport() {
           
           if (existingId) {
             // Update existing - cast to any for type stability
-            const { error } = await (supabase as any)
-              .from('resource_inventory')
+            const { error } = await typedQuery('resource_inventory')
               .update(record)
               .eq('id', existingId);
             
@@ -177,8 +176,7 @@ export function useCapacityImport() {
           } else {
             // Insert new - cast to any for type stability
             record.name = name;
-            const { error } = await (supabase as any)
-              .from('resource_inventory')
+            const { error } = await typedQuery('resource_inventory')
               .insert(record);
             
             if (error) throw error;

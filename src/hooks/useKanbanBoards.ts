@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import type {
   KanbanBoard,
@@ -423,8 +423,7 @@ export function useBoardUsers(boardId?: string) {
     queryKey: ['board-users', boardId],
     queryFn: async () => {
       if (!boardId) return [];
-      const { data, error } = await (supabase as any)
-        .from('kanban_board_users')
+      const { data, error } = await typedQuery('kanban_board_users')
         .select('*, profiles:user_id(id, full_name, email)')
         .eq('board_id', boardId)
         .limit(1000);

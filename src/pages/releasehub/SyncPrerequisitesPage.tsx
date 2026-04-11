@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { ShieldCheck, RefreshCw } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 
 type CheckStatus = 'checking' | 'pass' | 'fail' | 'warn';
@@ -59,7 +59,7 @@ export default function SyncPrerequisitesPage() {
 
     // CHECK 1 — Jira API credentials
     try {
-      const { data, error } = await (supabase as any).from('jira_auth_credentials').select('id, jira_url, created_at').limit(1).maybeSingle();
+      const { data, error } = await typedQuery('jira_auth_credentials').select('id, jira_url, created_at').limit(1).maybeSingle();
       if (error) throw error;
       if (data && data.jira_url) {
         update(0, { status: 'pass', detail: data.jira_url });
@@ -72,7 +72,7 @@ export default function SyncPrerequisitesPage() {
 
     // CHECK 2 — Jira project connection
     try {
-      const { data, error } = await (supabase as any).from('jira_connections').select('id, project_key, project_name').limit(1).maybeSingle();
+      const { data, error } = await typedQuery('jira_connections').select('id, project_key, project_name').limit(1).maybeSingle();
       if (error) throw error;
       if (data && data.project_key) {
         update(1, { status: 'pass', detail: `${data.project_key}${data.project_name ? ' — ' + data.project_name : ''}` });

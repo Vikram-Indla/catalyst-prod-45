@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { X, Server, Globe, Link2, Database, User, FileText, AlertCircle } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
 
 interface CreateEnvironmentModalProps {
@@ -67,8 +67,7 @@ export function CreateEnvironmentModal({ isOpen, onClose, onCreated }: CreateEnv
     if (!validate()) return;
     setIsSubmitting(true);
     try {
-      const { data, error } = await (supabase as any)
-        .from('tm_environments')
+      const { data, error } = await typedQuery('tm_environments')
         .insert({
           name: name.trim(),
           type,

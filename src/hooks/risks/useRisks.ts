@@ -2,7 +2,7 @@
 // Source: Implementation Spec Section 5
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase, typedQuery } from "@/integrations/supabase/client";
 import { Risk, RiskFormData } from "@/types/risks";
 import { useToast } from "@/hooks/use-toast";
 
@@ -59,7 +59,7 @@ export function useRisks(programId?: string) {
           .select('id, department, business_owner, department_id, business_owner_id')
           .in('id', brIds),
         supabase.from('departments').select('id, name'),
-        (supabase as any).from('business_owners').select('id, name'),
+        typedQuery('business_owners').select('id, name'),
       ]);
 
       const brMap = new Map(((brRes.data as any[]) || []).map((br: any) => [br.id, br]));

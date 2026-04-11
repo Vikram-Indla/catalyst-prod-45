@@ -15,7 +15,7 @@
  */
 
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useUsers } from './useUsers';
 import { useDepartments, useBusinessOwners } from './useDepartmentsAndOwners';
 import { useTeams } from './useTeams';
@@ -96,8 +96,7 @@ export function useAdminOverviewMetrics(): AdminOverviewMetrics {
   const { data: authSettings, isLoading: settingsLoading } = useQuery({
     queryKey: ['admin-auth-settings-count'],
     queryFn: async () => {
-      const { count, error } = await (supabase as any)
-        .from('auth_settings')
+      const { count, error } = await typedQuery('auth_settings')
         .select('*', { count: 'exact', head: true });
       if (error) throw error;
       return count || 0;

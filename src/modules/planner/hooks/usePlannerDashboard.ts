@@ -13,8 +13,9 @@ import type {
   TeamWorkload,
 } from '../types/planner-dashboard';
 
-const STALE_TIME = 30 * 1000; // 30 seconds
-const REFETCH_INTERVAL = 60 * 1000; // 60 seconds
+const STALE_TIME = 60 * 1000; // 60 seconds
+const REFETCH_INTERVAL = 2 * 60 * 1000; // 2 minutes (reduced from 60s to save bandwidth)
+const REFETCH_BG = false; // Stop polling when tab is hidden
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // Hook: useDashboardMetrics
@@ -33,6 +34,7 @@ export function useDashboardMetrics() {
     },
     staleTime: STALE_TIME,
     refetchInterval: REFETCH_INTERVAL,
+    refetchIntervalInBackground: REFETCH_BG,
   });
 }
 
@@ -53,6 +55,7 @@ export function useStatusDistribution() {
     },
     staleTime: STALE_TIME,
     refetchInterval: REFETCH_INTERVAL,
+    refetchIntervalInBackground: REFETCH_BG,
   });
 }
 
@@ -72,6 +75,7 @@ export function useWorkstreamHealth() {
     },
     staleTime: STALE_TIME,
     refetchInterval: REFETCH_INTERVAL,
+    refetchIntervalInBackground: REFETCH_BG,
   });
 }
 
@@ -91,6 +95,7 @@ export function useUpcomingDeadlines() {
     },
     staleTime: STALE_TIME,
     refetchInterval: REFETCH_INTERVAL,
+    refetchIntervalInBackground: REFETCH_BG,
   });
 }
 
@@ -110,6 +115,7 @@ export function useTeamWorkload() {
     },
     staleTime: STALE_TIME,
     refetchInterval: REFETCH_INTERVAL,
+    refetchIntervalInBackground: REFETCH_BG,
   });
 }
 
@@ -128,6 +134,7 @@ export function useUnassignedCount() {
     },
     staleTime: STALE_TIME,
     refetchInterval: REFETCH_INTERVAL,
+    refetchIntervalInBackground: REFETCH_BG,
   });
 }
 

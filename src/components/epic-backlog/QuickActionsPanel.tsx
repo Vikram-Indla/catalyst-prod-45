@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase, typedQuery } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast as showToast } from "sonner";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -40,8 +40,7 @@ export function QuickActionsPanel({ epicId, epicName, onUpdate }: QuickActionsPa
       const { data: user } = await supabase.auth.getUser();
       if (!user.user) return null;
       
-      const { data } = await (supabase as any)
-        .from('notifications')
+      const { data } = await typedQuery('notifications')
         .select('*')
         .eq('entity_id', epicId)
         .eq('user_id', user.user.id)
@@ -56,8 +55,7 @@ export function QuickActionsPanel({ epicId, epicName, onUpdate }: QuickActionsPa
   const { data: attachments } = useQuery({
     queryKey: ['attachments', epicId],
     queryFn: async () => {
-      const { data } = await (supabase as any)
-        .from('attachments')
+      const { data } = await typedQuery('attachments')
         .select('*')
         .eq('entity_type', 'epic')
         .eq('entity_id', epicId)
@@ -108,14 +106,12 @@ export function QuickActionsPanel({ epicId, epicName, onUpdate }: QuickActionsPa
 
       if (subscription) {
         // Unsubscribe
-        await (supabase as any)
-          .from('notifications')
+        await typedQuery('notifications')
           .delete()
           .eq('id', subscription.id);
       } else {
         // Subscribe
-        await (supabase as any)
-          .from('notifications')
+        await typedQuery('notifications')
           .insert({
             user_id: user.user.id,
             entity_id: epicId,
@@ -171,8 +167,7 @@ export function QuickActionsPanel({ epicId, epicName, onUpdate }: QuickActionsPa
       if (uploadError) throw uploadError;
 
       // Create attachment record
-      const { error: dbError } = await (supabase as any)
-        .from('attachments')
+      const { error: dbError } = await typedQuery('attachments')
         .insert({
           entity_type: 'epic',
           entity_id: epicId,

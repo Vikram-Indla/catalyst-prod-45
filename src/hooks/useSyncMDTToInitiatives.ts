@@ -4,7 +4,7 @@
  * Skips issues that already have a matching ph_initiative (by jira_issue_key).
  */
 import { useEffect, useRef } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 
 const BUSINESS_REQUEST_TYPE_ID = '0bd8d5df-70e1-4f1c-8db1-f9b217fac1de';
@@ -51,8 +51,7 @@ export function useSyncMDTToInitiatives() {
         });
 
         // 2. Get existing initiatives with jira_issue_key set
-        const { data: existing } = await (supabase as any)
-          .from('ph_initiatives')
+        const { data: existing } = await typedQuery('ph_initiatives')
           .select('jira_issue_key')
           .not('jira_issue_key', 'is', null);
 
@@ -76,7 +75,7 @@ export function useSyncMDTToInitiatives() {
         // Batch insert in chunks of 50
         for (let i = 0; i < rows.length; i += 50) {
           const chunk = rows.slice(i, i + 50);
-          await (supabase as any).from('ph_initiatives').insert(chunk);
+          await typedQuery('ph_initiatives').insert(chunk);
         }
 
         // 5. Invalidate queries

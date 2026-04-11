@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { JiraIssueTypeIcon } from '@/components/shared/JiraIssueTypeIcon';
 import { cn } from '@/lib/utils';
 
@@ -39,8 +39,7 @@ export function IssueBreakdownPopover({ projectKey, projectName, issueCount }: P
   const { data: typeSummaries = [], isLoading } = useQuery({
     queryKey: ['issue-breakdown', projectKey],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from('v_issue_counts')
+      const { data, error } = await typedQuery('v_issue_counts')
         .select('issue_type, cnt')
         .eq('project_key', projectKey);
 

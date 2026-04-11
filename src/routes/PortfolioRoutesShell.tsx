@@ -24,7 +24,7 @@ const Impediments = lazy(() => import("../pages/Impediments"));
 const Sprints = lazy(() => import("../pages/Sprints"));
 const ReleaseVehicles = lazy(() => import("../pages/ReleaseVehicles"));
 const Forecast = lazy(() => import("../pages/Forecast"));
-const CapacityPlanning = lazy(() => import("../pages/CapacityPlanning"));
+const CapacityPlanning = lazy(() => import("../pages/CapacityPlanningPage"));
 const Roadmaps = lazy(() => import("../pages/Roadmaps"));
 const TeamComingSoon = lazy(() => import("../pages/team/ComingSoon"));
 

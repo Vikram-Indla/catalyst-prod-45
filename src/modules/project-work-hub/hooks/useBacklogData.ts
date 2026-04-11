@@ -126,5 +126,6 @@ export function useStoryBacklog(projectId: string) {
       })) as BacklogStory[];
     },
     enabled: !!projectId && !!projectKey,
+    staleTime: 5 * 60 * 1000,
   });
 }

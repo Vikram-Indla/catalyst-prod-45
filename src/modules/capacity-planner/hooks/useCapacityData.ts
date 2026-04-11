@@ -1,5 +1,5 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useEffect } from 'react';
 import type { CapacityResource, CapacityAssignment, CapacityProject, CapacityScenario, ResourceMetric, CapacitySummary } from '../types';
 
@@ -30,13 +30,13 @@ export function useCapacityData() {
         { data: productRoles },
         { data: allocationsData },
       ] = await Promise.all([
-        supabase.from('resource_inventory').select('*').eq('is_active', true).order('name'),
+        supabase.from('resource_inventory').select('id, name, profile_id, department_id, assignment_id, vendor_id, vendor_name, country_id, location_id, role_name, contract_start_date, contract_end_date, is_active, created_at, updated_at').eq('is_active', true).order('name'),
         supabase.from('capacity_departments').select('id, name'),
         supabase.from('resource_assignments').select('id, name').eq('is_active', true),
         supabase.from('resource_vendors').select('id, name'),
         supabase.from('resource_countries').select('id, name, code, flag_svg'),
         supabase.from('resource_locations').select('id, name'),
-        supabase.from('profiles').select('id, full_name, email, avatar_url, department_id'),
+        supabase.from('profiles').select('id, full_name, email, avatar_url, department_id').limit(500),
         supabase.from('user_product_roles').select('user_id, role_id'),
         supabase.from('product_roles').select('id, name'),
         supabase.from('resource_allocations')
@@ -121,9 +121,6 @@ export function useCapacityData() {
         };
       });
       
-      // QA: Log resource counts for verification
-      console.log('[Capacity] Resources loaded:', mappedResources.length, 'with avatars:', mappedResources.filter(r => r.avatar_url).length);
-      
       return mappedResources as CapacityResource[];
     },
   });
@@ -150,9 +147,8 @@ export function useCapacityData() {
   const { data: assignments = [], isLoading: assignmentsLoading, isError: assignmentsError } = useQuery({
     queryKey: ['capacity-planner-assignments'],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from('assignments')
-        .select('*')
+      const { data, error } = await typedQuery('assignments')
+        .select('id, user_id, project_id, allocation_percentage, role, status, start_date, end_date, created_at')
         .in('status', ['active', 'paused'])
         .order('created_at', { ascending: false });
       if (error) throw error;
@@ -164,8 +160,7 @@ export function useCapacityData() {
   const { data: scenarios = [], isLoading: scenariosLoading, isError: scenariosError } = useQuery({
     queryKey: ['capacity-planner-scenarios'],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from('capacity_scenarios')
+      const { data, error } = await typedQuery('capacity_scenarios')
         .select('*')
         .order('created_at', { ascending: false });
       if (error) throw error;

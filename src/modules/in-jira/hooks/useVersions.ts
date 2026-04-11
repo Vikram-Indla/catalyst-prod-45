@@ -5,7 +5,7 @@
 
 import { useState, useCallback, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 export interface Version {
@@ -60,8 +60,7 @@ export function useVersions(projectId: string | null | undefined) {
       if (!projectId) return [];
 
       // Fetch versions
-      const { data: versionsData, error: versionsError } = await (supabase as any)
-        .from('injira_versions')
+      const { data: versionsData, error: versionsError } = await typedQuery('injira_versions')
         .select('*')
         .eq('project_id', projectId)
         .order('sort_order', { ascending: true });
@@ -106,8 +105,7 @@ export function useVersions(projectId: string | null | undefined) {
           }
 
           // Get status categories for each issue
-          const { data: issuesWithStatus } = await (supabase as any)
-            .from('injira_issues')
+          const { data: issuesWithStatus } = await typedQuery('injira_issues')
             .select(`
               id,
               injira_statuses!inner(
@@ -158,8 +156,7 @@ export function useVersions(projectId: string | null | undefined) {
   const createVersionMutation = useMutation({
     mutationFn: async (data: CreateVersionData) => {
       // Get tenant ID first
-      const { data: project } = await (supabase as any)
-        .from('injira_projects')
+      const { data: project } = await typedQuery('injira_projects')
         .select('tenant_id')
         .eq('id', data.projectId)
         .single();
@@ -168,8 +165,7 @@ export function useVersions(projectId: string | null | undefined) {
       if (!projectTyped) throw new Error('Project not found');
 
       // Get max sort_order
-      const { data: maxSeq } = await (supabase as any)
-        .from('injira_versions')
+      const { data: maxSeq } = await typedQuery('injira_versions')
         .select('sort_order')
         .eq('project_id', data.projectId)
         .order('sort_order', { ascending: false })
@@ -179,8 +175,7 @@ export function useVersions(projectId: string | null | undefined) {
 
       const nextSequence = (maxSeqTyped?.sort_order || 0) + 1;
 
-      const { data: version, error } = await (supabase as any)
-        .from('injira_versions')
+      const { data: version, error } = await typedQuery('injira_versions')
         .insert({
           tenant_id: projectTyped.tenant_id,
           project_id: data.projectId,
@@ -217,8 +212,7 @@ export function useVersions(projectId: string | null | undefined) {
       if (data.released !== undefined) updateData.released = data.released;
       if (data.archived !== undefined) updateData.archived = data.archived;
 
-      const { data: version, error } = await (supabase as any)
-        .from('injira_versions')
+      const { data: version, error } = await typedQuery('injira_versions')
         .update(updateData)
         .eq('id', id)
         .select()
@@ -271,8 +265,7 @@ export function useVersions(projectId: string | null | undefined) {
   // Delete version mutation
   const deleteVersionMutation = useMutation({
     mutationFn: async (versionId: string) => {
-      const { error } = await (supabase as any)
-        .from('injira_versions')
+      const { error } = await typedQuery('injira_versions')
         .delete()
         .eq('id', versionId);
 

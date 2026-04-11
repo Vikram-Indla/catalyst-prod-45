@@ -10,7 +10,7 @@ import {
   RefreshCw, CheckCircle2, XCircle, AlertTriangle, Clock,
   BarChart3, PieChart, Users, FileText
 } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
 
 interface Report {
@@ -58,8 +58,7 @@ export default function ReportDetailPage() {
     if (!reportId) return;
     setIsLoading(true);
     try {
-      const { data, error } = await (supabase as any)
-        .from('th_reports')
+      const { data, error } = await typedQuery('th_reports')
         .select(`
           *,
           cycle:tm_test_cycles!th_reports_cycle_id_fkey(cycle_key, name),
@@ -84,7 +83,7 @@ export default function ReportDetailPage() {
     if (!report) return;
     if (!confirm(`Delete ${report.report_key}? This cannot be undone.`)) return;
     try {
-      const { error } = await (supabase as any).from('th_reports').delete().eq('id', report.id);
+      const { error } = await typedQuery('th_reports').delete().eq('id', report.id);
       if (error) throw error;
       catalystToast.success('Report deleted');
       navigate('/testhub/reports');

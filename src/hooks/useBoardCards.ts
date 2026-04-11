@@ -1,6 +1,6 @@
 // useBoardCards — fetch cards for a board with work item details
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import type { KanbanCard } from '@/types/board';
 
 export function useBoardCards(boardId: string | undefined) {
@@ -8,8 +8,7 @@ export function useBoardCards(boardId: string | undefined) {
     queryKey: ['board-cards', boardId],
     queryFn: async (): Promise<KanbanCard[]> => {
       // Fetch ranked items with column mapping
-      const { data: ranks, error: rankError } = await (supabase as any)
-        .from('board_issue_rank')
+      const { data: ranks, error: rankError } = await typedQuery('board_issue_rank')
         .select('work_item_id, rank_value, column_id')
         .eq('board_id', boardId)
         .order('rank_value', { ascending: true });
@@ -20,8 +19,7 @@ export function useBoardCards(boardId: string | undefined) {
       const workItemIds = ranks.map((r: any) => r.work_item_id);
       
       // Fetch work items (ph_issues) for these IDs
-      const { data: items, error: itemError } = await (supabase as any)
-        .from('ph_issues')
+      const { data: items, error: itemError } = await typedQuery('ph_issues')
         .select('id, issue_key, summary, issue_type, status, status_category, priority, story_points, assignee_display_name, assignee_account_id, fix_versions, parent_key, labels, due_date')
         .in('id', workItemIds)
         .limit(5000);

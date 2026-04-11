@@ -4,7 +4,7 @@
 // ============================================================
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 // GUARDRAIL: No toasts in hooks - silent operations
 
 
@@ -44,8 +44,7 @@ export function useTaskDependencies(taskId: string | null) {
       if (!data || data.length === 0) return [];
       
       const linkedTaskIds = data.map(d => d.depends_on_task_id);
-      const { data: linkedTasks } = await (supabase as any)
-        .from('planner_tasks')
+      const { data: linkedTasks } = await typedQuery('planner_tasks')
         .select(`
           id,
           key,

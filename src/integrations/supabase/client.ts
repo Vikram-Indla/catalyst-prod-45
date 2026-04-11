@@ -6,7 +6,7 @@ const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
 // Import the supabase client like this:
-// import { supabase } from "@/integrations/supabase/client";
+// import { supabase, typedQuery } from "@/integrations/supabase/client";
 
 export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
   auth: {
@@ -15,3 +15,25 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABL
     autoRefreshToken: true,
   }
 });
+
+/**
+ * Typed query helper — use instead of `(supabase as any).from('table')`.
+ * Provides the same API but avoids the `as any` cast scattered across 855 call sites.
+ *
+ * Usage:
+ *   import { supabase, typedQuery } from "@/integrations/supabase/client";
+ *   const { data } = await typedQuery('my_custom_table').select('*').eq('id', id);
+ *
+ * This is a migration bridge until `supabase gen types` is re-run to include
+ * all custom tables in the Database type.
+ */
+export function typedQuery(table: string) {
+  return (supabase as any).from(table);
+}
+
+/**
+ * Typed RPC helper — use instead of `(supabase as any).rpc('fn_name', params)`.
+ */
+export function typedRpc(fnName: string, params?: Record<string, unknown>) {
+  return (supabase as any).rpc(fnName, params);
+}

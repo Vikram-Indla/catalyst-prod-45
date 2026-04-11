@@ -5,7 +5,7 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import type { RoadmapDemand } from '../types/roadmap';
 
 interface RoadmapScoreTabProps {
@@ -149,8 +149,7 @@ export function RoadmapScoreTab({ item }: RoadmapScoreTabProps) {
   // Save mutation
   const saveMutation = useMutation({
     mutationFn: async () => {
-      const { error } = await (supabase as any)
-        .from('business_requests')
+      const { error } = await typedQuery('business_requests')
         .update({
           business_value: scores.business_value,
           business_score: scores.business_score,

@@ -6,7 +6,7 @@
 
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { WorkItem, ItemStatus, Owner, Project, WorkTreeCounts } from './types';
 
 interface UseWorkbenchDataResult {
@@ -138,8 +138,7 @@ export function useWorkbenchData(
     queryKey: ['workbench-business-requests', brIds],
     queryFn: async () => {
       if (brIds.length === 0) return [];
-      const { data, error } = await (supabase as any)
-        .from('business_requests')
+      const { data, error } = await typedQuery('business_requests')
         .select('id, request_key, title')
         .in('id', brIds);
       if (error) throw error;

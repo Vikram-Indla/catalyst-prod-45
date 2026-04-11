@@ -6,7 +6,7 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { logInitiativeAudit } from '@/lib/initiativeAudit';
 import { CheckCircle2, RotateCcw, Pencil, Trash2, Flag, CircleDot, X } from 'lucide-react';
@@ -72,8 +72,7 @@ export const DetailTabMilestones: React.FC<DetailTabMilestonesProps> = ({ initia
   const { data: milestones = [], refetch } = useQuery({
     queryKey: ['idp-milestones', initiativeId],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from('ph_initiative_milestones')
+      const { data, error } = await typedQuery('ph_initiative_milestones')
         .select('*, owner:profiles!owner_id(id, full_name)')
         .eq('initiative_id', initiativeId)
         .order('planned_date', { ascending: true });
@@ -133,7 +132,7 @@ export const DetailTabMilestones: React.FC<DetailTabMilestonesProps> = ({ initia
       is_critical_path: form.is_critical_path,
     };
     if (editing) {
-      const { error } = await (supabase as any).from('ph_initiative_milestones').update(payload).eq('id', editing.id);
+      const { error } = await typedQuery('ph_initiative_milestones').update(payload).eq('id', editing.id);
       if (error) { toast.error('Failed to update'); return; }
       logInitiativeAudit({ initiative_id: initiativeId, action: 'updated', entity_type: 'milestone', entity_id: editing.id, field_name: 'milestone', new_value: form.title });
       // Silent auto-save
@@ -141,7 +140,7 @@ export const DetailTabMilestones: React.FC<DetailTabMilestonesProps> = ({ initia
       payload.status = 'not_started';
       payload.sort_order = milestones.length + 1;
       payload.created_by = (await supabase.auth.getUser()).data.user?.id;
-      const { error } = await (supabase as any).from('ph_initiative_milestones').insert(payload);
+      const { error } = await typedQuery('ph_initiative_milestones').insert(payload);
       if (error) { toast.error('Failed to add'); return; }
       logInitiativeAudit({ initiative_id: initiativeId, action: 'created', entity_type: 'milestone', new_value: form.title });
       toast.success('Milestone added', TOAST_OPTS);
@@ -151,7 +150,7 @@ export const DetailTabMilestones: React.FC<DetailTabMilestonesProps> = ({ initia
   };
 
   const handleComplete = async (m: any) => {
-    await (supabase as any).from('ph_initiative_milestones').update({
+    await typedQuery('ph_initiative_milestones').update({
       status: 'completed', actual_date: new Date().toISOString().slice(0, 10),
     }).eq('id', m.id);
     logInitiativeAudit({ initiative_id: initiativeId, action: 'completed', entity_type: 'milestone', entity_id: m.id, new_value: m.title });
@@ -159,7 +158,7 @@ export const DetailTabMilestones: React.FC<DetailTabMilestonesProps> = ({ initia
     refetch();
   };
   const handleReopen = async (m: any) => {
-    await (supabase as any).from('ph_initiative_milestones').update({
+    await typedQuery('ph_initiative_milestones').update({
       status: 'in_progress', actual_date: null,
     }).eq('id', m.id);
     logInitiativeAudit({ initiative_id: initiativeId, action: 'reopened', entity_type: 'milestone', entity_id: m.id, new_value: m.title });
@@ -167,7 +166,7 @@ export const DetailTabMilestones: React.FC<DetailTabMilestonesProps> = ({ initia
     refetch();
   };
   const handleDelete = async (m: any) => {
-    await (supabase as any).from('ph_initiative_milestones').delete().eq('id', m.id);
+    await typedQuery('ph_initiative_milestones').delete().eq('id', m.id);
     logInitiativeAudit({ initiative_id: initiativeId, action: 'deleted', entity_type: 'milestone', entity_id: m.id, new_value: m.title });
     toast.success('Milestone deleted', TOAST_OPTS);
     refetch();

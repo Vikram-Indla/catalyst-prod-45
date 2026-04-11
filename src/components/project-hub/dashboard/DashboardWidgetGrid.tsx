@@ -4,7 +4,7 @@
  */
 import { useMemo, useEffect, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useAuth } from '@/lib/auth';
 import { WIDGET_REGISTRY } from './widget-registry';
 
@@ -29,8 +29,7 @@ export function useDashboardWidgetConfig(projectId: string) {
     queryKey: ['dashboard-widget-config', projectId, userId],
     queryFn: async () => {
       if (!userId) return [];
-      const { data, error } = await (supabase as any)
-        .from('dashboard_widget_config')
+      const { data, error } = await typedQuery('dashboard_widget_config')
         .select('widget_id, visible, position, collapsed')
         .eq('project_id', projectId)
         .eq('user_id', userId);
@@ -54,8 +53,7 @@ export function useDashboardWidgetConfig(projectId: string) {
         position: def.defaultPosition,
         collapsed: false,
       }));
-      await (supabase as any)
-        .from('dashboard_widget_config')
+      await typedQuery('dashboard_widget_config')
         .upsert(rows, { onConflict: 'project_id,user_id,widget_id' });
     },
     onSuccess: () => {
@@ -73,8 +71,7 @@ export function useDashboardWidgetConfig(projectId: string) {
   const upsertMutation = useMutation({
     mutationFn: async (updates: Partial<WidgetConfig> & { widget_id: string }) => {
       if (!userId) return;
-      const { error } = await (supabase as any)
-        .from('dashboard_widget_config')
+      const { error } = await typedQuery('dashboard_widget_config')
         .upsert({
           project_id: projectId,
           user_id: userId,
@@ -103,8 +100,7 @@ export function useDashboardWidgetConfig(projectId: string) {
         collapsed: item.collapsed ?? false,
         updated_at: new Date().toISOString(),
       }));
-      const { error } = await (supabase as any)
-        .from('dashboard_widget_config')
+      const { error } = await typedQuery('dashboard_widget_config')
         .upsert(rows, { onConflict: 'project_id,user_id,widget_id' });
       if (error) throw error;
     },

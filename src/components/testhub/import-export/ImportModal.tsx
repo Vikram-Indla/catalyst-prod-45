@@ -3,7 +3,7 @@ import {
   X, Upload, FileText, Bug, FileCheck, Layers, Tags,
   CheckCircle2, File, Trash2
 } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
 import Papa from 'papaparse';
 
@@ -134,8 +134,7 @@ export function ImportModal({ isOpen, onClose, onImported }: ImportModalProps) {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       
-      const { data: job, error: jobError } = await (supabase as any)
-        .from('th_import_jobs')
+      const { data: job, error: jobError } = await typedQuery('th_import_jobs')
         .insert({
           name: importName || `Import ${new Date().toLocaleDateString()}`,
           type: importType,
@@ -182,7 +181,7 @@ export function ImportModal({ isOpen, onClose, onImported }: ImportModalProps) {
             };
             const priorityVal = (row.priority || 'medium').toLowerCase();
             const typeVal = (row.type || 'functional').toLowerCase();
-            const { error } = await (supabase as any).from('tm_test_cases').insert({
+            const { error } = await typedQuery('tm_test_cases').insert({
               title: row.title,
               description: row.description || null,
               priority_id: priorityMap[priorityVal] || priorityMap['medium'],
@@ -202,7 +201,7 @@ export function ImportModal({ isOpen, onClose, onImported }: ImportModalProps) {
         for (let i = 0; i < transformedData.length; i++) {
           const row = transformedData[i];
           try {
-            const { error } = await (supabase as any).from('tm_defects').insert({
+            const { error } = await typedQuery('tm_defects').insert({
               title: row.title,
               description: row.description || null,
               severity: row.severity || 'medium',
@@ -222,7 +221,7 @@ export function ImportModal({ isOpen, onClose, onImported }: ImportModalProps) {
         for (let i = 0; i < transformedData.length; i++) {
           const row = transformedData[i];
           try {
-            const { error } = await (supabase as any).from('th_tags').insert({
+            const { error } = await typedQuery('th_tags').insert({
               name: row.name,
               color: row.color || '#6366F1',
               category: row.category || null,
@@ -240,7 +239,7 @@ export function ImportModal({ isOpen, onClose, onImported }: ImportModalProps) {
         for (let i = 0; i < transformedData.length; i++) {
           const row = transformedData[i];
           try {
-            const { error } = await (supabase as any).from('tm_requirements').insert({
+            const { error } = await typedQuery('tm_requirements').insert({
               title: row.title,
               description: row.description || null,
               type: row.type || 'functional',
@@ -259,7 +258,7 @@ export function ImportModal({ isOpen, onClose, onImported }: ImportModalProps) {
         for (let i = 0; i < transformedData.length; i++) {
           const row = transformedData[i];
           try {
-            const { error } = await (supabase as any).from('th_shared_steps').insert({
+            const { error } = await typedQuery('th_shared_steps').insert({
               title: row.title,
               description: row.description || null,
               created_by: user?.id,
@@ -273,8 +272,7 @@ export function ImportModal({ isOpen, onClose, onImported }: ImportModalProps) {
         }
       }
 
-      await (supabase as any)
-        .from('th_import_jobs')
+      await typedQuery('th_import_jobs')
         .update({
           status: errorCount === transformedData.length ? 'failed' : 'completed',
           processed_rows: transformedData.length,

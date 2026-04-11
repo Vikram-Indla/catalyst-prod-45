@@ -5,7 +5,7 @@
  * Structures: stories with nested subtasks
  */
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { startOfMonth, subMonths, endOfMonth, format } from 'date-fns';
 
 export interface JiraWorkItem {
@@ -134,8 +134,7 @@ export function useResourceJiraWork(resourceId: string | null) {
       // Get department
       let department: string | null = null;
       // We'll get it from the analytics data context, but also try inventory
-      const { data: deptData } = await (supabase as any)
-        .from('resource_inventory')
+      const { data: deptData } = await typedQuery('resource_inventory')
         .select('capacity_departments(name)')
         .eq('id', resourceId!)
         .maybeSingle();

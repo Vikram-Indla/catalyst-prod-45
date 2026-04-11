@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
@@ -47,8 +47,7 @@ export default function Permissions() {
   const { data: grants } = useQuery({
     queryKey: ['permission-grants', roleFilter],
     queryFn: async () => {
-      let query = (supabase as any)
-        .from('permission_grants')
+      let query = typedQuery('permission_grants')
         .select('*, permission_roles(name)')
         .order('entity_type');
       
@@ -65,7 +64,7 @@ export default function Permissions() {
   const deleteMutation = useMutation({
     mutationFn: async ({ type, id }: { type: 'role' | 'grant'; id: string }) => {
       const table = type === 'role' ? 'permission_roles' : 'permission_grants';
-      const { error } = await (supabase as any).from(table).delete().eq('id', id);
+      const { error } = await typedQuery(table).delete().eq('id', id);
       if (error) throw error;
     },
     onSuccess: (_, variables) => {

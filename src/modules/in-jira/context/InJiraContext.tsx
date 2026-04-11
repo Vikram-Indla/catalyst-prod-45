@@ -3,7 +3,7 @@
  * Provides shared state for the In-Jira module
  */
 
-import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useCallback, useMemo, ReactNode } from 'react';
 import { Issue, CreateIssueData } from '../types';
 
 interface InJiraContextState {
@@ -81,24 +81,24 @@ export function InJiraProvider({ children }: InJiraProviderProps) {
     setActiveFilters([]);
   }, []);
 
+  const value = useMemo(() => ({
+    selectedIssue,
+    isDrawerOpen,
+    openIssueDrawer,
+    closeIssueDrawer,
+    isCreateModalOpen,
+    createModalDefaults,
+    openCreateModal,
+    closeCreateModal,
+    searchQuery,
+    setSearchQuery,
+    activeFilters,
+    toggleFilter,
+    clearFilters,
+  }), [selectedIssue, isDrawerOpen, openIssueDrawer, closeIssueDrawer, isCreateModalOpen, createModalDefaults, openCreateModal, closeCreateModal, searchQuery, activeFilters, toggleFilter, clearFilters]);
+
   return (
-    <InJiraContext.Provider
-      value={{
-        selectedIssue,
-        isDrawerOpen,
-        openIssueDrawer,
-        closeIssueDrawer,
-        isCreateModalOpen,
-        createModalDefaults,
-        openCreateModal,
-        closeCreateModal,
-        searchQuery,
-        setSearchQuery,
-        activeFilters,
-        toggleFilter,
-        clearFilters,
-      }}
-    >
+    <InJiraContext.Provider value={value}>
       {children}
     </InJiraContext.Provider>
   );

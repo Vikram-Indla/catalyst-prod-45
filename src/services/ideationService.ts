@@ -2,7 +2,7 @@
  * Ideation Module — Supabase Service Layer
  * All database operations for the Ideation module.
  */
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import type { Idea, IdeaStatus, IdeaType, ImpactFactors } from '@/pages/producthub/ideation/ideation-data';
 
 // ── Status & Type mappers (DB title-case → UI snake_case) ────────
@@ -89,8 +89,7 @@ export const ideationService = {
     search?: string;
   }): Promise<Idea[]> {
     try {
-      let query = (supabase as any)
-        .from('ph_ideas_listing')
+      let query = typedQuery('ph_ideas_listing')
         .select('*')
         .eq('is_deleted', false);
 
@@ -115,8 +114,7 @@ export const ideationService = {
   },
 
   async getIdeaRaw(ideaKey: string) {
-    const { data, error } = await (supabase as any)
-      .from('ph_ideas_listing')
+    const { data, error } = await typedQuery('ph_ideas_listing')
       .select('*')
       .eq('idea_key', ideaKey)
       .single();
@@ -145,8 +143,7 @@ export const ideationService = {
 
   // === ANALYTICS AGGREGATES (from DB views) ===
   async getStatusCounts(): Promise<Record<string, number>> {
-    const { data, error } = await (supabase as any)
-      .from('ph_ideas_status_counts')
+    const { data, error } = await typedQuery('ph_ideas_status_counts')
       .select('*');
     if (error) throw error;
     const result: Record<string, number> = {};
@@ -158,8 +155,7 @@ export const ideationService = {
   },
 
   async getDeptCounts(): Promise<{ name: string; count: number }[]> {
-    const { data, error } = await (supabase as any)
-      .from('ph_ideas_dept_counts')
+    const { data, error } = await typedQuery('ph_ideas_dept_counts')
       .select('*')
       .order('count', { ascending: false });
     if (error) throw error;
@@ -167,8 +163,7 @@ export const ideationService = {
   },
 
   async getTopContributors(): Promise<{ name: string; count: number; initials: string }[]> {
-    const { data, error } = await (supabase as any)
-      .from('ph_ideas_top_contributors')
+    const { data, error } = await typedQuery('ph_ideas_top_contributors')
       .select('*')
       .order('idea_count', { ascending: false })
       .limit(5);
@@ -191,8 +186,7 @@ export const ideationService = {
   },
 
   async getDriveIdeas(driveId: string) {
-    const { data, error } = await (supabase as any)
-      .from('ph_ideas')
+    const { data, error } = await typedQuery('ph_ideas')
       .select('idea_key, innovation_drive_id')
       .eq('innovation_drive_id', driveId);
     if (error) throw error;

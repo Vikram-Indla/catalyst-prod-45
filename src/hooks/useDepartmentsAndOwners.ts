@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 
 export interface Department {
   id: string;
@@ -43,8 +43,7 @@ export function useBusinessOwners() {
   return useQuery({
     queryKey: ['business_owners'],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from('business_owners')
+      const { data, error } = await typedQuery('business_owners')
         .select('*')
         .eq('is_active', true)
         .order('sort_order', { ascending: true });

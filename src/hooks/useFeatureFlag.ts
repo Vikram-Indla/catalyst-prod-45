@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 
 export type FeatureFlagKey = 'home_v2_enabled' | 'home_v2_shadow_mode';
 
@@ -7,8 +7,7 @@ export function useFeatureFlag(flagKey: string): boolean {
   const { data: flag } = useQuery({
     queryKey: ['feature-flag', flagKey],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from('feature_flags')
+      const { data, error } = await typedQuery('feature_flags')
         .select('enabled')
         .eq('flag_key', flagKey)
         .single();
@@ -33,8 +32,7 @@ export function useFeatureFlags(flagKeys: FeatureFlagKey[]): {
   const { data, isLoading } = useQuery({
     queryKey: ['feature-flags', flagKeys.join(',')],
     queryFn: async (): Promise<Record<string, boolean>> => {
-      const { data, error } = await (supabase as any)
-        .from('feature_flags')
+      const { data, error } = await typedQuery('feature_flags')
         .select('flag_key, enabled')
         .in('flag_key', flagKeys);
 

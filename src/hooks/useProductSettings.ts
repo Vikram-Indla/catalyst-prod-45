@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 // Types
@@ -78,8 +78,7 @@ export function useBusinessLines() {
   return useQuery({
     queryKey: ['business-lines'],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from('business_lines')
+      const { data, error } = await typedQuery('business_lines')
         .select('*')
         .order('sort_order');
       
@@ -94,8 +93,7 @@ export function useCreateBusinessLine() {
   
   return useMutation({
     mutationFn: async (businessLine: Omit<BusinessLine, 'id' | 'created_at' | 'updated_at'>) => {
-      const { data, error } = await (supabase as any)
-        .from('business_lines')
+      const { data, error } = await typedQuery('business_lines')
         .insert(businessLine)
         .select()
         .single();
@@ -119,8 +117,7 @@ export function useUpdateBusinessLine() {
   
   return useMutation({
     mutationFn: async ({ id, ...updates }: Partial<BusinessLine> & { id: string }) => {
-      const { data, error } = await (supabase as any)
-        .from('business_lines')
+      const { data, error } = await typedQuery('business_lines')
         .update(updates)
         .eq('id', id)
         .select()
@@ -144,8 +141,7 @@ export function useDeleteBusinessLine() {
   
   return useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await (supabase as any)
-        .from('business_lines')
+      const { error } = await typedQuery('business_lines')
         .delete()
         .eq('id', id);
       

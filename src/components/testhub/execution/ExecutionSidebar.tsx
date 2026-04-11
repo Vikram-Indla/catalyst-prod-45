@@ -5,7 +5,7 @@
 import { useState } from 'react';
 import { Bug, Paperclip, ExternalLink, Plus, Loader2, History } from 'lucide-react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { ExecutionAttachments } from '@/components/testhub/ExecutionAttachments';
 
 interface Attachment {
@@ -78,8 +78,7 @@ export function ExecutionSidebar({
     queryKey: ['testcase-defects', cycleTestCaseId],
     enabled: !!cycleTestCaseId,
     queryFn: async (): Promise<LinkedDefect[]> => {
-      const { data, error } = await (supabase as any)
-        .from('tm_defect_links')
+      const { data, error } = await typedQuery('tm_defect_links')
         .select(`
           defect_id,
           tm_defects (

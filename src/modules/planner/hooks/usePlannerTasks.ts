@@ -5,7 +5,7 @@
 // ============================================================
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import type { PlannerTask, TaskStatus, TaskPriority } from '../types';
 
 // Map planner_statuses to Planner TaskStatus
@@ -71,8 +71,7 @@ export function usePlannerTasks(teamId?: string | null) {
     // Cache-buster: ensures UI picks up task_key mapping changes immediately
     queryKey: ['planner-tasks', teamId, 'v2-task-key'],
     queryFn: async () => {
-      let query = (supabase as any)
-        .from('planner_tasks')
+      let query = typedQuery('planner_tasks')
         .select(`
           *,
           status:planner_statuses(*),

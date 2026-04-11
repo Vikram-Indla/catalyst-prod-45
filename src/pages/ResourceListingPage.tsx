@@ -6,7 +6,7 @@
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import {
   Search, RotateCw, Clock, LayoutGrid, Zap,
   ChevronDown, ChevronUp, ChevronLeft, ChevronRight,
@@ -138,8 +138,8 @@ export default function ResourceListingPage() {
         profileIds.length > 0
           ? supabase.from('profiles').select('id, avatar_url').in('id', profileIds)
           : Promise.resolve({ data: [] }),
-        (supabase as any).from('vw_wh_resource_360').select('resource_id'),
-        (supabase as any).from('ph_issues').select('reporter_account_id'),
+        typedQuery('vw_wh_resource_360').select('resource_id'),
+        typedQuery('ph_issues').select('reporter_account_id'),
       ]);
 
       const ridsWithAssigned = new Set((assignedRids || []).map((r: any) => r.resource_id));

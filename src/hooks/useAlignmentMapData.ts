@@ -2,7 +2,7 @@
  * useAlignmentMapData — Fetches vw_alignment_map and builds structured layers + connection maps
  */
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 
 export interface AlignmentNode {
   id: string;
@@ -71,8 +71,7 @@ export function useAlignmentMapData() {
   return useQuery<AlignmentData>({
     queryKey: ['alignment-map'],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from('vw_alignment_map')
+      const { data, error } = await typedQuery('vw_alignment_map')
         .select('*');
       if (error) throw error;
 

@@ -3,7 +3,7 @@
  */
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { Plus, Pencil, Trash2, ArrowRight, Star, ShieldAlert, Flag, CheckCircle, Wallet, Link2, Paperclip, MessageSquare, History, Filter, ChevronDown } from 'lucide-react';
 
 interface InitiativeAuditTabProps {
@@ -92,8 +92,7 @@ export function InitiativeAuditTab({ initiativeId }: InitiativeAuditTabProps) {
   const { data: auditLogs = [], isLoading } = useQuery({
     queryKey: ['initiative-audit', initiativeId, auditFilter],
     queryFn: async () => {
-      let query = (supabase as any)
-        .from('ph_initiative_audit_log')
+      let query = typedQuery('ph_initiative_audit_log')
         .select('*, user:profiles!user_id(id, full_name, email)')
         .eq('initiative_id', initiativeId)
         .order('created_at', { ascending: false })

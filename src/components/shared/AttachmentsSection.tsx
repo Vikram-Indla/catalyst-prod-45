@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -25,8 +25,7 @@ export function AttachmentsSection({ entityId, entityType }: AttachmentsSectionP
   const { data: attachments, isLoading } = useQuery({
     queryKey: ['attachments', entityId],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from('attachments')
+      const { data, error } = await typedQuery('attachments')
         .select('*')
         .eq('entity_id', entityId)
         .eq('entity_type', entityType)
@@ -51,8 +50,7 @@ export function AttachmentsSection({ entityId, entityType }: AttachmentsSectionP
 
       if (uploadError) throw uploadError;
 
-      const { error: dbError } = await (supabase as any)
-        .from('attachments')
+      const { error: dbError } = await typedQuery('attachments')
         .insert({
           entity_id: entityId,
           entity_type: entityType,
@@ -82,8 +80,7 @@ export function AttachmentsSection({ entityId, entityType }: AttachmentsSectionP
 
       if (storageError) throw storageError;
 
-      const { error: dbError } = await (supabase as any)
-        .from('attachments')
+      const { error: dbError } = await typedQuery('attachments')
         .delete()
         .eq('id', attachment.id);
 

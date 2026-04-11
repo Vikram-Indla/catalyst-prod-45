@@ -32,7 +32,7 @@ const WorkItemsListPageLazy = lazy(() => import("../pages/project-hub/WorkItemsL
 const ProjectBoardPageLazy = lazy(() => import("../pages/project-hub/ProjectBoardPage"));
 const ProjectBoardManagerPageLazy = lazy(() => import("../pages/project-hub/ProjectBoardManagerPage"));
 const ProjectBoardCanvasPageLazy = lazy(() => import("../pages/project-hub/ProjectBoardCanvasPage"));
-const AllProjectsPageLazy = lazy(() => import("../pages/projecthub/AllProjectsPage"));
+const AllProjectsPageLazy = lazy(() => import("../pages/project-hub/AllProjectsPage"));
 const NativeEpicBacklogPageLazy = lazy(() => import("../pages/project-hub/NativeEpicBacklogPage"));
 const NativeFeatureBacklogPageLazy = lazy(() => import("../pages/project-hub/NativeFeatureBacklogPage"));
 const NativeStoryBacklogPageLazy = lazy(() => import("../pages/project-hub/NativeStoryBacklogPage"));
@@ -60,7 +60,7 @@ const RH21AllReleasesPage = lazy(() => import("../pages/releasehub/AllReleasesPa
 const RH21ReleaseComparePage = lazy(() => import("../pages/releasehub/ReleaseComparePage"));
 const RH21TriageQueuePage = lazy(() => import("../pages/releasehub/TriageQueuePage"));
 const RH21AllChangesPage = lazy(() => import("../pages/releasehub/AllChangesPage"));
-const RH21SignOffQueuePage = lazy(() => import("../pages/release-hub/SignOffQueuePage"));
+const RH21SignOffQueuePage = lazy(() => import("../pages/releasehub/SignOffQueuePage"));
 const RH21FreezeWindowsPage = lazy(() => import("../pages/releasehub/FreezeWindowsPage"));
 const SyncPrerequisitesPage = lazy(() => import("../pages/releasehub/SyncPrerequisitesPage"));
 const StrategicThemesPage = lazy(() => import("../pages/strategyhub/StrategicThemesPage"));
@@ -217,7 +217,7 @@ const DependenciesPage = lazy(() => import("../pages/work/Dependencies"));
 const ProgramRoom = lazy(() => import("../pages/ProgramRoom"));
 const ProgramBoardHistory = lazy(() => import("../pages/ProgramBoardHistory"));
 const PIObjectives = lazy(() => import("../pages/PIObjectives"));
-const CapacityPlanning = lazy(() => import("../pages/CapacityPlanning"));
+
 const Forecast = lazy(() => import("../pages/Forecast"));
 const WorkSpendGrid = lazy(() => import("../pages/WorkSpendGrid"));
 const RisksGridPage = lazy(() => import("../pages/risks/RisksGridPage"));
@@ -682,7 +682,7 @@ export default function FullAppRoutes() {
         <Route path="/pis" element={<S><PlaceholderPage /></S>} />
         <Route path="/program-board" element={<Navigate to="/for-you" replace />} />
         <Route path="/pi-objectives" element={<S><PIObjectives /></S>} />
-        <Route path="/capacity" element={<S><CapacityPlanning /></S>} />
+        <Route path="/capacity" element={<S><CapacityPlanningPage /></S>} />
         <Route path="/risks" element={<S><RisksGridPage /></S>} />
         <Route path="/risk-roam-report" element={<S><RiskRoamReportPage /></S>} />
         <Route path="/release-train-calendar" element={<div className="p-8"><h1 className="text-2xl font-bold">Release Calendar</h1><p className="text-muted-foreground">Coming soon</p></div>} />

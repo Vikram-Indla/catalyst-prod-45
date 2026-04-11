@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Plus, Search, Edit, GripVertical } from 'lucide-react';
 import { useState } from 'react';
 import { useDepartments, useBusinessOwners, useDepartmentOwnerMappings } from '@/hooks/useDepartmentsAndOwners';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { Switch } from '@/components/ui/switch';
@@ -50,8 +50,7 @@ export default function BusinessOwners() {
   const handleAddOwner = async () => {
     if (!newOwnerName.trim()) return;
 
-    const { data: newOwner, error: ownerError } = await (supabase as any)
-      .from('business_owners')
+    const { data: newOwner, error: ownerError } = await typedQuery('business_owners')
       .insert({ name: newOwnerName.trim() })
       .select()
       .single();
@@ -93,8 +92,7 @@ export default function BusinessOwners() {
   const handleUpdateOwner = async () => {
     if (!editingOwner || !newOwnerName.trim()) return;
 
-    const { error: ownerError } = await (supabase as any)
-      .from('business_owners')
+    const { error: ownerError } = await typedQuery('business_owners')
       .update({ name: newOwnerName.trim() })
       .eq('id', editingOwner.id);
 
@@ -140,8 +138,7 @@ export default function BusinessOwners() {
   };
 
   const handleToggleActive = async (id: string, currentStatus: boolean) => {
-    const { error } = await (supabase as any)
-      .from('business_owners')
+    const { error } = await typedQuery('business_owners')
       .update({ is_active: !currentStatus })
       .eq('id', id);
 

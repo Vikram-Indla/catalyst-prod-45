@@ -7,7 +7,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { RefreshCw, Play, Filter, UserCheck, Clock, AlertTriangle } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useAuth } from '@/lib/auth';
 
 interface ScopeItem {
@@ -46,8 +46,7 @@ export default function MyTestScopePage() {
     if (!user?.id) return;
     setIsLoading(true);
     try {
-      const { data, error } = await (supabase as any)
-        .from('tm_cycle_scope')
+      const { data, error } = await typedQuery('tm_cycle_scope')
         .select(`
           id,
           current_status,

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase, typedQuery } from "@/integrations/supabase/client";
 
 export type ActivityType = "epic" | "feature" | "story" | "demand";
 
@@ -90,8 +90,7 @@ export function useActivityFeed(options: UseActivityFeedOptions) {
             .eq("owner_id", user.id)
             .order("updated_at", { ascending: false })
             .range(offset, offset + Math.floor(limit / 4)),
-          (supabase as any)
-            .from("business_requests")
+          typedQuery("business_requests")
             .select("id, title, request_key, updated_at, created_at, assignee")
             .eq("assignee", user.id)
             .order("updated_at", { ascending: false })
@@ -213,7 +212,7 @@ export function useActivityFeed(options: UseActivityFeedOptions) {
         supabase.from("epics").select("id", { count: "exact", head: true }).eq("owner_id", user.id),
         supabase.from("features").select("id", { count: "exact", head: true }).eq("owner_id", user.id),
         supabase.from("stories").select("id", { count: "exact", head: true }).eq("owner_id", user.id),
-        (supabase as any).from("business_requests").select("id", { count: "exact", head: true }).eq("assignee", user.id),
+        typedQuery("business_requests").select("id", { count: "exact", head: true }).eq("assignee", user.id),
       ]);
 
       const total = 

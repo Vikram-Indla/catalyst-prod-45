@@ -13,7 +13,7 @@ import { STATUS_DISPLAY, getPriorityLevel } from '@/types/initiative';
 import { StatusBadge } from './StatusBadge';
 import { PriorityBadge } from './PriorityBadge';
 import { catalystToast } from '@/lib/catalystToast';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery, typedQuery } from '@/integrations/supabase/client';
 import { useQueryClient, useQuery } from '@tanstack/react-query';
 import { useDepartmentOptions, useProfileOptions } from '@/hooks/useInitiativeLookups';
 import { StatusSelect } from '@/components/producthub/shared/StatusSelect';
@@ -279,7 +279,7 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
     let sanitized = value;
     if (UUID_FK_FIELDS.includes(field) && (value === '' || value === undefined)) sanitized = null;
     try {
-      const { error } = await (supabase as any).from('ph_initiatives').update({ [field]: sanitized, updated_at: new Date().toISOString() }).eq('id', initiative.id);
+      const { error } = await typedQuery('ph_initiatives').update({ [field]: sanitized, updated_at: new Date().toISOString() }).eq('id', initiative.id);
       if (error) throw new Error(error.message);
       invalidateAllInitiatives(queryClient);
       catalystToast.success(`${label || field.replace(/_/g, ' ')} updated`);
@@ -291,12 +291,12 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
     if (!isNativeInitiative(initiative.id)) { catalystToast.error('Jira-sourced items cannot be scored here'); return; }
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      await (supabase as any).from('ph_initiative_scores').upsert({
+      await typedQuery('ph_initiative_scores').upsert({
         initiative_id: initiative.id, strategic_alignment: scores.sa, business_impact: scores.bi,
         time_urgency: scores.tu, resource_feasibility: scores.rf, computed_score: computedScore,
         scored_by: user?.id || null, scored_at: new Date().toISOString(),
       }, { onConflict: 'initiative_id' });
-      await (supabase as any).from('ph_initiatives').update({
+      await typedQuery('ph_initiatives').update({
         score_strategic_alignment: scores.sa, score_business_impact: scores.bi, score_time_urgency: scores.tu,
         score_resource_feasibility: scores.rf, computed_score: computedScore, updated_at: new Date().toISOString(),
       }).eq('id', initiative.id);
@@ -316,11 +316,11 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
 
   const handleClone = async () => {
     try {
-      const { data: existing } = await (supabase as any).from('ph_initiatives').select('initiative_key').order('created_at', { ascending: false }).limit(100);
+      const { data: existing } = await typedQuery('ph_initiatives').select('initiative_key').order('created_at', { ascending: false }).limit(100);
       const maxNum = (existing || []).reduce((max: number, r: any) => { const num = parseInt(r.initiative_key?.replace(/[A-Z]+-/, '') || '0'); return num > max ? num : max; }, 0);
       const prefix = initiative.initiative_key?.replace(/-\d+$/, '') || 'MIM';
       const nextKey = `${prefix}-${String(maxNum + 1).padStart(3, '0')}`;
-      await (supabase as any).from('ph_initiatives').insert({ title: `${initiative.title} (Copy)`, initiative_key: nextKey, description: initiative.description, status: 'backlog', progress: 0, department_id: initiative.department_id, assignee_id: initiative.assignee_id });
+      await typedQuery('ph_initiatives').insert({ title: `${initiative.title} (Copy)`, initiative_key: nextKey, description: initiative.description, status: 'backlog', progress: 0, department_id: initiative.department_id, assignee_id: initiative.assignee_id });
       invalidateAllInitiatives(queryClient);
       catalystToast.success(`Cloned as ${nextKey}`);
     } catch (err: any) { catalystToast.error('Failed: ' + err.message); }
@@ -338,7 +338,7 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
           const path = `initiatives/${initiative.id}/${Date.now()}_${file.name}`;
           const { error: uploadErr } = await supabase.storage.from('attachments').upload(path, file);
           if (uploadErr) throw uploadErr;
-          await (supabase as any).from('ph_initiative_attachments').insert({
+          await typedQuery('ph_initiative_attachments').insert({
             initiative_id: initiative.id, file_name: file.name, file_path: path,
             file_size: file.size, mime_type: file.type, uploaded_by: user?.id || null,
           });
@@ -373,7 +373,7 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
     if (!initiative) return;
     const amount = parseFloat(value) || 0;
     setBudgetAllocated(amount);
-    await (supabase as any).from('ph_initiatives').update({ budget_allocated: amount, updated_at: new Date().toISOString() }).eq('id', initiative.id);
+    await typedQuery('ph_initiatives').update({ budget_allocated: amount, updated_at: new Date().toISOString() }).eq('id', initiative.id);
     invalidateAllInitiatives(queryClient);
   };
 
@@ -488,7 +488,7 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
               onClick={async () => {
                 if (!initiative?.id) return;
                 try {
-                  await (supabase as any).from('ph_initiatives').update({ is_deleted: true }).eq('id', initiative.id);
+                  await typedQuery('ph_initiatives').update({ is_deleted: true }).eq('id', initiative.id);
                   invalidateAllInitiatives(queryClient);
                   catalystToast.success(`${initiative.initiative_key} deleted`);
                   onClose();
@@ -531,14 +531,14 @@ function RoadmapToggleInline({ initiative }: { initiative: Initiative }) {
       const isJira = !isNativeInitiative(initiative.id);
       if (isJira) {
         if (!newValue) {
-          const { data: existing } = await (supabase as any).from('ph_initiatives').select('id').eq('initiative_key', initiative.initiative_key).maybeSingle();
+          const { data: existing } = await typedQuery('ph_initiatives').select('id').eq('initiative_key', initiative.initiative_key).maybeSingle();
           if (existing) await removeMutation.mutateAsync(existing.id);
         } else {
-          const { data: existing } = await (supabase as any).from('ph_initiatives').select('id').eq('initiative_key', initiative.initiative_key).maybeSingle();
+          const { data: existing } = await typedQuery('ph_initiatives').select('id').eq('initiative_key', initiative.initiative_key).maybeSingle();
           let initiativeId: string;
           if (existing) { initiativeId = existing.id; }
           else {
-            const { data: inserted, error: insertError } = await (supabase as any).from('ph_initiatives').insert({ initiative_key: initiative.initiative_key, title: initiative.title, description: initiative.description || null, status: 'new_demand', assignee_id: initiative.assignee_id || null, department_id: initiative.department_id || null, progress: initiative.progress || 0 }).select('id').single();
+            const { data: inserted, error: insertError } = await typedQuery('ph_initiatives').insert({ initiative_key: initiative.initiative_key, title: initiative.title, description: initiative.description || null, status: 'new_demand', assignee_id: initiative.assignee_id || null, department_id: initiative.department_id || null, progress: initiative.progress || 0 }).select('id').single();
             if (insertError) throw insertError;
             initiativeId = inserted.id;
           }
@@ -589,14 +589,14 @@ function CommentsSection({ initiativeId }: { initiativeId: string }) {
   const { data: comments = [], isLoading } = useQuery({
     queryKey: ['ph-comments', initiativeId],
     queryFn: async () => {
-      const { data, error } = await (supabase as any).from('ph_comments')
+      const { data, error } = await typedQuery('ph_comments')
         .select('id, body, author_id, created_at, updated_at').eq('work_item_id', initiativeId).order('created_at', { ascending: true });
       if (error) throw error;
       const authorIds: string[] = (data || []).map((c: any) => c.author_id).filter(Boolean);
       const uniqueAuthorIds = Array.from(new Set(authorIds));
       let authorMap: Record<string, string> = {};
       if (uniqueAuthorIds.length > 0) {
-        const { data: profiles } = await (supabase as any).from('profiles').select('id, display_name').in('id', uniqueAuthorIds);
+        const { data: profiles } = await typedQuery('profiles').select('id, display_name').in('id', uniqueAuthorIds);
         if (profiles) profiles.forEach((p: any) => { authorMap[p.id] = p.display_name; });
       }
       return (data || []).map((c: any) => ({ ...c, author_name: authorMap[c.author_id] || 'Unknown' }));
@@ -608,7 +608,7 @@ function CommentsSection({ initiativeId }: { initiativeId: string }) {
     setSubmitting(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      await (supabase as any).from('ph_comments').insert({ work_item_id: initiativeId, work_item_type: 'initiative', body: newComment.trim(), author_id: user?.id || null });
+      await typedQuery('ph_comments').insert({ work_item_id: initiativeId, work_item_type: 'initiative', body: newComment.trim(), author_id: user?.id || null });
       queryClient.invalidateQueries({ queryKey: ['ph-comments', initiativeId] });
       setNewComment('');
       catalystToast.success('Comment added');
@@ -617,7 +617,7 @@ function CommentsSection({ initiativeId }: { initiativeId: string }) {
   };
 
   const handleDelete = async (id: string) => {
-    await (supabase as any).from('ph_comments').delete().eq('id', id);
+    await typedQuery('ph_comments').delete().eq('id', id);
     queryClient.invalidateQueries({ queryKey: ['ph-comments', initiativeId] });
     catalystToast.success('Comment deleted');
   };
@@ -783,13 +783,13 @@ function DetailsContent({ initiative, onQuickEdit, onStatusChange }: {
               <button key={opt.key} onClick={async () => {
                 if (opt.key === selectedTypeKey) return;
                 try {
-                  const { data: typeRow, error: typeError } = await (supabase as any).from('initiative_types').select('id').eq('key', opt.key).single();
+                  const { data: typeRow, error: typeError } = await typedQuery('initiative_types').select('id').eq('key', opt.key).single();
                   if (typeError) throw typeError;
                   const now = new Date().toISOString();
                   if (isNativeInitiative(initiative.id)) {
-                    await (supabase as any).from('ph_initiatives').update({ initiative_type_id: typeRow.id, updated_at: now }).eq('id', initiative.id);
+                    await typedQuery('ph_initiatives').update({ initiative_type_id: typeRow.id, updated_at: now }).eq('id', initiative.id);
                   } else {
-                    await (supabase as any).from('ph_issue_initiative_type_overrides').upsert({ issue_key: initiative.initiative_key, initiative_type_id: typeRow.id, updated_at: now }, { onConflict: 'issue_key' });
+                    await typedQuery('ph_issue_initiative_type_overrides').upsert({ issue_key: initiative.initiative_key, initiative_type_id: typeRow.id, updated_at: now }, { onConflict: 'issue_key' });
                   }
                   setSelectedTypeKey(opt.key);
                   onQuickEdit('initiative_type_key', opt.key);

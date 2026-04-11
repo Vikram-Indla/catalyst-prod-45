@@ -4,7 +4,7 @@
  */
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { catalystToast } from '@/lib/catalystToast';
 
 export interface TestCaseComment {
@@ -29,8 +29,7 @@ export function useTestCaseComments(testCaseId: string | undefined) {
     queryFn: async (): Promise<TestCaseComment[]> => {
       if (!testCaseId) return [];
 
-      const { data, error } = await (supabase as any)
-        .from('tm_comments')
+      const { data, error } = await typedQuery('tm_comments')
         .select(`
           id,
           content,
@@ -67,8 +66,7 @@ export function useTestCaseCommentsCount(testCaseId: string | undefined) {
     queryFn: async (): Promise<number> => {
       if (!testCaseId) return 0;
 
-      const { count, error } = await (supabase as any)
-        .from('tm_comments')
+      const { count, error } = await typedQuery('tm_comments')
         .select('*', { count: 'exact', head: true })
         .eq('entity_type', 'test_case')
         .eq('entity_id', testCaseId);
@@ -96,8 +94,7 @@ export function useAddTestCaseComment() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const { data, error } = await (supabase as any)
-        .from('tm_comments')
+      const { data, error } = await typedQuery('tm_comments')
         .insert({
           entity_type: 'test_case',
           entity_id: input.testCaseId,
@@ -136,8 +133,7 @@ export function useDeleteTestCaseComment() {
 
   return useMutation({
     mutationFn: async (input: { commentId: string; testCaseId: string }) => {
-      const { error } = await (supabase as any)
-        .from('tm_comments')
+      const { error } = await typedQuery('tm_comments')
         .delete()
         .eq('id', input.commentId);
 

@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 export interface BusinessProcess {
@@ -30,8 +30,7 @@ export function useAllBusinessProcesses() {
   return useQuery({
     queryKey: ['business-processes', 'all'],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from('business_processes')
+      const { data, error } = await typedQuery('business_processes')
         .select('*')
         .order('sort_order', { ascending: true })
         .order('name_en', { ascending: true });
@@ -47,8 +46,7 @@ export function useActiveBusinessProcesses() {
   return useQuery({
     queryKey: ['business-processes', 'active'],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from('business_processes')
+      const { data, error } = await typedQuery('business_processes')
         .select('*')
         .eq('active', true)
         .order('sort_order', { ascending: true })
@@ -67,8 +65,7 @@ export function useEpicBusinessProcesses(epicId: string | null) {
     queryFn: async () => {
       if (!epicId) return [];
 
-      const { data, error } = await (supabase as any)
-        .from('epic_business_processes')
+      const { data, error } = await typedQuery('epic_business_processes')
         .select(`
           business_process_id,
           business_processes (
@@ -99,8 +96,7 @@ export function useCreateBusinessProcess() {
 
   return useMutation({
     mutationFn: async (input: CreateBusinessProcessInput) => {
-      const { data, error } = await (supabase as any)
-        .from('business_processes')
+      const { data, error } = await typedQuery('business_processes')
         .insert({
           name_en: input.name_en,
           name_ar: input.name_ar || null,
@@ -128,8 +124,7 @@ export function useUpdateBusinessProcess() {
 
   return useMutation({
     mutationFn: async ({ id, ...input }: UpdateBusinessProcessInput & { id: string }) => {
-      const { data, error } = await (supabase as any)
-        .from('business_processes')
+      const { data, error } = await typedQuery('business_processes')
         .update(input)
         .eq('id', id)
         .select()
@@ -154,8 +149,7 @@ export function useDeleteBusinessProcess() {
 
   return useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await (supabase as any)
-        .from('business_processes')
+      const { error } = await typedQuery('business_processes')
         .update({ active: false })
         .eq('id', id);
 
