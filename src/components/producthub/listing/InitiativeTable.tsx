@@ -12,7 +12,7 @@ import {
   type SortingState, type RowSelectionState, type ColumnResizeMode, type VisibilityState,
 } from '@tanstack/react-table';
 import { DragDropContext, Droppable, Draggable, type DropResult } from '@hello-pangea/dnd';
-import { Check, ChevronUp, ChevronDown, ChevronsUpDown, Pencil, Star, MoreVertical, Map, LayoutGrid, Paperclip } from 'lucide-react';
+import { Check, ChevronUp, ChevronDown, ChevronsUpDown, Pencil, Star, MoreVertical, Map as MapIcon, LayoutGrid, Paperclip } from 'lucide-react';
 import type { Initiative, InitiativeStatus, Density } from '@/types/initiative';
 import { STATUS_DISPLAY, getPriorityLevel } from '@/types/initiative';
 import type { GroupByField } from '@/components/producthub/listing/ListingToolbar';
