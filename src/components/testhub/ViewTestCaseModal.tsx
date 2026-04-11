@@ -551,7 +551,7 @@ export function ViewTestCaseModal({
                 ))}
               </div>
             )}
-            <AddLinkModal isOpen={addLinkOpen} onClose={() => setAddLinkOpen(false)} linkType={addLinkType} onAdd={handleAddLink} />
+            <AddLinkModal isOpen={addLinkOpen} onClose={() => setAddLinkOpen(false)} linkType={addLinkType} projectId={testCase?.project_id} onAdd={handleAddLink} />
           </div>
         );
 
