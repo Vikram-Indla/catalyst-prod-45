@@ -8,7 +8,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Play, CheckCircle2, XCircle, AlertTriangle, Clock,
-  RefreshCw, ChevronRight, Zap, BarChart3, Target,
+  RefreshCw, ChevronRight, Zap, BarChart3, Target, Bug,
 } from 'lucide-react';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { EmptyState } from '@/components/ui/EmptyState';
@@ -27,6 +27,7 @@ interface CycleWithStats {
   skipped_count: number;
   not_run_count: number;
   in_progress_count: number;
+  defect_count?: number;
 }
 
 const CYCLE_STATUS_MAP: Record<string, { bg: string; text: string; label: string }> = {
@@ -59,7 +60,30 @@ export default function ExecutionHubPage() {
         .eq('project_id', '00000000-0000-0000-0000-000000000001')
         .order('created_at', { ascending: false });
       if (error) throw error;
-      setCycles((data) || []);
+      
+      const cyclesData = (data || []) as CycleWithStats[];
+      
+      // Fetch defect counts per cycle
+      if (cyclesData.length > 0) {
+        const cycleIds = cyclesData.map(c => c.id);
+        const { data: defectLinks } = await supabase
+          .from('tm_defect_links' as any)
+          .select('linked_id')
+          .in('linked_id', cycleIds)
+          .eq('link_type', 'cycle');
+        
+        if (defectLinks) {
+          const countMap: Record<string, number> = {};
+          defectLinks.forEach((dl: any) => {
+            countMap[dl.linked_id] = (countMap[dl.linked_id] || 0) + 1;
+          });
+          cyclesData.forEach(c => {
+            c.defect_count = countMap[c.id] || 0;
+          });
+        }
+      }
+      
+      setCycles(cyclesData);
     } catch (err) {
       console.error('Failed to load cycles', err);
     } finally {
@@ -241,6 +265,12 @@ export default function ExecutionHubPage() {
                   <span className="inline-flex items-center gap-1 text-muted-foreground">
                     <Clock className="h-3 w-3" /> {cycle.not_run_count} remaining
                   </span>
+                  {(cycle.defect_count ?? 0) > 0 && (
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-red-50 text-red-700 dark:bg-red-950/30 dark:text-red-400">
+                      <Bug className="h-3 w-3" />
+                      {cycle.defect_count}
+                    </span>
+                  )}
                 </div>
               </div>
             );
