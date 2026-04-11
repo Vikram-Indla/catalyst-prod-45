@@ -1114,7 +1114,7 @@ export function TestRepositoryPage() {
           case_type_id: selectedTestCase.case_type_id,
           status: selectedTestCase.status,
           version: selectedTestCase.version || 1,
-          owner_id: selectedTestCase.assigned_to || null,
+          assigned_to: selectedTestCase.assigned_to || null,
         } : undefined}
         existingSteps={selectedTestCaseSteps.length > 0 ? selectedTestCaseSteps : undefined}
       />
