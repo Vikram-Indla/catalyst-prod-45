@@ -212,6 +212,8 @@ export default function StoryDetailModal({
   const [showCommentSummary, setShowCommentSummary] = useState(true);
   const [showFixVersionDropdown, setShowFixVersionDropdown] = useState(false);
   const [fixVersionSearch, setFixVersionSearch] = useState('');
+  const [showAttMenu, setShowAttMenu] = useState(false);
+  const [attViewMode, setAttViewMode] = useState<'list' | 'strip'>('list');
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const addMenuRef = useRef<HTMLDivElement>(null);
@@ -987,8 +989,8 @@ export default function StoryDetailModal({
                   </div>
 
                   {/* 6. ATTACHMENTS — Jira list view */}
-                  <SectionBlock title="Attachments" badge={attachments.length > 0 ? attachments.length : undefined} defaultExpanded={attachments.length > 0}
-                    actions={
+                  <SectionBlock title="Attachments" count={attachments.length} defaultExpanded={attachments.length > 0}
+                    headerRight={
                       <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                         <div style={{ position: 'relative' }}>
                           <button onClick={() => setShowAttMenu(p => !p)} style={{ background: 'none', border: '1px solid #DFE1E6', borderRadius: 3, cursor: 'pointer', color: '#42526E', width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
