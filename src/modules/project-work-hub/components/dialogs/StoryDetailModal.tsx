@@ -226,6 +226,10 @@ export default function StoryDetailModal({
   const [showAddEpicPanel, setShowAddEpicPanel] = useState(false);
   const [epicSearchTerm, setEpicSearchTerm] = useState('');
   const [acceptanceCriteria, setAcceptanceCriteria] = useState('');
+  const [descEditMode, setDescEditMode] = useState(false);
+  const [acEditMode, setAcEditMode] = useState(false);
+  const [descUnsaved, setDescUnsaved] = useState(false);
+  const [acUnsaved, setAcUnsaved] = useState(false);
   const [titleFocused, setTitleFocused] = useState(false);
   const [commentSummary, setCommentSummary] = useState<string | null>(null);
   const [commentSummaryLoading, setCommentSummaryLoading] = useState(false);
