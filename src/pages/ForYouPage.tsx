@@ -27,6 +27,9 @@ import type { AIPriorityItem, AINextItemData, AIStats, AISuggestionData } from '
 const StoryDetailModal = lazy(() => import('@/modules/project-work-hub/components/dialogs/StoryDetailModal'));
 const CatalystAIPanel = lazy(() => import('@/components/catalyst-ai/CatalystAIPanel').then(m => ({ default: m.CatalystAIPanel })));
 
+  const handleCloseFilterPanel = useCallback(() => {
+    setFilterPanelOpen(false);
+  }, []);
 
 export default function ForYouPage() {
   const {
