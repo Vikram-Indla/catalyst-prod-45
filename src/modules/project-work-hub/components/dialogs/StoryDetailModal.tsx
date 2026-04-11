@@ -1045,6 +1045,23 @@ export default function StoryDetailModal({
                           placeholder="Add a description..."
                           minHeight={200}
                           autoSave
+                          aiLabel="Improve description"
+                          onAiImprove={async () => {
+                            const { data, error: fnError } = await supabase.functions.invoke('ai-improve-story', {
+                              body: {
+                                issue_id: itemId,
+                                improve_type: 'improve_clarify',
+                                current_description: issue?.description_text || '(empty)',
+                                current_ac: acceptanceCriteria || '(none)',
+                                issue_summary: issue?.summary ?? '',
+                              },
+                            });
+                            if (fnError || !data?.description) {
+                              toast.error('AI improve failed. Try again.');
+                              return null;
+                            }
+                            return data.description;
+                          }}
                         />
                       </div>
                     )}
@@ -1059,6 +1076,23 @@ export default function StoryDetailModal({
                       placeholder="No acceptance criteria defined · Add manually or use AI →"
                       minHeight={80}
                       autoSave
+                      aiLabel="Improve criteria"
+                      onAiImprove={async () => {
+                        const { data, error: fnError } = await supabase.functions.invoke('ai-improve-story', {
+                          body: {
+                            issue_id: itemId,
+                            improve_type: 'add_acceptance_criteria',
+                            current_description: issue?.description_text || '(empty)',
+                            current_ac: acceptanceCriteria || '(none)',
+                            issue_summary: issue?.summary ?? '',
+                          },
+                        });
+                        if (fnError || !data?.acceptance_criteria) {
+                          toast.error('AI improve failed. Try again.');
+                          return null;
+                        }
+                        return data.acceptance_criteria;
+                      }}
                     />
                   </div>
 
