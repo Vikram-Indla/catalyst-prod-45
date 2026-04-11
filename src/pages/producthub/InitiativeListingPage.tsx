@@ -27,7 +27,7 @@ import { JiraBulkActionBar } from '@/components/shared/JiraBulkActionBar';
 
 import type { Initiative, InitiativeStatus, Density } from '@/types/initiative';
 import { getPriorityLevel, STATUS_DISPLAY, getAvatarColor, getInitials } from '@/types/initiative';
-import { Search, X, Plus, Download, ChevronsUp, ChevronUp, ChevronDown, ChevronsDown } from 'lucide-react';
+import { Search, X, Plus, Download, ChevronsUp, ChevronUp, ChevronDown, ChevronsDown, Calendar, Clock, LayoutGrid } from 'lucide-react';
 import { ProductHubPageHeader } from '@/components/producthub/shared/ProductHubPageHeader';
 import { BacklogSubTabs, type BacklogTabType } from '@/components/producthub/listing/BacklogSubTabs';
 import { BacklogStatusBar } from '@/components/producthub/listing/BacklogStatusBar';
@@ -273,15 +273,6 @@ export default function InitiativeListingPage() {
       Unscored: <span style={{ fontSize: 12, fontWeight: 600, color: '#94A3B8' }}>--</span>,
     };
 
-    // Type category
-    const typeOptions = TYPE_OPTIONS
-      .filter(t => tabFiltered.some(i => i.initiative_type_key === t.key))
-      .map(t => ({
-        id: t.key,
-        label: t.label,
-        iconNode: <span style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: t.color, display: 'inline-block', flexShrink: 0 }} />,
-      }));
-
     // Priority category
     const priorityLevels = ['High', 'Medium', 'Low', 'Unscored'] as const;
     const priorityOptions = priorityLevels.map(level => ({
@@ -290,18 +281,22 @@ export default function InitiativeListingPage() {
       iconNode: PRIORITY_ICONS[level],
     }));
 
-    // Quarter category — fixed 5-quarter window: -2, -1, current, +1, +2
+    // Quarter category — fixed 5-quarter window with calendar icons
     const now = new Date();
     const currentQNum = Math.ceil((now.getMonth() + 1) / 3);
     const currentYear = now.getFullYear();
-    const quarterOptions: Array<{ id: string; label: string }> = [];
+    const quarterOptions: Array<{ id: string; label: string; iconNode: React.ReactNode }> = [];
     for (let offset = -2; offset <= 2; offset++) {
       let q = currentQNum + offset;
       let y = currentYear;
       while (q < 1) { q += 4; y--; }
       while (q > 4) { q -= 4; y++; }
       const id = `Q${q} ${y}`;
-      quarterOptions.push({ id, label: offset === 0 ? `${id} (Current)` : id });
+      quarterOptions.push({
+        id,
+        label: offset === 0 ? `${id} (Current)` : id,
+        iconNode: <Calendar size={15} color={offset === 0 ? '#2563EB' : '#94A3B8'} strokeWidth={2} />,
+      });
     }
 
     // Roadmap category — with icons, mutually exclusive
@@ -332,20 +327,39 @@ export default function InitiativeListingPage() {
       },
     ];
 
-    // Status category
+    // Status category — with 3-colour StatusLozenge pills
+    const LOZENGE_COLORS: Record<string, { bg: string; color: string }> = {
+      grey:  { bg: '#DFE1E6', color: '#253858' },
+      blue:  { bg: '#DEEBFF', color: '#0747A6' },
+      green: { bg: '#E3FCEF', color: '#006644' },
+    };
     const statuses = [...new Set(tabFiltered.map(i => i.status))].sort();
-    const statusOptions = statuses.map(s => ({
-      id: s,
-      label: STATUS_DISPLAY[s]?.label ?? s,
-    }));
+    const statusOptions = statuses.map(s => {
+      const sd = STATUS_DISPLAY[s as InitiativeStatus];
+      const label = sd?.label ?? s;
+      const loz = LOZENGE_COLORS[sd?.lozenge ?? 'grey'] ?? LOZENGE_COLORS.grey;
+      return {
+        id: s,
+        label,
+        hideLabel: true,
+        iconNode: (
+          <span style={{
+            display: 'inline-block', height: 20, lineHeight: '20px', fontSize: 11,
+            fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.03em',
+            borderRadius: 3, padding: '0 6px', whiteSpace: 'nowrap' as const,
+            background: loz.bg, color: loz.color,
+          }}>{label}</span>
+        ),
+      };
+    });
 
     // Department category
     const depts = [...new Set(tabFiltered.map(i => i.department_name).filter(Boolean) as string[])].sort();
     const departmentOptions = depts.map(d => ({ id: d, label: d }));
 
-    // Assignee category — from profiles list with photo/initials avatars
-    const assigneeOptions = (profiles ?? []).map(p => {
-      const name = p.label;
+    // Assignee category — derived from actual initiative data for speed
+    const assigneeNames = [...new Set(tabFiltered.map(i => i.assignee_name).filter(Boolean) as string[])].sort();
+    const assigneeOptions = assigneeNames.map(name => {
       const avatarUrl = avatarsByName.get(name.toLowerCase());
       return {
         id: name,
@@ -357,7 +371,6 @@ export default function InitiativeListingPage() {
     });
 
     return [
-      { id: 'type', label: 'Type', searchPlaceholder: 'Search type', options: typeOptions },
       { id: 'priority', label: 'Priority', searchPlaceholder: 'Search priority', options: priorityOptions },
       { id: 'quarter', label: 'Quarter', searchPlaceholder: 'Search quarter', options: quarterOptions },
       { id: 'roadmap', label: 'Roadmap', searchPlaceholder: 'Search roadmap', options: roadmapOptions },
@@ -365,7 +378,7 @@ export default function InitiativeListingPage() {
       { id: 'department', label: 'Department', searchPlaceholder: 'Search department', options: departmentOptions },
       { id: 'assignee', label: 'Assignee', searchPlaceholder: 'Search assignee', options: assigneeOptions },
     ];
-  }, [tabFiltered, profiles, avatarsByName]);
+  }, [tabFiltered, avatarsByName]);
 
   const handleAdvancedFilterChange = useCallback((categoryId: string, optionIds: string[]) => {
     if (categoryId === 'roadmap') {
@@ -650,29 +663,53 @@ export default function InitiativeListingPage() {
         />
       )}
 
-      {/* ── Table ── */}
-      <div className="flex-1 flex flex-col min-h-0" style={{ padding: '0 32px' }}>
-        <InitiativeTable
-          data={paginatedData}
-          loading={isLoading}
-          density={density}
-          columnConfigs={columnConfigs}
-          groupBy={groupBy}
-          brdTasksMap={brdTasksMap}
-          onRowClick={handleRowClick}
-          onStatusChange={handleStatusChange}
-          onFavoriteToggle={handleFavoriteToggle}
-          onSelectionChange={setSelectedIds}
-          onSortChange={handleSortChange}
-          onContextMenu={handleContextMenu}
-          onReorder={handleReorder}
-          onInlineEdit={handleInlineEdit}
-          onPromote={setPromoteTarget}
-          onRoadmapToggle={handleRoadmapToggle}
-          focusedRowIndex={focusedRow}
-          onFocusedRowChange={setFocusedRow}
-        />
-      </div>
+      {/* ── Table or Empty State ── */}
+      {filtered.length === 0 && !isLoading ? (
+        <div className="flex-1 flex flex-col items-center justify-center" style={{ padding: '80px 32px' }}>
+          {overdueActive ? (
+            <>
+              <Clock size={40} color="#94A3B8" strokeWidth={1.5} />
+              <p style={{ fontSize: 15, fontWeight: 600, color: '#0F172A', marginTop: 16 }}>No overdue initiatives</p>
+              <p style={{ fontSize: 13, color: '#94A3B8', marginTop: 4 }}>All initiatives are on track with their target dates</p>
+              <button
+                onClick={() => { setOverdueActive(false); setPage(1); }}
+                style={{ marginTop: 16, fontSize: 13, fontWeight: 500, color: '#2563EB', cursor: 'pointer', background: 'none', border: 'none', padding: '6px 12px', borderRadius: 6 }}
+              >
+                Clear overdue filter
+              </button>
+            </>
+          ) : (
+            <>
+              <LayoutGrid size={40} color="#94A3B8" strokeWidth={1.5} />
+              <p style={{ fontSize: 15, fontWeight: 600, color: '#0F172A', marginTop: 16 }}>No initiatives match your filters</p>
+              <p style={{ fontSize: 13, color: '#94A3B8', marginTop: 4 }}>Try adjusting your search or filter criteria</p>
+            </>
+          )}
+        </div>
+      ) : (
+        <div className="flex-1 flex flex-col min-h-0" style={{ padding: '0 32px' }}>
+          <InitiativeTable
+            data={paginatedData}
+            loading={isLoading}
+            density={density}
+            columnConfigs={columnConfigs}
+            groupBy={groupBy}
+            brdTasksMap={brdTasksMap}
+            onRowClick={handleRowClick}
+            onStatusChange={handleStatusChange}
+            onFavoriteToggle={handleFavoriteToggle}
+            onSelectionChange={setSelectedIds}
+            onSortChange={handleSortChange}
+            onContextMenu={handleContextMenu}
+            onReorder={handleReorder}
+            onInlineEdit={handleInlineEdit}
+            onPromote={setPromoteTarget}
+            onRoadmapToggle={handleRoadmapToggle}
+            focusedRowIndex={focusedRow}
+            onFocusedRowChange={setFocusedRow}
+          />
+        </div>
+      )}
 
       {/* ── Pagination ── */}
       <Pagination
