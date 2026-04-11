@@ -31,7 +31,7 @@ export default function AtlaskitRenderer({
       style={maxHeight ? { maxHeight, overflowY: 'auto' } : undefined}
     >
       <ReactRenderer
-        document={document}
+        document={{ ...document, version: document.version ?? 1 } as any}
         appearance={appearance}
         adfStage="stage0"
       />
