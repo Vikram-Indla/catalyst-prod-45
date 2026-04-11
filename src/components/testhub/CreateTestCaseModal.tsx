@@ -30,7 +30,7 @@ interface TestCaseForEdit {
   case_type_id: string | null;
   status: string;
   version: number;
-  owner_id?: string | null;
+  assigned_to?: string | null;
   created_by?: string | null;
   automation_status?: string | null;
   test_format?: string | null;
@@ -113,7 +113,7 @@ export function CreateTestCaseModal({
         setCaseTypeId(testCase.case_type_id || '');
         setStatus(testCase.status);
         setAutomation(testCase.automation_status || 'manual');
-        setAssignedTo(testCase.owner_id || '');
+        setAssignedTo(testCase.assigned_to || '');
         setTestFormat((testCase as any).test_format || 'steps');
         setGherkinFeature((testCase as any).gherkin_feature || '');
         setGherkinScenario((testCase as any).gherkin_scenario || '');
@@ -226,7 +226,7 @@ export function CreateTestCaseModal({
         test_format: testFormat,
         gherkin_feature: testFormat === 'gherkin' ? gherkinFeature.trim() || null : null,
         gherkin_scenario: testFormat === 'gherkin' ? gherkinScenario.trim() || null : null,
-        owner_id: assignedTo || null,
+        assigned_to: assignedTo || null,
         version: 1,
         project_id: projectId,
       })
@@ -314,7 +314,7 @@ export function CreateTestCaseModal({
         test_format: testFormat,
         gherkin_feature: testFormat === 'gherkin' ? gherkinFeature.trim() || null : null,
         gherkin_scenario: testFormat === 'gherkin' ? gherkinScenario.trim() || null : null,
-        owner_id: assignedTo || null,
+        assigned_to: assignedTo || null,
         version: newVersion,
       })
       .eq('id', testCase.id);
