@@ -207,9 +207,6 @@ export function JiraBasicFilter({
                             onClick={() => handleCheckbox(option.id)}
                           >
                             <div className="jf-option-inner">
-                              <div className="jf-checkbox-wrap">
-                                <CheckboxSVG checked={isChecked} />
-                              </div>
                               <div className="jf-option-content">
                                 <div className="jf-option-row">
                                   {(option.iconNode || option.avatarUrl || option.avatarInitials || option.avatarType) && (
