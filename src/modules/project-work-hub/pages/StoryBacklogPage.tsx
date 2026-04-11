@@ -3,6 +3,7 @@
  * With Jira-style Group By dropdown + Filter
  */
 import React, { useState, useMemo, useRef, useEffect, useCallback, lazy, Suspense } from 'react';
+import { useStarredItemIds, useToggleStar } from '@/hooks/home/useStarredItems';
 import { useParams } from 'react-router-dom';
 import { useQueryClient, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -18,7 +19,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { StatusBadge } from '@/components/ui/StatusBadge';
-import { ChevronDown, ChevronRight, Plus, Pencil, Trash2, BookOpen, Search, Layers, Check, X } from 'lucide-react';
+import { ChevronDown, ChevronRight, ChevronLeft, Plus, Pencil, Trash2, BookOpen, Search, Layers, Check, X, Star } from 'lucide-react';
 import { toast } from 'sonner';
 import { useTheme } from '@/hooks/useTheme';
 import { DK, LK } from '@/utils/dark-mode-styles';
@@ -34,9 +35,10 @@ const StoryDetailModal = lazy(() => import('../components/dialogs/StoryDetailMod
 // ── Column definitions (CatalystTable pattern) ──
 const STORY_COLUMNS: TColDef[] = [
   { key: 'checkbox', label: '', defaultWidth: 40, minWidth: 40, locked: true },
-  { key: 'type', label: 'TYPE', defaultWidth: 32, minWidth: 32, locked: true },
+  { key: 'star', label: '', defaultWidth: 36, minWidth: 36, locked: true },
+  { key: 'type', label: 'TYPE', defaultWidth: 56, minWidth: 44, locked: true },
   { key: 'key', label: 'KEY', defaultWidth: 120, minWidth: 80 },
-  { key: 'summary', label: 'SUMMARY', defaultWidth: 400, minWidth: 150 },
+  { key: 'summary', label: 'SUMMARY', defaultWidth: 380, minWidth: 150 },
   { key: 'status', label: 'STATUS', defaultWidth: 130, minWidth: 80 },
   { key: 'parent', label: 'PARENT', defaultWidth: 200, minWidth: 100 },
   { key: 'assignee', label: 'ASSIGNEE', defaultWidth: 160, minWidth: 100 },
