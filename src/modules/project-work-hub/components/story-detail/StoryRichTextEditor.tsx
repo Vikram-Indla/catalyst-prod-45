@@ -1,10 +1,10 @@
 /**
  * StoryRichTextEditor — Atlassian-style TipTap rich text editor
- * Jira-matching toolbar: B I U S | H1–H6 | Lists | Code Link | Undo Redo
+ * Jira-matching toolbar: ✨ Improve description | B I U S | H1–H6 | Lists | Code Link | Undo Redo
  * Output: ADF (Atlassian Document Format) JSON
  * Modes: "save" (Save/Cancel buttons) | "autosave" (debounced save on blur)
  */
-import React, { useEffect, useCallback, useRef, useMemo } from 'react';
+import React, { useEffect, useCallback, useRef, useMemo, useState } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import LinkExtension from '@tiptap/extension-link';
@@ -17,7 +17,7 @@ import { TableHeader } from '@tiptap/extension-table-header';
 import {
   Bold, Italic, Underline as UnderlineIcon, Strikethrough,
   Heading1, Heading2, Heading3, Heading4, Heading5, Heading6,
-  List, ListOrdered, Code2, Link2, Undo2, Redo2,
+  List, ListOrdered, Code2, Link2, Undo2, Redo2, Sparkles, Loader2,
 } from 'lucide-react';
 import { tiptapJsonToAdf, resolveEditorContent } from './adf-utils';
 
@@ -31,6 +31,10 @@ interface StoryRichTextEditorProps {
   minHeight?: number;
   compact?: boolean;
   autoSave?: boolean;
+  /** AI Improve: callback to trigger AI generation, returns improved HTML/text */
+  onAiImprove?: () => Promise<string | null>;
+  /** Label for the AI button */
+  aiLabel?: string;
 }
 
 // ─── Debounce helper ─────────────────────────────────────────
@@ -106,9 +110,13 @@ function Sep() {
 // ─── Main editor component ──────────────────────────────────
 export const StoryRichTextEditor = React.memo(function StoryRichTextEditor({
   content, onSave, onCancel, placeholder = 'Start typing...', minHeight = 200, compact = false, autoSave = false,
+  onAiImprove, aiLabel = 'Improve description',
 }: StoryRichTextEditorProps) {
   const lastSavedRef = useRef<string>(content);
   const isInitialMount = useRef(true);
+  const [aiGenerating, setAiGenerating] = useState(false);
+  const [aiMode, setAiMode] = useState(false); // true = AI content loaded, showing Save/Cancel
+  const [preAiContent, setPreAiContent] = useState<string>(''); // content before AI replacement
 
   // Resolve content: ADF JSON → TipTap JSON, or HTML string
   const initialContent = useMemo(() => resolveEditorContent(content), [content]);
@@ -117,7 +125,6 @@ export const StoryRichTextEditor = React.memo(function StoryRichTextEditor({
     const json = ed.getJSON();
     const adf = tiptapJsonToAdf(json);
     const adfStr = JSON.stringify(adf);
-    // Skip if content is just an empty doc
     const isEmpty = !adf.content || adf.content.length === 0 ||
       (adf.content.length === 1 && adf.content[0].type === 'paragraph' && (!adf.content[0].content || adf.content[0].content.length === 0));
     return { adfStr, isEmpty };
@@ -159,13 +166,13 @@ export const StoryRichTextEditor = React.memo(function StoryRichTextEditor({
       },
     },
     onUpdate: ({ editor: ed }) => {
-      if (autoSave && !isInitialMount.current) {
+      if (autoSave && !isInitialMount.current && !aiMode) {
         const { adfStr, isEmpty } = emitAdf(ed);
         debouncedSave(isEmpty ? '' : adfStr);
       }
     },
     onBlur: ({ editor: ed }) => {
-      if (autoSave) {
+      if (autoSave && !aiMode) {
         const { adfStr, isEmpty } = emitAdf(ed);
         const value = isEmpty ? '' : adfStr;
         if (value !== lastSavedRef.current) {
@@ -180,6 +187,47 @@ export const StoryRichTextEditor = React.memo(function StoryRichTextEditor({
     isInitialMount.current = false;
     return () => { editor?.destroy(); };
   }, []);
+
+  // Handle AI Improve click
+  const handleAiImprove = useCallback(async () => {
+    if (!onAiImprove || !editor || aiGenerating) return;
+    
+    // Store current content for cancel
+    setPreAiContent(editor.getHTML());
+    setAiGenerating(true);
+    
+    try {
+      const result = await onAiImprove();
+      if (result && editor) {
+        // Replace editor content with AI result
+        editor.commands.setContent(result, false);
+        setAiMode(true);
+      }
+    } catch {
+      // Error handled by parent
+    } finally {
+      setAiGenerating(false);
+    }
+  }, [onAiImprove, editor, aiGenerating]);
+
+  // AI Save: persist the AI content
+  const handleAiSave = useCallback(() => {
+    if (!editor) return;
+    const { adfStr, isEmpty } = emitAdf(editor);
+    const value = isEmpty ? '' : adfStr;
+    lastSavedRef.current = value;
+    onSave(value);
+    setAiMode(false);
+    setPreAiContent('');
+  }, [editor, emitAdf, onSave]);
+
+  // AI Cancel: revert to original content
+  const handleAiCancel = useCallback(() => {
+    if (!editor) return;
+    editor.commands.setContent(preAiContent, false);
+    setAiMode(false);
+    setPreAiContent('');
+  }, [editor, preAiContent]);
 
   if (!editor) return null;
 
@@ -199,15 +247,46 @@ export const StoryRichTextEditor = React.memo(function StoryRichTextEditor({
     }
   };
 
-  const borderColor = autoSave ? '#DFE1E6' : '#4C9AFF';
+  const borderColor = aiMode ? '#2563EB' : autoSave ? '#DFE1E6' : '#4C9AFF';
 
   return (
-    <div style={{ border: `1.5px solid ${borderColor}`, borderRadius: 6, background: '#FFFFFF', overflow: 'hidden' }}>
+    <div style={{ border: `1.5px solid ${borderColor}`, borderRadius: 6, background: '#FFFFFF', overflow: 'hidden', transition: 'border-color 0.2s' }}>
       {/* ── Toolbar ── */}
       <div style={{
         display: 'flex', alignItems: 'center', gap: 2, padding: '4px 8px',
         borderBottom: '1px solid #EBECF0', background: '#FAFBFC', minHeight: 36, flexWrap: 'wrap',
       }}>
+        {/* AI Improve button — Jira Rovo style */}
+        {onAiImprove && (
+          <>
+            <button
+              type="button"
+              onClick={handleAiImprove}
+              disabled={aiGenerating}
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: 5,
+                height: 28, padding: '0 10px', borderRadius: 4, border: 'none',
+                background: aiGenerating ? '#EFF6FF' : 'transparent',
+                color: aiGenerating ? '#93C5FD' : '#5E6C84',
+                cursor: aiGenerating ? 'wait' : 'pointer',
+                fontSize: 12, fontWeight: 500, fontFamily: 'inherit',
+                transition: 'background 0.12s, color 0.12s',
+              }}
+              onMouseEnter={(e) => { if (!aiGenerating) { e.currentTarget.style.background = '#EFF6FF'; e.currentTarget.style.color = '#2563EB'; } }}
+              onMouseLeave={(e) => { if (!aiGenerating) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#5E6C84'; } }}
+              title={aiLabel}
+            >
+              {aiGenerating ? (
+                <Loader2 size={13} style={{ animation: 'sdm-spin 1s linear infinite' }} />
+              ) : (
+                <Sparkles size={13} />
+              )}
+              <span>{aiGenerating ? 'Improving…' : aiLabel}</span>
+            </button>
+            <Sep />
+          </>
+        )}
+
         {/* Formatting marks */}
         <ToolbarBtn active={editor.isActive('bold')} onClick={() => editor.chain().focus().toggleBold().run()} title="Bold (Ctrl+B)">
           <Bold size={15} />
@@ -269,10 +348,44 @@ export const StoryRichTextEditor = React.memo(function StoryRichTextEditor({
       </div>
 
       {/* ── Editor content ── */}
-      <EditorContent editor={editor} />
+      {aiGenerating ? (
+        <div style={{ minHeight, padding: '14px 16px', background: '#FAFBFC' }}>
+          {[100, 90, 75, 60, 85, 50].map((w, i) => (
+            <div key={i} style={{
+              height: 14, marginBottom: 10, borderRadius: 4, width: `${w}%`,
+              background: 'linear-gradient(90deg, #F1F5F9 25%, #E2E8F0 50%, #F1F5F9 75%)',
+              backgroundSize: '200% 100%',
+              animation: 'sdm-shimmer 1.5s ease-in-out infinite',
+            }} />
+          ))}
+        </div>
+      ) : (
+        <EditorContent editor={editor} />
+      )}
 
       {/* ── Footer ── */}
-      {autoSave ? (
+      {aiMode ? (
+        /* AI mode: Save / Cancel like Jira Rovo */
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px',
+          borderTop: '1px solid #BFDBFE', background: '#EFF6FF',
+        }}>
+          <Sparkles size={12} style={{ color: '#2563EB', flexShrink: 0 }} />
+          <span style={{ fontSize: 11, color: '#1E40AF', fontWeight: 500, flex: 1 }}>AI-generated content — review and save or cancel</span>
+          <button type="button" onClick={handleAiSave} style={{
+            height: 32, padding: '0 16px', borderRadius: 3, fontSize: 14, fontWeight: 500,
+            background: '#0052CC', color: '#FFFFFF', border: 'none', cursor: 'pointer',
+            transition: 'background 0.15s',
+          }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = '#0747A6'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = '#0052CC'; }}
+          >Save</button>
+          <button type="button" onClick={handleAiCancel} style={{
+            height: 32, padding: '0 16px', borderRadius: 3, fontSize: 14, fontWeight: 500,
+            background: 'transparent', color: '#42526E', border: 'none', cursor: 'pointer',
+          }}>Cancel</button>
+        </div>
+      ) : autoSave ? (
         <div style={{
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           padding: '6px 12px', borderTop: '1px solid #EBECF0', background: '#FAFBFC',
