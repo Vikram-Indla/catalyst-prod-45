@@ -1063,37 +1063,36 @@ export default function StoryDetailModal({
                             return data.description;
                           }}
                         />
+                        {/* Acceptance Criteria — inside Key Details */}
+                        <div style={{ marginTop: 16 }}>
+                          <h2 style={{ fontSize: 14, fontWeight: 500, color: '#505258', lineHeight: '18.67px', margin: '0 0 8px 0', padding: 0 }}>Acceptance Criteria</h2>
+                          <StoryRichTextEditor
+                            content={tryAdfStringToHtml(acceptanceCriteria) ?? acceptanceCriteria ?? ''}
+                            onSave={(adfJson) => { setAcceptanceCriteria(adfJson); supabase.from('ph_issues').update({ acceptance_criteria: adfJson }).eq('id', itemId).then(() => { queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] }); }); }}
+                            placeholder="No acceptance criteria defined · Add manually or use AI →"
+                            minHeight={80}
+                            autoSave
+                            aiLabel="Improve criteria"
+                            onAiImprove={async () => {
+                              const { data, error: fnError } = await supabase.functions.invoke('ai-improve-story', {
+                                body: {
+                                  issue_id: itemId,
+                                  improve_type: 'add_acceptance_criteria',
+                                  current_description: issue?.description_text || '(empty)',
+                                  current_ac: acceptanceCriteria || '(none)',
+                                  issue_summary: issue?.summary ?? '',
+                                },
+                              });
+                              if (fnError || !data?.acceptance_criteria) {
+                                toast.error('AI improve failed. Try again.');
+                                return null;
+                              }
+                              return data.acceptance_criteria;
+                            }}
+                          />
+                        </div>
                       </div>
                     )}
-                  </div>
-
-                  {/* 5. ACCEPTANCE CRITERIA — ADF auto-save editor */}
-                  <div style={{ marginBottom: 24 }}>
-                    <h2 style={{ fontSize: 14, fontWeight: 500, color: '#505258', lineHeight: '18.67px', margin: '0 0 8px 0', padding: 0 }}>Acceptance Criteria</h2>
-                    <StoryRichTextEditor
-                      content={tryAdfStringToHtml(acceptanceCriteria) ?? acceptanceCriteria ?? ''}
-                      onSave={(adfJson) => { setAcceptanceCriteria(adfJson); supabase.from('ph_issues').update({ acceptance_criteria: adfJson }).eq('id', itemId).then(() => { queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] }); }); }}
-                      placeholder="No acceptance criteria defined · Add manually or use AI →"
-                      minHeight={80}
-                      autoSave
-                      aiLabel="Improve criteria"
-                      onAiImprove={async () => {
-                        const { data, error: fnError } = await supabase.functions.invoke('ai-improve-story', {
-                          body: {
-                            issue_id: itemId,
-                            improve_type: 'add_acceptance_criteria',
-                            current_description: issue?.description_text || '(empty)',
-                            current_ac: acceptanceCriteria || '(none)',
-                            issue_summary: issue?.summary ?? '',
-                          },
-                        });
-                        if (fnError || !data?.acceptance_criteria) {
-                          toast.error('AI improve failed. Try again.');
-                          return null;
-                        }
-                        return data.acceptance_criteria;
-                      }}
-                    />
                   </div>
 
                   {/* 6. ATTACHMENTS — Jira list view */}
