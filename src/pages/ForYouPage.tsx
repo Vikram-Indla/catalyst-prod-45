@@ -98,7 +98,7 @@ export default function ForYouPage() {
       },
       {
         id: 'type', label: 'Type', searchPlaceholder: 'Search issue type',
-        options: [...new Set(workItems.map(i => i.type).filter(Boolean))].sort().map(t => ({ id: t, label: t })),
+        options: [...new Set(workItems.map(i => i.issueType).filter(Boolean))].sort().map(t => ({ id: t, label: t })),
       },
     ];
   }, [projectOptions, hubOptions, reportedByOptions, workItems, avatarsByName]);
@@ -132,7 +132,7 @@ export default function ForYouPage() {
       }
       if (af.status?.length && !af.status.includes(item.status)) return false;
       if (af.priority?.length && !af.priority.includes(item.priority)) return false;
-      if (af.type?.length && !af.type.includes(item.type)) return false;
+      if (af.type?.length && !af.type.includes(item.issueType)) return false;
       return true;
     };
     return {
