@@ -9,7 +9,7 @@ export interface CreateTemplateInput { name: string; description?: string; [key:
 
 export function usePlanHubAIConfig(..._: any[]) { return { data: null as any, isLoading: false }; }
 export function useUpdatePlanHubAIConfig() { return useMutation({ mutationFn: async (_: any) => {} }); }
-export function useTestAIConnection() { return useMutation({ mutationFn: async (_: any) => ({} as any) }); }
+export function useTestAIConnection() { return useMutation({ mutationFn: async () => ({} as any) }); }
 export function usePlanHubActivityLog(..._: any[]) { return { data: [], isLoading: false }; }
 export function usePlanHubSettings() { return { data: null as any, isLoading: false }; }
 export function useUpdatePlanHubSettings() { return useMutation({ mutationFn: async (_: any) => {} }); }
