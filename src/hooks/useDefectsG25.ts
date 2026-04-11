@@ -415,6 +415,7 @@ export const useDefectsByPlanId = (planId: string | undefined) => {
       }));
     },
   });
+};
 
 // ─── Defects by Requirement ─────────────────────────────────────
 export const useDefectsByRequirementId = (requirementId: string | undefined) => {
