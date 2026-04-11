@@ -296,8 +296,10 @@ export function useCreateDefect() {
         const { error: linkError } = await supabase.from('tm_defect_links').insert({
           defect_id: data.id,
           test_run_id: input.run_id || null,
-          test_case_id: input.source_test_case_id ?? null,
           step_result_id: input.step_id || null,
+          link_type: input.source_test_case_id ? 'test_case' : 'execution',
+          linked_id: input.source_test_case_id || input.run_id || null,
+          link_source: 'auto_execution',
           created_by: user.id,
         });
         if (linkError) {
