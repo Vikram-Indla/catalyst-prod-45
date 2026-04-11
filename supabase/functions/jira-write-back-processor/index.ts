@@ -254,6 +254,62 @@ Deno.serve(async (req) => {
           if (!jiraKey) throw new Error("No jira_key for update operation");
 
           const fields: Record<string, any> = {};
+
+          // ── Field-level updates (field_name / new_value columns) ──
+          if (item.field_name) {
+            switch (item.field_name) {
+              case 'status': {
+                // Status uses Jira transitions API, not field update
+                const transRes = await fetch(`${baseUrl}/rest/api/3/issue/${jiraKey}/transitions`, {
+                  method: "GET", headers: jiraHeaders,
+                });
+                if (transRes.ok) {
+                  const { transitions } = await transRes.json();
+                  const target = transitions.find((t: any) =>
+                    t.name.toLowerCase() === (item.new_value || '').toLowerCase() ||
+                    t.to?.name?.toLowerCase() === (item.new_value || '').toLowerCase()
+                  );
+                  if (target) {
+                    jiraResponse = await fetch(`${baseUrl}/rest/api/3/issue/${jiraKey}/transitions`, {
+                      method: "POST", headers: jiraHeaders,
+                      body: JSON.stringify({ transition: { id: target.id } }),
+                    });
+                  } else {
+                    console.warn(`[WRITE-BACK] No matching Jira transition for status "${item.new_value}" on ${jiraKey}`);
+                    jiraResponse = new Response(null, { status: 204 });
+                  }
+                } else {
+                  throw new Error(`Failed to fetch transitions for ${jiraKey}`);
+                }
+                break;
+              }
+              case 'parent': {
+                if (item.new_value) {
+                  fields.parent = { key: item.new_value };
+                } else {
+                  // Remove parent — Jira uses null parent
+                  fields.parent = null;
+                }
+                break;
+              }
+              case 'priority': {
+                fields.priority = { name: mapPriorityToJira(item.new_value || 'Medium') };
+                break;
+              }
+              case 'assignee': {
+                fields.assignee = item.new_value ? { accountId: item.new_value } : null;
+                break;
+              }
+              case 'summary': {
+                fields.summary = item.new_value || '';
+                break;
+              }
+              default:
+                console.warn(`[WRITE-BACK] Unhandled field_name: ${item.field_name}`);
+            }
+          }
+
+          // ── Payload-level updates (operation_payload JSONB) ──
           if (payload.title) fields.summary = payload.title;
           if (payload.description !== undefined) {
             fields.description = {
@@ -270,11 +326,17 @@ Deno.serve(async (req) => {
             fields.assignee = { accountId: payload.assignee_account_id };
           }
 
-          jiraResponse = await fetch(`${baseUrl}/rest/api/3/issue/${jiraKey}`, {
-            method: "PUT",
-            headers: jiraHeaders,
-            body: JSON.stringify({ fields }),
-          });
+          // Only call Jira if we have fields to update and haven't already handled it (e.g. status transition)
+          if (!jiraResponse! && Object.keys(fields).length > 0) {
+            jiraResponse = await fetch(`${baseUrl}/rest/api/3/issue/${jiraKey}`, {
+              method: "PUT",
+              headers: jiraHeaders,
+              body: JSON.stringify({ fields }),
+            });
+          } else if (!jiraResponse!) {
+            // Nothing to send — mark as success
+            jiraResponse = new Response(null, { status: 204 });
+          }
         } else if (operation === "delete") {
           const jiraKey = workItem?.jira_key || payload.jira_key;
           if (!jiraKey) throw new Error("No jira_key for delete operation");
