@@ -411,7 +411,7 @@ export default function StoryDetailModal({
   /* ── AI Apply handlers ─────────────────────── */
   const handleApplyDescription = useCallback(async (newDesc: string, prev: string) => {
     updateFieldMutation.mutate({ field: 'description_text', value: newDesc, oldValue: prev });
-    if (descriptionRef.current) descriptionRef.current.innerText = newDesc;
+    // TipTap editor re-renders via React Query invalidation
   }, [updateFieldMutation]);
 
   const handleApplyAC = useCallback(async (newAC: string, _prev: string) => {
@@ -1431,7 +1431,7 @@ export default function StoryDetailModal({
             {/* RIGHT PANEL — Sidebar details */}
             <div style={{
               width: rightPanelWidth, minWidth: 220, maxWidth: 480,
-              background: '#FFFFFF', overflowY: 'auto', overflowX: 'visible',
+              background: '#FFFFFF', overflowY: 'auto', overflowX: 'hidden',
               display: 'flex', flexDirection: 'column', padding: '16px 16px 32px 16px',
             }}>
               {/* Status */}
