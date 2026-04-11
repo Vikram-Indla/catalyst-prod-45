@@ -58,6 +58,7 @@ import { TestHubSection } from './story-detail-modules';
 import { LinkedIssuesSection } from './story-detail-modules';
 import { EditableAssignee, EditablePriority, EditableLabels, ParentFieldPicker } from './story-detail-modules';
 import { StoryRichTextEditor } from '../story-detail/StoryRichTextEditor';
+import { adfToHtml } from '../../utils/adfToHtml';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 
 /* ═══════════════════════════════════════════════
@@ -1039,8 +1040,8 @@ export default function StoryDetailModal({
                         {/* Description — ADF auto-save editor */}
                         <div style={{ fontSize: 13, fontWeight: 700, color: '#172B4D', marginBottom: 10 }}>Description</div>
                         <StoryRichTextEditor
-                          content={issue?.description_text ?? ''}
-                          onSave={(adfJson) => { updateFieldMutation.mutate({ field: 'description_text', value: adfJson, oldValue: issue?.description_text ?? '' }); }}
+                          content={adfToHtml(issue?.description_adf) || issue?.description_text || ''}
+                          onSave={(html) => { updateFieldMutation.mutate({ field: 'description_text', value: html, oldValue: issue?.description_text ?? '' }); }}
                           placeholder="Add a description..."
                           minHeight={200}
                           autoSave
