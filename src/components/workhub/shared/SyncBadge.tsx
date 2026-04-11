@@ -1,3 +1,3 @@
-export function SyncBadge({ synced, className }: { synced?: boolean; className?: string }) {
-  return <span className={className}>{synced ? 'Synced' : 'Not synced'}</span>;
+export function SyncBadge(props: any) {
+  return <span className={props.className}>{props.lastSyncedAt || (props.synced ? 'Synced' : '')}</span>;
 }

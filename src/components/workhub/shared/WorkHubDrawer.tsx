@@ -1,4 +1,5 @@
-export function WorkHubDrawer({ children, open, onClose, title }: { children?: React.ReactNode; open?: boolean; onClose?: () => void; title?: string }) {
+export function WorkHubDrawer(props: any) {
+  const open = props.open ?? props.isOpen;
   if (!open) return null;
-  return <div>{children}</div>;
+  return <div>{props.children}</div>;
 }

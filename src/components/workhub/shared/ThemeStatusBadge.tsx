@@ -1,3 +1,3 @@
-export function ThemeStatusBadge({ status, className }: { status?: string; className?: string }) {
-  return <span className={className}>{status}</span>;
+export function ThemeStatusBadge(props: any) {
+  return <span className={props.className}>{props.status}</span>;
 }

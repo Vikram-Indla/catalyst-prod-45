@@ -1,4 +1,4 @@
-export function useAvailabilityCalendar(_?: any) { return { data: [], isLoading: false }; }
-export function useDateHeaders(_?: any) { return { headers: [] }; }
-export function useCycleDistribution(_?: any) { return { data: [], isLoading: false }; }
-export function useWorkloadTrends(_?: any) { return { data: [], isLoading: false }; }
+export function useAvailabilityCalendar(..._: any[]) { return { data: [] as any[], isLoading: false }; }
+export function useDateHeaders(..._: any[]) { return [] as any[]; }
+export function useCycleDistribution(..._: any[]) { return { data: [] as any[], isLoading: false }; }
+export function useWorkloadTrends(..._: any[]) { return { data: { stats: [] } as any, isLoading: false }; }

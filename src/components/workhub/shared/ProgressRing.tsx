@@ -1,7 +1,8 @@
-export function ProgressRing({ value = 0, size = 40, className }: { value?: number; size?: number; className?: string }) {
+export function ProgressRing(props: any) {
+  const value = props.percent ?? props.value ?? 0;
   return (
-    <div className={className} style={{ width: size, height: size, display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
-      <span className="text-xs font-medium">{Math.round(value)}%</span>
+    <div className={props.className} style={{ width: props.size || 40, height: props.size || 40, display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+      {props.showLabel !== false && <span className="text-xs font-medium">{Math.round(value)}%</span>}
     </div>
   );
 }

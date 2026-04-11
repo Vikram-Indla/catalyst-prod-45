@@ -1,11 +1,12 @@
-export function ConfirmDialog({ open, onConfirm, onCancel, title, description }: { open?: boolean; onConfirm?: () => void; onCancel?: () => void; title?: string; description?: string }) {
+export function ConfirmDialog(props: any) {
+  const open = props.open ?? props.isOpen;
   if (!open) return null;
   return (
     <div>
-      <p>{title}</p>
-      <p>{description}</p>
-      <button onClick={onConfirm}>Confirm</button>
-      <button onClick={onCancel}>Cancel</button>
+      <p>{props.title}</p>
+      <p>{props.description ?? props.message}</p>
+      <button onClick={props.onConfirm}>{props.confirmLabel || 'Confirm'}</button>
+      <button onClick={props.onCancel ?? props.onClose}>Cancel</button>
     </div>
   );
 }
