@@ -27,39 +27,6 @@ import type { AIPriorityItem, AINextItemData, AIStats, AISuggestionData } from '
 const StoryDetailModal = lazy(() => import('@/modules/project-work-hub/components/dialogs/StoryDetailModal'));
 const CatalystAIPanel = lazy(() => import('@/components/catalyst-ai/CatalystAIPanel').then(m => ({ default: m.CatalystAIPanel })));
 
-/* Canonical Jira-style work item type icons for filter panel */
-const WORK_ITEM_TYPE_ICONS: Record<string, React.ReactNode> = {
-  Story: (
-    <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="#36B37E"/><path d="M4 3h5l3 3v7a1 1 0 01-1 1H5a1 1 0 01-1-1V3z" fill="#fff" opacity="0.9"/></svg>
-  ),
-  Bug: (
-    <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="#FF5630"/><circle cx="8" cy="8" r="4" fill="#fff"/></svg>
-  ),
-  'QA Bug': (
-    <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="#FF5630"/><circle cx="8" cy="8" r="4" fill="#fff"/></svg>
-  ),
-  Task: (
-    <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="#4BADE8"/><path d="M6.5 10.5L4.5 8.5l-1 1 3 3 6-6-1-1z" fill="#fff"/></svg>
-  ),
-  Epic: (
-    <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="#6554C0"/><path d="M9 2L5 9h3l-1 5 4-7H8z" fill="#fff"/></svg>
-  ),
-  'Sub-task': (
-    <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="#2684FF"/><path d="M6.5 10.5L4.5 8.5l-1 1 3 3 6-6-1-1z" fill="#fff"/></svg>
-  ),
-  'Production Incident': (
-    <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="#FF5630"/><path d="M8 4l4 8H4z" fill="#fff"/><rect x="7.25" y="7" width="1.5" height="2.5" rx="0.5" fill="#FF5630"/><circle cx="8" cy="10.75" r="0.75" fill="#FF5630"/></svg>
-  ),
-  'Business Request': (
-    <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="#36B37E"/><path d="M8 3l1.5 3H13l-2.5 2 1 3L8 9.5 4.5 11l1-3L3 6h3.5z" fill="#fff"/></svg>
-  ),
-  'New Feature': (
-    <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="#36B37E"/><path d="M8 3l1.5 3H13l-2.5 2 1 3L8 9.5 4.5 11l1-3L3 6h3.5z" fill="#fff"/></svg>
-  ),
-  Improvement: (
-    <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="#4BADE8"/><path d="M8 4l3 4H5z" fill="#fff"/><rect x="6.5" y="8" width="3" height="4" rx="0.5" fill="#fff"/></svg>
-  ),
-};
 
 export default function ForYouPage() {
   const {
