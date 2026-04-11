@@ -104,8 +104,8 @@ export function CreateDefectModal({ isOpen, onClose, onCreated, prefill }: Creat
         assigned_to: assignedTo || undefined,
         run_id: prefill?.cycleTestCaseId || undefined,
         source_test_case_id: prefill?.testCaseId || undefined,
-        source_test_run_id: prefill?.cycleTestCaseId || undefined,
-        source_test_plan_id: prefill?.cycleId || undefined,
+        source_test_run_id: prefill?.run_id || undefined,
+        cycle_id: prefill?.cycleId || undefined,
       });
 
       onCreated(result.key || result.id);
