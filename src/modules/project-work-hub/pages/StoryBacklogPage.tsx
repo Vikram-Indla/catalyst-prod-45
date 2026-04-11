@@ -784,6 +784,76 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
             </tbody>
           </table>
         </div>
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            padding: '10px 12px', borderTop: '0.75px solid #E2E8F0',
+            fontSize: 13, color: '#64748B', fontFamily: "'Inter', sans-serif",
+          }}>
+            <span style={{ fontWeight: 500 }}>
+              {((page - 1) * pageSize) + 1}–{Math.min(page * pageSize, totalFiltered)} of {totalFiltered}
+            </span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+              <button
+                disabled={page <= 1}
+                onClick={() => setPage(p => Math.max(1, p - 1))}
+                style={{
+                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                  width: 28, height: 28, borderRadius: 4,
+                  border: '1px solid #E2E8F0', background: '#FFFFFF',
+                  cursor: page <= 1 ? 'not-allowed' : 'pointer',
+                  opacity: page <= 1 ? 0.4 : 1,
+                }}
+              >
+                <ChevronLeft size={14} />
+              </button>
+              {Array.from({ length: totalPages }, (_, i) => i + 1)
+                .filter(p => p === 1 || p === totalPages || Math.abs(p - page) <= 2)
+                .reduce<(number | 'ellipsis')[]>((acc, p, i, arr) => {
+                  if (i > 0 && p - (arr[i - 1] as number) > 1) acc.push('ellipsis');
+                  acc.push(p);
+                  return acc;
+                }, [])
+                .map((p, i) =>
+                  p === 'ellipsis' ? (
+                    <span key={`e${i}`} style={{ padding: '0 4px', color: '#94A3B8' }}>…</span>
+                  ) : (
+                    <button
+                      key={p}
+                      onClick={() => setPage(p as number)}
+                      style={{
+                        display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                        minWidth: 28, height: 28, borderRadius: 4, padding: '0 6px',
+                        border: page === p ? '1.5px solid #2563EB' : '1px solid #E2E8F0',
+                        background: page === p ? 'rgba(37,99,235,0.06)' : '#FFFFFF',
+                        color: page === p ? '#2563EB' : '#475569',
+                        fontWeight: page === p ? 600 : 400,
+                        fontSize: 13, cursor: 'pointer',
+                        fontFamily: "'Inter', sans-serif",
+                      }}
+                    >
+                      {p}
+                    </button>
+                  )
+                )}
+              <button
+                disabled={page >= totalPages}
+                onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                style={{
+                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                  width: 28, height: 28, borderRadius: 4,
+                  border: '1px solid #E2E8F0', background: '#FFFFFF',
+                  cursor: page >= totalPages ? 'not-allowed' : 'pointer',
+                  opacity: page >= totalPages ? 0.4 : 1,
+                }}
+              >
+                <ChevronRight size={14} />
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     );
   };
