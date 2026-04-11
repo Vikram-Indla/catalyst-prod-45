@@ -6,6 +6,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { StoryRichTextEditor } from './StoryRichTextEditor';
+import { resolveDisplayHtml } from './adf-utils';
 import { getInitials } from '../../utils/backlog.utils';
 
 interface Comment {
@@ -257,7 +258,7 @@ function CommentItem({ comment, onDelete, confirmDeleteId, setConfirmDeleteId }:
         <div style={{ fontSize: 12, color: '#6B778C', marginBottom: 6 }}>
           {formatCommentDate(comment.jira_created_at)}
         </div>
-        <div style={{ fontSize: 14, color: '#172B4D', lineHeight: 1.6 }} dangerouslySetInnerHTML={{ __html: comment.body || '' }} />
+        <div style={{ fontSize: 14, color: '#172B4D', lineHeight: 1.6 }} dangerouslySetInnerHTML={{ __html: resolveDisplayHtml(comment.body) }} />
         {confirmDeleteId === comment.id ? (
           <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
             <button onClick={() => { onDelete(comment.id); setConfirmDeleteId(null); }}

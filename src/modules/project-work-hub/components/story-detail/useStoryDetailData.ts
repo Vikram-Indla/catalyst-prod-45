@@ -15,7 +15,7 @@ export function useStoryDetail(storyId: string | null) {
       if (!storyId) return null;
       const { data, error } = await supabase
         .from('ph_issues')
-        .select('id, issue_key, summary, description_text, status, status_category, priority, assignee_display_name, reporter_display_name, due_date, labels, parent_key, parent_summary, fix_versions, jira_created_at, jira_updated_at, issue_type, project_key')
+        .select('id, issue_key, summary, description_text, acceptance_criteria, status, status_category, priority, assignee_display_name, reporter_display_name, due_date, labels, parent_key, parent_summary, fix_versions, jira_created_at, jira_updated_at, issue_type, project_key')
         .eq('id', storyId)
         .single();
       if (error) throw error;

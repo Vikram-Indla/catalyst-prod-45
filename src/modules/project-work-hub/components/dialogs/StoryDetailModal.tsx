@@ -1036,11 +1036,11 @@ export default function StoryDetailModal({
                           </div>
                         </div>
 
-                        {/* Description — TipTap auto-save editor */}
+                        {/* Description — ADF auto-save editor */}
                         <div style={{ fontSize: 13, fontWeight: 700, color: '#172B4D', marginBottom: 10 }}>Description</div>
                         <StoryRichTextEditor
                           content={issue?.description_text ?? ''}
-                          onSave={(html) => { updateFieldMutation.mutate({ field: 'description_text', value: html, oldValue: issue?.description_text ?? '' }); }}
+                          onSave={(adfJson) => { updateFieldMutation.mutate({ field: 'description_text', value: adfJson, oldValue: issue?.description_text ?? '' }); }}
                           placeholder="Add a description..."
                           minHeight={200}
                           autoSave
@@ -1049,12 +1049,12 @@ export default function StoryDetailModal({
                     )}
                   </div>
 
-                  {/* 5. ACCEPTANCE CRITERIA — TipTap auto-save editor */}
+                  {/* 5. ACCEPTANCE CRITERIA — ADF auto-save editor */}
                   <div style={{ marginBottom: 24 }}>
                     <div style={{ fontSize: 13, fontWeight: 700, color: '#172B4D', marginBottom: 10 }}>Acceptance Criteria</div>
                     <StoryRichTextEditor
                       content={acceptanceCriteria || ''}
-                      onSave={(html) => { setAcceptanceCriteria(html); supabase.from('ph_issues').update({ acceptance_criteria: html }).eq('id', itemId).then(() => { queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] }); }); }}
+                      onSave={(adfJson) => { setAcceptanceCriteria(adfJson); supabase.from('ph_issues').update({ acceptance_criteria: adfJson }).eq('id', itemId).then(() => { queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] }); }); }}
                       placeholder="No acceptance criteria defined · Add manually or use AI →"
                       minHeight={80}
                       autoSave

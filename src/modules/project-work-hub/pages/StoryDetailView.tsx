@@ -16,6 +16,7 @@ import { StoryDetailHeader } from '../components/story-detail/StoryDetailHeader'
 import { StoryDetailSidebar } from '../components/story-detail/StoryDetailSidebar';
 import { StoryActivitySection } from '../components/story-detail/StoryActivitySection';
 import { StoryRichTextEditor } from '../components/story-detail/StoryRichTextEditor';
+import { resolveDisplayHtml } from '../components/story-detail/adf-utils';
 import {
   useStoryDetail, useStoryComments, useStoryHistory,
   useStorySiblings, useParentCandidates, useTeamMembers,
@@ -87,6 +88,7 @@ export default function StoryDetailView({ projectId, projectKey, itemId }: Story
   const [editingTitle, setEditingTitle] = useState(false);
   const [titleValue, setTitleValue] = useState('');
   const [editingDesc, setEditingDesc] = useState(false);
+  const [editingAC, setEditingAC] = useState(false);
   const [keyDetailsOpen, setKeyDetailsOpen] = useState(true);
   const [subtasksOpen, setSubtasksOpen] = useState(true);
   const [linkedOpen, setLinkedOpen] = useState(true);
@@ -121,9 +123,14 @@ export default function StoryDetailView({ projectId, projectKey, itemId }: Story
     setEditingTitle(true);
   }, [story?.summary]);
 
-  const handleDescSave = useCallback((html: string) => {
-    handleUpdateField('description_text', html);
+  const handleDescSave = useCallback((adfJson: string) => {
+    handleUpdateField('description_text', adfJson);
     setEditingDesc(false);
+  }, [handleUpdateField]);
+
+  const handleACSave = useCallback((adfJson: string) => {
+    handleUpdateField('acceptance_criteria', adfJson);
+    setEditingAC(false);
   }, [handleUpdateField]);
 
   const handleAddComment = useCallback((body: string) => {
@@ -338,7 +345,7 @@ export default function StoryDetailView({ projectId, projectKey, itemId }: Story
             )}
           </div>
 
-          {/* ── Description ── */}
+          {/* ── Description (ADF editor) ── */}
           <div style={{ padding: '0 32px 24px' }}>
             <div style={{ ...SECTION_HEADING, marginBottom: 8 }}>Description</div>
             {editingDesc ? (
@@ -352,8 +359,29 @@ export default function StoryDetailView({ projectId, projectKey, itemId }: Story
               <div onClick={() => setEditingDesc(true)}
                 style={{ fontSize: 14, lineHeight: 1.6, color: story.description_text ? '#292A2E' : '#6B6E76', fontStyle: story.description_text ? 'normal' : 'italic', cursor: 'text', minHeight: 40, padding: '8px 0' }}>
                 {story.description_text ? (
-                  <div dangerouslySetInnerHTML={{ __html: story.description_text }} />
+                  <div dangerouslySetInnerHTML={{ __html: resolveDisplayHtml(story.description_text) }} />
                 ) : 'Add a description...'}
+              </div>
+            )}
+          </div>
+
+          {/* ── Acceptance Criteria (ADF editor) ── */}
+          <div style={{ padding: '0 32px 24px' }}>
+            <div style={{ ...SECTION_HEADING, marginBottom: 8 }}>Acceptance Criteria</div>
+            {editingAC ? (
+              <StoryRichTextEditor
+                content={(story as any).acceptance_criteria || ''}
+                onSave={handleACSave}
+                onCancel={() => setEditingAC(false)}
+                placeholder="Add acceptance criteria..."
+                minHeight={120}
+              />
+            ) : (
+              <div onClick={() => setEditingAC(true)}
+                style={{ fontSize: 14, lineHeight: 1.6, color: (story as any).acceptance_criteria ? '#292A2E' : '#6B6E76', fontStyle: (story as any).acceptance_criteria ? 'normal' : 'italic', cursor: 'text', minHeight: 40, padding: '8px 0' }}>
+                {(story as any).acceptance_criteria ? (
+                  <div dangerouslySetInnerHTML={{ __html: resolveDisplayHtml((story as any).acceptance_criteria) }} />
+                ) : 'Add acceptance criteria...'}
               </div>
             )}
           </div>
