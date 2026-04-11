@@ -350,6 +350,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
     const statusOptions = Array.from(statusSet.entries()).map(([id, label]) => ({
       id, label,
       iconNode: <StatusBadge status={id} />,
+      hideLabel: true,
     }));
 
     const prioritySet = new Set<string>();
