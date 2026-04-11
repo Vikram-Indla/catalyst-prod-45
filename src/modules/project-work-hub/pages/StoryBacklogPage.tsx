@@ -493,8 +493,6 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
           <style>{`.sb-filter-anchor .jf-panel { left: auto !important; right: 0 !important; }`}</style>
         </div>
       )}
-        </div>
-      )}
 
       {panelMode && detailItemId ? (
         /* ═══ PANEL MODE — split layout ═══ */
