@@ -1049,46 +1049,16 @@ export default function StoryDetailModal({
                     )}
                   </div>
 
-                  {/* 5. ACCEPTANCE CRITERIA — rich text editor matching Description */}
+                  {/* 5. ACCEPTANCE CRITERIA — TipTap auto-save editor */}
                   <div style={{ marginBottom: 24 }}>
                     <div style={{ fontSize: 13, fontWeight: 700, color: '#172B4D', marginBottom: 10 }}>Acceptance Criteria</div>
-                    <div style={{ border: '1px solid #DFE1E6', borderRadius: 4, overflow: 'hidden' }}>
-                      {/* Toolbar */}
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 1, padding: '5px 10px', borderBottom: '1px solid #EBECF0', background: '#FAFBFC', flexWrap: 'wrap' }}>
-                        {[
-                          { cmd: 'bold', label: 'B', fw: 'bold' as const, fs: 'normal' as const, td: 'none' },
-                          { cmd: 'italic', label: 'I', fw: 'normal' as const, fs: 'italic' as const, td: 'none' },
-                          { cmd: 'underline', label: 'U', fw: 'normal' as const, fs: 'normal' as const, td: 'underline' },
-                          { cmd: 'strikeThrough', label: 'S', fw: 'normal' as const, fs: 'normal' as const, td: 'line-through' },
-                        ].map(btn => (
-                          <button key={btn.cmd} onMouseDown={(e) => { e.preventDefault(); document.execCommand(btn.cmd); }}
-                            style={{ width: 28, height: 28, borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, color: '#344054', background: 'transparent', border: 'none', cursor: 'pointer', fontWeight: btn.fw, fontStyle: btn.fs, textDecoration: btn.td, transition: 'background 0.12s' }}
-                            onMouseEnter={e => (e.currentTarget.style.background = '#EBECF0')}
-                            onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-                          >{btn.label}</button>
-                        ))}
-                        <div style={{ width: 1, height: 18, background: '#DFE1E6', margin: '0 6px' }} />
-                        <button onMouseDown={(e) => { e.preventDefault(); document.execCommand('insertUnorderedList'); }}
-                          style={{ width: 28, height: 28, borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, color: '#344054', background: 'transparent', border: 'none', cursor: 'pointer' }}
-                          onMouseEnter={e => (e.currentTarget.style.background = '#EBECF0')}
-                          onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-                        >•</button>
-                        <button onMouseDown={(e) => { e.preventDefault(); document.execCommand('insertOrderedList'); }}
-                          style={{ width: 28, height: 28, borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, color: '#344054', background: 'transparent', border: 'none', cursor: 'pointer' }}
-                          onMouseEnter={e => (e.currentTarget.style.background = '#EBECF0')}
-                          onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-                        >1.</button>
-                      </div>
-                      {/* AC content area */}
-                      <div contentEditable suppressContentEditableWarning
-                        onBlur={e => { const newAC = e.currentTarget.innerHTML.trim(); const cleanAC = newAC === '<br>' || newAC === '<p><br></p>' ? '' : newAC; if (cleanAC !== acceptanceCriteria) { setAcceptanceCriteria(cleanAC); supabase.from('ph_issues').update({ acceptance_criteria: cleanAC }).eq('id', itemId).then(() => { queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] }); }); } }}
-                        data-placeholder="No acceptance criteria defined · Add manually or use AI →"
-                        style={{ minHeight: 80, maxHeight: 400, overflowY: 'auto', padding: '14px 16px', fontSize: 14, color: '#172B4D', lineHeight: 1.6, outline: 'none', fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", wordBreak: 'break-word' }}
-                        dangerouslySetInnerHTML={{ __html: acceptanceCriteria || '' }} />
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', padding: '6px 12px', borderTop: '1px solid #EBECF0', background: '#FAFBFC' }}>
-                        <span style={{ fontSize: 11, color: '#97A0AF' }}>Auto-saved</span>
-                      </div>
-                    </div>
+                    <StoryRichTextEditor
+                      content={acceptanceCriteria || ''}
+                      onSave={(html) => { setAcceptanceCriteria(html); supabase.from('ph_issues').update({ acceptance_criteria: html }).eq('id', itemId).then(() => { queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] }); }); }}
+                      placeholder="No acceptance criteria defined · Add manually or use AI →"
+                      minHeight={80}
+                      autoSave
+                    />
                   </div>
 
                   {/* 6. ATTACHMENTS — Jira list view */}
