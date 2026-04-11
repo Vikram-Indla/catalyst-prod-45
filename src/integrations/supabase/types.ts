@@ -58479,7 +58479,7 @@ export type Database = {
             foreignKeyName: "tm_test_steps_shared_step_id_fkey"
             columns: ["shared_step_id"]
             isOneToOne: false
-            referencedRelation: "tm_test_steps"
+            referencedRelation: "tm_shared_steps"
             referencedColumns: ["id"]
           },
           {
