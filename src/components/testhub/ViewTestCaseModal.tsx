@@ -448,13 +448,28 @@ export function ViewTestCaseModal({
 
       setSteps(stepsRes.data || []);
 
-      const reqStoryLinks: Link[] = (reqStoryLinksRes.data || []).map((l: any) => ({
-        id: l.id,
-        link_type: l.linked_item_type || '',
-        linked_item_key: l.linked_item_key || l.linked_item_id || '',
-        linked_item_title: l.linked_item_title || '',
-        _source: 'tm_test_case_links' as const,
-      }));
+      // Resolve requirement/story links — table only has linked_item_id + linked_item_type
+      const rawLinks = (reqStoryLinksRes.data || []) as any[];
+      const reqStoryLinks: Link[] = await Promise.all(
+        rawLinks.map(async (l: any) => {
+          let key = l.linked_item_id || '';
+          let title = '';
+          if (l.linked_item_type === 'requirement') {
+            const { data: req } = await typedQuery('tm_requirements').select('req_key, title').eq('id', l.linked_item_id).maybeSingle();
+            if (req) { key = req.req_key; title = req.title; }
+          } else if (l.linked_item_type === 'story') {
+            const { data: issue } = await typedQuery('ph_issues').select('issue_key, summary').eq('id', l.linked_item_id).maybeSingle();
+            if (issue) { key = issue.issue_key; title = issue.summary; }
+          }
+          return {
+            id: l.id,
+            link_type: l.linked_item_type || '',
+            linked_item_key: key,
+            linked_item_title: title,
+            _source: 'tm_test_case_links' as const,
+          };
+        })
+      );
 
       const defectLinksData: Link[] = (defectLinksRes.data || []).map((l: any) => {
         const defectKey = l.tm_defects?.defect_key || '';
