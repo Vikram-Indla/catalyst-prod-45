@@ -31,6 +31,7 @@ interface Link {
   link_type: string;
   linked_item_key: string;
   linked_item_title: string;
+  _source: 'tm_test_case_links' | 'tm_defect_links';
 }
 
 interface VersionHistory {
