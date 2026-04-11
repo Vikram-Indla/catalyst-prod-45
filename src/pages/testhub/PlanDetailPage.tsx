@@ -232,6 +232,7 @@ export default function PlanDetailPage() {
           <TabsTrigger value="team" className="gap-2"><Users className="h-4 w-4" />Team</TabsTrigger>
           <TabsTrigger value="schedule" className="gap-2"><Calendar className="h-4 w-4" />Schedule</TabsTrigger>
           <TabsTrigger value="approvals" className="gap-2"><ShieldCheck className="h-4 w-4" />Approvals</TabsTrigger>
+          <TabsTrigger value="defects" className="gap-2"><Bug className="h-4 w-4" />Defects</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="mt-6">
@@ -359,6 +360,10 @@ export default function PlanDetailPage() {
 
         <TabsContent value="approvals" className="mt-6">
           <ApprovalsTab planId={plan.id} planStatus={plan.status} />
+        </TabsContent>
+
+        <TabsContent value="defects" className="mt-6">
+          <PlanDefectsPanel planId={plan.id} />
         </TabsContent>
       </Tabs>
 
