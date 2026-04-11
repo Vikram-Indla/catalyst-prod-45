@@ -326,7 +326,7 @@ export default function StoryDetailModal({
         old_value: oldValue, new_value: value, user_id: user!.id,
       });
     },
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] }); },
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] }); queryClient.invalidateQueries({ queryKey: ['ph_issues'] }); },
     onError: () => toast.error('Failed to update'),
   });
 
@@ -336,7 +336,7 @@ export default function StoryDetailModal({
       if (error) throw error;
       await supabase.from('jira_write_back_queue').insert({ ph_issue_id: itemId, field_name: 'assignee', new_value: userId, status: 'approved' });
     },
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] }); },
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] }); queryClient.invalidateQueries({ queryKey: ['ph_issues'] }); },
     onError: () => toast.error('Failed to update assignee'),
   });
 
