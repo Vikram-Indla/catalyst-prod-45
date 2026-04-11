@@ -206,6 +206,40 @@ const CONFIGS: Record<string, JiraTypeConfig> = {
   },
 };
 
+export const PROTECTED_ISSUE_TYPE_OPTIONS = [
+  'API Requirement',
+  'Backend',
+  'Bug',
+  'Business Gap',
+  'Change Request',
+  'Epic',
+  'Feature',
+  'Figma',
+  'Frontend',
+  'Improvement',
+  'Integration',
+  'Issue',
+  'New Feature',
+  'Problem',
+  'Production Incident',
+  'QA Bug',
+  'Question',
+  'Story',
+  'Sub-task',
+  'Task',
+] as const;
+
+const warnedUnknownTypes = new Set<string>();
+
+function warnUnknownJiraType(normalizedType: string, rawType: string) {
+  if (!import.meta.env.DEV) return;
+  if (!normalizedType || warnedUnknownTypes.has(normalizedType)) return;
+  warnedUnknownTypes.add(normalizedType);
+  console.warn(
+    `[JiraIssueTypeIcon guardrail] Unknown issue type "${rawType}" fell back to Task icon. Add it to src/lib/jira-issue-type-icons.tsx to protect it.`
+  );
+}
+
 // ─── RESOLVER ────────────────────────────────────────────────────────
 
 /**
@@ -243,6 +277,8 @@ export function resolveJiraTypeConfig(issueType: string): JiraTypeConfig {
   if (t.includes('task')) return CONFIGS.task;
   if (t.includes('feature')) return CONFIGS.feature;
   if (t.includes('issue')) return CONFIGS.issue;
+
+  warnUnknownJiraType(t, issueType);
 
   // Fallback → task icon
   return {
