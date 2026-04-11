@@ -838,85 +838,68 @@ export default function StoryDetailModal({
                         onMouseLeave={e => { e.currentTarget.style.background = '#FAFBFC'; e.currentTarget.style.borderColor = '#DFE1E6'; }}
                       ><Plus size={14} /></button>
                       {showAddMenu && (() => {
+                        const atlFont = '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif';
+                        const atlText = 'rgb(41, 42, 46)';
+                        const atlHover = 'rgba(11, 18, 14, 0.06)';
+                        const atlBorder = 'rgba(11, 18, 14, 0.14)';
                         const addMenuItems = [
-                          { id: 'subtask', icon: <CheckSquare size={16} color="#5E6C84" />, label: 'Create subtask', shortcut: '⇧ C', section: 'primary', action: () => { setShowAddMenu(false); setAddMenuSearch(''); toast('Create Subtask — use Sub-tasks section below'); } },
-                          { id: 'link', icon: <Link2 size={16} color="#5E6C84" />, label: 'Link work item', shortcut: '⇧ K', section: 'primary', action: () => { setShowAddMenu(false); setAddMenuSearch(''); const el = document.querySelector('[data-section="linked-issues"]'); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' }); toast.info('Use the Linked Issues section below to add links'); } },
-                          { id: 'attachment', icon: <Paperclip size={16} color="#5E6C84" />, label: 'Add attachment', section: 'secondary', action: () => { setShowAddMenu(false); setAddMenuSearch(''); fileInputRef.current?.click(); } },
-                          { id: 'weblink', icon: <Globe size={16} color="#5E6C84" />, label: 'Add web link', section: 'secondary', action: () => { setShowAddMenu(false); setAddMenuSearch(''); toast.info('Web link — coming soon'); } },
-                          { id: 'design', icon: <Palette size={16} color="#5E6C84" />, label: 'Add design', section: 'secondary', action: () => { setShowAddMenu(false); setAddMenuSearch(''); setShowFigmaInput(true); } },
-                        ];
-                        const recommendedItems = [
-                          { id: 'video', icon: <Video size={16} color="#5E6C84" />, label: 'Video', section: 'recommended', action: () => { setShowAddMenu(false); setAddMenuSearch(''); toast.info('Video attachment — coming soon'); } },
+                          { id: 'subtask', icon: <CheckSquare size={16} color={atlText} />, label: 'Create subtask', shortcut: '⇧ C', section: 'primary', action: () => { setShowAddMenu(false); setAddMenuSearch(''); toast('Create Subtask — use Sub-tasks section below'); } },
+                          { id: 'link', icon: <Link2 size={16} color={atlText} />, label: 'Link work item', shortcut: '⇧ K', section: 'primary', action: () => { setShowAddMenu(false); setAddMenuSearch(''); const el = document.querySelector('[data-section="linked-issues"]'); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' }); toast.info('Use the Linked Issues section below to add links'); } },
+                          { id: 'attachment', icon: <Paperclip size={16} color={atlText} />, label: 'Add attachment', section: 'secondary', action: () => { setShowAddMenu(false); setAddMenuSearch(''); fileInputRef.current?.click(); } },
+                          { id: 'weblink', icon: <Globe size={16} color={atlText} />, label: 'Add web link', section: 'secondary', action: () => { setShowAddMenu(false); setAddMenuSearch(''); toast.info('Web link — coming soon'); } },
+                          { id: 'design', icon: <Palette size={16} color={atlText} />, label: 'Add design', section: 'secondary', action: () => { setShowAddMenu(false); setAddMenuSearch(''); setShowFigmaInput(true); } },
                         ];
                         const q = addMenuSearch.toLowerCase();
                         const filteredMain = q ? addMenuItems.filter(i => i.label.toLowerCase().includes(q)) : addMenuItems;
-                        const filteredRec = q ? recommendedItems.filter(i => i.label.toLowerCase().includes(q)) : recommendedItems;
                         const primaryItems = filteredMain.filter(i => i.section === 'primary');
                         const secondaryItems = filteredMain.filter(i => i.section === 'secondary');
                         return (
-                        <div style={{ position: 'absolute', left: 0, top: 34, background: '#FFF', border: '1px solid #DFE1E6', borderRadius: 8, boxShadow: '0 4px 16px rgba(9,30,66,0.18)', padding: 0, zIndex: 50, minWidth: 280, overflow: 'hidden' }}>
+                        <div style={{ position: 'absolute', left: 0, top: 34, background: '#ffffff', borderRadius: 4, boxShadow: 'rgba(30,31,33,0.15) 0px 8px 12px 0px, rgba(30,31,33,0.31) 0px 0px 1px 0px', width: 266, zIndex: 400, padding: 0, fontFamily: atlFont }}>
                           {/* Search input */}
-                          <div style={{ padding: '8px 8px 4px' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 6, border: '2px solid #4C9AFF', borderRadius: 4, padding: '5px 8px', background: '#FAFBFC' }}>
-                              <Search size={14} color="#5E6C84" />
+                          <div style={{ margin: '4px 8px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', background: '#ffffff', border: '0.556px solid rgb(140, 143, 151)', borderRadius: 3, padding: '1px 0' }}>
+                              <Search size={14} color={atlText} style={{ marginLeft: 8, flexShrink: 0 }} />
                               <input
                                 type="text"
                                 placeholder="Find menu item"
                                 value={addMenuSearch}
                                 onChange={e => setAddMenuSearch(e.target.value)}
                                 autoFocus
-                                style={{ border: 'none', outline: 'none', background: 'transparent', fontSize: 13, fontFamily: 'Inter, sans-serif', color: '#172B4D', width: '100%' }}
+                                style={{ background: 'transparent', border: 'none', outline: 'none', padding: '4px 4px 4px 8px', fontSize: 14, color: atlText, width: '100%', height: 28, fontFamily: 'inherit' }}
                               />
+                              {addMenuSearch && (
+                                <button onClick={() => setAddMenuSearch('')} style={{ marginLeft: 8, background: 'transparent', border: 'none', cursor: 'pointer', color: atlText, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, marginRight: 6 }}>
+                                  <X size={14} />
+                                </button>
+                              )}
                             </div>
                           </div>
-                          {/* Primary items */}
+                          {/* Primary group */}
                           {primaryItems.length > 0 && (
-                            <div style={{ padding: '4px 0' }}>
+                            <div style={{ padding: 0 }}>
                               {primaryItems.map(item => (
-                                <button key={item.id} onClick={item.action} onMouseEnter={e => { e.currentTarget.style.background = '#F4F5F7'; }} onMouseLeave={e => { e.currentTarget.style.background = 'none'; }} style={{ ...menuItemStyle, justifyContent: 'space-between', padding: '8px 14px' }}>
-                                  <span style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                                    {item.icon}
-                                    <span>{item.label}</span>
-                                  </span>
-                                  {item.shortcut && <span style={{ fontSize: 11, color: '#97A0AF', fontFamily: 'Inter, sans-serif' }}>{item.shortcut}</span>}
+                                <button key={item.id} onClick={item.action} onMouseEnter={e => { e.currentTarget.style.background = atlHover; }} onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }} style={{ display: 'flex', alignItems: 'center', height: 40, padding: '8px 16px', fontSize: 13.33, fontWeight: 400, color: atlText, background: 'transparent', border: 'none', borderRadius: 0, cursor: 'pointer', width: '100%', boxSizing: 'border-box' as const, fontFamily: 'inherit' }}>
+                                  <span style={{ width: 24, height: 24, display: 'flex', alignItems: 'center', flexShrink: 0, marginRight: 8 }}>{item.icon}</span>
+                                  <span style={{ flex: 1, textAlign: 'left' }}>{item.label}</span>
+                                  {item.shortcut && <span style={{ marginLeft: 'auto', fontSize: 13.33, fontWeight: 400, color: atlText, opacity: 0.7 }}>{item.shortcut}</span>}
                                 </button>
                               ))}
                             </div>
                           )}
                           {/* Separator */}
                           {primaryItems.length > 0 && secondaryItems.length > 0 && (
-                            <div style={{ height: 1, background: '#EBECF0', margin: '0' }} />
+                            <div style={{ height: 0.556, background: atlBorder }} />
                           )}
-                          {/* Secondary items */}
+                          {/* Secondary group */}
                           {secondaryItems.length > 0 && (
-                            <div style={{ padding: '4px 0' }}>
+                            <div style={{ padding: 0 }}>
                               {secondaryItems.map(item => (
-                                <button key={item.id} onClick={item.action} onMouseEnter={e => { e.currentTarget.style.background = '#F4F5F7'; }} onMouseLeave={e => { e.currentTarget.style.background = 'none'; }} style={{ ...menuItemStyle, padding: '8px 14px' }}>
-                                  <span style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                                    {item.icon}
-                                    <span>{item.label}</span>
-                                  </span>
+                                <button key={item.id} onClick={item.action} onMouseEnter={e => { e.currentTarget.style.background = atlHover; }} onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }} style={{ display: 'flex', alignItems: 'center', height: 40, padding: '8px 16px', fontSize: 13.33, fontWeight: 400, color: atlText, background: 'transparent', border: 'none', borderRadius: 0, cursor: 'pointer', width: '100%', boxSizing: 'border-box' as const, fontFamily: 'inherit' }}>
+                                  <span style={{ width: 24, height: 24, display: 'flex', alignItems: 'center', flexShrink: 0, marginRight: 8 }}>{item.icon}</span>
+                                  <span style={{ flex: 1, textAlign: 'left' }}>{item.label}</span>
                                 </button>
                               ))}
                             </div>
-                          )}
-                          {/* Recommended */}
-                          {filteredRec.length > 0 && (
-                            <>
-                              <div style={{ height: 1, background: '#EBECF0' }} />
-                              <div style={{ padding: '8px 14px 4px', fontSize: 11, fontWeight: 700, color: '#5E6C84', fontFamily: 'Inter, sans-serif' }}>Recommended for you</div>
-                              <div style={{ padding: '0 0 4px' }}>
-                                {filteredRec.map(item => (
-                                  <button key={item.id} onClick={item.action} onMouseEnter={e => { e.currentTarget.style.background = '#F4F5F7'; }} onMouseLeave={e => { e.currentTarget.style.background = 'none'; }} style={{ ...menuItemStyle, padding: '8px 14px', justifyContent: 'space-between' }}>
-                                    <span style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                                      {item.icon}
-                                      <span>{item.label}</span>
-                                    </span>
-                                    <span style={{ fontSize: 11, fontWeight: 600, color: '#5E6C84', border: '1px solid #DFE1E6', borderRadius: 3, padding: '1px 6px', fontFamily: 'Inter, sans-serif' }}>ADD</span>
-                                  </button>
-                                ))}
-                              </div>
-                            </>
                           )}
                           {filteredMain.length === 0 && filteredRec.length === 0 && (
                             <div style={{ padding: '12px 14px', fontSize: 13, color: '#97A0AF', fontFamily: 'Inter, sans-serif' }}>No items found</div>
