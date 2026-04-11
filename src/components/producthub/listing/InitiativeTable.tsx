@@ -206,7 +206,7 @@ export function InitiativeTable({
     }),
     col.display({
       id: 'roadmap', size: 32, minSize: 32, maxSize: 32, enableResizing: false,
-      header: () => <Map size={14} style={{ color: 'var(--pb-ink-muted)' }} />,
+      header: () => <MapIcon size={14} style={{ color: 'var(--pb-ink-muted)' }} />,
       cell: ({ row }) => (
         <button
           type="button"
@@ -214,7 +214,7 @@ export function InitiativeTable({
           style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
           title={row.original.on_roadmap ? 'Remove from Roadmap' : 'Add to Roadmap'}
         >
-          <Map size={16} style={{ color: row.original.on_roadmap ? 'var(--pb-primary)' : 'var(--pb-ink-muted)', opacity: row.original.on_roadmap ? 1 : 0.4, transition: 'all 150ms' }} />
+          <MapIcon size={16} style={{ color: row.original.on_roadmap ? 'var(--pb-primary)' : 'var(--pb-ink-muted)', opacity: row.original.on_roadmap ? 1 : 0.4, transition: 'all 150ms' }} />
         </button>
       ),
     }),
@@ -492,7 +492,7 @@ export function InitiativeTable({
                                     {!row.original.on_roadmap && onPromote && (
                                       <button type="button" className="pb-row-action-btn" style={{ color: 'var(--pb-teal)' }} title="Add to Roadmap"
                                         onClick={(e) => { e.stopPropagation(); if (clickTimerRef.current) { clearTimeout(clickTimerRef.current); clickTimerRef.current = null; } onPromote(row.original); }}>
-                                        <Map size={14} />
+                                        <MapIcon size={14} />
                                       </button>
                                     )}
                                     <button type="button" className="pb-row-action-btn" title="Edit"
