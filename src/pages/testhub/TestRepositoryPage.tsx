@@ -4,7 +4,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { RefreshCw, Plus, Trash2, MoveRight, CheckSquare, Download, Upload, Sparkles } from 'lucide-react';
+import { RefreshCw, Plus, Trash2, MoveRight, CheckSquare, Download, Upload, Sparkles, UserPlus, Tag } from 'lucide-react';
 import { TestHubPageHeader } from '@/components/testhub/TestHubPageHeader';
 import { FolderPanel } from '@/components/testhub/FolderPanel';
 import { TestCasesTable } from '@/components/testhub/TestCasesTable';
@@ -497,6 +497,12 @@ export function TestRepositoryPage() {
     setSelectedIds(new Set());
   };
 
+  // Bulk assign/tag state
+  const [isBulkAssignOpen, setIsBulkAssignOpen] = useState(false);
+  const [isBulkTagOpen, setIsBulkTagOpen] = useState(false);
+  const [assignableUsers, setAssignableUsers] = useState<{ id: string; full_name: string }[]>([]);
+  const [availableLabels, setAvailableLabels] = useState<{ id: string; name: string }[]>([]);
+
   const handleBulkDelete = () => {
     const toDelete = testCases
       .filter(tc => selectedIds.has(tc.id))
@@ -505,8 +511,50 @@ export function TestRepositoryPage() {
     setIsDeleteModalOpen(true);
   };
 
-  const clearSelection = () => {
-    setSelectedIds(new Set());
+  const handleBulkAssign = async (userId: string) => {
+    const ids = [...selectedIds];
+    const { error } = await supabase
+      .from('tm_test_cases')
+      .update({ created_by: userId } as any)
+      .in('id', ids);
+    if (error) {
+      toast({ title: 'Assign failed', description: error.message, variant: 'destructive' });
+      return;
+    }
+    toast({ title: `${ids.length} case(s) assigned` });
+    setIsBulkAssignOpen(false);
+    fetchTestCases();
+  };
+
+  const handleBulkTag = async (labelId: string) => {
+    const ids = [...selectedIds];
+    const rows = ids.map(id => ({ test_case_id: id, label_id: labelId }));
+    const { error } = await supabase
+      .from('tm_case_labels' as any)
+      .upsert(rows, { onConflict: 'test_case_id,label_id', ignoreDuplicates: true });
+    if (error) {
+      toast({ title: 'Tag failed', description: error.message, variant: 'destructive' });
+      return;
+    }
+    toast({ title: `Tag applied to ${ids.length} case(s)` });
+    setIsBulkTagOpen(false);
+    fetchTestCases();
+  };
+
+  const openBulkAssign = async () => {
+    if (assignableUsers.length === 0) {
+      const { data } = await supabase.from('profiles').select('id, full_name').order('full_name');
+      if (data) setAssignableUsers(data.filter(p => p.full_name));
+    }
+    setIsBulkAssignOpen(true);
+  };
+
+  const openBulkTag = async () => {
+    if (availableLabels.length === 0) {
+      const { data } = await supabase.from('tm_labels' as any).select('id, name').order('name');
+      if (data) setAvailableLabels(data as any);
+    }
+    setIsBulkTagOpen(true);
   };
 
   // Folder delete handler
