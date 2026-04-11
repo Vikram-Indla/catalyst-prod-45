@@ -168,6 +168,10 @@ export default function ForYouPage() {
     setAdvancedFilters({});
   }, []);
 
+  const handleCloseFilterPanel = useCallback(() => {
+    setFilterPanelOpen(false);
+  }, []);
+
   const filteredGroupedItems = React.useMemo(() => {
     const filterItem = (item: typeof workItems[0]) => {
       // Inline filters
