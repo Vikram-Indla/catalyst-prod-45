@@ -10,6 +10,10 @@ import StarterKit from '@tiptap/starter-kit';
 import LinkExtension from '@tiptap/extension-link';
 import Placeholder from '@tiptap/extension-placeholder';
 import Underline from '@tiptap/extension-underline';
+import { Table } from '@tiptap/extension-table';
+import { TableRow } from '@tiptap/extension-table-row';
+import { TableCell } from '@tiptap/extension-table-cell';
+import { TableHeader } from '@tiptap/extension-table-header';
 import {
   Bold, Italic, Underline as UnderlineIcon, Strikethrough,
   Heading1, Heading2, Heading3, Heading4, Heading5, Heading6,
@@ -133,6 +137,10 @@ export const StoryRichTextEditor = React.memo(function StoryRichTextEditor({
       }),
       LinkExtension.configure({ openOnClick: false }),
       Underline,
+      Table.configure({ resizable: false }),
+      TableRow,
+      TableCell,
+      TableHeader,
       Placeholder.configure({ placeholder }),
     ],
     content: initialContent,

@@ -967,3 +967,39 @@
     display: none;
   }
 }
+
+/* ════════════════════════════════════════════════════════════════
+   ADF TABLE STYLES — Jira table rendering parity
+   ════════════════════════════════════════════════════════════════ */
+[data-sdm-scope] .adf-editor-content table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 8px 0;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+[data-sdm-scope] .adf-editor-content table th,
+[data-sdm-scope] .adf-editor-content table td {
+  border: 1px solid #DFE1E6;
+  padding: 8px 10px;
+  text-align: left;
+  vertical-align: top;
+  word-wrap: break-word;
+}
+
+[data-sdm-scope] .adf-editor-content table th {
+  background: #F4F5F7;
+  font-weight: 700;
+  color: #172B4D;
+  font-size: 12px;
+}
+
+[data-sdm-scope] .adf-editor-content table td {
+  color: #172B4D;
+  background: #FFFFFF;
+}
+
+[data-sdm-scope] .adf-editor-content table tr:hover td {
+  background: #FAFBFC;
+}
