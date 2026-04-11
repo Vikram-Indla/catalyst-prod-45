@@ -172,7 +172,7 @@ export function AttachmentsSection({ attachments, itemId, userId }: AttachmentsS
               style={{ display: 'none' }}
               onChange={handleFileChange}
             />
-          </div>
+          </div>}
         </div>
       </div>
 
