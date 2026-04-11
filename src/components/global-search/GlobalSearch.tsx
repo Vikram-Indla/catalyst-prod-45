@@ -636,10 +636,13 @@ export function GlobalSearch() {
   const handleSelect = useCallback((item: SearchResult) => {
     trackView.mutate(item);
     if (debouncedQuery) saveSearch.mutate(debouncedQuery);
-    const route = HUB_ROUTES[item.hub] || "/";
-    navigate(`${route}?openItem=${item.item_key}`);
-    close();
-  }, [debouncedQuery, navigate, close, trackView, saveSearch]);
+    // Open StoryDetailModal directly via store instead of navigating
+    const { openDetail } = useGlobalSearchStore.getState();
+    openDetail({
+      id: item.id,
+      projectKey: item.project_key || undefined,
+    });
+  }, [debouncedQuery, trackView, saveSearch]);
 
   const setFilter = useCallback(<K extends keyof ActiveFilters>(k: K, v: ActiveFilters[K]) => {
     setFilters(prev => ({ ...prev, [k]: v }));
