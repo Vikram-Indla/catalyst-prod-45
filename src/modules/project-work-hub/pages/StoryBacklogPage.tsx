@@ -431,7 +431,19 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
   }, [stories, advancedFilters, searchQuery]);
 
   const sortedStories = useMemo(() => sortStories(filteredStories, sortKey, sortDir), [filteredStories, sortKey, sortDir]);
-  const groups = useMemo(() => groupStories(sortedStories, groupBy), [sortedStories, groupBy]);
+
+  // Pagination
+  const totalFiltered = sortedStories.length;
+  const totalPages = Math.max(1, Math.ceil(totalFiltered / pageSize));
+  const paginatedStories = useMemo(() => {
+    const start = (page - 1) * pageSize;
+    return sortedStories.slice(start, start + pageSize);
+  }, [sortedStories, page, pageSize]);
+
+  // Reset page when filters/search change
+  useEffect(() => { setPage(1); }, [searchQuery, advancedFilters, groupBy]);
+
+  const groups = useMemo(() => groupStories(paginatedStories, groupBy), [paginatedStories, groupBy]);
 
   const flatStories = useMemo(() => {
     const result: { id: string; summary: string; issue_key?: string }[] = [];
@@ -442,7 +454,6 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
     });
     return result;
   }, [groups, collapsed]);
-
   const total = filteredStories.length;
   const toggleGroup = (label: string) => setCollapsed(prev => ({ ...prev, [label]: !prev[label] }));
 
