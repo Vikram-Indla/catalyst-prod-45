@@ -348,3 +348,37 @@ export function useDeleteDefectLinkG25() {
     },
   });
 }
+
+// ─── Defects by Cycle ────────────────────────────────────────────
+export const useDefectsByCycleId = (cycleId: string | undefined) => {
+  return useQuery({
+    queryKey: ['defects-by-cycle', cycleId],
+    enabled: !!cycleId,
+    queryFn: async () => {
+      if (!cycleId) return [];
+      const { data, error } = await supabase
+        .from('tm_defect_links')
+        .select(`
+          id,
+          link_source,
+          entity_label,
+          defect:tm_defects(
+            id,
+            defect_key,
+            title,
+            status,
+            severity,
+            priority
+          )
+        `)
+        .eq('linked_id', cycleId)
+        .eq('link_type', 'test_cycle');
+      if (error) throw error;
+      return (data ?? []).map((row: any) => ({
+        ...row.defect,
+        link_source: row.link_source,
+        entity_label: row.entity_label,
+      }));
+    },
+  });
+};

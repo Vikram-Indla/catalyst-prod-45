@@ -6,7 +6,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import {
   ArrowLeft, Pencil, Play, CheckCircle2, XCircle, AlertTriangle,
-  Clock, Plus, User, Calendar, RefreshCw, Trash2, Download, Users, BarChart3, Server
+  Clock, Plus, User, Calendar, RefreshCw, Trash2, Download, Users, BarChart3, Server, Bug
 } from 'lucide-react';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
@@ -15,6 +15,7 @@ import { CreateTestCycleModal } from '@/components/testhub/CreateTestCycleModal'
 import { AssignTesterModal } from '@/components/testhub/AssignTesterModal';
 import { QuickExecutionModal } from '@/components/testhub/QuickExecutionModal';
 import { useTheme } from '@/hooks/useTheme';
+import { useDefectsByCycleId } from '@/hooks/useDefectsG25';
 
 interface TestCycle {
   id: string;
@@ -72,6 +73,75 @@ const priorityConfig: Record<string, { color: string; bg: string }> = {
   high: { color: '#EA580C', bg: '#FFF7ED' },
   medium: { color: '#D97706', bg: '#FFFBEB' },
   low: { color: '#059669', bg: '#ECFDF5' },
+};
+
+const defectStatusColors: Record<string, { bg: string; color: string }> = {
+  open:        { bg: '#DFE1E6', color: '#253858' },
+  new:         { bg: '#DFE1E6', color: '#253858' },
+  deferred:    { bg: '#DFE1E6', color: '#253858' },
+  in_progress: { bg: '#DEEBFF', color: '#0747A6' },
+  reopened:    { bg: '#DEEBFF', color: '#0747A6' },
+  fixed:       { bg: '#E3FCEF', color: '#006644' },
+  resolved:    { bg: '#E3FCEF', color: '#006644' },
+  verified:    { bg: '#E3FCEF', color: '#006644' },
+  closed:      { bg: '#E3FCEF', color: '#006644' },
+};
+
+const CycleDefectsPanel = ({ cycleId, isDark }: { cycleId?: string; isDark: boolean }) => {
+  const { data: defects = [], isLoading } = useDefectsByCycleId(cycleId);
+  const navigate = useNavigate();
+
+  if (isLoading) {
+    return <p style={{ padding: '20px 32px', fontSize: 14, color: isDark ? '#878787' : '#64748B' }}>Loading defects...</p>;
+  }
+
+  if (defects.length === 0) {
+    return (
+      <div style={{ padding: '32px', textAlign: 'center', color: isDark ? '#878787' : '#94A3B8' }}>
+        <Bug size={36} style={{ marginBottom: 12, opacity: 0.4 }} />
+        <p style={{ fontSize: 14, margin: 0 }}>No defects linked to this cycle.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 12, overflow: 'hidden' }}>
+      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+        <thead>
+          <tr style={{ backgroundColor: isDark ? '#111111' : '#F8FAFC' }}>
+            {['Defect Key', 'Title', 'Status', 'Severity', 'Source'].map(h => (
+              <th key={h} style={{ padding: '10px 12px', textAlign: 'left', fontSize: 11, fontWeight: 600, color: isDark ? '#878787' : '#64748B', textTransform: 'uppercase' as const, letterSpacing: '0.05em', borderBottom: `0.75px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}` }}>{h}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {defects.map((d: any) => {
+            const sc = defectStatusColors[d.status] ?? { bg: '#DFE1E6', color: '#253858' };
+            return (
+              <tr key={d.id} style={{ height: 36, maxHeight: 36, borderBottom: `0.75px solid ${isDark ? '#292929' : '#F1F5F9'}` }}>
+                <td style={{ padding: '0 12px' }}>
+                  <span onClick={() => navigate(`/testhub/defects/${d.id}`)} style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 13, fontWeight: 500, color: '#2563EB', cursor: 'pointer' }}>{d.defect_key}</span>
+                </td>
+                <td style={{ padding: '0 12px', fontSize: 14, color: isDark ? '#EDEDED' : '#334155' }}>{d.title}</td>
+                <td style={{ padding: '0 12px' }}>
+                  <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.03em', padding: '2px 8px', borderRadius: 3, backgroundColor: sc.bg, color: sc.color }}>{d.status?.replace(/_/g, ' ')}</span>
+                </td>
+                <td style={{ padding: '0 12px', fontSize: 13, color: isDark ? '#A1A1A1' : '#475569', textTransform: 'capitalize' as const }}>{d.severity ?? '—'}</td>
+                <td style={{ padding: '0 12px' }}>
+                  {d.link_source === 'auto_execution' && (
+                    <span style={{ fontSize: 11, fontWeight: 600, padding: '2px 6px', borderRadius: 3, backgroundColor: isDark ? '#1F1F1F' : '#F1F5F9', color: isDark ? '#878787' : '#64748B' }}>Auto</span>
+                  )}
+                  {d.link_source === 'auto_jira' && (
+                    <span style={{ fontSize: 11, fontWeight: 600, padding: '2px 6px', borderRadius: 3, backgroundColor: '#DEEBFF', color: '#0747A6' }}>Jira</span>
+                  )}
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
 };
 
 export default function TestCycleDetailPage() {
@@ -621,6 +691,14 @@ export default function TestCycleDetailPage() {
             </div>
           )}
         </div>
+      </div>
+
+      {/* Linked Defects */}
+      <div style={{ padding: '0 32px 24px' }}>
+        <h2 style={{ fontSize: 16, fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A', margin: '0 0 12px', display: 'flex', alignItems: 'center', gap: 8 }}>
+          <Bug size={18} /> Linked Defects
+        </h2>
+        <CycleDefectsPanel cycleId={cycleId} isDark={isDark} />
       </div>
 
       <AddTestCasesModal
