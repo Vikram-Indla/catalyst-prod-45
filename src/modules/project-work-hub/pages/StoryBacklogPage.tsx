@@ -3,6 +3,7 @@
  * With Jira-style Group By dropdown + Filter
  */
 import React, { useState, useMemo, useRef, useEffect, useCallback, lazy, Suspense } from 'react';
+import { useStarredItemIds, useToggleStar } from '@/hooks/home/useStarredItems';
 import { useParams } from 'react-router-dom';
 import { useQueryClient, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -18,7 +19,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { StatusBadge } from '@/components/ui/StatusBadge';
-import { ChevronDown, ChevronRight, Plus, Pencil, Trash2, BookOpen, Search, Layers, Check, X } from 'lucide-react';
+import { ChevronDown, ChevronRight, ChevronLeft, Plus, Pencil, Trash2, BookOpen, Search, Layers, Check, X, Star } from 'lucide-react';
 import { toast } from 'sonner';
 import { useTheme } from '@/hooks/useTheme';
 import { DK, LK } from '@/utils/dark-mode-styles';
@@ -34,9 +35,10 @@ const StoryDetailModal = lazy(() => import('../components/dialogs/StoryDetailMod
 // ── Column definitions (CatalystTable pattern) ──
 const STORY_COLUMNS: TColDef[] = [
   { key: 'checkbox', label: '', defaultWidth: 40, minWidth: 40, locked: true },
-  { key: 'type', label: 'TYPE', defaultWidth: 32, minWidth: 32, locked: true },
+  { key: 'star', label: '', defaultWidth: 36, minWidth: 36, locked: true },
+  { key: 'type', label: 'TYPE', defaultWidth: 56, minWidth: 44, locked: true },
   { key: 'key', label: 'KEY', defaultWidth: 120, minWidth: 80 },
-  { key: 'summary', label: 'SUMMARY', defaultWidth: 400, minWidth: 150 },
+  { key: 'summary', label: 'SUMMARY', defaultWidth: 380, minWidth: 150 },
   { key: 'status', label: 'STATUS', defaultWidth: 130, minWidth: 80 },
   { key: 'parent', label: 'PARENT', defaultWidth: 200, minWidth: 100 },
   { key: 'assignee', label: 'ASSIGNEE', defaultWidth: 160, minWidth: 100 },
@@ -261,6 +263,8 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
   const queryClient = useQueryClient();
   const { data: stories, isLoading, error } = useStoryBacklog(projectId || '');
   const avatarsByName = useProfileAvatarsByName();
+  const { data: starredIds } = useStarredItemIds();
+  const toggleStarMutation = useToggleStar();
   const { isDark } = useTheme();
   const tk = isDark ? DK : LK;
 
@@ -286,6 +290,8 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
   const [sortKey, setSortKey] = useState<string | null>(null);
   const [sortDir, setSortDir] = useState<SortDir>(null);
   const [focusedIndex, setFocusedIndex] = useState(-1);
+  const [page, setPage] = useState(1);
+  const pageSize = 25;
 
   // Resizable panel
   const containerRef = useRef<HTMLDivElement>(null);
@@ -425,7 +431,19 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
   }, [stories, advancedFilters, searchQuery]);
 
   const sortedStories = useMemo(() => sortStories(filteredStories, sortKey, sortDir), [filteredStories, sortKey, sortDir]);
-  const groups = useMemo(() => groupStories(sortedStories, groupBy), [sortedStories, groupBy]);
+
+  // Pagination
+  const totalFiltered = sortedStories.length;
+  const totalPages = Math.max(1, Math.ceil(totalFiltered / pageSize));
+  const paginatedStories = useMemo(() => {
+    const start = (page - 1) * pageSize;
+    return sortedStories.slice(start, start + pageSize);
+  }, [sortedStories, page, pageSize]);
+
+  // Reset page when filters/search change
+  useEffect(() => { setPage(1); }, [searchQuery, advancedFilters, groupBy]);
+
+  const groups = useMemo(() => groupStories(paginatedStories, groupBy), [paginatedStories, groupBy]);
 
   const flatStories = useMemo(() => {
     const result: { id: string; summary: string; issue_key?: string }[] = [];
@@ -436,8 +454,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
     });
     return result;
   }, [groups, collapsed]);
-
-  const total = filteredStories.length;
+  const total = totalFiltered;
   const toggleGroup = (label: string) => setCollapsed(prev => ({ ...prev, [label]: !prev[label] }));
 
   // ── Selection ──
@@ -502,6 +519,26 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
             </div>
           </td>
         );
+      case 'star': {
+        const isStarred = starredIds?.has(story.id) ?? false;
+        return (
+          <td key={colKey} style={{ width: columnWidths.star, overflow: 'visible', textOverflow: 'clip' }} onClick={e => e.stopPropagation()}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <button
+                onClick={() => toggleStarMutation.mutate({ itemId: story.id, itemType: 'story', isCurrentlyStarred: isStarred })}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, display: 'flex', alignItems: 'center' }}
+              >
+                <Star
+                  size={14}
+                  fill={isStarred ? '#F59E0B' : 'none'}
+                  stroke={isStarred ? '#F59E0B' : '#94A3B8'}
+                  style={{ transition: 'all 150ms' }}
+                />
+              </button>
+            </div>
+          </td>
+        );
+      }
       case 'type':
         return (
           <td key={colKey} style={{ width: columnWidths.type, overflow: 'visible', textOverflow: 'clip' }}>
@@ -639,6 +676,15 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
                       </th>
                     );
                   }
+                  if (c.key === 'star') {
+                    return (
+                      <th key={c.key} style={{ width: columnWidths.star, overflow: 'visible', textOverflow: 'clip' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <Star size={13} stroke="#94A3B8" fill="none" />
+                        </div>
+                      </th>
+                    );
+                  }
                   return (
                     <ResizableTableHeader
                       key={c.key}
@@ -738,6 +784,76 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
             </tbody>
           </table>
         </div>
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            padding: '10px 12px', borderTop: '0.75px solid #E2E8F0',
+            fontSize: 13, color: '#64748B', fontFamily: "'Inter', sans-serif",
+          }}>
+            <span style={{ fontWeight: 500 }}>
+              {((page - 1) * pageSize) + 1}–{Math.min(page * pageSize, totalFiltered)} of {totalFiltered}
+            </span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+              <button
+                disabled={page <= 1}
+                onClick={() => setPage(p => Math.max(1, p - 1))}
+                style={{
+                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                  width: 28, height: 28, borderRadius: 4,
+                  border: '1px solid #E2E8F0', background: '#FFFFFF',
+                  cursor: page <= 1 ? 'not-allowed' : 'pointer',
+                  opacity: page <= 1 ? 0.4 : 1,
+                }}
+              >
+                <ChevronLeft size={14} />
+              </button>
+              {Array.from({ length: totalPages }, (_, i) => i + 1)
+                .filter(p => p === 1 || p === totalPages || Math.abs(p - page) <= 2)
+                .reduce<(number | 'ellipsis')[]>((acc, p, i, arr) => {
+                  if (i > 0 && p - (arr[i - 1] as number) > 1) acc.push('ellipsis');
+                  acc.push(p);
+                  return acc;
+                }, [])
+                .map((p, i) =>
+                  p === 'ellipsis' ? (
+                    <span key={`e${i}`} style={{ padding: '0 4px', color: '#94A3B8' }}>…</span>
+                  ) : (
+                    <button
+                      key={p}
+                      onClick={() => setPage(p as number)}
+                      style={{
+                        display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                        minWidth: 28, height: 28, borderRadius: 4, padding: '0 6px',
+                        border: page === p ? '1.5px solid #2563EB' : '1px solid #E2E8F0',
+                        background: page === p ? 'rgba(37,99,235,0.06)' : '#FFFFFF',
+                        color: page === p ? '#2563EB' : '#475569',
+                        fontWeight: page === p ? 600 : 400,
+                        fontSize: 13, cursor: 'pointer',
+                        fontFamily: "'Inter', sans-serif",
+                      }}
+                    >
+                      {p}
+                    </button>
+                  )
+                )}
+              <button
+                disabled={page >= totalPages}
+                onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                style={{
+                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                  width: 28, height: 28, borderRadius: 4,
+                  border: '1px solid #E2E8F0', background: '#FFFFFF',
+                  cursor: page >= totalPages ? 'not-allowed' : 'pointer',
+                  opacity: page >= totalPages ? 0.4 : 1,
+                }}
+              >
+                <ChevronRight size={14} />
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     );
   };
