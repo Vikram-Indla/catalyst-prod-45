@@ -51,7 +51,7 @@ import {
   SectionBlock, IssueRow, ColumnPicker, InlineCreateRow, SkeletonRows, EmptyState,
 } from './story-detail-modules';
 
-import { ChildIssuesSection } from './story-detail-modules';
+import { SubtasksPanel } from '../SubtasksPanel';
 import { DefectsSection } from './story-detail-modules';
 import { IncidentsSection } from './story-detail-modules';
 import { TestHubSection } from './story-detail-modules';
@@ -1214,7 +1214,7 @@ export default function StoryDetailModal({
                   {/* 7. V2 COLLAPSIBLE SECTIONS */}
                   {issue && (
                     <>
-                      <ChildIssuesSection storyKey={issue.issue_key} storyId={issue.id} projectKey={issue.project_key} onOpenItem={onOpenItem} />
+                      <SubtasksPanel storyKey={issue.issue_key} storyId={issue.id} projectKey={issue.project_key} />
                       <LinkedIssuesSection issueId={issue.id} />
                       <DefectsSection storyKey={issue.issue_key} projectKey={issue.project_key} />
                       <IncidentsSection storyKey={issue.issue_key} />
