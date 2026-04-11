@@ -1,9 +1,10 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { X, Edit2, Copy, FileText, ClipboardList, Paperclip, Link2, History, Play, Plus, Trash2, Download, Upload, Bug, BookOpen, ImageIcon, Table, File, MessageSquare } from 'lucide-react';
+import { X, Edit2, Copy, FileText, ClipboardList, Paperclip, Link2, History, Play, Plus, Trash2, Download, Upload, Bug, BookOpen, ImageIcon, Table, File, MessageSquare, Search, Loader2, GitBranch, RefreshCw, Tag } from 'lucide-react';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { EntityCommentsPanel } from '@/components/testhub/EntityCommentsPanel';
 import { formatDistanceToNow } from 'date-fns';
 import { useDropzone } from 'react-dropzone';
+import { useQuery } from '@tanstack/react-query';
 
 interface TestCase {
   id: string;
@@ -17,6 +18,7 @@ interface TestCase {
   status: string;
   version: number;
   updated_at: string;
+  project_id?: string;
 }
 
 interface Step {
@@ -75,97 +77,157 @@ const STATUS_STYLES: Record<string, { bg: string; color: string }> = {
   deprecated: { bg: '#FEE2E2', color: 'var(--sem-danger)' },
 };
 
-// --- ADD LINK MODAL ---
+// --- LINK TYPE CONFIG ---
+type LinkTypeConfig = {
+  value: string;
+  label: string;
+  icon: React.ElementType;
+  table: string;
+  keyField: string;
+  nameField: string;
+  searchFields: string[];
+};
+
+const LINK_TYPE_OPTIONS: LinkTypeConfig[] = [
+  { value: 'requirement', label: 'Requirement', icon: GitBranch, table: 'tm_requirements', keyField: 'req_key',    nameField: 'title', searchFields: ['title', 'req_key'] },
+  { value: 'defect',      label: 'Defect',      icon: Bug,       table: 'tm_defects',      keyField: 'defect_key', nameField: 'title', searchFields: ['title', 'defect_key'] },
+  { value: 'story',       label: 'Story',       icon: BookOpen,  table: 'ph_issues',       keyField: 'issue_key',  nameField: 'title', searchFields: ['title', 'issue_key'] },
+];
+
+type SearchResult = { id: string; key: string; name: string };
+
+// --- ADD LINK MODAL (searchable, entity-resolving) ---
 function AddLinkModal({
   isOpen,
   onClose,
-  linkType,
+  linkType: initialLinkType,
+  projectId,
   onAdd,
 }: {
   isOpen: boolean;
   onClose: () => void;
   linkType: 'requirement' | 'defect' | 'story';
-  onAdd: (key: string, title: string) => void;
+  projectId?: string;
+  onAdd: (item: SearchResult, linkType: string) => void;
 }) {
-  const [itemKey, setItemKey] = useState('');
-  const [itemTitle, setItemTitle] = useState('');
+  const [linkType, setLinkType] = useState(initialLinkType);
+  const [search, setSearch] = useState('');
+
+  useEffect(() => { if (isOpen) { setLinkType(initialLinkType); setSearch(''); } }, [isOpen, initialLinkType]);
+
+  const config = LINK_TYPE_OPTIONS.find(o => o.value === linkType)!;
+
+  const { data: results, isLoading } = useQuery({
+    queryKey: ['tc-add-link-search', linkType, search, projectId],
+    queryFn: async () => {
+      let query = (supabase as any)
+        .from(config.table)
+        .select(`id, ${config.keyField}, ${config.nameField}`)
+        .order(config.nameField, { ascending: true })
+        .limit(20);
+
+      if (search) {
+        const orClause = config.searchFields.map(f => `${f}.ilike.%${search}%`).join(',');
+        query = query.or(orClause);
+      }
+
+      if (projectId && ['tm_requirements', 'tm_defects'].includes(config.table)) {
+        query = query.eq('project_id', projectId);
+      }
+      if (projectId && config.table === 'ph_issues') {
+        query = query.eq('project_id', projectId);
+      }
+
+      const { data } = await query;
+      return ((data || []) as any[]).map(row => ({
+        id: row.id,
+        key: row[config.keyField] || '',
+        name: row[config.nameField] || '',
+      })) as SearchResult[];
+    },
+    enabled: isOpen,
+  });
 
   if (!isOpen) return null;
 
-  const titleMap = {
-    requirement: 'Requirement',
-    defect: 'Defect',
-    story: 'Story',
-  };
-
-  const prefixMap = {
-    requirement: 'REQ-',
-    defect: 'DEF-',
-    story: 'STORY-',
-  };
-
-  const handleSubmit = () => {
-    if (!itemKey.trim()) return;
-    onAdd(itemKey.trim(), itemTitle.trim() || 'Untitled');
-    setItemKey('');
-    setItemTitle('');
-    onClose();
-  };
+  const Icon = config.icon;
 
   return (
-    <div
-      onClick={onClose}
-      style={{
-        position: 'fixed',
-        inset: 0,
-        backgroundColor: 'rgba(0,0,0,0.4)',
-        backdropFilter: 'blur(4px)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        zIndex: 1100,
-      }}
-    >
-      <div
-        onClick={(e) => e.stopPropagation()}
-        style={{
-          width: 440,
-          backgroundColor: 'var(--cp-float)',
-          borderRadius: 12,
-          boxShadow: '0 20px 60px rgba(0,0,0,0.15)',
-          overflow: 'hidden',
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px', borderBottom: '1px solid var(--divider)' }}>
-          <h3 style={{ fontFamily: 'Inter', fontSize: 16, fontWeight: 600, color: 'var(--fg-1)', margin: 0 }}>
-            Add {titleMap[linkType]} Link
-          </h3>
-          <button onClick={onClose} style={{ width: 32, height: 32, border: 'none', backgroundColor: 'transparent', color: 'var(--fg-4)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    <div onClick={onClose} style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1100 }}>
+      <div onClick={e => e.stopPropagation()} style={{ width: 480, maxWidth: '95vw', maxHeight: '80vh', backgroundColor: 'var(--cp-float, #fff)', borderRadius: 12, boxShadow: '0 20px 60px rgba(0,0,0,0.15)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+        {/* Header */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px', borderBottom: '1px solid var(--divider, #E2E8F0)' }}>
+          <h3 style={{ fontFamily: 'Inter, sans-serif', fontSize: 16, fontWeight: 600, color: 'var(--fg-1, #0F172A)', margin: 0 }}>Add Link</h3>
+          <button onClick={onClose} style={{ width: 32, height: 32, border: 'none', backgroundColor: 'transparent', color: 'var(--fg-4, #94A3B8)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <X style={{ width: 18, height: 18 }} />
           </button>
         </div>
-        <div style={{ padding: 20 }}>
-          <div style={{ marginBottom: 16 }}>
-            <label style={{ display: 'block', fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--fg-3)', marginBottom: 6 }}>
-              Item Key *
-            </label>
-            <input type="text" value={itemKey} onChange={(e) => setItemKey(e.target.value)} placeholder={prefixMap[linkType]}
-              style={{ width: '100%', height: 40, padding: '8px 12px', fontSize: 14, fontFamily: 'Inter, sans-serif', border: '1.5px solid var(--divider)', borderRadius: 8, outline: 'none' }} />
+
+        <div style={{ padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: 12 }}>
+          {/* Type selector */}
+          <div style={{ display: 'flex', gap: 6 }}>
+            {LINK_TYPE_OPTIONS.map(opt => {
+              const active = linkType === opt.value;
+              return (
+                <button key={opt.value} onClick={() => { setLinkType(opt.value as any); setSearch(''); }}
+                  style={{
+                    height: 32, padding: '0 12px', borderRadius: 6, fontSize: 12, fontWeight: 500, cursor: 'pointer',
+                    display: 'flex', alignItems: 'center', gap: 6,
+                    border: active ? 'none' : '1px solid var(--divider, #E2E8F0)',
+                    background: active ? '#2563EB' : 'transparent',
+                    color: active ? '#FFFFFF' : 'var(--fg-2, #475569)',
+                  }}>
+                  <opt.icon style={{ width: 14, height: 14 }} />
+                  {opt.label}
+                </button>
+              );
+            })}
           </div>
-          <div>
-            <label style={{ display: 'block', fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--fg-3)', marginBottom: 6 }}>
-              Title
-            </label>
-            <input type="text" value={itemTitle} onChange={(e) => setItemTitle(e.target.value)} placeholder="Enter title..."
-              style={{ width: '100%', height: 40, padding: '8px 12px', fontSize: 14, fontFamily: 'Inter, sans-serif', border: '1.5px solid var(--divider)', borderRadius: 8, outline: 'none' }} />
+
+          {/* Search */}
+          <div style={{ position: 'relative' }}>
+            <Search style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', width: 16, height: 16, color: 'var(--fg-4, #94A3B8)' }} />
+            <input
+              type="text" value={search} onChange={e => setSearch(e.target.value)}
+              placeholder={`Search ${config.label.toLowerCase()}s...`}
+              style={{ width: '100%', height: 40, padding: '8px 12px 8px 36px', fontSize: 14, fontFamily: 'Inter, sans-serif', border: '1.5px solid var(--divider, #E2E8F0)', borderRadius: 8, outline: 'none', boxSizing: 'border-box' }}
+            />
           </div>
         </div>
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, padding: '16px 20px', borderTop: '1px solid var(--divider)' }}>
-          <button onClick={onClose} style={{ height: 40, padding: '0 20px', backgroundColor: 'var(--cp-float)', border: '1.5px solid var(--divider)', borderRadius: 8, fontSize: 14, fontWeight: 500, color: 'var(--fg-3)', cursor: 'pointer' }}>Cancel</button>
-          <button onClick={handleSubmit} disabled={!itemKey.trim()}
-            style={{ height: 40, padding: '0 20px', background: itemKey.trim() ? 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)' : 'var(--divider)', border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600, color: itemKey.trim() ? '#FFFFFF' : 'var(--fg-4)', cursor: itemKey.trim() ? 'pointer' : 'not-allowed' }}>
-            Add Link
-          </button>
+
+        {/* Results */}
+        <div style={{ flex: 1, overflowY: 'auto', padding: '0 20px 16px', maxHeight: 320 }}>
+          {isLoading ? (
+            <div style={{ display: 'flex', justifyContent: 'center', padding: 24 }}>
+              <Loader2 style={{ width: 20, height: 20, animation: 'spin 1s linear infinite', color: 'var(--fg-4, #94A3B8)' }} />
+            </div>
+          ) : !results?.length ? (
+            <p style={{ textAlign: 'center', padding: 24, fontSize: 13, color: 'var(--fg-4, #94A3B8)' }}>
+              No {config.label.toLowerCase()}s found
+            </p>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              {results.map(item => (
+                <button key={item.id} onClick={() => { onAdd(item, linkType); onClose(); }}
+                  style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 12, padding: '10px 12px', borderRadius: 8, border: 'none', background: 'transparent', cursor: 'pointer', textAlign: 'left', transition: 'background 150ms' }}
+                  onMouseEnter={e => (e.currentTarget.style.background = 'var(--cp-interact-hover, rgba(0,0,0,0.04))')}
+                  onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+                  <Icon style={{ width: 16, height: 16, color: 'var(--fg-4, #94A3B8)', flexShrink: 0 }} />
+                  <div style={{ minWidth: 0, flex: 1 }}>
+                    <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 500, color: '#2563EB' }}>{item.key}</span>
+                    {item.name !== item.key && (
+                      <p style={{ fontSize: 13, color: 'var(--fg-2, #475569)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.name}</p>
+                    )}
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Footer */}
+        <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '12px 20px', borderTop: '1px solid var(--divider, #E2E8F0)' }}>
+          <button onClick={onClose} style={{ height: 36, padding: '0 16px', backgroundColor: 'transparent', border: '1.5px solid var(--divider, #E2E8F0)', borderRadius: 8, fontSize: 13, fontWeight: 500, color: 'var(--fg-3, #64748B)', cursor: 'pointer' }}>Cancel</button>
         </div>
       </div>
     </div>
@@ -254,17 +316,18 @@ export function ViewTestCaseModal({
     }
   };
 
-  const handleAddLink = async (key: string, title: string) => {
+  const handleAddLink = async (item: SearchResult, selectedLinkType: string) => {
     if (!testCase) return;
     const { data: { user } } = await supabase.auth.getUser();
+    const entityLabel = item.key !== item.name ? `${item.key} — ${item.name}` : item.name;
 
-    if (addLinkType === 'defect') {
+    if (selectedLinkType === 'defect') {
       // Write to tm_defect_links
       const { data, error } = await typedQuery('tm_defect_links').insert({
-        defect_id: key,
+        defect_id: item.id,
         link_type: 'test_case',
         linked_id: testCase.id,
-        entity_label: title,
+        entity_label: entityLabel,
         link_source: 'manual',
         created_by: user?.id || null,
       }).select().single();
@@ -272,8 +335,8 @@ export function ViewTestCaseModal({
         setLinks([...links, {
           id: data.id,
           link_type: 'defect',
-          linked_item_key: data.defect_id || key,
-          linked_item_title: title,
+          linked_item_key: item.key,
+          linked_item_title: item.name,
           _source: 'tm_defect_links',
         }]);
       }
@@ -281,16 +344,18 @@ export function ViewTestCaseModal({
       // Write requirement/story to tm_test_case_links
       const { data, error } = await typedQuery('tm_test_case_links').insert({
         test_case_id: testCase.id,
-        linked_item_type: addLinkType,
-        linked_item_id: key,
+        linked_item_type: selectedLinkType,
+        linked_item_id: item.id,
+        linked_item_key: item.key,
+        linked_item_title: item.name,
         linked_by: user?.id || null,
       }).select().single();
       if (!error && data) {
         setLinks([...links, {
           id: data.id,
-          link_type: data.linked_item_type,
-          linked_item_key: data.linked_item_id || key,
-          linked_item_title: title,
+          link_type: selectedLinkType,
+          linked_item_key: item.key,
+          linked_item_title: item.name,
           _source: 'tm_test_case_links',
         }]);
       }
@@ -486,7 +551,7 @@ export function ViewTestCaseModal({
                 ))}
               </div>
             )}
-            <AddLinkModal isOpen={addLinkOpen} onClose={() => setAddLinkOpen(false)} linkType={addLinkType} onAdd={handleAddLink} />
+            <AddLinkModal isOpen={addLinkOpen} onClose={() => setAddLinkOpen(false)} linkType={addLinkType} projectId={testCase?.project_id} onAdd={handleAddLink} />
           </div>
         );
 
