@@ -14,6 +14,7 @@ import {
   GripVertical, Link2, Trash2, Check,
   Eye, EyeOff, Sparkles, Loader2, RotateCcw, Settings2, AlertTriangle,
   SquarePen, Reply, ThumbsUp, Smile, Pencil, MoreHorizontal, Copy,
+  Globe, Palette, Video, CheckSquare,
 } from 'lucide-react';
 import { RichTextCommentEditor } from './story-detail-modules/RichTextCommentEditor';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -218,6 +219,7 @@ export default function StoryDetailModal({
   const [localPriority, setLocalPriority] = useState<string>('');
   const [showStatusDropdown, setShowStatusDropdown] = useState(false);
   const [showAddMenu, setShowAddMenu] = useState(false);
+  const [addMenuSearch, setAddMenuSearch] = useState('');
   const [showAiMenu, setShowAiMenu] = useState(false);
   const [showDotsMenu, setShowDotsMenu] = useState(false);
   const [parentPickerTrigger, setParentPickerTrigger] = useState(0);
@@ -290,7 +292,7 @@ export default function StoryDetailModal({
   useEffect(() => {
     const h = (e: MouseEvent) => {
       if (aiDropRef.current && !aiDropRef.current.contains(e.target as Node)) setAiDropOpen(false);
-      if (addMenuRef.current && !addMenuRef.current.contains(e.target as Node)) setShowAddMenu(false);
+      if (addMenuRef.current && !addMenuRef.current.contains(e.target as Node)) { setShowAddMenu(false); setAddMenuSearch(''); }
       if (aiMenuRef.current && !aiMenuRef.current.contains(e.target as Node)) setShowAiMenu(false);
       if (statusDropdownRef.current && !statusDropdownRef.current.contains(e.target as Node)) setShowStatusDropdown(false);
       if (dotsMenuRef.current && !dotsMenuRef.current.contains(e.target as Node)) setShowDotsMenu(false);
@@ -835,14 +837,94 @@ export default function StoryDetailModal({
                         onMouseEnter={e => { e.currentTarget.style.background = '#EBECF0'; e.currentTarget.style.borderColor = '#C1C7D0'; }}
                         onMouseLeave={e => { e.currentTarget.style.background = '#FAFBFC'; e.currentTarget.style.borderColor = '#DFE1E6'; }}
                       ><Plus size={14} /></button>
-                      {showAddMenu && (
-                        <div style={{ position: 'absolute', left: 0, top: 34, background: '#FFF', border: '1px solid #DFE1E6', borderRadius: 4, boxShadow: '0 4px 16px rgba(9,30,66,0.18)', padding: '8px 0', zIndex: 50, minWidth: 200 }}>
-                          <button onClick={() => { setShowAddMenu(false); toast('Create Subtask — use Sub-tasks section below'); }} style={menuItemStyle}>Create Subtask</button>
-                          <button onClick={() => { setShowAddMenu(false); fileInputRef.current?.click(); }} style={menuItemStyle}>Add Attachment</button>
-                          <input ref={fileInputRef} type="file" style={{ display: 'none' }} onChange={e => { const f = e.target.files?.[0]; if (f) uploadAttachmentMutation.mutate(f); e.target.value = ''; }} />
-                          <button onClick={() => { setShowAddMenu(false); setShowFigmaInput(true); }} style={menuItemStyle}>Add Design (Figma)</button>
+                      {showAddMenu && (() => {
+                        const addMenuItems = [
+                          { id: 'subtask', icon: <CheckSquare size={16} color="#5E6C84" />, label: 'Create subtask', shortcut: '⇧ C', section: 'primary', action: () => { setShowAddMenu(false); setAddMenuSearch(''); toast('Create Subtask — use Sub-tasks section below'); } },
+                          { id: 'link', icon: <Link2 size={16} color="#5E6C84" />, label: 'Link work item', shortcut: '⇧ K', section: 'primary', action: () => { setShowAddMenu(false); setAddMenuSearch(''); const el = document.querySelector('[data-section="linked-issues"]'); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' }); toast.info('Use the Linked Issues section below to add links'); } },
+                          { id: 'attachment', icon: <Paperclip size={16} color="#5E6C84" />, label: 'Add attachment', section: 'secondary', action: () => { setShowAddMenu(false); setAddMenuSearch(''); fileInputRef.current?.click(); } },
+                          { id: 'weblink', icon: <Globe size={16} color="#5E6C84" />, label: 'Add web link', section: 'secondary', action: () => { setShowAddMenu(false); setAddMenuSearch(''); toast.info('Web link — coming soon'); } },
+                          { id: 'design', icon: <Palette size={16} color="#5E6C84" />, label: 'Add design', section: 'secondary', action: () => { setShowAddMenu(false); setAddMenuSearch(''); setShowFigmaInput(true); } },
+                        ];
+                        const recommendedItems = [
+                          { id: 'video', icon: <Video size={16} color="#5E6C84" />, label: 'Video', section: 'recommended', action: () => { setShowAddMenu(false); setAddMenuSearch(''); toast.info('Video attachment — coming soon'); } },
+                        ];
+                        const q = addMenuSearch.toLowerCase();
+                        const filteredMain = q ? addMenuItems.filter(i => i.label.toLowerCase().includes(q)) : addMenuItems;
+                        const filteredRec = q ? recommendedItems.filter(i => i.label.toLowerCase().includes(q)) : recommendedItems;
+                        const primaryItems = filteredMain.filter(i => i.section === 'primary');
+                        const secondaryItems = filteredMain.filter(i => i.section === 'secondary');
+                        return (
+                        <div style={{ position: 'absolute', left: 0, top: 34, background: '#FFF', border: '1px solid #DFE1E6', borderRadius: 8, boxShadow: '0 4px 16px rgba(9,30,66,0.18)', padding: 0, zIndex: 50, minWidth: 280, overflow: 'hidden' }}>
+                          {/* Search input */}
+                          <div style={{ padding: '8px 8px 4px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 6, border: '2px solid #4C9AFF', borderRadius: 4, padding: '5px 8px', background: '#FAFBFC' }}>
+                              <Search size={14} color="#5E6C84" />
+                              <input
+                                type="text"
+                                placeholder="Find menu item"
+                                value={addMenuSearch}
+                                onChange={e => setAddMenuSearch(e.target.value)}
+                                autoFocus
+                                style={{ border: 'none', outline: 'none', background: 'transparent', fontSize: 13, fontFamily: 'Inter, sans-serif', color: '#172B4D', width: '100%' }}
+                              />
+                            </div>
+                          </div>
+                          {/* Primary items */}
+                          {primaryItems.length > 0 && (
+                            <div style={{ padding: '4px 0' }}>
+                              {primaryItems.map(item => (
+                                <button key={item.id} onClick={item.action} onMouseEnter={e => { e.currentTarget.style.background = '#F4F5F7'; }} onMouseLeave={e => { e.currentTarget.style.background = 'none'; }} style={{ ...menuItemStyle, justifyContent: 'space-between', padding: '8px 14px' }}>
+                                  <span style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                                    {item.icon}
+                                    <span>{item.label}</span>
+                                  </span>
+                                  {item.shortcut && <span style={{ fontSize: 11, color: '#97A0AF', fontFamily: 'Inter, sans-serif' }}>{item.shortcut}</span>}
+                                </button>
+                              ))}
+                            </div>
+                          )}
+                          {/* Separator */}
+                          {primaryItems.length > 0 && secondaryItems.length > 0 && (
+                            <div style={{ height: 1, background: '#EBECF0', margin: '0' }} />
+                          )}
+                          {/* Secondary items */}
+                          {secondaryItems.length > 0 && (
+                            <div style={{ padding: '4px 0' }}>
+                              {secondaryItems.map(item => (
+                                <button key={item.id} onClick={item.action} onMouseEnter={e => { e.currentTarget.style.background = '#F4F5F7'; }} onMouseLeave={e => { e.currentTarget.style.background = 'none'; }} style={{ ...menuItemStyle, padding: '8px 14px' }}>
+                                  <span style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                                    {item.icon}
+                                    <span>{item.label}</span>
+                                  </span>
+                                </button>
+                              ))}
+                            </div>
+                          )}
+                          {/* Recommended */}
+                          {filteredRec.length > 0 && (
+                            <>
+                              <div style={{ height: 1, background: '#EBECF0' }} />
+                              <div style={{ padding: '8px 14px 4px', fontSize: 11, fontWeight: 700, color: '#5E6C84', fontFamily: 'Inter, sans-serif' }}>Recommended for you</div>
+                              <div style={{ padding: '0 0 4px' }}>
+                                {filteredRec.map(item => (
+                                  <button key={item.id} onClick={item.action} onMouseEnter={e => { e.currentTarget.style.background = '#F4F5F7'; }} onMouseLeave={e => { e.currentTarget.style.background = 'none'; }} style={{ ...menuItemStyle, padding: '8px 14px', justifyContent: 'space-between' }}>
+                                    <span style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                                      {item.icon}
+                                      <span>{item.label}</span>
+                                    </span>
+                                    <span style={{ fontSize: 11, fontWeight: 600, color: '#5E6C84', border: '1px solid #DFE1E6', borderRadius: 3, padding: '1px 6px', fontFamily: 'Inter, sans-serif' }}>ADD</span>
+                                  </button>
+                                ))}
+                              </div>
+                            </>
+                          )}
+                          {filteredMain.length === 0 && filteredRec.length === 0 && (
+                            <div style={{ padding: '12px 14px', fontSize: 13, color: '#97A0AF', fontFamily: 'Inter, sans-serif' }}>No items found</div>
+                          )}
                         </div>
-                      )}
+                        );
+                      })()}
+                      <input ref={fileInputRef} type="file" style={{ display: 'none' }} onChange={e => { const f = e.target.files?.[0]; if (f) uploadAttachmentMutation.mutate(f); e.target.value = ''; }} />
                     </div>
                     <div ref={aiMenuRef} style={{ position: 'relative' }}>
                       <button onClick={() => setShowAiMenu(o => !o)} style={{
