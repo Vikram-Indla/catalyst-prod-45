@@ -31,6 +31,7 @@ interface SubtaskRow {
   status_category: string;
   issue_type: string;
   assignee_display_name: string | null;
+  assignee_account_id: string | null;
   priority: string;
   position: number;
   deleted_at: string | null;
