@@ -4,7 +4,7 @@ import {
   CheckCircle2, XCircle, Clock, AlertTriangle, FileText, Bug,
   FileCheck, Layers, Tags, Database, Trash2
 } from 'lucide-react';
-import { supabase, typedQuery } from '@/integrations/supabase/client';
+import { supabase, typedQuery, typedRpc } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
 import { useTheme } from '@/hooks/useTheme';
 import { TestHubPageHeader } from '@/components/testhub/TestHubPageHeader';

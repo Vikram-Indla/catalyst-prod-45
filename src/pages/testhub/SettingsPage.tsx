@@ -8,7 +8,7 @@ import {
   Settings, Bell, Palette, Layout, Clock, Save,
   Sun, Moon, Monitor, Check, RefreshCw, Activity
 } from 'lucide-react';
-import { supabase, typedQuery } from '@/integrations/supabase/client';
+import { supabase, typedQuery, typedRpc } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
 import { TestHubPageHeader } from '@/components/testhub/TestHubPageHeader';
 import { ActivityLog } from '@/components/testhub/settings/ActivityLog';
