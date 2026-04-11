@@ -397,6 +397,12 @@
   font-size: 14px;
   font-weight: 400;
 }
+.jf-check-icon {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}
 .jf-avatar-wrap { width: 28px; height: 28px; display: flex; align-items: center; flex-shrink: 0; }
 .jf-avatar {
   display: flex;
