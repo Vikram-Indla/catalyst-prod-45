@@ -11,7 +11,8 @@ import { DeleteConfirmDialog } from '../components/dialogs/DeleteConfirmDialog';
 import { CreateStoryDialog } from '../components/dialogs/CreateStoryDialog';
 import { EditStoryDialog } from '../components/dialogs/EditStoryDialog';
 import { Button } from '@/components/ui/button';
-import { ChevronDown, ChevronRight, Plus, Pencil, Trash2, BookOpen } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { ChevronDown, ChevronRight, Plus, Pencil, Trash2, BookOpen, Search } from 'lucide-react';
 import { toast } from 'sonner';
 import { useTheme } from '@/hooks/useTheme';
 import { DK, LK } from '@/utils/dark-mode-styles';
@@ -82,6 +83,8 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
   const [panelDividerWidth, setPanelDividerWidth] = useState(55);
   const [filterPanelOpen, setFilterPanelOpen] = useState(false);
   const [advancedFilters, setAdvancedFilters] = useState<Record<string, string[]>>({});
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchFocused, setSearchFocused] = useState(false);
 
   // ── Build filter categories from story data ──
   const filterCategories = useMemo<FilterCategory[]>(() => {
@@ -204,13 +207,22 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
   // Apply advanced filters before grouping
   const filteredStories = useMemo(() => {
     let result = stories || [];
+    // Text search
+    if (searchQuery.trim()) {
+      const q = searchQuery.trim().toLowerCase();
+      result = result.filter(s =>
+        (s.title && s.title.toLowerCase().includes(q)) ||
+        (s.story_key && s.story_key.toLowerCase().includes(q)) ||
+        (s.assignee_name && s.assignee_name.toLowerCase().includes(q))
+      );
+    }
     const f = advancedFilters;
     if (f.status?.length) result = result.filter(s => s.status && f.status.includes(s.status));
     if (f.priority?.length) result = result.filter(s => s.priority && f.priority.includes(s.priority));
     if (f.assignee?.length) result = result.filter(s => s.assignee_name && f.assignee.includes(s.assignee_name));
     if (f.parent?.length) result = result.filter(s => s.feature?.epic && f.parent.includes(s.feature.epic.id));
     return result;
-  }, [stories, advancedFilters]);
+  }, [stories, advancedFilters, searchQuery]);
 
   const groups = useMemo(() => groupByStatus(filteredStories, STORY_GROUP_ORDER), [filteredStories]);
 
@@ -424,25 +436,49 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
 
   return (
     <div ref={containerRef} className="h-full flex flex-col" style={{ background: tk.pageBg }}>
-      <div className="flex items-center justify-between px-6 py-3 border-b" style={{ borderColor: tk.border }}>
-        <div className="flex items-center gap-3">
-          <JiraIssueTypeIcon type="story" size={20} />
-          <h1 className="text-base font-semibold" style={{ color: tk.t1, fontWeight: 650 }}>Story Backlog</h1>
-          <span className="text-xs" style={{ color: tk.t2 }}>{total} stories across {groups.length} groups</span>
+      {/* ── Title + Subtitle header (Defects-style) ── */}
+      <div className="px-6 pt-5 pb-3 border-b" style={{ borderColor: tk.border }}>
+        <h1 className="text-xl font-semibold" style={{ color: tk.t1, fontFamily: "'Sora', sans-serif", fontWeight: 650 }}>Story Backlog</h1>
+        <p className="text-sm mt-0.5" style={{ color: tk.t2 }}>Track and manage user stories across your project</p>
+      </div>
+
+      {/* ── Search + Filter bar (Defects-style) ── */}
+      <div className="flex items-center gap-3 px-6 py-2.5 border-b" style={{ borderColor: tk.border }}>
+        {/* Search input */}
+        <div className={`relative transition-all duration-200 ${searchFocused ? 'w-80' : 'w-64'}`}>
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: tk.t3 }} />
+          <Input
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onFocus={() => setSearchFocused(true)}
+            onBlur={() => setSearchFocused(false)}
+            placeholder="Search by title, key, Jira ID..."
+            className="h-9 pl-9 pr-3 text-sm"
+            style={{ borderColor: tk.border, background: tk.pageBg, color: tk.t1 }}
+          />
         </div>
-        <div className="flex items-center gap-2">
+
+        {/* Filter trigger */}
+        <div className="relative">
           <FilterTriggerButton
             count={advancedFilterCount}
             onClick={() => setFilterPanelOpen(p => !p)}
             isOpen={filterPanelOpen}
           />
-          <Button onClick={() => setShowCreate(true)} size="sm" style={{ backgroundColor: '#2563EB', color: '#FFFFFF', borderRadius: 6 }}>
-            <Plus className="h-3.5 w-3.5 mr-1" /> Create Story
-          </Button>
         </div>
+
+        <div className="flex-1" />
+
+        {/* Total count */}
+        <span className="text-xs" style={{ color: tk.t2 }}>{total} stories</span>
+
+        {/* Create button */}
+        <Button onClick={() => setShowCreate(true)} size="sm" style={{ backgroundColor: '#2563EB', color: '#FFFFFF', borderRadius: 6 }}>
+          <Plus className="h-3.5 w-3.5 mr-1" /> Create Story
+        </Button>
       </div>
 
-      {/* Filter panel — rendered below header in normal flow, not inside overflow container */}
+      {/* Filter panel — rendered below header, not inside overflow container */}
       {filterPanelOpen && (
         <div style={{ position: 'relative', zIndex: 50, flexShrink: 0, height: 0 }}>
           <div className="sb-filter-anchor" style={{ position: 'absolute', top: 0, right: 24, zIndex: 50 }}>
