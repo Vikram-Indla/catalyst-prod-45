@@ -16,15 +16,19 @@ export { useSaveTestData, hasTestDataToSave } from './useTestData';
 export { useDefects } from './useDefects';
 
 // ── Real hooks from sibling files ──
-export { useTestPlans, useDeleteTestPlan } from '../useTestPlansG26';
+export { useTestPlans, useTestPlan, useCreateTestPlan, useUpdateTestPlan, useDeleteTestPlan } from '../useTestPlansG26';
 export { cycleListKeys, useTestCycleList } from '../test-cycles/useTestCycleList';
-
-// ── Re-exports that need stubs (not yet implemented as real hooks) ──
-export { useDeleteTestCase } from './useTestCaseComments';
-export { useCreateTestCase } from './useTestCaseVersions';
 
 // ── Stubs for exports that have no real implementation yet ──
 export type CycleListRow = any;
+
+export function useDeleteTestCase() {
+  return useMutation({ mutationFn: async (_: any) => {} });
+}
+
+export function useCreateTestCase(..._: any[]) {
+  return useMutation({ mutationFn: async (...args: any[]) => ({} as any) });
+}
 
 export function useCloneTestPlan(..._: any[]) {
   return useMutation({ mutationFn: async (_: any) => ({} as any) });
