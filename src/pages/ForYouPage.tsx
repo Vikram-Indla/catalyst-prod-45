@@ -195,38 +195,40 @@ export default function ForYouPage() {
           <ForYouSubTabs activeTab={activeTab} counts={tabCounts} onTabChange={setActiveTab} />
         </div>
 
-        {/* Status Summary Bar — computed from filtered items */}
-        <StatusSummaryBar items={[
-          ...filteredGroupedItems.YESTERDAY,
-          ...filteredGroupedItems.THIS_WEEK,
-          ...filteredGroupedItems.EARLIER,
-        ]} />
-
-        {/* Filters */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
-          <ForYouInlineFilters
-            filters={inlineFilters}
-            onFiltersChange={setInlineFilters}
-            projectOptions={projectOptions}
-            hubOptions={hubOptions}
-            reportedByOptions={reportedByOptions}
-          />
-          {/* Jira-style advanced filter */}
-          <div style={{ position: 'relative' }}>
-            <FilterTriggerButton
-              count={advancedFilterCount}
-              onClick={() => setFilterPanelOpen(v => !v)}
-              isOpen={filterPanelOpen}
+        {/* Status Summary + Filters — single row */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 0', marginBottom: 12, borderBottom: '1px solid var(--cp-bd)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+            <StatusSummaryBar items={[
+              ...filteredGroupedItems.YESTERDAY,
+              ...filteredGroupedItems.THIS_WEEK,
+              ...filteredGroupedItems.EARLIER,
+            ]} />
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <ForYouInlineFilters
+              filters={inlineFilters}
+              onFiltersChange={setInlineFilters}
+              projectOptions={projectOptions}
+              hubOptions={hubOptions}
+              reportedByOptions={reportedByOptions}
             />
-            {filterPanelOpen && (
-              <JiraBasicFilter
-                categories={filterCategories}
-                selected={advancedFilters}
-                onSelectionChange={handleAdvancedFilterChange}
-                onClearAll={handleClearAllFilters}
-                onClose={() => setFilterPanelOpen(false)}
+            {/* Jira-style advanced filter */}
+            <div style={{ position: 'relative' }}>
+              <FilterTriggerButton
+                count={advancedFilterCount}
+                onClick={() => setFilterPanelOpen(v => !v)}
+                isOpen={filterPanelOpen}
               />
-            )}
+              {filterPanelOpen && (
+                <JiraBasicFilter
+                  categories={filterCategories}
+                  selected={advancedFilters}
+                  onSelectionChange={handleAdvancedFilterChange}
+                  onClearAll={handleClearAllFilters}
+                  onClose={() => setFilterPanelOpen(false)}
+                />
+              )}
+            </div>
           </div>
         </div>
 
