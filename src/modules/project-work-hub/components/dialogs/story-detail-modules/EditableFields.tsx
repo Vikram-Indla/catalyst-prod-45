@@ -152,9 +152,10 @@ export function EditableAssignee({ issueId, projectId, currentAssigneeId, curren
       {open && (() => {
         const rect = ref.current?.getBoundingClientRect();
         const dropTop = (rect?.bottom ?? 0) + 4;
-        const dropLeft = (rect?.left ?? 0);
+        const dropWidth = 280;
+        const dropLeft = Math.min(rect?.left ?? 0, window.innerWidth - dropWidth - 16);
         return (
-        <div style={{ ...ATLASSIAN_DROPDOWN, position: 'fixed', top: dropTop, left: dropLeft, width: 280, overflow: 'hidden' }}>
+        <div style={{ ...ATLASSIAN_DROPDOWN, position: 'fixed', top: dropTop, left: dropLeft, width: dropWidth, overflow: 'hidden' }}>
           {/* Search input */}
           <div style={{ padding: '8px 8px 4px' }}>
             <input autoFocus value={search} onChange={e => setSearch(e.target.value)} placeholder="Search members..."
