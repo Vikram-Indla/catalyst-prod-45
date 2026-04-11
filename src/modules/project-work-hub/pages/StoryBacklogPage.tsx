@@ -460,7 +460,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
       {/* ── Search + Filter bar (Defects-style) ── */}
       <div className="flex items-center gap-3 px-6 py-2.5 border-b" style={{ borderColor: tk.border }}>
         {/* Search input */}
-        <div className={`relative transition-all duration-200 ${searchFocused ? 'w-80' : 'w-64'}`}>
+        <div className="relative w-80">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: tk.t3 }} />
           <Input
             value={searchQuery}

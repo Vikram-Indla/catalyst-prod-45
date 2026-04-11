@@ -132,7 +132,7 @@ export function DefectFilters({ filters, onChange, users, projects }: Props) {
   return (
     <div className="flex items-center gap-2 flex-wrap">
       {/* Search */}
-      <div className="relative w-56">
+      <div className="relative w-80">
         <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
         <Input
           placeholder="Search by title, key, Jira ID..."
