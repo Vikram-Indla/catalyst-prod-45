@@ -226,7 +226,7 @@ export function CreateTestCaseModal({
         test_format: testFormat,
         gherkin_feature: testFormat === 'gherkin' ? gherkinFeature.trim() || null : null,
         gherkin_scenario: testFormat === 'gherkin' ? gherkinScenario.trim() || null : null,
-        owner_id: assignedTo || null,
+        assigned_to: assignedTo || null,
         version: 1,
         project_id: projectId,
       })
@@ -314,7 +314,7 @@ export function CreateTestCaseModal({
         test_format: testFormat,
         gherkin_feature: testFormat === 'gherkin' ? gherkinFeature.trim() || null : null,
         gherkin_scenario: testFormat === 'gherkin' ? gherkinScenario.trim() || null : null,
-        owner_id: assignedTo || null,
+        assigned_to: assignedTo || null,
         version: newVersion,
       })
       .eq('id', testCase.id);
