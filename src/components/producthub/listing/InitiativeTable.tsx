@@ -171,6 +171,22 @@ export function InitiativeTable({
       cell: ({ row }) => <PBCheckbox checked={row.getIsSelected()} onToggle={() => row.toggleSelected()} />,
     }),
     col.display({
+      id: 'star', size: 36, minSize: 36, maxSize: 36, enableResizing: false,
+      header: () => null,
+      cell: ({ row }) => (
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={e => e.stopPropagation()}>
+          <button
+            type="button"
+            onClick={() => onFavoriteToggle(row.original.id, row.original.is_favorited)}
+            style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 24, height: 24, border: 'none', background: 'transparent', cursor: 'pointer', borderRadius: 4, padding: 0 }}
+            title={row.original.is_favorited ? 'Unstar' : 'Star'}
+          >
+            <Star size={14} fill={row.original.is_favorited ? '#FACC15' : 'none'} stroke={row.original.is_favorited ? '#FACC15' : '#CBD5E1'} strokeWidth={2} />
+          </button>
+        </div>
+      ),
+    }),
+    col.display({
       id: 'roadmap', size: 32, minSize: 32, maxSize: 32, enableResizing: false,
       header: () => <Map size={14} style={{ color: 'var(--pb-ink-muted)' }} />,
       cell: ({ row }) => (
@@ -185,9 +201,13 @@ export function InitiativeTable({
       ),
     }),
     col.display({
-      id: 'type_icon', size: 28, minSize: 28, maxSize: 28, enableResizing: false,
-      header: () => <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--cp-text-muted)' }}>Type</span>,
-      cell: ({ row }) => <TypeIconCell typeKey={row.original.initiative_type_key} />,
+      id: 'type_icon', size: 44, minSize: 44, maxSize: 44, enableResizing: false,
+      header: () => <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--cp-text-muted)' }}>TY</span>,
+      cell: ({ row }) => (
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%' }}>
+          <TypeIconCell typeKey={row.original.initiative_type_key} />
+        </div>
+      ),
     }),
     col.accessor('initiative_key', {
       id: 'initiative_key', size: 90, minSize: 72, header: 'ID',
@@ -195,9 +215,8 @@ export function InitiativeTable({
     }),
     col.accessor('title', {
       id: 'title', size: 240, minSize: 200, header: 'Title',
-      cell: ({ getValue, row }) => (
+      cell: ({ getValue }) => (
         <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--pb-ink)', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-          {row.original.is_favorited && <Star size={12} style={{ color: '#F59E0B', fill: '#F59E0B', display: 'inline', marginRight: 4 }} />}
           {getValue()}
         </span>
       ),
