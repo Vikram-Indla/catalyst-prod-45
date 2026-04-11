@@ -166,8 +166,8 @@ export interface CapacitySummary {
 
 export interface ResourceMetric extends CapacityResource {
   allocation?: number;
-  assignments: CapacityAssignment[];
-  status: 'available' | 'healthy' | 'at_capacity' | 'over_allocated';
+  assignments?: CapacityAssignment[];
+  status?: 'available' | 'healthy' | 'at_capacity' | 'over_allocated';
 }
 
 export type ViewType = 'cards' | 'table' | 'timeline' | 'assignments' | 'leveling';
