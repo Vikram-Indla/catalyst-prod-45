@@ -22,114 +22,23 @@ import {
 import { tiptapJsonToAdf, resolveEditorContent } from './adf-utils';
 import { Extension } from '@tiptap/core';
 import { Plugin, PluginKey } from '@tiptap/pm/state';
+import './editor-drag-handle.css';
 
-// ─── Custom drag handle extension (compatible with TipTap 3.13) ─────
-const DRAG_HANDLE_SVG = `<svg viewBox="-8 -8 32 32" width="24" height="24" fill="currentColor"><path d="M7 2.75a1.75 1.75 0 1 1-3.5 0 1.75 1.75 0 0 1 3.5 0m5.5 0a1.75 1.75 0 1 1-3.5 0 1.75 1.75 0 0 1 3.5 0M7 8a1.75 1.75 0 1 1-3.5 0A1.75 1.75 0 0 1 7 8m5.5 0A1.75 1.75 0 1 1 9 8a1.75 1.75 0 0 1 3.5 0M7 13.25a1.75 1.75 0 1 1-3.5 0 1.75 1.75 0 0 1 3.5 0m5.5 0a1.75 1.75 0 1 1-3.5 0 1.75 1.75 0 0 1 3.5 0"/></svg>`;
-
+// ─── Custom drag handle — CSS-based visibility, JS for drag logic ─────
 const DragHandleExtension = Extension.create({
   name: 'customDragHandle',
   addProseMirrorPlugins() {
-    let handle: HTMLButtonElement | null = null;
-    let currentNodePos: number | null = null;
-    let draggedSlice: any = null;
-
-    const createHandle = () => {
-      const el = document.createElement('button');
-      el.type = 'button';
-      el.className = 'catalyst-drag-handle';
-      el.setAttribute('aria-label', 'Drag to reorder');
-      el.setAttribute('draggable', 'true');
-      el.contentEditable = 'false';
-      Object.assign(el.style, {
-        position: 'absolute', width: '20px', height: '24px', padding: '2px 0',
-        display: 'none', flexDirection: 'column', justifyContent: 'center', alignItems: 'center',
-        border: 'none', background: 'transparent', borderRadius: '4px',
-        cursor: 'grab', color: '#6B778C', zIndex: '100',
-        transition: 'background 0.15s ease, opacity 0.15s ease, color 0.15s ease', boxSizing: 'border-box',
-        opacity: '0', pointerEvents: 'auto',
-      });
-      el.innerHTML = DRAG_HANDLE_SVG;
-      el.addEventListener('mouseenter', () => { el.style.background = 'rgba(9, 30, 66, 0.08)'; el.style.color = '#42526E'; });
-      el.addEventListener('mouseleave', () => { el.style.background = 'transparent'; el.style.color = '#6B778C'; });
-      el.addEventListener('mousedown', () => { el.style.background = 'rgba(9, 30, 66, 0.13)'; el.style.cursor = 'grabbing'; });
-      el.addEventListener('mouseup', () => { el.style.background = 'rgba(9, 30, 66, 0.08)'; el.style.cursor = 'grab'; });
-      return el;
-    };
-
     return [
       new Plugin({
         key: new PluginKey('customDragHandle'),
         view(editorView) {
-          handle = createHandle();
-          editorView.dom.parentElement?.style.setProperty('position', 'relative');
-          editorView.dom.parentElement?.appendChild(handle);
+          // Add class to editor for CSS-based handle styling
+          editorView.dom.classList.add('catalyst-editor-with-handles');
 
-          const showHandle = (blockDom: HTMLElement, pos: number) => {
-            if (!handle) return;
-            currentNodePos = pos;
-            const parentRect = editorView.dom.parentElement!.getBoundingClientRect();
-            const blockRect = blockDom.getBoundingClientRect();
-            handle.style.display = 'flex';
-            handle.style.opacity = '1';
-            handle.style.left = '8px';
-            handle.style.top = `${blockRect.top - parentRect.top + (blockRect.height / 2) - 12}px`;
-          };
-
-          const hideHandle = () => {
-            if (!handle) return;
-            handle.style.opacity = '0';
-            setTimeout(() => { if (handle && handle.style.opacity === '0') handle.style.display = 'none'; }, 150);
-          };
-
-          const handleMouseMove = (e: MouseEvent) => {
-            const pos = editorView.posAtCoords({ left: e.clientX, top: e.clientY });
-            if (!pos) { hideHandle(); return; }
-            try {
-              const resolved = editorView.state.doc.resolve(pos.pos);
-              // Find top-level block
-              const depth = Math.max(1, resolved.depth);
-              const nodePos = resolved.before(1);
-              const node = editorView.state.doc.nodeAt(nodePos);
-              if (!node) { hideHandle(); return; }
-              const dom = editorView.nodeDOM(nodePos);
-              if (dom && dom instanceof HTMLElement) {
-                showHandle(dom, nodePos);
-              }
-            } catch { hideHandle(); }
-          };
-
-          const handleMouseLeave = (e: MouseEvent) => {
-            const related = e.relatedTarget as HTMLElement | null;
-            if (related && handle?.contains(related)) return;
-            hideHandle();
-          };
-
-          // Drag events on the handle
-          handle.addEventListener('dragstart', (e) => {
-            if (currentNodePos === null) return;
-            const { state } = editorView;
-            const node = state.doc.nodeAt(currentNodePos);
-            if (!node) return;
-            draggedSlice = { pos: currentNodePos, size: node.nodeSize };
-            e.dataTransfer?.setData('text/plain', '');
-            e.dataTransfer!.effectAllowed = 'move';
-          });
-
-          handle.addEventListener('dragend', () => {
-            draggedSlice = null;
-            if (handle) { handle.style.cursor = 'grab'; handle.style.background = 'transparent'; }
-          });
-
-          editorView.dom.addEventListener('mousemove', handleMouseMove);
-          editorView.dom.addEventListener('mouseleave', handleMouseLeave);
-          handle.addEventListener('mouseleave', (e) => {
-            const related = e.relatedTarget as HTMLElement | null;
-            if (related && editorView.dom.contains(related)) return;
-            hideHandle();
-          });
+          let draggedSlice: { pos: number; size: number } | null = null;
 
           // Handle drop for reordering
-          editorView.dom.addEventListener('drop', (e) => {
+          const handleDrop = (e: DragEvent) => {
             if (!draggedSlice) return;
             const dropPos = editorView.posAtCoords({ left: e.clientX, top: e.clientY });
             if (!dropPos) return;
@@ -139,23 +48,58 @@ const DragHandleExtension = Extension.create({
             const node = state.doc.nodeAt(fromPos);
             if (!node) return;
             const tr = state.tr;
-            // Delete old node, insert at drop position
             const resolvedDrop = tr.doc.resolve(dropPos.pos);
             const insertPos = resolvedDrop.before(1);
             tr.delete(fromPos, fromPos + size);
-            // Adjust insert position if it's after the deleted range
             const adjustedPos = insertPos > fromPos ? insertPos - size : insertPos;
             tr.insert(Math.max(0, adjustedPos), node);
             dispatch(tr);
             draggedSlice = null;
-          });
+          };
+
+          // Mousedown on handle — find the block node and start drag tracking
+          const handleMouseDown = (e: MouseEvent) => {
+            const target = e.target as HTMLElement;
+            if (!target.closest('.catalyst-block-handle')) return;
+            const blockEl = target.closest('[data-catalyst-block]') as HTMLElement;
+            if (!blockEl) return;
+            const posAttr = blockEl.getAttribute('data-catalyst-block');
+            if (posAttr === null) return;
+            const pos = parseInt(posAttr, 10);
+            const node = editorView.state.doc.nodeAt(pos);
+            if (!node) return;
+            draggedSlice = { pos, size: node.nodeSize };
+          };
+
+          editorView.dom.addEventListener('drop', handleDrop);
+          editorView.dom.addEventListener('mousedown', handleMouseDown);
 
           return {
+            update(view) {
+              // Inject data-catalyst-block attributes on top-level nodes for handle targeting
+              const dom = view.dom;
+              let pos = 0;
+              view.state.doc.forEach((node, offset) => {
+                const nodeDOM = view.nodeDOM(offset);
+                if (nodeDOM && nodeDOM instanceof HTMLElement) {
+                  nodeDOM.setAttribute('data-catalyst-block', String(offset));
+                  if (!nodeDOM.querySelector('.catalyst-block-handle')) {
+                    const handle = document.createElement('span');
+                    handle.className = 'catalyst-block-handle';
+                    handle.contentEditable = 'false';
+                    handle.setAttribute('draggable', 'true');
+                    handle.setAttribute('aria-label', 'Drag to reorder');
+                    handle.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><circle cx="5.5" cy="3.5" r="1.5"/><circle cx="10.5" cy="3.5" r="1.5"/><circle cx="5.5" cy="8" r="1.5"/><circle cx="10.5" cy="8" r="1.5"/><circle cx="5.5" cy="12.5" r="1.5"/><circle cx="10.5" cy="12.5" r="1.5"/></svg>';
+                    nodeDOM.style.position = 'relative';
+                    nodeDOM.insertBefore(handle, nodeDOM.firstChild);
+                  }
+                }
+              });
+            },
             destroy() {
-              editorView.dom.removeEventListener('mousemove', handleMouseMove);
-              editorView.dom.removeEventListener('mouseleave', handleMouseLeave);
-              handle?.remove();
-              handle = null;
+              editorView.dom.removeEventListener('drop', handleDrop);
+              editorView.dom.removeEventListener('mousedown', handleMouseDown);
+              editorView.dom.classList.remove('catalyst-editor-with-handles');
             },
           };
         },
@@ -300,7 +244,7 @@ export const StoryRichTextEditor = React.memo(function StoryRichTextEditor({
         class: 'adf-editor-content',
         style: [
           `min-height: ${minHeight}px`,
-          'padding: 14px 16px 14px 36px',
+          'padding: 14px 16px 14px 32px',
           'outline: none',
           'font-size: 14px',
           'line-height: 1.6',

@@ -1,0 +1,48 @@
+/*
+ * editor-drag-handle.css
+ * CSS-based drag handle for TipTap rich text editor blocks.
+ * Handle appears on hover of each top-level block node.
+ * Scoped to .catalyst-editor-with-handles (added by DragHandleExtension).
+ */
+
+/* Each block node gets position:relative via JS; the handle is injected as first child */
+.catalyst-editor-with-handles .catalyst-block-handle {
+  position: absolute;
+  left: -24px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  border-radius: 4px;
+  cursor: grab;
+  color: #C1C7D0;
+  opacity: 0;
+  transition: opacity 0.15s ease, background 0.12s ease, color 0.12s ease;
+  pointer-events: auto;
+  user-select: none;
+  z-index: 10;
+}
+
+/* Show handle on block hover */
+.catalyst-editor-with-handles [data-catalyst-block]:hover > .catalyst-block-handle {
+  opacity: 1;
+}
+
+/* Handle hover — darker grip + subtle bg */
+.catalyst-editor-with-handles .catalyst-block-handle:hover {
+  opacity: 1;
+  background: rgba(9, 30, 66, 0.08);
+  color: #6B778C;
+}
+
+/* Handle active / grabbing */
+.catalyst-editor-with-handles .catalyst-block-handle:active {
+  background: rgba(9, 30, 66, 0.13);
+  color: #42526E;
+  cursor: grabbing;
+}
