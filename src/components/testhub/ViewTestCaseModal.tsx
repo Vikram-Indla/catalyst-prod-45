@@ -435,32 +435,33 @@ export function ViewTestCaseModal({
     setLoading(true);
 
     try {
-      const [stepsRes, reqStoryLinksRes, defectLinksRes, historyRes, runsRes] = await Promise.all([
+      const [stepsRes, reqLinksRes, storyLinksRes, defectLinksRes, historyRes, runsRes] = await Promise.allSettled([
         supabase.from('tm_test_steps').select('*').eq('test_case_id', testCase.id).order('step_number'),
-        typedQuery('tm_test_case_links').select('*').eq('test_case_id', testCase.id).in('linked_item_type', ['requirement', 'story']),
+        typedQuery('tm_requirement_tests').select('id, requirement_id').eq('test_case_id', testCase.id),
+        typedQuery('tm_test_case_links').select('*').eq('test_case_id', testCase.id).eq('linked_item_type', 'story'),
         typedQuery('tm_defect_links').select('*, tm_defects!defect_id(defect_key)').eq('link_type', 'test_case').eq('linked_id', testCase.id),
         typedQuery('tm_test_case_versions').select('*').eq('test_case_id', testCase.id).order('version_number', { ascending: false }),
         typedQuery('th_test_executions').select(`*, tm_cycle_scope!cycle_scope_id(id, tm_test_cycles!test_cycle_id(id, name))`).eq('test_case_id', testCase.id).order('executed_at', { ascending: false }),
       ]);
 
-      setSteps(stepsRes.data || []);
+      const stepsData = stepsRes.status === 'fulfilled' ? stepsRes.value.data || [] : [];
+      const rawReqLinks = reqLinksRes.status === 'fulfilled' ? (reqLinksRes.value.data || []) as any[] : [];
+      const rawStoryLinks = storyLinksRes.status === 'fulfilled' ? (storyLinksRes.value.data || []) as any[] : [];
+      const defectLinksRaw = defectLinksRes.status === 'fulfilled' ? defectLinksRes.value.data || [] : [];
+      const historyRaw = historyRes.status === 'fulfilled' ? historyRes.value.data || [] : [];
+      const runsData = runsRes.status === 'fulfilled' ? runsRes.value.data || [] : [];
 
-      // Resolve requirement/story links — table only has linked_item_id + linked_item_type
-      const rawLinks = (reqStoryLinksRes.data || []) as any[];
-      const reqStoryLinks: Link[] = await Promise.all(
-        rawLinks.map(async (l: any) => {
-          let key = l.linked_item_id || '';
+      setSteps(stepsData);
+
+      const requirementLinks: Link[] = await Promise.all(
+        rawReqLinks.map(async (l: any) => {
+          let key = l.requirement_id || '';
           let title = '';
-          if (l.linked_item_type === 'requirement') {
-            const { data: req } = await typedQuery('tm_requirements').select('req_key, title').eq('id', l.linked_item_id).maybeSingle();
-            if (req) { key = req.req_key; title = req.title; }
-          } else if (l.linked_item_type === 'story') {
-            const { data: issue } = await typedQuery('ph_issues').select('issue_key, summary').eq('id', l.linked_item_id).maybeSingle();
-            if (issue) { key = issue.issue_key; title = issue.summary; }
-          }
+          const { data: req } = await typedQuery('tm_requirements').select('req_key, title').eq('id', l.requirement_id).maybeSingle();
+          if (req) { key = req.req_key; title = req.title; }
           return {
             id: l.id,
-            link_type: l.linked_item_type || '',
+            link_type: 'requirement',
             linked_item_key: key,
             linked_item_title: title,
             _source: 'tm_test_case_links' as const,
@@ -468,10 +469,25 @@ export function ViewTestCaseModal({
         })
       );
 
-      const defectLinksData: Link[] = (defectLinksRes.data || []).map((l: any) => {
+      const storyLinksResolved: Link[] = await Promise.all(
+        rawStoryLinks.map(async (l: any) => {
+          let key = l.linked_item_id || '';
+          let title = '';
+          const { data: issue } = await typedQuery('ph_issues').select('issue_key, summary').eq('id', l.linked_item_id).maybeSingle();
+          if (issue) { key = issue.issue_key; title = issue.summary; }
+          return {
+            id: l.id,
+            link_type: 'story',
+            linked_item_key: key,
+            linked_item_title: title,
+            _source: 'tm_test_case_links' as const,
+          };
+        })
+      );
+
+      const defectLinksData: Link[] = (defectLinksRaw as any[]).map((l: any) => {
         const defectKey = l.tm_defects?.defect_key || '';
         const label = l.entity_label || 'Defect';
-        // Split "DEF-0202 — title..." to get title portion only
         const titlePart = label.includes(' — ') ? label.split(' — ').slice(1).join(' — ') : label;
         return {
           id: l.id,
@@ -482,16 +498,16 @@ export function ViewTestCaseModal({
         };
       });
 
-      setLinks([...reqStoryLinks, ...defectLinksData]);
+      setLinks([...requirementLinks, ...storyLinksResolved, ...defectLinksData]);
 
-      const historyData = (historyRes.data || []).map((v: any) => ({
+      const historyData = (historyRaw as any[]).map((v: any) => ({
         id: v.id,
         version: v.version_number,
         changes: v.change_summary || v.snapshot,
         changed_at: v.created_at,
       }));
       setHistory(historyData);
-      setRuns(runsRes.data || []);
+      setRuns(runsData as any[]);
     } catch (err) {
       console.error('Error fetching related data:', err);
     } finally {
