@@ -410,7 +410,7 @@
 }
 .jf-avatar-img { width: 24px; height: 24px; border-radius: 9999px; object-fit: cover; }
 .jf-avatar-initials-text {
-  font-size: 7px;
+  font-size: 9px;
   font-weight: 700;
   color: #fff;
   line-height: 1;
