@@ -693,6 +693,14 @@ export default function TestCycleDetailPage() {
         </div>
       </div>
 
+      {/* Linked Defects */}
+      <div style={{ padding: '0 32px 24px' }}>
+        <h2 style={{ fontSize: 16, fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A', margin: '0 0 12px', display: 'flex', alignItems: 'center', gap: 8 }}>
+          <Bug size={18} /> Linked Defects
+        </h2>
+        <CycleDefectsPanel cycleId={cycleId} isDark={isDark} />
+      </div>
+
       <AddTestCasesModal
         isOpen={isAddModalOpen}
         cycleId={cycleId!}
