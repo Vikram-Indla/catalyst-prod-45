@@ -17,6 +17,7 @@ interface CreateDefectModalProps {
     testCaseId?: string;
     cycleTestCaseId?: string;
     cycleId?: string;
+    run_id?: string;
   };
 }
 

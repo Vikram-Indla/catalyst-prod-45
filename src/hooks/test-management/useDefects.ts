@@ -333,7 +333,7 @@ export function useCreateDefect() {
       if (input.cycle_id) {
         const { data: cycleRow } = await supabase
           .from('tm_test_cycles')
-          .select('id, name, plan_id:plan_test_cycles(test_plan_id, tm_test_plans(id, name, release_id, releases(id, name)))')
+          .select('id, name, plan_id:plan_test_cycles(plan_id, tm_test_plans(id, name, release_id, releases(id, name)))')
           .eq('id', input.cycle_id)
           .single();
 
