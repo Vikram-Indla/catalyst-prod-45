@@ -420,6 +420,8 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
     </>
   );
 
+  const total = filteredStories.length;
+
   return (
     <div ref={containerRef} className="h-full flex flex-col" style={{ background: tk.pageBg }}>
       <div className="flex items-center justify-between px-6 py-3 border-b" style={{ borderColor: tk.border }}>
@@ -428,9 +430,29 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
           <h1 className="text-base font-semibold" style={{ color: tk.t1, fontWeight: 650 }}>Story Backlog</h1>
           <span className="text-xs" style={{ color: tk.t2 }}>{total} stories across {groups.length} groups</span>
         </div>
-        <Button onClick={() => setShowCreate(true)} size="sm" style={{ backgroundColor: '#2563EB', color: '#FFFFFF', borderRadius: 6 }}>
-          <Plus className="h-3.5 w-3.5 mr-1" /> Create Story
-        </Button>
+        <div className="flex items-center gap-2">
+          <div style={{ position: 'relative' }}>
+            <FilterTriggerButton
+              count={advancedFilterCount}
+              onClick={() => setFilterPanelOpen(p => !p)}
+              isOpen={filterPanelOpen}
+            />
+            {filterPanelOpen && (
+              <div style={{ position: 'absolute', top: '100%', right: 0, zIndex: 50, marginTop: 4 }}>
+                <JiraBasicFilter
+                  categories={filterCategories}
+                  selected={advancedFilters}
+                  onSelectionChange={handleFilterChange}
+                  onClearAll={handleClearAllFilters}
+                  onClose={() => setFilterPanelOpen(false)}
+                />
+              </div>
+            )}
+          </div>
+          <Button onClick={() => setShowCreate(true)} size="sm" style={{ backgroundColor: '#2563EB', color: '#FFFFFF', borderRadius: 6 }}>
+            <Plus className="h-3.5 w-3.5 mr-1" /> Create Story
+          </Button>
+        </div>
       </div>
 
       {panelMode && detailItemId ? (
