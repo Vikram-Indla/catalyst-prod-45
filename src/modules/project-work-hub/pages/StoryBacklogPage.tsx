@@ -207,13 +207,22 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
   // Apply advanced filters before grouping
   const filteredStories = useMemo(() => {
     let result = stories || [];
+    // Text search
+    if (searchQuery.trim()) {
+      const q = searchQuery.trim().toLowerCase();
+      result = result.filter(s =>
+        (s.title && s.title.toLowerCase().includes(q)) ||
+        (s.story_key && s.story_key.toLowerCase().includes(q)) ||
+        (s.assignee_name && s.assignee_name.toLowerCase().includes(q))
+      );
+    }
     const f = advancedFilters;
     if (f.status?.length) result = result.filter(s => s.status && f.status.includes(s.status));
     if (f.priority?.length) result = result.filter(s => s.priority && f.priority.includes(s.priority));
     if (f.assignee?.length) result = result.filter(s => s.assignee_name && f.assignee.includes(s.assignee_name));
     if (f.parent?.length) result = result.filter(s => s.feature?.epic && f.parent.includes(s.feature.epic.id));
     return result;
-  }, [stories, advancedFilters]);
+  }, [stories, advancedFilters, searchQuery]);
 
   const groups = useMemo(() => groupByStatus(filteredStories, STORY_GROUP_ORDER), [filteredStories]);
 
