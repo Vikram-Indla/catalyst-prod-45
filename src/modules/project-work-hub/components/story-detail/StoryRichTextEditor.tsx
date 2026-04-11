@@ -41,18 +41,18 @@ const DragHandleExtension = Extension.create({
       el.setAttribute('draggable', 'true');
       el.contentEditable = 'false';
       Object.assign(el.style, {
-        position: 'absolute', width: '12px', height: '24px', padding: '2px 0',
+        position: 'absolute', width: '20px', height: '24px', padding: '2px 0',
         display: 'none', flexDirection: 'column', justifyContent: 'center', alignItems: 'center',
         border: 'none', background: 'transparent', borderRadius: '4px',
-        cursor: 'grab', color: 'rgb(41, 42, 46)', zIndex: '100',
-        transition: 'background 0.15s ease, opacity 0.15s ease', boxSizing: 'border-box',
+        cursor: 'grab', color: '#6B778C', zIndex: '100',
+        transition: 'background 0.15s ease, opacity 0.15s ease, color 0.15s ease', boxSizing: 'border-box',
         opacity: '0', pointerEvents: 'auto',
       });
       el.innerHTML = DRAG_HANDLE_SVG;
-      el.addEventListener('mouseenter', () => { el.style.background = 'rgba(5, 21, 36, 0.06)'; });
-      el.addEventListener('mouseleave', () => { el.style.background = 'transparent'; });
-      el.addEventListener('mousedown', () => { el.style.background = 'rgba(11, 18, 14, 0.14)'; el.style.cursor = 'grabbing'; });
-      el.addEventListener('mouseup', () => { el.style.background = 'rgba(5, 21, 36, 0.06)'; el.style.cursor = 'grab'; });
+      el.addEventListener('mouseenter', () => { el.style.background = 'rgba(9, 30, 66, 0.08)'; el.style.color = '#42526E'; });
+      el.addEventListener('mouseleave', () => { el.style.background = 'transparent'; el.style.color = '#6B778C'; });
+      el.addEventListener('mousedown', () => { el.style.background = 'rgba(9, 30, 66, 0.13)'; el.style.cursor = 'grabbing'; });
+      el.addEventListener('mouseup', () => { el.style.background = 'rgba(9, 30, 66, 0.08)'; el.style.cursor = 'grab'; });
       return el;
     };
 
@@ -71,7 +71,7 @@ const DragHandleExtension = Extension.create({
             const blockRect = blockDom.getBoundingClientRect();
             handle.style.display = 'flex';
             handle.style.opacity = '1';
-            handle.style.left = `${blockRect.left - parentRect.left - 20}px`;
+            handle.style.left = '8px';
             handle.style.top = `${blockRect.top - parentRect.top + (blockRect.height / 2) - 12}px`;
           };
 
@@ -300,7 +300,7 @@ export const StoryRichTextEditor = React.memo(function StoryRichTextEditor({
         class: 'adf-editor-content',
         style: [
           `min-height: ${minHeight}px`,
-          'padding: 14px 16px',
+          'padding: 14px 16px 14px 36px',
           'outline: none',
           'font-size: 14px',
           'line-height: 1.6',
