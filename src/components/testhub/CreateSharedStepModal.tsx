@@ -117,6 +117,21 @@ export function CreateSharedStepModal({ isOpen, onClose, onSuccess, categories, 
           .update({ ...stepData, updated_at: new Date().toISOString() })
           .eq('id', sharedStep.id);
         if (error) { catalystToast.error(error.message || 'Failed to update', { title: 'Update Failed' }); return; }
+
+        // Propagate updated content to all referencing tm_test_steps rows (C-05 / H-12)
+        try {
+          await supabase
+            .from('tm_test_steps' as any)
+            .update({
+              action: stepData.action,
+              expected_result: stepData.expected_result,
+            })
+            .eq('shared_step_id', sharedStep.id)
+            .eq('is_shared', true);
+        } catch (propErr) {
+          console.warn('Propagation to test steps failed:', propErr);
+        }
+
         catalystToast.success('Shared step updated successfully', { title: 'Updated' });
       } else {
         const { error } = await typedQuery('tm_shared_steps')

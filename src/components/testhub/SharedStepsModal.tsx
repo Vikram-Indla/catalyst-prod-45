@@ -77,19 +77,8 @@ export function SharedStepsModal({ isOpen, onClose, onInsert }: SharedStepsModal
       console.warn('Usage count not updated:', err);
     }
 
-    // Propagate step content to all referencing tm_test_steps rows (C-05 / H-12 fix)
-    try {
-      await supabase
-        .from('tm_test_steps' as any)
-        .update({
-          action: step.action,
-          expected_result: step.expected_result,
-        })
-        .eq('shared_step_id', step.id)
-        .eq('is_shared', true);
-    } catch (err) {
-      console.warn('Propagation to test steps failed:', err);
-    }
+    // NOTE: Propagation to tm_test_steps happens in CreateSharedStepModal (edit handler),
+    // NOT here. Inserting a shared step into a test case does not change existing references.
   };
 
 

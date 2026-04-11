@@ -63,19 +63,35 @@ export default function ExecutionHubPage() {
       
       const cyclesData = (data || []) as CycleWithStats[];
       
-      // Fetch defect counts per cycle
+      // Fetch defect counts per cycle via test_run links through cycle_scope
       if (cyclesData.length > 0) {
         const cycleIds = cyclesData.map(c => c.id);
-        const { data: defectLinks } = await supabase
-          .from('tm_defect_links' as any)
-          .select('linked_id')
-          .in('linked_id', cycleIds)
-          .eq('link_type', 'cycle');
+        
+        // Get all execution run IDs scoped to these cycles
+        const { data: scopeRows } = await supabase
+          .from('tm_cycle_scope' as any)
+          .select('id, cycle_id')
+          .in('cycle_id', cycleIds);
+        
+        const scopeIds = (scopeRows || []).map((s: any) => s.id);
+        const scopeToCycle: Record<string, string> = {};
+        (scopeRows || []).forEach((s: any) => { scopeToCycle[s.id] = s.cycle_id; });
+        
+        // Query defect links by test_run link_type against scope IDs
+        const { data: defectLinks } = scopeIds.length > 0
+          ? await supabase
+              .from('tm_defect_links' as any)
+              .select('linked_id')
+              .in('linked_id', scopeIds)
+              .eq('link_type', 'test_run')
+          : { data: [] };
         
         if (defectLinks) {
           const countMap: Record<string, number> = {};
           defectLinks.forEach((dl: any) => {
-            countMap[dl.linked_id] = (countMap[dl.linked_id] || 0) + 1;
+            // Map scope ID back to cycle ID for counting
+            const cId = scopeToCycle[dl.linked_id];
+            if (cId) countMap[cId] = (countMap[cId] || 0) + 1;
           });
           cyclesData.forEach(c => {
             c.defect_count = countMap[c.id] || 0;
