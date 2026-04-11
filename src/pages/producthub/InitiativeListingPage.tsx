@@ -603,16 +603,12 @@ export default function InitiativeListingPage() {
         subtitle="Strategic initiative portfolio & prioritization"
       />
 
-      {/* ── Primary Tabs (All / My Items / Starred) ── */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 28px' }}>
-        <BacklogSubTabs activeTab={activeTab} counts={tabCounts} onTabChange={handleTabChange} />
-      </div>
-
-      {/* ── Status Summary + Overdue + Filter ── */}
+      {/* ── Primary Tabs (All / My Items / Starred) + Overdue + Filter ── */}
       <div style={{
-        display: 'flex', alignItems: 'center', gap: 16,
+        display: 'flex', alignItems: 'center', gap: 8,
         padding: '10px 28px', borderBottom: '0.75px solid var(--cp-border-subtle)',
       }}>
+        <BacklogSubTabs activeTab={activeTab} counts={tabCounts} onTabChange={handleTabChange} />
         <BacklogStatusBar
           items={tabFiltered}
           overdueCount={overdueCount}
