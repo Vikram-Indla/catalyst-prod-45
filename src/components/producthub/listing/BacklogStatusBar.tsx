@@ -10,7 +10,7 @@ import type { Initiative, InitiativeStatus } from '@/types/initiative';
 type StatusBucket = 'todo' | 'inprogress' | 'done';
 
 const TERMINAL: InitiativeStatus[] = ['done', 'cancelled'];
-const IN_PROGRESS: InitiativeStatus[] = ['in_progress', 'in_review', 'in_development'];
+const IN_PROGRESS: InitiativeStatus[] = ['under_implementation', 'implementation_review', 'analysis'];
 
 function getStatusBucket(status: InitiativeStatus): StatusBucket {
   const normalized = status.toLowerCase().replace(/[\s_-]+/g, '');
