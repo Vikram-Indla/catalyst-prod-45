@@ -483,7 +483,7 @@ function Kbd({ children }: { children: string }) {
 
 export function GlobalSearch() {
   const { isOpen, close } = useGlobalSearchStore();
-  const navigate = useNavigate();
+  
   const inputRef = useRef<HTMLInputElement>(null);
   const { resolvedTheme } = useThemeMode();
 
