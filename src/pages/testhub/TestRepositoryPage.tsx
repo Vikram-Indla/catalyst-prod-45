@@ -1115,6 +1115,10 @@ export function TestRepositoryPage() {
           status: selectedTestCase.status,
           version: selectedTestCase.version || 1,
           assigned_to: selectedTestCase.assigned_to || null,
+          automation_status: (selectedTestCase as any).automation_status || null,
+          test_format: (selectedTestCase as any).test_format || null,
+          gherkin_feature: (selectedTestCase as any).gherkin_feature || null,
+          gherkin_scenario: (selectedTestCase as any).gherkin_scenario || null,
         } : undefined}
         existingSteps={selectedTestCaseSteps.length > 0 ? selectedTestCaseSteps : undefined}
       />

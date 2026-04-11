@@ -1,10 +1,24 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { X, Library } from 'lucide-react';
 import { StepsEditor, Step, StepAttachment } from './StepsEditor';
 import { SharedStepsModal } from './SharedStepsModal';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useTestHubProject } from '@/hooks/useTestHubProject';
+
+// DB column CHECK constraint allows only 'classic' | 'bdd'.
+// Map between UI labels and DB-safe values.
+type UiFormat = 'steps' | 'gherkin' | 'free_text';
+
+function uiFormatToDb(ui: UiFormat): string {
+  if (ui === 'gherkin') return 'bdd';
+  return 'classic'; // steps and free_text both map to classic
+}
+
+function dbFormatToUi(db: string | null | undefined): UiFormat {
+  if (db === 'bdd') return 'gherkin';
+  return 'steps'; // classic (and any other) maps to steps
+}
 
 interface TestStep {
   id: string;
@@ -114,7 +128,7 @@ export function CreateTestCaseModal({
         setStatus(testCase.status);
         setAutomation(testCase.automation_status || 'manual');
         setAssignedTo(testCase.assigned_to || '');
-        setTestFormat((testCase as any).test_format || 'steps');
+        setTestFormat(dbFormatToUi(testCase.test_format));
         setGherkinFeature((testCase as any).gherkin_feature || '');
         setGherkinScenario((testCase as any).gherkin_scenario || '');
         if (existingSteps && existingSteps.length > 0) {
@@ -172,29 +186,35 @@ export function CreateTestCaseModal({
     return true;
   };
 
-  const handleSave = async () => {
+  const handleSave = useCallback(async (overrideStatus?: string) => {
     if (!validateForm()) return;
+
+    // If overrideStatus is provided (e.g. Save Draft), apply it before saving
+    if (overrideStatus) {
+      setStatus(overrideStatus);
+    }
+    const effectiveStatus = overrideStatus ?? status;
 
     setIsSaving(true);
     try {
       if (editMode && testCase) {
-        await handleUpdate();
+        await handleUpdate(effectiveStatus);
       } else {
-        await handleCreate();
+        await handleCreate(effectiveStatus);
       }
     } catch (error) {
       console.error('Failed to save:', error);
       toast({
         title: 'Error',
-        description: 'Failed to save test case. Please try again.',
+        description: `Failed to save test case: ${(error as any)?.message || 'Unknown error'}`,
         variant: 'destructive',
       });
     } finally {
       setIsSaving(false);
     }
-  };
+  }, [editMode, testCase, title, description, preconditions, folderId, priorityId, caseTypeId, status, automation, testFormat, gherkinFeature, gherkinScenario, assignedTo, steps]);
 
-  const handleCreate = async () => {
+  const handleCreate = async (effectiveStatus?: string) => {
     // 1. Generate case_key - get ALL keys and find the MAX number to avoid duplicates
     const { data: allCases } = await typedQuery('tm_test_cases')
       .select('case_key');
@@ -221,9 +241,9 @@ export function CreateTestCaseModal({
         folder_id: folderId || null,
         priority_id: priorityId || null,
         case_type_id: caseTypeId || null,
-        status,
+        status: effectiveStatus ?? status,
         automation_status: automation,
-        test_format: testFormat,
+        test_format: uiFormatToDb(testFormat),
         gherkin_feature: testFormat === 'gherkin' ? gherkinFeature.trim() || null : null,
         gherkin_scenario: testFormat === 'gherkin' ? gherkinScenario.trim() || null : null,
         assigned_to: assignedTo || null,
@@ -295,13 +315,13 @@ export function CreateTestCaseModal({
     onClose();
   };
 
-  const handleUpdate = async () => {
+  const handleUpdate = async (effectiveStatus?: string) => {
     if (!testCase) return;
 
     const newVersion = (testCase.version || 1) + 1;
 
-    // 1. Update test case
-    const { error: tcError } = await typedQuery('tm_test_cases')
+    // 1. Update test case — use .select().single() to confirm a row was modified
+    const { data: updatedCase, error: tcError } = await typedQuery('tm_test_cases')
       .update({
         title: title.trim(),
         description: description.trim() || null,
@@ -309,23 +329,28 @@ export function CreateTestCaseModal({
         folder_id: folderId || null,
         priority_id: priorityId || null,
         case_type_id: caseTypeId || null,
-        status,
+        status: effectiveStatus ?? status,
         automation_status: automation,
-        test_format: testFormat,
+        test_format: uiFormatToDb(testFormat),
         gherkin_feature: testFormat === 'gherkin' ? gherkinFeature.trim() || null : null,
         gherkin_scenario: testFormat === 'gherkin' ? gherkinScenario.trim() || null : null,
         assigned_to: assignedTo || null,
         version: newVersion,
       })
-      .eq('id', testCase.id);
+      .eq('id', testCase.id)
+      .select()
+      .single();
 
     if (tcError) throw tcError;
+    if (!updatedCase) throw new Error('Update affected 0 rows — test case not found or access denied');
 
     // 2. Delete existing steps
-    await supabase
+    const { error: deleteStepsError } = await supabase
       .from('tm_test_steps')
       .delete()
       .eq('test_case_id', testCase.id);
+
+    if (deleteStepsError) throw deleteStepsError;
 
     // 3. Insert new steps (including shared steps)
     const stepsToInsert = steps
@@ -871,10 +896,7 @@ export function CreateTestCaseModal({
             }}
           >Cancel</button>
           <button
-            onClick={() => {
-              setStatus('draft');
-              handleSave();
-            }}
+            onClick={() => handleSave('draft')}
             disabled={isSaving}
             style={{
               height: 40,
@@ -899,7 +921,7 @@ export function CreateTestCaseModal({
             }}
           >Save Draft</button>
           <button
-            onClick={handleSave}
+            onClick={() => handleSave()}
             disabled={isSaving}
             style={{
               height: 40,
