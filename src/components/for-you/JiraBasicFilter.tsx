@@ -16,6 +16,7 @@ export interface FilterOption {
   avatarInitials?: string;
   avatarColor?: string;
   avatarType?: 'photo' | 'initials' | 'icon' | 'person-icon';
+  iconNode?: React.ReactNode;
 }
 
 export interface FilterCategory {
@@ -251,6 +252,9 @@ export function JiraBasicFilter({
 /* ── Avatar ──────────────────────────────────────────── */
 
 function OptionAvatar({ option }: { option: FilterOption }) {
+  if (option.iconNode) {
+    return <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 20, height: 20, flexShrink: 0 }}>{option.iconNode}</span>;
+  }
   if (option.avatarType === 'person-icon') {
     return (
       <span className="jf-avatar jf-avatar--circle" style={{ backgroundColor: 'rgb(24, 104, 219)' }}>

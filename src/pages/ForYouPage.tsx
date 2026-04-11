@@ -98,7 +98,10 @@ export default function ForYouPage() {
       },
       {
         id: 'type', label: 'Type', searchPlaceholder: 'Search issue type',
-        options: [...new Set(workItems.map(i => i.issueType).filter(Boolean))].sort().map(t => ({ id: t, label: t })),
+        options: [...new Set(workItems.map(i => i.issueType).filter(Boolean))]
+          .filter(t => t !== 'planner_task' && t !== 'Change Request')
+          .sort()
+          .map(t => ({ id: t, label: t, iconNode: WORK_ITEM_TYPE_ICONS[t] })),
       },
     ];
   }, [projectOptions, hubOptions, reportedByOptions, workItems, avatarsByName]);
