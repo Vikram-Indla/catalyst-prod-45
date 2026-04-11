@@ -395,6 +395,9 @@ export interface CreateDefectInput {
   step_id?: string;
   external_id?: string;
   external_url?: string;
+  source_test_case_id?: string;
+  source_test_run_id?: string;
+  source_test_plan_id?: string;
 }
 
 export interface UpdateDefectInput extends Partial<CreateDefectInput> {

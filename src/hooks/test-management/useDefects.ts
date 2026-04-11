@@ -282,6 +282,9 @@ export function useCreateDefect() {
           reporter_id: user.id,
           external_id: input.external_id || null,
           external_url: input.external_url || null,
+          source_test_case_id: input.source_test_case_id ?? null,
+          source_test_run_id: input.source_test_run_id ?? null,
+          source_test_plan_id: input.source_test_plan_id ?? null,
         })
         .select()
         .single();
@@ -293,11 +296,13 @@ export function useCreateDefect() {
         const { error: linkError } = await supabase.from('tm_defect_links').insert({
           defect_id: data.id,
           test_run_id: input.run_id || null,
+          test_case_id: input.source_test_case_id ?? null,
           step_result_id: input.step_id || null,
           created_by: user.id,
         });
         if (linkError) {
           console.error('[useCreateDefect] tm_defect_links insert failed:', linkError);
+          throw linkError;
         }
       }
 
