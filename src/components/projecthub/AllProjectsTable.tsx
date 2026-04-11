@@ -3,7 +3,7 @@ import { Star, MoreHorizontal, Lock, ChevronUp, ChevronDown, ExternalLink, Setti
 import { useNavigate } from 'react-router-dom';
 import '@/styles/product-backlog.css';
 import { useTableColumns, type ColumnDef as TColDef } from '@/hooks/useTableColumns';
-import { ResizableTableHeader } from '@/components/shared/ResizableTableHeader';
+import { ResizableTableHeader, type SortDir } from '@/components/shared/ResizableTableHeader';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { ProjectListItem, SortColumn, SortDirection, ProjectStatus } from '@/types/projecthub';
 import { ProjectStatusBadge } from './ProjectStatusBadge';
@@ -427,11 +427,12 @@ function RowActionMenu({ project }: { project: ProjectListItem }) {
   );
 }
 
-// ── Sort icon ──────────────────────────────────────────
-function SortIcon({ col, sortCol, sortDir }: { col: SortColumn; sortCol: SortColumn; sortDir: SortDirection }) {
-  if (col !== sortCol) return <ChevronUp size={12} className="opacity-25" />;
-  return sortDir === 'asc' ? <ChevronUp size={12} /> : <ChevronDown size={12} />;
-}
+// ── Column key → SortColumn mapping ──
+const COL_TO_SORT: Record<string, SortColumn> = {
+  project_name: 'name',
+  status: 'status',
+};
+const SORTABLE_PROJECT_KEYS = new Set(Object.keys(COL_TO_SORT));
 
 // ── Resizable column config ──
 const PROJECT_COLUMNS: TColDef[] = [
@@ -467,6 +468,20 @@ export function AllProjectsTable({
   selectedRows, onToggleRow, pageOffset = 0,
 }: Props) {
   const navigate = useNavigate();
+
+  const handleHeaderSort = useCallback((colKey: string) => {
+    const mappedCol = COL_TO_SORT[colKey];
+    if (mappedCol) onSort(mappedCol);
+  }, [onSort]);
+
+  // Reverse-map sortCol to column key for indicator display
+  const activeSortColKey = useMemo(() => {
+    for (const [k, v] of Object.entries(COL_TO_SORT)) {
+      if (v === sortCol) return k;
+    }
+    return null;
+  }, [sortCol]);
+
   const {
     orderedColumns, columnWidths, dragKey, dragOverKey,
     onResizeStart, onDragStart, onDragOver, onDragEnd,
@@ -576,6 +591,8 @@ export function AllProjectsTable({
                   onDragStart={onDragStart}
                   onDragOver={onDragOver}
                   onDragEnd={onDragEnd}
+                  sortDirection={activeSortColKey === c.key ? (sortDir as SortDir) : null}
+                  onSort={SORTABLE_PROJECT_KEYS.has(c.key) ? handleHeaderSort : undefined}
                 />
               );
             })}

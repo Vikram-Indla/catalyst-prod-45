@@ -3,14 +3,14 @@
  * With column resize + drag reorder via useTableColumns
  */
 
-import React, { useState, useCallback, useRef, useEffect } from 'react';
+import React, { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 import { Star } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { JiraIssueTypeIcon } from '@/components/shared/JiraIssueTypeIcon';
 import { StatusBadge } from '@/components/ui/StatusBadge';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 import { useTableColumns, type ColumnDef as TColDef } from '@/hooks/useTableColumns';
-import { ResizableTableHeader } from '@/components/shared/ResizableTableHeader';
+import { ResizableTableHeader, type SortDir } from '@/components/shared/ResizableTableHeader';
 import '@/styles/product-backlog.css';
 import type { WorkItem, WorkGroup } from '@/hooks/useForYouData';
 
@@ -58,11 +58,42 @@ const FORYOU_COLUMNS: TColDef[] = [
   { key: 'reporter', label: 'REPORTED BY', defaultWidth: 150, minWidth: 100 },
 ];
 
-export function ForYouTable({ 
+// Sortable column keys (columns that support click-to-sort)
+const SORTABLE_KEYS = new Set(['key', 'summary', 'status', 'project', 'hub', 'priority', 'updated', 'reporter']);
+
+function getSortValue(item: WorkItem, colKey: string): string | number {
+  switch (colKey) {
+    case 'key': return item.key;
+    case 'summary': return item.summary.toLowerCase();
+    case 'status': return item.status.toLowerCase();
+    case 'project': return item.project.toLowerCase();
+    case 'hub': return item.hubLabel.toLowerCase();
+    case 'priority': return item.priorityLevel;
+    case 'updated': return item.updatedAt;
+    case 'reporter': return (item.reporter || item.assignee.name).toLowerCase();
+    default: return '';
+  }
+}
+
+function sortItems(items: WorkItem[], sortKey: string | null, sortDir: SortDir): WorkItem[] {
+  if (!sortKey || !sortDir) return items;
+  return [...items].sort((a, b) => {
+    const aVal = getSortValue(a, sortKey);
+    const bVal = getSortValue(b, sortKey);
+    const cmp = typeof aVal === 'number' && typeof bVal === 'number'
+      ? aVal - bVal
+      : String(aVal).localeCompare(String(bVal));
+    return sortDir === 'asc' ? cmp : -cmp;
+  });
+}
+
+export function ForYouTable({
   groupedItems, onRowClick, selectedIds = new Set(),
   onSelectionChange, onStarToggle, isInitialLoad = false,
 }: ForYouTableProps) {
   const [focusedIndex, setFocusedIndex] = useState<number>(-1);
+  const [sortKey, setSortKey] = useState<string | null>(null);
+  const [sortDir, setSortDir] = useState<SortDir>(null);
   const tableRef = useRef<HTMLDivElement>(null);
   const nameAvatarMap = useProfileAvatarsByName();
 
@@ -71,14 +102,33 @@ export function ForYouTable({
     onResizeStart, onDragStart, onDragOver, onDragEnd,
   } = useTableColumns('for-you', FORYOU_COLUMNS);
 
-  const flatItems = React.useMemo(() => {
+  const handleSort = useCallback((colKey: string) => {
+    if (!SORTABLE_KEYS.has(colKey)) return;
+    setSortKey(prev => {
+      if (prev !== colKey) { setSortDir('asc'); return colKey; }
+      setSortDir(d => d === 'asc' ? 'desc' : 'asc');
+      return colKey;
+    });
+  }, []);
+
+  // Sort items within each group
+  const sortedGroupedItems = useMemo(() => {
+    if (!sortKey || !sortDir) return groupedItems;
+    return {
+      YESTERDAY: sortItems(groupedItems.YESTERDAY, sortKey, sortDir),
+      THIS_WEEK: sortItems(groupedItems.THIS_WEEK, sortKey, sortDir),
+      EARLIER: sortItems(groupedItems.EARLIER, sortKey, sortDir),
+    };
+  }, [groupedItems, sortKey, sortDir]);
+
+  const flatItems = useMemo(() => {
     const groups: WorkGroup[] = ['YESTERDAY', 'THIS_WEEK', 'EARLIER'];
     const items: WorkItem[] = [];
-    groups.forEach(group => { groupedItems[group].forEach(item => items.push(item)); });
+    groups.forEach(group => { sortedGroupedItems[group].forEach(item => items.push(item)); });
     return items;
-  }, [groupedItems]);
+  }, [sortedGroupedItems]);
 
-  const groups = (['YESTERDAY', 'THIS_WEEK', 'EARLIER'] as const).filter(g => groupedItems[g].length > 0);
+  const groups = (['YESTERDAY', 'THIS_WEEK', 'EARLIER'] as const).filter(g => sortedGroupedItems[g].length > 0);
 
   const handleSelectAll = useCallback((checked: boolean) => {
     if (!onSelectionChange) return;
@@ -265,6 +315,8 @@ export function ForYouTable({
                     onDragStart={onDragStart}
                     onDragOver={onDragOver}
                     onDragEnd={onDragEnd}
+                    sortDirection={sortKey === c.key ? sortDir : null}
+                    onSort={SORTABLE_KEYS.has(c.key) ? handleSort : undefined}
                   />
                 );
               })}
@@ -287,7 +339,7 @@ export function ForYouTable({
                   </td>
                 </tr>
 
-                {groupedItems[group].map((item) => {
+                {sortedGroupedItems[group].map((item) => {
                   rowIndex++;
                   const currentRowIndex = rowIndex;
                   const isSelected = selectedIds.has(item.id);

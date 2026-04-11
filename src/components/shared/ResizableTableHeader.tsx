@@ -1,10 +1,13 @@
 /**
- * ResizableTableHeader — Draggable + resizable <th> element
+ * ResizableTableHeader — Draggable + resizable + sortable <th> element
  * Drag-to-reorder via GripVertical handle; resize via right-edge handle.
+ * Jira-style sort: click header label to toggle asc → desc → asc.
  */
 import { cn } from '@/lib/utils';
-import { GripVertical } from 'lucide-react';
+import { GripVertical, ChevronUp, ChevronDown } from 'lucide-react';
 import { useRef } from 'react';
+
+export type SortDir = 'asc' | 'desc' | null;
 
 interface Props {
   colKey: string;
@@ -17,6 +20,8 @@ interface Props {
   onDragStart: (key: string) => void;
   onDragOver: (key: string) => void;
   onDragEnd: () => void;
+  sortDirection?: SortDir;
+  onSort?: (colKey: string) => void;
   className?: string;
   children?: React.ReactNode;
 }
@@ -24,14 +29,17 @@ interface Props {
 export function ResizableTableHeader({
   colKey, label, width, locked, isDragging, isDragOver,
   onResizeStart, onDragStart, onDragOver, onDragEnd,
+  sortDirection, onSort,
   className, children,
 }: Props) {
   const thRef = useRef<HTMLTableCellElement>(null);
+  const isSorted = sortDirection != null;
+  const canSort = !!onSort && !!label;
 
   return (
     <th
       ref={thRef}
-      style={{ width, minWidth: width, position: 'relative' }}
+      style={{ width, minWidth: width, position: 'relative', color: isSorted ? '#2563EB' : undefined }}
       className={cn(
         'select-none',
         isDragging && 'opacity-40',
@@ -56,7 +64,11 @@ export function ResizableTableHeader({
         }} />
       )}
 
-      <div className="flex items-center gap-1 pr-2">
+      <div
+        className="flex items-center gap-1 pr-2"
+        style={{ cursor: canSort ? 'pointer' : undefined }}
+        onClick={canSort ? () => onSort(colKey) : undefined}
+      >
         {!locked && (
           <span
             draggable
@@ -78,6 +90,13 @@ export function ResizableTableHeader({
           </span>
         )}
         {children || <span>{label}</span>}
+        {canSort && (
+          isSorted
+            ? (sortDirection === 'asc'
+              ? <ChevronUp size={12} style={{ color: '#2563EB', flexShrink: 0 }} />
+              : <ChevronDown size={12} style={{ color: '#2563EB', flexShrink: 0 }} />)
+            : <ChevronUp size={12} className="opacity-0 group-hover/thead:opacity-30 flex-shrink-0" style={{ color: '#94A3B8', transition: 'opacity 120ms' }} />
+        )}
       </div>
 
       {/* Resize handle — right edge */}

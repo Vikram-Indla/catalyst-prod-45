@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MoreHorizontal, ExternalLink, UserRound, ChevronsUp, ChevronUp, Minus, ChevronDown, Search, X } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -16,7 +16,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { EpicIcon, StoryIcon, TaskIcon, BugIcon } from '@/components/boards/WorkItemTypeIcons';
 import { useTableColumns, type ColumnDef as TColDef } from '@/hooks/useTableColumns';
-import { ResizableTableHeader } from '@/components/shared/ResizableTableHeader';
+import { ResizableTableHeader, type SortDir } from '@/components/shared/ResizableTableHeader';
 
 // ── Bug type icon (Jira canonical red rounded-square with dot) ──
 function BugTypeIcon() {
@@ -324,6 +324,37 @@ const COL_KEY_MAP: Record<string, ColumnKey | null> = {
   severity: 'SEVERITY', priority: 'PRIORITY', status: 'STATUS', assignee: 'ASSIGNEE', age: 'AGE',
 };
 
+// Jira-style sortable columns
+const DEFECT_SORTABLE_KEYS = new Set(['key', 'title', 'severity', 'priority', 'status', 'assignee', 'age']);
+
+const SEVERITY_ORDER: Record<string, number> = { critical: 4, high: 3, medium: 2, low: 1 };
+const PRIORITY_ORDER: Record<string, number> = { urgent: 5, critical: 4, high: 3, medium: 2, low: 1 };
+
+function getDefectSortValue(d: Defect, colKey: string): string | number {
+  switch (colKey) {
+    case 'key': return d.displayKey || d.defect_key;
+    case 'title': return d.title.toLowerCase();
+    case 'severity': return SEVERITY_ORDER[d.severity] ?? 0;
+    case 'priority': return PRIORITY_ORDER[d.priority ?? ''] ?? 0;
+    case 'status': return d.status.toLowerCase();
+    case 'assignee': return (d.assigneeName || d.jira_assignee_name || '').toLowerCase();
+    case 'age': return d.created_at;
+    default: return '';
+  }
+}
+
+function sortDefects(items: Defect[], sortKey: string | null, sortDir: SortDir): Defect[] {
+  if (!sortKey || !sortDir) return items;
+  return [...items].sort((a, b) => {
+    const aVal = getDefectSortValue(a, sortKey);
+    const bVal = getDefectSortValue(b, sortKey);
+    const cmp = typeof aVal === 'number' && typeof bVal === 'number'
+      ? aVal - bVal
+      : String(aVal).localeCompare(String(bVal));
+    return sortDir === 'asc' ? cmp : -cmp;
+  });
+}
+
 interface Props {
   defects: Defect[];
   selectedIds: Set<string>;
@@ -336,10 +367,23 @@ export function DefectTable({ defects, selectedIds, onSelectionChange, onDelete,
   const navigate = useNavigate();
   const cols = visibleColumns || new Set<ColumnKey>(['SEVERITY', 'PRIORITY', 'STATUS', 'ASSIGNEE', 'AGE']);
   const nameAvatarMap = useProfileAvatarsByName();
+  const [sortKey, setSortKey] = useState<string | null>(null);
+  const [sortDir, setSortDir] = useState<SortDir>(null);
   const {
     orderedColumns, columnWidths, dragKey, dragOverKey,
     onResizeStart, onDragStart, onDragOver, onDragEnd,
   } = useTableColumns('defects', DEFECT_COLUMNS);
+
+  const handleSort = useCallback((colKey: string) => {
+    if (!DEFECT_SORTABLE_KEYS.has(colKey)) return;
+    setSortKey(prev => {
+      if (prev !== colKey) { setSortDir('asc'); return colKey; }
+      setSortDir(d => d === 'asc' ? 'desc' : 'asc');
+      return colKey;
+    });
+  }, []);
+
+  const sortedDefects = useMemo(() => sortDefects(defects, sortKey, sortDir), [defects, sortKey, sortDir]);
 
   // Filter out hidden optional columns
   const visibleOrderedCols = orderedColumns.filter(c => {
@@ -451,13 +495,15 @@ export function DefectTable({ defects, selectedIds, onSelectionChange, onDelete,
                     onDragStart={onDragStart}
                     onDragOver={onDragOver}
                     onDragEnd={onDragEnd}
+                    sortDirection={sortKey === c.key ? sortDir : null}
+                    onSort={DEFECT_SORTABLE_KEYS.has(c.key) ? handleSort : undefined}
                   />
                 );
               })}
             </tr>
           </thead>
           <tbody>
-            {defects.map(d => {
+            {sortedDefects.map(d => {
               const isSelected = selectedIds.has(d.id);
               return (
                 <tr key={d.id} className={cn('group', isSelected && 'pb-row-selected')} style={{ cursor: 'pointer' }} onClick={() => navigate(`/testhub/defects/${d.id}`)}>
