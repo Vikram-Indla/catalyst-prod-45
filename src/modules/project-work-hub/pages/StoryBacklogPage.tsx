@@ -436,25 +436,49 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
 
   return (
     <div ref={containerRef} className="h-full flex flex-col" style={{ background: tk.pageBg }}>
-      <div className="flex items-center justify-between px-6 py-3 border-b" style={{ borderColor: tk.border }}>
-        <div className="flex items-center gap-3">
-          <JiraIssueTypeIcon type="story" size={20} />
-          <h1 className="text-base font-semibold" style={{ color: tk.t1, fontWeight: 650 }}>Story Backlog</h1>
-          <span className="text-xs" style={{ color: tk.t2 }}>{total} stories across {groups.length} groups</span>
+      {/* ── Title + Subtitle header (Defects-style) ── */}
+      <div className="px-6 pt-5 pb-3 border-b" style={{ borderColor: tk.border }}>
+        <h1 className="text-xl font-semibold" style={{ color: tk.t1, fontFamily: "'Sora', sans-serif", fontWeight: 650 }}>Story Backlog</h1>
+        <p className="text-sm mt-0.5" style={{ color: tk.t2 }}>Track and manage user stories across your project</p>
+      </div>
+
+      {/* ── Search + Filter bar (Defects-style) ── */}
+      <div className="flex items-center gap-3 px-6 py-2.5 border-b" style={{ borderColor: tk.border }}>
+        {/* Search input */}
+        <div className={`relative transition-all duration-200 ${searchFocused ? 'w-80' : 'w-64'}`}>
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: tk.t3 }} />
+          <Input
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onFocus={() => setSearchFocused(true)}
+            onBlur={() => setSearchFocused(false)}
+            placeholder="Search by title, key, Jira ID..."
+            className="h-9 pl-9 pr-3 text-sm"
+            style={{ borderColor: tk.border, background: tk.pageBg, color: tk.t1 }}
+          />
         </div>
-        <div className="flex items-center gap-2">
+
+        {/* Filter trigger */}
+        <div className="relative">
           <FilterTriggerButton
             count={advancedFilterCount}
             onClick={() => setFilterPanelOpen(p => !p)}
             isOpen={filterPanelOpen}
           />
-          <Button onClick={() => setShowCreate(true)} size="sm" style={{ backgroundColor: '#2563EB', color: '#FFFFFF', borderRadius: 6 }}>
-            <Plus className="h-3.5 w-3.5 mr-1" /> Create Story
-          </Button>
         </div>
+
+        <div className="flex-1" />
+
+        {/* Total count */}
+        <span className="text-xs" style={{ color: tk.t2 }}>{total} stories</span>
+
+        {/* Create button */}
+        <Button onClick={() => setShowCreate(true)} size="sm" style={{ backgroundColor: '#2563EB', color: '#FFFFFF', borderRadius: 6 }}>
+          <Plus className="h-3.5 w-3.5 mr-1" /> Create Story
+        </Button>
       </div>
 
-      {/* Filter panel — rendered below header in normal flow, not inside overflow container */}
+      {/* Filter panel — rendered below header, not inside overflow container */}
       {filterPanelOpen && (
         <div style={{ position: 'relative', zIndex: 50, flexShrink: 0, height: 0 }}>
           <div className="sb-filter-anchor" style={{ position: 'absolute', top: 0, right: 24, zIndex: 50 }}>
@@ -467,6 +491,8 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
             />
           </div>
           <style>{`.sb-filter-anchor .jf-panel { left: auto !important; right: 0 !important; }`}</style>
+        </div>
+      )}
         </div>
       )}
 
