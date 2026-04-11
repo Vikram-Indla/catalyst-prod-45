@@ -96,15 +96,15 @@ export function InitiativeTable({
   const { data: attachmentData } = useQuery({
     queryKey: ['initiative-attachment-counts', issueKeys],
     queryFn: async () => {
-      if (issueKeys.length === 0) return new Map() as Map<string, number>;
+      if (issueKeys.length === 0) return new Map<string, number>();
       const { data: rows } = await supabase.from('ph_issue_attachments').select('issue_key').in('issue_key', issueKeys);
-      const map = new Map() as Map<string, number>;
+      const map = new Map<string, number>();
       (rows || []).forEach((r: any) => map.set(r.issue_key, (map.get(r.issue_key) || 0) + 1));
       return map;
     },
     staleTime: 5 * 60_000,
   });
-  const attachmentCounts = attachmentData || (new Map() as Map<string, number>);
+  const attachmentCounts = attachmentData || new Map<string, number>();
 
   const [sorting, setSorting] = useState<SortingState>([{ id: 'initiative_key', desc: false }]);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
