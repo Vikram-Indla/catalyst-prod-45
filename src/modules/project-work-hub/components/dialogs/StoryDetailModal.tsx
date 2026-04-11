@@ -1179,7 +1179,7 @@ export default function StoryDetailModal({
                   {/* 7. V2 COLLAPSIBLE SECTIONS */}
                   {issue && (
                     <>
-                      <ChildIssuesSection storyKey={issue.issue_key} storyId={issue.id} projectKey={issue.project_key} />
+                      <ChildIssuesSection storyKey={issue.issue_key} storyId={issue.id} projectKey={issue.project_key} onOpenItem={onOpenItem} />
                       <LinkedIssuesSection issueId={issue.id} />
                       <DefectsSection storyKey={issue.issue_key} projectKey={issue.project_key} />
                       <IncidentsSection storyKey={issue.issue_key} />
