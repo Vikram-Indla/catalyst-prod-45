@@ -58,6 +58,7 @@ import { TestHubSection } from './story-detail-modules';
 import { LinkedIssuesSection } from './story-detail-modules';
 import { EditableAssignee, EditablePriority, EditableLabels, ParentFieldPicker } from './story-detail-modules';
 import { StoryRichTextEditor } from '../story-detail/StoryRichTextEditor';
+import { adfToHtml, tryAdfStringToHtml } from '../../utils/adfToHtml';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 
 /* ═══════════════════════════════════════════════
@@ -1039,11 +1040,28 @@ export default function StoryDetailModal({
                         {/* Description — ADF auto-save editor */}
                         <div style={{ fontSize: 13, fontWeight: 700, color: '#172B4D', marginBottom: 10 }}>Description</div>
                         <StoryRichTextEditor
-                          content={issue?.description_text ?? ''}
-                          onSave={(adfJson) => { updateFieldMutation.mutate({ field: 'description_text', value: adfJson, oldValue: issue?.description_text ?? '' }); }}
+                          content={adfToHtml(issue?.description_adf) || issue?.description_text || ''}
+                          onSave={(html) => { updateFieldMutation.mutate({ field: 'description_text', value: html, oldValue: issue?.description_text ?? '' }); }}
                           placeholder="Add a description..."
                           minHeight={200}
                           autoSave
+                          aiLabel="Improve description"
+                          onAiImprove={async () => {
+                            const { data, error: fnError } = await supabase.functions.invoke('ai-improve-story', {
+                              body: {
+                                issue_id: itemId,
+                                improve_type: 'improve_clarify',
+                                current_description: issue?.description_text || '(empty)',
+                                current_ac: acceptanceCriteria || '(none)',
+                                issue_summary: issue?.summary ?? '',
+                              },
+                            });
+                            if (fnError || !data?.description) {
+                              toast.error('AI improve failed. Try again.');
+                              return null;
+                            }
+                            return data.description;
+                          }}
                         />
                       </div>
                     )}
@@ -1053,11 +1071,28 @@ export default function StoryDetailModal({
                   <div style={{ marginBottom: 24 }}>
                     <div style={{ fontSize: 13, fontWeight: 700, color: '#172B4D', marginBottom: 10 }}>Acceptance Criteria</div>
                     <StoryRichTextEditor
-                      content={acceptanceCriteria || ''}
+                      content={tryAdfStringToHtml(acceptanceCriteria) ?? acceptanceCriteria ?? ''}
                       onSave={(adfJson) => { setAcceptanceCriteria(adfJson); supabase.from('ph_issues').update({ acceptance_criteria: adfJson }).eq('id', itemId).then(() => { queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] }); }); }}
                       placeholder="No acceptance criteria defined · Add manually or use AI →"
                       minHeight={80}
                       autoSave
+                      aiLabel="Improve criteria"
+                      onAiImprove={async () => {
+                        const { data, error: fnError } = await supabase.functions.invoke('ai-improve-story', {
+                          body: {
+                            issue_id: itemId,
+                            improve_type: 'add_acceptance_criteria',
+                            current_description: issue?.description_text || '(empty)',
+                            current_ac: acceptanceCriteria || '(none)',
+                            issue_summary: issue?.summary ?? '',
+                          },
+                        });
+                        if (fnError || !data?.acceptance_criteria) {
+                          toast.error('AI improve failed. Try again.');
+                          return null;
+                        }
+                        return data.acceptance_criteria;
+                      }}
                     />
                   </div>
 
