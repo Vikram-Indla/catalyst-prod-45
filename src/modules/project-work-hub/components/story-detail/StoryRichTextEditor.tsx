@@ -61,8 +61,13 @@ const DragHandleExtension = Extension.create({
         key: new PluginKey('customDragHandle'),
         view(editorView) {
           handle = createHandle();
-          editorView.dom.parentElement?.style.setProperty('position', 'relative');
-          editorView.dom.parentElement?.appendChild(handle);
+          // Attach to the editor DOM's parent and ensure it can show the handle
+          const wrapper = editorView.dom.parentElement;
+          if (wrapper) {
+            wrapper.style.position = 'relative';
+            wrapper.style.overflow = 'visible';
+          }
+          wrapper?.appendChild(handle);
 
           const showHandle = (blockDom: HTMLElement, pos: number) => {
             if (!handle) return;
