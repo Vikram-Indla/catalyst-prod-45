@@ -454,7 +454,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
     });
     return result;
   }, [groups, collapsed]);
-  const total = filteredStories.length;
+  const total = totalFiltered;
   const toggleGroup = (label: string) => setCollapsed(prev => ({ ...prev, [label]: !prev[label] }));
 
   // ── Selection ──
