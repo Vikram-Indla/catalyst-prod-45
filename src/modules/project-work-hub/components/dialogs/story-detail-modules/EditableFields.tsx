@@ -376,7 +376,7 @@ export function EditableLabels({ issueId, currentLabels, onUpdate }: { issueId: 
       {open && (() => {
         return (
           <div style={{
-            ...ATLASSIAN_DROPDOWN, position: 'absolute', top: '100%', left: 0, marginTop: 4,
+            ...ATLASSIAN_DROPDOWN, position: 'absolute', top: '100%', right: 0, marginTop: 4,
             width: Math.max(containerRef.current?.offsetWidth ?? 280, 280),
             maxHeight: 380, display: 'flex', flexDirection: 'column', overflow: 'hidden',
           }}>
