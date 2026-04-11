@@ -257,24 +257,55 @@ export function ViewTestCaseModal({
   const handleAddLink = async (key: string, title: string) => {
     if (!testCase) return;
     const { data: { user } } = await supabase.auth.getUser();
-    const { data, error } = await typedQuery('tm_test_case_links').insert({
-      test_case_id: testCase.id,
-      linked_item_type: addLinkType,
-      linked_item_id: key,
-      linked_by: user?.id || null,
-    }).select().single();
-    if (!error && data) {
-      setLinks([...links, {
-        id: data.id,
-        link_type: data.linked_item_type,
-        linked_item_key: data.linked_item_id || key,
-        linked_item_title: title,
-      }]);
+
+    if (addLinkType === 'defect') {
+      // Write to tm_defect_links
+      const { data, error } = await typedQuery('tm_defect_links').insert({
+        defect_id: key,
+        link_type: 'test_case',
+        linked_id: testCase.id,
+        entity_label: title,
+        link_source: 'manual',
+        created_by: user?.id || null,
+      }).select().single();
+      if (!error && data) {
+        setLinks([...links, {
+          id: data.id,
+          link_type: 'defect',
+          linked_item_key: data.defect_id || key,
+          linked_item_title: title,
+          _source: 'tm_defect_links',
+        }]);
+      }
+    } else {
+      // Write requirement/story to tm_test_case_links
+      const { data, error } = await typedQuery('tm_test_case_links').insert({
+        test_case_id: testCase.id,
+        linked_item_type: addLinkType,
+        linked_item_id: key,
+        linked_by: user?.id || null,
+      }).select().single();
+      if (!error && data) {
+        setLinks([...links, {
+          id: data.id,
+          link_type: data.linked_item_type,
+          linked_item_key: data.linked_item_id || key,
+          linked_item_title: title,
+          _source: 'tm_test_case_links',
+        }]);
+      }
     }
   };
 
   const handleDeleteLink = async (linkId: string) => {
-    await typedQuery('tm_test_case_links').delete().eq('id', linkId);
+    const link = links.find(l => l.id === linkId);
+    if (!link) return;
+
+    if (link._source === 'tm_defect_links') {
+      await typedQuery('tm_defect_links').delete().eq('id', linkId);
+    } else {
+      await typedQuery('tm_test_case_links').delete().eq('id', linkId);
+    }
     setLinks(links.filter(l => l.id !== linkId));
   };
 
