@@ -76,8 +76,8 @@ export function SidebarProjectNav({
         position: 'relative',
       }}
     >
-      {/* Header with project switcher — min-height aligns border-b with main content header divider */}
-      <div className="relative flex-shrink-0 border-b border-[var(--bd-default, #E2E8F0)] dark:border-[#2E2E2E] flex flex-col justify-center" style={{ minHeight: 82 }}>
+      {/* Header with project switcher — height matches main content title section border-b */}
+      <div className="relative flex-shrink-0 border-b border-[var(--bd-default, #E2E8F0)] dark:border-[#2E2E2E] flex flex-col justify-center" style={{ minHeight: 83 }}>
         <div
           className="flex items-center gap-2"
           style={{ padding: collapsed ? '12px 10px' : '12px 10px' }}
