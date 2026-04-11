@@ -35,22 +35,24 @@
    CHILD ISSUES SECTION
    ════════════════════════════════════════════════════════════════ */
 
+/* Subtasks-style flat expand/collapse — no card wrapper */
 [data-sdm-scope] .sdm-child-issues {
-  margin-top: 20px;
-  border: 1px solid var(--sdm-section-border);
-  border-radius: 6px;
-  overflow: hidden;
+  margin-top: 8px;
+  border: none;
+  border-radius: 0;
+  overflow: visible;
 }
 
-/* Section header */
+/* Section header — flat style matching SubtasksPanel */
 [data-sdm-scope] .sdm-child-header {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
-  background: var(--sdm-section-bg);
-  border-bottom: 1px solid var(--sdm-section-border);
-  min-height: 40px;
+  gap: 0;
+  padding: 0;
+  background: transparent;
+  border-bottom: none;
+  min-height: 32px;
+  margin-bottom: 4px;
 }
 
 [data-sdm-scope] .sdm-child-header-left {
@@ -60,9 +62,12 @@
 }
 
 [data-sdm-scope] .sdm-child-title {
-  font-size: 13px;
-  font-weight: 650;
-  color: #172B4D;
+  font-size: 16px;
+  font-weight: 600;
+  color: #29292E;
+  margin: 0;
+  padding: 0 4px;
+  line-height: 1.4;
   font-family: var(--cp-font-ui, Inter, system-ui, sans-serif);
 }
 
