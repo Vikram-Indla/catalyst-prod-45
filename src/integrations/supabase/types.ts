@@ -52054,7 +52054,11 @@ export type Database = {
           created_at: string | null
           created_by: string | null
           defect_id: string
+          entity_label: string | null
           id: string
+          link_source: string | null
+          link_type: string | null
+          linked_id: string | null
           step_result_id: string | null
           test_run_id: string | null
         }
@@ -52063,7 +52067,11 @@ export type Database = {
           created_at?: string | null
           created_by?: string | null
           defect_id: string
+          entity_label?: string | null
           id?: string
+          link_source?: string | null
+          link_type?: string | null
+          linked_id?: string | null
           step_result_id?: string | null
           test_run_id?: string | null
         }
@@ -52072,7 +52080,11 @@ export type Database = {
           created_at?: string | null
           created_by?: string | null
           defect_id?: string
+          entity_label?: string | null
           id?: string
+          link_source?: string | null
+          link_type?: string | null
+          linked_id?: string | null
           step_result_id?: string | null
           test_run_id?: string | null
         }
