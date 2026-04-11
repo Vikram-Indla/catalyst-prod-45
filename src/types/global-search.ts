@@ -12,6 +12,7 @@ export interface SearchResult {
   title: string;
   hub: SearchHub;
   project_name: string | null;
+  project_key: string | null;
   item_type: WorkItemType;
   assignee_name: string | null;
   viewed_at: string;
