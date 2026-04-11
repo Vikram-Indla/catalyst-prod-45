@@ -66,7 +66,7 @@ export function StatusSummaryBar({ items, filterSlot }: StatusSummaryBarProps) {
         </div>
       ))}
       {filterSlot}
-      <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--cp-t3)', marginLeft: 8 }}>
+      <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--cp-t3)', marginLeft: 'auto' }}>
         <strong style={{ color: 'var(--cp-t1)', fontWeight: 600 }}>{total}</strong>{' '}
         items across{' '}
         <strong style={{ color: 'var(--cp-t1)', fontWeight: 600 }}>{projectCount}</strong>{' '}
