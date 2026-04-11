@@ -974,39 +974,43 @@
    decision lists, mentions, status, dates, links, layout sections
    ════════════════════════════════════════════════════════════════ */
 
-/* ── Tables ── */
+/* ── Tables — Jira exact: 0.56px borders, #DDDEE1, #F0F1F2 header ── */
 [data-sdm-scope] .adf-editor-content table,
 [data-sdm-scope] .ProseMirror table {
+  border: 0.556px solid #DDDEE1;
   border-collapse: collapse;
   width: 100%;
   margin: 8px 0;
-  font-size: 13px;
-  line-height: 1.5;
+  font-size: 14px;
+  line-height: 1.43;
 }
 
 [data-sdm-scope] .adf-editor-content table th,
 [data-sdm-scope] .adf-editor-content table td,
 [data-sdm-scope] .ProseMirror table th,
 [data-sdm-scope] .ProseMirror table td {
-  border: 1px solid #DFE1E6;
-  padding: 8px 10px;
+  border-top: 0.556px solid #DDDEE1;
+  border-left: 0.556px solid #DDDEE1;
+  padding: 8px;
   text-align: left;
   vertical-align: top;
+  font-size: 14px;
+  font-weight: 400;
+  color: #292A2E;
   word-wrap: break-word;
 }
 
 [data-sdm-scope] .adf-editor-content table th,
 [data-sdm-scope] .ProseMirror table th {
-  background: #F4F5F7;
-  font-weight: 700;
-  color: #172B4D;
-  font-size: 12px;
+  background: #F0F1F2;
+  color: #292A2E;
+  font-weight: 400;
 }
 
 [data-sdm-scope] .adf-editor-content table td,
 [data-sdm-scope] .ProseMirror table td {
-  color: #172B4D;
   background: #FFFFFF;
+  color: #292A2E;
 }
 
 [data-sdm-scope] .adf-editor-content table tr:hover td,
