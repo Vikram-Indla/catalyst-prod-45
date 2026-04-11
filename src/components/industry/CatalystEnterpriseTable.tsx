@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react';
+import React, { memo, useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { GripVertical, ChevronDown, ChevronUp, Inbox } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -379,7 +379,7 @@ function RowActionsMenu({ onEdit }: { onEdit: () => void }) {
 // ============================================================================
 // MAIN TABLE COMPONENT - CATALYST V5 DARK MODE COMPLIANT
 // ============================================================================
-export function CatalystEnterpriseTable<T extends { id: string }>({
+function CatalystEnterpriseTableInner<T extends { id: string }>({
   data,
   columns,
   onRowUpdate,
@@ -868,3 +868,5 @@ export function CatalystEnterpriseTable<T extends { id: string }>({
 
   return tableContent;
 }
+
+export const CatalystEnterpriseTable = memo(CatalystEnterpriseTableInner) as typeof CatalystEnterpriseTableInner;

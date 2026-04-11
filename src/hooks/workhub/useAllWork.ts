@@ -12,7 +12,7 @@ import { toast } from 'sonner';
 // READ HOOKS
 // ════════════════════════════════════════════════════════════════
 
-const STALE = 30_000;
+const STALE = 60_000;
 
 export function useAllWorkItems(
   projectId?: string,

@@ -1052,11 +1052,10 @@ export function useHomeWorkItems(params: HomeWorkItemsParams) {
         default: return { items: [], counts: { workedOn: 0, assigned: 0, starred: 0, total: 0 }, pagination: { page, pageSize, total: 0, hasMore: false } };
       }
     },
-    // CRITICAL: Zero stale time for instant refresh
-    staleTime: 0,
-    gcTime: 0,
+    staleTime: 30_000,
+    gcTime: 5 * 60_000,
     refetchOnMount: true,
-    refetchOnWindowFocus: true,
+    refetchOnWindowFocus: false,
   });
 
   // Cancel previous queries when domain/scope/filters change

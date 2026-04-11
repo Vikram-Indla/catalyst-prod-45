@@ -56,7 +56,7 @@ export function useGovernanceScore() {
         scorePct: Math.max(0, 100 - Math.min(stale * 2, 100)),
       };
     },
-    staleTime: 0,
-    refetchOnWindowFocus: true,
+    staleTime: 60_000,
+    refetchOnWindowFocus: false,
   });
 }

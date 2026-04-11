@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback, useMemo } from 'react';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 
 export interface FeatureFlag {
@@ -113,16 +113,11 @@ export function FeatureFlagProvider({ children }: { children: React.ReactNode })
 
   useEffect(() => {
     fetchFlags();
-
-    // Refetch on window focus for near-instant admin updates
-    const onFocus = () => fetchFlags();
-    window.addEventListener('focus', onFocus);
-    return () => window.removeEventListener('focus', onFocus);
   }, [fetchFlags]);
 
-  // Auto-refresh every 60s
+  // Auto-refresh every 5 minutes (feature flags rarely change)
   useEffect(() => {
-    const interval = setInterval(fetchFlags, 60_000);
+    const interval = setInterval(fetchFlags, 5 * 60_000);
     return () => clearInterval(interval);
   }, [fetchFlags]);
 
@@ -170,10 +165,12 @@ export function FeatureFlagProvider({ children }: { children: React.ReactNode })
     [fetchFlags]
   );
 
+  const value = useMemo(() => ({
+    flags, allFlags, isLoading, isModuleEnabled, toggleFlag, refetch: fetchFlags,
+  }), [flags, allFlags, isLoading, isModuleEnabled, toggleFlag, fetchFlags]);
+
   return (
-    <FeatureFlagContext.Provider
-      value={{ flags, allFlags, isLoading, isModuleEnabled, toggleFlag, refetch: fetchFlags }}
-    >
+    <FeatureFlagContext.Provider value={value}>
       {children}
     </FeatureFlagContext.Provider>
   );

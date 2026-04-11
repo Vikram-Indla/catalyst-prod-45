@@ -119,6 +119,27 @@ export default defineConfig(({ mode, command }) => {
           if (id.includes('node_modules/recharts') || id.includes('node_modules/d3')) {
             return 'vendor-charts';
           }
+          if (id.includes('node_modules/@tiptap/') || id.includes('node_modules/prosemirror') || id.includes('node_modules/@atlaskit/')) {
+            return 'vendor-editor';
+          }
+          if (id.includes('node_modules/framer-motion')) {
+            return 'vendor-motion';
+          }
+          if (id.includes('node_modules/exceljs') || id.includes('node_modules/xlsx') || id.includes('node_modules/jspdf') || id.includes('node_modules/pptxgenjs') || id.includes('node_modules/jszip') || id.includes('node_modules/html2canvas') || id.includes('node_modules/file-saver') || id.includes('node_modules/papaparse')) {
+            return 'vendor-export';
+          }
+          if (id.includes('node_modules/lucide-react')) {
+            return 'vendor-icons';
+          }
+          if (id.includes('node_modules/date-fns')) {
+            return 'vendor-date';
+          }
+          if (id.includes('node_modules/zod') || id.includes('node_modules/react-hook-form') || id.includes('node_modules/@hookform/')) {
+            return 'vendor-forms';
+          }
+          if (id.includes('node_modules/@supabase/')) {
+            return 'vendor-supabase';
+          }
         },
       },
     },

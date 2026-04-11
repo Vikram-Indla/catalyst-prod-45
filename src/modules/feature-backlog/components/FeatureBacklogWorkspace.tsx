@@ -88,9 +88,9 @@ export function FeatureBacklogWorkspace({ programId }: FeatureBacklogWorkspacePr
   const { data: backlogData, isLoading, refetch } = useQuery({
     queryKey: ['program', programId, 'feature-backlog', queryParams],
     queryFn: () => fetchFeatureBacklog(queryParams),
-    staleTime: 0,
+    staleTime: 30_000,
     refetchOnMount: true,
-    refetchOnWindowFocus: true,
+    refetchOnWindowFocus: false,
   });
 
   // Fetch filter options

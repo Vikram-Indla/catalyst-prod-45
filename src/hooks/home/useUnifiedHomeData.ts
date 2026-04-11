@@ -258,10 +258,10 @@ export function useUnifiedHomeSummary(mode: HomeRoleMode, userId?: string) {
           return { workedOn: 0, assigned: 0, starred: 0, total: 0 };
       }
     },
-    staleTime: 1000 * 30, // 30 seconds
-    refetchInterval: 1000 * 30, // Poll every 30 seconds (reduced from 15s)
+    staleTime: 60_000,
+    refetchInterval: 60_000,
     refetchIntervalInBackground: false,
-    refetchOnWindowFocus: true,
+    refetchOnWindowFocus: false,
   });
 }
 
@@ -307,9 +307,9 @@ export function useUnifiedHomeItems(params: UnifiedQueryParams) {
           };
       }
     },
-    staleTime: 1000 * 15,
-    refetchInterval: 1000 * 15,
-    refetchOnWindowFocus: true,
+    staleTime: 30_000,
+    refetchInterval: 60_000,
+    refetchOnWindowFocus: false,
   });
 }
 

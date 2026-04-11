@@ -124,8 +124,8 @@ export function useNotifications(
       return (data || []) as Notification[];
     },
     enabled: !!user?.id,
-    staleTime: 30 * 1000,
-    refetchOnWindowFocus: true,
+    staleTime: 60_000,
+    refetchOnWindowFocus: false,
   });
 
   const unreadCount = notifications.filter((n) => !n.is_read).length;

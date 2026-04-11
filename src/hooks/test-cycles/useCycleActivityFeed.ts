@@ -59,7 +59,7 @@ export function useCycleActivityFeed(cycleId: string | null, limit: number = 20)
     },
     enabled: !!cycleId,
     staleTime: 10000,
-    refetchInterval: 30000, // Refetch every 30s for near real-time
+    refetchInterval: 60_000, // Refetch every 60s for near real-time
   });
 
   // Real-time subscription for new audit events

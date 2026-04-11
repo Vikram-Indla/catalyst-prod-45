@@ -79,38 +79,40 @@ export function useIncident(id: string) {
 
       if (error) throw error;
 
-      // Fetch labels separately due to junction table
-      const { data: labelData, error: labelError } = await supabase
-        .from('incident_labels')
-        .select('label:incident_label_defs(*)')
-        .eq('incident_id', id);
-      if (labelError) throw labelError;
+      // Fetch related data in parallel
+      const [labelResult, commentsResult, attachmentsResult, historyResult] = await Promise.all([
+        supabase
+          .from('incident_labels')
+          .select('label:incident_label_defs(*)')
+          .eq('incident_id', id),
+        supabase
+          .from('incident_comments')
+          .select('*, author:incident_user_profiles(*)')
+          .eq('incident_id', id)
+          .is('deleted_at', null)
+          .order('created_at', { ascending: false }),
+        supabase
+          .from('incident_attachments')
+          .select('*, uploader:incident_user_profiles(*)')
+          .eq('incident_id', id)
+          .is('deleted_at', null)
+          .order('created_at', { ascending: false }),
+        supabase
+          .from('incident_history')
+          .select('*, changer:incident_user_profiles(*)')
+          .eq('incident_id', id)
+          .order('changed_at', { ascending: false }),
+      ]);
 
-      // Fetch comments
-      const { data: commentsData, error: commentsError } = await supabase
-        .from('incident_comments')
-        .select('*, author:incident_user_profiles(*)')
-        .eq('incident_id', id)
-        .is('deleted_at', null)
-        .order('created_at', { ascending: false });
-      if (commentsError) throw commentsError;
+      if (labelResult.error) throw labelResult.error;
+      if (commentsResult.error) throw commentsResult.error;
+      if (attachmentsResult.error) throw attachmentsResult.error;
+      if (historyResult.error) throw historyResult.error;
 
-      // Fetch attachments
-      const { data: attachmentsData, error: attachmentsError } = await supabase
-        .from('incident_attachments')
-        .select('*, uploader:incident_user_profiles(*)')
-        .eq('incident_id', id)
-        .is('deleted_at', null)
-        .order('created_at', { ascending: false });
-      if (attachmentsError) throw attachmentsError;
-
-      // Fetch history
-      const { data: historyData, error: historyError } = await supabase
-        .from('incident_history')
-        .select('*, changer:incident_user_profiles(*)')
-        .eq('incident_id', id)
-        .order('changed_at', { ascending: false });
-      if (historyError) throw historyError;
+      const labelData = labelResult.data;
+      const commentsData = commentsResult.data;
+      const attachmentsData = attachmentsResult.data;
+      const historyData = historyResult.data;
 
       // Transform data to match types
       const transformedData = {

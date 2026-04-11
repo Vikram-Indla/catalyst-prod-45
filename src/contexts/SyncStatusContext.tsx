@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, { createContext, useContext, useState, useCallback, useMemo } from 'react';
 
 type SyncStatus = 'synced' | 'syncing' | 'error' | 'offline';
 
@@ -47,19 +47,19 @@ export function SyncStatusProvider({ children }: { children: React.ReactNode }) 
     setStatus('offline');
   }, []);
   
+  const value = useMemo(() => ({
+    status,
+    pendingChanges,
+    lastSyncedAt,
+    setSyncing,
+    setSynced,
+    setError,
+    setOffline,
+    errorMessage,
+  }), [status, pendingChanges, lastSyncedAt, setSyncing, setSynced, setError, setOffline, errorMessage]);
+
   return (
-    <SyncStatusContext.Provider
-      value={{
-        status,
-        pendingChanges,
-        lastSyncedAt,
-        setSyncing,
-        setSynced,
-        setError,
-        setOffline,
-        errorMessage,
-      }}
-    >
+    <SyncStatusContext.Provider value={value}>
       {children}
     </SyncStatusContext.Provider>
   );

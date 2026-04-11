@@ -16,7 +16,7 @@ export function useConflicts(projectId: string) {
   return useQuery({
     queryKey: jiraSyncKeys.conflicts(projectId),
     queryFn: () => jiraSyncService.getConflicts(projectId),
-    refetchInterval: 30_000,
+    refetchInterval: 60_000,
     enabled: !!projectId,
     staleTime: 10_000,
   });

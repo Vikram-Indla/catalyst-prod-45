@@ -2,7 +2,7 @@
 // V2 Home Implementation - Full enterprise-grade architecture
 // Single source of truth via useHomeWorkItems hook
 
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { memo, useState, useMemo, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { 
   ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight,
@@ -351,7 +351,7 @@ function WorkItemsDataGrid({
 // ============================================
 // MAIN COMPONENT
 // ============================================
-export function HomeContentV2() {
+export const HomeContentV2 = memo(function HomeContentV2() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   
@@ -801,6 +801,6 @@ export function HomeContentV2() {
       </div>
     </div>
   );
-}
+});
 
 export default HomeContentV2;

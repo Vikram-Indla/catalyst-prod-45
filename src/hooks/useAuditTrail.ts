@@ -32,8 +32,8 @@ export function useAuditTrail(opts: UseAuditTrailOptions) {
 
   return useQuery({
     queryKey: ['audit-trail', opts.page, opts.statusFilter, opts.categoryFilter, opts.dateFrom, opts.dateTo],
-    staleTime: 0,
-    refetchOnWindowFocus: true,
+    staleTime: 60_000,
+    refetchOnWindowFocus: false,
     queryFn: async () => {
       let query = supabase
         .from('governance_closure_log')
@@ -113,8 +113,8 @@ export function useAuditTrail(opts: UseAuditTrailOptions) {
 export function useAuditTrailAll(opts: Pick<UseAuditTrailOptions, 'statusFilter' | 'categoryFilter' | 'dateFrom' | 'dateTo'>) {
   return useQuery({
     queryKey: ['audit-trail-all', opts.statusFilter, opts.categoryFilter, opts.dateFrom, opts.dateTo],
-    staleTime: 0,
-    refetchOnWindowFocus: true,
+    staleTime: 60_000,
+    refetchOnWindowFocus: false,
     queryFn: async () => {
       let query = supabase
         .from('governance_closure_log')

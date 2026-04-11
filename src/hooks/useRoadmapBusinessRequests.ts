@@ -203,7 +203,7 @@ export function useRoadmapBusinessRequests() {
 
       return roadmapItems;
     },
-    staleTime: 30000, // Refresh every 30 seconds
-    refetchOnWindowFocus: true,
+    staleTime: 60_000,
+    refetchOnWindowFocus: false,
   });
 }
