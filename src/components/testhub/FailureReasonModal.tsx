@@ -13,6 +13,15 @@ interface FailureReasonModalProps {
   onConfirm: (failureReason: string, defectId: string | null, notes: string) => void;
 }
 
+const REASON_LABELS: Record<string, string> = {
+  bug: 'Bug / Defect',
+  environment: 'Environment Issue',
+  test_data: 'Test Data Issue',
+  test_script: 'Test Script Error',
+  timeout: 'Timeout',
+  other: 'Other',
+};
+
 const FAILURE_REASONS = [
   { id: 'bug', label: 'Bug / Defect', description: 'Application defect found', icon: Bug, color: 'var(--sem-danger)' },
   { id: 'environment', label: 'Environment Issue', description: 'Environment or configuration problem', icon: Server, color: '#2563EB' },
@@ -159,6 +168,7 @@ export function FailureReasonModal({ isOpen, testCaseKey, testCaseTitle, testCas
         }}
         prefill={{
           title: `Failed: ${testCaseKey} - ${testCaseTitle}`,
+          description: `[${REASON_LABELS[selectedReason ?? ''] ?? selectedReason ?? ''}] ${testCaseTitle} — ${notes.trim() || 'No additional notes'}`,
           testCaseId,
           cycleTestCaseId,
           cycleId,
