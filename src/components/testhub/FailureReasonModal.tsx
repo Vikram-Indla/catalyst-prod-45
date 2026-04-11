@@ -153,7 +153,10 @@ export function FailureReasonModal({ isOpen, testCaseKey, testCaseTitle, testCas
       <CreateDefectModal
         isOpen={showCreateDefect}
         onClose={() => setShowCreateDefect(false)}
-        onCreated={() => setShowCreateDefect(false)}
+        onCreated={(createdDefectId) => {
+          setDefectId(createdDefectId);
+          setShowCreateDefect(false);
+        }}
         prefill={{
           title: `Failed: ${testCaseKey} - ${testCaseTitle}`,
           testCaseId,
