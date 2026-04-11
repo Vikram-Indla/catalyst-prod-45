@@ -536,6 +536,8 @@ export function ParentFieldPicker({ storyKey, parentKey, projectKey, onParentCha
   useEffect(() => { if (open) setTimeout(() => searchInputRef.current?.focus(), 50); }, [open]);
   const handleSelect = (key: string | null) => { onParentChange(key); setOpen(false); setSearch(''); };
 
+  const [hovered, setHovered] = useState(false);
+
   return (
     <div ref={containerRef} style={{ position: 'relative', flex: 1 }}>
       {/* Trigger — Jira click-to-edit style (no border when idle) */}
@@ -546,8 +548,8 @@ export function ParentFieldPicker({ storyKey, parentKey, projectKey, onParentCha
         borderRadius: 3, cursor: 'pointer', background: 'transparent',
         transition: 'background 0.15s',
       }}
-        onMouseEnter={e => { e.currentTarget.style.background = '#F4F5F7'; }}
-        onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+        onMouseEnter={e => { e.currentTarget.style.background = '#F4F5F7'; setHovered(true); }}
+        onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; setHovered(false); }}
       >
         {parentKey && currentParent ? (
           <>
@@ -555,18 +557,19 @@ export function ParentFieldPicker({ storyKey, parentKey, projectKey, onParentCha
             <span style={{ flex: 1, fontSize: 14, color: '#172B4D', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {currentParent.issue_key} {currentParent.summary}
             </span>
-            {/* Clear button */}
+            {/* Clear button — hover only */}
             <button onClick={e => { e.stopPropagation(); handleSelect(null); }} style={{
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               width: 20, height: 20, borderRadius: '50%', border: 'none',
               background: '#DFE1E6', cursor: 'pointer', color: '#42526E', flexShrink: 0,
+              opacity: hovered ? 1 : 0, transition: 'opacity 0.15s',
             }}
               onMouseEnter={e => (e.currentTarget.style.background = '#C1C7D0')}
               onMouseLeave={e => (e.currentTarget.style.background = '#DFE1E6')}
             >
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             </button>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6B778C" strokeWidth="2" style={{ flexShrink: 0 }}><path d="M6 9l6 6 6-6"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6B778C" strokeWidth="2" style={{ flexShrink: 0, opacity: hovered ? 1 : 0, transition: 'opacity 0.15s' }}><path d="M6 9l6 6 6-6"/></svg>
           </>
         ) : (
           <>
