@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { MessageSquare, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
 import { useEntityComments, useAddEntityComment, useDeleteEntityComment } from '@/hooks/useEntityComments';
 import { formatDistanceToNow } from 'date-fns';
 import { toast } from 'sonner';
@@ -79,25 +78,123 @@ function extractMentionedUserIds(content: string): string[] {
   return [...new Set(ids)];
 }
 
+// ── ContentEditable composer helpers ──
+
+/** Convert storage string (with @[Name](id) tokens) into HTML for contentEditable */
+function storageToHtml(text: string): string {
+  const regex = new RegExp(MENTION_TOKEN_REGEX.source, 'g');
+  let html = '';
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
+
+  while ((match = regex.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      html += escapeHtml(text.slice(lastIndex, match.index));
+    }
+    const displayName = match[1];
+    const userId = match[2];
+    html += `<span data-mention-id="${userId}" data-mention-name="${escapeAttr(displayName)}" contenteditable="false" style="color:#2563EB;font-weight:500;background:#EFF6FF;border-radius:3px;padding:0 2px;user-select:all;">@${escapeHtml(displayName)}</span>`;
+    lastIndex = regex.lastIndex;
+  }
+  if (lastIndex < text.length) {
+    html += escapeHtml(text.slice(lastIndex));
+  }
+  // Preserve newlines
+  return html.replace(/\n/g, '<br>');
+}
+
+function escapeHtml(s: string): string {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function escapeAttr(s: string): string {
+  return s.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+/** Extract storage string from contentEditable DOM */
+function htmlToStorage(container: HTMLElement): string {
+  let result = '';
+  container.childNodes.forEach(node => {
+    if (node.nodeType === Node.TEXT_NODE) {
+      result += node.textContent ?? '';
+    } else if (node.nodeType === Node.ELEMENT_NODE) {
+      const el = node as HTMLElement;
+      if (el.tagName === 'BR') {
+        result += '\n';
+      } else if (el.dataset.mentionId) {
+        const name = el.dataset.mentionName ?? '';
+        const id = el.dataset.mentionId;
+        result += `@[${name}](${id})`;
+      } else if (el.tagName === 'SPAN') {
+        // Recurse for any other spans
+        result += htmlToStorage(el);
+      } else if (el.tagName === 'DIV') {
+        // Divs created by contentEditable newlines
+        if (result.length > 0 && !result.endsWith('\n')) {
+          result += '\n';
+        }
+        result += htmlToStorage(el);
+      } else {
+        result += el.textContent ?? '';
+      }
+    }
+  });
+  return result;
+}
+
+/** Get plain text cursor offset in contentEditable */
+function getCursorOffset(container: HTMLElement): number {
+  const sel = window.getSelection();
+  if (!sel || sel.rangeCount === 0) return 0;
+  const range = sel.getRangeAt(0).cloneRange();
+  range.selectNodeContents(container);
+  range.setEnd(sel.getRangeAt(0).startContainer, sel.getRangeAt(0).startOffset);
+  return range.toString().length;
+}
+
+/** Get the plain text content from contentEditable */
+function getPlainText(container: HTMLElement): string {
+  let result = '';
+  container.childNodes.forEach(node => {
+    if (node.nodeType === Node.TEXT_NODE) {
+      result += node.textContent ?? '';
+    } else if (node.nodeType === Node.ELEMENT_NODE) {
+      const el = node as HTMLElement;
+      if (el.tagName === 'BR') {
+        result += '\n';
+      } else if (el.dataset.mentionId) {
+        result += `@${el.dataset.mentionName ?? ''}`;
+      } else if (el.tagName === 'DIV') {
+        if (result.length > 0 && !result.endsWith('\n')) result += '\n';
+        result += getPlainText(el);
+      } else {
+        result += getPlainText(el);
+      }
+    }
+  });
+  return result;
+}
+
 export function EntityCommentsPanel({
   entityType,
   entityId,
   title = 'Comments',
 }: EntityCommentsPanelProps) {
-  const [content, setContent] = useState('');
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [composerOpen, setComposerOpen] = useState(false);
   const [newestFirst, setNewestFirst] = useState(true);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const editorRef = useRef<HTMLDivElement>(null);
 
   // ── Mention state ──
   const [mentionUsers, setMentionUsers] = useState<MentionUser[]>([]);
   const [mentionOpen, setMentionOpen] = useState(false);
   const [mentionQuery, setMentionQuery] = useState('');
-  const [mentionStartPos, setMentionStartPos] = useState<number>(0);
   const [mentionHighlight, setMentionHighlight] = useState(0);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Track if editor has content for Save button state
+  const [hasContent, setHasContent] = useState(false);
 
   const { data: comments = [], isLoading } = useEntityComments(entityType, entityId);
   const addComment = useAddEntityComment(entityType, entityId);
@@ -130,7 +227,7 @@ export function EntityCommentsPanel({
         && document.activeElement?.tagName !== 'TEXTAREA'
         && !document.activeElement?.getAttribute('contenteditable')) {
         setComposerOpen(true);
-        setTimeout(() => textareaRef.current?.focus(), 50);
+        setTimeout(() => editorRef.current?.focus(), 50);
       }
     };
     document.addEventListener('keydown', handler);
@@ -177,68 +274,141 @@ export function EntityCommentsPanel({
       return newestFirst ? db - da : da - db;
     }), [comments, newestFirst]);
 
-  // ── Mention selection ──
+  // ── Insert mention chip into contentEditable ──
   const selectMention = useCallback((user: MentionUser) => {
-    const before = content.slice(0, mentionStartPos);
-    const after = content.slice(textareaRef.current?.selectionStart ?? content.length);
-    // Remove partial @query from 'after' — find end of current word
-    const afterTrimmed = after.replace(/^\S*/, '');
-    const token = `@[${user.full_name}](${user.id}) `;
-    const newContent = before + token + afterTrimmed;
-    setContent(newContent);
+    const editor = editorRef.current;
+    if (!editor) return;
+
+    const sel = window.getSelection();
+    if (!sel || sel.rangeCount === 0) return;
+
+    // Find the '@' + query text in the current text node and replace it
+    const range = sel.getRangeAt(0);
+    const textNode = range.startContainer;
+    if (textNode.nodeType !== Node.TEXT_NODE) {
+      setMentionOpen(false);
+      return;
+    }
+
+    const text = textNode.textContent ?? '';
+    const cursorPos = range.startOffset;
+    // Walk backwards from cursor to find '@'
+    let atPos = -1;
+    for (let i = cursorPos - 1; i >= 0; i--) {
+      if (text[i] === '@') {
+        atPos = i;
+        break;
+      }
+    }
+    if (atPos < 0) {
+      setMentionOpen(false);
+      return;
+    }
+
+    // Split the text node: before '@', mention chip, after cursor
+    const beforeText = text.slice(0, atPos);
+    const afterText = text.slice(cursorPos);
+
+    // Create mention chip
+    const chip = document.createElement('span');
+    chip.dataset.mentionId = user.id;
+    chip.dataset.mentionName = user.full_name ?? '';
+    chip.contentEditable = 'false';
+    chip.style.cssText = 'color:#2563EB;font-weight:500;background:#EFF6FF;border-radius:3px;padding:0 2px;user-select:all;';
+    chip.textContent = `@${user.full_name ?? 'Unknown'}`;
+
+    // Create trailing space text node
+    const spaceNode = document.createTextNode('\u00A0');
+
+    // Replace the text node
+    const parent = textNode.parentNode!;
+    if (beforeText) {
+      const beforeNode = document.createTextNode(beforeText);
+      parent.insertBefore(beforeNode, textNode);
+    }
+    parent.insertBefore(chip, textNode);
+    parent.insertBefore(spaceNode, textNode);
+    if (afterText) {
+      textNode.textContent = afterText;
+    } else {
+      parent.removeChild(textNode);
+    }
+
+    // Place cursor after the space
+    const newRange = document.createRange();
+    newRange.setStartAfter(spaceNode);
+    newRange.collapse(true);
+    sel.removeAllRanges();
+    sel.addRange(newRange);
+
     setMentionOpen(false);
     setMentionQuery('');
-    // Restore focus and cursor
-    setTimeout(() => {
-      const ta = textareaRef.current;
-      if (ta) {
-        ta.focus();
-        const pos = before.length + token.length;
-        ta.setSelectionRange(pos, pos);
-      }
-    }, 0);
-  }, [content, mentionStartPos]);
+    updateHasContent();
+  }, []);
 
-  // ── Textarea onChange — detect '@' trigger ──
-  const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const val = e.target.value;
-    const cursorPos = e.target.selectionStart;
-    setContent(val);
+  const updateHasContent = useCallback(() => {
+    const editor = editorRef.current;
+    if (!editor) {
+      setHasContent(false);
+      return;
+    }
+    const storage = htmlToStorage(editor).trim();
+    setHasContent(storage.length > 0);
+  }, []);
 
-    // Check for '@' trigger: find last '@' before cursor not preceded by alphanumeric
-    const textBeforeCursor = val.slice(0, cursorPos);
+  // ── Input handler — detect '@' trigger ──
+  const handleInput = useCallback(() => {
+    const editor = editorRef.current;
+    if (!editor) return;
+
+    updateHasContent();
+
+    const sel = window.getSelection();
+    if (!sel || sel.rangeCount === 0) return;
+
+    const range = sel.getRangeAt(0);
+    const textNode = range.startContainer;
+    if (textNode.nodeType !== Node.TEXT_NODE) {
+      if (mentionOpen) setMentionOpen(false);
+      return;
+    }
+
+    const text = textNode.textContent ?? '';
+    const cursorPos = range.startOffset;
+    const textBeforeCursor = text.slice(0, cursorPos);
     const atIndex = textBeforeCursor.lastIndexOf('@');
 
     if (atIndex >= 0) {
       const charBefore = atIndex > 0 ? textBeforeCursor[atIndex - 1] : ' ';
-      if (charBefore === ' ' || charBefore === '\n' || atIndex === 0) {
+      if (charBefore === ' ' || charBefore === '\n' || charBefore === '\u00A0' || atIndex === 0) {
         const query = textBeforeCursor.slice(atIndex + 1);
-        // Only open if query has no spaces (single word being typed)
-        if (!query.includes(' ') && !query.includes('\n')) {
+        if (!query.includes(' ') && !query.includes('\n') && !query.includes('\u00A0')) {
           setMentionOpen(true);
           setMentionQuery(query);
-          setMentionStartPos(atIndex);
           return;
         }
       }
     }
 
-    if (mentionOpen) {
-      setMentionOpen(false);
-    }
-  };
+    if (mentionOpen) setMentionOpen(false);
+  }, [mentionOpen, updateHasContent]);
 
   // ── Submit with notifications ──
   const handleSubmit = async () => {
-    if (!content.trim()) return;
-    const trimmed = content.trim();
+    const editor = editorRef.current;
+    if (!editor) return;
+    const storageContent = htmlToStorage(editor).trim();
+    if (!storageContent) return;
+
     try {
-      await addComment.mutateAsync(trimmed);
-      setContent('');
+      await addComment.mutateAsync(storageContent);
+      // Clear editor
+      editor.innerHTML = '';
+      setHasContent(false);
       setComposerOpen(false);
 
       // Fire mention notifications (non-blocking)
-      const mentionedIds = extractMentionedUserIds(trimmed);
+      const mentionedIds = extractMentionedUserIds(storageContent);
       const toNotify = mentionedIds.filter(id => id !== currentUserId);
       if (toNotify.length > 0 && entityId) {
         Promise.all(
@@ -247,7 +417,7 @@ export function EntityCommentsPanel({
               user_id: uid,
               type: 'mention',
               title: 'You were mentioned in a comment',
-              message: trimmed.slice(0, 120),
+              message: storageContent.slice(0, 120),
               entity_type: entityType,
               entity_id: entityId,
               is_read: false,
@@ -270,13 +440,31 @@ export function EntityCommentsPanel({
   };
 
   const handleCancel = () => {
-    setContent('');
+    if (editorRef.current) editorRef.current.innerHTML = '';
+    setHasContent(false);
     setComposerOpen(false);
     setMentionOpen(false);
   };
 
-  // ── Keyboard handling in textarea ──
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+  const handleQuickPill = (pill: string) => {
+    const editor = editorRef.current;
+    if (!editor) return;
+    editor.textContent = pill;
+    setHasContent(true);
+    editor.focus();
+    // Place cursor at end
+    const sel = window.getSelection();
+    if (sel) {
+      const range = document.createRange();
+      range.selectNodeContents(editor);
+      range.collapse(false);
+      sel.removeAllRanges();
+      sel.addRange(range);
+    }
+  };
+
+  // ── Keyboard handling in contentEditable ──
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (mentionOpen && filteredMentions.length > 0) {
       if (e.key === 'ArrowDown') {
         e.preventDefault();
@@ -306,6 +494,13 @@ export function EntityCommentsPanel({
     }
   };
 
+  // Prevent pasting rich content — paste plain text only
+  const handlePaste = (e: React.ClipboardEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    const text = e.clipboardData.getData('text/plain');
+    document.execCommand('insertText', false, text);
+  };
+
   if (!entityId) return null;
 
   return (
@@ -330,14 +525,25 @@ export function EntityCommentsPanel({
       <div className="mb-4">
         {composerOpen ? (
           <div className="space-y-2 relative">
-            <Textarea
-              ref={textareaRef}
-              value={content}
-              onChange={handleContentChange}
-              placeholder="Add a comment... (type @ to mention)"
-              className="min-h-[80px] text-sm resize-none"
-              autoFocus
+            {/* ContentEditable composer */}
+            <div
+              ref={editorRef}
+              contentEditable
+              role="textbox"
+              aria-multiline="true"
+              data-placeholder="Add a comment... (type @ to mention)"
+              onInput={handleInput}
               onKeyDown={handleKeyDown}
+              onPaste={handlePaste}
+              autoFocus
+              className="min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              style={{
+                whiteSpace: 'pre-wrap',
+                wordBreak: 'break-word',
+                overflowY: 'auto',
+                maxHeight: 200,
+              }}
+              suppressContentEditableWarning
             />
 
             {/* Mention dropdown */}
@@ -380,7 +586,7 @@ export function EntityCommentsPanel({
                 <button
                   key={pill}
                   type="button"
-                  onClick={() => setContent(pill)}
+                  onClick={() => handleQuickPill(pill)}
                   className="text-xs border border-border rounded-full px-2 py-0.5 hover:bg-muted cursor-pointer transition-colors"
                 >
                   {pill}
@@ -396,7 +602,7 @@ export function EntityCommentsPanel({
                 <Button
                   size="sm"
                   onClick={handleSubmit}
-                  disabled={!content.trim() || addComment.isPending}
+                  disabled={!hasContent || addComment.isPending}
                   className="bg-[#2563EB] hover:bg-[#1D4ED8] text-white"
                 >
                   Save
@@ -407,7 +613,7 @@ export function EntityCommentsPanel({
         ) : (
           <button
             type="button"
-            onClick={() => { setComposerOpen(true); setTimeout(() => textareaRef.current?.focus(), 50); }}
+            onClick={() => { setComposerOpen(true); setTimeout(() => editorRef.current?.focus(), 50); }}
             className="w-full text-left text-sm text-muted-foreground border border-border rounded-md px-3 py-2 cursor-text hover:border-foreground/30 transition-colors"
           >
             Add a comment...
@@ -488,6 +694,16 @@ export function EntityCommentsPanel({
           })}
         </div>
       )}
+
+      {/* Placeholder styles for contentEditable */}
+      <style>{`
+        [data-placeholder]:empty::before {
+          content: attr(data-placeholder);
+          color: hsl(var(--muted-foreground));
+          pointer-events: none;
+          position: absolute;
+        }
+      `}</style>
     </div>
   );
 }
