@@ -7,6 +7,7 @@
  * DEF-S11-04: Release FK stored & clickable chip
  */
 import { useState, useCallback, useMemo } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   ArrowLeft, Save, ClipboardList, SendHorizontal, Loader2,
