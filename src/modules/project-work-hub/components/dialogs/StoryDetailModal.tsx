@@ -1292,22 +1292,37 @@ export default function StoryDetailModal({
                         )}
 
                         {/* Comment input — Rich text editor with image paste */}
-                        <div style={{ display: 'flex', gap: 12, marginBottom: 24 }}>
+                        <div style={{ display: 'flex', gap: 8, marginBottom: 24, alignItems: 'flex-start' }}>
                           {currentProfile?.avatar_url ? (
-                            <img src={currentProfile.avatar_url} alt="" style={{ width: 36, height: 36, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
+                            <img src={currentProfile.avatar_url} alt="" style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover', flexShrink: 0, marginTop: 4 }} />
                           ) : (
-                            <div style={{ width: 36, height: 36, borderRadius: '50%', background: getAvatarColor(user?.id ?? ''), color: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700, flexShrink: 0 }}>{getInitials(currentProfile?.full_name)}</div>
+                            <div style={{ width: 24, height: 24, borderRadius: '50%', background: getAvatarColor(user?.id ?? ''), color: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, flexShrink: 0, marginTop: 4 }}>{getInitials(currentProfile?.full_name)}</div>
                           )}
                           <div style={{ flex: 1 }}>
                             <RichTextCommentEditor
                               onSubmit={handleCommentSubmit}
                               isSubmitting={addCommentMutation.isPending}
-                              placeholder="Type /ai to Ask Rovo or @ to mention and notify someone."
+                              placeholder="Add a comment…"
                               teamMembers={mentionMembers}
                               workItemId={itemId}
                             />
-                            <div style={{ fontSize: 12, color: '#97A0AF', marginTop: 8 }}>
-                              <strong style={{ fontWeight: 600, color: '#42526E' }}>Pro tip:</strong> press <kbd style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, background: '#F4F5F7', border: '1px solid #DFE1E6', borderRadius: 3, padding: '2px 6px', fontWeight: 600 }}>M</kbd> to comment
+                            {/* Quick-reply pills */}
+                            <div style={{ display: 'flex', gap: 4, marginTop: 4 }}>
+                              {['Status update...', 'Thanks...', 'Agree...'].map(chip => (
+                                <button key={chip} type="button"
+                                  style={{
+                                    display: 'inline-flex', background: 'transparent', border: 'none',
+                                    borderRadius: 3, color: '#505258', fontSize: 14, fontWeight: 500,
+                                    padding: '2px 12px', height: 24, cursor: 'pointer',
+                                  }}
+                                  onMouseEnter={e => { e.currentTarget.style.background = '#F0F1F2'; }}
+                                  onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+                                >{chip}</button>
+                              ))}
+                            </div>
+                            {/* Pro tip */}
+                            <div style={{ fontSize: 14, fontWeight: 400, color: '#292A2E', lineHeight: '20px', marginTop: 4 }}>
+                              Pro tip: press <span style={{ fontWeight: 600 }}>M</span> to comment
                             </div>
                           </div>
                         </div>
