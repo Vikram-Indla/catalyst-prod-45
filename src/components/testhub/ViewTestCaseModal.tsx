@@ -86,7 +86,7 @@ type LinkTypeConfig = {
 const LINK_TYPE_OPTIONS: LinkTypeConfig[] = [
   { value: 'requirement', label: 'Requirement', icon: GitBranch, table: 'tm_requirements', keyField: 'req_key',    nameField: 'title', searchFields: ['title', 'req_key'] },
   { value: 'defect',      label: 'Defect',      icon: Bug,       table: 'tm_defects',      keyField: 'defect_key', nameField: 'title', searchFields: ['title', 'defect_key'] },
-  { value: 'story',       label: 'Story',       icon: BookOpen,  table: 'ph_issues',       keyField: 'issue_key',  nameField: 'title', searchFields: ['title', 'issue_key'] },
+  { value: 'story',       label: 'Story',       icon: BookOpen,  table: 'ph_issues',       keyField: 'issue_key',  nameField: 'summary', searchFields: ['summary', 'issue_key'] },
 ];
 
 type SearchResult = { id: string; key: string; name: string };
@@ -203,9 +203,6 @@ function AddLinkModal({
       }
 
       if (projectId && ['tm_requirements', 'tm_defects'].includes(config.table)) {
-        query = query.eq('project_id', projectId);
-      }
-      if (projectId && config.table === 'ph_issues') {
         query = query.eq('project_id', projectId);
       }
 
@@ -448,13 +445,28 @@ export function ViewTestCaseModal({
 
       setSteps(stepsRes.data || []);
 
-      const reqStoryLinks: Link[] = (reqStoryLinksRes.data || []).map((l: any) => ({
-        id: l.id,
-        link_type: l.linked_item_type || '',
-        linked_item_key: l.linked_item_key || l.linked_item_id || '',
-        linked_item_title: l.linked_item_title || '',
-        _source: 'tm_test_case_links' as const,
-      }));
+      // Resolve requirement/story links — table only has linked_item_id + linked_item_type
+      const rawLinks = (reqStoryLinksRes.data || []) as any[];
+      const reqStoryLinks: Link[] = await Promise.all(
+        rawLinks.map(async (l: any) => {
+          let key = l.linked_item_id || '';
+          let title = '';
+          if (l.linked_item_type === 'requirement') {
+            const { data: req } = await typedQuery('tm_requirements').select('req_key, title').eq('id', l.linked_item_id).maybeSingle();
+            if (req) { key = req.req_key; title = req.title; }
+          } else if (l.linked_item_type === 'story') {
+            const { data: issue } = await typedQuery('ph_issues').select('issue_key, summary').eq('id', l.linked_item_id).maybeSingle();
+            if (issue) { key = issue.issue_key; title = issue.summary; }
+          }
+          return {
+            id: l.id,
+            link_type: l.linked_item_type || '',
+            linked_item_key: key,
+            linked_item_title: title,
+            _source: 'tm_test_case_links' as const,
+          };
+        })
+      );
 
       const defectLinksData: Link[] = (defectLinksRes.data || []).map((l: any) => {
         const defectKey = l.tm_defects?.defect_key || '';
@@ -515,8 +527,6 @@ export function ViewTestCaseModal({
         test_case_id: testCase.id,
         linked_item_type: selectedLinkType,
         linked_item_id: item.id,
-        linked_item_key: item.key,
-        linked_item_title: item.name,
         linked_by: user?.id || null,
       }).select().single();
       if (!error && data) {
