@@ -17,8 +17,8 @@ import {
 import { StatusSummaryBar } from '@/components/for-you/StatusSummaryBar';
 import { ForYouInlineFilters, type ForYouFilters } from '@/components/for-you/ForYouInlineFilters';
 import { ForYouLightBulkBar } from '@/components/for-you/ForYouLightBulkBar';
-import { FilterTriggerButton, JiraBasicFilter } from '@/components/for-you/JiraBasicFilter';
-import type { FilterCategory } from '@/components/for-you/JiraBasicFilter';
+import { FilterTriggerButton, JiraBasicFilter } from '@/components/shared/JiraBasicFilter';
+import type { FilterCategory } from '@/components/shared/JiraBasicFilter';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 import { toast } from 'sonner';
 import type { AIPriorityItem, AINextItemData, AIStats, AISuggestionData } from '@/components/catalyst-ai/CatalystAIPanel';

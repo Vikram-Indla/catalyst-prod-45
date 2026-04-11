@@ -1,0 +1,496 @@
+/* ============================================================
+   JiraBasicFilter.css — CORRECTED pixel-perfect against Jira
+   All values scraped from live DOM via getComputedStyle()
+   ============================================================ */
+
+/* ── Font (exact Atlassian stack) ── */
+.jf-panel,
+.jf-panel * {
+  font-family: "Atlassian Sans", ui-sans-serif, -apple-system, "system-ui",
+    "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif;
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── TRIGGER BUTTON ─── */
+.jf-trigger-btn {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  padding: 6px 12px;
+  height: 32px;
+  background: transparent;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  color: rgb(23, 43, 77);
+  font-family: 'Inter', ui-sans-serif, sans-serif;
+  transition: background-color 0.1s;
+}
+.jf-trigger-btn:hover { background-color: rgba(9, 30, 66, 0.08); }
+.jf-trigger-btn--active {
+  background-color: rgb(233, 242, 254);
+  color: rgb(24, 104, 219);
+}
+.jf-trigger-icon { flex-shrink: 0; }
+.jf-trigger-text {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.jf-trigger-badge {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 24px;
+  height: 16px;
+  padding: 0 4px;
+  background-color: rgb(143, 184, 246);
+  color: rgb(23, 43, 77);
+  border-radius: 2px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1;
+}
+
+/* ─── PANEL ─── */
+.jf-panel {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 4px;
+  width: 480px;
+  background: rgb(255, 255, 255);
+  border-radius: 4px;
+  box-shadow:
+    rgba(30, 31, 33, 0.15) 0px 8px 12px 0px,
+    rgba(30, 31, 33, 0.31) 0px 0px 1px 0px;
+  overflow: hidden;
+  z-index: 500;
+  color: rgb(23, 43, 77);
+  font-size: 14px;
+  line-height: 20px;
+}
+.jf-panel-inner {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-height: 420px;
+}
+
+/* ─── CONTENT ─── */
+.jf-content {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  padding: 16px 16px 0;
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* ─── TAB BAR ─── */
+.jf-tabs-wrapper {
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  height: 32px;
+  flex-shrink: 0;
+}
+.jf-tabs-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 2px;
+  padding: 4px;
+  border: 0.556px solid rgba(11, 18, 14, 0.14);
+  border-radius: 6px;
+  background: transparent;
+  width: fit-content;
+  height: 32px;
+}
+.jf-tab {
+  display: inline-flex;
+  align-items: baseline;
+  justify-content: center;
+  padding: 2px 12px;
+  height: 24px;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  color: rgb(23, 43, 77);
+  background: transparent;
+  white-space: nowrap;
+  font-family: inherit;
+  transition: background-color 0.1s, color 0.1s;
+}
+.jf-tab:hover:not(.jf-tab--active):not(:disabled) { background-color: rgba(9, 30, 66, 0.06); }
+.jf-tab--active {
+  background-color: rgb(233, 242, 254);
+  color: rgb(24, 104, 219);
+}
+.jf-tab:disabled { opacity: 0.4; cursor: default; }
+
+/* ─── SPLIT LAYOUT ─── */
+.jf-split-wrapper {
+  display: flex;
+  flex-direction: row;
+  padding: 16px 0 0;
+  flex: 1;
+  min-height: 0;
+}
+.jf-split-inner {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  width: 100%;
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* ─── LEFT PANE ─── */
+.jf-left-pane {
+  display: flex;
+  flex-direction: row;
+  flex-shrink: 0;
+  width: 180px;
+  padding: 0 12px 16px 0;
+  overflow: hidden;
+  position: relative;
+}
+.jf-left-pane::after {
+  content: "";
+  display: block;
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 16px;
+  width: 1px;
+  background-color: rgba(11, 18, 14, 0.14);
+}
+.jf-left-scroll {
+  display: flex;
+  flex-direction: column;
+  width: 160px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  flex: 1;
+  justify-content: space-between;
+}
+.jf-category-list { display: flex; flex-direction: column; }
+.jf-category-item {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 160px;
+  height: 32px;
+  padding: 4px 12px;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  cursor: pointer;
+  font-size: 13.3333px;
+  font-weight: 400;
+  line-height: normal;
+  color: rgb(23, 43, 77);
+  text-align: left;
+  overflow: hidden;
+  font-family: inherit;
+  transition: background-color 0.1s;
+}
+.jf-category-item:hover:not(.jf-category-item--active) { background-color: rgba(9, 30, 66, 0.04); }
+.jf-category-item--active {
+  background-color: rgb(233, 242, 254);
+  color: rgb(24, 104, 219);
+}
+.jf-category-item--active::before {
+  content: "";
+  display: block;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 2px;
+  height: 100%;
+  background-color: rgb(24, 104, 219);
+}
+.jf-category-label { display: flex; flex: 1 1 auto; color: inherit; font-size: inherit; }
+.jf-category-text {
+  display: flex;
+  align-items: center;
+  color: inherit;
+  font-size: 13.3333px;
+  height: 20px;
+  white-space: nowrap;
+}
+.jf-info-icon {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 4px;
+  flex-shrink: 0;
+  color: rgb(24, 104, 219);
+}
+.jf-category-badge {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 24px;
+  height: 16px;
+  padding: 0 4px;
+  background-color: rgb(143, 184, 246);
+  color: rgb(23, 43, 77);
+  border-radius: 2px;
+  font-size: 13.3333px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.jf-clear-wrapper { padding: 8px 0 0; }
+.jf-clear-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 12px;
+  padding-left: 0;
+  height: 24px;
+  background: transparent;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: rgb(23, 43, 77);
+  font-family: inherit;
+  transition: color 0.1s;
+}
+.jf-clear-btn:hover:not(:disabled) { color: rgb(41, 42, 46); }
+.jf-clear-btn:disabled { opacity: 0.5; cursor: default; }
+
+/* ─── RIGHT PANE ─── */
+.jf-right-pane {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 0 0 16px 12px;
+  overflow: hidden;
+  min-width: 0;
+}
+.jf-right-scroll {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  flex: 1;
+  overflow: hidden;
+}
+.jf-right-content {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 20px;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* ─── SEARCH BOX ─── */
+.jf-search-box {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+  height: 32px;
+  flex-shrink: 0;
+  background: rgb(255, 255, 255);
+  border: 0.556px solid rgb(140, 143, 151);
+  border-radius: 3px;
+}
+.jf-search-icon-wrap {
+  display: block;
+  padding: 0 2px 0 8px;
+  flex-shrink: 0;
+  width: 26px;
+  color: rgb(23, 43, 77);
+}
+.jf-search-input-area {
+  display: grid;
+  flex: 1 1 0%;
+  padding: 2px 6px;
+  align-items: center;
+  height: 30px;
+  min-width: 0;
+  position: relative;
+}
+.jf-search-placeholder {
+  grid-area: 1 / 1 / 2 / 3;
+  color: rgb(94, 108, 132);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  pointer-events: none;
+  white-space: nowrap;
+  overflow: hidden;
+  user-select: none;
+}
+.jf-search-input-grid {
+  grid-area: 1 / 1 / 2 / 3;
+  display: grid;
+  align-items: center;
+}
+.jf-search-input {
+  background: transparent;
+  border: none;
+  outline: none;
+  padding: 0;
+  font-size: 14px;
+  line-height: 20px;
+  color: rgb(23, 43, 77);
+  font-family: inherit;
+  width: 100%;
+}
+
+/* ─── OPTIONS LIST ─── */
+.jf-options-list {
+  overflow-y: auto;
+  overflow-x: hidden;
+  max-height: 280px;
+  padding: 8px 0;
+  flex-shrink: 0;
+}
+.jf-option-item {
+  height: 32px;
+  cursor: pointer;
+  user-select: none;
+  display: block;
+}
+.jf-option-inner {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  padding: 4px 6px;
+  height: 32px;
+  transition: background-color 0.08s;
+}
+.jf-option-item:hover .jf-option-inner {
+  background-color: rgba(5, 21, 36, 0.06);
+}
+.jf-option-item--checked .jf-option-inner {
+  background-color: rgba(24, 104, 219, 0.06);
+}
+.jf-checkbox-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0 4px 0 0;
+  flex-shrink: 0;
+}
+.jf-checkbox-svg { flex-shrink: 0; display: block; }
+.jf-option-content { display: block; flex: 1; min-width: 0; }
+.jf-option-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  height: 24px;
+  color: rgb(23, 43, 77);
+  font-size: 14px;
+  font-weight: 400;
+}
+.jf-check-icon {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+.jf-avatar-wrap { width: 28px; height: 28px; display: flex; align-items: center; flex-shrink: 0; }
+.jf-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: rgb(255, 255, 255) 0px 0px 0px 2px;
+}
+.jf-avatar-img { width: 24px; height: 24px; border-radius: 9999px; object-fit: cover; }
+.jf-avatar-initials-text {
+  font-size: 9px;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1;
+  letter-spacing: -0.3px;
+  text-transform: uppercase;
+}
+.jf-option-label {
+  font-size: 14px;
+  font-weight: 400;
+  color: rgb(23, 43, 77);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 20px;
+}
+.jf-option-label-extra { color: rgb(107, 110, 118); font-size: 14px; font-weight: 400; }
+.jf-empty-options {
+  padding: 16px 0;
+  text-align: center;
+  color: rgb(94, 108, 132);
+  font-size: 14px;
+}
+
+/* ─── FOOTER ─── */
+.jf-footer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 8px 20px;
+  background-color: rgb(248, 248, 248);
+  border-radius: 0 0 8px 8px;
+  flex-shrink: 0;
+  height: 40px;
+  margin-top: auto;
+}
+.jf-feedback-btn {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: rgb(23, 43, 77);
+  padding: 0;
+  font-family: inherit;
+}
+.jf-feedback-btn:hover { color: rgb(41, 42, 46); }
+.jf-shortcut {
+  font-size: 14px;
+  font-weight: 400;
+  color: rgb(23, 43, 77);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+.jf-kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(5, 21, 36, 0.06);
+  color: rgb(23, 43, 77);
+  border-radius: 3px;
+  padding: 2px 8px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 400;
+  border: none;
+  line-height: 20px;
+}
