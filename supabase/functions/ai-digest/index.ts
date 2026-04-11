@@ -51,10 +51,10 @@ async function computeDataFingerprint(
   const encoded = new TextEncoder().encode(fingerprint);
   const hashBuffer = await crypto.subtle.digest('SHA-256', encoded);
   const hashArray = new Uint8Array(hashBuffer);
-  // Take first 6 bytes → 48-bit integer (safe for JS number precision & postgres int8)
+  // Take first 4 bytes → 31-bit positive integer (fits postgres INTEGER)
   let num = 0;
-  for (let i = 0; i < 6; i++) num = num * 256 + hashArray[i];
-  return num;
+  for (let i = 0; i < 4; i++) num = num * 256 + hashArray[i];
+  return num >>> 1; // ensure positive (31 bits, max ~2.1B)
 }
 
 serve(async (req) => {
