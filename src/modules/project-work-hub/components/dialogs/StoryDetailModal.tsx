@@ -841,12 +841,12 @@ export default function StoryDetailModal({
                     </div>
                     <div ref={aiMenuRef} style={{ position: 'relative' }}>
                       <button onClick={() => setShowAiMenu(o => !o)} style={{
-                        width: 28, height: 28, border: '1px solid #DFE1E6', background: '#FAFBFC',
+                        width: 28, height: 28, border: '1px solid #DEEBFF', background: '#EFF6FF',
                         borderRadius: 4, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        color: '#5E6C84', transition: 'background 0.15s',
+                        color: '#2563EB', transition: 'background 0.15s',
                       }}
-                        onMouseEnter={e => { e.currentTarget.style.background = '#EBECF0'; }}
-                        onMouseLeave={e => { e.currentTarget.style.background = '#FAFBFC'; }}
+                        onMouseEnter={e => { e.currentTarget.style.background = '#DEEBFF'; }}
+                        onMouseLeave={e => { e.currentTarget.style.background = '#EFF6FF'; }}
                         title="Catalyst Intelligence"
                       ><Sparkles size={14} /></button>
                       {showAiMenu && (
