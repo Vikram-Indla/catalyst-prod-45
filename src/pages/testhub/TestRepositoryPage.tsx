@@ -199,23 +199,48 @@ export function TestRepositoryPage() {
        return;
      }
 
-     // Fetch owner profiles
+     // Fetch lookup tables for priority and type names (parallel with profiles)
      const ownerIds = [...new Set(data?.map(tc => (tc as any).created_by).filter(Boolean) as string[])];
      let profilesMap: Record<string, { full_name: string | null; avatar_url: string | null }> = {};
+     let priorityMap: Record<string, string> = {};
+     let typeMap: Record<string, string> = {};
+
+     const lookupPromises: Promise<void>[] = [];
+
+     // Fetch owner profiles
      if (ownerIds.length > 0) {
-       const { data: profiles } = await supabase
-         .from('profiles')
-         .select('id, full_name, avatar_url')
-         .in('id', ownerIds);
-       profiles?.forEach(p => { profilesMap[p.id] = { full_name: p.full_name, avatar_url: p.avatar_url }; });
+       lookupPromises.push(
+         supabase.from('profiles').select('id, full_name, avatar_url').in('id', ownerIds)
+           .then(({ data: profiles }) => {
+             profiles?.forEach(p => { profilesMap[p.id] = { full_name: p.full_name, avatar_url: p.avatar_url }; });
+           })
+       );
      }
+
+     // Fetch priority lookup
+     lookupPromises.push(
+       (supabase as any).from('tm_case_priorities').select('id, name')
+         .then(({ data: priorities }: any) => {
+           priorities?.forEach((p: any) => { priorityMap[p.id] = p.name; });
+         })
+     );
+
+     // Fetch type lookup
+     lookupPromises.push(
+       (supabase as any).from('tm_case_types').select('id, name')
+         .then(({ data: types }: any) => {
+           types?.forEach((t: any) => { typeMap[t.id] = t.name; });
+         })
+     );
+
+     await Promise.all(lookupPromises);
 
      let mapped = data?.map(tc => {
        const ownerId = (tc as any).created_by;
        const owner = ownerId ? profilesMap[ownerId] : null;
        const ownerName = owner?.full_name || null;
-       const priorityName = (tc as any).priority_ref?.name || (tc as any).priority || 'medium';
-       const typeName = (tc as any).type_ref?.name || (tc as any).type || 'functional';
+       const priorityName = (tc.priority_id ? priorityMap[tc.priority_id] : null) || 'medium';
+       const typeName = (tc.case_type_id ? typeMap[tc.case_type_id] : null) || 'functional';
        return {
         id: tc.id,
         caseKey: tc.case_key,
