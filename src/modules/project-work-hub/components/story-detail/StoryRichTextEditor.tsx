@@ -150,6 +150,28 @@ export const StoryRichTextEditor = React.memo(function StoryRichTextEditor({
       TableCell,
       TableHeader,
       Placeholder.configure({ placeholder }),
+      DragHandle.configure({
+        render() {
+          const el = document.createElement('button');
+          el.type = 'button';
+          el.setAttribute('aria-label', 'Drag to reorder');
+          el.setAttribute('draggable', 'true');
+          Object.assign(el.style, {
+            width: '12px', height: '24px', padding: '2px 0',
+            display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center',
+            border: 'none', background: 'transparent', borderRadius: '4px',
+            cursor: 'grab', color: 'rgb(41, 42, 46)', zIndex: '100',
+            transition: 'background 0.15s ease', boxSizing: 'border-box',
+          });
+          el.innerHTML = `<svg viewBox="-8 -8 32 32" width="24" height="24" fill="currentColor"><path d="M7 2.75a1.75 1.75 0 1 1-3.5 0 1.75 1.75 0 0 1 3.5 0m5.5 0a1.75 1.75 0 1 1-3.5 0 1.75 1.75 0 0 1 3.5 0M7 8a1.75 1.75 0 1 1-3.5 0A1.75 1.75 0 0 1 7 8m5.5 0A1.75 1.75 0 1 1 9 8a1.75 1.75 0 0 1 3.5 0M7 13.25a1.75 1.75 0 1 1-3.5 0 1.75 1.75 0 0 1 3.5 0m5.5 0a1.75 1.75 0 1 1-3.5 0 1.75 1.75 0 0 1 3.5 0"/></svg>`;
+          el.addEventListener('mouseenter', () => { el.style.background = 'rgba(5, 21, 36, 0.06)'; });
+          el.addEventListener('mouseleave', () => { el.style.background = 'transparent'; });
+          el.addEventListener('mousedown', () => { el.style.background = 'rgba(11, 18, 14, 0.14)'; el.style.cursor = 'grabbing'; });
+          el.addEventListener('mouseup', () => { el.style.background = 'rgba(5, 21, 36, 0.06)'; el.style.cursor = 'grab'; });
+          return el;
+        },
+        nested: true,
+      }),
     ],
     content: initialContent,
     editorProps: {
