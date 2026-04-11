@@ -56,12 +56,12 @@
 /* "Attachments" text label */
 .att-heading-label {
   display: block;
-  font-size: 16px;
-  font-weight: 650;
-  color: rgb(41, 42, 46);
-  line-height: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #29292E;
+  line-height: 1.4;
   user-select: none;
-  font-family: 'Sora', ui-sans-serif, -apple-system, system-ui, 'Segoe UI', sans-serif;
+  font-family: var(--cp-font-ui, Inter, system-ui, sans-serif);
 }
 
 /* Badge: grey pill with count */
