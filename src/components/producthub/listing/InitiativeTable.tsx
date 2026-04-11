@@ -12,7 +12,7 @@ import {
   type SortingState, type RowSelectionState, type ColumnResizeMode, type VisibilityState,
 } from '@tanstack/react-table';
 import { DragDropContext, Droppable, Draggable, type DropResult } from '@hello-pangea/dnd';
-import { Check, ChevronUp, ChevronDown, ChevronsUpDown, Pencil, Star, MoreVertical, Map, LayoutGrid, Paperclip } from 'lucide-react';
+import { Check, ChevronUp, ChevronDown, ChevronsUpDown, Pencil, Star, MoreVertical, Map as MapIcon, LayoutGrid, Paperclip } from 'lucide-react';
 import type { Initiative, InitiativeStatus, Density } from '@/types/initiative';
 import { STATUS_DISPLAY, getPriorityLevel } from '@/types/initiative';
 import type { GroupByField } from '@/components/producthub/listing/ListingToolbar';
@@ -206,7 +206,7 @@ export function InitiativeTable({
     }),
     col.display({
       id: 'roadmap', size: 32, minSize: 32, maxSize: 32, enableResizing: false,
-      header: () => <Map size={14} style={{ color: 'var(--pb-ink-muted)' }} />,
+      header: () => <MapIcon size={14} style={{ color: 'var(--pb-ink-muted)' }} />,
       cell: ({ row }) => (
         <button
           type="button"
@@ -214,7 +214,7 @@ export function InitiativeTable({
           style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
           title={row.original.on_roadmap ? 'Remove from Roadmap' : 'Add to Roadmap'}
         >
-          <Map size={16} style={{ color: row.original.on_roadmap ? 'var(--pb-primary)' : 'var(--pb-ink-muted)', opacity: row.original.on_roadmap ? 1 : 0.4, transition: 'all 150ms' }} />
+          <MapIcon size={16} style={{ color: row.original.on_roadmap ? 'var(--pb-primary)' : 'var(--pb-ink-muted)', opacity: row.original.on_roadmap ? 1 : 0.4, transition: 'all 150ms' }} />
         </button>
       ),
     }),
@@ -235,7 +235,7 @@ export function InitiativeTable({
         const attCount = attachmentCounts.get(attKey) || 0;
         return (
           <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-            {attCount > 0 && <Paperclip size={12} style={{ color: '#94A3B8', flexShrink: 0, transform: 'rotate(-45deg)' }} title={`${attCount} attachment${attCount > 1 ? 's' : ''}`} />}
+            {attCount > 0 && <span title={`${attCount} attachment${attCount > 1 ? 's' : ''}`}><Paperclip size={12} style={{ color: '#94A3B8', flexShrink: 0, transform: 'rotate(-45deg)' }} /></span>}
             <IDCell value={key} />
           </div>
         );
@@ -492,7 +492,7 @@ export function InitiativeTable({
                                     {!row.original.on_roadmap && onPromote && (
                                       <button type="button" className="pb-row-action-btn" style={{ color: 'var(--pb-teal)' }} title="Add to Roadmap"
                                         onClick={(e) => { e.stopPropagation(); if (clickTimerRef.current) { clearTimeout(clickTimerRef.current); clickTimerRef.current = null; } onPromote(row.original); }}>
-                                        <Map size={14} />
+                                        <MapIcon size={14} />
                                       </button>
                                     )}
                                     <button type="button" className="pb-row-action-btn" title="Edit"
