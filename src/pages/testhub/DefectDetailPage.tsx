@@ -39,14 +39,12 @@ export default function DefectDetailPage() {
   useEffect(() => {
     if (!defect?.id) return;
     (async () => {
-      const { data } = await typedQuery('tm_defect_links')
-        .select('test_run_id')
+      const { data: runLink } = await typedQuery('tm_defect_links')
+        .select('linked_id')
         .eq('defect_id', defect.id)
-        .not('test_run_id', 'is', null)
-        .limit(1);
-      if (data && data.length > 0) {
-        setExecutionRunId(data[0].test_run_id);
-      }
+        .eq('link_type', 'test_run')
+        .maybeSingle();
+      setExecutionRunId(runLink?.linked_id ?? null);
     })();
   }, [defect?.id]);
 
