@@ -1,0 +1,507 @@
+/**
+ * SubtasksPanel — Pixel-perfect Jira native-issue-table CSS
+ * All values reverse-engineered from Jira's actual DOM
+ */
+
+/* ── Panel container ────────────────────────── */
+.sp-panel {
+  margin: 0;
+  padding: 0;
+}
+
+/* ── Header row ─────────────────────────────── */
+.sp-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 0;
+  margin-bottom: 4px;
+}
+
+.sp-header-left {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+.sp-collapse-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: #42526E;
+  padding: 0;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+.sp-collapse-btn:hover {
+  background: rgba(9, 30, 66, 0.04);
+}
+
+.sp-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #29292E;
+  margin: 0;
+  padding: 0 4px;
+  line-height: 1.4;
+}
+
+.sp-header-right {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.sp-icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: #6B778C;
+  border-radius: 3px;
+  padding: 0;
+  transition: background 0.12s, color 0.12s;
+}
+.sp-icon-btn:hover {
+  background: rgba(9, 30, 66, 0.08);
+  color: #172B4D;
+}
+
+/* ── Progress bar ───────────────────────────── */
+.sp-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.sp-progress-track {
+  width: 100%;
+  height: 8px;
+  background: rgba(9, 30, 66, 0.14);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.sp-progress-fill {
+  height: 100%;
+  background: #6A9A23;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.sp-progress-label {
+  text-align: right;
+  font-size: 14px;
+  color: #44546F;
+  line-height: 1;
+}
+
+/* ── Table ──────────────────────────────────── */
+.sp-scroll-container {
+  display: flex;
+  overflow-x: auto;
+}
+
+.sp-table {
+  border-collapse: separate;
+  border-spacing: 0;
+  table-layout: auto;
+  width: 100%;
+}
+
+/* ── Table header ───────────────────────────── */
+.sp-thead {
+  border-bottom: 1.667px solid rgba(11, 18, 14, 0.14);
+}
+
+.sp-th {
+  padding: 0 8px;
+  height: 32px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #505258;
+  text-align: left;
+  vertical-align: middle;
+  white-space: nowrap;
+  border-bottom: 0.556px solid rgba(11, 18, 14, 0.14);
+  text-transform: none; /* NOT uppercase — Jira uses sentence case */
+}
+
+.sp-th--priority,
+.sp-th--assignee {
+  width: 60px;
+  min-width: 60px;
+}
+
+.sp-th--status {
+  width: 168px;
+  min-width: 100px;
+}
+
+/* ── Table row ──────────────────────────────── */
+.sp-row {
+  height: 40px;
+  background: #FFFFFF;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+
+.sp-row:hover {
+  background: #F4F5F7;
+}
+
+.sp-row + .sp-row {
+  border-top: 0; /* separator handled by td */
+}
+
+.sp-td {
+  vertical-align: middle;
+  padding: 0;
+  border-top: 1px solid rgba(11, 18, 14, 0.14);
+}
+
+.sp-row:first-child .sp-td {
+  border-top: none;
+}
+
+/* ── Work cell (merged: icon + key + summary) ─ */
+.sp-work-cell {
+  display: flex;
+  align-items: center;
+  height: 40px;
+  padding-left: 8px;
+}
+
+.sp-type-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  flex-shrink: 0;
+}
+.sp-type-icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+.sp-issue-key {
+  color: #1868DB;
+  font-size: 14px;
+  font-weight: 400;
+  text-decoration: underline;
+  white-space: nowrap;
+  padding: 0 8px 0 4px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.sp-issue-key:hover {
+  color: #0747A6;
+}
+
+.sp-issue-summary {
+  font-size: 14px;
+  font-weight: 400;
+  color: #29292E;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  min-width: 0;
+}
+
+/* ── Priority cell ──────────────────────────── */
+.sp-priority-cell {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 40px;
+  padding: 0 8px;
+}
+
+.sp-priority-icon {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.sp-priority-label {
+  font-size: 14px;
+  color: #44546F;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Assignee cell ──────────────────────────── */
+.sp-assignee-cell {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 40px;
+  padding: 0 8px;
+}
+
+.sp-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  object-fit: cover;
+}
+
+.sp-avatar-fallback {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  color: #FFFFFF;
+  flex-shrink: 0;
+}
+
+.sp-assignee-name {
+  font-size: 14px;
+  color: #44546F;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 60px;
+}
+
+/* ── Status cell ────────────────────────────── */
+.sp-status-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  border: none;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0;
+  white-space: nowrap;
+  line-height: 1.4;
+  transition: opacity 0.12s;
+}
+.sp-status-btn:hover {
+  opacity: 0.85;
+}
+
+.sp-status-btn--done {
+  background: #DCFFF1;
+  color: #206B4E;
+}
+
+.sp-status-btn--inprogress {
+  background: #E9F2FF;
+  color: #0055CC;
+}
+
+.sp-status-btn--todo {
+  background: #F1F2F4;
+  color: #44546F;
+}
+
+.sp-status-chevron {
+  display: flex;
+  align-items: center;
+}
+
+/* ── Column picker ──────────────────────────── */
+.sp-colpicker-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  width: 220px;
+  background: #FFFFFF;
+  border: 1px solid rgba(9, 30, 66, 0.24);
+  border-radius: 6px;
+  box-shadow: 0 6px 16px rgba(9, 30, 66, 0.15);
+  z-index: 60;
+  overflow: hidden;
+  padding-bottom: 4px;
+}
+
+.sp-colpicker-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: #6B778C;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 8px 12px;
+  border-bottom: 1px solid rgba(9, 30, 66, 0.1);
+}
+
+.sp-colpicker-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: background 0.12s;
+  font-size: 13px;
+  color: #172B4D;
+}
+.sp-colpicker-item:hover {
+  background: rgba(9, 30, 66, 0.04);
+}
+
+.sp-colpicker-check {
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  border: 1.5px solid rgba(9, 30, 66, 0.24);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.12s, border-color 0.12s;
+}
+
+.sp-colpicker-check--active {
+  background: #2563EB;
+  border-color: #2563EB;
+}
+
+/* ── Inline create ──────────────────────────── */
+.sp-create-row {
+  display: flex;
+  align-items: center;
+  border: 2px solid #4C9AFF;
+  border-radius: 3px;
+  margin-top: 4px;
+  background: #FFFFFF;
+  overflow: hidden;
+}
+
+.sp-create-input {
+  flex: 1;
+  height: 36px;
+  padding: 0 12px;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  color: #172B4D;
+  font-family: inherit;
+  background: transparent;
+}
+.sp-create-input::placeholder {
+  color: #7A869A;
+}
+
+.sp-create-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 8px;
+  border-left: 1px solid #DFE1E6;
+}
+
+/* ── Empty state ────────────────────────────── */
+.sp-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 32px 16px;
+  text-align: center;
+}
+
+.sp-empty-heading {
+  font-size: 14px;
+  font-weight: 600;
+  color: #172B4D;
+}
+
+.sp-empty-sub {
+  font-size: 13px;
+  color: #6B778C;
+}
+
+.sp-empty-cta {
+  margin-top: 8px;
+  padding: 6px 16px;
+  border: 1px solid #DFE1E6;
+  border-radius: 3px;
+  background: #FFFFFF;
+  font-size: 13px;
+  color: #172B4D;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.12s;
+}
+.sp-empty-cta:hover {
+  background: #F4F5F7;
+}
+
+/* ── Skeleton ───────────────────────────────── */
+.sp-skeleton-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 40px;
+  padding: 0 12px;
+}
+
+.sp-skeleton-pulse {
+  border-radius: 4px;
+  background: #F1F5F9;
+  animation: sp-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes sp-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* ════════════════════════════════════════════════════════════════
+   ADF RICH TEXT TABLE STYLES — Jira parity (full-page view)
+   Applied to .adf-editor-content outside [data-sdm-scope]
+   ════════════════════════════════════════════════════════════════ */
+
+.adf-editor-content table {
+  border: 0.556px solid #DDDEE1;
+  border-collapse: collapse;
+  font-size: 14px;
+  width: 100%;
+  margin: 8px 0;
+}
+
+.adf-editor-content table th {
+  background: #F0F1F2;
+  color: #292A2E;
+  font-size: 14px;
+  font-weight: 400;
+  padding: 8px;
+  text-align: left;
+  vertical-align: top;
+  border-top: 0.556px solid #DDDEE1;
+  border-left: 0.556px solid #DDDEE1;
+}
+
+.adf-editor-content table td {
+  background: #FFFFFF;
+  color: #292A2E;
+  font-size: 14px;
+  font-weight: 400;
+  padding: 8px;
+  vertical-align: top;
+  border-top: 0.556px solid #DDDEE1;
+  border-left: 0.556px solid #DDDEE1;
+}
