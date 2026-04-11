@@ -20,6 +20,7 @@ import {
   List, ListOrdered, Code2, Link2, Undo2, Redo2, Sparkles, Loader2,
 } from 'lucide-react';
 import { tiptapJsonToAdf, resolveEditorContent } from './adf-utils';
+import DragHandle from '@tiptap/extension-drag-handle';
 
 interface StoryRichTextEditorProps {
   /** Raw content from DB — can be ADF JSON string or legacy HTML */
