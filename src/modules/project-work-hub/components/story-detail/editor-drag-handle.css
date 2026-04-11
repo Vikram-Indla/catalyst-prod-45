@@ -1,77 +1,15 @@
 /*
  * editor-drag-handle.css
- * Pure CSS drag handle for TipTap editor blocks.
- * Uses ::before pseudo-element — zero JS DOM manipulation.
- * Scoped to .catalyst-editor-with-handles class.
+ * Styles for the floating drag handle (rendered on document.body via JS).
+ * The handle is positioned with position:fixed to avoid all overflow clipping.
  */
 
-/* Top-level block nodes need position:relative for the ::before handle */
-.catalyst-editor-with-handles > p,
-.catalyst-editor-with-handles > h1,
-.catalyst-editor-with-handles > h2,
-.catalyst-editor-with-handles > h3,
-.catalyst-editor-with-handles > h4,
-.catalyst-editor-with-handles > h5,
-.catalyst-editor-with-handles > h6,
-.catalyst-editor-with-handles > ul,
-.catalyst-editor-with-handles > ol,
-.catalyst-editor-with-handles > blockquote,
-.catalyst-editor-with-handles > pre,
-.catalyst-editor-with-handles > table,
-.catalyst-editor-with-handles > hr {
-  position: relative;
+/* Floating handle — appended to document.body */
+.catalyst-floating-drag-handle {
+  font-size: 0;
+  line-height: 0;
 }
 
-/* Drag grip — 6-dot pattern via radial-gradient */
-.catalyst-editor-with-handles > p::before,
-.catalyst-editor-with-handles > h1::before,
-.catalyst-editor-with-handles > h2::before,
-.catalyst-editor-with-handles > h3::before,
-.catalyst-editor-with-handles > h4::before,
-.catalyst-editor-with-handles > h5::before,
-.catalyst-editor-with-handles > h6::before,
-.catalyst-editor-with-handles > ul::before,
-.catalyst-editor-with-handles > ol::before,
-.catalyst-editor-with-handles > blockquote::before,
-.catalyst-editor-with-handles > pre::before,
-.catalyst-editor-with-handles > table::before {
-  content: '';
-  position: absolute;
-  left: -24px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 16px;
-  height: 20px;
-  border-radius: 3px;
-  cursor: grab;
-  opacity: 0;
-  transition: opacity 0.15s ease, background-color 0.12s ease;
-
-  /* 6-dot grip pattern: 2 columns x 3 rows */
-  background-image:
-    radial-gradient(circle, #97A0AF 1.5px, transparent 1.5px);
-  background-size: 6px 6px;
-  background-position: 2px 1px;
-  background-repeat: repeat;
-}
-
-/* Show on block hover */
-.catalyst-editor-with-handles > p:hover::before,
-.catalyst-editor-with-handles > h1:hover::before,
-.catalyst-editor-with-handles > h2:hover::before,
-.catalyst-editor-with-handles > h3:hover::before,
-.catalyst-editor-with-handles > h4:hover::before,
-.catalyst-editor-with-handles > h5:hover::before,
-.catalyst-editor-with-handles > h6:hover::before,
-.catalyst-editor-with-handles > ul:hover::before,
-.catalyst-editor-with-handles > ol:hover::before,
-.catalyst-editor-with-handles > blockquote:hover::before,
-.catalyst-editor-with-handles > pre:hover::before,
-.catalyst-editor-with-handles > table:hover::before {
-  opacity: 1;
-}
-
-/* Hover state on the handle itself — subtle bg */
-.catalyst-editor-with-handles > *:hover::before {
-  background-color: rgba(9, 30, 66, 0.04);
+.catalyst-floating-drag-handle svg {
+  pointer-events: none;
 }
