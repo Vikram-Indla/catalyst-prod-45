@@ -206,7 +206,7 @@ export interface StoryDetailModalProps {
   onClose: () => void;
   itemId: string;
   projectId: string;
-  projectKey: string;
+  projectKey?: string;
   onOpenItem?: (itemId: string) => void;
   /** Panel mode — renders as side panel instead of centered modal */
   panelMode?: boolean;

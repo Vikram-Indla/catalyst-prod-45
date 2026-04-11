@@ -25,8 +25,10 @@ import {
   type GroupByOption,
   InlineDatePicker,
   InlineSummaryEdit,
-  IssueDetailPanel 
 } from '../components';
+import { lazy, Suspense } from 'react';
+
+const StoryDetailModal = lazy(() => import('@/modules/project-work-hub/components/dialogs/StoryDetailModal'));
 
 interface WorkItem {
   id: string;
@@ -807,12 +809,16 @@ export function ListView() {
         </div>
       </div>
 
-      {/* Detail Panel */}
+      {/* Detail Modal — unified StoryDetailModal */}
       {selectedItem && (
-        <IssueDetailPanel 
-          item={selectedItem} 
-          onClose={() => setSelectedItem(null)} 
-        />
+        <Suspense fallback={null}>
+          <StoryDetailModal
+            isOpen={true}
+            onClose={() => setSelectedItem(null)}
+            itemId={selectedItem.id}
+            projectId=""
+          />
+        </Suspense>
       )}
     </div>
   );

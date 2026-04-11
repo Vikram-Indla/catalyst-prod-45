@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, lazy, Suspense } from 'react';
 import { Search, ChevronDown, ChevronRight, MoreHorizontal, Download, LayoutGrid, List, Zap, AlertCircle, CheckSquare, FileText, Columns, RefreshCw, PanelRightOpen, PanelRightClose, Plus } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -19,8 +19,8 @@ import {
 import { cn } from '@/lib/utils';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { AllWorkTicketList } from '../components/AllWorkTicketList';
-import { AllWorkDetailPanel } from '../components/AllWorkDetailPanel';
 import { CreateVersionDialog } from '../components/CreateVersionDialog';
+const StoryDetailModal = lazy(() => import('@/modules/project-work-hub/components/dialogs/StoryDetailModal'));
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
@@ -633,13 +633,17 @@ export function AllWorkView() {
 
         {/* Table or Detail Panel based on mode */}
         {detailModeEnabled && selectedWorkItem ? (
-          /* Detail Panel */
+          /* Detail Modal — unified StoryDetailModal */
           <div className="flex-1 overflow-hidden">
-            <AllWorkDetailPanel
-              item={selectedWorkItem}
-              onClose={handleCloseDetail}
-              onNavigateToParent={handleNavigateToParent}
-            />
+            <Suspense fallback={null}>
+              <StoryDetailModal
+                isOpen={true}
+                onClose={handleCloseDetail}
+                itemId={selectedWorkItem.id}
+                projectId=""
+                panelMode={true}
+              />
+            </Suspense>
           </div>
         ) : (
           /* Regular Table View */
