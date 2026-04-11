@@ -431,29 +431,32 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
           <span className="text-xs" style={{ color: tk.t2 }}>{total} stories across {groups.length} groups</span>
         </div>
         <div className="flex items-center gap-2">
-          <div style={{ position: 'relative' }}>
-            <FilterTriggerButton
-              count={advancedFilterCount}
-              onClick={() => setFilterPanelOpen(p => !p)}
-              isOpen={filterPanelOpen}
-            />
-            {filterPanelOpen && (
-              <div style={{ position: 'absolute', top: '100%', right: 0, zIndex: 50, marginTop: 4 }}>
-                <JiraBasicFilter
-                  categories={filterCategories}
-                  selected={advancedFilters}
-                  onSelectionChange={handleFilterChange}
-                  onClearAll={handleClearAllFilters}
-                  onClose={() => setFilterPanelOpen(false)}
-                />
-              </div>
-            )}
-          </div>
+          <FilterTriggerButton
+            count={advancedFilterCount}
+            onClick={() => setFilterPanelOpen(p => !p)}
+            isOpen={filterPanelOpen}
+          />
           <Button onClick={() => setShowCreate(true)} size="sm" style={{ backgroundColor: '#2563EB', color: '#FFFFFF', borderRadius: 6 }}>
             <Plus className="h-3.5 w-3.5 mr-1" /> Create Story
           </Button>
         </div>
       </div>
+
+      {/* Filter panel — rendered below header in normal flow, not inside overflow container */}
+      {filterPanelOpen && (
+        <div style={{ position: 'relative', zIndex: 50, flexShrink: 0, height: 0 }}>
+          <div className="sb-filter-anchor" style={{ position: 'absolute', top: 0, right: 24, zIndex: 50 }}>
+            <JiraBasicFilter
+              categories={filterCategories}
+              selected={advancedFilters}
+              onSelectionChange={handleFilterChange}
+              onClearAll={handleClearAllFilters}
+              onClose={() => setFilterPanelOpen(false)}
+            />
+          </div>
+          <style>{`.sb-filter-anchor .jf-panel { left: auto !important; right: 0 !important; }`}</style>
+        </div>
+      )}
 
       {panelMode && detailItemId ? (
         /* ═══ PANEL MODE — split layout ═══ */
