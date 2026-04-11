@@ -205,13 +205,6 @@ export default function ForYouPage() {
             ]} />
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <ForYouInlineFilters
-              filters={inlineFilters}
-              onFiltersChange={setInlineFilters}
-              projectOptions={projectOptions}
-              hubOptions={hubOptions}
-              reportedByOptions={reportedByOptions}
-            />
             {/* Jira-style advanced filter */}
             <div style={{ position: 'relative' }}>
               <FilterTriggerButton

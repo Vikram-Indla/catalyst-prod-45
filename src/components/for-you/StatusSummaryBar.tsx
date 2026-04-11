@@ -49,22 +49,7 @@ export function StatusSummaryBar({ items }: StatusSummaryBarProps) {
 
   return (
     <>
-      {CATEGORIES.map(cat => (
-        <div key={cat.key} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{
-            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-            minWidth: 24, height: 22, padding: '0 8px',
-            borderRadius: 4, backgroundColor: cat.bgVar, color: cat.textVar,
-            fontSize: 12, fontWeight: 700,
-          }}>
-            {counts[cat.key]}
-          </span>
-          <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--cp-t3)' }}>
-            {cat.label}
-          </span>
-        </div>
-      ))}
-      <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--cp-t3)', marginLeft: 8 }}>
+      <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--cp-t3)' }}>
         <strong style={{ color: 'var(--cp-t1)', fontWeight: 600 }}>{total}</strong>{' '}
         items across{' '}
         <strong style={{ color: 'var(--cp-t1)', fontWeight: 600 }}>{projectCount}</strong>{' '}
