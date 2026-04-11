@@ -124,7 +124,7 @@ export function ChildIssuesSection({ storyKey, storyId, projectKey }: { storyKey
 
   return (
     <>
-      <SectionBlock title="Child Issues" count={children.length} doneCount={doneCount} defaultExpanded={children.length > 0} headerRight={
+      <SectionBlock title="Sub-tasks" count={children.length} doneCount={doneCount} defaultExpanded={children.length > 0} headerRight={
         <>
           {doneCount > 0 && (
             <button className="sdm-visibility-btn" onClick={() => setShowDone(s => !s)}>
@@ -187,7 +187,7 @@ export function ChildIssuesSection({ storyKey, storyId, projectKey }: { storyKey
 
         {isLoading && <SkeletonRows />}
         {!isLoading && children.length === 0 && !creating && (
-          <EmptyState heading="No child issues yet" sub="Break this story into sub-tasks to track progress" cta="+ Create sub-task" onCta={() => setCreating(true)} />
+          <EmptyState heading="No sub-tasks yet" sub="Break this story into sub-tasks to track progress" cta="+ Create sub-task" onCta={() => setCreating(true)} />
         )}
         {!isLoading && visible.length > 0 && (
           <div className="sdm-child-list" role="list">

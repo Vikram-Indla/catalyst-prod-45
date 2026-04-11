@@ -832,7 +832,7 @@ export default function StoryDetailModal({
                       ><Plus size={14} /></button>
                       {showAddMenu && (
                         <div style={{ position: 'absolute', left: 0, top: 34, background: '#FFF', border: '1px solid #DFE1E6', borderRadius: 4, boxShadow: '0 4px 16px rgba(9,30,66,0.18)', padding: '8px 0', zIndex: 50, minWidth: 200 }}>
-                          <button onClick={() => { setShowAddMenu(false); toast('Create Subtask — use Child Issues section below'); }} style={menuItemStyle}>Create Subtask</button>
+                          <button onClick={() => { setShowAddMenu(false); toast('Create Subtask — use Sub-tasks section below'); }} style={menuItemStyle}>Create Subtask</button>
                           <button onClick={() => { setShowAddMenu(false); fileInputRef.current?.click(); }} style={menuItemStyle}>Add Attachment</button>
                           <input ref={fileInputRef} type="file" style={{ display: 'none' }} onChange={e => { const f = e.target.files?.[0]; if (f) uploadAttachmentMutation.mutate(f); e.target.value = ''; }} />
                           <button onClick={() => { setShowAddMenu(false); setShowFigmaInput(true); }} style={menuItemStyle}>Add Design (Figma)</button>
@@ -885,7 +885,7 @@ export default function StoryDetailModal({
                                 setCommentSummary('Unable to generate summary. Please try again.');
                               } finally { setCommentSummaryLoading(false); }
                             } },
-                            { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5E6C84" strokeWidth="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/><path d="M13 8h4"/><path d="M13 12h4"/><path d="M13 16h2"/></svg>, label: 'Suggest child work items', action: () => { setShowAiMenu(false); const el = document.querySelector('[data-section="child-issues"]'); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' }); toast.info('Use the AI suggest bar in Child Issues section below'); } },
+                            { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5E6C84" strokeWidth="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/><path d="M13 8h4"/><path d="M13 12h4"/><path d="M13 16h2"/></svg>, label: 'Suggest child work items', action: () => { setShowAiMenu(false); const el = document.querySelector('[data-section="child-issues"]'); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' }); toast.info('Use the AI suggest bar in Sub-tasks section below'); } },
                             { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5E6C84" strokeWidth="1.8"><path d="M9 17H7A5 5 0 0 1 7 7h2"/><path d="M15 7h2a5 5 0 1 1 0 10h-2"/><line x1="8" y1="12" x2="16" y2="12"/></svg>, label: 'Link similar work items', action: () => { setShowAiMenu(false); const el = document.querySelector('[data-section="linked-issues"]'); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' }); toast.info('Use the AI link bar in Linked Issues section below'); } },
                           ].map((item, i) => (
                             <button key={i} onClick={item.action} style={{
@@ -1204,10 +1204,10 @@ export default function StoryDetailModal({
                   {issue && (
                     <>
                       <ChildIssuesSection storyKey={issue.issue_key} storyId={issue.id} projectKey={issue.project_key} />
+                      <LinkedIssuesSection issueId={issue.id} />
                       <DefectsSection storyKey={issue.issue_key} projectKey={issue.project_key} />
                       <IncidentsSection storyKey={issue.issue_key} />
                       <TestHubSection storyId={issue.id} />
-                      <LinkedIssuesSection issueId={issue.id} />
                     </>
                   )}
 
