@@ -1069,7 +1069,7 @@ export default function StoryDetailModal({
 
                   {/* 5. ACCEPTANCE CRITERIA — ADF auto-save editor */}
                   <div style={{ marginBottom: 24 }}>
-                    <div style={{ fontSize: 13, fontWeight: 700, color: '#172B4D', marginBottom: 10 }}>Acceptance Criteria</div>
+                    <h2 style={{ fontSize: 14, fontWeight: 500, color: '#505258', lineHeight: '18.67px', margin: '0 0 8px 0', padding: 0 }}>Acceptance Criteria</h2>
                     <StoryRichTextEditor
                       content={tryAdfStringToHtml(acceptanceCriteria) ?? acceptanceCriteria ?? ''}
                       onSave={(adfJson) => { setAcceptanceCriteria(adfJson); supabase.from('ph_issues').update({ acceptance_criteria: adfJson }).eq('id', itemId).then(() => { queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] }); }); }}
