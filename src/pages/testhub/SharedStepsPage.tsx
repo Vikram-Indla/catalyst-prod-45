@@ -5,6 +5,7 @@
  */
 
 import { useState, useEffect, useRef, Fragment } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Library, Plus, Search, Filter, ArrowUpDown, RefreshCw,
   MoreVertical, Pencil, Copy, Trash2, Eye, Tag,
@@ -122,6 +123,7 @@ function highlightVariables(text: string, isDark = false) {
 
 export default function SharedStepsPage() {
   const { isDark } = useTheme();
+  const navigate = useNavigate();
   const [sharedSteps, setSharedSteps] = useState<SharedStep[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -618,13 +620,19 @@ export default function SharedStepsPage() {
                             )}
                           </td>
                           <td style={{ padding: '12px 16px', textAlign: 'center' }}>
-                            <span style={{
-                              padding: '2px 8px', borderRadius: 12, fontSize: 12, fontWeight: 600,
-                              backgroundColor: step.usage_count > 0 ? (isDark ? 'rgba(5,150,105,0.12)' : '#F0FDF4') : (isDark ? '#1A1A1A' : '#F1F5F9'),
-                              color: step.usage_count > 0 ? '#059669' : (isDark ? '#878787' : '#64748B'),
-                            }}>
+                            <button
+                              onClick={(e) => { e.stopPropagation(); navigate(`/testhub/shared-steps/${step.id}`); }}
+                              style={{
+                                padding: '2px 8px', borderRadius: 12, fontSize: 12, fontWeight: 600,
+                                backgroundColor: step.usage_count > 0 ? (isDark ? 'rgba(5,150,105,0.12)' : '#F0FDF4') : (isDark ? '#1A1A1A' : '#F1F5F9'),
+                                color: step.usage_count > 0 ? '#059669' : (isDark ? '#878787' : '#64748B'),
+                                border: 'none', cursor: 'pointer',
+                              }}
+                              onMouseEnter={(e) => { if (step.usage_count > 0) e.currentTarget.style.textDecoration = 'underline'; }}
+                              onMouseLeave={(e) => { e.currentTarget.style.textDecoration = 'none'; }}
+                            >
                               {step.usage_count}x
-                            </span>
+                            </button>
                           </td>
                           <td style={{ padding: '12px 16px', textAlign: 'center' }} onClick={(e) => e.stopPropagation()}>
                             <button onClick={() => setEditingStep(step)} title="Edit" style={{
