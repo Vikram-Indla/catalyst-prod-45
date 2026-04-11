@@ -4,7 +4,9 @@
  */
 
 import React, { useState, useEffect, useCallback, lazy, Suspense } from 'react';
-import { MessageSquare, AlertCircle, FileText } from 'lucide-react';
+import { MessageSquare, AlertCircle, FileText, ChevronsUp, ChevronUp, ChevronDown, ChevronsDown, Folder, LayoutGrid, Bug as BugIcon, CheckSquare, Zap, BookOpen, AlertTriangle as AlertTriangleIcon } from 'lucide-react';
+import { StatusLozenge } from '@/components/ui/StatusLozenge';
+import { JiraIssueTypeIcon } from '@/components/shared/JiraIssueTypeIcon';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { useForYouData } from '@/hooks/useForYouData';
@@ -25,39 +27,6 @@ import type { AIPriorityItem, AINextItemData, AIStats, AISuggestionData } from '
 const StoryDetailModal = lazy(() => import('@/modules/project-work-hub/components/dialogs/StoryDetailModal'));
 const CatalystAIPanel = lazy(() => import('@/components/catalyst-ai/CatalystAIPanel').then(m => ({ default: m.CatalystAIPanel })));
 
-/* Canonical Jira-style work item type icons for filter panel */
-const WORK_ITEM_TYPE_ICONS: Record<string, React.ReactNode> = {
-  Story: (
-    <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="#36B37E"/><path d="M4 3h5l3 3v7a1 1 0 01-1 1H5a1 1 0 01-1-1V3z" fill="#fff" opacity="0.9"/></svg>
-  ),
-  Bug: (
-    <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="#FF5630"/><circle cx="8" cy="8" r="4" fill="#fff"/></svg>
-  ),
-  'QA Bug': (
-    <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="#FF5630"/><circle cx="8" cy="8" r="4" fill="#fff"/></svg>
-  ),
-  Task: (
-    <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="#4BADE8"/><path d="M6.5 10.5L4.5 8.5l-1 1 3 3 6-6-1-1z" fill="#fff"/></svg>
-  ),
-  Epic: (
-    <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="#6554C0"/><path d="M9 2L5 9h3l-1 5 4-7H8z" fill="#fff"/></svg>
-  ),
-  'Sub-task': (
-    <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="#2684FF"/><path d="M6.5 10.5L4.5 8.5l-1 1 3 3 6-6-1-1z" fill="#fff"/></svg>
-  ),
-  'Production Incident': (
-    <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="#FF5630"/><path d="M8 4l4 8H4z" fill="#fff"/><rect x="7.25" y="7" width="1.5" height="2.5" rx="0.5" fill="#FF5630"/><circle cx="8" cy="10.75" r="0.75" fill="#FF5630"/></svg>
-  ),
-  'Business Request': (
-    <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="#36B37E"/><path d="M8 3l1.5 3H13l-2.5 2 1 3L8 9.5 4.5 11l1-3L3 6h3.5z" fill="#fff"/></svg>
-  ),
-  'New Feature': (
-    <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="#36B37E"/><path d="M8 3l1.5 3H13l-2.5 2 1 3L8 9.5 4.5 11l1-3L3 6h3.5z" fill="#fff"/></svg>
-  ),
-  Improvement: (
-    <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="#4BADE8"/><path d="M8 4l3 4H5z" fill="#fff"/><rect x="6.5" y="8" width="3" height="4" rx="0.5" fill="#fff"/></svg>
-  ),
-};
 
 export default function ForYouPage() {
   const {
@@ -101,14 +70,35 @@ export default function ForYouPage() {
     const getInitials = (name: string) => name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
     const PALETTE = ['#1868DB', '#E2631E', '#5E4DB2', '#1B3459', '#0D7C66', '#B34D00', '#943A79', '#0055CC'];
     const pickColor = (name: string) => { let h = 0; for (let i = 0; i < name.length; i++) h = name.charCodeAt(i) + ((h << 5) - h); return PALETTE[Math.abs(h) % PALETTE.length]; };
+    const HUB_ICONS: Record<string, React.ReactNode> = {
+      Incident: <AlertTriangleIcon size={14} color="#FF5630" strokeWidth={2} />,
+      Product: <LayoutGrid size={14} color="#6554C0" strokeWidth={2} />,
+      Project: <Folder size={14} color="#2563EB" strokeWidth={2} />,
+      Task: <CheckSquare size={14} color="#4BADE8" strokeWidth={2} />,
+      Plan: <BookOpen size={14} color="#0D9488" strokeWidth={2} />,
+      Strategy: <Zap size={14} color="#D97706" strokeWidth={2} />,
+    };
+    const PRIORITY_ICONS: Record<string, React.ReactNode> = {
+      Highest: <ChevronsUp size={16} color="#AE2A19" strokeWidth={2.5} />,
+      High: <ChevronUp size={16} color="#DE350B" strokeWidth={2.5} />,
+      Medium: <span style={{ fontSize: 18, fontWeight: 700, color: '#D97706', lineHeight: 1 }}>=</span>,
+      Low: <ChevronDown size={16} color="#36B37E" strokeWidth={2.5} />,
+      Lowest: <ChevronsDown size={16} color="#6B778C" strokeWidth={2.5} />,
+    };
     return [
       {
         id: 'project', label: 'Project', searchPlaceholder: 'Search project',
-        options: projectOptions.map(p => ({ id: p, label: p })),
+        options: projectOptions.map(p => ({
+          id: p, label: p,
+          iconNode: <Folder size={14} color="#6B778C" strokeWidth={1.5} />,
+        })),
       },
       {
         id: 'hub', label: 'Hub', searchPlaceholder: 'Search hub',
-        options: hubOptions.map(h => ({ id: h, label: h + ' hub' })),
+        options: hubOptions.map(h => ({
+          id: h, label: h + ' Hub',
+          iconNode: HUB_ICONS[h] || <LayoutGrid size={14} color="#6B778C" strokeWidth={2} />,
+        })),
       },
       {
         id: 'reporter', label: 'Reporter', searchPlaceholder: 'Search reporter',
@@ -124,7 +114,10 @@ export default function ForYouPage() {
       },
       {
         id: 'status', label: 'Status', searchPlaceholder: 'Search status',
-        options: [...new Set(workItems.map(i => i.status).filter(Boolean))].sort().map(s => ({ id: s, label: s })),
+        options: [...new Set(workItems.map(i => i.status).filter(Boolean))].sort().map(s => ({
+          id: s, label: s,
+          iconNode: <StatusLozenge status={s} />,
+        })),
       },
       {
         id: 'priority', label: 'Priority', searchPlaceholder: 'Search priority',
@@ -136,7 +129,10 @@ export default function ForYouPage() {
             const norm = i.priority.charAt(0).toUpperCase() + i.priority.slice(1).toLowerCase();
             if (canonical.includes(norm)) seen.add(norm);
           });
-          return canonical.filter(p => seen.has(p)).map(p => ({ id: p, label: p }));
+          return canonical.filter(p => seen.has(p)).map(p => ({
+            id: p, label: p,
+            iconNode: PRIORITY_ICONS[p],
+          }));
         })(),
       },
       {
@@ -144,7 +140,7 @@ export default function ForYouPage() {
         options: [...new Set(workItems.map(i => i.issueType).filter(Boolean))]
           .filter(t => t !== 'planner_task' && t !== 'Change Request')
           .sort()
-          .map(t => ({ id: t, label: t, iconNode: WORK_ITEM_TYPE_ICONS[t] })),
+          .map(t => ({ id: t, label: t, iconNode: <JiraIssueTypeIcon issueType={t} size={16} /> })),
       },
     ];
   }, [projectOptions, hubOptions, reportedByOptions, workItems, avatarsByName]);
