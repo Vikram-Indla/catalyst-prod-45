@@ -464,7 +464,7 @@ export function ViewTestCaseModal({
             link_type: 'requirement',
             linked_item_key: key,
             linked_item_title: title,
-            _source: 'tm_test_case_links' as const,
+            _source: 'tm_requirement_tests' as const,
           };
         })
       );
