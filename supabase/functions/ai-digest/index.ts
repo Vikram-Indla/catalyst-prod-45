@@ -382,9 +382,10 @@ Return JSON:
 
     // ── STORE IN CACHE with content fingerprint ──────────────────────
     // Delete stale cache entries for this user first
-    await supabase.from("ai_digest_cache").delete().eq("user_id", userId);
+    const { error: delErr } = await supabase.from("ai_digest_cache").delete().eq("user_id", userId);
+    if (delErr) console.warn("Cache delete error:", delErr.message);
 
-    await supabase.from("ai_digest_cache").insert({
+    const { error: insErr } = await supabase.from("ai_digest_cache").insert({
       user_id: userId,
       digest_json: digestV2,
       generated_at: now.toISOString(),
@@ -393,6 +394,7 @@ Return JSON:
       context_version: dataFingerprint,
       role_persona: (parsed.role_persona as string) ?? 'Manager',
     });
+    if (insErr) console.error("Cache insert error:", insErr.message, insErr.details);
 
     console.log(`Cache STORED for user ${userId}, fingerprint=${dataFingerprint}, ttl=${hasCritical ? '30m' : '4h'}`);
 
