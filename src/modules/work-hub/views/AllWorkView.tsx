@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, lazy, Suspense } from 'react';
 import { Search, ChevronDown, ChevronRight, MoreHorizontal, Download, LayoutGrid, List, Zap, AlertCircle, CheckSquare, FileText, Columns, RefreshCw, PanelRightOpen, PanelRightClose, Plus } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -19,7 +19,8 @@ import {
 import { cn } from '@/lib/utils';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { AllWorkTicketList } from '../components/AllWorkTicketList';
-import { AllWorkDetailPanel } from '../components/AllWorkDetailPanel';
+import { CreateVersionDialog } from '../components/CreateVersionDialog';
+const StoryDetailModal = lazy(() => import('@/modules/project-work-hub/components/dialogs/StoryDetailModal'));
 import { CreateVersionDialog } from '../components/CreateVersionDialog';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
