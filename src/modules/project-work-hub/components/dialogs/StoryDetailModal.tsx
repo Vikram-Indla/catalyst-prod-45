@@ -58,7 +58,7 @@ import { TestHubSection } from './story-detail-modules';
 import { LinkedIssuesSection } from './story-detail-modules';
 import { EditableAssignee, EditablePriority, EditableLabels, ParentFieldPicker } from './story-detail-modules';
 import { StoryRichTextEditor } from '../story-detail/StoryRichTextEditor';
-import { adfToHtml } from '../../utils/adfToHtml';
+import { adfToHtml, tryAdfStringToHtml } from '../../utils/adfToHtml';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 
 /* ═══════════════════════════════════════════════
@@ -1054,7 +1054,7 @@ export default function StoryDetailModal({
                   <div style={{ marginBottom: 24 }}>
                     <div style={{ fontSize: 13, fontWeight: 700, color: '#172B4D', marginBottom: 10 }}>Acceptance Criteria</div>
                     <StoryRichTextEditor
-                      content={(() => { const { tryAdfStringToHtml } = require('../../utils/adfToHtml'); return tryAdfStringToHtml(acceptanceCriteria) ?? acceptanceCriteria ?? ''; })()}
+                      content={tryAdfStringToHtml(acceptanceCriteria) ?? acceptanceCriteria ?? ''}
                       onSave={(adfJson) => { setAcceptanceCriteria(adfJson); supabase.from('ph_issues').update({ acceptance_criteria: adfJson }).eq('id', itemId).then(() => { queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] }); }); }}
                       placeholder="No acceptance criteria defined · Add manually or use AI →"
                       minHeight={80}
