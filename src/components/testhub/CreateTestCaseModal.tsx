@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { X, Library } from 'lucide-react';
 import { StepsEditor, Step, StepAttachment } from './StepsEditor';
 import { SharedStepsModal } from './SharedStepsModal';
@@ -187,7 +187,7 @@ export function CreateTestCaseModal({
     return true;
   };
 
-  const handleSave = useCallback(async (overrideStatus?: string) => {
+  const handleSave = async (overrideStatus?: string) => {
     if (!validateForm()) return;
 
     // If overrideStatus is provided (e.g. Save Draft), apply it before saving
@@ -203,17 +203,18 @@ export function CreateTestCaseModal({
       } else {
         await handleCreate(effectiveStatus);
       }
-    } catch (error) {
-      console.error('Failed to save:', error);
+    } catch (error: any) {
+      console.error('Failed to save test case:', error);
+      const msg = error?.message || error?.details || error?.hint || 'Unknown error';
       toast({
         title: 'Error',
-        description: `Failed to save test case: ${(error as any)?.message || 'Unknown error'}`,
+        description: `Failed to save: ${msg}`,
         variant: 'destructive',
       });
     } finally {
       setIsSaving(false);
     }
-  }, [editMode, testCase, title, description, preconditions, folderId, priorityId, caseTypeId, status, automation, testFormat, gherkinFeature, gherkinScenario, assignedTo, steps]);
+  };
 
   const handleCreate = async (effectiveStatus?: string) => {
     // 1. Generate case_key - get ALL keys and find the MAX number to avoid duplicates
