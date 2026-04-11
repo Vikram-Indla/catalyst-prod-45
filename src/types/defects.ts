@@ -52,6 +52,8 @@ export interface Defect {
   reporter?: { id: string; full_name: string; avatar_url: string | null } | null;
   // Parent (from jira_parent_key or epic_link)
   parent_key?: string | null;
+  // Project association
+  project_id: string | null;
 }
 
 export interface DefectStats {
