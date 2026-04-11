@@ -358,6 +358,15 @@ export default function StoryDetailModal({
     onError: () => toast.error('Failed to delete'),
   });
 
+  const editCommentMutation = useMutation({
+    mutationFn: async ({ commentId, body }: { commentId: string; body: string }) => {
+      const { error } = await supabase.from('ph_comments').update({ body }).eq('id', commentId);
+      if (error) throw error;
+    },
+    onSuccess: () => { setEditingCommentId(null); queryClient.invalidateQueries({ queryKey: ['ph-comments', itemId] }); },
+    onError: () => toast.error('Failed to update comment'),
+  });
+
   const deleteIssueMutation = useMutation({
     mutationFn: async () => {
       const { error } = await supabase.from('ph_issues').update({ deleted_at: new Date().toISOString() }).eq('id', itemId);
@@ -380,8 +389,7 @@ export default function StoryDetailModal({
     onError: () => toast.error('Failed to upload'),
   });
 
-  const handleCommentSubmit = () => { if (newComment.trim()) addCommentMutation.mutate(newComment); };
-  const handleCommentKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => { if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); handleCommentSubmit(); } };
+  const handleCommentSubmit = (html: string) => { if (html.trim()) addCommentMutation.mutate(html); };
 
   const assignToMe = () => {
     if (!currentProfile || !user) return;
