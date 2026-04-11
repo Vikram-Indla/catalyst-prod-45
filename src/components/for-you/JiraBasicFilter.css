@@ -397,18 +397,18 @@
   font-size: 14px;
   font-weight: 400;
 }
-.jf-avatar-wrap { width: 20px; height: 20px; display: block; flex-shrink: 0; }
+.jf-avatar-wrap { width: 28px; height: 28px; display: flex; align-items: center; flex-shrink: 0; }
 .jf-avatar {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 16px;
-  height: 16px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
   overflow: hidden;
   box-shadow: rgb(255, 255, 255) 0px 0px 0px 2px;
 }
-.jf-avatar-img { width: 16px; height: 16px; border-radius: 9999px; object-fit: cover; }
+.jf-avatar-img { width: 24px; height: 24px; border-radius: 9999px; object-fit: cover; }
 .jf-avatar-initials-text {
   font-size: 7px;
   font-weight: 700;
