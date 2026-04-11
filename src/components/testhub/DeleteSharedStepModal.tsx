@@ -27,7 +27,17 @@ export function DeleteSharedStepModal({ isOpen, sharedStep, onClose, onSuccess }
     if (!sharedStep) return;
     setIsDeleting(true);
     try {
+      // 1. Remove orphaned test steps referencing this shared step (C-06 fix)
+      await supabase
+        .from('tm_test_steps' as any)
+        .delete()
+        .eq('shared_step_id', sharedStep.id)
+        .eq('is_shared', true);
+
+      // 2. Delete shared step usage records
       await typedQuery('th_shared_step_usage').delete().eq('shared_step_id', sharedStep.id);
+      
+      // 3. Delete the shared step itself
       const { error } = await typedQuery('tm_shared_steps').delete().eq('id', sharedStep.id) as any;
       if (error) {
         catalystToast.error(error.message || 'Failed to delete', { title: 'Delete Failed' });

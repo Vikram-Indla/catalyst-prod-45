@@ -160,6 +160,7 @@ const TestHubVerifyPage = lazy(() => import("../pages/testhub/TestHubVerifyPage"
 const TestRepositoryPage = lazy(() => import("../pages/testhub/TestRepositoryPage"));
 const TestHubDashboardPage = lazy(() => import("../pages/testhub/TestHubDashboardPage"));
 const SharedStepsPage = lazy(() => import("../pages/testhub/SharedStepsPage"));
+const SharedStepDetailPage = lazy(() => import("../pages/testhub/SharedStepDetailPage"));
 const TestSetsPage = lazy(() => import("../pages/testhub/TestSetsPage"));
 const TestSetDetailPage = lazy(() => import("../pages/testhub/TestSetDetailPage"));
 const TestCyclesPage = lazy(() => import("../pages/testhub/TestCyclesPage"));
@@ -545,6 +546,7 @@ export default function FullAppRoutes() {
           <Route path="repository" element={<S><TestRepositoryPage /></S>} />
           <Route path="dashboard" element={<S><TestHubDashboardPage /></S>} />
           <Route path="shared-steps" element={<S><SharedStepsPage /></S>} />
+          <Route path="shared-steps/:stepId" element={<S><SharedStepDetailPage /></S>} />
           <Route path="test-sets" element={<S><TestSetsPage /></S>} />
           <Route path="test-sets/:setId" element={<S><TestSetDetailPage /></S>} />
           <Route path="cycles" element={<S><TestCyclesPage /></S>} />

@@ -4,7 +4,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { RefreshCw, Plus, Trash2, MoveRight, CheckSquare, Download, Upload, Sparkles } from 'lucide-react';
+import { RefreshCw, Plus, Trash2, MoveRight, CheckSquare, Download, Upload, Sparkles, UserPlus, Tag } from 'lucide-react';
 import { TestHubPageHeader } from '@/components/testhub/TestHubPageHeader';
 import { FolderPanel } from '@/components/testhub/FolderPanel';
 import { TestCasesTable } from '@/components/testhub/TestCasesTable';
@@ -497,12 +497,64 @@ export function TestRepositoryPage() {
     setSelectedIds(new Set());
   };
 
+  // Bulk assign/tag state
+  const [isBulkAssignOpen, setIsBulkAssignOpen] = useState(false);
+  const [isBulkTagOpen, setIsBulkTagOpen] = useState(false);
+  const [assignableUsers, setAssignableUsers] = useState<{ id: string; full_name: string }[]>([]);
+  const [availableLabels, setAvailableLabels] = useState<{ id: string; name: string }[]>([]);
+
   const handleBulkDelete = () => {
     const toDelete = testCases
       .filter(tc => selectedIds.has(tc.id))
       .map(tc => ({ id: tc.id, case_key: tc.caseKey, title: tc.title }));
     setTestCasesToDelete(toDelete);
     setIsDeleteModalOpen(true);
+  };
+
+  const handleBulkAssign = async (userId: string) => {
+    const ids = [...selectedIds];
+    const { error } = await supabase
+      .from('tm_test_cases')
+      .update({ created_by: userId } as any)
+      .in('id', ids);
+    if (error) {
+      toast({ title: 'Assign failed', description: error.message, variant: 'destructive' });
+      return;
+    }
+    toast({ title: `${ids.length} case(s) assigned` });
+    setIsBulkAssignOpen(false);
+    fetchTestCases();
+  };
+
+  const handleBulkTag = async (labelId: string) => {
+    const ids = [...selectedIds];
+    const rows = ids.map(id => ({ test_case_id: id, label_id: labelId }));
+    const { error } = await supabase
+      .from('tm_case_labels' as any)
+      .upsert(rows, { onConflict: 'test_case_id,label_id', ignoreDuplicates: true });
+    if (error) {
+      toast({ title: 'Tag failed', description: error.message, variant: 'destructive' });
+      return;
+    }
+    toast({ title: `Tag applied to ${ids.length} case(s)` });
+    setIsBulkTagOpen(false);
+    fetchTestCases();
+  };
+
+  const openBulkAssign = async () => {
+    if (assignableUsers.length === 0) {
+      const { data } = await supabase.from('profiles').select('id, full_name').order('full_name');
+      if (data) setAssignableUsers(data.filter(p => p.full_name));
+    }
+    setIsBulkAssignOpen(true);
+  };
+
+  const openBulkTag = async () => {
+    if (availableLabels.length === 0) {
+      const { data } = await supabase.from('tm_labels' as any).select('id, name').order('name');
+      if (data) setAvailableLabels(data as any);
+    }
+    setIsBulkTagOpen(true);
   };
 
   const clearSelection = () => {
@@ -813,23 +865,94 @@ export function TestRepositoryPage() {
                   >
                     <CheckSquare style={{ width: 14, height: 14 }} />
                     Status
-                  </button>
+                   </button>
+                  {/* Bulk Assign */}
+                  <div style={{ position: 'relative' }}>
+                    <button 
+                      onClick={openBulkAssign}
+                      style={{
+                        height: 32, padding: '8px 12px',
+                        backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF',
+                        border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0',
+                        borderRadius: 6, fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 500,
+                        color: isDark ? '#A1A1A1' : '#334155', cursor: 'pointer',
+                        display: 'flex', alignItems: 'center', gap: 6,
+                      }}
+                    >
+                      <UserPlus style={{ width: 14, height: 14 }} />
+                      Assign
+                    </button>
+                    {isBulkAssignOpen && (
+                      <div style={{
+                        position: 'absolute', top: '100%', left: 0, marginTop: 4, width: 220,
+                        backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`,
+                        borderRadius: 8, boxShadow: '0 10px 40px rgba(0,0,0,0.15)', zIndex: 200,
+                        maxHeight: 240, overflowY: 'auto', padding: 4,
+                      }}>
+                        {assignableUsers.map(u => (
+                          <button key={u.id} onClick={() => handleBulkAssign(u.id)} style={{
+                            width: '100%', padding: '8px 12px', border: 'none', backgroundColor: 'transparent',
+                            fontSize: 13, color: isDark ? '#EDEDED' : '#334155', cursor: 'pointer', textAlign: 'left',
+                            borderRadius: 6, fontFamily: 'Inter',
+                          }}
+                            onMouseEnter={e => e.currentTarget.style.backgroundColor = isDark ? '#1F1F1F' : '#F8FAFC'}
+                            onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}
+                          >
+                            {u.full_name}
+                          </button>
+                        ))}
+                        {assignableUsers.length === 0 && <div style={{ padding: 12, fontSize: 13, color: '#94A3B8' }}>No users found</div>}
+                      </div>
+                    )}
+                  </div>
+                  {/* Bulk Tag */}
+                  <div style={{ position: 'relative' }}>
+                    <button 
+                      onClick={openBulkTag}
+                      style={{
+                        height: 32, padding: '8px 12px',
+                        backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF',
+                        border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0',
+                        borderRadius: 6, fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 500,
+                        color: isDark ? '#A1A1A1' : '#334155', cursor: 'pointer',
+                        display: 'flex', alignItems: 'center', gap: 6,
+                      }}
+                    >
+                      <Tag style={{ width: 14, height: 14 }} />
+                      Tag
+                    </button>
+                    {isBulkTagOpen && (
+                      <div style={{
+                        position: 'absolute', top: '100%', left: 0, marginTop: 4, width: 220,
+                        backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`,
+                        borderRadius: 8, boxShadow: '0 10px 40px rgba(0,0,0,0.15)', zIndex: 200,
+                        maxHeight: 240, overflowY: 'auto', padding: 4,
+                      }}>
+                        {availableLabels.map(l => (
+                          <button key={l.id} onClick={() => handleBulkTag(l.id)} style={{
+                            width: '100%', padding: '8px 12px', border: 'none', backgroundColor: 'transparent',
+                            fontSize: 13, color: isDark ? '#EDEDED' : '#334155', cursor: 'pointer', textAlign: 'left',
+                            borderRadius: 6, fontFamily: 'Inter',
+                          }}
+                            onMouseEnter={e => e.currentTarget.style.backgroundColor = isDark ? '#1F1F1F' : '#F8FAFC'}
+                            onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}
+                          >
+                            {l.name}
+                          </button>
+                        ))}
+                        {availableLabels.length === 0 && <div style={{ padding: 12, fontSize: 13, color: '#94A3B8' }}>No labels found</div>}
+                      </div>
+                    )}
+                  </div>
                   <button 
                     onClick={handleBulkDelete}
                     style={{
-                      height: 32,
-                      padding: '8px 12px',
+                      height: 32, padding: '8px 12px',
                       backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF',
                       border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0',
-                      borderRadius: 6,
-                      fontFamily: 'Inter, sans-serif',
-                      fontSize: 13,
-                      fontWeight: 500,
-                      color: '#DC2626',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 6,
+                      borderRadius: 6, fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 500,
+                      color: '#DC2626', cursor: 'pointer',
+                      display: 'flex', alignItems: 'center', gap: 6,
                     }}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.backgroundColor = isDark ? '#1A1A1A' : '#FEF2F2';
