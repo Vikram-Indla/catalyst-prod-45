@@ -442,11 +442,7 @@ export default function TestHubExecutionPage() {
     }
   };
   const handleSkip = () => {
-    if (fastTrackMode || steps.length === 0) {
-      setIsSkipModalOpen(true);
-    } else {
-      updateStepStatus('skipped');
-    }
+    setIsSkipModalOpen(true);
   };
   const handleReset = () => updateExecutionStatus('not_run');
 
@@ -461,7 +457,11 @@ export default function TestHubExecutionPage() {
 
   const handleSkipConfirm = async (skipReason: string, _defectId: string | null, skipNotes: string) => {
     setIsSkipModalOpen(false);
-    await updateExecutionStatus('skipped', skipReason, skipNotes);
+    if (fastTrackMode || steps.length === 0) {
+      await updateExecutionStatus('skipped', skipReason, skipNotes);
+    } else {
+      await updateStepStatus('skipped', skipReason);
+    }
   };
 
   // Step-level status tracking + DB persistence
