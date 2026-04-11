@@ -676,6 +676,15 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
                       </th>
                     );
                   }
+                  if (c.key === 'star') {
+                    return (
+                      <th key={c.key} style={{ width: columnWidths.star, overflow: 'visible', textOverflow: 'clip' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <Star size={13} stroke="#94A3B8" fill="none" />
+                        </div>
+                      </th>
+                    );
+                  }
                   return (
                     <ResizableTableHeader
                       key={c.key}
