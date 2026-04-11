@@ -210,7 +210,9 @@ export function JiraBasicFilter({
                             <div className="jf-option-inner">
                               <div className="jf-option-content">
                                 <div className="jf-option-row">
-                                  {(option.iconNode || option.avatarUrl || option.avatarInitials || option.avatarType) && (
+                                  {option.iconNode ? (
+                                    <OptionAvatar option={option} />
+                                  ) : (option.avatarUrl || option.avatarInitials || option.avatarType) && (
                                     <div className="jf-avatar-wrap"><OptionAvatar option={option} /></div>
                                   )}
                                   {!option.hideLabel && (
@@ -253,7 +255,7 @@ export function JiraBasicFilter({
 
 function OptionAvatar({ option }: { option: FilterOption }) {
   if (option.iconNode) {
-    return <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 20, height: 20, flexShrink: 0 }}>{option.iconNode}</span>;
+    return <span style={{ display: 'inline-flex', alignItems: 'center', flexShrink: 0 }}>{option.iconNode}</span>;
   }
   if (option.avatarType === 'person-icon') {
     return (
