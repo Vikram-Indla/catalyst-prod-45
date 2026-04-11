@@ -103,6 +103,37 @@ export default function DefectDetailPage() {
 
       {/* Info Cards */}
       <div className="grid grid-cols-2 gap-4">
+        {/* Origin Card */}
+        <Card>
+          <CardHeader className="pb-2"><CardTitle className="text-sm font-medium">Origin</CardTitle></CardHeader>
+          <CardContent className="flex flex-col gap-3 text-sm">
+            {defect.jira_source === true ? (
+              <>
+                <div><span className="text-muted-foreground">Source</span><p className="font-medium">Jira Sync</p></div>
+                <div><span className="text-muted-foreground">Jira Key</span><p className="font-medium">{defect.jira_key}</p></div>
+                <div><span className="text-muted-foreground">Assignee</span><p className="font-medium">{defect.jira_assignee_name ?? '—'}</p></div>
+                <div><span className="text-muted-foreground">Reporter</span><p className="font-medium">{defect.jira_reporter_name ?? '—'}</p></div>
+                <div><span className="text-muted-foreground">Environment</span><p className="font-medium">{defect.environment ?? '—'}</p></div>
+              </>
+            ) : defect.source_test_run_id ? (
+              <>
+                <div><span className="text-muted-foreground">Source</span><p className="font-medium">Execution</p></div>
+                {defect.source_test_case_id && (
+                  <div><span className="text-muted-foreground">Test Case</span><p className="font-medium"><a href={`/testhub/repository?case=${defect.source_test_case_id}`} style={{ color: '#2563EB' }}>View Test Case</a></p></div>
+                )}
+                <div><span className="text-muted-foreground">Test Run</span><p className="font-medium"><a href={`/testhub/execution/${defect.source_test_run_id}`} style={{ color: '#2563EB' }}>View Execution</a></p></div>
+                <div><span className="text-muted-foreground">Environment</span><p className="font-medium">{defect.environment ?? '—'}</p></div>
+              </>
+            ) : (
+              <>
+                <div><span className="text-muted-foreground">Source</span><p className="font-medium">Raised manually</p></div>
+                <div><span className="text-muted-foreground">Environment</span><p className="font-medium">{defect.environment ?? '—'}</p></div>
+                <div><span className="text-muted-foreground">Component</span><p className="font-medium">{defect.component ?? '—'}</p></div>
+              </>
+            )}
+          </CardContent>
+        </Card>
+
         <Card>
           <CardHeader className="pb-2"><CardTitle className="text-sm font-medium">Details</CardTitle></CardHeader>
           <CardContent className="space-y-3 text-sm">
@@ -183,7 +214,7 @@ export default function DefectDetailPage() {
         <div className="flex items-center gap-3 p-3 bg-primary/5 border border-primary/20 rounded-lg">
           <Play className="h-4 w-4 text-primary flex-shrink-0" />
           <span className="text-sm text-muted-foreground">Created from execution run</span>
-          <Button variant="outline" size="sm" onClick={() => navigate(`/testhub/cycles/${executionRunId}?mode=view`)}>
+          <Button variant="outline" size="sm" onClick={() => navigate(`/testhub/execution/${executionRunId}`)}>
             View Execution
           </Button>
         </div>
