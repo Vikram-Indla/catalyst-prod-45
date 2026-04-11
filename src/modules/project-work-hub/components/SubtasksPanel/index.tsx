@@ -337,7 +337,10 @@ export function SubtasksPanel({ storyKey, storyId, projectKey, onSubtaskClick }:
                       )}
                       {columns.assignee && (
                         <td className="sp-td">
-                          <AssigneeCell displayName={child.assignee_display_name} />
+                          <AssigneeCell
+                            displayName={child.assignee_display_name}
+                            avatarUrl={child.assignee_account_id ? avatarMap[child.assignee_account_id] : null}
+                          />
                         </td>
                       )}
                       {columns.status && (
