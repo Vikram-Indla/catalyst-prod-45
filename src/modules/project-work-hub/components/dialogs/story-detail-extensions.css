@@ -1003,3 +1003,27 @@
 [data-sdm-scope] .adf-editor-content table tr:hover td {
   background: #FAFBFC;
 }
+
+/* ════════════════════════════════════════════════════════════════
+   ADF LINK STYLES — Jira hyperlink parity
+   ════════════════════════════════════════════════════════════════ */
+[data-sdm-scope] .adf-editor-content a,
+[data-sdm-scope] .ProseMirror a {
+  color: #0052CC;
+  text-decoration: none;
+  cursor: pointer;
+  border-bottom: 1px solid transparent;
+  transition: color 0.12s, border-color 0.12s;
+}
+
+[data-sdm-scope] .adf-editor-content a:hover,
+[data-sdm-scope] .ProseMirror a:hover {
+  color: #0065FF;
+  border-bottom-color: #0065FF;
+  text-decoration: none;
+}
+
+[data-sdm-scope] .adf-editor-content a:visited,
+[data-sdm-scope] .ProseMirror a:visited {
+  color: #0052CC;
+}
