@@ -354,23 +354,18 @@ export function TestRepositoryPage() {
     }
   };
 
-  const handleRowClick = (testCase: TestCase) => {
-    // Use already-loaded data instead of fetching again
-    const rawTC: RawTestCase = {
-      id: testCase.id,
-      case_key: testCase.caseKey,
-      title: testCase.title,
-      description: testCase.description || null,
-      preconditions: testCase.preconditions || null,
-      folder_id: testCase.folderId || null,
-      priority_id: null,
-      case_type_id: null,
-      status: testCase.status,
-      version: testCase.version || 1,
-      updated_at: testCase.updatedAt,
-    };
-    setSelectedTestCase(rawTC);
-    setIsViewModalOpen(true);
+  const handleRowClick = async (testCase: TestCase) => {
+    // Fetch full row from DB to get all FK fields (priority_id, case_type_id, etc.)
+    const { data: fullTC } = await supabase
+      .from('tm_test_cases')
+      .select('*')
+      .eq('id', testCase.id)
+      .single();
+
+    if (fullTC) {
+      setSelectedTestCase(fullTC as RawTestCase);
+      setIsViewModalOpen(true);
+    }
   };
 
   const handleContextMenu = (e: React.MouseEvent, testCase: TestCase) => {
