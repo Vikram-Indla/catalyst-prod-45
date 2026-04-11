@@ -134,6 +134,9 @@ export default function DefectsPage() {
       jira_reporter_name: d.reporter?.full_name || null,
       assignee: d.assignee ? { id: d.assignee.id, full_name: d.assignee.full_name, avatar_url: d.assignee.avatar_url || null } : null,
       reporter: d.reporter ? { id: d.reporter.id, full_name: d.reporter.full_name, avatar_url: d.reporter.avatar_url || null } : null,
+      source_test_case_id: (d as any).source_test_case_id || null,
+      source_test_run_id: (d as any).source_test_run_id || null,
+      source_test_plan_id: (d as any).source_test_plan_id || null,
       parent_key: (d as any).jira_parent_key || (d as any).epic_link || null,
       // Source-aware display fields
       displayKey: isJira && jiraKey ? jiraKey : d.key,
