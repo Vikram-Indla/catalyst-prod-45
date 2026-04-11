@@ -16,6 +16,8 @@ import { toast } from 'sonner';
 import { useTheme } from '@/hooks/useTheme';
 import { DK, LK } from '@/utils/dark-mode-styles';
 import type { BacklogStory } from '../types/backlog.types';
+import { FilterTriggerButton, JiraBasicFilter } from '@/components/shared/JiraBasicFilter';
+import type { FilterCategory } from '@/components/shared/JiraBasicFilter';
 
 const StoryDetailModal = lazy(() => import('../components/dialogs/StoryDetailModal'));
 
