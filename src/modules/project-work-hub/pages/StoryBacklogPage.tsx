@@ -290,6 +290,8 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
   const [sortKey, setSortKey] = useState<string | null>(null);
   const [sortDir, setSortDir] = useState<SortDir>(null);
   const [focusedIndex, setFocusedIndex] = useState(-1);
+  const [page, setPage] = useState(1);
+  const pageSize = 25;
 
   // Resizable panel
   const containerRef = useRef<HTMLDivElement>(null);
