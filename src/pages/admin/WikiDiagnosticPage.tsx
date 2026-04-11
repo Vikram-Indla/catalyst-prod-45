@@ -3,7 +3,7 @@
  * Runs live health checks against all wiki-related tables and displays results.
  */
 import React, { useState, useEffect, useCallback } from 'react';
-import { supabase, typedQuery } from '@/integrations/supabase/client';
+import { supabase, typedQuery, typedRpc } from '@/integrations/supabase/client';
 import {
   RefreshCw, Database, Layers, FileText, FolderOpen,
   CheckCircle2, XCircle, BookOpen, Activity, BarChart3,

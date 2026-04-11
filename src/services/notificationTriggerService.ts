@@ -6,7 +6,7 @@
  * ═══════════════════════════════════════════════════════════════════
  */
 
-import { supabase, typedQuery, typedQuery, typedQuery } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import type {
   NotificationTriggerConfig,
   NotificationScheme,

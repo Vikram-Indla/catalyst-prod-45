@@ -1,4 +1,4 @@
-import { supabase, typedQuery, typedQuery } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { R360_STATUS_MAP, R360_STATUS_DEFAULT } from '@/constants/r360';
 import { isContributorRole } from '@/constants/r360RoleClassification';
 import type { R360WorkItem } from '@/types/r360';

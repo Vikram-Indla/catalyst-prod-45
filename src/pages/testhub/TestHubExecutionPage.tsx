@@ -34,7 +34,7 @@ interface ExecutionHistoryRecord {
 }
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import {
-  Clock,
+  Clock, CheckCircle2, XCircle, AlertTriangle, SkipForward,
 } from 'lucide-react';
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable';
 import { supabase, typedQuery } from '@/integrations/supabase/client';

@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { supabase, typedQuery, typedQuery, typedQuery } from '@/integrations/supabase/client'
+import { supabase, typedQuery } from '@/integrations/supabase/client'
 
 export interface SyncLogEntry {
   id: string
