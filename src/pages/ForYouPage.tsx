@@ -128,7 +128,16 @@ export default function ForYouPage() {
       },
       {
         id: 'priority', label: 'Priority', searchPlaceholder: 'Search priority',
-        options: [...new Set(workItems.map(i => i.priority).filter(Boolean))].sort().map(p => ({ id: p, label: p })),
+        options: (() => {
+          const canonical = ['Highest', 'High', 'Medium', 'Low', 'Lowest'];
+          const seen = new Set<string>();
+          workItems.forEach(i => {
+            if (!i.priority) return;
+            const norm = i.priority.charAt(0).toUpperCase() + i.priority.slice(1).toLowerCase();
+            if (canonical.includes(norm)) seen.add(norm);
+          });
+          return canonical.filter(p => seen.has(p)).map(p => ({ id: p, label: p }));
+        })(),
       },
       {
         id: 'type', label: 'Type', searchPlaceholder: 'Search issue type',
@@ -168,7 +177,10 @@ export default function ForYouPage() {
         if (!af.reporter.includes(reporter)) return false;
       }
       if (af.status?.length && !af.status.includes(item.status)) return false;
-      if (af.priority?.length && !af.priority.includes(item.priority)) return false;
+      if (af.priority?.length) {
+        const normPri = item.priority.charAt(0).toUpperCase() + item.priority.slice(1).toLowerCase();
+        if (!af.priority.includes(item.priority) && !af.priority.includes(normPri)) return false;
+      }
       if (af.type?.length && !af.type.includes(item.issueType)) return false;
       return true;
     };
