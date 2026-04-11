@@ -274,7 +274,7 @@ export default function ForYouPage() {
                     selected={advancedFilters}
                     onSelectionChange={handleAdvancedFilterChange}
                     onClearAll={handleClearAllFilters}
-                    onClose={() => setFilterPanelOpen(false)}
+                    onClose={handleCloseFilterPanel}
                   />
                 )}
               </div>
