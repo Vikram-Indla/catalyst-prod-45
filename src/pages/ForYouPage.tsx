@@ -56,7 +56,16 @@ export default function ForYouPage() {
     }
   }, [isLoading]);
 
-  useEffect(() => { setCurrentPage(1); }, [activeTab, searchQuery, inlineFilters, advancedFilters]);
+  useEffect(() => { setCurrentPage(1); }, [activeTab, searchQuery, inlineFilters]);
+  // Reset page for advanced filters only when filter count changes significantly
+  const prevAdvFilterCount = React.useRef(0);
+  useEffect(() => {
+    const count = Object.values(advancedFilters).flat().length;
+    if (count !== prevAdvFilterCount.current) {
+      prevAdvFilterCount.current = count;
+      setCurrentPage(1);
+    }
+  }, [advancedFilters]);
 
   // Shift+F global shortcut to toggle filter panel
   useEffect(() => {
