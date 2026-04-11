@@ -901,8 +901,8 @@ export default function StoryDetailModal({
                               ))}
                             </div>
                           )}
-                          {filteredMain.length === 0 && filteredRec.length === 0 && (
-                            <div style={{ padding: '12px 14px', fontSize: 13, color: '#97A0AF', fontFamily: 'Inter, sans-serif' }}>No items found</div>
+                          {filteredMain.length === 0 && (
+                            <div style={{ padding: '12px 16px', fontSize: 13.33, color: atlText, opacity: 0.5, fontFamily: 'inherit' }}>No items found</div>
                           )}
                         </div>
                         );
