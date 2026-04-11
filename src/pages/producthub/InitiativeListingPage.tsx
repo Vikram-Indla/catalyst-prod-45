@@ -288,9 +288,19 @@ export default function InitiativeListingPage() {
       iconNode: PRIORITY_ICONS[level],
     }));
 
-    // Quarter category
-    const quarters = [...new Set(tabFiltered.map(i => i.target_quarter).filter(Boolean) as string[])].sort();
-    const quarterOptions = quarters.map(q => ({ id: q, label: q }));
+    // Quarter category — fixed 5-quarter window: -2, -1, current, +1, +2
+    const now = new Date();
+    const currentQNum = Math.ceil((now.getMonth() + 1) / 3);
+    const currentYear = now.getFullYear();
+    const quarterOptions: Array<{ id: string; label: string }> = [];
+    for (let offset = -2; offset <= 2; offset++) {
+      let q = currentQNum + offset;
+      let y = currentYear;
+      while (q < 1) { q += 4; y--; }
+      while (q > 4) { q -= 4; y++; }
+      const id = `Q${q} ${y}`;
+      quarterOptions.push({ id, label: offset === 0 ? `${id} (Current)` : id });
+    }
 
     // Roadmap category
     const roadmapOptions = [
