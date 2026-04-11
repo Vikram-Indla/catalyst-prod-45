@@ -5,7 +5,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import {
-  ArrowLeft, Pencil, Play, CheckCircle2, XCircle, AlertTriangle,
+  ArrowLeft, Pencil, Play, Pause, CheckCircle2, XCircle, AlertTriangle,
   Clock, Plus, User, Calendar, RefreshCw, Trash2, Download, Users, BarChart3, Server, Bug
 } from 'lucide-react';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
