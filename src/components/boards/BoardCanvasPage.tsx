@@ -14,8 +14,10 @@ import KanbanColumn from './KanbanColumn';
 import KanbanCardComponent from './KanbanCard';
 import BoardQuickFilters from './BoardQuickFilters';
 import BoardSettingsDrawer from './BoardSettingsDrawer';
-import { BoardIssueDetailDrawer } from './BoardIssueDetailDrawer';
 import type { KanbanCard, BoardColumn } from '@/types/board';
+import { lazy, Suspense } from 'react';
+
+const StoryDetailModal = lazy(() => import('@/modules/project-work-hub/components/dialogs/StoryDetailModal'));
 
 /* Board accent colors — use board.color from DB, fallback map */
 const BOARD_ACCENT: Record<string, string> = {
@@ -493,11 +495,17 @@ export default function BoardCanvasPage({ projectIdOverride, basePath }: BoardCa
         />
       )}
 
-      {/* Issue Detail Drawer */}
-      <BoardIssueDetailDrawer
-        issueId={detailItemId}
-        onClose={() => setDetailItemId(null)}
-      />
+      {/* Issue Detail Modal — unified StoryDetailModal */}
+      {detailItemId && (
+        <Suspense fallback={null}>
+          <StoryDetailModal
+            isOpen={true}
+            onClose={() => setDetailItemId(null)}
+            itemId={detailItemId}
+            projectId={projectId ?? ''}
+          />
+        </Suspense>
+      )}
     </div>
   );
 }
