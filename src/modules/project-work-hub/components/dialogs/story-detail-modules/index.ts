@@ -39,6 +39,7 @@ export { DefectsSection } from './DefectsSection';
 export { IncidentsSection } from './IncidentsSection';
 export { TestHubSection } from './TestHubSection';
 export { LinkedIssuesSection } from './LinkedIssuesSection';
+export { AttachmentsSection } from './AttachmentsSection';
 
 // Editable fields
 export { EditableAssignee, EditablePriority, EditableLabels, ParentFieldPicker } from './EditableFields';

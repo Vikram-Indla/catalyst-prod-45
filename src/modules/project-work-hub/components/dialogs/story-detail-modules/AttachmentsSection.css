@@ -1,0 +1,405 @@
+/*
+ * AttachmentsSection.css — Jira-parity attachments table
+ * All tokens scraped from live Jira DOM.
+ * Scoped: .att-* prefix prevents leaks.
+ */
+
+/* ── Font ── */
+.att-section *,
+.att-section *::before,
+.att-section *::after {
+  box-sizing: border-box;
+}
+
+/* ── Section wrapper ── */
+.att-section {
+  margin-top: 24px;
+}
+
+/* ─── SECTION HEADER ─── */
+.att-heading-wrapper {
+  padding: 0;
+}
+
+.att-heading-inner {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 32px;
+}
+
+/* Left cluster: chevron + "Attachments" + badge */
+.att-heading-left {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.att-heading-toggle-area {
+  display: flex;
+  align-items: center;
+  padding: 4px 4px 4px 0;
+  margin-left: -4px;
+  gap: 0;
+  cursor: pointer;
+}
+
+/* Collapse/expand button */
+.att-collapse-btn {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+/* "Attachments" text label */
+.att-heading-label {
+  display: block;
+  font-size: 16px;
+  font-weight: 650;
+  color: rgb(41, 42, 46);
+  line-height: 20px;
+  user-select: none;
+  font-family: 'Sora', ui-sans-serif, -apple-system, system-ui, 'Segoe UI', sans-serif;
+}
+
+/* Badge: grey pill with count */
+.att-badge-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.att-badge {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgb(221, 222, 225);
+  color: rgb(41, 42, 46);
+  font-size: 14px;
+  font-weight: 400;
+  border-radius: 2px;
+  min-width: 24px;
+  height: 16px;
+  padding: 0 4px;
+  line-height: 1;
+  font-family: 'Inter', ui-sans-serif, sans-serif;
+}
+
+/* Right actions: ... and + */
+.att-heading-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ── Generic icon button ── */
+.att-icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 2px 0;
+  background: transparent;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  color: rgb(80, 82, 88);
+  transition: background-color 0.1s ease;
+}
+
+.att-icon-btn:hover {
+  background-color: rgba(9, 30, 66, 0.08);
+  color: rgb(41, 42, 46);
+}
+
+.att-icon-btn:active {
+  background-color: rgba(9, 30, 66, 0.16);
+}
+
+/* More menu dropdown */
+.att-more-menu {
+  position: absolute;
+  right: 0;
+  top: 28px;
+  background: #FFFFFF;
+  border: 1px solid #DFE1E6;
+  border-radius: 4px;
+  box-shadow: 0 4px 16px rgba(9, 30, 66, 0.18);
+  padding: 4px 0;
+  z-index: 50;
+  min-width: 200;
+  white-space: nowrap;
+}
+
+.att-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 14px;
+  border: none;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  font-size: 14px;
+  color: #172B4D;
+  font-family: 'Inter', ui-sans-serif, sans-serif;
+  transition: background 0.1s ease;
+}
+
+.att-menu-item:hover {
+  background: #F4F5F7;
+}
+
+.att-menu-badge {
+  background: #DFE1E6;
+  color: #42526E;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 3px;
+  margin-left: 8px;
+}
+
+/* ─── BODY ─── */
+.att-body {
+  margin-top: 0;
+}
+
+/* Empty state */
+.att-empty {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 56px;
+  color: rgb(97, 99, 103);
+  font-size: 14px;
+  font-weight: 400;
+  font-family: 'Inter', ui-sans-serif, sans-serif;
+}
+
+/* ─── TABLE ─── */
+.att-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  table-layout: auto;
+}
+
+/* Column widths — Jira ratios */
+.att-th-name     { width: 60%; }
+.att-th-size     { width: 8%; }
+.att-th-date     { width: 20%; }
+.att-th-view     { width: 4%; }
+.att-th-download { width: 5%; }
+
+/* Header cells */
+.att-th {
+  padding: 4px 8px;
+  font-size: 12px;
+  font-weight: 650;
+  color: rgb(80, 82, 88);
+  border-bottom: 1.667px solid rgba(11, 18, 14, 0.14);
+  white-space: nowrap;
+  background: transparent;
+  text-align: left;
+  font-family: 'Inter', ui-sans-serif, sans-serif;
+}
+
+.att-th-name {
+  padding-left: 0;
+  padding-right: 8px;
+}
+
+.att-th-download {
+  padding-right: 0;
+  padding-left: 8px;
+}
+
+/* Sort button inside header */
+.att-sort-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: rgb(80, 82, 88);
+  font-size: 12px;
+  font-weight: 650;
+  font-family: 'Inter', ui-sans-serif, sans-serif;
+}
+
+.att-sort-btn:hover {
+  color: rgb(41, 42, 46);
+}
+
+/* ─── DATA ROWS ─── */
+.att-row {
+  height: 41px;
+  background: transparent;
+  transition: background-color 0.1s ease;
+}
+
+.att-row:hover {
+  background-color: rgba(9, 30, 66, 0.04);
+}
+
+/* Data cells */
+.att-td {
+  padding: 4px 8px;
+  font-size: 14px;
+  color: rgb(41, 42, 46);
+  vertical-align: middle;
+  border-bottom: none;
+  font-family: 'Inter', ui-sans-serif, sans-serif;
+}
+
+.att-td-name {
+  padding-left: 0;
+  padding-right: 8px;
+  max-width: 0;
+}
+
+.att-td-size {
+  white-space: nowrap;
+  color: rgb(80, 82, 88);
+  font-size: 14px;
+}
+
+.att-td-date {
+  white-space: nowrap;
+  color: rgb(80, 82, 88);
+  font-size: 14px;
+}
+
+.att-td-action {
+  padding: 4px 8px;
+  text-align: center;
+}
+
+.att-td-download-cell {
+  padding-right: 0;
+  padding-left: 8px;
+}
+
+/* sr-only — visually hidden but accessible */
+.att-section .sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ─── FILE ROW (thumbnail + name) ─── */
+.att-file-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  min-width: 0;
+  height: 33px;
+}
+
+/* Thumbnail container */
+.att-thumb {
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  overflow: hidden;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+}
+
+.att-thumb-img {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  border-radius: 4px;
+}
+
+.att-thumb-fallback {
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  background: #F4F5F7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Filename text */
+.att-filename {
+  min-width: 0;
+  flex: 1;
+}
+
+.att-filename-inner {
+  display: flex;
+  align-items: baseline;
+  min-width: 0;
+}
+
+.att-filename-base {
+  display: inline-block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 14px;
+  color: rgb(41, 42, 46);
+  font-weight: 400;
+  min-width: 0;
+}
+
+.att-filename-ext {
+  display: inline-block;
+  white-space: nowrap;
+  font-size: 14px;
+  color: rgb(41, 42, 46);
+  font-weight: 400;
+  flex-shrink: 0;
+}
+
+/* ─── ACTION BUTTONS ─── */
+.att-action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 6px 0;
+  background: transparent;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background-color 0.1s ease;
+  text-decoration: none;
+}
+
+.att-eye-btn {
+  color: rgba(8, 15, 33, 0.29);
+}
+
+.att-eye-btn:hover {
+  color: rgb(80, 82, 88);
+  background-color: rgba(9, 30, 66, 0.08);
+}
+
+.att-download-btn {
+  color: rgb(80, 82, 88);
+}
+
+.att-download-btn:hover {
+  background-color: rgba(9, 30, 66, 0.08);
+  color: rgb(41, 42, 46);
+}
