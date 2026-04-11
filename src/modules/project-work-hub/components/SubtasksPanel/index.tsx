@@ -174,7 +174,6 @@ export function SubtasksPanel({ storyKey, storyId, projectKey, onSubtaskClick }:
         .from('ph_issues')
         .select('id,issue_key,summary,status,status_category,issue_type,assignee_display_name,priority,position,deleted_at')
         .eq('parent_key', storyKey)
-        .in('issue_type', ['task', 'Sub-task'])
         .is('deleted_at', null)
         .order('position', { ascending: true });
       if (error) throw error;
@@ -217,9 +216,6 @@ export function SubtasksPanel({ storyKey, storyId, projectKey, onSubtaskClick }:
   useEffect(() => {
     if (creating) setTimeout(() => createRef.current?.focus(), 50);
   }, [creating]);
-
-  // Don't render if no children and not creating
-  if (!isLoading && children.length === 0 && !creating) return null;
 
   return (
     <div className="sp-panel">
@@ -269,6 +265,15 @@ export function SubtasksPanel({ storyKey, storyId, projectKey, onSubtaskClick }:
                   <div className="sp-skeleton-pulse" style={{ width: 60, height: 18 }} />
                 </div>
               ))}
+            </div>
+          )}
+
+          {/* ═══ Empty state ═══ */}
+          {!isLoading && children.length === 0 && !creating && (
+            <div className="sp-empty">
+              <div className="sp-empty-heading">No subtasks yet</div>
+              <div className="sp-empty-sub">Break this story into subtasks to track progress</div>
+              <button type="button" className="sp-empty-cta" onClick={() => setCreating(true)}>+ Create subtask</button>
             </div>
           )}
 
