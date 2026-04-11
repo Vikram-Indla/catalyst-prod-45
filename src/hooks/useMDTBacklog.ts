@@ -57,8 +57,11 @@ export function useMDTBacklog() {
       const currentUserId = user?.id;
 
       // Fetch initiatives, profiles, departments, scores, favorites, BRD tasks in parallel
+      // 2026 GUARDRAIL — only show items created or updated in 2026+
+      const YEAR_2026 = '2026-01-01T00:00:00Z';
+
       const [initResult, profilesResult, deptsResult, scoresResult, favsResult, brdTasksResult] = await Promise.all([
-        typedQuery('ph_backlog_initiatives_view').select('*').limit(5000),
+        typedQuery('ph_backlog_initiatives_view').select('*').or(`created_at.gte.${YEAR_2026},updated_at.gte.${YEAR_2026}`).limit(5000),
         supabase.from('profiles').select('id, full_name, avatar_url'),
         typedQuery('ph_departments').select('id, name'),
         typedQuery('ph_initiative_scores').select('initiative_id, strategic_alignment, business_impact, time_urgency, resource_feasibility, computed_score'),
