@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MoreHorizontal, ExternalLink, UserRound, ChevronsUp, ChevronUp, Minus, ChevronDown, Search, X } from 'lucide-react';
+import { MoreHorizontal, ExternalLink, UserRound, ChevronsUp, ChevronUp, Minus, ChevronDown, Search, X, Paperclip } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import '@/styles/product-backlog.css';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -369,6 +369,21 @@ export function DefectTable({ defects, selectedIds, onSelectionChange, onDelete,
   const nameAvatarMap = useProfileAvatarsByName();
   const [sortKey, setSortKey] = useState<string | null>(null);
   const [sortDir, setSortDir] = useState<SortDir>(null);
+
+  // Fetch attachment counts for defect keys
+  const defectKeys = useMemo(() => defects.map(d => d.defect_key), [defects]);
+  const { data: attachmentData } = useQuery({
+    queryKey: ['defect-attachment-counts', defectKeys],
+    queryFn: async () => {
+      if (defectKeys.length === 0) return new Map<string, number>();
+      const { data } = await supabase.from('ph_issue_attachments').select('issue_key').in('issue_key', defectKeys);
+      const map = new Map<string, number>();
+      (data || []).forEach((r: any) => map.set(r.issue_key, (map.get(r.issue_key) || 0) + 1));
+      return map;
+    },
+    staleTime: 5 * 60_000,
+  });
+  const attachmentCounts = attachmentData || new Map<string, number>();
   const {
     orderedColumns, columnWidths, dragKey, dragOverKey,
     onResizeStart, onDragStart, onDragOver, onDragEnd,
@@ -416,10 +431,12 @@ export function DefectTable({ defects, selectedIds, onSelectionChange, onDelete,
         return <td key={colKey} style={{ width: columnWidths.star, overflow: 'visible', textOverflow: 'clip' }} onClick={e => e.stopPropagation()}><div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><WorkItemStarButton itemId={d.id} itemType="defect" size="sm" showTooltip={false} alwaysVisibleWhenStarred /></div></td>;
       case 'type':
         return <td key={colKey} style={{ width: columnWidths.type, overflow: 'visible', textOverflow: 'clip' }}><div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><BugTypeIcon /></div></td>;
-      case 'key':
+      case 'key': {
+        const attCount = attachmentCounts.get(d.defect_key) || 0;
         return (
           <td key={colKey} style={{ width: columnWidths.key }}>
             <div className="flex items-center gap-1">
+              {attCount > 0 && <Paperclip size={12} style={{ color: '#94A3B8', flexShrink: 0, transform: 'rotate(-45deg)' }} title={`${attCount} attachment${attCount > 1 ? 's' : ''}`} />}
               <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 600, color: '#2563EB' }}>{keyText}</span>
               {isJira && <JiraBadge />}
               {isJira && d.external_url && (
@@ -430,6 +447,7 @@ export function DefectTable({ defects, selectedIds, onSelectionChange, onDelete,
             </div>
           </td>
         );
+      }
       case 'title':
         return <td key={colKey} style={{ fontWeight: 500, width: columnWidths.title }}>{d.title}</td>;
       case 'parent':

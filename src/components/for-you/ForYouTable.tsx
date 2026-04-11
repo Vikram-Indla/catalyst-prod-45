@@ -1,10 +1,11 @@
 /**
- * For You Work Items Table - V12 Hybrid Precision · pb-table styling
- * With column resize + drag reorder via useTableColumns
+ * CatalystTable — Source-of-truth table component
+ * V12 Hybrid Precision · pb-table styling
+ * Column resize + drag reorder + Jira-style sort + attachment indicator
  */
 
 import React, { useState, useCallback, useRef, useEffect, useMemo } from 'react';
-import { Star } from 'lucide-react';
+import { Star, Paperclip } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { JiraIssueTypeIcon } from '@/components/shared/JiraIssueTypeIcon';
 import { StatusBadge } from '@/components/ui/StatusBadge';
@@ -14,7 +15,7 @@ import { ResizableTableHeader, type SortDir } from '@/components/shared/Resizabl
 import '@/styles/product-backlog.css';
 import type { WorkItem, WorkGroup } from '@/hooks/useForYouData';
 
-interface ForYouTableProps {
+interface CatalystTableProps {
   groupedItems: Record<WorkGroup, WorkItem[]>;
   onRowClick: (itemId: string) => void;
   selectedIds?: Set<string>;
@@ -87,10 +88,13 @@ function sortItems(items: WorkItem[], sortKey: string | null, sortDir: SortDir):
   });
 }
 
-export function ForYouTable({
+/** @deprecated Use CatalystTable instead */
+export const ForYouTable = CatalystTable;
+
+export function CatalystTable({
   groupedItems, onRowClick, selectedIds = new Set(),
   onSelectionChange, onStarToggle, isInitialLoad = false,
-}: ForYouTableProps) {
+}: CatalystTableProps) {
   const [focusedIndex, setFocusedIndex] = useState<number>(-1);
   const [sortKey, setSortKey] = useState<string | null>(null);
   const [sortDir, setSortDir] = useState<SortDir>(null);
@@ -210,7 +214,12 @@ export function ForYouTable({
       case 'key':
         return (
           <td key={colKey} style={{ width: columnWidths.key }}>
-            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 600, color: '#2563EB' }}>{item.key}</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+              {(item.attachmentCount ?? 0) > 0 && (
+                <Paperclip size={12} style={{ color: '#94A3B8', flexShrink: 0, transform: 'rotate(-45deg)' }} title={`${item.attachmentCount} attachment${item.attachmentCount! > 1 ? 's' : ''}`} />
+              )}
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 600, color: '#2563EB' }}>{item.key}</span>
+            </div>
           </td>
         );
       case 'summary':

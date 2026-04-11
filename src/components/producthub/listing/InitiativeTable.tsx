@@ -3,6 +3,8 @@
  */
 
 import { useMemo, useState, useCallback, useRef, useEffect, Fragment } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import type { BRDTask } from '@/hooks/useMDTBacklog';
 import {
   useReactTable, getCoreRowModel, getSortedRowModel,
@@ -10,7 +12,7 @@ import {
   type SortingState, type RowSelectionState, type ColumnResizeMode, type VisibilityState,
 } from '@tanstack/react-table';
 import { DragDropContext, Droppable, Draggable, type DropResult } from '@hello-pangea/dnd';
-import { Check, ChevronUp, ChevronDown, ChevronsUpDown, Pencil, Star, MoreVertical, Map, LayoutGrid } from 'lucide-react';
+import { Check, ChevronUp, ChevronDown, ChevronsUpDown, Pencil, Star, MoreVertical, Map, LayoutGrid, Paperclip } from 'lucide-react';
 import type { Initiative, InitiativeStatus, Density } from '@/types/initiative';
 import { STATUS_DISPLAY, getPriorityLevel } from '@/types/initiative';
 import type { GroupByField } from '@/components/producthub/listing/ListingToolbar';
@@ -88,6 +90,22 @@ export function InitiativeTable({
   onInlineEdit, onPromote, onRoadmapToggle, focusedRowIndex = -1, onFocusedRowChange,
 }: Props) {
   const avatarsByName = useProfileAvatarsByName();
+
+  // Fetch attachment counts for initiative keys
+  const issueKeys = useMemo(() => data.map(d => d.jira_issue_key || d.initiative_key).filter(Boolean), [data]);
+  const { data: attachmentData } = useQuery({
+    queryKey: ['initiative-attachment-counts', issueKeys],
+    queryFn: async () => {
+      if (issueKeys.length === 0) return new Map<string, number>();
+      const { data: rows } = await supabase.from('ph_issue_attachments').select('issue_key').in('issue_key', issueKeys);
+      const map = new Map<string, number>();
+      (rows || []).forEach((r: any) => map.set(r.issue_key, (map.get(r.issue_key) || 0) + 1));
+      return map;
+    },
+    staleTime: 5 * 60_000,
+  });
+  const attachmentCounts = attachmentData || new Map<string, number>();
+
   const [sorting, setSorting] = useState<SortingState>([{ id: 'initiative_key', desc: false }]);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [editingCell, setEditingCell] = useState<{ rowId: string; columnId: string; rect: DOMRect } | null>(null);
@@ -211,7 +229,17 @@ export function InitiativeTable({
     }),
     col.accessor('initiative_key', {
       id: 'initiative_key', size: 90, minSize: 72, header: 'ID',
-      cell: ({ getValue }) => <IDCell value={getValue()} />,
+      cell: ({ getValue, row }) => {
+        const key = getValue();
+        const attKey = row.original.jira_issue_key || key;
+        const attCount = attachmentCounts.get(attKey) || 0;
+        return (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+            {attCount > 0 && <Paperclip size={12} style={{ color: '#94A3B8', flexShrink: 0, transform: 'rotate(-45deg)' }} title={`${attCount} attachment${attCount > 1 ? 's' : ''}`} />}
+            <IDCell value={key} />
+          </div>
+        );
+      },
     }),
     col.accessor('title', {
       id: 'title', size: 240, minSize: 200, header: 'Title',

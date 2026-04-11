@@ -56,6 +56,7 @@ export interface WorkItem {
   description?: string;
   parentKey?: string;
   parentSummary?: string;
+  attachmentCount?: number;
 }
 
 export type AIWorkItemType = 'feature' | 'epic' | 'story' | 'defect' | 'incident' | 'task' | 'business-request';
@@ -316,7 +317,7 @@ function priorityToLevel(priority: string): number {
 }
 
 // Map ph_issues row to WorkItem
-function mapIssueToWorkItem(row: any, starredSet: Set<string>, projectNameMap: Map<string, string>): WorkItem {
+function mapIssueToWorkItem(row: any, starredSet: Set<string>, projectNameMap: Map<string, string>, attachmentCounts?: Map<string, number>): WorkItem {
   const assigneeName = row.assignee_display_name || 'Unassigned';
   const projectKey = row.project_key || '';
   const issueType = row.issue_type || 'Task';
@@ -383,6 +384,7 @@ function mapIssueToWorkItem(row: any, starredSet: Set<string>, projectNameMap: M
     reporter: row.reporter_display_name || undefined,
     group: row.jira_updated_at ? computeGroup(row.jira_updated_at) : 'EARLIER',
     starred: starredSet.has(row.issue_key),
+    attachmentCount: attachmentCounts?.get(row.issue_key) ?? 0,
   };
 }
 
@@ -400,6 +402,7 @@ export function useForYouData() {
   const [workedOnItems, setWorkedOnItems] = useState<any[]>([]);
   const [assignedItems, setAssignedItems] = useState<any[]>([]);
   const [starredData, setStarredData] = useState<any[]>([]);
+  const [attachmentCounts, setAttachmentCounts] = useState<Map<string, number>>(new Map());
   const [isLoading, setIsLoading] = useState(true);
   const [jiraAccountIds, setJiraAccountIds] = useState<string[]>([]);
   const [projectNameMap, setProjectNameMap] = useState<Map<string, string>>(new Map());
@@ -448,6 +451,7 @@ export function useForYouData() {
           { data: nativeEpics },
           { data: nativeIncidents },
           { data: stars },
+          { data: attachmentRows },
         ] = await Promise.all([
           supabase.from('ph_jira_projects').select('project_key, name'),
           supabase.from('projects').select('id, key'),
@@ -458,7 +462,15 @@ export function useForYouData() {
           supabase.from('epics').select('id, epic_key, name, status, state, assignee_id, owner_id, points_estimate, tags, description, updated_at, created_at').or(`assignee_id.eq.${authUser.id},owner_id.eq.${authUser.id}`).is('deleted_at', null).order('updated_at', { ascending: false }).limit(100),
           supabase.from('incidents').select('id, incident_key, title, status, severity, priority, assignee_id, reporter_name, description, updated_at, created_at, project_id, project:projects!incidents_project_id_fkey(id, name, key)').eq('assignee_id', authUser.id).is('deleted_at', null).order('updated_at', { ascending: false }).limit(100),
           supabase.from('user_starred_items').select('item_id, item_type').eq('user_id', authUser.id),
+          supabase.from('ph_issue_attachments').select('issue_key'),
         ]);
+
+        // Build attachment count map (issue_key → count)
+        const attMap = new Map<string, number>();
+        (attachmentRows || []).forEach((r: any) => {
+          attMap.set(r.issue_key, (attMap.get(r.issue_key) || 0) + 1);
+        });
+        setAttachmentCounts(attMap);
 
         // Build project maps
         const projectIdMap = new Map<string, string>();
@@ -581,14 +593,14 @@ export function useForYouData() {
   }, [activeTab, workedOnItems, assignedItems, starredData]);
 
   const filteredItems = useMemo(() => {
-    let items = sourceItems.map(row => mapIssueToWorkItem(row, starredItems, projectNameMap));
+    let items = sourceItems.map(row => mapIssueToWorkItem(row, starredItems, projectNameMap, attachmentCounts));
     if (activeMode !== 'all') items = items.filter(item => item.mode.toLowerCase() === activeMode);
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       items = items.filter(item => item.key.toLowerCase().includes(query) || item.summary.toLowerCase().includes(query));
     }
     return items;
-  }, [sourceItems, activeMode, searchQuery, starredItems, projectNameMap]);
+  }, [sourceItems, activeMode, searchQuery, starredItems, projectNameMap, attachmentCounts]);
 
   const groupedItems = useMemo(() => {
     const groups: Record<WorkGroup, WorkItem[]> = { YESTERDAY: [], THIS_WEEK: [], EARLIER: [] };
