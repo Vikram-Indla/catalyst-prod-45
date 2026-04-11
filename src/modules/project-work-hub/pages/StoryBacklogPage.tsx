@@ -446,13 +446,15 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
       {filterPanelOpen && (
         <div style={{ position: 'relative', zIndex: 50, flexShrink: 0 }}>
           <div style={{ position: 'absolute', top: 0, right: 24, zIndex: 50 }}>
-            <JiraBasicFilter
-              categories={filterCategories}
-              selected={advancedFilters}
-              onSelectionChange={handleFilterChange}
-              onClearAll={handleClearAllFilters}
-              onClose={() => setFilterPanelOpen(false)}
-            />
+            <div style={{ position: 'relative' }}>
+              <JiraBasicFilter
+                categories={filterCategories}
+                selected={advancedFilters}
+                onSelectionChange={handleFilterChange}
+                onClearAll={handleClearAllFilters}
+                onClose={() => setFilterPanelOpen(false)}
+              />
+            </div>
           </div>
         </div>
       )}
