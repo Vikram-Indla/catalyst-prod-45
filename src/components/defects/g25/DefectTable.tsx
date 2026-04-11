@@ -436,7 +436,7 @@ export function DefectTable({ defects, selectedIds, onSelectionChange, onDelete,
         return (
           <td key={colKey} style={{ width: columnWidths.key }}>
             <div className="flex items-center gap-1">
-              {attCount > 0 && <span title={`${attCount} attachment${attCount > 1 ? 's' : ''}`}><Paperclip size={12} style={{ color: '#94A3B8', flexShrink: 0, transform: 'rotate(-45deg)' }} /></span>}
+              {attCount > 0 && <Paperclip size={12} style={{ color: '#94A3B8', flexShrink: 0, transform: 'rotate(-45deg)' }} title="Attachments" />}
               <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 600, color: '#2563EB' }}>{keyText}</span>
               {isJira && <JiraBadge />}
               {isJira && d.external_url && (

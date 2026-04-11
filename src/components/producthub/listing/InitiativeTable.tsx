@@ -235,7 +235,7 @@ export function InitiativeTable({
         const attCount = attachmentCounts.get(attKey) || 0;
         return (
           <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-            {attCount > 0 && <span title={`${attCount} attachment${attCount > 1 ? 's' : ''}`}><Paperclip size={12} style={{ color: '#94A3B8', flexShrink: 0, transform: 'rotate(-45deg)' }} /></span>}
+            {attCount > 0 && <Paperclip size={12} style={{ color: '#94A3B8', flexShrink: 0, transform: 'rotate(-45deg)' }} title="Attachments" />}
             <IDCell value={key} />
           </div>
         );

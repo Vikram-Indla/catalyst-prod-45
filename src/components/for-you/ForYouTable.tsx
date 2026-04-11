@@ -216,7 +216,7 @@ export function CatalystTable({
           <td key={colKey} style={{ width: columnWidths.key }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
               {(item.attachmentCount ?? 0) > 0 && (
-                <span title={`${item.attachmentCount} attachment${item.attachmentCount! > 1 ? 's' : ''}`}><Paperclip size={12} style={{ color: '#94A3B8', flexShrink: 0, transform: 'rotate(-45deg)' }} /></span>
+                <Paperclip size={12} style={{ color: '#94A3B8', flexShrink: 0, transform: 'rotate(-45deg)' }} title="Attachments" />
               )}
               <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 600, color: '#2563EB' }}>{item.key}</span>
             </div>
