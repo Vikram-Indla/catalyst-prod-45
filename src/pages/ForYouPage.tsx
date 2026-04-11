@@ -56,7 +56,7 @@ export default function ForYouPage() {
     }
   }, [isLoading]);
 
-  useEffect(() => { setCurrentPage(1); }, [activeTab, searchQuery, inlineFilters, advancedFilters]);
+  useEffect(() => { setCurrentPage(1); }, [activeTab, searchQuery, inlineFilters]);
 
   // Shift+F global shortcut to toggle filter panel
   useEffect(() => {
@@ -168,6 +168,10 @@ export default function ForYouPage() {
     setAdvancedFilters({});
   }, []);
 
+  const handleCloseFilterPanel = useCallback(() => {
+    setFilterPanelOpen(false);
+  }, []);
+
   const filteredGroupedItems = React.useMemo(() => {
     const filterItem = (item: typeof workItems[0]) => {
       // Inline filters
@@ -274,7 +278,7 @@ export default function ForYouPage() {
                     selected={advancedFilters}
                     onSelectionChange={handleAdvancedFilterChange}
                     onClearAll={handleClearAllFilters}
-                    onClose={() => setFilterPanelOpen(false)}
+                    onClose={handleCloseFilterPanel}
                   />
                 )}
               </div>
