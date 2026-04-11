@@ -663,29 +663,53 @@ export default function InitiativeListingPage() {
         />
       )}
 
-      {/* ── Table ── */}
-      <div className="flex-1 flex flex-col min-h-0" style={{ padding: '0 32px' }}>
-        <InitiativeTable
-          data={paginatedData}
-          loading={isLoading}
-          density={density}
-          columnConfigs={columnConfigs}
-          groupBy={groupBy}
-          brdTasksMap={brdTasksMap}
-          onRowClick={handleRowClick}
-          onStatusChange={handleStatusChange}
-          onFavoriteToggle={handleFavoriteToggle}
-          onSelectionChange={setSelectedIds}
-          onSortChange={handleSortChange}
-          onContextMenu={handleContextMenu}
-          onReorder={handleReorder}
-          onInlineEdit={handleInlineEdit}
-          onPromote={setPromoteTarget}
-          onRoadmapToggle={handleRoadmapToggle}
-          focusedRowIndex={focusedRow}
-          onFocusedRowChange={setFocusedRow}
-        />
-      </div>
+      {/* ── Table or Empty State ── */}
+      {filtered.length === 0 && !isLoading ? (
+        <div className="flex-1 flex flex-col items-center justify-center" style={{ padding: '80px 32px' }}>
+          {overdueActive ? (
+            <>
+              <Clock size={40} color="#94A3B8" strokeWidth={1.5} />
+              <p style={{ fontSize: 15, fontWeight: 600, color: '#0F172A', marginTop: 16 }}>No overdue initiatives</p>
+              <p style={{ fontSize: 13, color: '#94A3B8', marginTop: 4 }}>All initiatives are on track with their target dates</p>
+              <button
+                onClick={() => { setOverdueActive(false); setPage(1); }}
+                style={{ marginTop: 16, fontSize: 13, fontWeight: 500, color: '#2563EB', cursor: 'pointer', background: 'none', border: 'none', padding: '6px 12px', borderRadius: 6 }}
+              >
+                Clear overdue filter
+              </button>
+            </>
+          ) : (
+            <>
+              <LayoutGrid size={40} color="#94A3B8" strokeWidth={1.5} />
+              <p style={{ fontSize: 15, fontWeight: 600, color: '#0F172A', marginTop: 16 }}>No initiatives match your filters</p>
+              <p style={{ fontSize: 13, color: '#94A3B8', marginTop: 4 }}>Try adjusting your search or filter criteria</p>
+            </>
+          )}
+        </div>
+      ) : (
+        <div className="flex-1 flex flex-col min-h-0" style={{ padding: '0 32px' }}>
+          <InitiativeTable
+            data={paginatedData}
+            loading={isLoading}
+            density={density}
+            columnConfigs={columnConfigs}
+            groupBy={groupBy}
+            brdTasksMap={brdTasksMap}
+            onRowClick={handleRowClick}
+            onStatusChange={handleStatusChange}
+            onFavoriteToggle={handleFavoriteToggle}
+            onSelectionChange={setSelectedIds}
+            onSortChange={handleSortChange}
+            onContextMenu={handleContextMenu}
+            onReorder={handleReorder}
+            onInlineEdit={handleInlineEdit}
+            onPromote={setPromoteTarget}
+            onRoadmapToggle={handleRoadmapToggle}
+            focusedRowIndex={focusedRow}
+            onFocusedRowChange={setFocusedRow}
+          />
+        </div>
+      )}
 
       {/* ── Pagination ── */}
       <Pagination
