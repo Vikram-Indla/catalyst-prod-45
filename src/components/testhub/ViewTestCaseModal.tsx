@@ -441,7 +441,7 @@ export function ViewTestCaseModal({
       const [stepsRes, reqStoryLinksRes, defectLinksRes, historyRes, runsRes] = await Promise.all([
         supabase.from('tm_test_steps').select('*').eq('test_case_id', testCase.id).order('step_number'),
         typedQuery('tm_test_case_links').select('*').eq('test_case_id', testCase.id).in('linked_item_type', ['requirement', 'story']),
-        typedQuery('tm_defect_links').select('*').eq('link_type', 'test_case').eq('linked_id', testCase.id),
+        typedQuery('tm_defect_links').select('*, tm_defects!defect_id(defect_key)').eq('link_type', 'test_case').eq('linked_id', testCase.id),
         typedQuery('tm_test_case_versions').select('*').eq('test_case_id', testCase.id).order('version_number', { ascending: false }),
         typedQuery('th_test_executions').select(`*, tm_cycle_scope!cycle_scope_id(id, tm_test_cycles!test_cycle_id(id, name))`).eq('test_case_id', testCase.id).order('executed_at', { ascending: false }),
       ]);
@@ -456,13 +456,19 @@ export function ViewTestCaseModal({
         _source: 'tm_test_case_links' as const,
       }));
 
-      const defectLinksData: Link[] = (defectLinksRes.data || []).map((l: any) => ({
-        id: l.id,
-        link_type: 'defect',
-        linked_item_key: l.defect_id || '',
-        linked_item_title: l.entity_label || 'Defect',
-        _source: 'tm_defect_links' as const,
-      }));
+      const defectLinksData: Link[] = (defectLinksRes.data || []).map((l: any) => {
+        const defectKey = l.tm_defects?.defect_key || '';
+        const label = l.entity_label || 'Defect';
+        // Split "DEF-0202 — title..." to get title portion only
+        const titlePart = label.includes(' — ') ? label.split(' — ').slice(1).join(' — ') : label;
+        return {
+          id: l.id,
+          link_type: 'defect',
+          linked_item_key: defectKey,
+          linked_item_title: titlePart,
+          _source: 'tm_defect_links' as const,
+        };
+      });
 
       setLinks([...reqStoryLinks, ...defectLinksData]);
 
