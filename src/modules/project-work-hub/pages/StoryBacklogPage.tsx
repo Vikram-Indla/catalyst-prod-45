@@ -263,6 +263,8 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
   const queryClient = useQueryClient();
   const { data: stories, isLoading, error } = useStoryBacklog(projectId || '');
   const avatarsByName = useProfileAvatarsByName();
+  const { data: starredIds } = useStarredItemIds();
+  const toggleStarMutation = useToggleStar();
   const { isDark } = useTheme();
   const tk = isDark ? DK : LK;
 
