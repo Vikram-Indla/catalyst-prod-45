@@ -266,7 +266,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
 
   if (error) return <div className="h-full flex items-center justify-center" style={{ background: tk.pageBg, color: '#DC2626' }}>Error loading stories</div>;
 
-  const total = stories?.length || 0;
+  
 
   const renderBacklogList = (compact?: boolean) => (
     <>
