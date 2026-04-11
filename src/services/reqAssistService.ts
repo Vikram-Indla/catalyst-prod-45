@@ -1,4 +1,4 @@
-import { supabase, typedQuery, typedQuery, typedQuery } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import type { RADocumentWithArtifacts, RAProcessingJob } from '@/types/reqAssistV2';
 
 // ── LIBRARY QUERIES ──

@@ -8,7 +8,7 @@ import { useMDTBacklog } from '@/hooks/useMDTBacklog';
 import type { BRDTask } from '@/hooks/useMDTBacklog';
 import { useSyncMDTToInitiatives } from '@/hooks/useSyncMDTToInitiatives';
 import { useProfileOptions, useDepartmentOptions } from '@/hooks/useInitiativeLookups';
-import { supabase, typedQuery, typedQuery } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { InitiativeTable } from '@/components/producthub/listing/InitiativeTable';
 import { Pagination } from '@/components/producthub/listing/Pagination';

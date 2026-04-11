@@ -1,4 +1,4 @@
-import { supabase, typedQuery, typedQuery, typedQuery } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import type { TestFolderWithCount, CreateFolderInput, UpdateFolderInput } from '@/types/test-folders';
 
 // ============================================================
