@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { MessageSquare, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -31,6 +31,54 @@ function getInitials(name?: string | null): string {
 
 const QUICK_PILLS = ['Looks good ✓', 'Needs review 👀', 'Blocked 🚫'];
 
+// ── Mention token format: @[Full Name](userId) ──
+const MENTION_TOKEN_REGEX = /@\[([^\]]+)\]\(([^)]+)\)/g;
+
+interface MentionUser {
+  id: string;
+  full_name: string | null;
+  avatar_url: string | null;
+}
+
+/** Parse content and render mention tokens as styled spans */
+function renderContentWithMentions(content: string): React.ReactNode[] {
+  const nodes: React.ReactNode[] = [];
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
+  const regex = new RegExp(MENTION_TOKEN_REGEX.source, 'g');
+
+  while ((match = regex.exec(content)) !== null) {
+    if (match.index > lastIndex) {
+      nodes.push(content.slice(lastIndex, match.index));
+    }
+    const displayName = match[1];
+    nodes.push(
+      <span
+        key={`mention-${match.index}`}
+        className="text-[#2563EB] font-medium bg-blue-50 rounded px-0.5"
+      >
+        @{displayName}
+      </span>
+    );
+    lastIndex = regex.lastIndex;
+  }
+  if (lastIndex < content.length) {
+    nodes.push(content.slice(lastIndex));
+  }
+  return nodes;
+}
+
+/** Extract mentioned user IDs from content */
+function extractMentionedUserIds(content: string): string[] {
+  const ids: string[] = [];
+  let match: RegExpExecArray | null;
+  const regex = new RegExp(MENTION_TOKEN_REGEX.source, 'g');
+  while ((match = regex.exec(content)) !== null) {
+    ids.push(match[2]);
+  }
+  return [...new Set(ids)];
+}
+
 export function EntityCommentsPanel({
   entityType,
   entityId,
@@ -43,14 +91,35 @@ export function EntityCommentsPanel({
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
+  // ── Mention state ──
+  const [mentionUsers, setMentionUsers] = useState<MentionUser[]>([]);
+  const [mentionOpen, setMentionOpen] = useState(false);
+  const [mentionQuery, setMentionQuery] = useState('');
+  const [mentionStartPos, setMentionStartPos] = useState<number>(0);
+  const [mentionHighlight, setMentionHighlight] = useState(0);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
   const { data: comments = [], isLoading } = useEntityComments(entityType, entityId);
   const addComment = useAddEntityComment(entityType, entityId);
   const deleteComment = useDeleteEntityComment(entityType, entityId);
 
+  // Fetch current user
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
       setCurrentUserId(data.user?.id ?? null);
     });
+  }, []);
+
+  // Fetch mentionable profiles once on mount
+  useEffect(() => {
+    (supabase as any)
+      .from('profiles')
+      .select('id, full_name, avatar_url')
+      .eq('status', 'Active')
+      .order('full_name')
+      .then(({ data }: { data: MentionUser[] | null }) => {
+        setMentionUsers(data ?? []);
+      });
   }, []);
 
   // Keyboard shortcut: press 'c' to open composer
@@ -68,6 +137,39 @@ export function EntityCommentsPanel({
     return () => document.removeEventListener('keydown', handler);
   }, []);
 
+  // Close mention dropdown on click outside
+  useEffect(() => {
+    if (!mentionOpen) return;
+    const handler = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setMentionOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [mentionOpen]);
+
+  // ── Filtered mention results ──
+  const filteredMentions = useMemo(() => {
+    if (!mentionOpen) return [];
+    const q = mentionQuery.toLowerCase();
+    return mentionUsers
+      .filter(u => u.full_name && u.full_name.toLowerCase().includes(q))
+      .slice(0, 5);
+  }, [mentionOpen, mentionQuery, mentionUsers]);
+
+  // Close dropdown if zero results and user types a space
+  useEffect(() => {
+    if (mentionOpen && filteredMentions.length === 0 && mentionQuery.includes(' ')) {
+      setMentionOpen(false);
+    }
+  }, [mentionOpen, filteredMentions.length, mentionQuery]);
+
+  // Reset highlight when filtered list changes
+  useEffect(() => {
+    setMentionHighlight(0);
+  }, [filteredMentions.length]);
+
   const sortedComments = useMemo(() =>
     [...comments].sort((a, b) => {
       const da = new Date(a.created_at).getTime();
@@ -75,12 +177,84 @@ export function EntityCommentsPanel({
       return newestFirst ? db - da : da - db;
     }), [comments, newestFirst]);
 
+  // ── Mention selection ──
+  const selectMention = useCallback((user: MentionUser) => {
+    const before = content.slice(0, mentionStartPos);
+    const after = content.slice(textareaRef.current?.selectionStart ?? content.length);
+    // Remove partial @query from 'after' — find end of current word
+    const afterTrimmed = after.replace(/^\S*/, '');
+    const token = `@[${user.full_name}](${user.id}) `;
+    const newContent = before + token + afterTrimmed;
+    setContent(newContent);
+    setMentionOpen(false);
+    setMentionQuery('');
+    // Restore focus and cursor
+    setTimeout(() => {
+      const ta = textareaRef.current;
+      if (ta) {
+        ta.focus();
+        const pos = before.length + token.length;
+        ta.setSelectionRange(pos, pos);
+      }
+    }, 0);
+  }, [content, mentionStartPos]);
+
+  // ── Textarea onChange — detect '@' trigger ──
+  const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const val = e.target.value;
+    const cursorPos = e.target.selectionStart;
+    setContent(val);
+
+    // Check for '@' trigger: find last '@' before cursor not preceded by alphanumeric
+    const textBeforeCursor = val.slice(0, cursorPos);
+    const atIndex = textBeforeCursor.lastIndexOf('@');
+
+    if (atIndex >= 0) {
+      const charBefore = atIndex > 0 ? textBeforeCursor[atIndex - 1] : ' ';
+      if (charBefore === ' ' || charBefore === '\n' || atIndex === 0) {
+        const query = textBeforeCursor.slice(atIndex + 1);
+        // Only open if query has no spaces (single word being typed)
+        if (!query.includes(' ') && !query.includes('\n')) {
+          setMentionOpen(true);
+          setMentionQuery(query);
+          setMentionStartPos(atIndex);
+          return;
+        }
+      }
+    }
+
+    if (mentionOpen) {
+      setMentionOpen(false);
+    }
+  };
+
+  // ── Submit with notifications ──
   const handleSubmit = async () => {
     if (!content.trim()) return;
+    const trimmed = content.trim();
     try {
-      await addComment.mutateAsync(content.trim());
+      await addComment.mutateAsync(trimmed);
       setContent('');
       setComposerOpen(false);
+
+      // Fire mention notifications (non-blocking)
+      const mentionedIds = extractMentionedUserIds(trimmed);
+      const toNotify = mentionedIds.filter(id => id !== currentUserId);
+      if (toNotify.length > 0 && entityId) {
+        Promise.all(
+          toNotify.map(uid =>
+            (supabase as any).from('tm_notifications').insert({
+              user_id: uid,
+              type: 'mention',
+              title: 'You were mentioned in a comment',
+              message: trimmed.slice(0, 120),
+              entity_type: entityType,
+              entity_id: entityId,
+              is_read: false,
+            })
+          )
+        ).catch(() => { /* silent */ });
+      }
     } catch {
       toast.error('Failed to add comment');
     }
@@ -98,6 +272,38 @@ export function EntityCommentsPanel({
   const handleCancel = () => {
     setContent('');
     setComposerOpen(false);
+    setMentionOpen(false);
+  };
+
+  // ── Keyboard handling in textarea ──
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (mentionOpen && filteredMentions.length > 0) {
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        setMentionHighlight(h => (h + 1) % filteredMentions.length);
+        return;
+      }
+      if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        setMentionHighlight(h => (h - 1 + filteredMentions.length) % filteredMentions.length);
+        return;
+      }
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        selectMention(filteredMentions[mentionHighlight]);
+        return;
+      }
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        setMentionOpen(false);
+        return;
+      }
+    }
+    // Cmd/Ctrl+Enter to submit
+    if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+      e.preventDefault();
+      handleSubmit();
+    }
   };
 
   if (!entityId) return null;
@@ -109,7 +315,6 @@ export function EntityCommentsPanel({
         <MessageSquare size={18} className="text-muted-foreground" />
         <span className="text-[15px] font-semibold">{title}</span>
         <span className="text-[13px] text-muted-foreground">({comments.length})</span>
-        {/* Sort toggle — right-aligned */}
         {comments.length > 1 && (
           <button
             type="button"
@@ -124,21 +329,51 @@ export function EntityCommentsPanel({
       {/* Composer — above comment list */}
       <div className="mb-4">
         {composerOpen ? (
-          <div className="space-y-2">
+          <div className="space-y-2 relative">
             <Textarea
               ref={textareaRef}
               value={content}
-              onChange={(e) => setContent(e.target.value)}
-              placeholder="Add a comment..."
+              onChange={handleContentChange}
+              placeholder="Add a comment... (type @ to mention)"
               className="min-h-[80px] text-sm resize-none"
               autoFocus
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
-                  e.preventDefault();
-                  handleSubmit();
-                }
-              }}
+              onKeyDown={handleKeyDown}
             />
+
+            {/* Mention dropdown */}
+            {mentionOpen && filteredMentions.length > 0 && (
+              <div
+                ref={dropdownRef}
+                className="absolute left-0 z-50 bg-white border border-border rounded-md shadow-md overflow-y-auto"
+                style={{ width: 240, maxHeight: 180, top: 'auto', marginTop: -4 }}
+              >
+                {filteredMentions.map((user, idx) => {
+                  const name = user.full_name || 'Unknown';
+                  const bg = avatarColour(name);
+                  const initials = getInitials(name);
+                  return (
+                    <button
+                      key={user.id}
+                      type="button"
+                      className={`w-full flex items-center gap-2 px-3 py-1.5 text-left text-sm transition-colors ${
+                        idx === mentionHighlight ? 'bg-muted' : 'hover:bg-muted/50'
+                      }`}
+                      onMouseDown={(e) => { e.preventDefault(); selectMention(user); }}
+                      onMouseEnter={() => setMentionHighlight(idx)}
+                    >
+                      <div
+                        className="flex items-center justify-center rounded-full text-white text-[10px] font-bold flex-shrink-0"
+                        style={{ width: 28, height: 28, backgroundColor: bg }}
+                      >
+                        {initials}
+                      </div>
+                      <span className="truncate">{name}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+
             {/* Quick-reply pills */}
             <div className="flex flex-wrap gap-1.5">
               {QUICK_PILLS.map(pill => (
@@ -153,7 +388,7 @@ export function EntityCommentsPanel({
               ))}
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-[11px] text-muted-foreground">⌘+Enter to submit</span>
+              <span className="text-[11px] text-muted-foreground">⌘+Enter to submit · @ to mention</span>
               <div className="flex items-center gap-2">
                 <Button variant="ghost" size="sm" onClick={handleCancel}>
                   Cancel
@@ -216,7 +451,7 @@ export function EntityCommentsPanel({
                     </span>
                   </div>
                   <p className="text-[13px] leading-relaxed mt-0.5 whitespace-pre-wrap">
-                    {comment.content}
+                    {renderContentWithMentions(comment.content)}
                   </p>
                   {/* Delete */}
                   {isOwner && (
