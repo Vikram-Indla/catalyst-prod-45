@@ -519,6 +519,26 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
             </div>
           </td>
         );
+      case 'star': {
+        const isStarred = starredIds?.has(story.id) ?? false;
+        return (
+          <td key={colKey} style={{ width: columnWidths.star, overflow: 'visible', textOverflow: 'clip' }} onClick={e => e.stopPropagation()}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <button
+                onClick={() => toggleStarMutation.mutate({ itemId: story.id, itemType: 'story', isCurrentlyStarred: isStarred })}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, display: 'flex', alignItems: 'center' }}
+              >
+                <Star
+                  size={14}
+                  fill={isStarred ? '#F59E0B' : 'none'}
+                  stroke={isStarred ? '#F59E0B' : '#94A3B8'}
+                  style={{ transition: 'all 150ms' }}
+                />
+              </button>
+            </div>
+          </td>
+        );
+      }
       case 'type':
         return (
           <td key={colKey} style={{ width: columnWidths.type, overflow: 'visible', textOverflow: 'clip' }}>
