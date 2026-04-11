@@ -349,7 +349,7 @@ export default function PlanDetailPage() {
         </TabsList>
 
         <TabsContent value="overview" className="mt-6">
-          <OverviewTab plan={displayPlan} onUpdate={handleUpdate} />
+          <OverviewTab plan={displayPlan} onUpdate={handleUpdate} passRate={cycleStats.overallPassRate} />
         </TabsContent>
 
         <TabsContent value="scope" className="mt-6">
