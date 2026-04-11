@@ -382,3 +382,37 @@ export const useDefectsByCycleId = (cycleId: string | undefined) => {
     },
   });
 };
+
+// ─── Defects by Plan ─────────────────────────────────────────────
+export const useDefectsByPlanId = (planId: string | undefined) => {
+  return useQuery({
+    queryKey: ['defects-by-plan', planId],
+    enabled: !!planId,
+    queryFn: async () => {
+      if (!planId) return [];
+      const { data, error } = await supabase
+        .from('tm_defect_links')
+        .select(`
+          id,
+          link_source,
+          entity_label,
+          defect:tm_defects(
+            id,
+            defect_key,
+            title,
+            status,
+            severity,
+            priority
+          )
+        `)
+        .eq('linked_id', planId)
+        .eq('link_type', 'test_plan');
+      if (error) throw error;
+      return (data ?? []).map((row: any) => ({
+        ...row.defect,
+        link_source: row.link_source,
+        entity_label: row.entity_label,
+      }));
+    },
+  });
+};
