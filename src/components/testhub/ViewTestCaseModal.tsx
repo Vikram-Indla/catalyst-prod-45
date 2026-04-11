@@ -86,7 +86,7 @@ type LinkTypeConfig = {
 const LINK_TYPE_OPTIONS: LinkTypeConfig[] = [
   { value: 'requirement', label: 'Requirement', icon: GitBranch, table: 'tm_requirements', keyField: 'req_key',    nameField: 'title', searchFields: ['title', 'req_key'] },
   { value: 'defect',      label: 'Defect',      icon: Bug,       table: 'tm_defects',      keyField: 'defect_key', nameField: 'title', searchFields: ['title', 'defect_key'] },
-  { value: 'story',       label: 'Story',       icon: BookOpen,  table: 'ph_issues',       keyField: 'issue_key',  nameField: 'title', searchFields: ['title', 'issue_key'] },
+  { value: 'story',       label: 'Story',       icon: BookOpen,  table: 'ph_issues',       keyField: 'issue_key',  nameField: 'summary', searchFields: ['summary', 'issue_key'] },
 ];
 
 type SearchResult = { id: string; key: string; name: string };
@@ -515,8 +515,6 @@ export function ViewTestCaseModal({
         test_case_id: testCase.id,
         linked_item_type: selectedLinkType,
         linked_item_id: item.id,
-        linked_item_key: item.key,
-        linked_item_title: item.name,
         linked_by: user?.id || null,
       }).select().single();
       if (!error && data) {
