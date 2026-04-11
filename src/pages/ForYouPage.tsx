@@ -117,6 +117,7 @@ export default function ForYouPage() {
         options: [...new Set(workItems.map(i => i.status).filter(Boolean))].sort().map(s => ({
           id: s, label: s,
           iconNode: <StatusLozenge status={s} />,
+          hideLabel: true,
         })),
       },
       {

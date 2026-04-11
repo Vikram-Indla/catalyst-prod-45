@@ -12,6 +12,7 @@ export interface FilterOption {
   id: string;
   label: string;
   labelExtra?: string;
+  hideLabel?: boolean;
   avatarUrl?: string;
   avatarInitials?: string;
   avatarColor?: string;
