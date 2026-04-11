@@ -355,6 +355,16 @@ export default function RequirementDetailPage() {
         )}
       </div>
 
+      {/* Linked Defects */}
+      <div style={{ backgroundColor: isDark ? '#1A1A1A' : '#FFF', borderRadius: 12, padding: 24, border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0', marginTop: 24 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+          <h3 style={{ fontSize: 16, fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A', margin: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
+            <Bug size={18} style={{ color: '#E5493A' }} /> Linked Defects
+          </h3>
+        </div>
+        <RequirementDefectsPanel requirementId={requirementId} />
+      </div>
+
       {showLinkModal && (
         <LinkTestCaseModal
           isOpen={showLinkModal}
