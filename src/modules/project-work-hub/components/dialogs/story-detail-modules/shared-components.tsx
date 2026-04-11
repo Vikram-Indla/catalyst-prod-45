@@ -97,7 +97,7 @@ export function SectionBlock({ title, count, doneCount, defaultExpanded = true, 
       <div className="sdm-child-header">
         <div className="sdm-child-header-left">
           <button className="sdm-chevron-btn" onClick={() => setExpanded(e => !e)} aria-expanded={expanded}>
-            {expanded ? <ChevronDown size={11} strokeWidth={2.5} /> : <ChevronRight size={11} strokeWidth={2.5} />}
+            {expanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
           </button>
           <span className="sdm-child-title">{title}</span>
           <span className="sdm-count-badge">{count}</span>
