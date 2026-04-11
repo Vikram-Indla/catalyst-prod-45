@@ -311,6 +311,7 @@ export default function PlanDetailPage() {
           <TabsTrigger value="schedule" className="gap-2"><Calendar className="h-4 w-4" />Schedule</TabsTrigger>
           <TabsTrigger value="approvals" className="gap-2"><ShieldCheck className="h-4 w-4" />Approvals</TabsTrigger>
           <TabsTrigger value="defects" className="gap-2"><Bug className="h-4 w-4" />Defects</TabsTrigger>
+          <TabsTrigger value="comments" className="gap-2"><MessageSquare className="h-4 w-4" />Comments</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="mt-6">

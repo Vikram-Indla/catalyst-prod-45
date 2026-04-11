@@ -64,7 +64,7 @@ interface ViewTestCaseModalProps {
   onClone: () => void;
 }
 
-type TabKey = 'details' | 'steps' | 'attachments' | 'links' | 'history' | 'runs';
+type TabKey = 'details' | 'steps' | 'attachments' | 'links' | 'history' | 'runs' | 'comments';
 
 const STATUS_STYLES: Record<string, { bg: string; color: string }> = {
   draft: { bg: 'var(--cp-bd-zone)', color: 'var(--fg-3)' },
@@ -305,6 +305,7 @@ export function ViewTestCaseModal({
     { key: 'links', label: 'Links', icon: Link2, count: links.length },
     { key: 'history', label: 'History', icon: History },
     { key: 'runs', label: 'Runs', icon: Play, count: runs.length },
+    { key: 'comments', label: 'Comments', icon: MessageSquare },
   ];
 
   const statusStyle = STATUS_STYLES[testCase.status] || STATUS_STYLES.draft;
