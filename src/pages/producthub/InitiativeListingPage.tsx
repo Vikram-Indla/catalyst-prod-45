@@ -3,7 +3,7 @@
  * LINEAR PRECISION Design — pb-* namespace
  */
 
-import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
+import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { useMDTBacklog } from '@/hooks/useMDTBacklog';
 import type { BRDTask } from '@/hooks/useMDTBacklog';
 import { useSyncMDTToInitiatives } from '@/hooks/useSyncMDTToInitiatives';
@@ -25,9 +25,13 @@ import { catalystToast } from '@/lib/catalystToast';
 import { JiraBulkActionBar } from '@/components/shared/JiraBulkActionBar';
 
 import type { Initiative, InitiativeStatus, Density } from '@/types/initiative';
-import { getPriorityLevel } from '@/types/initiative';
-import { Search, X, Plus, Download } from 'lucide-react';
+import { getPriorityLevel, STATUS_DISPLAY, getAvatarColor, getInitials } from '@/types/initiative';
+import { Search, X, Plus, Download, ChevronsUp, ChevronUp, ChevronDown, ChevronsDown } from 'lucide-react';
 import { ProductHubPageHeader } from '@/components/producthub/shared/ProductHubPageHeader';
+import { BacklogSubTabs, type BacklogTabType } from '@/components/producthub/listing/BacklogSubTabs';
+import { BacklogStatusBar } from '@/components/producthub/listing/BacklogStatusBar';
+import { FilterTriggerButton, JiraBasicFilter } from '@/components/shared/JiraBasicFilter';
+import type { FilterCategory } from '@/components/shared/JiraBasicFilter';
 import '@/styles/product-backlog.css';
 
 function toTimelineInitiative(i: Initiative): TimelineInitiative {
@@ -54,19 +58,7 @@ const TERMINAL_STATUSES: InitiativeStatus[] = ['done', 'cancelled'];
 const COLUMN_STORAGE_KEY = 'ph-backlog-columns';
 const DENSITY_STORAGE_KEY = 'ph-backlog-density';
 
-const QUICK_FILTERS = [
-  { id: 'all', label: 'All' },
-  { id: 'my', label: 'My Items' },
-  { id: 'quarter', label: 'This Quarter' },
-  { id: 'high', label: 'High Priority' },
-  { id: 'unscored', label: 'Unscored' },
-  { id: 'overdue', label: 'Overdue' },
-  { id: 'starred', label: 'Starred' },
-  { id: 'on_roadmap', label: 'On Roadmap' },
-  { id: 'not_on_roadmap', label: 'Not on Roadmap' },
-];
-
-const TYPE_LEGEND = [
+const TYPE_OPTIONS = [
   { key: 'project', label: 'Project', color: '#2563EB' },
   { key: 'enhancement', label: 'Enhancement', color: '#0EA5E9' },
   { key: 'improvement', label: 'Improvement', color: '#D97706' },
@@ -98,24 +90,55 @@ function loadDensity(): Density {
   return 'standard';
 }
 
-function applyQuickFilter(data: Initiative[], filter: string): Initiative[] {
-  switch (filter) {
+function applyTabFilter(data: Initiative[], tab: BacklogTabType): Initiative[] {
+  switch (tab) {
     case 'my': return data.filter(i => !!i.assignee_name);
-    case 'quarter': {
-      const now = new Date();
-      const currentQ = `Q${Math.ceil((now.getMonth() + 1) / 3)} ${now.getFullYear()}`;
-      return data.filter(i => i.target_quarter === currentQ);
-    }
-    case 'high': return data.filter(i => i.computed_score !== null && i.computed_score >= 4.0);
-    case 'unscored': return data.filter(i => i.computed_score === null);
-    case 'overdue': return data.filter(i =>
-      i.target_complete && new Date(i.target_complete) < new Date() && !TERMINAL_STATUSES.includes(i.status)
-    );
     case 'starred': return data.filter(i => i.is_favorited);
-    case 'on_roadmap': return data.filter(i => i.on_roadmap === true);
-    case 'not_on_roadmap': return data.filter(i => !i.on_roadmap);
     default: return data;
   }
+}
+
+function isOverdue(i: Initiative): boolean {
+  return !!(i.target_complete && new Date(i.target_complete) < new Date() && !TERMINAL_STATUSES.includes(i.status));
+}
+
+function applyAdvancedFilters(data: Initiative[], filters: Record<string, string[]>, overdueActive: boolean): Initiative[] {
+  let result = data;
+
+  if (overdueActive) {
+    result = result.filter(isOverdue);
+  }
+
+  const af = filters;
+  if (af.type?.length) {
+    result = result.filter(i => af.type.includes(i.initiative_type_key ?? ''));
+  }
+  if (af.priority?.length) {
+    result = result.filter(i => {
+      const level = getPriorityLevel(i.computed_score).level;
+      return af.priority.includes(level);
+    });
+  }
+  if (af.quarter?.length) {
+    result = result.filter(i => af.quarter.includes(i.target_quarter ?? ''));
+  }
+  if (af.roadmap?.length) {
+    result = result.filter(i => {
+      const val = i.on_roadmap ? 'on' : 'off';
+      return af.roadmap.includes(val);
+    });
+  }
+  if (af.status?.length) {
+    result = result.filter(i => af.status.includes(i.status));
+  }
+  if (af.department?.length) {
+    result = result.filter(i => af.department.includes(i.department_name ?? ''));
+  }
+  if (af.assignee?.length) {
+    result = result.filter(i => af.assignee.includes(i.assignee_name ?? ''));
+  }
+
+  return result;
 }
 
 function applySearch(data: Initiative[], query: string): Initiative[] {
@@ -169,7 +192,10 @@ export default function InitiativeListingPage() {
 
   const [density, setDensity] = useState<Density>(loadDensity);
   const [searchQuery, setSearchQuery] = useState('');
-  const [quickFilter, setQuickFilter] = useState('all');
+  const [activeTab, setActiveTab] = useState<BacklogTabType>('all');
+  const [advancedFilters, setAdvancedFilters] = useState<Record<string, string[]>>({});
+  const [filterPanelOpen, setFilterPanelOpen] = useState(false);
+  const [overdueActive, setOverdueActive] = useState(false);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [sorting, setSorting] = useState<{ id: string; desc: boolean }[]>([{ id: 'initiative_key', desc: false }]);
   const [orderedData, setOrderedData] = useState<Initiative[] | null>(null);
@@ -207,8 +233,14 @@ export default function InitiativeListingPage() {
 
   useEffect(() => { setLocalSearch(searchQuery); }, [searchQuery]);
 
+  // Tab-filtered data (before advanced filters, used for status counts)
+  const tabFiltered = useMemo(() => {
+    return applyTabFilter(allInitiatives, activeTab);
+  }, [allInitiatives, activeTab]);
+
   const filtered = useMemo(() => {
-    let result = applyQuickFilter(allInitiatives, quickFilter);
+    let result = applyTabFilter(allInitiatives, activeTab);
+    result = applyAdvancedFilters(result, advancedFilters, overdueActive);
     result = applySearch(result, searchQuery);
     if (groupBy !== 'none') {
       result = [...result].sort((a, b) => {
@@ -218,16 +250,115 @@ export default function InitiativeListingPage() {
       });
     }
     return result;
-  }, [allInitiatives, quickFilter, searchQuery, groupBy]);
+  }, [allInitiatives, activeTab, advancedFilters, overdueActive, searchQuery, groupBy]);
 
-  const filterCounts = useMemo(() => {
-    const counts: Record<string, number> = {};
-    QUICK_FILTERS.forEach(f => {
-      if (f.id === 'all') counts[f.id] = allInitiatives.length;
-      else counts[f.id] = applyQuickFilter(allInitiatives, f.id).length;
-    });
-    return counts;
-  }, [allInitiatives]);
+  const tabCounts = useMemo<Record<BacklogTabType, number>>(() => ({
+    all: allInitiatives.length,
+    my: applyTabFilter(allInitiatives, 'my').length,
+    starred: applyTabFilter(allInitiatives, 'starred').length,
+  }), [allInitiatives]);
+
+  const overdueCount = useMemo(() => tabFiltered.filter(isOverdue).length, [tabFiltered]);
+
+  const advancedFilterCount = useMemo(() => Object.values(advancedFilters).flat().length, [advancedFilters]);
+
+  // Build filter categories for JiraBasicFilter panel
+  const filterCategories = useMemo<FilterCategory[]>(() => {
+    const PRIORITY_ICONS: Record<string, React.ReactNode> = {
+      High: <ChevronsUp size={16} color="#DE350B" strokeWidth={2.5} />,
+      Medium: <span style={{ fontSize: 18, fontWeight: 700, color: '#D97706', lineHeight: 1 }}>=</span>,
+      Low: <ChevronDown size={16} color="#36B37E" strokeWidth={2.5} />,
+      Unscored: <span style={{ fontSize: 12, fontWeight: 600, color: '#94A3B8' }}>--</span>,
+    };
+
+    // Type category
+    const typeOptions = TYPE_OPTIONS
+      .filter(t => tabFiltered.some(i => i.initiative_type_key === t.key))
+      .map(t => ({
+        id: t.key,
+        label: t.label,
+        iconNode: <span style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: t.color, display: 'inline-block', flexShrink: 0 }} />,
+      }));
+
+    // Priority category
+    const priorityLevels = ['High', 'Medium', 'Low', 'Unscored'] as const;
+    const priorityOptions = priorityLevels.map(level => ({
+      id: level,
+      label: level,
+      iconNode: PRIORITY_ICONS[level],
+    }));
+
+    // Quarter category
+    const quarters = [...new Set(tabFiltered.map(i => i.target_quarter).filter(Boolean) as string[])].sort();
+    const quarterOptions = quarters.map(q => ({ id: q, label: q }));
+
+    // Roadmap category
+    const roadmapOptions = [
+      { id: 'on', label: 'On Roadmap' },
+      { id: 'off', label: 'Not on Roadmap' },
+    ];
+
+    // Status category
+    const statuses = [...new Set(tabFiltered.map(i => i.status))].sort();
+    const statusOptions = statuses.map(s => ({
+      id: s,
+      label: STATUS_DISPLAY[s]?.label ?? s,
+    }));
+
+    // Department category
+    const depts = [...new Set(tabFiltered.map(i => i.department_name).filter(Boolean) as string[])].sort();
+    const departmentOptions = depts.map(d => ({ id: d, label: d }));
+
+    // Assignee category
+    const assignees = [...new Set(tabFiltered.map(i => i.assignee_name).filter(Boolean) as string[])].sort();
+    const assigneeOptions = assignees.map(name => ({
+      id: name,
+      label: name,
+      avatarInitials: getInitials(name),
+      avatarColor: getAvatarColor(name),
+      avatarType: 'initials' as const,
+    }));
+
+    return [
+      { id: 'type', label: 'Type', searchPlaceholder: 'Search type', options: typeOptions },
+      { id: 'priority', label: 'Priority', searchPlaceholder: 'Search priority', options: priorityOptions },
+      { id: 'quarter', label: 'Quarter', searchPlaceholder: 'Search quarter', options: quarterOptions },
+      { id: 'roadmap', label: 'Roadmap', searchPlaceholder: 'Search roadmap', options: roadmapOptions },
+      { id: 'status', label: 'Status', searchPlaceholder: 'Search status', options: statusOptions },
+      { id: 'department', label: 'Department', searchPlaceholder: 'Search department', options: departmentOptions },
+      { id: 'assignee', label: 'Assignee', searchPlaceholder: 'Search assignee', options: assigneeOptions },
+    ];
+  }, [tabFiltered]);
+
+  const handleAdvancedFilterChange = useCallback((categoryId: string, optionIds: string[]) => {
+    setAdvancedFilters(prev => ({ ...prev, [categoryId]: optionIds }));
+  }, []);
+
+  const handleClearAllFilters = useCallback(() => {
+    setAdvancedFilters({});
+    setOverdueActive(false);
+  }, []);
+
+  const handleCloseFilterPanel = useCallback(() => {
+    setFilterPanelOpen(false);
+  }, []);
+
+  const handleTabChange = useCallback((tab: BacklogTabType) => {
+    setActiveTab(tab);
+    setPage(1);
+  }, []);
+
+  // Shift+F to toggle filter panel
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.shiftKey && e.key === 'F') {
+        e.preventDefault();
+        setFilterPanelOpen(v => !v);
+      }
+    };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  }, []);
 
   const paginatedData = useMemo(() => {
     const start = (page - 1) * pageSize;
@@ -487,31 +618,40 @@ export default function InitiativeListingPage() {
         </button>
       </div>
 
-      {/* ── Filter Chips ── */}
-      <div className="pb-filters">
-        {QUICK_FILTERS.map(f => (
-          <button
-            key={f.id}
-            className={`pb-chip ${quickFilter === f.id ? 'pb-chip-active' : ''}`}
-            onClick={() => { setQuickFilter(f.id); setPage(1); }}
-          >
-            {f.label}
-            {quickFilter === f.id && filterCounts[f.id] > 0 && (
-              <span className="pb-chip-count">{filterCounts[f.id]}</span>
-            )}
-          </button>
-        ))}
+      {/* ── Primary Tabs (All / My Items / Starred) ── */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 28px' }}>
+        <BacklogSubTabs activeTab={activeTab} counts={tabCounts} onTabChange={handleTabChange} />
       </div>
 
-      {/* ── Type Legend Bar ── */}
-      <div className="pb-type-legend">
-        <span className="pb-type-legend-label">Types:</span>
-        {TYPE_LEGEND.map(t => (
-          <span key={t.key} className="pb-type-legend-item">
-            <span className="pb-type-dot" style={{ backgroundColor: t.color }} />
-            {t.label}
-          </span>
-        ))}
+      {/* ── Status Summary + Overdue + Filter ── */}
+      <div style={{
+        display: 'flex', alignItems: 'center', gap: 16,
+        padding: '10px 28px', borderBottom: '0.75px solid var(--cp-border-subtle)',
+      }}>
+        <BacklogStatusBar
+          items={tabFiltered}
+          overdueCount={overdueCount}
+          overdueActive={overdueActive}
+          onOverdueToggle={() => { setOverdueActive(v => !v); setPage(1); }}
+          filterSlot={
+            <div style={{ position: 'relative' }}>
+              <FilterTriggerButton
+                count={advancedFilterCount}
+                onClick={() => setFilterPanelOpen(v => !v)}
+                isOpen={filterPanelOpen}
+              />
+              {filterPanelOpen && (
+                <JiraBasicFilter
+                  categories={filterCategories}
+                  selected={advancedFilters}
+                  onSelectionChange={handleAdvancedFilterChange}
+                  onClearAll={handleClearAllFilters}
+                  onClose={handleCloseFilterPanel}
+                />
+              )}
+            </div>
+          }
+        />
       </div>
 
       {/* ── Jira-style bulk action bar ── */}
