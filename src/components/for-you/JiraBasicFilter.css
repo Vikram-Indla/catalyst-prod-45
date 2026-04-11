@@ -376,6 +376,9 @@
 .jf-option-item:hover .jf-option-inner {
   background-color: rgba(5, 21, 36, 0.06);
 }
+.jf-option-item--checked .jf-option-inner {
+  background-color: rgba(24, 104, 219, 0.06);
+}
 .jf-checkbox-wrap {
   display: flex;
   align-items: center;
