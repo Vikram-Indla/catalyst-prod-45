@@ -201,7 +201,18 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
     };
   }, []);
 
-  const groups = useMemo(() => groupByStatus(stories || [], STORY_GROUP_ORDER), [stories]);
+  // Apply advanced filters before grouping
+  const filteredStories = useMemo(() => {
+    let result = stories || [];
+    const f = advancedFilters;
+    if (f.status?.length) result = result.filter(s => s.status && f.status.includes(s.status));
+    if (f.priority?.length) result = result.filter(s => s.priority && f.priority.includes(s.priority));
+    if (f.assignee?.length) result = result.filter(s => s.assignee_name && f.assignee.includes(s.assignee_name));
+    if (f.parent?.length) result = result.filter(s => s.feature?.epic && f.parent.includes(s.feature.epic.id));
+    return result;
+  }, [stories, advancedFilters]);
+
+  const groups = useMemo(() => groupByStatus(filteredStories, STORY_GROUP_ORDER), [filteredStories]);
 
   // Flat list of all visible stories for navigation
   const flatStories = useMemo(() => {
