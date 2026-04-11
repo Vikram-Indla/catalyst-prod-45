@@ -139,84 +139,9 @@ export function parseAdfContent(raw: string | null | undefined): any | null {
 }
 
 // ─── ADF → HTML (for read-only rendering) ───────────────────
-export function adfToHtml(adf: any): string {
-  if (!adf || !adf.content) return '';
-  return adf.content.map(renderAdfNode).join('');
-}
-
-function renderAdfNode(node: any): string {
-  switch (node.type) {
-    case 'paragraph':
-      return `<p>${renderInline(node.content)}</p>`;
-    case 'heading': {
-      const level = node.attrs?.level || 1;
-      return `<h${level}>${renderInline(node.content)}</h${level}>`;
-    }
-    case 'bulletList':
-      return `<ul>${(node.content || []).map(renderAdfNode).join('')}</ul>`;
-    case 'orderedList':
-      return `<ol>${(node.content || []).map(renderAdfNode).join('')}</ol>`;
-    case 'listItem':
-      return `<li>${(node.content || []).map(renderAdfNode).join('')}</li>`;
-    case 'codeBlock':
-      return `<pre><code>${renderInline(node.content)}</code></pre>`;
-    case 'blockquote':
-      return `<blockquote>${(node.content || []).map(renderAdfNode).join('')}</blockquote>`;
-    case 'rule':
-      return '<hr />';
-    case 'hardBreak':
-      return '<br />';
-    default:
-      if (node.content) return node.content.map(renderAdfNode).join('');
-      return '';
-  }
-}
-
-function renderInline(content: any[] | undefined): string {
-  if (!content) return '';
-  return content
-    .map((node) => {
-      if (node.type === 'text') {
-        let text = escapeHtml(node.text || '');
-        if (node.marks) {
-          for (const mark of node.marks) {
-            switch (mark.type) {
-              case 'strong':
-                text = `<strong>${text}</strong>`;
-                break;
-              case 'em':
-                text = `<em>${text}</em>`;
-                break;
-              case 'underline':
-                text = `<u>${text}</u>`;
-                break;
-              case 'strike':
-                text = `<s>${text}</s>`;
-                break;
-              case 'code':
-                text = `<code>${text}</code>`;
-                break;
-              case 'link':
-                text = `<a href="${escapeHtml(mark.attrs?.href || '')}" target="_blank" rel="noopener noreferrer">${text}</a>`;
-                break;
-            }
-          }
-        }
-        return text;
-      }
-      if (node.type === 'hardBreak') return '<br />';
-      return '';
-    })
-    .join('');
-}
-
-function escapeHtml(s: string): string {
-  return s
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
-}
+// Delegates to the canonical hardened converter in utils/adfToHtml.ts
+import { adfToHtml as _adfToHtml } from '../../utils/adfToHtml';
+export const adfToHtml = _adfToHtml;
 
 // ─── Resolve content for TipTap editor ──────────────────────
 // Returns either ADF JSON (for setContent) or HTML string, depending on stored format
