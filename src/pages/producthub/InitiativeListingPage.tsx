@@ -378,7 +378,7 @@ export default function InitiativeListingPage() {
       { id: 'department', label: 'Department', searchPlaceholder: 'Search department', options: departmentOptions },
       { id: 'assignee', label: 'Assignee', searchPlaceholder: 'Search assignee', options: assigneeOptions },
     ];
-  }, [tabFiltered, profiles, avatarsByName]);
+  }, [tabFiltered, avatarsByName]);
 
   const handleAdvancedFilterChange = useCallback((categoryId: string, optionIds: string[]) => {
     if (categoryId === 'roadmap') {
