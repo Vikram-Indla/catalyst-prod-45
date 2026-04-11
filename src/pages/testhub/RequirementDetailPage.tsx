@@ -9,7 +9,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { 
   ArrowLeft, FileCheck, Trash2, Plus, Link2, Unlink,
   CheckCircle2, XCircle, Clock, AlertTriangle, User, Tag,
-  ExternalLink, RefreshCw, FileText, ChevronRight
+  ExternalLink, RefreshCw, FileText, ChevronRight, Bug
 } from 'lucide-react';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
@@ -18,6 +18,7 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
 import { useTheme } from '@/hooks/useTheme';
+import { useDefectsByRequirementId } from '@/hooks/useDefectsG25';
 
 interface Requirement {
   id: string;
@@ -66,6 +67,82 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }
   implemented:  { label: 'IMPLEMENTED',  color: '#006644', bg: '#E3FCEF' },
   verified:     { label: 'VERIFIED',     color: '#006644', bg: '#E3FCEF' },
   deprecated:   { label: 'DEPRECATED',   color: '#253858', bg: '#DFE1E6' },
+};
+
+const defectStatusColors: Record<string, { bg: string; color: string }> = {
+  open:        { bg: '#DFE1E6', color: '#253858' },
+  new:         { bg: '#DFE1E6', color: '#253858' },
+  deferred:    { bg: '#DFE1E6', color: '#253858' },
+  in_progress: { bg: '#DEEBFF', color: '#0747A6' },
+  reopened:    { bg: '#DEEBFF', color: '#0747A6' },
+  fixed:       { bg: '#E3FCEF', color: '#006644' },
+  resolved:    { bg: '#E3FCEF', color: '#006644' },
+  closed:      { bg: '#E3FCEF', color: '#006644' },
+  verified:    { bg: '#E3FCEF', color: '#006644' },
+};
+
+const RequirementDefectsPanel = ({ requirementId }: { requirementId?: string }) => {
+  const { data: defects = [], isLoading } = useDefectsByRequirementId(requirementId);
+
+  if (isLoading) {
+    return <div style={{ padding: 24, color: '#94A3B8', textAlign: 'center' }}>Loading defects...</div>;
+  }
+
+  if (defects.length === 0) {
+    return (
+      <div style={{ textAlign: 'center', padding: 40, color: '#94A3B8' }}>
+        <Bug size={40} style={{ marginBottom: 12, opacity: 0.5 }} />
+        <p style={{ margin: 0 }}>No defects linked to this requirement.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
+      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+        <thead>
+          <tr style={{ height: 36, backgroundColor: '#111111', textAlign: 'left' }}>
+            {['Defect Key', 'Title', 'Status', 'Severity', 'Source'].map(h => (
+              <th key={h} style={{ padding: '8px 12px', fontWeight: 600, color: '#A1A1A1', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.03em', borderBottom: '1px solid #2E2E2E' }}>{h}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {defects.map((d: any) => {
+            const sc = defectStatusColors[d.status] ?? { bg: '#DFE1E6', color: '#253858' };
+            return (
+              <tr key={d.id} style={{ height: 36, backgroundColor: '#1A1A1A', borderBottom: '0.75px solid #2E2E2E' }}>
+                <td style={{ padding: '8px 12px' }}>
+                  <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 12, fontWeight: 600, color: '#2563EB' }}>
+                    {d.defect_key}
+                  </span>
+                </td>
+                <td style={{ padding: '8px 12px', color: '#EDEDED' }}>{d.title}</td>
+                <td style={{ padding: '8px 12px' }}>
+                  <span style={{
+                    display: 'inline-flex', alignItems: 'center', height: 20, padding: '2px 6px', borderRadius: 3,
+                    fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em',
+                    backgroundColor: sc.bg, color: sc.color,
+                  }}>
+                    {d.status?.replace(/_/g, ' ')}
+                  </span>
+                </td>
+                <td style={{ padding: '8px 12px', color: '#A1A1A1' }}>{d.severity ?? '—'}</td>
+                <td style={{ padding: '8px 12px' }}>
+                  {d.link_source === 'auto_execution' && (
+                    <span style={{ fontSize: 11, fontWeight: 600, color: '#A1A1A1', backgroundColor: '#1F1F1F', padding: '2px 6px', borderRadius: 4 }}>Auto</span>
+                  )}
+                  {d.link_source === 'auto_jira' && (
+                    <span style={{ fontSize: 11, fontWeight: 600, color: '#A1A1A1', backgroundColor: '#1F1F1F', padding: '2px 6px', borderRadius: 4 }}>Jira</span>
+                  )}
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
 };
 
 export default function RequirementDetailPage() {

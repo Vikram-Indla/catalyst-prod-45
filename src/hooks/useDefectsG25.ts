@@ -415,4 +415,37 @@ export const useDefectsByPlanId = (planId: string | undefined) => {
       }));
     },
   });
+
+// ─── Defects by Requirement ─────────────────────────────────────
+export const useDefectsByRequirementId = (requirementId: string | undefined) => {
+  return useQuery({
+    queryKey: ['defects-by-requirement', requirementId],
+    enabled: !!requirementId,
+    queryFn: async () => {
+      if (!requirementId) return [];
+      const { data, error } = await supabase
+        .from('tm_defect_links')
+        .select(`
+          id,
+          link_source,
+          entity_label,
+          defect:tm_defects(
+            id,
+            defect_key,
+            title,
+            status,
+            severity,
+            priority
+          )
+        `)
+        .eq('linked_id', requirementId)
+        .eq('link_type', 'requirement');
+      if (error) throw error;
+      return (data ?? []).map((row: any) => ({
+        ...row.defect,
+        link_source: row.link_source,
+        entity_label: row.entity_label,
+      }));
+    },
+  });
 };
