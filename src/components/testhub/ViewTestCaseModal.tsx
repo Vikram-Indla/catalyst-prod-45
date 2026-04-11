@@ -106,10 +106,10 @@ if (typeof document !== 'undefined' && !document.getElementById(ANIM_STYLE_ID)) 
 
 // --- STATUS PILL COLORS (Jira-strong solid) ---
 const STATUS_PILL: Record<string, { bg: string; color: string }> = {
-  draft:      { bg: '#6B778C', color: '#FFFFFF' },
-  ready:      { bg: '#00875A', color: '#FFFFFF' },
-  approved:   { bg: '#0052CC', color: '#FFFFFF' },
-  deprecated: { bg: '#DE350B', color: '#FFFFFF' },
+  draft:      { bg: '#DFE1E6', color: '#253858' },
+  ready:      { bg: '#E3FCEF', color: '#006644' },
+  approved:   { bg: '#DEEBFF', color: '#0747A6' },
+  deprecated: { bg: '#DFE1E6', color: '#253858' },
 };
 
 // --- RESULT LOZENGE (3-colour guardrail) ---
@@ -596,13 +596,22 @@ export function ViewTestCaseModal({
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           padding: '12px 24px', flexShrink: 0,
         }}>
-          {/* Left: case_key */}
-          <span style={{
-            fontFamily: "'JetBrains Mono', monospace",
-            fontSize: 12, fontWeight: 500, color: '#5E6C84',
-          }}>
-            {testCase.case_key}
-          </span>
+          {/* Left: case_key + title */}
+          <div style={{ minWidth: 0, flex: 1 }}>
+            <span style={{
+              fontFamily: "'JetBrains Mono', monospace",
+              fontSize: 12, fontWeight: 500, color: '#5E6C84',
+            }}>
+              {testCase.case_key}
+            </span>
+            <p style={{
+              fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 400,
+              color: '#42526E', margin: '2px 0 0', maxWidth: 600,
+              overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+            }}>
+              {testCase.title}
+            </p>
+          </div>
           {/* Right: ghost buttons */}
           <div style={{ display: 'flex', gap: 2 }}>
             {[
@@ -670,7 +679,12 @@ export function ViewTestCaseModal({
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px 24px' }}>
                     {[
                       { label: 'Automation Status', value: testCase.automation_status || '—' },
-                      { label: 'Test Format', value: testCase.test_format || '—' },
+                      { label: 'Test Format', value: (() => {
+                        const fmt = testCase.test_format || 'steps';
+                        if (fmt === 'gherkin') return 'Gherkin / BDD';
+                        if (fmt === 'free_text') return 'Free Text';
+                        return fmt.charAt(0).toUpperCase() + fmt.slice(1);
+                      })() },
                       { label: 'Version', value: testCase.version != null ? String(testCase.version) : '—' },
                     ].map(({ label, value }) => (
                       <div key={label}>
@@ -773,7 +787,7 @@ export function ViewTestCaseModal({
                 {/* g. HISTORY */}
                 <AccordionSection label="History" defaultExpanded={false}>
                   {history.length === 0 ? (
-                    <span style={{ fontSize: 14, color: '#5E6C84' }}>—</span>
+                    <p style={{ fontSize: 13, color: '#6B778C', margin: 0 }}>No version history yet.</p>
                   ) : (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                       {history.map(h => (
@@ -834,27 +848,24 @@ export function ViewTestCaseModal({
             padding: '16px 20px',
             display: 'flex', flexDirection: 'column', gap: 20,
           }}>
-            {/* Status pill */}
-            <button
+            {/* Status lozenge — V12 */}
+            <span
               style={{
-                width: '100%', height: 32, borderRadius: 4,
-                border: 'none', cursor: 'default',
-                background: statusPill.bg, color: statusPill.color,
-                fontSize: 12, fontWeight: 600, textTransform: 'uppercase' as const,
+                display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                height: 20, padding: '0 6px', borderRadius: 3,
+                fontSize: 11, fontWeight: 700, textTransform: 'uppercase' as const,
                 letterSpacing: '0.03em',
                 fontFamily: "'Inter', sans-serif",
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                background: statusPill.bg, color: statusPill.color,
               }}
             >
               {testCase.status}
-            </button>
+            </span>
 
             {/* Details */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
               {[
                 { label: 'Case Key', value: testCase.case_key, mono: true },
-                { label: 'Version', value: testCase.version != null ? String(testCase.version) : '—' },
-                { label: 'Format', value: testCase.test_format || '—' },
               ].map(({ label, value, mono }) => (
                 <div key={label} style={{
                   display: 'flex', alignItems: 'center', justifyContent: 'space-between',
