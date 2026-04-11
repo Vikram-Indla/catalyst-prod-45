@@ -11,7 +11,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import {
   ArrowLeft, Save, ClipboardList, SendHorizontal, Loader2,
   FileText, Target, Users, Calendar, ShieldCheck, BookCopy, MoreVertical, Trash2,
-  Link2, Plus, PlayCircle, X, ExternalLink
+  Link2, Plus, PlayCircle, X, ExternalLink, Bug
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
@@ -34,6 +34,7 @@ import {
 } from '@/hooks/useTestPlansG26';
 import { TestPlan, PlanStatus } from '@/types/testPlans';
 import { toast } from 'sonner';
+import { useDefectsByPlanId } from '@/hooks/useDefectsG25';
 import { formatDistanceToNow } from 'date-fns';
 
 export default function PlanDetailPage() {
