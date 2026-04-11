@@ -173,14 +173,44 @@ export default function DefectDetailPage() {
         </Card>
       </div>
 
-      {/* Description */}
+      {/* Description — mode-aware */}
       <Card>
         <CardHeader className="pb-2"><CardTitle className="text-sm font-medium">Description</CardTitle></CardHeader>
         <CardContent>
-          {defect.description ? (
-            <p className="text-sm whitespace-pre-wrap">{defect.description}</p>
+          {defect.source_test_run_id ? (
+            <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: 6, padding: '12px 14px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
+                <span style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em', color: '#64748B' }}>
+                  Execution Evidence
+                </span>
+                <span style={{ fontSize: 10, background: '#EFF6FF', color: '#1D4ED8', padding: '1px 5px', borderRadius: 3, fontWeight: 600 }}>
+                  READ ONLY
+                </span>
+              </div>
+              <p style={{ fontSize: 13, color: '#374151', margin: 0, whiteSpace: 'pre-wrap', lineHeight: 1.6 }}>
+                {defect.description || 'No execution description recorded.'}
+              </p>
+            </div>
+          ) : defect.jira_source ? (
+            <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: 6, padding: '12px 14px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
+                <span style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em', color: '#64748B' }}>
+                  Jira Description
+                </span>
+                <span style={{ fontSize: 10, background: '#F0FDF4', color: '#166534', padding: '1px 5px', borderRadius: 3, fontWeight: 600 }}>
+                  READ ONLY
+                </span>
+              </div>
+              <p style={{ fontSize: 13, color: '#374151', margin: 0, whiteSpace: 'pre-wrap', lineHeight: 1.6 }}>
+                {defect.description || 'No description synced from Jira.'}
+              </p>
+            </div>
           ) : (
-            <p className="text-sm text-muted-foreground italic">No description provided</p>
+            defect.description ? (
+              <p className="text-sm whitespace-pre-wrap">{defect.description}</p>
+            ) : (
+              <p className="text-sm text-muted-foreground italic">No description provided</p>
+            )
           )}
         </CardContent>
       </Card>
