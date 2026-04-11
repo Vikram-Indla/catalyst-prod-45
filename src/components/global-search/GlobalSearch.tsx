@@ -8,7 +8,7 @@ import {
   useTrackView,
   useSaveSearch,
 } from "@/hooks/useGlobalSearch";
-import { useNavigate } from "react-router-dom";
+
 import type { SearchResult, ActiveFilters, SearchHub, WorkItemType } from "@/types/global-search";
 import { useProfileAvatarsByName } from "@/hooks/useProfileAvatars";
 import { useThemeMode } from "@/providers/ThemeProvider";
