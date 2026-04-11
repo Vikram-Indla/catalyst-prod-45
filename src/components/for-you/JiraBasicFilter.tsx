@@ -253,7 +253,7 @@ export function JiraBasicFilter({
 
 function OptionAvatar({ option }: { option: FilterOption }) {
   if (option.iconNode) {
-    return <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 20, height: 20, flexShrink: 0 }}>{option.iconNode}</span>;
+    return <span style={{ display: 'inline-flex', alignItems: 'center', flexShrink: 0 }}>{option.iconNode}</span>;
   }
   if (option.avatarType === 'person-icon') {
     return (
