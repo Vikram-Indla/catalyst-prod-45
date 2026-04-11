@@ -20,93 +20,8 @@ import {
   List, ListOrdered, Code2, Link2, Undo2, Redo2, Sparkles, Loader2,
 } from 'lucide-react';
 import { tiptapJsonToAdf, resolveEditorContent } from './adf-utils';
-import { Extension } from '@tiptap/core';
-import { Plugin, PluginKey } from '@tiptap/pm/state';
+
 import './editor-drag-handle.css';
-
-// ─── Custom drag handle — CSS-based visibility, JS for drag logic ─────
-const DragHandleExtension = Extension.create({
-  name: 'customDragHandle',
-  addProseMirrorPlugins() {
-    return [
-      new Plugin({
-        key: new PluginKey('customDragHandle'),
-        view(editorView) {
-          // Add class to editor for CSS-based handle styling
-          editorView.dom.classList.add('catalyst-editor-with-handles');
-
-          let draggedSlice: { pos: number; size: number } | null = null;
-
-          // Handle drop for reordering
-          const handleDrop = (e: DragEvent) => {
-            if (!draggedSlice) return;
-            const dropPos = editorView.posAtCoords({ left: e.clientX, top: e.clientY });
-            if (!dropPos) return;
-            e.preventDefault();
-            const { state, dispatch } = editorView;
-            const { pos: fromPos, size } = draggedSlice;
-            const node = state.doc.nodeAt(fromPos);
-            if (!node) return;
-            const tr = state.tr;
-            const resolvedDrop = tr.doc.resolve(dropPos.pos);
-            const insertPos = resolvedDrop.before(1);
-            tr.delete(fromPos, fromPos + size);
-            const adjustedPos = insertPos > fromPos ? insertPos - size : insertPos;
-            tr.insert(Math.max(0, adjustedPos), node);
-            dispatch(tr);
-            draggedSlice = null;
-          };
-
-          // Mousedown on handle — find the block node and start drag tracking
-          const handleMouseDown = (e: MouseEvent) => {
-            const target = e.target as HTMLElement;
-            if (!target.closest('.catalyst-block-handle')) return;
-            const blockEl = target.closest('[data-catalyst-block]') as HTMLElement;
-            if (!blockEl) return;
-            const posAttr = blockEl.getAttribute('data-catalyst-block');
-            if (posAttr === null) return;
-            const pos = parseInt(posAttr, 10);
-            const node = editorView.state.doc.nodeAt(pos);
-            if (!node) return;
-            draggedSlice = { pos, size: node.nodeSize };
-          };
-
-          editorView.dom.addEventListener('drop', handleDrop);
-          editorView.dom.addEventListener('mousedown', handleMouseDown);
-
-          return {
-            update(view) {
-              // Inject data-catalyst-block attributes on top-level nodes for handle targeting
-              const dom = view.dom;
-              let pos = 0;
-              view.state.doc.forEach((node, offset) => {
-                const nodeDOM = view.nodeDOM(offset);
-                if (nodeDOM && nodeDOM instanceof HTMLElement) {
-                  nodeDOM.setAttribute('data-catalyst-block', String(offset));
-                  if (!nodeDOM.querySelector('.catalyst-block-handle')) {
-                    const handle = document.createElement('span');
-                    handle.className = 'catalyst-block-handle';
-                    handle.contentEditable = 'false';
-                    handle.setAttribute('draggable', 'true');
-                    handle.setAttribute('aria-label', 'Drag to reorder');
-                    handle.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><circle cx="5.5" cy="3.5" r="1.5"/><circle cx="10.5" cy="3.5" r="1.5"/><circle cx="5.5" cy="8" r="1.5"/><circle cx="10.5" cy="8" r="1.5"/><circle cx="5.5" cy="12.5" r="1.5"/><circle cx="10.5" cy="12.5" r="1.5"/></svg>';
-                    nodeDOM.style.position = 'relative';
-                    nodeDOM.insertBefore(handle, nodeDOM.firstChild);
-                  }
-                }
-              });
-            },
-            destroy() {
-              editorView.dom.removeEventListener('drop', handleDrop);
-              editorView.dom.removeEventListener('mousedown', handleMouseDown);
-              editorView.dom.classList.remove('catalyst-editor-with-handles');
-            },
-          };
-        },
-      }),
-    ];
-  },
-});
 
 interface StoryRichTextEditorProps {
   /** Raw content from DB — can be ADF JSON string or legacy HTML */
@@ -236,12 +151,11 @@ export const StoryRichTextEditor = React.memo(function StoryRichTextEditor({
       TableCell,
       TableHeader,
       Placeholder.configure({ placeholder }),
-      DragHandleExtension,
     ],
     content: initialContent,
     editorProps: {
       attributes: {
-        class: 'adf-editor-content',
+        class: 'adf-editor-content catalyst-editor-with-handles',
         style: [
           `min-height: ${minHeight}px`,
           'padding: 14px 16px 14px 32px',

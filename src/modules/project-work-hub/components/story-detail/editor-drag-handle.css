@@ -1,48 +1,77 @@
 /*
  * editor-drag-handle.css
- * CSS-based drag handle for TipTap rich text editor blocks.
- * Handle appears on hover of each top-level block node.
- * Scoped to .catalyst-editor-with-handles (added by DragHandleExtension).
+ * Pure CSS drag handle for TipTap editor blocks.
+ * Uses ::before pseudo-element — zero JS DOM manipulation.
+ * Scoped to .catalyst-editor-with-handles class.
  */
 
-/* Each block node gets position:relative via JS; the handle is injected as first child */
-.catalyst-editor-with-handles .catalyst-block-handle {
+/* Top-level block nodes need position:relative for the ::before handle */
+.catalyst-editor-with-handles > p,
+.catalyst-editor-with-handles > h1,
+.catalyst-editor-with-handles > h2,
+.catalyst-editor-with-handles > h3,
+.catalyst-editor-with-handles > h4,
+.catalyst-editor-with-handles > h5,
+.catalyst-editor-with-handles > h6,
+.catalyst-editor-with-handles > ul,
+.catalyst-editor-with-handles > ol,
+.catalyst-editor-with-handles > blockquote,
+.catalyst-editor-with-handles > pre,
+.catalyst-editor-with-handles > table,
+.catalyst-editor-with-handles > hr {
+  position: relative;
+}
+
+/* Drag grip — 6-dot pattern via radial-gradient */
+.catalyst-editor-with-handles > p::before,
+.catalyst-editor-with-handles > h1::before,
+.catalyst-editor-with-handles > h2::before,
+.catalyst-editor-with-handles > h3::before,
+.catalyst-editor-with-handles > h4::before,
+.catalyst-editor-with-handles > h5::before,
+.catalyst-editor-with-handles > h6::before,
+.catalyst-editor-with-handles > ul::before,
+.catalyst-editor-with-handles > ol::before,
+.catalyst-editor-with-handles > blockquote::before,
+.catalyst-editor-with-handles > pre::before,
+.catalyst-editor-with-handles > table::before {
+  content: '';
   position: absolute;
   left: -24px;
   top: 50%;
   transform: translateY(-50%);
-  width: 20px;
-  height: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  background: transparent;
-  border-radius: 4px;
+  width: 16px;
+  height: 20px;
+  border-radius: 3px;
   cursor: grab;
-  color: #C1C7D0;
   opacity: 0;
-  transition: opacity 0.15s ease, background 0.12s ease, color 0.12s ease;
-  pointer-events: auto;
-  user-select: none;
-  z-index: 10;
+  transition: opacity 0.15s ease, background-color 0.12s ease;
+
+  /* 6-dot grip pattern: 2 columns x 3 rows */
+  background-image:
+    radial-gradient(circle, #97A0AF 1.5px, transparent 1.5px);
+  background-size: 6px 6px;
+  background-position: 2px 1px;
+  background-repeat: repeat;
 }
 
-/* Show handle on block hover */
-.catalyst-editor-with-handles [data-catalyst-block]:hover > .catalyst-block-handle {
+/* Show on block hover */
+.catalyst-editor-with-handles > p:hover::before,
+.catalyst-editor-with-handles > h1:hover::before,
+.catalyst-editor-with-handles > h2:hover::before,
+.catalyst-editor-with-handles > h3:hover::before,
+.catalyst-editor-with-handles > h4:hover::before,
+.catalyst-editor-with-handles > h5:hover::before,
+.catalyst-editor-with-handles > h6:hover::before,
+.catalyst-editor-with-handles > ul:hover::before,
+.catalyst-editor-with-handles > ol:hover::before,
+.catalyst-editor-with-handles > blockquote:hover::before,
+.catalyst-editor-with-handles > pre:hover::before,
+.catalyst-editor-with-handles > table:hover::before {
   opacity: 1;
 }
 
-/* Handle hover — darker grip + subtle bg */
-.catalyst-editor-with-handles .catalyst-block-handle:hover {
-  opacity: 1;
-  background: rgba(9, 30, 66, 0.08);
-  color: #6B778C;
-}
-
-/* Handle active / grabbing */
-.catalyst-editor-with-handles .catalyst-block-handle:active {
-  background: rgba(9, 30, 66, 0.13);
-  color: #42526E;
-  cursor: grabbing;
+/* Hover state on the handle itself — subtle bg */
+.catalyst-editor-with-handles > *:hover::before {
+  background-color: rgba(9, 30, 66, 0.04);
 }
