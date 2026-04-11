@@ -58,7 +58,7 @@
 [data-sdm-scope] .sdm-child-header-left {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 0;
 }
 
 [data-sdm-scope] .sdm-child-title {
