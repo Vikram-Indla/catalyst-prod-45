@@ -308,7 +308,7 @@ type ColumnKey = 'SEVERITY' | 'PRIORITY' | 'STATUS' | 'ASSIGNEE' | 'AGE';
 const DEFECT_COLUMNS: TColDef[] = [
   { key: 'checkbox', label: '', defaultWidth: 40, minWidth: 40, locked: true },
   { key: 'star', label: '', defaultWidth: 28, minWidth: 28, locked: true },
-  { key: 'type', label: 'TYPE', defaultWidth: 32, minWidth: 32, locked: true },
+  { key: 'type', label: 'TYPE', defaultWidth: 44, minWidth: 44, locked: true },
   { key: 'key', label: 'KEY', defaultWidth: 140, minWidth: 80 },
   { key: 'title', label: 'TITLE', defaultWidth: 320, minWidth: 150 },
   { key: 'parent', label: 'PARENT', defaultWidth: 120, minWidth: 80 },
