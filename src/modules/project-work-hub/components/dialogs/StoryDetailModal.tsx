@@ -14,7 +14,7 @@ import {
   GripVertical, Link2, Trash2, Check,
   Eye, EyeOff, Sparkles, Loader2, RotateCcw, Settings2, AlertTriangle,
   SquarePen, Reply, ThumbsUp, Smile, Pencil, MoreHorizontal, Copy,
-  Globe, Palette, Video, CheckSquare,
+  Globe, Palette, CheckSquare,
 } from 'lucide-react';
 import { RichTextCommentEditor } from './story-detail-modules/RichTextCommentEditor';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
