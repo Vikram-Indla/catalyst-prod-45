@@ -267,7 +267,7 @@ export function EditableLabels({ issueId, currentLabels, onUpdate }: { issueId: 
 
   const updateMutation = useMutation({
     mutationFn: async (labels: string[]) => {
-      const { error } = await supabase.from('ph_issues').update({ labels: JSON.stringify(labels) as any }).eq('id', issueId);
+      const { error } = await supabase.from('ph_issues').update({ labels: labels as any }).eq('id', issueId);
       if (error) throw error;
     },
     onSuccess: () => onUpdate(),
@@ -373,13 +373,10 @@ export function EditableLabels({ issueId, currentLabels, onUpdate }: { issueId: 
 
       {/* Dropdown */}
       {open && (() => {
-        const rect = containerRef.current?.getBoundingClientRect();
-        const top = (rect?.bottom ?? 0) + 4;
-        const left = rect?.left ?? 0;
-        const width = Math.max(rect?.width ?? 280, 280);
         return (
           <div style={{
-            ...ATLASSIAN_DROPDOWN, position: 'fixed', top, left, width,
+            ...ATLASSIAN_DROPDOWN, position: 'absolute', top: '100%', left: 0, marginTop: 4,
+            width: Math.max(containerRef.current?.offsetWidth ?? 280, 280),
             maxHeight: 380, display: 'flex', flexDirection: 'column', overflow: 'hidden',
           }}>
             {/* Search/create input */}
