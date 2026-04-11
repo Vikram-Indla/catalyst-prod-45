@@ -10,7 +10,7 @@ const DEFAULT_PROJECT_ID = '00000000-0000-0000-0000-000000000001';
 interface CreateDefectModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onCreated: () => void;
+  onCreated: (defectId: string) => void;
   prefill?: {
     title?: string;
     description?: string;
@@ -96,16 +96,19 @@ export function CreateDefectModal({ isOpen, onClose, onCreated, prefill }: Creat
     const sevOption = SEVERITY_OPTIONS.find(o => o.value === severity);
 
     try {
-      await createDefect.mutateAsync({
+      const result = await createDefect.mutateAsync({
         project_id: DEFAULT_PROJECT_ID,
         title: title.trim(),
         description: description.trim() || undefined,
         severity: sevOption?.mapped || 'MINOR',
         assigned_to: assignedTo || undefined,
         run_id: prefill?.cycleTestCaseId || undefined,
+        source_test_case_id: prefill?.testCaseId || undefined,
+        source_test_run_id: prefill?.cycleTestCaseId || undefined,
+        source_test_plan_id: prefill?.cycleId || undefined,
       });
 
-      onCreated();
+      onCreated(result.key || result.id);
       onClose();
     } catch (err: any) {
       console.error('Create defect error:', err);
