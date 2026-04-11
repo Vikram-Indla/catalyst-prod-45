@@ -1,13 +1,13 @@
 import { useMutation } from '@tanstack/react-query';
 
 export interface PlanHubAIFeaturesEnabled { [key: string]: boolean; }
-export interface ActivityLogFilters { from?: string; to?: string; type?: string; }
+export interface ActivityLogFilters { from?: string; to?: string; type?: string; search?: string; action?: string; [key: string]: any; }
 export interface PlanHubGeneralSettings { [key: string]: any; }
 export interface PlanHubFeatureSettings { [key: string]: boolean; }
 export interface PlanHubTemplate { id: string; name: string; description?: string; [key: string]: any; }
 export interface CreateTemplateInput { name: string; description?: string; [key: string]: any; }
 
-export function usePlanHubAIConfig() { return { data: null as any, isLoading: false }; }
+export function usePlanHubAIConfig(..._: any[]) { return { data: null as any, isLoading: false }; }
 export function useUpdatePlanHubAIConfig() { return useMutation({ mutationFn: async (_: any) => {} }); }
 export function useTestAIConnection() { return useMutation({ mutationFn: async (_: any) => ({} as any) }); }
 export function usePlanHubActivityLog(..._: any[]) { return { data: [], isLoading: false }; }

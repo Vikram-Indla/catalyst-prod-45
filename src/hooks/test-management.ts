@@ -4,15 +4,15 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 export function useCloneTestCase() { return useMutation({ mutationFn: async (_: any) => {} }); }
 export function useDeleteTestCase() { return useMutation({ mutationFn: async (_: any) => {} }); }
 export function useBulkDeleteTestCases() { return useMutation({ mutationFn: async (_: any) => {} }); }
-export function useUpsertTestCaseDraft() { return useMutation({ mutationFn: async (..._: any[]) => ({} as any) }); }
-export function useCreateTestCase() { return useMutation({ mutationFn: async (..._: any[]) => ({} as any) }); }
+export function useUpsertTestCaseDraft() { return useMutation({ mutationFn: async (...args: any[]) => ({} as any) }); }
+export function useCreateTestCase() { return useMutation({ mutationFn: async (...args: any[]) => ({} as any) }); }
 export function useSaveTestData() { return useMutation({ mutationFn: async (_: any) => {} }); }
 export function hasTestDataToSave(_: any) { return false; }
 export function useTeamMembers(..._: any[]) { return { data: [], isLoading: false }; }
 export function useCreateTestPlan() { return useMutation({ mutationFn: async (_: any) => ({} as any) }); }
 export function useUpdateTestPlan() { return useMutation({ mutationFn: async (_: any) => ({} as any) }); }
-export function useTestPlan(..._: any[]) { return { data: null, isLoading: false }; }
-export function useTestPlans(..._: any[]) { return { data: [], isLoading: false }; }
+export function useTestPlan(..._: any[]) { return { data: null, isLoading: false, refetch: async () => {} }; }
+export function useTestPlans(..._: any[]) { return { data: { plans: [] } as any, isLoading: false, refetch: async () => {} }; }
 export function useDeleteTestPlan() { return useMutation({ mutationFn: async (_: any) => {} }); }
 export function useCloneTestPlan() { return useMutation({ mutationFn: async (_: any) => ({} as any) }); }
 export function useDeleteFolder() { return useMutation({ mutationFn: async (_: any) => {} }); }
