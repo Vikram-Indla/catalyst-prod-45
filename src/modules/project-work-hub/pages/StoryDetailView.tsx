@@ -17,6 +17,7 @@ import { StoryDetailSidebar } from '../components/story-detail/StoryDetailSideba
 import { StoryActivitySection } from '../components/story-detail/StoryActivitySection';
 import { StoryRichTextEditor } from '../components/story-detail/StoryRichTextEditor';
 import { resolveDisplayHtml } from '../components/story-detail/adf-utils';
+import { adfToHtml, tryAdfStringToHtml } from '../utils/adfToHtml';
 import {
   useStoryDetail, useStoryComments, useStoryHistory,
   useStorySiblings, useParentCandidates, useTeamMembers,
@@ -350,16 +351,17 @@ export default function StoryDetailView({ projectId, projectKey, itemId }: Story
             <div style={{ ...SECTION_HEADING, marginBottom: 8 }}>Description</div>
             {editingDesc ? (
               <StoryRichTextEditor
-                content={story.description_text || ''}
+                content={adfToHtml((story as any).description_adf) || story.description_text || ''}
                 onSave={handleDescSave}
                 onCancel={() => setEditingDesc(false)}
                 placeholder="Add a description..."
               />
             ) : (
               <div onClick={() => setEditingDesc(true)}
-                style={{ fontSize: 14, lineHeight: 1.6, color: story.description_text ? '#292A2E' : '#6B6E76', fontStyle: story.description_text ? 'normal' : 'italic', cursor: 'text', minHeight: 40, padding: '8px 0' }}>
-                {story.description_text ? (
-                  <div dangerouslySetInnerHTML={{ __html: resolveDisplayHtml(story.description_text) }} />
+                style={{ fontSize: 14, lineHeight: 1.6, color: story.description_text ? '#292A2E' : '#6B6E76', fontStyle: story.description_text ? 'normal' : 'italic', cursor: 'text', minHeight: 40, padding: '8px 0' }}
+                className="adf-editor-content">
+                {story.description_text || (story as any).description_adf ? (
+                  <div dangerouslySetInnerHTML={{ __html: adfToHtml((story as any).description_adf) || resolveDisplayHtml(story.description_text) }} />
                 ) : 'Add a description...'}
               </div>
             )}
@@ -370,7 +372,7 @@ export default function StoryDetailView({ projectId, projectKey, itemId }: Story
             <div style={{ ...SECTION_HEADING, marginBottom: 8 }}>Acceptance Criteria</div>
             {editingAC ? (
               <StoryRichTextEditor
-                content={(story as any).acceptance_criteria || ''}
+                content={tryAdfStringToHtml((story as any).acceptance_criteria) ?? (story as any).acceptance_criteria ?? ''}
                 onSave={handleACSave}
                 onCancel={() => setEditingAC(false)}
                 placeholder="Add acceptance criteria..."
