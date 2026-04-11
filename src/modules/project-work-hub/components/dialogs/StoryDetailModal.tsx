@@ -57,6 +57,7 @@ import { DefectsSection } from './story-detail-modules';
 import { IncidentsSection } from './story-detail-modules';
 import { TestHubSection } from './story-detail-modules';
 import { LinkedIssuesSection } from './story-detail-modules';
+import { AttachmentsSection } from './story-detail-modules';
 import { EditableAssignee, EditablePriority, EditableLabels, ParentFieldPicker } from './story-detail-modules';
 import { StoryRichTextEditor } from '../story-detail/StoryRichTextEditor';
 import { adfToHtml, tryAdfStringToHtml } from '../../utils/adfToHtml';
@@ -236,8 +237,6 @@ export default function StoryDetailModal({
   const [showCommentSummary, setShowCommentSummary] = useState(true);
   const [showFixVersionDropdown, setShowFixVersionDropdown] = useState(false);
   const [fixVersionSearch, setFixVersionSearch] = useState('');
-  const [showAttMenu, setShowAttMenu] = useState(false);
-  const [attViewMode, setAttViewMode] = useState<'list' | 'strip'>('list');
 
   // All epics for "Add epic" panel (breadcrumb)
   const { data: allEpics = [] } = useQuery({
@@ -1249,120 +1248,12 @@ export default function StoryDetailModal({
                     )}
                   </div>
 
-                  {/* 6. ATTACHMENTS — Jira list view */}
-                  <SectionBlock title="Attachments" count={attachments.length} defaultExpanded={attachments.length > 0}
-                    headerRight={
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                        <div style={{ position: 'relative' }}>
-                          <button onClick={() => setShowAttMenu(p => !p)} style={{ background: 'none', border: '1px solid #DFE1E6', borderRadius: 3, cursor: 'pointer', color: '#42526E', width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                            onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
-                            onMouseLeave={e => (e.currentTarget.style.background = 'none')}
-                          >
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
-                          </button>
-                          {showAttMenu && (
-                            <div style={{ position: 'absolute', right: 0, top: 32, background: '#FFF', border: '1px solid #DFE1E6', borderRadius: 4, boxShadow: '0 4px 16px rgba(9,30,66,0.18)', padding: '4px 0', zIndex: 50, minWidth: 200, whiteSpace: 'nowrap' }}>
-                              <button onClick={() => { setAttViewMode(v => v === 'list' ? 'strip' : 'list'); setShowAttMenu(false); }} style={menuItemStyle}>
-                                {attViewMode === 'list' ? 'Switch to strip view' : 'Switch to list view'}
-                              </button>
-                              {attachments.length > 0 && (
-                                <button onClick={() => { attachments.forEach(att => { const url = supabase.storage.from('attachments').getPublicUrl(att.storage_path).data.publicUrl; window.open(url, '_blank'); }); setShowAttMenu(false); }} style={menuItemStyle}>
-                                  Download all <span style={{ background: '#DFE1E6', color: '#42526E', fontSize: 11, fontWeight: 600, padding: '1px 6px', borderRadius: 3, marginLeft: 8 }}>{attachments.length}</span>
-                                </button>
-                              )}
-                            </div>
-                          )}
-                        </div>
-                        <button onClick={() => fileInputRef.current?.click()} style={{ background: 'none', border: '1px solid #DFE1E6', borderRadius: 3, cursor: 'pointer', color: '#42526E', width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                          onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
-                          onMouseLeave={e => (e.currentTarget.style.background = 'none')}
-                        ><Plus size={14} /></button>
-                      </div>
-                    }
-                  >
-                    {attachments.length === 0 ? (
-                      <div style={{ padding: '16px 0', textAlign: 'center' }}>
-                        <span style={{ fontSize: 13, color: '#97A0AF' }}>No attachments — click + to add</span>
-                      </div>
-                    ) : attViewMode === 'list' ? (
-                      <div>
-                        {/* Table header */}
-                        <div style={{ display: 'flex', alignItems: 'center', padding: '6px 8px', borderBottom: '1px solid #EBECF0', fontSize: 11, fontWeight: 600, color: '#6B778C', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
-                          <span style={{ flex: 1 }}>Name</span>
-                          <span style={{ width: 80, textAlign: 'right' }}>Size</span>
-                          <span style={{ width: 170, textAlign: 'right', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 4 }}>
-                            Date added <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
-                          </span>
-                          <span style={{ width: 64 }} />
-                        </div>
-                        {/* Rows */}
-                        {attachments.map(att => {
-                          const publicUrl = supabase.storage.from('attachments').getPublicUrl(att.storage_path).data.publicUrl;
-                          const isImage = att.mime_type?.startsWith('image/');
-                          const isVideo = att.mime_type?.startsWith('video/');
-                          const sizeStr = att.file_size >= 1024 * 1024 ? `${(att.file_size / (1024 * 1024)).toFixed(0)} MB` : `${Math.round(att.file_size / 1024)} KB`;
-                          const dateStr = new Date(att.created_at).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }) + ', ' + new Date(att.created_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
-                          return (
-                            <div key={att.id} className="group" style={{ display: 'flex', alignItems: 'center', padding: '8px 8px', borderBottom: '1px solid #F4F5F7', transition: 'background 0.1s', cursor: 'default' }}
-                              onMouseEnter={e => (e.currentTarget.style.background = '#FAFBFC')}
-                              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-                            >
-                              {/* Thumbnail */}
-                              <div style={{ width: 40, height: 40, borderRadius: 3, border: '1px solid #DFE1E6', overflow: 'hidden', marginRight: 10, flexShrink: 0, background: '#F4F5F7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                {isImage ? (
-                                  <img src={publicUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                                ) : isVideo ? (
-                                  <svg width="18" height="18" viewBox="0 0 24 24" fill="#42526E"><path d="M8 5v14l11-7z"/></svg>
-                                ) : (
-                                  <Paperclip size={14} style={{ color: '#97A0AF' }} />
-                                )}
-                              </div>
-                              {/* Name */}
-                              <span style={{ flex: 1, fontSize: 13, color: '#172B4D', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{att.file_name}</span>
-                              {/* Size */}
-                              <span style={{ width: 80, textAlign: 'right', fontSize: 12, color: '#6B778C' }}>{sizeStr}</span>
-                              {/* Date */}
-                              <span style={{ width: 170, textAlign: 'right', fontSize: 12, color: '#6B778C' }}>{dateStr}</span>
-                              {/* Actions */}
-                              <div style={{ width: 64, display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 6 }}>
-                                <button onClick={() => window.open(publicUrl, '_blank')} title="Preview" style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#97A0AF', padding: 2 }}
-                                  onMouseEnter={e => (e.currentTarget.style.color = '#42526E')}
-                                  onMouseLeave={e => (e.currentTarget.style.color = '#97A0AF')}
-                                ><Eye size={15} /></button>
-                                <a href={publicUrl} download={att.file_name} title="Download" style={{ color: '#97A0AF', padding: 2 }}
-                                  onMouseEnter={e => (e.currentTarget.style.color = '#42526E')}
-                                  onMouseLeave={e => (e.currentTarget.style.color = '#97A0AF')}
-                                ><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></a>
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    ) : (
-                      /* Strip view — thumbnail cards */
-                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, padding: '8px 0' }}>
-                        {attachments.map(att => {
-                          const publicUrl = supabase.storage.from('attachments').getPublicUrl(att.storage_path).data.publicUrl;
-                          const isImage = att.mime_type?.startsWith('image/');
-                          return (
-                            <div key={att.id} style={{ width: 140, border: '1px solid #DFE1E6', borderRadius: 4, overflow: 'hidden', cursor: 'pointer', transition: 'box-shadow 0.15s' }}
-                              onClick={() => window.open(publicUrl, '_blank')}
-                              onMouseEnter={e => (e.currentTarget.style.boxShadow = '0 2px 8px rgba(9,30,66,0.15)')}
-                              onMouseLeave={e => (e.currentTarget.style.boxShadow = 'none')}
-                            >
-                              <div style={{ width: '100%', height: 80, background: '#F4F5F7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                {isImage ? <img src={publicUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <Paperclip size={20} style={{ color: '#97A0AF' }} />}
-                              </div>
-                              <div style={{ padding: '6px 8px', borderTop: '1px solid #EBECF0' }}>
-                                <div style={{ fontSize: 11, fontWeight: 600, color: '#172B4D', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{att.file_name}</div>
-                                <div style={{ fontSize: 10, color: '#97A0AF', marginTop: 2 }}>{fmtDate(att.created_at)}</div>
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    )}
-                  </SectionBlock>
+                  {/* 6. ATTACHMENTS — Jira-parity component */}
+                  <AttachmentsSection
+                    attachments={attachments}
+                    itemId={itemId}
+                    userId={user!.id}
+                  />
 
                   {/* 7. V2 COLLAPSIBLE SECTIONS */}
                   {issue && (

@@ -297,7 +297,6 @@ export const StoryRichTextEditor = React.memo(function StoryRichTextEditor({
       TableCell,
       TableHeader,
       Placeholder.configure({ placeholder }),
-      DragHandleExtension,
     ],
     content: initialContent,
     editorProps: {
