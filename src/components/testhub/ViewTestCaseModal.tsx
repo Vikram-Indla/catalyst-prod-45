@@ -31,6 +31,7 @@ interface Link {
   link_type: string;
   linked_item_key: string;
   linked_item_title: string;
+  _source: 'tm_test_case_links' | 'tm_defect_links';
 }
 
 interface VersionHistory {
@@ -205,23 +206,37 @@ export function ViewTestCaseModal({
     setLoading(true);
 
     try {
-      const [stepsRes, linksRes, historyRes, runsRes, attachmentsRes] = await Promise.all([
+      const [stepsRes, reqStoryLinksRes, defectLinksRes, historyRes, runsRes, attachmentsRes] = await Promise.all([
         supabase.from('tm_test_steps').select('*').eq('test_case_id', testCase.id).order('step_number'),
-        typedQuery('tm_test_case_links').select('*').eq('test_case_id', testCase.id),
+        typedQuery('tm_test_case_links').select('*').eq('test_case_id', testCase.id).in('linked_item_type', ['requirement', 'story']),
+        typedQuery('tm_defect_links').select('*').eq('link_type', 'test_case').eq('linked_id', testCase.id),
         typedQuery('tm_test_case_versions').select('*').eq('test_case_id', testCase.id).order('version_number', { ascending: false }),
         typedQuery('th_test_executions').select('*').eq('test_case_id', testCase.id).order('executed_at', { ascending: false }),
         typedQuery('th_test_case_attachments').select('*').eq('test_case_id', testCase.id),
       ]);
 
       setSteps(stepsRes.data || []);
-      // Map tm_test_case_links to expected shape
-      const linksData = (linksRes.data || []).map((l: any) => ({
+
+      // Map requirement/story links from tm_test_case_links
+      const reqStoryLinks: Link[] = (reqStoryLinksRes.data || []).map((l: any) => ({
         id: l.id,
         link_type: l.linked_item_type || '',
-        linked_item_key: l.linked_item_key || '',
+        linked_item_key: l.linked_item_key || l.linked_item_id || '',
         linked_item_title: l.linked_item_title || '',
+        _source: 'tm_test_case_links' as const,
       }));
-      setLinks(linksData);
+
+      // Map defect links from tm_defect_links
+      const defectLinks: Link[] = (defectLinksRes.data || []).map((l: any) => ({
+        id: l.id,
+        link_type: 'defect',
+        linked_item_key: l.defect_id || '',
+        linked_item_title: l.entity_label || 'Defect',
+        _source: 'tm_defect_links' as const,
+      }));
+
+      setLinks([...reqStoryLinks, ...defectLinks]);
+
       // Map tm_test_case_versions to expected shape
       const historyData = (historyRes.data || []).map((v: any) => ({
         id: v.id,
@@ -242,24 +257,55 @@ export function ViewTestCaseModal({
   const handleAddLink = async (key: string, title: string) => {
     if (!testCase) return;
     const { data: { user } } = await supabase.auth.getUser();
-    const { data, error } = await typedQuery('tm_test_case_links').insert({
-      test_case_id: testCase.id,
-      linked_item_type: addLinkType,
-      linked_item_id: key,
-      linked_by: user?.id || null,
-    }).select().single();
-    if (!error && data) {
-      setLinks([...links, {
-        id: data.id,
-        link_type: data.linked_item_type,
-        linked_item_key: data.linked_item_id || key,
-        linked_item_title: title,
-      }]);
+
+    if (addLinkType === 'defect') {
+      // Write to tm_defect_links
+      const { data, error } = await typedQuery('tm_defect_links').insert({
+        defect_id: key,
+        link_type: 'test_case',
+        linked_id: testCase.id,
+        entity_label: title,
+        link_source: 'manual',
+        created_by: user?.id || null,
+      }).select().single();
+      if (!error && data) {
+        setLinks([...links, {
+          id: data.id,
+          link_type: 'defect',
+          linked_item_key: data.defect_id || key,
+          linked_item_title: title,
+          _source: 'tm_defect_links',
+        }]);
+      }
+    } else {
+      // Write requirement/story to tm_test_case_links
+      const { data, error } = await typedQuery('tm_test_case_links').insert({
+        test_case_id: testCase.id,
+        linked_item_type: addLinkType,
+        linked_item_id: key,
+        linked_by: user?.id || null,
+      }).select().single();
+      if (!error && data) {
+        setLinks([...links, {
+          id: data.id,
+          link_type: data.linked_item_type,
+          linked_item_key: data.linked_item_id || key,
+          linked_item_title: title,
+          _source: 'tm_test_case_links',
+        }]);
+      }
     }
   };
 
   const handleDeleteLink = async (linkId: string) => {
-    await typedQuery('tm_test_case_links').delete().eq('id', linkId);
+    const link = links.find(l => l.id === linkId);
+    if (!link) return;
+
+    if (link._source === 'tm_defect_links') {
+      await typedQuery('tm_defect_links').delete().eq('id', linkId);
+    } else {
+      await typedQuery('tm_test_case_links').delete().eq('id', linkId);
+    }
     setLinks(links.filter(l => l.id !== linkId));
   };
 
