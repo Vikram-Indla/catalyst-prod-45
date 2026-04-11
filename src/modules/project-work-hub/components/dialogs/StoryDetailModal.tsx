@@ -14,6 +14,7 @@ import {
   GripVertical, Link2, Trash2, Check,
   Eye, EyeOff, Sparkles, Loader2, RotateCcw, Settings2, AlertTriangle,
   SquarePen, Reply, ThumbsUp, Smile, Pencil, MoreHorizontal, Copy,
+  Globe, Palette, Video, CheckSquare,
 } from 'lucide-react';
 import { RichTextCommentEditor } from './story-detail-modules/RichTextCommentEditor';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -218,6 +219,7 @@ export default function StoryDetailModal({
   const [localPriority, setLocalPriority] = useState<string>('');
   const [showStatusDropdown, setShowStatusDropdown] = useState(false);
   const [showAddMenu, setShowAddMenu] = useState(false);
+  const [addMenuSearch, setAddMenuSearch] = useState('');
   const [showAiMenu, setShowAiMenu] = useState(false);
   const [showDotsMenu, setShowDotsMenu] = useState(false);
   const [parentPickerTrigger, setParentPickerTrigger] = useState(0);
