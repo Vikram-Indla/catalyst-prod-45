@@ -173,7 +173,7 @@ export function SubtasksPanel({ storyKey, storyId, projectKey, onSubtaskClick }:
     queryFn: async () => {
       const { data, error } = await supabase
         .from('ph_issues')
-        .select('id,issue_key,summary,status,status_category,issue_type,assignee_display_name,priority,position,deleted_at')
+        .select('id,issue_key,summary,status,status_category,issue_type,assignee_display_name,assignee_account_id,priority,position,deleted_at')
         .eq('parent_key', storyKey)
         .is('deleted_at', null)
         .order('position', { ascending: true });
@@ -181,6 +181,31 @@ export function SubtasksPanel({ storyKey, storyId, projectKey, onSubtaskClick }:
       return (data ?? []) as SubtaskRow[];
     },
     enabled: !!storyKey,
+  });
+
+  // ─── Resolve avatar URLs from jira_identity_map ───
+  const assigneeAccountIds = useMemo(
+    () => [...new Set(children.map(c => c.assignee_account_id).filter(Boolean))] as string[],
+    [children]
+  );
+
+  const { data: avatarMap = {} } = useQuery({
+    queryKey: ['subtask-avatars', assigneeAccountIds],
+    queryFn: async () => {
+      if (assigneeAccountIds.length === 0) return {};
+      const { data, error } = await supabase
+        .from('jira_identity_map')
+        .select('jira_account_id,avatar_url')
+        .in('jira_account_id', assigneeAccountIds);
+      if (error) throw error;
+      const map: Record<string, string | null> = {};
+      (data ?? []).forEach(row => {
+        if (row.jira_account_id) map[row.jira_account_id] = row.avatar_url;
+      });
+      return map;
+    },
+    enabled: assigneeAccountIds.length > 0,
+    staleTime: 5 * 60 * 1000,
   });
 
   // ─── Progress calc ────────────────────────────
