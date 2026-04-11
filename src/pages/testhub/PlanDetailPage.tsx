@@ -11,7 +11,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import {
   ArrowLeft, Save, ClipboardList, SendHorizontal, Loader2,
   FileText, Target, Users, Calendar, ShieldCheck, BookCopy, MoreVertical, Trash2,
-  Link2, Plus, PlayCircle, X, ExternalLink, Bug, MessageSquare
+  Link2, Plus, PlayCircle, X, ExternalLink, Bug, MessageSquare, Paperclip
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
@@ -26,6 +26,7 @@ import { ScheduleTab } from '@/components/test-plans/ScheduleTab';
 import { ApprovalsTab } from '@/components/test-plans/ApprovalsTab';
 import { SaveAsTemplateModal } from '@/components/test-plans/SaveAsTemplateModal';
 import { EntityCommentsPanel } from '@/components/testhub/EntityCommentsPanel';
+import { EntityAttachmentsPanel } from '@/components/testhub/EntityAttachmentsPanel';
 import { CreateTestCycleModal } from '@/components/testhub/CreateTestCycleModal';
 import {
   useTestPlan, useUpdateTestPlan, useDeleteTestPlan,
@@ -312,6 +313,7 @@ export default function PlanDetailPage() {
           <TabsTrigger value="approvals" className="gap-2"><ShieldCheck className="h-4 w-4" />Approvals</TabsTrigger>
           <TabsTrigger value="defects" className="gap-2"><Bug className="h-4 w-4" />Defects</TabsTrigger>
           <TabsTrigger value="comments" className="gap-2"><MessageSquare className="h-4 w-4" />Comments</TabsTrigger>
+          <TabsTrigger value="attachments" className="gap-2"><Paperclip className="h-4 w-4" />Attachments</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="mt-6">
@@ -447,6 +449,10 @@ export default function PlanDetailPage() {
 
         <TabsContent value="comments" className="mt-6">
           <EntityCommentsPanel entityType="test_plan" entityId={plan.id} title="Plan Comments" />
+        </TabsContent>
+
+        <TabsContent value="attachments" className="mt-6">
+          <EntityAttachmentsPanel entityType="test_plan" entityId={plan.id} title="Plan Attachments" />
         </TabsContent>
       </Tabs>
 

@@ -20,6 +20,7 @@ import {
 import { useTheme } from '@/hooks/useTheme';
 import { useDefectsByRequirementId } from '@/hooks/useDefectsG25';
 import { EntityCommentsPanel } from '@/components/testhub/EntityCommentsPanel';
+import { EntityAttachmentsPanel } from '@/components/testhub/EntityAttachmentsPanel';
 
 interface Requirement {
   id: string;
@@ -369,6 +370,11 @@ export default function RequirementDetailPage() {
       {/* Comments */}
       <div style={{ backgroundColor: isDark ? '#1A1A1A' : '#FFF', borderRadius: 12, padding: 24, border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0', marginTop: 24 }}>
         <EntityCommentsPanel entityType="requirement" entityId={requirement?.id} title="Requirement Comments" />
+      </div>
+
+      {/* Attachments */}
+      <div style={{ backgroundColor: isDark ? '#1A1A1A' : '#FFF', borderRadius: 12, padding: 24, border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0', marginTop: 24 }}>
+        <EntityAttachmentsPanel entityType="requirement" entityId={requirement?.id} title="Requirement Attachments" />
       </div>
 
       {showLinkModal && (
