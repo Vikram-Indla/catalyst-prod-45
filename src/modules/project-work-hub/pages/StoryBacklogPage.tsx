@@ -683,6 +683,21 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
                             ? <ChevronRight size={14} style={{ color: '#475569' }} />
                             : <ChevronDown size={14} style={{ color: '#475569' }} />
                           }
+                          {groupBy === 'assignee' && group.label !== 'Unassigned' && (() => {
+                            const url = avatarsByName.get(group.label.toLowerCase());
+                            return url ? (
+                              <img src={url} alt="" style={{ width: 20, height: 20, borderRadius: '50%', objectFit: 'cover', flexShrink: 0, border: '1px solid #E2E8F0' }} />
+                            ) : (
+                              <div style={{
+                                width: 20, height: 20, borderRadius: '50%', flexShrink: 0,
+                                background: AVATAR_COLOURS[(getInitials(group.label) || 'U').charCodeAt(0) % AVATAR_COLOURS.length],
+                                color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                fontSize: 9, fontWeight: 700,
+                              }}>
+                                {getInitials(group.label)}
+                              </div>
+                            );
+                          })()}
                           {group.label}
                           <span style={{
                             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
