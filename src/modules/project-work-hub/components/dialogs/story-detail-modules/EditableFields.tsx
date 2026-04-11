@@ -250,9 +250,8 @@ export function EditablePriority({ issueId, currentPriority, onUpdate }: { issue
   );
 }
 
-/* ── EditableLabels — Jira-parity dropdown ── */
+/* ── EditableLabels — Jira-parity: type + Enter to create, reuse existing ── */
 
-/** Deterministic label border colors from Jira's palette */
 const LABEL_COLORS = ['#4C9AFF', '#00B8D9', '#36B37E', '#FFAB00', '#FF5630', '#6554C0', '#FF7452', '#57D9A3', '#FFC400', '#998DD9', '#79E2F2', '#FF8F73'];
 function getLabelColor(name: string) {
   let hash = 0;
@@ -274,7 +273,7 @@ export function EditableLabels({ issueId, currentLabels, onUpdate }: { issueId: 
     onSuccess: () => onUpdate(),
   });
 
-  // Fetch all unique labels from project issues for the "All labels" list
+  // Fetch all unique labels used across issues for reuse
   const { data: allLabels = [] } = useQuery({
     queryKey: ['ph-all-labels'],
     queryFn: async () => {
@@ -358,24 +357,21 @@ export function EditableLabels({ issueId, currentLabels, onUpdate }: { issueId: 
         </div>
       )}
 
-      {/* Trigger — "Select label" with chevron, Jira style */}
+      {/* Trigger — click-to-edit (no border, plain text) */}
       <div onClick={() => setOpen(o => !o)} style={{
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        height: 40, padding: '0 12px',
-        border: open ? '2px solid #4C9AFF' : '1px solid #DFE1E6',
-        borderRadius: 3, cursor: 'pointer', background: '#fff',
-        transition: 'border-color 0.15s',
+        display: 'flex', alignItems: 'center', minHeight: 32, padding: '4px 8px',
+        borderRadius: 3, cursor: 'pointer', background: 'transparent',
+        transition: 'background 0.15s',
       }}
-        onMouseEnter={e => { if (!open) e.currentTarget.style.borderColor = '#B3D4FF'; }}
-        onMouseLeave={e => { if (!open) e.currentTarget.style.borderColor = open ? '#4C9AFF' : '#DFE1E6'; }}
+        onMouseEnter={e => { e.currentTarget.style.background = '#F4F5F7'; }}
+        onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
       >
         <span style={{ fontSize: 14, color: currentLabels.length > 0 ? '#172B4D' : '#7A869A' }}>
-          {currentLabels.length > 0 ? `${currentLabels.length} selected` : 'Select label'}
+          {currentLabels.length > 0 ? 'Add more' : 'None'}
         </span>
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6B778C" strokeWidth="2" style={{ flexShrink: 0 }}><path d="M6 9l6 6 6-6"/></svg>
       </div>
 
-      {/* Dropdown — Jira "All labels" style */}
+      {/* Dropdown */}
       {open && (() => {
         const rect = containerRef.current?.getBoundingClientRect();
         const top = (rect?.bottom ?? 0) + 4;
@@ -386,12 +382,17 @@ export function EditableLabels({ issueId, currentLabels, onUpdate }: { issueId: 
             ...ATLASSIAN_DROPDOWN, position: 'fixed', top, left, width,
             maxHeight: 380, display: 'flex', flexDirection: 'column', overflow: 'hidden',
           }}>
-            {/* Search input */}
+            {/* Search/create input */}
             <div style={{ padding: '8px 8px 4px' }}>
               <input ref={searchInputRef} value={search} onChange={e => setSearch(e.target.value)}
-                placeholder="Search labels..."
+                placeholder="Type to search or create a label..."
                 onKeyDown={e => {
-                  if (e.key === 'Enter' && search.trim() && filteredLabels.length === 0) addNewLabel();
+                  if (e.key === 'Enter' && search.trim()) {
+                    // If exact match exists, toggle it; otherwise create new
+                    const exact = allLabels.find(l => l.toLowerCase() === search.trim().toLowerCase());
+                    if (exact) { toggleLabel(exact); setSearch(''); }
+                    else addNewLabel();
+                  }
                   if (e.key === 'Escape') { setOpen(false); setSearch(''); }
                 }}
                 style={{
@@ -401,10 +402,26 @@ export function EditableLabels({ issueId, currentLabels, onUpdate }: { issueId: 
                 }} />
             </div>
 
-            {/* "All labels" header */}
-            <div style={{ padding: '8px 12px 4px', fontSize: 11, fontWeight: 700, color: '#6B778C', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-              All labels
-            </div>
+            {/* Create option — shown when typing something new */}
+            {search.trim() && !allLabels.some(l => l.toLowerCase() === search.trim().toLowerCase()) && (
+              <div onClick={addNewLabel} style={{
+                padding: '10px 12px', cursor: 'pointer', fontSize: 13, color: '#0052CC',
+                display: 'flex', alignItems: 'center', gap: 6, borderBottom: '1px solid #EBECF0',
+              }}
+                onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
+                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Create "{search.trim()}"
+              </div>
+            )}
+
+            {/* Existing labels header */}
+            {filteredLabels.length > 0 && (
+              <div style={{ padding: '8px 12px 4px', fontSize: 11, fontWeight: 700, color: '#6B778C', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                All labels
+              </div>
+            )}
 
             {/* Label list */}
             <div style={{ flex: 1, overflowY: 'auto' }}>
@@ -431,23 +448,16 @@ export function EditableLabels({ issueId, currentLabels, onUpdate }: { issueId: 
                     }}>
                       {label}
                     </span>
+                    {isSelected && (
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0052CC" strokeWidth="2.5" style={{ marginLeft: 'auto' }}>
+                        <polyline points="20 6 9 17 4 12"/>
+                      </svg>
+                    )}
                   </div>
                 );
               })}
-              {filteredLabels.length === 0 && search.trim() && (
-                <div onClick={addNewLabel} style={{
-                  padding: '10px 12px', cursor: 'pointer', fontSize: 13, color: '#0052CC',
-                  display: 'flex', alignItems: 'center', gap: 6,
-                }}
-                  onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
-                  onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-                >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                  Create "{search.trim()}"
-                </div>
-              )}
               {filteredLabels.length === 0 && !search.trim() && (
-                <div style={{ padding: 16, fontSize: 13, color: '#6B778C', textAlign: 'center' }}>No labels available</div>
+                <div style={{ padding: 16, fontSize: 13, color: '#6B778C', textAlign: 'center' }}>No labels yet — type to create one</div>
               )}
             </div>
           </div>
