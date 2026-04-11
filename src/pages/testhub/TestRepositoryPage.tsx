@@ -865,23 +865,94 @@ export function TestRepositoryPage() {
                   >
                     <CheckSquare style={{ width: 14, height: 14 }} />
                     Status
-                  </button>
+                   </button>
+                  {/* Bulk Assign */}
+                  <div style={{ position: 'relative' }}>
+                    <button 
+                      onClick={openBulkAssign}
+                      style={{
+                        height: 32, padding: '8px 12px',
+                        backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF',
+                        border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0',
+                        borderRadius: 6, fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 500,
+                        color: isDark ? '#A1A1A1' : '#334155', cursor: 'pointer',
+                        display: 'flex', alignItems: 'center', gap: 6,
+                      }}
+                    >
+                      <UserPlus style={{ width: 14, height: 14 }} />
+                      Assign
+                    </button>
+                    {isBulkAssignOpen && (
+                      <div style={{
+                        position: 'absolute', top: '100%', left: 0, marginTop: 4, width: 220,
+                        backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`,
+                        borderRadius: 8, boxShadow: '0 10px 40px rgba(0,0,0,0.15)', zIndex: 200,
+                        maxHeight: 240, overflowY: 'auto', padding: 4,
+                      }}>
+                        {assignableUsers.map(u => (
+                          <button key={u.id} onClick={() => handleBulkAssign(u.id)} style={{
+                            width: '100%', padding: '8px 12px', border: 'none', backgroundColor: 'transparent',
+                            fontSize: 13, color: isDark ? '#EDEDED' : '#334155', cursor: 'pointer', textAlign: 'left',
+                            borderRadius: 6, fontFamily: 'Inter',
+                          }}
+                            onMouseEnter={e => e.currentTarget.style.backgroundColor = isDark ? '#1F1F1F' : '#F8FAFC'}
+                            onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}
+                          >
+                            {u.full_name}
+                          </button>
+                        ))}
+                        {assignableUsers.length === 0 && <div style={{ padding: 12, fontSize: 13, color: '#94A3B8' }}>No users found</div>}
+                      </div>
+                    )}
+                  </div>
+                  {/* Bulk Tag */}
+                  <div style={{ position: 'relative' }}>
+                    <button 
+                      onClick={openBulkTag}
+                      style={{
+                        height: 32, padding: '8px 12px',
+                        backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF',
+                        border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0',
+                        borderRadius: 6, fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 500,
+                        color: isDark ? '#A1A1A1' : '#334155', cursor: 'pointer',
+                        display: 'flex', alignItems: 'center', gap: 6,
+                      }}
+                    >
+                      <Tag style={{ width: 14, height: 14 }} />
+                      Tag
+                    </button>
+                    {isBulkTagOpen && (
+                      <div style={{
+                        position: 'absolute', top: '100%', left: 0, marginTop: 4, width: 220,
+                        backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`,
+                        borderRadius: 8, boxShadow: '0 10px 40px rgba(0,0,0,0.15)', zIndex: 200,
+                        maxHeight: 240, overflowY: 'auto', padding: 4,
+                      }}>
+                        {availableLabels.map(l => (
+                          <button key={l.id} onClick={() => handleBulkTag(l.id)} style={{
+                            width: '100%', padding: '8px 12px', border: 'none', backgroundColor: 'transparent',
+                            fontSize: 13, color: isDark ? '#EDEDED' : '#334155', cursor: 'pointer', textAlign: 'left',
+                            borderRadius: 6, fontFamily: 'Inter',
+                          }}
+                            onMouseEnter={e => e.currentTarget.style.backgroundColor = isDark ? '#1F1F1F' : '#F8FAFC'}
+                            onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}
+                          >
+                            {l.name}
+                          </button>
+                        ))}
+                        {availableLabels.length === 0 && <div style={{ padding: 12, fontSize: 13, color: '#94A3B8' }}>No labels found</div>}
+                      </div>
+                    )}
+                  </div>
                   <button 
                     onClick={handleBulkDelete}
                     style={{
-                      height: 32,
-                      padding: '8px 12px',
+                      height: 32, padding: '8px 12px',
                       backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF',
                       border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0',
-                      borderRadius: 6,
-                      fontFamily: 'Inter, sans-serif',
-                      fontSize: 13,
-                      fontWeight: 500,
-                      color: '#DC2626',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 6,
+                      borderRadius: 6, fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 500,
+                      color: '#DC2626', cursor: 'pointer',
+                      display: 'flex', alignItems: 'center', gap: 6,
                     }}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.backgroundColor = isDark ? '#1A1A1A' : '#FEF2F2';

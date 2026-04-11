@@ -8,7 +8,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   GitBranch, Search, CheckCircle2, XCircle, AlertTriangle, Clock,
-  ChevronRight, ChevronDown, Target, FileText, ArrowRight,
+  ChevronRight, ChevronDown, Target, FileText, ArrowRight, Download,
 } from 'lucide-react';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { TestHubPageHeader } from '@/components/testhub/TestHubPageHeader';
@@ -133,9 +133,40 @@ export default function TraceabilityPage() {
     return { total, full, partial, none };
   }, [requirements]);
 
+  const handleExportCSV = () => {
+    const headers = ['Requirement Key', 'Title', 'Type', 'Status', 'Coverage %', 'Total Linked Tests', 'Passed', 'Failed', 'Not Run'];
+    const rows = filtered.map(req => [
+      req.req_key,
+      `"${req.title.replace(/"/g, '""')}"`,
+      req.type,
+      req.status,
+      req.coverage_percent,
+      req.total_linked_tests,
+      req.passed_tests,
+      req.failed_tests,
+      req.not_run_tests,
+    ]);
+    const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `traceability-export-${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="flex-1 flex flex-col overflow-auto">
-      <TestHubPageHeader title="Traceability" subtitle="Requirements-to-test traceability view" />
+      <TestHubPageHeader title="Traceability" subtitle="Requirements-to-test traceability view">
+        <button
+          onClick={handleExportCSV}
+          className="inline-flex items-center gap-2 h-10 px-4 border rounded-lg text-sm font-medium transition-colors bg-background border-border text-foreground hover:bg-muted"
+        >
+          <Download className="h-4 w-4" />
+          Export CSV
+        </button>
+      </TestHubPageHeader>
 
       {/* Summary Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
