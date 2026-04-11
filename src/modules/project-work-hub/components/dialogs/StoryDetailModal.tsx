@@ -1124,9 +1124,9 @@ export default function StoryDetailModal({
                         return (
                           <button key={tab} onClick={() => setActiveActivityTab(tab)} style={{
                             padding: '6px 14px', marginBottom: -1,
-                            border: isActive ? '2px solid #2563EB' : '2px solid transparent',
-                            borderBottom: isActive ? '2px solid #FFFFFF' : '2px solid transparent',
-                            borderRadius: isActive ? '4px 4px 0 0' : 4,
+                            border: 'none',
+                            borderBottom: isActive ? '2px solid #2563EB' : '2px solid transparent',
+                            borderRadius: 0,
                             background: 'transparent', fontSize: 14, fontWeight: isActive ? 500 : 400,
                             color: isActive ? '#2563EB' : '#42526E', cursor: 'pointer', transition: 'color 0.12s',
                           }}
