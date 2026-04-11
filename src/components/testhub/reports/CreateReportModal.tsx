@@ -3,7 +3,7 @@
  */
 import { useState, useEffect } from 'react';
 import { X, FileBarChart, Calendar, FileText, BarChart3, Shield, TrendingUp, AlertCircle } from 'lucide-react';
-import { supabase, typedQuery } from '@/integrations/supabase/client';
+import { supabase, typedQuery, typedRpc } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
 
 interface CreateReportModalProps {

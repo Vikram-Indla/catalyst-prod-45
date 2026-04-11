@@ -6,7 +6,7 @@ import {
   Activity, FileText, Play, Bug, CheckCircle2, XCircle, 
   Plus, Edit2, Trash2, RefreshCw, User, Clock
 } from 'lucide-react';
-import { supabase, typedQuery } from '@/integrations/supabase/client';
+import { supabase, typedQuery, typedRpc } from '@/integrations/supabase/client';
 
 interface ActivityItem {
   id: string;

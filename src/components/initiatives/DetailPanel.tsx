@@ -13,7 +13,7 @@ import { STATUS_DISPLAY, getPriorityLevel } from '@/types/initiative';
 import { StatusBadge } from './StatusBadge';
 import { PriorityBadge } from './PriorityBadge';
 import { catalystToast } from '@/lib/catalystToast';
-import { supabase, typedQuery, typedQuery } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useQueryClient, useQuery } from '@tanstack/react-query';
 import { useDepartmentOptions, useProfileOptions } from '@/hooks/useInitiativeLookups';
 import { StatusSelect } from '@/components/producthub/shared/StatusSelect';

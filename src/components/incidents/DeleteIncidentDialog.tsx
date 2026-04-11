@@ -15,7 +15,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
-import { supabase, typedQuery } from '@/integrations/supabase/client';
+import { supabase, typedQuery, typedRpc } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { catalystToast as toast } from '@/lib/catalystToast';
 
