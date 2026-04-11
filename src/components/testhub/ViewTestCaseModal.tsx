@@ -18,6 +18,7 @@ interface TestCase {
   status: string;
   version: number;
   updated_at: string;
+  project_id?: string;
 }
 
 interface Step {
