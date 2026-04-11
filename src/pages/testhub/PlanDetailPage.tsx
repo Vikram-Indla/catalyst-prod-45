@@ -120,6 +120,7 @@ const PlanDefectsPanel = ({ planId }: { planId?: string }) => {
 export default function PlanDetailPage() {
   const { planId } = useParams<{ planId: string }>();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { data: plan, isLoading, isError } = useTestPlan(planId);
   const updatePlan = useUpdateTestPlan();
   const deletePlan = useDeleteTestPlan();
