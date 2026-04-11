@@ -4,7 +4,9 @@
  */
 
 import React, { useState, useEffect, useCallback, lazy, Suspense } from 'react';
-import { MessageSquare, AlertCircle, FileText } from 'lucide-react';
+import { MessageSquare, AlertCircle, FileText, ChevronsUp, ChevronUp, ChevronDown, ChevronsDown, Folder, LayoutGrid, Bug as BugIcon, CheckSquare, Zap, BookOpen, AlertTriangle as AlertTriangleIcon } from 'lucide-react';
+import { StatusLozenge } from '@/components/ui/StatusLozenge';
+import { JiraIssueTypeIcon } from '@/components/shared/JiraIssueTypeIcon';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { useForYouData } from '@/hooks/useForYouData';
