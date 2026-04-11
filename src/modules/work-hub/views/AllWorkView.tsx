@@ -633,13 +633,17 @@ export function AllWorkView() {
 
         {/* Table or Detail Panel based on mode */}
         {detailModeEnabled && selectedWorkItem ? (
-          /* Detail Panel */
+          /* Detail Modal — unified StoryDetailModal */
           <div className="flex-1 overflow-hidden">
-            <AllWorkDetailPanel
-              item={selectedWorkItem}
-              onClose={handleCloseDetail}
-              onNavigateToParent={handleNavigateToParent}
-            />
+            <Suspense fallback={null}>
+              <StoryDetailModal
+                isOpen={true}
+                onClose={handleCloseDetail}
+                itemId={selectedWorkItem.id}
+                projectId=""
+                panelMode={true}
+              />
+            </Suspense>
           </div>
         ) : (
           /* Regular Table View */
