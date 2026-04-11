@@ -694,8 +694,8 @@ export function ViewTestCaseModal({
             {/* Title */}
             <h2 style={{
               fontFamily: "'Sora', sans-serif",
-              fontSize: 22, fontWeight: 700, color: '#172B4D',
-              margin: '0 0 12px 0', lineHeight: 1.3,
+              fontSize: 18, fontWeight: 650, color: '#172B4D',
+              margin: '0 0 12px 0', lineHeight: 1.4,
             }}>
               {testCase.title}
             </h2>
@@ -882,23 +882,27 @@ export function ViewTestCaseModal({
             display: 'flex', flexDirection: 'column', gap: 20,
           }}>
             {/* Status lozenge — V12 */}
-            <span
-              style={{
-                display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                height: 20, padding: '0 6px', borderRadius: 3,
-                fontSize: 11, fontWeight: 700, textTransform: 'uppercase' as const,
-                letterSpacing: '0.03em',
-                fontFamily: "'Inter', sans-serif",
-                background: statusPill.bg, color: statusPill.color,
-              }}
-            >
-              {testCase.status}
-            </span>
+            <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
+              <span
+                style={{
+                  display: 'inline-flex', alignItems: 'center',
+                  height: 20, padding: '0 6px', borderRadius: 3,
+                  fontSize: 11, fontWeight: 700, textTransform: 'uppercase' as const,
+                  letterSpacing: '0.03em', width: 'auto',
+                  fontFamily: "'Inter', sans-serif",
+                  background: statusPill.bg, color: statusPill.color,
+                }}
+              >
+                {testCase.status}
+              </span>
+            </div>
 
             {/* Details */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
               {[
                 { label: 'Case Key', value: testCase.case_key, mono: true },
+                { label: 'Owner', value: '—', mono: false },
+                { label: 'Priority', value: '—', mono: false },
               ].map(({ label, value, mono }) => (
                 <div key={label} style={{
                   display: 'flex', alignItems: 'center', justifyContent: 'space-between',
