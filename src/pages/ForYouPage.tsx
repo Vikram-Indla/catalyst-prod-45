@@ -103,14 +103,35 @@ export default function ForYouPage() {
     const getInitials = (name: string) => name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
     const PALETTE = ['#1868DB', '#E2631E', '#5E4DB2', '#1B3459', '#0D7C66', '#B34D00', '#943A79', '#0055CC'];
     const pickColor = (name: string) => { let h = 0; for (let i = 0; i < name.length; i++) h = name.charCodeAt(i) + ((h << 5) - h); return PALETTE[Math.abs(h) % PALETTE.length]; };
+    const HUB_ICONS: Record<string, React.ReactNode> = {
+      Incident: <AlertTriangleIcon size={14} color="#FF5630" strokeWidth={2} />,
+      Product: <LayoutGrid size={14} color="#6554C0" strokeWidth={2} />,
+      Project: <Folder size={14} color="#2563EB" strokeWidth={2} />,
+      Task: <CheckSquare size={14} color="#4BADE8" strokeWidth={2} />,
+      Plan: <BookOpen size={14} color="#0D9488" strokeWidth={2} />,
+      Strategy: <Zap size={14} color="#D97706" strokeWidth={2} />,
+    };
+    const PRIORITY_ICONS: Record<string, React.ReactNode> = {
+      Highest: <ChevronsUp size={16} color="#AE2A19" strokeWidth={2.5} />,
+      High: <ChevronUp size={16} color="#DE350B" strokeWidth={2.5} />,
+      Medium: <span style={{ fontSize: 18, fontWeight: 700, color: '#D97706', lineHeight: 1 }}>=</span>,
+      Low: <ChevronDown size={16} color="#36B37E" strokeWidth={2.5} />,
+      Lowest: <ChevronsDown size={16} color="#6B778C" strokeWidth={2.5} />,
+    };
     return [
       {
         id: 'project', label: 'Project', searchPlaceholder: 'Search project',
-        options: projectOptions.map(p => ({ id: p, label: p })),
+        options: projectOptions.map(p => ({
+          id: p, label: p,
+          iconNode: <Folder size={14} color="#6B778C" strokeWidth={1.5} />,
+        })),
       },
       {
         id: 'hub', label: 'Hub', searchPlaceholder: 'Search hub',
-        options: hubOptions.map(h => ({ id: h, label: h + ' hub' })),
+        options: hubOptions.map(h => ({
+          id: h, label: h + ' Hub',
+          iconNode: HUB_ICONS[h] || <LayoutGrid size={14} color="#6B778C" strokeWidth={2} />,
+        })),
       },
       {
         id: 'reporter', label: 'Reporter', searchPlaceholder: 'Search reporter',
@@ -126,7 +147,10 @@ export default function ForYouPage() {
       },
       {
         id: 'status', label: 'Status', searchPlaceholder: 'Search status',
-        options: [...new Set(workItems.map(i => i.status).filter(Boolean))].sort().map(s => ({ id: s, label: s })),
+        options: [...new Set(workItems.map(i => i.status).filter(Boolean))].sort().map(s => ({
+          id: s, label: s,
+          iconNode: <StatusLozenge status={s} />,
+        })),
       },
       {
         id: 'priority', label: 'Priority', searchPlaceholder: 'Search priority',
@@ -138,7 +162,10 @@ export default function ForYouPage() {
             const norm = i.priority.charAt(0).toUpperCase() + i.priority.slice(1).toLowerCase();
             if (canonical.includes(norm)) seen.add(norm);
           });
-          return canonical.filter(p => seen.has(p)).map(p => ({ id: p, label: p }));
+          return canonical.filter(p => seen.has(p)).map(p => ({
+            id: p, label: p,
+            iconNode: PRIORITY_ICONS[p],
+          }));
         })(),
       },
       {
@@ -146,7 +173,7 @@ export default function ForYouPage() {
         options: [...new Set(workItems.map(i => i.issueType).filter(Boolean))]
           .filter(t => t !== 'planner_task' && t !== 'Change Request')
           .sort()
-          .map(t => ({ id: t, label: t, iconNode: WORK_ITEM_TYPE_ICONS[t] })),
+          .map(t => ({ id: t, label: t, iconNode: <JiraIssueTypeIcon issueType={t} size={16} /> })),
       },
     ];
   }, [projectOptions, hubOptions, reportedByOptions, workItems, avatarsByName]);
