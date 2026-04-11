@@ -234,6 +234,7 @@ export default function StoryDetailModal({
     staleTime: 60000,
   });
 
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const addMenuRef = useRef<HTMLDivElement>(null);
   const aiMenuRef = useRef<HTMLDivElement>(null);
   const descriptionRef = useRef<HTMLDivElement>(null);
