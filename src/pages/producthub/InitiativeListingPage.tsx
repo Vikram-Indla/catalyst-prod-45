@@ -8,6 +8,7 @@ import { useMDTBacklog } from '@/hooks/useMDTBacklog';
 import type { BRDTask } from '@/hooks/useMDTBacklog';
 import { useSyncMDTToInitiatives } from '@/hooks/useSyncMDTToInitiatives';
 import { useProfileOptions, useDepartmentOptions } from '@/hooks/useInitiativeLookups';
+import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { InitiativeTable } from '@/components/producthub/listing/InitiativeTable';
@@ -168,6 +169,7 @@ export default function InitiativeListingPage() {
   const { data: mdtData, isLoading } = useMDTBacklog();
   const { data: profiles } = useProfileOptions();
   const { data: departments } = useDepartmentOptions();
+  const avatarsByName = useProfileAvatarsByName();
   const queryClient = useQueryClient();
 
   const invalidateAll = useCallback(() => {
@@ -302,10 +304,32 @@ export default function InitiativeListingPage() {
       quarterOptions.push({ id, label: offset === 0 ? `${id} (Current)` : id });
     }
 
-    // Roadmap category
+    // Roadmap category — with icons, mutually exclusive
     const roadmapOptions = [
-      { id: 'on', label: 'On Roadmap' },
-      { id: 'off', label: 'Not on Roadmap' },
+      {
+        id: 'on',
+        label: 'On Roadmap',
+        iconNode: (
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M2 3.5C2 3.22 2.22 3 2.5 3H5.5C5.78 3 6 3.22 6 3.5V6.5C6 6.78 5.78 7 5.5 7H2.5C2.22 7 2 6.78 2 6.5V3.5Z" fill="#2563EB" opacity="0.9"/>
+            <path d="M7 4.5C7 4.22 7.22 4 7.5 4H13.5C13.78 4 14 4.22 14 4.5V5.5C14 5.78 13.78 6 13.5 6H7.5C7.22 6 7 5.78 7 5.5V4.5Z" fill="#2563EB" opacity="0.5"/>
+            <path d="M2 9.5C2 9.22 2.22 9 2.5 9H5.5C5.78 9 6 9.22 6 9.5V12.5C6 12.78 5.78 13 5.5 13H2.5C2.22 13 2 12.78 2 12.5V9.5Z" fill="#2563EB" opacity="0.9"/>
+            <path d="M7 10.5C7 10.22 7.22 10 7.5 10H11.5C11.78 10 12 10.22 12 10.5V11.5C12 11.78 11.78 12 11.5 12H7.5C7.22 12 7 11.78 7 11.5V10.5Z" fill="#2563EB" opacity="0.5"/>
+          </svg>
+        ),
+      },
+      {
+        id: 'off',
+        label: 'Not on Roadmap',
+        iconNode: (
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M2 3.5C2 3.22 2.22 3 2.5 3H5.5C5.78 3 6 3.22 6 3.5V6.5C6 6.78 5.78 7 5.5 7H2.5C2.22 7 2 6.78 2 6.5V3.5Z" stroke="#94A3B8" strokeWidth="1" fill="none"/>
+            <path d="M7 4.5C7 4.22 7.22 4 7.5 4H13.5C13.78 4 14 4.22 14 4.5V5.5C14 5.78 13.78 6 13.5 6H7.5C7.22 6 7 5.78 7 5.5V4.5Z" stroke="#94A3B8" strokeWidth="1" fill="none" strokeDasharray="2 2"/>
+            <path d="M2 9.5C2 9.22 2.22 9 2.5 9H5.5C5.78 9 6 9.22 6 9.5V12.5C6 12.78 5.78 13 5.5 13H2.5C2.22 13 2 12.78 2 12.5V9.5Z" stroke="#94A3B8" strokeWidth="1" fill="none"/>
+            <path d="M7 10.5C7 10.22 7.22 10 7.5 10H11.5C11.78 10 12 10.22 12 10.5V11.5C12 11.78 11.78 12 11.5 12H7.5C7.22 12 7 11.78 7 11.5V10.5Z" stroke="#94A3B8" strokeWidth="1" fill="none" strokeDasharray="2 2"/>
+          </svg>
+        ),
+      },
     ];
 
     // Status category
@@ -319,15 +343,18 @@ export default function InitiativeListingPage() {
     const depts = [...new Set(tabFiltered.map(i => i.department_name).filter(Boolean) as string[])].sort();
     const departmentOptions = depts.map(d => ({ id: d, label: d }));
 
-    // Assignee category
-    const assignees = [...new Set(tabFiltered.map(i => i.assignee_name).filter(Boolean) as string[])].sort();
-    const assigneeOptions = assignees.map(name => ({
-      id: name,
-      label: name,
-      avatarInitials: getInitials(name),
-      avatarColor: getAvatarColor(name),
-      avatarType: 'initials' as const,
-    }));
+    // Assignee category — from profiles list with photo/initials avatars
+    const assigneeOptions = (profiles ?? []).map(p => {
+      const name = p.label;
+      const avatarUrl = avatarsByName.get(name.toLowerCase());
+      return {
+        id: name,
+        label: name,
+        ...(avatarUrl
+          ? { avatarUrl, avatarType: 'photo' as const }
+          : { avatarInitials: getInitials(name), avatarColor: getAvatarColor(name), avatarType: 'initials' as const }),
+      };
+    });
 
     return [
       { id: 'type', label: 'Type', searchPlaceholder: 'Search type', options: typeOptions },
@@ -338,10 +365,19 @@ export default function InitiativeListingPage() {
       { id: 'department', label: 'Department', searchPlaceholder: 'Search department', options: departmentOptions },
       { id: 'assignee', label: 'Assignee', searchPlaceholder: 'Search assignee', options: assigneeOptions },
     ];
-  }, [tabFiltered]);
+  }, [tabFiltered, profiles, avatarsByName]);
 
   const handleAdvancedFilterChange = useCallback((categoryId: string, optionIds: string[]) => {
-    setAdvancedFilters(prev => ({ ...prev, [categoryId]: optionIds }));
+    if (categoryId === 'roadmap') {
+      // Mutually exclusive: only keep the most recently selected option
+      setAdvancedFilters(prev => {
+        const prevSelected = prev.roadmap ?? [];
+        const newlyAdded = optionIds.filter(id => !prevSelected.includes(id));
+        return { ...prev, roadmap: newlyAdded.length > 0 ? [newlyAdded[newlyAdded.length - 1]] : [] };
+      });
+    } else {
+      setAdvancedFilters(prev => ({ ...prev, [categoryId]: optionIds }));
+    }
   }, []);
 
   const handleClearAllFilters = useCallback(() => {
