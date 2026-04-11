@@ -1,6 +1,6 @@
 // useBoardMutations — create, update, delete, star board
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase, typedQuery, typedQuery, typedQuery } from '@/integrations/supabase/client';
+import { supabase, typedQuery, typedRpc } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import type { CreateBoardInput, BoardVisibility, SwimlaneType } from '@/types/board';
 

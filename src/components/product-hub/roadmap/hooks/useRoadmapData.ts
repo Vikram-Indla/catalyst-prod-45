@@ -3,7 +3,7 @@
  * All data from ph_roadmap_initiatives_view, ph_roadmap_summary_view, ph_initiative_milestones
  */
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase, typedQuery, typedQuery, typedQuery } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import type { RoadmapInitiative, RoadmapStats, RoadmapMilestone } from '../types/roadmap.types';
 
 // ── Status mapping: DB enum → UI label ──

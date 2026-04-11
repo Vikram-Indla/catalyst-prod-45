@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import { useTheme } from '@/hooks/useTheme';
 import { useNavigate } from 'react-router-dom';
 import { X, FileText, Zap, BookOpen, FlaskConical, Copy, Check, Paperclip, ArrowDownToLine, ExternalLink, Loader2, FileUp, ChevronRight, RefreshCw } from 'lucide-react';
-import { supabase, typedQuery, typedQuery, typedQuery } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import type { RADocumentWithArtifacts } from '@/types/reqAssistV2';
 import { formatTimestamp } from '@/lib/formatTimestamp';
 import toast from 'react-hot-toast';
