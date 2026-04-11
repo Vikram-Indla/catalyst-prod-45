@@ -1269,7 +1269,7 @@ export default function StoryDetailModal({
                           </div>
                         )}
 
-                        {/* Comment input — Jira: 36px avatar + rounded pill quick-actions */}
+                        {/* Comment input — Rich text editor with image paste */}
                         <div style={{ display: 'flex', gap: 12, marginBottom: 24 }}>
                           {currentProfile?.avatar_url ? (
                             <img src={currentProfile.avatar_url} alt="" style={{ width: 36, height: 36, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
@@ -1277,22 +1277,13 @@ export default function StoryDetailModal({
                             <div style={{ width: 36, height: 36, borderRadius: '50%', background: getAvatarColor(user?.id ?? ''), color: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700, flexShrink: 0 }}>{getInitials(currentProfile?.full_name)}</div>
                           )}
                           <div style={{ flex: 1 }}>
-                            <div style={{ border: '1px solid #DFE1E6', borderRadius: 6, overflow: 'hidden', transition: 'border-color 0.15s, box-shadow 0.15s' }}
-                              onFocus={e => { e.currentTarget.style.borderColor = '#4C9AFF'; e.currentTarget.style.boxShadow = '0 0 0 1px #4C9AFF'; }}
-                              onBlur={e => { e.currentTarget.style.borderColor = '#DFE1E6'; e.currentTarget.style.boxShadow = 'none'; }}
-                            >
-                              <textarea value={newComment} onChange={e => setNewComment(e.target.value)} onKeyDown={handleCommentKeyDown}
-                                placeholder="Add a comment…"
-                                style={{ width: '100%', minHeight: 48, padding: '12px 14px', border: 'none', outline: 'none', fontSize: 14, color: '#172B4D', resize: 'none', fontFamily: 'inherit', background: '#FFFFFF', lineHeight: 1.5 }} />
-                              <div style={{ display: 'flex', gap: 8, padding: '8px 14px', background: '#FAFBFC', borderTop: '1px solid #F4F5F7' }}>
-                                {['Can I get more info...?', 'Status update...', 'Thanks...'].map(txt => (
-                                  <button key={txt} onClick={() => setNewComment(txt.replace('...', ': '))} style={{ padding: '5px 14px', border: '1px solid #DFE1E6', borderRadius: 20, background: '#FFF', fontSize: 13, color: '#42526E', cursor: 'pointer', fontFamily: 'inherit', transition: 'background 0.12s' }}
-                                    onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
-                                    onMouseLeave={e => (e.currentTarget.style.background = '#FFF')}
-                                  >{txt}</button>
-                                ))}
-                              </div>
-                            </div>
+                            <RichTextCommentEditor
+                              onSubmit={handleCommentSubmit}
+                              isSubmitting={addCommentMutation.isPending}
+                              placeholder="Type /ai to Ask Rovo or @ to mention and notify someone."
+                              teamMembers={mentionMembers}
+                              workItemId={itemId}
+                            />
                             <div style={{ fontSize: 12, color: '#97A0AF', marginTop: 8 }}>
                               <strong style={{ fontWeight: 600, color: '#42526E' }}>Pro tip:</strong> press <kbd style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, background: '#F4F5F7', border: '1px solid #DFE1E6', borderRadius: 3, padding: '2px 6px', fontWeight: 600 }}>M</kbd> to comment
                             </div>
@@ -1313,11 +1304,64 @@ export default function StoryDetailModal({
                                 <span style={{ fontSize: 14, fontWeight: 600, color: '#172B4D' }}>{c.author?.full_name ?? 'Unknown'}</span>
                                 <span style={{ fontSize: 13, color: '#6B778C' }}>{fmtDate(c.created_at)}</span>
                               </div>
-                              <div style={{ fontSize: 14, color: '#172B4D', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>{c.body}</div>
-                              <div style={{ display: 'flex', gap: 16, marginTop: 8 }}>
-                                <button style={{ fontSize: 12, color: '#6B778C', background: 'none', border: 'none', cursor: 'pointer' }} onMouseEnter={e => (e.currentTarget.style.color = '#172B4D')} onMouseLeave={e => (e.currentTarget.style.color = '#6B778C')}>Edit</button>
-                                <button onClick={() => deleteCommentMutation.mutate(c.id)} style={{ fontSize: 12, color: '#6B778C', background: 'none', border: 'none', cursor: 'pointer' }} onMouseEnter={e => (e.currentTarget.style.color = '#DE350B')} onMouseLeave={e => (e.currentTarget.style.color = '#6B778C')}>Delete</button>
-                              </div>
+
+                              {editingCommentId === c.id ? (
+                                <RichTextCommentEditor
+                                  onSubmit={(html) => editCommentMutation.mutate({ commentId: c.id, body: html })}
+                                  onCancel={() => setEditingCommentId(null)}
+                                  isSubmitting={editCommentMutation.isPending}
+                                  initialValue={c.body}
+                                  teamMembers={mentionMembers}
+                                  workItemId={itemId}
+                                />
+                              ) : (
+                                <div style={{ fontSize: 14, color: '#172B4D', lineHeight: 1.6 }}
+                                  dangerouslySetInnerHTML={{ __html: c.body }}
+                                />
+                              )}
+
+                              {/* Comment action icons — Jira style */}
+                              {editingCommentId !== c.id && (
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 8, position: 'relative' }}>
+                                  {[
+                                    { icon: <Reply size={14} />, title: 'Reply', onClick: () => {} },
+                                    { icon: <ThumbsUp size={14} />, title: 'Like', onClick: () => {} },
+                                    { icon: <Smile size={14} />, title: 'React', onClick: () => {} },
+                                    { icon: <Pencil size={14} />, title: 'Edit', onClick: () => setEditingCommentId(c.id) },
+                                  ].map((action, idx) => (
+                                    <button key={idx} onClick={action.onClick} title={action.title}
+                                      style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px 6px', borderRadius: 4, color: '#6B778C', display: 'flex', alignItems: 'center', transition: 'color 0.1s, background 0.1s' }}
+                                      onMouseEnter={e => { e.currentTarget.style.color = '#172B4D'; e.currentTarget.style.background = '#F4F5F7'; }}
+                                      onMouseLeave={e => { e.currentTarget.style.color = '#6B778C'; e.currentTarget.style.background = 'none'; }}
+                                    >{action.icon}</button>
+                                  ))}
+                                  {/* 3-dot menu */}
+                                  <div style={{ position: 'relative' }}>
+                                    <button onClick={() => setCommentMenuId(commentMenuId === c.id ? null : c.id)} title="More"
+                                      style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px 6px', borderRadius: 4, color: '#6B778C', display: 'flex', alignItems: 'center', transition: 'color 0.1s, background 0.1s' }}
+                                      onMouseEnter={e => { e.currentTarget.style.color = '#172B4D'; e.currentTarget.style.background = '#F4F5F7'; }}
+                                      onMouseLeave={e => { e.currentTarget.style.color = '#6B778C'; e.currentTarget.style.background = 'none'; }}
+                                    ><MoreHorizontal size={14} /></button>
+                                    {commentMenuId === c.id && (
+                                      <div style={{
+                                        position: 'absolute', left: 0, top: 28, background: '#FFF', border: '1px solid #DFE1E6',
+                                        borderRadius: 6, boxShadow: '0 4px 16px rgba(9,30,66,0.18)', zIndex: 50, minWidth: 160, padding: '4px 0',
+                                      }}>
+                                        <button onClick={() => { navigator.clipboard.writeText(`${window.location.origin}/comment/${c.id}`); setCommentMenuId(null); toast.success('Link copied'); }}
+                                          style={{ width: '100%', padding: '8px 14px', border: 'none', background: 'transparent', textAlign: 'left', cursor: 'pointer', fontSize: 13, color: '#172B4D', display: 'flex', alignItems: 'center', gap: 8, transition: 'background 0.1s' }}
+                                          onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
+                                          onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                                        ><Copy size={14} /> Copy link</button>
+                                        <button onClick={() => { deleteCommentMutation.mutate(c.id); setCommentMenuId(null); }}
+                                          style={{ width: '100%', padding: '8px 14px', border: 'none', background: 'transparent', textAlign: 'left', cursor: 'pointer', fontSize: 13, color: '#DE350B', display: 'flex', alignItems: 'center', gap: 8, transition: 'background 0.1s' }}
+                                          onMouseEnter={e => (e.currentTarget.style.background = '#FFEBE6')}
+                                          onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                                        ><Trash2 size={14} /> Delete</button>
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                              )}
                             </div>
                           </div>
                         ))}
