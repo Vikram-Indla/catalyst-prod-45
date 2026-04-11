@@ -200,7 +200,7 @@ export const StoryRichTextEditor = React.memo(function StoryRichTextEditor({
       const result = await onAiImprove();
       if (result && editor) {
         // Replace editor content with AI result
-        editor.commands.setContent(result, { emitUpdate: false });
+        editor.commands.setContent(result);
         setAiMode(true);
       }
     } catch {
@@ -224,7 +224,7 @@ export const StoryRichTextEditor = React.memo(function StoryRichTextEditor({
   // AI Cancel: revert to original content
   const handleAiCancel = useCallback(() => {
     if (!editor) return;
-    editor.commands.setContent(preAiContent, { emitUpdate: false });
+    editor.commands.setContent(preAiContent);
     setAiMode(false);
     setPreAiContent('');
   }, [editor, preAiContent]);
