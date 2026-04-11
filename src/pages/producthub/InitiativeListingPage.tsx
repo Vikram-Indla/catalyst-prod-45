@@ -557,67 +557,6 @@ export default function InitiativeListingPage() {
         subtitle="Strategic initiative portfolio & prioritization"
       />
 
-      {/* ── Toolbar — FIX 5: View toggle group added ── */}
-      <div className="pb-toolbar">
-        {/* View toggle button group */}
-        <div className="pb-view-toggle-group">
-          <button className="pb-view-toggle-btn pb-view-toggle-active" title="Standard">
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2 4h12M2 8h12M2 12h12" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/></svg>
-            Standard
-          </button>
-          <button
-            ref={columnsButtonRef}
-            className="pb-view-toggle-btn"
-            onClick={() => setColumnManagerOpen(prev => !prev)}
-            title="Columns"
-          >
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="4" height="12" rx="1" stroke="currentColor" strokeWidth="1.2"/><rect x="8" y="2" width="4" height="12" rx="1" stroke="currentColor" strokeWidth="1.2"/></svg>
-            Columns
-          </button>
-          <button className="pb-view-toggle-btn" title="Group" onClick={() => catalystToast.success('Grouping coming soon')}>
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="4" rx="1" stroke="currentColor" strokeWidth="1.2"/><rect x="2" y="8" width="12" height="4" rx="1" stroke="currentColor" strokeWidth="1.2"/></svg>
-            Group: None
-          </button>
-        </div>
-
-        <div className="pb-toolbar-divider" />
-
-        {/* Search */}
-        <div className="pb-search">
-          <Search size={14} className="pb-search-icon" />
-          <input
-            ref={searchInputRef}
-            type="text"
-            value={localSearch}
-            onChange={(e) => handleSearch(e.target.value)}
-            placeholder="Search initiatives…"
-          />
-          {localSearch ? (
-            <button onClick={() => handleSearch('')} style={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--pb-ink-muted)' }}>
-              <X size={14} />
-            </button>
-          ) : (
-            <span className="pb-search-kbd">⌘K</span>
-          )}
-        </div>
-
-        <div style={{ flex: 1 }} />
-
-        <button
-          ref={exportButtonRef}
-          className="pb-toolbar-btn"
-          onClick={() => setExportOpen(prev => !prev)}
-        >
-          <Download size={14} />
-          Export
-        </button>
-
-        <button className="pb-toolbar-btn pb-toolbar-btn-primary" onClick={() => setShowCreateDrawer(true)}>
-          <Plus size={14} />
-          New Initiative
-        </button>
-      </div>
-
       {/* ── Primary Tabs (All / My Items / Starred) ── */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 28px' }}>
         <BacklogSubTabs activeTab={activeTab} counts={tabCounts} onTabChange={handleTabChange} />
