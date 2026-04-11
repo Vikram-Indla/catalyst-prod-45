@@ -62,7 +62,7 @@ const RH21TriageQueuePage = lazy(() => import("../pages/releasehub/TriageQueuePa
 const RH21AllChangesPage = lazy(() => import("../pages/releasehub/AllChangesPage"));
 const RH21SignOffQueuePage = lazy(() => import("../pages/releasehub/SignOffQueuePage"));
 const RH21FreezeWindowsPage = lazy(() => import("../pages/releasehub/FreezeWindowsPage"));
-const SyncPrerequisitesPage = lazy(() => import("../pages/releasehub/SyncPrerequisitesPage"));
+
 const StrategicThemesPage = lazy(() => import("../pages/strategyhub/StrategicThemesPage"));
 const GoalsKeyResultsPage = lazy(() => import("../pages/strategyhub/GoalsKeyResultsPage"));
 const InitiativeListingPage = lazy(() => import("../pages/producthub/InitiativeListingPage"));
@@ -599,7 +599,7 @@ export default function FullAppRoutes() {
         <Route path="/release-hub/sign-off-queue" element={<S><RH21SignOffQueuePage /></S>} />
         <Route path="/release-hub/production-events" element={<S><ProductionEventsPageLazy /></S>} />
         <Route path="/release-hub/freeze-windows" element={<S><RH21FreezeWindowsPage /></S>} />
-        <Route path="/release-hub/prerequisites" element={<S><SyncPrerequisitesPage /></S>} />
+        
         <Route path="/release-hub/:releaseId" element={<S><ReleaseDashboardV5Page /></S>} />
 
         {/* Legacy releasehub redirects */}

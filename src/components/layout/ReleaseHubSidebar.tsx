@@ -55,12 +55,6 @@ const buildSections = (triageCount: number, pendingSignoffs: number): SidebarSec
     ],
   },
   {
-    title: 'Diagnostics',
-    items: [
-      { id: 'prerequisites', title: 'Sync Prerequisites', path: '/release-hub/prerequisites', icon: ShieldCheck, exact: true },
-    ],
-  },
-  {
     title: 'Settings',
     items: [
       { id: 'freeze-windows', title: 'Freeze Windows', path: '/release-hub/freeze-windows', icon: CalendarOff, exact: true },
