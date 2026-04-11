@@ -87,17 +87,18 @@
 }
 
 [data-sdm-scope] .sdm-chevron-btn {
-  width: 20px;
-  height: 20px;
+  width: 24px;
+  height: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
   background: transparent;
   border: none;
   cursor: pointer;
-  color: #6B778C;
+  color: #42526E;
   border-radius: 3px;
   padding: 0;
+  flex-shrink: 0;
   transition: background 0.12s ease;
 }
 [data-sdm-scope] .sdm-chevron-btn:hover {
