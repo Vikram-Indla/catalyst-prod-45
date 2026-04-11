@@ -57,6 +57,7 @@ import { IncidentsSection } from './story-detail-modules';
 import { TestHubSection } from './story-detail-modules';
 import { LinkedIssuesSection } from './story-detail-modules';
 import { EditableAssignee, EditablePriority, EditableLabels, ParentFieldPicker } from './story-detail-modules';
+import { StoryRichTextEditor } from '../story-detail/StoryRichTextEditor';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 
 /* ═══════════════════════════════════════════════
@@ -1035,46 +1036,15 @@ export default function StoryDetailModal({
                           </div>
                         </div>
 
-                        {/* Description */}
+                        {/* Description — TipTap auto-save editor */}
                         <div style={{ fontSize: 13, fontWeight: 700, color: '#172B4D', marginBottom: 10 }}>Description</div>
-                        <div style={{ border: '1px solid #DFE1E6', borderRadius: 4, overflow: 'hidden' }}>
-                          {/* Toolbar */}
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 1, padding: '5px 10px', borderBottom: '1px solid #EBECF0', background: '#FAFBFC', flexWrap: 'wrap' }}>
-                            {[
-                              { cmd: 'bold', label: 'B', fw: 'bold' as const, fs: 'normal' as const, td: 'none' },
-                              { cmd: 'italic', label: 'I', fw: 'normal' as const, fs: 'italic' as const, td: 'none' },
-                              { cmd: 'underline', label: 'U', fw: 'normal' as const, fs: 'normal' as const, td: 'underline' },
-                              { cmd: 'strikeThrough', label: 'S', fw: 'normal' as const, fs: 'normal' as const, td: 'line-through' },
-                            ].map(btn => (
-                              <button key={btn.cmd} onMouseDown={(e) => { e.preventDefault(); document.execCommand(btn.cmd); }}
-                                style={{ width: 28, height: 28, borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, color: '#344054', background: 'transparent', border: 'none', cursor: 'pointer', fontWeight: btn.fw, fontStyle: btn.fs, textDecoration: btn.td, transition: 'background 0.12s' }}
-                                onMouseEnter={e => (e.currentTarget.style.background = '#EBECF0')}
-                                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-                              >{btn.label}</button>
-                            ))}
-                            <div style={{ width: 1, height: 18, background: '#DFE1E6', margin: '0 6px' }} />
-                            <button onMouseDown={(e) => { e.preventDefault(); document.execCommand('insertUnorderedList'); }}
-                              style={{ width: 28, height: 28, borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, color: '#344054', background: 'transparent', border: 'none', cursor: 'pointer' }}
-                              onMouseEnter={e => (e.currentTarget.style.background = '#EBECF0')}
-                              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-                            >•</button>
-                            <button onMouseDown={(e) => { e.preventDefault(); document.execCommand('insertOrderedList'); }}
-                              style={{ width: 28, height: 28, borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, color: '#344054', background: 'transparent', border: 'none', cursor: 'pointer' }}
-                              onMouseEnter={e => (e.currentTarget.style.background = '#EBECF0')}
-                              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-                            >1.</button>
-                          </div>
-                          {/* Description content area — supports 5000+ words */}
-                          <div ref={descriptionRef} contentEditable suppressContentEditableWarning
-                            onBlur={(e) => { const newText = e.currentTarget.innerText; if (newText !== (issue?.description_text ?? '')) { updateFieldMutation.mutate({ field: 'description_text', value: newText, oldValue: issue?.description_text ?? '' }); } }}
-                            data-placeholder="Add a description..."
-                            style={{ minHeight: 200, maxHeight: 600, overflowY: 'auto', padding: '14px 16px', fontSize: 14, color: '#172B4D', lineHeight: 1.6, outline: 'none', fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", wordBreak: 'break-word' }}
-                            dangerouslySetInnerHTML={{ __html: issue?.description_text ?? '' }} />
-                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 12px', borderTop: '1px solid #EBECF0', background: '#FAFBFC' }}>
-                            <span style={{ fontSize: 11, color: '#97A0AF' }}>Tip: <kbd style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10, background: '#F4F5F7', border: '1px solid #DFE1E6', borderRadius: 3, padding: '1px 4px' }}>Ctrl+B</kbd> bold</span>
-                            <span style={{ fontSize: 11, color: '#97A0AF' }}>Auto-saved</span>
-                          </div>
-                        </div>
+                        <StoryRichTextEditor
+                          content={issue?.description_text ?? ''}
+                          onSave={(html) => { updateFieldMutation.mutate({ field: 'description_text', value: html, oldValue: issue?.description_text ?? '' }); }}
+                          placeholder="Add a description..."
+                          minHeight={200}
+                          autoSave
+                        />
                       </div>
                     )}
                   </div>
