@@ -100,8 +100,9 @@ export function CreateTestCaseModal({
   const [priorities, setPriorities] = useState<Array<{ id: string; name: string; color: string }>>([]);
   const [caseTypes, setCaseTypes] = useState<Array<{ id: string; name: string }>>([]);
 
-  // Fetch users, priorities, case types
+  // Fetch users, priorities, case types — runs each time modal opens to ensure fresh data
   useEffect(() => {
+    if (!isOpen) return;
     const fetchLookups = async () => {
       const [usersRes, prioritiesRes, caseTypesRes] = await Promise.all([
         supabase.from('profiles').select('id, full_name, avatar_url').order('full_name'),
@@ -113,7 +114,7 @@ export function CreateTestCaseModal({
       if (caseTypesRes.data) setCaseTypes(caseTypesRes.data);
     };
     fetchLookups();
-  }, []);
+  }, [isOpen]);
 
   // Reset or pre-fill form when modal opens
   useEffect(() => {
@@ -129,8 +130,8 @@ export function CreateTestCaseModal({
         setAutomation(testCase.automation_status || 'manual');
         setAssignedTo(testCase.assigned_to || '');
         setTestFormat(dbFormatToUi(testCase.test_format));
-        setGherkinFeature((testCase as any).gherkin_feature || '');
-        setGherkinScenario((testCase as any).gherkin_scenario || '');
+        setGherkinFeature(testCase.gherkin_feature || '');
+        setGherkinScenario(testCase.gherkin_scenario || '');
         if (existingSteps && existingSteps.length > 0) {
           setSteps(existingSteps.map(s => ({ ...s, attachments: [] })));
         } else {

@@ -420,6 +420,12 @@ export function ViewTestCaseModal({
   const [runs, setRuns] = useState<Execution[]>([]);
   const [loading, setLoading] = useState(false);
 
+  // Resolved FK display names
+  const [priorityName, setPriorityName] = useState<string>('—');
+  const [typeName, setTypeName] = useState<string>('—');
+  const [ownerName, setOwnerName] = useState<string>('—');
+  const [assigneeName, setAssigneeName] = useState<string>('—');
+
   const [addLinkOpen, setAddLinkOpen] = useState(false);
   const [addLinkType, setAddLinkType] = useState<'requirement' | 'defect' | 'story'>('requirement');
 
@@ -433,6 +439,49 @@ export function ViewTestCaseModal({
   const fetchRelatedData = async () => {
     if (!testCase) return;
     setLoading(true);
+
+    // Resolve FK display names (priority, type, owner, assignee) in parallel
+    const fkPromises: Promise<void>[] = [];
+    setPriorityName('—');
+    setTypeName('—');
+    setOwnerName('—');
+    setAssigneeName('—');
+
+    if (testCase.priority_id) {
+      fkPromises.push(
+        typedQuery('tm_case_priorities').select('name').eq('id', testCase.priority_id).maybeSingle()
+          .then(({ data }: any) => { if (data?.name) setPriorityName(data.name); })
+      );
+    }
+    if (testCase.case_type_id) {
+      fkPromises.push(
+        typedQuery('tm_case_types').select('name').eq('id', testCase.case_type_id).maybeSingle()
+          .then(({ data }: any) => { if (data?.name) setTypeName(data.name); })
+      );
+    }
+    const ownerId = (testCase as any).created_by;
+    if (ownerId) {
+      fkPromises.push(
+        supabase.from('profiles').select('full_name').eq('id', ownerId).maybeSingle()
+          .then(({ data }) => { if (data?.full_name) setOwnerName(data.full_name); })
+      );
+    }
+    const assigneeId = (testCase as any).assigned_to;
+    if (assigneeId && assigneeId !== ownerId) {
+      fkPromises.push(
+        supabase.from('profiles').select('full_name').eq('id', assigneeId).maybeSingle()
+          .then(({ data }) => { if (data?.full_name) setAssigneeName(data.full_name); })
+      );
+    } else if (assigneeId && assigneeId === ownerId) {
+      // Will be set from owner lookup
+      fkPromises.push(
+        supabase.from('profiles').select('full_name').eq('id', assigneeId).maybeSingle()
+          .then(({ data }) => { if (data?.full_name) setAssigneeName(data.full_name); })
+      );
+    }
+
+    // Fire FK lookups (don't block main data)
+    Promise.all(fkPromises).catch(() => {});
 
     try {
       const [stepsRes, reqLinksRes, storyLinksRes, defectLinksRes, historyRes, runsRes] = await Promise.allSettled([
@@ -900,8 +949,10 @@ export function ViewTestCaseModal({
             <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
               {[
                 { label: 'Case Key', value: testCase.case_key, mono: true },
-                { label: 'Owner', value: '—', mono: false },
-                { label: 'Priority', value: '—', mono: false },
+                { label: 'Owner', value: ownerName, mono: false },
+                { label: 'Priority', value: priorityName, mono: false },
+                { label: 'Type', value: typeName, mono: false },
+                ...(assigneeName !== '—' ? [{ label: 'Assigned To', value: assigneeName, mono: false }] : []),
               ].map(({ label, value, mono }) => (
                 <div key={label} style={{
                   display: 'flex', alignItems: 'center', justifyContent: 'space-between',
