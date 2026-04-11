@@ -212,7 +212,7 @@ export function JiraBasicFilter({
                               </div>
                               <div className="jf-option-content">
                                 <div className="jf-option-row">
-                                  {(option.avatarUrl || option.avatarInitials || option.avatarType) && (
+                                  {(option.iconNode || option.avatarUrl || option.avatarInitials || option.avatarType) && (
                                     <div className="jf-avatar-wrap"><OptionAvatar option={option} /></div>
                                   )}
                                   <span className="jf-option-label">
