@@ -556,7 +556,7 @@ export default function StoryDetailModal({
                       Add parent
                     </button>
                   </PopoverTrigger>
-                  <PopoverContent align="start" sideOffset={4} className="p-0 w-[380px]" style={{ borderRadius: 8, boxShadow: '0 8px 16px rgba(0,0,0,0.12), 0 0 1px rgba(0,0,0,0.12)' }}>
+                  <PopoverContent align="start" sideOffset={4} className="p-0 w-[380px] z-[10001]" style={{ borderRadius: 8, boxShadow: '0 8px 16px rgba(0,0,0,0.12), 0 0 1px rgba(0,0,0,0.12)' }}>
                     <div style={{ padding: '10px 16px 6px', fontSize: 11, fontWeight: 700, color: '#6B778C', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
                       Recent epics
                     </div>
