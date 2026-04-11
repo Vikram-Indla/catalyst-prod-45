@@ -1038,7 +1038,7 @@ export default function StoryDetailModal({
                         </div>
 
                         {/* Description — ADF auto-save editor */}
-                        <div style={{ fontSize: 13, fontWeight: 700, color: '#172B4D', marginBottom: 10 }}>Description</div>
+                        <h2 style={{ fontSize: 14, fontWeight: 500, color: '#505258', lineHeight: '18.67px', margin: '0 0 8px 0', padding: 0 }}>Description</h2>
                         <StoryRichTextEditor
                           content={adfToHtml(issue?.description_adf) || issue?.description_text || ''}
                           onSave={(html) => { updateFieldMutation.mutate({ field: 'description_text', value: html, oldValue: issue?.description_text ?? '' }); }}
@@ -1069,7 +1069,7 @@ export default function StoryDetailModal({
 
                   {/* 5. ACCEPTANCE CRITERIA — ADF auto-save editor */}
                   <div style={{ marginBottom: 24 }}>
-                    <div style={{ fontSize: 13, fontWeight: 700, color: '#172B4D', marginBottom: 10 }}>Acceptance Criteria</div>
+                    <h2 style={{ fontSize: 14, fontWeight: 500, color: '#505258', lineHeight: '18.67px', margin: '0 0 8px 0', padding: 0 }}>Acceptance Criteria</h2>
                     <StoryRichTextEditor
                       content={tryAdfStringToHtml(acceptanceCriteria) ?? acceptanceCriteria ?? ''}
                       onSave={(adfJson) => { setAcceptanceCriteria(adfJson); supabase.from('ph_issues').update({ acceptance_criteria: adfJson }).eq('id', itemId).then(() => { queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] }); }); }}
@@ -1224,25 +1224,36 @@ export default function StoryDetailModal({
 
                   {/* 8. ACTIVITY — Jira-exact */}
                   <div style={{ marginTop: 32 }}>
-                    <div style={{ fontSize: 15, fontWeight: 600, color: '#172B4D', marginBottom: 12 }}>Activity</div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 0, marginBottom: 20, borderBottom: '1px solid #EBECF0' }}>
+                    <h2 style={{ fontSize: 16, fontWeight: 700, color: '#292A2E', lineHeight: '20px', margin: 0, padding: 0, marginBottom: 12 }}>Activity</h2>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 16 }}>
                       {(['all', 'comments', 'history'] as ActivityTab[]).map(tab => {
                         const isActive = activeActivityTab === tab;
                         const label = tab === 'all' ? 'All' : tab === 'comments' ? 'Comments' : 'History';
                         return (
                           <button key={tab} onClick={() => setActiveActivityTab(tab)} style={{
-                            padding: '6px 14px', marginBottom: -1,
-                            border: 'none',
-                            borderBottom: isActive ? '2px solid #2563EB' : '2px solid transparent',
-                            borderRadius: 0,
-                            background: 'transparent', fontSize: 14, fontWeight: isActive ? 500 : 400,
-                            color: isActive ? '#2563EB' : '#42526E', cursor: 'pointer', transition: 'color 0.12s',
+                            height: 26, padding: '0 12px',
+                            border: isActive ? '0.556px solid #1868DB' : '0.556px solid transparent',
+                            borderRadius: 2,
+                            background: isActive ? '#E9F2FE' : 'transparent',
+                            fontSize: 13.33, fontWeight: 500,
+                            color: isActive ? '#1868DB' : '#505258',
+                            cursor: 'pointer', transition: 'background 150ms, border-color 150ms, color 150ms',
+                            lineHeight: 'normal',
                           }}
-                            onMouseEnter={e => { if (!isActive) e.currentTarget.style.color = '#172B4D'; }}
-                            onMouseLeave={e => { if (!isActive) e.currentTarget.style.color = '#42526E'; }}
+                            onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = '#F0F1F2'; }}
+                            onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = 'transparent'; }}
                           >{label}</button>
                         );
                       })}
+                      {/* Sort toggle — right-aligned */}
+                      <button type="button" onClick={() => {/* toggle sort placeholder */}}
+                        style={{
+                          marginLeft: 'auto', fontSize: 14, fontWeight: 500, color: '#505258',
+                          background: 'transparent', border: 'none', borderRadius: 3, padding: '2px 0',
+                          height: 24, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4,
+                        }}>
+                        Newest first
+                      </button>
                     </div>
 
                     {/* COMMENTS + ALL tabs share comment input */}
@@ -1281,22 +1292,37 @@ export default function StoryDetailModal({
                         )}
 
                         {/* Comment input — Rich text editor with image paste */}
-                        <div style={{ display: 'flex', gap: 12, marginBottom: 24 }}>
+                        <div style={{ display: 'flex', gap: 8, marginBottom: 24, alignItems: 'flex-start' }}>
                           {currentProfile?.avatar_url ? (
-                            <img src={currentProfile.avatar_url} alt="" style={{ width: 36, height: 36, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
+                            <img src={currentProfile.avatar_url} alt="" style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover', flexShrink: 0, marginTop: 4 }} />
                           ) : (
-                            <div style={{ width: 36, height: 36, borderRadius: '50%', background: getAvatarColor(user?.id ?? ''), color: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700, flexShrink: 0 }}>{getInitials(currentProfile?.full_name)}</div>
+                            <div style={{ width: 24, height: 24, borderRadius: '50%', background: getAvatarColor(user?.id ?? ''), color: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, flexShrink: 0, marginTop: 4 }}>{getInitials(currentProfile?.full_name)}</div>
                           )}
                           <div style={{ flex: 1 }}>
                             <RichTextCommentEditor
                               onSubmit={handleCommentSubmit}
                               isSubmitting={addCommentMutation.isPending}
-                              placeholder="Type /ai to Ask Rovo or @ to mention and notify someone."
+                              placeholder="Add a comment…"
                               teamMembers={mentionMembers}
                               workItemId={itemId}
                             />
-                            <div style={{ fontSize: 12, color: '#97A0AF', marginTop: 8 }}>
-                              <strong style={{ fontWeight: 600, color: '#42526E' }}>Pro tip:</strong> press <kbd style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, background: '#F4F5F7', border: '1px solid #DFE1E6', borderRadius: 3, padding: '2px 6px', fontWeight: 600 }}>M</kbd> to comment
+                            {/* Quick-reply pills */}
+                            <div style={{ display: 'flex', gap: 4, marginTop: 4 }}>
+                              {['Status update...', 'Thanks...', 'Agree...'].map(chip => (
+                                <button key={chip} type="button"
+                                  style={{
+                                    display: 'inline-flex', background: 'transparent', border: 'none',
+                                    borderRadius: 3, color: '#505258', fontSize: 14, fontWeight: 500,
+                                    padding: '2px 12px', height: 24, cursor: 'pointer',
+                                  }}
+                                  onMouseEnter={e => { e.currentTarget.style.background = '#F0F1F2'; }}
+                                  onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+                                >{chip}</button>
+                              ))}
+                            </div>
+                            {/* Pro tip */}
+                            <div style={{ fontSize: 14, fontWeight: 400, color: '#292A2E', lineHeight: '20px', marginTop: 4 }}>
+                              Pro tip: press <span style={{ fontWeight: 600 }}>M</span> to comment
                             </div>
                           </div>
                         </div>
@@ -1304,17 +1330,22 @@ export default function StoryDetailModal({
                         {/* Comments list */}
                         {activeActivityTab === 'comments' && comments.length === 0 && <div style={{ padding: '24px 0', color: '#97A0AF', fontSize: 14, textAlign: 'center' }}>No comments yet</div>}
                         {activeActivityTab === 'comments' && comments.map(c => (
-                          <div key={c.id} style={{ display: 'flex', gap: 12, marginBottom: 24 }}>
+                          <div key={c.id} style={{ display: 'flex', gap: 8, margin: '8px 0 32px 0', minHeight: 40 }}>
                             {c.author?.avatar_url ? (
-                              <img src={c.author.avatar_url} alt="" style={{ width: 36, height: 36, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
-                            ) : (
-                              <div style={{ width: 36, height: 36, borderRadius: '50%', background: getAvatarColor(c.author_id), color: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700, flexShrink: 0 }}>{getInitials(c.author?.full_name)}</div>
-                            )}
-                            <div style={{ flex: 1, minWidth: 0 }}>
-                              <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 6 }}>
-                                <span style={{ fontSize: 14, fontWeight: 600, color: '#172B4D' }}>{c.author?.full_name ?? 'Unknown'}</span>
-                                <span style={{ fontSize: 13, color: '#6B778C' }}>{fmtDate(c.created_at)}</span>
+                              <div style={{ width: 36, height: 36, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <img src={c.author.avatar_url} alt="" style={{ width: 32, height: 32, borderRadius: 9999, objectFit: 'cover', border: '2px solid #FFFFFF' }} />
                               </div>
+                            ) : (
+                              <div style={{ width: 36, height: 36, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <div style={{ width: 32, height: 32, borderRadius: '50%', background: getAvatarColor(c.author_id), color: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, border: '2px solid #FFFFFF' }}>{getInitials(c.author?.full_name)}</div>
+                              </div>
+                            )}
+                            <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 2 }}>
+                              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, alignItems: 'baseline' }}>
+                                <span style={{ fontSize: 14, fontWeight: 700, color: '#292A2E' }}>{c.author?.full_name ?? 'Unknown'}</span>
+                                <span style={{ fontSize: 14, fontWeight: 400, color: '#292A2E' }}>commented</span>
+                              </div>
+                              <div style={{ fontSize: 12, fontWeight: 400, color: '#292A2E', lineHeight: '16px' }}>{fmtDate(c.created_at)}</div>
 
                               {editingCommentId === c.id ? (
                                 <RichTextCommentEditor
@@ -1400,17 +1431,34 @@ export default function StoryDetailModal({
                             }
                             const e = item.data;
                             return (
-                              <div key={`h-${e.id}`} style={{ display: 'flex', gap: 12, marginBottom: 24 }}>
-                                {e.actor?.avatar_url ? <img src={e.actor.avatar_url} alt="" style={{ width: 36, height: 36, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} /> : <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#0052CC', color: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFF" strokeWidth="2"><rect x="8" y="2" width="8" height="4" rx="1"/><rect x="4" y="4" width="16" height="18" rx="2"/></svg></div>}
-                                <div style={{ flex: 1, minWidth: 0 }}>
-                                  <div style={{ fontSize: 14, color: '#172B4D', lineHeight: 1.5, marginBottom: 2 }}><span style={{ fontWeight: 600 }}>{e.actor?.full_name ?? 'System'}</span>{' '}{e.action === 'field_updated' ? <>changed the <span style={{ fontWeight: 600 }}>{e.field_name}</span></> : e.action}</div>
-                                  <div style={{ fontSize: 13, color: '#6B778C', marginBottom: 6 }}>{fmtDate(e.created_at)}</div>
-                                  <span style={{ display: 'inline-block', fontSize: 11, fontWeight: 700, color: '#172B4D', border: '1px solid #DFE1E6', borderRadius: 3, padding: '2px 6px', textTransform: 'uppercase', letterSpacing: '0.03em', background: '#F4F5F7' }}>HISTORY</span>
+                              <div key={`h-${e.id}`} style={{ display: 'flex', gap: 8, margin: '8px 0 32px 0', minHeight: 40, fontSize: 14, lineHeight: '20px', color: '#292A2E' }}>
+                                {e.actor?.avatar_url ? (
+                                  <div style={{ width: 36, height: 36, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                    <img src={e.actor.avatar_url} alt="" style={{ width: 32, height: 32, borderRadius: 9999, objectFit: 'cover', border: '2px solid #FFFFFF' }} />
+                                  </div>
+                                ) : (
+                                  <div style={{ width: 36, height: 36, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                    <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#0052CC', color: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, border: '2px solid #FFFFFF' }}>
+                                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFF" strokeWidth="2"><rect x="8" y="2" width="8" height="4" rx="1"/><rect x="4" y="4" width="16" height="18" rx="2"/></svg>
+                                    </div>
+                                  </div>
+                                )}
+                                <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 2 }}>
+                                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, alignItems: 'baseline' }}>
+                                    <span style={{ fontSize: 14, fontWeight: 700, color: '#292A2E' }}>{e.actor?.full_name ?? 'System'}</span>
+                                    <span style={{ fontSize: 14, fontWeight: 400, color: '#292A2E' }}>{e.action === 'field_updated' ? 'changed the' : e.action}</span>
+                                    {e.action === 'field_updated' && e.field_name && <span style={{ fontSize: 14, fontWeight: 500, color: '#292A2E' }}>{e.field_name}</span>}
+                                  </div>
+                                  <div style={{ fontSize: 12, fontWeight: 400, color: '#292A2E', lineHeight: '16px' }}>{fmtDate(e.created_at)}</div>
                                   {(e.old_value || e.new_value) && (
-                                    <div style={{ marginTop: 8, fontSize: 14, color: '#172B4D', display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-                                      <span style={{ color: '#6B778C' }}>{e.old_value || 'None'}</span>
-                                      <span style={{ color: '#97A0AF' }}>→</span>
-                                      {e.field_name === 'assignee_display_name' && e.new_value ? <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>{(() => { const avu = avatarsByName.get(e.new_value.toLowerCase()); return avu ? <img src={avu} alt="" style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} /> : <div style={{ width: 24, height: 24, borderRadius: '50%', background: getAvatarColor(e.new_value), color: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700 }}>{getInitials(e.new_value)}</div>; })()}<span style={{ fontWeight: 500 }}>{e.new_value}</span></span> : <span style={{ fontWeight: 500 }}>{e.new_value || 'None'}</span>}
+                                    <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 8, marginTop: 4, fontSize: 14, color: '#505258' }}>
+                                      {e.old_value && <span style={{ color: '#292A2E', fontWeight: 400 }}>{e.old_value}</span>}
+                                      {e.old_value && e.new_value && <span style={{ color: '#505258' }}>→</span>}
+                                      {e.new_value && (
+                                        e.field_name === 'assignee_display_name'
+                                          ? <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>{(() => { const avu = avatarsByName.get(e.new_value.toLowerCase()); return avu ? <img src={avu} alt="" style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} /> : <div style={{ width: 24, height: 24, borderRadius: '50%', background: getAvatarColor(e.new_value), color: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700 }}>{getInitials(e.new_value)}</div>; })()}<span style={{ fontWeight: 500 }}>{e.new_value}</span></span>
+                                          : <span style={{ color: '#292A2E', fontWeight: 400 }}>{e.new_value}</span>
+                                      )}
                                     </div>
                                   )}
                                 </div>
