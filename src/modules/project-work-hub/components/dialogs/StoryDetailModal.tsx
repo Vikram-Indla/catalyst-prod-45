@@ -205,6 +205,8 @@ export default function StoryDetailModal({
   const [showAiMenu, setShowAiMenu] = useState(false);
   const [showDotsMenu, setShowDotsMenu] = useState(false);
   const [parentPickerTrigger, setParentPickerTrigger] = useState(0);
+  const [showAddEpicPanel, setShowAddEpicPanel] = useState(false);
+  const [epicSearchTerm, setEpicSearchTerm] = useState('');
   const [acceptanceCriteria, setAcceptanceCriteria] = useState('');
   const [titleFocused, setTitleFocused] = useState(false);
   const [commentSummary, setCommentSummary] = useState<string | null>(null);
