@@ -83,6 +83,8 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
   const [panelDividerWidth, setPanelDividerWidth] = useState(55);
   const [filterPanelOpen, setFilterPanelOpen] = useState(false);
   const [advancedFilters, setAdvancedFilters] = useState<Record<string, string[]>>({});
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchFocused, setSearchFocused] = useState(false);
 
   // ── Build filter categories from story data ──
   const filterCategories = useMemo<FilterCategory[]>(() => {
