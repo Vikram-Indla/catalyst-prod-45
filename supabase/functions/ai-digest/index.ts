@@ -35,6 +35,28 @@ function inferRole(userId: string, releases: Record<string, string>[]): string {
   return 'Manager';
 }
 
+/** Compute a numeric fingerprint from source data for cache invalidation */
+async function computeDataFingerprint(
+  notifications: any[], releases: any[], incidents: any[], testFails: any[]
+): Promise<number> {
+  // Build a deterministic string from the data that changes when any item changes
+  const parts: string[] = [];
+  for (const n of notifications) parts.push(`n:${n.entity_id ?? ''}:${n.created_at ?? ''}`);
+  for (const r of releases) parts.push(`r:${r.id}:${r.health}:${r.defects_open}:${r.readiness_pct}:${r.is_blocked}:${r.status}`);
+  for (const i of incidents) parts.push(`i:${i.id}:${i.severity}:${i.status}`);
+  for (const t of testFails) parts.push(`t:${t.id}:${t.status}`);
+  parts.sort(); // deterministic ordering
+
+  const fingerprint = parts.join('|');
+  const encoded = new TextEncoder().encode(fingerprint);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', encoded);
+  const hashArray = new Uint8Array(hashBuffer);
+  // Take first 4 bytes → 31-bit positive integer (fits postgres INTEGER)
+  let num = 0;
+  for (let i = 0; i < 4; i++) num = num * 256 + hashArray[i];
+  return num >>> 1; // ensure positive (31 bits, max ~2.1B)
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
@@ -61,25 +83,7 @@ serve(async (req) => {
     }
     const userId = user.id;
 
-    if (!forceRefresh) {
-      const { data: cached } = await supabase
-        .from("ai_digest_cache")
-        .select("digest_json, has_critical, role_persona")
-        .eq("user_id", userId)
-        .eq("context_version", 2)
-        .gt("expires_at", new Date().toISOString())
-        .order("generated_at", { ascending: false })
-        .limit(1)
-        .maybeSingle();
-
-      if (cached) {
-        return new Response(
-          JSON.stringify({ digest: cached.digest_json, cached: true }),
-          { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-      }
-    }
-
+    // ── FETCH SOURCE DATA (always needed for fingerprint) ────────────
     const now = new Date();
     const cutoff48h = new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString();
     const cutoff24h = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
@@ -132,6 +136,31 @@ serve(async (req) => {
     const incidents: any[] = incidentsRes.status === 'fulfilled' ? (incidentsRes.value as any).data ?? [] : [];
     const testFails: any[] = testFailRes.status === 'fulfilled' ? (testFailRes.value as any).data ?? [] : [];
 
+    // ── CONTENT-HASH CACHE CHECK ─────────────────────────────────────
+    const dataFingerprint = await computeDataFingerprint(notifications, releases, incidents, testFails);
+
+    if (!forceRefresh) {
+      const { data: cached } = await supabase
+        .from("ai_digest_cache")
+        .select("digest_json, has_critical, role_persona")
+        .eq("user_id", userId)
+        .eq("context_version", dataFingerprint)
+        .gt("expires_at", new Date().toISOString())
+        .order("generated_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (cached) {
+        console.log(`Cache HIT for user ${userId}, fingerprint=${dataFingerprint}`);
+        return new Response(
+          JSON.stringify({ digest: cached.digest_json, cached: true }),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+      console.log(`Cache MISS for user ${userId}, fingerprint=${dataFingerprint}`);
+    }
+
+    // ── EMPTY DATA — no AI call needed ───────────────────────────────
     if (!notifications.length && !releases.length && !incidents.length && !testFails.length) {
       return new Response(
         JSON.stringify({ digest: { summary: "", items: [], role_persona: "Manager", has_critical: false, generated_at: now.toISOString() }, cached: false, empty: true }),
@@ -351,15 +380,23 @@ Return JSON:
     const ttlMs = hasCritical ? 30 * 60 * 1000 : 4 * 60 * 60 * 1000;
     const expiresAt = new Date(Date.now() + ttlMs).toISOString();
 
-    await supabase.from("ai_digest_cache").insert({
+    // ── STORE IN CACHE with content fingerprint ──────────────────────
+    // Delete stale cache entries for this user first
+    const { error: delErr } = await supabase.from("ai_digest_cache").delete().eq("user_id", userId);
+    if (delErr) console.warn("Cache delete error:", delErr.message);
+
+    const { error: insErr } = await supabase.from("ai_digest_cache").insert({
       user_id: userId,
       digest_json: digestV2,
       generated_at: now.toISOString(),
       expires_at: expiresAt,
       has_critical: hasCritical,
-      context_version: 2,
+      context_version: dataFingerprint,
       role_persona: (parsed.role_persona as string) ?? 'Manager',
     });
+    if (insErr) console.error("Cache insert error:", insErr.message, insErr.details);
+
+    console.log(`Cache STORED for user ${userId}, fingerprint=${dataFingerprint}, ttl=${hasCritical ? '30m' : '4h'}`);
 
     return new Response(
       JSON.stringify({ digest: digestV2, cached: false }),
