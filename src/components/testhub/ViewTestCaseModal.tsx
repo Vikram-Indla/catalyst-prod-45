@@ -41,7 +41,7 @@ interface Link {
   link_type: string;
   linked_item_key: string;
   linked_item_title: string;
-  _source: 'tm_test_case_links' | 'tm_defect_links';
+  _source: 'tm_requirement_tests' | 'tm_test_case_links' | 'tm_defect_links';
 }
 
 interface VersionHistory {
@@ -538,6 +538,21 @@ export function ViewTestCaseModal({
           _source: 'tm_defect_links',
         }]);
       }
+    } else if (selectedLinkType === 'requirement') {
+      const { data, error } = await typedQuery('tm_requirement_tests').insert({
+        test_case_id: testCase.id,
+        requirement_id: item.id,
+        created_by: user?.id || null,
+      }).select().single();
+      if (!error && data) {
+        setLinks([...links, {
+          id: data.id,
+          link_type: 'requirement',
+          linked_item_key: item.key,
+          linked_item_title: item.name,
+          _source: 'tm_requirement_tests',
+        }]);
+      }
     } else {
       const { data, error } = await typedQuery('tm_test_case_links').insert({
         test_case_id: testCase.id,
@@ -563,6 +578,8 @@ export function ViewTestCaseModal({
 
     if (link._source === 'tm_defect_links') {
       await typedQuery('tm_defect_links').delete().eq('id', linkId);
+    } else if (link._source === 'tm_requirement_tests') {
+      await typedQuery('tm_requirement_tests').delete().eq('id', linkId);
     } else {
       await typedQuery('tm_test_case_links').delete().eq('id', linkId);
     }
