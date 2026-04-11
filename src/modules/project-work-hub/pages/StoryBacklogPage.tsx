@@ -142,23 +142,32 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
         avatarType: (a.avatarUrl ? 'photo' : 'initials') as 'photo' | 'initials',
       }));
 
-    // Parent Epic
-    const epicMap = new Map<string, { key: string; name: string }>();
+    // Parent (Epics + Features)
+    const parentMap = new Map<string, { key: string; name: string; type: 'epic' | 'feature' }>();
     allStories.forEach(s => {
-      const epic = s.feature?.epic;
-      if (epic && !epicMap.has(epic.id)) {
-        epicMap.set(epic.id, { key: epic.epic_key || '', name: epic.name });
+      const feat = s.feature;
+      if (feat && !parentMap.has(`feature-${feat.id}`)) {
+        parentMap.set(`feature-${feat.id}`, { key: feat.display_id || '', name: feat.name, type: 'feature' });
+      }
+      const epic = feat?.epic;
+      if (epic && !parentMap.has(`epic-${epic.id}`)) {
+        parentMap.set(`epic-${epic.id}`, { key: epic.epic_key || '', name: epic.name, type: 'epic' });
       }
     });
-    const parentOptions = Array.from(epicMap.entries())
-      .sort((_, b) => b[1].name.localeCompare(b[1].name))
-      .map(([id, e]) => ({ id, label: e.name, labelExtra: e.key || undefined }));
+    const parentOptions = Array.from(parentMap.entries())
+      .sort((a, b) => a[1].name.localeCompare(b[1].name))
+      .map(([id, e]) => ({
+        id,
+        label: e.name,
+        labelExtra: e.key || undefined,
+        iconNode: <JiraIssueTypeIcon type={e.type === 'epic' ? 'Epic' : 'Feature'} size={16} />,
+      }));
 
     return [
       { id: 'status', label: 'Status', options: statusOptions, searchPlaceholder: 'Search statuses' },
       { id: 'priority', label: 'Priority', options: priorityOptions, searchPlaceholder: 'Search priorities' },
       { id: 'assignee', label: 'Assignee', options: assigneeOptions, searchPlaceholder: 'Search people' },
-      { id: 'parent', label: 'Parent (Epic)', options: parentOptions, searchPlaceholder: 'Search epics' },
+      { id: 'parent', label: 'Parent', options: parentOptions, searchPlaceholder: 'Search epics & features' },
     ];
   }, [stories, avatarsByName]);
 
