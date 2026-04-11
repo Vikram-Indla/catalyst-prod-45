@@ -13,8 +13,9 @@ import {
   ExternalLink, Share2, Search, MessageSquare, Clock,
   GripVertical, Link2, Trash2, Check,
   Eye, EyeOff, Sparkles, Loader2, RotateCcw, Settings2, AlertTriangle,
-  SquarePen,
+  SquarePen, Reply, ThumbsUp, Smile, Pencil, MoreHorizontal, Copy,
 } from 'lucide-react';
+import { RichTextCommentEditor } from './story-detail-modules/RichTextCommentEditor';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 
