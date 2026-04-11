@@ -326,11 +326,16 @@ Deno.serve(async (req) => {
       }
     }
 
-    // ── 2026 GUARDRAIL — skip issues created before 2026 ──
-    if (payload.issue?.fields?.created) {
-      const createdYear = new Date(payload.issue.fields.created).getFullYear();
-      if (createdYear < 2026) {
-        console.log(`[2026-GUARDRAIL] Webhook skipped pre-2026 issue: ${payload.issue.key} (created ${payload.issue.fields.created})`);
+    // ── 2026 GUARDRAIL — skip issues with no 2026 activity (created or updated) ──
+    if (payload.issue?.fields) {
+      const created = payload.issue.fields.created;
+      const updated = payload.issue.fields.updated;
+      const createdYear = created ? new Date(created).getFullYear() : null;
+      const updatedYear = updated ? new Date(updated).getFullYear() : null;
+      const has2026Activity = (createdYear !== null && createdYear >= 2026) ||
+                              (updatedYear !== null && updatedYear >= 2026);
+      if (!has2026Activity) {
+        console.log(`[2026-GUARDRAIL] Webhook skipped pre-2026 issue: ${payload.issue.key} (created ${created}, updated ${updated})`);
         return new Response(
           JSON.stringify({ status: 'skipped_pre_2026', key: payload.issue.key }),
           { status: 200, headers: { 'Content-Type': 'application/json' } }

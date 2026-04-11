@@ -320,10 +320,12 @@ serve(async (req) => {
             raw_json: null,
           }
         })
-        // ── 2026 GUARDRAIL — only sync items created in 2026+ ──
+        // ── 2026 GUARDRAIL — only sync items created or updated in 2026+ ──
         .filter((r: any) => {
-          if (!r.jira_created_at) return false
-          return new Date(r.jira_created_at).getFullYear() >= 2026
+          const createdYear = r.jira_created_at ? new Date(r.jira_created_at).getFullYear() : null
+          const updatedYear = r.jira_updated_at ? new Date(r.jira_updated_at).getFullYear() : null
+          return (createdYear !== null && createdYear >= 2026) ||
+                 (updatedYear !== null && updatedYear >= 2026)
         })
 
         // ── GOVERNANCE LOCK CHECK — filter out governance-closed items ──
@@ -365,10 +367,14 @@ serve(async (req) => {
         if (bugIssues.length > 0 && tmProjectMap.size > 0) {
           const defectRows = bugIssues
             .filter((issue: any) => tmProjectMap.has(issue.key.split('-')[0]))
-            // 2026 GUARDRAIL — skip pre-2026 defects
+            // 2026 GUARDRAIL — skip pre-2026 defects (allow if updated in 2026+)
             .filter((issue: any) => {
               const created = issue.fields.created
-              return created && new Date(created).getFullYear() >= 2026
+              const updated = issue.fields.updated
+              const createdYear = created ? new Date(created).getFullYear() : null
+              const updatedYear = updated ? new Date(updated).getFullYear() : null
+              return (createdYear !== null && createdYear >= 2026) ||
+                     (updatedYear !== null && updatedYear >= 2026)
             })
             .map((issue: any) => {
               const projKey = issue.key.split('-')[0]

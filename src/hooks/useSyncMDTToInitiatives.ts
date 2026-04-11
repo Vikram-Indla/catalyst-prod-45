@@ -37,15 +37,24 @@ export function useSyncMDTToInitiatives() {
         // 1. Get all MDT issues from Jira (exclude Done Business Requests only)
         const { data: mdtIssues, error: issErr } = await supabase
           .from('ph_issues')
-          .select('issue_key, summary, status, status_category, priority, assignee_display_name, issue_type')
+          .select('issue_key, summary, status, status_category, priority, assignee_display_name, issue_type, jira_created_at, jira_updated_at')
           .eq('project_key', 'MDT')
           .limit(2000);
 
         if (issErr || !mdtIssues?.length) return;
 
+        // ── 2026 GUARDRAIL — only sync items created or updated in 2026+ ──
+        const YEAR_2026 = 2026;
+        const issues2026 = mdtIssues.filter((i: any) => {
+          const createdYear = i.jira_created_at ? new Date(i.jira_created_at).getFullYear() : null;
+          const updatedYear = i.jira_updated_at ? new Date(i.jira_updated_at).getFullYear() : null;
+          return (createdYear !== null && createdYear >= YEAR_2026) ||
+                 (updatedYear !== null && updatedYear >= YEAR_2026);
+        });
+
         // Filter out Done Business Requests only
-        const filteredIssues = mdtIssues.filter((i: any) => {
-          const isDoneBusinessRequest = i.status_category === 'Done' && 
+        const filteredIssues = issues2026.filter((i: any) => {
+          const isDoneBusinessRequest = i.status_category === 'Done' &&
             (i.issue_type || '').toLowerCase().includes('business request');
           return !isDoneBusinessRequest;
         });

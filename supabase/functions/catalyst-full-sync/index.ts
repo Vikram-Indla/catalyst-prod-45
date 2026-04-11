@@ -168,10 +168,12 @@ serve(async (req) => {
             description_text: descText,
           }
         })
-        // ── 2026 GUARDRAIL — only sync items created in 2026+ ──
+        // ── 2026 GUARDRAIL — only sync items created or updated in 2026+ ──
         .filter((r: any) => {
-          if (!r.jira_created_at) return false
-          return new Date(r.jira_created_at).getFullYear() >= 2026
+          const createdYear = r.jira_created_at ? new Date(r.jira_created_at).getFullYear() : null
+          const updatedYear = r.jira_updated_at ? new Date(r.jira_updated_at).getFullYear() : null
+          return (createdYear !== null && createdYear >= 2026) ||
+                 (updatedYear !== null && updatedYear >= 2026)
         })
 
         // Batch upsert (chunks of 200)
