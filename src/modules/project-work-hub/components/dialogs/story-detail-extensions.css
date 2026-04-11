@@ -37,7 +37,7 @@
 
 /* Subtasks-style flat expand/collapse — no card wrapper */
 [data-sdm-scope] .sdm-child-issues {
-  margin-top: 8px;
+  margin-top: 24px;
   border: none;
   border-radius: 0;
   overflow: visible;

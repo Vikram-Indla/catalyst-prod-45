@@ -134,8 +134,8 @@ export function AttachmentsSection({ attachments, itemId, userId }: AttachmentsS
             </div>
           </div>
 
-          {/* Right: more options + add */}
-          <div className="att-heading-actions">
+          {/* Right: more options + add — hidden when collapsed */}
+          {!collapsed && <div className="att-heading-actions">
             <div style={{ position: 'relative' }} ref={moreMenuRef}>
               <button
                 className="att-icon-btn"
@@ -172,7 +172,7 @@ export function AttachmentsSection({ attachments, itemId, userId }: AttachmentsS
               style={{ display: 'none' }}
               onChange={handleFileChange}
             />
-          </div>
+          </div>}
         </div>
       </div>
 
