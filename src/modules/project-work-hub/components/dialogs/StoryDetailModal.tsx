@@ -190,9 +190,21 @@ export default function StoryDetailModal({
     },
   });
 
+  // Team members for @mention
+  const { data: mentionMembers = [] } = useQuery({
+    queryKey: ['team-members-mention', projectId], enabled: !!projectId && isOpen,
+    queryFn: async () => {
+      const { data } = await supabase.from('profiles').select('id, full_name, avatar_url').limit(50);
+      return (data ?? []) as Array<{ id: string; full_name: string; avatar_url: string | null }>;
+    },
+    staleTime: 120000,
+  });
+
   /* ── LOCAL STATE ───────────────────────────── */
   const [activeActivityTab, setActiveActivityTab] = useState<ActivityTab>('comments');
   const [newComment, setNewComment] = useState('');
+  const [commentMenuId, setCommentMenuId] = useState<string | null>(null);
+  const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
   const [showWorkflow, setShowWorkflow] = useState(false);
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
   const [showAiRegenConfirm, setShowAiRegenConfirm] = useState(false);
