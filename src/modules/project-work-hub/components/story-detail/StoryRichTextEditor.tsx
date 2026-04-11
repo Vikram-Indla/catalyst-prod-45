@@ -33,6 +33,11 @@ function useEditorDragHandle(editor: ReturnType<typeof useEditor>) {
   useEffect(() => {
     if (!editor) return;
 
+    // Guard: wait until TipTap has mounted the editor view to the DOM
+    let view: any;
+    try { view = editor.view; } catch { return; }
+    if (!view?.dom) return;
+
     // Create floating handle — appended to document.body, NOT inside ProseMirror
     const handle = document.createElement('div');
     handle.className = 'catalyst-floating-drag-handle';
@@ -56,8 +61,6 @@ function useEditorDragHandle(editor: ReturnType<typeof useEditor>) {
     handle.addEventListener('mouseleave', () => { handle.style.background = 'transparent'; handle.style.color = '#97A0AF'; });
     handle.addEventListener('mousedown', () => { handle.style.cursor = 'grabbing'; });
     handle.addEventListener('mouseup', () => { handle.style.cursor = 'grab'; });
-
-    const view = editor.view;
 
     const showHandle = (blockDom: HTMLElement, pos: number) => {
       if (hideTimerRef.current) { clearTimeout(hideTimerRef.current); hideTimerRef.current = undefined; }
