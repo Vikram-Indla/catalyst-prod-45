@@ -215,7 +215,6 @@ export function JiraBasicFilter({
                                   ) : (option.avatarUrl || option.avatarInitials || option.avatarType) && (
                                     <div className="jf-avatar-wrap"><OptionAvatar option={option} /></div>
                                   )}
-                                  )}
                                   {!option.hideLabel && (
                                     <span className="jf-option-label">
                                       {option.label}
