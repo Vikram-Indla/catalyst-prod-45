@@ -4,11 +4,23 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { TestPlan } from '@/types/testPlans';
 
-interface Props { plan: TestPlan; onUpdate: (updates: Partial<TestPlan>) => void; }
+interface Props { plan: TestPlan; onUpdate: (updates: Partial<TestPlan>) => void; passRate?: number; }
 
-export function OverviewTab({ plan, onUpdate }: Props) {
+export function OverviewTab({ plan, onUpdate, passRate }: Props) {
   return (
     <div className="space-y-6 max-w-3xl">
+      {/* Execution Progress */}
+      <Card>
+        <CardHeader><CardTitle className="text-base">Execution Progress</CardTitle></CardHeader>
+        <CardContent>
+          <div className="flex items-center gap-4">
+            <span className="text-sm text-muted-foreground">Overall Pass Rate:</span>
+            <span className="text-lg font-semibold">
+              {passRate !== undefined ? `${passRate}%` : '—'}
+            </span>
+          </div>
+        </CardContent>
+      </Card>
       <Card>
         <CardHeader><CardTitle className="text-base">Basic Information</CardTitle></CardHeader>
         <CardContent className="space-y-4">

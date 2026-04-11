@@ -45,9 +45,15 @@ interface VersionHistory {
 
 interface Execution {
   id: string;
-  cycle_name: string;
   result: string;
   executed_at: string;
+  tm_cycle_scope?: {
+    id: string;
+    tm_test_cycles?: {
+      id: string;
+      name: string;
+    } | null;
+  } | null;
 }
 
 interface Attachment {
@@ -273,7 +279,7 @@ export function ViewTestCaseModal({
         typedQuery('tm_test_case_links').select('*').eq('test_case_id', testCase.id).in('linked_item_type', ['requirement', 'story']),
         typedQuery('tm_defect_links').select('*').eq('link_type', 'test_case').eq('linked_id', testCase.id),
         typedQuery('tm_test_case_versions').select('*').eq('test_case_id', testCase.id).order('version_number', { ascending: false }),
-        typedQuery('th_test_executions').select('*').eq('test_case_id', testCase.id).order('executed_at', { ascending: false }),
+        typedQuery('th_test_executions').select(`*, tm_cycle_scope!cycle_scope_id(id, tm_test_cycles!test_cycle_id(id, name))`).eq('test_case_id', testCase.id).order('executed_at', { ascending: false }),
         typedQuery('th_test_case_attachments').select('*').eq('test_case_id', testCase.id),
       ]);
 
@@ -578,7 +584,7 @@ export function ViewTestCaseModal({
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {runs.map(r => (
               <div key={r.id} style={{ padding: '12px 16px', backgroundColor: 'var(--bg-1)', borderRadius: 8, border: '1px solid var(--divider)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: 13, color: 'var(--fg-2)' }}>{r.cycle_name || 'Unknown cycle'}</span>
+                <span style={{ fontSize: 13, color: 'var(--fg-2)' }}>{(r as any).tm_cycle_scope?.tm_test_cycles?.name || 'Unknown cycle'}</span>
                 <span style={{ fontSize: 12, fontWeight: 600, textTransform: 'capitalize', color: r.result === 'passed' ? 'var(--sem-success)' : r.result === 'failed' ? 'var(--sem-danger)' : 'var(--fg-3)' }}>{r.result}</span>
               </div>
             ))}
