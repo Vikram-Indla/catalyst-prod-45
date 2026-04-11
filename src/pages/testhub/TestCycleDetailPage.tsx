@@ -15,6 +15,9 @@ import { CreateTestCycleModal } from '@/components/testhub/CreateTestCycleModal'
 import { AssignTesterModal } from '@/components/testhub/AssignTesterModal';
 import { QuickExecutionModal } from '@/components/testhub/QuickExecutionModal';
 import { useTheme } from '@/hooks/useTheme';
+import { useDefectsByCycleId } from '@/hooks/useDefectsG25';
+import { useNavigate as useNav } from 'react-router-dom';
+import { Bug } from 'lucide-react';
 
 interface TestCycle {
   id: string;
