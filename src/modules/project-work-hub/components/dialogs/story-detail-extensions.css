@@ -969,9 +969,14 @@
 }
 
 /* ════════════════════════════════════════════════════════════════
-   ADF TABLE STYLES — Jira table rendering parity
+   ADF CONTENT STYLES — Full Jira rendering parity
+   Covers: tables, panels, expand, code, blockquote, task lists,
+   decision lists, mentions, status, dates, links, layout sections
    ════════════════════════════════════════════════════════════════ */
-[data-sdm-scope] .adf-editor-content table {
+
+/* ── Tables ── */
+[data-sdm-scope] .adf-editor-content table,
+[data-sdm-scope] .ProseMirror table {
   border-collapse: collapse;
   width: 100%;
   margin: 8px 0;
@@ -980,7 +985,9 @@
 }
 
 [data-sdm-scope] .adf-editor-content table th,
-[data-sdm-scope] .adf-editor-content table td {
+[data-sdm-scope] .adf-editor-content table td,
+[data-sdm-scope] .ProseMirror table th,
+[data-sdm-scope] .ProseMirror table td {
   border: 1px solid #DFE1E6;
   padding: 8px 10px;
   text-align: left;
@@ -988,20 +995,293 @@
   word-wrap: break-word;
 }
 
-[data-sdm-scope] .adf-editor-content table th {
+[data-sdm-scope] .adf-editor-content table th,
+[data-sdm-scope] .ProseMirror table th {
   background: #F4F5F7;
   font-weight: 700;
   color: #172B4D;
   font-size: 12px;
 }
 
-[data-sdm-scope] .adf-editor-content table td {
+[data-sdm-scope] .adf-editor-content table td,
+[data-sdm-scope] .ProseMirror table td {
   color: #172B4D;
   background: #FFFFFF;
 }
 
-[data-sdm-scope] .adf-editor-content table tr:hover td {
+[data-sdm-scope] .adf-editor-content table tr:hover td,
+[data-sdm-scope] .ProseMirror table tr:hover td {
   background: #FAFBFC;
+}
+
+/* ── Links ── */
+[data-sdm-scope] .adf-editor-content a,
+[data-sdm-scope] .ProseMirror a {
+  color: #0052CC;
+  text-decoration: none;
+  cursor: pointer;
+  border-bottom: 1px solid transparent;
+  transition: color 0.12s, border-color 0.12s;
+}
+[data-sdm-scope] .adf-editor-content a:hover,
+[data-sdm-scope] .ProseMirror a:hover {
+  color: #0065FF;
+  border-bottom-color: #0065FF;
+}
+[data-sdm-scope] .adf-editor-content a:visited,
+[data-sdm-scope] .ProseMirror a:visited {
+  color: #0052CC;
+}
+
+/* ── Inline cards (Jira smart links) ── */
+[data-sdm-scope] .adf-inline-card,
+[data-sdm-scope] .adf-block-card {
+  color: #0052CC;
+  text-decoration: none;
+  padding: 2px 4px;
+  border-radius: 3px;
+  background: #DEEBFF;
+  font-size: 13px;
+  transition: background 0.12s;
+}
+[data-sdm-scope] .adf-inline-card:hover,
+[data-sdm-scope] .adf-block-card:hover {
+  background: #B3D4FF;
+}
+
+/* ── Code blocks ── */
+[data-sdm-scope] .adf-editor-content pre,
+[data-sdm-scope] .ProseMirror pre {
+  background: #F4F5F7;
+  border-radius: 4px;
+  padding: 12px 16px;
+  margin: 8px 0;
+  overflow-x: auto;
+  font-family: 'JetBrains Mono', 'SFMono-Regular', Consolas, monospace;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #172B4D;
+  border: 1px solid #EBECF0;
+}
+[data-sdm-scope] .adf-editor-content pre code,
+[data-sdm-scope] .ProseMirror pre code {
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
+  font-size: inherit;
+  color: inherit;
+}
+
+/* ── Inline code ── */
+[data-sdm-scope] .adf-editor-content code,
+[data-sdm-scope] .ProseMirror code {
+  background: #F4F5F7;
+  border-radius: 3px;
+  padding: 2px 4px;
+  font-family: 'JetBrains Mono', 'SFMono-Regular', Consolas, monospace;
+  font-size: 12px;
+  color: #E5493A;
+}
+
+/* ── Blockquotes ── */
+[data-sdm-scope] .adf-editor-content blockquote,
+[data-sdm-scope] .ProseMirror blockquote {
+  border-left: 3px solid #DFE1E6;
+  margin: 8px 0;
+  padding: 4px 16px;
+  color: #42526E;
+}
+
+/* ── Horizontal rule ── */
+[data-sdm-scope] .adf-editor-content hr,
+[data-sdm-scope] .ProseMirror hr {
+  border: none;
+  border-top: 1px solid #DFE1E6;
+  margin: 16px 0;
+}
+
+/* ── Lists ── */
+[data-sdm-scope] .adf-editor-content ul,
+[data-sdm-scope] .adf-editor-content ol,
+[data-sdm-scope] .ProseMirror ul,
+[data-sdm-scope] .ProseMirror ol {
+  margin: 4px 0;
+  padding-left: 24px;
+}
+[data-sdm-scope] .adf-editor-content li,
+[data-sdm-scope] .ProseMirror li {
+  margin: 2px 0;
+  line-height: 1.6;
+}
+[data-sdm-scope] .adf-editor-content li p,
+[data-sdm-scope] .ProseMirror li p {
+  margin: 0;
+}
+
+/* ── Headings ── */
+[data-sdm-scope] .adf-editor-content h1 { font-size: 24px; font-weight: 700; margin: 20px 0 8px; color: #172B4D; }
+[data-sdm-scope] .adf-editor-content h2 { font-size: 20px; font-weight: 700; margin: 16px 0 6px; color: #172B4D; }
+[data-sdm-scope] .adf-editor-content h3 { font-size: 16px; font-weight: 600; margin: 14px 0 6px; color: #172B4D; }
+[data-sdm-scope] .adf-editor-content h4 { font-size: 14px; font-weight: 600; margin: 12px 0 4px; color: #172B4D; }
+[data-sdm-scope] .adf-editor-content h5 { font-size: 13px; font-weight: 600; margin: 10px 0 4px; color: #172B4D; }
+[data-sdm-scope] .adf-editor-content h6 { font-size: 12px; font-weight: 600; margin: 10px 0 4px; color: #6B778C; }
+
+/* ── Panels (info, note, warning, success, error) ── */
+[data-sdm-scope] .adf-panel {
+  display: flex;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: 4px;
+  margin: 8px 0;
+  font-size: 14px;
+  line-height: 1.6;
+}
+[data-sdm-scope] .adf-panel-icon {
+  flex-shrink: 0;
+  font-size: 16px;
+  line-height: 1.6;
+}
+[data-sdm-scope] .adf-panel-content { flex: 1; min-width: 0; }
+[data-sdm-scope] .adf-panel-content p { margin: 0; }
+
+[data-sdm-scope] .adf-panel--info    { background: #DEEBFF; border-left: 3px solid #0052CC; }
+[data-sdm-scope] .adf-panel--note    { background: #EAE6FF; border-left: 3px solid #6554C0; }
+[data-sdm-scope] .adf-panel--warning { background: #FFFAE6; border-left: 3px solid #FF8B00; }
+[data-sdm-scope] .adf-panel--success { background: #E3FCEF; border-left: 3px solid #00875A; }
+[data-sdm-scope] .adf-panel--error   { background: #FFEBE6; border-left: 3px solid #DE350B; }
+
+/* ── Expand / collapse ── */
+[data-sdm-scope] .adf-expand {
+  border: 1px solid #DFE1E6;
+  border-radius: 4px;
+  margin: 8px 0;
+}
+[data-sdm-scope] .adf-expand summary {
+  padding: 8px 12px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  color: #172B4D;
+  background: #FAFBFC;
+  border-radius: 4px;
+  user-select: none;
+}
+[data-sdm-scope] .adf-expand summary:hover { background: #F4F5F7; }
+[data-sdm-scope] .adf-expand-content { padding: 8px 12px; }
+
+/* ── Task lists (checkboxes) ── */
+[data-sdm-scope] .adf-task-list {
+  list-style: none;
+  padding-left: 0;
+  margin: 4px 0;
+}
+[data-sdm-scope] .adf-task-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 4px 0;
+}
+[data-sdm-scope] .adf-task-item input[type="checkbox"] {
+  margin-top: 4px;
+  width: 14px;
+  height: 14px;
+  accent-color: #0052CC;
+  flex-shrink: 0;
+}
+
+/* ── Decision lists ── */
+[data-sdm-scope] .adf-decision-list {
+  margin: 8px 0;
+}
+[data-sdm-scope] .adf-decision-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px 12px;
+  background: #FFFAE6;
+  border-radius: 4px;
+  margin: 4px 0;
+  font-size: 14px;
+  line-height: 1.6;
+}
+[data-sdm-scope] .adf-decision-icon {
+  color: #FF8B00;
+  font-size: 14px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* ── Mentions ── */
+[data-sdm-scope] .adf-mention {
+  color: #0052CC;
+  background: #DEEBFF;
+  padding: 1px 4px;
+  border-radius: 3px;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+/* ── Status lozenges ── */
+[data-sdm-scope] .adf-status {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 2px 6px;
+  border-radius: 3px;
+  vertical-align: baseline;
+}
+[data-sdm-scope] .adf-status--neutral  { background: #DFE1E6; color: #253858; }
+[data-sdm-scope] .adf-status--blue     { background: #DEEBFF; color: #0747A6; }
+[data-sdm-scope] .adf-status--green    { background: #E3FCEF; color: #006644; }
+[data-sdm-scope] .adf-status--yellow   { background: #FFFAE6; color: #172B4D; }
+[data-sdm-scope] .adf-status--red      { background: #FFEBE6; color: #BF2600; }
+[data-sdm-scope] .adf-status--purple   { background: #EAE6FF; color: #403294; }
+
+/* ── Dates ── */
+[data-sdm-scope] .adf-date {
+  display: inline-block;
+  background: #EBECF0;
+  color: #172B4D;
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* ── Layout sections (multi-column) ── */
+[data-sdm-scope] .adf-layout-section {
+  display: flex;
+  gap: 16px;
+  margin: 8px 0;
+}
+[data-sdm-scope] .adf-layout-column {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ── Media placeholder ── */
+[data-sdm-scope] .adf-media-placeholder {
+  color: #6B778C;
+  font-style: italic;
+}
+
+/* ── Emoji ── */
+[data-sdm-scope] .adf-emoji {
+  font-size: 16px;
+}
+
+/* ── Annotation (inline comments marker) ── */
+[data-sdm-scope] .adf-annotation {
+  background: #FFFAE6;
+  border-bottom: 2px solid #FF8B00;
+}
+
+/* ── Paragraph spacing within editor content ── */
+[data-sdm-scope] .adf-editor-content p,
+[data-sdm-scope] .ProseMirror p {
+  margin: 4px 0;
 }
 
 /* ════════════════════════════════════════════════════════════════

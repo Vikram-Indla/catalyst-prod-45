@@ -1054,7 +1054,7 @@ export default function StoryDetailModal({
                   <div style={{ marginBottom: 24 }}>
                     <div style={{ fontSize: 13, fontWeight: 700, color: '#172B4D', marginBottom: 10 }}>Acceptance Criteria</div>
                     <StoryRichTextEditor
-                      content={acceptanceCriteria || ''}
+                      content={(() => { const { tryAdfStringToHtml } = require('../../utils/adfToHtml'); return tryAdfStringToHtml(acceptanceCriteria) ?? acceptanceCriteria ?? ''; })()}
                       onSave={(adfJson) => { setAcceptanceCriteria(adfJson); supabase.from('ph_issues').update({ acceptance_criteria: adfJson }).eq('id', itemId).then(() => { queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] }); }); }}
                       placeholder="No acceptance criteria defined · Add manually or use AI →"
                       minHeight={80}
