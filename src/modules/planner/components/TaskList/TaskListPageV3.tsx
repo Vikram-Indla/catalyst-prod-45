@@ -81,8 +81,8 @@ const VIRTUALIZE_THRESHOLD = 50;
 
 function VirtualizedTaskBody({ tasks, parentRef, selectedIds, focusedIndex, onSelect, onClick, onUpdate, visibleColumns, columnWidths, statuses, users, labelsMap }: {
   tasks: any[]; parentRef: React.RefObject<HTMLDivElement>; selectedIds: Set<string>; focusedIndex: number;
-  onSelect: (id: string, checked: boolean) => void; onClick: (id: string) => void; onUpdate: (id: string, updates: any) => void;
-  visibleColumns: string[]; columnWidths: Record<string, number>; statuses: any[]; users: any[]; labelsMap: Record<string, any[]>;
+  onSelect: (id: string) => void; onClick: (task: any) => void; onUpdate: (taskId: string, field: string, value: any) => void;
+  visibleColumns: Set<string>; columnWidths: Record<string, number>; statuses: any[]; users: any[]; labelsMap: Record<string, any[]>;
 }) {
   const virtualizer = useVirtualizer({
     count: tasks.length,
