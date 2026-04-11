@@ -469,3 +469,39 @@
   0%, 100% { opacity: 1; }
   50% { opacity: 0.5; }
 }
+
+/* ════════════════════════════════════════════════════════════════
+   ADF RICH TEXT TABLE STYLES — Jira parity (full-page view)
+   Applied to .adf-editor-content outside [data-sdm-scope]
+   ════════════════════════════════════════════════════════════════ */
+
+.adf-editor-content table {
+  border: 0.556px solid #DDDEE1;
+  border-collapse: collapse;
+  font-size: 14px;
+  width: 100%;
+  margin: 8px 0;
+}
+
+.adf-editor-content table th {
+  background: #F0F1F2;
+  color: #292A2E;
+  font-size: 14px;
+  font-weight: 400;
+  padding: 8px;
+  text-align: left;
+  vertical-align: top;
+  border-top: 0.556px solid #DDDEE1;
+  border-left: 0.556px solid #DDDEE1;
+}
+
+.adf-editor-content table td {
+  background: #FFFFFF;
+  color: #292A2E;
+  font-size: 14px;
+  font-weight: 400;
+  padding: 8px;
+  vertical-align: top;
+  border-top: 0.556px solid #DDDEE1;
+  border-left: 0.556px solid #DDDEE1;
+}

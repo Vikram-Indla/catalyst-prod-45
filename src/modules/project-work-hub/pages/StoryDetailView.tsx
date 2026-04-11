@@ -340,9 +340,9 @@ export default function StoryDetailView({ projectId, projectKey, itemId }: Story
             )}
           </div>
 
-          {/* ── Description (ADF editor) ── */}
+          {/* ── Description (Jira parity: h2 label, hover bg, rich text table) ── */}
           <div style={{ padding: '0 32px 24px' }}>
-            <div style={{ ...SECTION_HEADING, marginBottom: 8 }}>Description</div>
+            <h2 style={{ fontSize: 14, fontWeight: 500, color: '#505258', lineHeight: '18.67px', margin: '0 0 8px 0', padding: 0 }}>Description</h2>
             {editingDesc ? (
               <StoryRichTextEditor
                 content={adfToHtml((story as any).description_adf) || story.description_text || ''}
@@ -352,8 +352,16 @@ export default function StoryDetailView({ projectId, projectKey, itemId }: Story
               />
             ) : (
               <div onClick={() => setEditingDesc(true)}
-                style={{ fontSize: 14, lineHeight: 1.6, color: story.description_text ? '#292A2E' : '#6B6E76', fontStyle: story.description_text ? 'normal' : 'italic', cursor: 'text', minHeight: 40, padding: '8px 0' }}
-                className="adf-editor-content">
+                style={{
+                  fontSize: 14, lineHeight: '20px', color: story.description_text || (story as any).description_adf ? '#292A2E' : '#6B6E76',
+                  fontStyle: story.description_text || (story as any).description_adf ? 'normal' : 'italic',
+                  fontWeight: 400, cursor: 'pointer', minHeight: 40, padding: 4, borderRadius: 4,
+                  transition: 'background 150ms ease',
+                }}
+                className="adf-editor-content jira-desc-hover"
+                onMouseEnter={e => { e.currentTarget.style.background = '#F8F8F8'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+              >
                 {story.description_text || (story as any).description_adf ? (
                   <div dangerouslySetInnerHTML={{ __html: adfToHtml((story as any).description_adf) || resolveDisplayHtml(story.description_text) }} />
                 ) : 'Add a description...'}
@@ -361,9 +369,9 @@ export default function StoryDetailView({ projectId, projectKey, itemId }: Story
             )}
           </div>
 
-          {/* ── Acceptance Criteria (ADF editor) ── */}
+          {/* ── Acceptance Criteria (Jira parity: h2 label, hover bg) ── */}
           <div style={{ padding: '0 32px 24px' }}>
-            <div style={{ ...SECTION_HEADING, marginBottom: 8 }}>Acceptance Criteria</div>
+            <h2 style={{ fontSize: 14, fontWeight: 500, color: '#505258', lineHeight: '18.67px', margin: '0 0 8px 0', padding: 0 }}>Acceptance Criteria</h2>
             {editingAC ? (
               <StoryRichTextEditor
                 content={tryAdfStringToHtml((story as any).acceptance_criteria) ?? (story as any).acceptance_criteria ?? ''}
@@ -374,7 +382,15 @@ export default function StoryDetailView({ projectId, projectKey, itemId }: Story
               />
             ) : (
               <div onClick={() => setEditingAC(true)}
-                style={{ fontSize: 14, lineHeight: 1.6, color: (story as any).acceptance_criteria ? '#292A2E' : '#6B6E76', fontStyle: (story as any).acceptance_criteria ? 'normal' : 'italic', cursor: 'text', minHeight: 40, padding: '8px 0' }}>
+                style={{
+                  fontSize: 14, lineHeight: '20px', color: (story as any).acceptance_criteria ? '#292A2E' : '#6B6E76',
+                  fontStyle: (story as any).acceptance_criteria ? 'normal' : 'italic',
+                  fontWeight: 400, cursor: 'pointer', minHeight: 40, padding: 4, borderRadius: 4,
+                  transition: 'background 150ms ease',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.background = '#F8F8F8'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+              >
                 {(story as any).acceptance_criteria ? (
                   <div dangerouslySetInnerHTML={{ __html: resolveDisplayHtml((story as any).acceptance_criteria) }} />
                 ) : 'Add acceptance criteria...'}
