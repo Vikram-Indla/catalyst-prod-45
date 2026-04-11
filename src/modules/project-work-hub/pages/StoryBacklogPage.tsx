@@ -84,7 +84,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
   const [filterPanelOpen, setFilterPanelOpen] = useState(false);
   const [advancedFilters, setAdvancedFilters] = useState<Record<string, string[]>>({});
   const [searchQuery, setSearchQuery] = useState('');
-  const [searchFocused, setSearchFocused] = useState(false);
+  
 
   // ── Build filter categories from story data ──
   const filterCategories = useMemo<FilterCategory[]>(() => {
@@ -460,13 +460,11 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
       {/* ── Search + Filter bar (Defects-style) ── */}
       <div className="flex items-center gap-3 px-6 py-2.5 border-b" style={{ borderColor: tk.border }}>
         {/* Search input */}
-        <div className={`relative transition-all duration-200 ${searchFocused ? 'w-80' : 'w-64'}`}>
+        <div className="relative w-80">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: tk.t3 }} />
           <Input
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            onFocus={() => setSearchFocused(true)}
-            onBlur={() => setSearchFocused(false)}
             placeholder="Search by title, key, Jira ID..."
             className="h-9 pl-9 pr-3 text-sm"
             style={{ borderColor: tk.border, background: tk.pageBg, color: tk.t1 }}
