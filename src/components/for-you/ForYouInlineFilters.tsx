@@ -75,11 +75,11 @@ function FilterDropdown({ label, value, options, onChange, variant = 'default', 
         style={{
           display: 'inline-flex', alignItems: 'center', gap: 6,
           height: 34, padding: '0 14px', borderRadius: 8,
-          fontSize: 13, fontWeight: value ? 600 : 500,
+          fontSize: 14, fontWeight: value ? 600 : 500,
           transition: 'all 0.15s',
           border: value ? '1px solid var(--cp-blue)' : '1px solid var(--cp-bd)',
           background: value ? 'var(--cp-blue-wash)' : 'var(--cp-bg)',
-          color: value ? 'var(--cp-blue-text)' : 'var(--cp-t2)',
+          color: value ? 'var(--cp-blue-text)' : 'var(--cp-t1)',
           cursor: 'pointer',
         }}
       >
@@ -144,7 +144,7 @@ function FilterDropdown({ label, value, options, onChange, variant = 'default', 
             style={{
               display: 'flex', alignItems: 'center', justifyContent: 'space-between',
               width: '100%', textAlign: 'left', padding: '10px 12px',
-              borderRadius: 8, fontSize: 13,
+              borderRadius: 8, fontSize: 14,
               fontWeight: !value ? 600 : 500,
               color: !value ? 'var(--cp-blue-text)' : 'var(--cp-t1)',
               background: !value ? 'var(--cp-blue-wash)' : 'transparent',
@@ -167,7 +167,7 @@ function FilterDropdown({ label, value, options, onChange, variant = 'default', 
                 style={{
                   display: 'flex', alignItems: 'center', gap: 10, width: '100%',
                   textAlign: 'left', padding: '10px 12px', borderRadius: 8,
-                  fontSize: 13, fontWeight: isSelected ? 600 : 500,
+                  fontSize: 14, fontWeight: isSelected ? 600 : 500,
                   color: isSelected ? 'var(--cp-blue-text)' : 'var(--cp-t1)',
                   background: isSelected ? 'var(--cp-blue-wash)' : 'transparent',
                   border: 'none', cursor: 'pointer',
@@ -208,15 +208,11 @@ function FilterDropdown({ label, value, options, onChange, variant = 'default', 
 }
 
 export function ForYouInlineFilters({ filters, onFiltersChange, projectOptions, hubOptions, reportedByOptions }: ForYouInlineFiltersProps) {
-  const activeCount = [filters.project, filters.hub, filters.reportedBy].filter(Boolean).length;
-
   return (
     <div className="fy-controls" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, position: 'relative' }}>
-      <FilterDropdown label="Project" value={filters.project} options={projectOptions} onChange={v => onFiltersChange({ ...filters, project: v })} />
       <FilterDropdown label="Hub" value={filters.hub} options={hubOptions} onChange={v => onFiltersChange({ ...filters, hub: v })} variant="hub" />
-      <FilterDropdown label="Reported by" value={filters.reportedBy} options={reportedByOptions} onChange={v => onFiltersChange({ ...filters, reportedBy: v })} variant="reporter" alignRight />
 
-      {activeCount > 0 && (
+      {filters.hub && (
         <button
           onClick={() => onFiltersChange({ project: null, hub: null, reportedBy: null })}
           style={{
