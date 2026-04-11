@@ -16,6 +16,7 @@ import { AssignTesterModal } from '@/components/testhub/AssignTesterModal';
 import { QuickExecutionModal } from '@/components/testhub/QuickExecutionModal';
 import { useTheme } from '@/hooks/useTheme';
 import { useDefectsByCycleId } from '@/hooks/useDefectsG25';
+import { EntityCommentsPanel } from '@/components/testhub/EntityCommentsPanel';
 
 interface TestCycle {
   id: string;
@@ -699,6 +700,13 @@ export default function TestCycleDetailPage() {
           <Bug size={18} /> Linked Defects
         </h2>
         <CycleDefectsPanel cycleId={cycleId} isDark={isDark} />
+      </div>
+
+      {/* Comments */}
+      <div style={{ padding: '0 32px 24px' }}>
+        <div style={{ backgroundColor: isDark ? '#1A1A1A' : '#FFF', borderRadius: 12, padding: 24, border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0' }}>
+          <EntityCommentsPanel entityType="test_cycle" entityId={cycle?.id} title="Cycle Comments" />
+        </div>
       </div>
 
       <AddTestCasesModal

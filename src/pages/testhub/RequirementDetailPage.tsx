@@ -19,6 +19,7 @@ import {
 } from '@/components/ui/select';
 import { useTheme } from '@/hooks/useTheme';
 import { useDefectsByRequirementId } from '@/hooks/useDefectsG25';
+import { EntityCommentsPanel } from '@/components/testhub/EntityCommentsPanel';
 
 interface Requirement {
   id: string;
@@ -363,6 +364,11 @@ export default function RequirementDetailPage() {
           </h3>
         </div>
         <RequirementDefectsPanel requirementId={requirementId} />
+      </div>
+
+      {/* Comments */}
+      <div style={{ backgroundColor: isDark ? '#1A1A1A' : '#FFF', borderRadius: 12, padding: 24, border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0', marginTop: 24 }}>
+        <EntityCommentsPanel entityType="requirement" entityId={requirement?.id} title="Requirement Comments" />
       </div>
 
       {showLinkModal && (
