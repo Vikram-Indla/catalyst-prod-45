@@ -49,8 +49,8 @@ export function useSyncConnection() {
 
       return null;
     },
-    refetchInterval: 30000,
-    staleTime: 15_000,
+    refetchInterval: 60_000,
+    staleTime: 30_000,
   });
 }
 
@@ -76,8 +76,8 @@ export function useSyncHealthLatest() {
         .maybeSingle();
       return data;
     },
-    refetchInterval: 30000,
-    staleTime: 15_000,
+    refetchInterval: 60_000,
+    staleTime: 30_000,
   });
 }
 
@@ -144,7 +144,8 @@ export function JiraSyncPanel() {
       } catch (e) { console.error('Sync stats error:', e); }
       return results;
     },
-    refetchInterval: 30000,
+    refetchInterval: 60_000,
+    staleTime: 30_000,
   });
 
   const handleSyncNow = async () => {

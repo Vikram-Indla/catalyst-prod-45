@@ -77,8 +77,8 @@ export function useWorkspaceAccess() {
       if (error) throw error;
       return data || [];
     },
-    staleTime: 10 * 1000, // Cache for 10 seconds for quicker refresh
-    refetchOnWindowFocus: true,
+    staleTime: 2 * 60_000,
+    refetchOnWindowFocus: false,
   });
 
   // Fetch all projects - NO dependency on memberships (calculate access after)

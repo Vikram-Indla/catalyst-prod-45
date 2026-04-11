@@ -17,7 +17,7 @@ export function useOpenIncidentCount() {
       if (error) throw error;
       return count || 0;
     },
-    staleTime: 30_000, // Refresh every 30 seconds
-    refetchInterval: 60_000,
+    staleTime: 30_000,
+    refetchInterval: 2 * 60_000,
   });
 }

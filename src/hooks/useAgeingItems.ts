@@ -82,8 +82,8 @@ export function useAgeingItems() {
   // Step B: fetch ageing items only when myJiraId is confirmed
   return useQuery({
     queryKey: ["ageing-items", user?.id, myJiraId],
-    staleTime: 0,
-    refetchOnWindowFocus: true,
+    staleTime: 60_000,
+    refetchOnWindowFocus: false,
     enabled: !!user?.id && !!myJiraId,
     queryFn: async (): Promise<AgeingItem[]> => {
       if (!myJiraId) return [];

@@ -71,7 +71,7 @@ export interface WorkItemTreeNode {
   isExpanded?: boolean;
 }
 
-const QUERY_OPTIONS = { staleTime: 30_000, refetchInterval: 60_000 };
+const QUERY_OPTIONS = { staleTime: 60_000, refetchInterval: 2 * 60_000 };
 
 function buildFilteredQuery(baseQuery: any, filters?: Partial<WorkItemFilterConfig>) {
   let q = baseQuery;

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback, useMemo } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -97,7 +97,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
-  const signIn = async (email: string, password: string) => {
+  const signIn = useCallback(async (email: string, password: string) => {
     try {
       // Use the secure login edge function with rate limiting and audit logging
       const { data, error: invokeError } = await supabase.functions.invoke('login-with-audit', {
@@ -157,9 +157,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
       return { error };
     }
-  };
+  }, [toast]);
 
-  const signUp = async (email: string, password: string, fullName?: string) => {
+  const signUp = useCallback(async (email: string, password: string, fullName?: string) => {
     try {
       // Use direct fetch to call edge function
       const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
@@ -230,14 +230,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       };
     } catch (error: any) {
       // Only true network errors reach here
-      return { 
+      return {
         error: { message: 'Something went wrong. Please try again.', code: 'NETWORK_ERROR' },
         code: 'NETWORK_ERROR'
       };
     }
-  };
+  }, [toast]);
 
-  const signOut = async () => {
+  const signOut = useCallback(async () => {
     try {
       await supabase.auth.signOut();
       toast({
@@ -251,10 +251,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         variant: "destructive",
       });
     }
-  };
+  }, [toast]);
+
+  const value = useMemo(() => ({ user, session, signIn, signUp, signOut, loading }), [user, session, signIn, signUp, signOut, loading]);
 
   return (
-    <AuthContext.Provider value={{ user, session, signIn, signUp, signOut, loading }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );

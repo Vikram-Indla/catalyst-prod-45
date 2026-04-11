@@ -79,8 +79,8 @@ export function useCommandCenterKPIs(projectId: string) {
         },
       };
     },
-    refetchInterval: 30000, // Auto-refresh every 30s
-    staleTime: 15000,
+    refetchInterval: 60_000,
+    staleTime: 30_000,
   });
 }
 
@@ -115,8 +115,8 @@ export function useReleaseHealthGrid(projectId: string) {
       if (error) throw new Error(error.message);
       return (data as any[]) || [];
     },
-    refetchInterval: 30000,
-    staleTime: 15000,
+    refetchInterval: 60_000,
+    staleTime: 30_000,
   });
 
   return { releases: query.data || [], isLoading: query.isLoading, error: query.error };

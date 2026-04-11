@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, useState, useCallback, useMemo, ReactNode } from 'react';
 
 interface AdminSidebarContextType {
   expanded: boolean;
@@ -11,10 +11,12 @@ const AdminSidebarContext = createContext<AdminSidebarContextType | undefined>(u
 export function AdminSidebarProvider({ children }: { children: ReactNode }) {
   const [expanded, setExpanded] = useState(true);
 
-  const collapse = () => setExpanded(false);
+  const collapse = useCallback(() => setExpanded(false), []);
+
+  const value = useMemo(() => ({ expanded, setExpanded, collapse }), [expanded, collapse]);
 
   return (
-    <AdminSidebarContext.Provider value={{ expanded, setExpanded, collapse }}>
+    <AdminSidebarContext.Provider value={value}>
       {children}
     </AdminSidebarContext.Provider>
   );

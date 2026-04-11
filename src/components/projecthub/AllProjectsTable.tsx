@@ -529,8 +529,8 @@ export function AllProjectsTable({
 
       return { countMap, lastSyncAt: effectiveSyncAt, syncedProjectKeys };
     },
-    refetchInterval: 30000,
-    staleTime: 15_000,
+    refetchInterval: 60_000,
+    staleTime: 30_000,
   });
 
   const renderProjectCell = (colKey: string, p: ProjectListItem, idx: number) => {

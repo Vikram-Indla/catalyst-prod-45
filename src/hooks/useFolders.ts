@@ -37,8 +37,8 @@ export function useFolderTree(projectId: string | undefined) {
       return result;
     },
     enabled: !!projectId,
-    staleTime: 0, // Always refetch to ensure fresh data
-    refetchOnWindowFocus: true,
+    staleTime: 30_000,
+    refetchOnWindowFocus: false,
   });
 
   // Subscribe to real-time changes

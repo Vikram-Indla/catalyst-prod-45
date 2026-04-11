@@ -33,9 +33,9 @@ export function useBoardData(projectId: string, filters?: BoardFilters) {
     queryKey: boardKeys.data(projectId, filters),
     queryFn: () => getBoardData(projectId, filters),
     enabled: !!projectId,
-    refetchInterval: 30000, // Refresh every 30 seconds
+    refetchInterval: 60_000,
     refetchIntervalInBackground: false,
-    staleTime: 30000, // Data is fresh for 30 seconds
+    staleTime: 60_000,
     refetchOnMount: false,
     refetchOnWindowFocus: false,
   });

@@ -36,7 +36,7 @@ export function useWorkItemPresence(workItemType: string, workItemId: string) {
       if (error) throw error;
       return data as PresenceUser[];
     },
-    refetchInterval: 30000, // Refetch every 30 seconds
+    refetchInterval: 60_000,
   });
 
   // Subscribe to realtime presence changes

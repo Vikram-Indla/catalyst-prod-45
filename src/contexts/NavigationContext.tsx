@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, useMemo, ReactNode } from 'react';
 
 /**
  * Navigation Context for Catalyst-style persistent scope and time filters
@@ -91,29 +91,29 @@ export function NavigationProvider({ children }: { children: ReactNode }) {
     }
   }, [selectedPIIds]);
   
-  const resetFilters = () => {
+  const resetFilters = useCallback(() => {
     setSelectedProgramId(null);
     setSelectedProjectId(null);
     setSelectedTeamId(null);
     setSelectedPIIds([]);
-  };
-  
+  }, []);
+
+  const value = useMemo(() => ({
+    currentRoom,
+    setCurrentRoom,
+    selectedProgramId,
+    setSelectedProgramId,
+    selectedProjectId,
+    setSelectedProjectId,
+    selectedTeamId,
+    setSelectedTeamId,
+    selectedPIIds,
+    setSelectedPIIds,
+    resetFilters,
+  }), [currentRoom, selectedProgramId, selectedProjectId, selectedTeamId, selectedPIIds, resetFilters]);
+
   return (
-    <NavigationContext.Provider
-      value={{
-        currentRoom,
-        setCurrentRoom,
-        selectedProgramId,
-        setSelectedProgramId,
-        selectedProjectId,
-        setSelectedProjectId,
-        selectedTeamId,
-        setSelectedTeamId,
-        selectedPIIds,
-        setSelectedPIIds,
-        resetFilters,
-      }}
-    >
+    <NavigationContext.Provider value={value}>
       {children}
     </NavigationContext.Provider>
   );

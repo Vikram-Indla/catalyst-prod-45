@@ -32,7 +32,7 @@ export const useJiraSyncRuns = () =>
   useQuery({
     queryKey: K.runs,
     queryFn: svc.fetchSyncRuns,
-    refetchInterval: 10_000,
+    refetchInterval: 30_000,
   });
 
 export const useJiraUserDetail = (id: string | null) =>

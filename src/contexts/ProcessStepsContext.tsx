@@ -59,8 +59,8 @@ export function ProcessStepsProvider({ children }: ProcessStepsProviderProps) {
       if (error) throw error;
       return data as ProcessStep[];
     },
-    staleTime: 30 * 1000, // 30 seconds - shorter for real-time color updates
-    refetchOnWindowFocus: true,
+    staleTime: 2 * 60_000,
+    refetchOnWindowFocus: false,
   });
 
   // Build lookup map for O(1) access
@@ -115,14 +115,14 @@ export function ProcessStepsProvider({ children }: ProcessStepsProviderProps) {
     [getProcessStepLabel, getProcessStepColor]
   );
 
-  const contextValue: ProcessStepsContextValue = {
+  const contextValue = useMemo<ProcessStepsContextValue>(() => ({
     processSteps,
     processStepOptions,
     getProcessStepLabel,
     getProcessStepColor,
     getProcessStepInfo,
     isLoading,
-  };
+  }), [processSteps, processStepOptions, getProcessStepLabel, getProcessStepColor, getProcessStepInfo, isLoading]);
 
   return (
     <ProcessStepsContext.Provider value={contextValue}>

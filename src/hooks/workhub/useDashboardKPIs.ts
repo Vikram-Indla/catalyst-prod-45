@@ -16,6 +16,6 @@ export function useDashboardKPIs() {
       if (error) throw new Error(error.message);
       return data as unknown as DashboardKPIs;
     },
-    staleTime: 15_000,
+    staleTime: 30_000,
   });
 }

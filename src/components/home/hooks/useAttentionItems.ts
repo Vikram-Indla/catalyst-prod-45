@@ -172,8 +172,8 @@ export function useAttentionItems(userCtx: UserContext | undefined) {
       return results.slice(0, 5);
     },
     enabled: !!userCtx,
-    staleTime: 30 * 1000,
-    refetchOnWindowFocus: true,
-    refetchInterval: 60 * 1000,
+    staleTime: 60_000,
+    refetchOnWindowFocus: false,
+    refetchInterval: 2 * 60_000,
   });
 }

@@ -37,8 +37,8 @@ export function useProjects() {
       // Exclude the TestHub default project from ProjectHub listing
       return ((data ?? []) as ProjectListItem[]).filter(p => p.project_key !== 'TH-DEFAULT');
     },
-    staleTime: 30_000,
-    refetchOnWindowFocus: true,
+    staleTime: 60_000,
+    refetchOnWindowFocus: false,
   });
 }
 
