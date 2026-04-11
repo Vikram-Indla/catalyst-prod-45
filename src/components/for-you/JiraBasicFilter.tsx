@@ -291,7 +291,7 @@ function OptionAvatar({ option }: { option: FilterOption }) {
 function CheckboxSVG({ checked }: { checked: boolean }) {
   return (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="jf-checkbox-svg"
-      style={{ color: checked ? 'rgb(24, 104, 219)' : 'rgba(5, 21, 36, 0.06)' }}
+      style={{ color: checked ? 'rgb(24, 104, 219)' : 'rgba(9, 30, 66, 0.14)' }}
     >
       <g fillRule="evenodd">
         <rect x="5.5" y="5.5" width="13" height="13" rx="1.5" fill="currentColor" />
