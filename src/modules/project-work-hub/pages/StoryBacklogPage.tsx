@@ -16,6 +16,8 @@ import { toast } from 'sonner';
 import { useTheme } from '@/hooks/useTheme';
 import { DK, LK } from '@/utils/dark-mode-styles';
 import type { BacklogStory } from '../types/backlog.types';
+import { FilterTriggerButton, JiraBasicFilter } from '@/components/shared/JiraBasicFilter';
+import type { FilterCategory } from '@/components/shared/JiraBasicFilter';
 
 const StoryDetailModal = lazy(() => import('../components/dialogs/StoryDetailModal'));
 
@@ -78,6 +80,94 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
   const [detailItemId, setDetailItemId] = useState<string | null>(null);
   const [panelMode, setPanelMode] = useState(false);
   const [panelDividerWidth, setPanelDividerWidth] = useState(55);
+  const [filterPanelOpen, setFilterPanelOpen] = useState(false);
+  const [advancedFilters, setAdvancedFilters] = useState<Record<string, string[]>>({});
+
+  // ── Build filter categories from story data ──
+  const filterCategories = useMemo<FilterCategory[]>(() => {
+    const allStories = stories || [];
+
+    // Status — dedupe from actual data
+    const statusSet = new Map<string, string>();
+    allStories.forEach(s => {
+      if (s.status) {
+        const cfg = STORY_STATUS_LOZENGE[s.status];
+        statusSet.set(s.status, cfg?.label || s.status);
+      }
+    });
+    const statusOptions = Array.from(statusSet.entries()).map(([value, label]) => ({
+      id: value,
+      label,
+      iconNode: (() => {
+        const cfg = STORY_STATUS_LOZENGE[value];
+        if (!cfg) return undefined;
+        const ls = getLozengeStyle(cfg.color);
+        return (
+          <span style={{
+            display: 'inline-flex', alignItems: 'center', height: 18, padding: '0 5px',
+            borderRadius: 3, fontSize: 10, fontWeight: 700, textTransform: 'uppercase' as const,
+            letterSpacing: '0.03em', background: ls.bg, color: ls.text, lineHeight: 1,
+          }}>{cfg.label}</span>
+        );
+      })(),
+      hideLabel: true,
+    }));
+
+    // Priority
+    const prioritySet = new Set<string>();
+    allStories.forEach(s => { if (s.priority) prioritySet.add(s.priority); });
+    const PRIORITY_ORDER = ['critical', 'highest', 'high', 'medium', 'low', 'lowest'];
+    const priorityOptions = PRIORITY_ORDER
+      .filter(p => prioritySet.has(p))
+      .map(p => ({ id: p, label: getPriorityLabel(p) }));
+
+    // Assignee
+    const assigneeMap = new Map<string, { name: string; avatarUrl?: string }>();
+    allStories.forEach(s => {
+      const name = s.assignee_name;
+      if (name && !assigneeMap.has(name)) {
+        assigneeMap.set(name, { name, avatarUrl: avatarsByName.get(name.toLowerCase()) || undefined });
+      }
+    });
+    const assigneeOptions = Array.from(assigneeMap.values())
+      .sort((a, b) => a.name.localeCompare(b.name))
+      .map(a => ({
+        id: a.name,
+        label: a.name,
+        avatarUrl: a.avatarUrl,
+        avatarInitials: !a.avatarUrl ? getInitials(a.name) : undefined,
+        avatarType: (a.avatarUrl ? 'photo' : 'initials') as 'photo' | 'initials',
+      }));
+
+    // Parent Epic
+    const epicMap = new Map<string, { key: string; name: string }>();
+    allStories.forEach(s => {
+      const epic = s.feature?.epic;
+      if (epic && !epicMap.has(epic.id)) {
+        epicMap.set(epic.id, { key: epic.epic_key || '', name: epic.name });
+      }
+    });
+    const parentOptions = Array.from(epicMap.entries())
+      .sort((_, b) => b[1].name.localeCompare(b[1].name))
+      .map(([id, e]) => ({ id, label: e.name, labelExtra: e.key || undefined }));
+
+    return [
+      { id: 'status', label: 'Status', options: statusOptions, searchPlaceholder: 'Search statuses' },
+      { id: 'priority', label: 'Priority', options: priorityOptions, searchPlaceholder: 'Search priorities' },
+      { id: 'assignee', label: 'Assignee', options: assigneeOptions, searchPlaceholder: 'Search people' },
+      { id: 'parent', label: 'Parent (Epic)', options: parentOptions, searchPlaceholder: 'Search epics' },
+    ];
+  }, [stories, avatarsByName]);
+
+  const advancedFilterCount = useMemo(() => Object.values(advancedFilters).flat().length, [advancedFilters]);
+
+  const handleFilterChange = useCallback((categoryId: string, optionIds: string[]) => {
+    setAdvancedFilters(prev => ({ ...prev, [categoryId]: optionIds }));
+  }, []);
+
+  const handleClearAllFilters = useCallback(() => {
+    setAdvancedFilters({});
+  }, []);
 
   // Resizable panel divider
   const containerRef = useRef<HTMLDivElement>(null);
@@ -111,7 +201,18 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
     };
   }, []);
 
-  const groups = useMemo(() => groupByStatus(stories || [], STORY_GROUP_ORDER), [stories]);
+  // Apply advanced filters before grouping
+  const filteredStories = useMemo(() => {
+    let result = stories || [];
+    const f = advancedFilters;
+    if (f.status?.length) result = result.filter(s => s.status && f.status.includes(s.status));
+    if (f.priority?.length) result = result.filter(s => s.priority && f.priority.includes(s.priority));
+    if (f.assignee?.length) result = result.filter(s => s.assignee_name && f.assignee.includes(s.assignee_name));
+    if (f.parent?.length) result = result.filter(s => s.feature?.epic && f.parent.includes(s.feature.epic.id));
+    return result;
+  }, [stories, advancedFilters]);
+
+  const groups = useMemo(() => groupByStatus(filteredStories, STORY_GROUP_ORDER), [filteredStories]);
 
   // Flat list of all visible stories for navigation
   const flatStories = useMemo(() => {
@@ -165,7 +266,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
 
   if (error) return <div className="h-full flex items-center justify-center" style={{ background: tk.pageBg, color: '#DC2626' }}>Error loading stories</div>;
 
-  const total = stories?.length || 0;
+  
 
   const renderBacklogList = (compact?: boolean) => (
     <>
@@ -319,6 +420,8 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
     </>
   );
 
+  const total = filteredStories.length;
+
   return (
     <div ref={containerRef} className="h-full flex flex-col" style={{ background: tk.pageBg }}>
       <div className="flex items-center justify-between px-6 py-3 border-b" style={{ borderColor: tk.border }}>
@@ -327,9 +430,29 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
           <h1 className="text-base font-semibold" style={{ color: tk.t1, fontWeight: 650 }}>Story Backlog</h1>
           <span className="text-xs" style={{ color: tk.t2 }}>{total} stories across {groups.length} groups</span>
         </div>
-        <Button onClick={() => setShowCreate(true)} size="sm" style={{ backgroundColor: '#2563EB', color: '#FFFFFF', borderRadius: 6 }}>
-          <Plus className="h-3.5 w-3.5 mr-1" /> Create Story
-        </Button>
+        <div className="flex items-center gap-2">
+          <div style={{ position: 'relative' }}>
+            <FilterTriggerButton
+              count={advancedFilterCount}
+              onClick={() => setFilterPanelOpen(p => !p)}
+              isOpen={filterPanelOpen}
+            />
+            {filterPanelOpen && (
+              <div style={{ position: 'absolute', top: '100%', right: 0, zIndex: 50, marginTop: 4 }}>
+                <JiraBasicFilter
+                  categories={filterCategories}
+                  selected={advancedFilters}
+                  onSelectionChange={handleFilterChange}
+                  onClearAll={handleClearAllFilters}
+                  onClose={() => setFilterPanelOpen(false)}
+                />
+              </div>
+            )}
+          </div>
+          <Button onClick={() => setShowCreate(true)} size="sm" style={{ backgroundColor: '#2563EB', color: '#FFFFFF', borderRadius: 6 }}>
+            <Plus className="h-3.5 w-3.5 mr-1" /> Create Story
+          </Button>
+        </div>
       </div>
 
       {panelMode && detailItemId ? (
