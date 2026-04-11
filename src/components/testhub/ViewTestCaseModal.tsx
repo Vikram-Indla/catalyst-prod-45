@@ -45,9 +45,15 @@ interface VersionHistory {
 
 interface Execution {
   id: string;
-  cycle_name: string;
   result: string;
   executed_at: string;
+  tm_cycle_scope?: {
+    id: string;
+    tm_test_cycles?: {
+      id: string;
+      name: string;
+    } | null;
+  } | null;
 }
 
 interface Attachment {
