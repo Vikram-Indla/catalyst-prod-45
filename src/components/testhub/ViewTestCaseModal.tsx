@@ -713,10 +713,9 @@ export function ViewTestCaseModal({
                     {[
                       { label: 'Automation Status', value: testCase.automation_status || '—' },
                       { label: 'Test Format', value: (() => {
-                        const fmt = testCase.test_format || 'steps';
-                        if (fmt === 'gherkin') return 'Gherkin / BDD';
-                        if (fmt === 'free_text') return 'Free Text';
-                        return fmt.charAt(0).toUpperCase() + fmt.slice(1);
+                        const fmt = testCase.test_format || 'classic';
+                        if (fmt === 'bdd') return 'Gherkin / BDD';
+                        return 'Steps';
                       })() },
                       { label: 'Version', value: testCase.version != null ? String(testCase.version) : '—' },
                     ].map(({ label, value }) => (
