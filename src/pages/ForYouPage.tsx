@@ -58,6 +58,18 @@ export default function ForYouPage() {
 
   useEffect(() => { setCurrentPage(1); }, [activeTab, searchQuery, inlineFilters, advancedFilters]);
 
+  // Shift+F global shortcut to toggle filter panel
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.shiftKey && e.key === 'F') {
+        e.preventDefault();
+        setFilterPanelOpen(v => !v);
+      }
+    };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  }, []);
+
   const totalItems = workItems.length;
   const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
 
