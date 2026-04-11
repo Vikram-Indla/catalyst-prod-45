@@ -108,7 +108,7 @@ export default function ForYouPage() {
       },
       {
         id: 'hub', label: 'Hub', searchPlaceholder: 'Search hub',
-        options: hubOptions.map(h => ({ id: h, label: h })),
+        options: hubOptions.map(h => ({ id: h, label: h + ' hub' })),
       },
       {
         id: 'reporter', label: 'Reporter', searchPlaceholder: 'Search reporter',
