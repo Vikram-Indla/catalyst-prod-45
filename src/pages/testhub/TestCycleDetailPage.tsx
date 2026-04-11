@@ -361,6 +361,24 @@ export default function TestCycleDetailPage() {
             )}
             {cycle.status === 'active' && (
               <button onClick={async () => {
+                const { error } = await typedQuery('tm_test_cycles').update({ status: 'paused', updated_at: new Date().toISOString() }).eq('id', cycleId);
+                if (error) { catalystToast.error(error.message); return; }
+                catalystToast.success('Cycle paused'); fetchCycle();
+              }} style={{ height: 40, padding: '0 16px', border: `1.5px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 8, backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#A1A1A1' : '#334155', fontSize: 14, fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
+                <Pause size={16} /> Pause Cycle
+              </button>
+            )}
+            {cycle.status === 'paused' && (
+              <button onClick={async () => {
+                const { error } = await typedQuery('tm_test_cycles').update({ status: 'active', updated_at: new Date().toISOString() }).eq('id', cycleId);
+                if (error) { catalystToast.error(error.message); return; }
+                catalystToast.success('Cycle resumed'); fetchCycle();
+              }} style={{ height: 40, padding: '0 16px', border: `1.5px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 8, backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#A1A1A1' : '#334155', fontSize: 14, fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
+                <Play size={16} /> Resume Cycle
+              </button>
+            )}
+            {cycle.status === 'active' && (
+              <button onClick={async () => {
                 const { error } = await typedQuery('tm_test_cycles').update({ status: 'completed', updated_at: new Date().toISOString() }).eq('id', cycleId);
                 if (error) { catalystToast.error(error.message); return; }
                 catalystToast.success('Cycle completed'); fetchCycle();
