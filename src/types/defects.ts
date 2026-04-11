@@ -35,6 +35,10 @@ export interface Defect {
   closed_at: string | null;
   created_at: string;
   updated_at: string;
+  // Source traceability fields
+  source_test_case_id: string | null;
+  source_test_run_id: string | null;
+  source_test_plan_id: string | null;
   // Jira sync fields
   jira_key: string | null;
   jira_source: boolean;
