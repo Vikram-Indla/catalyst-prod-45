@@ -229,7 +229,13 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
     if (f.status?.length) result = result.filter(s => s.status && f.status.includes(s.status));
     if (f.priority?.length) result = result.filter(s => s.priority && f.priority.includes(s.priority));
     if (f.assignee?.length) result = result.filter(s => s.assignee_name && f.assignee.includes(s.assignee_name));
-    if (f.parent?.length) result = result.filter(s => s.feature?.epic && f.parent.includes(s.feature.epic.id));
+    if (f.parent?.length) result = result.filter(s => {
+      const feat = s.feature;
+      if (!feat) return false;
+      const matchesFeature = f.parent.includes(`feature-${feat.id}`);
+      const matchesEpic = feat.epic ? f.parent.includes(`epic-${feat.epic.id}`) : false;
+      return matchesFeature || matchesEpic;
+    });
     return result;
   }, [stories, advancedFilters, searchQuery]);
 
