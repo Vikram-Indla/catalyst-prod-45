@@ -51,7 +51,7 @@ export function CreateEditTestPlanDialog({
     coverageStats,
     reset,
     getTabErrors,
-  } = useCreateEditPlanForm({ existingPlan: isEditing ? existingPlan : null });
+  } = useCreateEditPlanForm({ existingPlan: isEditing ? (existingPlan as any) : null });
 
   // Mutations
   const createMutation = useCreateTestPlan(projectId);
