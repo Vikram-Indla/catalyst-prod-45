@@ -456,13 +456,19 @@ export function ViewTestCaseModal({
         _source: 'tm_test_case_links' as const,
       }));
 
-      const defectLinksData: Link[] = (defectLinksRes.data || []).map((l: any) => ({
-        id: l.id,
-        link_type: 'defect',
-        linked_item_key: l.defect_id || '',
-        linked_item_title: l.entity_label || 'Defect',
-        _source: 'tm_defect_links' as const,
-      }));
+      const defectLinksData: Link[] = (defectLinksRes.data || []).map((l: any) => {
+        const defectKey = l.tm_defects?.defect_key || '';
+        const label = l.entity_label || 'Defect';
+        // Split "DEF-0202 — title..." to get title portion only
+        const titlePart = label.includes(' — ') ? label.split(' — ').slice(1).join(' — ') : label;
+        return {
+          id: l.id,
+          link_type: 'defect',
+          linked_item_key: defectKey,
+          linked_item_title: titlePart,
+          _source: 'tm_defect_links' as const,
+        };
+      });
 
       setLinks([...reqStoryLinks, ...defectLinksData]);
 
