@@ -557,6 +557,10 @@ export function TestRepositoryPage() {
     setIsBulkTagOpen(true);
   };
 
+  const clearSelection = () => {
+    setSelectedIds(new Set());
+  };
+
   // Folder delete handler
   const handleDeleteFolder = async (folderId: string, folderName: string) => {
     // Check if folder has test cases
