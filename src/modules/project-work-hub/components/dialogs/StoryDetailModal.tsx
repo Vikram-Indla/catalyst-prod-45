@@ -1111,34 +1111,48 @@ export default function StoryDetailModal({
                           {descUnsaved && <span style={{ fontSize: 12, fontWeight: 653, color: 'rgb(41, 42, 46)' }}>• Unsaved changes</span>}
                         </div>
                         {descEditMode ? (
-                          <StoryRichTextEditor
-                            content={adfToHtml(issue?.description_adf) || issue?.description_text || ''}
-                            onSave={(html) => {
-                              updateFieldMutation.mutate({ field: 'description_text', value: html, oldValue: issue?.description_text ?? '' });
-                              setDescEditMode(false);
-                              setDescUnsaved(false);
+                          <div style={{
+                            position: 'relative', borderRadius: 3, backgroundColor: '#FFFFFF',
+                            border: '1px solid #8C8F97',
+                            transition: 'background-color 0.2s ease-in-out, border-color 0.2s ease-in-out',
+                          }}
+                            ref={(el) => {
+                              if (!el) return;
+                              const handler = () => { el.style.borderColor = '#4688EC'; el.style.outline = '2px solid #4688EC'; el.style.outlineOffset = '2px'; };
+                              const blurHandler = () => { el.style.borderColor = '#8C8F97'; el.style.outline = 'none'; };
+                              el.addEventListener('focusin', handler);
+                              el.addEventListener('focusout', blurHandler);
                             }}
-                            onCancel={() => { setDescEditMode(false); }}
-                            placeholder="Add a description..."
-                            minHeight={150}
-                            aiLabel="Improve description"
-                            onAiImprove={async () => {
-                              const { data, error: fnError } = await supabase.functions.invoke('ai-improve-story', {
-                                body: {
-                                  issue_id: itemId,
-                                  improve_type: 'improve_clarify',
-                                  current_description: issue?.description_text || '(empty)',
-                                  current_ac: acceptanceCriteria || '(none)',
-                                  issue_summary: issue?.summary ?? '',
-                                },
-                              });
-                              if (fnError || !data?.description) {
-                                toast.error('AI improve failed. Try again.');
-                                return null;
-                              }
-                              return data.description;
-                            }}
-                          />
+                          >
+                            <StoryRichTextEditor
+                              content={adfToHtml(issue?.description_adf) || issue?.description_text || ''}
+                              onSave={(html) => {
+                                updateFieldMutation.mutate({ field: 'description_text', value: html, oldValue: issue?.description_text ?? '' });
+                                setDescEditMode(false);
+                                setDescUnsaved(false);
+                              }}
+                              onCancel={() => { setDescEditMode(false); }}
+                              placeholder="Add a description..."
+                              minHeight={150}
+                              aiLabel="Improve description"
+                              onAiImprove={async () => {
+                                const { data, error: fnError } = await supabase.functions.invoke('ai-improve-story', {
+                                  body: {
+                                    issue_id: itemId,
+                                    improve_type: 'improve_clarify',
+                                    current_description: issue?.description_text || '(empty)',
+                                    current_ac: acceptanceCriteria || '(none)',
+                                    issue_summary: issue?.summary ?? '',
+                                  },
+                                });
+                                if (fnError || !data?.description) {
+                                  toast.error('AI improve failed. Try again.');
+                                  return null;
+                                }
+                                return data.description;
+                              }}
+                            />
+                          </div>
                         ) : (
                           <div
                             onClick={() => setDescEditMode(true)}
@@ -1182,35 +1196,49 @@ export default function StoryDetailModal({
                             {acUnsaved && <span style={{ fontSize: 12, fontWeight: 653, color: 'rgb(41, 42, 46)' }}>• Unsaved changes</span>}
                           </div>
                           {acEditMode ? (
-                            <StoryRichTextEditor
-                              content={tryAdfStringToHtml(acceptanceCriteria) ?? acceptanceCriteria ?? ''}
-                              onSave={(adfJson) => {
-                                setAcceptanceCriteria(adfJson);
-                                supabase.from('ph_issues').update({ acceptance_criteria: adfJson }).eq('id', itemId).then(() => { queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] }); });
-                                setAcEditMode(false);
-                                setAcUnsaved(false);
+                            <div style={{
+                              position: 'relative', borderRadius: 3, backgroundColor: '#FFFFFF',
+                              border: '1px solid #8C8F97',
+                              transition: 'background-color 0.2s ease-in-out, border-color 0.2s ease-in-out',
+                            }}
+                              ref={(el) => {
+                                if (!el) return;
+                                const handler = () => { el.style.borderColor = '#4688EC'; el.style.outline = '2px solid #4688EC'; el.style.outlineOffset = '2px'; };
+                                const blurHandler = () => { el.style.borderColor = '#8C8F97'; el.style.outline = 'none'; };
+                                el.addEventListener('focusin', handler);
+                                el.addEventListener('focusout', blurHandler);
                               }}
-                              onCancel={() => { setAcEditMode(false); }}
-                              placeholder="No acceptance criteria defined · Add manually or use AI →"
-                              minHeight={80}
-                              aiLabel="Improve criteria"
-                              onAiImprove={async () => {
-                                const { data, error: fnError } = await supabase.functions.invoke('ai-improve-story', {
-                                  body: {
-                                    issue_id: itemId,
-                                    improve_type: 'add_acceptance_criteria',
-                                    current_description: issue?.description_text || '(empty)',
-                                    current_ac: acceptanceCriteria || '(none)',
-                                    issue_summary: issue?.summary ?? '',
-                                  },
-                                });
-                                if (fnError || !data?.acceptance_criteria) {
-                                  toast.error('AI improve failed. Try again.');
-                                  return null;
-                                }
-                                return data.acceptance_criteria;
-                              }}
-                            />
+                            >
+                              <StoryRichTextEditor
+                                content={tryAdfStringToHtml(acceptanceCriteria) ?? acceptanceCriteria ?? ''}
+                                onSave={(adfJson) => {
+                                  setAcceptanceCriteria(adfJson);
+                                  supabase.from('ph_issues').update({ acceptance_criteria: adfJson }).eq('id', itemId).then(() => { queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] }); });
+                                  setAcEditMode(false);
+                                  setAcUnsaved(false);
+                                }}
+                                onCancel={() => { setAcEditMode(false); }}
+                                placeholder="No acceptance criteria defined · Add manually or use AI →"
+                                minHeight={80}
+                                aiLabel="Improve criteria"
+                                onAiImprove={async () => {
+                                  const { data, error: fnError } = await supabase.functions.invoke('ai-improve-story', {
+                                    body: {
+                                      issue_id: itemId,
+                                      improve_type: 'add_acceptance_criteria',
+                                      current_description: issue?.description_text || '(empty)',
+                                      current_ac: acceptanceCriteria || '(none)',
+                                      issue_summary: issue?.summary ?? '',
+                                    },
+                                  });
+                                  if (fnError || !data?.acceptance_criteria) {
+                                    toast.error('AI improve failed. Try again.');
+                                    return null;
+                                  }
+                                  return data.acceptance_criteria;
+                                }}
+                              />
+                            </div>
                           ) : (
                             <div
                               onClick={() => setAcEditMode(true)}
