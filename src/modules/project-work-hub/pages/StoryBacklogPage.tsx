@@ -460,7 +460,9 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
     const result: { id: string; summary: string; issue_key?: string }[] = [];
     groups.forEach(group => {
       if (!collapsed[group.label]) {
-        group.items.forEach(s => result.push({ id: s.id, summary: s.title, issue_key: s.story_key || undefined }));
+        group.items.forEach(s => {
+          if (s?.id) result.push({ id: s.id, summary: s.title, issue_key: s.story_key || undefined });
+        });
       }
     });
     return result;
