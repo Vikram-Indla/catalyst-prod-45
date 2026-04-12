@@ -585,6 +585,7 @@ export function ViewTestCaseModal({
     setEditStepExpected(step.expected_result || '');
   }, []);
 
+  useEffect(() => {
     if (isOpen && testCase) {
       fetchRelatedData();
     }
