@@ -1,6 +1,9 @@
+/**
+ * PriorityIcon — Delegates to canonical PriorityIndicator
+ */
 import React from 'react';
-import { Priority, PRIORITY_CONFIG } from '../types';
-import { ChevronsUp, ChevronUp, Minus, ChevronDown, ChevronsDown } from 'lucide-react';
+import { Priority } from '../types';
+import { PriorityIndicator } from '@/components/shared/PriorityIndicator';
 
 interface PriorityIconProps {
   priority: Priority;
@@ -8,23 +11,5 @@ interface PriorityIconProps {
 }
 
 export const PriorityIcon: React.FC<PriorityIconProps> = ({ priority, showLabel = false }) => {
-  const config = PRIORITY_CONFIG[priority];
-  
-  const IconComponent = {
-    HIGHEST: ChevronsUp,
-    HIGH: ChevronUp,
-    MEDIUM: Minus,
-    LOW: ChevronDown,
-    LOWEST: ChevronsDown,
-  }[priority];
-
-  return (
-    <span 
-      className={`inline-flex items-center gap-1 ${config.colorClass}`}
-      title={config.label}
-    >
-      <IconComponent className="w-4 h-4" />
-      {showLabel && <span className="text-xs">{config.label}</span>}
-    </span>
-  );
+  return <PriorityIndicator priority={priority} showLabel={showLabel} />;
 };

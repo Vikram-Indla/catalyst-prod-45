@@ -4,7 +4,8 @@
  */
 
 import React, { useState, useEffect, useCallback, lazy, Suspense, useRef, useMemo } from 'react';
-import { MessageSquare, AlertCircle, FileText, ChevronsUp, ChevronUp, ChevronDown, ChevronsDown, Folder, LayoutGrid, Bug as BugIcon, CheckSquare, Zap, BookOpen, AlertTriangle as AlertTriangleIcon, Layers, Search, Check } from 'lucide-react';
+import { MessageSquare, AlertCircle, FileText, Folder, LayoutGrid, Bug as BugIcon, CheckSquare, Zap, BookOpen, AlertTriangle as AlertTriangleIcon, Layers, Search, Check } from 'lucide-react';
+import { PriorityBars, normalisePriority } from '@/components/shared/PriorityIndicator';
 import { StatusLozenge } from '@/components/ui/StatusLozenge';
 import { JiraIssueTypeIcon } from '@/components/shared/JiraIssueTypeIcon';
 import { useNavigate } from 'react-router-dom';
@@ -272,11 +273,12 @@ export default function ForYouPage() {
       Strategy: <Zap size={14} color="#D97706" strokeWidth={2} />,
     };
     const PRIORITY_ICONS: Record<string, React.ReactNode> = {
-      Highest: <ChevronsUp size={16} color="#AE2A19" strokeWidth={2.5} />,
-      High: <ChevronUp size={16} color="#DE350B" strokeWidth={2.5} />,
-      Medium: <span style={{ fontSize: 18, fontWeight: 700, color: '#D97706', lineHeight: 1 }}>=</span>,
-      Low: <ChevronDown size={16} color="#36B37E" strokeWidth={2.5} />,
-      Lowest: <ChevronsDown size={16} color="#6B778C" strokeWidth={2.5} />,
+      Critical: <PriorityBars priority="critical" />,
+      Highest: <PriorityBars priority="critical" />,
+      High: <PriorityBars priority="high" />,
+      Medium: <PriorityBars priority="medium" />,
+      Low: <PriorityBars priority="low" />,
+      Lowest: <PriorityBars priority="low" />,
     };
     return [
       {

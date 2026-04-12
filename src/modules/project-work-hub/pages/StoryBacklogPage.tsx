@@ -19,7 +19,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { StatusBadge } from '@/components/ui/StatusBadge';
-import { ChevronDown, ChevronRight, ChevronLeft, ChevronUp, ChevronsUp, ChevronsDown, Plus, Pencil, Trash2, BookOpen, Search, Layers, Check, X, Star } from 'lucide-react';
+import { ChevronDown, ChevronRight, ChevronLeft, Plus, Pencil, Trash2, BookOpen, Search, Layers, Check, X, Star } from 'lucide-react';
+import { PriorityBars, normalisePriority } from '@/components/shared/PriorityIndicator';
 import { toast } from 'sonner';
 import { useTheme } from '@/hooks/useTheme';
 import { DK, LK } from '@/utils/dark-mode-styles';
@@ -60,12 +61,12 @@ const GROUP_OPTIONS: { key: GroupByKey; label: string }[] = [
 const PRIORITY_ORDER = ['critical', 'highest', 'high', 'medium', 'low', 'lowest'];
 
 const PRIORITY_ICONS: Record<string, React.ReactNode> = {
-  critical: <ChevronsUp size={16} color="#AE2A19" strokeWidth={2.5} />,
-  highest: <ChevronsUp size={16} color="#AE2A19" strokeWidth={2.5} />,
-  high: <ChevronUp size={16} color="#DE350B" strokeWidth={2.5} />,
-  medium: <span style={{ fontSize: 18, fontWeight: 700, color: '#D97706', lineHeight: 1 }}>=</span>,
-  low: <ChevronDown size={16} color="#36B37E" strokeWidth={2.5} />,
-  lowest: <ChevronsDown size={16} color="#6B778C" strokeWidth={2.5} />,
+  critical: <PriorityBars priority="critical" />,
+  highest: <PriorityBars priority="critical" />,
+  high: <PriorityBars priority="high" />,
+  medium: <PriorityBars priority="medium" />,
+  low: <PriorityBars priority="low" />,
+  lowest: <PriorityBars priority="low" />,
 };
 
 function getSortValue(s: BacklogStory, colKey: string): string | number {

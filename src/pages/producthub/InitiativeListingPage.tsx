@@ -27,7 +27,8 @@ import { JiraBulkActionBar } from '@/components/shared/JiraBulkActionBar';
 
 import type { Initiative, InitiativeStatus, Density } from '@/types/initiative';
 import { getPriorityLevel, STATUS_DISPLAY, getAvatarColor, getInitials } from '@/types/initiative';
-import { Search, X, Plus, Download, ChevronsUp, ChevronUp, ChevronDown, ChevronsDown, Calendar, Clock, LayoutGrid } from 'lucide-react';
+import { Search, X, Plus, Download, Calendar, Clock, LayoutGrid } from 'lucide-react';
+import { PriorityBars } from '@/components/shared/PriorityIndicator';
 import { ProductHubPageHeader } from '@/components/producthub/shared/ProductHubPageHeader';
 import { BacklogSubTabs, type BacklogTabType } from '@/components/producthub/listing/BacklogSubTabs';
 import { BacklogStatusBar } from '@/components/producthub/listing/BacklogStatusBar';
@@ -267,10 +268,11 @@ export default function InitiativeListingPage() {
   // Build filter categories for JiraBasicFilter panel
   const filterCategories = useMemo<FilterCategory[]>(() => {
     const PRIORITY_ICONS: Record<string, React.ReactNode> = {
-      High: <ChevronsUp size={16} color="#DE350B" strokeWidth={2.5} />,
-      Medium: <span style={{ fontSize: 18, fontWeight: 700, color: '#D97706', lineHeight: 1 }}>=</span>,
-      Low: <ChevronDown size={16} color="#36B37E" strokeWidth={2.5} />,
-      Unscored: <span style={{ fontSize: 12, fontWeight: 600, color: '#94A3B8' }}>--</span>,
+      Critical: <PriorityBars priority="critical" />,
+      High: <PriorityBars priority="high" />,
+      Medium: <PriorityBars priority="medium" />,
+      Low: <PriorityBars priority="low" />,
+      Unscored: <PriorityBars priority="low" />,
     };
 
     // Priority category

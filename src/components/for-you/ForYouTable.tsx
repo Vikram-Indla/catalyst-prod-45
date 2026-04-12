@@ -6,6 +6,7 @@
 
 import React, { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 import { Star, Paperclip } from 'lucide-react';
+import { PriorityBars, normalisePriority } from '@/components/shared/PriorityIndicator';
 import { Checkbox } from '@/components/ui/checkbox';
 import { JiraIssueTypeIcon } from '@/components/shared/JiraIssueTypeIcon';
 import { StatusBadge } from '@/components/ui/StatusBadge';
@@ -32,7 +33,7 @@ const GROUP_LABELS: Record<WorkGroup, string> = {
 };
 
 const PRIORITY_LABELS: Record<number, string> = {
-  1: 'Lowest', 2: 'Low', 3: 'Medium', 4: 'High',
+  1: 'Low', 2: 'Medium', 3: 'High', 4: 'Critical',
 };
 
 const HUB_CFG: Record<string, { bg: string; color: string; border: string }> = {
@@ -262,13 +263,7 @@ export function CatalystTable({
       case 'priority':
         return (
           <td key={colKey} style={{ width: columnWidths.priority }} title={priorityLabel}>
-            <div style={{ display: 'flex', gap: 2 }}>
-              {[1,2,3,4].map(i => {
-                const filled = i <= item.priorityLevel;
-                const fillColor = item.priorityLevel >= 4 ? '#E5484D' : item.priorityLevel >= 3 ? '#F59E0B' : '#22C55E';
-                return <div key={i} style={{ width: 4, height: 14, borderRadius: 1, background: filled ? fillColor : '#E2E8F0' }} />;
-              })}
-            </div>
+            <PriorityBars priority={normalisePriority(priorityLabel)} />
           </td>
         );
       case 'updated':
