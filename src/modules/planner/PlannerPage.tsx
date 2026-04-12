@@ -3,12 +3,13 @@
 // Enterprise work planning with 7 views
 // ============================================================
 
-import { useState, useCallback, useRef, useMemo, useEffect } from 'react';
+import { useState, useCallback, useRef, useMemo, useEffect, lazy, Suspense } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Plus, Download, FileText } from 'lucide-react';
 import type { PlannerView, PlannerTask, TaskStatus, AIInsight, GroupByOption } from './types';
 import type { KanbanTask } from './types/kanban';
-import { KanbanBoard, TaskDetailDrawer } from './components/kanban';
+import { KanbanBoard } from './components/kanban';
+const CatalystDetailRouter = lazy(() => import('@/components/catalyst-detail-views/CatalystDetailRouter'));
 import { PlannerTaskList } from './components/PlannerTaskList';
 import { PlannerTimeline } from './components/PlannerTimeline';
 import { PlannerCalendar } from './components/PlannerCalendar';
@@ -595,14 +596,17 @@ export function PlannerPage() {
         </div>
 
         {/* Task Detail Drawer (unified for all views) */}
-        <TaskDetailDrawer
-          task={selectedKanbanTask}
-          open={isKanbanDrawerOpen}
-          onOpenChange={(open) => {
-            setIsKanbanDrawerOpen(open);
-            if (!open) setSelectedKanbanTask(null);
-          }}
-        />
+        <Suspense fallback={null}>
+          <CatalystDetailRouter
+            isOpen={isKanbanDrawerOpen}
+            onClose={() => {
+              setIsKanbanDrawerOpen(false);
+              setSelectedKanbanTask(null);
+            }}
+            itemId={selectedKanbanTask?.id || ''}
+            itemType="task"
+          />
+        </Suspense>
 
         {/* Create Modal */}
         <PlannerCreateModal

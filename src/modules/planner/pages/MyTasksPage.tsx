@@ -3,11 +3,11 @@
 // Uses PageChrome + Budget Planner header styling
 // ============================================================
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, lazy, Suspense } from 'react';
 import { PageChrome } from '@/components/layout/PageChrome';
 import { MyTasksContent } from '../components/my-tasks';
 import { useMyTasksRealtime } from '../hooks/useMyTasksRealtime';
-import { TaskDetailDrawer } from '../components/TaskDetailDrawer/TaskDetailDrawer';
+const CatalystDetailRouter = lazy(() => import('@/components/catalyst-detail-views/CatalystDetailRouter'));
 import { PlannerCreateModal } from '../components/PlannerCreateModal';
 import { useCreatePlannerTask } from '../hooks/useCreatePlannerTask';
 import { usePlannerUsers } from '../hooks/usePlannerUsers';
@@ -95,12 +95,14 @@ export function MyTasksPage() {
 
       {/* Task Detail Drawer */}
       {detailTaskId && (
-        <TaskDetailDrawer
-          taskId={detailTaskId}
-          open={!!detailTaskId}
-          onClose={handleCloseTaskDetail}
-          onOpenChange={(open) => !open && handleCloseTaskDetail()}
-        />
+        <Suspense fallback={null}>
+          <CatalystDetailRouter
+            isOpen={!!detailTaskId}
+            onClose={handleCloseTaskDetail}
+            itemId={detailTaskId}
+            itemType="task"
+          />
+        </Suspense>
       )}
 
       {/* Create Task Modal */}

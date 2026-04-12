@@ -1,6 +1,6 @@
 // Stories Module - Jira Align compliant implementation
 // Citation: Catalyst_Stories_PRD_v2.pdf, Lovable-Build-Instructions-Story-Module.pdf
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Input } from '@/components/ui/input';
@@ -13,7 +13,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ListScreenToolbar } from '@/components/shared/ListScreenToolbar';
 import { StoryDialog } from '@/components/forms/StoryDialog';
 import { StoriesKanbanView } from '@/components/stories/StoriesKanbanView';
-import { StoryDetailPanel } from '@/components/stories/StoryDetailPanel';
+const CatalystDetailRouter = lazy(() => import('@/components/catalyst-detail-views/CatalystDetailRouter'));
 import { StoriesToolbar } from '@/components/stories/StoriesToolbar';
 import { StoriesFiltersDialog } from '@/components/stories/StoriesFiltersDialog';
 import { StoriesColumnConfig } from '@/components/stories/StoriesColumnConfig';
@@ -369,12 +369,14 @@ export default function Stories() {
 
       {/* Details Panel */}
       {detailsOpen && selectedStory && (
-        <StoryDetailPanel
-          story={selectedStory}
-          open={detailsOpen}
-          onClose={() => setDetailsOpen(false)}
-          onUpdate={refetch}
-        />
+        <Suspense fallback={null}>
+          <CatalystDetailRouter
+            isOpen={detailsOpen}
+            onClose={() => setDetailsOpen(false)}
+            itemId={selectedStory.id}
+            itemType="story"
+          />
+        </Suspense>
       )}
 
       {/* Create/Edit Dialog */}
