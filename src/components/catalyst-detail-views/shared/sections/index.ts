@@ -5,3 +5,4 @@ export { CatalystActivitySection } from './CatalystActivitySection';
 export { CatalystSidebarDetails } from './CatalystSidebarDetails';
 export { CatalystPriorityField } from './CatalystPriorityField';
 export { CatalystParentLinker } from './CatalystParentLinker';
+export { CatalystChildWorkItemsTable } from './CatalystChildWorkItemsTable';
