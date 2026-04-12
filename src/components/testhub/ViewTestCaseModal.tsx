@@ -1026,52 +1026,155 @@ export function ViewTestCaseModal({
             padding: '14px 16px',
             background: 'var(--bg-1)',
           }}>
-            {/* STATUS BUTTON — full-width colored */}
-            <button
-              style={{
-                width: '100%', padding: '8px 0', borderRadius: 6, border: 'none',
-                background: statusBtnBg, color: '#FFFFFF',
-                fontSize: 11, fontWeight: 700, textTransform: 'uppercase' as const,
-                letterSpacing: '0.05em', textAlign: 'center', cursor: 'pointer',
-                transition: 'opacity 150ms', marginBottom: 12,
-              }}
-              onMouseEnter={e => { e.currentTarget.style.opacity = '0.85'; }}
-              onMouseLeave={e => { e.currentTarget.style.opacity = '1'; }}
-            >
-              {testCase.status}
-            </button>
+            {/* STATUS BUTTON — clickable dropdown */}
+            <div style={{ position: 'relative', marginBottom: 12 }}>
+              <button
+                onClick={(e) => { e.stopPropagation(); setOpenPicker(openPicker === 'status' ? null : 'status'); }}
+                style={{
+                  width: '100%', padding: '8px 0', borderRadius: 6, border: 'none',
+                  background: statusBtnBg, color: '#FFFFFF',
+                  fontSize: 11, fontWeight: 700, textTransform: 'uppercase' as const,
+                  letterSpacing: '0.05em', textAlign: 'center', cursor: 'pointer',
+                  transition: 'opacity 150ms',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.opacity = '0.85'; }}
+                onMouseLeave={e => { e.currentTarget.style.opacity = '1'; }}
+              >
+                {localStatus}
+              </button>
+              {openPicker === 'status' && (
+                <PickerDropdown>
+                  {['draft', 'ready', 'approved', 'deprecated'].map(s => (
+                    <PickerOption
+                      key={s}
+                      selected={localStatus === s}
+                      onClick={() => {
+                        setLocalStatus(s);
+                        setOpenPicker(null);
+                        updateField('status', s);
+                      }}
+                    >
+                      <span style={{
+                        display: 'inline-block', height: 20, lineHeight: '20px', fontSize: 11,
+                        fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.03em',
+                        borderRadius: 3, padding: '0 6px',
+                        background: (STATUS_PILL[s] || STATUS_PILL.draft).bg,
+                        color: (STATUS_PILL[s] || STATUS_PILL.draft).color,
+                      }}>{s}</span>
+                    </PickerOption>
+                  ))}
+                </PickerDropdown>
+              )}
+            </div>
 
-            {/* PINNED FIELDS */}
+            {/* PINNED FIELDS — all inline-editable */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12, paddingBottom: 12 }}>
+
+              {/* Owner */}
               <SidebarField label="Owner">
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  {ownerName !== '—' ? (
-                    <><MiniAvatar name={ownerName} size={22} /><span style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg-1)' }}>{ownerName}</span></>
-                  ) : (
-                    <span style={{ fontSize: 13, color: 'var(--fg-4)' }}>Unassigned</span>
+                <div style={{ position: 'relative' }}>
+                  <ClickableField onClick={(e) => { e.stopPropagation(); setOpenPicker(openPicker === 'owner' ? null : 'owner'); }}>
+                    {resolvedOwnerName !== '—' ? (
+                      <><MiniAvatar name={resolvedOwnerName} size={22} /><span style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg-1)' }}>{resolvedOwnerName}</span></>
+                    ) : (
+                      <span style={{ fontSize: 13, color: 'var(--fg-4)' }}>Unassigned</span>
+                    )}
+                  </ClickableField>
+                  {openPicker === 'owner' && (
+                    <PeoplePickerDropdown
+                      members={teamMembers || []}
+                      selectedId={localOwnerId}
+                      onSelect={(id, name) => {
+                        setLocalOwnerId(id);
+                        setOwnerName(name || '—');
+                        setOpenPicker(null);
+                        updateField('created_by', id);
+                      }}
+                    />
                   )}
                 </div>
               </SidebarField>
 
+              {/* Assigned To */}
               <SidebarField label="Assigned To">
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  {assigneeName !== '—' ? (
-                    <><MiniAvatar name={assigneeName} size={22} /><span style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg-1)' }}>{assigneeName}</span></>
-                  ) : (
-                    <span style={{ fontSize: 13, color: 'var(--fg-4)' }}>Unassigned</span>
+                <div style={{ position: 'relative' }}>
+                  <ClickableField onClick={(e) => { e.stopPropagation(); setOpenPicker(openPicker === 'assignee' ? null : 'assignee'); }}>
+                    {resolvedAssigneeName !== '—' ? (
+                      <><MiniAvatar name={resolvedAssigneeName} size={22} /><span style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg-1)' }}>{resolvedAssigneeName}</span></>
+                    ) : (
+                      <span style={{ fontSize: 13, color: 'var(--fg-4)' }}>Unassigned</span>
+                    )}
+                  </ClickableField>
+                  {openPicker === 'assignee' && (
+                    <PeoplePickerDropdown
+                      members={teamMembers || []}
+                      selectedId={localAssigneeId}
+                      onSelect={(id, name) => {
+                        setLocalAssigneeId(id);
+                        setAssigneeName(name || '—');
+                        setOpenPicker(null);
+                        updateField('assigned_to', id);
+                      }}
+                    />
                   )}
                 </div>
               </SidebarField>
 
+              {/* Priority */}
               <SidebarField label="Priority">
-                {priorityName !== '—'
-                  ? <PriorityIndicator priority={priorityName} fontSize={12} />
-                  : <span style={{ fontSize: 13, color: 'var(--fg-4)' }}>None</span>
-                }
+                <div style={{ position: 'relative' }}>
+                  <ClickableField onClick={(e) => { e.stopPropagation(); setOpenPicker(openPicker === 'priority' ? null : 'priority'); }}>
+                    {resolvedPriorityName !== '—'
+                      ? <PriorityIndicator priority={resolvedPriorityName} fontSize={12} />
+                      : <span style={{ fontSize: 13, color: 'var(--fg-4)' }}>None</span>
+                    }
+                  </ClickableField>
+                  {openPicker === 'priority' && (
+                    <PickerDropdown>
+                      {(priorities || []).map(p => (
+                        <PickerOption
+                          key={p.id}
+                          selected={localPriorityId === p.id}
+                          onClick={() => {
+                            setLocalPriorityId(p.id);
+                            setPriorityName(p.name);
+                            setOpenPicker(null);
+                            updateField('priority_id', p.id);
+                          }}
+                        >
+                          <PriorityIndicator priority={p.name} fontSize={12} />
+                        </PickerOption>
+                      ))}
+                    </PickerDropdown>
+                  )}
+                </div>
               </SidebarField>
 
+              {/* Type */}
               <SidebarField label="Type">
-                <span style={{ fontSize: 13, fontWeight: 400, color: 'var(--fg-1)' }}>{typeName}</span>
+                <div style={{ position: 'relative' }}>
+                  <ClickableField onClick={(e) => { e.stopPropagation(); setOpenPicker(openPicker === 'type' ? null : 'type'); }}>
+                    <span style={{ fontSize: 13, fontWeight: 400, color: 'var(--fg-1)' }}>{resolvedTypeName}</span>
+                  </ClickableField>
+                  {openPicker === 'type' && (
+                    <PickerDropdown>
+                      {(caseTypes || []).map(t => (
+                        <PickerOption
+                          key={t.id}
+                          selected={localTypeId === t.id}
+                          onClick={() => {
+                            setLocalTypeId(t.id);
+                            setTypeName(t.name);
+                            setOpenPicker(null);
+                            updateField('case_type_id', t.id);
+                          }}
+                        >
+                          <span style={{ fontSize: 13, color: 'var(--fg-1)' }}>{t.name}</span>
+                        </PickerOption>
+                      ))}
+                    </PickerDropdown>
+                  )}
+                </div>
               </SidebarField>
             </div>
 
