@@ -4,7 +4,8 @@
  * Ghost header, accordion sections, no tabs.
  */
 import { useState, useEffect } from 'react';
-import { X, Edit2, Copy, ClipboardList, Paperclip, Link2, History, Play, Plus, Trash2, Bug, BookOpen, MessageSquare, Search, Loader2, GitBranch, ChevronDown, ChevronRight, FileText, Settings2 } from 'lucide-react';
+import { X, Edit2, Copy, ClipboardList, Paperclip, Link2, History, Play, Plus, Trash2, Bug, BookOpen, MessageSquare, Search, Loader2, GitBranch, ChevronRight, FileText, Settings2, Share2, MoreHorizontal } from 'lucide-react';
+import { toast } from 'sonner';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { PriorityIndicator } from '@/components/shared/PriorityIndicator';
 import { EntityCommentsPanel } from '@/components/testhub/EntityCommentsPanel';
@@ -105,7 +106,15 @@ if (typeof document !== 'undefined' && !document.getElementById(ANIM_STYLE_ID)) 
   document.head.appendChild(s);
 }
 
-// --- STATUS PILL COLORS (Jira-strong solid) ---
+// --- STATUS BUTTON COLORS (full-width, matching WorkItemDetailModal sidebar) ---
+const STATUS_BTN: Record<string, string> = {
+  draft:      '#44546F',
+  ready:      '#1B7F37',
+  approved:   '#0C66E4',
+  deprecated: '#44546F',
+};
+
+// --- STATUS PILL COLORS (kept for inline lozenge usage in dropdowns) ---
 const STATUS_PILL: Record<string, { bg: string; color: string }> = {
   draft:      { bg: '#DFE1E6', color: '#253858' },
   ready:      { bg: '#E3FCEF', color: '#006644' },
@@ -122,7 +131,7 @@ const RESULT_LOZENGE: Record<string, { bg: string; color: string }> = {
 };
 
 // ═══════════════════════════════════════
-// ACCORDION SECTION (reusable)
+// ACCORDION SECTION (CollapsibleSection parity)
 // ═══════════════════════════════════════
 function AccordionSection({
   label, count, defaultExpanded = false, children,
@@ -135,30 +144,35 @@ function AccordionSection({
   const [expanded, setExpanded] = useState(defaultExpanded);
 
   return (
-    <div>
-      <div
+    <div style={{ marginBottom: 16 }}>
+      <button
         onClick={() => setExpanded(p => !p)}
         style={{
-          display: 'flex', alignItems: 'center', gap: 8,
-          height: 40, padding: '0 0', cursor: 'pointer', userSelect: 'none',
-          borderBottom: '1px solid #EBECF0',
+          display: 'flex', alignItems: 'center', gap: 6,
+          width: '100%', textAlign: 'left', padding: '6px 0',
+          border: 'none', background: 'transparent', cursor: 'pointer',
         }}
       >
-        {expanded
-          ? <ChevronDown style={{ width: 16, height: 16, color: '#5E6C84', flexShrink: 0 }} />
-          : <ChevronRight style={{ width: 16, height: 16, color: '#5E6C84', flexShrink: 0 }} />
-        }
-        <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 600, color: '#172B4D', flex: 1 }}>{label}</span>
-        {count !== undefined && (
+        <ChevronRight
+          style={{
+            width: 14, height: 14, color: 'var(--fg-4)',
+            flexShrink: 0,
+            transition: 'transform 150ms ease',
+            transform: expanded ? 'rotate(90deg)' : 'rotate(0deg)',
+          }}
+        />
+        <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 600, color: 'var(--fg-1)', flex: 1 }}>{label}</span>
+        {count != null && count > 0 && (
           <span style={{
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-            height: 18, minWidth: 20, padding: '0 6px', borderRadius: 9,
-            fontSize: 11, fontWeight: 700, background: '#DFE1E6', color: '#253858',
+            height: 18, minWidth: 18, padding: '0 6px', borderRadius: 9,
+            fontSize: 10, fontWeight: 600,
+            background: 'var(--cp-bd-zone)', color: 'var(--fg-3)',
           }}>{count}</span>
         )}
-      </div>
+      </button>
       {expanded && (
-        <div style={{ padding: '16px 0' }}>
+        <div style={{ marginTop: 6 }}>
           {children}
         </div>
       )}
@@ -223,11 +237,11 @@ function AddLinkModal({
 
   return (
     <div onClick={onClose} style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1100 }}>
-      <div onClick={e => e.stopPropagation()} style={{ width: 480, maxWidth: '95vw', maxHeight: '80vh', backgroundColor: '#FFFFFF', borderRadius: 12, boxShadow: '0 20px 60px rgba(0,0,0,0.15)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      <div onClick={e => e.stopPropagation()} style={{ width: 480, maxWidth: '95vw', maxHeight: '80vh', backgroundColor: 'var(--cp-float)', borderRadius: 12, boxShadow: '0 20px 60px rgba(0,0,0,0.15)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
         {/* Header */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px', borderBottom: '1px solid #E2E8F0' }}>
-          <h3 style={{ fontFamily: "'Inter', sans-serif", fontSize: 16, fontWeight: 600, color: '#0F172A', margin: 0 }}>Add Link</h3>
-          <button onClick={onClose} style={{ width: 32, height: 32, border: 'none', backgroundColor: 'transparent', color: '#94A3B8', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px', borderBottom: '1px solid var(--divider)' }}>
+          <h3 style={{ fontFamily: "'Inter', sans-serif", fontSize: 16, fontWeight: 600, color: 'var(--fg-1)', margin: 0 }}>Add Link</h3>
+          <button onClick={onClose} style={{ width: 32, height: 32, border: 'none', backgroundColor: 'transparent', color: 'var(--fg-4)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <X style={{ width: 18, height: 18 }} />
           </button>
         </div>
@@ -242,9 +256,9 @@ function AddLinkModal({
                   style={{
                     height: 32, padding: '0 12px', borderRadius: 6, fontSize: 12, fontWeight: 500, cursor: 'pointer',
                     display: 'flex', alignItems: 'center', gap: 6,
-                    border: active ? 'none' : '1px solid #E2E8F0',
-                    background: active ? '#2563EB' : 'transparent',
-                    color: active ? '#FFFFFF' : '#475569',
+                    border: active ? 'none' : '1px solid var(--divider)',
+                    background: active ? 'var(--cp-blue)' : 'transparent',
+                    color: active ? '#FFFFFF' : 'var(--fg-2)',
                   }}>
                   <opt.icon style={{ width: 14, height: 14 }} />
                   {opt.label}
@@ -255,11 +269,11 @@ function AddLinkModal({
 
           {/* Search */}
           <div style={{ position: 'relative' }}>
-            <Search style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', width: 16, height: 16, color: '#94A3B8' }} />
+            <Search style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', width: 16, height: 16, color: 'var(--fg-4)' }} />
             <input
               type="text" value={search} onChange={e => setSearch(e.target.value)}
               placeholder={`Search ${config.label.toLowerCase()}s...`}
-              style={{ width: '100%', height: 40, padding: '8px 12px 8px 36px', fontSize: 14, fontFamily: "'Inter', sans-serif", border: '1.5px solid #E2E8F0', borderRadius: 8, outline: 'none', boxSizing: 'border-box' }}
+              style={{ width: '100%', height: 40, padding: '8px 12px 8px 36px', fontSize: 14, fontFamily: "'Inter', sans-serif", border: '1.5px solid var(--divider)', borderRadius: 8, outline: 'none', boxSizing: 'border-box', background: 'var(--cp-float)', color: 'var(--fg-1)' }}
             />
           </div>
         </div>
@@ -268,10 +282,10 @@ function AddLinkModal({
         <div style={{ flex: 1, overflowY: 'auto', padding: '0 20px 16px', maxHeight: 320 }}>
           {isLoading ? (
             <div style={{ display: 'flex', justifyContent: 'center', padding: 24 }}>
-              <Loader2 style={{ width: 20, height: 20, animation: 'vtcm-spin 1s linear infinite', color: '#94A3B8' }} />
+              <Loader2 style={{ width: 20, height: 20, animation: 'vtcm-spin 1s linear infinite', color: 'var(--fg-4)' }} />
             </div>
           ) : !results?.length ? (
-            <p style={{ textAlign: 'center', padding: 24, fontSize: 13, color: '#94A3B8' }}>
+            <p style={{ textAlign: 'center', padding: 24, fontSize: 13, color: 'var(--fg-4)' }}>
               No {config.label.toLowerCase()}s found
             </p>
           ) : (
@@ -281,11 +295,11 @@ function AddLinkModal({
                   style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 12, padding: '10px 12px', borderRadius: 8, border: 'none', background: 'transparent', cursor: 'pointer', textAlign: 'left', transition: 'background 150ms' }}
                   onMouseEnter={e => (e.currentTarget.style.background = 'rgba(0,0,0,0.04)')}
                   onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-                  <Icon style={{ width: 16, height: 16, color: '#94A3B8', flexShrink: 0 }} />
+                  <Icon style={{ width: 16, height: 16, color: 'var(--fg-4)', flexShrink: 0 }} />
                   <div style={{ minWidth: 0, flex: 1 }}>
-                    <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 500, color: '#2563EB' }}>{item.key}</span>
+                    <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 500, color: 'var(--cp-blue)' }}>{item.key}</span>
                     {item.name !== item.key && (
-                      <p style={{ fontSize: 13, color: '#475569', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.name}</p>
+                      <p style={{ fontSize: 13, color: 'var(--fg-2)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.name}</p>
                     )}
                   </div>
                 </button>
@@ -295,8 +309,8 @@ function AddLinkModal({
         </div>
 
         {/* Footer */}
-        <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '12px 20px', borderTop: '1px solid #E2E8F0' }}>
-          <button onClick={onClose} style={{ height: 36, padding: '0 16px', backgroundColor: 'transparent', border: '1.5px solid #E2E8F0', borderRadius: 8, fontSize: 13, fontWeight: 500, color: '#64748B', cursor: 'pointer' }}>Cancel</button>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '12px 20px', borderTop: '1px solid var(--divider)' }}>
+          <button onClick={onClose} style={{ height: 36, padding: '0 16px', backgroundColor: 'transparent', border: '1.5px solid var(--divider)', borderRadius: 8, fontSize: 13, fontWeight: 500, color: 'var(--fg-3)', cursor: 'pointer' }}>Cancel</button>
         </div>
       </div>
     </div>
@@ -326,21 +340,24 @@ function LinkAccordionSection({
   }, [links.length]);
 
   return (
-    <div style={{ borderRadius: 4, border: '0.75px solid #EBECF0', overflow: 'hidden' }}>
+    <div style={{ borderRadius: 4, border: '0.75px solid var(--divider)', overflow: 'hidden' }}>
       {/* Section header */}
       <div
         onClick={() => setExpanded(p => !p)}
         style={{
           display: 'flex', alignItems: 'center', gap: 8, height: 36, padding: '0 12px',
-          background: '#F7F8F9', cursor: 'pointer', userSelect: 'none',
+          background: 'var(--bg-1)', cursor: 'pointer', userSelect: 'none',
         }}
       >
-        {expanded
-          ? <ChevronDown style={{ width: 14, height: 14, color: '#64748B', flexShrink: 0 }} />
-          : <ChevronRight style={{ width: 14, height: 14, color: '#64748B', flexShrink: 0 }} />
-        }
-        <Icon style={{ width: 14, height: 14, color: '#64748B', flexShrink: 0 }} />
-        <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 500, color: '#475569', flex: 1 }}>{label}</span>
+        <ChevronRight
+          style={{
+            width: 14, height: 14, color: 'var(--fg-4)', flexShrink: 0,
+            transition: 'transform 150ms ease',
+            transform: expanded ? 'rotate(90deg)' : 'rotate(0deg)',
+          }}
+        />
+        <Icon style={{ width: 14, height: 14, color: 'var(--fg-3)', flexShrink: 0 }} />
+        <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 500, color: 'var(--fg-2)', flex: 1 }}>{label}</span>
         <span style={{
           display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
           height: 20, minWidth: 20, padding: '0 6px', borderRadius: 3,
@@ -350,7 +367,7 @@ function LinkAccordionSection({
           onClick={(e) => { e.stopPropagation(); onAdd(); }}
           style={{
             border: 'none', background: 'transparent', cursor: 'pointer',
-            fontSize: 12, fontWeight: 500, color: '#2563EB',
+            fontSize: 12, fontWeight: 500, color: 'var(--cp-blue)',
             display: 'flex', alignItems: 'center', gap: 4, padding: '2px 6px',
           }}
         >
@@ -366,17 +383,17 @@ function LinkAccordionSection({
               className="group"
               style={{
                 display: 'flex', alignItems: 'center', gap: 10, height: 36, padding: '0 12px 0 36px',
-                borderTop: '0.75px solid #EBECF0',
+                borderTop: '0.75px solid var(--divider)',
                 transition: 'background 120ms',
               }}
               onMouseEnter={e => (e.currentTarget.style.background = 'rgba(0,0,0,0.04)')}
               onMouseLeave={e => (e.currentTarget.style.background = '')}
             >
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 500, color: '#2563EB' }}>
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 500, color: 'var(--cp-blue)' }}>
                 {link.linked_item_key}
               </span>
               <span style={{
-                flex: 1, fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 400, color: '#172B4D',
+                flex: 1, fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 400, color: 'var(--fg-1)',
                 overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
               }}>
                 {link.linked_item_title}
@@ -385,7 +402,7 @@ function LinkAccordionSection({
                 onClick={() => onDelete(link.id)}
                 style={{
                   border: 'none', background: 'transparent', cursor: 'pointer', padding: 2,
-                  color: '#94A3B8', opacity: 0, transition: 'opacity 120ms',
+                  color: 'var(--fg-4)', opacity: 0, transition: 'opacity 120ms',
                 }}
                 className="group-hover:!opacity-100"
               >
@@ -397,8 +414,8 @@ function LinkAccordionSection({
       )}
 
       {expanded && links.length === 0 && (
-        <div style={{ padding: '12px 36px', borderTop: '0.75px solid #EBECF0' }}>
-          <span style={{ fontSize: 12, color: '#94A3B8' }}>No {label.toLowerCase()} linked</span>
+        <div style={{ padding: '12px 36px', borderTop: '0.75px solid var(--divider)' }}>
+          <span style={{ fontSize: 12, color: 'var(--fg-4)' }}>No {label.toLowerCase()} linked</span>
         </div>
       )}
     </div>
@@ -643,6 +660,12 @@ export function ViewTestCaseModal({
   const storyLinks = links.filter(l => l.link_type === 'story');
 
   const statusPill = STATUS_PILL[testCase.status] || STATUS_PILL.draft;
+  const statusBtnBg = STATUS_BTN[testCase.status] || STATUS_BTN.draft;
+
+  const handleCopyKey = () => {
+    navigator.clipboard.writeText(testCase.case_key);
+    toast.success(`Copied ${testCase.case_key}`);
+  };
 
   const fmtDate = (d: string | null | undefined) => {
     if (!d) return '—';
@@ -658,80 +681,45 @@ export function ViewTestCaseModal({
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         zIndex: 1000,
         animation: 'sdm-overlay-in 200ms ease',
+        fontFamily: "'Inter', sans-serif",
       }}
     >
       <div
         onClick={(e) => e.stopPropagation()}
         style={{
-          width: 1100, maxWidth: '95vw',
-          minHeight: 600,
-          maxHeight: 'calc(100vh - 80px)',
-          backgroundColor: '#FFFFFF',
-          borderRadius: 8,
-          boxShadow: '0 8px 32px rgba(9,30,66,0.25)',
+          width: 960, maxWidth: '95vw',
+          maxHeight: '90vh',
+          backgroundColor: 'var(--cp-float)',
+          borderRadius: 12,
+          boxShadow: '0 0 0 1px rgba(9,30,66,0.08), 0 2px 1px rgba(9,30,66,0.08), 0 0 20px -6px rgba(9,30,66,0.31)',
           display: 'flex', flexDirection: 'column',
           overflow: 'hidden',
           animation: 'sdm-card-in 250ms ease',
         }}
       >
-        {/* ── GHOST HEADER ── */}
+        {/* ── HEADER (52px, border-bottom — WorkItemDetailModal parity) ── */}
         <div style={{
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          padding: '12px 24px', flexShrink: 0,
+          padding: '0 24px', height: 52, flexShrink: 0,
+          borderBottom: '1px solid var(--divider)',
         }}>
-          {/* Left: case_key + title */}
-          <div style={{ minWidth: 0, flex: 1 }}>
+          {/* Left: type icon + case_key */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
+            <ClipboardList style={{ width: 18, height: 18, color: 'var(--cp-blue)', flexShrink: 0 }} />
             <span style={{
               fontFamily: "'JetBrains Mono', monospace",
-              fontSize: 12, fontWeight: 500, color: '#5E6C84',
+              fontSize: 13, fontWeight: 500, color: 'var(--fg-3)',
             }}>
               {testCase.case_key}
             </span>
-            <p style={{
-              fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 400,
-              color: '#42526E', margin: '2px 0 0', maxWidth: 600,
-              overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-            }}>
-              {testCase.title}
-            </p>
           </div>
-          {/* Right: ghost buttons */}
-          <div style={{ display: 'flex', gap: 2 }}>
-            {[
-              { icon: Edit2, title: 'Edit', onClick: onEdit },
-              { icon: Copy, title: 'Clone', onClick: onClone },
-            ].map(({ icon: Ic, title, onClick }) => (
-              <button
-                key={title}
-                onClick={onClick}
-                title={title}
-                style={{
-                  width: 32, height: 32, border: 'none', borderRadius: 4,
-                  backgroundColor: 'transparent', color: '#5E6C84',
-                  cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  transition: 'background 150ms',
-                }}
-                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,0,0,0.04)'; }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
-              >
-                <Ic style={{ width: 16, height: 16 }} />
-              </button>
-            ))}
-            {/* Close — red hover */}
-            <button
-              onClick={onClose}
-              title="Close"
-              style={{
-                width: 32, height: 32, border: 'none', borderRadius: 4,
-                backgroundColor: 'transparent', color: '#5E6C84',
-                cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                transition: 'all 150ms',
-              }}
-              onMouseEnter={e => { e.currentTarget.style.background = '#FFEBE6'; e.currentTarget.style.color = '#DE350B'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#5E6C84'; }}
-            >
-              <X style={{ width: 16, height: 16 }} />
-            </button>
+          {/* Right: ghost action buttons */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <HeaderBtn title="Edit" onClick={onEdit}><Edit2 style={{ width: 15, height: 15 }} /></HeaderBtn>
+            <HeaderBtn title="Copy key" onClick={handleCopyKey}><Copy style={{ width: 15, height: 15 }} /></HeaderBtn>
+            <HeaderBtn title="Clone" onClick={onClone}><Share2 style={{ width: 15, height: 15 }} /></HeaderBtn>
+            <HeaderBtn title="More"><MoreHorizontal style={{ width: 15, height: 15 }} /></HeaderBtn>
+            <HeaderBtn title="Close" onClick={onClose} close><X style={{ width: 16, height: 16 }} /></HeaderBtn>
           </div>
         </div>
 
@@ -739,20 +727,31 @@ export function ViewTestCaseModal({
         <div style={{ flex: 1, display: 'flex', minHeight: 0 }}>
 
           {/* ── LEFT PANEL ── */}
-          <div style={{ flex: 1, overflowY: 'auto', padding: '0 24px 24px', minWidth: 0 }}>
+          <div style={{ flex: 1, overflowY: 'auto', padding: '0 24px 80px', minWidth: 0 }}>
 
             {/* Title */}
-            <h2 style={{
-              fontFamily: "'Sora', sans-serif",
-              fontSize: 18, fontWeight: 650, color: '#172B4D',
-              margin: '0 0 12px 0', lineHeight: 1.4,
-            }}>
-              {testCase.title}
-            </h2>
+            <div style={{ padding: '20px 0 8px' }}>
+              <h2
+                style={{
+                  fontFamily: "'Sora', sans-serif",
+                  fontSize: 22, fontWeight: 600, color: 'var(--fg-1)',
+                  margin: 0, lineHeight: '30px',
+                  padding: '2px 4px',
+                  borderRadius: 4,
+                  border: '2px solid transparent',
+                  transition: 'border-color 150ms',
+                  cursor: 'text',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--divider)'; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = 'transparent'; }}
+              >
+                {testCase.title}
+              </h2>
+            </div>
 
             {loading ? (
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 200 }}>
-                <Loader2 style={{ width: 24, height: 24, animation: 'vtcm-spin 1s linear infinite', color: '#5E6C84' }} />
+                <Loader2 style={{ width: 24, height: 24, animation: 'vtcm-spin 1s linear infinite', color: 'var(--fg-3)' }} />
               </div>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
@@ -770,8 +769,8 @@ export function ViewTestCaseModal({
                       { label: 'Version', value: testCase.version != null ? String(testCase.version) : '—' },
                     ].map(({ label, value }) => (
                       <div key={label}>
-                        <div style={{ fontSize: 11, fontWeight: 500, color: '#5E6C84', marginBottom: 4, textTransform: 'uppercase' as const, letterSpacing: '0.04em' }}>{label}</div>
-                        <div style={{ fontSize: 13, fontWeight: 400, color: '#172B4D' }}>{value}</div>
+                        <div style={{ fontSize: 11, fontWeight: 500, color: 'var(--fg-3)', marginBottom: 4, textTransform: 'uppercase' as const, letterSpacing: '0.04em' }}>{label}</div>
+                        <div style={{ fontSize: 13, fontWeight: 400, color: 'var(--fg-1)' }}>{value}</div>
                       </div>
                     ))}
                   </div>
@@ -779,38 +778,54 @@ export function ViewTestCaseModal({
 
                 {/* b. DESCRIPTION */}
                 <AccordionSection label="Description" defaultExpanded>
-                  {testCase.description ? (
-                    <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, lineHeight: 1.6, color: '#172B4D', margin: 0 }}>{testCase.description}</p>
-                  ) : (
-                    <span style={{ fontSize: 14, color: '#5E6C84' }}>—</span>
-                  )}
+                  <div
+                    style={{
+                      borderRadius: 6, padding: '8px 12px', minHeight: 60,
+                      border: '1px solid transparent', cursor: 'text',
+                      transition: 'border-color 150ms',
+                      fontSize: 14, lineHeight: '22px',
+                      color: testCase.description ? 'var(--fg-1)' : 'var(--fg-4)',
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--divider)'; }}
+                    onMouseLeave={e => { e.currentTarget.style.borderColor = 'transparent'; }}
+                  >
+                    {testCase.description || 'Add a description...'}
+                  </div>
                 </AccordionSection>
 
                 {/* c. PRECONDITIONS */}
                 <AccordionSection label="Preconditions" defaultExpanded>
-                  {testCase.preconditions ? (
-                    <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, lineHeight: 1.6, color: '#172B4D', margin: 0, whiteSpace: 'pre-wrap' }}>{testCase.preconditions}</p>
-                  ) : (
-                    <span style={{ fontSize: 14, color: '#5E6C84' }}>—</span>
-                  )}
+                  <div
+                    style={{
+                      borderRadius: 6, padding: '8px 12px', minHeight: 60,
+                      border: '1px solid transparent', cursor: 'text',
+                      transition: 'border-color 150ms',
+                      fontSize: 14, lineHeight: '22px', whiteSpace: 'pre-wrap',
+                      color: testCase.preconditions ? 'var(--fg-1)' : 'var(--fg-4)',
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--divider)'; }}
+                    onMouseLeave={e => { e.currentTarget.style.borderColor = 'transparent'; }}
+                  >
+                    {testCase.preconditions || 'Add preconditions...'}
+                  </div>
                 </AccordionSection>
 
                 {/* d. TEST STEPS */}
                 <AccordionSection label="Test Steps" count={steps.length} defaultExpanded>
                   {steps.length === 0 ? (
-                    <span style={{ fontSize: 14, color: '#5E6C84' }}>—</span>
+                    <span style={{ fontSize: 14, color: 'var(--fg-4)' }}>No test steps yet.</span>
                   ) : (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
                       {steps.map(step => (
                         <div key={step.id} style={{
                           display: 'flex', gap: 12, alignItems: 'flex-start',
                           minHeight: 36, padding: '8px 0',
-                          borderBottom: '0.75px solid #EBECF0',
+                          borderBottom: '0.75px solid var(--divider)',
                         }}>
                           {/* Step number badge */}
                           <div style={{
                             width: 24, height: 24, borderRadius: '50%',
-                            background: '#2563EB', color: '#FFFFFF',
+                            background: 'var(--cp-blue)', color: '#FFFFFF',
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
                             fontSize: 11, fontWeight: 700, flexShrink: 0, marginTop: 2,
                           }}>
@@ -818,13 +833,13 @@ export function ViewTestCaseModal({
                           </div>
                           <div style={{ flex: 1, minWidth: 0 }}>
                             <div style={{ marginBottom: step.expected_result ? 6 : 0 }}>
-                              <span style={{ fontSize: 11, fontWeight: 600, color: '#5E6C84', textTransform: 'uppercase' as const, letterSpacing: '0.04em' }}>Action</span>
-                              <p style={{ fontSize: 14, color: '#172B4D', margin: '2px 0 0', lineHeight: 1.5 }}>{step.action}</p>
+                              <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--fg-3)', textTransform: 'uppercase' as const, letterSpacing: '0.04em' }}>Action</span>
+                              <p style={{ fontSize: 14, color: 'var(--fg-1)', margin: '2px 0 0', lineHeight: 1.5 }}>{step.action}</p>
                             </div>
                             {step.expected_result && (
                               <div>
-                                <span style={{ fontSize: 11, fontWeight: 600, color: '#5E6C84', textTransform: 'uppercase' as const, letterSpacing: '0.04em' }}>Expected Result</span>
-                                <p style={{ fontSize: 14, color: '#172B4D', margin: '2px 0 0', lineHeight: 1.5 }}>{step.expected_result}</p>
+                                <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--fg-3)', textTransform: 'uppercase' as const, letterSpacing: '0.04em' }}>Expected Result</span>
+                                <p style={{ fontSize: 14, color: 'var(--fg-1)', margin: '2px 0 0', lineHeight: 1.5 }}>{step.expected_result}</p>
                               </div>
                             )}
                           </div>
@@ -869,7 +884,7 @@ export function ViewTestCaseModal({
                 {/* g. HISTORY */}
                 <AccordionSection label="History" defaultExpanded={false}>
                   {history.length === 0 ? (
-                    <p style={{ fontSize: 13, color: '#6B778C', margin: 0 }}>No version history yet.</p>
+                    <p style={{ fontSize: 13, color: 'var(--fg-4)', margin: 0 }}>No version history yet.</p>
                   ) : (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                       {history.map(h => (
@@ -877,8 +892,8 @@ export function ViewTestCaseModal({
                           display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                           height: 36, padding: '0 8px', borderRadius: 4,
                         }}>
-                          <span style={{ fontSize: 13, fontWeight: 600, color: '#172B4D' }}>Version {h.version}</span>
-                          <span style={{ fontSize: 12, color: '#5E6C84' }}>{h.changed_at ? formatDistanceToNow(new Date(h.changed_at), { addSuffix: true }) : '—'}</span>
+                          <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1)' }}>Version {h.version}</span>
+                          <span style={{ fontSize: 12, color: 'var(--fg-3)' }}>{h.changed_at ? formatDistanceToNow(new Date(h.changed_at), { addSuffix: true }) : '—'}</span>
                         </div>
                       ))}
                     </div>
@@ -888,7 +903,7 @@ export function ViewTestCaseModal({
                 {/* h. RUNS */}
                 <AccordionSection label="Runs" count={runs.length} defaultExpanded={false}>
                   {runs.length === 0 ? (
-                    <span style={{ fontSize: 14, color: '#5E6C84' }}>—</span>
+                    <span style={{ fontSize: 14, color: 'var(--fg-4)' }}>No runs yet.</span>
                   ) : (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                       {runs.map(r => {
@@ -898,7 +913,7 @@ export function ViewTestCaseModal({
                             display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                             height: 36, padding: '0 8px', borderRadius: 4,
                           }}>
-                            <span style={{ fontSize: 13, color: '#172B4D' }}>{(r as any).tm_cycle_scope?.tm_test_cycles?.name || 'Unknown cycle'}</span>
+                            <span style={{ fontSize: 13, color: 'var(--fg-1)' }}>{(r as any).tm_cycle_scope?.tm_test_cycles?.name || 'Unknown cycle'}</span>
                             <span style={{
                               display: 'inline-block', height: 20, lineHeight: '20px',
                               fontSize: 11, fontWeight: 700, textTransform: 'uppercase' as const,
@@ -922,83 +937,88 @@ export function ViewTestCaseModal({
             )}
           </div>
 
-          {/* ── RIGHT SIDEBAR ── */}
+          {/* ── RIGHT SIDEBAR (DetailRightSidebar parity) ── */}
           <div style={{
             width: 280, flexShrink: 0,
-            borderLeft: '1px solid #EBECF0',
+            borderLeft: '1px solid var(--divider)',
             overflowY: 'auto',
-            padding: '16px 20px',
-            display: 'flex', flexDirection: 'column', gap: 20,
+            padding: '14px 16px',
+            background: 'var(--bg-1)',
           }}>
-            {/* Status lozenge — V12 */}
-            <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
-              <span
-                style={{
-                  display: 'inline-flex', alignItems: 'center',
-                  height: 20, padding: '0 6px', borderRadius: 3,
-                  fontSize: 11, fontWeight: 700, textTransform: 'uppercase' as const,
-                  letterSpacing: '0.03em', width: 'auto',
-                  fontFamily: "'Inter', sans-serif",
-                  background: statusPill.bg, color: statusPill.color,
-                }}
-              >
-                {testCase.status}
-              </span>
-            </div>
+            {/* STATUS BUTTON — full-width colored */}
+            <button
+              style={{
+                width: '100%', padding: '8px 0', borderRadius: 6, border: 'none',
+                background: statusBtnBg, color: '#FFFFFF',
+                fontSize: 11, fontWeight: 700, textTransform: 'uppercase' as const,
+                letterSpacing: '0.05em', textAlign: 'center', cursor: 'pointer',
+                transition: 'opacity 150ms', marginBottom: 12,
+              }}
+              onMouseEnter={e => { e.currentTarget.style.opacity = '0.85'; }}
+              onMouseLeave={e => { e.currentTarget.style.opacity = '1'; }}
+            >
+              {testCase.status}
+            </button>
 
-            {/* Details */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-              {/* Static rows */}
-              {[
-                { label: 'Case Key', value: testCase.case_key, mono: true },
-                { label: 'Owner', value: ownerName, mono: false },
-              ].map(({ label, value, mono }) => (
-                <div key={label} style={{
-                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                  height: 32, borderBottom: '1px solid #EBECF0',
-                }}>
-                  <span style={{ fontSize: 11, fontWeight: 500, color: '#5E6C84' }}>{label}</span>
-                  <span style={{
-                    fontSize: 13, fontWeight: 400, color: '#172B4D',
-                    fontFamily: mono ? "'JetBrains Mono', monospace" : "'Inter', sans-serif",
-                  }}>{value}</span>
+            {/* PINNED FIELDS */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12, paddingBottom: 12 }}>
+              <SidebarField label="Owner">
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  {ownerName !== '—' ? (
+                    <><MiniAvatar name={ownerName} size={22} /><span style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg-1)' }}>{ownerName}</span></>
+                  ) : (
+                    <span style={{ fontSize: 13, color: 'var(--fg-4)' }}>Unassigned</span>
+                  )}
                 </div>
-              ))}
-              {/* Priority — canonical bars */}
-              <div style={{
-                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                height: 32, borderBottom: '1px solid #EBECF0',
-              }}>
-                <span style={{ fontSize: 11, fontWeight: 500, color: '#5E6C84' }}>Priority</span>
+              </SidebarField>
+
+              <SidebarField label="Assigned To">
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  {assigneeName !== '—' ? (
+                    <><MiniAvatar name={assigneeName} size={22} /><span style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg-1)' }}>{assigneeName}</span></>
+                  ) : (
+                    <span style={{ fontSize: 13, color: 'var(--fg-4)' }}>Unassigned</span>
+                  )}
+                </div>
+              </SidebarField>
+
+              <SidebarField label="Priority">
                 {priorityName !== '—'
                   ? <PriorityIndicator priority={priorityName} fontSize={12} />
-                  : <span style={{ fontSize: 13, color: '#172B4D' }}>—</span>
+                  : <span style={{ fontSize: 13, color: 'var(--fg-4)' }}>None</span>
                 }
-              </div>
-              {/* Type + optional Assigned To */}
-              {[
-                { label: 'Type', value: typeName },
-                ...(assigneeName !== '—' ? [{ label: 'Assigned To', value: assigneeName }] : []),
-              ].map(({ label, value }) => (
-                <div key={label} style={{
-                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                  height: 32, borderBottom: '1px solid #EBECF0',
-                }}>
-                  <span style={{ fontSize: 11, fontWeight: 500, color: '#5E6C84' }}>{label}</span>
-                  <span style={{ fontSize: 13, fontWeight: 400, color: '#172B4D', fontFamily: "'Inter', sans-serif" }}>{value}</span>
-                </div>
-              ))}
+              </SidebarField>
+
+              <SidebarField label="Type">
+                <span style={{ fontSize: 13, fontWeight: 400, color: 'var(--fg-1)' }}>{typeName}</span>
+              </SidebarField>
             </div>
 
-            {/* Dates */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ fontSize: 11, color: '#5E6C84' }}>Created</span>
-                <span style={{ fontSize: 11, color: '#5E6C84' }}>{fmtDate(testCase.created_at)}</span>
+            {/* CONTEXT SECTION */}
+            <div style={{ borderTop: '1px solid var(--divider)', paddingTop: 12 }}>
+              <span style={{ display: 'block', fontSize: 10, fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.06em', color: 'var(--fg-3)', marginBottom: 12 }}>Details</span>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                <SidebarField label="Case Key">
+                  <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg-1)', fontFamily: "'JetBrains Mono', monospace" }}>{testCase.case_key}</span>
+                </SidebarField>
+
+                <SidebarField label="Automation">
+                  <span style={{ fontSize: 12, color: 'var(--fg-2)' }}>{testCase.automation_status || 'Manual'}</span>
+                </SidebarField>
+
+                <SidebarField label="Version">
+                  <span style={{ fontSize: 12, color: 'var(--fg-2)' }}>{testCase.version != null ? String(testCase.version) : '—'}</span>
+                </SidebarField>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ fontSize: 11, color: '#5E6C84' }}>Updated</span>
-                <span style={{ fontSize: 11, color: '#5E6C84' }}>{fmtDate(testCase.updated_at)}</span>
+            </div>
+
+            {/* METADATA — timestamps */}
+            <div style={{ marginTop: 16, paddingTop: 12, borderTop: '1px solid var(--divider)' }}>
+              <div style={{ fontSize: 11, color: 'var(--fg-4)', lineHeight: '18px' }}>
+                Created {testCase.created_at ? new Date(testCase.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : '—'}
+              </div>
+              <div style={{ fontSize: 11, color: 'var(--fg-4)', lineHeight: '18px' }}>
+                Updated {testCase.updated_at ? formatDistanceToNow(new Date(testCase.updated_at), { addSuffix: true }) : '—'}
               </div>
             </div>
           </div>
@@ -1007,6 +1027,56 @@ export function ViewTestCaseModal({
 
       {/* AddLinkModal */}
       <AddLinkModal isOpen={addLinkOpen} onClose={() => setAddLinkOpen(false)} linkType={addLinkType} projectId={testCase?.project_id} onAdd={handleAddLink} />
+    </div>
+  );
+}
+
+// ─── Primitives (WorkItemDetailModal parity) ─────────────────────────────
+function HeaderBtn({ title, onClick, close, children }: { title: string; onClick?: () => void; close?: boolean; children: React.ReactNode }) {
+  return (
+    <button
+      onClick={onClick}
+      title={title}
+      style={{
+        width: 32, height: 32, border: 'none', borderRadius: 8,
+        backgroundColor: 'transparent', color: 'var(--fg-4)',
+        cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+        transition: 'all 150ms',
+      }}
+      onMouseEnter={e => {
+        if (close) { e.currentTarget.style.background = '#FFEBE6'; e.currentTarget.style.color = '#DE350B'; }
+        else { e.currentTarget.style.background = 'var(--cp-bd-zone)'; }
+      }}
+      onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--fg-4)'; }}
+    >
+      {children}
+    </button>
+  );
+}
+
+function SidebarField({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <span style={{ display: 'block', fontSize: 11, fontWeight: 600, color: 'var(--fg-2)', marginBottom: 4 }}>{label}</span>
+      {children}
+    </div>
+  );
+}
+
+function MiniAvatar({ name, size = 22 }: { name: string; size?: number }) {
+  const initials = name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  const colors = ['#2563EB', '#0D9488', '#7C3AED', '#D97706', '#DC2626', '#16A34A'];
+  return (
+    <div style={{
+      width: size, height: size, borderRadius: '50%',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      fontWeight: 700, color: '#FFFFFF', flexShrink: 0,
+      fontSize: size * 0.38,
+      backgroundColor: colors[Math.abs(hash) % colors.length],
+    }}>
+      {initials}
     </div>
   );
 }
