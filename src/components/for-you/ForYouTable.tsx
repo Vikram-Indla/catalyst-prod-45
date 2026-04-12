@@ -17,6 +17,7 @@ import type { WorkItem, WorkGroup } from '@/hooks/useForYouData';
 
 interface CatalystTableProps {
   groupedItems: Record<WorkGroup, WorkItem[]>;
+  customGroups?: { label: string; items: WorkItem[] }[];
   onRowClick: (itemId: string) => void;
   selectedIds?: Set<string>;
   onSelectionChange?: (ids: Set<string>) => void;
