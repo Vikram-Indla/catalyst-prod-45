@@ -19,6 +19,7 @@ import { StoryRichTextEditor } from '../components/story-detail/StoryRichTextEdi
 import { resolveDisplayHtml } from '../components/story-detail/adf-utils';
 import { SubtasksPanel } from '../components/SubtasksPanel';
 import { adfToHtml, tryAdfStringToHtml } from '../utils/adfToHtml';
+import { AdfDescriptionRenderer } from '../components/AdfDescriptionRenderer';
 import {
   useStoryDetail, useStoryComments, useStoryHistory,
   useStorySiblings, useParentCandidates, useTeamMembers,
@@ -363,7 +364,10 @@ export default function StoryDetailView({ projectId, projectKey, itemId }: Story
                 onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
               >
                 {story.description_text || (story as any).description_adf ? (
-                  <div dangerouslySetInnerHTML={{ __html: adfToHtml((story as any).description_adf) || resolveDisplayHtml(story.description_text) }} />
+                  <AdfDescriptionRenderer
+                    html={adfToHtml((story as any).description_adf) || resolveDisplayHtml(story.description_text)}
+                    issueKey={(story as any).issue_key}
+                  />
                 ) : 'Add a description...'}
               </div>
             )}

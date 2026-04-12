@@ -61,6 +61,7 @@ import { AttachmentsSection } from './story-detail-modules';
 import { EditableAssignee, EditablePriority, EditableLabels, ParentFieldPicker } from './story-detail-modules';
 import { StoryRichTextEditor } from '../story-detail/StoryRichTextEditor';
 import { adfToHtml, tryAdfStringToHtml } from '../../utils/adfToHtml';
+import { AdfDescriptionRenderer } from '../AdfDescriptionRenderer';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 
 /* ═══════════════════════════════════════════════
@@ -1166,14 +1167,9 @@ export default function StoryDetailModal({
                                 return <span style={{ fontSize: 14, color: 'rgb(140, 143, 151)', fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif', padding: '4px 0' }}>Add a description…</span>;
                               }
                               return (
-                                <div
-                                  dangerouslySetInnerHTML={{ __html: descHtml }}
-                                  style={{
-                                    fontSize: 14, fontWeight: 400, lineHeight: '24px', color: 'rgb(41, 42, 46)',
-                                    fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif',
-                                    padding: 0, margin: 0, background: 'transparent',
-                                  }}
-                                  className="jira-desc-view"
+                                <AdfDescriptionRenderer
+                                  html={descHtml}
+                                  issueKey={issue?.issue_key}
                                 />
                               );
                             })()}
