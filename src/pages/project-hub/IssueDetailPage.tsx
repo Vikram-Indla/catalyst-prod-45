@@ -8,7 +8,7 @@
 import { lazy, Suspense } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { typedQuery } from '@/integrations/supabase/client';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
 
 const CatalystDetailRouter = lazy(() => import('@/components/catalyst-detail-views/CatalystDetailRouter'));
@@ -18,19 +18,22 @@ export default function IssueDetailPage() {
   const navigate = useNavigate();
 
   // Look up issue by issue_key to get the ID and type
-  const { data: issue, isLoading } = useQuery({
+  const { data: issue, isLoading, error: queryError } = useQuery({
     queryKey: ['issue-detail-page', issueKey],
     enabled: !!issueKey,
     queryFn: async () => {
-      const { data } = await supabase
-        .from('ph_issues')
+      const { data, error } = await typedQuery('ph_issues')
         .select('id, issue_type, project_key')
         .eq('issue_key', issueKey!)
-        .is('deleted_at', null)
         .maybeSingle();
-      return data;
+      if (error) {
+        console.error('[IssueDetailPage] Supabase query error:', error);
+        throw new Error(error.message);
+      }
+      return data as { id: string; issue_type: string; project_key: string } | null;
     },
     staleTime: 120000,
+    retry: false,
   });
 
   const openDetail = useGlobalSearchStore(s => s.openDetail);
@@ -56,6 +59,11 @@ export default function IssueDetailPage() {
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', fontFamily: 'Inter, sans-serif', gap: 12 }}>
         <span style={{ fontSize: 16, fontWeight: 600, color: '#344054' }}>Issue not found</span>
         <span style={{ fontSize: 13, color: '#5E6C84' }}>{issueKey} could not be found or has been deleted.</span>
+        {queryError && (
+          <span style={{ fontSize: 11, color: '#DE350B', fontFamily: "'JetBrains Mono', monospace", maxWidth: 500, textAlign: 'center' }}>
+            Debug: {queryError.message}
+          </span>
+        )}
         <button
           onClick={() => navigate(`/project-hub/${projectKey}/list`)}
           style={{ marginTop: 8, padding: '8px 16px', background: '#2563EB', color: '#FFFFFF', border: 'none', borderRadius: 6, fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: 'Inter, sans-serif' }}
