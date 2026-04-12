@@ -322,8 +322,18 @@ function CommentItem({ comment, onDelete, confirmDeleteId, setConfirmDeleteId }:
           {relativeTime(comment.jira_created_at)}
         </div>
         {/* Body */}
-        <div style={{ fontSize: 14, color: T.textPrimary, lineHeight: '20px', marginTop: 4 }}
-          dangerouslySetInnerHTML={{ __html: resolveDisplayHtml(comment.body) }} />
+        <div
+          className="catalyst-comment-body"
+          style={{ fontSize: 14, color: T.textPrimary, lineHeight: '20px', marginTop: 4 }}
+          dangerouslySetInnerHTML={{ __html: resolveDisplayHtml(comment.body) }}
+          onClick={(e) => {
+            const target = e.target as HTMLElement;
+            if (target.tagName === 'IMG') {
+              const src = (target as HTMLImageElement).src;
+              if (src) window.open(src, '_blank', 'noopener,noreferrer');
+            }
+          }}
+        />
         {/* Delete */}
         {confirmDeleteId === comment.id ? (
           <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>

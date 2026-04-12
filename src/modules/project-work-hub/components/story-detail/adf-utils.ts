@@ -41,6 +41,25 @@ const ADF_TO_TIPTAP_NODES: Record<string, string> = Object.fromEntries(
 
 // ─── TipTap JSON → ADF ─────────────────────────────────────
 function tiptapNodeToAdf(node: any): any {
+  // Special handling: TipTap `image` → ADF `mediaSingle > media`
+  if (node.type === 'image') {
+    const src = node.attrs?.src || '';
+    const alt = node.attrs?.alt || '';
+    return {
+      type: 'mediaSingle',
+      attrs: { layout: 'center' },
+      content: [{
+        type: 'media',
+        attrs: {
+          type: 'file',
+          url: src,
+          alt: alt,
+          filename: alt || 'image',
+        },
+      }],
+    };
+  }
+
   const adfType = TIPTAP_TO_ADF_NODES[node.type] || node.type;
   const result: any = { type: adfType };
 
@@ -78,6 +97,33 @@ export function tiptapJsonToAdf(json: any): any {
 
 // ─── ADF → TipTap JSON ─────────────────────────────────────
 function adfNodeToTiptap(node: any): any {
+  // Special handling: ADF `mediaSingle` / `mediaGroup` → TipTap `image` nodes
+  if (node.type === 'mediaSingle' || node.type === 'mediaGroup') {
+    const mediaChildren = (node.content ?? []).filter((c: any) => c.type === 'media');
+    if (mediaChildren.length > 0) {
+      // Return an array of image nodes (flatted by caller)
+      return mediaChildren.map((m: any) => ({
+        type: 'image',
+        attrs: {
+          src: m.attrs?.url || '',
+          alt: m.attrs?.alt || m.attrs?.filename || 'image',
+        },
+      }));
+    }
+    return null;
+  }
+
+  // ADF `media` node at top level (shouldn't happen often, but handle it)
+  if (node.type === 'media') {
+    return {
+      type: 'image',
+      attrs: {
+        src: node.attrs?.url || '',
+        alt: node.attrs?.alt || node.attrs?.filename || 'image',
+      },
+    };
+  }
+
   const tiptapType = ADF_TO_TIPTAP_NODES[node.type] || node.type;
   const result: any = { type: tiptapType };
 
@@ -100,7 +146,11 @@ function adfNodeToTiptap(node: any): any {
   }
 
   if (node.content && node.content.length > 0) {
-    result.content = node.content.map(adfNodeToTiptap);
+    // Flatten any arrays returned by mediaSingle/mediaGroup conversion
+    result.content = node.content
+      .map(adfNodeToTiptap)
+      .filter((n: any) => n != null)
+      .flat();
   }
 
   return result;

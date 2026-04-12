@@ -1327,3 +1327,44 @@
   background-color: #F4F5F7;
   font-weight: 600;
 }
+
+/* ════════════════════════════════════════════════════════════════
+   COMMENT BODY — IMAGE RENDERING
+   Ensures pasted/uploaded images in comments display correctly
+   with proper sizing, border radius, and click-to-enlarge cursor.
+   ════════════════════════════════════════════════════════════════ */
+
+[data-sdm-scope] .catalyst-comment-body img {
+  max-width: 100%;
+  border-radius: 4px;
+  margin: 8px 0;
+  display: block;
+  cursor: pointer;
+}
+
+[data-sdm-scope] .catalyst-comment-body img:hover {
+  box-shadow: 0 0 0 2px rgba(9, 30, 66, 0.14);
+}
+
+/* ════════════════════════════════════════════════════════════════
+   DESCRIPTION EDITOR — IMAGE STYLES IN TIPTAP
+   Ensures images rendered inside the TipTap editor have proper
+   display styling and don't overflow the editor bounds.
+   ════════════════════════════════════════════════════════════════ */
+
+.adf-editor-content img {
+  max-width: 100%;
+  border-radius: 4px;
+  margin: 8px 0;
+  display: block;
+  cursor: pointer;
+}
+
+.adf-editor-content img:hover {
+  box-shadow: 0 0 0 2px rgba(9, 30, 66, 0.14);
+}
+
+.adf-editor-content img.ProseMirror-selectednode {
+  outline: 2px solid #4C9AFF;
+  border-radius: 4px;
+}

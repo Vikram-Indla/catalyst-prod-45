@@ -1118,6 +1118,7 @@ export default function StoryDetailModal({
                           >
                             <StoryRichTextEditor
                               content={adfToHtml(issue?.description_adf) || issue?.description_text || ''}
+                              workItemId={itemId}
                               onSave={(html) => {
                                 updateFieldMutation.mutate({ field: 'description_text', value: html, oldValue: issue?.description_text ?? '' });
                                 setDescEditMode(false);
@@ -1189,6 +1190,7 @@ export default function StoryDetailModal({
                             >
                               <StoryRichTextEditor
                                 content={tryAdfStringToHtml(acceptanceCriteria) ?? acceptanceCriteria ?? ''}
+                                workItemId={itemId}
                                 onSave={(adfJson) => {
                                   setAcceptanceCriteria(adfJson);
                                   supabase.from('ph_issues').update({ acceptance_criteria: adfJson }).eq('id', itemId).then(() => { queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] }); });
@@ -1409,8 +1411,17 @@ export default function StoryDetailModal({
                                   workItemId={itemId}
                                 />
                               ) : (
-                                <div style={{ fontSize: 14, color: '#172B4D', lineHeight: 1.6 }}
+                                <div
+                                  className="catalyst-comment-body"
+                                  style={{ fontSize: 14, color: '#172B4D', lineHeight: 1.6 }}
                                   dangerouslySetInnerHTML={{ __html: c.body }}
+                                  onClick={(e) => {
+                                    const target = e.target as HTMLElement;
+                                    if (target.tagName === 'IMG') {
+                                      const src = (target as HTMLImageElement).src;
+                                      if (src) window.open(src, '_blank', 'noopener,noreferrer');
+                                    }
+                                  }}
                                 />
                               )}
 

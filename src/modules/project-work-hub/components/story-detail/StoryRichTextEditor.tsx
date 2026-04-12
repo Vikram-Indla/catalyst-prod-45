@@ -10,6 +10,7 @@ import StarterKit from '@tiptap/starter-kit';
 import LinkExtension from '@tiptap/extension-link';
 import Placeholder from '@tiptap/extension-placeholder';
 import Underline from '@tiptap/extension-underline';
+import ImageExtension from '@tiptap/extension-image';
 import { Table } from '@tiptap/extension-table';
 import { TableRow } from '@tiptap/extension-table-row';
 import { TableCell } from '@tiptap/extension-table-cell';
@@ -17,9 +18,10 @@ import { TableHeader } from '@tiptap/extension-table-header';
 import {
   Bold, Italic, Underline as UnderlineIcon, Strikethrough,
   Heading1, Heading2, Heading3, Heading4, Heading5, Heading6,
-  List, ListOrdered, Code2, Link2, Undo2, Redo2, Sparkles, Loader2,
+  List, ListOrdered, Code2, Link2, Image as ImageIcon, Undo2, Redo2, Sparkles, Loader2,
 } from 'lucide-react';
 import { tiptapJsonToAdf, resolveEditorContent } from './adf-utils';
+import { supabase } from '@/integrations/supabase/client';
 import { Extension } from '@tiptap/core';
 import { Plugin, PluginKey } from '@tiptap/pm/state';
 
@@ -183,6 +185,8 @@ interface StoryRichTextEditorProps {
   onAiImprove?: () => Promise<string | null>;
   /** Label for the AI button */
   aiLabel?: string;
+  /** Work item ID — used for image upload path in Supabase storage */
+  workItemId?: string;
 }
 
 // ─── Debounce helper ─────────────────────────────────────────
@@ -258,13 +262,31 @@ function Sep() {
 // ─── Main editor component ──────────────────────────────────
 export const StoryRichTextEditor = React.memo(function StoryRichTextEditor({
   content, onSave, onCancel, placeholder = 'Start typing...', minHeight = 200, compact = false, autoSave = false,
-  onAiImprove, aiLabel = 'Improve description',
+  onAiImprove, aiLabel = 'Improve description', workItemId,
 }: StoryRichTextEditorProps) {
   const lastSavedRef = useRef<string>(content);
   const isInitialMount = useRef(true);
   const [aiGenerating, setAiGenerating] = useState(false);
   const [aiMode, setAiMode] = useState(false); // true = AI content loaded, showing Save/Cancel
   const [preAiContent, setPreAiContent] = useState<string>(''); // content before AI replacement
+  const [imageUploading, setImageUploading] = useState(false);
+
+  // ─── Image upload to Supabase storage ───────────────────
+  const uploadImage = useCallback(async (file: File): Promise<string | null> => {
+    if (file.size > 10 * 1024 * 1024) return null; // 10 MB limit
+    const ext = file.name?.split('.').pop() || 'png';
+    const folder = workItemId || 'general';
+    const path = `description-images/${folder}/${Date.now()}.${ext}`;
+    setImageUploading(true);
+    try {
+      const { error } = await supabase.storage.from('attachments').upload(path, file, { contentType: file.type });
+      if (error) { console.error('Image upload error:', error); return null; }
+      const { data } = supabase.storage.from('attachments').getPublicUrl(path);
+      return data.publicUrl;
+    } finally {
+      setImageUploading(false);
+    }
+  }, [workItemId]);
 
   // Resolve content: ADF JSON → TipTap JSON, or HTML string
   const initialContent = useMemo(() => resolveEditorContent(content), [content]);
@@ -285,6 +307,68 @@ export const StoryRichTextEditor = React.memo(function StoryRichTextEditor({
     }
   }, 300);
 
+  // Ref to hold upload function for use inside ProseMirror plugins
+  const uploadImageRef = useRef(uploadImage);
+  uploadImageRef.current = uploadImage;
+
+  // ─── ProseMirror plugin for image paste & drop ──────────
+  const ImagePasteDropPlugin = useMemo(() => Extension.create({
+    name: 'imagePasteDrop',
+    addProseMirrorPlugins() {
+      return [
+        new Plugin({
+          key: new PluginKey('imagePasteDrop'),
+          props: {
+            handlePaste(view, event) {
+              const items = Array.from(event.clipboardData?.items ?? []);
+              const imageItem = items.find(i => i.type.startsWith('image/'));
+              if (imageItem) {
+                event.preventDefault();
+                const file = imageItem.getAsFile();
+                if (file) {
+                  uploadImageRef.current(file).then(url => {
+                    if (url) {
+                      const { schema } = view.state;
+                      const node = schema.nodes.image?.create({ src: url, alt: file.name || 'image' });
+                      if (node) {
+                        const tr = view.state.tr.replaceSelectionWith(node);
+                        view.dispatch(tr);
+                      }
+                    }
+                  });
+                }
+                return true;
+              }
+              return false;
+            },
+            handleDrop(view, event) {
+              const files = Array.from(event.dataTransfer?.files ?? []).filter(f => f.type.startsWith('image/'));
+              if (files.length > 0) {
+                event.preventDefault();
+                const pos = view.posAtCoords({ left: event.clientX, top: event.clientY });
+                files.forEach(file => {
+                  uploadImageRef.current(file).then(url => {
+                    if (url) {
+                      const { schema } = view.state;
+                      const node = schema.nodes.image?.create({ src: url, alt: file.name || 'image' });
+                      if (node) {
+                        const insertPos = pos?.pos ?? view.state.selection.from;
+                        const tr = view.state.tr.insert(insertPos, node);
+                        view.dispatch(tr);
+                      }
+                    }
+                  });
+                });
+                return true;
+              }
+              return false;
+            },
+          },
+        }),
+      ];
+    },
+  }), []);
+
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
@@ -292,6 +376,14 @@ export const StoryRichTextEditor = React.memo(function StoryRichTextEditor({
       }),
       LinkExtension.configure({ openOnClick: false }),
       Underline,
+      ImageExtension.configure({
+        inline: false,
+        allowBase64: false,
+        HTMLAttributes: {
+          style: 'max-width: 100%; border-radius: 4px; margin: 8px 0; display: block; cursor: pointer;',
+        },
+      }),
+      ImagePasteDropPlugin,
       Table.configure({ resizable: false }),
       TableRow,
       TableCell,
@@ -476,12 +568,33 @@ export const StoryRichTextEditor = React.memo(function StoryRichTextEditor({
 
         <Sep />
 
-        {/* Code + Link */}
+        {/* Code + Link + Image */}
         <ToolbarBtn active={editor.isActive('codeBlock')} onClick={() => editor.chain().focus().toggleCodeBlock().run()} title="Code block">
           <Code2 size={15} />
         </ToolbarBtn>
         <ToolbarBtn active={editor.isActive('link')} onClick={setLink} title="Link">
           <Link2 size={15} />
+        </ToolbarBtn>
+        <ToolbarBtn
+          onClick={() => {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.onchange = async () => {
+              const file = input.files?.[0];
+              if (file) {
+                const url = await uploadImage(file);
+                if (url) {
+                  editor.chain().focus().setImage({ src: url, alt: file.name || 'image' }).run();
+                }
+              }
+            };
+            input.click();
+          }}
+          title="Insert image"
+          disabled={imageUploading}
+        >
+          <ImageIcon size={15} />
         </ToolbarBtn>
 
         <Sep />
@@ -493,6 +606,13 @@ export const StoryRichTextEditor = React.memo(function StoryRichTextEditor({
         <ToolbarBtn onClick={() => editor.chain().focus().redo().run()} title="Redo (Ctrl+Shift+Z)" disabled={!editor.can().redo()}>
           <Redo2 size={15} />
         </ToolbarBtn>
+
+        {/* Upload indicator */}
+        {imageUploading && (
+          <span style={{ fontSize: 11, color: '#6B778C', marginLeft: 8, display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+            <Loader2 size={12} style={{ animation: 'sdm-spin 1s linear infinite' }} /> Uploading…
+          </span>
+        )}
       </div>
 
       {/* ── Editor content ── */}

@@ -347,6 +347,7 @@ export default function StoryDetailView({ projectId, projectKey, itemId }: Story
             {editingDesc ? (
               <StoryRichTextEditor
                 content={adfToHtml((story as any).description_adf) || story.description_text || ''}
+                workItemId={itemId}
                 onSave={handleDescSave}
                 onCancel={() => setEditingDesc(false)}
                 placeholder="Add a description..."
@@ -379,6 +380,7 @@ export default function StoryDetailView({ projectId, projectKey, itemId }: Story
             {editingAC ? (
               <StoryRichTextEditor
                 content={tryAdfStringToHtml((story as any).acceptance_criteria) ?? (story as any).acceptance_criteria ?? ''}
+                workItemId={itemId}
                 onSave={handleACSave}
                 onCancel={() => setEditingAC(false)}
                 placeholder="Add acceptance criteria..."
