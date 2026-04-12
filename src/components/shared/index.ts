@@ -20,6 +20,8 @@ export { StatusPill } from './StatusPill';
 export { HealthBadge } from './HealthBadge';
 export { TechnicalScoreBadge } from './TechnicalScoreBadge';
 export { BulkSelectionBar } from './BulkSelectionBar';
+export { PriorityIndicator, PriorityBars, normalisePriority, PRIORITY_MAP } from './PriorityIndicator';
+export type { PriorityLevel } from './PriorityIndicator';
 
 // Section Components  
 export { CommentsSection } from './CommentsSection';

@@ -6,6 +6,7 @@
 import { useState, useEffect } from 'react';
 import { X, Edit2, Copy, ClipboardList, Paperclip, Link2, History, Play, Plus, Trash2, Bug, BookOpen, MessageSquare, Search, Loader2, GitBranch, ChevronDown, ChevronRight, FileText, Settings2 } from 'lucide-react';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
+import { PriorityIndicator } from '@/components/shared/PriorityIndicator';
 import { EntityCommentsPanel } from '@/components/testhub/EntityCommentsPanel';
 import { EntityAttachmentsPanel } from '@/components/testhub/EntityAttachmentsPanel';
 import { formatDistanceToNow, format } from 'date-fns';
@@ -947,12 +948,10 @@ export function ViewTestCaseModal({
 
             {/* Details */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+              {/* Static rows */}
               {[
                 { label: 'Case Key', value: testCase.case_key, mono: true },
                 { label: 'Owner', value: ownerName, mono: false },
-                { label: 'Priority', value: priorityName, mono: false },
-                { label: 'Type', value: typeName, mono: false },
-                ...(assigneeName !== '—' ? [{ label: 'Assigned To', value: assigneeName, mono: false }] : []),
               ].map(({ label, value, mono }) => (
                 <div key={label} style={{
                   display: 'flex', alignItems: 'center', justifyContent: 'space-between',
@@ -963,6 +962,30 @@ export function ViewTestCaseModal({
                     fontSize: 13, fontWeight: 400, color: '#172B4D',
                     fontFamily: mono ? "'JetBrains Mono', monospace" : "'Inter', sans-serif",
                   }}>{value}</span>
+                </div>
+              ))}
+              {/* Priority — canonical bars */}
+              <div style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                height: 32, borderBottom: '1px solid #EBECF0',
+              }}>
+                <span style={{ fontSize: 11, fontWeight: 500, color: '#5E6C84' }}>Priority</span>
+                {priorityName !== '—'
+                  ? <PriorityIndicator priority={priorityName} fontSize={12} />
+                  : <span style={{ fontSize: 13, color: '#172B4D' }}>—</span>
+                }
+              </div>
+              {/* Type + optional Assigned To */}
+              {[
+                { label: 'Type', value: typeName },
+                ...(assigneeName !== '—' ? [{ label: 'Assigned To', value: assigneeName }] : []),
+              ].map(({ label, value }) => (
+                <div key={label} style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                  height: 32, borderBottom: '1px solid #EBECF0',
+                }}>
+                  <span style={{ fontSize: 11, fontWeight: 500, color: '#5E6C84' }}>{label}</span>
+                  <span style={{ fontSize: 13, fontWeight: 400, color: '#172B4D', fontFamily: "'Inter', sans-serif" }}>{value}</span>
                 </div>
               ))}
             </div>

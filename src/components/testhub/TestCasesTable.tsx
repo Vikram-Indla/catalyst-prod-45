@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTheme } from '@/hooks/useTheme';
 import { MoreVertical, ChevronUp, ChevronDown } from 'lucide-react';
+import { PriorityIndicator } from '@/components/shared/PriorityIndicator';
 
 interface TestCase {
   id: string;
@@ -256,17 +257,9 @@ export function TestCasesTable({
                   {tc.title}
                 </td>
                 
-                {/* Priority - Bold colored text */}
+                {/* Priority — canonical bars + label */}
                 <td className="th-table-col-priority" style={bodyCellStyle}>
-                  <span style={{
-                    fontWeight: 600,
-                    fontSize: 13,
-                    color: isDark
-                      ? (tc.priority === 'critical' ? '#F87171' : tc.priority === 'high' ? '#FB923C' : tc.priority === 'medium' ? '#FBBF24' : '#A1A1A1')
-                      : (tc.priority === 'critical' ? '#991B1B' : tc.priority === 'high' ? '#C2410C' : tc.priority === 'medium' ? '#A16207' : 'var(--fg-3)'),
-                  }}>
-                    {tc.priority.charAt(0).toUpperCase() + tc.priority.slice(1)}
-                  </span>
+                  <PriorityIndicator priority={tc.priority} isDark={isDark} />
                 </td>
                 
                 {/* Type - Pill badge */}

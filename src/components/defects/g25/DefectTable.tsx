@@ -1,6 +1,7 @@
 import { useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MoreHorizontal, ExternalLink, UserRound, ChevronsUp, ChevronUp, Minus, ChevronDown, Search, X, Paperclip } from 'lucide-react';
+import { MoreHorizontal, ExternalLink, UserRound, Search, X, Paperclip } from 'lucide-react';
+import { PriorityIndicator } from '@/components/shared/PriorityIndicator';
 import { Checkbox } from '@/components/ui/checkbox';
 import '@/styles/product-backlog.css';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -50,25 +51,9 @@ function SeverityPill({ severity }: { severity: string }) {
   );
 }
 
-// ── Priority chevron icon (matching ProjectHub) ──
-const PRIORITY_ICONS: Record<string, { Icon: typeof ChevronsUp; color: string; label: string }> = {
-  critical: { Icon: ChevronsUp, color: '#E5484D', label: 'Critical' },
-  urgent:   { Icon: ChevronsUp, color: '#E5484D', label: 'Urgent' },
-  high:     { Icon: ChevronUp,  color: '#F76B15', label: 'High' },
-  medium:   { Icon: Minus,      color: '#6B778C', label: 'Medium' },
-  low:      { Icon: ChevronDown, color: '#94A3B8', label: 'Low' },
-};
-
 function PriorityCell({ priority }: { priority: string | null }) {
   if (!priority) return <span style={{ fontSize: 13, color: '#94A3B8' }}>—</span>;
-  const p = PRIORITY_ICONS[priority];
-  if (!p) return <span style={{ fontSize: 13, color: '#94A3B8' }}>—</span>;
-  return (
-    <span className="inline-flex items-center gap-1">
-      <p.Icon className="h-3.5 w-3.5" style={{ color: p.color }} />
-      <span style={{ fontSize: 13, fontWeight: 500, color: '#1E293B' }}>{p.label}</span>
-    </span>
-  );
+  return <PriorityIndicator priority={priority} />;
 }
 
 // ── Avatar colours (deterministic) ──

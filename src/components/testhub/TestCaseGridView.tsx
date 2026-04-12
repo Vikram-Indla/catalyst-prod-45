@@ -1,3 +1,5 @@
+import { PriorityIndicator } from '@/components/shared/PriorityIndicator';
+
 interface TestCase {
   id: string;
   caseKey: string;
@@ -132,9 +134,7 @@ export function TestCaseGridView({ testCases, selectedIds, onSelectOne, onRowCli
 
             {/* Metadata */}
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 12 }}>
-              <span style={{ fontSize: 12, fontWeight: 600, color: getPriorityColor(tc.priority) }}>
-                {tc.priority.charAt(0).toUpperCase() + tc.priority.slice(1)}
-              </span>
+              <PriorityIndicator priority={tc.priority} fontSize={12} />
               <span style={{
                 fontSize: 10,
                 fontWeight: 600,
