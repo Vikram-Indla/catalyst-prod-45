@@ -15,17 +15,21 @@ const CatalystViewEpic = lazy(() => import('./epic/CatalystViewEpic'));
 const CatalystViewDefect = lazy(() => import('./defect/CatalystViewDefect'));
 const CatalystViewIncident = lazy(() => import('./incident/CatalystViewIncident'));
 const CatalystViewTask = lazy(() => import('./task/CatalystViewTask'));
+const CatalystViewBusinessRequest = lazy(() => import('./business-request/CatalystViewBusinessRequest'));
+const CatalystViewSubtask = lazy(() => import('./subtask/CatalystViewSubtask'));
 
 /** Normalize various issue_type strings to a canonical CatalystItemType */
-function resolveItemType(raw: string | undefined | null): 'story' | 'epic' | 'defect' | 'incident' | 'task' | null {
+function resolveItemType(raw: string | undefined | null): 'story' | 'epic' | 'defect' | 'incident' | 'task' | 'business_request' | 'subtask' | null {
   if (!raw) return null;
   const t = raw.toLowerCase().trim();
   if (t === 'epic') return 'epic';
   if (t === 'bug' || t === 'defect' || t === 'qa bug') return 'defect';
   if (t.includes('incident') || t === 'production incident' || t === 'business gap') return 'incident';
   if (t === 'task') return 'task';
+  if (t === 'business request' || t === 'business_request' || t === 'demand') return 'business_request';
+  if (t === 'sub-task' || t === 'subtask' || t === 'backend' || t === 'frontend' || t === 'figma' || t === 'entity figma' || t === 'integration') return 'subtask';
   if (t === 'story' || t === 'new feature' || t === 'feature' || t === 'improvement') return 'story';
-  // Default to story for unknown types (Business Request, Sub-task excluded per spec)
+  // Default to story for any unknown type
   return 'story';
 }
 
@@ -71,6 +75,8 @@ export default function CatalystDetailRouter({
       {resolved === 'defect' && <CatalystViewDefect {...sharedProps} />}
       {resolved === 'incident' && <CatalystViewIncident {...sharedProps} />}
       {resolved === 'task' && <CatalystViewTask {...sharedProps} />}
+      {resolved === 'business_request' && <CatalystViewBusinessRequest {...sharedProps} />}
+      {resolved === 'subtask' && <CatalystViewSubtask {...sharedProps} />}
       {(resolved === 'story' || !resolved) && <CatalystViewStory {...sharedProps} />}
     </Suspense>
   );
