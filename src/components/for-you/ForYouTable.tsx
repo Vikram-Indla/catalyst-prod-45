@@ -5,7 +5,7 @@
  */
 
 import React, { useState, useCallback, useRef, useEffect, useMemo } from 'react';
-import { Star, Paperclip } from 'lucide-react';
+import { Star, Paperclip, ChevronRight, ChevronDown } from 'lucide-react';
 import { PriorityBars, normalisePriority } from '@/components/shared/PriorityIndicator';
 import { Checkbox } from '@/components/ui/checkbox';
 import { JiraIssueTypeIcon } from '@/components/shared/JiraIssueTypeIcon';
@@ -100,8 +100,13 @@ export function CatalystTable({
   const [focusedIndex, setFocusedIndex] = useState<number>(-1);
   const [sortKey, setSortKey] = useState<string | null>(null);
   const [sortDir, setSortDir] = useState<SortDir>(null);
+  const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
   const tableRef = useRef<HTMLDivElement>(null);
   const nameAvatarMap = useProfileAvatarsByName();
+
+  const toggleGroup = useCallback((label: string) => {
+    setCollapsed(prev => ({ ...prev, [label]: !prev[label] }));
+  }, []);
 
   const {
     orderedColumns, columnWidths, dragKey, dragOverKey,
@@ -338,23 +343,62 @@ export function CatalystTable({
             </tr>
           </thead>
           <tbody>
-            {resolvedGroups.map(group => (
+            {resolvedGroups.map(group => {
+              const isCollapsed = !!collapsed[group.key];
+              // Check if this group looks like an assignee name (has a space = first+last name)
+              const isAssigneeGroup = group.label.includes(' ') && group.label !== 'No Status' && group.label !== 'No Priority' && group.label !== 'No Project';
+              const avatarUrl = isAssigneeGroup ? nameAvatarMap.get(group.label.toLowerCase()) : undefined;
+              const initials = group.label.split(' ').map((w: string) => w[0]).join('').toUpperCase().slice(0, 2);
+
+              return (
               <React.Fragment key={group.key}>
                 <tr>
-                  <td colSpan={orderedColumns.length} style={{
-                    height: 36, padding: '0 12px',
-                    background: '#F7F8F9',
-                    borderBottom: '0.75px solid #E2E8F0',
-                    borderTop: '0.75px solid #E2E8F0',
-                    fontSize: 11, fontWeight: 700, color: '#475569',
-                    textTransform: 'uppercase', letterSpacing: '0.08em',
-                    verticalAlign: 'middle',
-                  }}>
-                    {group.label} <span style={{ fontWeight: 500, color: '#94A3B8', marginLeft: 6 }}>({group.items.length})</span>
+                  <td
+                    colSpan={orderedColumns.length}
+                    onClick={() => toggleGroup(group.key)}
+                    style={{
+                      height: 36, padding: '0 12px', cursor: 'pointer', userSelect: 'none',
+                      background: '#F7F8F9',
+                      borderBottom: '0.75px solid #E2E8F0',
+                      borderTop: '0.75px solid #E2E8F0',
+                      fontSize: 11, fontWeight: 700, color: '#475569',
+                      textTransform: 'uppercase', letterSpacing: '0.08em',
+                      verticalAlign: 'middle',
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                      {isCollapsed
+                        ? <ChevronRight size={14} style={{ color: '#475569', flexShrink: 0 }} />
+                        : <ChevronDown size={14} style={{ color: '#475569', flexShrink: 0 }} />
+                      }
+                      {isAssigneeGroup && (
+                        avatarUrl ? (
+                          <img src={avatarUrl} alt="" style={{ width: 20, height: 20, borderRadius: '50%', objectFit: 'cover', flexShrink: 0, border: '1px solid #E2E8F0' }} />
+                        ) : (
+                          <div style={{
+                            width: 20, height: 20, borderRadius: '50%', flexShrink: 0,
+                            background: AVATAR_COLOURS[initials.charCodeAt(0) % AVATAR_COLOURS.length],
+                            color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            fontSize: 9, fontWeight: 700,
+                          }}>
+                            {initials}
+                          </div>
+                        )
+                      )}
+                      {group.label}
+                      <span style={{
+                        display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                        minWidth: 20, height: 18, padding: '0 6px', borderRadius: 9,
+                        background: '#DFE1E6', color: '#253858',
+                        fontSize: 10, fontWeight: 700,
+                      }}>
+                        {group.items.length}
+                      </span>
+                    </div>
                   </td>
                 </tr>
 
-                {group.items.map((item) => {
+                {!isCollapsed && group.items.map((item) => {
                   rowIndex++;
                   const currentRowIndex = rowIndex;
                   const isSelected = selectedIds.has(item.id);
@@ -375,7 +419,8 @@ export function CatalystTable({
                   );
                 })}
               </React.Fragment>
-            ))}
+            );
+            })}
           </tbody>
         </table>
       </div>
