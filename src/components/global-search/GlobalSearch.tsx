@@ -247,17 +247,22 @@ function ResultRow({ item, isSelected, onHover, onClick, query }: {
                 </span>
               </>
             )}
-            {/* Reporter & Assignee — compact inline */}
+            {/* Reporter & Assignee — text only */}
             {(item.reporter_name || item.assignee_name) && (
               <>
                 <span style={{ margin: "0 6px 0 10px", color: "#CBD5E1" }}>|</span>
-                <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
-                  {item.reporter_name && <PersonTag name={item.reporter_name} role="R" />}
+                <span style={{ display: "inline-flex", alignItems: "center", gap: 4, whiteSpace: "nowrap" }}>
+                  {item.reporter_name && (
+                    <span title={`Reporter: ${item.reporter_name}`}>
+                      <span style={{ color: "#94A3B8" }}>by</span>{" "}
+                      <span style={{ color: "#505258" }}>{item.reporter_name.split(" ")[0]}</span>
+                    </span>
+                  )}
                   {item.assignee_name && (
-                    <>
-                      <span style={{ color: "#CBD5E1", fontSize: 10 }}>→</span>
-                      <PersonTag name={item.assignee_name} role="A" />
-                    </>
+                    <span title={`Assignee: ${item.assignee_name}`}>
+                      <span style={{ color: "#94A3B8", marginLeft: 6 }}>→</span>{" "}
+                      <span style={{ color: "#505258" }}>{item.assignee_name.split(" ")[0]}</span>
+                    </span>
                   )}
                 </span>
               </>
