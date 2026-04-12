@@ -210,7 +210,7 @@ export function TestRepositoryPage() {
      // Fetch owner profiles
      if (ownerIds.length > 0) {
        lookupPromises.push(
-         supabase.from('profiles').select('id, full_name, avatar_url').in('id', ownerIds)
+         Promise.resolve(supabase.from('profiles').select('id, full_name, avatar_url').in('id', ownerIds))
            .then(({ data: profiles }) => {
              profiles?.forEach(p => { profilesMap[p.id] = { full_name: p.full_name, avatar_url: p.avatar_url }; });
            })

@@ -462,20 +462,20 @@ export function ViewTestCaseModal({
     const ownerId = (testCase as any).created_by;
     if (ownerId) {
       fkPromises.push(
-        supabase.from('profiles').select('full_name').eq('id', ownerId).maybeSingle()
+        Promise.resolve(supabase.from('profiles').select('full_name').eq('id', ownerId).maybeSingle())
           .then(({ data }) => { if (data?.full_name) setOwnerName(data.full_name); })
       );
     }
     const assigneeId = (testCase as any).assigned_to;
     if (assigneeId && assigneeId !== ownerId) {
       fkPromises.push(
-        supabase.from('profiles').select('full_name').eq('id', assigneeId).maybeSingle()
+        Promise.resolve(supabase.from('profiles').select('full_name').eq('id', assigneeId).maybeSingle())
           .then(({ data }) => { if (data?.full_name) setAssigneeName(data.full_name); })
       );
     } else if (assigneeId && assigneeId === ownerId) {
       // Will be set from owner lookup
       fkPromises.push(
-        supabase.from('profiles').select('full_name').eq('id', assigneeId).maybeSingle()
+        Promise.resolve(supabase.from('profiles').select('full_name').eq('id', assigneeId).maybeSingle())
           .then(({ data }) => { if (data?.full_name) setAssigneeName(data.full_name); })
       );
     }
