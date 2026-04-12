@@ -1264,7 +1264,7 @@ export function ViewTestCaseModal({
                           />
                           <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
                             <button onClick={() => { setAddingFreeText(false); setNewFreeText(''); }} style={{ height: 30, padding: '0 12px', fontSize: 12, fontWeight: 500, border: '1px solid #E2E8F0', borderRadius: 6, background: 'transparent', color: '#475569', cursor: 'pointer' }}>Cancel</button>
-                            <button onClick={handleAddFreeTextBlock} disabled={!newFreeText.trim()} style={{ height: 30, padding: '0 12px', fontSize: 12, fontWeight: 500, border: 'none', borderRadius: 6, background: newFreeText.trim() ? '#2563EB' : '#94A3B8', color: '#FFFFFF', cursor: newFreeText.trim() ? 'pointer' : 'not-allowed' }}>Add Text Block</button>
+                            <button onClick={handleAddFreeTextBlock} disabled={!newFreeText.trim()} style={{ height: 30, padding: '0 12px', fontSize: 12, fontWeight: 500, border: 'none', borderRadius: 6, background: newFreeText.trim() ? '#2563EB' : '#94A3B8', color: '#FFFFFF', cursor: newFreeText.trim() ? 'pointer' : 'not-allowed' }}>Add Test Step</button>
                           </div>
                         </div>
                       ) : (
@@ -1273,7 +1273,7 @@ export function ViewTestCaseModal({
                             onClick={() => setAddingFreeText(true)}
                             style={{ display: 'flex', alignItems: 'center', gap: 6, height: 32, padding: '0 12px', borderRadius: 6, fontSize: 13, fontWeight: 500, cursor: 'pointer', border: '1px solid #E2E8F0', background: '#FFFFFF', color: '#172B4D', fontFamily: "'Inter', sans-serif" }}>
                             <Plus style={{ width: 14, height: 14 }} />
-                            Add Text Block
+                            Add Test Step
                           </button>
                         </div>
                       )}
