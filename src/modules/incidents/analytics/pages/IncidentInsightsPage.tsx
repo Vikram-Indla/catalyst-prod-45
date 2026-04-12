@@ -5,7 +5,7 @@
  */
 
 import { useNavigate } from 'react-router-dom';
-import { useState, useRef } from 'react';
+import { useState, useRef, lazy, Suspense } from 'react';
 import { 
   Printer, Loader2, AlertTriangle, TrendingUp, TrendingDown, Minus, 
   Clock, ArrowRight, FileText, ChevronUp, ChevronDown, ExternalLink
@@ -18,10 +18,10 @@ import { CreateIncidentModal, IncidentFormData } from '@/components/incidents/Cr
 import { usePeriodAnalytics } from '../hooks/usePeriodAnalytics';
 import { useIncidentInsights } from '../hooks/useIncidentInsights';
 import { DrilldownDrawer } from '../components/DrilldownDrawer';
-import { useIncidentDetail } from '../hooks/useIncidentDetail';
 import { useCreateIncident } from '@/hooks/useIncidents';
-import IncidentDetailModal from '@/components/incidents/modal/IncidentDetailModal';
 import { cn } from '@/lib/utils';
+
+const CatalystDetailRouter = lazy(() => import('@/components/catalyst-detail-views/CatalystDetailRouter'));
 import { format } from 'date-fns';
 import catalystLogo from '@/assets/catalyst-logo.png';
 import { toast } from 'sonner';
@@ -1215,8 +1215,7 @@ export default function IncidentInsightsPage() {
   const [filteredIncidents, setFilteredIncidents] = useState<IncidentWithSLA[]>([]);
   const [selectedIncidentId, setSelectedIncidentId] = useState<string | null>(null);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
-  
-  const { data: selectedIncident } = useIncidentDetail(selectedIncidentId);
+
   const createIncident = useCreateIncident();
 
   const handleDrilldown = (filter: DrilldownFilter, incidentList: IncidentWithSLA[]) => {
@@ -1349,12 +1348,15 @@ export default function IncidentInsightsPage() {
         />
 
         {/* Incident Detail Modal */}
-        {selectedIncident && (
-          <IncidentDetailModal
-            incident={selectedIncident}
-            isOpen={!!selectedIncidentId}
-            onClose={() => setSelectedIncidentId(null)}
-          />
+        {selectedIncidentId && (
+          <Suspense fallback={null}>
+            <CatalystDetailRouter
+              itemId={selectedIncidentId}
+              itemType="incident"
+              isOpen={!!selectedIncidentId}
+              onClose={() => setSelectedIncidentId(null)}
+            />
+          </Suspense>
         )}
 
         {/* Create Incident Modal */}

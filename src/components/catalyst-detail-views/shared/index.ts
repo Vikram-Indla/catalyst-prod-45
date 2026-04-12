@@ -14,6 +14,9 @@ export {
 // Canonical sections
 export {
   CatalystTitleEditor,
+  CatalystDescriptionSection,
+  CatalystAcceptanceCriteria,
+  CatalystPriorityField,
   CatalystActivitySection,
   CatalystSidebarDetails,
 } from './sections';

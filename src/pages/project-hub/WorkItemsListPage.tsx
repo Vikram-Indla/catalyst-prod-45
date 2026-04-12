@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback, useEffect } from 'react';
+import React, { useState, useMemo, useCallback, useEffect, lazy, Suspense } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -9,7 +9,7 @@ import { jiraSyncService } from '@/services/jira-sync.service';
 import { WorkItemsToolbar } from '@/components/project-hub/work-items/WorkItemsToolbar';
 import { WorkItemsTable } from '@/components/project-hub/work-items/WorkItemsTable';
 import { CreateWorkItemModal } from '@/components/project-hub/work-items/CreateWorkItemModal';
-import { WorkItemDetailModal } from '@/components/project-hub/work-items/WorkItemDetailModal';
+const CatalystDetailRouter = lazy(() => import('@/components/catalyst-detail-views/CatalystDetailRouter'));
 import { SyncBanner } from '@/components/project-hub/source-badge/SyncBanner';
 import { SyncLegend } from '@/components/project-hub/source-badge/SyncLegend';
 import { SourceFilterPills } from '@/components/project-hub/source-filter/SourceFilterPills';
@@ -360,7 +360,18 @@ export default function WorkItemsListPage() {
       </div>
 
       {project && <CreateWorkItemModal open={createOpen} onClose={() => setCreateOpen(false)} projectId={project.id} projectKey={project.key} />}
-      {project && <WorkItemDetailModal open={!!detailItemId} itemId={detailItemId} projectId={project.id} projectKey={project.key} onClose={() => setDetailItemId(null)} onNavigate={setDetailItemId} />}
+      {project && detailItemId && (
+        <Suspense fallback={null}>
+          <CatalystDetailRouter
+            isOpen={!!detailItemId}
+            itemId={detailItemId}
+            projectId={project.id}
+            projectKey={project.key}
+            onClose={() => setDetailItemId(null)}
+            onNavigate={setDetailItemId}
+          />
+        </Suspense>
+      )}
 
       {/* Conflict Resolution Drawer — real data */}
       <ConflictResolutionDrawer

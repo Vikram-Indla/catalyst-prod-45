@@ -3,7 +3,7 @@
  * Premium Operations Control Room for CIO/Operations Head
  */
 
-import { useState } from 'react';
+import { useState, lazy, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Printer, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -11,7 +11,6 @@ import { GlobalPageHeader } from '@/components/layout/GlobalPageHeader';
 import { IncidentCommandBar } from '@/components/incidents/IncidentCommandBar';
 import { CreateIncidentModal, IncidentFormData } from '@/components/incidents/CreateIncidentModal';
 import { useIncidentAnalytics, useFilteredIncidents } from '../hooks/useIncidentAnalytics';
-import { useIncidentDetail } from '../hooks/useIncidentDetail';
 import { useCreateIncident } from '@/hooks/useIncidents';
 import { ExecutiveSnapshot } from '../components/ExecutiveSnapshot';
 import { BreakdownTiles } from '../components/BreakdownTiles';
@@ -19,8 +18,9 @@ import { AgingPressureBar } from '../components/AgingPressureBar';
 import { RequiresAttentionTabs } from '../components/RequiresAttentionTabs';
 import { DrilldownDrawer } from '../components/DrilldownDrawer';
 import { TimeRangeSelector } from '../components/TimeRangeSelector';
-import IncidentDetailModal from '@/components/incidents/modal/IncidentDetailModal';
 import { toast } from 'sonner';
+
+const CatalystDetailRouter = lazy(() => import('@/components/catalyst-detail-views/CatalystDetailRouter'));
 import type { TimeRange, DrilldownFilter, IncidentWithSLA } from '../types';
 
 export default function IncidentAnalyticsPage() {
@@ -37,7 +37,6 @@ export default function IncidentAnalyticsPage() {
     timeRange, customStart, customEnd
   );
 
-  const { data: selectedIncident } = useIncidentDetail(selectedIncidentId);
   const createIncident = useCreateIncident();
 
   const filteredIncidents = useFilteredIncidents(
@@ -186,12 +185,15 @@ export default function IncidentAnalyticsPage() {
       />
 
       {/* Incident Detail Modal */}
-      {selectedIncident && (
-        <IncidentDetailModal
-          incident={selectedIncident}
-          isOpen={!!selectedIncidentId}
-          onClose={() => setSelectedIncidentId(null)}
-        />
+      {selectedIncidentId && (
+        <Suspense fallback={null}>
+          <CatalystDetailRouter
+            itemId={selectedIncidentId}
+            itemType="incident"
+            isOpen={!!selectedIncidentId}
+            onClose={() => setSelectedIncidentId(null)}
+          />
+        </Suspense>
       )}
 
       {/* Create Incident Modal */}

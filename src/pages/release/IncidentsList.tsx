@@ -12,8 +12,8 @@ import { useIncidents } from '@/hooks/useIncidents';
 import type { IncidentFilters } from '@/types/incident';
 import { IncidentsFiltersDialog } from '@/components/release/IncidentsFiltersDialog';
 
-// Lazy load the modal
-const IncidentDetailModal = lazy(() => import('@/components/incidents/modal/IncidentDetailModal'));
+// Lazy load the detail router
+const CatalystDetailRouter = lazy(() => import('@/components/catalyst-detail-views/CatalystDetailRouter'));
 
 type ViewMode = 'list' | 'kanban';
 
@@ -160,11 +160,6 @@ export default function IncidentsList() {
       setKanbanExpanded(true);
     }
   };
-
-  // Find selected incident for modal
-  const selectedIncident = selectedIncidentId 
-    ? incidents.find(inc => inc.id === selectedIncidentId)
-    : null;
 
   if (error) {
     return (
@@ -577,13 +572,13 @@ export default function IncidentsList() {
       />
 
       {/* Incident Detail Modal */}
-      {selectedIncident && (
+      {selectedIncidentId && (
         <Suspense fallback={null}>
-          <IncidentDetailModal
-            incident={selectedIncident as any}
-            isOpen={!!selectedIncident}
+          <CatalystDetailRouter
+            itemId={selectedIncidentId}
+            itemType="incident"
+            isOpen={!!selectedIncidentId}
             onClose={() => setSelectedIncidentId(null)}
-            parentIncidentId={selectedIncident.incident_key || ''}
           />
         </Suspense>
       )}

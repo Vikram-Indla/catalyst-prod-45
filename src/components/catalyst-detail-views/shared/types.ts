@@ -12,7 +12,7 @@ export type {
 } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/types';
 
 /** Catalyst work item types supported by detail views */
-export type CatalystItemType = 'story' | 'epic' | 'defect' | 'incident' | 'task' | 'business_request' | 'subtask';
+export type CatalystItemType = 'story' | 'epic' | 'feature' | 'defect' | 'incident' | 'task' | 'business_request' | 'subtask';
 
 /** Shared props for all CatalystView* components */
 export interface CatalystViewBaseProps {
