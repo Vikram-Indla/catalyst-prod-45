@@ -88,24 +88,21 @@ function mapDbRowToTMDefect(row: any): TMDefect {
 // ============================================================================
 
 async function generateDefectKey(projectId: string): Promise<string> {
-  try {
-    const { data, error } = await supabase.rpc('tm_next_entity_key', {
-      p_prefix: 'DEF',
-      p_project_id: projectId,
-    });
-    if (!error && data) return data;
-  } catch {
-    // Fallback below
-  }
-
-  // Fallback
-  const { count } = await supabase
+  // MAX scan — collision-safe even after deletions
+  const { data: allDefects } = await supabase
     .from('tm_defects')
-    .select('*', { count: 'exact', head: true })
+    .select('defect_key')
     .eq('project_id', projectId);
 
-  const nextNum = (count || 0) + 1;
-  return `DEF-${String(nextNum).padStart(3, '0')}`;
+  let maxNum = 0;
+  for (const d of allDefects || []) {
+    const match = d.defect_key?.match(/DEF-(\d+)/);
+    if (match) {
+      const num = parseInt(match[1], 10);
+      if (num > maxNum) maxNum = num;
+    }
+  }
+  return `DEF-${String(maxNum + 1).padStart(3, '0')}`;
 }
 
 // ============================================================================

@@ -62,11 +62,10 @@ export function CreateDefectModal({ isOpen, onClose, onCreated, prefill }: Creat
   }, []);
 
   useEffect(() => {
-    if (prefill) {
-      if (prefill.title) setTitle(prefill.title);
-      if (prefill.description) setDescription(prefill.description);
-    }
-  }, [prefill]);
+    if (!isOpen) return;
+    if (prefill?.title) setTitle(prefill.title);
+    if (prefill?.description) setDescription(prefill.description);
+  }, [isOpen]);
 
   useEffect(() => {
     if (isOpen && !prefill) {
