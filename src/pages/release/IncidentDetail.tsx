@@ -1,4 +1,4 @@
-import { useState, lazy, Suspense } from 'react';
+import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useQuery } from '@tanstack/react-query';
@@ -6,7 +6,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { IncidentHeader } from '@/components/incidents/IncidentHeader';
 import { IncidentDescription } from '@/components/incidents/IncidentDescription';
 import { IncidentAttachments } from '@/components/incidents/IncidentAttachments';
-const CatalystDetailRouter = lazy(() => import('@/components/catalyst-detail-views/CatalystDetailRouter'));
+import { IncidentDetailsPanel } from '@/components/incidents/IncidentDetailsPanel';
 import type { Incident, Attachment } from '@/types/release';
 
 export default function IncidentDetail() {
@@ -217,14 +217,13 @@ export default function IncidentDetail() {
         </div>
 
         <div className="p-6 overflow-y-auto space-y-4 bg-muted/20">
-          <Suspense fallback={null}>
-            <CatalystDetailRouter
-              isOpen={!!incident}
-              onClose={() => {}}
-              itemId={incident?.id || ''}
-              itemType="incident"
-            />
-          </Suspense>
+          <IncidentDetailsPanel
+            incident={incident}
+            isEditMode={isEditMode}
+            editedData={editedData}
+            onFieldChange={handleFieldChange}
+            onStatusChange={handleStatusChange}
+          />
         </div>
       </div>
     </div>

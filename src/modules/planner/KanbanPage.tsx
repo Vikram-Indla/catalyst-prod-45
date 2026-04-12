@@ -3,10 +3,9 @@
 // New Kanban board using planner_statuses and planner_tasks
 // ============================================================
 
-import { useState, useCallback, lazy, Suspense } from 'react';
+import { useState, useCallback } from 'react';
 import { Plus } from 'lucide-react';
-import { KanbanBoard, CreateTaskModal } from './components/kanban';
-const CatalystDetailRouter = lazy(() => import('@/components/catalyst-detail-views/CatalystDetailRouter'));
+import { KanbanBoard, CreateTaskModal, TaskDetailDrawer } from './components/kanban';
 import type { KanbanTask } from './types/kanban';
 import { useDeleteKanbanTask } from './hooks/useKanbanTasks';
 import { Button } from '@/components/ui/button';
@@ -69,15 +68,12 @@ export function KanbanPage() {
         />
       </div>
 
-      {/* Task Detail Drawer - CatalystDetailRouter */}
-      <Suspense fallback={null}>
-        <CatalystDetailRouter
-          isOpen={isDetailOpen}
-          onClose={handleDrawerClose}
-          itemId={selectedTask?.id || ''}
-          itemType="task"
-        />
-      </Suspense>
+      {/* Task Detail Drawer - uses new GOD-TIER drawer */}
+      <TaskDetailDrawer
+        task={selectedTask}
+        open={isDetailOpen}
+        onClose={handleDrawerClose}
+      />
 
       {/* Create Task Modal - V10 */}
       <CreateTaskModal

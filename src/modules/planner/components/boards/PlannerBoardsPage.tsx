@@ -4,13 +4,13 @@
 // Using V2 TaskDetailDrawer for proper auto-save
 // ============================================================
 
-import { useState, useCallback, useMemo, useRef, useEffect, lazy, Suspense } from 'react';
+import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Kanban } from 'lucide-react';
 import { BoardKanban } from './BoardKanban';
 import type { BoardFilters, BoardTask } from '../../types/planner-boards';
 import { CreateTaskModal } from '../kanban';
-const CatalystDetailRouter = lazy(() => import('@/components/catalyst-detail-views/CatalystDetailRouter'));
+import { TaskDetailDrawer } from '../TaskDetailDrawer/TaskDetailDrawer';
 import { PlannerViewHeader } from '../shared/PlannerViewHeader';
 import { PlannerSearchBar } from '../PlannerSearchBar';
 import { usePlannerUsers } from '../../hooks/usePlannerUsers';
@@ -177,15 +177,12 @@ export function PlannerBoardsPage({
         onOpenChange={setIsCreateOpen}
       />
 
-      {/* V2 Task Detail Drawer - CatalystDetailRouter */}
-      <Suspense fallback={null}>
-        <CatalystDetailRouter
-          isOpen={!!selectedTaskId}
-          onClose={handleCloseModal}
-          itemId={selectedTaskId || ''}
-          itemType="task"
-        />
-      </Suspense>
+      {/* V2 Task Detail Drawer - Real auto-save wired to Supabase */}
+      <TaskDetailDrawer
+        taskId={selectedTaskId}
+        open={!!selectedTaskId}
+        onClose={handleCloseModal}
+      />
     </div>
   );
 }

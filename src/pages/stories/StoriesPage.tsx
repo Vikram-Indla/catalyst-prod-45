@@ -1,11 +1,11 @@
-import { useState, lazy, Suspense } from 'react';
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Plus, Filter, Download, Settings2 } from 'lucide-react';
 import { StoriesGrid } from '@/components/stories/StoriesGrid';
-const CatalystDetailRouter = lazy(() => import('@/components/catalyst-detail-views/CatalystDetailRouter'));
+import { StoryDetailPanel } from '@/components/stories/StoryDetailPanel';
 import { CreateEditStoryPanel } from '@/components/stories/CreateEditStoryPanel';
 import { StoriesSidebar } from '@/components/stories/StoriesSidebar';
 import { useToast } from '@/hooks/use-toast';
@@ -67,6 +67,8 @@ export function StoriesPage() {
     toast({ title: 'Export complete', description: 'Stories exported to CSV' });
   };
 
+  const selectedStory = stories.find(s => s.id === selectedStoryId);
+
   return (
     <div className="flex h-full w-full bg-background">
       <StoriesSidebar />
@@ -119,14 +121,14 @@ export function StoriesPage() {
       </div>
 
       {/* Detail Panel */}
-      <Suspense fallback={null}>
-        <CatalystDetailRouter
-          isOpen={!!selectedStoryId}
+      {selectedStory && (
+        <StoryDetailPanel
+          story={selectedStory}
+          open={!!selectedStoryId}
           onClose={() => setSelectedStoryId(null)}
-          itemId={selectedStoryId || ''}
-          itemType="story"
+          onUpdate={refetch}
         />
-      </Suspense>
+      )}
 
       {/* Create Panel */}
       <CreateEditStoryPanel

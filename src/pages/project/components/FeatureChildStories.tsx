@@ -3,7 +3,7 @@
  * Now includes ASSIGNEE column and uses StoryDetailPanel for row clicks.
  */
 
-import { useState, lazy, Suspense } from 'react';
+import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { Link2, Plus, AlertTriangle, X, Loader2 } from 'lucide-react';
@@ -21,7 +21,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ScrollArea } from '@/components/ui/scroll-area';
-const CatalystDetailRouter = lazy(() => import('@/components/catalyst-detail-views/CatalystDetailRouter'));
+import { StoryDetailPanel } from '@/components/stories/StoryDetailPanel';
 import styles from '../FeatureViewPage.module.css';
 
 interface Story {
@@ -335,15 +335,20 @@ export function FeatureChildStories({ stories, featureId, projectId, totalCount,
         </div>
       </div>
 
-      {/* Story Detail Panel - CatalystDetailRouter */}
-      <Suspense fallback={null}>
-        <CatalystDetailRouter
-          isOpen={!!selectedStory}
+      {/* Story Detail Panel - existing component */}
+      {selectedStory && (
+        <StoryDetailPanel
+          story={{
+            id: selectedStory.id,
+            name: selectedStory.name || selectedStory.title || '',
+            feature_id: featureId,
+            status: (selectedStory.status || 'todo') as 'accepted' | 'blocked' | 'done' | 'in_progress' | 'todo',
+            assignee_id: selectedStory.assignee_id,
+          }}
+          open={!!selectedStory}
           onClose={handleCloseStoryPanel}
-          itemId={selectedStory?.id || ''}
-          itemType="story"
         />
-      </Suspense>
+      )}
 
       {/* Add Story Dialog */}
       <Dialog open={addStoryOpen} onOpenChange={setAddStoryOpen}>
