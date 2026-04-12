@@ -175,7 +175,7 @@ export function CatalystTable({
 
   const isAllSelected = flatItems.length > 0 && flatItems.every(item => selectedIds.has(item.id));
 
-  if (groups.length === 0) {
+  if (resolvedGroups.length === 0) {
     return (
       <div className="fy-empty" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '64px 0', border: '0.555556px solid #E2E8F0', borderRadius: 8, background: '#FFFFFF' }}>
         <span style={{ fontSize: 24, marginBottom: 12 }}>📋</span>
