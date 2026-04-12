@@ -158,12 +158,23 @@ export function AdfDescriptionRenderer({ html, issueKey, attachments: preloadedA
   const attachments = preloadedAttachments ?? fetchedAttachments ?? [];
 
   // Build a lookup map: jira_attachment_id -> best URL
+  // For Jira content URLs (no local_public_url), route through the proxy edge function
+  const supabaseUrl = (import.meta as any).env?.VITE_SUPABASE_URL || '';
+
   const mediaUrlMap = React.useMemo(() => {
     const map = new Map<string, string>();
     for (const att of attachments) {
       // Only image attachments
       if (!att.mime_type?.startsWith('image/')) continue;
-      const url = att.local_public_url || att.content_url || att.thumbnail_url || '';
+      let url = '';
+      if (att.local_public_url) {
+        url = att.local_public_url;
+      } else if (att.jira_attachment_id && supabaseUrl) {
+        // Route through proxy to avoid Jira auth issues
+        url = `${supabaseUrl}/functions/v1/jira-attachment-proxy?id=${att.jira_attachment_id}`;
+      } else {
+        url = att.content_url || att.thumbnail_url || '';
+      }
       if (url) {
         map.set(att.jira_attachment_id, url);
         // Also map by filename for fallback matching
@@ -171,7 +182,7 @@ export function AdfDescriptionRenderer({ html, issueKey, attachments: preloadedA
       }
     }
     return map;
-  }, [attachments]);
+  }, [attachments, supabaseUrl]);
 
   // Parse media placeholder divs from the HTML and render them as React components
   // The adfToHtml outputs: <div data-adf-media-id="..." data-adf-media-filename="..." class="adf-media-slot"></div>
