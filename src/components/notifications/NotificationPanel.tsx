@@ -286,16 +286,17 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
     return () => document.removeEventListener('mousedown', handler);
   }, [menuOpen]);
 
-  // W4 — Click handler: mark read + close + navigate
+  // W4 — Click handler: mark read + close + open global detail modal
   const handleItemClick = useCallback((n: Notification) => {
     if (!n.read_at) markAsRead(n.id);
     onClose();
 
-    // Use the global detail modal (same mechanism as GlobalSearch)
-    // entity_key is the issue key like "BAU-5354"
-    if (n.entity_key) {
+    // StoryDetailModal resolves ph_issues by UUID id, not by display key.
+    // Prefer entity_id and only fall back to entity_key for older rows.
+    const detailId = n.entity_id || n.entity_key;
+    if (detailId) {
       const { openDetail } = useGlobalSearchStore.getState();
-      openDetail({ id: n.entity_key });
+      openDetail({ id: detailId });
     }
   }, [markAsRead, onClose]);
 
