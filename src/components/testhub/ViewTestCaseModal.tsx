@@ -1125,53 +1125,159 @@ export function ViewTestCaseModal({
 
                   {/* GHERKIN MODE */}
                   {localTestFormat === 'gherkin' && (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                      <div>
-                        <label style={{ fontSize: 11, fontWeight: 600, color: '#6B778C', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', marginBottom: 4 }}>Feature</label>
-                        <textarea
-                          value={localGherkinFeature}
-                          onChange={e => setLocalGherkinFeature(e.target.value)}
-                          onBlur={handleGherkinSave}
-                          placeholder="Feature: ..."
-                          style={{ width: '100%', minHeight: 80, padding: 10, fontSize: 13, fontFamily: "'JetBrains Mono', monospace", border: '1.5px solid #E2E8F0', borderRadius: 4, resize: 'vertical', boxSizing: 'border-box', outline: 'none' }}
-                        />
-                      </div>
-                      <div>
-                        <label style={{ fontSize: 11, fontWeight: 600, color: '#6B778C', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', marginBottom: 4 }}>Scenario</label>
-                        <textarea
-                          value={localGherkinScenario}
-                          onChange={e => setLocalGherkinScenario(e.target.value)}
-                          onBlur={handleGherkinSave}
-                          placeholder="Scenario: ..."
-                          style={{ width: '100%', minHeight: 120, padding: 10, fontSize: 13, fontFamily: "'JetBrains Mono', monospace", border: '1.5px solid #E2E8F0', borderRadius: 4, resize: 'vertical', boxSizing: 'border-box', outline: 'none' }}
-                        />
-                      </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                      {/* Legacy single feature/scenario (backward compat) */}
+                      {(localGherkinFeature || localGherkinScenario) && (
+                        <div style={{ padding: 12, border: '1.5px solid #E2E8F0', borderRadius: 8, background: '#FAFBFC' }}>
+                          <div style={{ marginBottom: 10 }}>
+                            <label style={{ fontSize: 11, fontWeight: 600, color: '#6B778C', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', marginBottom: 4 }}>Feature</label>
+                            <textarea
+                              value={localGherkinFeature}
+                              onChange={e => setLocalGherkinFeature(e.target.value)}
+                              onBlur={handleGherkinSave}
+                              placeholder="Feature: ..."
+                              style={{ width: '100%', minHeight: 60, padding: 10, fontSize: 13, fontFamily: "'JetBrains Mono', monospace", border: '1.5px solid #E2E8F0', borderRadius: 4, resize: 'vertical', boxSizing: 'border-box', outline: 'none' }}
+                            />
+                          </div>
+                          <div>
+                            <label style={{ fontSize: 11, fontWeight: 600, color: '#6B778C', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', marginBottom: 4 }}>Scenario</label>
+                            <textarea
+                              value={localGherkinScenario}
+                              onChange={e => setLocalGherkinScenario(e.target.value)}
+                              onBlur={handleGherkinSave}
+                              placeholder="Scenario: ..."
+                              style={{ width: '100%', minHeight: 80, padding: 10, fontSize: 13, fontFamily: "'JetBrains Mono', monospace", border: '1.5px solid #E2E8F0', borderRadius: 4, resize: 'vertical', boxSizing: 'border-box', outline: 'none' }}
+                            />
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Multi-scenario blocks */}
+                      {gherkinScenarios.map((sc, idx) => (
+                        <div key={sc.id} className="group" style={{ padding: 12, border: '1.5px solid #E2E8F0', borderRadius: 8, background: '#FAFBFC', position: 'relative' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+                            <span style={{ fontSize: 12, fontWeight: 600, color: '#475569', fontFamily: "'Inter', sans-serif" }}>Scenario {idx + 1}</span>
+                            <button
+                              onClick={() => handleDeleteGherkinScenario(sc.id)}
+                              className="opacity-0 group-hover:opacity-100"
+                              style={{ width: 24, height: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none', background: 'transparent', cursor: 'pointer', color: '#DC2626', borderRadius: 4, transition: 'opacity 150ms' }}
+                            >
+                              <Trash2 style={{ width: 14, height: 14 }} />
+                            </button>
+                          </div>
+                          <div style={{ marginBottom: 10 }}>
+                            <label style={{ fontSize: 11, fontWeight: 600, color: '#6B778C', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', marginBottom: 4 }}>Feature</label>
+                            <textarea
+                              value={sc.feature}
+                              onChange={e => { const v = e.target.value; setGherkinScenarios(prev => prev.map(s => s.id === sc.id ? { ...s, feature: v } : s)); }}
+                              onBlur={() => handleGherkinScenarioBlur(sc.id, sc.feature, sc.scenario)}
+                              placeholder="Feature: ..."
+                              style={{ width: '100%', minHeight: 60, padding: 10, fontSize: 13, fontFamily: "'JetBrains Mono', monospace", border: '1.5px solid #E2E8F0', borderRadius: 4, resize: 'vertical', boxSizing: 'border-box', outline: 'none' }}
+                            />
+                          </div>
+                          <div>
+                            <label style={{ fontSize: 11, fontWeight: 600, color: '#6B778C', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', marginBottom: 4 }}>Scenario</label>
+                            <textarea
+                              value={sc.scenario}
+                              onChange={e => { const v = e.target.value; setGherkinScenarios(prev => prev.map(s => s.id === sc.id ? { ...s, scenario: v } : s)); }}
+                              onBlur={() => handleGherkinScenarioBlur(sc.id, sc.feature, sc.scenario)}
+                              placeholder="Scenario: ..."
+                              style={{ width: '100%', minHeight: 80, padding: 10, fontSize: 13, fontFamily: "'JetBrains Mono', monospace", border: '1.5px solid #E2E8F0', borderRadius: 4, resize: 'vertical', boxSizing: 'border-box', outline: 'none' }}
+                            />
+                          </div>
+                        </div>
+                      ))}
+
+                      {/* Add Gherkin Scenario form */}
+                      {addingGherkin ? (
+                        <div style={{ padding: 12, border: '1.5px dashed #2563EB', borderRadius: 8, background: '#F8FAFC' }}>
+                          <div style={{ marginBottom: 10 }}>
+                            <label style={{ fontSize: 11, fontWeight: 600, color: '#6B778C', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', marginBottom: 4 }}>Feature</label>
+                            <textarea
+                              value={newGherkinFeature}
+                              onChange={e => setNewGherkinFeature(e.target.value)}
+                              placeholder="Feature: ..."
+                              style={{ width: '100%', minHeight: 60, padding: 10, fontSize: 13, fontFamily: "'JetBrains Mono', monospace", border: '1.5px solid #E2E8F0', borderRadius: 4, resize: 'vertical', boxSizing: 'border-box', outline: 'none' }}
+                            />
+                          </div>
+                          <div style={{ marginBottom: 10 }}>
+                            <label style={{ fontSize: 11, fontWeight: 600, color: '#6B778C', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', marginBottom: 4 }}>Scenario</label>
+                            <textarea
+                              value={newGherkinScenario}
+                              onChange={e => setNewGherkinScenario(e.target.value)}
+                              placeholder="Scenario: ..."
+                              style={{ width: '100%', minHeight: 80, padding: 10, fontSize: 13, fontFamily: "'JetBrains Mono', monospace", border: '1.5px solid #E2E8F0', borderRadius: 4, resize: 'vertical', boxSizing: 'border-box', outline: 'none' }}
+                            />
+                          </div>
+                          <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
+                            <button onClick={() => { setAddingGherkin(false); setNewGherkinFeature(''); setNewGherkinScenario(''); }} style={{ height: 30, padding: '0 12px', fontSize: 12, fontWeight: 500, border: '1px solid #E2E8F0', borderRadius: 6, background: 'transparent', color: '#475569', cursor: 'pointer' }}>Cancel</button>
+                            <button onClick={handleAddGherkinScenario} disabled={!newGherkinScenario.trim()} style={{ height: 30, padding: '0 12px', fontSize: 12, fontWeight: 500, border: 'none', borderRadius: 6, background: newGherkinScenario.trim() ? '#2563EB' : '#94A3B8', color: '#FFFFFF', cursor: newGherkinScenario.trim() ? 'pointer' : 'not-allowed' }}>Add Scenario</button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 4 }}>
+                          <button
+                            onClick={() => setAddingGherkin(true)}
+                            style={{ display: 'flex', alignItems: 'center', gap: 6, height: 32, padding: '0 12px', borderRadius: 6, fontSize: 13, fontWeight: 500, cursor: 'pointer', border: '1px solid #E2E8F0', background: '#FFFFFF', color: '#172B4D', fontFamily: "'Inter', sans-serif" }}>
+                            <Plus style={{ width: 14, height: 14 }} />
+                            Add Scenario
+                          </button>
+                        </div>
+                      )}
                     </div>
                   )}
 
                   {/* FREE TEXT MODE */}
                   {localTestFormat === 'free_text' && (
-                    <textarea
-                      value={steps[0]?.action || ''}
-                      onChange={e => {
-                        const val = e.target.value;
-                        setSteps(prev => prev.length > 0
-                          ? [{ ...prev[0], action: val }]
-                          : [{ id: Date.now().toString(), step_number: 1, action: val, expected_result: null, is_shared: false, shared_step_id: null }]
-                        );
-                      }}
-                      onBlur={async e => {
-                        if (!testCase) return;
-                        const val = e.target.value;
-                        await supabase.from('tm_test_steps').delete().eq('test_case_id', testCase.id);
-                        if (val.trim()) {
-                          await supabase.from('tm_test_steps').insert({ test_case_id: testCase.id, step_number: 1, action: val.trim(), expected_result: null, is_shared: false });
-                        }
-                        toast('Saved');
-                      }}
-                      placeholder="Describe the test in free text..."
-                      style={{ width: '100%', minHeight: 160, padding: 12, fontSize: 14, fontFamily: "'Inter', sans-serif", border: '1.5px solid #E2E8F0', borderRadius: 4, resize: 'vertical', boxSizing: 'border-box', outline: 'none' }}
-                    />
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                      {/* Existing free text blocks */}
+                      {freeTextBlocks.map((block, idx) => (
+                        <div key={block.id} className="group" style={{ position: 'relative' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
+                            <span style={{ fontSize: 12, fontWeight: 600, color: '#475569', fontFamily: "'Inter', sans-serif" }}>Text Block {idx + 1}</span>
+                            <button
+                              onClick={() => handleDeleteFreeTextBlock(block.id)}
+                              className="opacity-0 group-hover:opacity-100"
+                              style={{ width: 24, height: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none', background: 'transparent', cursor: 'pointer', color: '#DC2626', borderRadius: 4, transition: 'opacity 150ms' }}
+                            >
+                              <Trash2 style={{ width: 14, height: 14 }} />
+                            </button>
+                          </div>
+                          <textarea
+                            value={block.text}
+                            onChange={e => { const v = e.target.value; setFreeTextBlocks(prev => prev.map(b => b.id === block.id ? { ...b, text: v } : b)); }}
+                            onBlur={() => handleFreeTextBlockBlur(block.id, block.text)}
+                            placeholder="Describe the test in free text..."
+                            style={{ width: '100%', minHeight: 120, padding: 12, fontSize: 14, fontFamily: "'Inter', sans-serif", border: '1.5px solid #E2E8F0', borderRadius: 4, resize: 'vertical', boxSizing: 'border-box', outline: 'none' }}
+                          />
+                        </div>
+                      ))}
+
+                      {/* Add Free Text form */}
+                      {addingFreeText ? (
+                        <div style={{ padding: 12, border: '1.5px dashed #2563EB', borderRadius: 8, background: '#F8FAFC' }}>
+                          <textarea
+                            value={newFreeText}
+                            onChange={e => setNewFreeText(e.target.value)}
+                            placeholder="Describe the test in free text..."
+                            style={{ width: '100%', minHeight: 120, padding: 12, fontSize: 14, fontFamily: "'Inter', sans-serif", border: '1.5px solid #E2E8F0', borderRadius: 4, resize: 'vertical', boxSizing: 'border-box', outline: 'none', marginBottom: 10 }}
+                          />
+                          <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
+                            <button onClick={() => { setAddingFreeText(false); setNewFreeText(''); }} style={{ height: 30, padding: '0 12px', fontSize: 12, fontWeight: 500, border: '1px solid #E2E8F0', borderRadius: 6, background: 'transparent', color: '#475569', cursor: 'pointer' }}>Cancel</button>
+                            <button onClick={handleAddFreeTextBlock} disabled={!newFreeText.trim()} style={{ height: 30, padding: '0 12px', fontSize: 12, fontWeight: 500, border: 'none', borderRadius: 6, background: newFreeText.trim() ? '#2563EB' : '#94A3B8', color: '#FFFFFF', cursor: newFreeText.trim() ? 'pointer' : 'not-allowed' }}>Add Text Block</button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 4 }}>
+                          <button
+                            onClick={() => setAddingFreeText(true)}
+                            style={{ display: 'flex', alignItems: 'center', gap: 6, height: 32, padding: '0 12px', borderRadius: 6, fontSize: 13, fontWeight: 500, cursor: 'pointer', border: '1px solid #E2E8F0', background: '#FFFFFF', color: '#172B4D', fontFamily: "'Inter', sans-serif" }}>
+                            <Plus style={{ width: 14, height: 14 }} />
+                            Add Text Block
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   )}
 
                   {/* STEPS MODE */}
