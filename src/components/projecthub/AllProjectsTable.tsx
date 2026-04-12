@@ -445,6 +445,7 @@ const PROJECT_COLUMNS: TColDef[] = [
   { key: 'lead', label: 'LEAD', defaultWidth: 200, minWidth: 120 },
   { key: 'members', label: 'MEMBERS', defaultWidth: 150, minWidth: 80 },
   { key: 'sync', label: 'SYNC', defaultWidth: 200, minWidth: 100 },
+  { key: 'backlogs', label: 'BACKLOGS', defaultWidth: 140, minWidth: 120 },
   { key: 'actions', label: '', defaultWidth: 48, minWidth: 48, locked: true },
 ];
 
