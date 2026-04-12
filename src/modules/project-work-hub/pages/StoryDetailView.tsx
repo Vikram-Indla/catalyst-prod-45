@@ -358,7 +358,7 @@ export default function StoryDetailView({ projectId, projectKey, itemId }: Story
                   fontWeight: 400, cursor: 'pointer', minHeight: 40, padding: 4, borderRadius: 4,
                   transition: 'background 150ms ease',
                 }}
-                className="adf-editor-content jira-desc-hover"
+                className="adf-content adf-editor-content jira-desc-hover"
                 onMouseEnter={e => { e.currentTarget.style.background = '#F8F8F8'; }}
                 onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
               >
@@ -382,6 +382,7 @@ export default function StoryDetailView({ projectId, projectKey, itemId }: Story
               />
             ) : (
               <div onClick={() => setEditingAC(true)}
+                className="adf-content"
                 style={{
                   fontSize: 14, lineHeight: '20px', color: (story as any).acceptance_criteria ? '#292A2E' : '#6B6E76',
                   fontStyle: (story as any).acceptance_criteria ? 'normal' : 'italic',
