@@ -734,8 +734,14 @@ export function ViewTestCaseModal({
   const defectLinks = links.filter(l => l.link_type === 'defect');
   const storyLinks = links.filter(l => l.link_type === 'story');
 
-  const statusPill = STATUS_PILL[testCase.status] || STATUS_PILL.draft;
-  const statusBtnBg = STATUS_BTN[testCase.status] || STATUS_BTN.draft;
+  const statusPill = STATUS_PILL[localStatus] || STATUS_PILL.draft;
+  const statusBtnBg = STATUS_BTN[localStatus] || STATUS_BTN.draft;
+
+  // Resolved display names from lookup data
+  const resolvedPriorityName = priorities?.find(p => p.id === localPriorityId)?.name || priorityName;
+  const resolvedTypeName = caseTypes?.find(t => t.id === localTypeId)?.name || typeName;
+  const resolvedOwnerName = teamMembers?.find(m => m.id === localOwnerId)?.full_name || ownerName;
+  const resolvedAssigneeName = teamMembers?.find(m => m.id === localAssigneeId)?.full_name || assigneeName;
 
   const handleCopyKey = () => {
     navigator.clipboard.writeText(testCase.case_key);
