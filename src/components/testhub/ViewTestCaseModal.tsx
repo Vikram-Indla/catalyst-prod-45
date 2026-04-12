@@ -542,7 +542,49 @@ export function ViewTestCaseModal({
     queryClient.invalidateQueries({ queryKey: ['tm-case', testCase.id] });
   }, [testCase, queryClient]);
 
-  useEffect(() => {
+  // ── Test Step CRUD handlers ──
+  const handleAddStep = useCallback(async () => {
+    if (!testCase || !newStepAction.trim()) return;
+    const nextNum = steps.length + 1;
+    const { data, error } = await supabase.from('tm_test_steps').insert({
+      test_case_id: testCase.id,
+      step_number: nextNum,
+      action: newStepAction.trim(),
+      expected_result: newStepExpected.trim() || null,
+    }).select().single();
+    if (error) { toast.error('Failed to add step'); return; }
+    if (data) setSteps(prev => [...prev, data as Step]);
+    setNewStepAction('');
+    setNewStepExpected('');
+    setAddingStep(false);
+  }, [testCase, newStepAction, newStepExpected, steps.length]);
+
+  const handleUpdateStep = useCallback(async (stepId: string) => {
+    if (!editStepAction.trim()) return;
+    const { error } = await supabase.from('tm_test_steps').update({
+      action: editStepAction.trim(),
+      expected_result: editStepExpected.trim() || null,
+    }).eq('id', stepId);
+    if (error) { toast.error('Failed to update step'); return; }
+    setSteps(prev => prev.map(s => s.id === stepId ? { ...s, action: editStepAction.trim(), expected_result: editStepExpected.trim() || null } : s));
+    setEditingStepId(null);
+  }, [editStepAction, editStepExpected]);
+
+  const handleDeleteStep = useCallback(async (stepId: string) => {
+    const { error } = await supabase.from('tm_test_steps').delete().eq('id', stepId);
+    if (error) { toast.error('Failed to delete step'); return; }
+    setSteps(prev => {
+      const filtered = prev.filter(s => s.id !== stepId);
+      return filtered.map((s, i) => ({ ...s, step_number: i + 1 }));
+    });
+  }, []);
+
+  const startEditStep = useCallback((step: Step) => {
+    setEditingStepId(step.id);
+    setEditStepAction(step.action);
+    setEditStepExpected(step.expected_result || '');
+  }, []);
+
     if (isOpen && testCase) {
       fetchRelatedData();
     }
