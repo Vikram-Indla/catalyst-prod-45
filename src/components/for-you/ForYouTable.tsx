@@ -126,14 +126,24 @@ export function CatalystTable({
     };
   }, [groupedItems, sortKey, sortDir]);
 
-  const flatItems = useMemo(() => {
-    const groups: WorkGroup[] = ['YESTERDAY', 'THIS_WEEK', 'EARLIER'];
-    const items: WorkItem[] = [];
-    groups.forEach(group => { sortedGroupedItems[group].forEach(item => items.push(item)); });
-    return items;
-  }, [sortedGroupedItems]);
+  // Resolve which rendering mode: customGroups or time-based
+  const resolvedGroups = useMemo(() => {
+    if (customGroups && customGroups.length > 0) {
+      return customGroups.map(g => ({
+        key: g.label,
+        label: g.label,
+        items: sortItems(g.items, sortKey, sortDir),
+      }));
+    }
+    const timeGroups: WorkGroup[] = ['YESTERDAY', 'THIS_WEEK', 'EARLIER'];
+    return timeGroups
+      .filter(g => sortedGroupedItems[g].length > 0)
+      .map(g => ({ key: g, label: GROUP_LABELS[g], items: sortedGroupedItems[g] }));
+  }, [customGroups, sortedGroupedItems, sortKey, sortDir]);
 
-  const groups = (['YESTERDAY', 'THIS_WEEK', 'EARLIER'] as const).filter(g => sortedGroupedItems[g].length > 0);
+  const flatItems = useMemo(() => {
+    return resolvedGroups.flatMap(g => g.items);
+  }, [resolvedGroups]);
 
   const handleSelectAll = useCallback((checked: boolean) => {
     if (!onSelectionChange) return;
