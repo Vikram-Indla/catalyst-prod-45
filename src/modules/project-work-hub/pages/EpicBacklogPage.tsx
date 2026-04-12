@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, lazy, Suspense } from 'react';
 import { useParams } from 'react-router-dom';
 import { useQueryClient, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -7,7 +7,7 @@ import { useProject } from '@/hooks/useProjects';
 import { groupByStatus, EPIC_GROUP_ORDER, EPIC_STATUS_LOZENGE, getLozengeStyle, formatDueDate, isDueDateOverdue, getInitials } from '../utils/backlog.utils';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
-import { EpicDetailDrawer } from '../components/drawers/EpicDetailDrawer';
+const CatalystDetailRouter = lazy(() => import('@/components/catalyst-detail-views/CatalystDetailRouter'));
 import { DeleteConfirmDialog } from '../components/dialogs/DeleteConfirmDialog';
 import { CreateEpicDialog } from '@/modules/program-epics';
 import { EditEpicDialog } from '@/modules/program-epics';
@@ -219,12 +219,15 @@ export default function EpicBacklogPage({ projectId: propProjectId }: { projectI
         />
       )}
 
-      <EpicDetailDrawer
-        isOpen={!!drawerEpicId}
-        onClose={() => setDrawerEpicId(null)}
-        epicId={drawerEpicId}
-        projectId={projectId || ''}
-      />
+      <Suspense fallback={null}>
+        <CatalystDetailRouter
+          isOpen={!!drawerEpicId}
+          onClose={() => setDrawerEpicId(null)}
+          itemId={drawerEpicId || ''}
+          itemType="epic"
+          projectId={projectId || ''}
+        />
+      </Suspense>
 
       <DeleteConfirmDialog
         isOpen={!!deleteTarget}
