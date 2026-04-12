@@ -812,7 +812,6 @@ export function GlobalSearch() {
             </span>
           </div>
         </div>
-      </div>
 
       {/* PopupSelect overlays */}
       {openFilter === "project" && (
