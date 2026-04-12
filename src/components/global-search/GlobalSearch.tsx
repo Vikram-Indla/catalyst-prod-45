@@ -512,6 +512,7 @@ export function GlobalSearch() {
     openDetail({
       id: item.id,
       projectKey: item.project_key || undefined,
+      itemType: item.item_type,
     });
   }, [debouncedQuery, trackView, saveSearch]);
 

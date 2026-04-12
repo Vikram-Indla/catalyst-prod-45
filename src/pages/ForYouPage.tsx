@@ -205,7 +205,7 @@ function ForYouGroupByPopover({
 }
 
 // ─── Heavy panels: lazy-loaded so they never block initial render ────
-const StoryDetailModal = lazy(() => import('@/modules/project-work-hub/components/dialogs/StoryDetailModal'));
+const CatalystDetailRouter = lazy(() => import('@/components/catalyst-detail-views/CatalystDetailRouter'));
 const CatalystAIPanel = lazy(() => import('@/components/catalyst-ai/CatalystAIPanel').then(m => ({ default: m.CatalystAIPanel })));
 
 
@@ -521,7 +521,7 @@ export default function ForYouPage() {
       {/* Detail Modal — lazy loaded */}
       {selectedItem && selectedItem.phIssueId && selectedItem.projectId && (
         <Suspense fallback={null}>
-          <StoryDetailModal
+          <CatalystDetailRouter
             isOpen={true}
             onClose={closeDetailPanel}
             itemId={selectedItem.phIssueId}

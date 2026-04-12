@@ -296,7 +296,7 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
     const detailId = n.entity_id || n.entity_key;
     if (detailId) {
       const { openDetail } = useGlobalSearchStore.getState();
-      openDetail({ id: detailId });
+      openDetail({ id: detailId, itemType: n.entity_icon_type || undefined });
     }
   }, [markAsRead, onClose]);
 
