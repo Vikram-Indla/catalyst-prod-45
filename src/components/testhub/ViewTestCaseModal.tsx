@@ -1264,3 +1264,119 @@ function MiniAvatar({ name, size = 22 }: { name: string; size?: number }) {
     </div>
   );
 }
+
+// ─── Inline Picker Primitives ─────────────────────────────
+function ClickableField({ onClick, children }: { onClick: (e: React.MouseEvent) => void; children: React.ReactNode }) {
+  return (
+    <div
+      onClick={onClick}
+      style={{
+        display: 'flex', alignItems: 'center', gap: 8,
+        padding: '4px 6px', borderRadius: 4, cursor: 'pointer',
+        border: '1px solid transparent', transition: 'all 120ms',
+        marginLeft: -6,
+      }}
+      onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,0,0,0.04)'; e.currentTarget.style.borderColor = 'var(--divider)'; }}
+      onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = 'transparent'; }}
+    >
+      {children}
+    </div>
+  );
+}
+
+function PickerDropdown({ children }: { children: React.ReactNode }) {
+  return (
+    <div
+      onClick={e => e.stopPropagation()}
+      style={{
+        position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 50,
+        marginTop: 4, backgroundColor: 'var(--cp-float, #FFFFFF)',
+        border: '1px solid var(--divider)', borderRadius: 8,
+        boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
+        padding: 4, maxHeight: 240, overflowY: 'auto',
+        minWidth: 180,
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
+function PickerOption({ selected, onClick, children }: { selected: boolean; onClick: () => void; children: React.ReactNode }) {
+  return (
+    <div
+      onClick={onClick}
+      style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        gap: 8, padding: '6px 8px', borderRadius: 4, cursor: 'pointer',
+        background: selected ? 'rgba(37,99,235,0.08)' : 'transparent',
+        transition: 'background 120ms',
+      }}
+      onMouseEnter={e => { if (!selected) e.currentTarget.style.background = 'rgba(0,0,0,0.04)'; }}
+      onMouseLeave={e => { if (!selected) e.currentTarget.style.background = 'transparent'; }}
+    >
+      {children}
+      {selected && <Check style={{ width: 14, height: 14, color: '#2563EB', flexShrink: 0 }} />}
+    </div>
+  );
+}
+
+function PeoplePickerDropdown({ members, selectedId, onSelect }: {
+  members: { id: string; full_name: string | null }[];
+  selectedId: string | null;
+  onSelect: (id: string | null, name: string | null) => void;
+}) {
+  const [search, setSearch] = useState('');
+  const filtered = members.filter(m =>
+    m.full_name && m.full_name.toLowerCase().includes(search.toLowerCase())
+  );
+
+  return (
+    <div
+      onClick={e => e.stopPropagation()}
+      style={{
+        position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 50,
+        marginTop: 4, backgroundColor: 'var(--cp-float, #FFFFFF)',
+        border: '1px solid var(--divider)', borderRadius: 8,
+        boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
+        padding: 4, maxHeight: 280, display: 'flex', flexDirection: 'column',
+        minWidth: 200,
+      }}
+    >
+      <div style={{ padding: '4px 4px 6px' }}>
+        <input
+          type="text"
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          placeholder="Search..."
+          autoFocus
+          style={{
+            width: '100%', height: 32, padding: '0 8px', fontSize: 13,
+            fontFamily: "'Inter', sans-serif",
+            border: '1px solid var(--divider)', borderRadius: 6,
+            outline: 'none', boxSizing: 'border-box',
+            background: 'var(--cp-float, #FFFFFF)', color: 'var(--fg-1)',
+          }}
+          onClick={e => e.stopPropagation()}
+        />
+      </div>
+      <div style={{ overflowY: 'auto', maxHeight: 200 }}>
+        {/* Unassign option */}
+        <PickerOption selected={!selectedId} onClick={() => onSelect(null, null)}>
+          <span style={{ fontSize: 13, color: 'var(--fg-4)' }}>Unassigned</span>
+        </PickerOption>
+        {filtered.map(m => (
+          <PickerOption key={m.id} selected={selectedId === m.id} onClick={() => onSelect(m.id, m.full_name)}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <MiniAvatar name={m.full_name || '?'} size={20} />
+              <span style={{ fontSize: 13, color: 'var(--fg-1)' }}>{m.full_name}</span>
+            </div>
+          </PickerOption>
+        ))}
+        {filtered.length === 0 && (
+          <div style={{ padding: '12px 8px', fontSize: 12, color: 'var(--fg-4)', textAlign: 'center' }}>No results</div>
+        )}
+      </div>
+    </div>
+  );
+}
