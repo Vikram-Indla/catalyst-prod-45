@@ -291,22 +291,13 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
     if (!n.read_at) markAsRead(n.id);
     onClose();
 
-    const HUB_ROUTES: Record<string, string> = {
-      'TestHub':      '/testhub/cases',
-      'ProjectHub':   '/projecthub/items',
-      'ProductHub':   '/producthub/items',
-      'ReleaseHub':   '/releasehub/releases',
-      'IncidentHub':  '/incidenthub/incidents',
-      'TaskHub':      '/taskhub/tasks',
-      'PlanHub':      '/planhub/tasks',
-      'StrategyHub':  '/strategyhub',
-    };
-
-    const base = HUB_ROUTES[n.hub_source];
-    if (base) {
-      navigate(`${base}?openItem=${n.entity_id}`);
+    // Use the global detail modal (same mechanism as GlobalSearch)
+    // entity_key is the issue key like "BAU-5354"
+    if (n.entity_key) {
+      const { openDetail } = useGlobalSearchStore.getState();
+      openDetail({ id: n.entity_key });
     }
-  }, [markAsRead, onClose, navigate]);
+  }, [markAsRead, onClose]);
 
   const handleMarkRead = useCallback((id: string) => {
     markAsRead(id);
