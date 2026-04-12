@@ -385,6 +385,17 @@ export default function ForYouPage() {
     };
   }, [groupedItems, inlineFilters, advancedFilters]);
 
+  // Compute custom groups when groupBy is active
+  const fyCustomGroups = useMemo(() => {
+    if (fyGroupBy === 'none') return undefined;
+    const allItems = [
+      ...filteredGroupedItems.YESTERDAY,
+      ...filteredGroupedItems.THIS_WEEK,
+      ...filteredGroupedItems.EARLIER,
+    ];
+    return groupForYouItems(allItems, fyGroupBy);
+  }, [filteredGroupedItems, fyGroupBy]);
+
   const handleBulkApprove = () => { toast.success(`Approved ${selectedIds.size} items`); setSelectedIds(new Set()); };
   const handleBulkDelete = () => { toast.success(`Deleted ${selectedIds.size} items`); setSelectedIds(new Set()); };
   const handleBulkAssign = () => { toast.info('Assign owner dialog would open here'); };
