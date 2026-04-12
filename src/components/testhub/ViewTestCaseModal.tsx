@@ -5,6 +5,7 @@
  * Sidebar fields are inline-editable (Status, Priority, Assigned To, Owner, Type).
  */
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { X, Edit2, Copy, ClipboardList, Paperclip, Link2, History, Play, Plus, Trash2, Bug, BookOpen, MessageSquare, Search, Loader2, GitBranch, ChevronRight, FileText, Settings2, Share2, MoreHorizontal, Check } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
@@ -1138,29 +1139,31 @@ export function ViewTestCaseModal({
             width: 280, flexShrink: 0,
             borderLeft: '1px solid var(--divider)',
             overflowY: 'auto',
-            overflowX: 'visible',
             padding: '14px 16px',
             background: 'var(--bg-1)',
             position: 'relative',
           }}>
             {/* STATUS BUTTON — clickable dropdown */}
-            <div style={{ position: 'relative', marginBottom: 12 }}>
-              <button
-                onClick={(e) => { e.stopPropagation(); setOpenPicker(openPicker === 'status' ? null : 'status'); }}
-                style={{
-                  width: '100%', padding: '8px 0', borderRadius: 6, border: 'none',
-                  background: statusBtnBg, color: '#FFFFFF',
-                  fontSize: 11, fontWeight: 700, textTransform: 'uppercase' as const,
-                  letterSpacing: '0.05em', textAlign: 'center', cursor: 'pointer',
-                  transition: 'opacity 150ms',
-                }}
-                onMouseEnter={e => { e.currentTarget.style.opacity = '0.85'; }}
-                onMouseLeave={e => { e.currentTarget.style.opacity = '1'; }}
-              >
-                {localStatus}
-              </button>
-              {openPicker === 'status' && (
-                <PickerDropdown>
+            <PortalPickerWrapper pickerKey="status" openPicker={openPicker} setOpenPicker={setOpenPicker}
+              trigger={(ref) => (
+                <button
+                  ref={ref}
+                  onClick={(e) => { e.stopPropagation(); setOpenPicker(openPicker === 'status' ? null : 'status'); }}
+                  style={{
+                    width: '100%', padding: '8px 0', borderRadius: 6, border: 'none',
+                    background: statusBtnBg, color: '#FFFFFF',
+                    fontSize: 11, fontWeight: 700, textTransform: 'uppercase' as const,
+                    letterSpacing: '0.05em', textAlign: 'center', cursor: 'pointer',
+                    transition: 'opacity 150ms',
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.opacity = '0.85'; }}
+                  onMouseLeave={e => { e.currentTarget.style.opacity = '1'; }}
+                >
+                  {localStatus}
+                </button>
+              )}
+              dropdown={
+                <>
                   {['draft', 'ready', 'approved', 'deprecated'].map(s => (
                     <PickerOption
                       key={s}
@@ -1180,25 +1183,27 @@ export function ViewTestCaseModal({
                       }}>{s}</span>
                     </PickerOption>
                   ))}
-                </PickerDropdown>
-              )}
-            </div>
+                </>
+              }
+            />
 
             {/* PINNED FIELDS — all inline-editable */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 12, paddingBottom: 12 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12, paddingBottom: 12, marginTop: 12 }}>
 
               {/* Owner */}
               <SidebarField label="Owner">
-                <div style={{ position: 'relative' }}>
-                  <ClickableField onClick={(e) => { e.stopPropagation(); setOpenPicker(openPicker === 'owner' ? null : 'owner'); }}>
-                    {resolvedOwnerName !== '—' ? (
-                      <><MiniAvatar name={resolvedOwnerName} size={22} /><span style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg-1)' }}>{resolvedOwnerName}</span></>
-                    ) : (
-                      <span style={{ fontSize: 13, color: 'var(--fg-4)' }}>Unassigned</span>
-                    )}
-                  </ClickableField>
-                  {openPicker === 'owner' && (
-                    <PeoplePickerDropdown
+                <PortalPickerWrapper pickerKey="owner" openPicker={openPicker} setOpenPicker={setOpenPicker}
+                  trigger={(ref) => (
+                    <ClickableField ref={ref} onClick={(e) => { e.stopPropagation(); setOpenPicker(openPicker === 'owner' ? null : 'owner'); }}>
+                      {resolvedOwnerName !== '—' ? (
+                        <><MiniAvatar name={resolvedOwnerName} size={22} /><span style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg-1)' }}>{resolvedOwnerName}</span></>
+                      ) : (
+                        <span style={{ fontSize: 13, color: 'var(--fg-4)' }}>Unassigned</span>
+                      )}
+                    </ClickableField>
+                  )}
+                  dropdown={
+                    <PortalPeoplePicker
                       members={teamMembers || []}
                       selectedId={localOwnerId}
                       onSelect={(id, name) => {
@@ -1208,22 +1213,24 @@ export function ViewTestCaseModal({
                         updateField('created_by', id);
                       }}
                     />
-                  )}
-                </div>
+                  }
+                />
               </SidebarField>
 
               {/* Assigned To */}
               <SidebarField label="Assigned To">
-                <div style={{ position: 'relative' }}>
-                  <ClickableField onClick={(e) => { e.stopPropagation(); setOpenPicker(openPicker === 'assignee' ? null : 'assignee'); }}>
-                    {resolvedAssigneeName !== '—' ? (
-                      <><MiniAvatar name={resolvedAssigneeName} size={22} /><span style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg-1)' }}>{resolvedAssigneeName}</span></>
-                    ) : (
-                      <span style={{ fontSize: 13, color: 'var(--fg-4)' }}>Unassigned</span>
-                    )}
-                  </ClickableField>
-                  {openPicker === 'assignee' && (
-                    <PeoplePickerDropdown
+                <PortalPickerWrapper pickerKey="assignee" openPicker={openPicker} setOpenPicker={setOpenPicker}
+                  trigger={(ref) => (
+                    <ClickableField ref={ref} onClick={(e) => { e.stopPropagation(); setOpenPicker(openPicker === 'assignee' ? null : 'assignee'); }}>
+                      {resolvedAssigneeName !== '—' ? (
+                        <><MiniAvatar name={resolvedAssigneeName} size={22} /><span style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg-1)' }}>{resolvedAssigneeName}</span></>
+                      ) : (
+                        <span style={{ fontSize: 13, color: 'var(--fg-4)' }}>Unassigned</span>
+                      )}
+                    </ClickableField>
+                  )}
+                  dropdown={
+                    <PortalPeoplePicker
                       members={teamMembers || []}
                       selectedId={localAssigneeId}
                       onSelect={(id, name) => {
@@ -1233,21 +1240,23 @@ export function ViewTestCaseModal({
                         updateField('assigned_to', id);
                       }}
                     />
-                  )}
-                </div>
+                  }
+                />
               </SidebarField>
 
               {/* Priority */}
               <SidebarField label="Priority">
-                <div style={{ position: 'relative' }}>
-                  <ClickableField onClick={(e) => { e.stopPropagation(); setOpenPicker(openPicker === 'priority' ? null : 'priority'); }}>
-                    {resolvedPriorityName !== '—'
-                      ? <PriorityIndicator priority={resolvedPriorityName} fontSize={12} />
-                      : <span style={{ fontSize: 13, color: 'var(--fg-4)' }}>None</span>
-                    }
-                  </ClickableField>
-                  {openPicker === 'priority' && (
-                    <PickerDropdown>
+                <PortalPickerWrapper pickerKey="priority" openPicker={openPicker} setOpenPicker={setOpenPicker}
+                  trigger={(ref) => (
+                    <ClickableField ref={ref} onClick={(e) => { e.stopPropagation(); setOpenPicker(openPicker === 'priority' ? null : 'priority'); }}>
+                      {resolvedPriorityName !== '—'
+                        ? <PriorityIndicator priority={resolvedPriorityName} fontSize={12} />
+                        : <span style={{ fontSize: 13, color: 'var(--fg-4)' }}>None</span>
+                      }
+                    </ClickableField>
+                  )}
+                  dropdown={
+                    <>
                       {(priorities || []).map(p => (
                         <PickerOption
                           key={p.id}
@@ -1262,19 +1271,21 @@ export function ViewTestCaseModal({
                           <PriorityIndicator priority={p.name} fontSize={12} />
                         </PickerOption>
                       ))}
-                    </PickerDropdown>
-                  )}
-                </div>
+                    </>
+                  }
+                />
               </SidebarField>
 
               {/* Type */}
               <SidebarField label="Type">
-                <div style={{ position: 'relative' }}>
-                  <ClickableField onClick={(e) => { e.stopPropagation(); setOpenPicker(openPicker === 'type' ? null : 'type'); }}>
-                    <span style={{ fontSize: 13, fontWeight: 400, color: 'var(--fg-1)' }}>{resolvedTypeName}</span>
-                  </ClickableField>
-                  {openPicker === 'type' && (
-                    <PickerDropdown>
+                <PortalPickerWrapper pickerKey="type" openPicker={openPicker} setOpenPicker={setOpenPicker}
+                  trigger={(ref) => (
+                    <ClickableField ref={ref} onClick={(e) => { e.stopPropagation(); setOpenPicker(openPicker === 'type' ? null : 'type'); }}>
+                      <span style={{ fontSize: 13, fontWeight: 400, color: 'var(--fg-1)' }}>{resolvedTypeName}</span>
+                    </ClickableField>
+                  )}
+                  dropdown={
+                    <>
                       {(caseTypes || []).map(t => (
                         <PickerOption
                           key={t.id}
@@ -1289,9 +1300,9 @@ export function ViewTestCaseModal({
                           <span style={{ fontSize: 13, color: 'var(--fg-1)' }}>{t.name}</span>
                         </PickerOption>
                       ))}
-                    </PickerDropdown>
-                  )}
-                </div>
+                    </>
+                  }
+                />
               </SidebarField>
             </div>
 
@@ -1383,9 +1394,12 @@ function MiniAvatar({ name, size = 22 }: { name: string; size?: number }) {
 }
 
 // ─── Inline Picker Primitives ─────────────────────────────
-function ClickableField({ onClick, children }: { onClick: (e: React.MouseEvent) => void; children: React.ReactNode }) {
-  return (
+import React from 'react';
+
+const ClickableField = React.forwardRef<HTMLDivElement, { onClick: (e: React.MouseEvent) => void; children: React.ReactNode }>(
+  ({ onClick, children }, ref) => (
     <div
+      ref={ref}
       onClick={onClick}
       style={{
         display: 'flex', alignItems: 'center', gap: 8,
@@ -1398,28 +1412,8 @@ function ClickableField({ onClick, children }: { onClick: (e: React.MouseEvent) 
     >
       {children}
     </div>
-  );
-}
-
-function PickerDropdown({ children }: { children: React.ReactNode }) {
-  return (
-    <div
-      data-picker-dropdown
-      onClick={e => e.stopPropagation()}
-      onMouseDown={e => e.stopPropagation()}
-      style={{
-        position: 'absolute', top: '100%', left: -6, right: -6, zIndex: 50,
-        marginTop: 4, backgroundColor: 'var(--cp-float, #FFFFFF)',
-        border: '1px solid var(--divider)', borderRadius: 8,
-        boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
-        padding: 4, maxHeight: 240, overflowY: 'auto',
-        minWidth: 200,
-      }}
-    >
-      {children}
-    </div>
-  );
-}
+  )
+);
 
 function PickerOption({ selected, onClick, children }: { selected: boolean; onClick: () => void; children: React.ReactNode }) {
   return (
@@ -1440,7 +1434,63 @@ function PickerOption({ selected, onClick, children }: { selected: boolean; onCl
   );
 }
 
-function PeoplePickerDropdown({ members, selectedId, onSelect }: {
+/** Portal-based dropdown wrapper that renders fixed-position dropdown via createPortal */
+function PortalPickerWrapper({
+  pickerKey,
+  openPicker,
+  setOpenPicker,
+  trigger,
+  dropdown,
+}: {
+  pickerKey: string;
+  openPicker: string | null;
+  setOpenPicker: (v: string | null) => void;
+  trigger: (ref: React.RefObject<any>) => React.ReactNode;
+  dropdown: React.ReactNode;
+}) {
+  const anchorRef = useRef<any>(null);
+  const [pos, setPos] = useState<{ top: number; left: number; width: number } | null>(null);
+  const isOpen = openPicker === pickerKey;
+
+  useEffect(() => {
+    if (!isOpen || !anchorRef.current) { setPos(null); return; }
+    const rect = anchorRef.current.getBoundingClientRect();
+    setPos({ top: rect.bottom + 4, left: rect.left, width: Math.max(rect.width, 220) });
+  }, [isOpen]);
+
+  return (
+    <div style={{ marginBottom: pickerKey === 'status' ? 0 : undefined }}>
+      {trigger(anchorRef)}
+      {isOpen && pos && createPortal(
+        <div
+          data-picker-dropdown
+          onClick={e => e.stopPropagation()}
+          onMouseDown={e => e.stopPropagation()}
+          style={{
+            position: 'fixed',
+            top: pos.top,
+            left: pos.left,
+            width: pos.width,
+            zIndex: 99999,
+            backgroundColor: 'var(--cp-float, #FFFFFF)',
+            border: '1px solid var(--divider)',
+            borderRadius: 8,
+            boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
+            padding: 4,
+            maxHeight: 240,
+            overflowY: 'auto',
+          }}
+        >
+          {dropdown}
+        </div>,
+        document.body
+      )}
+    </div>
+  );
+}
+
+/** People picker content (search + list) — rendered inside PortalPickerWrapper */
+function PortalPeoplePicker({ members, selectedId, onSelect }: {
   members: { id: string; full_name: string | null }[];
   selectedId: string | null;
   onSelect: (id: string | null, name: string | null) => void;
@@ -1451,19 +1501,7 @@ function PeoplePickerDropdown({ members, selectedId, onSelect }: {
   );
 
   return (
-    <div
-      data-picker-dropdown
-      onClick={e => e.stopPropagation()}
-      onMouseDown={e => e.stopPropagation()}
-      style={{
-        position: 'absolute', top: '100%', left: -6, right: -6, zIndex: 50,
-        marginTop: 4, backgroundColor: 'var(--cp-float, #FFFFFF)',
-        border: '1px solid var(--divider)', borderRadius: 8,
-        boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
-        padding: 4, maxHeight: 280, display: 'flex', flexDirection: 'column',
-        minWidth: 200,
-      }}
-    >
+    <>
       <div style={{ padding: '4px 4px 6px' }}>
         <input
           type="text"
@@ -1482,7 +1520,6 @@ function PeoplePickerDropdown({ members, selectedId, onSelect }: {
         />
       </div>
       <div style={{ overflowY: 'auto', maxHeight: 200 }}>
-        {/* Unassign option */}
         <PickerOption selected={!selectedId} onClick={() => onSelect(null, null)}>
           <span style={{ fontSize: 13, color: 'var(--fg-4)' }}>Unassigned</span>
         </PickerOption>
@@ -1498,6 +1535,6 @@ function PeoplePickerDropdown({ members, selectedId, onSelect }: {
           <div style={{ padding: '12px 8px', fontSize: 12, color: 'var(--fg-4)', textAlign: 'center' }}>No results</div>
         )}
       </div>
-    </div>
+    </>
   );
 }
