@@ -563,6 +563,16 @@ export function AllProjectsTable({
           </div>
         </td>
       );
+      case 'backlogs': return (
+        <td key={colKey}>
+          <div className="flex items-center justify-center gap-2.5" style={{ pointerEvents: 'auto' }}>
+            <Tooltip><TooltipTrigger asChild><span className="cursor-pointer rounded p-0.5 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors" onClick={e => { e.stopPropagation(); navigate(`/project-hub/${p.project_key}/story-backlog`); }}><JiraIssueTypeIcon type="story" size={18} /></span></TooltipTrigger><TooltipContent side="top" className="text-xs font-medium">Go to Story Backlog</TooltipContent></Tooltip>
+            <Tooltip><TooltipTrigger asChild><span className="cursor-pointer rounded p-0.5 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors" onClick={e => { e.stopPropagation(); navigate(`/project-hub/${p.project_key}/epic-backlog`); }}><JiraIssueTypeIcon type="epic" size={18} /></span></TooltipTrigger><TooltipContent side="top" className="text-xs font-medium">Go to Epic Backlog</TooltipContent></Tooltip>
+            <Tooltip><TooltipTrigger asChild><span className="cursor-pointer rounded p-0.5 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors" onClick={e => { e.stopPropagation(); navigate(`/project-hub/${p.project_key}/feature-backlog`); }}><JiraIssueTypeIcon type="feature" size={18} /></span></TooltipTrigger><TooltipContent side="top" className="text-xs font-medium">Go to Feature Backlog</TooltipContent></Tooltip>
+            <Tooltip><TooltipTrigger asChild><span className="cursor-pointer rounded p-0.5 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors" onClick={e => { e.stopPropagation(); navigate(`/project-hub/${p.project_key}/board`); }}><JiraIssueTypeIcon type="task" size={18} /></span></TooltipTrigger><TooltipContent side="top" className="text-xs font-medium">Go to Work Items Board</TooltipContent></Tooltip>
+          </div>
+        </td>
+      );
       case 'actions': return <td key={colKey} className="text-center" style={{ pointerEvents: 'auto' }}>{active ? <RowActionMenu project={p} /> : <Lock size={14} className="text-slate-300 dark:text-[#878787]" />}</td>;
       default: return <td key={colKey} />;
     }
