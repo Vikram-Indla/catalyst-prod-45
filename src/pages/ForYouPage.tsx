@@ -228,6 +228,7 @@ export default function ForYouPage() {
   const [filterPanelOpen, setFilterPanelOpen] = useState(false);
   const [advancedFilters, setAdvancedFilters] = useState<Record<string, string[]>>({});
   const avatarsByName = useProfileAvatarsByName();
+  const [fyGroupBy, setFyGroupBy] = useState<ForYouGroupByKey>('none');
 
   useEffect(() => {
     if (!isLoading) {
