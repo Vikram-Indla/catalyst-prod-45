@@ -551,19 +551,7 @@ export function AllProjectsTable({
       case 'num': return <td key={colKey} className="text-center"><span className="text-xs text-slate-400 dark:text-[#878787] tabular-nums">{rowNum}</span></td>;
       case 'star': return <td key={colKey} style={{ overflow: 'visible', textOverflow: 'clip' }}><div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><button onClick={e => { e.stopPropagation(); onToggleFav(p.id, isFav); }} className="bg-transparent border-none cursor-pointer p-0 outline-none rounded flex-shrink-0" style={{ pointerEvents: 'auto' }}><Star size={14} fill={isFav ? '#F59E0B' : 'none'} className={isFav ? 'text-amber-500' : 'text-slate-300 dark:text-[#878787]'} /></button></div></td>;
       case 'project_key': return <td key={colKey}><div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><span className="font-mono text-[11px] font-bold tracking-wide text-white px-1.5 py-0.5 rounded" style={{ background: badgeColor }}>{p.project_key}</span></div></td>;
-      case 'project_name': return (
-        <td key={colKey}>
-          <div className="flex items-center gap-2">
-            <span onClick={() => navigate(`/project-hub/${p.project_key}/dashboard`)} className="font-semibold text-[13px] truncate hover:text-blue-600 hover:underline cursor-pointer text-slate-900 dark:text-white" title={p.name} style={{ pointerEvents: 'auto' }}>{p.name}</span>
-            <div className="flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-150 flex-shrink-0" style={{ pointerEvents: 'auto' }}>
-              <Tooltip><TooltipTrigger asChild><span className="cursor-pointer hover:scale-110 transition-transform" onClick={e => { e.stopPropagation(); navigate(`/project-hub/${p.project_key}/story-backlog`); }}><JiraIssueTypeIcon type="story" size={16} /></span></TooltipTrigger><TooltipContent side="top" className="text-xs">Story Backlog</TooltipContent></Tooltip>
-              <Tooltip><TooltipTrigger asChild><span className="cursor-pointer hover:scale-110 transition-transform" onClick={e => { e.stopPropagation(); navigate(`/project-hub/${p.project_key}/epic-backlog`); }}><JiraIssueTypeIcon type="epic" size={16} /></span></TooltipTrigger><TooltipContent side="top" className="text-xs">Epic Backlog</TooltipContent></Tooltip>
-              <Tooltip><TooltipTrigger asChild><span className="cursor-pointer hover:scale-110 transition-transform" onClick={e => { e.stopPropagation(); navigate(`/project-hub/${p.project_key}/feature-backlog`); }}><JiraIssueTypeIcon type="feature" size={16} /></span></TooltipTrigger><TooltipContent side="top" className="text-xs">Feature Backlog</TooltipContent></Tooltip>
-              <Tooltip><TooltipTrigger asChild><span className="cursor-pointer hover:scale-110 transition-transform" onClick={e => { e.stopPropagation(); navigate(`/project-hub/${p.project_key}/board`); }}><JiraIssueTypeIcon type="task" size={16} /></span></TooltipTrigger><TooltipContent side="top" className="text-xs">Board</TooltipContent></Tooltip>
-            </div>
-          </div>
-        </td>
-      );
+      case 'project_name': return <td key={colKey}><span onClick={() => navigate(`/project-hub/${p.project_key}/dashboard`)} className="font-semibold text-[13px] truncate hover:text-blue-600 hover:underline cursor-pointer text-slate-900 dark:text-white" title={p.name} style={{ pointerEvents: 'auto' }}>{p.name}</span></td>;
       case 'status': return <td key={colKey} className="text-center">{active ? <StatusChangePopover project={p} /> : <ProjectStatusBadge status={p.status} />}</td>;
       case 'lead': return <td key={colKey}><LeadReassignPopover project={p} /></td>;
       case 'members': return <td key={colKey}><MemberManagePopover project={p} /></td>;
