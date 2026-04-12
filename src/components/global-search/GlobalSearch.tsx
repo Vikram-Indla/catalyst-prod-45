@@ -831,7 +831,7 @@ export function GlobalSearch() {
           selected={selectedAssignees}
           onSelect={setSelectedAssignees}
           triggerRef={assigneeBtnRef}
-          avatarMap={nameAvatarMap}
+          avatarMap={assigneeAvatarMap}
         />
       )}
     </div>,
