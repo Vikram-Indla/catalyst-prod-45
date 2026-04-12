@@ -15,6 +15,7 @@ export interface SearchResult {
   project_key: string | null;
   item_type: WorkItemType;
   assignee_name: string | null;
+  reporter_name: string | null;
   viewed_at: string;
 }
 

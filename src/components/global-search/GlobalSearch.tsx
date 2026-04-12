@@ -131,6 +131,35 @@ function HighlightTitle({ text, query }: { text: string; query: string }) {
   );
 }
 
+/** Compact inline person tag: initials circle + first name */
+function PersonTag({ name, role }: { name: string; role: "R" | "A" }) {
+  const color = getAvatarColor(name);
+  const firstName = name.split(" ")[0];
+  const roleLabel = role === "R" ? "Reporter" : "Assignee";
+  return (
+    <span
+      title={`${roleLabel}: ${name}`}
+      style={{
+        display: "inline-flex", alignItems: "center", gap: 3,
+        whiteSpace: "nowrap",
+      }}
+    >
+      <span style={{
+        width: 14, height: 14, borderRadius: "50%",
+        backgroundColor: color, color: "#FFFFFF",
+        fontSize: 7, fontWeight: 700, lineHeight: "14px",
+        textAlign: "center", display: "inline-block", flexShrink: 0,
+        fontFamily: "Inter, system-ui, sans-serif",
+      }}>
+        {getInitials(name)}
+      </span>
+      <span style={{ maxWidth: 72, overflow: "hidden", textOverflow: "ellipsis" }}>
+        {firstName}
+      </span>
+    </span>
+  );
+}
+
 /* ── Jira-style Result Row (two-line: title + subtitle) ── */
 function ResultRow({ item, isSelected, onHover, onClick, query }: {
   item: SearchResult; isSelected: boolean; onHover: () => void; onClick: () => void;
@@ -138,6 +167,8 @@ function ResultRow({ item, isSelected, onHover, onClick, query }: {
 }) {
   const typeKey = mapType(item.item_type);
   const icon = WORK_ICONS[typeKey] ?? WORK_ICONS.task;
+  const [showTooltip, setShowTooltip] = useState(false);
+  const iconRef = useRef<HTMLSpanElement>(null);
 
   return (
     <div style={{ display: "block", padding: "0 8px" }}>
@@ -148,18 +179,34 @@ function ResultRow({ item, isSelected, onHover, onClick, query }: {
         aria-selected={isSelected}
         style={{
           display: "flex", flexDirection: "row", alignItems: "center",
-          padding: "6px 8px", height: 45,
+          padding: "6px 8px", height: 50,
           borderRadius: 8, cursor: "pointer",
           backgroundColor: isSelected ? "rgba(5,21,36,0.06)" : "transparent",
           transition: "background 60ms ease",
         }}
       >
-        {/* Icon */}
+        {/* Icon with custom tooltip */}
         <span
-          title={icon.label}
-          style={{ flexShrink: 0, width: 24, height: 24, display: "flex", alignItems: "center", justifyContent: "center" }}
+          ref={iconRef}
+          onMouseEnter={() => setShowTooltip(true)}
+          onMouseLeave={() => setShowTooltip(false)}
+          style={{ flexShrink: 0, width: 24, height: 24, display: "flex", alignItems: "center", justifyContent: "center", position: "relative" }}
           dangerouslySetInnerHTML={{ __html: icon.svg }}
         />
+        {showTooltip && (
+          <div style={{
+            position: "absolute",
+            marginLeft: -4, marginTop: -42,
+            backgroundColor: "#292A2E", color: "#FFFFFF",
+            fontSize: 12, fontWeight: 500, fontFamily: "Inter, system-ui, sans-serif",
+            padding: "4px 8px", borderRadius: 4,
+            whiteSpace: "nowrap", zIndex: 9999,
+            pointerEvents: "none",
+            boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
+          }}>
+            {icon.label}
+          </div>
+        )}
 
         {/* Content column */}
         <div style={{
@@ -187,6 +234,7 @@ function ResultRow({ item, isSelected, onHover, onClick, query }: {
           <div style={{
             display: "flex", alignItems: "center",
             fontSize: 12, color: "#6B6E76", fontFamily: "Inter, system-ui, sans-serif",
+            gap: 0,
           }}>
             <span>Jira</span>
             <span style={{ margin: "0 4px" }}>•</span>
@@ -194,8 +242,23 @@ function ResultRow({ item, isSelected, onHover, onClick, query }: {
             {item.project_name && (
               <>
                 <span style={{ margin: "0 4px" }}>•</span>
-                <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 140 }}>
                   {item.project_name}
+                </span>
+              </>
+            )}
+            {/* Reporter & Assignee — compact inline */}
+            {(item.reporter_name || item.assignee_name) && (
+              <>
+                <span style={{ margin: "0 6px 0 10px", color: "#CBD5E1" }}>|</span>
+                <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+                  {item.reporter_name && <PersonTag name={item.reporter_name} role="R" />}
+                  {item.assignee_name && (
+                    <>
+                      <span style={{ color: "#CBD5E1", fontSize: 10 }}>→</span>
+                      <PersonTag name={item.assignee_name} role="A" />
+                    </>
+                  )}
                 </span>
               </>
             )}
