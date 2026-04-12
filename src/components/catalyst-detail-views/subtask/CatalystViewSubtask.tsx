@@ -71,7 +71,7 @@ export default function CatalystViewSubtask({
   return (
     <CatalystViewBase isOpen={isOpen} onClose={onClose} panelMode={panelMode} fullPageMode={fullPageMode}
       itemType={issue?.issue_type || 'Sub-task'} itemKey={issue?.issue_key || null}
-      projectKey={issue?.project_key || projectKey}
+      projectKey={issue?.project_key || projectKey} projectName={issue?.project_name || undefined}
       parentKey={issue?.parent_key} parentType={parentIssue?.issue_type || 'Story'}
       onParentClick={parentIssue ? () => onOpenItem?.(parentIssue.id) : undefined}
       onShare={() => { navigator.clipboard.writeText(window.location.href); toast.success('Link copied'); }}
