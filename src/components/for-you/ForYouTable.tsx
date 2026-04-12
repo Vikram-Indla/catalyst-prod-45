@@ -343,8 +343,8 @@ export function CatalystTable({
             </tr>
           </thead>
           <tbody>
-            {groups.map(group => (
-              <React.Fragment key={group}>
+            {resolvedGroups.map(group => (
+              <React.Fragment key={group.key}>
                 <tr>
                   <td colSpan={orderedColumns.length} style={{
                     height: 36, padding: '0 12px',
@@ -355,11 +355,11 @@ export function CatalystTable({
                     textTransform: 'uppercase', letterSpacing: '0.08em',
                     verticalAlign: 'middle',
                   }}>
-                    {GROUP_LABELS[group]}
+                    {group.label} <span style={{ fontWeight: 500, color: '#94A3B8', marginLeft: 6 }}>({group.items.length})</span>
                   </td>
                 </tr>
 
-                {sortedGroupedItems[group].map((item) => {
+                {group.items.map((item) => {
                   rowIndex++;
                   const currentRowIndex = rowIndex;
                   const isSelected = selectedIds.has(item.id);
