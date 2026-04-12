@@ -558,23 +558,28 @@ export function GlobalSearch() {
         }}
       />
 
-      {/* Search Container */}
+      {/* Search Container — anchored to top nav (48px) */}
       <div
         ref={containerRef}
         style={{
-          position: "fixed", top: "12%", left: "50%", transform: "translateX(-50%)",
+          position: "fixed", top: 56, left: "50%", transform: "translateX(-50%)",
           zIndex: 9999, width: 780,
+          backgroundColor: "#FFFFFF", borderRadius: 8,
+          boxShadow: "0 8px 12px rgba(30,31,33,0.15), 0 0 1px rgba(30,31,33,0.31)",
+          display: "flex", flexDirection: "column",
+          maxHeight: "calc(100vh - 72px)",
+          overflow: "hidden",
         }}
       >
         {/* Search Input Bar */}
         <div style={{
           display: "flex", alignItems: "center",
-          height: 40, width: "100%",
-          backgroundColor: "#FFFFFF", borderRadius: 4,
-          boxShadow: "0 8px 12px rgba(30,31,33,0.15), 0 0 1px rgba(30,31,33,0.31)",
+          height: 48, width: "100%",
           paddingLeft: 16, paddingRight: 8,
+          borderBottom: "0.56px solid rgba(11,18,14,0.08)",
+          flexShrink: 0,
         }}>
-          <Search size={24} color="#6B6E76" style={{ flexShrink: 0, marginRight: 12 }} />
+          <Search size={22} color="#6B6E76" style={{ flexShrink: 0, marginRight: 12 }} />
           <input
             ref={inputRef}
             role="combobox"
@@ -585,7 +590,7 @@ export function GlobalSearch() {
             placeholder="Search Catalyst..."
             style={{
               flex: 1, border: "none", outline: "none",
-              fontSize: 14, fontFamily: "Inter, system-ui, sans-serif",
+              fontSize: 15, fontFamily: "Inter, system-ui, sans-serif",
               color: "#292A2E", backgroundColor: "transparent",
             }}
           />
@@ -612,42 +617,35 @@ export function GlobalSearch() {
           </div>
         </div>
 
-        {/* Search Dialog (dropdown panel) */}
+        {/* Filter Bar */}
         <div style={{
-          position: "absolute", top: 40, left: 0, width: 780,
-          backgroundColor: "#FFFFFF", borderRadius: 4,
-          boxShadow: "0 8px 12px rgba(30,31,33,0.15), 0 0 1px rgba(30,31,33,0.31)",
-          display: "flex", flexDirection: "column",
-          maxHeight: "60vh", marginTop: 2,
+          display: "flex", flexDirection: "row", alignItems: "center",
+          justifyContent: "flex-start",
+          padding: "6px 16px", minHeight: 44, gap: 8,
+          borderBottom: "0.56px solid rgba(11,18,14,0.08)",
+          flexShrink: 0,
         }}>
-          {/* Filter Bar */}
-          <div style={{
-            display: "flex", flexDirection: "row", alignItems: "center",
-            justifyContent: "flex-start",
-            padding: "2px 16px 6px", height: 40, gap: 8,
-            borderBottom: "0.56px solid rgba(11,18,14,0.08)",
-          }}>
-            <FilterButton
-              label={selectedProjects.length > 0 ? `Project (${selectedProjects.length})` : "Project"}
-              isActive={selectedProjects.length > 0}
-              isOpen={openFilter === "project"}
-              onClick={() => setOpenFilter(openFilter === "project" ? null : "project")}
-              buttonRef={projectBtnRef}
-            />
-            <FilterButton
-              label={selectedAssignees.length > 0 ? `Assignee (${selectedAssignees.length})` : "Assignee"}
-              isActive={selectedAssignees.length > 0}
-              isOpen={openFilter === "assignee"}
-              onClick={() => setOpenFilter(openFilter === "assignee" ? null : "assignee")}
-              buttonRef={assigneeBtnRef}
-            />
-          </div>
+          <FilterButton
+            label={selectedProjects.length > 0 ? `Project (${selectedProjects.length})` : "Project"}
+            isActive={selectedProjects.length > 0}
+            isOpen={openFilter === "project"}
+            onClick={() => setOpenFilter(openFilter === "project" ? null : "project")}
+            buttonRef={projectBtnRef}
+          />
+          <FilterButton
+            label={selectedAssignees.length > 0 ? `Assignee (${selectedAssignees.length})` : "Assignee"}
+            isActive={selectedAssignees.length > 0}
+            isOpen={openFilter === "assignee"}
+            onClick={() => setOpenFilter(openFilter === "assignee" ? null : "assignee")}
+            buttonRef={assigneeBtnRef}
+          />
+        </div>
 
-          {/* Scrollable Results */}
-          <div role="listbox" id="gs-results-listbox" style={{
-            flex: 1, overflowY: "auto", padding: "8px 0",
-            display: "flex", flexDirection: "column", gap: 2,
-          }}>
+        {/* Scrollable Results */}
+        <div role="listbox" id="gs-results-listbox" style={{
+          flex: 1, overflowY: "auto", padding: "8px 0",
+          display: "flex", flexDirection: "column", gap: 2,
+        }}>
             {/* Loading */}
             {showSearch && isLoading && [1,2,3,4].map(i => (
               <div key={i} style={{
