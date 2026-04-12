@@ -1025,7 +1025,7 @@ export function ViewTestCaseModal({
           {/* ── LEFT PANEL ── */}
           <div style={{ flex: 1, overflowY: 'auto', padding: '0 24px 80px', minWidth: 0 }}>
 
-            <div style={{ padding: '12px 0 0' }}>
+
 
             {loading ? (
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 200 }}>
