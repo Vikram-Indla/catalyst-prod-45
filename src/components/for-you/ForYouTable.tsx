@@ -93,7 +93,7 @@ function sortItems(items: WorkItem[], sortKey: string | null, sortDir: SortDir):
 export const ForYouTable = CatalystTable;
 
 export function CatalystTable({
-  groupedItems, onRowClick, selectedIds = new Set(),
+  groupedItems, customGroups, onRowClick, selectedIds = new Set(),
   onSelectionChange, onStarToggle, isInitialLoad = false,
 }: CatalystTableProps) {
   const [focusedIndex, setFocusedIndex] = useState<number>(-1);
