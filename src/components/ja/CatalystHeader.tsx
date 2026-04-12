@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, lazy, Suspense } from "react";
+import { useEffect, useRef, useState, useMemo, lazy, Suspense } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Search, ChevronDown, LogOut, Settings, Bell, User } from "lucide-react";
 import { useUnreadCount } from "@/hooks/useUnreadCount";
@@ -176,6 +176,54 @@ export function CatalystHeader() {
     })
     .filter(item => item.isEnabled);
 
+  // ── Priority overflow: keep key hubs visible, others go into "More" ──
+  const NAV_PRIORITY_SET = useMemo(() => new Set(['ProductHub', 'ProjectHub', 'TestHub', 'IncidentHub']), []);
+  const MORE_BTN_WIDTH = 80;
+  const navContainerRef = useRef<HTMLElement>(null);
+  const [navAvailableWidth, setNavAvailableWidth] = useState(Infinity);
+  const [moreMenuOpen, setMoreMenuOpen] = useState(false);
+
+  useEffect(() => {
+    const el = navContainerRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(([entry]) => {
+      setNavAvailableWidth(entry.contentRect.width);
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  const { visibleNavItems, overflowNavItems } = useMemo(() => {
+    const estimateWidth = (label: string) => label.length * 8 + 32;
+    const gap = 4;
+    const totalWidth = navItems.reduce((sum, i, idx) => sum + estimateWidth(i.label) + (idx > 0 ? gap : 0), 0);
+
+    if (totalWidth <= navAvailableWidth) {
+      return { visibleNavItems: navItems, overflowNavItems: [] as typeof navItems };
+    }
+
+    const budget = navAvailableWidth - MORE_BTN_WIDTH;
+    const scored = navItems.map((item, idx) => ({
+      item, idx,
+      priority: NAV_PRIORITY_SET.has(item.label) || item.label === activeNavItem ? 1 : 0,
+    }));
+    const sorted = [...scored].sort((a, b) => b.priority - a.priority || a.idx - b.idx);
+
+    const pickedIndices = new Set<number>();
+    let used = 0;
+    for (const s of sorted) {
+      const w = estimateWidth(s.item.label) + (pickedIndices.size > 0 ? gap : 0);
+      if (used + w <= budget) { pickedIndices.add(s.idx); used += w; }
+    }
+
+    return {
+      visibleNavItems: navItems.filter((_, i) => pickedIndices.has(i)),
+      overflowNavItems: navItems.filter((_, i) => !pickedIndices.has(i)),
+    };
+  }, [navItems, navAvailableWidth, activeNavItem, NAV_PRIORITY_SET]);
+
+  const hasActiveInOverflow = overflowNavItems.some(i => i.label === activeNavItem);
+
   return (
     <>
       <header
@@ -213,9 +261,9 @@ export function CatalystHeader() {
         </a>
         
         {/* ===== NAVIGATION ZONE ===== */}
-        <nav className="hidden lg:flex items-center flex-1 overflow-hidden" style={{ gap: '4px' }}>
+        <nav ref={navContainerRef} className="hidden lg:flex items-center flex-1 overflow-hidden" style={{ gap: '4px' }}>
           <TooltipProvider>
-            {navItems.map((item) => {
+            {visibleNavItems.map((item) => {
               if (!item.isEnabled) {
                 return (
                   <Tooltip key={item.label}>
@@ -493,6 +541,103 @@ export function CatalystHeader() {
               );
             })}
           </TooltipProvider>
+
+          {/* ── "More" overflow dropdown ── */}
+          {overflowNavItems.length > 0 && (
+            <Popover open={moreMenuOpen} onOpenChange={setMoreMenuOpen}>
+              <PopoverTrigger asChild>
+                <button
+                  style={{
+                    height: '100%',
+                    padding: '0 12px',
+                    fontSize: '13px',
+                    fontWeight: hasActiveInOverflow ? 600 : 500,
+                    color: hasActiveInOverflow
+                      ? (isDark ? '#FFFFFF' : 'var(--cp-blue-text)')
+                      : (isDark ? '#A1A1A1' : 'var(--cp-t3)'),
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                    cursor: 'pointer',
+                    border: 'none',
+                    background: 'transparent',
+                    borderBottom: hasActiveInOverflow ? '2px solid #3B82F6' : '2px solid transparent',
+                    fontFamily: "'Inter', sans-serif",
+                    letterSpacing: '-0.1px',
+                    flexShrink: 0,
+                    transition: 'color 0.15s ease',
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!hasActiveInOverflow) {
+                      e.currentTarget.style.color = isDark ? '#FFFFFF' : 'var(--cp-t1)';
+                      e.currentTarget.style.borderBottom = `2px solid ${isDark ? '#484F58' : 'var(--cp-bd)'}`;
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!hasActiveInOverflow) {
+                      e.currentTarget.style.color = isDark ? '#A1A1A1' : 'var(--cp-t3)';
+                      e.currentTarget.style.borderBottom = '2px solid transparent';
+                    }
+                  }}
+                >
+                  More
+                  <ChevronDown style={{ width: '14px', height: '14px' }} />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent
+                className="p-1 w-auto"
+                align="start"
+                style={{
+                  minWidth: '180px',
+                  borderRadius: '8px',
+                  border: `1px solid ${isDark ? '#2E2E2E' : 'var(--cp-bd)'}`,
+                  background: isDark ? '#1A1A1A' : '#FFFFFF',
+                  boxShadow: '0 8px 30px rgba(0,0,0,0.12)',
+                }}
+              >
+                {overflowNavItems.map((item) => {
+                  const isItemActive = item.label === activeNavItem;
+                  return (
+                    <button
+                      key={item.label}
+                      onClick={() => {
+                        if (item.path) navigate(item.path);
+                        setMoreMenuOpen(false);
+                      }}
+                      style={{
+                        width: '100%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        padding: '8px 12px',
+                        borderRadius: '4px',
+                        border: 'none',
+                        background: isItemActive ? (isDark ? 'rgba(59,130,246,0.12)' : 'rgba(37,99,235,0.08)') : 'transparent',
+                        cursor: 'pointer',
+                        fontSize: '13px',
+                        fontWeight: isItemActive ? 600 : 400,
+                        color: isItemActive
+                          ? (isDark ? '#FFFFFF' : '#2563EB')
+                          : (isDark ? '#EDEDED' : '#1E293B'),
+                        fontFamily: "'Inter', sans-serif",
+                        textAlign: 'left',
+                        transition: 'background 0.1s',
+                      }}
+                      onMouseEnter={(e) => {
+                        if (!isItemActive) e.currentTarget.style.background = isDark ? '#292929' : 'rgba(0,0,0,0.04)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = isItemActive
+                          ? (isDark ? 'rgba(59,130,246,0.12)' : 'rgba(37,99,235,0.08)')
+                          : 'transparent';
+                      }}
+                    >
+                      {item.label}
+                    </button>
+                  );
+                })}
+              </PopoverContent>
+            </Popover>
+          )}
         </nav>
 
         {/* Mobile Menu */}
