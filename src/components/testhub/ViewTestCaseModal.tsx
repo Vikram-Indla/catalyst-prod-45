@@ -471,6 +471,14 @@ export function ViewTestCaseModal({
   const [localTestFormat, setLocalTestFormat] = useState<'steps' | 'gherkin' | 'free_text'>('steps');
   const [localGherkinFeature, setLocalGherkinFeature] = useState('');
   const [localGherkinScenario, setLocalGherkinScenario] = useState('');
+  // Multi-block state for Gherkin (multiple scenarios) and Free Text (multiple text blocks)
+  const [gherkinScenarios, setGherkinScenarios] = useState<Array<{ id: string; feature: string; scenario: string }>>([]);
+  const [addingGherkin, setAddingGherkin] = useState(false);
+  const [newGherkinFeature, setNewGherkinFeature] = useState('');
+  const [newGherkinScenario, setNewGherkinScenario] = useState('');
+  const [freeTextBlocks, setFreeTextBlocks] = useState<Array<{ id: string; text: string }>>([]);
+  const [addingFreeText, setAddingFreeText] = useState(false);
+  const [newFreeText, setNewFreeText] = useState('');
   const [isSharedStepsModalOpen, setIsSharedStepsModalOpen] = useState(false);
   const [isAddStepMenuOpen, setIsAddStepMenuOpen] = useState(false);
 
