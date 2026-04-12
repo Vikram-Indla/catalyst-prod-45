@@ -33,9 +33,9 @@ export const PARENT_LINK_RULES: Record<CatalystItemType, ParentLinkRule> = {
     pickerLabel: 'Parent (Epic / Feature)',
   },
   epic: {
-    allowedParentTypes: [],
+    allowedParentTypes: ['Business Request', 'business request', 'Business_Request', 'business_request'],
     mode: 'single',
-    pickerLabel: 'Parent',
+    pickerLabel: 'Parent (Business Request)',
   },
   feature: {
     allowedParentTypes: ['Epic', 'epic'],
