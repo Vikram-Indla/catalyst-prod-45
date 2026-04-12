@@ -459,6 +459,14 @@ export function ViewTestCaseModal({
   const [addLinkOpen, setAddLinkOpen] = useState(false);
   const [addLinkType, setAddLinkType] = useState<'requirement' | 'defect' | 'story'>('requirement');
 
+  // Test step inline CRUD state
+  const [editingStepId, setEditingStepId] = useState<string | null>(null);
+  const [editStepAction, setEditStepAction] = useState('');
+  const [editStepExpected, setEditStepExpected] = useState('');
+  const [addingStep, setAddingStep] = useState(false);
+  const [newStepAction, setNewStepAction] = useState('');
+  const [newStepExpected, setNewStepExpected] = useState('');
+
   // Lookup data for pickers
   const { data: priorities } = useQuery({
     queryKey: ['tm-case-priorities'],
