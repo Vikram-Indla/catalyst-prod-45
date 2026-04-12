@@ -1,16 +1,22 @@
 /**
  * CANONICAL — Right sidebar for all CatalystView* components.
- * Change here → updates all 7 work item types.
+ * Change here → updates all work item types.
  *
- * Renders:  Status dropdown → Details header → {children} → Assignee → Reporter → Labels → Timestamps
+ * Uses production-grade editable components from StoryDetailModal:
+ *   - EditableAssignee (Jira-parity user picker with avatars)
+ *   - EditablePriority (Jira-native priority SVGs with dropdown)
+ *   - EditableLabels (add/remove labels with suggestions)
  *
- * The `children` slot is where type-specific fields go (Priority, Fix Versions, etc.).
- * This lets each view add unique fields without losing the canonical ones.
+ * Renders: Status dropdown → Details header → {children} → Priority → Assignee → Reporter → Labels → Fix Versions → Timestamps
+ *
+ * The `children` slot is where type-specific sidebar fields go.
  */
 import React, { useState, useEffect, useRef } from 'react';
 import { ChevronDown } from 'lucide-react';
+import { useQueryClient } from '@tanstack/react-query';
 import type { PhIssue } from '../types';
 import { useCatalystAvatarProfile } from '../hooks/useCatalystAvatarProfile';
+import { EditableAssignee, EditablePriority, EditableLabels } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/EditableFields';
 import {
   STATUS_OPTION_GROUPS,
 } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/constants';
@@ -21,24 +27,25 @@ import {
 interface CatalystSidebarDetailsProps {
   issue: PhIssue | null;
   itemId: string;
+  projectId?: string;
   onStatusChange: (newStatus: string) => void;
   onClose: () => void;
   onDelete: () => void;
-  /** Type-specific fields rendered between the "Details" header and Assignee */
+  /** Type-specific fields rendered between the "Details" header and Priority */
   children?: React.ReactNode;
   /** Label for the work item type in the delete confirmation */
   typeLabel?: string;
-  /** External trigger to open the delete confirmation (e.g. from "more" menu) */
+  /** External trigger to open the delete confirmation */
   deleteRequested?: boolean;
-  /** Called when the delete confirmation is dismissed without deleting */
   onDeleteDismiss?: () => void;
 }
 
 export function CatalystSidebarDetails({
-  issue, itemId, onStatusChange, onClose, onDelete,
+  issue, itemId, projectId, onStatusChange, onClose, onDelete,
   children, typeLabel = 'item',
   deleteRequested, onDeleteDismiss,
 }: CatalystSidebarDetailsProps) {
+  const queryClient = useQueryClient();
 
   /* ── Status state ───────────────────────── */
   const [localStatus, setLocalStatus] = useState<string>('');
@@ -50,15 +57,12 @@ export function CatalystSidebarDetails({
   const statusCategory = issue?.status_category || getStatusCategory(statusValue);
   const statusStyle = getStatusStyle(statusValue, statusCategory);
 
-  // Sync localStatus when issue changes (e.g. navigation)
   useEffect(() => { setLocalStatus(''); }, [itemId]);
 
-  // Allow external trigger for delete confirmation (e.g. from "more" menu)
   useEffect(() => {
     if (deleteRequested) setShowConfirmDelete(true);
   }, [deleteRequested]);
 
-  // Close dropdown on outside click
   useEffect(() => {
     if (!showStatusDropdown) return;
     const h = (e: MouseEvent) => {
@@ -69,11 +73,12 @@ export function CatalystSidebarDetails({
     return () => document.removeEventListener('mousedown', h);
   }, [showStatusDropdown]);
 
-  /* ── Avatar resolution ──────────────────── */
-  const { data: assigneeProfile } = useCatalystAvatarProfile(issue?.assignee_account_id);
+  /* ── Avatar resolution for reporter ─────── */
   const { data: reporterProfile } = useCatalystAvatarProfile(issue?.reporter_account_id);
 
   const labelsArray: string[] = Array.isArray(issue?.labels) ? issue.labels : [];
+
+  const invalidateIssue = () => queryClient.invalidateQueries({ queryKey: ['cv-issue-detail', itemId] });
 
   return (
     <>
@@ -119,13 +124,7 @@ export function CatalystSidebarDetails({
                       ? { background: '#DEEBFF', color: '#0747A6' }
                       : { background: '#DFE1E6', color: '#253858' };
                   return (
-                    <div
-                      key={st}
-                      onClick={() => {
-                        setLocalStatus(st);
-                        setShowStatusDropdown(false);
-                        onStatusChange(st);
-                      }}
+                    <div key={st} onClick={() => { setLocalStatus(st); setShowStatusDropdown(false); onStatusChange(st); }}
                       style={{
                         height: 36, padding: '0 12px', display: 'flex', alignItems: 'center',
                         justifyContent: 'space-between', cursor: 'pointer',
@@ -163,29 +162,33 @@ export function CatalystSidebarDetails({
         {/* ── TYPE-SPECIFIC FIELDS (children slot) ── */}
         {children}
 
-        {/* ── Assignee (canonical) ────────────── */}
+        {/* ── Priority (canonical, EDITABLE) ──── */}
         <div style={{ marginBottom: 14 }}>
-          <div style={{ fontSize: 12, fontWeight: 600, color: '#172B4D', marginBottom: 4 }}>Assignee</div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 6px', borderRadius: 4 }}>
-            {issue?.assignee_display_name ? (
-              <>
-                {assigneeProfile?.avatar_url ? (
-                  <img src={assigneeProfile.avatar_url} alt="" style={{ width: 28, height: 28, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
-                ) : (
-                  <span style={{
-                    width: 28, height: 28, borderRadius: '50%',
-                    background: getAvatarColor(issue.assignee_account_id ?? issue.assignee_display_name),
-                    color: '#FFF', display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: 11, fontWeight: 700, flexShrink: 0,
-                  }}>{getInitials(issue.assignee_display_name)}</span>
-                )}
-                <span style={{ fontSize: 14, color: '#172B4D' }}>{issue.assignee_display_name}</span>
-              </>
-            ) : <span style={{ color: '#42526E', fontSize: 14 }}>Unassigned</span>}
-          </div>
+          <div style={{ fontSize: 12, fontWeight: 600, color: '#172B4D', marginBottom: 4 }}>Priority</div>
+          {issue && (
+            <EditablePriority
+              issueId={issue.id}
+              currentPriority={issue.priority}
+              onUpdate={invalidateIssue}
+            />
+          )}
         </div>
 
-        {/* ── Reporter (canonical) ────────────── */}
+        {/* ── Assignee (canonical, EDITABLE) ──── */}
+        <div style={{ marginBottom: 14 }}>
+          <div style={{ fontSize: 12, fontWeight: 600, color: '#172B4D', marginBottom: 4 }}>Assignee</div>
+          {issue && (
+            <EditableAssignee
+              issueId={issue.id}
+              projectId={projectId || ''}
+              currentAssigneeId={issue.assignee_account_id}
+              currentAssigneeName={issue.assignee_display_name}
+              onUpdate={invalidateIssue}
+            />
+          )}
+        </div>
+
+        {/* ── Reporter (canonical, display) ────── */}
         <div style={{ marginBottom: 14 }}>
           <div style={{ fontSize: 12, fontWeight: 600, color: '#172B4D', marginBottom: 4 }}>Reporter</div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 6px', borderRadius: 4 }}>
@@ -207,22 +210,20 @@ export function CatalystSidebarDetails({
           </div>
         </div>
 
-        {/* ── Labels (canonical) ──────────────── */}
+        {/* ── Labels (canonical, EDITABLE) ────── */}
         <div style={{ marginBottom: 14 }}>
           <div style={{ fontSize: 12, fontWeight: 600, color: '#172B4D', marginBottom: 4 }}>Labels</div>
-          {labelsArray.length > 0 ? (
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, padding: '4px 0' }}>
-              {labelsArray.map((label, i) => (
-                <span key={i} style={{ fontSize: 12, fontWeight: 500, padding: '2px 8px', borderRadius: 3, background: '#F4F5F7', color: '#172B4D' }}>{label}</span>
-              ))}
-            </div>
-          ) : (
-            <div style={{ padding: '4px 6px', fontSize: 14, color: '#42526E' }}>None</div>
+          {issue && (
+            <EditableLabels
+              issueId={issue.id}
+              currentLabels={labelsArray}
+              onUpdate={invalidateIssue}
+            />
           )}
         </div>
       </div>
 
-      {/* ── Timestamps (canonical, always at bottom) ── */}
+      {/* ── Timestamps (canonical) ────────────── */}
       <div style={{ marginTop: 'auto', padding: '12px 0 0' }}>
         <div style={{ fontSize: 12, color: '#5E6C84', marginBottom: 4, lineHeight: 1.6 }}>
           <span style={{ color: '#42526E', fontWeight: 500 }}>Created</span> {fmtDate(issue?.jira_created_at)}
@@ -241,7 +242,7 @@ export function CatalystSidebarDetails({
               This {typeLabel} will be soft-deleted. It can be restored within 30 days.
             </p>
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
-              <button onClick={() => setShowConfirmDelete(false)} style={{ padding: '7px 16px', borderRadius: 4, background: '#FFF', border: '1px solid #DFE1E6', fontSize: 13, fontWeight: 500, cursor: 'pointer', color: '#5E6C84' }}>Cancel</button>
+              <button onClick={() => { setShowConfirmDelete(false); onDeleteDismiss?.(); }} style={{ padding: '7px 16px', borderRadius: 4, background: '#FFF', border: '1px solid #DFE1E6', fontSize: 13, fontWeight: 500, cursor: 'pointer', color: '#5E6C84' }}>Cancel</button>
               <button onClick={() => { setShowConfirmDelete(false); onDelete(); }} style={{ padding: '7px 16px', borderRadius: 4, background: '#DE350B', color: '#FFF', border: 'none', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>Delete</button>
             </div>
           </div>
@@ -250,6 +251,3 @@ export function CatalystSidebarDetails({
     </>
   );
 }
-
-/** Expose a trigger for the delete confirmation — views call this via the "more" menu */
-CatalystSidebarDetails.displayName = 'CatalystSidebarDetails';

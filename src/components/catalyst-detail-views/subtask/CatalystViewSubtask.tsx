@@ -13,7 +13,7 @@ import { CatalystViewBase } from '../shared/CatalystViewBase';
 import { useCatalystIssue, useCatalystIssueMutations } from '../shared/hooks';
 import {
   CatalystTitleEditor, CatalystParentLinker, CatalystDescriptionSection, CatalystAcceptanceCriteria,
-  CatalystActivitySection, CatalystSidebarDetails, CatalystPriorityField,
+  CatalystActivitySection, CatalystSidebarDetails,
 } from '../shared/sections';
 import type { CatalystViewBaseProps } from '../shared/types';
 import {
@@ -65,9 +65,7 @@ export default function CatalystViewSubtask({
   );
 
   const rightContent = (
-    <CatalystSidebarDetails issue={issue ?? null} itemId={itemId} onStatusChange={(st) => mutations.updateStatus.mutate(st)} onClose={onClose} onDelete={() => mutations.deleteIssue.mutate()} typeLabel="sub-task">
-      <CatalystPriorityField issue={issue ?? null} />
-    </CatalystSidebarDetails>
+    <CatalystSidebarDetails issue={issue ?? null} itemId={itemId} projectId={projectId} onStatusChange={(st) => mutations.updateStatus.mutate(st)} onClose={onClose} onDelete={() => mutations.deleteIssue.mutate()} typeLabel="sub-task" />
   );
 
   return (
