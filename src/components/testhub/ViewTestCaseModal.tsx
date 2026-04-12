@@ -622,7 +622,7 @@ export function ViewTestCaseModal({
     toast('Format updated');
   };
 
-  // ── Gherkin save handler ──
+  // ── Gherkin save handler (legacy single) ──
   const handleGherkinSave = async () => {
     if (!testCase) return;
     await typedQuery('tm_test_cases').update({
@@ -630,6 +630,66 @@ export function ViewTestCaseModal({
       gherkin_scenario: localGherkinScenario.trim() || null,
     } as any).eq('id', testCase.id);
     toast('Gherkin saved');
+  };
+
+  // ── Gherkin multi-scenario CRUD ──
+  const handleAddGherkinScenario = async () => {
+    if (!testCase || !newGherkinScenario.trim()) return;
+    const nextNum = steps.length + gherkinScenarios.length + freeTextBlocks.length + 1;
+    const { data, error } = await supabase.from('tm_test_steps').insert({
+      test_case_id: testCase.id,
+      step_number: nextNum,
+      action: newGherkinScenario.trim(),
+      expected_result: newGherkinFeature.trim() || null,
+      is_shared: false,
+    }).select().single();
+    if (error) { toast.error('Failed to add scenario'); return; }
+    if (data) setGherkinScenarios(prev => [...prev, { id: (data as any).id, feature: (data as any).expected_result || '', scenario: (data as any).action }]);
+    setNewGherkinFeature('');
+    setNewGherkinScenario('');
+    setAddingGherkin(false);
+    toast('Scenario added');
+  };
+
+  const handleDeleteGherkinScenario = async (scenarioId: string) => {
+    await supabase.from('tm_test_steps').delete().eq('id', scenarioId);
+    setGherkinScenarios(prev => prev.filter(s => s.id !== scenarioId));
+    toast('Scenario removed');
+  };
+
+  const handleGherkinScenarioBlur = async (scenarioId: string, feature: string, scenario: string) => {
+    await supabase.from('tm_test_steps').update({
+      action: scenario.trim() || null,
+      expected_result: feature.trim() || null,
+    }).eq('id', scenarioId);
+  };
+
+  // ── Free Text multi-block CRUD ──
+  const handleAddFreeTextBlock = async () => {
+    if (!testCase || !newFreeText.trim()) return;
+    const nextNum = steps.length + gherkinScenarios.length + freeTextBlocks.length + 1;
+    const { data, error } = await supabase.from('tm_test_steps').insert({
+      test_case_id: testCase.id,
+      step_number: nextNum,
+      action: newFreeText.trim(),
+      expected_result: null,
+      is_shared: false,
+    }).select().single();
+    if (error) { toast.error('Failed to add text block'); return; }
+    if (data) setFreeTextBlocks(prev => [...prev, { id: (data as any).id, text: (data as any).action }]);
+    setNewFreeText('');
+    setAddingFreeText(false);
+    toast('Text block added');
+  };
+
+  const handleDeleteFreeTextBlock = async (blockId: string) => {
+    await supabase.from('tm_test_steps').delete().eq('id', blockId);
+    setFreeTextBlocks(prev => prev.filter(b => b.id !== blockId));
+    toast('Text block removed');
+  };
+
+  const handleFreeTextBlockBlur = async (blockId: string, text: string) => {
+    await supabase.from('tm_test_steps').update({ action: text.trim() || null }).eq('id', blockId);
   };
 
   // ── Shared step insert handler ──
