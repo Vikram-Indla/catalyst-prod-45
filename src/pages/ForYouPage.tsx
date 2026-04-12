@@ -526,7 +526,7 @@ export default function ForYouPage() {
             onClose={closeDetailPanel}
             itemId={selectedItem.phIssueId}
             projectId={selectedItem.projectId}
-            projectKey={selectedItem.projectKey}
+            projectKey={selectedItem.projectKey || ''}
           />
         </Suspense>
       )}
