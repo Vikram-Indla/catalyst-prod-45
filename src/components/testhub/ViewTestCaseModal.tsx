@@ -1143,46 +1143,48 @@ export function ViewTestCaseModal({
             background: 'var(--bg-1)',
             position: 'relative',
           }}>
-            {/* STATUS BUTTON — clickable dropdown */}
-            <div style={{ position: 'relative', marginBottom: 12 }}>
-              <button
-                onClick={(e) => { e.stopPropagation(); setOpenPicker(openPicker === 'status' ? null : 'status'); }}
-                style={{
-                  width: '100%', padding: '8px 0', borderRadius: 6, border: 'none',
-                  background: statusBtnBg, color: '#FFFFFF',
-                  fontSize: 11, fontWeight: 700, textTransform: 'uppercase' as const,
-                  letterSpacing: '0.05em', textAlign: 'center', cursor: 'pointer',
-                  transition: 'opacity 150ms',
-                }}
-                onMouseEnter={e => { e.currentTarget.style.opacity = '0.85'; }}
-                onMouseLeave={e => { e.currentTarget.style.opacity = '1'; }}
-              >
-                {localStatus}
-              </button>
-              {openPicker === 'status' && (
-                <PickerDropdown>
-                  {['draft', 'ready', 'approved', 'deprecated'].map(s => (
-                    <PickerOption
-                      key={s}
-                      selected={localStatus === s}
-                      onClick={() => {
-                        setLocalStatus(s);
-                        setOpenPicker(null);
-                        updateField('status', s);
-                      }}
-                    >
-                      <span style={{
-                        display: 'inline-block', height: 20, lineHeight: '20px', fontSize: 11,
-                        fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.03em',
-                        borderRadius: 3, padding: '0 6px',
-                        background: (STATUS_PILL[s] || STATUS_PILL.draft).bg,
-                        color: (STATUS_PILL[s] || STATUS_PILL.draft).color,
-                      }}>{s}</span>
-                    </PickerOption>
-                  ))}
-                </PickerDropdown>
+            <SidebarPickerField pickerKey="status" openPicker={openPicker} setOpenPicker={setOpenPicker}>
+              {(anchorRef) => (
+                <>
+                  <button
+                    ref={anchorRef as any}
+                    onClick={(e) => { e.stopPropagation(); setOpenPicker(openPicker === 'status' ? null : 'status'); }}
+                    style={{
+                      width: '100%', padding: '8px 0', borderRadius: 6, border: 'none',
+                      background: statusBtnBg, color: '#FFFFFF',
+                      fontSize: 11, fontWeight: 700, textTransform: 'uppercase' as const,
+                      letterSpacing: '0.05em', textAlign: 'center', cursor: 'pointer',
+                      transition: 'opacity 150ms',
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.opacity = '0.85'; }}
+                    onMouseLeave={e => { e.currentTarget.style.opacity = '1'; }}
+                  >
+                    {localStatus}
+                  </button>
+                  {openPicker === 'status' && <PortalDropdown anchorRef={anchorRef}>
+                    {['draft', 'ready', 'approved', 'deprecated'].map(s => (
+                      <PickerOption
+                        key={s}
+                        selected={localStatus === s}
+                        onClick={() => {
+                          setLocalStatus(s);
+                          setOpenPicker(null);
+                          updateField('status', s);
+                        }}
+                      >
+                        <span style={{
+                          display: 'inline-block', height: 20, lineHeight: '20px', fontSize: 11,
+                          fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.03em',
+                          borderRadius: 3, padding: '0 6px',
+                          background: (STATUS_PILL[s] || STATUS_PILL.draft).bg,
+                          color: (STATUS_PILL[s] || STATUS_PILL.draft).color,
+                        }}>{s}</span>
+                      </PickerOption>
+                    ))}
+                  </PortalDropdown>}
+                </>
               )}
-            </div>
+            </SidebarPickerField>
 
             {/* PINNED FIELDS — all inline-editable */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12, paddingBottom: 12 }}>
