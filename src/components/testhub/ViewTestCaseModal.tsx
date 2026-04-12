@@ -1404,14 +1404,16 @@ function ClickableField({ onClick, children }: { onClick: (e: React.MouseEvent) 
 function PickerDropdown({ children }: { children: React.ReactNode }) {
   return (
     <div
+      data-picker-dropdown
       onClick={e => e.stopPropagation()}
+      onMouseDown={e => e.stopPropagation()}
       style={{
-        position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 50,
+        position: 'absolute', top: '100%', left: -6, right: -6, zIndex: 50,
         marginTop: 4, backgroundColor: 'var(--cp-float, #FFFFFF)',
         border: '1px solid var(--divider)', borderRadius: 8,
         boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
         padding: 4, maxHeight: 240, overflowY: 'auto',
-        minWidth: 180,
+        minWidth: 200,
       }}
     >
       {children}
