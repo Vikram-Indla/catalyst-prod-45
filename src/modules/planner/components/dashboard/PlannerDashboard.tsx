@@ -18,7 +18,7 @@ import { DashboardUpcomingDeadlinesV2 } from './DashboardUpcomingDeadlinesV2';
 import { DashboardTeamWorkloadV2 } from './DashboardTeamWorkloadV2';
 import { DashboardSkeleton } from './DashboardSkeleton';
 const CreateTaskModal = React.lazy(() => import('../kanban').then(m => ({ default: m.CreateTaskModal })));
-const TaskDetailDrawer = React.lazy(() => import('../TaskDetailDrawer/TaskDetailDrawer').then(m => ({ default: m.TaskDetailDrawer })));
+const CatalystDetailRouter = React.lazy(() => import('@/components/catalyst-detail-views/CatalystDetailRouter'));
 import { Button } from '@/components/ui/button';
 import { RefreshCw, LayoutDashboard, Calendar, Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -253,11 +253,14 @@ export function PlannerDashboard() {
       />
 
       {/* Task Detail Drawer */}
-      <TaskDetailDrawer
-        taskId={selectedTaskId}
-        open={!!selectedTaskId}
-        onClose={handleCloseDrawer}
-      />
+      <React.Suspense fallback={null}>
+        <CatalystDetailRouter
+          isOpen={!!selectedTaskId}
+          onClose={handleCloseDrawer}
+          itemId={selectedTaskId || ''}
+          itemType="task"
+        />
+      </React.Suspense>
     </div>
   );
 }
