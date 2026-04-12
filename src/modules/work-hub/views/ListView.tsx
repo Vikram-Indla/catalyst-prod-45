@@ -28,7 +28,7 @@ import {
 } from '../components';
 import { lazy, Suspense } from 'react';
 
-const StoryDetailModal = lazy(() => import('@/modules/project-work-hub/components/dialogs/StoryDetailModal'));
+const CatalystDetailRouter = lazy(() => import('@/components/catalyst-detail-views/CatalystDetailRouter'));
 
 interface WorkItem {
   id: string;
@@ -812,7 +812,7 @@ export function ListView() {
       {/* Detail Modal — unified StoryDetailModal */}
       {selectedItem && (
         <Suspense fallback={null}>
-          <StoryDetailModal
+          <CatalystDetailRouter
             isOpen={true}
             onClose={() => setSelectedItem(null)}
             itemId={selectedItem.id}

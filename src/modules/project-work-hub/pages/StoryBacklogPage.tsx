@@ -31,7 +31,7 @@ import { useTableColumns, type ColumnDef as TColDef } from '@/hooks/useTableColu
 import { ResizableTableHeader, type SortDir } from '@/components/shared/ResizableTableHeader';
 import '@/styles/product-backlog.css';
 
-const StoryDetailModal = lazy(() => import('../components/dialogs/StoryDetailModal'));
+const CatalystDetailRouter = lazy(() => import('@/components/catalyst-detail-views/CatalystDetailRouter'));
 
 // ── Column definitions (CatalystTable pattern) ──
 const STORY_COLUMNS: TColDef[] = [
@@ -940,7 +940,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
           </div>
           <div style={{ flex: 1, minWidth: 0, overflow: 'hidden', transition: isDraggingPanel.current ? 'none' : 'flex 0.15s ease' }}>
             <Suspense fallback={<div style={{ padding: 24, color: '#97A0AF' }}>Loading…</div>}>
-              <StoryDetailModal
+              <CatalystDetailRouter
                 isOpen={true}
                 onClose={handleCloseDetail}
                 itemId={detailItemId}
@@ -966,7 +966,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
       <DeleteConfirmDialog isOpen={!!deleteTarget} onClose={() => setDeleteTarget(null)} onConfirm={() => deleteTarget && deleteMutation.mutate(deleteTarget.id)} itemType="Story" itemKey={deleteTarget?.story_key || null} itemName={deleteTarget?.title || ''} isPending={deleteMutation.isPending} />
       {!panelMode && detailItemId && (
         <Suspense fallback={null}>
-          <StoryDetailModal isOpen={!!detailItemId} onClose={() => setDetailItemId(null)} itemId={detailItemId} projectId={projectId || ''} projectKey={projectKey || ''} onOpenItem={(id) => setDetailItemId(id)} onTogglePanelMode={handleTogglePanelMode} />
+          <CatalystDetailRouter isOpen={!!detailItemId} onClose={() => setDetailItemId(null)} itemId={detailItemId} projectId={projectId || ''} projectKey={projectKey || ''} onOpenItem={(id) => setDetailItemId(id)} onTogglePanelMode={handleTogglePanelMode} />
         </Suspense>
       )}
     </div>

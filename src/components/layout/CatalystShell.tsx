@@ -2,7 +2,7 @@ import { useState, lazy, Suspense, ComponentType } from 'react';
 import { GlobalSearch } from '@/components/global-search';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
 
-const StoryDetailModal = lazy(() => import('@/modules/project-work-hub/components/dialogs/StoryDetailModal'));
+const CatalystDetailRouter = lazy(() => import('@/components/catalyst-detail-views/CatalystDetailRouter'));
 
 import { useLocation, useParams, Outlet, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -370,15 +370,16 @@ export function CatalystShell() {
     <CatalystContextProvider>
       <CatalystShellContent />
       <GlobalSearch />
-      {/* Global StoryDetailModal — opened from GlobalSearch, ForYou, etc. */}
+      {/* Global CatalystDetailRouter — opened from GlobalSearch, Notifications, ForYou, etc. */}
       {pendingItem && (
         <Suspense fallback={null}>
-          <StoryDetailModal
+          <CatalystDetailRouter
             isOpen={true}
             onClose={clearDetail}
             itemId={pendingItem.id}
             projectId={pendingItem.projectId || ''}
             projectKey={pendingItem.projectKey || ''}
+            itemType={pendingItem.itemType}
           />
         </Suspense>
       )}

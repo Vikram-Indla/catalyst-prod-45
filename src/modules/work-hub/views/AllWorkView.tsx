@@ -20,7 +20,7 @@ import { cn } from '@/lib/utils';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { AllWorkTicketList } from '../components/AllWorkTicketList';
 import { CreateVersionDialog } from '../components/CreateVersionDialog';
-const StoryDetailModal = lazy(() => import('@/modules/project-work-hub/components/dialogs/StoryDetailModal'));
+const CatalystDetailRouter = lazy(() => import('@/components/catalyst-detail-views/CatalystDetailRouter'));
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
@@ -636,7 +636,7 @@ export function AllWorkView() {
           /* Detail Modal — unified StoryDetailModal */
           <div className="flex-1 overflow-hidden">
             <Suspense fallback={null}>
-              <StoryDetailModal
+              <CatalystDetailRouter
                 isOpen={true}
                 onClose={handleCloseDetail}
                 itemId={selectedWorkItem.id}
