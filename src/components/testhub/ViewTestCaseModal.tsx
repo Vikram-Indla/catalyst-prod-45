@@ -501,12 +501,23 @@ export function ViewTestCaseModal({
     }
   }, [testCase?.id]);
 
-  // Close picker on outside click
+  // Close picker on outside mousedown (delayed to avoid race with same-click open)
   useEffect(() => {
     if (!openPicker) return;
-    const handler = () => setOpenPicker(null);
-    document.addEventListener('click', handler);
-    return () => document.removeEventListener('click', handler);
+    const handler = (e: MouseEvent) => {
+      // Check if click is inside a picker dropdown
+      const target = e.target as HTMLElement;
+      if (target.closest('[data-picker-dropdown]')) return;
+      setOpenPicker(null);
+    };
+    // Delay to next tick to avoid closing on the same click that opened
+    const timer = setTimeout(() => {
+      document.addEventListener('mousedown', handler);
+    }, 0);
+    return () => {
+      clearTimeout(timer);
+      document.removeEventListener('mousedown', handler);
+    };
   }, [openPicker]);
 
   // Silent auto-save helper
