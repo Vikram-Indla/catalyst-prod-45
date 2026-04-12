@@ -3,13 +3,14 @@
  * Ring-fenced: all classes use fy- prefix
  */
 
-import React, { useState, useEffect, useCallback, lazy, Suspense } from 'react';
-import { MessageSquare, AlertCircle, FileText, ChevronsUp, ChevronUp, ChevronDown, ChevronsDown, Folder, LayoutGrid, Bug as BugIcon, CheckSquare, Zap, BookOpen, AlertTriangle as AlertTriangleIcon } from 'lucide-react';
+import React, { useState, useEffect, useCallback, lazy, Suspense, useRef, useMemo } from 'react';
+import { MessageSquare, AlertCircle, FileText, ChevronsUp, ChevronUp, ChevronDown, ChevronsDown, Folder, LayoutGrid, Bug as BugIcon, CheckSquare, Zap, BookOpen, AlertTriangle as AlertTriangleIcon, Layers, Search, Check } from 'lucide-react';
 import { StatusLozenge } from '@/components/ui/StatusLozenge';
 import { JiraIssueTypeIcon } from '@/components/shared/JiraIssueTypeIcon';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { useForYouData } from '@/hooks/useForYouData';
+import type { WorkItem } from '@/hooks/useForYouData';
 import {
   ForYouHeader, ForYouSubTabs, ForYouToolbar, ForYouTable,
   ForYouTableSkeleton, ForYouPagination,
@@ -22,6 +23,185 @@ import type { FilterCategory } from '@/components/shared/JiraBasicFilter';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 import { toast } from 'sonner';
 import type { AIPriorityItem, AINextItemData, AIStats, AISuggestionData } from '@/components/catalyst-ai/CatalystAIPanel';
+
+// ─── Group By ────────────────────────────────────────────────
+type ForYouGroupByKey = 'none' | 'status' | 'priority' | 'hub' | 'project' | 'assignee' | 'type';
+
+const FY_GROUP_OPTIONS: { key: ForYouGroupByKey; label: string }[] = [
+  { key: 'status', label: 'Status' },
+  { key: 'priority', label: 'Priority' },
+  { key: 'hub', label: 'Hub' },
+  { key: 'project', label: 'Project' },
+  { key: 'assignee', label: 'Assignee' },
+  { key: 'type', label: 'Type' },
+];
+
+const PRIORITY_ORDER_FY = ['critical', 'highest', 'high', 'medium', 'low', 'lowest'];
+
+function groupForYouItems(items: WorkItem[], groupBy: ForYouGroupByKey): { label: string; items: WorkItem[] }[] {
+  if (groupBy === 'none') return [];
+
+  const map = new Map<string, WorkItem[]>();
+  items.forEach(item => {
+    let key: string;
+    switch (groupBy) {
+      case 'status': key = item.status || 'No Status'; break;
+      case 'priority': key = item.priority || 'No Priority'; break;
+      case 'hub': key = item.hubLabel || 'Unknown'; break;
+      case 'project': key = item.project || 'No Project'; break;
+      case 'assignee': key = item.assignee?.name || 'Unassigned'; break;
+      case 'type': key = item.issueType || 'Unknown'; break;
+      default: key = 'Other';
+    }
+    if (!map.has(key)) map.set(key, []);
+    map.get(key)!.push(item);
+  });
+
+  const entries = Array.from(map.entries());
+  if (groupBy === 'priority') {
+    entries.sort((a, b) => {
+      const ai = PRIORITY_ORDER_FY.indexOf(a[0].toLowerCase());
+      const bi = PRIORITY_ORDER_FY.indexOf(b[0].toLowerCase());
+      return (ai >= 0 ? ai : 999) - (bi >= 0 ? bi : 999);
+    });
+  } else {
+    entries.sort((a, b) => a[0].localeCompare(b[0]));
+  }
+
+  return entries.map(([label, items]) => ({ label, items }));
+}
+
+function ForYouGroupByPopover({
+  value, onChange,
+}: { value: ForYouGroupByKey; onChange: (v: ForYouGroupByKey) => void }) {
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState('');
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [open]);
+
+  const filtered = FY_GROUP_OPTIONS.filter(o =>
+    o.label.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const isActive = value !== 'none';
+
+  return (
+    <div ref={ref} style={{ position: 'relative' }}>
+      <button
+        onClick={() => setOpen(p => !p)}
+        style={{
+          display: 'inline-flex', alignItems: 'center', gap: 6,
+          height: 32, padding: '0 10px', borderRadius: 6,
+          border: isActive ? '1.5px solid #2563EB' : '1.5px solid #E2E8F0',
+          background: isActive ? 'rgba(37,99,235,0.06)' : '#FFFFFF',
+          color: isActive ? '#2563EB' : '#0F172A',
+          fontSize: 13, fontWeight: 500, cursor: 'pointer',
+          fontFamily: "'Inter', sans-serif",
+          transition: 'all 150ms',
+        }}
+      >
+        <Layers size={14} />
+        Group
+        {isActive && (
+          <span style={{
+            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+            minWidth: 18, height: 18, borderRadius: 9,
+            background: '#2563EB', color: '#FFFFFF', fontSize: 10, fontWeight: 700,
+          }}>1</span>
+        )}
+      </button>
+
+      {open && (
+        <div style={{
+          position: 'absolute', top: 'calc(100% + 6px)', left: 0, zIndex: 100,
+          width: 280, background: '#FFFFFF',
+          border: '1px solid #E2E8F0', borderRadius: 8,
+          boxShadow: '0 4px 16px rgba(0,0,0,0.1)',
+          overflow: 'hidden',
+        }}>
+          <div style={{ padding: '8px 12px', borderBottom: '1px solid #F1F5F9' }}>
+            <div style={{ position: 'relative' }}>
+              <Search size={14} style={{ position: 'absolute', left: 8, top: '50%', transform: 'translateY(-50%)', color: '#94A3B8' }} />
+              <input
+                type="text"
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                placeholder="Search grouping options"
+                autoFocus
+                style={{
+                  width: '100%', height: 32, paddingLeft: 28, paddingRight: 8,
+                  border: '1.5px solid #E2E8F0', borderRadius: 6,
+                  fontSize: 13, color: '#0F172A', background: '#FFFFFF',
+                  outline: 'none', fontFamily: "'Inter', sans-serif",
+                }}
+                onFocus={e => (e.currentTarget.style.borderColor = '#2563EB')}
+                onBlur={e => (e.currentTarget.style.borderColor = '#E2E8F0')}
+              />
+            </div>
+          </div>
+
+          <div style={{ padding: '4px 0', maxHeight: 240, overflowY: 'auto' }}>
+            <div style={{ padding: '4px 12px 2px', fontSize: 11, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              All fields
+            </div>
+            {filtered.map(opt => {
+              const isSelected = value === opt.key;
+              return (
+                <button
+                  key={opt.key}
+                  onClick={() => { onChange(isSelected ? 'none' : opt.key); setOpen(false); setSearch(''); }}
+                  style={{
+                    width: '100%', display: 'flex', alignItems: 'center', gap: 8,
+                    height: 36, padding: '0 12px',
+                    border: 'none', background: isSelected ? 'rgba(37,99,235,0.06)' : 'transparent',
+                    color: isSelected ? '#2563EB' : '#0F172A',
+                    fontSize: 14, fontWeight: isSelected ? 500 : 400,
+                    cursor: 'pointer', fontFamily: "'Inter', sans-serif",
+                    borderLeft: isSelected ? '3px solid #2563EB' : '3px solid transparent',
+                    transition: 'background 100ms',
+                  }}
+                  onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = 'rgba(0,0,0,0.04)'; }}
+                  onMouseLeave={e => { if (!isSelected) e.currentTarget.style.background = 'transparent'; }}
+                >
+                  {opt.label}
+                  {isSelected && <Check size={14} style={{ marginLeft: 'auto', color: '#2563EB' }} />}
+                </button>
+              );
+            })}
+            {filtered.length === 0 && (
+              <div style={{ padding: '12px', textAlign: 'center', fontSize: 13, color: '#94A3B8' }}>No results</div>
+            )}
+          </div>
+
+          {isActive && (
+            <div style={{ padding: '6px 12px', borderTop: '1px solid #F1F5F9' }}>
+              <button
+                onClick={() => { onChange('none'); setOpen(false); }}
+                style={{
+                  border: 'none', background: 'transparent', color: '#94A3B8',
+                  fontSize: 13, cursor: 'pointer', fontFamily: "'Inter', sans-serif",
+                  padding: '4px 0',
+                }}
+                onMouseEnter={e => (e.currentTarget.style.color = '#2563EB')}
+                onMouseLeave={e => (e.currentTarget.style.color = '#94A3B8')}
+              >
+                Clear selection
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
 
 // ─── Heavy panels: lazy-loaded so they never block initial render ────
 const StoryDetailModal = lazy(() => import('@/modules/project-work-hub/components/dialogs/StoryDetailModal'));
