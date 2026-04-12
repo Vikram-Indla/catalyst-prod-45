@@ -1,8 +1,9 @@
 /**
- * ViewTestCaseModal — V15 Rebuild (StoryDetailModal parity)
+ * ViewTestCaseModal — V16 Rebuild (StoryDetailModal parity)
  * Two-column layout: scrollable left panel + right sidebar (280px)
  * Ghost header, accordion sections, no tabs.
  * Sidebar fields are inline-editable (Status, Priority, Assigned To, Owner, Type).
+ * Test Steps: 3-format toggle (Steps / Gherkin / Free Text) + Shared Steps support.
  */
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
@@ -12,8 +13,10 @@ import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { PriorityIndicator } from '@/components/shared/PriorityIndicator';
 import { EntityCommentsPanel } from '@/components/testhub/EntityCommentsPanel';
 import { EntityAttachmentsPanel } from '@/components/testhub/EntityAttachmentsPanel';
+import { SharedStepsModal } from '@/components/testhub/SharedStepsModal';
 import { formatDistanceToNow, format } from 'date-fns';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import React from 'react';
 
 interface TestCase {
   id: string;
@@ -38,6 +41,8 @@ interface Step {
   step_number: number;
   action: string;
   expected_result: string | null;
+  is_shared: boolean;
+  shared_step_id: string | null;
 }
 
 interface Link {
@@ -108,7 +113,7 @@ if (typeof document !== 'undefined' && !document.getElementById(ANIM_STYLE_ID)) 
   document.head.appendChild(s);
 }
 
-// --- STATUS BUTTON COLORS (full-width, matching WorkItemDetailModal sidebar) ---
+// --- STATUS BUTTON COLORS ---
 const STATUS_BTN: Record<string, string> = {
   draft:      '#44546F',
   ready:      '#1B7F37',
@@ -116,7 +121,7 @@ const STATUS_BTN: Record<string, string> = {
   deprecated: '#44546F',
 };
 
-// --- STATUS PILL COLORS (kept for inline lozenge usage in dropdowns) ---
+// --- STATUS PILL COLORS ---
 const STATUS_PILL: Record<string, { bg: string; color: string }> = {
   draft:      { bg: '#DFE1E6', color: '#253858' },
   ready:      { bg: '#E3FCEF', color: '#006644' },
@@ -133,7 +138,7 @@ const RESULT_LOZENGE: Record<string, { bg: string; color: string }> = {
 };
 
 // ═══════════════════════════════════════
-// ACCORDION SECTION (CollapsibleSection parity)
+// ACCORDION SECTION
 // ═══════════════════════════════════════
 function AccordionSection({
   label, count, defaultExpanded = false, children,
@@ -183,7 +188,7 @@ function AccordionSection({
 }
 
 // ═══════════════════════════════════════
-// ADD LINK MODAL (preserved exactly)
+// ADD LINK MODAL
 // ═══════════════════════════════════════
 function AddLinkModal({
   isOpen,
@@ -240,7 +245,6 @@ function AddLinkModal({
   return (
     <div onClick={onClose} style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1100 }}>
       <div onClick={e => e.stopPropagation()} style={{ width: 480, maxWidth: '95vw', maxHeight: '80vh', backgroundColor: 'var(--cp-float)', borderRadius: 12, boxShadow: '0 20px 60px rgba(0,0,0,0.15)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-        {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px', borderBottom: '1px solid var(--divider)' }}>
           <h3 style={{ fontFamily: "'Inter', sans-serif", fontSize: 16, fontWeight: 600, color: 'var(--fg-1)', margin: 0 }}>Add Link</h3>
           <button onClick={onClose} style={{ width: 32, height: 32, border: 'none', backgroundColor: 'transparent', color: 'var(--fg-4)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -249,7 +253,6 @@ function AddLinkModal({
         </div>
 
         <div style={{ padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: 12 }}>
-          {/* Type selector */}
           <div style={{ display: 'flex', gap: 6 }}>
             {LINK_TYPE_OPTIONS.map(opt => {
               const active = linkType === opt.value;
@@ -269,7 +272,6 @@ function AddLinkModal({
             })}
           </div>
 
-          {/* Search */}
           <div style={{ position: 'relative' }}>
             <Search style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', width: 16, height: 16, color: 'var(--fg-4)' }} />
             <input
@@ -280,7 +282,6 @@ function AddLinkModal({
           </div>
         </div>
 
-        {/* Results */}
         <div style={{ flex: 1, overflowY: 'auto', padding: '0 20px 16px', maxHeight: 320 }}>
           {isLoading ? (
             <div style={{ display: 'flex', justifyContent: 'center', padding: 24 }}>
@@ -310,7 +311,6 @@ function AddLinkModal({
           )}
         </div>
 
-        {/* Footer */}
         <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '12px 20px', borderTop: '1px solid var(--divider)' }}>
           <button onClick={onClose} style={{ height: 36, padding: '0 16px', backgroundColor: 'transparent', border: '1.5px solid var(--divider)', borderRadius: 8, fontSize: 13, fontWeight: 500, color: 'var(--fg-3)', cursor: 'pointer' }}>Cancel</button>
         </div>
@@ -320,7 +320,7 @@ function AddLinkModal({
 }
 
 // ═══════════════════════════════════════
-// LINK ACCORDION SECTION (preserved exactly)
+// LINK ACCORDION SECTION
 // ═══════════════════════════════════════
 function LinkAccordionSection({
   label,
@@ -343,7 +343,6 @@ function LinkAccordionSection({
 
   return (
     <div style={{ borderRadius: 4, border: '0.75px solid var(--divider)', overflow: 'hidden' }}>
-      {/* Section header */}
       <div
         onClick={() => setExpanded(p => !p)}
         style={{
@@ -441,7 +440,7 @@ export function ViewTestCaseModal({
   const [runs, setRuns] = useState<Execution[]>([]);
   const [loading, setLoading] = useState(false);
 
-  // Editable sidebar state (local copies that update optimistically)
+  // Editable sidebar state
   const [localStatus, setLocalStatus] = useState(testCase?.status || 'draft');
   const [localPriorityId, setLocalPriorityId] = useState(testCase?.priority_id || null);
   const [localTypeId, setLocalTypeId] = useState(testCase?.case_type_id || null);
@@ -467,6 +466,13 @@ export function ViewTestCaseModal({
   const [addingStep, setAddingStep] = useState(false);
   const [newStepAction, setNewStepAction] = useState('');
   const [newStepExpected, setNewStepExpected] = useState('');
+
+  // Test format state (Steps / Gherkin / Free Text)
+  const [localTestFormat, setLocalTestFormat] = useState<'steps' | 'gherkin' | 'free_text'>('steps');
+  const [localGherkinFeature, setLocalGherkinFeature] = useState('');
+  const [localGherkinScenario, setLocalGherkinScenario] = useState('');
+  const [isSharedStepsModalOpen, setIsSharedStepsModalOpen] = useState(false);
+  const [isAddStepMenuOpen, setIsAddStepMenuOpen] = useState(false);
 
   // Lookup data for pickers
   const { data: priorities } = useQuery({
@@ -510,16 +516,14 @@ export function ViewTestCaseModal({
     }
   }, [testCase?.id]);
 
-  // Close picker on outside mousedown (delayed to avoid race with same-click open)
+  // Close picker on outside mousedown
   useEffect(() => {
     if (!openPicker) return;
     const handler = (e: MouseEvent) => {
-      // Check if click is inside a picker dropdown
       const target = e.target as HTMLElement;
       if (target.closest('[data-picker-dropdown]')) return;
       setOpenPicker(null);
     };
-    // Delay to next tick to avoid closing on the same click that opened
     const timer = setTimeout(() => {
       document.addEventListener('mousedown', handler);
     }, 0);
@@ -528,6 +532,23 @@ export function ViewTestCaseModal({
       document.removeEventListener('mousedown', handler);
     };
   }, [openPicker]);
+
+  // Close add step menu on outside click
+  useEffect(() => {
+    if (!isAddStepMenuOpen) return;
+    const handler = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.closest('[data-add-step-menu]')) return;
+      setIsAddStepMenuOpen(false);
+    };
+    const timer = setTimeout(() => {
+      document.addEventListener('mousedown', handler);
+    }, 0);
+    return () => {
+      clearTimeout(timer);
+      document.removeEventListener('mousedown', handler);
+    };
+  }, [isAddStepMenuOpen]);
 
   // Silent auto-save helper
   const updateField = useCallback(async (field: string, value: any) => {
@@ -538,7 +559,6 @@ export function ViewTestCaseModal({
       toast.error(`Failed to update ${field}`);
       return;
     }
-    // Invalidate queries for refresh
     queryClient.invalidateQueries({ queryKey: ['tm-cases'] });
     queryClient.invalidateQueries({ queryKey: ['tm-case', testCase.id] });
   }, [testCase, queryClient]);
@@ -554,7 +574,7 @@ export function ViewTestCaseModal({
       expected_result: newStepExpected.trim() || null,
     }).select().single();
     if (error) { toast.error('Failed to add step'); return; }
-    if (data) setSteps(prev => [...prev, data as Step]);
+    if (data) setSteps(prev => [...prev, { ...(data as any), is_shared: false, shared_step_id: null }]);
     setNewStepAction('');
     setNewStepExpected('');
     setAddingStep(false);
@@ -586,6 +606,50 @@ export function ViewTestCaseModal({
     setEditStepExpected(step.expected_result || '');
   }, []);
 
+  // ── Format change handler ──
+  const handleFormatChange = async (newFmt: 'steps' | 'gherkin' | 'free_text') => {
+    setLocalTestFormat(newFmt);
+    const dbVal = newFmt === 'gherkin' ? 'bdd' : newFmt === 'free_text' ? 'free_text' : 'classic';
+    await typedQuery('tm_test_cases').update({ test_format: dbVal } as any).eq('id', testCase!.id);
+    toast('Format updated');
+  };
+
+  // ── Gherkin save handler ──
+  const handleGherkinSave = async () => {
+    if (!testCase) return;
+    await typedQuery('tm_test_cases').update({
+      gherkin_feature: localGherkinFeature.trim() || null,
+      gherkin_scenario: localGherkinScenario.trim() || null,
+    } as any).eq('id', testCase.id);
+    toast('Gherkin saved');
+  };
+
+  // ── Shared step insert handler ──
+  const handleInsertSharedStep = async (sharedStep: { action: string; expectedResult: string; sharedStepId: string }) => {
+    if (!testCase) return;
+    const nextNum = steps.length + 1;
+    const { data, error } = await supabase.from('tm_test_steps').insert({
+      test_case_id: testCase.id,
+      step_number: nextNum,
+      action: sharedStep.action,
+      expected_result: sharedStep.expectedResult || null,
+      is_shared: true,
+      shared_step_id: sharedStep.sharedStepId,
+    }).select().single();
+    if (!error && data) {
+      setSteps(prev => [...prev, {
+        id: (data as any).id,
+        step_number: (data as any).step_number,
+        action: (data as any).action,
+        expected_result: (data as any).expected_result,
+        is_shared: true,
+        shared_step_id: sharedStep.sharedStepId,
+      }]);
+      toast('Shared step inserted');
+    }
+    setIsSharedStepsModalOpen(false);
+  };
+
   useEffect(() => {
     if (isOpen && testCase) {
       fetchRelatedData();
@@ -597,7 +661,7 @@ export function ViewTestCaseModal({
     if (!testCase) return;
     setLoading(true);
 
-    // Resolve FK display names (priority, type, owner, assignee) in parallel
+    // Resolve FK display names in parallel
     const fkPromises: Promise<void>[] = [];
     setPriorityName('—');
     setTypeName('—');
@@ -624,19 +688,13 @@ export function ViewTestCaseModal({
       );
     }
     const assigneeId = (testCase as any).assigned_to;
-    if (assigneeId && assigneeId !== ownerId) {
-      fkPromises.push(
-        Promise.resolve(supabase.from('profiles').select('full_name').eq('id', assigneeId).maybeSingle())
-          .then(({ data }) => { if (data?.full_name) setAssigneeName(data.full_name); })
-      );
-    } else if (assigneeId && assigneeId === ownerId) {
+    if (assigneeId) {
       fkPromises.push(
         Promise.resolve(supabase.from('profiles').select('full_name').eq('id', assigneeId).maybeSingle())
           .then(({ data }) => { if (data?.full_name) setAssigneeName(data.full_name); })
       );
     }
 
-    // Fire FK lookups (don't block main data)
     Promise.all(fkPromises).catch(() => {});
 
     try {
@@ -656,7 +714,22 @@ export function ViewTestCaseModal({
       const historyRaw = historyRes.status === 'fulfilled' ? historyRes.value.data || [] : [];
       const runsData = runsRes.status === 'fulfilled' ? runsRes.value.data || [] : [];
 
-      setSteps(stepsData);
+      // Map steps with is_shared / shared_step_id
+      setSteps((stepsData as any[]).map((s: any) => ({
+        id: s.id,
+        step_number: s.step_number,
+        action: s.action,
+        expected_result: s.expected_result,
+        is_shared: s.is_shared || false,
+        shared_step_id: s.shared_step_id || null,
+      })));
+
+      // Hydrate format state from testCase
+      const dbFormat = (testCase as any).test_format || 'classic';
+      const uiFormat = dbFormat === 'bdd' ? 'gherkin' : dbFormat === 'free_text' ? 'free_text' : 'steps';
+      setLocalTestFormat(uiFormat as any);
+      setLocalGherkinFeature((testCase as any).gherkin_feature || '');
+      setLocalGherkinScenario((testCase as any).gherkin_scenario || '');
 
       const requirementLinks: Link[] = await Promise.all(
         rawReqLinks.map(async (l: any) => {
@@ -800,7 +873,6 @@ export function ViewTestCaseModal({
   const statusPill = STATUS_PILL[localStatus] || STATUS_PILL.draft;
   const statusBtnBg = STATUS_BTN[localStatus] || STATUS_BTN.draft;
 
-  // Resolved display names from lookup data
   const resolvedPriorityName = priorities?.find(p => p.id === localPriorityId)?.name || priorityName;
   const resolvedTypeName = caseTypes?.find(t => t.id === localTypeId)?.name || typeName;
   const resolvedOwnerName = teamMembers?.find(m => m.id === localOwnerId)?.full_name || ownerName;
@@ -841,13 +913,12 @@ export function ViewTestCaseModal({
           animation: 'sdm-card-in 250ms ease',
         }}
       >
-        {/* ── HEADER (52px, border-bottom — WorkItemDetailModal parity) ── */}
+        {/* ── HEADER ── */}
         <div style={{
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           padding: '0 24px', height: 52, flexShrink: 0,
           borderBottom: '1px solid var(--divider)',
         }}>
-          {/* Left: type icon + case_key */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
             <ClipboardList style={{ width: 18, height: 18, color: 'var(--cp-blue)', flexShrink: 0 }} />
             <span style={{
@@ -857,7 +928,6 @@ export function ViewTestCaseModal({
               {testCase.case_key}
             </span>
           </div>
-          {/* Right: ghost action buttons */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
             <HeaderBtn title="Edit" onClick={onEdit}><Edit2 style={{ width: 15, height: 15 }} /></HeaderBtn>
             <HeaderBtn title="Copy key" onClick={handleCopyKey}><Copy style={{ width: 15, height: 15 }} /></HeaderBtn>
@@ -873,13 +943,14 @@ export function ViewTestCaseModal({
           {/* ── LEFT PANEL ── */}
           <div style={{ flex: 1, overflowY: 'auto', padding: '0 24px 80px', minWidth: 0 }}>
 
-            {/* Title */}
+            {/* FIX-C: Title — fontSize:18, fontWeight:650, color:#172B4D */}
             <div style={{ padding: '20px 0 8px' }}>
               <h2
                 style={{
                   fontFamily: "'Sora', sans-serif",
-                  fontSize: 22, fontWeight: 600, color: 'var(--fg-1)',
-                  margin: 0, lineHeight: '30px',
+                  fontSize: 18, fontWeight: 650, color: '#172B4D',
+                  lineHeight: 1.4,
+                  margin: '0 0 16px 0',
                   padding: '2px 4px',
                   borderRadius: 4,
                   border: '2px solid transparent',
@@ -908,6 +979,7 @@ export function ViewTestCaseModal({
                       { label: 'Test Format', value: (() => {
                         const fmt = testCase.test_format || 'classic';
                         if (fmt === 'bdd') return 'Gherkin / BDD';
+                        if (fmt === 'free_text') return 'Free Text';
                         return 'Steps';
                       })() },
                       { label: 'Version', value: testCase.version != null ? String(testCase.version) : '—' },
@@ -954,96 +1026,214 @@ export function ViewTestCaseModal({
                   </div>
                 </AccordionSection>
 
-                {/* d. TEST STEPS — with inline Add/Edit/Delete */}
+                {/* d. TEST STEPS — 3-format toggle + shared steps */}
                 <AccordionSection label="Test Steps" count={steps.length} defaultExpanded>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-                    {steps.map(step => (
-                      <div key={step.id} className="group" style={{
-                        display: 'flex', gap: 12, alignItems: 'flex-start',
-                        minHeight: 36, padding: '8px 0',
-                        borderBottom: '0.75px solid var(--divider)',
-                        position: 'relative',
-                      }}>
-                        <div style={{
-                          width: 24, height: 24, borderRadius: '50%',
-                          background: 'var(--cp-blue)', color: '#FFFFFF',
-                          display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          fontSize: 11, fontWeight: 700, flexShrink: 0, marginTop: 2,
-                        }}>
-                          {step.step_number}
-                        </div>
 
-                        {editingStepId === step.id ? (
-                          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8 }}>
-                            <div>
-                              <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--fg-3)', textTransform: 'uppercase' as const, letterSpacing: '0.04em' }}>Action</span>
-                              <textarea value={editStepAction} onChange={e => setEditStepAction(e.target.value)} autoFocus rows={2}
-                                style={{ width: '100%', padding: '6px 8px', fontSize: 14, lineHeight: 1.5, fontFamily: "'Inter', sans-serif", border: '1.5px solid #2563EB', borderRadius: 6, outline: 'none', resize: 'vertical', boxSizing: 'border-box', background: 'var(--cp-float)', color: 'var(--fg-1)', marginTop: 4 }} />
-                            </div>
-                            <div>
-                              <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--fg-3)', textTransform: 'uppercase' as const, letterSpacing: '0.04em' }}>Expected Result</span>
-                              <textarea value={editStepExpected} onChange={e => setEditStepExpected(e.target.value)} rows={2}
-                                style={{ width: '100%', padding: '6px 8px', fontSize: 14, lineHeight: 1.5, fontFamily: "'Inter', sans-serif", border: '1.5px solid var(--divider)', borderRadius: 6, outline: 'none', resize: 'vertical', boxSizing: 'border-box', background: 'var(--cp-float)', color: 'var(--fg-1)', marginTop: 4 }} />
-                            </div>
-                            <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
-                              <button onClick={() => setEditingStepId(null)} style={{ height: 30, padding: '0 12px', fontSize: 12, fontWeight: 500, border: '1px solid var(--divider)', borderRadius: 6, background: 'transparent', color: 'var(--fg-3)', cursor: 'pointer' }}>Cancel</button>
-                              <button onClick={() => handleUpdateStep(step.id)} style={{ height: 30, padding: '0 12px', fontSize: 12, fontWeight: 500, border: 'none', borderRadius: 6, background: '#2563EB', color: '#FFFFFF', cursor: 'pointer' }}>Save</button>
-                            </div>
-                          </div>
-                        ) : (
-                          <>
-                            <div style={{ flex: 1, minWidth: 0, cursor: 'pointer' }} onClick={() => startEditStep(step)}>
-                              <div style={{ marginBottom: step.expected_result ? 6 : 0 }}>
-                                <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--fg-3)', textTransform: 'uppercase' as const, letterSpacing: '0.04em' }}>Action</span>
-                                <p style={{ fontSize: 14, color: 'var(--fg-1)', margin: '2px 0 0', lineHeight: 1.5 }}>{step.action}</p>
-                              </div>
-                              {step.expected_result && (
-                                <div>
-                                  <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--fg-3)', textTransform: 'uppercase' as const, letterSpacing: '0.04em' }}>Expected Result</span>
-                                  <p style={{ fontSize: 14, color: 'var(--fg-1)', margin: '2px 0 0', lineHeight: 1.5 }}>{step.expected_result}</p>
-                                </div>
-                              )}
-                            </div>
-                            <div style={{ display: 'flex', gap: 2, position: 'absolute', top: 6, right: 0, opacity: 0, transition: 'opacity 120ms' }} className="group-hover:!opacity-100">
-                              <button onClick={() => startEditStep(step)} title="Edit" style={{ width: 26, height: 26, border: 'none', borderRadius: 4, background: 'transparent', cursor: 'pointer', color: 'var(--fg-4)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                <Edit2 style={{ width: 13, height: 13 }} />
-                              </button>
-                              <button onClick={() => handleDeleteStep(step.id)} title="Delete" style={{ width: 26, height: 26, border: 'none', borderRadius: 4, background: 'transparent', cursor: 'pointer', color: 'var(--fg-4)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                <Trash2 style={{ width: 13, height: 13 }} />
-                              </button>
-                            </div>
-                          </>
-                        )}
-                      </div>
-                    ))}
+                  {/* FORMAT TOGGLE — 3 pill buttons */}
+                  <div style={{ display: 'flex', gap: 6, marginBottom: 16 }}>
+                    {(['steps', 'gherkin', 'free_text'] as const).map(fmt => {
+                      const labels = { steps: 'Steps', gherkin: 'Gherkin / BDD', free_text: 'Free Text' };
+                      const active = localTestFormat === fmt;
+                      return (
+                        <button key={fmt} onClick={() => handleFormatChange(fmt)} style={{
+                          height: 28, padding: '0 12px', borderRadius: 4, fontSize: 12, fontWeight: 500,
+                          cursor: 'pointer', border: active ? 'none' : '1px solid #E2E8F0',
+                          background: active ? '#2563EB' : 'transparent',
+                          color: active ? '#FFFFFF' : '#475569',
+                          fontFamily: "'Inter', sans-serif",
+                        }}>
+                          {labels[fmt]}
+                        </button>
+                      );
+                    })}
                   </div>
 
-                  {addingStep ? (
-                    <div style={{ marginTop: 12, padding: 12, border: '1.5px solid var(--divider)', borderRadius: 8, background: 'var(--bg-1)' }}>
-                      <div style={{ marginBottom: 8 }}>
-                        <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--fg-3)', textTransform: 'uppercase' as const, letterSpacing: '0.04em' }}>Action *</span>
-                        <textarea value={newStepAction} onChange={e => setNewStepAction(e.target.value)} autoFocus rows={2} placeholder="Describe the action..."
-                          style={{ width: '100%', padding: '6px 8px', fontSize: 14, lineHeight: 1.5, fontFamily: "'Inter', sans-serif", border: '1.5px solid var(--divider)', borderRadius: 6, outline: 'none', resize: 'vertical', boxSizing: 'border-box', background: 'var(--cp-float)', color: 'var(--fg-1)', marginTop: 4 }} />
+                  {/* GHERKIN MODE */}
+                  {localTestFormat === 'gherkin' && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                      <div>
+                        <label style={{ fontSize: 11, fontWeight: 600, color: '#6B778C', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', marginBottom: 4 }}>Feature</label>
+                        <textarea
+                          value={localGherkinFeature}
+                          onChange={e => setLocalGherkinFeature(e.target.value)}
+                          onBlur={handleGherkinSave}
+                          placeholder="Feature: ..."
+                          style={{ width: '100%', minHeight: 80, padding: 10, fontSize: 13, fontFamily: "'JetBrains Mono', monospace", border: '1.5px solid #E2E8F0', borderRadius: 4, resize: 'vertical', boxSizing: 'border-box', outline: 'none' }}
+                        />
                       </div>
-                      <div style={{ marginBottom: 10 }}>
-                        <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--fg-3)', textTransform: 'uppercase' as const, letterSpacing: '0.04em' }}>Expected Result</span>
-                        <textarea value={newStepExpected} onChange={e => setNewStepExpected(e.target.value)} rows={2} placeholder="Expected outcome..."
-                          style={{ width: '100%', padding: '6px 8px', fontSize: 14, lineHeight: 1.5, fontFamily: "'Inter', sans-serif", border: '1.5px solid var(--divider)', borderRadius: 6, outline: 'none', resize: 'vertical', boxSizing: 'border-box', background: 'var(--cp-float)', color: 'var(--fg-1)', marginTop: 4 }} />
-                      </div>
-                      <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
-                        <button onClick={() => { setAddingStep(false); setNewStepAction(''); setNewStepExpected(''); }} style={{ height: 30, padding: '0 12px', fontSize: 12, fontWeight: 500, border: '1px solid var(--divider)', borderRadius: 6, background: 'transparent', color: 'var(--fg-3)', cursor: 'pointer' }}>Cancel</button>
-                        <button onClick={handleAddStep} disabled={!newStepAction.trim()} style={{ height: 30, padding: '0 12px', fontSize: 12, fontWeight: 500, border: 'none', borderRadius: 6, background: newStepAction.trim() ? '#2563EB' : '#94A3B8', color: '#FFFFFF', cursor: newStepAction.trim() ? 'pointer' : 'not-allowed' }}>Add Step</button>
+                      <div>
+                        <label style={{ fontSize: 11, fontWeight: 600, color: '#6B778C', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', marginBottom: 4 }}>Scenario</label>
+                        <textarea
+                          value={localGherkinScenario}
+                          onChange={e => setLocalGherkinScenario(e.target.value)}
+                          onBlur={handleGherkinSave}
+                          placeholder="Scenario: ..."
+                          style={{ width: '100%', minHeight: 120, padding: 10, fontSize: 13, fontFamily: "'JetBrains Mono', monospace", border: '1.5px solid #E2E8F0', borderRadius: 4, resize: 'vertical', boxSizing: 'border-box', outline: 'none' }}
+                        />
                       </div>
                     </div>
-                  ) : (
-                    <button onClick={() => setAddingStep(true)}
-                      style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 8, padding: '6px 10px', border: 'none', borderRadius: 6, background: 'transparent', cursor: 'pointer', fontSize: 13, fontWeight: 500, color: '#2563EB', transition: 'background 120ms' }}
-                      onMouseEnter={e => { e.currentTarget.style.background = 'rgba(37,99,235,0.08)'; }}
-                      onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
-                    >
-                      <Plus style={{ width: 14, height: 14 }} /> Add Step
-                    </button>
                   )}
+
+                  {/* FREE TEXT MODE */}
+                  {localTestFormat === 'free_text' && (
+                    <textarea
+                      value={steps[0]?.action || ''}
+                      onChange={e => {
+                        const val = e.target.value;
+                        setSteps(prev => prev.length > 0
+                          ? [{ ...prev[0], action: val }]
+                          : [{ id: Date.now().toString(), step_number: 1, action: val, expected_result: null, is_shared: false, shared_step_id: null }]
+                        );
+                      }}
+                      onBlur={async e => {
+                        if (!testCase) return;
+                        const val = e.target.value;
+                        await supabase.from('tm_test_steps').delete().eq('test_case_id', testCase.id);
+                        if (val.trim()) {
+                          await supabase.from('tm_test_steps').insert({ test_case_id: testCase.id, step_number: 1, action: val.trim(), expected_result: null, is_shared: false });
+                        }
+                        toast('Saved');
+                      }}
+                      placeholder="Describe the test in free text..."
+                      style={{ width: '100%', minHeight: 160, padding: 12, fontSize: 14, fontFamily: "'Inter', sans-serif", border: '1.5px solid #E2E8F0', borderRadius: 4, resize: 'vertical', boxSizing: 'border-box', outline: 'none' }}
+                    />
+                  )}
+
+                  {/* STEPS MODE */}
+                  {localTestFormat === 'steps' && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+                      {steps.map(step => (
+                        <div key={step.id} className="group" style={{
+                          display: 'flex', gap: 12, alignItems: 'flex-start',
+                          minHeight: 36, padding: '8px 0',
+                          borderBottom: '0.75px solid var(--divider)',
+                          position: 'relative',
+                        }}>
+                          <div style={{
+                            width: 24, height: 24, borderRadius: '50%',
+                            background: '#2563EB', color: '#FFFFFF',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            fontSize: 11, fontWeight: 700, flexShrink: 0, marginTop: 2,
+                          }}>
+                            {step.step_number}
+                          </div>
+
+                          {editingStepId === step.id ? (
+                            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8 }}>
+                              <div>
+                                <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--fg-3)', textTransform: 'uppercase' as const, letterSpacing: '0.04em' }}>Action</span>
+                                <textarea value={editStepAction} onChange={e => setEditStepAction(e.target.value)} autoFocus rows={2}
+                                  style={{ width: '100%', padding: '6px 8px', fontSize: 14, lineHeight: 1.5, fontFamily: "'Inter', sans-serif", border: '1.5px solid #2563EB', borderRadius: 6, outline: 'none', resize: 'vertical', boxSizing: 'border-box', background: 'var(--cp-float)', color: 'var(--fg-1)', marginTop: 4 }} />
+                              </div>
+                              <div>
+                                <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--fg-3)', textTransform: 'uppercase' as const, letterSpacing: '0.04em' }}>Expected Result</span>
+                                <textarea value={editStepExpected} onChange={e => setEditStepExpected(e.target.value)} rows={2}
+                                  style={{ width: '100%', padding: '6px 8px', fontSize: 14, lineHeight: 1.5, fontFamily: "'Inter', sans-serif", border: '1.5px solid var(--divider)', borderRadius: 6, outline: 'none', resize: 'vertical', boxSizing: 'border-box', background: 'var(--cp-float)', color: 'var(--fg-1)', marginTop: 4 }} />
+                              </div>
+                              <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
+                                <button onClick={() => setEditingStepId(null)} style={{ height: 30, padding: '0 12px', fontSize: 12, fontWeight: 500, border: '1px solid var(--divider)', borderRadius: 6, background: 'transparent', color: 'var(--fg-3)', cursor: 'pointer' }}>Cancel</button>
+                                <button onClick={() => handleUpdateStep(step.id)} style={{ height: 30, padding: '0 12px', fontSize: 12, fontWeight: 500, border: 'none', borderRadius: 6, background: '#2563EB', color: '#FFFFFF', cursor: 'pointer' }}>Save</button>
+                              </div>
+                            </div>
+                          ) : (
+                            <>
+                              <div style={{ flex: 1, minWidth: 0, cursor: 'pointer' }} onClick={() => startEditStep(step)}>
+                                <div style={{ marginBottom: step.expected_result ? 6 : 0 }}>
+                                  <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--fg-3)', textTransform: 'uppercase' as const, letterSpacing: '0.04em' }}>Action</span>
+                                  <p style={{ fontSize: 14, color: 'var(--fg-1)', margin: '2px 0 0', lineHeight: 1.5 }}>{step.action}</p>
+                                </div>
+                                {step.expected_result && (
+                                  <div>
+                                    <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--fg-3)', textTransform: 'uppercase' as const, letterSpacing: '0.04em' }}>Expected Result</span>
+                                    <p style={{ fontSize: 14, color: 'var(--fg-1)', margin: '2px 0 0', lineHeight: 1.5 }}>{step.expected_result}</p>
+                                  </div>
+                                )}
+                                {step.is_shared && (
+                                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 10, color: '#0747A6', background: '#DEEBFF', borderRadius: 3, padding: '1px 6px', marginTop: 4 }}>
+                                    SHARED STEP
+                                  </span>
+                                )}
+                              </div>
+                              <div style={{ display: 'flex', gap: 2, position: 'absolute', top: 6, right: 0, opacity: 0, transition: 'opacity 120ms' }} className="group-hover:!opacity-100">
+                                <button onClick={() => startEditStep(step)} title="Edit" style={{ width: 26, height: 26, border: 'none', borderRadius: 4, background: 'transparent', cursor: 'pointer', color: 'var(--fg-4)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                  <Edit2 style={{ width: 13, height: 13 }} />
+                                </button>
+                                <button onClick={() => handleDeleteStep(step.id)} title="Delete" style={{ width: 26, height: 26, border: 'none', borderRadius: 4, background: 'transparent', cursor: 'pointer', color: 'var(--fg-4)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                  <Trash2 style={{ width: 13, height: 13 }} />
+                                </button>
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      ))}
+
+                      {/* ADD STEP CONTROLS */}
+                      {addingStep ? (
+                        <div style={{ marginTop: 12, padding: 12, border: '1.5px solid var(--divider)', borderRadius: 8, background: 'var(--bg-1)' }}>
+                          <div style={{ marginBottom: 8 }}>
+                            <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--fg-3)', textTransform: 'uppercase' as const, letterSpacing: '0.04em' }}>Action *</span>
+                            <textarea value={newStepAction} onChange={e => setNewStepAction(e.target.value)} autoFocus rows={2} placeholder="Describe the action..."
+                              style={{ width: '100%', padding: '6px 8px', fontSize: 14, lineHeight: 1.5, fontFamily: "'Inter', sans-serif", border: '1.5px solid var(--divider)', borderRadius: 6, outline: 'none', resize: 'vertical', boxSizing: 'border-box', background: 'var(--cp-float)', color: 'var(--fg-1)', marginTop: 4 }} />
+                          </div>
+                          <div style={{ marginBottom: 10 }}>
+                            <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--fg-3)', textTransform: 'uppercase' as const, letterSpacing: '0.04em' }}>Expected Result</span>
+                            <textarea value={newStepExpected} onChange={e => setNewStepExpected(e.target.value)} rows={2} placeholder="Expected outcome..."
+                              style={{ width: '100%', padding: '6px 8px', fontSize: 14, lineHeight: 1.5, fontFamily: "'Inter', sans-serif", border: '1.5px solid var(--divider)', borderRadius: 6, outline: 'none', resize: 'vertical', boxSizing: 'border-box', background: 'var(--cp-float)', color: 'var(--fg-1)', marginTop: 4 }} />
+                          </div>
+                          <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
+                            <button onClick={() => { setAddingStep(false); setNewStepAction(''); setNewStepExpected(''); }} style={{ height: 30, padding: '0 12px', fontSize: 12, fontWeight: 500, border: '1px solid var(--divider)', borderRadius: 6, background: 'transparent', color: 'var(--fg-3)', cursor: 'pointer' }}>Cancel</button>
+                            <button onClick={handleAddStep} disabled={!newStepAction.trim()} style={{ height: 30, padding: '0 12px', fontSize: 12, fontWeight: 500, border: 'none', borderRadius: 6, background: newStepAction.trim() ? '#2563EB' : '#94A3B8', color: '#FFFFFF', cursor: newStepAction.trim() ? 'pointer' : 'not-allowed' }}>Add Step</button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 8 }}>
+                          {/* Insert from Library */}
+                          <button onClick={() => setIsSharedStepsModalOpen(true)} style={{
+                            display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: '#2563EB',
+                            background: 'transparent', border: 'none', cursor: 'pointer', padding: '6px 10px', fontWeight: 500,
+                            borderRadius: 6, transition: 'background 120ms', fontFamily: "'Inter', sans-serif",
+                          }}
+                            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(37,99,235,0.08)'; }}
+                            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+                          >
+                            <BookOpen style={{ width: 14, height: 14 }} />
+                            Insert from Library
+                          </button>
+
+                          {/* Add Step dropdown */}
+                          <div style={{ position: 'relative' }} data-add-step-menu>
+                            <button
+                              onClick={() => setIsAddStepMenuOpen(p => !p)}
+                              style={{ display: 'flex', alignItems: 'center', gap: 6, height: 32, padding: '0 12px', borderRadius: 6, fontSize: 13, fontWeight: 500, cursor: 'pointer', border: '1px solid #E2E8F0', background: '#FFFFFF', color: '#172B4D', fontFamily: "'Inter', sans-serif" }}>
+                              <Plus style={{ width: 14, height: 14 }} />
+                              Add Step
+                            </button>
+                            {isAddStepMenuOpen && (
+                              <div style={{ position: 'absolute', right: 0, top: 36, background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 6, boxShadow: '0 4px 16px rgba(9,30,66,0.15)', zIndex: 100, minWidth: 180, overflow: 'hidden' }}>
+                                <button
+                                  onClick={() => { setIsAddStepMenuOpen(false); setAddingStep(true); }}
+                                  style={{ width: '100%', textAlign: 'left', padding: '10px 14px', fontSize: 13, background: 'transparent', border: 'none', cursor: 'pointer', color: '#172B4D', fontFamily: "'Inter', sans-serif" }}
+                                  onMouseEnter={e => (e.currentTarget.style.background = 'rgba(0,0,0,0.04)')}
+                                  onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                                >
+                                  Add New Step
+                                </button>
+                                <button
+                                  onClick={() => { setIsAddStepMenuOpen(false); setIsSharedStepsModalOpen(true); }}
+                                  style={{ width: '100%', textAlign: 'left', padding: '10px 14px', fontSize: 13, background: 'transparent', border: 'none', cursor: 'pointer', color: '#172B4D', fontFamily: "'Inter', sans-serif" }}
+                                  onMouseEnter={e => (e.currentTarget.style.background = 'rgba(0,0,0,0.04)')}
+                                  onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                                >
+                                  Insert Shared Step
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
                 </AccordionSection>
 
                 {/* e. ATTACHMENTS */}
@@ -1084,13 +1274,10 @@ export function ViewTestCaseModal({
                     <p style={{ fontSize: 13, color: 'var(--fg-4)', margin: 0 }}>No version history yet.</p>
                   ) : (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                      {history.map(h => (
-                        <div key={h.id} style={{
-                          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                          height: 36, padding: '0 8px', borderRadius: 4,
-                        }}>
-                          <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1)' }}>Version {h.version}</span>
-                          <span style={{ fontSize: 12, color: 'var(--fg-3)' }}>{h.changed_at ? formatDistanceToNow(new Date(h.changed_at), { addSuffix: true }) : '—'}</span>
+                      {history.map(v => (
+                        <div key={v.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: 36, padding: '0 8px', borderRadius: 4 }}>
+                          <span style={{ fontSize: 13, color: 'var(--fg-1)' }}>v{v.version}</span>
+                          <span style={{ fontSize: 12, color: 'var(--fg-3)' }}>{fmtDate(v.changed_at)}</span>
                         </div>
                       ))}
                     </div>
@@ -1134,7 +1321,7 @@ export function ViewTestCaseModal({
             )}
           </div>
 
-          {/* ── RIGHT SIDEBAR (DetailRightSidebar parity) ── */}
+          {/* ── RIGHT SIDEBAR ── */}
           <div style={{
             width: 280, flexShrink: 0,
             borderLeft: '1px solid var(--divider)',
@@ -1143,52 +1330,53 @@ export function ViewTestCaseModal({
             background: 'var(--bg-1)',
             position: 'relative',
           }}>
-            {/* STATUS BUTTON — clickable dropdown */}
-            <PortalPickerWrapper pickerKey="status" openPicker={openPicker} setOpenPicker={setOpenPicker}
-              trigger={(ref) => (
-                <button
-                  ref={ref}
-                  onClick={(e) => { e.stopPropagation(); setOpenPicker(openPicker === 'status' ? null : 'status'); }}
-                  style={{
-                    width: '100%', padding: '8px 0', borderRadius: 6, border: 'none',
-                    background: statusBtnBg, color: '#FFFFFF',
-                    fontSize: 11, fontWeight: 700, textTransform: 'uppercase' as const,
-                    letterSpacing: '0.05em', textAlign: 'center', cursor: 'pointer',
-                    transition: 'opacity 150ms',
-                  }}
-                  onMouseEnter={e => { e.currentTarget.style.opacity = '0.85'; }}
-                  onMouseLeave={e => { e.currentTarget.style.opacity = '1'; }}
-                >
-                  {localStatus}
-                </button>
-              )}
-              dropdown={
-                <>
-                  {['draft', 'ready', 'approved', 'deprecated'].map(s => (
-                    <PickerOption
-                      key={s}
-                      selected={localStatus === s}
-                      onClick={() => {
-                        setLocalStatus(s);
-                        setOpenPicker(null);
-                        updateField('status', s);
-                      }}
-                    >
-                      <span style={{
-                        display: 'inline-block', height: 20, lineHeight: '20px', fontSize: 11,
-                        fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.03em',
-                        borderRadius: 3, padding: '0 6px',
-                        background: (STATUS_PILL[s] || STATUS_PILL.draft).bg,
-                        color: (STATUS_PILL[s] || STATUS_PILL.draft).color,
-                      }}>{s}</span>
-                    </PickerOption>
-                  ))}
-                </>
-              }
-            />
+            {/* FIX-A: STATUS PILL — inline-flex, width:auto */}
+            <div style={{ display: 'flex', justifyContent: 'flex-start', marginBottom: 12 }}>
+              <PortalPickerWrapper pickerKey="status" openPicker={openPicker} setOpenPicker={setOpenPicker}
+                trigger={(ref) => (
+                  <span
+                    ref={ref}
+                    onClick={(e) => { e.stopPropagation(); setOpenPicker(openPicker === 'status' ? null : 'status'); }}
+                    style={{
+                      display: 'inline-flex', alignItems: 'center',
+                      height: 20, padding: '0 6px', borderRadius: 3,
+                      fontSize: 11, fontWeight: 700, textTransform: 'uppercase' as const,
+                      letterSpacing: '0.03em', width: 'auto',
+                      background: statusPill.bg, color: statusPill.color,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    {localStatus}
+                  </span>
+                )}
+                dropdown={
+                  <>
+                    {['draft', 'ready', 'approved', 'deprecated'].map(s => (
+                      <PickerOption
+                        key={s}
+                        selected={localStatus === s}
+                        onClick={() => {
+                          setLocalStatus(s);
+                          setOpenPicker(null);
+                          updateField('status', s);
+                        }}
+                      >
+                        <span style={{
+                          display: 'inline-block', height: 20, lineHeight: '20px', fontSize: 11,
+                          fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.03em',
+                          borderRadius: 3, padding: '0 6px',
+                          background: (STATUS_PILL[s] || STATUS_PILL.draft).bg,
+                          color: (STATUS_PILL[s] || STATUS_PILL.draft).color,
+                        }}>{s}</span>
+                      </PickerOption>
+                    ))}
+                  </>
+                }
+              />
+            </div>
 
             {/* PINNED FIELDS — all inline-editable */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 12, paddingBottom: 12, marginTop: 12 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12, paddingBottom: 12 }}>
 
               {/* Owner */}
               <SidebarField label="Owner">
@@ -1244,7 +1432,7 @@ export function ViewTestCaseModal({
                 />
               </SidebarField>
 
-              {/* Priority */}
+              {/* FIX-B: Priority */}
               <SidebarField label="Priority">
                 <PortalPickerWrapper pickerKey="priority" openPicker={openPicker} setOpenPicker={setOpenPicker}
                   trigger={(ref) => (
@@ -1339,11 +1527,18 @@ export function ViewTestCaseModal({
 
       {/* AddLinkModal */}
       <AddLinkModal isOpen={addLinkOpen} onClose={() => setAddLinkOpen(false)} linkType={addLinkType} projectId={testCase?.project_id} onAdd={handleAddLink} />
+
+      {/* SharedStepsModal */}
+      <SharedStepsModal
+        isOpen={isSharedStepsModalOpen}
+        onClose={() => setIsSharedStepsModalOpen(false)}
+        onInsert={handleInsertSharedStep}
+      />
     </div>
   );
 }
 
-// ─── Primitives (WorkItemDetailModal parity) ─────────────────────────────
+// ─── Primitives ─────────────────────────────
 function HeaderBtn({ title, onClick, close, children }: { title: string; onClick?: () => void; close?: boolean; children: React.ReactNode }) {
   return (
     <button
@@ -1394,7 +1589,6 @@ function MiniAvatar({ name, size = 22 }: { name: string; size?: number }) {
 }
 
 // ─── Inline Picker Primitives ─────────────────────────────
-import React from 'react';
 
 const ClickableField = React.forwardRef<HTMLDivElement, { onClick: (e: React.MouseEvent) => void; children: React.ReactNode }>(
   ({ onClick, children }, ref) => (
@@ -1434,7 +1628,7 @@ function PickerOption({ selected, onClick, children }: { selected: boolean; onCl
   );
 }
 
-/** Portal-based dropdown wrapper that renders fixed-position dropdown via createPortal */
+/** Portal-based dropdown wrapper */
 function PortalPickerWrapper({
   pickerKey,
   openPicker,
@@ -1489,7 +1683,7 @@ function PortalPickerWrapper({
   );
 }
 
-/** People picker content (search + list) — rendered inside PortalPickerWrapper */
+/** People picker content */
 function PortalPeoplePicker({ members, selectedId, onSelect }: {
   members: { id: string; full_name: string | null }[];
   selectedId: string | null;
