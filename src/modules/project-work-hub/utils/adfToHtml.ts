@@ -247,7 +247,7 @@ function renderNode(node: AdfNode): string {
     /* ── Media ── */
     case 'mediaSingle':
     case 'mediaGroup':
-      // Check if there's a media child with a URL
+      // Render media children — emit data slots for React hydration or direct <img> if URL available
       if (node.content) {
         const mediaNodes = node.content.filter(c => c.type === 'media');
         if (mediaNodes.length > 0) {
@@ -256,18 +256,24 @@ function renderNode(node: AdfNode): string {
             if (url) {
               return `<p><img src="${escapeAttr(url)}" alt="attachment" style="max-width:100%;border-radius:4px" /></p>`;
             }
-            return `<p><em class="adf-media-placeholder">[Media attachment]</em></p>`;
+            // Emit a data-slot div that AdfDescriptionRenderer can hydrate with real images
+            const mediaId = m.attrs?.id || '';
+            const filename = m.attrs?.alt || m.attrs?.filename || '';
+            return `<div data-adf-media-id="${escapeAttr(mediaId)}" data-adf-media-filename="${escapeAttr(filename)}" class="adf-media-slot"></div>`;
           }).join('');
         }
       }
-      return `<p><em class="adf-media-placeholder">[Media attachment]</em></p>`;
+      // Fallback: emit empty slot
+      return `<div data-adf-media-id="" data-adf-media-filename="" class="adf-media-slot"></div>`;
 
     case 'media': {
       const url = node.attrs?.url;
       if (url) {
         return `<img src="${escapeAttr(url)}" alt="attachment" style="max-width:100%;border-radius:4px" />`;
       }
-      return `<em class="adf-media-placeholder">[Media attachment]</em>`;
+      const mediaId = node.attrs?.id || '';
+      const filename = node.attrs?.alt || node.attrs?.filename || '';
+      return `<div data-adf-media-id="${escapeAttr(mediaId)}" data-adf-media-filename="${escapeAttr(filename)}" class="adf-media-slot"></div>`;
     }
 
     /* ── Cards (block / embed) ── */
