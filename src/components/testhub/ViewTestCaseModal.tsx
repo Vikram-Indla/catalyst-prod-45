@@ -1026,16 +1026,6 @@ export function ViewTestCaseModal({
           <div style={{ flex: 1, overflowY: 'auto', padding: '0 24px 80px', minWidth: 0 }}>
 
             <div style={{ padding: '12px 0 0' }}>
-                  border: '2px solid transparent',
-                  transition: 'border-color 150ms',
-                  cursor: 'text',
-                }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--divider)'; }}
-                onMouseLeave={e => { e.currentTarget.style.borderColor = 'transparent'; }}
-              >
-                {testCase.title}
-              </h2>
-            </div>
 
             {loading ? (
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 200 }}>
@@ -1668,11 +1658,13 @@ export function ViewTestCaseModal({
             {/* DATES SECTION */}
             <div style={{ paddingTop: 12 }}>
               <span style={{ display: 'block', fontSize: 10, fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.06em', color: 'var(--fg-3)', marginBottom: 12 }}>Dates</span>
-              <div style={{ fontSize: 11, color: 'var(--fg-4)', lineHeight: '18px' }}>
-                Created {testCase.created_at ? new Date(testCase.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : '—'}
-              </div>
-              <div style={{ fontSize: 11, color: 'var(--fg-4)', lineHeight: '18px' }}>
-                Updated {testCase.updated_at ? formatDistanceToNow(new Date(testCase.updated_at), { addSuffix: true }) : '—'}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                <div style={{ fontSize: 11, color: 'var(--fg-4)', lineHeight: '18px' }}>
+                  Created {testCase.created_at ? new Date(testCase.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : '—'}
+                </div>
+                <div style={{ fontSize: 11, color: 'var(--fg-4)', lineHeight: '18px' }}>
+                  Updated {testCase.updated_at ? formatDistanceToNow(new Date(testCase.updated_at), { addSuffix: true }) : '—'}
+                </div>
               </div>
             </div>
           </div>
