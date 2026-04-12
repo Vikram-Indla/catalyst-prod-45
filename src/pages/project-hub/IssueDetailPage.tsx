@@ -5,36 +5,82 @@
  * Resolves :issueKey to an item ID via ph_issues, then renders
  * CatalystDetailRouter in fullPageMode (no modal overlay, fills viewport).
  */
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
-import { typedQuery } from '@/integrations/supabase/client';
+import { supabase } from '@/integrations/supabase/client';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
 
 const CatalystDetailRouter = lazy(() => import('@/components/catalyst-detail-views/CatalystDetailRouter'));
+
+interface ResolvedIssue {
+  id: string;
+  issue_type: string;
+  project_key: string;
+}
 
 export default function IssueDetailPage() {
   const { key: projectKey, issueKey } = useParams<{ key: string; issueKey: string }>();
   const navigate = useNavigate();
 
-  // Look up issue by issue_key to get the ID and type
-  const { data: issue, isLoading, error: queryError } = useQuery({
-    queryKey: ['issue-detail-page', issueKey],
-    enabled: !!issueKey,
-    queryFn: async () => {
-      const { data, error } = await typedQuery('ph_issues')
-        .select('id, issue_type, project_key')
-        .eq('issue_key', issueKey!)
-        .maybeSingle();
-      if (error) {
-        console.error('[IssueDetailPage] Supabase query error:', error);
-        throw new Error(error.message);
+  const [issue, setIssue] = useState<ResolvedIssue | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [debugInfo, setDebugInfo] = useState('');
+
+  useEffect(() => {
+    if (!issueKey) {
+      setDebugInfo('No issueKey from URL params');
+      setLoading(false);
+      return;
+    }
+
+    let cancelled = false;
+
+    async function resolve() {
+      setLoading(true);
+      setDebugInfo(`Querying ph_issues for issue_key="${issueKey}"...`);
+
+      try {
+        // Use the exact same client and pattern as useCatalystIssue
+        const result = await (supabase as any)
+          .from('ph_issues')
+          .select('*')
+          .eq('issue_key', issueKey)
+          .maybeSingle();
+
+        if (cancelled) return;
+
+        const { data, error } = result;
+
+        if (error) {
+          setDebugInfo(`Supabase error: ${JSON.stringify(error)}`);
+          setLoading(false);
+          return;
+        }
+
+        if (!data) {
+          setDebugInfo(`Query returned null. issue_key="${issueKey}" not found in ph_issues.`);
+          setLoading(false);
+          return;
+        }
+
+        setIssue({
+          id: data.id,
+          issue_type: data.issue_type,
+          project_key: data.project_key,
+        });
+        setDebugInfo('');
+        setLoading(false);
+      } catch (err: any) {
+        if (!cancelled) {
+          setDebugInfo(`Exception: ${err?.message || String(err)}`);
+          setLoading(false);
+        }
       }
-      return data as { id: string; issue_type: string; project_key: string } | null;
-    },
-    staleTime: 120000,
-    retry: false,
-  });
+    }
+
+    resolve();
+    return () => { cancelled = true; };
+  }, [issueKey]);
 
   const openDetail = useGlobalSearchStore(s => s.openDetail);
 
@@ -46,7 +92,7 @@ export default function IssueDetailPage() {
     navigate(`/project-hub/${projectKey}/list`);
   };
 
-  if (isLoading) {
+  if (loading) {
     return (
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', fontFamily: 'Inter, sans-serif', color: '#5E6C84' }}>
         Loading...
@@ -59,9 +105,9 @@ export default function IssueDetailPage() {
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', fontFamily: 'Inter, sans-serif', gap: 12 }}>
         <span style={{ fontSize: 16, fontWeight: 600, color: '#344054' }}>Issue not found</span>
         <span style={{ fontSize: 13, color: '#5E6C84' }}>{issueKey} could not be found or has been deleted.</span>
-        {queryError && (
-          <span style={{ fontSize: 11, color: '#DE350B', fontFamily: "'JetBrains Mono', monospace", maxWidth: 500, textAlign: 'center' }}>
-            Debug: {queryError.message}
+        {debugInfo && (
+          <span style={{ fontSize: 11, color: '#DE350B', fontFamily: "'JetBrains Mono', monospace", maxWidth: 600, textAlign: 'center', padding: '8px 12px', background: '#FFF5F5', border: '1px solid #FFCDD2', borderRadius: 4 }}>
+            {debugInfo}
           </span>
         )}
         <button
