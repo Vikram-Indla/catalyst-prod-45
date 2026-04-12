@@ -50,7 +50,7 @@ function groupForYouItems(items: WorkItem[], groupBy: ForYouGroupByKey): { label
       case 'priority': key = item.priority || 'No Priority'; break;
       case 'hub': key = item.hubLabel || 'Unknown'; break;
       case 'project': key = item.project || 'No Project'; break;
-      case 'assignee': key = item.assignee?.name || 'Unassigned'; break;
+      case 'assignee': key = (item.assignee?.name || 'Unassigned').trim(); break;
       case 'type': key = item.issueType || 'Unknown'; break;
       default: key = 'Other';
     }
