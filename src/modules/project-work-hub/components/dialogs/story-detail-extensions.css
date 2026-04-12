@@ -1293,3 +1293,37 @@
 [data-sdm-scope] .ProseMirror p {
   margin: 4px 0;
 }
+
+/* ════════════════════════════════════════════════════════════════
+   ADF TABLE STYLING — Jira-parity for description & AC view mode
+   ════════════════════════════════════════════════════════════════ */
+[data-sdm-scope] .jira-desc-view table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 14px;
+  table-layout: fixed;
+  margin: 8px 0;
+}
+
+[data-sdm-scope] .jira-desc-view th,
+[data-sdm-scope] .jira-desc-view td {
+  border: 1px solid #DFE1E6;
+  padding: 8px 10px;
+  vertical-align: top;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  font-size: 14px;
+  line-height: 1.43;
+  color: #172B4D;
+}
+
+[data-sdm-scope] .jira-desc-view th {
+  background-color: #F4F5F7;
+  font-weight: 600;
+  color: #172B4D;
+}
+
+[data-sdm-scope] .jira-desc-view tbody th {
+  background-color: #F4F5F7;
+  font-weight: 600;
+}
