@@ -156,6 +156,7 @@ function ResultRow({ item, isSelected, onHover, onClick, query }: {
       >
         {/* Icon */}
         <span
+          title={icon.label}
           style={{ flexShrink: 0, width: 24, height: 24, display: "flex", alignItems: "center", justifyContent: "center" }}
           dangerouslySetInnerHTML={{ __html: icon.svg }}
         />
@@ -187,7 +188,7 @@ function ResultRow({ item, isSelected, onHover, onClick, query }: {
             display: "flex", alignItems: "center",
             fontSize: 12, color: "#6B6E76", fontFamily: "Inter, system-ui, sans-serif",
           }}>
-            <span>Catalyst</span>
+            <span>Jira</span>
             <span style={{ margin: "0 4px" }}>•</span>
             <span>{icon.label}</span>
             {item.project_name && (
