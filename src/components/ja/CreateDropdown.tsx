@@ -154,7 +154,7 @@ export function CreateDropdown() {
             title="Create"
           >
             <Plus className="w-4 h-4" />
-            <span className="hidden lg:inline">Create</span>
+            <span className="hidden xl:inline">Create</span>
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent
