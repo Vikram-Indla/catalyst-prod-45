@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef, useCallback, type CSSProperties } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
-import { Search, ChevronDown, X, Clock, Check } from "lucide-react";
+import { Search, ChevronDown, X, Clock, Check, CornerDownLeft, FolderKanban, User } from "lucide-react";
 import { useGlobalSearchStore } from "@/store/globalSearchStore";
 import {
   useRecentItems,
@@ -73,35 +73,11 @@ function formatViewedDate(d: string): string {
   const then = new Date(d);
   const diffMs = now.getTime() - then.getTime();
   const diffH = Math.floor(diffMs / (1000 * 60 * 60));
-  if (diffH < 1) return `You viewed ${Math.max(1, Math.floor(diffMs / 60000))} minutes ago`;
-  if (diffH < 24) return `You viewed ${diffH} hours ago`;
+  if (diffH < 1) return `${Math.max(1, Math.floor(diffMs / 60000))}m ago`;
+  if (diffH < 24) return `${diffH}h ago`;
   const diffD = Math.floor(diffH / 24);
-  if (diffD === 1) return "You viewed 1 day ago";
-  return `You viewed ${diffD} days ago`;
-}
-
-type DateGroup = "TODAY" | "YESTERDAY" | "THIS WEEK" | "RECENT";
-
-function getDateGroup(dateStr: string): DateGroup {
-  const now = new Date();
-  const then = new Date(dateStr);
-  const diffMs = now.getTime() - then.getTime();
-  const diffDays = diffMs / (1000 * 60 * 60 * 24);
-  if (diffDays < 1 && now.getDate() === then.getDate()) return "TODAY";
-  if (diffDays < 2) return "YESTERDAY";
-  if (diffDays < 7) return "THIS WEEK";
-  return "RECENT";
-}
-
-function groupItems(items: SearchResult[]): { group: DateGroup; items: SearchResult[] }[] {
-  const ORDER: DateGroup[] = ["TODAY", "YESTERDAY", "THIS WEEK", "RECENT"];
-  const map: Record<string, SearchResult[]> = {};
-  for (const item of items) {
-    const g = getDateGroup(item.viewed_at);
-    if (!map[g]) map[g] = [];
-    map[g].push(item);
-  }
-  return ORDER.filter(g => map[g]?.length > 0).map(g => ({ group: g, items: map[g] }));
+  if (diffD === 1) return "1d ago";
+  return `${diffD}d ago`;
 }
 
 function getInitials(name: string): string {
@@ -115,7 +91,7 @@ function getAvatarColor(name: string): string {
   return colors[Math.abs(hash) % colors.length];
 }
 
-/** Highlight matched query words with <strong> */
+/** Highlight matched query words with <strong> — no background, just bold */
 function HighlightTitle({ text, query }: { text: string; query: string }) {
   if (!query || query.length < 2) return <>{text}</>;
   const words = query.trim().split(/\s+/).filter(Boolean);
@@ -125,42 +101,13 @@ function HighlightTitle({ text, query }: { text: string; query: string }) {
   return (
     <>
       {parts.map((part, i) =>
-        pattern.test(part) ? <strong key={i} style={{ fontWeight: 700 }}>{part}</strong> : part
+        pattern.test(part) ? <strong key={i} style={{ fontWeight: 700, color: "#292A2E", background: "transparent" }}>{part}</strong> : part
       )}
     </>
   );
 }
 
-/** Compact inline person tag: initials circle + first name */
-function PersonTag({ name, role }: { name: string; role: "R" | "A" }) {
-  const color = getAvatarColor(name);
-  const firstName = name.split(" ")[0];
-  const roleLabel = role === "R" ? "Reporter" : "Assignee";
-  return (
-    <span
-      title={`${roleLabel}: ${name}`}
-      style={{
-        display: "inline-flex", alignItems: "center", gap: 3,
-        whiteSpace: "nowrap",
-      }}
-    >
-      <span style={{
-        width: 14, height: 14, borderRadius: "50%",
-        backgroundColor: color, color: "#FFFFFF",
-        fontSize: 7, fontWeight: 700, lineHeight: "14px",
-        textAlign: "center", display: "inline-block", flexShrink: 0,
-        fontFamily: "Inter, system-ui, sans-serif",
-      }}>
-        {getInitials(name)}
-      </span>
-      <span style={{ maxWidth: 72, overflow: "hidden", textOverflow: "ellipsis" }}>
-        {firstName}
-      </span>
-    </span>
-  );
-}
-
-/* ── Jira-style Result Row (two-line: title + subtitle) ── */
+/* ── Result Row — Jira parity (45px, 3-column) ── */
 function ResultRow({ item, isSelected, onHover, onClick, query }: {
   item: SearchResult; isSelected: boolean; onHover: () => void; onClick: () => void;
   query: string;
@@ -168,26 +115,26 @@ function ResultRow({ item, isSelected, onHover, onClick, query }: {
   const typeKey = mapType(item.item_type);
   const icon = WORK_ICONS[typeKey] ?? WORK_ICONS.task;
   const [showTooltip, setShowTooltip] = useState(false);
-  const iconRef = useRef<HTMLSpanElement>(null);
 
   return (
-    <div style={{ display: "block", padding: "0 8px" }}>
+    <div style={{ display: "block", width: "100%" }}>
       <div
         onClick={onClick}
         onMouseEnter={onHover}
         role="option"
         aria-selected={isSelected}
         style={{
-          display: "flex", flexDirection: "row", alignItems: "center",
-          padding: "6px 8px", height: 50,
+          display: "inline-flex", flexDirection: "row", alignItems: "center",
+          width: "calc(100% - 16px)", margin: "0 8px",
+          padding: "6px 8px", height: 45,
           borderRadius: 8, cursor: "pointer",
           backgroundColor: isSelected ? "rgba(5,21,36,0.06)" : "transparent",
           transition: "background 60ms ease",
         }}
+        onMouseLeave={e => { if (!isSelected) e.currentTarget.style.backgroundColor = "transparent"; }}
       >
-        {/* Icon with custom tooltip */}
+        {/* Col 1: Icon */}
         <span
-          ref={iconRef}
           onMouseEnter={() => setShowTooltip(true)}
           onMouseLeave={() => setShowTooltip(false)}
           style={{ flexShrink: 0, width: 24, height: 24, display: "flex", alignItems: "center", justifyContent: "center", position: "relative" }}
@@ -195,86 +142,58 @@ function ResultRow({ item, isSelected, onHover, onClick, query }: {
         />
         {showTooltip && (
           <div style={{
-            position: "absolute",
-            marginLeft: -4, marginTop: -42,
+            position: "absolute", marginLeft: -4, marginTop: -42,
             backgroundColor: "#292A2E", color: "#FFFFFF",
             fontSize: 12, fontWeight: 500, fontFamily: "Inter, system-ui, sans-serif",
             padding: "4px 8px", borderRadius: 4,
-            whiteSpace: "nowrap", zIndex: 9999,
-            pointerEvents: "none",
+            whiteSpace: "nowrap", zIndex: 9999, pointerEvents: "none",
             boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
           }}>
             {icon.label}
           </div>
         )}
 
-        {/* Content column */}
+        {/* Col 2: Content */}
         <div style={{
           display: "flex", flexDirection: "column", flex: "1 1 0%", minWidth: 0,
-          marginLeft: 12, gap: 2,
+          marginLeft: 12, height: 33,
         }}>
-          {/* Title row */}
           <div style={{
             display: "flex", alignItems: "center", flexWrap: "nowrap", gap: 6,
             fontSize: 14, lineHeight: "16px", color: "#292A2E",
             overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
-            fontFamily: "Inter, system-ui, sans-serif",
+            fontFamily: "Inter, system-ui, sans-serif", fontWeight: 400,
           }}>
-            <span style={{ color: "#292A2E", fontWeight: 400, whiteSpace: "nowrap" }}>
-              {item.item_key}:
-            </span>
-            <span style={{
-              overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
-            }}>
+            <span style={{ whiteSpace: "nowrap" }}>{item.item_key}:</span>
+            <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
               <HighlightTitle text={item.title} query={query} />
             </span>
           </div>
-
-          {/* Subtitle row */}
           <div style={{
-            display: "flex", alignItems: "center",
+            display: "flex", alignItems: "center", flexWrap: "nowrap",
             fontSize: 12, color: "#6B6E76", fontFamily: "Inter, system-ui, sans-serif",
-            gap: 0,
+            lineHeight: "16px", marginTop: 0,
           }}>
-            <span>Jira</span>
-            <span style={{ margin: "0 4px" }}>•</span>
+            <span>Catalyst</span>
+            <span style={{ display: "inline-block", margin: "0 4px", color: "#6B6E76" }}>•</span>
             <span>{icon.label}</span>
             {item.project_name && (
               <>
-                <span style={{ margin: "0 4px" }}>•</span>
-                <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 140 }}>
+                <span style={{ display: "inline-block", margin: "0 4px", color: "#6B6E76" }}>•</span>
+                <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 160 }}>
                   {item.project_name}
-                </span>
-              </>
-            )}
-            {/* Reporter & Assignee — text only */}
-            {(item.reporter_name || item.assignee_name) && (
-              <>
-                <span style={{ margin: "0 6px 0 10px", color: "#CBD5E1" }}>|</span>
-                <span style={{ display: "inline-flex", alignItems: "center", gap: 4, whiteSpace: "nowrap" }}>
-                  {item.reporter_name && (
-                    <span title={`Reporter: ${item.reporter_name}`}>
-                      <span style={{ color: "#94A3B8" }}>by</span>{" "}
-                      <span style={{ color: "#505258" }}>{item.reporter_name.split(" ")[0]}</span>
-                    </span>
-                  )}
-                  {item.assignee_name && (
-                    <span title={`Assignee: ${item.assignee_name}`}>
-                      <span style={{ color: "#94A3B8", marginLeft: 6 }}>→</span>{" "}
-                      <span style={{ color: "#505258" }}>{item.assignee_name.split(" ")[0]}</span>
-                    </span>
-                  )}
                 </span>
               </>
             )}
           </div>
         </div>
 
-        {/* Timestamp */}
+        {/* Col 3: Timestamp */}
         <div style={{
           display: "flex", alignItems: "center", justifyContent: "flex-end",
-          fontSize: 12, color: "#6B6E76", flexShrink: 0, marginLeft: 12,
-          fontFamily: "Inter, system-ui, sans-serif", whiteSpace: "nowrap",
+          flex: "0 0 auto", marginLeft: 12,
+          fontSize: 12, fontWeight: 400, color: "#6B6E76",
+          fontFamily: "Inter, system-ui, sans-serif", whiteSpace: "nowrap", lineHeight: "16px",
         }}>
           {formatViewedDate(item.viewed_at)}
         </div>
@@ -312,7 +231,6 @@ function PopupSelect({ label, items, selected, onSelect, triggerRef, avatarMap }
     }
   };
 
-  // Position below trigger
   const triggerRect = triggerRef.current?.getBoundingClientRect();
   const top = (triggerRect?.bottom ?? 0) + 4;
   const left = triggerRect?.left ?? 0;
@@ -329,7 +247,6 @@ function PopupSelect({ label, items, selected, onSelect, triggerRef, avatarMap }
         overflow: "hidden",
       }}
     >
-      {/* Search input */}
       <div style={{ padding: 8 }}>
         <div style={{
           display: "flex", alignItems: "center",
@@ -343,7 +260,7 @@ function PopupSelect({ label, items, selected, onSelect, triggerRef, avatarMap }
             ref={inputRef}
             value={search}
             onChange={e => setSearch(e.target.value)}
-            placeholder={label === "Project" ? "Find projects" : "Find people"}
+            placeholder={label === "Projects" ? "Find projects" : "Find people"}
             style={{
               flex: 1, border: "none", outline: "none",
               fontSize: 14, fontFamily: "Inter, system-ui, sans-serif",
@@ -353,7 +270,6 @@ function PopupSelect({ label, items, selected, onSelect, triggerRef, avatarMap }
         </div>
       </div>
 
-      {/* Suggested label */}
       <div style={{
         padding: "8px 12px 4px", fontSize: 12, fontWeight: 600,
         color: "#6B6E76", fontFamily: "Inter, system-ui, sans-serif",
@@ -361,7 +277,6 @@ function PopupSelect({ label, items, selected, onSelect, triggerRef, avatarMap }
         Suggested
       </div>
 
-      {/* Options list */}
       <div role="listbox" style={{ overflowY: "auto", maxHeight: 260 }}>
         {filtered.length === 0 ? (
           <div style={{
@@ -370,7 +285,7 @@ function PopupSelect({ label, items, selected, onSelect, triggerRef, avatarMap }
           }}>
             No results found
           </div>
-        ) : filtered.map((item, idx) => {
+        ) : filtered.map((item) => {
           const isActive = selected.includes(item.value);
           const photoUrl = avatarMap?.get(item.display.toLowerCase());
           return (
@@ -395,7 +310,6 @@ function PopupSelect({ label, items, selected, onSelect, triggerRef, avatarMap }
                 if (!isActive) e.currentTarget.style.backgroundColor = "transparent";
               }}
             >
-              {/* Avatar or icon */}
               {label === "Assignee" ? (
                 photoUrl ? (
                   <img src={photoUrl} alt={item.display} style={{
@@ -421,17 +335,17 @@ function PopupSelect({ label, items, selected, onSelect, triggerRef, avatarMap }
         })}
       </div>
 
-      {/* Clear filter */}
       {selected.length > 0 && (
         <div
           onClick={() => onSelect([])}
           style={{
-            padding: "8px 6px 8px 20px", cursor: "pointer",
+            padding: "1px 6px 1px 20px", height: 32, cursor: "pointer",
             color: "#505258", fontSize: 14, fontFamily: "Inter, system-ui, sans-serif",
             borderTop: "0.56px solid rgba(11,18,14,0.14)",
             backgroundColor: "#FFFFFF",
+            display: "flex", alignItems: "center",
           }}
-          onMouseEnter={e => (e.currentTarget.style.backgroundColor = "rgba(5,21,36,0.04)")}
+          onMouseEnter={e => (e.currentTarget.style.backgroundColor = "rgba(5,21,36,0.06)")}
           onMouseLeave={e => (e.currentTarget.style.backgroundColor = "#FFFFFF")}
         >
           Clear filter
@@ -441,9 +355,9 @@ function PopupSelect({ label, items, selected, onSelect, triggerRef, avatarMap }
   );
 }
 
-/* ── Jira-style Filter Button ── */
-function FilterButton({ label, isActive, isOpen, onClick, buttonRef }: {
-  label: string; isActive: boolean; isOpen: boolean;
+/* ── Filter Button with icon + chevron ── */
+function FilterButton({ label, icon, isActive, isOpen, onClick, buttonRef }: {
+  label: string; icon: React.ReactNode; isActive: boolean; isOpen: boolean;
   onClick: () => void; buttonRef: React.RefObject<HTMLButtonElement | null>;
 }) {
   const active = isActive || isOpen;
@@ -454,18 +368,20 @@ function FilterButton({ label, isActive, isOpen, onClick, buttonRef }: {
       aria-haspopup="true"
       aria-expanded={isOpen}
       style={{
-        display: "flex", alignItems: "center", gap: 6,
+        display: "inline-flex", alignItems: "center", gap: 6,
         padding: "4px 12px", height: 32, borderRadius: 4,
         border: `0.56px solid ${active ? "rgb(24,104,219)" : "rgba(11,18,14,0.14)"}`,
         backgroundColor: active ? "rgb(207,225,253)" : "transparent",
         color: active ? "rgb(24,104,219)" : "#505258",
         fontSize: 14, fontWeight: 500, cursor: "pointer",
         fontFamily: "Inter, system-ui, sans-serif",
+        lineHeight: "20px", whiteSpace: "nowrap",
         transition: "all 80ms ease",
       }}
     >
+      {icon}
       {label}
-      <ChevronDown size={14} />
+      <ChevronDown size={12} />
     </button>
   );
 }
@@ -488,7 +404,6 @@ export function GlobalSearch() {
   const [openFilter, setOpenFilter] = useState<"project" | "assignee" | null>(null);
   const [selectedProjects, setSelectedProjects] = useState<string[]>([]);
   const [selectedAssignees, setSelectedAssignees] = useState<string[]>([]);
-  const [visibleCount, setVisibleCount] = useState(8);
 
   const projectBtnRef = useRef<HTMLButtonElement>(null);
   const assigneeBtnRef = useRef<HTMLButtonElement>(null);
@@ -498,9 +413,7 @@ export function GlobalSearch() {
   const { data: results = [], isLoading } = useSearchResults(debouncedQuery, filters);
   const trackView = useTrackView();
   const saveSearch = useSaveSearch();
-  
 
-  // Projects from ProjectBackbone (ph_jira_projects)
   const { data: dbProjects = [] } = useQuery({
     queryKey: ['gs-projects'],
     queryFn: async () => {
@@ -512,13 +425,12 @@ export function GlobalSearch() {
       if (error) throw error;
       return (data ?? []).map((p: any) => ({
         value: p.name as string,
-        display: `${p.project_key} - ${p.name}` as string,
+        display: `${p.name} (${p.project_key})` as string,
       }));
     },
     staleTime: 60_000,
   });
 
-  // Assignees from profiles (all Catalyst users with face avatars)
   const { data: dbAssignees = [] } = useQuery({
     queryKey: ['gs-assignees'],
     queryFn: async () => {
@@ -538,10 +450,6 @@ export function GlobalSearch() {
     staleTime: 60_000,
   });
 
-  const projectOptions = dbProjects;
-  const assigneeOptions = dbAssignees;
-
-  // Build avatar map from DB assignees for PopupSelect
   const assigneeAvatarMap = new Map<string, string>();
   for (const a of dbAssignees) {
     if (a.avatarUrl) assigneeAvatarMap.set(a.display.toLowerCase(), a.avatarUrl);
@@ -549,50 +457,43 @@ export function GlobalSearch() {
 
   const showSearch = debouncedQuery.length >= 2;
 
-  // Apply multi-select filters to recents
   const filteredRecents = recents.filter(item => {
     if (selectedProjects.length > 0 && !selectedProjects.includes(item.project_name || "")) return false;
     if (selectedAssignees.length > 0 && !selectedAssignees.includes(item.assignee_name || "")) return false;
     return true;
   });
 
-  const allResults = showSearch ? results : filteredRecents;
-  const visibleResults = allResults.slice(0, visibleCount);
-  const hasMore = allResults.length > visibleCount;
+  // Max 10 results visible (no pagination)
+  const displayItems = showSearch ? results.slice(0, 10) : filteredRecents.slice(0, 10);
 
-  // Focus on open
   useEffect(() => {
     if (isOpen) {
       setTimeout(() => inputRef.current?.focus(), 50);
-      setQuery(""); setDebouncedQuery(""); setSelectedIdx(0); setVisibleCount(8);
+      setQuery(""); setDebouncedQuery(""); setSelectedIdx(0);
       setFilters({ hub: null, project: null, assignee: null, type: null });
       setOpenFilter(null); setSelectedProjects([]); setSelectedAssignees([]);
     }
   }, [isOpen]);
 
-  // Debounce
   const onInput = useCallback((v: string) => {
     setQuery(v);
     setSelectedIdx(0);
-    setVisibleCount(8);
     clearTimeout(debRef.current);
     debRef.current = setTimeout(() => setDebouncedQuery(v), 150);
   }, []);
 
-  // Keyboard nav
   useEffect(() => {
     if (!isOpen) return;
     const handler = (e: KeyboardEvent) => {
       if (e.key === "Escape") { if (openFilter) { setOpenFilter(null); } else { close(); } return; }
-      if (e.key === "ArrowDown") { e.preventDefault(); setSelectedIdx(i => Math.min(i + 1, visibleResults.length - 1)); }
+      if (e.key === "ArrowDown") { e.preventDefault(); setSelectedIdx(i => Math.min(i + 1, displayItems.length - 1)); }
       if (e.key === "ArrowUp") { e.preventDefault(); setSelectedIdx(i => Math.max(i - 1, 0)); }
-      if (e.key === "Enter" && visibleResults[selectedIdx]) { handleSelect(visibleResults[selectedIdx]); }
+      if (e.key === "Enter" && displayItems[selectedIdx]) { handleSelect(displayItems[selectedIdx]); }
     };
     document.addEventListener("keydown", handler);
     return () => document.removeEventListener("keydown", handler);
-  }, [isOpen, visibleResults, selectedIdx, openFilter]);
+  }, [isOpen, displayItems, selectedIdx, openFilter]);
 
-  // Close popup on outside click
   useEffect(() => {
     if (!openFilter) return;
     const handler = (e: MouseEvent) => {
@@ -627,28 +528,24 @@ export function GlobalSearch() {
         }}
       />
 
-      {/* Search Container — anchored to top nav (48px) */}
+      {/* Main container */}
       <div
         ref={containerRef}
         style={{
           position: "fixed", top: 56, left: "50%", transform: "translateX(-50%)",
           zIndex: 9999, width: 780,
-          backgroundColor: "#FFFFFF", borderRadius: 8,
-          boxShadow: "0 8px 12px rgba(30,31,33,0.15), 0 0 1px rgba(30,31,33,0.31)",
           display: "flex", flexDirection: "column",
           maxHeight: "calc(100vh - 72px)",
-          overflow: "hidden",
         }}
       >
-        {/* Search Input Bar */}
+        {/* Search Input Bar — FIX 1 */}
         <div style={{
-          display: "flex", alignItems: "center",
-          height: 48, width: "100%",
-          paddingLeft: 16, paddingRight: 8,
-          borderBottom: "0.56px solid rgba(11,18,14,0.08)",
-          flexShrink: 0,
+          display: "flex", flexDirection: "row", alignItems: "center",
+          backgroundColor: "#FFFFFF", borderRadius: 4,
+          boxShadow: "0px 8px 12px rgba(30,31,33,0.15), 0px 0px 1px rgba(30,31,33,0.31)",
+          height: 40, width: 780, border: "none", padding: 0,
         }}>
-          <Search size={22} color="#6B6E76" style={{ flexShrink: 0, marginRight: 12 }} />
+          <Search size={16} color="#6B6E76" style={{ margin: "0 12px 0 16px", flexShrink: 0 }} />
           <input
             ref={inputRef}
             role="combobox"
@@ -658,64 +555,65 @@ export function GlobalSearch() {
             onChange={e => onInput(e.target.value)}
             placeholder="Search Catalyst..."
             style={{
-              flex: 1, border: "none", outline: "none",
-              fontSize: 15, fontFamily: "Inter, system-ui, sans-serif",
-              color: "#292A2E", backgroundColor: "transparent",
+              flex: 1, height: 20, border: "none", outline: "none",
+              fontSize: 14, fontFamily: "ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif",
+              color: "#292A2E", backgroundColor: "transparent", caretColor: "#292A2E",
             }}
           />
-          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            <kbd style={{
-              fontSize: 11, fontFamily: "JetBrains Mono, monospace",
-              color: "#6B6E76", backgroundColor: "#F1F5F9",
-              border: "1px solid #E2E8F0", borderRadius: 4,
-              padding: "2px 6px",
-            }}>⌘K</kbd>
+          {query && (
             <button
-              onClick={close}
+              onClick={() => { setQuery(""); setDebouncedQuery(""); }}
               style={{
-                width: 28, height: 28, borderRadius: 4,
-                border: "none", backgroundColor: "transparent",
+                width: 24, height: 24, margin: "0 8px 0 0", flexShrink: 0,
+                border: "none", backgroundColor: "transparent", cursor: "pointer",
                 display: "flex", alignItems: "center", justifyContent: "center",
-                cursor: "pointer", color: "#6B6E76",
+                color: "#6B6E76", borderRadius: 4,
               }}
-              onMouseEnter={e => (e.currentTarget.style.backgroundColor = "rgba(5,21,36,0.06)")}
-              onMouseLeave={e => (e.currentTarget.style.backgroundColor = "transparent")}
             >
-              <X size={18} />
+              <X size={16} />
             </button>
-          </div>
+          )}
         </div>
 
-        {/* Filter Bar */}
+        {/* Dropdown Panel — FIX 2 */}
         <div style={{
-          display: "flex", flexDirection: "row", alignItems: "center",
-          justifyContent: "flex-start",
-          padding: "6px 16px", minHeight: 44, gap: 8,
-          borderBottom: "0.56px solid rgba(11,18,14,0.08)",
-          flexShrink: 0,
+          position: "relative", top: 0, left: 0, width: 780,
+          backgroundColor: "#FFFFFF", borderRadius: 4,
+          boxShadow: "0px 8px 12px rgba(30,31,33,0.15), 0px 0px 1px rgba(30,31,33,0.31)",
+          display: "flex", flexDirection: "column",
+          overflow: "hidden", marginTop: 4,
         }}>
-          <FilterButton
-            label={selectedProjects.length > 0 ? `Project (${selectedProjects.length})` : "Project"}
-            isActive={selectedProjects.length > 0}
-            isOpen={openFilter === "project"}
-            onClick={() => setOpenFilter(openFilter === "project" ? null : "project")}
-            buttonRef={projectBtnRef}
-          />
-          <FilterButton
-            label={selectedAssignees.length > 0 ? `Assignee (${selectedAssignees.length})` : "Assignee"}
-            isActive={selectedAssignees.length > 0}
-            isOpen={openFilter === "assignee"}
-            onClick={() => setOpenFilter(openFilter === "assignee" ? null : "assignee")}
-            buttonRef={assigneeBtnRef}
-          />
-        </div>
+          {/* Filter Bar — FIX 3 */}
+          <div style={{
+            display: "flex", alignItems: "center",
+            padding: "2px 16px 6px", height: 40, gap: 8,
+            flexShrink: 0,
+          }}>
+            <FilterButton
+              label={selectedProjects.length > 0 ? `Projects (${selectedProjects.length})` : "Projects"}
+              icon={<FolderKanban size={16} />}
+              isActive={selectedProjects.length > 0}
+              isOpen={openFilter === "project"}
+              onClick={() => setOpenFilter(openFilter === "project" ? null : "project")}
+              buttonRef={projectBtnRef}
+            />
+            <FilterButton
+              label={selectedAssignees.length > 0 ? `Assignee (${selectedAssignees.length})` : "Assignee"}
+              icon={<User size={16} />}
+              isActive={selectedAssignees.length > 0}
+              isOpen={openFilter === "assignee"}
+              onClick={() => setOpenFilter(openFilter === "assignee" ? null : "assignee")}
+              buttonRef={assigneeBtnRef}
+            />
+          </div>
 
-        {/* Scrollable Results */}
-        <div role="listbox" id="gs-results-listbox" style={{
-          flex: 1, overflowY: "auto", padding: "8px 0",
-          display: "flex", flexDirection: "column", gap: 2,
-        }}>
-            {/* Loading */}
+          {/* Scrollable Results — FIX 11 */}
+          <div role="listbox" id="gs-results-listbox" style={{
+            display: "flex", flexDirection: "column", gap: 2,
+            padding: "8px 0", overflowY: "auto", maxHeight: 640,
+            flex: 1,
+          }}>
+            {/* Loading skeleton */}
             {showSearch && isLoading && [1,2,3,4].map(i => (
               <div key={i} style={{
                 display: "flex", alignItems: "center", height: 45, padding: "0 16px", gap: 12,
@@ -728,10 +626,9 @@ export function GlobalSearch() {
               </div>
             ))}
 
-            {/* Recents (date-grouped) */}
+            {/* Recent state — FIX 4 */}
             {!showSearch && (() => {
-              const groups = groupItems(filteredRecents);
-              if (groups.length === 0) return (
+              if (filteredRecents.length === 0) return (
                 <div style={{
                   display: "flex", flexDirection: "column", alignItems: "center",
                   justifyContent: "center", height: 180, gap: 10,
@@ -746,60 +643,32 @@ export function GlobalSearch() {
                 </div>
               );
 
-              let globalIdx = 0;
               return (
                 <>
-                  {groups.map(({ group, items: groupItems }) => {
-                    const startIdx = globalIdx;
-                    globalIdx += groupItems.length;
-                    const groupVisible = groupItems.slice(0, Math.max(0, visibleCount - startIdx));
-                    if (groupVisible.length === 0) return null;
-                    return (
-                      <div key={group}>
-                        {/* Section heading */}
-                        <div style={{
-                          padding: "8px 16px 4px", fontSize: 11, fontWeight: 700,
-                          color: "#6B6E76", fontFamily: "Inter, system-ui, sans-serif",
-                          textTransform: "uppercase", letterSpacing: "0.06em",
-                        }}>
-                          {group}
-                        </div>
-                        {groupVisible.map((item, relIdx) => (
-                          <ResultRow
-                            key={`${item.id}-${startIdx + relIdx}`}
-                            item={item}
-                            query=""
-                            isSelected={selectedIdx === startIdx + relIdx}
-                            onHover={() => setSelectedIdx(startIdx + relIdx)}
-                            onClick={() => handleSelect(item)}
-                          />
-                        ))}
-                      </div>
-                    );
-                  })}
-                  {hasMore && (
-                    <div
-                      onClick={(e) => { e.stopPropagation(); setVisibleCount(c => c + 10); }}
-                      style={{
-                        display: "flex", alignItems: "center", justifyContent: "center",
-                        height: 40, fontSize: 13, fontWeight: 500,
-                        color: "#1868DB", fontFamily: "Inter, system-ui, sans-serif",
-                        cursor: "pointer", gap: 6, transition: "background 100ms ease",
-                      }}
-                      onMouseEnter={e => (e.currentTarget.style.backgroundColor = "rgba(5,21,36,0.04)")}
-                      onMouseLeave={e => (e.currentTarget.style.backgroundColor = "transparent")}
-                    >
-                      Show 10 more
-                      <span style={{ fontSize: 12, color: "#6B6E76" }}>
-                        ({filteredRecents.length - visibleCount} remaining)
-                      </span>
-                    </div>
-                  )}
+                  {/* Single "Recent" heading — no date sub-groups */}
+                  <div style={{
+                    padding: "0 8px", height: 32,
+                    display: "flex", alignItems: "center",
+                    fontSize: 14, fontWeight: 400, color: "#292A2E",
+                    fontFamily: "Inter, system-ui, sans-serif",
+                  }}>
+                    Recent
+                  </div>
+                  {displayItems.map((item, idx) => (
+                    <ResultRow
+                      key={`${item.id}-${idx}`}
+                      item={item}
+                      query=""
+                      isSelected={selectedIdx === idx}
+                      onHover={() => setSelectedIdx(idx)}
+                      onClick={() => handleSelect(item)}
+                    />
+                  ))}
                 </>
               );
             })()}
 
-            {/* Search results */}
+            {/* Search Results state — FIX 5 */}
             {showSearch && !isLoading && (
               <>
                 {results.length === 0 ? (
@@ -814,14 +683,18 @@ export function GlobalSearch() {
                   </div>
                 ) : (
                   <>
+                    {/* "Search Results" heading */}
                     <div style={{
-                      padding: "4px 16px 4px", fontSize: 11, fontWeight: 700,
-                      color: "#6B6E76", textTransform: "uppercase", letterSpacing: "0.06em",
-                      fontFamily: "Inter, system-ui, sans-serif",
+                      height: 32, display: "flex", alignItems: "center",
                     }}>
-                      SEARCH RESULTS
+                      <span style={{
+                        padding: "0 8px", fontSize: 14, fontWeight: 400,
+                        color: "#292A2E", fontFamily: "Inter, system-ui, sans-serif",
+                      }}>
+                        Search Results
+                      </span>
                     </div>
-                    {visibleResults.map((item, idx) => (
+                    {displayItems.map((item, idx) => (
                       <ResultRow
                         key={`${item.id}-${idx}`}
                         item={item}
@@ -831,62 +704,47 @@ export function GlobalSearch() {
                         onClick={() => handleSelect(item)}
                       />
                     ))}
-                    {hasMore && (
-                      <div
-                        onClick={(e) => { e.stopPropagation(); setVisibleCount(c => c + 10); }}
-                        style={{
-                          display: "flex", alignItems: "center", justifyContent: "center",
-                          height: 40, fontSize: 13, fontWeight: 500,
-                          color: "#1868DB", fontFamily: "Inter, system-ui, sans-serif",
-                          cursor: "pointer", gap: 6, transition: "background 100ms ease",
-                        }}
-                        onMouseEnter={e => (e.currentTarget.style.backgroundColor = "rgba(5,21,36,0.04)")}
-                        onMouseLeave={e => (e.currentTarget.style.backgroundColor = "transparent")}
-                      >
-                        Show 10 more
-                        <span style={{ fontSize: 12, color: "#6B6E76" }}>
-                          ({results.length - visibleCount} remaining)
-                        </span>
-                      </div>
-                    )}
                   </>
                 )}
               </>
             )}
           </div>
 
-          {/* Footer */}
-          <div style={{
-            display: "flex", alignItems: "center", height: 40,
-            padding: "0 16px", gap: 16,
-            borderTop: "0.56px solid rgba(11,18,14,0.08)",
-            backgroundColor: "#FAFBFC",
-            fontSize: 12, fontFamily: "Inter, system-ui, sans-serif", color: "#6B6E76",
-          }}>
-            <span style={{ display: "flex", alignItems: "center", gap: 4 }}>
-              <kbd style={{ fontSize: 11, fontFamily: "JetBrains Mono, monospace", color: "#6B6E76", backgroundColor: "#F1F5F9", border: "1px solid #E2E8F0", borderRadius: 3, padding: "1px 4px" }}>↑</kbd>
-              <kbd style={{ fontSize: 11, fontFamily: "JetBrains Mono, monospace", color: "#6B6E76", backgroundColor: "#F1F5F9", border: "1px solid #E2E8F0", borderRadius: 3, padding: "1px 4px" }}>↓</kbd>
-              <span style={{ marginLeft: 2 }}>Navigate</span>
-            </span>
-            <span style={{ display: "flex", alignItems: "center", gap: 4 }}>
-              <kbd style={{ fontSize: 11, fontFamily: "JetBrains Mono, monospace", color: "#6B6E76", backgroundColor: "#F1F5F9", border: "1px solid #E2E8F0", borderRadius: 3, padding: "1px 4px" }}>↵</kbd>
-              <span>Open</span>
-            </span>
-            <span style={{ display: "flex", alignItems: "center", gap: 4 }}>
-              <kbd style={{ fontSize: 11, fontFamily: "JetBrains Mono, monospace", color: "#6B6E76", backgroundColor: "#F1F5F9", border: "1px solid #E2E8F0", borderRadius: 3, padding: "1px 4px" }}>Esc</kbd>
-              <span>Close</span>
-            </span>
-            <span style={{ marginLeft: "auto", color: "#A3A3A3", fontSize: 11 }}>
-              Catalyst Search
-            </span>
+          {/* Footer link — FIX 8 (replaces FIX 7 pagination + FIX 9 keyboard hints) */}
+          <div
+            onClick={() => {
+              /* Could navigate to full search page */
+            }}
+            style={{
+              display: "inline-block", width: "100%", height: 40,
+              textDecoration: "none", color: "#292A2E", cursor: "pointer",
+              borderTop: "0.56px solid rgba(11,18,14,0.08)",
+            }}
+            onMouseEnter={e => (e.currentTarget.style.backgroundColor = "rgba(5,21,36,0.06)")}
+            onMouseLeave={e => (e.currentTarget.style.backgroundColor = "transparent")}
+          >
+            <div style={{
+              display: "flex", flexDirection: "row", alignItems: "center",
+              padding: "8px 16px", height: 40, gap: 12,
+            }}>
+              <Search size={16} color="#6B6E76" style={{ flexShrink: 0 }} />
+              <span style={{
+                flex: 1, fontSize: 14, fontWeight: 400, color: "#292A2E",
+                fontFamily: "Inter, system-ui, sans-serif",
+              }}>
+                Search Catalyst for work items
+              </span>
+              <CornerDownLeft size={16} color="#6B6E76" style={{ flexShrink: 0 }} />
+            </div>
           </div>
         </div>
+      </div>
 
-      {/* PopupSelect overlays */}
+      {/* PopupSelect overlays — FIX 10 */}
       {openFilter === "project" && (
         <PopupSelect
-          label="Project"
-          items={projectOptions}
+          label="Projects"
+          items={dbProjects}
           selected={selectedProjects}
           onSelect={setSelectedProjects}
           triggerRef={projectBtnRef}
@@ -895,7 +753,7 @@ export function GlobalSearch() {
       {openFilter === "assignee" && (
         <PopupSelect
           label="Assignee"
-          items={assigneeOptions}
+          items={dbAssignees}
           selected={selectedAssignees}
           onSelect={setSelectedAssignees}
           triggerRef={assigneeBtnRef}
