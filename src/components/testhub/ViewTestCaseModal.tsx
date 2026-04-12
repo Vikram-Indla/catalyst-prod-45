@@ -617,6 +617,12 @@ export function ViewTestCaseModal({
   // ── Format change handler ──
   const handleFormatChange = async (newFmt: 'steps' | 'gherkin' | 'free_text') => {
     setLocalTestFormat(newFmt);
+
+    // Hydrate free text from existing steps when switching to free_text
+    if (newFmt === 'free_text' && freeTextBlocks.length === 0 && steps.length > 0) {
+      setFreeTextBlocks(steps.map(s => ({ id: s.id, text: s.action || '' })));
+    }
+
     const dbVal = newFmt === 'gherkin' ? 'bdd' : newFmt === 'free_text' ? 'free_text' : 'classic';
     await typedQuery('tm_test_cases').update({ test_format: dbVal } as any).eq('id', testCase!.id);
     toast('Format updated');
@@ -996,18 +1002,19 @@ export function ViewTestCaseModal({
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
             <ClipboardList style={{ width: 18, height: 18, color: 'var(--cp-blue)', flexShrink: 0 }} />
-            <span style={{
-              fontFamily: "'JetBrains Mono', monospace",
-              fontSize: 13, fontWeight: 500, color: 'var(--fg-3)',
-            }}>
-              {testCase.case_key}
-            </span>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <span style={{ fontSize: 12, fontFamily: "'JetBrains Mono', monospace", color: '#5E6C84', fontWeight: 500 }}>
+                {testCase.case_key}
+              </span>
+              <span style={{ fontSize: 13, fontFamily: "'Inter', sans-serif", color: '#172B4D', fontWeight: 500, maxWidth: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {testCase.title}
+              </span>
+            </div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
             <HeaderBtn title="Edit" onClick={onEdit}><Edit2 style={{ width: 15, height: 15 }} /></HeaderBtn>
             <HeaderBtn title="Copy key" onClick={handleCopyKey}><Copy style={{ width: 15, height: 15 }} /></HeaderBtn>
-            <HeaderBtn title="Clone" onClick={onClone}><Share2 style={{ width: 15, height: 15 }} /></HeaderBtn>
-            <HeaderBtn title="More"><MoreHorizontal style={{ width: 15, height: 15 }} /></HeaderBtn>
+            <HeaderBtn title="Clone" onClick={onClone}><Copy style={{ width: 15, height: 15 }} /></HeaderBtn>
             <HeaderBtn title="Close" onClick={onClose} close><X style={{ width: 16, height: 16 }} /></HeaderBtn>
           </div>
         </div>
@@ -1018,16 +1025,7 @@ export function ViewTestCaseModal({
           {/* ── LEFT PANEL ── */}
           <div style={{ flex: 1, overflowY: 'auto', padding: '0 24px 80px', minWidth: 0 }}>
 
-            {/* FIX-C: Title — fontSize:18, fontWeight:650, color:#172B4D */}
-            <div style={{ padding: '20px 0 8px' }}>
-              <h2
-                style={{
-                  fontFamily: "'Sora', sans-serif",
-                  fontSize: 18, fontWeight: 650, color: '#172B4D',
-                  lineHeight: 1.4,
-                  margin: '0 0 16px 0',
-                  padding: '2px 4px',
-                  borderRadius: 4,
+            <div style={{ padding: '12px 0 0' }}>
                   border: '2px solid transparent',
                   transition: 'border-color 150ms',
                   cursor: 'text',
@@ -1548,7 +1546,7 @@ export function ViewTestCaseModal({
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12, paddingBottom: 12 }}>
 
               {/* Owner */}
-              <SidebarField label="Owner">
+              <SidebarField label="Reporter">
                 <PortalPickerWrapper pickerKey="owner" openPicker={openPicker} setOpenPicker={setOpenPicker}
                   trigger={(ref) => (
                     <ClickableField ref={ref} onClick={(e) => { e.stopPropagation(); setOpenPicker(openPicker === 'owner' ? null : 'owner'); }}>
@@ -1667,26 +1665,9 @@ export function ViewTestCaseModal({
               </SidebarField>
             </div>
 
-            {/* CONTEXT SECTION */}
+            {/* DATES SECTION */}
             <div style={{ paddingTop: 12 }}>
-              <span style={{ display: 'block', fontSize: 10, fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.06em', color: 'var(--fg-3)', marginBottom: 12 }}>Details</span>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                <SidebarField label="Case Key">
-                  <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg-1)', fontFamily: "'JetBrains Mono', monospace" }}>{testCase.case_key}</span>
-                </SidebarField>
-
-                <SidebarField label="Automation">
-                  <span style={{ fontSize: 12, color: 'var(--fg-2)' }}>{testCase.automation_status || 'Manual'}</span>
-                </SidebarField>
-
-                <SidebarField label="Version">
-                  <span style={{ fontSize: 12, color: 'var(--fg-2)' }}>{testCase.version != null ? String(testCase.version) : '—'}</span>
-                </SidebarField>
-              </div>
-            </div>
-
-            {/* METADATA — timestamps */}
-            <div style={{ marginTop: 16, paddingTop: 12, borderTop: '1px solid var(--divider)' }}>
+              <span style={{ display: 'block', fontSize: 10, fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.06em', color: 'var(--fg-3)', marginBottom: 12 }}>Dates</span>
               <div style={{ fontSize: 11, color: 'var(--fg-4)', lineHeight: '18px' }}>
                 Created {testCase.created_at ? new Date(testCase.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : '—'}
               </div>
