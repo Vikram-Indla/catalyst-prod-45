@@ -1483,7 +1483,7 @@ export function ViewTestCaseModal({
             </div>
 
             {/* CONTEXT SECTION */}
-            <div style={{ borderTop: '1px solid var(--divider)', paddingTop: 12 }}>
+            <div style={{ paddingTop: 12 }}>
               <span style={{ display: 'block', fontSize: 10, fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.06em', color: 'var(--fg-3)', marginBottom: 12 }}>Details</span>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                 <SidebarField label="Case Key">
