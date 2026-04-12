@@ -429,7 +429,7 @@ export function GlobalSearch() {
   const { data: results = [], isLoading } = useSearchResults(debouncedQuery, filters);
   const trackView = useTrackView();
   const saveSearch = useSaveSearch();
-  const nameAvatarMap = useProfileAvatarsByName();
+  
 
   // Projects from ProjectBackbone (ph_jira_projects)
   const { data: dbProjects = [] } = useQuery({
