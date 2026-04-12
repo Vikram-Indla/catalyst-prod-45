@@ -186,28 +186,28 @@ export function CatalystChildWorkItemsTable({
               borderBottom: '1px solid #EBECF0', borderTop: '1px solid #EBECF0',
             }}>
               {/* Type icon spacer + Key */}
-              <div style={{ width: 104, flexShrink: 0, fontSize: 11, fontWeight: 600, color: '#6B778C', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              <div style={{ width: 104, flexShrink: 0, fontSize: 12, fontWeight: 600, color: '#6B778C', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 Work
               </div>
               {/* Summary spacer */}
               <div style={{ flex: 1, minWidth: 120 }} />
               {columns.assignee && (
-                <div style={{ width: 140, flexShrink: 0, fontSize: 11, fontWeight: 600, color: '#6B778C', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                <div style={{ width: 140, flexShrink: 0, fontSize: 12, fontWeight: 600, color: '#6B778C', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                   Assignee
                 </div>
               )}
               {columns.status && (
-                <div style={{ width: 150, flexShrink: 0, fontSize: 11, fontWeight: 600, color: '#6B778C', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                <div style={{ width: 150, flexShrink: 0, fontSize: 12, fontWeight: 600, color: '#6B778C', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                   Status
                 </div>
               )}
               {columns.fixVersions && (
-                <div style={{ width: 130, flexShrink: 0, fontSize: 11, fontWeight: 600, color: '#6B778C', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                <div style={{ width: 130, flexShrink: 0, fontSize: 12, fontWeight: 600, color: '#6B778C', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                   Fix versions
                 </div>
               )}
               {columns.priority && (
-                <div style={{ width: 28, flexShrink: 0, fontSize: 11, fontWeight: 600, color: '#6B778C', textTransform: 'uppercase', letterSpacing: '0.04em', textAlign: 'center' }}>
+                <div style={{ width: 28, flexShrink: 0, fontSize: 12, fontWeight: 600, color: '#6B778C', textTransform: 'uppercase', letterSpacing: '0.04em', textAlign: 'center' }}>
                   P
                 </div>
               )}

@@ -103,7 +103,7 @@ export function ChildWorkItemRow({ item, columns, parentIssueKey, onOpenItem }: 
     <div
       style={{
         display: 'flex', alignItems: 'center', minHeight: 44, padding: '0 12px',
-        borderBottom: '1px solid #F4F5F7', cursor: 'pointer',
+        borderBottom: '1px solid #EBECF0', cursor: 'pointer',
         transition: 'background 80ms',
       }}
       onMouseEnter={e => (e.currentTarget.style.background = '#FAFBFC')}

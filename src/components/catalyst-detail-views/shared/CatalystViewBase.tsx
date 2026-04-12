@@ -50,6 +50,7 @@ export interface CatalystViewBaseLayoutProps {
   itemType: string;
   itemKey: string | null;
   projectKey?: string;
+  projectName?: string;
   parentKey?: string | null;
   parentType?: string;
   onParentClick?: () => void;
@@ -78,7 +79,7 @@ export interface CatalystViewBaseLayoutProps {
    ═══════════════════════════════════════════ */
 export function CatalystViewBase({
   isOpen, onClose, panelMode, fullPageMode,
-  itemType, itemKey, projectKey, parentKey, parentType, onParentClick, breadcrumbExtra,
+  itemType, itemKey, projectKey, projectName, parentKey, parentType, onParentClick, breadcrumbExtra,
   onShare, moreMenuItems,
   onTogglePanelMode, navigationItems, currentItemId, onNavigate,
   leftContent, rightContent,
@@ -209,12 +210,12 @@ export function CatalystViewBase({
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           padding: '12px 16px 0 16px', minHeight: 40, flexShrink: 0,
         }}>
-          {/* Breadcrumb */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: '#5E6C84', minWidth: 0 }}>
+          {/* Breadcrumb — Jira pattern: Project / ParentKey / ItemKey */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 14, color: '#6B778C', minWidth: 0 }}>
             {/* Full-page back button */}
             {fullPageMode && (
               <button onClick={handleBack} style={{
-                ...hoverBtn, padding: '4px 6px', marginRight: 4,
+                ...hoverBtn, padding: '4px 6px', marginRight: 2,
               }}
                 onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
                 onMouseLeave={e => (e.currentTarget.style.background = 'none')}
@@ -223,31 +224,39 @@ export function CatalystViewBase({
                 <ArrowLeft size={16} />
               </button>
             )}
+            {/* Project name */}
+            {projectName && (
+              <>
+                <span style={{ fontSize: 14, fontWeight: 400, color: '#6B778C' }}>{projectName}</span>
+                <span style={{ color: '#C1C7D0', fontSize: 14 }}>/</span>
+              </>
+            )}
             {parentKey && (
               <>
-                <IssueIcon type={parentType || 'Epic'} size={14} />
+                <IssueIcon type={parentType || 'Epic'} size={16} />
                 <span
-                  style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 500, color: '#5E6C84', cursor: onParentClick ? 'pointer' : 'default' }}
+                  style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, fontWeight: 500, color: '#6B778C', cursor: onParentClick ? 'pointer' : 'default' }}
                   onClick={onParentClick}
+                  onMouseEnter={e => { if (onParentClick) e.currentTarget.style.color = '#0052CC'; }}
+                  onMouseLeave={e => { e.currentTarget.style.color = '#6B778C'; }}
                 >{parentKey}</span>
-                <span style={{ color: '#C1C7D0', fontSize: 12 }}>/</span>
+                <span style={{ color: '#C1C7D0', fontSize: 14 }}>/</span>
               </>
             )}
             {breadcrumbExtra}
-            {!parentKey && !breadcrumbExtra && null}
-            <IssueIcon type={itemType} size={14} />
+            <IssueIcon type={itemType} size={16} />
             {!fullPageMode && itemKey && projectKey ? (
               <Link
                 to={`/project-hub/${projectKey}/issue/${itemKey}`}
-                style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 500, color: '#5E6C84', textDecoration: 'none' }}
-                onMouseEnter={e => { e.currentTarget.style.color = '#2563EB'; e.currentTarget.style.textDecoration = 'underline'; }}
-                onMouseLeave={e => { e.currentTarget.style.color = '#5E6C84'; e.currentTarget.style.textDecoration = 'none'; }}
+                style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, fontWeight: 500, color: '#6B778C', textDecoration: 'none' }}
+                onMouseEnter={e => { e.currentTarget.style.color = '#0052CC'; e.currentTarget.style.textDecoration = 'underline'; }}
+                onMouseLeave={e => { e.currentTarget.style.color = '#6B778C'; e.currentTarget.style.textDecoration = 'none'; }}
                 title="Open full page view"
               >
                 {itemKey}
               </Link>
             ) : (
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: fullPageMode ? 600 : 500, color: fullPageMode ? '#344054' : '#5E6C84' }}>
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, fontWeight: fullPageMode ? 600 : 500, color: fullPageMode ? '#172B4D' : '#6B778C' }}>
                 {itemKey ?? '—'}
               </span>
             )}
