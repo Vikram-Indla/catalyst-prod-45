@@ -26,14 +26,14 @@ import { toast } from 'sonner';
 import type { AIPriorityItem, AINextItemData, AIStats, AISuggestionData } from '@/components/catalyst-ai/CatalystAIPanel';
 
 // ─── Group By ────────────────────────────────────────────────
-type ForYouGroupByKey = 'none' | 'status' | 'priority' | 'hub' | 'project' | 'assignee' | 'type';
+type ForYouGroupByKey = 'none' | 'status' | 'priority' | 'hub' | 'project' | 'reporter' | 'type';
 
 const FY_GROUP_OPTIONS: { key: ForYouGroupByKey; label: string }[] = [
   { key: 'status', label: 'Status' },
   { key: 'priority', label: 'Priority' },
   { key: 'hub', label: 'Hub' },
   { key: 'project', label: 'Project' },
-  { key: 'assignee', label: 'Assignee' },
+  { key: 'reporter', label: 'Reporter' },
   { key: 'type', label: 'Type' },
 ];
 
@@ -50,7 +50,7 @@ function groupForYouItems(items: WorkItem[], groupBy: ForYouGroupByKey): { label
       case 'priority': key = item.priority || 'No Priority'; break;
       case 'hub': key = item.hubLabel || 'Unknown'; break;
       case 'project': key = item.project || 'No Project'; break;
-      case 'assignee': key = (item.assignee?.name || 'Unassigned').trim(); break;
+      case 'reporter': key = (item.reporter || item.assignee?.name || 'Unknown').trim(); break;
       case 'type': key = item.issueType || 'Unknown'; break;
       default: key = 'Other';
     }
