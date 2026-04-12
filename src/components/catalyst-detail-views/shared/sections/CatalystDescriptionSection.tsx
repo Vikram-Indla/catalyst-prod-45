@@ -2,10 +2,13 @@
  * CANONICAL — Description section for all CatalystView* components.
  * Change here → updates all work item types.
  *
- * Renders ADF (Atlassian Document Format) content with images when available,
- * falls back to plain text. Shows placeholder when empty.
+ * Renders ADF (Atlassian Document Format) content with full Jira-parity
+ * (headings, bold, numbered lists, tables, media with lightbox).
+ * Falls back to plain text. Shows placeholder when empty.
  */
 import React from 'react';
+import { adfToHtml } from '@/modules/project-work-hub/utils/adfToHtml';
+import { AdfDescriptionRenderer } from '@/modules/project-work-hub/components/AdfDescriptionRenderer';
 import type { PhIssue } from '../types';
 
 interface CatalystDescriptionSectionProps {
@@ -15,34 +18,19 @@ interface CatalystDescriptionSectionProps {
 }
 
 export function CatalystDescriptionSection({ issue, label = 'Description' }: CatalystDescriptionSectionProps) {
-  const hasAdf = issue?.description_adf != null;
-  const hasText = !!issue?.description_text;
+  const descHtml = adfToHtml(issue?.description_adf) || issue?.description_text || '';
+  const isEmpty = !descHtml.trim();
 
   return (
     <div style={{ marginBottom: 24 }}>
       <div style={{ fontSize: 14, fontWeight: 600, color: '#172B4D', marginBottom: 8 }}>{label}</div>
-      {hasAdf ? (
-        <div
-          className="catalyst-description-body"
-          style={{ fontSize: 14, color: '#172B4D', lineHeight: 1.7, minHeight: 60 }}
-          dangerouslySetInnerHTML={{
-            __html: adfToSimpleHtml(issue!.description_adf),
-          }}
-          onClick={(e) => {
-            const target = e.target as HTMLElement;
-            if (target.tagName === 'IMG') {
-              const src = (target as HTMLImageElement).src;
-              if (src) window.open(src, '_blank', 'noopener,noreferrer');
-            }
-          }}
-        />
-      ) : hasText ? (
-        <div style={{ fontSize: 14, color: '#172B4D', lineHeight: 1.7, whiteSpace: 'pre-wrap', minHeight: 60 }}>
-          {issue!.description_text}
-        </div>
-      ) : (
+      {isEmpty ? (
         <div style={{ fontSize: 14, color: '#97A0AF', fontStyle: 'italic', minHeight: 60 }}>
           Add a description…
+        </div>
+      ) : (
+        <div style={{ fontSize: 14, color: '#172B4D', lineHeight: 1.7, minHeight: 60 }}>
+          <AdfDescriptionRenderer html={descHtml} issueKey={issue?.issue_key} />
         </div>
       )}
     </div>
