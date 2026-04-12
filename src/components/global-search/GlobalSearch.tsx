@@ -11,6 +11,8 @@ import {
 import type { SearchResult, ActiveFilters } from "@/types/global-search";
 import { useProfileAvatarsByName } from "@/hooks/useProfileAvatars";
 import { useThemeMode } from "@/providers/ThemeProvider";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 /* ─── CANONICAL WORK ITEM SVG ICONS ─── */
 const WORK_ICONS: Record<string, { label: string; svg: string }> = {
