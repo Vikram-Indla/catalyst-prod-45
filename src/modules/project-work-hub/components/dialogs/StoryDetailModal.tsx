@@ -61,6 +61,7 @@ import { AttachmentsSection } from './story-detail-modules';
 import { EditableAssignee, EditablePriority, EditableLabels, ParentFieldPicker } from './story-detail-modules';
 import { StoryRichTextEditor } from '../story-detail/StoryRichTextEditor';
 import { adfToHtml, tryAdfStringToHtml } from '../../utils/adfToHtml';
+import { AdfDescriptionRenderer } from '../AdfDescriptionRenderer';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 
 /* ═══════════════════════════════════════════════
