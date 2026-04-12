@@ -119,16 +119,14 @@ export function StoriesPage() {
       </div>
 
       {/* Detail Panel */}
-      {selectedStoryId && (
-        <Suspense fallback={null}>
-          <CatalystDetailRouter
-            isOpen={!!selectedStoryId}
-            onClose={() => setSelectedStoryId(null)}
-            itemId={selectedStoryId}
-            itemType="story"
-          />
-        </Suspense>
-      )}
+      <Suspense fallback={null}>
+        <CatalystDetailRouter
+          isOpen={!!selectedStoryId}
+          onClose={() => setSelectedStoryId(null)}
+          itemId={selectedStoryId || ''}
+          itemType="story"
+        />
+      </Suspense>
 
       {/* Create Panel */}
       <CreateEditStoryPanel

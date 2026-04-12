@@ -94,16 +94,14 @@ export function MyTasksPage() {
       </PageChrome>
 
       {/* Task Detail Drawer */}
-      {detailTaskId && (
-        <Suspense fallback={null}>
-          <CatalystDetailRouter
-            isOpen={!!detailTaskId}
-            onClose={handleCloseTaskDetail}
-            itemId={detailTaskId}
-            itemType="task"
-          />
-        </Suspense>
-      )}
+      <Suspense fallback={null}>
+        <CatalystDetailRouter
+          isOpen={!!detailTaskId}
+          onClose={handleCloseTaskDetail}
+          itemId={detailTaskId || ''}
+          itemType="task"
+        />
+      </Suspense>
 
       {/* Create Task Modal */}
       <PlannerCreateModal
