@@ -1445,10 +1445,10 @@ function PortalPickerWrapper({
   pickerKey: string;
   openPicker: string | null;
   setOpenPicker: (v: string | null) => void;
-  trigger: (ref: React.RefObject<HTMLElement>) => React.ReactNode;
+  trigger: (ref: React.RefObject<any>) => React.ReactNode;
   dropdown: React.ReactNode;
 }) {
-  const anchorRef = useRef<HTMLElement>(null);
+  const anchorRef = useRef<any>(null);
   const [pos, setPos] = useState<{ top: number; left: number; width: number } | null>(null);
   const isOpen = openPicker === pickerKey;
 
