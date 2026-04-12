@@ -1186,19 +1186,7 @@ export function ViewTestCaseModal({
                           </div>
                         </div>
                       ) : (
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 8 }}>
-                          {/* Insert from Library */}
-                          <button onClick={() => setIsSharedStepsModalOpen(true)} style={{
-                            display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: '#2563EB',
-                            background: 'transparent', border: 'none', cursor: 'pointer', padding: '6px 10px', fontWeight: 500,
-                            borderRadius: 6, transition: 'background 120ms', fontFamily: "'Inter', sans-serif",
-                          }}
-                            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(37,99,235,0.08)'; }}
-                            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
-                          >
-                            <BookOpen style={{ width: 14, height: 14 }} />
-                            Insert from Library
-                          </button>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', marginTop: 8 }}>
 
                           {/* Add Step dropdown */}
                           <div style={{ position: 'relative' }} data-add-step-menu>
