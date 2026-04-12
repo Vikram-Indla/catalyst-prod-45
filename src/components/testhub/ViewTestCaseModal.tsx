@@ -953,42 +953,95 @@ export function ViewTestCaseModal({
                   </div>
                 </AccordionSection>
 
-                {/* d. TEST STEPS */}
+                {/* d. TEST STEPS — with inline Add/Edit/Delete */}
                 <AccordionSection label="Test Steps" count={steps.length} defaultExpanded>
-                  {steps.length === 0 ? (
-                    <span style={{ fontSize: 14, color: 'var(--fg-4)' }}>No test steps yet.</span>
-                  ) : (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-                      {steps.map(step => (
-                        <div key={step.id} style={{
-                          display: 'flex', gap: 12, alignItems: 'flex-start',
-                          minHeight: 36, padding: '8px 0',
-                          borderBottom: '0.75px solid var(--divider)',
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+                    {steps.map(step => (
+                      <div key={step.id} className="group" style={{
+                        display: 'flex', gap: 12, alignItems: 'flex-start',
+                        minHeight: 36, padding: '8px 0',
+                        borderBottom: '0.75px solid var(--divider)',
+                        position: 'relative',
+                      }}>
+                        <div style={{
+                          width: 24, height: 24, borderRadius: '50%',
+                          background: 'var(--cp-blue)', color: '#FFFFFF',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          fontSize: 11, fontWeight: 700, flexShrink: 0, marginTop: 2,
                         }}>
-                          {/* Step number badge */}
-                          <div style={{
-                            width: 24, height: 24, borderRadius: '50%',
-                            background: 'var(--cp-blue)', color: '#FFFFFF',
-                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            fontSize: 11, fontWeight: 700, flexShrink: 0, marginTop: 2,
-                          }}>
-                            {step.step_number}
-                          </div>
-                          <div style={{ flex: 1, minWidth: 0 }}>
-                            <div style={{ marginBottom: step.expected_result ? 6 : 0 }}>
-                              <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--fg-3)', textTransform: 'uppercase' as const, letterSpacing: '0.04em' }}>Action</span>
-                              <p style={{ fontSize: 14, color: 'var(--fg-1)', margin: '2px 0 0', lineHeight: 1.5 }}>{step.action}</p>
-                            </div>
-                            {step.expected_result && (
-                              <div>
-                                <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--fg-3)', textTransform: 'uppercase' as const, letterSpacing: '0.04em' }}>Expected Result</span>
-                                <p style={{ fontSize: 14, color: 'var(--fg-1)', margin: '2px 0 0', lineHeight: 1.5 }}>{step.expected_result}</p>
-                              </div>
-                            )}
-                          </div>
+                          {step.step_number}
                         </div>
-                      ))}
+
+                        {editingStepId === step.id ? (
+                          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8 }}>
+                            <div>
+                              <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--fg-3)', textTransform: 'uppercase' as const, letterSpacing: '0.04em' }}>Action</span>
+                              <textarea value={editStepAction} onChange={e => setEditStepAction(e.target.value)} autoFocus rows={2}
+                                style={{ width: '100%', padding: '6px 8px', fontSize: 14, lineHeight: 1.5, fontFamily: "'Inter', sans-serif", border: '1.5px solid #2563EB', borderRadius: 6, outline: 'none', resize: 'vertical', boxSizing: 'border-box', background: 'var(--cp-float)', color: 'var(--fg-1)', marginTop: 4 }} />
+                            </div>
+                            <div>
+                              <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--fg-3)', textTransform: 'uppercase' as const, letterSpacing: '0.04em' }}>Expected Result</span>
+                              <textarea value={editStepExpected} onChange={e => setEditStepExpected(e.target.value)} rows={2}
+                                style={{ width: '100%', padding: '6px 8px', fontSize: 14, lineHeight: 1.5, fontFamily: "'Inter', sans-serif", border: '1.5px solid var(--divider)', borderRadius: 6, outline: 'none', resize: 'vertical', boxSizing: 'border-box', background: 'var(--cp-float)', color: 'var(--fg-1)', marginTop: 4 }} />
+                            </div>
+                            <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
+                              <button onClick={() => setEditingStepId(null)} style={{ height: 30, padding: '0 12px', fontSize: 12, fontWeight: 500, border: '1px solid var(--divider)', borderRadius: 6, background: 'transparent', color: 'var(--fg-3)', cursor: 'pointer' }}>Cancel</button>
+                              <button onClick={() => handleUpdateStep(step.id)} style={{ height: 30, padding: '0 12px', fontSize: 12, fontWeight: 500, border: 'none', borderRadius: 6, background: '#2563EB', color: '#FFFFFF', cursor: 'pointer' }}>Save</button>
+                            </div>
+                          </div>
+                        ) : (
+                          <>
+                            <div style={{ flex: 1, minWidth: 0, cursor: 'pointer' }} onClick={() => startEditStep(step)}>
+                              <div style={{ marginBottom: step.expected_result ? 6 : 0 }}>
+                                <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--fg-3)', textTransform: 'uppercase' as const, letterSpacing: '0.04em' }}>Action</span>
+                                <p style={{ fontSize: 14, color: 'var(--fg-1)', margin: '2px 0 0', lineHeight: 1.5 }}>{step.action}</p>
+                              </div>
+                              {step.expected_result && (
+                                <div>
+                                  <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--fg-3)', textTransform: 'uppercase' as const, letterSpacing: '0.04em' }}>Expected Result</span>
+                                  <p style={{ fontSize: 14, color: 'var(--fg-1)', margin: '2px 0 0', lineHeight: 1.5 }}>{step.expected_result}</p>
+                                </div>
+                              )}
+                            </div>
+                            <div style={{ display: 'flex', gap: 2, position: 'absolute', top: 6, right: 0, opacity: 0, transition: 'opacity 120ms' }} className="group-hover:!opacity-100">
+                              <button onClick={() => startEditStep(step)} title="Edit" style={{ width: 26, height: 26, border: 'none', borderRadius: 4, background: 'transparent', cursor: 'pointer', color: 'var(--fg-4)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <Edit2 style={{ width: 13, height: 13 }} />
+                              </button>
+                              <button onClick={() => handleDeleteStep(step.id)} title="Delete" style={{ width: 26, height: 26, border: 'none', borderRadius: 4, background: 'transparent', cursor: 'pointer', color: 'var(--fg-4)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <Trash2 style={{ width: 13, height: 13 }} />
+                              </button>
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+
+                  {addingStep ? (
+                    <div style={{ marginTop: 12, padding: 12, border: '1.5px solid var(--divider)', borderRadius: 8, background: 'var(--bg-1)' }}>
+                      <div style={{ marginBottom: 8 }}>
+                        <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--fg-3)', textTransform: 'uppercase' as const, letterSpacing: '0.04em' }}>Action *</span>
+                        <textarea value={newStepAction} onChange={e => setNewStepAction(e.target.value)} autoFocus rows={2} placeholder="Describe the action..."
+                          style={{ width: '100%', padding: '6px 8px', fontSize: 14, lineHeight: 1.5, fontFamily: "'Inter', sans-serif", border: '1.5px solid var(--divider)', borderRadius: 6, outline: 'none', resize: 'vertical', boxSizing: 'border-box', background: 'var(--cp-float)', color: 'var(--fg-1)', marginTop: 4 }} />
+                      </div>
+                      <div style={{ marginBottom: 10 }}>
+                        <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--fg-3)', textTransform: 'uppercase' as const, letterSpacing: '0.04em' }}>Expected Result</span>
+                        <textarea value={newStepExpected} onChange={e => setNewStepExpected(e.target.value)} rows={2} placeholder="Expected outcome..."
+                          style={{ width: '100%', padding: '6px 8px', fontSize: 14, lineHeight: 1.5, fontFamily: "'Inter', sans-serif", border: '1.5px solid var(--divider)', borderRadius: 6, outline: 'none', resize: 'vertical', boxSizing: 'border-box', background: 'var(--cp-float)', color: 'var(--fg-1)', marginTop: 4 }} />
+                      </div>
+                      <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
+                        <button onClick={() => { setAddingStep(false); setNewStepAction(''); setNewStepExpected(''); }} style={{ height: 30, padding: '0 12px', fontSize: 12, fontWeight: 500, border: '1px solid var(--divider)', borderRadius: 6, background: 'transparent', color: 'var(--fg-3)', cursor: 'pointer' }}>Cancel</button>
+                        <button onClick={handleAddStep} disabled={!newStepAction.trim()} style={{ height: 30, padding: '0 12px', fontSize: 12, fontWeight: 500, border: 'none', borderRadius: 6, background: newStepAction.trim() ? '#2563EB' : '#94A3B8', color: '#FFFFFF', cursor: newStepAction.trim() ? 'pointer' : 'not-allowed' }}>Add Step</button>
+                      </div>
                     </div>
+                  ) : (
+                    <button onClick={() => setAddingStep(true)}
+                      style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 8, padding: '6px 10px', border: 'none', borderRadius: 6, background: 'transparent', cursor: 'pointer', fontSize: 13, fontWeight: 500, color: '#2563EB', transition: 'background 120ms' }}
+                      onMouseEnter={e => { e.currentTarget.style.background = 'rgba(37,99,235,0.08)'; }}
+                      onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+                    >
+                      <Plus style={{ width: 14, height: 14 }} /> Add Step
+                    </button>
                   )}
                 </AccordionSection>
 
