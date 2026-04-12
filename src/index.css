@@ -4984,3 +4984,81 @@ input[type="range"]::-moz-range-thumb {
 [data-theme="dark"] [class*="bg-background"] {
   background: hsl(0 0% 4%) !important;
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   ADF CONTENT TABLE STYLES — Jira rendering parity
+   Scoped to .adf-content wrapper on description / AC fields
+   ═══════════════════════════════════════════════════════════════ */
+
+.adf-content {
+  overflow-x: auto;
+}
+
+.adf-content table {
+  display: table;
+  border-collapse: collapse;
+  width: 100%;
+  margin: 12px 0;
+  font-size: 14px;
+  table-layout: fixed;
+  border: 1px solid #DFE1E6;
+}
+
+.adf-content table th,
+.adf-content table td {
+  border: 1px solid #DFE1E6;
+  padding: 8px 10px;
+  text-align: left;
+  vertical-align: top;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  min-width: 48px;
+  font-size: 14px;
+  line-height: 1.43;
+  color: #172B4D;
+}
+
+.adf-content table th {
+  background-color: #F4F5F7;
+  font-weight: 600;
+  color: #172B4D;
+}
+
+/* Jira places <th> inside <tbody> for row-header columns */
+.adf-content table tbody th {
+  background-color: #F4F5F7;
+  font-weight: 600;
+}
+
+.adf-content table tr:hover td {
+  background-color: #FAFBFC;
+}
+
+/* ── Dark mode ADF tables ── */
+.dark .adf-content table {
+  border-color: #2E2E2E;
+}
+
+.dark .adf-content table th,
+.dark .adf-content table td {
+  border-color: #2E2E2E;
+  color: #EDEDED;
+}
+
+.dark .adf-content table th {
+  background-color: #111111;
+  color: #A1A1A1;
+}
+
+.dark .adf-content table tbody th {
+  background-color: #111111;
+  color: #A1A1A1;
+}
+
+.dark .adf-content table td {
+  background-color: #1A1A1A;
+}
+
+.dark .adf-content table tr:hover td {
+  background-color: #1F1F1F;
+}
