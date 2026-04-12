@@ -1455,7 +1455,8 @@ function PeoplePickerDropdown({ members, selectedId, onSelect }: {
       data-picker-dropdown
       onClick={e => e.stopPropagation()}
       onMouseDown={e => e.stopPropagation()}
-        position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 50,
+      style={{
+        position: 'absolute', top: '100%', left: -6, right: -6, zIndex: 50,
         marginTop: 4, backgroundColor: 'var(--cp-float, #FFFFFF)',
         border: '1px solid var(--divider)', borderRadius: 8,
         boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
