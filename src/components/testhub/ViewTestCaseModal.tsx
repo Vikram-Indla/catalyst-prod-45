@@ -433,11 +433,19 @@ export function ViewTestCaseModal({
   onEdit,
   onClone,
 }: ViewTestCaseModalProps) {
+  const queryClient = useQueryClient();
   const [steps, setSteps] = useState<Step[]>([]);
   const [links, setLinks] = useState<Link[]>([]);
   const [history, setHistory] = useState<VersionHistory[]>([]);
   const [runs, setRuns] = useState<Execution[]>([]);
   const [loading, setLoading] = useState(false);
+
+  // Editable sidebar state (local copies that update optimistically)
+  const [localStatus, setLocalStatus] = useState(testCase?.status || 'draft');
+  const [localPriorityId, setLocalPriorityId] = useState(testCase?.priority_id || null);
+  const [localTypeId, setLocalTypeId] = useState(testCase?.case_type_id || null);
+  const [localOwnerId, setLocalOwnerId] = useState<string | null>((testCase as any)?.created_by || null);
+  const [localAssigneeId, setLocalAssigneeId] = useState<string | null>((testCase as any)?.assigned_to || null);
 
   // Resolved FK display names
   const [priorityName, setPriorityName] = useState<string>('—');
@@ -445,8 +453,75 @@ export function ViewTestCaseModal({
   const [ownerName, setOwnerName] = useState<string>('—');
   const [assigneeName, setAssigneeName] = useState<string>('—');
 
+  // Dropdown open state
+  const [openPicker, setOpenPicker] = useState<string | null>(null);
+
   const [addLinkOpen, setAddLinkOpen] = useState(false);
   const [addLinkType, setAddLinkType] = useState<'requirement' | 'defect' | 'story'>('requirement');
+
+  // Lookup data for pickers
+  const { data: priorities } = useQuery({
+    queryKey: ['tm-case-priorities'],
+    queryFn: async () => {
+      const { data } = await typedQuery('tm_case_priorities').select('id, name').order('sort_order');
+      return (data || []) as { id: string; name: string }[];
+    },
+    enabled: isOpen,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const { data: caseTypes } = useQuery({
+    queryKey: ['tm-case-types'],
+    queryFn: async () => {
+      const { data } = await typedQuery('tm_case_types').select('id, name').order('sort_order');
+      return (data || []) as { id: string; name: string }[];
+    },
+    enabled: isOpen,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const { data: teamMembers } = useQuery({
+    queryKey: ['tm-team-profiles'],
+    queryFn: async () => {
+      const { data } = await supabase.from('profiles').select('id, full_name').order('full_name');
+      return (data || []) as { id: string; full_name: string | null }[];
+    },
+    enabled: isOpen,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  // Sync local state when testCase changes
+  useEffect(() => {
+    if (testCase) {
+      setLocalStatus(testCase.status);
+      setLocalPriorityId(testCase.priority_id || null);
+      setLocalTypeId(testCase.case_type_id || null);
+      setLocalOwnerId((testCase as any)?.created_by || null);
+      setLocalAssigneeId((testCase as any)?.assigned_to || null);
+    }
+  }, [testCase?.id]);
+
+  // Close picker on outside click
+  useEffect(() => {
+    if (!openPicker) return;
+    const handler = () => setOpenPicker(null);
+    document.addEventListener('click', handler);
+    return () => document.removeEventListener('click', handler);
+  }, [openPicker]);
+
+  // Silent auto-save helper
+  const updateField = useCallback(async (field: string, value: any) => {
+    if (!testCase) return;
+    const { error } = await typedQuery('tm_test_cases').update({ [field]: value }).eq('id', testCase.id);
+    if (error) {
+      console.error(`Failed to update ${field}:`, error);
+      toast.error(`Failed to update ${field}`);
+      return;
+    }
+    // Invalidate queries for refresh
+    queryClient.invalidateQueries({ queryKey: ['tm-cases'] });
+    queryClient.invalidateQueries({ queryKey: ['tm-case', testCase.id] });
+  }, [testCase, queryClient]);
 
   useEffect(() => {
     if (isOpen && testCase) {
@@ -492,7 +567,6 @@ export function ViewTestCaseModal({
           .then(({ data }) => { if (data?.full_name) setAssigneeName(data.full_name); })
       );
     } else if (assigneeId && assigneeId === ownerId) {
-      // Will be set from owner lookup
       fkPromises.push(
         Promise.resolve(supabase.from('profiles').select('full_name').eq('id', assigneeId).maybeSingle())
           .then(({ data }) => { if (data?.full_name) setAssigneeName(data.full_name); })
