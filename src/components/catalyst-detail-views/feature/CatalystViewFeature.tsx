@@ -1,9 +1,12 @@
 /**
- * CatalystViewEpic — Epic detail overlay.
+ * CatalystViewFeature — Feature detail overlay.
  *
- * Canonical sections: Title, Description, Activity, Sidebar (status, priority,
- * assignee, reporter, labels, timestamps).
- * Epic-unique: Child issues query + rendering.
+ * Canonical sections: Title, Description, Acceptance Criteria, Priority,
+ * Activity, Sidebar.
+ * Feature-unique: Child issues (stories under this feature).
+ *
+ * Note: Even if no Jira tickets exist yet, this view is ready for when
+ * features are created natively in Catalyst.
  */
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
@@ -20,7 +23,7 @@ import {
   IssueIcon, StatusLozenge,
 } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/shared-components';
 
-export default function CatalystViewEpic({
+export default function CatalystViewFeature({
   isOpen, onClose, itemId, projectId, projectKey,
   onOpenItem, panelMode, onTogglePanelMode, navigationItems, onNavigate,
 }: CatalystViewBaseProps) {
@@ -28,9 +31,9 @@ export default function CatalystViewEpic({
   const { data: issue, isLoading } = useCatalystIssue(itemId, isOpen);
   const mutations = useCatalystIssueMutations(itemId, onClose);
 
-  /* ── EPIC-UNIQUE: child issues query ────── */
+  /* ── FEATURE-UNIQUE: child stories/tasks under this feature ── */
   const { data: childIssues = [] } = useQuery({
-    queryKey: ['cv-epic-children', issue?.issue_key],
+    queryKey: ['cv-feature-children', issue?.issue_key],
     enabled: !!issue?.issue_key && isOpen,
     queryFn: async () => {
       const { data } = await supabase.from('ph_issues')
@@ -47,11 +50,11 @@ export default function CatalystViewEpic({
   const leftContent = (
     <>
       <CatalystTitleEditor issue={issue ?? null} onTitleChange={(t) => mutations.updateField.mutate({ field: 'summary', value: t, oldValue: issue?.summary ?? '' })} />
-      <CatalystParentLinker issue={issue ?? null} itemId={itemId} itemType="epic" projectKey={projectKey} onOpenItem={onOpenItem} />
+      <CatalystParentLinker issue={issue ?? null} itemId={itemId} itemType="feature" projectKey={projectKey} onOpenItem={onOpenItem} />
       <CatalystDescriptionSection issue={issue ?? null} />
       <CatalystAcceptanceCriteria issue={issue ?? null} />
 
-      {/* EPIC-UNIQUE: Child issues */}
+      {/* FEATURE-UNIQUE: Child issues */}
       {childIssues.length > 0 && (
         <div style={{ marginBottom: 24 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
@@ -59,7 +62,7 @@ export default function CatalystViewEpic({
             <span style={{ fontSize: 11, fontWeight: 700, color: '#5E6C84', background: '#F4F5F7', padding: '1px 6px', borderRadius: 3 }}>{childIssues.length}</span>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginLeft: 'auto' }}>
               <div style={{ width: 80, height: 4, borderRadius: 2, background: '#F4F5F7', overflow: 'hidden' }}>
-                <div style={{ width: `${(doneChildren / childIssues.length) * 100}%`, height: '100%', borderRadius: 2, background: '#36B37E' }} />
+                <div style={{ width: `${childIssues.length ? (doneChildren / childIssues.length) * 100 : 0}%`, height: '100%', borderRadius: 2, background: '#36B37E' }} />
               </div>
               <span style={{ fontSize: 11, color: '#5E6C84' }}>{doneChildren} / {childIssues.length}</span>
             </div>
@@ -81,20 +84,20 @@ export default function CatalystViewEpic({
   );
 
   const rightContent = (
-    <CatalystSidebarDetails issue={issue ?? null} itemId={itemId} onStatusChange={(st) => mutations.updateStatus.mutate(st)} onClose={onClose} onDelete={() => mutations.deleteIssue.mutate()} typeLabel="epic">
+    <CatalystSidebarDetails issue={issue ?? null} itemId={itemId} onStatusChange={(st) => mutations.updateStatus.mutate(st)} onClose={onClose} onDelete={() => mutations.deleteIssue.mutate()} typeLabel="feature">
       <CatalystPriorityField issue={issue ?? null} />
     </CatalystSidebarDetails>
   );
 
   return (
     <CatalystViewBase isOpen={isOpen} onClose={onClose} panelMode={panelMode}
-      itemType={issue?.issue_type || 'Epic'} itemKey={issue?.issue_key || null}
+      itemType={issue?.issue_type || 'Feature'} itemKey={issue?.issue_key || null}
       parentKey={issue?.parent_key} parentType="Epic"
       onParentClick={issue?.parent_key ? () => onOpenItem?.(issue.parent_key!) : undefined}
       onShare={() => { navigator.clipboard.writeText(window.location.href); toast.success('Link copied'); }}
       moreMenuItems={[
-        { label: 'Clone epic', onClick: () => toast('Clone — coming soon') },
-        { label: 'Delete epic', onClick: () => mutations.deleteIssue.mutate(), danger: true },
+        { label: 'Clone feature', onClick: () => toast('Clone — coming soon') },
+        { label: 'Delete feature', onClick: () => mutations.deleteIssue.mutate(), danger: true },
       ]}
       onTogglePanelMode={onTogglePanelMode} navigationItems={navigationItems} currentItemId={itemId} onNavigate={onNavigate}
       leftContent={leftContent} rightContent={rightContent} isLoading={isLoading}
