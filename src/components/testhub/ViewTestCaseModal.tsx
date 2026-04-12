@@ -2,16 +2,17 @@
  * ViewTestCaseModal — V15 Rebuild (StoryDetailModal parity)
  * Two-column layout: scrollable left panel + right sidebar (280px)
  * Ghost header, accordion sections, no tabs.
+ * Sidebar fields are inline-editable (Status, Priority, Assigned To, Owner, Type).
  */
-import { useState, useEffect } from 'react';
-import { X, Edit2, Copy, ClipboardList, Paperclip, Link2, History, Play, Plus, Trash2, Bug, BookOpen, MessageSquare, Search, Loader2, GitBranch, ChevronRight, FileText, Settings2, Share2, MoreHorizontal } from 'lucide-react';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { X, Edit2, Copy, ClipboardList, Paperclip, Link2, History, Play, Plus, Trash2, Bug, BookOpen, MessageSquare, Search, Loader2, GitBranch, ChevronRight, FileText, Settings2, Share2, MoreHorizontal, Check } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { PriorityIndicator } from '@/components/shared/PriorityIndicator';
 import { EntityCommentsPanel } from '@/components/testhub/EntityCommentsPanel';
 import { EntityAttachmentsPanel } from '@/components/testhub/EntityAttachmentsPanel';
 import { formatDistanceToNow, format } from 'date-fns';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 interface TestCase {
   id: string;
