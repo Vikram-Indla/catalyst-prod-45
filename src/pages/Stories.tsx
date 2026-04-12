@@ -368,16 +368,14 @@ export default function Stories() {
       </div>
 
       {/* Details Panel */}
-      {detailsOpen && selectedStory && (
-        <Suspense fallback={null}>
-          <CatalystDetailRouter
-            isOpen={detailsOpen}
-            onClose={() => setDetailsOpen(false)}
-            itemId={selectedStory.id}
-            itemType="story"
-          />
-        </Suspense>
-      )}
+      <Suspense fallback={null}>
+        <CatalystDetailRouter
+          isOpen={detailsOpen && !!selectedStory}
+          onClose={() => setDetailsOpen(false)}
+          itemId={selectedStory?.id || ''}
+          itemType="story"
+        />
+      </Suspense>
 
       {/* Create/Edit Dialog */}
       <StoryDialog

@@ -336,16 +336,14 @@ export function FeatureChildStories({ stories, featureId, projectId, totalCount,
       </div>
 
       {/* Story Detail Panel - CatalystDetailRouter */}
-      {selectedStory && (
-        <Suspense fallback={null}>
-          <CatalystDetailRouter
-            isOpen={!!selectedStory}
-            onClose={handleCloseStoryPanel}
-            itemId={selectedStory.id}
-            itemType="story"
-          />
-        </Suspense>
-      )}
+      <Suspense fallback={null}>
+        <CatalystDetailRouter
+          isOpen={!!selectedStory}
+          onClose={handleCloseStoryPanel}
+          itemId={selectedStory?.id || ''}
+          itemType="story"
+        />
+      </Suspense>
 
       {/* Add Story Dialog */}
       <Dialog open={addStoryOpen} onOpenChange={setAddStoryOpen}>
