@@ -799,6 +799,15 @@ export function ViewTestCaseModal({
       setLocalGherkinFeature((testCase as any).gherkin_feature || '');
       setLocalGherkinScenario((testCase as any).gherkin_scenario || '');
 
+      // Hydrate multi-block Gherkin scenarios and Free Text blocks from steps
+      if (uiFormat === 'gherkin') {
+        const stepsData = rawSteps || [];
+        setGherkinScenarios(stepsData.map((s: any) => ({ id: s.id, feature: s.expected_result || '', scenario: s.action || '' })));
+      } else if (uiFormat === 'free_text') {
+        const stepsData = rawSteps || [];
+        setFreeTextBlocks(stepsData.map((s: any) => ({ id: s.id, text: s.action || '' })));
+      }
+
       const requirementLinks: Link[] = await Promise.all(
         rawReqLinks.map(async (l: any) => {
           let key = l.requirement_id || '';
