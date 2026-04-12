@@ -81,8 +81,14 @@ export function CatalystChildWorkItemsTable({
   });
 
   const total = children.length;
-  const doneCount = children.filter(c => c.status_category === 'done').length;
-  const inProgressCount = children.filter(c => c.status_category === 'in_progress').length;
+  const doneCount = children.filter(c => {
+    const cat = (c.status_category || '').toLowerCase();
+    return cat === 'done' || cat === 'complete' || cat === 'completed' || cat === 'closed';
+  }).length;
+  const inProgressCount = children.filter(c => {
+    const cat = (c.status_category || '').toLowerCase();
+    return cat === 'in_progress' || cat === 'inprogress' || cat === 'in progress';
+  }).length;
 
   const invalidateChildren = () =>
     queryClient.invalidateQueries({ queryKey: ['cv-child-items', parentIssueKey] });
@@ -173,35 +179,36 @@ export function CatalystChildWorkItemsTable({
           {/* Progress bar */}
           <SegmentedProgressBar total={total} doneCount={doneCount} inProgressCount={inProgressCount} />
 
-          {/* Table header */}
+          {/* Table header — widths match ChildWorkItemRow */}
           {total > 0 && (
             <div style={{
-              display: 'flex', alignItems: 'center', height: 32, padding: '0 8px',
+              display: 'flex', alignItems: 'center', height: 32, padding: '0 12px',
               borderBottom: '1px solid #EBECF0', borderTop: '1px solid #EBECF0',
             }}>
-              <div style={{ width: 24, flexShrink: 0 }} />
-              <div style={{ width: 90, flexShrink: 0, fontSize: 11, fontWeight: 650, color: '#5E6C84', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              {/* Type icon spacer + Key */}
+              <div style={{ width: 104, flexShrink: 0, fontSize: 11, fontWeight: 600, color: '#6B778C', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 Work
               </div>
-              <div style={{ flex: 1 }} />
+              {/* Summary spacer */}
+              <div style={{ flex: 1, minWidth: 120 }} />
               {columns.assignee && (
-                <div style={{ width: 120, flexShrink: 0, fontSize: 11, fontWeight: 650, color: '#5E6C84', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                <div style={{ width: 140, flexShrink: 0, fontSize: 11, fontWeight: 600, color: '#6B778C', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                   Assignee
                 </div>
               )}
               {columns.status && (
-                <div style={{ width: 140, flexShrink: 0, fontSize: 11, fontWeight: 650, color: '#5E6C84', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                <div style={{ width: 150, flexShrink: 0, fontSize: 11, fontWeight: 600, color: '#6B778C', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                   Status
                 </div>
               )}
               {columns.fixVersions && (
-                <div style={{ width: 120, flexShrink: 0, fontSize: 11, fontWeight: 650, color: '#5E6C84', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                <div style={{ width: 130, flexShrink: 0, fontSize: 11, fontWeight: 600, color: '#6B778C', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                   Fix versions
                 </div>
               )}
               {columns.priority && (
-                <div style={{ width: 32, flexShrink: 0, fontSize: 11, fontWeight: 650, color: '#5E6C84', textTransform: 'uppercase', letterSpacing: '0.04em', textAlign: 'center' }}>
-                  P.
+                <div style={{ width: 28, flexShrink: 0, fontSize: 11, fontWeight: 600, color: '#6B778C', textTransform: 'uppercase', letterSpacing: '0.04em', textAlign: 'center' }}>
+                  P
                 </div>
               )}
             </div>
