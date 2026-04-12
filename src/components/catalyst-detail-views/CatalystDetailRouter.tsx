@@ -59,10 +59,13 @@ export default function CatalystDetailRouter({
 
   const resolved = resolveItemType(itemType || lookedUpType);
 
+  // Don't render anything when closed — prevents lazy component from loading
+  // and avoids "Rendered more hooks" when Suspense swaps from fallback to loaded component
+  if (!isOpen) return null;
+
   // While we're looking up the type, don't render anything
   if (!resolved && !itemType) {
-    if (!isOpen) return null;
-    return null; // brief flash while lookup completes
+    return null;
   }
 
   const sharedProps = {
