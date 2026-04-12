@@ -32,7 +32,7 @@ import {
   ZoomIn,
   ZoomOut,
 } from 'lucide-react';
-import { EpicDetailModal } from '@/components/items/epics/EpicDetailModal';
+import CatalystDetailRouter from '@/components/catalyst-detail-views/CatalystDetailRouter';
 
 /* ---------- types ---------- */
 interface EpicRow {
@@ -458,8 +458,9 @@ export function EpicRoadmap({ programId }: EpicRoadmapProps) {
 
       {/* Epic Detail Modal */}
       {selectedEpic && (
-        <EpicDetailModal
-          epicId={selectedEpic.id}
+        <CatalystDetailRouter
+          itemId={selectedEpic.id}
+          itemType="epic"
           isOpen={!!selectedEpic}
           onClose={() => setSelectedEpicId(null)}
         />

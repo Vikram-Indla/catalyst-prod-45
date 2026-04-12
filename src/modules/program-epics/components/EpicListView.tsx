@@ -25,7 +25,7 @@ import {
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
-import { EpicDetailModal } from '@/components/items/epics/EpicDetailModal';
+import CatalystDetailRouter from '@/components/catalyst-detail-views/CatalystDetailRouter';
 
 interface Epic {
   id: string;
@@ -474,10 +474,11 @@ export function EpicListView({ programId }: EpicListViewProps) {
       </div>
 
       {/* Epic Detail Modal */}
-      <EpicDetailModal 
-        epicId={selectedEpic?.id || null}
+      <CatalystDetailRouter
+        itemId={selectedEpic?.id || ''}
+        itemType="epic"
         isOpen={!!selectedEpic}
-        onClose={() => setSelectedEpic(null)} 
+        onClose={() => setSelectedEpic(null)}
       />
     </div>
   );

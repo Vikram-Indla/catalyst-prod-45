@@ -15,7 +15,7 @@ import { TableView } from './views/TableView';
 import { PageChrome } from '@/components/layout/PageChrome';
 import { useWorkbenchData } from './useWorkbenchData';
 import { startOfQuarter, endOfQuarter, addQuarters } from 'date-fns';
-import { EpicDetailModal } from '@/components/items/epics/EpicDetailModal';
+import CatalystDetailRouter from '@/components/catalyst-detail-views/CatalystDetailRouter';
 import { FeatureDetailsPanel } from '@/components/items/features/FeatureDetailsPanel';
 import { supabase } from '@/integrations/supabase/client';
 import type { Feature } from '@/types/feature.types';
@@ -229,10 +229,11 @@ export default function ExecutionWorkbenchPage() {
       />
 
       {/* Epic Detail Modal */}
-      <EpicDetailModal
+      <CatalystDetailRouter
         isOpen={!!selectedEpicId}
         onClose={() => setSelectedEpicId(null)}
-        epicId={selectedEpicId}
+        itemId={selectedEpicId || ''}
+        itemType="epic"
       />
 
       {/* Feature Details Panel */}
