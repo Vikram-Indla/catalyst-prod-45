@@ -458,21 +458,24 @@ export default function ForYouPage() {
               ...filteredGroupedItems.EARLIER,
             ]}
             filterSlot={
-              <div style={{ position: 'relative' }}>
-                <FilterTriggerButton
-                  count={advancedFilterCount}
-                  onClick={() => setFilterPanelOpen(v => !v)}
-                  isOpen={filterPanelOpen}
-                />
-                {filterPanelOpen && (
-                  <JiraBasicFilter
-                    categories={filterCategories}
-                    selected={advancedFilters}
-                    onSelectionChange={handleAdvancedFilterChange}
-                    onClearAll={handleClearAllFilters}
-                    onClose={handleCloseFilterPanel}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div style={{ position: 'relative' }}>
+                  <FilterTriggerButton
+                    count={advancedFilterCount}
+                    onClick={() => setFilterPanelOpen(v => !v)}
+                    isOpen={filterPanelOpen}
                   />
-                )}
+                  {filterPanelOpen && (
+                    <JiraBasicFilter
+                      categories={filterCategories}
+                      selected={advancedFilters}
+                      onSelectionChange={handleAdvancedFilterChange}
+                      onClearAll={handleClearAllFilters}
+                      onClose={handleCloseFilterPanel}
+                    />
+                  )}
+                </div>
+                <ForYouGroupByPopover value={fyGroupBy} onChange={setFyGroupBy} />
               </div>
             }
           />
@@ -485,6 +488,7 @@ export default function ForYouPage() {
           <>
             <ForYouTable
               groupedItems={filteredGroupedItems}
+              customGroups={fyCustomGroups}
               onRowClick={handleRowClick}
               selectedIds={selectedIds}
               onSelectionChange={setSelectedIds}
