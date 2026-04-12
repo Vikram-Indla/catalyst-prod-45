@@ -488,7 +488,7 @@ export function ViewTestCaseModal({
   const { data: caseTypes } = useQuery({
     queryKey: ['tm-case-types'],
     queryFn: async () => {
-      const { data } = await typedQuery('tm_case_types').select('id, name').order('sort_order');
+      const { data } = await typedQuery('tm_case_types').select('id, name').order('name');
       return (data || []) as { id: string; name: string }[];
     },
     enabled: isOpen,
@@ -1461,22 +1461,26 @@ export function ViewTestCaseModal({
                     </ClickableField>
                   )}
                   dropdown={
-                    <>
-                      {(caseTypes || []).map(t => (
-                        <PickerOption
-                          key={t.id}
-                          selected={localTypeId === t.id}
-                          onClick={() => {
-                            setLocalTypeId(t.id);
-                            setTypeName(t.name);
-                            setOpenPicker(null);
-                            updateField('case_type_id', t.id);
-                          }}
-                        >
-                          <span style={{ fontSize: 13, color: 'var(--fg-1)' }}>{t.name}</span>
-                        </PickerOption>
-                      ))}
-                    </>
+                    (caseTypes && caseTypes.length > 0) ? (
+                      <>
+                        {caseTypes.map(t => (
+                          <PickerOption
+                            key={t.id}
+                            selected={localTypeId === t.id}
+                            onClick={() => {
+                              setLocalTypeId(t.id);
+                              setTypeName(t.name);
+                              setOpenPicker(null);
+                              updateField('case_type_id', t.id);
+                            }}
+                          >
+                            <span style={{ fontSize: 13, color: 'var(--fg-1)' }}>{t.name}</span>
+                          </PickerOption>
+                        ))}
+                      </>
+                    ) : (
+                      <div style={{ padding: '8px 12px', fontSize: 13, color: 'var(--fg-4)' }}>Loading…</div>
+                    )
                   }
                 />
               </SidebarField>
