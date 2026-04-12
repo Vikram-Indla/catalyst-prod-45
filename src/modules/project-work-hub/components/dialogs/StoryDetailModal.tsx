@@ -64,6 +64,41 @@ import { adfToHtml, tryAdfStringToHtml } from '../../utils/adfToHtml';
 import { AdfDescriptionRenderer } from '../AdfDescriptionRenderer';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 
+/* ─── Resolve media slot placeholders to <img> tags for TipTap editor ─── */
+function resolveMediaSlotsForEditor(
+  html: string,
+  attachments: Array<{ jira_attachment_id: string; filename: string; mime_type: string | null; content_url: string; thumbnail_url: string | null; local_public_url: string | null }>,
+): string {
+  if (!html || !html.includes('data-adf-media-id')) return html;
+  const supabaseUrl = (import.meta as any).env?.VITE_SUPABASE_URL || '';
+  const urlMap = new Map<string, string>();
+  for (const att of attachments) {
+    if (!att.mime_type?.startsWith('image/')) continue;
+    let url = '';
+    if (att.local_public_url) {
+      url = att.local_public_url;
+    } else if (att.jira_attachment_id && supabaseUrl) {
+      url = `${supabaseUrl}/functions/v1/jira-attachment-proxy?id=${att.jira_attachment_id}`;
+    } else {
+      url = att.content_url || att.thumbnail_url || '';
+    }
+    if (url) {
+      urlMap.set(att.jira_attachment_id, url);
+      urlMap.set(att.filename, url);
+    }
+  }
+  return html.replace(
+    /<div\s+data-adf-media-id="([^"]*)"\s*data-adf-media-filename="([^"]*)"\s*class="adf-media-slot"\s*><\/div>/g,
+    (_, mediaId, filename) => {
+      const url = urlMap.get(mediaId) || urlMap.get(filename);
+      if (url) {
+        return `<img src="${url}" alt="${filename || 'attachment'}" style="max-width:100%;border-radius:4px;margin:8px 0;display:block" />`;
+      }
+      return '';
+    },
+  );
+}
+
 /* ═══════════════════════════════════════════════
    ANIMATIONS
    ═══════════════════════════════════════════════ */
@@ -193,6 +228,21 @@ export default function StoryDetailModal({
       const { data } = await supabase.from('ph_attachments').select('id, work_item_id, file_name, file_size, mime_type, storage_path, uploaded_by, created_at').eq('work_item_id', itemId).order('created_at', { ascending: false });
       return (data ?? []) as unknown as PhAttachment[];
     },
+  });
+
+  // Jira-synced attachments (ph_issue_attachments) — needed to resolve media slots in description editor
+  const { data: issueAttachments = [] } = useQuery({
+    queryKey: ['ph-issue-attachments', issue?.issue_key],
+    enabled: !!issue?.issue_key && isOpen,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('ph_issue_attachments')
+        .select('id, issue_key, jira_attachment_id, filename, mime_type, content_url, thumbnail_url, local_public_url, local_storage_path')
+        .eq('issue_key', issue!.issue_key)
+        .order('jira_created_at', { ascending: true });
+      return (data ?? []) as Array<{ id: string; issue_key: string; jira_attachment_id: string; filename: string; mime_type: string | null; content_url: string; thumbnail_url: string | null; local_public_url: string | null; local_storage_path: string | null }>;
+    },
+    staleTime: 60000,
   });
 
   // Team members for @mention
@@ -1117,7 +1167,7 @@ export default function StoryDetailModal({
                           }}
                           >
                             <StoryRichTextEditor
-                              content={adfToHtml(issue?.description_adf) || issue?.description_text || ''}
+                              content={resolveMediaSlotsForEditor(adfToHtml(issue?.description_adf) || issue?.description_text || '', issueAttachments)}
                               workItemId={itemId}
                               onSave={(html) => {
                                 updateFieldMutation.mutate({ field: 'description_text', value: html, oldValue: issue?.description_text ?? '' });
