@@ -23,6 +23,8 @@ export interface CatalystViewBaseProps {
   projectKey?: string;
   onOpenItem?: (itemId: string) => void;
   panelMode?: boolean;
+  /** Full-page mode: no overlay/modal chrome, fills viewport below top nav */
+  fullPageMode?: boolean;
   onTogglePanelMode?: () => void;
   navigationItems?: { id: string; summary: string; issue_key?: string }[];
   onNavigate?: (itemId: string) => void;

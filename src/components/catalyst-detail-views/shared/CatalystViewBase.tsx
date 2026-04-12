@@ -13,7 +13,8 @@
  * renders its own content into the left/right slots.
  */
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { X, Share2, MoreHorizontal } from 'lucide-react';
+import { useNavigate, Link } from 'react-router-dom';
+import { X, Share2, MoreHorizontal, ArrowLeft } from 'lucide-react';
 import { toast } from 'sonner';
 import { IssueIcon, Skel } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/shared-components';
 
@@ -42,10 +43,13 @@ export interface CatalystViewBaseLayoutProps {
   isOpen: boolean;
   onClose: () => void;
   panelMode?: boolean;
+  /** Full-page mode: no overlay/modal chrome, fills viewport below top nav */
+  fullPageMode?: boolean;
 
   /* Breadcrumb */
   itemType: string;
   itemKey: string | null;
+  projectKey?: string;
   parentKey?: string | null;
   parentType?: string;
   onParentClick?: () => void;
@@ -73,8 +77,8 @@ export interface CatalystViewBaseLayoutProps {
    COMPONENT
    ═══════════════════════════════════════════ */
 export function CatalystViewBase({
-  isOpen, onClose, panelMode,
-  itemType, itemKey, parentKey, parentType, onParentClick, breadcrumbExtra,
+  isOpen, onClose, panelMode, fullPageMode,
+  itemType, itemKey, projectKey, parentKey, parentType, onParentClick, breadcrumbExtra,
   onShare, moreMenuItems,
   onTogglePanelMode, navigationItems, currentItemId, onNavigate,
   leftContent, rightContent,
@@ -116,12 +120,12 @@ export function CatalystViewBase({
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         if (showDotsMenu) { setShowDotsMenu(false); return; }
-        onClose();
+        if (!fullPageMode) onClose();
       }
     };
     document.addEventListener('keydown', handleEscape);
     return () => document.removeEventListener('keydown', handleEscape);
-  }, [isOpen, showDotsMenu, onClose]);
+  }, [isOpen, showDotsMenu, onClose, fullPageMode]);
 
   if (!isOpen) return null;
 
@@ -133,7 +137,10 @@ export function CatalystViewBase({
   const navNext = () => { if (canNavNext && navigationItems) onNavigate?.(navigationItems[currentNavIndex + 1].id); };
 
   /* ── Styles ─────────────────────────────── */
-  const OVERLAY: React.CSSProperties = panelMode ? {
+  const OVERLAY: React.CSSProperties = fullPageMode ? {
+    position: 'relative', width: '100%', height: '100%',
+    display: 'flex', flexDirection: 'column',
+  } : panelMode ? {
     position: 'relative', width: '100%', height: '100%',
     display: 'flex', flexDirection: 'column',
   } : {
@@ -144,7 +151,10 @@ export function CatalystViewBase({
     animation: 'cv-overlay-in 200ms ease-out',
   };
 
-  const MODAL: React.CSSProperties = panelMode ? {
+  const MODAL: React.CSSProperties = fullPageMode ? {
+    width: '100%', height: '100%', background: '#FFFFFF',
+    display: 'flex', flexDirection: 'column', overflow: 'hidden',
+  } : panelMode ? {
     width: '100%', height: '100%', background: '#FFFFFF',
     display: 'flex', flexDirection: 'column', overflow: 'hidden',
     animation: 'cv-panel-in 200ms ease-out',
@@ -169,15 +179,29 @@ export function CatalystViewBase({
     fontFamily: 'Inter, sans-serif', textAlign: 'left',
   };
 
+  /* ── Navigation (full-page back) ─────────── */
+  const navigate = useNavigate();
+  const handleBack = useCallback(() => {
+    if (fullPageMode && projectKey) {
+      navigate(`/project-hub/${projectKey}/list`);
+    } else {
+      onClose();
+    }
+  }, [fullPageMode, projectKey, navigate, onClose]);
+
   /* ── Share handler ──────────────────────── */
   const handleShare = useCallback(() => {
     if (onShare) { onShare(); return; }
-    navigator.clipboard.writeText(window.location.href);
+    if (fullPageMode && itemKey && projectKey) {
+      navigator.clipboard.writeText(`${window.location.origin}/project-hub/${projectKey}/issue/${itemKey}`);
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+    }
     toast.success('Link copied to clipboard');
-  }, [onShare]);
+  }, [onShare, fullPageMode, itemKey, projectKey]);
 
   return (
-    <div style={OVERLAY} onClick={panelMode ? undefined : onClose}>
+    <div style={OVERLAY} onClick={panelMode || fullPageMode ? undefined : onClose}>
       <div data-cv-scope style={MODAL} onClick={e => e.stopPropagation()}>
 
         {/* ── A. TOP BAR ─────────────────────────── */}
@@ -187,6 +211,18 @@ export function CatalystViewBase({
         }}>
           {/* Breadcrumb */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: '#5E6C84', minWidth: 0 }}>
+            {/* Full-page back button */}
+            {fullPageMode && (
+              <button onClick={handleBack} style={{
+                ...hoverBtn, padding: '4px 6px', marginRight: 4,
+              }}
+                onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
+                onMouseLeave={e => (e.currentTarget.style.background = 'none')}
+                title="Back to list"
+              >
+                <ArrowLeft size={16} />
+              </button>
+            )}
             {parentKey && (
               <>
                 <IssueIcon type={parentType || 'Epic'} size={14} />
@@ -200,9 +236,21 @@ export function CatalystViewBase({
             {breadcrumbExtra}
             {!parentKey && !breadcrumbExtra && null}
             <IssueIcon type={itemType} size={14} />
-            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 500, color: '#5E6C84' }}>
-              {itemKey ?? '—'}
-            </span>
+            {!fullPageMode && itemKey && projectKey ? (
+              <Link
+                to={`/project-hub/${projectKey}/issue/${itemKey}`}
+                style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 500, color: '#5E6C84', textDecoration: 'none' }}
+                onMouseEnter={e => { e.currentTarget.style.color = '#2563EB'; e.currentTarget.style.textDecoration = 'underline'; }}
+                onMouseLeave={e => { e.currentTarget.style.color = '#5E6C84'; e.currentTarget.style.textDecoration = 'none'; }}
+                title="Open full page view"
+              >
+                {itemKey}
+              </Link>
+            ) : (
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: fullPageMode ? 600 : 500, color: fullPageMode ? '#344054' : '#5E6C84' }}>
+                {itemKey ?? '—'}
+              </span>
+            )}
           </div>
 
           {/* Right actions */}
@@ -243,8 +291,8 @@ export function CatalystViewBase({
               </div>
             )}
 
-            {/* Panel toggle */}
-            {onTogglePanelMode && (
+            {/* Panel toggle — hidden in full-page mode */}
+            {onTogglePanelMode && !fullPageMode && (
               <button onClick={onTogglePanelMode} title={panelMode ? 'Show as modal' : 'Show as side panel'} style={hoverBtn}
                 onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
                 onMouseLeave={e => (e.currentTarget.style.background = 'none')}
@@ -282,11 +330,13 @@ export function CatalystViewBase({
               </div>
             )}
 
-            {/* Close */}
-            <button onClick={onClose} style={{ ...hoverBtn, fontSize: 16 }}
-              onMouseEnter={e => { e.currentTarget.style.background = '#FFEBE6'; e.currentTarget.style.color = '#DE350B'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = '#5E6C84'; }}
-            ><X size={16} /></button>
+            {/* Close — hidden in full-page mode (back button replaces it) */}
+            {!fullPageMode && (
+              <button onClick={onClose} style={{ ...hoverBtn, fontSize: 16 }}
+                onMouseEnter={e => { e.currentTarget.style.background = '#FFEBE6'; e.currentTarget.style.color = '#DE350B'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = '#5E6C84'; }}
+              ><X size={16} /></button>
+            )}
           </div>
         </div>
 

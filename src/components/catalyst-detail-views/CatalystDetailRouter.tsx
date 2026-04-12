@@ -38,7 +38,7 @@ function resolveItemType(raw: string | undefined | null): 'story' | 'epic' | 'fe
 export default function CatalystDetailRouter({
   isOpen, onClose, itemId, itemType,
   projectId, projectKey, onOpenItem,
-  panelMode, onTogglePanelMode, navigationItems, onNavigate,
+  panelMode, fullPageMode, onTogglePanelMode, navigationItems, onNavigate,
 }: CatalystDetailRouterProps) {
 
   // Only query if itemType is not provided
@@ -71,7 +71,7 @@ export default function CatalystDetailRouter({
   const sharedProps = {
     isOpen, onClose, itemId,
     projectId, projectKey, onOpenItem,
-    panelMode, onTogglePanelMode, navigationItems, onNavigate,
+    panelMode, fullPageMode, onTogglePanelMode, navigationItems, onNavigate,
   };
 
   return (

@@ -16,7 +16,7 @@ import type { CatalystViewBaseProps } from '../shared/types';
 
 export default function CatalystViewEpic({
   isOpen, onClose, itemId, projectId, projectKey,
-  onOpenItem, panelMode, onTogglePanelMode, navigationItems, onNavigate,
+  onOpenItem, panelMode, fullPageMode, onTogglePanelMode, navigationItems, onNavigate,
 }: CatalystViewBaseProps) {
 
   const { data: issue, isLoading } = useCatalystIssue(itemId, isOpen);
@@ -47,8 +47,9 @@ export default function CatalystViewEpic({
   );
 
   return (
-    <CatalystViewBase isOpen={isOpen} onClose={onClose} panelMode={panelMode}
+    <CatalystViewBase isOpen={isOpen} onClose={onClose} panelMode={panelMode} fullPageMode={fullPageMode}
       itemType={issue?.issue_type || 'Epic'} itemKey={issue?.issue_key || null}
+      projectKey={issue?.project_key || projectKey}
       parentKey={issue?.parent_key} parentType="Epic"
       onParentClick={issue?.parent_key ? () => onOpenItem?.(issue.parent_key!) : undefined}
       onShare={() => { navigator.clipboard.writeText(window.location.href); toast.success('Link copied'); }}
