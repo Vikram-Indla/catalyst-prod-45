@@ -2,16 +2,17 @@
  * ViewTestCaseModal — V15 Rebuild (StoryDetailModal parity)
  * Two-column layout: scrollable left panel + right sidebar (280px)
  * Ghost header, accordion sections, no tabs.
+ * Sidebar fields are inline-editable (Status, Priority, Assigned To, Owner, Type).
  */
-import { useState, useEffect } from 'react';
-import { X, Edit2, Copy, ClipboardList, Paperclip, Link2, History, Play, Plus, Trash2, Bug, BookOpen, MessageSquare, Search, Loader2, GitBranch, ChevronRight, FileText, Settings2, Share2, MoreHorizontal } from 'lucide-react';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { X, Edit2, Copy, ClipboardList, Paperclip, Link2, History, Play, Plus, Trash2, Bug, BookOpen, MessageSquare, Search, Loader2, GitBranch, ChevronRight, FileText, Settings2, Share2, MoreHorizontal, Check } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { PriorityIndicator } from '@/components/shared/PriorityIndicator';
 import { EntityCommentsPanel } from '@/components/testhub/EntityCommentsPanel';
 import { EntityAttachmentsPanel } from '@/components/testhub/EntityAttachmentsPanel';
 import { formatDistanceToNow, format } from 'date-fns';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 interface TestCase {
   id: string;
@@ -432,11 +433,19 @@ export function ViewTestCaseModal({
   onEdit,
   onClone,
 }: ViewTestCaseModalProps) {
+  const queryClient = useQueryClient();
   const [steps, setSteps] = useState<Step[]>([]);
   const [links, setLinks] = useState<Link[]>([]);
   const [history, setHistory] = useState<VersionHistory[]>([]);
   const [runs, setRuns] = useState<Execution[]>([]);
   const [loading, setLoading] = useState(false);
+
+  // Editable sidebar state (local copies that update optimistically)
+  const [localStatus, setLocalStatus] = useState(testCase?.status || 'draft');
+  const [localPriorityId, setLocalPriorityId] = useState(testCase?.priority_id || null);
+  const [localTypeId, setLocalTypeId] = useState(testCase?.case_type_id || null);
+  const [localOwnerId, setLocalOwnerId] = useState<string | null>((testCase as any)?.created_by || null);
+  const [localAssigneeId, setLocalAssigneeId] = useState<string | null>((testCase as any)?.assigned_to || null);
 
   // Resolved FK display names
   const [priorityName, setPriorityName] = useState<string>('—');
@@ -444,8 +453,75 @@ export function ViewTestCaseModal({
   const [ownerName, setOwnerName] = useState<string>('—');
   const [assigneeName, setAssigneeName] = useState<string>('—');
 
+  // Dropdown open state
+  const [openPicker, setOpenPicker] = useState<string | null>(null);
+
   const [addLinkOpen, setAddLinkOpen] = useState(false);
   const [addLinkType, setAddLinkType] = useState<'requirement' | 'defect' | 'story'>('requirement');
+
+  // Lookup data for pickers
+  const { data: priorities } = useQuery({
+    queryKey: ['tm-case-priorities'],
+    queryFn: async () => {
+      const { data } = await typedQuery('tm_case_priorities').select('id, name').order('sort_order');
+      return (data || []) as { id: string; name: string }[];
+    },
+    enabled: isOpen,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const { data: caseTypes } = useQuery({
+    queryKey: ['tm-case-types'],
+    queryFn: async () => {
+      const { data } = await typedQuery('tm_case_types').select('id, name').order('sort_order');
+      return (data || []) as { id: string; name: string }[];
+    },
+    enabled: isOpen,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const { data: teamMembers } = useQuery({
+    queryKey: ['tm-team-profiles'],
+    queryFn: async () => {
+      const { data } = await supabase.from('profiles').select('id, full_name').order('full_name');
+      return (data || []) as { id: string; full_name: string | null }[];
+    },
+    enabled: isOpen,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  // Sync local state when testCase changes
+  useEffect(() => {
+    if (testCase) {
+      setLocalStatus(testCase.status);
+      setLocalPriorityId(testCase.priority_id || null);
+      setLocalTypeId(testCase.case_type_id || null);
+      setLocalOwnerId((testCase as any)?.created_by || null);
+      setLocalAssigneeId((testCase as any)?.assigned_to || null);
+    }
+  }, [testCase?.id]);
+
+  // Close picker on outside click
+  useEffect(() => {
+    if (!openPicker) return;
+    const handler = () => setOpenPicker(null);
+    document.addEventListener('click', handler);
+    return () => document.removeEventListener('click', handler);
+  }, [openPicker]);
+
+  // Silent auto-save helper
+  const updateField = useCallback(async (field: string, value: any) => {
+    if (!testCase) return;
+    const { error } = await typedQuery('tm_test_cases').update({ [field]: value }).eq('id', testCase.id);
+    if (error) {
+      console.error(`Failed to update ${field}:`, error);
+      toast.error(`Failed to update ${field}`);
+      return;
+    }
+    // Invalidate queries for refresh
+    queryClient.invalidateQueries({ queryKey: ['tm-cases'] });
+    queryClient.invalidateQueries({ queryKey: ['tm-case', testCase.id] });
+  }, [testCase, queryClient]);
 
   useEffect(() => {
     if (isOpen && testCase) {
@@ -491,7 +567,6 @@ export function ViewTestCaseModal({
           .then(({ data }) => { if (data?.full_name) setAssigneeName(data.full_name); })
       );
     } else if (assigneeId && assigneeId === ownerId) {
-      // Will be set from owner lookup
       fkPromises.push(
         Promise.resolve(supabase.from('profiles').select('full_name').eq('id', assigneeId).maybeSingle())
           .then(({ data }) => { if (data?.full_name) setAssigneeName(data.full_name); })
@@ -659,8 +734,14 @@ export function ViewTestCaseModal({
   const defectLinks = links.filter(l => l.link_type === 'defect');
   const storyLinks = links.filter(l => l.link_type === 'story');
 
-  const statusPill = STATUS_PILL[testCase.status] || STATUS_PILL.draft;
-  const statusBtnBg = STATUS_BTN[testCase.status] || STATUS_BTN.draft;
+  const statusPill = STATUS_PILL[localStatus] || STATUS_PILL.draft;
+  const statusBtnBg = STATUS_BTN[localStatus] || STATUS_BTN.draft;
+
+  // Resolved display names from lookup data
+  const resolvedPriorityName = priorities?.find(p => p.id === localPriorityId)?.name || priorityName;
+  const resolvedTypeName = caseTypes?.find(t => t.id === localTypeId)?.name || typeName;
+  const resolvedOwnerName = teamMembers?.find(m => m.id === localOwnerId)?.full_name || ownerName;
+  const resolvedAssigneeName = teamMembers?.find(m => m.id === localAssigneeId)?.full_name || assigneeName;
 
   const handleCopyKey = () => {
     navigator.clipboard.writeText(testCase.case_key);
@@ -945,52 +1026,155 @@ export function ViewTestCaseModal({
             padding: '14px 16px',
             background: 'var(--bg-1)',
           }}>
-            {/* STATUS BUTTON — full-width colored */}
-            <button
-              style={{
-                width: '100%', padding: '8px 0', borderRadius: 6, border: 'none',
-                background: statusBtnBg, color: '#FFFFFF',
-                fontSize: 11, fontWeight: 700, textTransform: 'uppercase' as const,
-                letterSpacing: '0.05em', textAlign: 'center', cursor: 'pointer',
-                transition: 'opacity 150ms', marginBottom: 12,
-              }}
-              onMouseEnter={e => { e.currentTarget.style.opacity = '0.85'; }}
-              onMouseLeave={e => { e.currentTarget.style.opacity = '1'; }}
-            >
-              {testCase.status}
-            </button>
+            {/* STATUS BUTTON — clickable dropdown */}
+            <div style={{ position: 'relative', marginBottom: 12 }}>
+              <button
+                onClick={(e) => { e.stopPropagation(); setOpenPicker(openPicker === 'status' ? null : 'status'); }}
+                style={{
+                  width: '100%', padding: '8px 0', borderRadius: 6, border: 'none',
+                  background: statusBtnBg, color: '#FFFFFF',
+                  fontSize: 11, fontWeight: 700, textTransform: 'uppercase' as const,
+                  letterSpacing: '0.05em', textAlign: 'center', cursor: 'pointer',
+                  transition: 'opacity 150ms',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.opacity = '0.85'; }}
+                onMouseLeave={e => { e.currentTarget.style.opacity = '1'; }}
+              >
+                {localStatus}
+              </button>
+              {openPicker === 'status' && (
+                <PickerDropdown>
+                  {['draft', 'ready', 'approved', 'deprecated'].map(s => (
+                    <PickerOption
+                      key={s}
+                      selected={localStatus === s}
+                      onClick={() => {
+                        setLocalStatus(s);
+                        setOpenPicker(null);
+                        updateField('status', s);
+                      }}
+                    >
+                      <span style={{
+                        display: 'inline-block', height: 20, lineHeight: '20px', fontSize: 11,
+                        fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.03em',
+                        borderRadius: 3, padding: '0 6px',
+                        background: (STATUS_PILL[s] || STATUS_PILL.draft).bg,
+                        color: (STATUS_PILL[s] || STATUS_PILL.draft).color,
+                      }}>{s}</span>
+                    </PickerOption>
+                  ))}
+                </PickerDropdown>
+              )}
+            </div>
 
-            {/* PINNED FIELDS */}
+            {/* PINNED FIELDS — all inline-editable */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12, paddingBottom: 12 }}>
+
+              {/* Owner */}
               <SidebarField label="Owner">
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  {ownerName !== '—' ? (
-                    <><MiniAvatar name={ownerName} size={22} /><span style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg-1)' }}>{ownerName}</span></>
-                  ) : (
-                    <span style={{ fontSize: 13, color: 'var(--fg-4)' }}>Unassigned</span>
+                <div style={{ position: 'relative' }}>
+                  <ClickableField onClick={(e) => { e.stopPropagation(); setOpenPicker(openPicker === 'owner' ? null : 'owner'); }}>
+                    {resolvedOwnerName !== '—' ? (
+                      <><MiniAvatar name={resolvedOwnerName} size={22} /><span style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg-1)' }}>{resolvedOwnerName}</span></>
+                    ) : (
+                      <span style={{ fontSize: 13, color: 'var(--fg-4)' }}>Unassigned</span>
+                    )}
+                  </ClickableField>
+                  {openPicker === 'owner' && (
+                    <PeoplePickerDropdown
+                      members={teamMembers || []}
+                      selectedId={localOwnerId}
+                      onSelect={(id, name) => {
+                        setLocalOwnerId(id);
+                        setOwnerName(name || '—');
+                        setOpenPicker(null);
+                        updateField('created_by', id);
+                      }}
+                    />
                   )}
                 </div>
               </SidebarField>
 
+              {/* Assigned To */}
               <SidebarField label="Assigned To">
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  {assigneeName !== '—' ? (
-                    <><MiniAvatar name={assigneeName} size={22} /><span style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg-1)' }}>{assigneeName}</span></>
-                  ) : (
-                    <span style={{ fontSize: 13, color: 'var(--fg-4)' }}>Unassigned</span>
+                <div style={{ position: 'relative' }}>
+                  <ClickableField onClick={(e) => { e.stopPropagation(); setOpenPicker(openPicker === 'assignee' ? null : 'assignee'); }}>
+                    {resolvedAssigneeName !== '—' ? (
+                      <><MiniAvatar name={resolvedAssigneeName} size={22} /><span style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg-1)' }}>{resolvedAssigneeName}</span></>
+                    ) : (
+                      <span style={{ fontSize: 13, color: 'var(--fg-4)' }}>Unassigned</span>
+                    )}
+                  </ClickableField>
+                  {openPicker === 'assignee' && (
+                    <PeoplePickerDropdown
+                      members={teamMembers || []}
+                      selectedId={localAssigneeId}
+                      onSelect={(id, name) => {
+                        setLocalAssigneeId(id);
+                        setAssigneeName(name || '—');
+                        setOpenPicker(null);
+                        updateField('assigned_to', id);
+                      }}
+                    />
                   )}
                 </div>
               </SidebarField>
 
+              {/* Priority */}
               <SidebarField label="Priority">
-                {priorityName !== '—'
-                  ? <PriorityIndicator priority={priorityName} fontSize={12} />
-                  : <span style={{ fontSize: 13, color: 'var(--fg-4)' }}>None</span>
-                }
+                <div style={{ position: 'relative' }}>
+                  <ClickableField onClick={(e) => { e.stopPropagation(); setOpenPicker(openPicker === 'priority' ? null : 'priority'); }}>
+                    {resolvedPriorityName !== '—'
+                      ? <PriorityIndicator priority={resolvedPriorityName} fontSize={12} />
+                      : <span style={{ fontSize: 13, color: 'var(--fg-4)' }}>None</span>
+                    }
+                  </ClickableField>
+                  {openPicker === 'priority' && (
+                    <PickerDropdown>
+                      {(priorities || []).map(p => (
+                        <PickerOption
+                          key={p.id}
+                          selected={localPriorityId === p.id}
+                          onClick={() => {
+                            setLocalPriorityId(p.id);
+                            setPriorityName(p.name);
+                            setOpenPicker(null);
+                            updateField('priority_id', p.id);
+                          }}
+                        >
+                          <PriorityIndicator priority={p.name} fontSize={12} />
+                        </PickerOption>
+                      ))}
+                    </PickerDropdown>
+                  )}
+                </div>
               </SidebarField>
 
+              {/* Type */}
               <SidebarField label="Type">
-                <span style={{ fontSize: 13, fontWeight: 400, color: 'var(--fg-1)' }}>{typeName}</span>
+                <div style={{ position: 'relative' }}>
+                  <ClickableField onClick={(e) => { e.stopPropagation(); setOpenPicker(openPicker === 'type' ? null : 'type'); }}>
+                    <span style={{ fontSize: 13, fontWeight: 400, color: 'var(--fg-1)' }}>{resolvedTypeName}</span>
+                  </ClickableField>
+                  {openPicker === 'type' && (
+                    <PickerDropdown>
+                      {(caseTypes || []).map(t => (
+                        <PickerOption
+                          key={t.id}
+                          selected={localTypeId === t.id}
+                          onClick={() => {
+                            setLocalTypeId(t.id);
+                            setTypeName(t.name);
+                            setOpenPicker(null);
+                            updateField('case_type_id', t.id);
+                          }}
+                        >
+                          <span style={{ fontSize: 13, color: 'var(--fg-1)' }}>{t.name}</span>
+                        </PickerOption>
+                      ))}
+                    </PickerDropdown>
+                  )}
+                </div>
               </SidebarField>
             </div>
 
@@ -1077,6 +1261,122 @@ function MiniAvatar({ name, size = 22 }: { name: string; size?: number }) {
       backgroundColor: colors[Math.abs(hash) % colors.length],
     }}>
       {initials}
+    </div>
+  );
+}
+
+// ─── Inline Picker Primitives ─────────────────────────────
+function ClickableField({ onClick, children }: { onClick: (e: React.MouseEvent) => void; children: React.ReactNode }) {
+  return (
+    <div
+      onClick={onClick}
+      style={{
+        display: 'flex', alignItems: 'center', gap: 8,
+        padding: '4px 6px', borderRadius: 4, cursor: 'pointer',
+        border: '1px solid transparent', transition: 'all 120ms',
+        marginLeft: -6,
+      }}
+      onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,0,0,0.04)'; e.currentTarget.style.borderColor = 'var(--divider)'; }}
+      onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = 'transparent'; }}
+    >
+      {children}
+    </div>
+  );
+}
+
+function PickerDropdown({ children }: { children: React.ReactNode }) {
+  return (
+    <div
+      onClick={e => e.stopPropagation()}
+      style={{
+        position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 50,
+        marginTop: 4, backgroundColor: 'var(--cp-float, #FFFFFF)',
+        border: '1px solid var(--divider)', borderRadius: 8,
+        boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
+        padding: 4, maxHeight: 240, overflowY: 'auto',
+        minWidth: 180,
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
+function PickerOption({ selected, onClick, children }: { selected: boolean; onClick: () => void; children: React.ReactNode }) {
+  return (
+    <div
+      onClick={onClick}
+      style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        gap: 8, padding: '6px 8px', borderRadius: 4, cursor: 'pointer',
+        background: selected ? 'rgba(37,99,235,0.08)' : 'transparent',
+        transition: 'background 120ms',
+      }}
+      onMouseEnter={e => { if (!selected) e.currentTarget.style.background = 'rgba(0,0,0,0.04)'; }}
+      onMouseLeave={e => { if (!selected) e.currentTarget.style.background = 'transparent'; }}
+    >
+      {children}
+      {selected && <Check style={{ width: 14, height: 14, color: '#2563EB', flexShrink: 0 }} />}
+    </div>
+  );
+}
+
+function PeoplePickerDropdown({ members, selectedId, onSelect }: {
+  members: { id: string; full_name: string | null }[];
+  selectedId: string | null;
+  onSelect: (id: string | null, name: string | null) => void;
+}) {
+  const [search, setSearch] = useState('');
+  const filtered = members.filter(m =>
+    m.full_name && m.full_name.toLowerCase().includes(search.toLowerCase())
+  );
+
+  return (
+    <div
+      onClick={e => e.stopPropagation()}
+      style={{
+        position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 50,
+        marginTop: 4, backgroundColor: 'var(--cp-float, #FFFFFF)',
+        border: '1px solid var(--divider)', borderRadius: 8,
+        boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
+        padding: 4, maxHeight: 280, display: 'flex', flexDirection: 'column',
+        minWidth: 200,
+      }}
+    >
+      <div style={{ padding: '4px 4px 6px' }}>
+        <input
+          type="text"
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          placeholder="Search..."
+          autoFocus
+          style={{
+            width: '100%', height: 32, padding: '0 8px', fontSize: 13,
+            fontFamily: "'Inter', sans-serif",
+            border: '1px solid var(--divider)', borderRadius: 6,
+            outline: 'none', boxSizing: 'border-box',
+            background: 'var(--cp-float, #FFFFFF)', color: 'var(--fg-1)',
+          }}
+          onClick={e => e.stopPropagation()}
+        />
+      </div>
+      <div style={{ overflowY: 'auto', maxHeight: 200 }}>
+        {/* Unassign option */}
+        <PickerOption selected={!selectedId} onClick={() => onSelect(null, null)}>
+          <span style={{ fontSize: 13, color: 'var(--fg-4)' }}>Unassigned</span>
+        </PickerOption>
+        {filtered.map(m => (
+          <PickerOption key={m.id} selected={selectedId === m.id} onClick={() => onSelect(m.id, m.full_name)}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <MiniAvatar name={m.full_name || '?'} size={20} />
+              <span style={{ fontSize: 13, color: 'var(--fg-1)' }}>{m.full_name}</span>
+            </div>
+          </PickerOption>
+        ))}
+        {filtered.length === 0 && (
+          <div style={{ padding: '12px 8px', fontSize: 12, color: 'var(--fg-4)', textAlign: 'center' }}>No results</div>
+        )}
+      </div>
     </div>
   );
 }
