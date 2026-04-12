@@ -24,10 +24,10 @@ export default function IssueDetailPage() {
     queryFn: async () => {
       const { data } = await supabase
         .from('ph_issues')
-        .select('id, issue_type, project_id, project_key')
+        .select('id, issue_type, project_key')
         .eq('issue_key', issueKey!)
         .is('deleted_at', null)
-        .single();
+        .maybeSingle();
       return data;
     },
     staleTime: 120000,
@@ -73,7 +73,6 @@ export default function IssueDetailPage() {
           isOpen={true}
           onClose={handleClose}
           itemId={issue.id}
-          projectId={issue.project_id || ''}
           projectKey={issue.project_key || projectKey || ''}
           itemType={issue.issue_type}
           fullPageMode={true}
