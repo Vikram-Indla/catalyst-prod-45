@@ -1,18 +1,19 @@
 /**
  * CatalystViewIncident — Production Incident detail overlay.
  *
- * Uses CatalystViewBase for the shared layout shell and canonical
- * hooks/sections for data + UI. Only incident-specific sections remain inline:
- *   - Severity banner (red AlertTriangle banner)
- *   - Description section
- *   - "Impact / Root Cause" section (acceptance_criteria)
+ * Canonical sections: Title, Description, Acceptance Criteria (as "Impact /
+ * Root Cause"), Priority, Activity, Sidebar.
+ * Incident-unique: Severity banner (red AlertTriangle).
  */
 import React from 'react';
 import { toast } from 'sonner';
 import { AlertTriangle } from 'lucide-react';
 import { CatalystViewBase } from '../shared/CatalystViewBase';
 import { useCatalystIssue, useCatalystIssueMutations } from '../shared/hooks';
-import { CatalystTitleEditor, CatalystActivitySection, CatalystSidebarDetails } from '../shared/sections';
+import {
+  CatalystTitleEditor, CatalystDescriptionSection, CatalystAcceptanceCriteria,
+  CatalystActivitySection, CatalystSidebarDetails, CatalystPriorityField,
+} from '../shared/sections';
 import type { CatalystViewBaseProps } from '../shared/types';
 import {
   PRIORITY_STYLES,
@@ -25,10 +26,8 @@ export default function CatalystViewIncident({
 
   const { data: issue, isLoading } = useCatalystIssue(itemId, isOpen);
   const mutations = useCatalystIssueMutations(itemId, onClose);
-
   const priorityStyle = PRIORITY_STYLES[issue?.priority ?? 'Medium'] ?? PRIORITY_STYLES.Medium;
 
-  /* ── LEFT PANEL ─────────────────────────── */
   const leftContent = (
     <>
       {/* INCIDENT-UNIQUE: Severity banner */}
@@ -43,78 +42,31 @@ export default function CatalystViewIncident({
         </span>
       </div>
 
-      {/* CANONICAL: Title */}
-      <CatalystTitleEditor
-        issue={issue ?? null}
-        onTitleChange={(t) => mutations.updateField.mutate({ field: 'summary', value: t, oldValue: issue?.summary ?? '' })}
-      />
-
-      {/* INCIDENT-UNIQUE: Description */}
-      <div style={{ marginBottom: 24 }}>
-        <div style={{ fontSize: 14, fontWeight: 600, color: '#172B4D', marginBottom: 8 }}>Description</div>
-        <div style={{ fontSize: 14, color: '#172B4D', lineHeight: 1.7, whiteSpace: 'pre-wrap', minHeight: 60 }}>
-          {issue?.description_text || <span style={{ color: '#97A0AF', fontStyle: 'italic' }}>Add a description…</span>}
-        </div>
-      </div>
-
-      {/* INCIDENT-UNIQUE: Impact / Root Cause (acceptance_criteria) */}
-      {issue?.acceptance_criteria && (
-        <div style={{ marginBottom: 24 }}>
-          <div style={{ fontSize: 14, fontWeight: 600, color: '#172B4D', marginBottom: 8 }}>Impact / Root Cause</div>
-          <div style={{ fontSize: 14, color: '#172B4D', lineHeight: 1.7, whiteSpace: 'pre-wrap' }}>
-            {issue.acceptance_criteria}
-          </div>
-        </div>
-      )}
-
-      {/* CANONICAL: Activity */}
+      <CatalystTitleEditor issue={issue ?? null} onTitleChange={(t) => mutations.updateField.mutate({ field: 'summary', value: t, oldValue: issue?.summary ?? '' })} />
+      <CatalystDescriptionSection issue={issue ?? null} />
+      <CatalystAcceptanceCriteria issue={issue ?? null} label="Impact / Root Cause" />
       <CatalystActivitySection itemId={itemId} isOpen={isOpen} />
     </>
   );
 
-  /* ── RIGHT SIDEBAR ──────────────────────── */
   const rightContent = (
-    <CatalystSidebarDetails
-      issue={issue ?? null}
-      itemId={itemId}
-      onStatusChange={(st) => mutations.updateStatus.mutate(st)}
-      onClose={onClose}
-      onDelete={() => mutations.deleteIssue.mutate()}
-      typeLabel="incident"
-    >
-      {/* INCIDENT-UNIQUE: Priority field in sidebar */}
-      <div style={{ marginBottom: 14 }}>
-        <div style={{ fontSize: 12, fontWeight: 600, color: '#172B4D', marginBottom: 4 }}>Priority</div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '4px 6px' }}>
-          <span style={{ color: priorityStyle.color, fontWeight: 700, fontSize: 14 }}>{priorityStyle.symbol}</span>
-          <span style={{ fontSize: 14, color: '#172B4D' }}>{issue?.priority ?? 'Medium'}</span>
-        </div>
-      </div>
+    <CatalystSidebarDetails issue={issue ?? null} itemId={itemId} onStatusChange={(st) => mutations.updateStatus.mutate(st)} onClose={onClose} onDelete={() => mutations.deleteIssue.mutate()} typeLabel="incident">
+      <CatalystPriorityField issue={issue ?? null} />
     </CatalystSidebarDetails>
   );
 
   return (
-    <CatalystViewBase
-      isOpen={isOpen}
-      onClose={onClose}
-      panelMode={panelMode}
-      itemType={issue?.issue_type || 'Production Incident'}
-      itemKey={issue?.issue_key || null}
-      parentKey={issue?.parent_key}
-      parentType="Epic"
+    <CatalystViewBase isOpen={isOpen} onClose={onClose} panelMode={panelMode}
+      itemType={issue?.issue_type || 'Production Incident'} itemKey={issue?.issue_key || null}
+      parentKey={issue?.parent_key} parentType="Epic"
       onParentClick={issue?.parent_key ? () => onOpenItem?.(issue.parent_key!) : undefined}
       onShare={() => { navigator.clipboard.writeText(window.location.href); toast.success('Link copied'); }}
       moreMenuItems={[
         { label: 'Clone incident', onClick: () => toast('Clone — coming soon') },
         { label: 'Delete incident', onClick: () => mutations.deleteIssue.mutate(), danger: true },
       ]}
-      onTogglePanelMode={onTogglePanelMode}
-      navigationItems={navigationItems}
-      currentItemId={itemId}
-      onNavigate={onNavigate}
-      leftContent={leftContent}
-      rightContent={rightContent}
-      isLoading={isLoading}
+      onTogglePanelMode={onTogglePanelMode} navigationItems={navigationItems} currentItemId={itemId} onNavigate={onNavigate}
+      leftContent={leftContent} rightContent={rightContent} isLoading={isLoading}
     />
   );
 }
