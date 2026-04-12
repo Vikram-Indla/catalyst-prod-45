@@ -285,7 +285,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
 
   // ── State ──
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
-  const [groupBy, setGroupBy] = useState<GroupByKey | null>(null);
+  const [groupBy, setGroupBy] = useState<GroupByKey>('none');
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
   const [showCreate, setShowCreate] = useState(false);
   const [editStoryId, setEditStoryId] = useState<string | null>(null);
