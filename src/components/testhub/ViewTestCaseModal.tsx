@@ -1034,8 +1034,10 @@ export function ViewTestCaseModal({
             width: 280, flexShrink: 0,
             borderLeft: '1px solid var(--divider)',
             overflowY: 'auto',
+            overflowX: 'visible',
             padding: '14px 16px',
             background: 'var(--bg-1)',
+            position: 'relative',
           }}>
             {/* STATUS BUTTON — clickable dropdown */}
             <div style={{ position: 'relative', marginBottom: 12 }}>
