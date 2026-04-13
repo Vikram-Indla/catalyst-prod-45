@@ -21,10 +21,11 @@ export default function ProjectJiraLayout() {
   const { data: project } = useQuery({
     queryKey: ['project-info', key],
     queryFn: async () => {
+      // @ts-ignore - deep type instantiation
       const { data } = await supabase
         .from('projects')
-        .select('id, name, project_key, color')
-        .eq('project_key', key!)
+        .select('id, name, key, color')
+        .eq('key', key!)
         .maybeSingle();
       return data;
     },
@@ -37,12 +38,12 @@ export default function ProjectJiraLayout() {
       <div className="flex items-center gap-3 px-4 py-2 border-b" style={{ borderColor: 'var(--cp-border-default, rgba(15,23,42,0.12))' }}>
         <div
           className="w-6 h-6 rounded flex items-center justify-center text-white text-xs font-bold flex-shrink-0"
-          style={{ background: project?.color || '#2563EB' }}
+          style={{ background: (project as any)?.color || '#2563EB' }}
         >
-          {project?.project_key?.[0] ?? 'P'}
+          {(project as any)?.key?.[0] ?? 'P'}
         </div>
         <span className="text-sm font-semibold" style={{ color: 'var(--cp-text-primary, #0F172A)' }}>
-          {project?.name ?? 'Loading...'}
+          {(project as any)?.name ?? 'Loading...'}
         </span>
       </div>
 

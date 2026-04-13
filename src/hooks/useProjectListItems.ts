@@ -110,10 +110,11 @@ export function useProjectListItems(projectKey: string | undefined) {
         .maybeSingle();
       if (!proj) return [];
 
+      // @ts-ignore - deep type instantiation
       const { data, error } = await supabase
         .from('ph_work_items')
         .select('id, item_key, title, summary, item_type, priority, parent_id, assignee_id, created_at, updated_at, project_id, ph_work_types!ph_work_items_type_id_fkey (name, color, icon, level), ph_workflow_statuses!ph_work_items_status_id_fkey (name, category, color), ph_releases!ph_work_items_release_id_fkey (name)')
-        .eq('project_id', proj.id)
+        .eq('project_id', (proj as any).id)
         .eq('item_type', 'epic')
         .order('created_at', { ascending: false })
         .limit(2000);
