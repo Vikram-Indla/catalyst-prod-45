@@ -606,7 +606,7 @@ export function CreateStoryModal({ open, onClose, projectId, projectKey, onSucce
   const priorityOptions = PRIORITIES.map(p => ({
     value: p,
     label: p,
-    icon: <PriorityIcon priority={p} />,
+    icon: <span style={{ display: 'flex', flexShrink: 0 }}>{PRIORITY_SVG[p]}</span>,
   }));
 
   const statusOptions = STATUSES.map(s => ({
