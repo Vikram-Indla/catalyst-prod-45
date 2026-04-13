@@ -137,14 +137,17 @@ export function useCreateStoryMutation() {
   return useMutation({
     mutationFn: async (params: { form: CreateStoryFormData; projectKey: string; issueType?: string }) => {
       const { form, projectKey, issueType } = params;
+
+      if (!form.projectId || !form.projectId.trim()) {
+        throw new Error('Project is required');
+      }
+
       const issueKey = await generateIssueKey(projectKey);
 
       // Guard: convert any empty strings to null for UUID columns
       const uuid = (v: string | null | undefined) => (v && v.trim() ? v : null);
 
-      const { data, error } = await supabase
-        .from('catalyst_issues')
-        .insert({
+      const insertData: Record<string, any> = {
           project_id: form.projectId,
           issue_key: issueKey,
           title: form.summary.trim(),
@@ -159,7 +162,16 @@ export function useCreateStoryMutation() {
           tags: form.tags.length > 0 ? form.tags : [],
           last_modified_by_system: 'catalyst',
           sync_enabled: false,
-        })
+      };
+
+      // Strip any remaining empty-string values for UUID columns
+      for (const key of Object.keys(insertData)) {
+        if (insertData[key] === '') insertData[key] = null;
+      }
+
+      const { data, error } = await supabase
+        .from('catalyst_issues')
+        .insert(insertData)
         .select()
         .single();
 
