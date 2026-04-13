@@ -1,7 +1,7 @@
 /**
  * CreateStoryModal — Jira Cloud parity "Create" dialog.
- * Fields: Space, Work type, Status, Summary, Parent, MDT Ref, Priority, Description,
- *         Target Release, Assignee, Reporter.
+ * Fields: Space, Work type, Status, Summary, Parent, Priority, Description,
+ *         Fix versions, Assignee, Reporter, Labels.
  */
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
@@ -9,7 +9,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { createPortal } from 'react-dom';
 import {
   X, Maximize2, Minus, MoreHorizontal, ChevronDown, Bold, Italic, List,
-  ListOrdered, Code2, Link2, Undo, Redo, ExternalLink,
+  ListOrdered, Code2, Link2, Undo, Redo, ExternalLink, Check,
 } from 'lucide-react';
 import {
   useCreateStoryForm, useProjects, useTeamMembers,
@@ -22,6 +22,7 @@ import Underline from '@tiptap/extension-underline';
 import TipTapLink from '@tiptap/extension-link';
 import Placeholder from '@tiptap/extension-placeholder';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
+import { useFixVersions } from '@/modules/project-work-hub/hooks/useFixVersions';
 import './create-story.css';
 
 // ── Helpers ──
