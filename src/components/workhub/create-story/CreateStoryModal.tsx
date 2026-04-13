@@ -4,6 +4,7 @@
  *         Target Release, Assignee, Reporter.
  */
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import {
   X, Maximize2, Minus, MoreHorizontal, ChevronDown, Bold, Italic, List,
   ListOrdered, Code2, Link2, Undo, Redo, ExternalLink,
@@ -448,7 +449,7 @@ export function CreateStoryModal({ open, onClose, projectId, projectKey, onSucce
     icon: <span className="csStatusDot" />,
   }));
 
-  return (
+  return createPortal(
     <div className="csOverlay" onClick={onClose}>
       <div className={`csModal ${isExpanded ? 'csModal--expanded' : ''}`} ref={modalRef} onClick={e => e.stopPropagation()}>
         {/* ── Header ── */}
@@ -595,7 +596,8 @@ export function CreateStoryModal({ open, onClose, projectId, projectKey, onSucce
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 
