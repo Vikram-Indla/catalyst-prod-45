@@ -166,17 +166,52 @@ export function useCreateStoryMutation() {
   });
 }
 
+// ── Last-project memory per user ──
+const LAST_PROJECT_KEY = 'catalyst-last-project';
+
+function getLastProjectId(userId: string | undefined): string {
+  if (!userId) return '';
+  try {
+    const stored = localStorage.getItem(LAST_PROJECT_KEY);
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      return parsed[userId] ?? '';
+    }
+  } catch {}
+  return '';
+}
+
+function setLastProjectId(userId: string | undefined, projectId: string) {
+  if (!userId || !projectId) return;
+  try {
+    const stored = localStorage.getItem(LAST_PROJECT_KEY);
+    const parsed = stored ? JSON.parse(stored) : {};
+    parsed[userId] = projectId;
+    localStorage.setItem(LAST_PROJECT_KEY, JSON.stringify(parsed));
+  } catch {}
+}
+
 export function useCreateStoryForm(defaultProjectId?: string) {
+  const { user } = useAuth();
+  const rememberedProjectId = getLastProjectId(user?.id);
+
   const [form, setForm] = useState<CreateStoryFormData>({
     ...INITIAL_FORM,
-    projectId: defaultProjectId ?? '',
+    projectId: defaultProjectId ?? rememberedProjectId ?? '',
   });
 
   const updateField = useCallback(<K extends keyof CreateStoryFormData>(
     key: K, value: CreateStoryFormData[K]
   ) => {
-    setForm(prev => ({ ...prev, [key]: value }));
-  }, []);
+    setForm(prev => {
+      const next = { ...prev, [key]: value };
+      // Persist project selection per user
+      if (key === 'projectId' && typeof value === 'string') {
+        setLastProjectId(user?.id, value);
+      }
+      return next;
+    });
+  }, [user?.id]);
 
   const reset = useCallback((keepProject = false) => {
     setForm(prev => ({
