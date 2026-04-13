@@ -12,6 +12,7 @@ import {
   CatalystTitleEditor, CatalystQuickActions, CatalystParentLinker, CatalystDescriptionSection, CatalystAcceptanceCriteria,
   CatalystActivitySection, CatalystSidebarDetails, CatalystChildWorkItemsTable,
 } from '../shared/sections';
+import { LinkedIssuesSection } from '@/modules/project-work-hub/components/dialogs/story-detail-modules';
 import type { CatalystViewBaseProps } from '../shared/types';
 
 export default function CatalystViewEpic({
@@ -40,6 +41,7 @@ export default function CatalystViewEpic({
         />
       )}
 
+      <LinkedIssuesSection issueId={itemId} />
       <CatalystActivitySection itemId={itemId} isOpen={isOpen} />
     </>
   );
