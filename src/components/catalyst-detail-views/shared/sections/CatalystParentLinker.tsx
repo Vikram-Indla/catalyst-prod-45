@@ -47,10 +47,13 @@ export function CatalystParentLinker({
   issue, itemId, itemType, projectKey, onOpenItem,
 }: CatalystParentLinkerProps) {
   const rule = PARENT_LINK_RULES[itemType];
-  const queryClient = useQueryClient();
 
   // If no allowed parents, don't render
   if (!rule || rule.allowedParentTypes.length === 0) return null;
+
+  if (rule.useBusinessRequests) {
+    return <BusinessRequestParentPicker issue={issue} itemId={itemId} rule={rule} projectKey={projectKey} onOpenItem={onOpenItem} />;
+  }
 
   return rule.mode === 'single'
     ? <SingleParentPicker issue={issue} itemId={itemId} rule={rule} projectKey={projectKey} onOpenItem={onOpenItem} />
