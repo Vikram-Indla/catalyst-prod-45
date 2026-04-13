@@ -12,6 +12,7 @@ import type { AllWorkItem } from '@/types/allwork.types';
 import { formatDistanceToNow, format } from 'date-fns';
 import { SubtasksPanel } from './sections/SubtasksPanel';
 import { LocalStorageBackedProvider } from '@/lib/subtasks-provider';
+import { CreateStoryModal } from '@/components/workhub/create-story';
 
 interface Props {
   issueKey: string | null;
