@@ -92,7 +92,10 @@ export function CatalystSidebarDetails({
     return [];
   }, [issue?.fix_versions]);
 
-  const invalidateIssue = () => queryClient.invalidateQueries({ queryKey: ['cv-issue-detail', itemId] });
+  const invalidateIssue = useCallback(
+    () => queryClient.invalidateQueries({ queryKey: ['cv-issue-detail', itemId] }),
+    [queryClient, itemId],
+  );
 
   /* ── Assign to me handler ──────────────── */
   const handleAssignToMe = useCallback(async () => {
@@ -102,7 +105,7 @@ export function CatalystSidebarDetails({
       .update({ assignee_account_id: user.id, assignee_display_name: displayName })
       .eq('id', itemId);
     invalidateIssue();
-  }, [user, currentProfile, itemId]);
+  }, [user, currentProfile, itemId, invalidateIssue]);
 
   return (
     <>

@@ -33,11 +33,14 @@ export default function IssueDetailPage() {
       return;
     }
 
+    // Reset state synchronously to prevent flash of stale "not found"
+    setIssue(null);
+    setLoading(true);
+    setDebugInfo('');
+
     let cancelled = false;
 
     async function resolve() {
-      setLoading(true);
-      setDebugInfo(`Querying ph_issues for issue_key="${issueKey}"...`);
 
       try {
         // Use the exact same client and pattern as useCatalystIssue
@@ -89,7 +92,11 @@ export default function IssueDetailPage() {
   };
 
   const handleClose = () => {
-    navigate(`/project-hub/${projectKey}/list`);
+    if (projectKey) {
+      navigate(`/project-hub/${projectKey}/list`);
+    } else {
+      navigate(-1);
+    }
   };
 
   if (loading) {
@@ -111,7 +118,7 @@ export default function IssueDetailPage() {
           </span>
         )}
         <button
-          onClick={() => navigate(`/project-hub/${projectKey}/list`)}
+          onClick={handleClose}
           style={{ marginTop: 8, padding: '8px 16px', background: '#2563EB', color: '#FFFFFF', border: 'none', borderRadius: 6, fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: 'Inter, sans-serif' }}
         >
           Back to list

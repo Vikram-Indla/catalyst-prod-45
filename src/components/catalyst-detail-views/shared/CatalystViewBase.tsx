@@ -183,8 +183,12 @@ export function CatalystViewBase({
   /* ── Navigation (full-page back) ─────────── */
   const navigate = useNavigate();
   const handleBack = useCallback(() => {
-    if (fullPageMode && projectKey) {
-      navigate(`/project-hub/${projectKey}/list`);
+    if (fullPageMode) {
+      if (projectKey) {
+        navigate(`/project-hub/${projectKey}/list`);
+      } else {
+        navigate(-1);
+      }
     } else {
       onClose();
     }
