@@ -1,4 +1,5 @@
 export { CatalystTitleEditor } from './CatalystTitleEditor';
+export { CatalystQuickActions } from './CatalystQuickActions';
 export { CatalystDescriptionSection } from './CatalystDescriptionSection';
 export { CatalystAcceptanceCriteria } from './CatalystAcceptanceCriteria';
 export { CatalystActivitySection } from './CatalystActivitySection';
