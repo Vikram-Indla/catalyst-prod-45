@@ -82,16 +82,18 @@
   flex-shrink: 0;
 }
 
-/* Body (scrollable) */
+/* Body (scrollable — hidden scrollbar, Jira parity) */
 .csModalBody {
   flex: 1 1 auto;
   overflow-y: auto;
   overflow-x: hidden;
   padding: 0 24px 24px;
   min-height: 0;
-  -ms-overflow-style: none;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(9,30,66,0.13) transparent;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+.csModalBody::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
 }
 
 /* Footer (sticky) */
