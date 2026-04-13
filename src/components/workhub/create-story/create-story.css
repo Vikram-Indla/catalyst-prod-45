@@ -9,22 +9,33 @@
   z-index: 1000;
   background: rgba(9, 30, 66, 0.54);
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
-  padding-top: 48px;
 }
 
 /* Modal */
 .csModal {
   background: #fff;
   border-radius: 8px;
-  width: 680px;
-  max-width: 95vw;
-  max-height: calc(100vh - 96px);
+  width: min(720px, 90vw);
+  max-height: min(640px, 90vh);
+  min-height: 400px;
   display: flex;
   flex-direction: column;
   box-shadow: 0 0 0 1px rgba(9,30,66,0.08), 0 8px 32px rgba(9,30,66,0.35);
   animation: csSlideIn 200ms ease-out;
+}
+.csModal--expanded {
+  width: min(960px, 95vw);
+  max-height: min(800px, 95vh);
+}
+@media (max-width: 600px) {
+  .csModal,
+  .csModal--expanded {
+    width: 100vw;
+    max-height: 100vh;
+    border-radius: 0;
+  }
 }
 @keyframes csSlideIn {
   from { opacity: 0; transform: translateY(-12px); }
