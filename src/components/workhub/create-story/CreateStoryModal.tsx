@@ -530,6 +530,7 @@ export function CreateStoryModal({ open, onClose, projectId, projectKey, onSucce
   const [summaryError, setSummaryError] = useState('');
   const [workType, setWorkType] = useState('Story');
   const [isExpanded, setIsExpanded] = useState(false);
+  const [keyDetailsOpen, setKeyDetailsOpen] = useState(true);
   const summaryRef = useRef<HTMLInputElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
 
