@@ -18,7 +18,7 @@
   background: #fff;
   border-radius: 8px;
   width: min(720px, 90vw);
-  max-height: min(640px, 90vh);
+  max-height: 90vh;
   min-height: 400px;
   display: flex;
   flex-direction: column;
@@ -27,7 +27,7 @@
 }
 .csModal--expanded {
   width: min(960px, 95vw);
-  max-height: min(800px, 95vh);
+  max-height: 95vh;
 }
 @media (max-width: 600px) {
   .csModal,
