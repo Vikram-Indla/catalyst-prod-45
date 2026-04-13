@@ -104,7 +104,7 @@ export function IssueListPanel({
                   className={`awRow ${isSelected ? 'awRowSelected' : ''}`}
                   onClick={() => onSelectIssue(item.issue_key)}
                 >
-                  <JiraIssueTypeIcon issueType={item.issue_type} size={16} />
+                  <JiraIssueTypeIcon type={item.issue_type} size={16} />
                   <div className="awRowMain">
                     <div className="awRowTop">
                       <span className="awKey">{item.issue_key}</span>

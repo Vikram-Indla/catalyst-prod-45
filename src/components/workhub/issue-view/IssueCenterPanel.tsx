@@ -114,7 +114,7 @@ export function IssueCenterPanel({ issueKey, item, parentItem, loading = false }
           {/* Breadcrumb — clickable parent */}
           {(parentItem || item?.parent_key) && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6, fontSize: 12 }}>
-              {parentItem && <JiraIssueTypeIcon issueType={parentItem.issue_type} size={14} />}
+              {parentItem && <JiraIssueTypeIcon type={parentItem.issue_type} size={14} />}
               <span style={{ color: 'var(--aw-blue)', fontWeight: 600, cursor: 'pointer' }}>
                 {item?.parent_key ?? parentItem?.issue_key}
               </span>
@@ -125,7 +125,7 @@ export function IssueCenterPanel({ issueKey, item, parentItem, loading = false }
 
           {/* Title row */}
           <div className="awCenterTitleRow">
-            {item && <JiraIssueTypeIcon issueType={item.issue_type} size={20} />}
+            {item && <JiraIssueTypeIcon type={item.issue_type} size={20} />}
             <div style={{ minWidth: 0, flex: 1 }}>
               <div className="awCenterSummary">{item?.summary ?? 'Untitled'}</div>
             </div>

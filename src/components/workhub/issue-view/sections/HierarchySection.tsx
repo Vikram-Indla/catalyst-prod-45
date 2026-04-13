@@ -40,7 +40,7 @@ function IssueRow({
       )}
       onClick={() => onOpen?.(item.key)}
     >
-      {item.issueType && <JiraIssueTypeIcon issueType={item.issueType} size={16} />}
+      {item.issueType && <JiraIssueTypeIcon type={item.issueType} size={16} />}
       <span className={cn('font-mono text-xs font-medium shrink-0', isDark ? 'text-[#A1A1A1]' : 'text-[#505258]')}>
         {item.key}
       </span>

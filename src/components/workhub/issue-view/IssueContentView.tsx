@@ -96,11 +96,11 @@ export function IssueContentView({
           {/* Breadcrumb */}
           <div className="awBreadcrumb">
             {parentItem && <>
-              <JiraIssueTypeIcon issueType={parentItem.issue_type} size={14} />
+              <JiraIssueTypeIcon type={parentItem.issue_type} size={14} />
               <span className="awBreadcrumbLink">{parentItem.issue_key}</span>
               <span>/</span>
             </>}
-            {item && <JiraIssueTypeIcon issueType={item.issue_type} size={14} />}
+            {item && <JiraIssueTypeIcon type={item.issue_type} size={14} />}
             <span>{issueKey}</span>
             {/* Prev/Next arrows */}
             <span style={{ marginLeft: 'auto', display: 'flex', gap: 2 }}>
@@ -174,7 +174,7 @@ export function IssueContentView({
                       {childItems.map(ch => (
                         <tr key={ch.issue_key}>
                           <td style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                            <JiraIssueTypeIcon issueType={ch.issue_type} size={14} />
+                            <JiraIssueTypeIcon type={ch.issue_type} size={14} />
                             <span style={{ color: 'var(--aw-blue)', fontWeight: 500, fontSize: 12 }}>{ch.issue_key}</span>
                             <span style={{ fontSize: 13 }}>{ch.summary}</span>
                           </td>
@@ -209,7 +209,7 @@ export function IssueContentView({
                   <div key={link.id ?? i}>
                     <div className="awLinkGroupLabel">{link.link_type_name ?? 'relates to'}</div>
                     <div className="awLinkRow">
-                      <JiraIssueTypeIcon issueType={link.target_issue_type ?? link.source_issue_type ?? ''} size={14} />
+                      <JiraIssueTypeIcon type={link.target_issue_type ?? link.source_issue_type ?? ''} size={14} />
                       <span style={{ color: 'var(--aw-blue)', fontWeight: 500, fontSize: 12 }}>{link.target_key ?? link.source_key ?? ''}</span>
                       <span style={{ flex: 1, fontSize: 13, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{link.target_summary ?? link.source_summary ?? ''}</span>
                       {(link.target_status ?? link.source_status) && <StatusLozenge status={link.target_status ?? link.source_status} />}
