@@ -39,6 +39,24 @@ const STATUSES = [
   'In Development', 'In QA', 'In UAT', 'In Beta', 'Done',
 ];
 
+/** Status dot colour by category: grey=to-do, blue=in-progress, green=done */
+function statusDotColor(status: string): string {
+  const s = status.toLowerCase();
+  if (s === 'done') return '#006644';
+  if (['to do', 'in requirements'].includes(s)) return '#253858';
+  // Everything else is in-progress
+  return '#0747A6';
+}
+
+function StatusDot({ status }: { status: string }) {
+  return (
+    <span style={{
+      display: 'inline-block', width: 8, height: 8, borderRadius: '50%',
+      background: statusDotColor(status), flexShrink: 0,
+    }} />
+  );
+}
+
 const WORK_TYPES = [
   'Epic', 'Feature', 'Story', 'Business Gap', 'QA Bug',
   'Production Incident', 'Change Request', 'Task', 'API Requirement',
@@ -990,7 +1008,7 @@ export function CreateStoryModal({ open, onClose, projectId, projectKey, onSucce
   const statusOptions = STATUSES.map(s => ({
     value: s,
     label: s,
-    icon: <span className="csStatusDot" />,
+    icon: <StatusDot status={s} />,
   }));
 
   return createPortal(
