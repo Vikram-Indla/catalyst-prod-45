@@ -1,11 +1,12 @@
 /**
  * WorkItemDetailPanel — Split view detail panel
- * Stage C: Full pixel-perfect build
+ * Stage D: Full Supabase wiring — children from useWorkItemChildren
  */
 import React from 'react';
 import { Eye, Share2, MoreHorizontal, ChevronRight, Plus } from 'lucide-react';
 import { JiraStatusLozenge } from '@/components/ui/JiraStatusLozenge';
 import { WorkItemTypeIcon } from '@/components/icons/WorkItemTypeIcon';
+import { useWorkItemChildren, useUpdateWorkItemStatus } from '@/hooks/useProjectListItems';
 import type { WorkItem } from '@/types/workItem.types';
 
 interface Props {
@@ -17,7 +18,12 @@ interface Props {
 
 export function WorkItemDetailPanel({ item, allItems, onNavigate }: Props) {
   const currentIdx = allItems.findIndex(i => i.id === item.id);
-  const children = allItems.filter(i => i.parentId === item.id);
+  const { data: children = [], isLoading: childrenLoading } = useWorkItemChildren(
+    item.type === 'epic' ? item.id : undefined,
+    item.type === 'epic'
+  );
+  const { mutate: updateStatus } = useUpdateWorkItemStatus();
+
   const doneChildren = children.filter(c => c.status === 'done').length;
   const pctDone = children.length > 0 ? Math.round(doneChildren / children.length * 100) : 0;
   const inprogChildren = children.filter(c => ['in_progress', 'in_dev', 'in_qa', 'ready_for_qa', 'in_uat', 'in_production'].includes(c.status)).length;
@@ -58,7 +64,11 @@ export function WorkItemDetailPanel({ item, allItems, onNavigate }: Props) {
 
         {/* Quick actions */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
-          <JiraStatusLozenge status={item.status} interactive />
+          <JiraStatusLozenge
+            status={item.status}
+            interactive
+            onStatusChange={(newStatus) => updateStatus({ id: item.id, status: newStatus })}
+          />
           <button style={{ height: 32, padding: '0 10px', borderRadius: 4, border: '1px solid var(--cp-border-default)', background: 'var(--cp-bg-page)', display: 'flex', alignItems: 'center', gap: 5, fontSize: 14, cursor: 'pointer', color: 'var(--cp-text-primary)', fontFamily: 'Inter, sans-serif' }}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="#7C3AED"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z" /></svg>
             AI Suggestions
@@ -71,8 +81,8 @@ export function WorkItemDetailPanel({ item, allItems, onNavigate }: Props) {
             <ChevronRight size={14} />
             Description
           </div>
-          <div style={{ fontSize: 14, color: 'var(--cp-text-tertiary)', fontStyle: 'italic', paddingLeft: 20 }}>
-            No description added.
+          <div style={{ fontSize: 14, color: item.description ? 'var(--cp-text-primary)' : 'var(--cp-text-tertiary)', paddingLeft: 20 }}>
+            {item.description || 'No description added.'}
           </div>
         </div>
 
@@ -117,7 +127,9 @@ export function WorkItemDetailPanel({ item, allItems, onNavigate }: Props) {
                 </tr>
               </thead>
               <tbody>
-                {children.length === 0 ? (
+                {childrenLoading ? (
+                  <tr><td colSpan={2} style={{ textAlign: 'center', padding: 16, color: 'var(--cp-text-tertiary)', fontSize: 13 }}>Loading…</td></tr>
+                ) : children.length === 0 ? (
                   <tr><td colSpan={2} style={{ textAlign: 'center', padding: 16, color: 'var(--cp-text-tertiary)', fontSize: 13 }}>No child items yet</td></tr>
                 ) : children.map(child => (
                   <tr key={child.id} style={{ cursor: 'pointer' }}

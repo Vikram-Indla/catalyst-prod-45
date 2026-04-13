@@ -1,12 +1,12 @@
 /**
  * ProjectAllWorkView — All work tab with Table/Split modes
- * Stage C: Full pixel-perfect build
+ * Stage D: Full Supabase wiring — ZERO hardcoded data
  */
 import React, { useState } from 'react';
 import { Search, Filter, MoreHorizontal, ChevronDown, Globe, ChevronRight, Plus } from 'lucide-react';
 import { JiraStatusLozenge } from '@/components/ui/JiraStatusLozenge';
 import { WorkItemTypeIcon } from '@/components/icons/WorkItemTypeIcon';
-import { useProjectAllWorkItems } from '@/hooks/useProjectListItems';
+import { useProjectAllWorkItems, useWorkItemChildren, useUpdateWorkItemStatus } from '@/hooks/useProjectListItems';
 import { WorkItemDetailPanel } from './components/WorkItemDetailPanel';
 import type { WorkItem } from '@/types/workItem.types';
 
@@ -16,8 +16,83 @@ interface Props {
   projectKey: string;
 }
 
+/* ── Skeleton row ── */
+const SkeletonRow = () => (
+  <tr>
+    {[36, 360, 180, 150, 100, 140, 165].map((w, i) => (
+      <td key={i} style={{ width: w || undefined }}>
+        <div style={{
+          height: 14, borderRadius: 4,
+          background: 'linear-gradient(90deg, #F1F5F9 25%, #E2E8F0 50%, #F1F5F9 75%)',
+          backgroundSize: '200% 100%',
+          animation: 'shimmer 1.5s infinite',
+          width: Math.round(w * 0.6),
+        }} />
+      </td>
+    ))}
+  </tr>
+);
+
+/* ── Expandable children row component ── */
+function ExpandedChildren({ epicId, epicKey }: { epicId: string; epicKey: string }) {
+  const { data: children = [], isLoading } = useWorkItemChildren(epicId, true);
+  const { mutate: updateStatus } = useUpdateWorkItemStatus();
+
+  if (isLoading) return (
+    <tr><td colSpan={9} style={{ paddingLeft: 48, color: 'var(--cp-text-tertiary)', fontSize: 13 }}>Loading children…</td></tr>
+  );
+  if (children.length === 0) return (
+    <tr><td colSpan={9} style={{ paddingLeft: 48, color: 'var(--cp-text-tertiary)', fontSize: 13, fontStyle: 'italic' }}>No child items</td></tr>
+  );
+
+  return (
+    <>
+      {children.map(child => (
+        <tr key={child.id} style={{ background: 'rgba(248,250,252,0.5)' }}>
+          <td style={{ textAlign: 'center' }}>
+            <input type="checkbox" style={{ width: 14, height: 14 }} />
+          </td>
+          <td>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, paddingLeft: 38 }}>
+              <WorkItemTypeIcon type={child.type} size={16} />
+              <a className="ph-iss-key" href="#">{child.jiraKey}</a>
+              <span style={{ fontSize: 14, color: 'var(--cp-text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {child.summary}
+              </span>
+            </div>
+          </td>
+          <td style={{ color: 'var(--cp-text-tertiary)', fontSize: 13 }}>{epicKey}</td>
+          <td>
+            <JiraStatusLozenge
+              status={child.status}
+              interactive
+              onStatusChange={(newStatus) => updateStatus({ id: child.id, status: newStatus })}
+            />
+          </td>
+          <td style={{ color: 'var(--cp-text-tertiary)', fontSize: 13 }}>{child.fixVersion ?? 'None'}</td>
+          <td>
+            {child.assignee ? (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <div style={{ width: 24, height: 24, borderRadius: '50%', background: child.assignee.color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: '#fff', flexShrink: 0 }}>
+                  {child.assignee.initials}
+                </div>
+                <span style={{ fontSize: 13 }}>{child.assignee.name}</span>
+              </div>
+            ) : <span style={{ color: 'var(--cp-text-tertiary)', fontSize: 13 }}>—</span>}
+          </td>
+          <td style={{ color: 'var(--cp-text-tertiary)', fontSize: 12, fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: 'tabular-nums' }}>
+            {new Date(child.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+          </td>
+          <td /><td />
+        </tr>
+      ))}
+    </>
+  );
+}
+
 export default function ProjectAllWorkView({ projectKey }: Props) {
   const { data: items = [], isLoading } = useProjectAllWorkItems(projectKey);
+  const { mutate: updateStatus } = useUpdateWorkItemStatus();
   const [subView, setSubView] = useState<AllWorkSubView>('table');
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
@@ -31,7 +106,6 @@ export default function ProjectAllWorkView({ projectKey }: Props) {
   };
 
   const epics = items.filter(i => i.type === 'epic');
-  const childrenOf = (parentId: string) => items.filter(i => i.parentId === parentId);
   const selectedItemData = items.find(i => i.id === selectedItem);
 
   return (
@@ -165,7 +239,26 @@ export default function ProjectAllWorkView({ projectKey }: Props) {
             </thead>
             <tbody>
               {isLoading ? (
-                <tr><td colSpan={9} style={{ textAlign: 'center', padding: 24, color: 'var(--cp-text-tertiary)' }}>Loading…</td></tr>
+                Array.from({ length: 8 }).map((_, i) => <SkeletonRow key={i} />)
+              ) : epics.length === 0 ? (
+                <tr>
+                  <td colSpan={9}>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '64px 24px', gap: 12 }}>
+                      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--cp-border-default)" strokeWidth="1.5">
+                        <rect x="3" y="3" width="18" height="18" rx="2"/>
+                        <line x1="8" y1="8" x2="16" y2="8"/>
+                        <line x1="8" y1="12" x2="16" y2="12"/>
+                        <line x1="8" y1="16" x2="12" y2="16"/>
+                      </svg>
+                      <p style={{ fontSize: 16, fontWeight: 600, color: 'var(--cp-text-primary)', margin: 0, fontFamily: 'Sora, sans-serif' }}>
+                        No work items yet
+                      </p>
+                      <p style={{ fontSize: 14, color: 'var(--cp-text-tertiary)', margin: 0, textAlign: 'center' }}>
+                        Work items will appear here once they are created or synced.
+                      </p>
+                    </div>
+                  </td>
+                </tr>
               ) : epics.map(epic => (
                 <React.Fragment key={epic.id}>
                   <tr>
@@ -189,9 +282,15 @@ export default function ProjectAllWorkView({ projectKey }: Props) {
                         </span>
                       </div>
                     </td>
-                    <td style={{ color: 'var(--cp-text-tertiary)', fontSize: 13 }}>{epic.parentKey ?? 'None'}</td>
-                    <td><JiraStatusLozenge status={epic.status} interactive /></td>
-                    <td style={{ color: 'var(--cp-text-tertiary)', fontSize: 13 }}>{epic.fixVersion ?? 'None'}</td>
+                    <td style={{ color: 'var(--cp-text-tertiary)', fontSize: 13 }}>{epic.parentKey ?? '—'}</td>
+                    <td>
+                      <JiraStatusLozenge
+                        status={epic.status}
+                        interactive
+                        onStatusChange={(newStatus) => updateStatus({ id: epic.id, status: newStatus })}
+                      />
+                    </td>
+                    <td style={{ color: 'var(--cp-text-tertiary)', fontSize: 13 }}>{epic.fixVersion ?? '—'}</td>
                     <td>
                       {epic.assignee ? (
                         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -213,39 +312,9 @@ export default function ProjectAllWorkView({ projectKey }: Props) {
                     </td>
                   </tr>
 
-                  {expandedRows.has(epic.id) && childrenOf(epic.id).map(child => (
-                    <tr key={child.id} style={{ background: 'rgba(248,250,252,0.5)' }}>
-                      <td style={{ textAlign: 'center' }}>
-                        <input type="checkbox" style={{ width: 14, height: 14 }} />
-                      </td>
-                      <td>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, paddingLeft: 38 }}>
-                          <WorkItemTypeIcon type={child.type} size={16} />
-                          <a className="ph-iss-key" href="#">{child.jiraKey}</a>
-                          <span style={{ fontSize: 14, color: 'var(--cp-text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                            {child.summary}
-                          </span>
-                        </div>
-                      </td>
-                      <td style={{ color: 'var(--cp-text-tertiary)', fontSize: 13 }}>{epic.jiraKey}</td>
-                      <td><JiraStatusLozenge status={child.status} interactive /></td>
-                      <td style={{ color: 'var(--cp-text-tertiary)', fontSize: 13 }}>{child.fixVersion ?? 'None'}</td>
-                      <td>
-                        {child.assignee ? (
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                            <div style={{ width: 24, height: 24, borderRadius: '50%', background: child.assignee.color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: '#fff', flexShrink: 0 }}>
-                              {child.assignee.initials}
-                            </div>
-                            <span style={{ fontSize: 13 }}>{child.assignee.name}</span>
-                          </div>
-                        ) : <span style={{ color: 'var(--cp-text-tertiary)', fontSize: 13 }}>—</span>}
-                      </td>
-                      <td style={{ color: 'var(--cp-text-tertiary)', fontSize: 12, fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: 'tabular-nums' }}>
-                        {new Date(child.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                      </td>
-                      <td /><td />
-                    </tr>
-                  ))}
+                  {expandedRows.has(epic.id) && (
+                    <ExpandedChildren epicId={epic.id} epicKey={epic.jiraKey} />
+                  )}
                 </React.Fragment>
               ))}
             </tbody>
@@ -268,7 +337,7 @@ export default function ProjectAllWorkView({ projectKey }: Props) {
               Created <ChevronDown size={12} />
             </div>
             <div style={{ flex: 1, overflowY: 'auto' }}>
-              {[...epics, ...items.filter(i => i.type !== 'epic')].map(item => (
+              {items.map(item => (
                 <div key={item.id}
                   onClick={() => setSelectedItem(item.id)}
                   style={{
