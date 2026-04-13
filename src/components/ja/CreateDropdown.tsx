@@ -4,7 +4,6 @@ import { Plus } from "lucide-react";
 import { useEnabledModules } from "@/hooks/useModules";
 import { useCreateMenuVisibility } from "@/hooks/useCreateMenuVisibility";
 import { WorkItemIcon } from "@/components/ja/icons/WorkItemIcon";
-// CatalystCreateTheme removed
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,6 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { getWorkItemsByCategory, WorkItemType } from "@/config/workItemConfig";
+import { CreateStoryModal } from "@/components/workhub/create-story";
 
 // Get items organized by category from centralized config
 const enterpriseItems = getWorkItemsByCategory('enterprise').map(item => ({
@@ -49,7 +49,7 @@ const otherItems = getWorkItemsByCategory('other').map(item => ({
 export function CreateDropdown() {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
-  const [themeDialogOpen, setThemeDialogOpen] = useState(false); // unused, kept for type safety
+  const [createStoryOpen, setCreateStoryOpen] = useState(false);
   const { isModuleEnabled } = useEnabledModules();
   const { isWorkItemVisible } = useCreateMenuVisibility();
 
@@ -97,8 +97,12 @@ export function CreateDropdown() {
   const handleItemClick = (type: string) => {
     setOpen(false);
     
-    // Theme and snapshot creation removed
-    
+    // Open CreateStoryModal for story, epic, feature, task, bug etc.
+    const modalTypes = ['story', 'epic', 'feature', 'defect', 'task'];
+    if (modalTypes.includes(type)) {
+      setCreateStoryOpen(true);
+      return;
+    }
     
     // Handle incident creation - route to create page
     if (type === 'incident') {
@@ -109,10 +113,6 @@ export function CreateDropdown() {
     // Route to the appropriate page with create parameter
     const routeMap: Record<string, string> = {
       'business-request': '/producthub?create=true',
-      'epic': '/items/epics?create=true',
-      'feature': '/features?create=true',
-      'story': '/stories?create=true',
-      'defect': '/items/defects?create=true',
       'objective': '/enterprise/okr-hub?create=true',
       'dependency': '/dependencies?create=true',
       'risk': '/enterprise/risks?create=true',
@@ -185,7 +185,11 @@ export function CreateDropdown() {
         </DropdownMenuContent>
       </DropdownMenu>
 
-      {/* Theme Create Dialog removed */}
+      {/* Create Story Modal */}
+      <CreateStoryModal
+        open={createStoryOpen}
+        onClose={() => setCreateStoryOpen(false)}
+      />
     </>
   );
 }
