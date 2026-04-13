@@ -441,6 +441,13 @@ export function IssueContentView({
           </button>
         </div>
       </div>
+
+      {/* Create Story Modal */}
+      <CreateStoryModal
+        open={createStoryOpen}
+        onClose={() => setCreateStoryOpen(false)}
+        projectId={item?.project_id}
+      />
     </div>
   );
 }
