@@ -3,13 +3,15 @@
  * Left side: breadcrumb, title, actions, key details, description, subtasks, linked work, activity
  * Right side: collapsible Details sidebar (Assignee, Priority, Reporter, Labels, Fix versions, MDT Ref)
  */
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef } from 'react';
 import { ChevronDown, ChevronRight, ChevronLeft, Link2, ArrowRightLeft, MoreHorizontal, Pencil, Plus, Settings, MessageSquare, History as HistoryIcon, Clock, FileText, Send, Minus, Eye, Share2 } from 'lucide-react';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { StatusLozenge } from '@/components/ui/StatusLozenge';
 import { useAuth } from '@/hooks/useAuth';
 import type { AllWorkItem } from '@/types/allwork.types';
 import { formatDistanceToNow, format } from 'date-fns';
+import { SubtasksPanel } from './sections/SubtasksPanel';
+import { LocalStorageBackedProvider } from '@/lib/subtasks-provider';
 
 interface Props {
   issueKey: string | null;
@@ -95,6 +97,7 @@ export function IssueContentView({
   const [activityTab, setActivityTab] = useState<ActivityTab>('all');
   const [commentText, setCommentText] = useState('');
   const [posting, setPosting] = useState(false);
+  const subtasksProvider = useMemo(() => new LocalStorageBackedProvider(), []);
 
   // Section collapse
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
@@ -112,9 +115,7 @@ export function IssueContentView({
     </div>;
   }
 
-  const doneCount = childItems.filter(c => (c.status_category ?? '').toLowerCase().includes('done')).length;
   const totalChildren = childItems.length || (item?.child_count ?? 0);
-  const donePercent = totalChildren > 0 ? Math.round((doneCount / totalChildren) * 100) : 0;
 
   const handleComment = async () => {
     if (!commentText.trim() || !createComment) return;
@@ -225,55 +226,12 @@ export function IssueContentView({
             )}
           </div>
 
-          {/* ── Subtasks / Child work items ── */}
-          {totalChildren > 0 && (
-            <div className="awSection">
-              <div className="awSectionHead" onClick={() => toggle('subtasks')}>
-                <span className="awSectionLabel">
-                  {collapsed.subtasks ? <ChevronRight style={{ width: 16, height: 16 }} /> : <ChevronDown style={{ width: 16, height: 16 }} />}
-                  Subtasks
-                  <span className="awCount">{totalChildren}</span>
-                </span>
-                <div className="awSectionActions">
-                  <button className="awPill" style={{ height: 22 }}><MoreHorizontal style={{ width: 12, height: 12 }} /></button>
-                  <button className="awPill" style={{ height: 22, fontSize: 12 }}>⊞</button>
-                  <button className="awPill" style={{ height: 22 }}><Plus style={{ width: 12, height: 12 }} /></button>
-                </div>
-              </div>
-              {!collapsed.subtasks && (
-                <div className="awSectionBody">
-                  <div className="awProgress">
-                    <div className="awProgressBar"><div className="awProgressFill" style={{ width: `${donePercent}%` }} /></div>
-                    <span className="awProgressText">{donePercent}% Done</span>
-                  </div>
-                  <table className="awSubtasksTable">
-                    <thead><tr>
-                      <th>Work</th><th>Priority</th><th>Assignee</th><th>Status</th>
-                    </tr></thead>
-                    <tbody>
-                      {childItems.map(ch => (
-                        <tr key={ch.issue_key}>
-                          <td style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                            <JiraIssueTypeIcon type={ch.issue_type} size={14} />
-                            <span style={{ color: 'var(--aw-blue)', fontWeight: 500, fontSize: 12, fontFamily: "'JetBrains Mono', monospace" }}>{ch.issue_key}</span>
-                            <span style={{ fontSize: 13 }}>{ch.summary}</span>
-                          </td>
-                          <td>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                              <PriorityIcon priority={ch.priority} />
-                              <span style={{ fontSize: 12 }}>{capitalize(ch.priority)}</span>
-                            </div>
-                          </td>
-                          <td>{ch.assignee_display_name ? <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><Avatar name={ch.assignee_display_name} url={ch.assignee_avatar} size={20} /><span style={{ fontSize: 12 }}>{ch.assignee_display_name.split(' ')[0].slice(0,4)}...</span></div> : <span style={{ color: 'var(--aw-text-subtle)', fontSize: 12 }}>—</span>}</td>
-                          <td><StatusLozenge status={ch.status} /></td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </div>
-          )}
+          {/* ── Subtasks Panel (full Jira-parity) ── */}
+          <SubtasksPanel
+            parentKey={issueKey!}
+            provider={subtasksProvider}
+            externalChildren={childItems}
+          />
 
           {/* ── Linked work items ── */}
           <div className="awSection">

@@ -604,6 +604,182 @@
   flex-shrink: 0;
 }
 
+/* ── SubtasksPanel (st-*) ── */
+.stTable {
+  width: 100%;
+  border-collapse: collapse;
+  font: 400 13px/18px system-ui, -apple-system, sans-serif;
+}
+.stTh {
+  text-align: left;
+  font: 600 11px/16px system-ui, -apple-system, sans-serif;
+  color: var(--aw-text-subtle);
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--aw-border);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+.stTd {
+  padding: 6px 8px;
+  border-bottom: 1px solid rgba(9,30,66,0.06);
+  vertical-align: middle;
+}
+.stTr:hover .stTd { background: var(--aw-hover); }
+
+.stKey {
+  color: var(--aw-blue);
+  font: 500 12px/16px 'JetBrains Mono', monospace;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.stKey:hover { text-decoration: underline; }
+.stSummary {
+  font: 400 13px/18px system-ui, -apple-system, sans-serif;
+  color: var(--aw-text);
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: block;
+  max-width: 300px;
+}
+.stSummary:hover { color: var(--aw-blue); }
+.stPriorityCell {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+}
+.stAssigneeCell {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+}
+.stAvatar {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font: 700 9px/1 system-ui;
+  color: #fff;
+}
+.stUnassigned { color: var(--aw-text-subtle); font-size: 12px; }
+.stDate { font-size: 12px; color: var(--aw-text-subtle); white-space: nowrap; }
+
+/* Inline create row */
+.stCreateRow .stTd { background: #FFFDE7; }
+.stCreateInput {
+  width: 100%;
+  border: 1px solid var(--aw-border);
+  border-radius: 4px;
+  padding: 4px 8px;
+  font: 400 13px/18px system-ui, -apple-system, sans-serif;
+  outline: none;
+}
+.stCreateInput:focus { border-color: var(--aw-blue); }
+.stErrorText {
+  color: #EF4444;
+  font-size: 11px;
+  margin-top: 2px;
+}
+
+/* Icon buttons */
+.stIconBtn { padding: 0 5px !important; height: 24px; }
+
+/* Row actions */
+.stRowAction {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--aw-text-subtle);
+  padding: 2px;
+  border-radius: 3px;
+  opacity: 0;
+  display: flex;
+  align-items: center;
+}
+.stTr:hover .stRowAction { opacity: 1; }
+.stRowAction:hover { background: var(--aw-hover); color: var(--aw-text); }
+.stRowMenu {
+  position: absolute;
+  right: 0;
+  top: 24px;
+  background: #fff;
+  border: 1px solid var(--aw-border);
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+  z-index: 20;
+  min-width: 120px;
+  padding: 4px;
+}
+.stRowMenuItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  border: none;
+  background: none;
+  padding: 6px 8px;
+  font: 400 13px/18px system-ui;
+  color: #EF4444;
+  cursor: pointer;
+  border-radius: 4px;
+}
+.stRowMenuItem:hover { background: #FEF2F2; }
+
+/* Column picker popover */
+.stColumnPicker {
+  position: absolute;
+  right: 40px;
+  top: 32px;
+  background: #fff;
+  border: 1px solid var(--aw-border);
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+  z-index: 30;
+  min-width: 160px;
+  padding: 8px;
+}
+.stPickerTitle {
+  font: 600 12px/16px system-ui;
+  color: var(--aw-text-subtle);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 4px 4px 8px;
+}
+.stPickerRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px;
+  font: 400 13px/18px system-ui;
+  color: var(--aw-text);
+  cursor: pointer;
+  border-radius: 4px;
+}
+.stPickerRow:hover { background: var(--aw-hover); }
+.stPickerRow input[type="checkbox"] {
+  accent-color: var(--aw-blue);
+}
+
+/* Skeleton loading */
+.stLoading { padding: 8px 0; }
+.stSkeleton {
+  width: 100%;
+  height: 28px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #F0F0F0 25%, #E8E8E8 50%, #F0F0F0 75%);
+  background-size: 200% 100%;
+  animation: stShimmer 1.2s infinite;
+  margin-bottom: 4px;
+}
+@keyframes stShimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
 /* ── Dark mode ── */
 .dark .awShell, .dark .awCol, .dark .awHeader,
 .dark .awIssueContent, .dark .awDetailsSidebar { background: #0A0A0A; }
@@ -620,3 +796,14 @@
 .dark .awSubtasksTable td { border-color: #2E2E2E; }
 .dark .awFieldValue { color: #EDEDED; }
 .dark .awCommentBox { border-color: #2E2E2E; }
+.dark .stTd { border-color: #2E2E2E; }
+.dark .stTh { border-color: #2E2E2E; }
+.dark .stTr:hover .stTd { background: #1F1F1F; }
+.dark .stKey { color: #5B9AFF; }
+.dark .stSummary { color: #EDEDED; }
+.dark .stCreateRow .stTd { background: #1A1A0A; }
+.dark .stCreateInput { background: #1A1A1A; border-color: #2E2E2E; color: #EDEDED; }
+.dark .stRowMenu { background: #1A1A1A; border-color: #2E2E2E; }
+.dark .stColumnPicker { background: #1A1A1A; border-color: #2E2E2E; }
+.dark .stPickerRow { color: #EDEDED; }
+.dark .stSkeleton { background: linear-gradient(90deg, #2E2E2E 25%, #3A3A3A 50%, #2E2E2E 75%); background-size: 200% 100%; }
