@@ -965,28 +965,36 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
       )}
 
       {/* Jira-style bulk action bar */}
-      {selectedIds.size > 0 && (
-        <JiraBulkActionBar
-          selectedIds={Array.from(selectedIds)}
-          items={flatItems.map(s => ({ id: s.id, issue_key: s.story_key, title: s.title, summary: s.title, status: s.status, priority: s.priority ?? undefined, assignee_name: s.assignee_name ?? undefined }))}
-          onClear={() => setSelectedIds(new Set())}
-          onDelete={async (ids) => {
-            // Separate catalyst vs ph_issues items
-            const catIds = ids.filter(id => /^[0-9a-f]{8}-/.test(id));
-            const phIds = ids.filter(id => !/^[0-9a-f]{8}-/.test(id));
-            if (catIds.length > 0) {
-              await supabase.from('catalyst_issues').delete().in('id', catIds);
-            }
-            if (phIds.length > 0) {
-              await supabase.from('ph_issues').delete().in('id', phIds);
-            }
-            toast.success(`${ids.length} item${ids.length !== 1 ? 's' : ''} deleted`);
-            setSelectedIds(new Set());
-            queryClient.invalidateQueries({ queryKey: ['backlog-stories', projectId] });
-          }}
-          entityLabel="work item"
-        />
-      )}
+      {selectedIds.size > 0 && (() => {
+        const selectedItems = flatItems.filter(s => selectedIds.has(s.id));
+        const catItems = selectedItems.filter(s => (s as any).source === 'catalyst');
+        const jiraItems = selectedItems.filter(s => (s as any).source === 'jira');
+        return (
+          <JiraBulkActionBar
+            selectedIds={Array.from(selectedIds)}
+            items={selectedItems.map(s => ({ id: s.id, issue_key: s.story_key, title: s.title, summary: s.title, status: s.status, priority: s.priority ?? undefined, assignee_name: s.assignee_name ?? undefined }))}
+            onClear={() => setSelectedIds(new Set())}
+            onDelete={catItems.length > 0 ? async (ids) => {
+              // Only delete Catalyst-native items
+              const catIds = catItems.map(s => s.id);
+              const { error } = await supabase.from('catalyst_issues').delete().in('id', catIds);
+              if (error) throw error;
+              const skipped = jiraItems.length;
+              const deleted = catIds.length;
+              if (skipped > 0) {
+                toast.success(`${deleted} item${deleted !== 1 ? 's' : ''} deleted. ${skipped} Jira-synced item${skipped !== 1 ? 's' : ''} skipped (delete in Jira).`);
+              } else {
+                toast.success(`${deleted} item${deleted !== 1 ? 's' : ''} deleted`);
+              }
+              setSelectedIds(new Set());
+              queryClient.invalidateQueries({ queryKey: ['backlog-stories', projectId] });
+            } : async () => {
+              toast.info('Jira-synced items cannot be deleted from Catalyst. Delete them in Jira instead.');
+            }}
+            entityLabel="work item"
+          />
+        );
+      })()}
     </div>
   );
 }
