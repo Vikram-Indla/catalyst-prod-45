@@ -1,9 +1,9 @@
 /**
- * WorkItemDetailPanel — Split view detail panel
- * Stage E: RTL support, real children, description display, design precision
+ * WorkItemDetailPanel — 3-column split: Left (list) + Center (body) + Right (details)
+ * The LEFT panel is rendered by the parent; this component renders CENTER + RIGHT.
  */
-import React from 'react';
-import { Eye, Share2, MoreHorizontal, ChevronRight, Plus } from 'lucide-react';
+import React, { useState } from 'react';
+import { Eye, Share2, MoreHorizontal, ChevronRight, ChevronDown, Plus, Trash2 } from 'lucide-react';
 import { JiraStatusLozenge } from '@/components/ui/JiraStatusLozenge';
 import { WorkItemTypeIcon } from '@/components/icons/WorkItemTypeIcon';
 import { useWorkItemChildren, useUpdateWorkItemStatus } from '@/hooks/useProjectListItems';
@@ -18,189 +18,340 @@ interface Props {
 
 const isRTL = (text: string) => /[\u0600-\u06FF]/.test(text);
 
-export function WorkItemDetailPanel({ item, allItems, onNavigate }: Props) {
-  const currentIdx = allItems.findIndex(i => i.id === item.id);
-  const isEpic = item.type === 'epic';
-  const { data: children = [], isLoading: childrenLoading } = useWorkItemChildren(
-    isEpic ? item.jiraKey : undefined,
-    isEpic,
-  );
+/* ── Tokens ── */
+const V = {
+  textPrimary: '#172B4D',
+  textSecondary: '#505258',
+  textMuted: '#6B778C',
+  border: '#DFE1E6',
+  borderSubtle: '#F0F1F2',
+  surface: '#FFFFFF',
+  surfaceAlt: '#FAFBFC',
+  keyColor: '#0C66E4',
+  brand: '#2563EB',
+  progressGreen: '#2D7A2D',
+  progressBlue: '#3B82F6',
+  avatarPurple: '#6554C0',
+  avatarBlue: '#0C66E4',
+};
+
+function capitalize(s: string): string {
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
+/* ── Center Panel: Body ── */
+function CenterBody({ item, children: childItems, childrenLoading }: {
+  item: WorkItem;
+  children: WorkItem[];
+  childrenLoading: boolean;
+}) {
   const { mutate: updateStatus } = useUpdateWorkItemStatus();
-
-  const doneChildren = children.filter(c => c.status === 'done').length;
-  const pctDone = children.length > 0 ? Math.round(doneChildren / children.length * 100) : 0;
-  const inprogChildren = children.filter(c => ['in_progress', 'in_dev', 'in_qa', 'ready_for_qa', 'in_uat', 'in_production'].includes(c.status)).length;
-  const inprogPct = children.length > 0 ? Math.round(inprogChildren / children.length * 100) : 0;
-
+  const isEpic = item.type === 'epic';
   const summaryRtl = isRTL(item.summary);
 
+  const doneCount = childItems.filter(c => c.status === 'done').length;
+  const pctDone = childItems.length > 0 ? Math.round(doneCount / childItems.length * 100) : 0;
+  const inprogCount = childItems.filter(c => ['in_progress', 'in_dev', 'in_qa', 'ready_for_qa', 'in_uat', 'in_production'].includes(c.status)).length;
+  const inprogPct = childItems.length > 0 ? Math.round(inprogCount / childItems.length * 100) : 0;
+
   return (
-    <div style={{ flex: 1, display: 'flex', overflow: 'hidden', minWidth: 400 }}>
-      {/* Main content */}
-      <div style={{ flex: 1, overflowY: 'auto', padding: '16px 16px 16px 24px' }}>
-        {/* Nav row */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 12 }}>
-          <WorkItemTypeIcon type={item.type} size={20} />
-          <span style={{ fontSize: 13, color: 'var(--cp-text-tertiary)', fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontVariantNumeric: 'tabular-nums' }}>
-            {item.jiraKey}
-          </span>
-          <button disabled={currentIdx <= 0}
-            onClick={() => currentIdx > 0 && onNavigate(allItems[currentIdx - 1].id)}
-            style={{ width: 28, height: 28, border: '1px solid var(--cp-border-default)', borderRadius: 4, background: 'var(--cp-bg-page)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--cp-text-secondary)', opacity: currentIdx <= 0 ? 0.3 : 1 }}>
-            ∧
-          </button>
-          <button disabled={currentIdx >= allItems.length - 1}
-            onClick={() => currentIdx < allItems.length - 1 && onNavigate(allItems[currentIdx + 1].id)}
-            style={{ width: 28, height: 28, border: '1px solid var(--cp-border-default)', borderRadius: 4, background: 'var(--cp-bg-page)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--cp-text-secondary)', opacity: currentIdx >= allItems.length - 1 ? 0.3 : 1 }}>
-            ∨
-          </button>
-          <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 4 }}>
-            <button style={{ height: 32, padding: '0 10px', border: '1px solid #2563EB', borderRadius: 4, background: 'rgba(37,99,235,0.08)', display: 'flex', alignItems: 'center', gap: 5, fontSize: 14, color: '#2563EB', cursor: 'pointer', fontWeight: 500, fontFamily: 'Inter, sans-serif' }}>
-              <Eye size={13} /> 1
-            </button>
-            <button className="ph-icon-btn"><Share2 size={14} /></button>
-            <button className="ph-icon-btn"><MoreHorizontal size={14} /></button>
+    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0, borderRight: `1px solid ${V.border}` }}>
+      <div style={{ flex: 1, overflowY: 'auto', padding: '18px 18px 30px' }}>
+        {/* Header row: key + nav */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <WorkItemTypeIcon type={item.type} size={18} />
+            <span style={{ fontSize: 12, color: V.textMuted, fontFamily: "'JetBrains Mono', monospace", fontWeight: 500 }}>
+              {item.jiraKey}
+            </span>
+          </div>
+          <div style={{ display: 'flex', gap: 4 }}>
+            <SmallBtn>▴</SmallBtn>
+            <SmallBtn>▾</SmallBtn>
           </div>
         </div>
 
-        {/* Title */}
-        <h2
-          dir={summaryRtl ? 'rtl' : 'ltr'}
-          style={{ fontSize: 22, fontWeight: 650, lineHeight: 1.3, color: 'var(--cp-text-primary)', fontFamily: 'Sora, sans-serif', marginBottom: 12, textAlign: summaryRtl ? 'right' : 'left' }}
-        >
-          {item.summary || '(No title)'}
-        </h2>
-
-        {/* Quick actions */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
-          <JiraStatusLozenge
-            status={item.status}
-            interactive
-            onStatusChange={(newStatus) => updateStatus({ id: item.id, status: newStatus })}
-          />
-          <button style={{ height: 32, padding: '0 10px', borderRadius: 4, border: '1px solid var(--cp-border-default)', background: 'var(--cp-bg-page)', display: 'flex', alignItems: 'center', gap: 5, fontSize: 14, cursor: 'pointer', color: 'var(--cp-text-primary)', fontFamily: 'Inter, sans-serif' }}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="#7C3AED"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z" /></svg>
-            AI Suggestions
-          </button>
+        {/* Title row */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 18 }}>
+          <div style={{ width: 26, height: 26, borderRadius: 6, background: '#42526E', flexShrink: 0 }} />
+          <h2
+            dir={summaryRtl ? 'rtl' : 'ltr'}
+            style={{
+              margin: 0, fontSize: 28, fontWeight: 700, color: V.textPrimary,
+              fontFamily: 'Sora, sans-serif', lineHeight: 1.25,
+            }}
+          >
+            {item.summary || '(No title)'}
+          </h2>
         </div>
 
-        {/* Description */}
-        <div style={{ marginBottom: 16 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 14, fontWeight: 500, color: 'var(--cp-text-secondary)', cursor: 'pointer', padding: '4px 0', marginBottom: 8, fontFamily: 'Inter, sans-serif' }}>
-            <ChevronRight size={14} />
+        {/* Description section */}
+        <div style={{ borderTop: `1px solid ${V.borderSubtle}`, paddingTop: 14, marginTop: 14 }}>
+          <div style={{ fontSize: 14, fontWeight: 800, color: V.textPrimary, marginBottom: 10, fontFamily: 'Inter, sans-serif' }}>
             Description
           </div>
           <div
             dir={item.description && isRTL(item.description) ? 'rtl' : 'ltr'}
-            style={{ fontSize: 14, color: item.description ? 'var(--cp-text-primary)' : 'var(--cp-text-tertiary)', paddingLeft: 20, fontFamily: 'Inter, sans-serif', lineHeight: 1.6 }}
+            style={{
+              fontSize: 14, color: item.description ? V.textPrimary : V.textMuted,
+              fontFamily: 'Inter, sans-serif', lineHeight: 1.6,
+            }}
           >
-            {item.description || 'No description added.'}
+            {item.description || <span style={{ color: V.textMuted }}>—</span>}
           </div>
         </div>
 
         {/* Child work items */}
         {isEpic && (
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, flex: 1, fontSize: 14, fontWeight: 600, color: 'var(--cp-text-primary)', cursor: 'pointer', fontFamily: 'Inter, sans-serif' }}>
-                <ChevronRight size={14} style={{ transform: 'rotate(90deg)' }} />
+          <div style={{ borderTop: `1px solid ${V.borderSubtle}`, paddingTop: 14, marginTop: 14 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+              <span style={{ fontSize: 14, fontWeight: 800, color: V.textPrimary, fontFamily: 'Inter, sans-serif' }}>
                 Child work items
-              </div>
-              <div style={{ display: 'flex', gap: 2 }}>
-                <button className="ph-icon-btn" style={{ width: 24, height: 24 }}><MoreHorizontal size={13} /></button>
-                <button className="ph-icon-btn" style={{ width: 24, height: 24 }}>
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2" /><line x1="9" y1="3" x2="9" y2="21" /><line x1="15" y1="3" x2="15" y2="21" /></svg>
-                </button>
-                <button className="ph-icon-btn" style={{ width: 24, height: 24 }}><Plus size={13} /></button>
+              </span>
+              <div style={{ display: 'flex', gap: 4 }}>
+                <IconBtn><MoreHorizontal size={14} /></IconBtn>
+                <IconBtn><Trash2 size={14} /></IconBtn>
+                <IconBtn><Plus size={14} /></IconBtn>
               </div>
             </div>
 
-            {/* §1.6: Only show progress bar when children > 0 */}
-            {children.length > 0 && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-                <div style={{ flex: 1, height: 8, borderRadius: 4, background: '#E2E8F0', overflow: 'hidden', display: 'flex' }}>
-                  {pctDone > 0 && <div style={{ width: `${pctDone}%`, background: '#16A34A', borderRadius: '4px 0 0 4px' }} />}
-                  {inprogPct > 0 && <div style={{ width: `${inprogPct}%`, background: '#3B82F6' }} />}
+            {/* Progress bar */}
+            {childItems.length > 0 && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '12px 0' }}>
+                <div style={{
+                  height: 8, background: V.borderSubtle, borderRadius: 999, width: 220,
+                  overflow: 'hidden', border: `1px solid #E6E8EA`, display: 'flex',
+                }}>
+                  {pctDone > 0 && <div style={{ width: `${pctDone}%`, background: V.progressGreen }} />}
+                  {inprogPct > 0 && <div style={{ width: `${inprogPct}%`, background: V.progressBlue }} />}
                 </div>
-                <span style={{ fontSize: 12, color: 'var(--cp-text-secondary)', whiteSpace: 'nowrap', fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: 'tabular-nums' }}>
+                <span style={{ fontSize: 12, color: V.textMuted, fontFamily: "'JetBrains Mono', monospace" }}>
                   {pctDone}% Done
                 </span>
               </div>
             )}
 
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-              <thead>
-                <tr>
-                  <th style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--cp-text-tertiary)', padding: '0 8px', height: 32, textAlign: 'left', borderBottom: '0.75px solid rgba(15, 23, 42, 0.08)', background: 'var(--cp-bg-sunken)', fontFamily: 'Inter, sans-serif' }}>
-                    WORK
-                  </th>
-                  <th style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--cp-text-tertiary)', padding: '0 8px', height: 32, textAlign: 'left', borderBottom: '0.75px solid rgba(15, 23, 42, 0.08)', background: 'var(--cp-bg-sunken)', width: 140, fontFamily: 'Inter, sans-serif' }}>
-                    STATUS
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {childrenLoading ? (
-                  <tr><td colSpan={2} style={{ textAlign: 'center', padding: 16, color: 'var(--cp-text-tertiary)', fontSize: 13 }}>Loading…</td></tr>
-                ) : children.length === 0 ? (
-                  <tr><td colSpan={2} style={{ textAlign: 'center', padding: 16, color: 'var(--cp-text-tertiary)', fontSize: 13, fontFamily: 'Inter, sans-serif' }}>No child items yet</td></tr>
-                ) : children.map(child => (
-                  <tr key={child.id} style={{ cursor: 'pointer', transition: 'background 100ms' }}
-                    onMouseEnter={e => (e.currentTarget as HTMLTableRowElement).style.background = 'rgba(0,0,0,0.04)'}
-                    onMouseLeave={e => (e.currentTarget as HTMLTableRowElement).style.background = 'transparent'}
-                  >
-                    <td style={{ padding: '0 8px', height: 36, maxHeight: 36, borderBottom: '0.75px solid rgba(15, 23, 42, 0.08)', verticalAlign: 'middle', overflow: 'hidden' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            {/* Children table */}
+            <div style={{ border: `1px solid ${V.border}`, borderRadius: 10, overflow: 'hidden', background: V.surface }}>
+              <div style={{
+                padding: '10px 12px', fontWeight: 700, borderBottom: `1px solid ${V.border}`,
+                background: V.surfaceAlt, color: V.textPrimary, fontSize: 13, fontFamily: 'Inter, sans-serif',
+              }}>
+                Work
+              </div>
+              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <tbody>
+                  {childrenLoading ? (
+                    <tr><td style={{ padding: 16, textAlign: 'center', color: V.textMuted, fontSize: 13 }}>Loading…</td></tr>
+                  ) : childItems.length === 0 ? (
+                    <tr><td style={{ padding: 16, textAlign: 'center', color: V.textMuted, fontSize: 13 }}>No child items yet</td></tr>
+                  ) : childItems.map(child => (
+                    <tr
+                      key={child.id}
+                      style={{ cursor: 'pointer' }}
+                      onMouseEnter={e => (e.currentTarget.style.background = '#F7F8F9')}
+                      onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                    >
+                      <td style={{ width: 34, textAlign: 'center', color: V.textMuted, borderBottom: `1px solid ${V.borderSubtle}`, padding: '10px 4px' }}>
                         <WorkItemTypeIcon type={child.type} size={14} />
-                        <a className="ph-iss-key" style={{ fontSize: 13 }} href="#">{child.jiraKey}</a>
-                        <span style={{ fontSize: 13, color: 'var(--cp-text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontFamily: 'Inter, sans-serif' }}>{child.summary || '(No title)'}</span>
-                      </div>
-                    </td>
-                    <td style={{ padding: '0 8px', height: 36, maxHeight: 36, borderBottom: '0.75px solid rgba(15, 23, 42, 0.08)', verticalAlign: 'middle' }}>
-                      <JiraStatusLozenge status={child.status} />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                      </td>
+                      <td style={{ width: 90, borderBottom: `1px solid ${V.borderSubtle}`, padding: '10px 4px' }}>
+                        <a href="#" onClick={e => e.preventDefault()} style={{ color: V.keyColor, textDecoration: 'none', fontWeight: 700, fontSize: 13 }}>
+                          {child.jiraKey}
+                        </a>
+                      </td>
+                      <td style={{ borderBottom: `1px solid ${V.borderSubtle}`, padding: '10px 8px', color: V.textPrimary, fontSize: 13, fontFamily: 'Inter, sans-serif' }}>
+                        {child.summary || '(No title)'}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
       </div>
+    </div>
+  );
+}
 
-      {/* Right sidebar */}
-      <div style={{ width: 240, flexShrink: 0, borderLeft: '0.75px solid rgba(15, 23, 42, 0.08)', overflowY: 'auto', padding: '12px 16px' }}>
-        <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--cp-text-primary)', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 4, cursor: 'pointer', fontFamily: 'Inter, sans-serif' }}>
-          <ChevronRight size={13} style={{ transform: 'rotate(90deg)' }} /> Details
-        </div>
+/* ── Right Panel: Details Accordion ── */
+function RightDetails({ item }: { item: WorkItem }) {
+  const [detailsOpen, setDetailsOpen] = useState(true);
+  const [devOpen, setDevOpen] = useState(false);
+  const [moreOpen, setMoreOpen] = useState(false);
+  const { mutate: updateStatus } = useUpdateWorkItemStatus();
 
-        {[
-          { label: 'Assignee', value: item.assignee?.name ?? 'Unassigned', extra: 'Assign to me' },
-          { label: 'Priority', value: (item.priority ?? 'Medium').charAt(0).toUpperCase() + (item.priority ?? 'medium').slice(1) },
-          { label: 'Reporter', value: item.reporter?.name ?? '—' },
-          { label: 'Fix Version', value: item.fixVersion ?? '—' },
-        ].map(field => (
-          <div key={field.label} style={{ marginBottom: 14 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--cp-text-tertiary)', marginBottom: 3, textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: 'Inter, sans-serif' }}>
-              {field.label}
-            </div>
-            <div style={{ fontSize: 14, color: 'var(--cp-text-primary)', display: 'flex', alignItems: 'center', gap: 6, fontFamily: 'Inter, sans-serif' }}>
-              {field.value}
-            </div>
-            {field.extra && (
-              <a style={{ fontSize: 12, color: '#2563EB', cursor: 'pointer', textDecoration: 'none' }}
-                onMouseEnter={e => (e.currentTarget as HTMLAnchorElement).style.textDecoration = 'underline'}
-                onMouseLeave={e => (e.currentTarget as HTMLAnchorElement).style.textDecoration = 'none'}>
-                {field.extra}
+  const initials = item.assignee?.initials || 'NA';
+  const reporterInitials = item.reporter?.name
+    ? item.reporter.name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
+    : 'VK';
+
+  return (
+    <div style={{ width: 420, flexShrink: 0, display: 'flex', flexDirection: 'column', minHeight: 0, background: V.surface }}>
+      {/* Sticky header */}
+      <div style={{
+        position: 'sticky', top: 0, zIndex: 5,
+        display: 'flex', alignItems: 'center', gap: 10,
+        padding: 12, borderBottom: `1px solid ${V.border}`, background: V.surface,
+      }}>
+        <button style={{ ...headerBtnStyle }}>
+          <Eye size={14} />
+        </button>
+        <JiraStatusLozenge
+          status={item.status}
+          interactive
+          onStatusChange={(newStatus) => updateStatus({ id: item.id, status: newStatus })}
+        />
+        <button style={{ ...headerBtnStyle, marginLeft: 'auto', fontSize: 13, fontWeight: 600, fontFamily: 'Inter, sans-serif' }}>
+          Improve Epic
+        </button>
+      </div>
+
+      {/* Scrollable accordion body */}
+      <div style={{ flex: 1, overflowY: 'auto', padding: '10px 12px 18px' }}>
+        {/* Details section */}
+        <AccordionSection title="Details" open={detailsOpen} onToggle={() => setDetailsOpen(v => !v)}>
+          <KVRow label="Assignee">
+            <div>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                <div style={{ ...avatarStyle, background: V.avatarPurple }}>{initials}</div>
+                <span style={{ color: V.textPrimary, fontSize: 14, fontFamily: 'Inter, sans-serif' }}>
+                  {item.assignee?.name ?? 'Unassigned'}
+                </span>
+              </div>
+              <a href="#" onClick={e => e.preventDefault()} style={{ display: 'block', marginTop: 6, color: V.keyColor, textDecoration: 'none', fontWeight: 700, fontSize: 13 }}>
+                Assign to me
               </a>
-            )}
-          </div>
-        ))}
+            </div>
+          </KVRow>
+          <KVRow label="Priority">
+            <span style={{ fontSize: 14, color: V.textPrimary }}>{capitalize(item.priority)}</span>
+          </KVRow>
+          <KVRow label="Reporter">
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+              <div style={{ ...avatarStyle, background: V.avatarBlue }}>{reporterInitials}</div>
+              <span style={{ color: V.textPrimary, fontSize: 14, fontFamily: 'Inter, sans-serif' }}>
+                {item.reporter?.name ?? '—'}
+              </span>
+            </div>
+          </KVRow>
+          <KVRow label="MDT Ref">
+            <span style={{ fontSize: 14, color: V.textMuted }}>Add text</span>
+          </KVRow>
+          <KVRow label="Actual start">
+            <span style={{ fontSize: 14, color: V.textPrimary }}>None</span>
+          </KVRow>
+          <KVRow label="Actual end">
+            <span style={{ fontSize: 14, color: V.textPrimary }}>None</span>
+          </KVRow>
+        </AccordionSection>
 
-        <div style={{ fontSize: 11, color: 'var(--cp-text-tertiary)', marginTop: 20, lineHeight: 1.8, fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: 'tabular-nums' }}>
-          Created {new Date(item.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}<br />
-          Updated {new Date(item.updatedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+        {/* Development section */}
+        <AccordionSection title="Development" open={devOpen} onToggle={() => setDevOpen(v => !v)}>
+          <div style={{ padding: 12, color: V.textMuted, fontSize: 13 }}>Development content…</div>
+        </AccordionSection>
+
+        {/* More fields */}
+        <AccordionSection title="More fields" open={moreOpen} onToggle={() => setMoreOpen(v => !v)}>
+          <div style={{ padding: 12, color: V.textMuted, fontSize: 13 }}>More fields…</div>
+        </AccordionSection>
+
+        {/* Audit trail */}
+        <div style={{ marginTop: 10, color: V.textMuted, fontSize: 12, lineHeight: 1.7, fontFamily: "'JetBrains Mono', monospace" }}>
+          Created {new Date(item.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' })}<br />
+          Updated {new Date(item.updatedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' })}
         </div>
       </div>
+    </div>
+  );
+}
+
+/* ── Accordion Section ── */
+function AccordionSection({ title, open, onToggle, children }: {
+  title: string; open: boolean; onToggle: () => void; children: React.ReactNode;
+}) {
+  return (
+    <div style={{ border: `1px solid ${V.border}`, borderRadius: 10, marginBottom: 10, background: V.surface }}>
+      <button
+        onClick={onToggle}
+        style={{
+          width: '100%', textAlign: 'left', background: V.surface, border: 'none', cursor: 'pointer',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          padding: 12, fontWeight: 800, color: V.textPrimary, fontSize: 14, fontFamily: 'Inter, sans-serif',
+          borderRadius: 10,
+        }}
+      >
+        {title}
+        {open ? <ChevronDown size={16} style={{ opacity: 0.7 }} /> : <ChevronRight size={16} style={{ opacity: 0.7 }} />}
+      </button>
+      {open && <div style={{ padding: '0 12px 12px' }}>{children}</div>}
+    </div>
+  );
+}
+
+/* ── KV Row ── */
+function KVRow({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div style={{
+      display: 'grid', gridTemplateColumns: '160px 1fr', gap: 12,
+      padding: '10px 0', borderTop: `1px solid ${V.borderSubtle}`,
+    }}>
+      <span style={{ color: V.textMuted, fontWeight: 700, fontSize: 12, fontFamily: 'Inter, sans-serif' }}>{label}</span>
+      <div>{children}</div>
+    </div>
+  );
+}
+
+/* ── Helpers ── */
+function SmallBtn({ children }: { children: React.ReactNode }) {
+  return (
+    <button style={{
+      border: `1px solid ${V.border}`, background: V.surface, borderRadius: 8,
+      padding: '6px 10px', cursor: 'pointer', fontSize: 12, color: V.textMuted,
+    }}>
+      {children}
+    </button>
+  );
+}
+
+function IconBtn({ children }: { children: React.ReactNode }) {
+  return (
+    <button
+      style={{
+        border: `1px solid transparent`, background: 'transparent', cursor: 'pointer',
+        padding: '6px 8px', borderRadius: 8, color: V.textMuted, display: 'flex', alignItems: 'center',
+      }}
+      onMouseEnter={e => { e.currentTarget.style.background = '#F4F5F7'; e.currentTarget.style.borderColor = V.border; }}
+      onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = 'transparent'; }}
+    >
+      {children}
+    </button>
+  );
+}
+
+const headerBtnStyle: React.CSSProperties = {
+  border: `1px solid #DFE1E6`, background: '#FFFFFF', borderRadius: 8,
+  padding: '8px 10px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4,
+};
+
+const avatarStyle: React.CSSProperties = {
+  width: 26, height: 26, borderRadius: 999, display: 'grid', placeItems: 'center',
+  fontWeight: 900, fontSize: 12, color: '#fff',
+};
+
+/* ── Main Export: CENTER + RIGHT combined ── */
+export function WorkItemDetailPanel({ item, allItems, onNavigate, onClose }: Props) {
+  const isEpic = item.type === 'epic';
+  const { data: children = [], isLoading: childrenLoading } = useWorkItemChildren(
+    isEpic ? item.jiraKey : undefined,
+    isEpic,
+  );
+
+  return (
+    <div style={{ flex: 1, display: 'flex', overflow: 'hidden', minWidth: 0 }}>
+      <CenterBody item={item} children={children} childrenLoading={childrenLoading} />
+      <RightDetails item={item} />
     </div>
   );
 }

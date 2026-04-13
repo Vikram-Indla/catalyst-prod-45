@@ -1,74 +1,18 @@
 /**
- * ProjectAllWorkView — All Work tab (Jira-parity AllWorkTable + Split toggle)
+ * ProjectAllWorkView — All Work tab: Table mode + 3-column Split mode
  */
 import React, { useState, useMemo, useCallback } from 'react';
 import { AllWorkTable } from './components/AllWorkTable';
 import { WorkItemDetailPanel } from './components/WorkItemDetailPanel';
+import { WorkListPanel } from './components/WorkListPanel';
 import { useProjectAllWorkItems } from '@/hooks/useProjectListItems';
-import { WorkItemTypeIcon } from '@/components/icons/WorkItemTypeIcon';
 import { LayoutGrid, Columns } from 'lucide-react';
-import type { WorkItem as PhWorkItem } from '@/types/workItem.types';
 
 interface Props {
   projectKey: string;
 }
 
 type ViewMode = 'list' | 'detail';
-
-function SplitListCard({ item, isActive, onClick }: { item: PhWorkItem; isActive: boolean; onClick: () => void }) {
-  const isRTL = /[\u0600-\u06FF]/.test(item.summary);
-  return (
-    <div
-      onClick={onClick}
-      style={{
-        padding: '10px 12px',
-        borderBottom: '0.75px solid #DDDEE1',
-        cursor: 'pointer',
-        background: isActive ? 'rgba(37,99,235,0.06)' : 'transparent',
-        borderLeft: isActive ? '3px solid #2563EB' : '3px solid transparent',
-        transition: 'background 100ms',
-      }}
-      onMouseEnter={e => { if (!isActive) (e.currentTarget).style.background = 'rgba(0,0,0,0.02)'; }}
-      onMouseLeave={e => { if (!isActive) (e.currentTarget).style.background = 'transparent'; }}
-    >
-      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
-        <div style={{ flexShrink: 0, marginTop: 2 }}>
-          <WorkItemTypeIcon type={item.type} size={16} />
-        </div>
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div
-            dir={isRTL ? 'rtl' : 'ltr'}
-            style={{
-              fontSize: 13, fontWeight: 500, color: '#292A2E',
-              lineHeight: 1.4, marginBottom: 4,
-              overflow: 'hidden', textOverflow: 'ellipsis',
-              display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
-              fontFamily: 'Inter, sans-serif',
-            }}
-          >
-            {item.summary || '(No title)'}
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <span style={{ fontSize: 11, fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, color: '#2563EB' }}>
-              {item.jiraKey}
-            </span>
-            {item.assignee && (
-              <div style={{
-                width: 20, height: 20, borderRadius: '50%',
-                background: item.assignee.color || '#6554C0',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: 9, fontWeight: 700, color: '#fff',
-                marginLeft: 'auto', flexShrink: 0,
-              }}>
-                {item.assignee.initials}
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 export default function ProjectAllWorkView({ projectKey }: Props) {
   const { data: items = [], isLoading } = useProjectAllWorkItems(projectKey);
@@ -103,74 +47,34 @@ export default function ProjectAllWorkView({ projectKey }: Props) {
         flexShrink: 0,
       }}>
         <div style={{ display: 'flex', gap: 2 }}>
-          <button
-            onClick={() => setViewMode('list')}
-            title="List view"
-            style={{
-              width: 30, height: 28, border: '1px solid',
-              borderColor: viewMode === 'list' ? '#2563EB' : '#DDDEE1',
-              borderRadius: '4px 0 0 4px',
-              background: viewMode === 'list' ? 'rgba(37,99,235,0.08)' : '#fff',
-              color: viewMode === 'list' ? '#2563EB' : '#94A3B8',
-              cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-            }}
-          >
+          <ToggleBtn active={viewMode === 'list'} onClick={() => setViewMode('list')} title="Table view" side="left">
             <LayoutGrid size={14} />
-          </button>
-          <button
-            onClick={() => { setViewMode('detail'); if (!activeItemId && items.length) setActiveItemId(items[0].id); }}
-            title="Detail view"
-            style={{
-              width: 30, height: 28, border: '1px solid',
-              borderColor: viewMode === 'detail' ? '#2563EB' : '#DDDEE1',
-              borderRadius: '0 4px 4px 0',
-              background: viewMode === 'detail' ? 'rgba(37,99,235,0.08)' : '#fff',
-              color: viewMode === 'detail' ? '#2563EB' : '#94A3B8',
-              cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-              marginLeft: -1,
-            }}
-          >
+          </ToggleBtn>
+          <ToggleBtn active={viewMode === 'detail'} onClick={() => { setViewMode('detail'); if (!activeItemId && items.length) setActiveItemId(items[0].id); }} title="Split view" side="right">
             <Columns size={14} />
-          </button>
+          </ToggleBtn>
         </div>
       </div>
 
       {/* Content */}
       {viewMode === 'list' ? (
-        <AllWorkTable
-          items={items}
-          isLoading={isLoading}
-          onOpenItem={handleOpenItem}
-          pageTitle="All Work"
-          subtitle="Global work view — all types, all statuses"
-        />
+        <AllWorkTable items={items} isLoading={isLoading} onOpenItem={handleOpenItem} pageTitle="All Work" subtitle="Global work view — all types, all statuses" />
       ) : (
-        <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
+        <div style={{ flex: 1, display: 'flex', overflow: 'hidden', background: '#F4F5F7' }}>
+          {/* Left: WorkListPanel */}
           <div style={{
-            width: 280, flexShrink: 0,
-            borderRight: '0.75px solid #DDDEE1',
-            overflowY: 'auto',
-            background: '#fff',
+            width: 320, flexShrink: 0, background: '#FFFFFF',
+            border: '1px solid #DFE1E6', borderRadius: '10px 0 0 10px',
+            overflow: 'hidden', display: 'flex', flexDirection: 'column',
           }}>
-            <div style={{
-              padding: '8px 12px', fontSize: 11, fontWeight: 700,
-              textTransform: 'uppercase', letterSpacing: '0.06em',
-              color: '#44546F', background: '#F7F8F9',
-              borderBottom: '0.75px solid #DDDEE1',
-              fontFamily: 'Inter, sans-serif',
-              position: 'sticky', top: 0, zIndex: 1,
-            }}>
-              {items.length} ITEMS
-            </div>
-            {items.map(item => (
-              <SplitListCard
-                key={item.id}
-                item={item}
-                isActive={activeItem?.id === item.id}
-                onClick={() => setActiveItemId(item.id)}
-              />
-            ))}
+            <WorkListPanel
+              items={items}
+              selectedKey={activeItem?.id ?? null}
+              onSelect={id => setActiveItemId(id)}
+            />
           </div>
+
+          {/* Center + Right: WorkItemDetailPanel */}
           {activeItem ? (
             <WorkItemDetailPanel
               item={activeItem}
@@ -186,5 +90,27 @@ export default function ProjectAllWorkView({ projectKey }: Props) {
         </div>
       )}
     </div>
+  );
+}
+
+function ToggleBtn({ active, onClick, title, side, children }: {
+  active: boolean; onClick: () => void; title: string; side: 'left' | 'right'; children: React.ReactNode;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      title={title}
+      style={{
+        width: 30, height: 28, border: '1px solid',
+        borderColor: active ? '#2563EB' : '#DDDEE1',
+        borderRadius: side === 'left' ? '4px 0 0 4px' : '0 4px 4px 0',
+        background: active ? 'rgba(37,99,235,0.08)' : '#fff',
+        color: active ? '#2563EB' : '#94A3B8',
+        cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+        marginLeft: side === 'right' ? -1 : 0,
+      }}
+    >
+      {children}
+    </button>
   );
 }
