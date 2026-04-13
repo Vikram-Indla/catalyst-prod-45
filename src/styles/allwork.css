@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════════════════════════════════
-   ALL WORK 3-COLUMN — Jira-flat visual system
-   Flat white columns · 1px separators · tight density · blue selected rail
+   ALL WORK — 2-column layout with collapsible inline Details sidebar
+   Matches Jira Cloud issue view: Left list | Center (content + details)
    ═══════════════════════════════════════════════════════════════════════ */
 
 :root {
@@ -15,11 +15,11 @@
   --aw-selected-outline: rgba(12,102,228,0.25);
 }
 
-/* ── Shell: 3 flat columns ── */
+/* ── Shell: 2 columns (list + issue view) ── */
 .awShell {
   height: calc(100vh - var(--cp-layout-topnav, 48px));
   display: grid;
-  grid-template-columns: var(--aw-left, 340px) 10px minmax(0, 1fr) 10px var(--aw-right, 360px);
+  grid-template-columns: var(--aw-left, 240px) 1px minmax(0, 1fr);
   background: var(--aw-bg);
 }
 .awCol {
@@ -29,24 +29,11 @@
   background: var(--aw-bg);
 }
 
-/* ── Splitter: 10px hit area, 1px centered line ── */
-.awSplitter {
-  position: relative;
-  cursor: col-resize;
-  background: transparent;
-}
-.awSplitter::before {
-  content: "";
-  position: absolute;
-  left: 50%;
-  top: 0;
-  bottom: 0;
-  width: 1px;
-  transform: translateX(-0.5px);
+/* Column separator (static 1px line between list and content) */
+.awDivider {
   background: var(--aw-border);
+  width: 1px;
 }
-.awSplitter:hover::before { background: rgba(12,102,228,0.3); }
-.awSplitter.is-dragging::before { background: var(--aw-blue); }
 
 /* ── Sticky header + scroll body ── */
 .awHeader {
@@ -63,67 +50,67 @@
   overflow-y: auto;
 }
 
-/* ── Left panel: project + search + filters ── */
+/* ── Left panel ── */
 .awLeftTop {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 14px 8px;
+  padding: 10px 12px 8px;
 }
 .awLeftTitle {
   display: flex;
   align-items: baseline;
-  gap: 8px;
+  gap: 6px;
 }
-.awLeftTitle > strong { font-size: 14px; font-weight: 700; color: var(--aw-text); }
-.awLeftTitle > span { font-size: 13px; font-weight: 500; color: var(--aw-text-subtle); }
+.awLeftTitle > strong { font-size: 13px; font-weight: 700; color: var(--aw-text); }
+.awLeftTitle > span { font-size: 12px; font-weight: 500; color: var(--aw-text-subtle); }
 
-.awSearchWrap { padding: 0 14px 8px; }
+.awSearchWrap { padding: 0 12px 8px; }
 .awSearch {
   width: 100%;
-  height: 32px;
+  height: 30px;
   border: 1px solid var(--aw-border);
-  border-radius: 6px;
-  padding: 0 10px 0 32px;
-  font: 12.5px/32px var(--aw-font, Inter, system-ui, sans-serif);
-  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%236B778C' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E") 10px center no-repeat;
+  border-radius: 5px;
+  padding: 0 8px 0 28px;
+  font: 12px/30px system-ui, -apple-system, sans-serif;
+  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='13' height='13' viewBox='0 0 24 24' fill='none' stroke='%236B778C' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E") 8px center no-repeat;
 }
 .awSearch:focus { border-color: var(--aw-blue); outline: none; }
 
 .awFilters {
   display: flex;
-  gap: 6px;
-  padding: 0 14px 10px;
+  gap: 4px;
+  padding: 0 12px 8px;
+  flex-wrap: wrap;
 }
 .awChip {
-  height: 26px;
+  height: 24px;
   border-radius: 4px;
   border: 1px solid var(--aw-border);
   background: #fff;
-  padding: 0 8px;
-  font: 12px/26px var(--aw-font, Inter, system-ui, sans-serif);
+  padding: 0 7px;
+  font: 11px/24px system-ui, -apple-system, sans-serif;
   cursor: pointer;
   color: var(--aw-text);
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 3px;
 }
 .awChip:hover { background: var(--aw-hover); }
-.awChip > svg { width: 12px; height: 12px; color: var(--aw-text-subtle); }
 
 /* ── Left list rows ── */
-.awList { padding: 4px 6px; }
+.awList { padding: 2px 4px; }
 .awRow {
   display: flex;
-  gap: 10px;
-  padding: 8px 10px;
-  border-radius: 6px;
+  gap: 8px;
+  padding: 8px 8px;
+  border-radius: 4px;
   cursor: pointer;
   position: relative;
   border-left: 3px solid transparent;
+  margin-bottom: 1px;
 }
 .awRow:hover { background: var(--aw-hover); }
-
 .awRow.awRowSelected {
   background: var(--aw-selected);
   border-left-color: var(--aw-blue);
@@ -134,190 +121,374 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
+  gap: 6px;
+  margin-bottom: 2px;
 }
-.awKey {
-  font: 700 12px/16px var(--aw-font, Inter, system-ui, sans-serif);
-  color: var(--aw-text-subtle);
-  letter-spacing: 0.2px;
-}
-.awSummary {
-  margin-top: 2px;
-  font: 400 13px/1.3 var(--aw-font, Inter, system-ui, sans-serif);
+.awRowTitle {
+  font: 400 13px/1.3 system-ui, -apple-system, sans-serif;
   color: var(--aw-text);
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  min-width: 0;
 }
-.awMeta {
-  margin-top: 4px;
-  font: 400 12px/16px var(--aw-font, Inter, system-ui, sans-serif);
+.awKey {
+  font: 500 11px/14px system-ui, -apple-system, sans-serif;
   color: var(--aw-text-subtle);
+}
+.awRowMeta {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 3px;
 }
 
-/* ── Center header ── */
-.awCenterHeader {
-  padding: 12px 16px;
+/* ── Issue view: content + collapsible details sidebar ── */
+.awIssueView {
+  display: flex;
+  height: 100%;
+  min-height: 0;
+}
+.awIssueContent {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.awIssueContent > .awBody { flex: 1; }
+
+/* Collapsible sidebar divider with toggle button */
+.awSidebarDivider {
+  width: 24px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 12px;
+  position: relative;
+  cursor: pointer;
+}
+.awSidebarDivider::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--aw-border);
+}
+.awCollapseBtn {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1px solid var(--aw-border);
+  background: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  position: relative;
+  left: -10px;
+  color: var(--aw-text-subtle);
+  font-size: 11px;
+  transition: background 120ms;
+}
+.awCollapseBtn:hover {
+  background: var(--aw-hover);
+  color: var(--aw-blue);
+}
+
+/* Details sidebar */
+.awDetailsSidebar {
+  width: 340px;
+  flex-shrink: 0;
+  overflow-y: auto;
+  padding: 0;
+}
+.awDetailsSidebar.collapsed { display: none; }
+
+/* ── Issue header (breadcrumb + title + actions) ── */
+.awIssueHeader {
+  padding: 12px 16px 10px;
   border-bottom: 1px solid var(--aw-border);
 }
-.awCenterTitleRow { display: flex; align-items: flex-start; gap: 10px; }
-.awCenterKey {
-  font: 700 12px/16px var(--aw-font, Inter, system-ui, sans-serif);
+.awBreadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 6px;
+  font: 500 12px/16px system-ui, -apple-system, sans-serif;
   color: var(--aw-text-subtle);
 }
-.awCenterSummary {
-  margin-top: 2px;
-  font: 600 16px/1.25 var(--aw-font, Inter, system-ui, sans-serif);
-  color: var(--aw-text);
+.awBreadcrumb a, .awBreadcrumb .awBreadcrumbLink {
+  color: var(--aw-blue);
+  text-decoration: none;
+  cursor: pointer;
 }
-.awPills { margin-top: 10px; display: flex; gap: 8px; align-items: center; }
+.awIssueTitle {
+  font: 600 20px/1.25 system-ui, -apple-system, sans-serif;
+  color: var(--aw-text);
+  margin-bottom: 8px;
+}
+.awActions {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
 .awPill {
   height: 24px;
   border-radius: 4px;
   border: 1px solid var(--aw-border);
   background: #fff;
-  padding: 0 10px;
-  font: 500 12px/24px var(--aw-font, Inter, system-ui, sans-serif);
+  padding: 0 8px;
+  font: 500 12px/24px system-ui, -apple-system, sans-serif;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   color: var(--aw-text);
 }
 .awPill:hover { background: var(--aw-hover); }
 .awPill > svg { width: 14px; height: 14px; }
 
-/* Section dividers in center */
-.awSectionTitle {
-  padding: 12px 16px 6px;
-  font: 600 12px/16px var(--aw-font, Inter, system-ui, sans-serif);
-  color: var(--aw-text);
+/* ── Content sections (Description, Subtasks, Linked, Activity) ── */
+.awSection {
+  border-bottom: 1px solid var(--aw-border);
+}
+.awSectionHead {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  padding: 10px 16px;
+  cursor: pointer;
 }
-.awSectionBody {
-  padding: 0 16px 16px;
-  font: 400 13px/1.5 var(--aw-font, Inter, system-ui, sans-serif);
+.awSectionHead:hover { background: var(--aw-hover); }
+.awSectionLabel {
+  font: 600 14px/20px system-ui, -apple-system, sans-serif;
   color: var(--aw-text);
-}
-.awSectionDivider {
-  margin: 0 16px;
-  border: none;
-  border-top: 1px solid var(--aw-border);
-}
-
-/* ── Right header: tabs + copy ── */
-.awRightTop {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  padding: 8px 12px;
-}
-.awTabs { display: flex; gap: 0; }
-.awTab {
-  padding: 6px 12px;
-  font: 500 13px/18px var(--aw-font, Inter, system-ui, sans-serif);
-  color: var(--aw-text-subtle);
-  cursor: pointer;
-  border: none;
-  background: none;
-  border-bottom: 2px solid transparent;
-}
-.awTab:hover { color: var(--aw-text); }
-.awTab.awTabActive {
-  color: var(--aw-blue);
-  border-bottom-color: var(--aw-blue);
-  font-weight: 600;
-}
-
-.awCopyBtn {
-  height: 28px;
-  padding: 0 10px;
-  border-radius: 6px;
-  border: 1px solid var(--aw-border);
-  background: #fff;
-  font: 500 12px/28px var(--aw-font, Inter, system-ui, sans-serif);
-  cursor: pointer;
-  display: inline-flex;
   align-items: center;
   gap: 6px;
-  color: var(--aw-text);
 }
-.awCopyBtn:hover { background: var(--aw-hover); }
-.awCopyBtn > svg { width: 14px; height: 14px; }
-
-/* ── Right body: summary + section cards ── */
-.awRightBody { padding: 0; }
-
-.awRightSummary {
-  border: 1px solid var(--aw-border);
-  border-radius: 8px;
-  margin: 10px 12px;
-  padding: 10px 12px;
-  background: #fff;
+.awSectionLabel .awCount {
+  font-weight: 400;
+  font-size: 13px;
+  color: var(--aw-text-subtle);
 }
-.awRightSummaryRow {
+.awSectionActions {
   display: flex;
-  gap: 8px;
+  gap: 4px;
   align-items: center;
 }
-.awRightKey {
-  font: 700 12px/16px var(--aw-font, Inter, system-ui, sans-serif);
-  color: var(--aw-text-subtle);
-  flex-shrink: 0;
+.awSectionBody {
+  padding: 0 16px 14px;
 }
-.awRightSummaryText {
-  font: 600 13px/18px var(--aw-font, Inter, system-ui, sans-serif);
-  color: var(--aw-text);
-  min-width: 0;
+.awSectionBody.collapsed { display: none; }
+
+/* Child work items / subtasks table */
+.awSubtasksTable {
+  width: 100%;
+  border-collapse: collapse;
+  font: 400 13px/18px system-ui, -apple-system, sans-serif;
+}
+.awSubtasksTable th {
+  text-align: left;
+  font: 600 11px/16px system-ui, -apple-system, sans-serif;
+  color: var(--aw-text-subtle);
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--aw-border);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+.awSubtasksTable td {
+  padding: 6px 8px;
+  border-bottom: 1px solid rgba(9,30,66,0.06);
+  vertical-align: middle;
+}
+.awSubtasksTable tr:hover td { background: var(--aw-hover); }
+
+/* Progress bar */
+.awProgress {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.awProgressBar {
+  flex: 1;
+  height: 6px;
+  border-radius: 3px;
+  background: #DFE1E6;
   overflow: hidden;
-  text-overflow: ellipsis;
+}
+.awProgressFill {
+  height: 100%;
+  border-radius: 3px;
+  background: #22A06B;
+}
+.awProgressText {
+  font: 500 12px/16px system-ui, -apple-system, sans-serif;
+  color: var(--aw-text-subtle);
   white-space: nowrap;
 }
-.awMetrics {
+
+/* Linked work items */
+.awLinkGroup {
+  margin-bottom: 8px;
+}
+.awLinkGroupLabel {
+  font: 400 12px/16px system-ui, -apple-system, sans-serif;
+  color: var(--aw-text-subtle);
+  margin-bottom: 4px;
+}
+.awLinkRow {
   display: flex;
-  gap: 12px;
-  margin-top: 8px;
-  font: 400 12px/16px var(--aw-font, Inter, system-ui, sans-serif);
+  align-items: center;
+  gap: 8px;
+  padding: 5px 4px;
+  border-radius: 4px;
+}
+.awLinkRow:hover { background: var(--aw-hover); }
+
+/* Activity */
+.awActivityTabs {
+  display: flex;
+  gap: 2px;
+  margin-bottom: 12px;
+}
+.awActivityTab {
+  padding: 4px 10px;
+  border-radius: 4px;
+  border: 1px solid transparent;
+  background: none;
+  font: 500 12px/16px system-ui, -apple-system, sans-serif;
+  color: var(--aw-text-subtle);
+  cursor: pointer;
+}
+.awActivityTab:hover { background: var(--aw-hover); color: var(--aw-text); }
+.awActivityTab.active {
+  background: var(--aw-selected);
+  color: var(--aw-blue);
+  border-color: rgba(12,102,228,0.2);
+}
+
+.awCommentBox {
+  border: 1px solid var(--aw-border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 12px;
+  font: 400 13px/18px system-ui, -apple-system, sans-serif;
+  color: var(--aw-text-subtle);
+  cursor: text;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.awCommentBox:focus-within { border-color: var(--aw-blue); }
+.awCommentBox input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font: inherit;
+  color: var(--aw-text);
+  background: transparent;
+}
+
+.awActivityItem {
+  display: flex;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(9,30,66,0.06);
+}
+.awActivityItem:last-child { border-bottom: none; }
+.awAvatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font: 700 10px/1 system-ui;
+  color: #fff;
+}
+.awActivityBody { flex: 1; min-width: 0; }
+.awActivityMeta {
+  font: 400 12px/16px system-ui, -apple-system, sans-serif;
+  color: var(--aw-text-subtle);
+}
+.awActivityMeta strong { color: var(--aw-text); font-weight: 500; }
+
+/* ── Details sidebar sections ── */
+.awDetailsSection {
+  border-bottom: 1px solid var(--aw-border);
+  padding: 0;
+}
+.awDetailsSectionHead {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px;
+  font: 600 14px/20px system-ui, -apple-system, sans-serif;
+  color: var(--aw-text);
+  cursor: pointer;
+}
+.awDetailsSectionHead:hover { background: var(--aw-hover); }
+.awDetailsSectionBody {
+  padding: 0 16px 12px;
+}
+
+.awFieldRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 0;
+  min-height: 28px;
+}
+.awFieldLabel {
+  width: 100px;
+  flex-shrink: 0;
+  font: 400 13px/18px system-ui, -apple-system, sans-serif;
+  color: var(--aw-text-subtle);
+}
+.awFieldValue {
+  flex: 1;
+  min-width: 0;
+  font: 400 13px/18px system-ui, -apple-system, sans-serif;
+  color: var(--aw-text);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.awFieldNone { color: var(--aw-text-subtle); }
+
+/* Avatars in fields */
+.awFieldAvatar {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font: 700 9px/1 system-ui;
+  color: #fff;
+}
+
+/* Timestamps at bottom of sidebar */
+.awTimestamps {
+  padding: 10px 16px;
+  font: 400 12px/16px system-ui, -apple-system, sans-serif;
   color: var(--aw-text-subtle);
 }
 
-/* Section cards */
-.awCard {
-  border: 1px solid var(--aw-border);
-  border-radius: 8px;
-  margin: 0 12px 10px;
-  background: #fff;
-  overflow: hidden;
-}
-.awCardHeader {
-  padding: 8px 12px;
-  border-bottom: 1px solid var(--aw-border);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  cursor: pointer;
-}
-.awCardHeader:hover { background: var(--aw-hover); }
-.awCardHeaderTitle {
-  font: 700 11px/16px var(--aw-font, Inter, system-ui, sans-serif);
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-  color: var(--aw-text);
-}
-.awCardBody {
-  padding: 10px 12px;
-  font: 400 13px/1.4 var(--aw-font, Inter, system-ui, sans-serif);
-}
-.awCardBody.is-collapsed { display: none; }
-
+/* ── Empty/muted ── */
 .awEmpty {
   color: var(--aw-text-subtle);
   text-align: center;
-  padding: 12px 0 4px;
+  padding: 16px 0;
   font-size: 13px;
 }
 .awLinkCta {
@@ -327,90 +498,33 @@
   font-weight: 600;
   font-size: 13px;
   text-decoration: none;
-  padding: 4px 0 8px;
+  padding: 4px 0;
   cursor: pointer;
 }
-.awLinkCta:hover { text-decoration: underline; }
 
-/* Activity filters */
-.awActivityFilters { display: flex; gap: 4px; margin-bottom: 10px; }
-.awFilterPill {
-  padding: 4px 10px;
-  border-radius: 4px;
-  border: none;
-  background: none;
-  font: 500 12px/16px var(--aw-font, Inter, system-ui, sans-serif);
+/* ── Footer count ── */
+.awFooter {
+  padding: 6px 12px;
+  font: 400 11px/16px system-ui, -apple-system, sans-serif;
   color: var(--aw-text-subtle);
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-}
-.awFilterPill:hover { background: var(--aw-hover); color: var(--aw-text); }
-.awFilterPill.awFilterPillActive {
-  background: var(--aw-selected);
-  color: var(--aw-blue);
-  font-weight: 600;
+  text-align: center;
+  border-top: 1px solid var(--aw-border);
+  flex-shrink: 0;
 }
 
-/* Comment row */
-.awCommentRow {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  margin-top: 8px;
-}
-.awCommentInput {
-  flex: 1;
-  height: 34px;
-  border: 1px solid var(--aw-border);
-  border-radius: 6px;
-  padding: 0 10px;
-  font: 400 13px/34px var(--aw-font, Inter, system-ui, sans-serif);
-}
-.awCommentInput:focus { border-color: var(--aw-blue); outline: none; }
-.awSendBtn {
-  width: 34px;
-  height: 34px;
-  border-radius: 6px;
-  border: 1px solid var(--aw-border);
-  background: #fff;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--aw-text-subtle);
-}
-.awSendBtn:hover { background: var(--aw-hover); color: var(--aw-blue); }
-
-/* ── Dark mode overrides ── */
-.dark .awShell,
-.dark .awCol,
-.dark .awHeader { background: #0A0A0A; }
-.dark .awSplitter::before { background: #2E2E2E; }
-.dark .awRow:hover { background: #1F1F1F; }
+/* ── Dark mode ── */
+.dark .awShell, .dark .awCol, .dark .awHeader,
+.dark .awIssueContent, .dark .awDetailsSidebar { background: #0A0A0A; }
+.dark .awDivider, .dark .awSidebarDivider::before { background: #2E2E2E; }
+.dark .awRow:hover, .dark .awSectionHead:hover,
+.dark .awDetailsSectionHead:hover { background: #1F1F1F; }
 .dark .awRow.awRowSelected { background: rgba(12,102,228,0.12); }
 .dark .awSearch { background-color: #1A1A1A; border-color: #2E2E2E; color: #EDEDED; }
-.dark .awChip { background: #1A1A1A; border-color: #2E2E2E; color: #EDEDED; }
+.dark .awChip, .dark .awPill { background: #1A1A1A; border-color: #2E2E2E; color: #EDEDED; }
+.dark .awCollapseBtn { background: #1A1A1A; border-color: #2E2E2E; }
+.dark .awIssueTitle { color: #EDEDED; }
+.dark .awRowTitle { color: #EDEDED; }
 .dark .awKey { color: #A1A1A1; }
-.dark .awSummary { color: #EDEDED; }
-.dark .awMeta { color: #878787; }
-.dark .awCenterHeader { border-color: #2E2E2E; }
-.dark .awCenterKey { color: #A1A1A1; }
-.dark .awCenterSummary { color: #EDEDED; }
-.dark .awPill { background: #1A1A1A; border-color: #2E2E2E; color: #EDEDED; }
-.dark .awTab { color: #A1A1A1; }
-.dark .awTab.awTabActive { color: #4C9AFF; border-bottom-color: #4C9AFF; }
-.dark .awCopyBtn { background: #1A1A1A; border-color: #2E2E2E; color: #EDEDED; }
-.dark .awRightSummary { background: #1A1A1A; border-color: #2E2E2E; }
-.dark .awRightKey { color: #A1A1A1; }
-.dark .awRightSummaryText { color: #EDEDED; }
-.dark .awMetrics { color: #878787; }
-.dark .awCard { background: #1A1A1A; border-color: #2E2E2E; }
-.dark .awCardHeader:hover { background: #1F1F1F; }
-.dark .awCardHeaderTitle { color: #EDEDED; }
-.dark .awCardBody { color: #EDEDED; }
-.dark .awEmpty { color: #878787; }
-.dark .awLinkCta { color: #4C9AFF; }
-.dark .awCommentInput { background: #111111; border-color: #2E2E2E; color: #EDEDED; }
-.dark .awSendBtn { background: #1A1A1A; border-color: #2E2E2E; }
+.dark .awSubtasksTable td { border-color: #2E2E2E; }
+.dark .awFieldValue { color: #EDEDED; }
+.dark .awCommentBox { border-color: #2E2E2E; }
