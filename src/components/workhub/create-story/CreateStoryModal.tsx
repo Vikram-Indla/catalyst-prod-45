@@ -915,6 +915,7 @@ export function CreateStoryModal({ open, onClose, projectId, projectKey, onSucce
   const createMutation = useCreateStoryMutation();
   const [createAnother, setCreateAnother] = useState(false);
   const [summaryError, setSummaryError] = useState('');
+  const [createdKey, setCreatedKey] = useState<string | null>(null);
   const [workType, setWorkType] = useState('Story');
   const [isExpanded, setIsExpanded] = useState(false);
   const [keyDetailsOpen, setKeyDetailsOpen] = useState(true);
@@ -962,12 +963,14 @@ export function CreateStoryModal({ open, onClose, projectId, projectKey, onSucce
       return;
     }
     setSummaryError('');
+    setCreatedKey(null);
 
     try {
       const result = await createMutation.mutateAsync({ form, projectKey: resolvedKey, issueType: workType });
       onSuccess?.(result.issue_key);
 
       if (createAnother) {
+        setCreatedKey(result.issue_key);
         reset(true);
         setSummaryError('');
         setTimeout(() => summaryRef.current?.focus(), 100);
@@ -1146,14 +1149,25 @@ export function CreateStoryModal({ open, onClose, projectId, projectKey, onSucce
 
         {/* ── Footer (sticky) ── */}
         <div className="csModalFooter">
-          <label className="csCreateAnother">
-            <input
-              type="checkbox"
-              checked={createAnother}
-              onChange={e => setCreateAnother(e.target.checked)}
-            />
-            Create another
-          </label>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <label className="csCreateAnother">
+              <input
+                type="checkbox"
+                checked={createAnother}
+                onChange={e => setCreateAnother(e.target.checked)}
+              />
+              Create another
+            </label>
+            {createdKey && (
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 13, color: '#006644', fontWeight: 500 }}>
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <circle cx="8" cy="8" r="8" fill="#36B37E"/>
+                  <path d="M5 8l2 2 4-4" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+                {createdKey} created
+              </span>
+            )}
+          </div>
           <div className="csFooterActions">
             <button type="button" className="csBtn csCancel" onClick={onClose}>Cancel</button>
             <button
