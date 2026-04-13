@@ -32,7 +32,8 @@ export default function CatalystViewEpic({
       {/* EPIC: Child work items table (Jira-parity with full CRUD) */}
       {issue?.issue_key && (
         <CatalystChildWorkItemsTable
-          parentIssueKey={issue.issue_key}
+          parentKey={issue.issue_key}
+          parentId={issue.id}
           projectKey={issue.project_key || projectKey || ''}
           onOpenItem={onOpenItem}
         />
