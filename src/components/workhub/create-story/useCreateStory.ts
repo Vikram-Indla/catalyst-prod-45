@@ -131,8 +131,8 @@ export function useCreateStoryMutation() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (params: { form: CreateStoryFormData; projectKey: string }) => {
-      const { form, projectKey } = params;
+    mutationFn: async (params: { form: CreateStoryFormData; projectKey: string; issueType?: string }) => {
+      const { form, projectKey, issueType } = params;
       const issueKey = await generateIssueKey(projectKey);
 
       const { data, error } = await supabase
@@ -143,7 +143,7 @@ export function useCreateStoryMutation() {
           title: form.summary.trim(),
           description: form.description || null,
           description_adf_raw: form.descriptionAdf || null,
-          issue_type: 'Story',
+          issue_type: issueType || 'Story',
           status: form.status,
           priority: form.priority,
           assignee_id: form.assigneeId || null,

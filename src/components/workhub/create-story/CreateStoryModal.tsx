@@ -1,12 +1,12 @@
 /**
- * CreateStoryModal — Jira-parity "Create Story" dialog.
- * Pixel-perfect match to Jira Cloud's create issue experience.
- * Metadata-driven fields, rich-text description, full CRUD to catalyst_issues.
+ * CreateStoryModal — Jira Cloud parity "Create" dialog.
+ * Fields: Space, Work type, Status, Summary, Parent, MDT Ref, Priority, Description,
+ *         Target Release, Assignee, Reporter.
  */
 import { useState, useEffect, useRef, useCallback } from 'react';
 import {
-  X, Maximize2, ChevronDown, Bold, Italic, List, ListOrdered,
-  Code2, Link2, Undo, Redo,
+  X, Maximize2, Minus, MoreHorizontal, ChevronDown, Bold, Italic, List,
+  ListOrdered, Code2, Link2, Undo, Redo, ExternalLink,
 } from 'lucide-react';
 import {
   useCreateStoryForm, useProjects, useTeamMembers,
@@ -18,6 +18,7 @@ import StarterKit from '@tiptap/starter-kit';
 import Underline from '@tiptap/extension-underline';
 import TipTapLink from '@tiptap/extension-link';
 import Placeholder from '@tiptap/extension-placeholder';
+import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import './create-story.css';
 
 // ── Helpers ──
@@ -28,6 +29,11 @@ function initials(name: string) { return name.split(' ').filter(Boolean).map(n =
 const STATUSES = [
   'In Requirements', 'To Do', 'In Design', 'Ready for Development',
   'In Development', 'In QA', 'In UAT', 'In Beta', 'Done',
+];
+
+const WORK_TYPES = [
+  'Epic', 'Feature', 'Story', 'Business Gap', 'QA Bug',
+  'Production Incident', 'Change Request', 'Task', 'API Requirement',
 ];
 
 const PRIORITIES = ['Highest', 'High', 'Medium', 'Low', 'Lowest'];
@@ -49,8 +55,17 @@ function PriorityIcon({ priority }: { priority: string }) {
   return <svg width="16" height="16" viewBox="0 0 16 16"><rect x="2" y="5" width="12" height="2" rx="1" fill={color}/><rect x="2" y="9" width="12" height="2" rx="1" fill={color}/></svg>;
 }
 
+// ── Project icon (small colored square with first letter) ──
+function ProjectIcon({ name }: { name: string }) {
+  return (
+    <span className="csProjectIcon">
+      {name.charAt(0).toUpperCase()}
+    </span>
+  );
+}
+
 // ── Select Dropdown ──
-function SelectField({ label, required, value, options, onChange, placeholder, renderOption, disabled }: {
+function SelectField({ label, required, value, options, onChange, placeholder, renderOption, disabled, helpText, helpLink, helpLinkText }: {
   label: string;
   required?: boolean;
   value: string;
@@ -59,6 +74,9 @@ function SelectField({ label, required, value, options, onChange, placeholder, r
   placeholder?: string;
   renderOption?: (opt: any) => React.ReactNode;
   disabled?: boolean;
+  helpText?: string;
+  helpLink?: string;
+  helpLinkText?: string;
 }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -88,6 +106,12 @@ function SelectField({ label, required, value, options, onChange, placeholder, r
         </span>
         <ChevronDown className="csSelectChevron" />
       </button>
+      {helpLink && (
+        <a href={helpLink} target="_blank" rel="noopener noreferrer" className="csLearnLink">
+          {helpLinkText || 'Learn more'} <ExternalLink size={12} />
+        </a>
+      )}
+      {helpText && <div className="csHelpText">{helpText}</div>}
       {open && (
         <div className="csDropdown">
           {options.map(opt => (
@@ -105,6 +129,74 @@ function SelectField({ label, required, value, options, onChange, placeholder, r
             </button>
           ))}
           {options.length === 0 && <div className="csDropdownEmpty">No options</div>}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Searchable Parent Picker ──
+function ParentPicker({ label, required, value, options, onChange, helpText }: {
+  label: string;
+  required?: boolean;
+  value: string;
+  options: { value: string; label: string; icon?: React.ReactNode; projectKey?: string; issueKey?: string; title?: string }[];
+  onChange: (val: string) => void;
+  helpText?: string;
+}) {
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState('');
+  const [showDone, setShowDone] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const handleClick = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false); };
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [open]);
+
+  useEffect(() => { if (open && inputRef.current) inputRef.current.focus(); }, [open]);
+
+  const filtered = options.filter(o =>
+    !search || o.label.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const selected = options.find(o => o.value === value);
+
+  return (
+    <div className="csField" ref={ref}>
+      <label className="csLabel">{label}{required && <span className="csRequired"> *</span>}</label>
+      <button type="button" className="csSelect" onClick={() => setOpen(o => !o)}>
+        <span className="csSelectText">
+          {selected ? selected.label : 'Select parent'}
+        </span>
+        <ChevronDown className="csSelectChevron" />
+      </button>
+      {helpText && <div className="csHelpText">{helpText}</div>}
+      {open && (
+        <div className="csDropdown csDropdownWide csParentDropdown">
+          <div className="csDropdownSearch">
+            <input ref={inputRef} placeholder="Search by key or title..." value={search} onChange={e => setSearch(e.target.value)} />
+          </div>
+          <label className="csShowDoneLabel">
+            <input type="checkbox" checked={showDone} onChange={e => setShowDone(e.target.checked)} />
+            Show everything marked as done
+          </label>
+          {filtered.map(opt => (
+            <button
+              key={opt.value}
+              type="button"
+              className={`csDropdownItem ${opt.value === value ? 'selected' : ''}`}
+              onClick={() => { onChange(opt.value); setOpen(false); setSearch(''); }}
+            >
+              <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                {opt.icon}{opt.label}
+              </span>
+            </button>
+          ))}
+          {filtered.length === 0 && <div className="csDropdownEmpty">No matching items</div>}
         </div>
       )}
     </div>
@@ -248,6 +340,8 @@ export function CreateStoryModal({ open, onClose, projectId, projectKey, onSucce
   const createMutation = useCreateStoryMutation();
   const [createAnother, setCreateAnother] = useState(false);
   const [summaryError, setSummaryError] = useState('');
+  const [workType, setWorkType] = useState('Story');
+  const [mdtRef, setMdtRef] = useState('');
   const summaryRef = useRef<HTMLInputElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
 
@@ -288,46 +382,70 @@ export function CreateStoryModal({ open, onClose, projectId, projectKey, onSucce
 
   const handleSubmit = useCallback(async () => {
     if (!form.summary.trim()) {
-      setSummaryError('You must specify a summary of the issue.');
+      setSummaryError('Summary is required');
       summaryRef.current?.focus();
       return;
     }
     setSummaryError('');
 
     try {
-      const result = await createMutation.mutateAsync({ form, projectKey: resolvedKey });
+      const result = await createMutation.mutateAsync({ form, projectKey: resolvedKey, issueType: workType });
       onSuccess?.(result.issue_key);
 
       if (createAnother) {
         reset(true);
         setSummaryError('');
+        setMdtRef('');
         setTimeout(() => summaryRef.current?.focus(), 100);
       } else {
         onClose();
         reset();
       }
     } catch (err: any) {
-      setSummaryError(err?.message ?? 'Failed to create story');
+      setSummaryError(err?.message ?? 'Failed to create');
     }
-  }, [form, resolvedKey, createMutation, createAnother, onSuccess, onClose, reset]);
+  }, [form, resolvedKey, createMutation, createAnother, onSuccess, onClose, reset, workType]);
 
   if (!open) return null;
 
-  const projectOptions = projects.map(p => ({ value: p.id, label: p.name, sublabel: p.key }));
+  const projectOptions = projects.map(p => ({
+    value: p.id,
+    label: `${p.name} (${p.key})`,
+    icon: <ProjectIcon name={p.name} />,
+    sublabel: p.key,
+  }));
+
+  const workTypeOptions = WORK_TYPES.map(t => ({
+    value: t,
+    label: t,
+    icon: <JiraIssueTypeIcon type={t} size={16} />,
+  }));
+
   const parentOptions = parentCandidates.map((p: any) => ({
     value: p.id,
-    label: `${p.issue_key} ${p.title}`,
-    icon: <span className="csParentType">{p.issue_type?.charAt(0)}</span>,
+    label: `${p.issue_key}  ${p.title}`,
+    icon: (
+      <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+        <span className="csParentBadge">{resolvedKey}</span>
+        <JiraIssueTypeIcon type={p.issue_type} size={16} />
+      </span>
+    ),
+    issueKey: p.issue_key,
+    title: p.title,
+    projectKey: resolvedKey,
   }));
+
   const releaseOptions = releases.map((r: any) => ({ value: r.id, label: r.name }));
+
   const priorityOptions = PRIORITIES.map(p => ({
     value: p,
     label: p,
     icon: <PriorityIcon priority={p} />,
   }));
+
   const statusOptions = STATUSES.map(s => ({
     value: s,
-    label: s.toUpperCase(),
+    label: s,
     icon: <span className="csStatusDot" />,
   }));
 
@@ -338,13 +456,42 @@ export function CreateStoryModal({ open, onClose, projectId, projectKey, onSucce
         <div className="csModalHeader">
           <h2 className="csModalTitle">Create Story</h2>
           <div className="csModalHeaderActions">
-            <button type="button" className="csHeaderBtn"><Maximize2 size={16} /></button>
-            <button type="button" className="csHeaderBtn" onClick={onClose}><X size={18} /></button>
+            <button type="button" className="csHeaderBtn" title="Minimize"><Minus size={16} /></button>
+            <button type="button" className="csHeaderBtn" title="Full screen"><Maximize2 size={16} /></button>
+            <button type="button" className="csHeaderBtn" title="More actions"><MoreHorizontal size={16} /></button>
+            <button type="button" className="csHeaderBtn" onClick={onClose} title="Close"><X size={18} /></button>
           </div>
         </div>
 
+        {/* Required fields note */}
+        <div className="csRequiredNote">Required fields are marked with an asterisk <span className="csRequired">*</span></div>
+
         {/* ── Body (scrollable) ── */}
         <div className="csModalBody">
+          {/* Space (Project) */}
+          <SelectField
+            label="Space"
+            required
+            value={form.projectId}
+            options={projectOptions}
+            onChange={v => updateField('projectId', v)}
+            placeholder="Select space"
+          />
+
+          {/* Work type */}
+          <SelectField
+            label="Work type"
+            required
+            value={workType}
+            options={workTypeOptions}
+            onChange={setWorkType}
+            helpLink="#"
+            helpLinkText="Learn about work types"
+          />
+
+          {/* Divider */}
+          <div className="csDivider" />
+
           {/* Status */}
           <SelectField
             label="Status"
@@ -356,32 +503,41 @@ export function CreateStoryModal({ open, onClose, projectId, projectKey, onSucce
 
           {/* Summary */}
           <div className="csField">
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <label className="csLabel">Summary<span className="csRequired"> *</span></label>
-              <span className="csCharCount">{form.summary.length}/200</span>
-            </div>
+            <label className="csLabel">Summary<span className="csRequired"> *</span></label>
             <input
               ref={summaryRef}
-              className={`csInput ${summaryError ? 'error' : ''}`}
-              placeholder="What needs to be done?"
+              className={`csInput csInputBordered ${summaryError ? 'error' : ''}`}
+              placeholder=""
               value={form.summary}
               maxLength={200}
               onChange={e => { updateField('summary', e.target.value); if (summaryError) setSummaryError(''); }}
               onKeyDown={e => { if (e.key === 'Enter') e.preventDefault(); }}
             />
-            {summaryError && <div className="csErrorText">{summaryError}</div>}
+            {summaryError && (
+              <div className="csErrorText">
+                <span className="csErrorIcon">◆</span> {summaryError}
+              </div>
+            )}
           </div>
 
           {/* Parent */}
-          <SelectField
+          <ParentPicker
             label="Parent"
-            required
             value={form.parentId ?? ''}
-            options={[{ value: '', label: 'Select parent' }, ...parentOptions]}
+            options={parentOptions}
             onChange={v => updateField('parentId', v || null)}
-            placeholder="Select parent"
+            helpText="Your work type hierarchy determines the work items you can select here."
           />
-          <div className="csHelpText">Your work type hierarchy determines the work items you can select here.</div>
+
+          {/* MDT Ref */}
+          <div className="csField">
+            <label className="csLabel">MDT Ref</label>
+            <input
+              className="csInput csInputBordered"
+              value={mdtRef}
+              onChange={e => setMdtRef(e.target.value)}
+            />
+          </div>
 
           {/* Priority */}
           <SelectField
@@ -389,6 +545,8 @@ export function CreateStoryModal({ open, onClose, projectId, projectKey, onSucce
             value={form.priority}
             options={priorityOptions}
             onChange={v => updateField('priority', v)}
+            helpLink="#"
+            helpLinkText="Learn about priority levels"
           />
 
           {/* Description */}
@@ -447,7 +605,7 @@ export function CreateStoryModal({ open, onClose, projectId, projectKey, onSucce
               onClick={handleSubmit}
               disabled={createMutation.isPending}
             >
-              {createMutation.isPending ? 'Creating...' : 'Create Story'}
+              {createMutation.isPending ? 'Creating...' : 'Create'}
             </button>
           </div>
         </div>
