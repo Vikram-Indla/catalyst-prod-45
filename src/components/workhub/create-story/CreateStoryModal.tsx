@@ -984,7 +984,7 @@ export function CreateStoryModal({ open, onClose, projectId, projectKey, onSucce
           </span>
           {/* Actions */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginLeft: 4 }}>
-            <button onClick={() => { clearTimeout(autoDismiss); dismiss(); navigate(viewTarget); }} style={{
+            <button onClick={() => { clearTimeout(autoDismiss); dismiss(); window.location.href = viewTarget; }} style={{
               fontSize: 13, fontWeight: 500, color: '#0052CC', background: 'none', border: 'none',
               cursor: 'pointer', padding: '4px 8px', borderRadius: 4, fontFamily: "'Inter', sans-serif",
               transition: 'background 0.12s',
