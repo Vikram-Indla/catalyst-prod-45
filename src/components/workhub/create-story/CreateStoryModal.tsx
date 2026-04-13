@@ -849,9 +849,7 @@ export function CreateStoryModal({ open, onClose, projectId, projectKey, onSucce
         <div className="csModalHeader">
           <h2 className="csModalTitle">Create {workType}</h2>
           <div className="csModalHeaderActions">
-            <button type="button" className="csHeaderBtn" title="Minimize"><Minus size={16} /></button>
             <button type="button" className="csHeaderBtn" title="Full screen" onClick={() => setIsExpanded(e => !e)}><Maximize2 size={16} /></button>
-            <button type="button" className="csHeaderBtn" title="More actions"><MoreHorizontal size={16} /></button>
             <button type="button" className="csHeaderBtn" onClick={onClose} title="Close"><X size={18} /></button>
           </div>
         </div>
