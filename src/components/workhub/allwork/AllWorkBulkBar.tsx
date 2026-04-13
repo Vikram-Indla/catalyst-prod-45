@@ -19,11 +19,19 @@ interface Props {
 export function AllWorkBulkBar({ selectedIds, items = [], totalCount, onSelectAll, onClear, onDone, onEdit }: Props) {
   const handleDelete = async (ids: string[]) => {
     try {
-      const { error } = await supabase
-        .from('catalyst_issues')
-        .delete()
-        .in('id', ids);
-      if (error) throw error;
+      // Separate catalyst_issues items (UUID ids) from ph_issues items (issue_key ids)
+      const catIds = ids.filter(id => /^[0-9a-f]{8}-/.test(id));
+      const phKeys = ids.filter(id => !/^[0-9a-f]{8}-/.test(id));
+
+      if (catIds.length > 0) {
+        const { error } = await supabase.from('catalyst_issues').delete().in('id', catIds);
+        if (error) throw error;
+      }
+      if (phKeys.length > 0) {
+        const { error } = await supabase.from('ph_issues').delete().in('issue_key', phKeys);
+        if (error) throw error;
+      }
+
       toast.success(`${ids.length} item${ids.length !== 1 ? 's' : ''} deleted`);
       onDone();
     } catch (err: any) {

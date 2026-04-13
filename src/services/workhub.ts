@@ -59,12 +59,90 @@ async function fetchAllWorkList(
     };
   }
 
-  // Fallback to ph_issues
-  return fetchPhIssuesFallback(filters, pagination, sort);
+  // Fallback to ph_issues + catalyst_issues merged
+  return fetchPhIssuesFallback(projectId, filters, pagination, sort);
 }
 
-/** Fallback: read from ph_issues when wh_ tables are empty */
+/** Fetch Catalyst-native items from catalyst_issues */
+async function fetchCatalystItems(
+  projectId?: string,
+  filters?: {
+    types?: string[];
+    statuses?: string[];
+    priorities?: string[];
+    search?: string;
+  },
+) {
+  let q = supabase
+    .from('catalyst_issues')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (projectId) q = q.eq('project_id', projectId);
+  if (filters?.types?.length) q = q.in('issue_type', filters.types);
+  if (filters?.statuses?.length) q = q.in('status', filters.statuses);
+  if (filters?.priorities?.length) q = q.in('priority', filters.priorities);
+  if (filters?.search) {
+    q = q.or(`title.ilike.%${filters.search}%,issue_key.ilike.%${filters.search}%`);
+  }
+
+  const { data } = await q;
+  return (data ?? []).map(mapCatalystIssueToListRow);
+}
+
+/** Map catalyst_issues row to the wh_all_work_list shape */
+function mapCatalystIssueToListRow(row: any) {
+  return {
+    id: row.id,
+    project_id: row.project_id,
+    item_key: row.issue_key,
+    key_sequence: 0,
+    summary: row.title,
+    description: row.description,
+    priority: row.priority,
+    severity: null,
+    rank: null,
+    created_at: row.created_at,
+    updated_at: row.updated_at,
+    work_type_id: null,
+    work_type_name: row.issue_type,
+    icon_glyph: null,
+    icon_color: null,
+    is_subtask: false,
+    status_id: null,
+    status_name: row.status,
+    status_category: row.status === 'Done' ? 'done' : row.status === 'To Do' ? 'new' : 'indeterminate',
+    status_color: null,
+    parent_id: row.parent_id,
+    parent_key: null,
+    parent_summary: null,
+    fix_version_id: row.release_id,
+    fix_version_name: null,
+    assignee_id: row.assignee_id,
+    assignee_name: null,
+    assignee_avatar: null,
+    reporter_id: row.reporter_id,
+    reporter_name: null,
+    comment_count: 0,
+    attachment_count: 0,
+    child_count: 0,
+    labels: row.tags || [],
+    _source: 'catalyst' as const,
+    project_key: null,
+    story_points: row.story_points,
+    sprint_name: row.sprint_name,
+    resolution: null,
+    components: [],
+    fix_versions: [],
+    description_text: row.description,
+    comments_data: [],
+    changelog: [],
+  };
+}
+
+/** Fallback: read from ph_issues + catalyst_issues merged */
 async function fetchPhIssuesFallback(
+  projectId?: string,
   filters?: {
     types?: string[];
     statuses?: string[];
@@ -76,31 +154,42 @@ async function fetchPhIssuesFallback(
 ) {
   const page = pagination?.page ?? 0;
   const pageSize = pagination?.pageSize ?? 25;
-  const from = page * pageSize;
-  const to = from + pageSize - 1;
 
-  let q = supabase
-    .from('ph_issues')
-    .select('*', { count: 'exact' })
-    .order('jira_updated_at', { ascending: false })
-    .range(from, to);
+  // Fetch catalyst_issues (Catalyst-native items) in parallel with ph_issues
+  const [catItems, phResult] = await Promise.all([
+    fetchCatalystItems(projectId, filters),
+    (async () => {
+      const from = page * pageSize;
+      const to = from + pageSize - 1;
+      let q = supabase
+        .from('ph_issues')
+        .select('*', { count: 'exact' })
+        .order('jira_updated_at', { ascending: false })
+        .range(from, to);
 
-  if (filters?.types?.length) q = q.in('issue_type', filters.types);
-  if (filters?.statuses?.length) q = q.in('status', filters.statuses);
-  if (filters?.priorities?.length) q = q.in('priority', filters.priorities);
-  if (filters?.search) {
-    q = q.or(`summary.ilike.%${filters.search}%,issue_key.ilike.%${filters.search}%`);
-  }
+      if (filters?.types?.length) q = q.in('issue_type', filters.types);
+      if (filters?.statuses?.length) q = q.in('status', filters.statuses);
+      if (filters?.priorities?.length) q = q.in('priority', filters.priorities);
+      if (filters?.search) {
+        q = q.or(`summary.ilike.%${filters.search}%,issue_key.ilike.%${filters.search}%`);
+      }
 
-  const { data, error, count } = await q;
-  if (error) throw new Error(error.message);
+      const { data, error, count } = await q;
+      if (error) throw new Error(error.message);
+      return { items: (data ?? []).map(mapPhIssueToListRow), count: count ?? 0 };
+    })(),
+  ]);
+
+  // Merge: catalyst items first (newest), then ph_issues
+  const merged = [...catItems, ...phResult.items];
+  const totalCount = catItems.length + phResult.count;
 
   return {
-    items: (data ?? []).map(mapPhIssueToListRow),
-    totalCount: count ?? 0,
+    items: merged,
+    totalCount,
     page,
     pageSize,
-    totalPages: Math.ceil((count ?? 0) / pageSize),
+    totalPages: Math.ceil(totalCount / pageSize),
   };
 }
 
