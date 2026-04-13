@@ -83,10 +83,19 @@ export function useStoryBacklog(projectId: string) {
         .is('jira_removed_at', null)
         .order('jira_updated_at', { ascending: false });
       if (error) throw error;
-      if (!data || data.length === 0) return [];
+      // Also fetch Catalyst-native stories for this project
+      const { data: catData } = await supabase
+        .from('catalyst_issues')
+        .select('id, issue_key, title, status, priority, assignee_id, created_at, updated_at')
+        .eq('project_id', projectId)
+        .in('issue_type', ['Story', 'Feature', 'Epic', 'Task', 'QA Bug', 'Production Incident', 'Change Request', 'Business Gap', 'API Requirement'])
+        .order('created_at', { ascending: false });
+
+      const jiraRows = data || [];
+      const catRows = catData || [];
 
       // Resolve parent epic keys to get epic info for ParentEpicChip
-      const parentKeys = [...new Set(data.map((s: any) => s.parent_key).filter(Boolean))];
+      const parentKeys = [...new Set(jiraRows.map((s: any) => s.parent_key).filter(Boolean))];
       const epicMap: Record<string, { id: string; epic_key: string | null; name: string }> = {};
       if (parentKeys.length > 0) {
         const { data: epics } = await supabase
@@ -100,7 +109,7 @@ export function useStoryBacklog(projectId: string) {
         }
       }
 
-      return data.map((row: any) => ({
+      const jiraStories: BacklogStory[] = jiraRows.map((row: any) => ({
         id: row.id,
         story_key: row.issue_key,
         title: row.summary,
@@ -123,7 +132,29 @@ export function useStoryBacklog(projectId: string) {
           epic_id: epicMap[row.parent_key].id,
           epic: epicMap[row.parent_key],
         } : null,
-      })) as BacklogStory[];
+      }));
+
+      const catStories: BacklogStory[] = catRows.map((row: any) => ({
+        id: row.id,
+        story_key: row.issue_key,
+        title: row.title,
+        name: row.title,
+        description: null,
+        status: row.status,
+        feature_id: null,
+        assignee_id: row.assignee_id,
+        assignee_name: null,
+        start_date: null,
+        priority: row.priority?.toLowerCase() ?? null,
+        deleted_at: null,
+        jira_created_at: row.created_at,
+        jira_updated_at: row.updated_at,
+        source: 'catalyst' as const,
+        feature: null,
+      }));
+
+      // Catalyst items first, then Jira items
+      return [...catStories, ...jiraStories];
     },
     enabled: !!projectId && !!projectKey,
     staleTime: 5 * 60 * 1000,

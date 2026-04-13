@@ -15,6 +15,7 @@ import { ParentEpicChip } from '../components/shared/ParentEpicChip';
 import { DeleteConfirmDialog } from '../components/dialogs/DeleteConfirmDialog';
 
 import { EditStoryDialog } from '../components/dialogs/EditStoryDialog';
+import { JiraBulkActionBar } from '@/components/shared/JiraBulkActionBar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -961,6 +962,30 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
         <Suspense fallback={null}>
           <CatalystDetailRouter isOpen={!!detailItemId} onClose={() => setDetailItemId(null)} itemId={detailItemId} projectId={projectId || ''} projectKey={projectKey || ''} onOpenItem={(id) => setDetailItemId(id)} onTogglePanelMode={handleTogglePanelMode} />
         </Suspense>
+      )}
+
+      {/* Jira-style bulk action bar */}
+      {selectedIds.size > 0 && (
+        <JiraBulkActionBar
+          selectedIds={Array.from(selectedIds)}
+          items={flatItems.map(s => ({ id: s.id, issue_key: s.story_key, title: s.title, summary: s.title, status: s.status, priority: s.priority ?? undefined, assignee_name: s.assignee_name ?? undefined }))}
+          onClear={() => setSelectedIds(new Set())}
+          onDelete={async (ids) => {
+            // Separate catalyst vs ph_issues items
+            const catIds = ids.filter(id => /^[0-9a-f]{8}-/.test(id));
+            const phIds = ids.filter(id => !/^[0-9a-f]{8}-/.test(id));
+            if (catIds.length > 0) {
+              await supabase.from('catalyst_issues').delete().in('id', catIds);
+            }
+            if (phIds.length > 0) {
+              await supabase.from('ph_issues').delete().in('id', phIds);
+            }
+            toast.success(`${ids.length} item${ids.length !== 1 ? 's' : ''} deleted`);
+            setSelectedIds(new Set());
+            queryClient.invalidateQueries({ queryKey: ['backlog-stories', projectId] });
+          }}
+          entityLabel="work item"
+        />
       )}
     </div>
   );
