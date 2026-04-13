@@ -962,7 +962,7 @@ export function CreateStoryModal({ open, onClose, projectId, projectKey, onSucce
 
     ReactDOM.render(
       <div style={{
-        position: 'fixed', bottom: 24, left: '50%', transform: 'translateX(-50%)',
+        position: 'fixed', bottom: 72, left: '50%', transform: 'translateX(-50%)',
         zIndex: 99999, pointerEvents: 'auto',
       }}>
         <div data-toast-bar="" style={{
