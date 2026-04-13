@@ -258,12 +258,15 @@ export function CreateStoryModal({ open, onClose, projectId, projectKey, onSucce
     }
   }, [user?.id]);
 
-  // Set project if provided
+  // Set project if provided (by id or key)
   useEffect(() => {
-    if (projectId && !form.projectId) {
-      updateField('projectId', projectId);
+    if (form.projectId) return;
+    if (projectId) { updateField('projectId', projectId); return; }
+    if (projectKey && projects.length > 0) {
+      const match = projects.find(p => p.key === projectKey);
+      if (match) updateField('projectId', match.id);
     }
-  }, [projectId]);
+  }, [projectId, projectKey, projects, form.projectId]);
 
   // Focus trap
   useEffect(() => {
