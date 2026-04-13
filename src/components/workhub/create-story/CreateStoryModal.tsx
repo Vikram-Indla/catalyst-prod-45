@@ -25,9 +25,12 @@ import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import './create-story.css';
 
 // ── Helpers ──
-const AVATAR_COLORS = ['#4C6EF5', '#FA8C16', '#52C41A', '#EB2F96', '#722ED1'];
-function avatarBg(name: string) { return AVATAR_COLORS[name.split('').reduce((a, c) => a + c.charCodeAt(0), 0) % AVATAR_COLORS.length]; }
-function initials(name: string) { return name.split(' ').filter(Boolean).map(n => n[0]).join('').slice(0, 2).toUpperCase(); }
+const AVATAR_COLORS = ['#4C6EF5', '#FA8C16', '#52C41A', '#EB2F96', '#722ED1', '#2F54EB', '#13C2C2', '#FA541C'];
+function getAvatarColor(id: string) {
+  let hash = 0;
+  for (let i = 0; i < id.length; i++) hash = ((hash << 5) - hash + id.charCodeAt(i)) | 0;
+  return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
+}
 
 const STATUSES = [
   'In Requirements', 'To Do', 'In Design', 'Ready for Development',
@@ -41,21 +44,62 @@ const WORK_TYPES = [
 
 const PRIORITIES = ['Highest', 'High', 'Medium', 'Low', 'Lowest'];
 
-function PriorityIcon({ priority }: { priority: string }) {
-  const p = priority.toLowerCase();
-  let color = '#F79232';
-  if (p === 'highest') color = '#EF4444';
-  else if (p === 'high') color = '#F97316';
-  else if (p === 'low') color = '#3B82F6';
-  else if (p === 'lowest') color = '#60A5FA';
+/** Jira-native priority SVGs — canonical (from StoryDetailView) */
+const PRIORITY_SVG: Record<string, React.ReactNode> = {
+  Highest: (
+    <svg width="16" height="16" viewBox="0 0 16 16">
+      <path d="M3 8l5-5 5 5" fill="none" stroke="#FF5630" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M3 12l5-5 5 5" fill="none" stroke="#FF5630" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  ),
+  High: (
+    <svg width="16" height="16" viewBox="0 0 16 16">
+      <path d="M3 10l5-5 5 5" fill="none" stroke="#FF5630" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  ),
+  Medium: (
+    <svg width="16" height="16" viewBox="0 0 16 16">
+      <path d="M3 6h10" fill="none" stroke="#FFAB00" strokeWidth="2" strokeLinecap="round"/>
+      <path d="M3 10h10" fill="none" stroke="#FFAB00" strokeWidth="2" strokeLinecap="round"/>
+    </svg>
+  ),
+  Low: (
+    <svg width="16" height="16" viewBox="0 0 16 16">
+      <path d="M3 6l5 5 5-5" fill="none" stroke="#2684FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  ),
+  Lowest: (
+    <svg width="16" height="16" viewBox="0 0 16 16">
+      <path d="M3 4l5 5 5-5" fill="none" stroke="#2684FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M3 8l5 5 5-5" fill="none" stroke="#2684FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  ),
+};
 
-  if (p === 'highest' || p === 'high') {
-    return <svg width="16" height="16" viewBox="0 0 16 16"><path d="M3 13l5-10 5 10" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>;
+/** Atlassian checkmark */
+const CheckmarkSVG = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0052CC" strokeWidth="2.5" style={{ flexShrink: 0 }}>
+    <polyline points="20 6 9 17 4 12"/>
+  </svg>
+);
+
+/** Atlassian-spec dropdown styles */
+const ATLASSIAN_DROPDOWN: React.CSSProperties = {
+  background: '#FFFFFF', borderRadius: 4, border: 'none',
+  boxShadow: '0 8px 12px rgba(30,31,33,0.15), 0 0 1px rgba(30,31,33,0.31)',
+  padding: '4px 0', zIndex: 9999,
+};
+
+/** Avatar — real image or initials fallback (canonical) */
+function AvatarCircle({ userId, name, avatarUrl, size = 28 }: { userId: string; name: string; avatarUrl?: string | null; size?: number }) {
+  if (avatarUrl) {
+    return <img src={avatarUrl} alt={name} style={{ width: size, height: size, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />;
   }
-  if (p === 'low' || p === 'lowest') {
-    return <svg width="16" height="16" viewBox="0 0 16 16"><path d="M3 3l5 10 5-10" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>;
-  }
-  return <svg width="16" height="16" viewBox="0 0 16 16"><rect x="2" y="5" width="12" height="2" rx="1" fill={color}/><rect x="2" y="9" width="12" height="2" rx="1" fill={color}/></svg>;
+  return (
+    <div style={{ width: size, height: size, borderRadius: '50%', background: getAvatarColor(userId), display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: Math.round(size * 0.39), fontWeight: 700, color: '#fff', flexShrink: 0 }}>
+      {name.charAt(0).toUpperCase()}
+    </div>
+  );
 }
 
 // ── Project icon (small colored square with first letter) ──
@@ -320,7 +364,7 @@ function ParentPicker({ label, required, projectId, projectKey, value, onChange,
   );
 }
 
-// ── User Picker ──
+// ── User Picker (Jira-parity — 28px avatars, search, checkmarks, DEEBFF highlight) ──
 function UserPicker({ label, required, value, members, onChange, showAssignToMe, onAssignToMe }: {
   label: string;
   required?: boolean;
@@ -363,36 +407,55 @@ function UserPicker({ label, required, value, members, onChange, showAssignToMe,
         <span className="csSelectText">
           {selected ? (
             <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              {selected.avatar_url
-                ? <img src={selected.avatar_url} alt="" className="csAvatarImg" />
-                : <span className="csAvatarCircle" style={{ background: avatarBg(selected.full_name ?? '') }}>{initials(selected.full_name ?? '')}</span>
-              }
-              {selected.full_name}
+              <AvatarCircle userId={selected.id} name={selected.full_name ?? ''} avatarUrl={selected.avatar_url} size={24} />
+              <span style={{ fontSize: 14, color: '#172B4D', fontWeight: 400 }}>{selected.full_name}</span>
             </span>
           ) : 'Automatic'}
         </span>
         <ChevronDown className="csSelectChevron" />
       </button>
       {open && (
-        <div className="csDropdown csDropdownWide">
-          <div className="csDropdownSearch">
-            <input ref={inputRef} placeholder="Search..." value={search} onChange={e => setSearch(e.target.value)} />
+        <div className="csDropdown" style={{ ...ATLASSIAN_DROPDOWN, position: 'absolute', width: '100%', minWidth: 280, maxHeight: 340, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+          <div style={{ padding: '8px 8px 4px' }}>
+            <input ref={inputRef} placeholder="Search members..." value={search} onChange={e => setSearch(e.target.value)}
+              onKeyDown={e => { if (e.key === 'Escape') { setOpen(false); setSearch(''); } }}
+              style={{
+                width: '100%', height: 36, padding: '0 10px',
+                border: '2px solid #4C9AFF', borderRadius: 3,
+                fontSize: 14, fontFamily: 'inherit', outline: 'none', color: '#172B4D',
+              }} />
           </div>
-          <button type="button" className="csDropdownItem" onClick={() => { onChange(null); setOpen(false); setSearch(''); }}>
-            <span style={{ color: '#6B778C' }}>Automatic</span>
-          </button>
-          {filtered.map(m => (
-            <button key={m.id} type="button" className={`csDropdownItem ${m.id === value ? 'selected' : ''}`}
-              onClick={() => { onChange(m.id); setOpen(false); setSearch(''); }}>
-              <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                {m.avatar_url
-                  ? <img src={m.avatar_url} alt="" className="csAvatarImg" />
-                  : <span className="csAvatarCircle" style={{ background: avatarBg(m.full_name ?? '') }}>{initials(m.full_name ?? '')}</span>
-                }
-                {m.full_name}
-              </span>
-            </button>
-          ))}
+          <div style={{ flex: 1, overflowY: 'auto' }}>
+            {/* Unassigned / Automatic */}
+            <div onClick={() => { onChange(null); setOpen(false); setSearch(''); }} style={{
+              height: 40, padding: '0 12px', display: 'flex', alignItems: 'center', gap: 10,
+              cursor: 'pointer', borderBottom: '1px solid #F4F5F7',
+              background: !value ? '#DEEBFF' : 'transparent',
+            }}
+              onMouseEnter={e => { if (value) (e.currentTarget as HTMLElement).style.background = '#F4F5F7'; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = !value ? '#DEEBFF' : 'transparent'; }}
+            >
+              <div style={{ width: 28, height: 28, borderRadius: '50%', flexShrink: 0, border: '1px dashed #C1C7D0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, color: '#C1C7D0' }}>?</div>
+              <span style={{ fontSize: 14, color: '#6B778C', flex: 1 }}>Automatic</span>
+              {!value && <CheckmarkSVG />}
+            </div>
+            {filtered.map(m => (
+              <div key={m.id} onClick={() => { onChange(m.id); setOpen(false); setSearch(''); }}
+                style={{
+                  height: 40, padding: '0 12px', display: 'flex', alignItems: 'center', gap: 10,
+                  cursor: 'pointer', background: m.id === value ? '#DEEBFF' : 'transparent',
+                }}
+                onMouseEnter={e => { if (m.id !== value) (e.currentTarget as HTMLElement).style.background = '#F4F5F7'; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = m.id === value ? '#DEEBFF' : 'transparent'; }}
+              >
+                <AvatarCircle userId={m.id} name={m.full_name ?? ''} avatarUrl={m.avatar_url} />
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: 14, fontWeight: 400, color: '#172B4D', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{m.full_name}</div>
+                </div>
+                {m.id === value && <CheckmarkSVG />}
+              </div>
+            ))}
+          </div>
         </div>
       )}
     </div>
@@ -543,7 +606,7 @@ export function CreateStoryModal({ open, onClose, projectId, projectKey, onSucce
   const priorityOptions = PRIORITIES.map(p => ({
     value: p,
     label: p,
-    icon: <PriorityIcon priority={p} />,
+    icon: <span style={{ display: 'flex', flexShrink: 0 }}>{PRIORITY_SVG[p]}</span>,
   }));
 
   const statusOptions = STATUSES.map(s => ({
