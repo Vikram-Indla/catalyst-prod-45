@@ -1,18 +1,13 @@
 /**
- * IssueViewShell — 3-column layout (Left list | Center content | Right details)
+ * IssueViewShell — Flat 3-column layout matching Jira issue view
  * ════════════════════════════════════════════════════════════════════════════
- * Production-ready: wired to Supabase via useIssueViewData composite hook.
- * Resizable panels with localStorage persistence.
- * Responsive: 3-col >= 1280px, 2-col 960-1279px, 1-col < 960px.
- * URL sync: ?selectedIssue=KEY via pushState (user action) / replaceState (refresh).
+ * Flat white columns · 1px separators · sticky headers · independent scroll
+ * Uses CSS classes from allwork.css (no Tailwind panel cards/shadows)
  */
-import { useState, useCallback, useEffect, useMemo } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { cn } from '@/lib/utils';
 import { useTheme } from '@/hooks/useTheme';
-import { useResizablePanel } from '@/hooks/workhub/useResizablePanel';
 import { useIssueViewData } from '@/hooks/workhub/useIssueViewData';
-import { PanelLeft, PanelRight } from 'lucide-react';
 import { IssueListPanel } from './IssueListPanel';
 import { IssueCenterPanel } from './IssueCenterPanel';
 import { IssueRightPanel } from './IssueRightPanel';
@@ -25,226 +20,126 @@ interface IssueViewShellProps {
 export function IssueViewShell({ projectKey, storageKey }: IssueViewShellProps) {
   const { isDark } = useTheme();
   const [searchParams, setSearchParams] = useSearchParams();
-
-  // URL sync: ?selectedIssue=KEY
   const urlSelectedKey = searchParams.get('selectedIssue');
   const [selectedIssueKey, setSelectedIssueKey] = useState<string | null>(urlSelectedKey);
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Resizable panels
-  const {
-    leftWidth, rightWidth,
-    isDraggingLeft, isDraggingRight,
-    onLeftSplitterMouseDown, onRightSplitterMouseDown,
-  } = useResizablePanel({ storageKey });
+  // Splitter state
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [leftW, setLeftW] = useState(() => {
+    try { const s = localStorage.getItem(storageKey); if (s) { const p = JSON.parse(s); return p.left ?? 340; } } catch {}
+    return 340;
+  });
+  const [rightW, setRightW] = useState(() => {
+    try { const s = localStorage.getItem(storageKey); if (s) { const p = JSON.parse(s); return p.right ?? 360; } } catch {}
+    return 360;
+  });
 
-  // Responsive breakpoints
-  const [windowWidth, setWindowWidth] = useState(
-    typeof window !== 'undefined' ? window.innerWidth : 1440,
-  );
-  const [leftDrawerOpen, setLeftDrawerOpen] = useState(false);
-  const [rightDrawerOpen, setRightDrawerOpen] = useState(false);
-
+  // Persist widths
   useEffect(() => {
-    const handleResize = () => setWindowWidth(window.innerWidth);
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+    try { localStorage.setItem(storageKey, JSON.stringify({ left: leftW, right: rightW })); } catch {}
+  }, [leftW, rightW, storageKey]);
 
-  const is3Col = windowWidth >= 1280;
-  const is2Col = windowWidth >= 960 && windowWidth < 1280;
-  const is1Col = windowWidth < 960;
-
-  // ─── Data layer (real Supabase) ───
+  // Data
   const {
-    items, itemsLoading,
-    selectedItem, parentItem,
-    children, childrenLoading,
-    links, linksLoading,
-    comments, commentsLoading,
-    history, historyLoading,
-    createComment,
+    items, itemsLoading, selectedItem, parentItem,
+    children, childrenLoading, links, linksLoading,
+    comments, commentsLoading, history, historyLoading, createComment,
   } = useIssueViewData(projectKey, selectedIssueKey, searchQuery);
 
-  // Auto-select first item if none selected
+  // Auto-select first
   useEffect(() => {
     if (!selectedIssueKey && items.length > 0 && !itemsLoading) {
       const firstKey = items[0].issue_key;
       setSelectedIssueKey(firstKey);
-      setSearchParams(prev => {
-        prev.set('selectedIssue', firstKey);
-        return prev;
-      }, { replace: true });
+      setSearchParams(prev => { prev.set('selectedIssue', firstKey); return prev; }, { replace: true });
     }
   }, [items, selectedIssueKey, itemsLoading]);
 
-  // URL sync: when selection changes via user action
   const handleSelectIssue = useCallback((key: string) => {
     setSelectedIssueKey(key);
-    setSearchParams(prev => {
-      prev.set('selectedIssue', key);
-      return prev;
-    });
-    if (is1Col) setLeftDrawerOpen(false);
-  }, [setSearchParams, is1Col]);
+    setSearchParams(prev => { prev.set('selectedIssue', key); return prev; });
+  }, [setSearchParams]);
 
-  const handleSearch = useCallback((query: string) => {
-    setSearchQuery(query);
-  }, []);
+  // Splitter drag handlers
+  const handleSplitterDrag = useCallback((side: 'left' | 'right', e: React.MouseEvent) => {
+    e.preventDefault();
+    const startX = e.clientX;
+    const startW = side === 'left' ? leftW : rightW;
+    const onMove = (ev: MouseEvent) => {
+      const delta = ev.clientX - startX;
+      if (side === 'left') {
+        setLeftW(Math.max(280, Math.min(520, startW + delta)));
+      } else {
+        setRightW(Math.max(320, Math.min(520, startW - delta)));
+      }
+    };
+    const onUp = () => {
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onUp);
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    };
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+  }, [leftW, rightW]);
 
   return (
     <div
-      className={cn(
-        'h-[calc(100vh-var(--cp-layout-topnav))] overflow-hidden',
-        isDark ? 'bg-[#0A0A0A]' : 'bg-[#F7F8F9]',
-      )}
+      ref={containerRef}
+      className={`awShell ${isDark ? 'dark' : ''}`}
+      style={{
+        '--aw-left': `${leftW}px`,
+        '--aw-right': `${rightW}px`,
+      } as React.CSSProperties}
     >
-      <div
-        className="h-full flex"
-        style={isDraggingLeft || isDraggingRight ? { userSelect: 'none' } : undefined}
-      >
-        {/* ─── LEFT PANEL ─── */}
-        {(is3Col || is2Col) && (
-          <>
-            <aside
-              className={cn(
-                'flex flex-col h-full shrink-0 border-r',
-                isDark ? 'bg-[#111111] border-[#2E2E2E]' : 'bg-white border-[#DFE1E6]',
-              )}
-              style={{ width: leftWidth }}
-            >
-              <IssueListPanel
-                projectKey={projectKey}
-                selectedIssueKey={selectedIssueKey}
-                onSelectIssue={handleSelectIssue}
-                onSearch={handleSearch}
-                isDark={isDark}
-                items={items}
-                loading={itemsLoading}
-              />
-            </aside>
-            <div
-              className={cn(
-                'w-[6px] shrink-0 cursor-col-resize relative z-10 flex items-center justify-center',
-                'hover:bg-[#0C66E4]/10',
-                isDraggingLeft && 'bg-[#0C66E4]/10',
-              )}
-              onMouseDown={onLeftSplitterMouseDown}
-              onDoubleClick={() => {/* reset handled by hook */}}
-            >
-              <div className={cn(
-                'w-px h-full transition-colors duration-150',
-                isDraggingLeft ? 'bg-[#0C66E4]' : isDark ? 'bg-[#2E2E2E]' : 'bg-transparent hover:bg-[#DFE1E6]',
-              )} />
-            </div>
-          </>
-        )}
+      {/* ── LEFT COLUMN ── */}
+      <div className="awCol">
+        <IssueListPanel
+          projectKey={projectKey}
+          selectedIssueKey={selectedIssueKey}
+          onSelectIssue={handleSelectIssue}
+          onSearch={setSearchQuery}
+          items={items}
+          loading={itemsLoading}
+        />
+      </div>
 
-        {/* 1-col: Left drawer overlay */}
-        {is1Col && leftDrawerOpen && (
-          <div className="fixed inset-0 z-40 flex">
-            <div className="absolute inset-0 bg-black/30" onClick={() => setLeftDrawerOpen(false)} />
-            <aside className={cn('relative z-50 w-[360px] max-w-[85vw] h-full shadow-lg', isDark ? 'bg-[#111111]' : 'bg-white')}>
-              <IssueListPanel
-                projectKey={projectKey}
-                selectedIssueKey={selectedIssueKey}
-                onSelectIssue={handleSelectIssue}
-                onSearch={handleSearch}
-                isDark={isDark}
-                items={items}
-                loading={itemsLoading}
-              />
-            </aside>
-          </div>
-        )}
+      {/* ── LEFT SPLITTER ── */}
+      <div className="awSplitter" onMouseDown={(e) => handleSplitterDrag('left', e)} />
 
-        {/* ─── CENTER PANEL ─── */}
-        <main className={cn('flex flex-col h-full flex-1 min-w-0', isDark ? 'bg-[#0A0A0A]' : 'bg-white')}>
-          {(is1Col || is2Col) && (
-            <div className={cn('flex items-center gap-2 px-4 py-2 border-b shrink-0', isDark ? 'border-[#2E2E2E]' : 'border-[#DFE1E6]')}>
-              {is1Col && (
-                <button onClick={() => setLeftDrawerOpen(true)} className={cn('p-1.5 rounded-md transition-colors', isDark ? 'hover:bg-[#1F1F1F] text-[#A1A1A1]' : 'hover:bg-[#F4F5F7] text-[#505258]')}>
-                  <PanelLeft className="w-4 h-4" />
-                </button>
-              )}
-              {is2Col && (
-                <button onClick={() => setRightDrawerOpen(!rightDrawerOpen)} className={cn('ml-auto p-1.5 rounded-md transition-colors', isDark ? 'hover:bg-[#1F1F1F] text-[#A1A1A1]' : 'hover:bg-[#F4F5F7] text-[#505258]')}>
-                  <PanelRight className="w-4 h-4" />
-                </button>
-              )}
-            </div>
-          )}
-          <IssueCenterPanel
-            issueKey={selectedIssueKey}
-            isDark={isDark}
-            item={selectedItem}
-            parentItem={parentItem}
-            loading={itemsLoading && !selectedItem}
-          />
-        </main>
+      {/* ── CENTER COLUMN ── */}
+      <div className="awCol">
+        <IssueCenterPanel
+          issueKey={selectedIssueKey}
+          item={selectedItem}
+          parentItem={parentItem}
+          loading={itemsLoading && !selectedItem}
+        />
+      </div>
 
-        {/* ─── RIGHT PANEL ─── */}
-        {is3Col && (
-          <>
-            <div
-              className={cn(
-                'w-[6px] shrink-0 cursor-col-resize relative z-10 flex items-center justify-center',
-                'hover:bg-[#0C66E4]/10',
-                isDraggingRight && 'bg-[#0C66E4]/10',
-              )}
-              onMouseDown={onRightSplitterMouseDown}
-            >
-              <div className={cn(
-                'w-px h-full transition-colors duration-150',
-                isDraggingRight ? 'bg-[#0C66E4]' : isDark ? 'bg-[#2E2E2E]' : 'bg-transparent hover:bg-[#DFE1E6]',
-              )} />
-            </div>
-            <aside
-              className={cn('flex flex-col h-full shrink-0 border-l', isDark ? 'bg-[#111111] border-[#2E2E2E]' : 'bg-white border-[#DFE1E6]')}
-              style={{ width: rightWidth }}
-            >
-              <IssueRightPanel
-                issueKey={selectedIssueKey}
-                isDark={isDark}
-                item={selectedItem}
-                parentItem={parentItem}
-                children={children}
-                childrenLoading={childrenLoading}
-                links={links}
-                linksLoading={linksLoading}
-                comments={comments}
-                commentsLoading={commentsLoading}
-                history={history}
-                historyLoading={historyLoading}
-                createComment={createComment}
-              />
-            </aside>
-          </>
-        )}
+      {/* ── RIGHT SPLITTER ── */}
+      <div className="awSplitter" onMouseDown={(e) => handleSplitterDrag('right', e)} />
 
-        {/* 2-col / 1-col: Right drawer */}
-        {((is2Col && rightDrawerOpen) || (is1Col && rightDrawerOpen)) && (
-          <div className="fixed inset-0 z-40 flex justify-end">
-            <div className="absolute inset-0 bg-black/30" onClick={() => setRightDrawerOpen(false)} />
-            <aside className={cn('relative z-50 h-full shadow-lg', is1Col ? 'w-full' : 'w-[400px] max-w-[85vw]', isDark ? 'bg-[#111111]' : 'bg-white')}>
-              <IssueRightPanel
-                issueKey={selectedIssueKey}
-                isDark={isDark}
-                item={selectedItem}
-                parentItem={parentItem}
-                children={children}
-                childrenLoading={childrenLoading}
-                links={links}
-                linksLoading={linksLoading}
-                comments={comments}
-                commentsLoading={commentsLoading}
-                history={history}
-                historyLoading={historyLoading}
-                createComment={createComment}
-              />
-            </aside>
-          </div>
-        )}
+      {/* ── RIGHT COLUMN ── */}
+      <div className="awCol">
+        <IssueRightPanel
+          issueKey={selectedIssueKey}
+          isDark={isDark}
+          item={selectedItem}
+          parentItem={parentItem}
+          children={children}
+          childrenLoading={childrenLoading}
+          links={links}
+          linksLoading={linksLoading}
+          comments={comments}
+          commentsLoading={commentsLoading}
+          history={history}
+          historyLoading={historyLoading}
+          createComment={createComment}
+        />
       </div>
     </div>
   );

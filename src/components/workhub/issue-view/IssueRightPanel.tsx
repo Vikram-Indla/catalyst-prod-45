@@ -1,16 +1,17 @@
 /**
- * IssueRightPanel — Right panel with "All work" and "Fields" tabs + Copy menu
- * ════════════════════════════════════════════════════════════════════════════
- * Receives real data props from IssueViewShell. Tabs persist via localStorage.
+ * IssueRightPanel — Flat right panel: underline tabs + Copy in header,
+ * body switches between AllWorkTab and FieldsTab.
  */
 import { useState, useMemo } from 'react';
-import { cn } from '@/lib/utils';
+import { Copy } from 'lucide-react';
 import { AllWorkTab } from './AllWorkTab';
 import { FieldsTab } from './FieldsTab';
 import { CopyMenu } from './copy/CopyMenu';
 import type { AllWorkItem } from '@/types/allwork.types';
 
-interface IssueRightPanelProps {
+type RightTab = 'allwork' | 'fields';
+
+interface Props {
   issueKey: string | null;
   isDark: boolean;
   item?: AllWorkItem | null;
@@ -26,10 +27,6 @@ interface IssueRightPanelProps {
   createComment?: any;
 }
 
-type RightPanelTab = 'allwork' | 'fields';
-
-const STORAGE_KEY = 'allwork.rightTab';
-
 export function IssueRightPanel({
   issueKey, isDark, item, parentItem,
   children: childItems = [], childrenLoading = false,
@@ -37,69 +34,51 @@ export function IssueRightPanel({
   comments = [], commentsLoading = false,
   history = [], historyLoading = false,
   createComment,
-}: IssueRightPanelProps) {
-  const initialTab = useMemo<RightPanelTab>(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    return stored === 'fields' ? 'fields' : 'allwork';
-  }, []);
+}: Props) {
+  const [tab, setTab] = useState<RightTab>(() => {
+    const s = localStorage.getItem('allwork.rightTab');
+    return s === 'fields' ? 'fields' : 'allwork';
+  });
 
-  const [activeTab, setActiveTab] = useState<RightPanelTab>(initialTab);
-
-  const handleTabChange = (tab: RightPanelTab) => {
-    setActiveTab(tab);
-    localStorage.setItem(STORAGE_KEY, tab);
+  const handleTab = (t: RightTab) => {
+    setTab(t);
+    localStorage.setItem('allwork.rightTab', t);
   };
 
   if (!issueKey) {
     return (
-      <div className="flex-1 flex items-center justify-center">
-        <p className={cn('font-body text-sm', isDark ? 'text-[#878787]' : 'text-[#6B6E76]')}>
-          Select an issue
-        </p>
+      <div className="awBody" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <span style={{ color: 'var(--aw-text-subtle)', fontSize: 13 }}>Select an issue</span>
       </div>
     );
   }
 
-  const tabs: { key: RightPanelTab; label: string }[] = [
-    { key: 'allwork', label: 'All work' },
-    { key: 'fields', label: 'Fields' },
-  ];
-
   return (
-    <div className="flex flex-col h-full">
-      {/* ─── Header: Tabs + Copy ─── */}
-      <div className={cn(
-        'flex items-center justify-between px-4 py-2 border-b shrink-0',
-        isDark ? 'border-[#2E2E2E]' : 'border-[#DFE1E6]',
-      )}>
-        <div className="flex items-center gap-1">
-          {tabs.map((tab) => (
+    <>
+      {/* ── Header: underline tabs + Copy ── */}
+      <div className="awHeader">
+        <div className="awRightTop">
+          <div className="awTabs">
             <button
-              key={tab.key}
-              onClick={() => handleTabChange(tab.key)}
-              aria-selected={activeTab === tab.key}
-              role="tab"
-              className={cn(
-                'px-3 py-1.5 rounded-md font-body text-sm font-medium transition-colors border',
-                activeTab === tab.key
-                  ? isDark
-                    ? 'bg-[#1A1A1A] border-[#2E2E2E] text-[#EDEDED] shadow-sm'
-                    : 'bg-white border-[#DFE1E6] text-[#292A2E] shadow-sm'
-                  : isDark
-                    ? 'bg-transparent border-transparent text-[#A1A1A1] hover:bg-[#1F1F1F]'
-                    : 'bg-transparent border-transparent text-[#505258] hover:bg-[#F4F5F7]',
-              )}
+              className={`awTab ${tab === 'allwork' ? 'awTabActive' : ''}`}
+              onClick={() => handleTab('allwork')}
             >
-              {tab.label}
+              All work
             </button>
-          ))}
+            <button
+              className={`awTab ${tab === 'fields' ? 'awTabActive' : ''}`}
+              onClick={() => handleTab('fields')}
+            >
+              Fields
+            </button>
+          </div>
+          <CopyMenu issueKey={issueKey} item={item} isDark={isDark} />
         </div>
-        <CopyMenu issueKey={issueKey} item={item} isDark={isDark} />
       </div>
 
-      {/* ─── Tab content ─── */}
-      <div className="flex-1 overflow-y-auto">
-        {activeTab === 'allwork' ? (
+      {/* ── Body ── */}
+      <div className="awBody awRightBody">
+        {tab === 'allwork' ? (
           <AllWorkTab
             issueKey={issueKey}
             isDark={isDark}
@@ -119,6 +98,6 @@ export function IssueRightPanel({
           <FieldsTab issueKey={issueKey} isDark={isDark} item={item} />
         )}
       </div>
-    </div>
+    </>
   );
 }
