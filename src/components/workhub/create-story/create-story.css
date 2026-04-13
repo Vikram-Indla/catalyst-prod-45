@@ -24,6 +24,7 @@
   flex-direction: column;
   box-shadow: 0 0 0 1px rgba(9,30,66,0.08), 0 8px 32px rgba(9,30,66,0.35);
   animation: csSlideIn 200ms ease-out;
+  overflow: hidden;
 }
 .csModal--expanded {
   width: min(960px, 95vw);
@@ -85,8 +86,12 @@
 .csModalBody {
   flex: 1 1 auto;
   overflow-y: auto;
+  overflow-x: hidden;
   padding: 0 24px 24px;
   min-height: 0;
+  -ms-overflow-style: none;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(9,30,66,0.13) transparent;
 }
 
 /* Footer (sticky) */
