@@ -1110,6 +1110,7 @@ export function CreateStoryModal({ open, onClose, projectId, projectKey, onSucce
               }}
               placeholder="Add a description..."
               minHeight={150}
+              aiLabel="Improve description"
             />
           </div>
 
