@@ -1491,6 +1491,7 @@ export type Database = {
           release_id: string | null
           reporter_id: string | null
           restore_deadline: string | null
+          source: string
           sprint_name: string | null
           status: string
           story_points: number | null
@@ -1519,6 +1520,7 @@ export type Database = {
           release_id?: string | null
           reporter_id?: string | null
           restore_deadline?: string | null
+          source?: string
           sprint_name?: string | null
           status?: string
           story_points?: number | null
@@ -1547,6 +1549,7 @@ export type Database = {
           release_id?: string | null
           reporter_id?: string | null
           restore_deadline?: string | null
+          source?: string
           sprint_name?: string | null
           status?: string
           story_points?: number | null
