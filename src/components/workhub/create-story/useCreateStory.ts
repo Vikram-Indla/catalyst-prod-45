@@ -60,7 +60,7 @@ export function useTeamMembers() {
       const { data, error } = await supabase
         .from('profiles')
         .select('id, full_name, avatar_url, email')
-        .eq('approval_status', 'approved')
+        .eq('approval_status', 'APPROVED')
         .order('full_name');
       if (error) throw error;
       return data ?? [];
