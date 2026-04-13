@@ -107,7 +107,12 @@ function AvatarCircle({ userId, name, avatarUrl, size = 28 }: { userId: string; 
 // ── Project icon (small colored square with first letter) ──
 function ProjectIcon({ name }: { name: string }) {
   return (
-    <span className="csProjectIcon">
+    <span style={{
+      display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+      width: 24, height: 24, borderRadius: '50%', flexShrink: 0,
+      background: '#2563EB', color: '#FFFFFF',
+      fontSize: 12, fontWeight: 700, fontFamily: "'Inter', sans-serif",
+    }}>
       {name.charAt(0).toUpperCase()}
     </span>
   );
