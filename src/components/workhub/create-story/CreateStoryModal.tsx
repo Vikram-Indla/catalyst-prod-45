@@ -364,7 +364,7 @@ function ParentPicker({ label, required, projectId, projectKey, value, onChange,
   );
 }
 
-// ── User Picker ──
+// ── User Picker (Jira-parity — 28px avatars, search, checkmarks, DEEBFF highlight) ──
 function UserPicker({ label, required, value, members, onChange, showAssignToMe, onAssignToMe }: {
   label: string;
   required?: boolean;
@@ -407,37 +407,57 @@ function UserPicker({ label, required, value, members, onChange, showAssignToMe,
         <span className="csSelectText">
           {selected ? (
             <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              {selected.avatar_url
-                ? <img src={selected.avatar_url} alt="" className="csAvatarImg" />
-                : <span className="csAvatarCircle" style={{ background: avatarBg(selected.full_name ?? '') }}>{initials(selected.full_name ?? '')}</span>
-              }
-              {selected.full_name}
+              <AvatarCircle userId={selected.id} name={selected.full_name ?? ''} avatarUrl={selected.avatar_url} size={24} />
+              <span style={{ fontSize: 14, color: '#172B4D', fontWeight: 400 }}>{selected.full_name}</span>
             </span>
           ) : 'Automatic'}
         </span>
         <ChevronDown className="csSelectChevron" />
       </button>
       {open && (
-        <div className="csDropdown csDropdownWide">
-          <div className="csDropdownSearch">
-            <input ref={inputRef} placeholder="Search..." value={search} onChange={e => setSearch(e.target.value)} />
+        <div className="csDropdown" style={{ ...ATLASSIAN_DROPDOWN, position: 'absolute', width: '100%', minWidth: 280, maxHeight: 340, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+          <div style={{ padding: '8px 8px 4px' }}>
+            <input ref={inputRef} placeholder="Search members..." value={search} onChange={e => setSearch(e.target.value)}
+              onKeyDown={e => { if (e.key === 'Escape') { setOpen(false); setSearch(''); } }}
+              style={{
+                width: '100%', height: 36, padding: '0 10px',
+                border: '2px solid #4C9AFF', borderRadius: 3,
+                fontSize: 14, fontFamily: 'inherit', outline: 'none', color: '#172B4D',
+              }} />
           </div>
-          <button type="button" className="csDropdownItem" onClick={() => { onChange(null); setOpen(false); setSearch(''); }}>
-            <span style={{ color: '#6B778C' }}>Automatic</span>
-          </button>
-          {filtered.map(m => (
-            <button key={m.id} type="button" className={`csDropdownItem ${m.id === value ? 'selected' : ''}`}
-              onClick={() => { onChange(m.id); setOpen(false); setSearch(''); }}>
-              <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                {m.avatar_url
-                  ? <img src={m.avatar_url} alt="" className="csAvatarImg" />
-                  : <span className="csAvatarCircle" style={{ background: avatarBg(m.full_name ?? '') }}>{initials(m.full_name ?? '')}</span>
-                }
-                {m.full_name}
-              </span>
-            </button>
-          ))}
+          <div style={{ flex: 1, overflowY: 'auto' }}>
+            {/* Unassigned / Automatic */}
+            <div onClick={() => { onChange(null); setOpen(false); setSearch(''); }} style={{
+              height: 40, padding: '0 12px', display: 'flex', alignItems: 'center', gap: 10,
+              cursor: 'pointer', borderBottom: '1px solid #F4F5F7',
+              background: !value ? '#DEEBFF' : 'transparent',
+            }}
+              onMouseEnter={e => { if (value) (e.currentTarget as HTMLElement).style.background = '#F4F5F7'; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = !value ? '#DEEBFF' : 'transparent'; }}
+            >
+              <div style={{ width: 28, height: 28, borderRadius: '50%', flexShrink: 0, border: '1px dashed #C1C7D0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, color: '#C1C7D0' }}>?</div>
+              <span style={{ fontSize: 14, color: '#6B778C', flex: 1 }}>Automatic</span>
+              {!value && <CheckmarkSVG />}
+            </div>
+            {filtered.map(m => (
+              <div key={m.id} onClick={() => { onChange(m.id); setOpen(false); setSearch(''); }}
+                style={{
+                  height: 40, padding: '0 12px', display: 'flex', alignItems: 'center', gap: 10,
+                  cursor: 'pointer', background: m.id === value ? '#DEEBFF' : 'transparent',
+                }}
+                onMouseEnter={e => { if (m.id !== value) (e.currentTarget as HTMLElement).style.background = '#F4F5F7'; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = m.id === value ? '#DEEBFF' : 'transparent'; }}
+              >
+                <AvatarCircle userId={m.id} name={m.full_name ?? ''} avatarUrl={m.avatar_url} />
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: 14, fontWeight: 400, color: '#172B4D', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{m.full_name}</div>
+                </div>
+                {m.id === value && <CheckmarkSVG />}
+              </div>
+            ))}
+          </div>
         </div>
+      )}
       )}
     </div>
   );
