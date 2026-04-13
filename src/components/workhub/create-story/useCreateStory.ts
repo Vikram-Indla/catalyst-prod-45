@@ -20,6 +20,7 @@ export interface CreateStoryFormData {
   assigneeId: string | null;
   reporterId: string | null;
   tags: string[];
+  labels: string[];
 }
 
 const INITIAL_FORM: CreateStoryFormData = {
@@ -35,6 +36,7 @@ const INITIAL_FORM: CreateStoryFormData = {
   assigneeId: null,
   reporterId: null,
   tags: [],
+  labels: [],
 };
 
 // Fetch projects for the project selector

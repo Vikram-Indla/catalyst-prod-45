@@ -107,7 +107,12 @@ function AvatarCircle({ userId, name, avatarUrl, size = 28 }: { userId: string; 
 // ── Project icon (small colored square with first letter) ──
 function ProjectIcon({ name }: { name: string }) {
   return (
-    <span className="csProjectIcon">
+    <span style={{
+      display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+      width: 24, height: 24, borderRadius: '50%', flexShrink: 0,
+      background: '#2563EB', color: '#FFFFFF',
+      fontSize: 12, fontWeight: 700, fontFamily: "'Inter', sans-serif",
+    }}>
       {name.charAt(0).toUpperCase()}
     </span>
   );
@@ -606,13 +611,18 @@ function UserPicker({ label, required, value, members, onChange, showAssignToMe,
         )}
       </div>
       <button type="button" className="csSelect csSelectFull" onClick={() => setOpen(o => !o)}>
-        <span className="csSelectText">
+          <span className="csSelectText">
           {selected ? (
             <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <AvatarCircle userId={selected.id} name={selected.full_name ?? ''} avatarUrl={selected.avatar_url} size={24} />
               <span style={{ fontSize: 14, color: '#172B4D', fontWeight: 400 }}>{selected.full_name}</span>
             </span>
-          ) : 'Automatic'}
+          ) : (
+            <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div style={{ width: 24, height: 24, borderRadius: '50%', border: '1px dashed #C1C7D0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, color: '#C1C7D0', flexShrink: 0 }}>?</div>
+              <span style={{ fontSize: 14, color: '#172B4D', fontWeight: 400 }}>Automatic</span>
+            </span>
+          )}
         </span>
         <ChevronDown className="csSelectChevron" />
       </button>
@@ -699,6 +709,169 @@ function DescriptionEditor({ onChange }: { onChange: (html: string, json: any) =
         <button type="button" className="csEditorBtn" onClick={() => editor.chain().focus().redo().run()}><Redo size={16} /></button>
       </div>
       <EditorContent editor={editor} className="csEditorContent" />
+    </div>
+  );
+}
+
+// ── CreateLabelsField — local-state label picker (mirrors EditableLabels from View Story) ──
+const LABEL_COLORS = ['#4C9AFF', '#00B8D9', '#36B37E', '#FFAB00', '#FF5630', '#6554C0', '#FF7452', '#57D9A3', '#FFC400', '#998DD9', '#79E2F2', '#FF8F73'];
+function getLabelColor(name: string) {
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) hash = ((hash << 5) - hash + name.charCodeAt(i)) | 0;
+  return LABEL_COLORS[Math.abs(hash) % LABEL_COLORS.length];
+}
+
+function CreateLabelsField({ value, onChange }: { value: string[]; onChange: (labels: string[]) => void }) {
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState('');
+  const containerRef = useRef<HTMLDivElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // Fetch all existing labels for reuse suggestions
+  const { data: allLabels = [] } = useQuery({
+    queryKey: ['ph-all-labels'],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('ph_issues')
+        .select('labels').is('deleted_at', null).not('labels', 'is', null);
+      if (error) throw error;
+      const labelSet = new Set<string>();
+      (data ?? []).forEach((row: any) => {
+        if (Array.isArray(row.labels)) {
+          (row.labels as string[]).forEach(l => { if (typeof l === 'string' && l.trim()) labelSet.add(l.trim()); });
+        }
+      });
+      return Array.from(labelSet).sort((a, b) => a.localeCompare(b));
+    },
+    staleTime: 30000,
+  });
+
+  const filteredLabels = search.trim()
+    ? allLabels.filter(l => l.toLowerCase().includes(search.toLowerCase()))
+    : allLabels;
+
+  const toggleLabel = (label: string) => {
+    const next = value.includes(label) ? value.filter(l => l !== label) : [...value, label];
+    onChange(next);
+  };
+
+  const addNewLabel = () => {
+    const trimmed = search.trim();
+    if (!trimmed || value.includes(trimmed)) return;
+    onChange([...value, trimmed]);
+    setSearch('');
+  };
+
+  useEffect(() => {
+    if (!open) return;
+    const h = (e: MouseEvent) => { if (containerRef.current && !containerRef.current.contains(e.target as Node)) { setOpen(false); setSearch(''); } };
+    document.addEventListener('mousedown', h); return () => document.removeEventListener('mousedown', h);
+  }, [open]);
+
+  useEffect(() => { if (open) setTimeout(() => searchInputRef.current?.focus(), 50); }, [open]);
+
+  return (
+    <div className="csField" ref={containerRef} style={{ position: 'relative' }}>
+      <label className="csLabel">Labels</label>
+      {/* Selected label chips */}
+      {value.length > 0 && (
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginBottom: 6 }}>
+          {value.map(label => {
+            const color = getLabelColor(label);
+            return (
+              <span key={label} style={{
+                display: 'inline-flex', alignItems: 'center', gap: 4,
+                height: 22, padding: '0 8px', background: '#fff',
+                border: `1px solid ${color}`, borderRadius: 3,
+                fontSize: 12, fontWeight: 500, color: '#172B4D',
+              }}>
+                {label}
+                <button type="button" onClick={() => toggleLabel(label)} style={{
+                  background: 'none', border: 'none', cursor: 'pointer', color: '#6B778C',
+                  padding: 0, marginLeft: 2, display: 'flex', alignItems: 'center',
+                }}
+                  onMouseEnter={e => (e.currentTarget.style.color = '#172B4D')}
+                  onMouseLeave={e => (e.currentTarget.style.color = '#6B778C')}
+                >
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                  </svg>
+                </button>
+              </span>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Trigger */}
+      <div onClick={() => setOpen(o => !o)} style={{
+        display: 'flex', alignItems: 'center', minHeight: 32, padding: '4px 8px',
+        borderRadius: 3, cursor: 'pointer', background: 'transparent', transition: 'background 0.15s',
+      }}
+        onMouseEnter={e => { e.currentTarget.style.background = '#F4F5F7'; }}
+        onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+      >
+        <span style={{ fontSize: 14, color: value.length > 0 ? '#172B4D' : '#7A869A' }}>
+          {value.length > 0 ? 'Edit labels' : 'None'}
+        </span>
+      </div>
+
+      {/* Dropdown */}
+      {open && (
+        <div style={{
+          ...ATLASSIAN_DROPDOWN, position: 'absolute', top: '100%', left: 0, right: 0,
+          marginTop: 4, maxHeight: 340, display: 'flex', flexDirection: 'column', overflow: 'hidden',
+        }}>
+          <div style={{ padding: '8px 8px 4px' }}>
+            <input ref={searchInputRef} value={search} onChange={e => setSearch(e.target.value)}
+              placeholder="Type to search or create..."
+              onKeyDown={e => {
+                if (e.key === 'Enter') { e.preventDefault(); addNewLabel(); }
+                if (e.key === 'Escape') { setOpen(false); setSearch(''); }
+              }}
+              style={{
+                width: '100%', height: 36, padding: '0 12px',
+                border: '2px solid #4C9AFF', borderRadius: 3,
+                fontSize: 14, fontFamily: 'inherit', outline: 'none', color: '#172B4D',
+              }} />
+          </div>
+          <div style={{ flex: 1, overflowY: 'auto', maxHeight: 260 }}>
+            {/* Create new option */}
+            {search.trim() && !allLabels.includes(search.trim()) && (
+              <div onClick={addNewLabel} style={{
+                padding: '8px 12px', cursor: 'pointer', fontSize: 14, color: '#0052CC',
+                borderBottom: '1px solid #F4F5F7',
+              }}
+                onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
+                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+              >
+                Create "<strong>{search.trim()}</strong>"
+              </div>
+            )}
+            {filteredLabels.map(label => {
+              const isSelected = value.includes(label);
+              return (
+                <div key={label} onClick={() => toggleLabel(label)} style={{
+                  padding: '8px 12px', cursor: 'pointer', fontSize: 14, color: '#172B4D',
+                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                  background: isSelected ? '#DEEBFF' : 'transparent',
+                }}
+                  onMouseEnter={e => { if (!isSelected) (e.currentTarget as HTMLElement).style.background = '#F4F5F7'; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = isSelected ? '#DEEBFF' : 'transparent'; }}
+                >
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <span style={{ width: 8, height: 8, borderRadius: '50%', background: getLabelColor(label), flexShrink: 0 }} />
+                    {label}
+                  </span>
+                  {isSelected && <CheckmarkSVG />}
+                </div>
+              );
+            })}
+            {filteredLabels.length === 0 && !search.trim() && (
+              <div style={{ padding: 16, fontSize: 13, color: '#6B778C', textAlign: 'center' }}>No labels yet — type to create one</div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -849,9 +1022,7 @@ export function CreateStoryModal({ open, onClose, projectId, projectKey, onSucce
         <div className="csModalHeader">
           <h2 className="csModalTitle">Create {workType}</h2>
           <div className="csModalHeaderActions">
-            <button type="button" className="csHeaderBtn" title="Minimize"><Minus size={16} /></button>
             <button type="button" className="csHeaderBtn" title="Full screen" onClick={() => setIsExpanded(e => !e)}><Maximize2 size={16} /></button>
-            <button type="button" className="csHeaderBtn" title="More actions"><MoreHorizontal size={16} /></button>
             <button type="button" className="csHeaderBtn" onClick={onClose} title="Close"><X size={18} /></button>
           </div>
         </div>
@@ -1089,11 +1260,11 @@ export function CreateStoryModal({ open, onClose, projectId, projectKey, onSucce
             onChange={id => updateField('reporterId', id)}
           />
 
-          {/* Labels */}
-          <div className="csField">
-            <label className="csLabel">Labels</label>
-            <div style={{ color: '#6B778C', fontSize: 14, padding: '4px 0' }}>None</div>
-          </div>
+          {/* Labels — functional local-state picker */}
+          <CreateLabelsField
+            value={form.labels ?? []}
+            onChange={(labels) => updateField('labels', labels)}
+          />
         </div>
 
         {/* ── Footer (sticky) ── */}
