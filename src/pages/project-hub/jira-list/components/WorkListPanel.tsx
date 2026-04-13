@@ -1,23 +1,11 @@
 /**
- * WorkListPanel — Left panel: search + filter + scrollable card list
- * Jira-parity split view left column
+ * WorkListPanel — Jira-parity left panel: search + filter + scrollable card list
+ * Matches Jira's actual split view left column styling exactly.
  */
 import React, { useMemo, useState } from 'react';
 import { Search, Filter, ArrowUpDown, RotateCw } from 'lucide-react';
 import { WorkItemTypeIcon } from '@/components/icons/WorkItemTypeIcon';
 import type { WorkItem } from '@/types/workItem.types';
-
-const V = {
-  textPrimary: '#172B4D',
-  textMuted: '#6B778C',
-  border: '#DFE1E6',
-  surface: '#FFFFFF',
-  selectedBg: '#E9F2FF',
-  selectedBorder: '#85B8FF',
-  hoverBg: '#F7F8F9',
-  keyColor: '#6B778C',
-  avatarPurple: '#6554C0',
-};
 
 interface Props {
   items: WorkItem[];
@@ -38,61 +26,75 @@ export function WorkListPanel({ items, selectedKey, onSelect }: Props) {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', minHeight: 0 }}>
-      {/* Top bar: Ask AI + Search + Filter */}
+      {/* Top bar: Ask AI | Search work | Avatars | Filter */}
       <div style={{
-        display: 'grid', gridTemplateColumns: 'auto 1fr auto', gap: 10,
-        padding: 10, borderBottom: `1px solid ${V.border}`, background: V.surface,
+        display: 'flex', alignItems: 'center', gap: 8,
+        padding: '8px 12px', borderBottom: '1px solid #DFE1E6', background: '#FFFFFF',
+        flexWrap: 'nowrap',
       }}>
         <button style={{
-          height: 34, padding: '0 12px', border: `1px solid ${V.border}`,
-          background: V.surface, borderRadius: 8, fontWeight: 600, cursor: 'pointer',
-          fontSize: 13, fontFamily: 'Inter, sans-serif', color: '#7C3AED',
+          height: 32, padding: '0 10px', border: '1px solid #DFE1E6',
+          background: '#FFFFFF', borderRadius: 6, cursor: 'pointer',
+          fontSize: 13, fontWeight: 600, fontFamily: 'Inter, sans-serif',
+          color: '#7C3AED', display: 'inline-flex', alignItems: 'center', gap: 4,
+          flexShrink: 0, whiteSpace: 'nowrap',
         }}>
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="#7C3AED"><circle cx="4" cy="4" r="1.5"/><circle cx="8" cy="4" r="1.5"/><circle cx="12" cy="4" r="1.5"/><circle cx="4" cy="8" r="1.5"/><circle cx="8" cy="8" r="1.5"/></svg>
           Ask AI
         </button>
 
         <div style={{
-          display: 'flex', alignItems: 'center', gap: 8,
-          border: `1px solid ${V.border}`, borderRadius: 8, padding: '0 10px', height: 34,
+          display: 'flex', alignItems: 'center', gap: 6, flex: 1, minWidth: 0,
+          border: '1px solid #DFE1E6', borderRadius: 6, padding: '0 8px', height: 32,
+          background: '#FFFFFF',
         }}>
-          <Search size={14} style={{ opacity: 0.65, flexShrink: 0 }} />
+          <Search size={14} style={{ opacity: 0.5, flexShrink: 0 }} />
           <input
             type="text"
             value={query}
             onChange={e => setQuery(e.target.value)}
-            placeholder="Search…"
+            placeholder="Search work"
             style={{
               border: 'none', outline: 'none', width: '100%', fontSize: 14,
-              fontFamily: 'Inter, sans-serif', background: 'transparent',
+              fontFamily: "'Atlassian Sans', -apple-system, sans-serif",
+              background: 'transparent', color: '#172B4D',
             }}
           />
         </div>
 
         <button style={{
-          height: 34, padding: '0 12px', border: `1px solid ${V.border}`,
-          background: V.surface, borderRadius: 8, cursor: 'pointer',
-          fontSize: 13, fontFamily: 'Inter, sans-serif', display: 'flex', alignItems: 'center', gap: 4,
+          height: 32, padding: '0 10px', border: '1px solid #DFE1E6',
+          background: '#FFFFFF', borderRadius: 6, cursor: 'pointer',
+          fontSize: 13, fontFamily: 'Inter, sans-serif', display: 'inline-flex',
+          alignItems: 'center', gap: 4, color: '#44546F', flexShrink: 0,
         }}>
-          <Filter size={13} /> Filter
+          <Filter size={14} />
+          Filter
         </button>
       </div>
 
-      {/* List header: sort label + actions */}
+      {/* Sort header */}
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '10px 12px', borderBottom: `1px solid ${V.border}`, background: V.surface,
+        padding: '8px 12px', borderBottom: '1px solid #DFE1E6', background: '#FFFFFF',
       }}>
-        <span style={{ fontWeight: 600, color: V.textPrimary, fontSize: 13, fontFamily: 'Inter, sans-serif', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-          Created <span style={{ opacity: 0.65, fontSize: 11 }}>▾</span>
-        </span>
-        <div style={{ display: 'inline-flex', gap: 6 }}>
-          <ListIconBtn><ArrowUpDown size={14} /></ListIconBtn>
-          <ListIconBtn><RotateCw size={14} /></ListIconBtn>
+        <button style={{
+          display: 'inline-flex', alignItems: 'center', gap: 4,
+          background: 'transparent', border: 'none', cursor: 'pointer',
+          fontWeight: 600, color: '#172B4D', fontSize: 14,
+          fontFamily: "'Atlassian Sans', -apple-system, sans-serif",
+        }}>
+          Created
+          <svg width="10" height="6" viewBox="0 0 10 6"><path d="M0 0l5 6 5-6z" fill="#44546F"/></svg>
+        </button>
+        <div style={{ display: 'inline-flex', gap: 4 }}>
+          <SortIconBtn><ArrowUpDown size={16} /></SortIconBtn>
+          <SortIconBtn><RotateCw size={16} /></SortIconBtn>
         </div>
       </div>
 
       {/* Scrollable card list */}
-      <div style={{ flex: 1, overflowY: 'auto', padding: 10, minHeight: 0, background: V.surface }}>
+      <div style={{ flex: 1, overflowY: 'auto', padding: '8px 8px', minHeight: 0, background: '#FFFFFF' }}>
         {filtered.map(item => {
           const selected = item.id === selectedKey;
           const rtl = /[\u0600-\u06FF]/.test(item.summary);
@@ -101,21 +103,22 @@ export function WorkListPanel({ items, selectedKey, onSelect }: Props) {
               key={item.id}
               onClick={() => onSelect(item.id)}
               style={{
-                width: '100%', textAlign: 'left',
-                border: `1px solid ${selected ? V.selectedBorder : V.border}`,
-                background: selected ? V.selectedBg : V.surface,
-                borderRadius: 10, padding: 12, marginBottom: 10, cursor: 'pointer',
-                display: 'block',
-                transition: 'background 100ms',
+                width: '100%', textAlign: 'left', display: 'block',
+                border: selected ? '2px solid #579DFF' : '1px solid #DFE1E6',
+                background: selected ? '#E9F2FF' : '#FFFFFF',
+                borderRadius: 8, padding: selected ? '11px' : '12px',
+                marginBottom: 8, cursor: 'pointer',
+                transition: 'background 80ms, border-color 80ms',
               }}
-              onMouseEnter={e => { if (!selected) e.currentTarget.style.background = V.hoverBg; }}
-              onMouseLeave={e => { if (!selected) e.currentTarget.style.background = V.surface; }}
+              onMouseEnter={e => { if (!selected) { e.currentTarget.style.background = '#F7F8F9'; } }}
+              onMouseLeave={e => { if (!selected) { e.currentTarget.style.background = '#FFFFFF'; } }}
             >
               <div
                 dir={rtl ? 'rtl' : 'ltr'}
                 style={{
-                  fontWeight: 700, color: V.textPrimary, marginBottom: 8, lineHeight: 1.25,
-                  fontSize: 14, fontFamily: 'Inter, sans-serif',
+                  fontWeight: 600, color: selected ? '#0C66E4' : '#172B4D',
+                  marginBottom: 8, lineHeight: 1.3, fontSize: 14,
+                  fontFamily: "'Atlassian Sans', -apple-system, sans-serif",
                   overflow: 'hidden', textOverflow: 'ellipsis',
                   display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
                 }}
@@ -123,15 +126,19 @@ export function WorkListPanel({ items, selectedKey, onSelect }: Props) {
                 {item.summary || '(No title)'}
               </div>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <span style={{ fontSize: 12, color: V.keyColor, display: 'inline-flex', alignItems: 'center', gap: 4, fontFamily: "'JetBrains Mono', monospace" }}>
+                <span style={{
+                  fontSize: 12, color: '#626F86', display: 'inline-flex',
+                  alignItems: 'center', gap: 5,
+                  fontFamily: "'JetBrains Mono', monospace", fontWeight: 500,
+                }}>
                   <WorkItemTypeIcon type={item.type} size={14} />
                   {item.jiraKey}
                 </span>
                 <div style={{
-                  width: 28, height: 28, borderRadius: 999,
-                  background: item.assignee?.color || V.avatarPurple,
-                  color: '#FFFFFF', display: 'grid', placeItems: 'center',
-                  fontWeight: 800, fontSize: 12, flexShrink: 0,
+                  width: 28, height: 28, borderRadius: '50%',
+                  background: item.assignee?.color || '#6554C0',
+                  color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontWeight: 800, fontSize: 11, flexShrink: 0,
                 }}>
                   {item.assignee?.initials || 'NA'}
                 </div>
@@ -141,23 +148,27 @@ export function WorkListPanel({ items, selectedKey, onSelect }: Props) {
         })}
 
         {/* Footer count */}
-        <div style={{ marginTop: 10, padding: 10, color: V.textMuted, fontSize: 12, textAlign: 'center', fontFamily: 'Inter, sans-serif' }}>
-          {filtered.length} of {items.length}+
+        <div style={{
+          padding: '12px 4px', color: '#626F86', fontSize: 12, textAlign: 'center',
+          fontFamily: "'Atlassian Sans', -apple-system, sans-serif",
+        }}>
+          {filtered.length} of <a href="#" onClick={e => e.preventDefault()} style={{ color: '#0C66E4', fontWeight: 600, textDecoration: 'none' }}>1000+</a>
         </div>
       </div>
     </div>
   );
 }
 
-function ListIconBtn({ children }: { children: React.ReactNode }) {
+function SortIconBtn({ children }: { children: React.ReactNode }) {
   return (
     <button
       style={{
-        border: '1px solid transparent', background: 'transparent', cursor: 'pointer',
-        padding: '6px 8px', borderRadius: 8, color: '#6B778C', display: 'flex', alignItems: 'center',
+        width: 28, height: 28, border: 'none', background: 'transparent',
+        cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+        color: '#626F86', borderRadius: 4,
       }}
-      onMouseEnter={e => { e.currentTarget.style.background = '#F4F5F7'; e.currentTarget.style.borderColor = '#DFE1E6'; }}
-      onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = 'transparent'; }}
+      onMouseEnter={e => { e.currentTarget.style.background = '#F1F2F4'; }}
+      onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
     >
       {children}
     </button>
