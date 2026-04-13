@@ -50,136 +50,262 @@
   overflow-y: auto;
 }
 
-/* ── Left panel ── */
-.awLeftTop {
+/* ═══════════════════════════════════════════
+   Jira-parity left panel — card list
+   ═══════════════════════════════════════════ */
+
+/* ── Header (sort bar) ── */
+.jlpHeader {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: var(--aw-bg);
+  border-bottom: 1px solid var(--aw-border);
+  flex-shrink: 0;
+}
+.jlpSortRow {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 10px 12px 8px;
-}
-.awLeftTitle {
-  display: flex;
-  align-items: baseline;
-  gap: 6px;
-}
-.awLeftTitle > strong { font-size: 13px; font-weight: 700; color: var(--aw-text); }
-.awLeftTitle > span { font-size: 12px; font-weight: 500; color: var(--aw-text-subtle); }
-
-.awSearchWrap { padding: 0 12px 8px; }
-.awSearch {
-  width: 100%;
-  height: 30px;
-  border: 1px solid var(--aw-border);
-  border-radius: 5px;
-  padding: 0 8px 0 28px;
-  font: 12px/30px system-ui, -apple-system, sans-serif;
-  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='13' height='13' viewBox='0 0 24 24' fill='none' stroke='%236B778C' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E") 8px center no-repeat;
-}
-.awSearch:focus { border-color: var(--aw-blue); outline: none; }
-
-.awFilters {
-  display: flex;
   gap: 4px;
-  padding: 0 12px 8px;
-  flex-wrap: wrap;
-}
-.awChip {
-  height: 24px;
-  border-radius: 4px;
-  border: 1px solid var(--aw-border);
-  background: #fff;
-  padding: 0 7px;
-  font: 11px/24px system-ui, -apple-system, sans-serif;
-  cursor: pointer;
-  color: var(--aw-text);
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-}
-.awChip:hover { background: var(--aw-hover); }
-
-/* ── Left list rows ── */
-.awList { padding: 2px 4px; }
-.awRow {
-  display: flex;
-  gap: 8px;
-  padding: 8px 8px;
-  border-radius: 4px;
-  cursor: pointer;
+  padding: 8px 12px;
   position: relative;
-  border-left: 3px solid transparent;
-  margin-bottom: 1px;
 }
-.awRow:hover { background: var(--aw-hover); }
-.awRow.awRowSelected {
-  background: var(--aw-selected);
-  border-left-color: var(--aw-blue);
-}
-
-.awRowMain { flex: 1; min-width: 0; }
-.awRowTop {
+.jlpSortBtn {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 6px;
-  margin-bottom: 2px;
+  gap: 4px;
+  height: 28px;
+  padding: 0 10px;
+  border-radius: 4px;
+  border: none;
+  background: none;
+  font: 500 13px/28px system-ui, -apple-system, sans-serif;
+  color: var(--aw-text);
+  cursor: pointer;
 }
-.awRowTitle {
-  font: 400 13px/1.3 system-ui, -apple-system, sans-serif;
+.jlpSortBtn:hover, .jlpSortBtn.active {
+  background: #E9F2FF;
+  color: #0C66E4;
+}
+.jlpToolBtn {
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: none;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--aw-text-subtle);
+  margin-left: auto;
+}
+.jlpToolBtn + .jlpToolBtn { margin-left: 0; }
+.jlpToolBtn:hover { background: var(--aw-hover); color: var(--aw-text); }
+
+/* Sort dropdown menu */
+.jlpSortMenu {
+  position: absolute;
+  top: 100%;
+  left: 12px;
+  margin-top: 2px;
+  background: #fff;
+  border: 1px solid var(--aw-border);
+  border-radius: 6px;
+  box-shadow: 0 4px 16px rgba(9,30,66,0.15);
+  z-index: 20;
+  min-width: 200px;
+  padding: 8px 0;
+}
+.jlpSortMenuTitle {
+  font: 600 12px/16px system-ui;
+  color: var(--aw-text-subtle);
+  padding: 4px 16px 8px;
+}
+.jlpSortOption {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 16px;
+  font: 400 14px/20px system-ui;
+  color: var(--aw-text);
+  cursor: pointer;
+}
+.jlpSortOption:hover { background: var(--aw-hover); }
+.jlpSortOption input[type="radio"] {
+  accent-color: #0C66E4;
+  width: 16px;
+  height: 16px;
+}
+
+/* ── Body (scrollable) ── */
+.jlpBody {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  outline: none;
+}
+
+/* ── Card list ── */
+.jlpCards { padding: 0; }
+
+.jlpCard {
+  padding: 12px 16px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--aw-border);
+  border-left: 3px solid transparent;
+  transition: background 120ms;
+}
+.jlpCard:hover { background: var(--aw-hover); }
+.jlpCard.jlpCardSelected {
+  background: #E9F2FF;
+  border-left-color: #0C66E4;
+}
+
+/* Summary — prominent, dark, 2-line clamp */
+.jlpCardSummary {
+  font: 400 14px/20px system-ui, -apple-system, sans-serif;
   color: var(--aw-text);
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  min-width: 0;
+  margin-bottom: 8px;
 }
-.awKey {
-  font: 500 11px/14px system-ui, -apple-system, sans-serif;
-  color: var(--aw-text-subtle);
+.jlpCardSummary.jlpCardSummaryActive {
+  color: #0C66E4;
+  font-weight: 500;
 }
-/* Assignee row in left panel */
-.awRowAssignee {
+
+/* Footer row: icon+key left, avatar right */
+.jlpCardFooter {
   display: flex;
   align-items: center;
-  gap: 5px;
-  margin-top: 4px;
+  justify-content: space-between;
 }
-.awRowAvatarImg {
-  width: 20px;
-  height: 20px;
+.jlpCardMeta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.jlpCardKey {
+  font: 500 12px/16px system-ui, -apple-system, sans-serif;
+  color: var(--aw-text-subtle);
+}
+
+/* Face avatar — 32px circle */
+.jlpCardAvatar {
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   object-fit: cover;
   flex-shrink: 0;
 }
-.awRowAvatarCircle {
-  width: 20px;
-  height: 20px;
+.jlpCardAvatarFallback {
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
-  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  font: 700 8px/1 system-ui;
+  font: 700 11px/1 system-ui;
   color: #fff;
+  flex-shrink: 0;
 }
-.awMeta {
-  font: 400 11px/14px system-ui, -apple-system, sans-serif;
-  color: var(--aw-text-subtle);
-}
-.awSummary {
-  font: 400 13px/1.3 system-ui, -apple-system, sans-serif;
-  color: var(--aw-text);
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-.awRowMeta {
+.jlpCardAvatarEmpty {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
-  gap: 4px;
-  margin-top: 3px;
+  justify-content: center;
+  background: #F4F5F7;
+  flex-shrink: 0;
 }
+
+/* Footer count */
+.jlpFooterCount {
+  padding: 10px 16px;
+  font: 400 13px/16px system-ui;
+  color: var(--aw-text-subtle);
+  text-align: center;
+  border-top: 1px solid var(--aw-border);
+}
+.jlpFooterCount strong { color: #0C66E4; }
+
+/* Skeleton */
+.jlpCard.jlpCardSkeleton {
+  pointer-events: none;
+}
+.jlpSkLine {
+  border-radius: 3px;
+  background: #E2E8F0;
+  animation: jlpPulse 1.5s ease-in-out infinite;
+}
+.jlpSkRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+.jlpSkCircle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #E2E8F0;
+  animation: jlpPulse 1.5s ease-in-out infinite;
+}
+@keyframes jlpPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* Empty state */
+.jlpEmpty {
+  padding: 48px 16px;
+  text-align: center;
+  font: 400 14px/20px system-ui;
+  color: var(--aw-text-subtle);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.jlpResetLink {
+  background: none;
+  border: none;
+  color: #0C66E4;
+  cursor: pointer;
+  font: 400 13px system-ui;
+}
+.jlpResetLink:hover { text-decoration: underline; }
+
+/* ── Dark mode ── */
+.dark .jlpHeader { background: #0A0A0A; border-color: #2E2E2E; }
+.dark .jlpSortBtn { color: #EDEDED; }
+.dark .jlpSortBtn:hover, .dark .jlpSortBtn.active { background: rgba(12,102,228,0.15); color: #4C9AFF; }
+.dark .jlpToolBtn { color: #878787; }
+.dark .jlpToolBtn:hover { background: #1F1F1F; color: #EDEDED; }
+.dark .jlpSortMenu { background: #1A1A1A; border-color: #2E2E2E; }
+.dark .jlpSortMenuTitle { color: #878787; }
+.dark .jlpSortOption { color: #EDEDED; }
+.dark .jlpSortOption:hover { background: #1F1F1F; }
+.dark .jlpBody { background: #0A0A0A; }
+.dark .jlpCard { border-color: #2E2E2E; }
+.dark .jlpCard:hover { background: #1F1F1F; }
+.dark .jlpCard.jlpCardSelected { background: rgba(12,102,228,0.12); border-left-color: #4C9AFF; }
+.dark .jlpCardSummary { color: #EDEDED; }
+.dark .jlpCardSummary.jlpCardSummaryActive { color: #4C9AFF; }
+.dark .jlpCardKey { color: #878787; }
+.dark .jlpCardAvatarEmpty { background: #292929; }
+.dark .jlpFooterCount { color: #878787; border-color: #2E2E2E; }
+.dark .jlpFooterCount strong { color: #4C9AFF; }
+.dark .jlpSkLine, .dark .jlpSkCircle { background: #292929; }
+
+/* Legacy aw* classes kept for center/right panel usage */
+.awLeftTop, .awLeftTitle, .awSearchWrap, .awSearch, .awFilters { display: none; }
+.awList { padding: 2px 4px; }
+.awRow { display: none; }
 
 /* ── Status pill (Jira-strong) ── */
 .awStatusPill {
