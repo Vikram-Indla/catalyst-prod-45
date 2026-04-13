@@ -25494,6 +25494,118 @@ export type Database = {
           },
         ]
       }
+      ph_list_comments: {
+        Row: {
+          author_id: string | null
+          body: string
+          created_at: string
+          id: string
+          updated_at: string
+          work_item_id: string
+        }
+        Insert: {
+          author_id?: string | null
+          body: string
+          created_at?: string
+          id?: string
+          updated_at?: string
+          work_item_id: string
+        }
+        Update: {
+          author_id?: string | null
+          body?: string
+          created_at?: string
+          id?: string
+          updated_at?: string
+          work_item_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ph_list_comments_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "ph_list_comments_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "ph_list_comments_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_list_comments_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "ph_list_comments_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_list_comments_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_list_comments_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_list_comments_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_list_comments_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_list_comments_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_list_comments_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "ph_list_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_list_comments_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "v_project_epics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ph_list_config: {
         Row: {
           column_order: string[] | null
@@ -25618,6 +25730,381 @@ export type Database = {
           {
             foreignKeyName: "ph_list_config_user_id_fkey"
             columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+        ]
+      }
+      ph_list_items: {
+        Row: {
+          assignee_id: string | null
+          comments_count: number
+          created_at: string
+          created_by: string | null
+          description: string | null
+          fix_version: string | null
+          id: string
+          jira_key: string
+          jira_sync_at: string | null
+          parent_id: string | null
+          parent_key: string | null
+          priority: string
+          project_id: string
+          reporter_id: string | null
+          status: string
+          summary: string
+          type: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          assignee_id?: string | null
+          comments_count?: number
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          fix_version?: string | null
+          id?: string
+          jira_key: string
+          jira_sync_at?: string | null
+          parent_id?: string | null
+          parent_key?: string | null
+          priority?: string
+          project_id: string
+          reporter_id?: string | null
+          status?: string
+          summary: string
+          type: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          assignee_id?: string | null
+          comments_count?: number
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          fix_version?: string | null
+          id?: string
+          jira_key?: string
+          jira_sync_at?: string | null
+          parent_id?: string | null
+          parent_key?: string | null
+          priority?: string
+          project_id?: string
+          reporter_id?: string | null
+          status?: string
+          summary?: string
+          type?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ph_list_items_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "ph_list_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "v_project_epics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "wh_sidebar_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_updated_by_fkey"
+            columns: ["updated_by"]
             isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
             referencedColumns: ["theme_owner_id"]
@@ -69670,6 +70157,343 @@ export type Database = {
           project_key: string | null
         }
         Relationships: []
+      }
+      v_project_epics: {
+        Row: {
+          assignee_id: string | null
+          comments_count: number | null
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          done_children: number | null
+          fix_version: string | null
+          id: string | null
+          inprog_children: number | null
+          jira_key: string | null
+          jira_sync_at: string | null
+          parent_id: string | null
+          parent_key: string | null
+          pct_done: number | null
+          priority: string | null
+          project_id: string | null
+          reporter_id: string | null
+          status: string | null
+          summary: string | null
+          total_children: number | null
+          type: string | null
+          updated_at: string | null
+          updated_by: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ph_list_items_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "ph_list_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "v_project_epics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "wh_sidebar_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_list_items_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+        ]
       }
       v_project_list: {
         Row: {
