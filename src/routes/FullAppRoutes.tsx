@@ -39,6 +39,7 @@ const NativeStoryBacklogPageLazy = lazy(() => import("../pages/project-hub/Nativ
 const StoryDetailPageLazy = lazy(() => import("../pages/project-hub/StoryDetailPage"));
 const IssueDetailPageLazy = lazy(() => import("../pages/project-hub/IssueDetailPage"));
 const HierarchyPageLazy = lazy(() => import("../pages/project-hub/HierarchyPage"));
+const ProjectJiraLayoutLazy = lazy(() => import("../pages/project-hub/jira-list/ProjectJiraLayout"));
 const PHPlaceholderBase = lazy(() => import("../pages/project-hub/PhasePlaceholderPage"));
 
 function PHPlaceholder({ title, phase }: { title: string; phase: string }) {
@@ -908,7 +909,8 @@ export default function FullAppRoutes() {
         <Route path="/project-hub/:key/boards" element={<S><ProjectBoardManagerPageLazy /></S>} />
         <Route path="/project-hub/:key/boards/:boardId" element={<S><ProjectBoardCanvasPageLazy /></S>} />
         <Route path="/project-hub/:key/hierarchy" element={<S><HierarchyPageLazy /></S>} />
-        <Route path="/project-hub/:key/list" element={<S><WorkItemsListPageLazy /></S>} />
+        <Route path="/project-hub/:key/list" element={<S><ProjectJiraLayoutLazy /></S>} />
+        <Route path="/project-hub/:key/allwork" element={<S><ProjectJiraLayoutLazy /></S>} />
         <Route path="/project-hub/:key/timeline" element={<PHPlaceholder title="Timeline" phase="Phase 3" />} />
         <Route path="/project-hub/:key/releases" element={<PHPlaceholder title="Releases" phase="Phase 3" />} />
         <Route path="/project-hub/:key/reports" element={<PHPlaceholder title="Reports" phase="Phase 4" />} />
