@@ -183,70 +183,71 @@ export function CatalystSidebarDetails({
       <div style={{ marginBottom: 20 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 12 }}>
           <ChevronDown size={14} color="#6B778C" />
-          <span style={{ fontSize: 14, fontWeight: 700, color: '#172B4D' }}>Details</span>
+          <span style={{ fontSize: 14, fontWeight: 600, color: '#172B4D' }}>Details</span>
         </div>
 
-        {/* ── Assignee (canonical, EDITABLE) ──── */}
-        <div style={{ marginBottom: 4 }}>
-          <div style={{ fontSize: 12, fontWeight: 600, color: '#172B4D', marginBottom: 4 }}>Assignee</div>
-          {issue && (
-            <EditableAssignee
-              issueId={issue.id}
-              projectId={projectId || ''}
-              currentAssigneeId={issue.assignee_account_id}
-              currentAssigneeName={issue.assignee_display_name}
-              onUpdate={invalidateIssue}
-            />
-          )}
-        </div>
-
-        {/* ── Assign to me ──────────────────── */}
-        {user && issue?.assignee_account_id !== user.id && (
-          <div style={{ marginBottom: 14, paddingLeft: 6 }}>
-            <button
-              onClick={handleAssignToMe}
-              style={{
-                background: 'none', border: 'none', padding: 0, cursor: 'pointer',
-                fontSize: 13, color: '#0052CC', fontFamily: 'inherit',
-              }}
-              onMouseEnter={e => (e.currentTarget.style.textDecoration = 'underline')}
-              onMouseLeave={e => (e.currentTarget.style.textDecoration = 'none')}
-            >
-              Assign to me
-            </button>
+        {/* Jira-parity: horizontal label-value rows with separator lines */}
+        {/* ── Assignee ──── */}
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid #EBECF0' }}>
+          <span style={{ fontSize: 14, color: '#6B778C', fontWeight: 400, minWidth: 90, paddingTop: 4 }}>Assignee</span>
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+            {issue && (
+              <EditableAssignee
+                issueId={issue.id}
+                projectId={projectId || ''}
+                currentAssigneeId={issue.assignee_account_id}
+                currentAssigneeName={issue.assignee_display_name}
+                onUpdate={invalidateIssue}
+              />
+            )}
+            {/* Assign to me */}
+            {user && issue?.assignee_account_id !== user.id && (
+              <button
+                onClick={handleAssignToMe}
+                style={{
+                  background: 'none', border: 'none', padding: 0, cursor: 'pointer',
+                  fontSize: 12, color: '#0052CC', fontFamily: 'inherit', marginTop: 2,
+                }}
+                onMouseEnter={e => (e.currentTarget.style.textDecoration = 'underline')}
+                onMouseLeave={e => (e.currentTarget.style.textDecoration = 'none')}
+              >
+                Assign to me
+              </button>
+            )}
           </div>
-        )}
-        {(!user || issue?.assignee_account_id === user.id) && <div style={{ marginBottom: 14 }} />}
+        </div>
 
         {/* ── TYPE-SPECIFIC FIELDS (children slot) ── */}
         {children}
 
-        {/* ── Priority (canonical, EDITABLE) ──── */}
-        <div style={{ marginBottom: 14 }}>
-          <div style={{ fontSize: 12, fontWeight: 600, color: '#172B4D', marginBottom: 4 }}>Priority</div>
-          {issue && (
-            <EditablePriority
-              issueId={issue.id}
-              currentPriority={issue.priority}
-              onUpdate={invalidateIssue}
-            />
-          )}
+        {/* ── Priority ──── */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid #EBECF0' }}>
+          <span style={{ fontSize: 14, color: '#6B778C', fontWeight: 400, minWidth: 90 }}>Priority</span>
+          <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end' }}>
+            {issue && (
+              <EditablePriority
+                issueId={issue.id}
+                currentPriority={issue.priority}
+                onUpdate={invalidateIssue}
+              />
+            )}
+          </div>
         </div>
 
-        {/* ── Reporter (canonical, display) ────── */}
-        <div style={{ marginBottom: 14 }}>
-          <div style={{ fontSize: 12, fontWeight: 600, color: '#172B4D', marginBottom: 4 }}>Reporter</div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 6px', borderRadius: 4 }}>
+        {/* ── Reporter ──── */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid #EBECF0' }}>
+          <span style={{ fontSize: 14, color: '#6B778C', fontWeight: 400, minWidth: 90 }}>Reporter</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'flex-end' }}>
             {issue?.reporter_display_name ? (
               <>
                 {reporterProfile?.avatar_url ? (
-                  <img src={reporterProfile.avatar_url} alt="" style={{ width: 28, height: 28, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
+                  <img src={reporterProfile.avatar_url} alt="" style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
                 ) : (
                   <span style={{
-                    width: 28, height: 28, borderRadius: '50%',
+                    width: 24, height: 24, borderRadius: '50%',
                     background: getAvatarColor(issue.reporter_account_id ?? issue.reporter_display_name),
                     color: '#FFF', display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: 11, fontWeight: 700, flexShrink: 0,
+                    fontSize: 10, fontWeight: 700, flexShrink: 0,
                   }}>{getInitials(issue.reporter_display_name)}</span>
                 )}
                 <span style={{ fontSize: 14, color: '#172B4D' }}>{issue.reporter_display_name}</span>
@@ -255,44 +256,60 @@ export function CatalystSidebarDetails({
           </div>
         </div>
 
-        {/* ── Labels (canonical, EDITABLE) ────── */}
-        <div style={{ marginBottom: 14 }}>
-          <div style={{ fontSize: 12, fontWeight: 600, color: '#172B4D', marginBottom: 4 }}>Labels</div>
-          {issue && (
-            <EditableLabels
-              issueId={issue.id}
-              currentLabels={labelsArray}
-              onUpdate={invalidateIssue}
-            />
-          )}
+        {/* ── MDT Ref ──── */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid #EBECF0' }}>
+          <span style={{ fontSize: 14, color: '#6B778C', fontWeight: 400, minWidth: 90 }}>MDT Ref</span>
+          <span style={{ fontSize: 14, color: '#97A0AF' }}>Add text</span>
         </div>
 
-        {/* ── Fix Versions (display) ────────── */}
-        <div style={{ marginBottom: 14 }}>
-          <div style={{ fontSize: 12, fontWeight: 600, color: '#172B4D', marginBottom: 4 }}>Fix versions</div>
-          <div style={{ padding: '4px 6px' }}>
-            {fixVersionNames.length > 0 ? (
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-                {fixVersionNames.map(v => (
-                  <span key={v} style={{
-                    background: '#DEEBFF', color: '#0747A6', fontSize: 12, fontWeight: 500,
-                    padding: '2px 8px', borderRadius: 3, lineHeight: '18px',
-                  }}>{v}</span>
-                ))}
-              </div>
-            ) : (
-              <span style={{ fontSize: 14, color: '#42526E' }}>None</span>
+        {/* ── Actual start ──── */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid #EBECF0' }}>
+          <span style={{ fontSize: 14, color: '#6B778C', fontWeight: 400, minWidth: 90 }}>Actual start</span>
+          <span style={{ fontSize: 14, color: '#172B4D' }}>None</span>
+        </div>
+
+        {/* ── Actual end ──── */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid #EBECF0' }}>
+          <span style={{ fontSize: 14, color: '#6B778C', fontWeight: 400, minWidth: 90 }}>Actual end</span>
+          <span style={{ fontSize: 14, color: '#172B4D' }}>None</span>
+        </div>
+
+        {/* ── Labels ──── */}
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid #EBECF0' }}>
+          <span style={{ fontSize: 14, color: '#6B778C', fontWeight: 400, minWidth: 90, paddingTop: 2 }}>Labels</span>
+          <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end' }}>
+            {issue && (
+              <EditableLabels
+                issueId={issue.id}
+                currentLabels={labelsArray}
+                onUpdate={invalidateIssue}
+              />
             )}
           </div>
         </div>
 
-        {/* ── Story Points (display) ─────────── */}
+        {/* ── Fix Versions ──── */}
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid #EBECF0' }}>
+          <span style={{ fontSize: 14, color: '#6B778C', fontWeight: 400, minWidth: 90, paddingTop: 2 }}>Fix versions</span>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, justifyContent: 'flex-end' }}>
+            {fixVersionNames.length > 0 ? (
+              fixVersionNames.map(v => (
+                <span key={v} style={{
+                  background: '#DEEBFF', color: '#0747A6', fontSize: 12, fontWeight: 500,
+                  padding: '2px 8px', borderRadius: 3, lineHeight: '18px',
+                }}>{v}</span>
+              ))
+            ) : (
+              <span style={{ fontSize: 14, color: '#172B4D' }}>None</span>
+            )}
+          </div>
+        </div>
+
+        {/* ── Story Points ──── */}
         {(issue as any)?.story_points != null && (
-          <div style={{ marginBottom: 14 }}>
-            <div style={{ fontSize: 12, fontWeight: 600, color: '#172B4D', marginBottom: 4 }}>Story points</div>
-            <div style={{ padding: '4px 6px', fontSize: 14, color: '#172B4D' }}>
-              {(issue as any).story_points}
-            </div>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid #EBECF0' }}>
+            <span style={{ fontSize: 14, color: '#6B778C', fontWeight: 400, minWidth: 90 }}>Story points</span>
+            <span style={{ fontSize: 14, color: '#172B4D' }}>{(issue as any).story_points}</span>
           </div>
         )}
       </div>
