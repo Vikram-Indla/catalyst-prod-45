@@ -154,6 +154,8 @@ export function useCreateStoryMutation() {
           release_id: form.releaseId || null,
           tags: form.tags.length > 0 ? form.tags : [],
           last_modified_by_system: 'catalyst',
+          source: 'cat',
+          sync_enabled: false,
         })
         .select()
         .single();

@@ -847,7 +847,7 @@ export function CreateStoryModal({ open, onClose, projectId, projectKey, onSucce
       <div className={`csModal ${isExpanded ? 'csModal--expanded' : ''}`} ref={modalRef} onClick={e => e.stopPropagation()}>
         {/* ── Header ── */}
         <div className="csModalHeader">
-          <h2 className="csModalTitle">Create Story</h2>
+          <h2 className="csModalTitle">Create {workType}</h2>
           <div className="csModalHeaderActions">
             <button type="button" className="csHeaderBtn" title="Minimize"><Minus size={16} /></button>
             <button type="button" className="csHeaderBtn" title="Full screen" onClick={() => setIsExpanded(e => !e)}><Maximize2 size={16} /></button>
