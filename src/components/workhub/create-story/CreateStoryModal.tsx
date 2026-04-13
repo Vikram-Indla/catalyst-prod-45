@@ -458,7 +458,6 @@ function UserPicker({ label, required, value, members, onChange, showAssignToMe,
           </div>
         </div>
       )}
-      )}
     </div>
   );
 }
