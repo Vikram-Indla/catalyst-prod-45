@@ -136,13 +136,21 @@ function SelectField({ label, required, value, options, onChange, placeholder, r
   );
 }
 
-// ── Searchable Parent Picker ──
-function ParentPicker({ label, required, value, options, onChange, helpText }: {
+// ── Parent Picker (Jira-parity — mirrors StoryDetailView's ParentFieldPicker) ──
+const EpicIconInline = ({ size = 16 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 16 16" style={{ flexShrink: 0 }}>
+    <rect fill="#6554C0" width="16" height="16" rx="2"/>
+    <path fill="#FFF" d="M8.39 2L4.5 9h3.11v5L11.5 7H8.39V2z"/>
+  </svg>
+);
+
+function ParentPicker({ label, required, projectId, projectKey, value, onChange, helpText }: {
   label: string;
   required?: boolean;
-  value: string;
-  options: { value: string; label: string; icon?: React.ReactNode; projectKey?: string; issueKey?: string; title?: string }[];
-  onChange: (val: string) => void;
+  projectId: string;
+  projectKey: string;
+  value: string | null;
+  onChange: (parentId: string | null, parentKey: string | null) => void;
   helpText?: string;
 }) {
   const [open, setOpen] = useState(false);
@@ -151,53 +159,159 @@ function ParentPicker({ label, required, value, options, onChange, helpText }: {
   const ref = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  // Live search epics from ph_issues (same as detail view)
+  const { data: searchResults = [] } = useQuery({
+    queryKey: ['create-story-parent-search', projectKey, search, showDone],
+    queryFn: async () => {
+      if (!projectKey) return [];
+      let query = supabase.from('ph_issues')
+        .select('id, issue_key, summary, issue_type, status, status_category')
+        .eq('project_key', projectKey).eq('issue_type', 'Epic')
+        .is('deleted_at', null)
+        .order('jira_updated_at', { ascending: false }).limit(20);
+      if (!showDone) {
+        query = query.neq('status_category', 'done');
+      }
+      if (search.trim()) {
+        query = query.or(`issue_key.ilike.${search}%,summary.ilike.%${search}%`);
+      }
+      const { data, error } = await query;
+      if (error) return [];
+      return (data ?? []) as any[];
+    },
+    enabled: open && !!projectKey,
+  });
+
+  // Resolve current parent display
+  const { data: currentParent } = useQuery({
+    queryKey: ['create-story-current-parent', value],
+    queryFn: async () => {
+      if (!value) return null;
+      const { data, error } = await supabase.from('catalyst_issues')
+        .select('id, issue_key, title, issue_type')
+        .eq('id', value).single();
+      if (error) return null;
+      return data;
+    },
+    enabled: !!value,
+  });
+
   useEffect(() => {
     if (!open) return;
-    const handleClick = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false); };
+    const handleClick = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) { setOpen(false); setSearch(''); } };
     document.addEventListener('mousedown', handleClick);
     return () => document.removeEventListener('mousedown', handleClick);
   }, [open]);
 
-  useEffect(() => { if (open && inputRef.current) inputRef.current.focus(); }, [open]);
+  useEffect(() => { if (open) setTimeout(() => inputRef.current?.focus(), 50); }, [open]);
 
-  const filtered = options.filter(o =>
-    !search || o.label.toLowerCase().includes(search.toLowerCase())
-  );
+  const handleSelect = (result: any) => {
+    // Map ph_issues id to catalyst_issues — use the id directly
+    onChange(result.id, result.issue_key);
+    setOpen(false);
+    setSearch('');
+  };
 
-  const selected = options.find(o => o.value === value);
+  const handleClear = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onChange(null, null);
+  };
+
+  const [hovered, setHovered] = useState(false);
 
   return (
     <div className="csField" ref={ref}>
       <label className="csLabel">{label}{required && <span className="csRequired"> *</span>}</label>
-      <button type="button" className="csSelect" onClick={() => setOpen(o => !o)}>
-        <span className="csSelectText">
-          {selected ? selected.label : 'Select parent'}
-        </span>
-        <ChevronDown className="csSelectChevron" />
-      </button>
-      {helpText && <div className="csHelpText">{helpText}</div>}
-      {open && (
-        <div className="csDropdown csDropdownWide csParentDropdown">
-          <div className="csDropdownSearch">
-            <input ref={inputRef} placeholder="Search by key or title..." value={search} onChange={e => setSearch(e.target.value)} />
-          </div>
-          <label className="csShowDoneLabel">
-            <input type="checkbox" checked={showDone} onChange={e => setShowDone(e.target.checked)} />
-            Show everything marked as done
-          </label>
-          {filtered.map(opt => (
-            <button
-              key={opt.value}
-              type="button"
-              className={`csDropdownItem ${opt.value === value ? 'selected' : ''}`}
-              onClick={() => { onChange(opt.value); setOpen(false); setSearch(''); }}
-            >
-              <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                {opt.icon}{opt.label}
-              </span>
+      {/* Trigger */}
+      <div
+        className="csSelect"
+        onClick={() => setOpen(o => !o)}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+      >
+        {currentParent ? (
+          <span style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1, overflow: 'hidden' }}>
+            <EpicIconInline />
+            <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: 14 }}>
+              {currentParent.issue_key} {currentParent.title}
+            </span>
+            <button type="button" onClick={handleClear} style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              width: 18, height: 18, borderRadius: '50%', border: 'none',
+              background: '#DFE1E6', cursor: 'pointer', color: '#42526E', flexShrink: 0,
+              opacity: hovered ? 1 : 0, transition: 'opacity 0.15s',
+            }}>
+              <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             </button>
-          ))}
-          {filtered.length === 0 && <div className="csDropdownEmpty">No matching items</div>}
+          </span>
+        ) : (
+          <span className="csSelectText">Select parent</span>
+        )}
+        <ChevronDown className="csSelectChevron" />
+      </div>
+      {helpText && <div className="csHelpText">{helpText}</div>}
+
+      {/* Dropdown — Jira parity: search, show done, two-line results */}
+      {open && (
+        <div className="csDropdown" style={{ width: '100%', minWidth: 420, maxHeight: 380, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+          {/* Search */}
+          <div style={{ padding: '8px 8px 4px' }}>
+            <input
+              ref={inputRef}
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder="Search epics..."
+              onKeyDown={e => { if (e.key === 'Escape') { setOpen(false); setSearch(''); } }}
+              style={{
+                width: '100%', height: 36, padding: '0 12px',
+                border: '2px solid #4C9AFF', borderRadius: 3,
+                fontSize: 14, fontFamily: 'inherit', outline: 'none', color: '#172B4D',
+                background: '#fff',
+              }}
+            />
+          </div>
+          {/* Show done */}
+          <div style={{ padding: '6px 12px', borderBottom: '1px solid #F4F5F7' }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: 14, color: '#172B4D' }}>
+              <input type="checkbox" checked={showDone} onChange={e => setShowDone(e.target.checked)}
+                style={{ width: 16, height: 16, accentColor: '#0052CC', cursor: 'pointer' }} />
+              Show done work items
+            </label>
+          </div>
+          {/* Results */}
+          <div style={{ flex: 1, overflowY: 'auto' }}>
+            {searchResults.map(result => {
+              const isActive = result.id === value;
+              return (
+                <div
+                  key={result.id}
+                  onClick={() => handleSelect(result)}
+                  style={{
+                    padding: '10px 12px', cursor: 'pointer',
+                    borderBottom: '1px solid #F4F5F7',
+                    background: isActive ? '#DEEBFF' : 'transparent',
+                    transition: 'background 0.1s',
+                  }}
+                  onMouseEnter={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = '#F4F5F7'; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = isActive ? '#DEEBFF' : 'transparent'; }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2 }}>
+                    <EpicIconInline />
+                    <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, color: '#6B778C', fontSize: 12 }}>{result.issue_key}</span>
+                  </div>
+                  <div style={{ fontSize: 14, color: '#172B4D', paddingLeft: 22, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {result.summary}
+                  </div>
+                </div>
+              );
+            })}
+            {searchResults.length === 0 && search && (
+              <div style={{ padding: 16, fontSize: 13, color: '#6B778C', textAlign: 'center' }}>No epics found for "{search}"</div>
+            )}
+            {searchResults.length === 0 && !search && (
+              <div style={{ padding: 16, fontSize: 13, color: '#6B778C', textAlign: 'center' }}>No epics available</div>
+            )}
+          </div>
         </div>
       )}
     </div>
