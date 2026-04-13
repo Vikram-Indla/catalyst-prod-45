@@ -255,17 +255,17 @@
 }
 .csDropdownSearch input:focus { border-color: #0C66E4; }
 
-/* Avatars */
+/* Avatars — face-photo priority */
 .csAvatarImg {
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   object-fit: cover;
   flex-shrink: 0;
 }
 .csAvatarCircle {
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   display: flex;
   align-items: center;
