@@ -943,34 +943,6 @@ export function CreateStoryModal({ open, onClose, projectId, projectKey, onSucce
     }
   }, [projectId, projectKey, projects, form.projectId]);
 
-  // Wrap onClose to flush any batch-created items as a toast
-  const handleClose = useCallback(() => {
-    if (createdKeysRef.current.length > 0) {
-      const keys = [...createdKeysRef.current];
-      createdKeysRef.current = [];
-      showCreateToast(keys);
-    }
-    setCreatedKey(null);
-    onClose();
-  }, [onClose, showCreateToast]);
-
-  // Focus trap
-  useEffect(() => {
-    if (!open) return;
-    const handleKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') handleClose();
-    };
-    document.addEventListener('keydown', handleKey);
-    return () => document.removeEventListener('keydown', handleKey);
-  }, [open, handleClose]);
-
-  // Focus summary on open
-  useEffect(() => {
-    if (open) setTimeout(() => summaryRef.current?.focus(), 100);
-  }, [open]);
-
-  // currentProject and resolvedKey already defined above
-
   const showCreateToast = useCallback((keys: string[]) => {
     if (keys.length === 0) return;
     const copyLink = () => {
@@ -1000,6 +972,32 @@ export function CreateStoryModal({ open, onClose, projectId, projectKey, onSucce
       });
     }
   }, [navigate]);
+
+  // Wrap onClose to flush any batch-created items as a toast
+  const handleClose = useCallback(() => {
+    if (createdKeysRef.current.length > 0) {
+      const keys = [...createdKeysRef.current];
+      createdKeysRef.current = [];
+      showCreateToast(keys);
+    }
+    setCreatedKey(null);
+    onClose();
+  }, [onClose, showCreateToast]);
+
+  // Focus trap
+  useEffect(() => {
+    if (!open) return;
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') handleClose();
+    };
+    document.addEventListener('keydown', handleKey);
+    return () => document.removeEventListener('keydown', handleKey);
+  }, [open, handleClose]);
+
+  // Focus summary on open
+  useEffect(() => {
+    if (open) setTimeout(() => summaryRef.current?.focus(), 100);
+  }, [open]);
 
   const handleSubmit = useCallback(async () => {
     if (!form.summary.trim()) {
