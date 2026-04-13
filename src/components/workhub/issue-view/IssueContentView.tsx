@@ -446,7 +446,7 @@ export function IssueContentView({
       <CreateStoryModal
         open={createStoryOpen}
         onClose={() => setCreateStoryOpen(false)}
-        projectId={item?.project_id}
+        projectKey={item?.project_key ?? undefined}
       />
     </div>
   );
