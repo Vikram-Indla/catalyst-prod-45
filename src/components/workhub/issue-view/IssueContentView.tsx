@@ -115,9 +115,7 @@ export function IssueContentView({
     </div>;
   }
 
-  const doneCount = childItems.filter(c => (c.status_category ?? '').toLowerCase().includes('done')).length;
   const totalChildren = childItems.length || (item?.child_count ?? 0);
-  const donePercent = totalChildren > 0 ? Math.round((doneCount / totalChildren) * 100) : 0;
 
   const handleComment = async () => {
     if (!commentText.trim() || !createComment) return;
