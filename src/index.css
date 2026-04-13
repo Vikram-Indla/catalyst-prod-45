@@ -1543,6 +1543,20 @@ html:has(body[data-scroll-locked]) {
     background-color: hsl(var(--muted) / 0.6);
   }
 
+  /* ═══ ProjectHub Work Views — Ringfenced tokens ═══ */
+  --cp-primary: #2563EB;
+  --cp-primary-hover: #1D4ED8;
+  --cp-bg-hover: rgba(0,0,0,0.04);
+  --cp-bg-selected: rgba(37,99,235,0.08);
+  --ph-row-height: 36px;
+  --ph-header-height: 36px;
+  --ph-cell-px: 8px;
+  --ph-cell-py: 12px;
+  --ph-divider: 0.75px solid rgba(15,23,42,0.08);
+  --ph-tab-height: 40px;
+  --ph-card-panel-w: 288px;
+  --ph-sidebar-w: 240px;
+
 
   /* === SURFACE UTILITIES === */
   .c-bg-0 { background-color: var(--bg-0); }
