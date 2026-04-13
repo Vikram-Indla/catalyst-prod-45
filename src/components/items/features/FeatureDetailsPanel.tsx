@@ -36,7 +36,7 @@ import { useProjects } from '@/hooks/useProjects';
 import { WorkItemPresence } from '@/components/work-items/WorkItemPresence';
 import { WorkItemWatchers } from '@/components/work-items/WorkItemWatchers';
 import { AssignModal } from '@/components/features/AssignModal';
-import { CreateStoryModal } from '@/components/workhub/create-story';
+
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -303,10 +303,6 @@ export function FeatureDetailsPanel({ feature, open, onClose }: FeatureDetailsPa
               <div className="flex items-center gap-1 md:gap-2 flex-shrink-0">
                 {feature?.id && <WorkItemStarButton itemId={feature.id} itemType="feature" size="md" />}
                 
-                <Button variant="outline" size="sm" onClick={() => setIsCreateStoryOpen(true)} className="hidden md:flex">
-                  <Plus className="h-4 w-4 mr-1" />
-                  Story
-                </Button>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="icon">
@@ -316,9 +312,6 @@ export function FeatureDetailsPanel({ feature, open, onClose }: FeatureDetailsPa
                   <DropdownMenuContent align="end">
                     <DropdownMenuItem onClick={() => setIsAssignModalOpen(true)} className="md:hidden">
                       Assign
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setIsCreateStoryOpen(true)} className="md:hidden">
-                      Create Story
                     </DropdownMenuItem>
                     <DropdownMenuSeparator className="md:hidden" />
                     <DropdownMenuItem onClick={() => handleStatusChange('analyzing')}>
@@ -488,14 +481,6 @@ export function FeatureDetailsPanel({ feature, open, onClose }: FeatureDetailsPa
           />
         )}
 
-        {/* Create Story Modal */}
-        {featureData && (
-          <CreateStoryModal
-            open={isCreateStoryOpen}
-            onClose={() => setIsCreateStoryOpen(false)}
-            projectId={feature.project_id}
-          />
-        )}
       </SheetContent>
     </Sheet>
   );

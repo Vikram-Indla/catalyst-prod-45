@@ -13,7 +13,7 @@ import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 import { ParentEpicChip } from '../components/shared/ParentEpicChip';
 import { DeleteConfirmDialog } from '../components/dialogs/DeleteConfirmDialog';
-import { CreateStoryModal } from '@/components/workhub/create-story';
+
 import { EditStoryDialog } from '../components/dialogs/EditStoryDialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -661,9 +661,6 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
           <BookOpen className="h-12 w-12 mb-4" style={{ color: '#94A3B8' }} />
           <p style={{ fontSize: 14, fontWeight: 600, color: '#0F172A', marginBottom: 4 }}>No stories found</p>
           <p style={{ fontSize: 12, color: '#94A3B8', marginBottom: 16 }}>Try adjusting your filters or search</p>
-          <Button onClick={() => setShowCreate(true)} size="sm" style={{ backgroundColor: '#2563EB', color: '#FFFFFF', borderRadius: 6 }}>
-            <Plus className="h-3.5 w-3.5 mr-1" /> Create Story
-          </Button>
         </div>
       );
     }
@@ -919,10 +916,6 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
         {/* Total count */}
         <span style={{ fontSize: 13, color: '#64748B' }}>{total} stories</span>
 
-        {/* Create button */}
-        <Button onClick={() => setShowCreate(true)} size="sm" style={{ backgroundColor: '#2563EB', color: '#FFFFFF', borderRadius: 6 }}>
-          <Plus className="h-3.5 w-3.5 mr-1" /> Create Story
-        </Button>
       </div>
 
       {panelMode && detailItemId ? (
@@ -961,7 +954,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
         </div>
       )}
 
-      <CreateStoryModal open={showCreate} onClose={() => setShowCreate(false)} projectId={projectId || ''} onSuccess={() => queryClient.invalidateQueries({ queryKey: ['backlog-stories', projectId] })} />
+      
       {editStoryId && <EditStoryDialog isOpen={!!editStoryId} onClose={() => setEditStoryId(null)} storyId={editStoryId} projectId={projectId || ''} onSuccess={() => queryClient.invalidateQueries({ queryKey: ['backlog-stories', projectId] })} />}
       <DeleteConfirmDialog isOpen={!!deleteTarget} onClose={() => setDeleteTarget(null)} onConfirm={() => deleteTarget && deleteMutation.mutate(deleteTarget.id)} itemType="Story" itemKey={deleteTarget?.story_key || null} itemName={deleteTarget?.title || ''} isPending={deleteMutation.isPending} />
       {!panelMode && detailItemId && (
