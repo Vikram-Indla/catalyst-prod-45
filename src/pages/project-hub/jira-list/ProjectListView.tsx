@@ -1,6 +1,6 @@
 /**
  * ProjectListView — List tab (epics table)
- * Stage D: Full Supabase wiring — ZERO hardcoded data
+ * Stage E: Edge case guards, RTL support, design precision
  */
 import React, { useState, useRef } from 'react';
 import { Search, Filter, ChevronDown, MessageSquare, Plus, MoreHorizontal } from 'lucide-react';
@@ -13,11 +13,14 @@ interface Props {
   projectId?: string;
 }
 
+/* ── RTL detection ── */
+const isRTL = (text: string) => /[\u0600-\u06FF]/.test(text);
+
 /* ── Skeleton row ── */
 const SkeletonRow = () => (
   <tr>
     {[36, 52, 110, 0, 140, 150, 120].map((w, i) => (
-      <td key={i} style={{ width: w || undefined }}>
+      <td key={i} style={{ width: w || undefined, lineHeight: 'normal' }}>
         <div style={{
           height: 14, borderRadius: 4,
           background: 'linear-gradient(90deg, #F1F5F9 25%, #E2E8F0 50%, #F1F5F9 75%)',
@@ -32,7 +35,7 @@ const SkeletonRow = () => (
 
 export default function ProjectListView({ projectKey, projectId }: Props) {
   const [searchQuery, setSearchQuery] = useState('');
-  const { data: allItems = [], isLoading } = useProjectListItems(projectKey);
+  const { data: allItems = [], isLoading, error } = useProjectListItems(projectKey);
   const { data: searchResults } = useSearchWorkItems(projectKey, searchQuery);
   const { mutateAsync: createItem, isPending: isCreating } = useCreateWorkItem();
   const { mutate: updateStatus } = useUpdateWorkItemStatus();
@@ -44,7 +47,6 @@ export default function ProjectListView({ projectKey, projectId }: Props) {
 
   const displayItems = searchQuery.length >= 2 ? (searchResults ?? []) : allItems;
 
-  // Auto-generate next key
   const nextKey = `${projectKey ?? 'CAT'}-${(allItems.length + 1).toString().padStart(3, '0')}`;
 
   const handleInlineCreate = async () => {
@@ -80,7 +82,7 @@ export default function ProjectListView({ projectKey, projectId }: Props) {
       {/* ── LIST TOOLBAR ── */}
       <div style={{
         display: 'flex', alignItems: 'center', gap: 6,
-        padding: '8px 12px', borderBottom: 'var(--ph-divider)',
+        padding: '8px 12px', borderBottom: '0.75px solid rgba(15, 23, 42, 0.08)',
         background: 'var(--cp-bg-page)', flexShrink: 0,
       }}>
         <div style={{
@@ -172,9 +174,13 @@ export default function ProjectListView({ projectKey, projectId }: Props) {
           <tbody>
             {isLoading ? (
               Array.from({ length: 8 }).map((_, i) => <SkeletonRow key={i} />)
+            ) : error ? (
+              <tr><td colSpan={8} style={{ textAlign: 'center', padding: 40, color: 'var(--cp-text-tertiary)', lineHeight: 'normal' }}>
+                Failed to load work items. Please try again.
+              </td></tr>
             ) : displayItems.length === 0 ? (
               <tr>
-                <td colSpan={8}>
+                <td colSpan={8} style={{ lineHeight: 'normal' }}>
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '64px 24px', gap: 12 }}>
                     <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--cp-border-default)" strokeWidth="1.5">
                       <rect x="3" y="3" width="18" height="18" rx="2"/>
@@ -190,60 +196,72 @@ export default function ProjectListView({ projectKey, projectId }: Props) {
                     </p>
                     <button
                       onClick={() => setInlineCreate(true)}
-                      style={{ height: 36, padding: '0 16px', borderRadius: 6, border: 'none', background: 'var(--cp-primary)', color: '#fff', fontSize: 14, fontWeight: 500, cursor: 'pointer', fontFamily: 'Inter, sans-serif', display: 'flex', alignItems: 'center', gap: 6 }}>
+                      style={{ height: 36, padding: '0 16px', borderRadius: 6, border: 'none', background: '#2563EB', color: '#fff', fontSize: 14, fontWeight: 500, cursor: 'pointer', fontFamily: 'Inter, sans-serif', display: 'flex', alignItems: 'center', gap: 6 }}>
                       + Create Epic
                     </button>
                   </div>
                 </td>
               </tr>
-            ) : displayItems.map(item => (
-              <tr key={item.id} className={selectedRows.has(item.id) ? 'ph-row-selected' : ''}>
-                <td style={{ textAlign: 'center', width: 36 }}>
-                  <input type="checkbox" checked={selectedRows.has(item.id)}
-                    onChange={() => toggleRow(item.id)}
-                    style={{ width: 14, height: 14, cursor: 'pointer' }}
-                  />
-                </td>
-                <td style={{ textAlign: 'center', width: 52 }}>
-                  <WorkItemTypeIcon type={item.type} size={16} />
-                </td>
-                <td style={{ width: 120 }}>
-                  <a className="ph-iss-key" href="#">
-                    {item.jiraKey}
-                  </a>
-                </td>
-                <td style={{ overflow: 'hidden', maxWidth: 1 }}>
-                  <span style={{
-                    display: 'block', overflow: 'hidden',
-                    textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                    fontSize: 14, color: 'var(--cp-text-primary)',
-                    fontFamily: 'Inter, sans-serif',
-                  }}>
-                    {item.summary}
-                  </span>
-                </td>
-                <td style={{ width: 140 }}>
-                  <JiraStatusLozenge
-                    status={item.status}
-                    interactive
-                    onStatusChange={(newStatus) => updateStatus({ id: item.id, status: newStatus })}
-                  />
-                </td>
-                <td style={{ width: 150 }}>
-                  <span style={{
-                    display: 'flex', alignItems: 'center', gap: 6,
-                    color: 'var(--cp-text-tertiary)', fontSize: 13, cursor: 'pointer',
-                  }}>
-                    <MessageSquare size={13} style={{ flexShrink: 0 }} />
-                    <span>{item.commentsCount > 0 ? `${item.commentsCount} comment${item.commentsCount > 1 ? 's' : ''}` : 'Add comment'}</span>
-                  </span>
-                </td>
-                <td style={{ width: 120, color: 'var(--cp-text-tertiary)', fontSize: 13 }}>
-                  {item.parentKey ?? '—'}
-                </td>
-                <td style={{ width: 36 }} />
-              </tr>
-            ))}
+            ) : displayItems.map(item => {
+              // §1.1: Guard empty summary
+              const summary = item.summary?.trim() || '';
+              const rtl = isRTL(summary);
+              return (
+                <tr key={item.id} className={selectedRows.has(item.id) ? 'ph-row-selected' : ''}>
+                  <td style={{ textAlign: 'center', width: 36 }}>
+                    <input type="checkbox" checked={selectedRows.has(item.id)}
+                      onChange={() => toggleRow(item.id)}
+                      style={{ width: 14, height: 14, cursor: 'pointer' }}
+                    />
+                  </td>
+                  <td style={{ textAlign: 'center', width: 52 }}>
+                    <WorkItemTypeIcon type={item.type} size={16} />
+                  </td>
+                  <td style={{ width: 120 }}>
+                    <a className="ph-iss-key" href="#">
+                      {item.jiraKey}
+                    </a>
+                  </td>
+                  <td style={{ overflow: 'hidden', maxWidth: 0 }}>
+                    {summary ? (
+                      <span
+                        dir={rtl ? 'rtl' : 'ltr'}
+                        style={{
+                          display: 'block', overflow: 'hidden',
+                          textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                          fontSize: 14, color: 'var(--cp-text-primary)',
+                          fontFamily: 'Inter, sans-serif',
+                          textAlign: rtl ? 'right' : 'left',
+                        }}>
+                        {summary}
+                      </span>
+                    ) : (
+                      <span style={{ color: 'var(--cp-text-tertiary)', fontStyle: 'italic', fontSize: 14 }}>(No title)</span>
+                    )}
+                  </td>
+                  <td style={{ width: 140 }}>
+                    <JiraStatusLozenge
+                      status={item.status}
+                      interactive
+                      onStatusChange={(newStatus) => updateStatus({ id: item.id, status: newStatus })}
+                    />
+                  </td>
+                  <td style={{ width: 150 }}>
+                    <span style={{
+                      display: 'flex', alignItems: 'center', gap: 6,
+                      color: 'var(--cp-text-tertiary)', fontSize: 13, cursor: 'pointer',
+                    }}>
+                      <MessageSquare size={13} style={{ flexShrink: 0 }} />
+                      <span>{item.commentsCount > 0 ? `${item.commentsCount} comment${item.commentsCount > 1 ? 's' : ''}` : 'Add comment'}</span>
+                    </span>
+                  </td>
+                  <td style={{ width: 120, color: 'var(--cp-text-tertiary)', fontSize: 13 }}>
+                    {item.parentKey ?? '—'}
+                  </td>
+                  <td style={{ width: 36 }} />
+                </tr>
+              );
+            })}
 
             {inlineCreate && (
               <tr>
@@ -256,7 +274,7 @@ export default function ProjectListView({ projectKey, projectId }: Props) {
                     {nextKey}
                   </span>
                 </td>
-                <td colSpan={4}>
+                <td colSpan={4} style={{ lineHeight: 'normal' }}>
                   <input
                     ref={newInputRef}
                     autoFocus
@@ -270,7 +288,7 @@ export default function ProjectListView({ projectKey, projectId }: Props) {
                     placeholder="What needs to be done?"
                     disabled={isCreating}
                     style={{
-                      width: '100%', border: 'none', outline: '2px solid var(--cp-primary)',
+                      width: '100%', border: 'none', outline: '2px solid #2563EB',
                       borderRadius: 3, fontSize: 14, fontFamily: 'Inter, sans-serif',
                       padding: '4px 8px', background: 'var(--cp-bg-page)',
                       opacity: isCreating ? 0.6 : 1,
@@ -290,10 +308,10 @@ export default function ProjectListView({ projectKey, projectId }: Props) {
             padding: '8px 12px', width: '100%', border: 'none',
             background: 'transparent', cursor: 'pointer',
             fontSize: 14, color: 'var(--cp-text-tertiary)',
-            borderTop: 'var(--ph-divider)', fontFamily: 'Inter, sans-serif',
+            borderTop: '0.75px solid rgba(15, 23, 42, 0.08)', fontFamily: 'Inter, sans-serif',
             transition: 'color 150ms, background 150ms',
           }}
-          onMouseEnter={e => { e.currentTarget.style.background = 'var(--cp-bg-hover)'; }}
+          onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,0,0,0.04)'; }}
           onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
         >
           <Plus size={14} /> Create

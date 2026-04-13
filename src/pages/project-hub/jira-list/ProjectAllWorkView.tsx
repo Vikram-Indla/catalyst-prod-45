@@ -1,6 +1,6 @@
 /**
  * ProjectAllWorkView — All work tab with Table/Split modes
- * Stage D: Full Supabase wiring — ZERO hardcoded data
+ * Stage E: Edge case guards, RTL, design precision, proper children loading
  */
 import React, { useState } from 'react';
 import { Search, Filter, MoreHorizontal, ChevronDown, Globe, ChevronRight, Plus } from 'lucide-react';
@@ -16,11 +16,13 @@ interface Props {
   projectKey: string;
 }
 
+const isRTL = (text: string) => /[\u0600-\u06FF]/.test(text);
+
 /* ── Skeleton row ── */
 const SkeletonRow = () => (
   <tr>
     {[36, 360, 180, 150, 100, 140, 165].map((w, i) => (
-      <td key={i} style={{ width: w || undefined }}>
+      <td key={i} style={{ width: w || undefined, lineHeight: 'normal' }}>
         <div style={{
           height: 14, borderRadius: 4,
           background: 'linear-gradient(90deg, #F1F5F9 25%, #E2E8F0 50%, #F1F5F9 75%)',
@@ -39,53 +41,63 @@ function ExpandedChildren({ epicId, epicKey }: { epicId: string; epicKey: string
   const { mutate: updateStatus } = useUpdateWorkItemStatus();
 
   if (isLoading) return (
-    <tr><td colSpan={9} style={{ paddingLeft: 48, color: 'var(--cp-text-tertiary)', fontSize: 13 }}>Loading children…</td></tr>
+    <tr><td colSpan={9} style={{ paddingLeft: 48, color: 'var(--cp-text-tertiary)', fontSize: 13, lineHeight: 'normal' }}>Loading children…</td></tr>
   );
   if (children.length === 0) return (
-    <tr><td colSpan={9} style={{ paddingLeft: 48, color: 'var(--cp-text-tertiary)', fontSize: 13, fontStyle: 'italic' }}>No child items</td></tr>
+    <tr><td colSpan={9} style={{ lineHeight: 'normal' }}>
+      <div style={{ paddingLeft: 60, padding: '8px', fontSize: 13, color: 'var(--cp-text-tertiary)' }}>No child items</div>
+    </td></tr>
   );
 
   return (
     <>
-      {children.map(child => (
-        <tr key={child.id} style={{ background: 'rgba(248,250,252,0.5)' }}>
-          <td style={{ textAlign: 'center' }}>
-            <input type="checkbox" style={{ width: 14, height: 14 }} />
-          </td>
-          <td>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, paddingLeft: 38 }}>
-              <WorkItemTypeIcon type={child.type} size={16} />
-              <a className="ph-iss-key" href="#">{child.jiraKey}</a>
-              <span style={{ fontSize: 14, color: 'var(--cp-text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                {child.summary}
-              </span>
-            </div>
-          </td>
-          <td style={{ color: 'var(--cp-text-tertiary)', fontSize: 13 }}>{epicKey}</td>
-          <td>
-            <JiraStatusLozenge
-              status={child.status}
-              interactive
-              onStatusChange={(newStatus) => updateStatus({ id: child.id, status: newStatus })}
-            />
-          </td>
-          <td style={{ color: 'var(--cp-text-tertiary)', fontSize: 13 }}>{child.fixVersion ?? 'None'}</td>
-          <td>
-            {child.assignee ? (
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                <div style={{ width: 24, height: 24, borderRadius: '50%', background: child.assignee.color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: '#fff', flexShrink: 0 }}>
-                  {child.assignee.initials}
-                </div>
-                <span style={{ fontSize: 13 }}>{child.assignee.name}</span>
+      {children.map(child => {
+        const summary = child.summary?.trim() || '';
+        const rtl = isRTL(summary);
+        return (
+          <tr key={child.id} style={{ background: 'rgba(248,250,252,0.5)' }}>
+            <td style={{ textAlign: 'center' }}>
+              <input type="checkbox" style={{ width: 14, height: 14 }} />
+            </td>
+            <td>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, paddingLeft: 38 }}>
+                <WorkItemTypeIcon type={child.type} size={16} />
+                <a className="ph-iss-key" href="#">{child.jiraKey}</a>
+                {summary ? (
+                  <span dir={rtl ? 'rtl' : 'ltr'} style={{ fontSize: 14, color: 'var(--cp-text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {summary}
+                  </span>
+                ) : (
+                  <span style={{ color: 'var(--cp-text-tertiary)', fontStyle: 'italic', fontSize: 14 }}>(No title)</span>
+                )}
               </div>
-            ) : <span style={{ color: 'var(--cp-text-tertiary)', fontSize: 13 }}>—</span>}
-          </td>
-          <td style={{ color: 'var(--cp-text-tertiary)', fontSize: 12, fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: 'tabular-nums' }}>
-            {new Date(child.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-          </td>
-          <td /><td />
-        </tr>
-      ))}
+            </td>
+            <td style={{ color: 'var(--cp-text-tertiary)', fontSize: 13 }}>{epicKey}</td>
+            <td>
+              <JiraStatusLozenge
+                status={child.status}
+                interactive
+                onStatusChange={(newStatus) => updateStatus({ id: child.id, status: newStatus })}
+              />
+            </td>
+            <td style={{ color: 'var(--cp-text-tertiary)', fontSize: 13 }}>{child.fixVersion ?? '—'}</td>
+            <td>
+              {child.assignee ? (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <div style={{ width: 24, height: 24, borderRadius: '50%', background: child.assignee.color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: '#fff', flexShrink: 0 }}>
+                    {child.assignee.initials}
+                  </div>
+                  <span style={{ fontSize: 13 }}>{child.assignee.name}</span>
+                </div>
+              ) : <span style={{ color: 'var(--cp-text-tertiary)', fontSize: 13 }}>—</span>}
+            </td>
+            <td style={{ color: 'var(--cp-text-tertiary)', fontSize: 12, fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: 'tabular-nums' }}>
+              {new Date(child.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+            </td>
+            <td /><td />
+          </tr>
+        );
+      })}
     </>
   );
 }
@@ -113,7 +125,7 @@ export default function ProjectAllWorkView({ projectKey }: Props) {
       {/* ── ALL WORK TOOLBAR ── */}
       <div style={{
         display: 'flex', alignItems: 'center', gap: 6,
-        padding: '8px 12px', borderBottom: 'var(--ph-divider)',
+        padding: '8px 12px', borderBottom: '0.75px solid rgba(15, 23, 42, 0.08)',
         background: 'var(--cp-bg-page)', flexShrink: 0,
       }}>
         <button style={{
@@ -142,7 +154,7 @@ export default function ProjectAllWorkView({ projectKey }: Props) {
         </div>
 
         <div style={{
-          width: 28, height: 28, borderRadius: '50%', background: 'var(--cp-primary)',
+          width: 28, height: 28, borderRadius: '50%', background: '#2563EB',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           fontSize: 11, color: '#fff', fontWeight: 700, cursor: 'pointer', flexShrink: 0,
         }}>V</div>
@@ -197,7 +209,7 @@ export default function ProjectAllWorkView({ projectKey }: Props) {
                 style={{
                   width: 32, height: 32, border: 'none',
                   background: subView === btn.key ? 'rgba(37,99,235,0.1)' : 'var(--cp-bg-page)',
-                  color: subView === btn.key ? 'var(--cp-primary)' : 'var(--cp-text-secondary)',
+                  color: subView === btn.key ? '#2563EB' : 'var(--cp-text-secondary)',
                   cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
                   borderRight: btn.key === 'table' ? '1px solid var(--cp-border-default)' : 'none',
                 }}>
@@ -242,7 +254,7 @@ export default function ProjectAllWorkView({ projectKey }: Props) {
                 Array.from({ length: 8 }).map((_, i) => <SkeletonRow key={i} />)
               ) : epics.length === 0 ? (
                 <tr>
-                  <td colSpan={9}>
+                  <td colSpan={9} style={{ lineHeight: 'normal' }}>
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '64px 24px', gap: 12 }}>
                       <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--cp-border-default)" strokeWidth="1.5">
                         <rect x="3" y="3" width="18" height="18" rx="2"/>
@@ -259,69 +271,77 @@ export default function ProjectAllWorkView({ projectKey }: Props) {
                     </div>
                   </td>
                 </tr>
-              ) : epics.map(epic => (
-                <React.Fragment key={epic.id}>
-                  <tr>
-                    <td style={{ textAlign: 'center' }}>
-                      <input type="checkbox" style={{ width: 14, height: 14 }} />
-                    </td>
-                    <td>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                        <button onClick={() => toggleExpand(epic.id)}
-                          style={{ width: 18, height: 18, border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--cp-text-tertiary)', borderRadius: 2, flexShrink: 0 }}
-                        >
-                          <ChevronRight size={14} style={{ transform: expandedRows.has(epic.id) ? 'rotate(90deg)' : 'rotate(0deg)', transition: 'transform 150ms' }} />
-                        </button>
-                        <WorkItemTypeIcon type="epic" size={16} />
-                        <a className="ph-iss-key" href="#"
-                          onClick={e => { e.preventDefault(); setSelectedItem(epic.id); setSubView('split'); }}>
-                          {epic.jiraKey}
-                        </a>
-                        <span style={{ fontSize: 14, color: 'var(--cp-text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                          {epic.summary}
-                        </span>
-                      </div>
-                    </td>
-                    <td style={{ color: 'var(--cp-text-tertiary)', fontSize: 13 }}>{epic.parentKey ?? '—'}</td>
-                    <td>
-                      <JiraStatusLozenge
-                        status={epic.status}
-                        interactive
-                        onStatusChange={(newStatus) => updateStatus({ id: epic.id, status: newStatus })}
-                      />
-                    </td>
-                    <td style={{ color: 'var(--cp-text-tertiary)', fontSize: 13 }}>{epic.fixVersion ?? '—'}</td>
-                    <td>
-                      {epic.assignee ? (
+              ) : epics.map(epic => {
+                const summary = epic.summary?.trim() || '';
+                const rtl = isRTL(summary);
+                return (
+                  <React.Fragment key={epic.id}>
+                    <tr>
+                      <td style={{ textAlign: 'center' }}>
+                        <input type="checkbox" style={{ width: 14, height: 14 }} />
+                      </td>
+                      <td>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                          <div style={{ width: 24, height: 24, borderRadius: '50%', background: epic.assignee.color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: '#fff', flexShrink: 0 }}>
-                            {epic.assignee.initials}
-                          </div>
-                          <span style={{ fontSize: 13, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                            {epic.assignee.name}
-                          </span>
+                          <button onClick={() => toggleExpand(epic.id)}
+                            style={{ width: 18, height: 18, border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--cp-text-tertiary)', borderRadius: 2, flexShrink: 0 }}
+                          >
+                            <ChevronRight size={14} style={{ transform: expandedRows.has(epic.id) ? 'rotate(90deg)' : 'rotate(0deg)', transition: 'transform 150ms' }} />
+                          </button>
+                          <WorkItemTypeIcon type="epic" size={16} />
+                          <a className="ph-iss-key" href="#"
+                            onClick={e => { e.preventDefault(); setSelectedItem(epic.id); setSubView('split'); }}>
+                            {epic.jiraKey}
+                          </a>
+                          {summary ? (
+                            <span dir={rtl ? 'rtl' : 'ltr'} style={{ fontSize: 14, color: 'var(--cp-text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                              {summary}
+                            </span>
+                          ) : (
+                            <span style={{ color: 'var(--cp-text-tertiary)', fontStyle: 'italic', fontSize: 14 }}>(No title)</span>
+                          )}
                         </div>
-                      ) : <span style={{ color: 'var(--cp-text-tertiary)', fontSize: 13 }}>—</span>}
-                    </td>
-                    <td style={{ color: 'var(--cp-text-tertiary)', fontSize: 12, fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: 'tabular-nums' }}>
-                      {new Date(epic.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                    </td>
-                    <td />
-                    <td style={{ textAlign: 'center' }}>
-                      <button className="ph-icon-btn" style={{ width: 24, height: 24 }}><MoreHorizontal size={13} /></button>
-                    </td>
-                  </tr>
+                      </td>
+                      <td style={{ color: 'var(--cp-text-tertiary)', fontSize: 13 }}>{epic.parentKey ?? '—'}</td>
+                      <td>
+                        <JiraStatusLozenge
+                          status={epic.status}
+                          interactive
+                          onStatusChange={(newStatus) => updateStatus({ id: epic.id, status: newStatus })}
+                        />
+                      </td>
+                      <td style={{ color: 'var(--cp-text-tertiary)', fontSize: 13 }}>{epic.fixVersion ?? '—'}</td>
+                      <td>
+                        {epic.assignee ? (
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                            <div style={{ width: 24, height: 24, borderRadius: '50%', background: epic.assignee.color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: '#fff', flexShrink: 0 }}>
+                              {epic.assignee.initials}
+                            </div>
+                            <span style={{ fontSize: 13, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                              {epic.assignee.name}
+                            </span>
+                          </div>
+                        ) : <span style={{ color: 'var(--cp-text-tertiary)', fontSize: 13 }}>—</span>}
+                      </td>
+                      <td style={{ color: 'var(--cp-text-tertiary)', fontSize: 12, fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: 'tabular-nums' }}>
+                        {new Date(epic.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                      </td>
+                      <td />
+                      <td style={{ textAlign: 'center' }}>
+                        <button className="ph-icon-btn" style={{ width: 24, height: 24 }}><MoreHorizontal size={13} /></button>
+                      </td>
+                    </tr>
 
-                  {expandedRows.has(epic.id) && (
-                    <ExpandedChildren epicId={epic.id} epicKey={epic.jiraKey} />
-                  )}
-                </React.Fragment>
-              ))}
+                    {expandedRows.has(epic.id) && (
+                      <ExpandedChildren epicId={epic.id} epicKey={epic.jiraKey} />
+                    )}
+                  </React.Fragment>
+                );
+              })}
             </tbody>
           </table>
 
           {/* Footer */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '10px 12px', borderTop: 'var(--ph-divider)', fontSize: 13, color: 'var(--cp-text-secondary)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '10px 12px', borderTop: '0.75px solid rgba(15, 23, 42, 0.08)', fontSize: 13, color: 'var(--cp-text-secondary)' }}>
             <button style={{ display: 'flex', alignItems: 'center', gap: 6, border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 14, color: 'var(--cp-text-tertiary)', fontFamily: 'Inter, sans-serif', marginRight: 'auto' }}>
               <Plus size={13} /> Create
             </button>
@@ -332,35 +352,38 @@ export default function ProjectAllWorkView({ projectKey }: Props) {
         /* SPLIT MODE */
         <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
           {/* Left: Card List */}
-          <div style={{ width: 'var(--ph-card-panel-w, 288px)', flexShrink: 0, borderRight: 'var(--ph-divider)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 12px', borderBottom: 'var(--ph-divider)', fontSize: 13, fontWeight: 500, color: 'var(--cp-text-primary)', flexShrink: 0 }}>
+          <div style={{ width: 288, minWidth: 280, flexShrink: 0, borderRight: '0.75px solid rgba(15, 23, 42, 0.08)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 12px', borderBottom: '0.75px solid rgba(15, 23, 42, 0.08)', fontSize: 13, fontWeight: 500, color: 'var(--cp-text-primary)', flexShrink: 0, fontFamily: 'Inter, sans-serif' }}>
               Created <ChevronDown size={12} />
             </div>
             <div style={{ flex: 1, overflowY: 'auto' }}>
-              {items.map(item => (
-                <div key={item.id}
-                  onClick={() => setSelectedItem(item.id)}
-                  style={{
-                    padding: '10px 12px', borderBottom: 'var(--ph-divider)', cursor: 'pointer',
-                    background: selectedItem === item.id ? 'rgba(37,99,235,0.06)' : 'transparent',
-                    transition: 'background 100ms',
-                  }}
-                  onMouseEnter={e => { if (selectedItem !== item.id) e.currentTarget.style.background = 'var(--cp-bg-hover)'; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = selectedItem === item.id ? 'rgba(37,99,235,0.06)' : 'transparent'; }}
-                >
-                  <div style={{ fontSize: 14, fontWeight: 500, color: selectedItem === item.id ? 'var(--cp-primary)' : 'var(--cp-text-primary)', marginBottom: 4, lineHeight: 1.35 }}>
-                    {item.summary}
+              {items.map(item => {
+                const summary = item.summary?.trim() || '(No title)';
+                return (
+                  <div key={item.id}
+                    onClick={() => setSelectedItem(item.id)}
+                    style={{
+                      padding: '10px 12px', borderBottom: '0.75px solid rgba(15, 23, 42, 0.08)', cursor: 'pointer',
+                      background: selectedItem === item.id ? 'rgba(37,99,235,0.06)' : 'transparent',
+                      transition: 'background 100ms',
+                    }}
+                    onMouseEnter={e => { if (selectedItem !== item.id) e.currentTarget.style.background = 'rgba(0,0,0,0.04)'; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = selectedItem === item.id ? 'rgba(37,99,235,0.06)' : 'transparent'; }}
+                  >
+                    <div style={{ fontSize: 14, fontWeight: 500, color: selectedItem === item.id ? '#2563EB' : 'var(--cp-text-primary)', marginBottom: 4, lineHeight: 1.35, fontFamily: 'Inter, sans-serif' }}>
+                      {summary}
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <WorkItemTypeIcon type={item.type} size={13} />
+                      <span style={{ fontSize: 12, color: 'var(--cp-text-tertiary)', fontFamily: "'JetBrains Mono', monospace" }}>
+                        {item.jiraKey}
+                      </span>
+                    </div>
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                    <WorkItemTypeIcon type={item.type} size={13} />
-                    <span style={{ fontSize: 12, color: 'var(--cp-text-tertiary)', fontFamily: "'JetBrains Mono', monospace" }}>
-                      {item.jiraKey}
-                    </span>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
-            <div style={{ padding: '8px 12px', borderTop: 'var(--ph-divider)', fontSize: 12, color: 'var(--cp-text-tertiary)', textAlign: 'center' }}>
+            <div style={{ padding: '8px 12px', borderTop: '0.75px solid rgba(15, 23, 42, 0.08)', fontSize: 12, color: 'var(--cp-text-tertiary)', textAlign: 'center', fontFamily: 'Inter, sans-serif' }}>
               {items.length} items
             </div>
           </div>
@@ -374,7 +397,7 @@ export default function ProjectAllWorkView({ projectKey }: Props) {
               onClose={() => setSelectedItem(null)}
             />
           ) : (
-            <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--cp-text-tertiary)', fontSize: 14 }}>
+            <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--cp-text-tertiary)', fontSize: 14, fontFamily: 'Inter, sans-serif', minWidth: 400 }}>
               Select a work item to view details
             </div>
           )}
