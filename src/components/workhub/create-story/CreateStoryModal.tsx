@@ -517,7 +517,13 @@ export function CreateStoryModal({ open, onClose, projectId, projectKey, onSucce
   const { data: projects = [] } = useProjects();
   const { data: members = [] } = useTeamMembers();
   const { data: releases = [] } = useProjectReleases(form.projectId);
-  
+  const currentProject = projects.find(p => p.id === form.projectId);
+  const resolvedKey = currentProject?.key ?? projectKey ?? '';
+  const { unreleased: unreleasedVersions, released: releasedVersions, isLoading: versionsLoading } = useFixVersions(resolvedKey || null);
+
+  const [fixVersionSearch, setFixVersionSearch] = useState('');
+  const [showFixVersionDropdown, setShowFixVersionDropdown] = useState(false);
+  const fixVersionDropdownRef = useRef<HTMLDivElement>(null);
   const createMutation = useCreateStoryMutation();
   const [createAnother, setCreateAnother] = useState(false);
   const [summaryError, setSummaryError] = useState('');
