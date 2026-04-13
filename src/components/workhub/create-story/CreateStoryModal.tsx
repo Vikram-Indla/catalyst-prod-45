@@ -1,7 +1,7 @@
 /**
  * CreateStoryModal — Jira Cloud parity "Create" dialog.
- * Fields: Space, Work type, Status, Summary, Parent, MDT Ref, Priority, Description,
- *         Target Release, Assignee, Reporter.
+ * Fields: Space, Work type, Status, Summary, Parent, Priority, Description,
+ *         Fix versions, Assignee, Reporter, Labels.
  */
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
@@ -9,7 +9,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { createPortal } from 'react-dom';
 import {
   X, Maximize2, Minus, MoreHorizontal, ChevronDown, Bold, Italic, List,
-  ListOrdered, Code2, Link2, Undo, Redo, ExternalLink,
+  ListOrdered, Code2, Link2, Undo, Redo, ExternalLink, Check,
 } from 'lucide-react';
 import {
   useCreateStoryForm, useProjects, useTeamMembers,
@@ -22,6 +22,7 @@ import Underline from '@tiptap/extension-underline';
 import TipTapLink from '@tiptap/extension-link';
 import Placeholder from '@tiptap/extension-placeholder';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
+import { useFixVersions } from '@/modules/project-work-hub/hooks/useFixVersions';
 import './create-story.css';
 
 // ── Helpers ──
@@ -516,7 +517,13 @@ export function CreateStoryModal({ open, onClose, projectId, projectKey, onSucce
   const { data: projects = [] } = useProjects();
   const { data: members = [] } = useTeamMembers();
   const { data: releases = [] } = useProjectReleases(form.projectId);
-  
+  const currentProject = projects.find(p => p.id === form.projectId);
+  const resolvedKey = currentProject?.key ?? projectKey ?? '';
+  const { unreleased: unreleasedVersions, released: releasedVersions, isLoading: versionsLoading } = useFixVersions(resolvedKey || null);
+
+  const [fixVersionSearch, setFixVersionSearch] = useState('');
+  const [showFixVersionDropdown, setShowFixVersionDropdown] = useState(false);
+  const fixVersionDropdownRef = useRef<HTMLDivElement>(null);
   const createMutation = useCreateStoryMutation();
   const [createAnother, setCreateAnother] = useState(false);
   const [summaryError, setSummaryError] = useState('');
@@ -531,6 +538,25 @@ export function CreateStoryModal({ open, onClose, projectId, projectKey, onSucce
       updateField('reporterId', user.id);
     }
   }, [user?.id]);
+
+  // Close fix version dropdown on outside click
+  useEffect(() => {
+    if (!showFixVersionDropdown) return;
+    const handleClick = (e: MouseEvent) => {
+      if (fixVersionDropdownRef.current && !fixVersionDropdownRef.current.contains(e.target as Node)) {
+        setShowFixVersionDropdown(false);
+        setFixVersionSearch('');
+      }
+    };
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [showFixVersionDropdown]);
+
+  const handleToggleFixVersion = useCallback((name: string) => {
+    const current = form.fixVersions ?? [];
+    const updated = current.includes(name) ? current.filter(v => v !== name) : [...current, name];
+    updateField('fixVersions', updated);
+  }, [form.fixVersions, updateField]);
 
   // Set project if provided (by id or key)
   useEffect(() => {
@@ -557,8 +583,7 @@ export function CreateStoryModal({ open, onClose, projectId, projectKey, onSucce
     if (open) setTimeout(() => summaryRef.current?.focus(), 100);
   }, [open]);
 
-  const currentProject = projects.find(p => p.id === form.projectId);
-  const resolvedKey = currentProject?.key ?? projectKey ?? '';
+  // currentProject and resolvedKey already defined above
 
   const handleSubmit = useCallback(async () => {
     if (!form.summary.trim()) {
@@ -711,16 +736,135 @@ export function CreateStoryModal({ open, onClose, projectId, projectKey, onSucce
             }} />
           </div>
 
-          {/* Target Release */}
-          <SelectField
-            label="Target Release"
-            value={form.releaseId ?? ''}
-            options={[{ value: '', label: 'Select release' }, ...releaseOptions]}
-            onChange={v => updateField('releaseId', v || null)}
-            placeholder="Select release"
-          />
+          {/* Fix versions — Jira-parity: multi-select with DEEBFF pills, Unreleased/Released sections */}
+          <div className="csField" ref={fixVersionDropdownRef} style={{ position: 'relative' }}>
+            <label className="csLabel">Fix versions</label>
+            <div
+              onClick={() => setShowFixVersionDropdown(!showFixVersionDropdown)}
+              style={{
+                display: 'flex', flexWrap: 'wrap', gap: 4, alignItems: 'center',
+                padding: '4px 8px', borderRadius: 4, cursor: 'pointer',
+                minHeight: 36, transition: 'background 0.12s',
+                border: showFixVersionDropdown ? '2px solid #4C9AFF' : '2px solid #DFE1E6',
+                background: showFixVersionDropdown ? '#FFFFFF' : '#FAFBFC',
+              }}
+              onMouseEnter={e => { if (!showFixVersionDropdown) e.currentTarget.style.background = '#F4F5F7'; }}
+              onMouseLeave={e => { if (!showFixVersionDropdown) e.currentTarget.style.background = '#FAFBFC'; }}
+            >
+              {(form.fixVersions ?? []).length > 0 ? (
+                (form.fixVersions ?? []).map((v: string, i: number) => (
+                  <span key={i} style={{
+                    display: 'inline-flex', alignItems: 'center', gap: 4,
+                    fontSize: 12, fontWeight: 500, padding: '2px 8px', borderRadius: 3,
+                    background: '#DEEBFF', color: '#0747A6',
+                  }}>
+                    {v}
+                    <button type="button" onClick={e => { e.stopPropagation(); handleToggleFixVersion(v); }} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', color: '#0747A6' }}>
+                      <X size={10} />
+                    </button>
+                  </span>
+                ))
+              ) : (
+                <span style={{ color: '#6B778C', fontSize: 14 }}>None</span>
+              )}
+            </div>
 
-          {/* Assignee */}
+            {showFixVersionDropdown && (
+              <div style={{
+                position: 'absolute', top: '100%', left: 0, right: 0,
+                background: '#FFFFFF', border: '1px solid #DFE1E6', borderRadius: 4,
+                boxShadow: '0 4px 12px rgba(0,0,0,0.15)', zIndex: 9999,
+                maxHeight: 320, overflow: 'hidden', marginTop: 2,
+              }}>
+                <div style={{ padding: '8px 12px', borderBottom: '1px solid #F4F5F7' }}>
+                  <input
+                    autoFocus
+                    value={fixVersionSearch}
+                    onChange={e => setFixVersionSearch(e.target.value)}
+                    placeholder="Search versions..."
+                    style={{
+                      width: '100%', border: '1px solid #DFE1E6', borderRadius: 4,
+                      padding: '6px 10px', fontSize: 13, color: '#172B4D', outline: 'none',
+                      fontFamily: 'inherit',
+                    }}
+                    onFocus={e => { e.currentTarget.style.borderColor = '#4C9AFF'; }}
+                    onBlur={e => { e.currentTarget.style.borderColor = '#DFE1E6'; }}
+                  />
+                </div>
+                <div style={{ maxHeight: 260, overflowY: 'auto' }}>
+                  {versionsLoading && <div style={{ padding: '12px 16px', fontSize: 13, color: '#6B778C' }}>Loading...</div>}
+
+                  {/* Unreleased */}
+                  {(() => {
+                    const filtered = unreleasedVersions.filter(v => v.name.toLowerCase().includes(fixVersionSearch.toLowerCase()));
+                    if (filtered.length === 0) return null;
+                    return (
+                      <>
+                        <div style={{ padding: '8px 16px 4px', fontSize: 11, fontWeight: 700, color: '#6B778C', textTransform: 'uppercase', letterSpacing: '0.03em' }}>Unreleased</div>
+                        {filtered.map(v => {
+                          const isSelected = (form.fixVersions ?? []).includes(v.name);
+                          return (
+                            <div
+                              key={v.name}
+                              onClick={() => handleToggleFixVersion(v.name)}
+                              style={{
+                                padding: '8px 16px', fontSize: 14, color: '#172B4D',
+                                cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                                background: isSelected ? '#DEEBFF' : 'transparent',
+                                transition: 'background 0.1s',
+                              }}
+                              onMouseEnter={e => { if (!isSelected) (e.currentTarget as HTMLElement).style.background = '#F4F5F7'; }}
+                              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = isSelected ? '#DEEBFF' : 'transparent'; }}
+                            >
+                              <span>{v.name}</span>
+                              {isSelected && <Check size={14} color="#0747A6" />}
+                            </div>
+                          );
+                        })}
+                      </>
+                    );
+                  })()}
+
+                  {/* Released */}
+                  {(() => {
+                    const filtered = releasedVersions.filter(v => v.name.toLowerCase().includes(fixVersionSearch.toLowerCase()));
+                    if (filtered.length === 0) return null;
+                    return (
+                      <>
+                        <div style={{ padding: '8px 16px 4px', fontSize: 11, fontWeight: 700, color: '#6B778C', textTransform: 'uppercase', letterSpacing: '0.03em', borderTop: '1px solid #F4F5F7' }}>Released</div>
+                        {filtered.map(v => {
+                          const isSelected = (form.fixVersions ?? []).includes(v.name);
+                          return (
+                            <div
+                              key={v.name}
+                              onClick={() => handleToggleFixVersion(v.name)}
+                              style={{
+                                padding: '8px 16px', fontSize: 14, color: '#172B4D',
+                                cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                                background: isSelected ? '#DEEBFF' : 'transparent',
+                                transition: 'background 0.1s',
+                              }}
+                              onMouseEnter={e => { if (!isSelected) (e.currentTarget as HTMLElement).style.background = '#F4F5F7'; }}
+                              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = isSelected ? '#DEEBFF' : 'transparent'; }}
+                            >
+                              <span>{v.name}</span>
+                              {isSelected && <Check size={14} color="#0747A6" />}
+                            </div>
+                          );
+                        })}
+                      </>
+                    );
+                  })()}
+
+                  {!versionsLoading && unreleasedVersions.length === 0 && releasedVersions.length === 0 && (
+                    <div style={{ padding: '16px', fontSize: 13, color: '#6B778C', textAlign: 'center' }}>No versions found for this project</div>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Assignee — Jira-parity sidebar style: 12px bold label, 28px avatar */}
           <UserPicker
             label="Assignee"
             value={form.assigneeId}
@@ -730,7 +874,7 @@ export function CreateStoryModal({ open, onClose, projectId, projectKey, onSucce
             onAssignToMe={() => { if (user?.id) updateField('assigneeId', user.id); }}
           />
 
-          {/* Reporter */}
+          {/* Reporter — Jira-parity sidebar style */}
           <UserPicker
             label="Reporter"
             required
@@ -738,6 +882,12 @@ export function CreateStoryModal({ open, onClose, projectId, projectKey, onSucce
             members={members}
             onChange={id => updateField('reporterId', id)}
           />
+
+          {/* Labels */}
+          <div className="csField">
+            <label className="csLabel">Labels</label>
+            <div style={{ color: '#6B778C', fontSize: 14, padding: '4px 0' }}>None</div>
+          </div>
         </div>
 
         {/* ── Footer (sticky) ── */}
