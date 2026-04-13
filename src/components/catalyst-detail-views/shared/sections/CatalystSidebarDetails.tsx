@@ -7,13 +7,15 @@
  *   - EditablePriority (Jira-native priority SVGs with dropdown)
  *   - EditableLabels (add/remove labels with suggestions)
  *
- * Renders: Status dropdown → Details header → {children} → Priority → Assignee → Reporter → Labels → Fix Versions → Timestamps
+ * Renders: Status dropdown → Details header → Assignee → "Assign to me" → {children} → Priority → Reporter → Labels → Fix Versions → Story Points → Timestamps
  *
  * The `children` slot is where type-specific sidebar fields go.
  */
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/lib/auth';
 import type { PhIssue } from '../types';
 import { useCatalystAvatarProfile } from '../hooks/useCatalystAvatarProfile';
 import { EditableAssignee, EditablePriority, EditableLabels } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/EditableFields';
@@ -73,12 +75,34 @@ export function CatalystSidebarDetails({
     return () => document.removeEventListener('mousedown', h);
   }, [showStatusDropdown]);
 
+  /* ── Auth + current user profile ─────────── */
+  const { user } = useAuth();
+  const { data: currentProfile } = useCatalystAvatarProfile(user?.id);
+
   /* ── Avatar resolution for reporter ─────── */
   const { data: reporterProfile } = useCatalystAvatarProfile(issue?.reporter_account_id);
 
   const labelsArray: string[] = Array.isArray(issue?.labels) ? issue.labels : [];
 
+  /* ── Fix versions ──────────────────────── */
+  const fixVersionNames = useMemo(() => {
+    if (!issue?.fix_versions) return [];
+    const fv = issue.fix_versions;
+    if (Array.isArray(fv)) return fv.map((v: any) => v?.name || v).filter(Boolean) as string[];
+    return [];
+  }, [issue?.fix_versions]);
+
   const invalidateIssue = () => queryClient.invalidateQueries({ queryKey: ['cv-issue-detail', itemId] });
+
+  /* ── Assign to me handler ──────────────── */
+  const handleAssignToMe = useCallback(async () => {
+    if (!user) return;
+    const displayName = currentProfile?.full_name ?? user.email ?? 'Me';
+    await (supabase as any).from('ph_issues')
+      .update({ assignee_account_id: user.id, assignee_display_name: displayName })
+      .eq('id', itemId);
+    invalidateIssue();
+  }, [user, currentProfile, itemId]);
 
   return (
     <>
@@ -155,9 +179,41 @@ export function CatalystSidebarDetails({
       {/* ── Details section ──────────────────── */}
       <div style={{ marginBottom: 20 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 12 }}>
-          <ChevronDown size={14} color="#42526E" />
+          <ChevronDown size={14} color="#6B778C" />
           <span style={{ fontSize: 14, fontWeight: 700, color: '#172B4D' }}>Details</span>
         </div>
+
+        {/* ── Assignee (canonical, EDITABLE) ──── */}
+        <div style={{ marginBottom: 4 }}>
+          <div style={{ fontSize: 12, fontWeight: 600, color: '#172B4D', marginBottom: 4 }}>Assignee</div>
+          {issue && (
+            <EditableAssignee
+              issueId={issue.id}
+              projectId={projectId || ''}
+              currentAssigneeId={issue.assignee_account_id}
+              currentAssigneeName={issue.assignee_display_name}
+              onUpdate={invalidateIssue}
+            />
+          )}
+        </div>
+
+        {/* ── Assign to me ──────────────────── */}
+        {user && issue?.assignee_account_id !== user.id && (
+          <div style={{ marginBottom: 14, paddingLeft: 6 }}>
+            <button
+              onClick={handleAssignToMe}
+              style={{
+                background: 'none', border: 'none', padding: 0, cursor: 'pointer',
+                fontSize: 13, color: '#0052CC', fontFamily: 'inherit',
+              }}
+              onMouseEnter={e => (e.currentTarget.style.textDecoration = 'underline')}
+              onMouseLeave={e => (e.currentTarget.style.textDecoration = 'none')}
+            >
+              Assign to me
+            </button>
+          </div>
+        )}
+        {(!user || issue?.assignee_account_id === user.id) && <div style={{ marginBottom: 14 }} />}
 
         {/* ── TYPE-SPECIFIC FIELDS (children slot) ── */}
         {children}
@@ -169,20 +225,6 @@ export function CatalystSidebarDetails({
             <EditablePriority
               issueId={issue.id}
               currentPriority={issue.priority}
-              onUpdate={invalidateIssue}
-            />
-          )}
-        </div>
-
-        {/* ── Assignee (canonical, EDITABLE) ──── */}
-        <div style={{ marginBottom: 14 }}>
-          <div style={{ fontSize: 12, fontWeight: 600, color: '#172B4D', marginBottom: 4 }}>Assignee</div>
-          {issue && (
-            <EditableAssignee
-              issueId={issue.id}
-              projectId={projectId || ''}
-              currentAssigneeId={issue.assignee_account_id}
-              currentAssigneeName={issue.assignee_display_name}
               onUpdate={invalidateIssue}
             />
           )}
@@ -221,6 +263,35 @@ export function CatalystSidebarDetails({
             />
           )}
         </div>
+
+        {/* ── Fix Versions (display) ────────── */}
+        <div style={{ marginBottom: 14 }}>
+          <div style={{ fontSize: 12, fontWeight: 600, color: '#172B4D', marginBottom: 4 }}>Fix versions</div>
+          <div style={{ padding: '4px 6px' }}>
+            {fixVersionNames.length > 0 ? (
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+                {fixVersionNames.map(v => (
+                  <span key={v} style={{
+                    background: '#DEEBFF', color: '#0747A6', fontSize: 12, fontWeight: 500,
+                    padding: '2px 8px', borderRadius: 3, lineHeight: '18px',
+                  }}>{v}</span>
+                ))}
+              </div>
+            ) : (
+              <span style={{ fontSize: 14, color: '#42526E' }}>None</span>
+            )}
+          </div>
+        </div>
+
+        {/* ── Story Points (display) ─────────── */}
+        {issue?.story_points != null && (
+          <div style={{ marginBottom: 14 }}>
+            <div style={{ fontSize: 12, fontWeight: 600, color: '#172B4D', marginBottom: 4 }}>Story points</div>
+            <div style={{ padding: '4px 6px', fontSize: 14, color: '#172B4D' }}>
+              {issue.story_points}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* ── Timestamps (canonical) ────────────── */}
