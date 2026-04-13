@@ -115,10 +115,10 @@ export function CatalystSidebarDetails({
           onClick={() => setShowStatusDropdown(!showStatusDropdown)}
           style={{
             backgroundColor: statusStyle.bg, color: statusStyle.text,
-            padding: '6px 12px', borderRadius: 4, fontSize: 13, fontWeight: 700,
+            padding: '0 10px', borderRadius: 3, fontSize: 14, fontWeight: 500,
             border: 'none', cursor: 'pointer', display: 'inline-flex',
             alignItems: 'center', gap: 6, fontFamily: 'inherit', lineHeight: 1,
-            transition: 'opacity 0.15s',
+            height: 32, transition: 'opacity 0.15s',
           }}
           onMouseEnter={e => (e.currentTarget.style.opacity = '0.85')}
           onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
@@ -179,139 +179,129 @@ export function CatalystSidebarDetails({
         )}
       </div>
 
-      {/* ── Details section ──────────────────── */}
-      <div style={{ marginBottom: 20 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 12 }}>
-          <ChevronDown size={14} color="#6B778C" />
-          <span style={{ fontSize: 14, fontWeight: 600, color: '#172B4D' }}>Details</span>
+      {/* ── Details section card ──────────────── */}
+      <div style={{ marginBottom: 8 }}>
+        {/* Section header — 49px, Jira spec */}
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 6, height: 49,
+          padding: '0 8px', borderRadius: '6px 6px 0 0', background: '#FFFFFF',
+        }}>
+          <ChevronDown size={14} color="#505258" />
+          <span style={{ fontSize: 16, fontWeight: 500, lineHeight: '20px', color: '#292A2E' }}>Details</span>
         </div>
 
-        {/* Jira-parity: horizontal label-value rows with separator lines */}
-        {/* ── Assignee ──── */}
-        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid #EBECF0' }}>
-          <span style={{ fontSize: 14, color: '#6B778C', fontWeight: 400, minWidth: 90, paddingTop: 4 }}>Assignee</span>
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
-            {issue && (
-              <EditableAssignee
-                issueId={issue.id}
-                projectId={projectId || ''}
-                currentAssigneeId={issue.assignee_account_id}
-                currentAssigneeName={issue.assignee_display_name}
-                onUpdate={invalidateIssue}
-              />
-            )}
-            {/* Assign to me */}
-            {user && issue?.assignee_account_id !== user.id && (
-              <button
-                onClick={handleAssignToMe}
-                style={{
-                  background: 'none', border: 'none', padding: 0, cursor: 'pointer',
-                  fontSize: 12, color: '#0052CC', fontFamily: 'inherit', marginTop: 2,
-                }}
-                onMouseEnter={e => (e.currentTarget.style.textDecoration = 'underline')}
-                onMouseLeave={e => (e.currentTarget.style.textDecoration = 'none')}
-              >
-                Assign to me
-              </button>
-            )}
+        {/* Section body — two-column field grid */}
+        <div style={{ padding: '8px 12px 8px 19px' }}>
+
+          {/* ── Assignee ──── */}
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 20, padding: '11px 0' }}>
+            <span style={{ fontSize: 14, fontWeight: 500, lineHeight: '18.67px', color: '#505258', minWidth: 120, flexShrink: 0 }}>Assignee</span>
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+              {issue && (
+                <EditableAssignee
+                  issueId={issue.id}
+                  projectId={projectId || ''}
+                  currentAssigneeId={issue.assignee_account_id}
+                  currentAssigneeName={issue.assignee_display_name}
+                  onUpdate={invalidateIssue}
+                />
+              )}
+              {/* Assign to me */}
+              {user && issue?.assignee_account_id !== user.id && (
+                <button
+                  onClick={handleAssignToMe}
+                  style={{
+                    background: 'none', border: 'none', padding: 0, cursor: 'pointer',
+                    fontSize: 14, color: '#1868DB', fontFamily: 'inherit', marginTop: 2,
+                    textAlign: 'left', textDecoration: 'none',
+                  }}
+                  onMouseEnter={e => (e.currentTarget.style.textDecoration = 'underline')}
+                  onMouseLeave={e => (e.currentTarget.style.textDecoration = 'none')}
+                >
+                  Assign to me
+                </button>
+              )}
+            </div>
           </div>
-        </div>
 
-        {/* ── TYPE-SPECIFIC FIELDS (children slot) ── */}
-        {children}
+          {/* ── TYPE-SPECIFIC FIELDS (children slot) ── */}
+          {children}
 
-        {/* ── Priority ──── */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid #EBECF0' }}>
-          <span style={{ fontSize: 14, color: '#6B778C', fontWeight: 400, minWidth: 90 }}>Priority</span>
-          <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end' }}>
-            {issue && (
-              <EditablePriority
-                issueId={issue.id}
-                currentPriority={issue.priority}
-                onUpdate={invalidateIssue}
-              />
-            )}
+          {/* ── Priority ──── */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 20, padding: '11px 0' }}>
+            <span style={{ fontSize: 14, fontWeight: 500, lineHeight: '18.67px', color: '#505258', minWidth: 120, flexShrink: 0 }}>Priority</span>
+            <div style={{ flex: 1 }}>
+              {issue && (
+                <EditablePriority
+                  issueId={issue.id}
+                  currentPriority={issue.priority}
+                  onUpdate={invalidateIssue}
+                />
+              )}
+            </div>
           </div>
-        </div>
 
-        {/* ── Reporter ──── */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid #EBECF0' }}>
-          <span style={{ fontSize: 14, color: '#6B778C', fontWeight: 400, minWidth: 90 }}>Reporter</span>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'flex-end' }}>
-            {issue?.reporter_display_name ? (
-              <>
-                {reporterProfile?.avatar_url ? (
-                  <img src={reporterProfile.avatar_url} alt="" style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
-                ) : (
-                  <span style={{
-                    width: 24, height: 24, borderRadius: '50%',
-                    background: getAvatarColor(issue.reporter_account_id ?? issue.reporter_display_name),
-                    color: '#FFF', display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: 10, fontWeight: 700, flexShrink: 0,
-                  }}>{getInitials(issue.reporter_display_name)}</span>
-                )}
-                <span style={{ fontSize: 14, color: '#172B4D' }}>{issue.reporter_display_name}</span>
-              </>
-            ) : <span style={{ color: '#42526E', fontSize: 14 }}>—</span>}
+          {/* ── Reporter ──── */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 20, padding: '12px 0' }}>
+            <span style={{ fontSize: 14, fontWeight: 500, lineHeight: '18.67px', color: '#505258', minWidth: 120, flexShrink: 0 }}>Reporter</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              {issue?.reporter_display_name ? (
+                <>
+                  {reporterProfile?.avatar_url ? (
+                    <img src={reporterProfile.avatar_url} alt="" style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
+                  ) : (
+                    <span style={{
+                      width: 24, height: 24, borderRadius: '50%',
+                      background: getAvatarColor(issue.reporter_account_id ?? issue.reporter_display_name),
+                      color: '#FFF', display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                      fontSize: 10, fontWeight: 700, flexShrink: 0,
+                    }}>{getInitials(issue.reporter_display_name)}</span>
+                  )}
+                  <span style={{ fontSize: 14, fontWeight: 400, color: '#292A2E' }}>{issue.reporter_display_name}</span>
+                </>
+              ) : <span style={{ color: '#6B6E76', fontSize: 14, fontWeight: 400 }}>None</span>}
+            </div>
           </div>
-        </div>
 
-        {/* ── MDT Ref ──── */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid #EBECF0' }}>
-          <span style={{ fontSize: 14, color: '#6B778C', fontWeight: 400, minWidth: 90 }}>MDT Ref</span>
-          <span style={{ fontSize: 14, color: '#97A0AF' }}>Add text</span>
-        </div>
-
-        {/* ── Actual start ──── */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid #EBECF0' }}>
-          <span style={{ fontSize: 14, color: '#6B778C', fontWeight: 400, minWidth: 90 }}>Actual start</span>
-          <span style={{ fontSize: 14, color: '#172B4D' }}>None</span>
-        </div>
-
-        {/* ── Actual end ──── */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid #EBECF0' }}>
-          <span style={{ fontSize: 14, color: '#6B778C', fontWeight: 400, minWidth: 90 }}>Actual end</span>
-          <span style={{ fontSize: 14, color: '#172B4D' }}>None</span>
-        </div>
-
-        {/* ── Labels ──── */}
-        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid #EBECF0' }}>
-          <span style={{ fontSize: 14, color: '#6B778C', fontWeight: 400, minWidth: 90, paddingTop: 2 }}>Labels</span>
-          <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end' }}>
-            {issue && (
-              <EditableLabels
-                issueId={issue.id}
-                currentLabels={labelsArray}
-                onUpdate={invalidateIssue}
-              />
-            )}
+          {/* ── Labels ──── */}
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 20, padding: '11px 0' }}>
+            <span style={{ fontSize: 14, fontWeight: 500, lineHeight: '18.67px', color: '#505258', minWidth: 120, flexShrink: 0, paddingTop: 2 }}>Labels</span>
+            <div style={{ flex: 1 }}>
+              {issue && (
+                <EditableLabels
+                  issueId={issue.id}
+                  currentLabels={labelsArray}
+                  onUpdate={invalidateIssue}
+                />
+              )}
+            </div>
           </div>
-        </div>
 
-        {/* ── Fix Versions ──── */}
-        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid #EBECF0' }}>
-          <span style={{ fontSize: 14, color: '#6B778C', fontWeight: 400, minWidth: 90, paddingTop: 2 }}>Fix versions</span>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, justifyContent: 'flex-end' }}>
-            {fixVersionNames.length > 0 ? (
-              fixVersionNames.map(v => (
-                <span key={v} style={{
-                  background: '#DEEBFF', color: '#0747A6', fontSize: 12, fontWeight: 500,
-                  padding: '2px 8px', borderRadius: 3, lineHeight: '18px',
-                }}>{v}</span>
-              ))
-            ) : (
-              <span style={{ fontSize: 14, color: '#172B4D' }}>None</span>
-            )}
+          {/* ── Fix Versions ──── */}
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 20, padding: '11px 0' }}>
+            <span style={{ fontSize: 14, fontWeight: 500, lineHeight: '18.67px', color: '#505258', minWidth: 120, flexShrink: 0, paddingTop: 2 }}>Fix versions</span>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+              {fixVersionNames.length > 0 ? (
+                fixVersionNames.map(v => (
+                  <span key={v} style={{
+                    background: '#DEEBFF', color: '#0747A6', fontSize: 12, fontWeight: 500,
+                    padding: '2px 8px', borderRadius: 3, lineHeight: '18px',
+                  }}>{v}</span>
+                ))
+              ) : (
+                <span style={{ fontSize: 14, fontWeight: 400, color: '#6B6E76' }}>None</span>
+              )}
+            </div>
           </div>
-        </div>
 
-        {/* ── Story Points ──── */}
-        {(issue as any)?.story_points != null && (
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid #EBECF0' }}>
-            <span style={{ fontSize: 14, color: '#6B778C', fontWeight: 400, minWidth: 90 }}>Story points</span>
-            <span style={{ fontSize: 14, color: '#172B4D' }}>{(issue as any).story_points}</span>
-          </div>
-        )}
+          {/* ── Story Points ──── */}
+          {(issue as any)?.story_points != null && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 20, padding: '11px 0' }}>
+              <span style={{ fontSize: 14, fontWeight: 500, lineHeight: '18.67px', color: '#505258', minWidth: 120, flexShrink: 0 }}>Story points</span>
+              <span style={{ fontSize: 14, fontWeight: 400, color: '#292A2E' }}>{(issue as any).story_points}</span>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* ── Timestamps (canonical) ────────────── */}
