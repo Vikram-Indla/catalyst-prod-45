@@ -1,7 +1,6 @@
 /**
  * useProjectListItems & useProjectAllWorkItems
- * Stage D: Full Supabase wiring — ZERO hardcoded data
- * Reads from ph_work_items (existing table)
+ * Reads from ph_issues (the actual synced Jira data) keyed by project_key
  */
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -13,24 +12,27 @@ function normaliseType(raw: string | null): WorkItemType {
   if (!raw) return 'task';
   const l = raw.toLowerCase().replace(/[\s_-]/g, '');
   if (l === 'epic') return 'epic';
-  if (l === 'story') return 'story';
-  if (l === 'bug' || l === 'defect') return 'bug';
+  if (l === 'story' || l === 'userstory') return 'story';
+  if (l === 'bug' || l === 'defect' || l === 'qabug') return 'bug';
   if (l === 'subtask' || l === 'sub-task') return 'subtask';
   if (l === 'feature' || l === 'newfeature') return 'feature';
   if (l === 'improvement') return 'improvement';
+  if (l === 'frontend') return 'task';
+  if (l === 'backend') return 'task';
   return 'task';
 }
 
-function normaliseStatus(raw: string | null, rawDirect?: string | null): WorkItemStatus {
-  const s = raw ?? rawDirect ?? 'backlog';
+function normaliseStatus(raw: string | null): WorkItemStatus {
+  const s = raw ?? 'backlog';
   const l = s.toLowerCase().replace(/[\s_-]/g, '');
   if (l.includes('done') || l.includes('closed') || l.includes('resolved')) return 'done';
-  if (l.includes('progress') || l.includes('dev')) return 'in_progress';
+  if (l.includes('progress') || l.includes('dev') || l.includes('indev')) return 'in_progress';
   if (l.includes('qa')) return 'in_qa';
   if (l.includes('uat')) return 'in_uat';
   if (l.includes('production')) return 'in_production';
   if (l.includes('requirement')) return 'in_requirements';
   if (l.includes('readyforqa')) return 'ready_for_qa';
+  if (l.includes('todo') || l.includes('to do')) return 'backlog';
   return 'backlog';
 }
 
@@ -44,6 +46,14 @@ function normalisePriority(raw: string | null): WorkItemPriority {
   return 'medium';
 }
 
+function statusCategory(raw: string | null): 'done' | 'in_progress' | 'todo' {
+  if (!raw) return 'todo';
+  const l = raw.toLowerCase();
+  if (l.includes('done')) return 'done';
+  if (l.includes('progress')) return 'in_progress';
+  return 'todo';
+}
+
 function getInitials(name: string): string {
   return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
 }
@@ -55,84 +65,73 @@ function hashColor(id: string): string {
   return AVATAR_COLORS[Math.abs(h) % AVATAR_COLORS.length];
 }
 
-function mapRow(row: any, profileMap: Map<string, { full_name: string; avatar_url: string | null }>): WorkItem {
-  const assigneeId = row.assignee_id ?? row.assignee_user_id;
-  const profile = assigneeId ? profileMap.get(assigneeId) : undefined;
-  const reporterProfile = row.reporter_id ? profileMap.get(row.reporter_id) : undefined;
-  const statusName = row.ph_workflow_statuses?.name ?? row.status ?? 'Backlog';
-  const statusCategory = row.ph_workflow_statuses?.category ?? null;
+function countComments(raw: any): number {
+  if (!raw) return 0;
+  if (Array.isArray(raw)) return raw.length;
+  if (typeof raw === 'object' && raw.comments) return Array.isArray(raw.comments) ? raw.comments.length : 0;
+  return 0;
+}
+
+function mapPhIssue(row: any): WorkItem {
+  const assigneeId = row.assignee_account_id ?? null;
+  const assigneeName = row.assignee_display_name ?? null;
   return {
-    id: row.id,
-    projectId: row.project_id,
-    parentId: row.parent_id ?? null,
-    parentKey: null,
-    jiraKey: row.item_key ?? '',
-    type: normaliseType(row.ph_work_types?.name ?? row.item_type),
-    summary: row.title || row.summary || '',
-    status: normaliseStatus(row.ph_workflow_statuses?.name, row.status),
-    statusName,
-    statusCategory: statusCategory === 'done' ? 'done' : statusCategory === 'in_progress' ? 'in_progress' : 'todo',
-    assigneeId: assigneeId ?? null,
-    assignee: profile ? {
-      id: assigneeId!,
-      name: profile.full_name,
-      avatarUrl: profile.avatar_url,
-      initials: getInitials(profile.full_name),
-      color: hashColor(assigneeId!),
+    id: row.id ?? row.issue_key,
+    projectId: '',
+    parentId: null,
+    parentKey: row.parent_key ?? null,
+    jiraKey: row.issue_key ?? '',
+    type: normaliseType(row.issue_type),
+    summary: row.summary || '(No title)',
+    status: normaliseStatus(row.status),
+    statusName: row.status ?? 'Backlog',
+    statusCategory: statusCategory(row.status_category),
+    assigneeId: assigneeId,
+    assignee: assigneeName ? {
+      id: assigneeId || assigneeName,
+      name: assigneeName,
+      avatarUrl: null,
+      initials: getInitials(assigneeName),
+      color: hashColor(assigneeId || assigneeName),
     } : undefined,
-    reporterId: row.reporter_id ?? null,
-    reporter: reporterProfile ? { id: row.reporter_id!, name: reporterProfile.full_name } : undefined,
-    priority: normalisePriority(row.priority ?? row.jira_priority),
-    fixVersion: row.ph_releases?.name ?? null,
-    commentsCount: 0,
+    reporterId: row.reporter_account_id ?? null,
+    reporter: row.reporter_display_name ? { id: row.reporter_account_id || '', name: row.reporter_display_name } : undefined,
+    priority: normalisePriority(row.priority),
+    fixVersion: Array.isArray(row.fix_versions) && row.fix_versions.length > 0 ? row.fix_versions[0] : null,
+    commentsCount: countComments(row.comments),
     childCount: 0,
-    description: row.description ?? null,
-    createdAt: row.created_at ?? new Date().toISOString(),
-    updatedAt: row.updated_at ?? new Date().toISOString(),
+    description: row.description_text ?? null,
+    createdAt: row.jira_created_at ?? new Date().toISOString(),
+    updatedAt: row.jira_updated_at ?? new Date().toISOString(),
     createdBy: null,
+    parentSummary: row.parent_summary ?? null,
+    storyPoints: row.story_points ?? null,
+    sprintName: row.sprint_name ?? null,
+    resolution: row.resolution ?? null,
+    labels: row.labels ?? [],
   };
 }
 
-async function fetchProfiles(ids: string[]) {
-  const map = new Map<string, { full_name: string; avatar_url: string | null }>();
-  if (ids.length === 0) return map;
-  // @ts-ignore
-  const { data } = await supabase.from('profiles').select('id, full_name, avatar_url').in('id', ids);
-  for (const p of data ?? []) map.set(p.id, { full_name: p.full_name || '', avatar_url: p.avatar_url });
-  return map;
-}
+const PH_ISSUES_SELECT = 'id, issue_key, project_key, issue_type, summary, status, status_category, assignee_account_id, assignee_display_name, parent_key, parent_summary, fix_versions, labels, priority, story_points, sprint_name, resolution, jira_created_at, jira_updated_at, description_text, comments, reporter_account_id, reporter_display_name';
 
-const SELECT_FIELDS = 'id, item_key, title, summary, item_type, priority, jira_priority, parent_id, assignee_id, assignee_user_id, reporter_id, status, description, created_at, updated_at, project_id, deleted_at, ph_work_types!ph_work_items_type_id_fkey (name, color, icon, level), ph_workflow_statuses!ph_work_items_status_id_fkey (name, category, color), ph_releases!wh_work_items_release_id_fkey (name)';
-
-/* ── Resolve projectKey → projectId ── */
-async function resolveProjectId(projectKey: string): Promise<string | null> {
-  // @ts-ignore
-  const { data } = await supabase.from('projects').select('id').eq('key', projectKey).maybeSingle();
-  return (data as any)?.id ?? null;
-}
-
-/* ── List view: epics only ── */
+/* ── List view: all items for a project ── */
 export function useProjectListItems(projectKey: string | undefined) {
   return useQuery({
     queryKey: ['project-list-items-v2', projectKey],
     queryFn: async (): Promise<WorkItem[]> => {
       if (!projectKey) return [];
-      const projectId = await resolveProjectId(projectKey);
-      if (!projectId) return [];
 
       // @ts-ignore
       const { data, error } = await supabase
-        .from('ph_work_items')
-        .select(SELECT_FIELDS)
-        .eq('project_id', projectId)
+        .from('ph_issues')
+        .select(PH_ISSUES_SELECT)
+        .eq('project_key', projectKey)
         .is('deleted_at', null)
-        .order('updated_at', { ascending: false })
+        .order('jira_updated_at', { ascending: false, nullsFirst: false })
         .limit(2000);
       if (error) throw error;
 
-      const ids = collectProfileIds(data);
-      const profileMap = await fetchProfiles(ids);
-      return (data ?? []).map((r: any) => mapRow(r, profileMap));
+      return (data ?? []).map(mapPhIssue);
     },
     enabled: !!projectKey,
     staleTime: 30_000,
@@ -145,49 +144,43 @@ export function useProjectAllWorkItems(projectKey: string | undefined) {
     queryKey: ['project-all-work-items-v2', projectKey],
     queryFn: async (): Promise<WorkItem[]> => {
       if (!projectKey) return [];
-      const projectId = await resolveProjectId(projectKey);
-      if (!projectId) return [];
 
       // @ts-ignore
       const { data, error } = await supabase
-        .from('ph_work_items')
-        .select(SELECT_FIELDS)
-        .eq('project_id', projectId)
+        .from('ph_issues')
+        .select(PH_ISSUES_SELECT)
+        .eq('project_key', projectKey)
         .is('deleted_at', null)
-        .order('updated_at', { ascending: false })
+        .order('jira_updated_at', { ascending: false, nullsFirst: false })
         .limit(5000);
       if (error) throw error;
 
-      const ids = collectProfileIds(data);
-      const profileMap = await fetchProfiles(ids);
-      return (data ?? []).map((r: any) => mapRow(r, profileMap));
+      return (data ?? []).map(mapPhIssue);
     },
     enabled: !!projectKey,
     staleTime: 30_000,
   });
 }
 
-/* ── Children for expand ── */
-export function useWorkItemChildren(parentId: string | undefined, enabled: boolean) {
+/* ── Children for expand (by parent_key) ── */
+export function useWorkItemChildren(parentKey: string | undefined, enabled: boolean) {
   return useQuery({
-    queryKey: ['work-item-children-v2', parentId],
+    queryKey: ['work-item-children-v2', parentKey],
     queryFn: async (): Promise<WorkItem[]> => {
-      if (!parentId) return [];
+      if (!parentKey) return [];
       // @ts-ignore
       const { data, error } = await supabase
-        .from('ph_work_items')
-        .select(SELECT_FIELDS)
-        .eq('parent_id', parentId)
+        .from('ph_issues')
+        .select(PH_ISSUES_SELECT)
+        .eq('parent_key', parentKey)
         .is('deleted_at', null)
-        .order('created_at', { ascending: false })
+        .order('jira_updated_at', { ascending: false, nullsFirst: false })
         .limit(500);
       if (error) throw error;
 
-      const ids = collectProfileIds(data);
-      const profileMap = await fetchProfiles(ids);
-      return (data ?? []).map((r: any) => mapRow(r, profileMap));
+      return (data ?? []).map(mapPhIssue);
     },
-    enabled: enabled && !!parentId,
+    enabled: enabled && !!parentKey,
     staleTime: 30_000,
   });
 }
@@ -200,16 +193,13 @@ export function useWorkItem(itemId: string | undefined) {
       if (!itemId) return null;
       // @ts-ignore
       const { data, error } = await supabase
-        .from('ph_work_items')
-        .select(SELECT_FIELDS)
+        .from('ph_issues')
+        .select(PH_ISSUES_SELECT)
         .eq('id', itemId)
         .maybeSingle();
       if (error) throw error;
       if (!data) return null;
-
-      const ids = collectProfileIds([data]);
-      const profileMap = await fetchProfiles(ids);
-      return mapRow(data, profileMap);
+      return mapPhIssue(data);
     },
     enabled: !!itemId,
     staleTime: 15_000,
@@ -222,29 +212,25 @@ export function useSearchWorkItems(projectKey: string | undefined, query: string
     queryKey: ['work-items-search', projectKey, query],
     queryFn: async (): Promise<WorkItem[]> => {
       if (!query.trim() || !projectKey) return [];
-      const projectId = await resolveProjectId(projectKey);
-      if (!projectId) return [];
 
       // @ts-ignore
       const { data, error } = await supabase
-        .from('ph_work_items')
-        .select(SELECT_FIELDS)
-        .eq('project_id', projectId)
+        .from('ph_issues')
+        .select(PH_ISSUES_SELECT)
+        .eq('project_key', projectKey)
         .is('deleted_at', null)
-        .or(`summary.ilike.%${query}%,item_key.ilike.%${query}%,title.ilike.%${query}%`)
+        .or(`summary.ilike.%${query}%,issue_key.ilike.%${query}%`)
         .limit(20);
       if (error) throw error;
 
-      const ids = collectProfileIds(data);
-      const profileMap = await fetchProfiles(ids);
-      return (data ?? []).map((r: any) => mapRow(r, profileMap));
+      return (data ?? []).map(mapPhIssue);
     },
     enabled: !!projectKey && query.length >= 2,
     staleTime: 5_000,
   });
 }
 
-/* ── Create work item ── */
+/* ── Create work item (still uses ph_work_items for new items) ── */
 export function useCreateWorkItem() {
   const queryClient = useQueryClient();
   return useMutation({
@@ -301,16 +287,4 @@ export function useUpdateWorkItemStatus() {
       queryClient.invalidateQueries({ queryKey: ['work-item-detail'] });
     },
   });
-}
-
-/* ── util ── */
-function collectProfileIds(data: any[] | null): string[] {
-  if (!data) return [];
-  const ids = new Set<string>();
-  for (const r of data) {
-    if (r.assignee_id) ids.add(r.assignee_id);
-    if (r.assignee_user_id) ids.add(r.assignee_user_id);
-    if (r.reporter_id) ids.add(r.reporter_id);
-  }
-  return [...ids];
 }

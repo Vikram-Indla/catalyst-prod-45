@@ -50,6 +50,11 @@ export interface WorkItem {
   createdAt: string;
   updatedAt: string;
   createdBy: string | null;
+  parentSummary?: string | null;
+  storyPoints?: number | null;
+  sprintName?: string | null;
+  resolution?: string | null;
+  labels?: string[];
 }
 
 export interface ProjectInfo {
