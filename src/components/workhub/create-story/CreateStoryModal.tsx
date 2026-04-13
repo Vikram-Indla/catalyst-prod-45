@@ -606,13 +606,18 @@ function UserPicker({ label, required, value, members, onChange, showAssignToMe,
         )}
       </div>
       <button type="button" className="csSelect csSelectFull" onClick={() => setOpen(o => !o)}>
-        <span className="csSelectText">
+          <span className="csSelectText">
           {selected ? (
             <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <AvatarCircle userId={selected.id} name={selected.full_name ?? ''} avatarUrl={selected.avatar_url} size={24} />
               <span style={{ fontSize: 14, color: '#172B4D', fontWeight: 400 }}>{selected.full_name}</span>
             </span>
-          ) : 'Automatic'}
+          ) : (
+            <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div style={{ width: 24, height: 24, borderRadius: '50%', border: '1px dashed #C1C7D0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, color: '#C1C7D0', flexShrink: 0 }}>?</div>
+              <span style={{ fontSize: 14, color: '#172B4D', fontWeight: 400 }}>Automatic</span>
+            </span>
+          )}
         </span>
         <ChevronDown className="csSelectChevron" />
       </button>
@@ -1090,11 +1095,11 @@ export function CreateStoryModal({ open, onClose, projectId, projectKey, onSucce
             onChange={id => updateField('reporterId', id)}
           />
 
-          {/* Labels */}
-          <div className="csField">
-            <label className="csLabel">Labels</label>
-            <div style={{ color: '#6B778C', fontSize: 14, padding: '4px 0' }}>None</div>
-          </div>
+          {/* Labels — functional local-state picker */}
+          <CreateLabelsField
+            value={form.labels ?? []}
+            onChange={(labels) => updateField('labels', labels)}
+          />
         </div>
 
         {/* ── Footer (sticky) ── */}
