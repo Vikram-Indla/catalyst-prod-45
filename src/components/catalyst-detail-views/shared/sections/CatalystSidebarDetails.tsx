@@ -97,7 +97,7 @@ export function CatalystSidebarDetails({
   /* ── Assign to me handler ──────────────── */
   const handleAssignToMe = useCallback(async () => {
     if (!user) return;
-    const displayName = currentProfile?.full_name ?? user.email ?? 'Me';
+    const displayName = (currentProfile as any)?.full_name ?? user.email ?? 'Me';
     await (supabase as any).from('ph_issues')
       .update({ assignee_account_id: user.id, assignee_display_name: displayName })
       .eq('id', itemId);
@@ -284,11 +284,11 @@ export function CatalystSidebarDetails({
         </div>
 
         {/* ── Story Points (display) ─────────── */}
-        {issue?.story_points != null && (
+        {(issue as any)?.story_points != null && (
           <div style={{ marginBottom: 14 }}>
             <div style={{ fontSize: 12, fontWeight: 600, color: '#172B4D', marginBottom: 4 }}>Story points</div>
             <div style={{ padding: '4px 6px', fontSize: 14, color: '#172B4D' }}>
-              {issue.story_points}
+              {(issue as any).story_points}
             </div>
           </div>
         )}
