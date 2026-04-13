@@ -8,8 +8,8 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { createPortal } from 'react-dom';
 import {
-  X, Maximize2, Minus, MoreHorizontal, ChevronDown, Bold, Italic, List,
-  ListOrdered, Code2, Link2, Undo, Redo, ExternalLink, Check,
+  X, Maximize2, Minus, MoreHorizontal, ChevronDown, ChevronRight,
+  Bold, Italic, List, ListOrdered, Code2, Link2, Undo, Redo, ExternalLink, Check,
 } from 'lucide-react';
 import {
   useCreateStoryForm, useProjects, useTeamMembers,
@@ -23,6 +23,7 @@ import TipTapLink from '@tiptap/extension-link';
 import Placeholder from '@tiptap/extension-placeholder';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { useFixVersions } from '@/modules/project-work-hub/hooks/useFixVersions';
+import { StoryRichTextEditor } from '@/modules/project-work-hub/components/story-detail/StoryRichTextEditor';
 import './create-story.css';
 
 // ── Helpers ──
@@ -365,7 +366,207 @@ function ParentPicker({ label, required, projectId, projectKey, value, onChange,
   );
 }
 
-// ── User Picker (Jira-parity — 28px avatars, search, checkmarks, DEEBFF highlight) ──
+// ── CreateParentPicker — Canonical from View Story modal (local state, no DB mutation) ──
+function CreateParentPicker({ projectKey, value, onChange }: {
+  projectKey: string;
+  value: string | null;
+  onChange: (parentId: string | null) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState('');
+  const [showDone, setShowDone] = useState(false);
+  const [hovered, setHovered] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // Resolve current parent display
+  const { data: currentParent } = useQuery({
+    queryKey: ['create-story-parent-resolve', value],
+    queryFn: async () => {
+      if (!value) return null;
+      const { data, error } = await supabase.from('ph_issues')
+        .select('id, issue_key, summary, issue_type, status, status_category')
+        .eq('id', value).is('deleted_at', null).single();
+      if (error) return null;
+      return data;
+    },
+    enabled: !!value,
+  });
+
+  // Search epics
+  const { data: searchResults = [] } = useQuery({
+    queryKey: ['create-story-parent-search-canon', projectKey, search, showDone],
+    queryFn: async () => {
+      if (!projectKey) return [];
+      let query = supabase.from('ph_issues')
+        .select('id, issue_key, summary, issue_type, status, status_category')
+        .eq('project_key', projectKey).eq('issue_type', 'Epic')
+        .is('deleted_at', null)
+        .order('jira_updated_at', { ascending: false }).limit(20);
+      if (!showDone) query = query.neq('status_category', 'done');
+      if (search.trim()) query = query.or(`issue_key.ilike.${search}%,summary.ilike.%${search}%`);
+      const { data, error } = await query;
+      if (error) return [];
+      return (data ?? []) as any[];
+    },
+    enabled: open && !!projectKey,
+  });
+
+  useEffect(() => {
+    if (!open) return;
+    const h = (e: MouseEvent) => { if (containerRef.current && !containerRef.current.contains(e.target as Node)) { setOpen(false); setSearch(''); } };
+    document.addEventListener('mousedown', h); return () => document.removeEventListener('mousedown', h);
+  }, [open]);
+
+  useEffect(() => { if (open) setTimeout(() => searchInputRef.current?.focus(), 50); }, [open]);
+
+  const handleSelect = (result: any) => { onChange(result.id); setOpen(false); setSearch(''); };
+  const handleClear = (e: React.MouseEvent) => { e.stopPropagation(); onChange(null); };
+
+  return (
+    <div ref={containerRef} style={{ position: 'relative', flex: 1 }}>
+      {/* Trigger — Jira click-to-edit style (no border when idle) */}
+      <div onClick={() => setOpen(o => !o)} style={{
+        display: 'flex', alignItems: 'center', gap: 8,
+        minHeight: 32, padding: '4px 8px',
+        border: 'none', borderRadius: 3, cursor: 'pointer', background: 'transparent',
+        transition: 'background 0.15s',
+      }}
+        onMouseEnter={e => { e.currentTarget.style.background = '#F4F5F7'; setHovered(true); }}
+        onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; setHovered(false); }}
+      >
+        {value && currentParent ? (
+          <>
+            <EpicIconInline />
+            <span style={{ flex: 1, fontSize: 14, color: '#172B4D', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {currentParent.issue_key} {currentParent.summary}
+            </span>
+            <button type="button" onClick={handleClear} style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              width: 20, height: 20, borderRadius: '50%', border: 'none',
+              background: '#DFE1E6', cursor: 'pointer', color: '#42526E', flexShrink: 0,
+              opacity: hovered ? 1 : 0, transition: 'opacity 0.15s',
+            }}
+              onMouseEnter={e => (e.currentTarget.style.background = '#C1C7D0')}
+              onMouseLeave={e => (e.currentTarget.style.background = '#DFE1E6')}
+            >
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6B778C" strokeWidth="2" style={{ flexShrink: 0, opacity: hovered ? 1 : 0, transition: 'opacity 0.15s' }}><path d="M6 9l6 6 6-6"/></svg>
+          </>
+        ) : (
+          <span style={{ flex: 1, fontSize: 14, color: '#6B778C' }}>None</span>
+        )}
+      </div>
+
+      {/* Dropdown — Jira parity */}
+      {open && (
+        <div style={{
+          ...ATLASSIAN_DROPDOWN, position: 'absolute', top: '100%', left: 0, marginTop: 4,
+          width: Math.max(containerRef.current?.offsetWidth ?? 420, 420),
+          maxHeight: 440, display: 'flex', flexDirection: 'column', overflow: 'hidden',
+        }}>
+          <div style={{ padding: '8px 8px 4px' }}>
+            <input ref={searchInputRef} value={search} onChange={e => setSearch(e.target.value)}
+              placeholder="Search epics..."
+              onKeyDown={e => { if (e.key === 'Escape') { setOpen(false); setSearch(''); } }}
+              style={{
+                width: '100%', height: 40, padding: '0 12px',
+                border: '2px solid #4C9AFF', borderRadius: 3,
+                fontSize: 14, fontFamily: 'inherit', outline: 'none', color: '#172B4D',
+              }} />
+          </div>
+          <div style={{ padding: '6px 12px', borderBottom: '1px solid #F4F5F7' }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: 14, color: '#172B4D' }}>
+              <input type="checkbox" checked={showDone} onChange={e => setShowDone(e.target.checked)}
+                style={{ width: 16, height: 16, accentColor: '#0052CC', cursor: 'pointer' }} />
+              Show done work items
+            </label>
+          </div>
+          <div style={{ flex: 1, overflowY: 'auto' }}>
+            {searchResults.map((result: any) => {
+              const isActive = result.id === value;
+              return (
+                <div key={result.id} onClick={() => handleSelect(result)}
+                  style={{
+                    padding: '10px 12px', cursor: 'pointer',
+                    borderBottom: '1px solid #F4F5F7',
+                    background: isActive ? '#DEEBFF' : 'transparent',
+                    transition: 'background 0.1s',
+                  }}
+                  onMouseEnter={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = '#F4F5F7'; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = isActive ? '#DEEBFF' : 'transparent'; }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2 }}>
+                    <EpicIconInline />
+                    <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, color: '#6B778C', fontSize: 12 }}>{result.issue_key}</span>
+                  </div>
+                  <div style={{ fontSize: 14, color: '#172B4D', paddingLeft: 22, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {result.summary}
+                  </div>
+                </div>
+              );
+            })}
+            {searchResults.length === 0 && search && (
+              <div style={{ padding: 16, fontSize: 13, color: '#6B778C', textAlign: 'center' }}>No epics found for "{search}"</div>
+            )}
+            {searchResults.length === 0 && !search && (
+              <div style={{ padding: 16, fontSize: 13, color: '#6B778C', textAlign: 'center' }}>No epics available</div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── CreatePriorityPicker — Canonical from View Story modal (local state, no DB mutation) ──
+function CreatePriorityPicker({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const h = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false); };
+    document.addEventListener('mousedown', h); return () => document.removeEventListener('mousedown', h);
+  }, [open]);
+
+  return (
+    <div ref={ref} style={{ flex: 1, position: 'relative' }}>
+      {/* Jira-style trigger — SVG icon + dark text, no pencil, no colored text */}
+      <div onClick={() => setOpen(o => !o)} style={{
+        display: 'inline-flex', alignItems: 'center', gap: 6, cursor: 'pointer',
+        padding: '4px 6px', borderRadius: 4, transition: 'background .12s',
+      }}
+        onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
+        onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+      >
+        <span style={{ display: 'flex', flexShrink: 0 }}>{PRIORITY_SVG[value] ?? PRIORITY_SVG.Medium}</span>
+        <span style={{ fontSize: 14, color: '#172B4D', fontWeight: 400 }}>{value}</span>
+      </div>
+      {open && (
+        <div style={{ ...ATLASSIAN_DROPDOWN, position: 'absolute', top: 'calc(100% + 4px)', left: 0, width: 200, overflow: 'hidden' }}>
+          {PRIORITIES.map(p => (
+            <div key={p} onClick={() => { onChange(p); setOpen(false); }}
+              style={{
+                height: 36, padding: '0 12px', display: 'flex', alignItems: 'center', gap: 8,
+                cursor: 'pointer', fontSize: 14, fontWeight: 400, color: '#172B4D',
+                background: p === value ? '#DEEBFF' : 'transparent',
+              }}
+              onMouseEnter={e => { if (p !== value) (e.currentTarget as HTMLElement).style.background = '#F4F5F7'; }}
+              onMouseLeave={e => { if (p !== value) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
+            >
+              <span style={{ display: 'flex', flexShrink: 0 }}>{PRIORITY_SVG[p]}</span>
+              <span style={{ flex: 1 }}>{p}</span>
+              {p === value && <CheckmarkSVG />}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function UserPicker({ label, required, value, members, onChange, showAssignToMe, onAssignToMe }: {
   label: string;
   required?: boolean;
@@ -529,6 +730,7 @@ export function CreateStoryModal({ open, onClose, projectId, projectKey, onSucce
   const [summaryError, setSummaryError] = useState('');
   const [workType, setWorkType] = useState('Story');
   const [isExpanded, setIsExpanded] = useState(false);
+  const [keyDetailsOpen, setKeyDetailsOpen] = useState(true);
   const summaryRef = useRef<HTMLInputElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
 
@@ -709,31 +911,53 @@ export function CreateStoryModal({ open, onClose, projectId, projectKey, onSucce
             )}
           </div>
 
-          {/* Parent */}
-          <ParentPicker
-            label="Parent"
-            projectId={form.projectId}
-            projectKey={resolvedKey}
-            value={form.parentId ?? null}
-            onChange={(parentId) => updateField('parentId', parentId)}
-            helpText="Your work type hierarchy determines the work items you can select here."
-          />
+          {/* ── KEY DETAILS — collapsible, matches View Story modal ── */}
+          <div style={{ marginBottom: 8 }}>
+            <div onClick={() => setKeyDetailsOpen(!keyDetailsOpen)} style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', userSelect: 'none', marginBottom: 14, padding: '2px 0' }}>
+              <span style={{ width: 16, height: 16, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: '#5E6C84', transition: 'transform 0.2s', transform: keyDetailsOpen ? 'rotate(0deg)' : 'rotate(-90deg)', flexShrink: 0 }}>
+                <ChevronDown size={14} />
+              </span>
+              <span style={{ fontSize: 13, fontWeight: 700, color: '#172B4D' }}>Key details</span>
+            </div>
+            {keyDetailsOpen && (
+              <div>
+                {/* Parent — canonical from View Story modal */}
+                <div style={{ display: 'flex', alignItems: 'flex-start', marginBottom: 12, minHeight: 28 }}>
+                  <span style={{ width: 100, flexShrink: 0, fontSize: 13, color: '#5E6C84', paddingTop: 4 }}>Parent</span>
+                  <div style={{ flex: 1, fontSize: 13, color: '#172B4D' }}>
+                    <CreateParentPicker
+                      projectKey={resolvedKey}
+                      value={form.parentId ?? null}
+                      onChange={(parentId) => updateField('parentId', parentId)}
+                    />
+                  </div>
+                </div>
 
-          {/* Priority */}
-          <SelectField
-            label="Priority"
-            value={form.priority}
-            options={priorityOptions}
-            onChange={v => updateField('priority', v)}
-          />
+                {/* Priority — canonical from View Story modal */}
+                <div style={{ display: 'flex', alignItems: 'flex-start', marginBottom: 12, minHeight: 28 }}>
+                  <span style={{ width: 100, flexShrink: 0, fontSize: 13, color: '#5E6C84', paddingTop: 4 }}>Priority</span>
+                  <div style={{ flex: 1 }}>
+                    <CreatePriorityPicker value={form.priority} onChange={v => updateField('priority', v)} />
+                  </div>
+                </div>
 
-          {/* Description */}
-          <div className="csField">
-            <label className="csLabel">Description</label>
-            <DescriptionEditor onChange={(html, json) => {
-              updateField('description', html);
-              updateField('descriptionAdf', json);
-            }} />
+                {/* Description — canonical StoryRichTextEditor from View Story modal */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, margin: '0 0 4px 0' }}>
+                  <h2 style={{ fontSize: 14, fontWeight: 500, color: 'rgb(80, 82, 88)', lineHeight: '18.67px', margin: 0, padding: 0, fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif' }}>Description</h2>
+                </div>
+                <StoryRichTextEditor
+                  content=""
+                  workItemId="create-new"
+                  onSave={(html) => {
+                    updateField('description', html);
+                  }}
+                  onCancel={() => {}}
+                  placeholder="Add a description..."
+                  minHeight={150}
+                  aiLabel="Improve description"
+                />
+              </div>
+            )}
           </div>
 
           {/* Fix versions — Jira-parity: multi-select with DEEBFF pills, Unreleased/Released sections */}
