@@ -1261,7 +1261,13 @@ export function CreateStoryModal({ open, onClose, projectId, projectKey, onSucce
                   <circle cx="8" cy="8" r="8" fill="#36B37E"/>
                   <path d="M5 8l2 2 4-4" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
-                {createdKey} created
+                <a
+                  href={`/browse/${createdKey}`}
+                  onClick={(e) => { e.preventDefault(); handleClose(); window.location.href = `/browse/${createdKey}`; }}
+                  style={{ color: '#0052CC', textDecoration: 'none', cursor: 'pointer' }}
+                  onMouseEnter={e => { e.currentTarget.style.textDecoration = 'underline'; }}
+                  onMouseLeave={e => { e.currentTarget.style.textDecoration = 'none'; }}
+                >{createdKey}</a> created
               </span>
             )}
           </div>
