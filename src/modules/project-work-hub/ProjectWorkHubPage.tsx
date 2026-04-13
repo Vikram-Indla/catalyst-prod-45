@@ -17,11 +17,6 @@ import { ArchivedTab } from './components/tabs/ArchivedTab';
 import { FilterDrawer } from './components/FilterDrawer';
 import { CreateWorkItemDropdown } from './components/CreateWorkItemDropdown';
 import { WorkItemDetailsDrawer } from './components/WorkItemDetailsDrawer';
-import { CreateFeatureDialog } from './components/dialogs/CreateFeatureDialog';
-import { CreateStoryModal } from '@/components/workhub/create-story';
-import { CreateSubtaskDialog } from './components/dialogs/CreateSubtaskDialog';
-import { LogDefectDialog } from './components/dialogs/LogDefectDialog';
-import { LogIncidentDialog } from './components/dialogs/LogIncidentDialog';
 import { WorkHubFilters, WorkItem, WorkItemType, WorkHubTab } from './types';
 
 export const ProjectWorkHubPage: React.FC = () => {
@@ -202,41 +197,6 @@ export const ProjectWorkHubPage: React.FC = () => {
         onClose={() => setSelectedItem(null)}
       />
 
-      {/* Create Dialogs */}
-      <CreateFeatureDialog
-        isOpen={createDialogOpen === 'FEATURE'}
-        onClose={() => setCreateDialogOpen(null)}
-        onSuccess={() => setCreateDialogOpen(null)}
-        projectId={projectId}
-      />
-
-      <CreateStoryModal
-        open={createDialogOpen === 'STORY'}
-        onClose={() => setCreateDialogOpen(null)}
-        onSuccess={() => setCreateDialogOpen(null)}
-        projectId={projectId}
-      />
-
-      <CreateSubtaskDialog
-        isOpen={createDialogOpen === 'SUBTASK'}
-        onClose={() => setCreateDialogOpen(null)}
-        onSubmit={handleCreateSubmit}
-        projectId={projectId}
-      />
-
-      <LogDefectDialog
-        isOpen={createDialogOpen === 'DEFECT'}
-        onClose={() => setCreateDialogOpen(null)}
-        onSubmit={handleCreateSubmit}
-        projectId={projectId}
-      />
-
-      <LogIncidentDialog
-        isOpen={createDialogOpen === 'INCIDENT'}
-        onClose={() => setCreateDialogOpen(null)}
-        onSubmit={handleCreateSubmit}
-        projectId={projectId}
-      />
     </div>
   );
 };

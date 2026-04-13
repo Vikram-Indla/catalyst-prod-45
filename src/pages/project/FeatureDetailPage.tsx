@@ -56,7 +56,7 @@ import { FeatureActivityTab } from './feature-detail/FeatureActivityTab';
 import { FeatureAuditTab } from './feature-detail/FeatureAuditTab';
 import { FeatureRightRail } from './feature-detail/FeatureRightRail';
 import { AssignModal } from '@/components/features/AssignModal';
-import { CreateStoryModal } from '@/components/workhub/create-story';
+
 import { Contributor } from '@/hooks/useFeatureAssignments';
 
 // Types
@@ -308,10 +308,6 @@ export default function FeatureDetailPage() {
 
           {/* Actions */}
           <div className="flex items-center gap-2 flex-shrink-0">
-            <Button variant="outline" size="sm" onClick={() => setIsCreateStoryOpen(true)}>
-              <Plus className="h-4 w-4 mr-1" />
-              Create Story
-            </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon">
@@ -498,12 +494,6 @@ export default function FeatureDetailPage() {
         projectId={feature.project_id}
       />
 
-      {/* Create Story Modal */}
-      <CreateStoryModal
-        open={isCreateStoryOpen}
-        onClose={() => setIsCreateStoryOpen(false)}
-        projectId={feature.project_id}
-      />
     </div>
   );
 }
