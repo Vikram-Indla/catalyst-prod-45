@@ -93,23 +93,25 @@
   box-shadow: 0 0 0 1px #4c9aff;
 }
 
+/* Toolbar + action buttons — 14px weight 400, Jira grey */
 .allwork-toolbar-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 3px 8px;
-  font-size: 12px;
+  padding: 4px 8px;
+  font-size: 14px;
+  font-weight: 400;
   line-height: 20px;
   color: #42526e;
-  background: #fff;
+  background: transparent;
   border-radius: 3px;
-  border: 1px solid #dfe1e6;
+  border: none;
   cursor: pointer;
   white-space: nowrap;
   gap: 4px;
 }
-.allwork-toolbar-button:hover { background-color: #f4f5f7; }
-.allwork-toolbar-button svg { width: 14px; height: 14px; }
+.allwork-toolbar-button:hover { background-color: #f4f5f7; color: #172b4d; }
+.allwork-toolbar-button svg { width: 16px; height: 16px; }
 
 /* Table wrapper (scrollable) */
 .allwork-table-wrapper {
@@ -171,23 +173,27 @@
 .allwork-col-assignee { width: 140px; }
 .allwork-col-updated { width: 120px; }
 
-/* Issue key */
+/* Issue key — 12px weight 400, blue link */
 .allwork-issue-key {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  font-weight: 500;
-  color: #0052cc;
   font-size: 12px;
+  font-weight: 400;
+  color: #0052cc;
+  cursor: pointer;
 }
-.allwork-issue-key:hover { text-decoration: underline; }
+.allwork-issue-key:hover { text-decoration: underline; color: #0747a6; }
 
-/* Summary */
+/* Summary — 14px weight 400 */
 .allwork-summary {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: 13px;
+  font-size: 14px;
+  font-weight: 400;
+  color: #172b4d;
+  line-height: 20px;
 }
 
 /* Status lozenge */
@@ -265,9 +271,9 @@
 }
 .allwork-right--hidden { display: none; }
 
-/* Right header */
+/* Right header — matches Jira issue detail header spacing */
 .allwork-right-header {
-  padding: 10px 12px 8px;
+  padding: 12px 16px 10px;
   border-bottom: 1px solid #dfe1e6;
   flex-shrink: 0;
 }
@@ -277,28 +283,40 @@
   gap: 6px;
   margin-bottom: 4px;
 }
+/* Right panel key — 12px weight 400, blue link */
 .allwork-right-key {
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 400;
   color: #0052cc;
+  cursor: pointer;
 }
+.allwork-right-key:hover { text-decoration: underline; color: #0747a6; }
 .allwork-right-actions {
   margin-left: auto;
   display: flex;
   gap: 4px;
   align-items: center;
 }
+/* Right panel title — 20px weight 600 matching Jira issue title */
 .allwork-right-summary {
-  font-size: 14px;
+  font-size: 20px;
   font-weight: 600;
   color: #172b4d;
-  line-height: 1.3;
+  line-height: 1.25;
   margin-bottom: 8px;
 }
+/* Action row (Status lozenge + Link + Move + more) */
 .allwork-right-action-row {
   display: flex;
-  gap: 6px;
+  gap: 8px;
   align-items: center;
+  margin-top: 4px;
+}
+.allwork-right-action-row .allwork-toolbar-button {
+  font-size: 14px;
+  font-weight: 400;
+  color: #42526e;
+  padding: 4px 8px;
 }
 
 /* Right body (scrollable) */
@@ -313,14 +331,16 @@
 .allwork-right-section {
   border-bottom: 1px solid #dfe1e6;
 }
+/* Section heads — 14px weight 600 (matches Jira "Details", "Development") */
 .allwork-right-section-head {
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 8px 12px;
+  padding: 10px 16px;
   cursor: pointer;
   font-size: 14px;
   font-weight: 600;
+  line-height: 20px;
   color: #172b4d;
 }
 .allwork-right-section-head:hover { background: #f4f5f7; }
@@ -332,43 +352,55 @@
   margin-left: 4px;
 }
 .allwork-right-section-body {
-  padding: 0 12px 10px;
+  padding: 0 16px 12px;
 }
 .allwork-right-section-body.collapsed { display: none; }
 
-/* Field rows */
+/* Field rows — 14px matching Jira detail panel */
 .allwork-field-row {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 5px 0;
-  min-height: 28px;
+  padding: 6px 0;
+  min-height: 32px;
 }
 .allwork-field-label {
   width: 100px;
   flex-shrink: 0;
-  font-size: 13px;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
   color: #6b778c;
 }
 .allwork-field-value {
   flex: 1;
   min-width: 0;
-  font-size: 13px;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
   color: #172b4d;
   display: flex;
   align-items: center;
   gap: 6px;
 }
-.allwork-field-none { color: #6b778c; }
-.allwork-field-link { color: #0052cc; cursor: pointer; font-size: 12px; }
-.allwork-field-link:hover { text-decoration: underline; }
+.allwork-field-none { color: #6b778c; font-size: 14px; }
+/* Links inside fields (Assign to me, parent key) — 12px blue */
+.allwork-field-link {
+  color: #0052cc;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 400;
+  text-decoration: none;
+}
+.allwork-field-link:hover { text-decoration: underline; color: #0747a6; }
 
-/* Timestamps */
+/* Timestamps — 12px weight 400, subtle grey, matches Jira footer */
 .allwork-timestamps {
-  padding: 10px 12px;
-  font-size: 11px;
+  padding: 12px 16px;
+  font-size: 12px;
+  font-weight: 400;
   color: #6b778c;
-  line-height: 1.5;
+  line-height: 1.6;
 }
 
 /* ── Responsive ── */
