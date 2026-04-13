@@ -42,7 +42,7 @@ const STATUSES = [
 /** Status dot colour by category: grey=to-do, blue=in-progress, green=done */
 function statusDotColor(status: string): string {
   const s = status.toLowerCase();
-  if (s === 'done') return '#36B37E';
+  if (['done', 'in beta'].includes(s)) return '#36B37E';
   if (['to do', 'in requirements'].includes(s)) return '#97A0AF';
   return '#2684FF';
 }
