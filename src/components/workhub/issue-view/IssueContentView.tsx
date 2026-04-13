@@ -12,6 +12,7 @@ import type { AllWorkItem } from '@/types/allwork.types';
 import { formatDistanceToNow, format } from 'date-fns';
 import { SubtasksPanel } from './sections/SubtasksPanel';
 import { LocalStorageBackedProvider } from '@/lib/subtasks-provider';
+import { CreateStoryModal } from '@/components/workhub/create-story';
 
 interface Props {
   issueKey: string | null;
@@ -98,6 +99,7 @@ export function IssueContentView({
   const [commentText, setCommentText] = useState('');
   const [posting, setPosting] = useState(false);
   const subtasksProvider = useMemo(() => new LocalStorageBackedProvider(), []);
+  const [createStoryOpen, setCreateStoryOpen] = useState(false);
 
   // Section collapse
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
@@ -159,7 +161,7 @@ export function IssueContentView({
 
           {/* Actions row: + and ⚙ buttons */}
           <div className="awActions">
-            <button className="awPill" style={{ padding: '0 6px' }}><Plus style={{ width: 14, height: 14 }} /></button>
+            <button className="awPill" style={{ padding: '0 6px' }} onClick={() => setCreateStoryOpen(true)}><Plus style={{ width: 14, height: 14 }} /></button>
             <button className="awPill" style={{ padding: '0 6px' }}><Settings style={{ width: 14, height: 14 }} /></button>
           </div>
         </div>
@@ -439,6 +441,13 @@ export function IssueContentView({
           </button>
         </div>
       </div>
+
+      {/* Create Story Modal */}
+      <CreateStoryModal
+        open={createStoryOpen}
+        onClose={() => setCreateStoryOpen(false)}
+        projectKey={item?.project_key ?? undefined}
+      />
     </div>
   );
 }
