@@ -113,6 +113,9 @@ export function AllProjectsCardGrid({ projects, favoriteIds, onToggleFav, onSele
               {p.lead_name ? (
                 <div className="flex items-center gap-1.5">
                   <Avatar className="w-5 h-5">
+                    {p.lead_avatar_url && (
+                      <AvatarImage src={p.lead_avatar_url} alt={p.lead_name} className="object-cover" />
+                    )}
                     <AvatarFallback className="text-[8px] font-bold text-white"
                       style={{ background: getBadgeColor(p.lead_id || '') }}>
                       {getInitials(p.lead_name)}
