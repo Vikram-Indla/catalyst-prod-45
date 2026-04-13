@@ -564,8 +564,7 @@ export function CreateStoryModal({ open, onClose, projectId, projectKey, onSucce
     if (open) setTimeout(() => summaryRef.current?.focus(), 100);
   }, [open]);
 
-  const currentProject = projects.find(p => p.id === form.projectId);
-  const resolvedKey = currentProject?.key ?? projectKey ?? '';
+  // currentProject and resolvedKey already defined above
 
   const handleSubmit = useCallback(async () => {
     if (!form.summary.trim()) {
