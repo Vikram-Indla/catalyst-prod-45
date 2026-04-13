@@ -13,7 +13,7 @@ import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 import { ParentEpicChip } from '../components/shared/ParentEpicChip';
 import { DeleteConfirmDialog } from '../components/dialogs/DeleteConfirmDialog';
-import { CreateStoryDialog } from '../components/dialogs/CreateStoryDialog';
+import { CreateStoryModal } from '@/components/workhub/create-story';
 import { EditStoryDialog } from '../components/dialogs/EditStoryDialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -961,7 +961,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
         </div>
       )}
 
-      <CreateStoryDialog isOpen={showCreate} onClose={() => setShowCreate(false)} projectId={projectId || ''} onSuccess={() => queryClient.invalidateQueries({ queryKey: ['backlog-stories', projectId] })} />
+      <CreateStoryModal open={showCreate} onClose={() => setShowCreate(false)} projectId={projectId || ''} onSuccess={() => queryClient.invalidateQueries({ queryKey: ['backlog-stories', projectId] })} />
       {editStoryId && <EditStoryDialog isOpen={!!editStoryId} onClose={() => setEditStoryId(null)} storyId={editStoryId} projectId={projectId || ''} onSuccess={() => queryClient.invalidateQueries({ queryKey: ['backlog-stories', projectId] })} />}
       <DeleteConfirmDialog isOpen={!!deleteTarget} onClose={() => setDeleteTarget(null)} onConfirm={() => deleteTarget && deleteMutation.mutate(deleteTarget.id)} itemType="Story" itemKey={deleteTarget?.story_key || null} itemName={deleteTarget?.title || ''} isPending={deleteMutation.isPending} />
       {!panelMode && detailItemId && (

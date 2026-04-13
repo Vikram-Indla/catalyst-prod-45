@@ -18,7 +18,7 @@ import { FilterDrawer } from './components/FilterDrawer';
 import { CreateWorkItemDropdown } from './components/CreateWorkItemDropdown';
 import { WorkItemDetailsDrawer } from './components/WorkItemDetailsDrawer';
 import { CreateFeatureDialog } from './components/dialogs/CreateFeatureDialog';
-import { CreateStoryDialog } from './components/dialogs/CreateStoryDialog';
+import { CreateStoryModal } from '@/components/workhub/create-story';
 import { CreateSubtaskDialog } from './components/dialogs/CreateSubtaskDialog';
 import { LogDefectDialog } from './components/dialogs/LogDefectDialog';
 import { LogIncidentDialog } from './components/dialogs/LogIncidentDialog';
@@ -210,8 +210,8 @@ export const ProjectWorkHubPage: React.FC = () => {
         projectId={projectId}
       />
 
-      <CreateStoryDialog
-        isOpen={createDialogOpen === 'STORY'}
+      <CreateStoryModal
+        open={createDialogOpen === 'STORY'}
         onClose={() => setCreateDialogOpen(null)}
         onSuccess={() => setCreateDialogOpen(null)}
         projectId={projectId}
