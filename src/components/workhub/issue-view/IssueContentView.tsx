@@ -161,7 +161,7 @@ export function IssueContentView({
 
           {/* Actions row: + and ⚙ buttons */}
           <div className="awActions">
-            <button className="awPill" style={{ padding: '0 6px' }}><Plus style={{ width: 14, height: 14 }} /></button>
+            <button className="awPill" style={{ padding: '0 6px' }} onClick={() => setCreateStoryOpen(true)}><Plus style={{ width: 14, height: 14 }} /></button>
             <button className="awPill" style={{ padding: '0 6px' }}><Settings style={{ width: 14, height: 14 }} /></button>
           </div>
         </div>
