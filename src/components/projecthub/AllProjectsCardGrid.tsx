@@ -4,7 +4,7 @@ import { formatDistanceToNowStrict, format } from 'date-fns';
 import type { ProjectListItem } from '@/types/projecthub';
 import { MemberStack } from './MemberStack';
 import { ProjectStatusBadge } from './ProjectStatusBadge';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 
@@ -113,6 +113,9 @@ export function AllProjectsCardGrid({ projects, favoriteIds, onToggleFav, onSele
               {p.lead_name ? (
                 <div className="flex items-center gap-1.5">
                   <Avatar className="w-5 h-5">
+                    {p.lead_avatar_url && (
+                      <AvatarImage src={p.lead_avatar_url} alt={p.lead_name} className="object-cover" />
+                    )}
                     <AvatarFallback className="text-[8px] font-bold text-white"
                       style={{ background: getBadgeColor(p.lead_id || '') }}>
                       {getInitials(p.lead_name)}
