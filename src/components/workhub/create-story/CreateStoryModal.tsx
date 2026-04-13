@@ -109,10 +109,10 @@ function ProjectKeyBadge({ projectKey }: { projectKey: string }) {
   return (
     <span style={{
       display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-      minWidth: 20, height: 18, borderRadius: 3, flexShrink: 0,
-      padding: '0 4px',
+      minWidth: 18, height: 16, borderRadius: 3, flexShrink: 0,
+      padding: '0 3px',
       background: '#2563EB', color: '#FFFFFF',
-      fontSize: 9, fontWeight: 700, fontFamily: "'Inter', sans-serif",
+      fontSize: 8, fontWeight: 700, fontFamily: "'Inter', sans-serif",
       letterSpacing: '0.02em',
     }}>
       {projectKey}
