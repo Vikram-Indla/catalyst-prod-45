@@ -187,3 +187,60 @@ export function useWorkItemChildren(parentId: string | undefined, enabled: boole
     staleTime: 30_000,
   });
 }
+
+/** Create a new work item (inline create) */
+export function useCreateWorkItem() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (input: {
+      projectId: string;
+      parentId?: string;
+      type: WorkItemType;
+      summary: string;
+      jiraKey: string;
+    }) => {
+      const { data, error } = await supabase
+        .from('ph_list_items')
+        .insert({
+          project_id: input.projectId,
+          parent_id: input.parentId ?? null,
+          type: input.type,
+          summary: input.summary,
+          jira_key: input.jiraKey,
+          status: 'backlog',
+          priority: 'medium',
+        })
+        .select()
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['project-list-items'] });
+      queryClient.invalidateQueries({ queryKey: ['project-all-work-items'] });
+    },
+  });
+}
+
+/** Update work item status */
+export function useUpdateWorkItemStatus() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, status, projectId }: {
+      id: string; status: string; projectId: string;
+    }) => {
+      const { data, error } = await supabase
+        .from('ph_list_items')
+        .update({ status })
+        .eq('id', id)
+        .select()
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['project-list-items'] });
+      queryClient.invalidateQueries({ queryKey: ['project-all-work-items'] });
+    },
+  });
+}
