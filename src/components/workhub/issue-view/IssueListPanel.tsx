@@ -1,17 +1,57 @@
 /**
- * IssueListPanel — Flat left panel with tight row density
- * Blue selected rail · status lozenge right · key + summary + assignee avatar
- * Matches Jira Cloud left panel: type icon, key, status, summary, assignee avatar
+ * IssueListPanel — Jira Cloud "All work" left panel
+ * Card-style rows: Summary prominent → icon + key on left, avatar on right
+ * Sort dropdown header, face avatars, no status lozenges in cards
  */
-import { useState, useCallback, useRef } from 'react';
-import { ChevronDown } from 'lucide-react';
+import { useState, useCallback, useRef, useEffect, useMemo } from 'react';
+import { ChevronDown, ListFilter, RotateCcw, Search } from 'lucide-react';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
-import { StatusLozenge } from '@/components/ui/StatusLozenge';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import type { AllWorkItem } from '@/types/allwork.types';
 
-const AVATAR_COLORS = ['#4C6EF5', '#FA8C16', '#52C41A', '#EB2F96', '#722ED1', '#13C2C2', '#F5222D', '#2F54EB'];
+/* ── Avatar helpers ── */
+const AVATAR_COLORS = ['#6554C0', '#2684FF', '#36B37E', '#FF5630', '#FFAB00', '#00B8D9', '#EB2F96', '#722ED1'];
 function avatarBg(name: string) { return AVATAR_COLORS[name.split('').reduce((a, c) => a + c.charCodeAt(0), 0) % AVATAR_COLORS.length]; }
-function initials(name: string) { return name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase(); }
+function initials(name: string) { return name.split(' ').filter(Boolean).map(n => n[0]).join('').slice(0, 2).toUpperCase(); }
+
+/* ── Sort options (Jira parity) ── */
+type SortKey = 'updated' | 'created' | 'key' | 'priority' | 'status';
+const SORT_OPTIONS: { key: SortKey; label: string }[] = [
+  { key: 'updated', label: 'Last viewed' },
+  { key: 'created', label: 'Created' },
+  { key: 'key', label: 'Key' },
+  { key: 'priority', label: 'Priority' },
+  { key: 'status', label: 'Status' },
+];
+
+/* ── Avatar resolution hook ── */
+function useAvatarMap(items: AllWorkItem[]) {
+  // Collect unique assignee names that need avatar resolution
+  const assigneeNames = useMemo(() => {
+    const names = new Set<string>();
+    items.forEach(i => { if (i.assignee_display_name) names.add(i.assignee_display_name); });
+    return Array.from(names);
+  }, [items]);
+
+  const { data: profileMap } = useQuery({
+    queryKey: ['avatar-map-profiles', assigneeNames.join(',')],
+    queryFn: async () => {
+      if (assigneeNames.length === 0) return {};
+      const { data } = await supabase
+        .from('profiles')
+        .select('full_name, avatar_url')
+        .in('full_name', assigneeNames);
+      const map: Record<string, string> = {};
+      (data ?? []).forEach((p: any) => { if (p.avatar_url) map[p.full_name] = p.avatar_url; });
+      return map;
+    },
+    enabled: assigneeNames.length > 0,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  return profileMap ?? {};
+}
 
 interface Props {
   projectKey: string;
@@ -27,7 +67,11 @@ export function IssueListPanel({
   items = [], loading = false,
 }: Props) {
   const [searchQuery, setSearchQuery] = useState('');
+  const [sortKey, setSortKey] = useState<SortKey>('updated');
+  const [sortMenuOpen, setSortMenuOpen] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout>>();
+  const sortRef = useRef<HTMLDivElement>(null);
+  const avatarMap = useAvatarMap(items);
 
   const handleSearchChange = useCallback((value: string) => {
     setSearchQuery(value);
@@ -35,6 +79,17 @@ export function IssueListPanel({
     debounceRef.current = setTimeout(() => onSearch(value), 300);
   }, [onSearch]);
 
+  // Close sort menu on outside click
+  useEffect(() => {
+    if (!sortMenuOpen) return;
+    const handleClick = (e: MouseEvent) => {
+      if (sortRef.current && !sortRef.current.contains(e.target as Node)) setSortMenuOpen(false);
+    };
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [sortMenuOpen]);
+
+  // Keyboard navigation
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (!items.length) return;
     const idx = items.findIndex(i => i.issue_key === selectedIssueKey);
@@ -42,97 +97,113 @@ export function IssueListPanel({
     if (e.key === 'ArrowUp') { e.preventDefault(); if (idx > 0) onSelectIssue(items[idx - 1].issue_key); }
   }, [items, selectedIssueKey, onSelectIssue]);
 
+  const sortLabel = SORT_OPTIONS.find(o => o.key === sortKey)?.label ?? 'Last viewed';
+
   return (
     <>
-      {/* ── Sticky header ── */}
-      <div className="awHeader">
-        <div className="awLeftTop">
-          <div className="awLeftTitle">
-            <strong>{projectKey}</strong>
-            <span>All work</span>
-          </div>
-          <button className="awChip" style={{ height: 24 }}>
-            <ChevronDown style={{ width: 12, height: 12 }} />
+      {/* ── Header toolbar ── */}
+      <div className="jlpHeader">
+        <div className="jlpSortRow" ref={sortRef}>
+          <button
+            className={`jlpSortBtn ${sortMenuOpen ? 'active' : ''}`}
+            onClick={() => setSortMenuOpen(o => !o)}
+          >
+            {sortLabel} <ChevronDown size={14} />
           </button>
-        </div>
+          <button className="jlpToolBtn" title="Filter"><ListFilter size={16} /></button>
+          <button className="jlpToolBtn" title="Refresh"><RotateCcw size={16} /></button>
 
-        <div className="awSearchWrap">
-          <input
-            className="awSearch"
-            placeholder="Search issues (key, summary, text)..."
-            value={searchQuery}
-            onChange={(e) => handleSearchChange(e.target.value)}
-          />
-        </div>
-
-        <div className="awFilters">
-          {['Type', 'Status', 'Assignee', 'Priority'].map(f => (
-            <button key={f} className="awChip" type="button">
-              {f} <ChevronDown style={{ width: 10, height: 10 }} />
-            </button>
-          ))}
+          {sortMenuOpen && (
+            <div className="jlpSortMenu">
+              <div className="jlpSortMenuTitle">Order work items by</div>
+              {SORT_OPTIONS.map(opt => (
+                <label key={opt.key} className="jlpSortOption">
+                  <input
+                    type="radio"
+                    name="sort"
+                    checked={sortKey === opt.key}
+                    onChange={() => { setSortKey(opt.key); setSortMenuOpen(false); }}
+                  />
+                  {opt.label}
+                </label>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
-      {/* ── Scrollable list ── */}
-      <div className="awBody" onKeyDown={handleKeyDown} tabIndex={0}>
+      {/* ── Scrollable card list ── */}
+      <div className="jlpBody" onKeyDown={handleKeyDown} tabIndex={0}>
         {loading && !items.length ? (
-          <div className="awList">
-            {Array.from({ length: 8 }).map((_, i) => (
-              <div key={i} className="awRow" style={{ opacity: 0.4 }}>
-                <div style={{ width: 18, height: 18, borderRadius: 4, background: '#E2E8F0' }} />
-                <div className="awRowMain">
-                  <div style={{ width: 60, height: 12, borderRadius: 3, background: '#E2E8F0', marginBottom: 6 }} />
-                  <div style={{ width: '80%', height: 12, borderRadius: 3, background: '#E2E8F0' }} />
+          <div className="jlpCards">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="jlpCard jlpCardSkeleton">
+                <div className="jlpSkLine" style={{ width: '85%', height: 14 }} />
+                <div className="jlpSkLine" style={{ width: '60%', height: 14, marginTop: 6 }} />
+                <div className="jlpSkRow">
+                  <div className="jlpSkLine" style={{ width: 60, height: 12 }} />
+                  <div className="jlpSkCircle" />
                 </div>
               </div>
             ))}
           </div>
         ) : items.length === 0 ? (
-          <div className="awEmpty" style={{ padding: '40px 16px' }}>
+          <div className="jlpEmpty">
             No issues found
             {searchQuery && (
-              <button onClick={() => handleSearchChange('')} className="awLinkCta" style={{ marginTop: 8 }}>
+              <button onClick={() => handleSearchChange('')} className="jlpResetLink">
                 Reset search
               </button>
             )}
           </div>
         ) : (
-          <div className="awList" role="listbox" aria-label="Issues">
+          <div className="jlpCards" role="listbox" aria-label="Issues">
             {items.map((item) => {
               const isSelected = item.issue_key === selectedIssueKey;
+              const avatarUrl = item.assignee_avatar || (item.assignee_display_name ? avatarMap[item.assignee_display_name] : null);
+
               return (
                 <div
                   key={item.issue_key}
                   role="option"
                   aria-selected={isSelected}
-                  className={`awRow ${isSelected ? 'awRowSelected' : ''}`}
+                  className={`jlpCard ${isSelected ? 'jlpCardSelected' : ''}`}
                   onClick={() => onSelectIssue(item.issue_key)}
                 >
-                  <JiraIssueTypeIcon type={item.issue_type} size={16} />
-                  <div className="awRowMain">
-                    <div className="awRowTop">
-                      <span className="awKey">{item.issue_key}</span>
-                      <StatusLozenge status={item.status} />
+                  {/* Summary — prominent, top of card */}
+                  <div className={`jlpCardSummary ${isSelected ? 'jlpCardSummaryActive' : ''}`}>
+                    {item.summary}
+                  </div>
+
+                  {/* Bottom row: icon + key  ···  avatar */}
+                  <div className="jlpCardFooter">
+                    <div className="jlpCardMeta">
+                      <JiraIssueTypeIcon type={item.issue_type} size={16} />
+                      <span className="jlpCardKey">{item.issue_key}</span>
                     </div>
-                    <div className="awSummary">{item.summary}</div>
-                    {item.assignee_display_name && (
-                      <div className="awRowAssignee">
-                        {item.assignee_avatar ? (
-                          <img
-                            src={item.assignee_avatar}
-                            alt=""
-                            className="awRowAvatarImg"
-                          />
-                        ) : (
-                          <div
-                            className="awRowAvatarCircle"
-                            style={{ background: avatarBg(item.assignee_display_name) }}
-                          >
-                            {initials(item.assignee_display_name)}
-                          </div>
-                        )}
-                        <span className="awMeta">{item.assignee_display_name}</span>
+                    {item.assignee_display_name ? (
+                      avatarUrl ? (
+                        <img
+                          src={avatarUrl}
+                          alt={item.assignee_display_name}
+                          title={item.assignee_display_name}
+                          className="jlpCardAvatar"
+                        />
+                      ) : (
+                        <div
+                          className="jlpCardAvatarFallback"
+                          style={{ background: avatarBg(item.assignee_display_name) }}
+                          title={item.assignee_display_name}
+                        >
+                          {initials(item.assignee_display_name)}
+                        </div>
+                      )
+                    ) : (
+                      <div className="jlpCardAvatarEmpty" title="Unassigned">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#B3BAC5" strokeWidth="1.5">
+                          <circle cx="12" cy="8" r="4" />
+                          <path d="M20 21a8 8 0 10-16 0" />
+                        </svg>
                       </div>
                     )}
                   </div>
@@ -142,10 +213,12 @@ export function IssueListPanel({
           </div>
         )}
 
-        {/* Footer count */}
-        <div style={{ padding: '8px 14px', fontSize: 12, color: 'var(--aw-text-subtle)', textAlign: 'center' }}>
-          {items.length} issue{items.length !== 1 ? 's' : ''}
-        </div>
+        {/* Footer count — Jira parity */}
+        {items.length > 0 && (
+          <div className="jlpFooterCount">
+            {items.length} of <strong>{items.length >= 1000 ? '1000+' : items.length}</strong>
+          </div>
+        )}
       </div>
     </>
   );
