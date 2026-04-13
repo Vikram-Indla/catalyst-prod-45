@@ -125,9 +125,8 @@ export function useProjectListItems(projectKey: string | undefined) {
         .from('ph_work_items')
         .select(SELECT_FIELDS)
         .eq('project_id', projectId)
-        .eq('item_type', 'epic')
         .is('deleted_at', null)
-        .order('created_at', { ascending: false })
+        .order('updated_at', { ascending: false })
         .limit(2000);
       if (error) throw error;
 
@@ -155,8 +154,7 @@ export function useProjectAllWorkItems(projectKey: string | undefined) {
         .select(SELECT_FIELDS)
         .eq('project_id', projectId)
         .is('deleted_at', null)
-        .order('item_type', { ascending: true })
-        .order('created_at', { ascending: false })
+        .order('updated_at', { ascending: false })
         .limit(5000);
       if (error) throw error;
 
