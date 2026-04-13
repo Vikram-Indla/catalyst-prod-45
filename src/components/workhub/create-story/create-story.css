@@ -164,8 +164,8 @@
 .csHelpText {
   font: 400 12px/16px system-ui, -apple-system, sans-serif;
   color: #6B778C;
-  margin-top: -8px;
-  margin-bottom: 16px;
+  margin-top: 4px;
+  margin-bottom: 8px;
 }
 
 /* Learn link */
