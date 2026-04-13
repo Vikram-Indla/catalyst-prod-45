@@ -36,7 +36,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 20px 24px 16px;
+  padding: 20px 24px 12px;
   flex-shrink: 0;
 }
 .csModalTitle {
@@ -61,6 +61,14 @@
   color: #6B778C;
 }
 .csHeaderBtn:hover { background: #F4F5F7; color: #172B4D; }
+
+/* Required fields note */
+.csRequiredNote {
+  font: 400 13px/18px system-ui, -apple-system, sans-serif;
+  color: #6B778C;
+  padding: 0 24px 12px;
+  flex-shrink: 0;
+}
 
 /* Body (scrollable) */
 .csModalBody {
@@ -142,18 +150,43 @@
   margin-bottom: 16px;
 }
 
+/* Learn link */
+.csLearnLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font: 400 12px/16px system-ui, -apple-system, sans-serif;
+  color: #0C66E4;
+  text-decoration: none;
+  margin-top: 4px;
+  margin-bottom: 8px;
+}
+.csLearnLink:hover { text-decoration: underline; }
+
+/* Divider */
+.csDivider {
+  height: 1px;
+  background: rgba(9,30,66,0.13);
+  margin: 20px 0;
+}
+
 /* Input */
 .csInput {
   width: 100%;
   height: 36px;
-  border: none;
-  border-bottom: 2px solid #DFE1E6;
-  padding: 0 0 4px;
+  padding: 0 8px;
   font: 400 14px/20px system-ui, -apple-system, sans-serif;
   color: #172B4D;
   outline: none;
   background: transparent;
   transition: border-color 120ms;
+  border: none;
+  border-bottom: 2px solid #DFE1E6;
+}
+.csInput.csInputBordered {
+  border: 2px solid #DFE1E6;
+  border-radius: 4px;
+  padding: 0 8px;
 }
 .csInput:focus { border-color: #0C66E4; }
 .csInput.error { border-color: #DE350B; }
@@ -164,6 +197,12 @@
   color: #DE350B;
   font: 400 12px/16px system-ui;
   margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.csErrorIcon {
+  font-size: 10px;
 }
 
 /* Select */
@@ -255,6 +294,37 @@
 }
 .csDropdownSearch input:focus { border-color: #0C66E4; }
 
+/* Parent dropdown extras */
+.csParentDropdown {
+  max-height: 320px;
+}
+.csParentBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 18px;
+  padding: 0 6px;
+  border-radius: 3px;
+  background: #DFE1E6;
+  font: 700 10px/18px system-ui;
+  color: #42526E;
+  white-space: nowrap;
+}
+.csShowDoneLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  font: 400 13px/18px system-ui;
+  color: #42526E;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(9,30,66,0.08);
+}
+.csShowDoneLabel input[type="checkbox"] {
+  width: 14px;
+  height: 14px;
+}
+
 /* Avatars — face-photo priority */
 .csAvatarImg {
   width: 28px;
@@ -284,7 +354,21 @@
   flex-shrink: 0;
 }
 
-/* Parent type initial */
+/* Project icon */
+.csProjectIcon {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  background: #0C66E4;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font: 700 12px/1 system-ui;
+  flex-shrink: 0;
+}
+
+/* Parent type initial (legacy) */
 .csParentType {
   width: 18px;
   height: 18px;
@@ -367,6 +451,7 @@
 /* ── Dark mode ── */
 .dark .csModal { background: #1A1A1A; }
 .dark .csModalTitle { color: #EDEDED; }
+.dark .csRequiredNote { color: #878787; }
 .dark .csHeaderBtn { color: #A1A1A1; }
 .dark .csHeaderBtn:hover { background: #292929; color: #EDEDED; }
 .dark .csModalFooter { border-color: #2E2E2E; }
@@ -388,3 +473,8 @@
 .dark .csCancel { color: #A1A1A1; }
 .dark .csCancel:hover { background: #292929; }
 .dark .csHelpText { color: #878787; }
+.dark .csDivider { background: #2E2E2E; }
+.dark .csLearnLink { color: #4C9AFF; }
+.dark .csProjectIcon { background: #0C66E4; }
+.dark .csParentBadge { background: #454545; color: #A1A1A1; }
+.dark .csShowDoneLabel { color: #A1A1A1; border-color: #2E2E2E; }
