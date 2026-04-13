@@ -13,7 +13,7 @@ import {
 } from 'lucide-react';
 import {
   useCreateStoryForm, useProjects, useTeamMembers,
-  useProjectReleases, useParentCandidates, useCreateStoryMutation,
+  useProjectReleases, useCreateStoryMutation,
 } from './useCreateStory';
 import { useAuth } from '@/hooks/useAuth';
 import { useEditor, EditorContent } from '@tiptap/react';
@@ -453,7 +453,7 @@ export function CreateStoryModal({ open, onClose, projectId, projectKey, onSucce
   const { data: projects = [] } = useProjects();
   const { data: members = [] } = useTeamMembers();
   const { data: releases = [] } = useProjectReleases(form.projectId);
-  const { data: parentCandidates = [] } = useParentCandidates(form.projectId);
+  
   const createMutation = useCreateStoryMutation();
   const [createAnother, setCreateAnother] = useState(false);
   const [summaryError, setSummaryError] = useState('');
@@ -537,19 +537,6 @@ export function CreateStoryModal({ open, onClose, projectId, projectKey, onSucce
     icon: <JiraIssueTypeIcon type={t} size={16} />,
   }));
 
-  const parentOptions = parentCandidates.map((p: any) => ({
-    value: p.id,
-    label: `${p.issue_key}  ${p.title}`,
-    icon: (
-      <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-        <span className="csParentBadge">{resolvedKey}</span>
-        <JiraIssueTypeIcon type={p.issue_type} size={16} />
-      </span>
-    ),
-    issueKey: p.issue_key,
-    title: p.title,
-    projectKey: resolvedKey,
-  }));
 
   const releaseOptions = releases.map((r: any) => ({ value: r.id, label: r.name }));
 
