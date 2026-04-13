@@ -341,7 +341,7 @@ export function CreateStoryModal({ open, onClose, projectId, projectKey, onSucce
   const [createAnother, setCreateAnother] = useState(false);
   const [summaryError, setSummaryError] = useState('');
   const [workType, setWorkType] = useState('Story');
-  const [mdtRef, setMdtRef] = useState('');
+  const [isExpanded, setIsExpanded] = useState(false);
   const summaryRef = useRef<HTMLInputElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
 
@@ -395,7 +395,6 @@ export function CreateStoryModal({ open, onClose, projectId, projectKey, onSucce
       if (createAnother) {
         reset(true);
         setSummaryError('');
-        setMdtRef('');
         setTimeout(() => summaryRef.current?.focus(), 100);
       } else {
         onClose();
@@ -451,13 +450,13 @@ export function CreateStoryModal({ open, onClose, projectId, projectKey, onSucce
 
   return (
     <div className="csOverlay" onClick={onClose}>
-      <div className="csModal" ref={modalRef} onClick={e => e.stopPropagation()}>
+      <div className={`csModal ${isExpanded ? 'csModal--expanded' : ''}`} ref={modalRef} onClick={e => e.stopPropagation()}>
         {/* ── Header ── */}
         <div className="csModalHeader">
           <h2 className="csModalTitle">Create Story</h2>
           <div className="csModalHeaderActions">
             <button type="button" className="csHeaderBtn" title="Minimize"><Minus size={16} /></button>
-            <button type="button" className="csHeaderBtn" title="Full screen"><Maximize2 size={16} /></button>
+            <button type="button" className="csHeaderBtn" title="Full screen" onClick={() => setIsExpanded(e => !e)}><Maximize2 size={16} /></button>
             <button type="button" className="csHeaderBtn" title="More actions"><MoreHorizontal size={16} /></button>
             <button type="button" className="csHeaderBtn" onClick={onClose} title="Close"><X size={18} /></button>
           </div>
@@ -468,14 +467,14 @@ export function CreateStoryModal({ open, onClose, projectId, projectKey, onSucce
 
         {/* ── Body (scrollable) ── */}
         <div className="csModalBody">
-          {/* Space (Project) */}
+          {/* Project */}
           <SelectField
-            label="Space"
+            label="Project"
             required
             value={form.projectId}
             options={projectOptions}
             onChange={v => updateField('projectId', v)}
-            placeholder="Select space"
+            placeholder="Select project"
           />
 
           {/* Work type */}
@@ -485,8 +484,6 @@ export function CreateStoryModal({ open, onClose, projectId, projectKey, onSucce
             value={workType}
             options={workTypeOptions}
             onChange={setWorkType}
-            helpLink="#"
-            helpLinkText="Learn about work types"
           />
 
           {/* Divider */}
@@ -529,24 +526,12 @@ export function CreateStoryModal({ open, onClose, projectId, projectKey, onSucce
             helpText="Your work type hierarchy determines the work items you can select here."
           />
 
-          {/* MDT Ref */}
-          <div className="csField">
-            <label className="csLabel">MDT Ref</label>
-            <input
-              className="csInput csInputBordered"
-              value={mdtRef}
-              onChange={e => setMdtRef(e.target.value)}
-            />
-          </div>
-
           {/* Priority */}
           <SelectField
             label="Priority"
             value={form.priority}
             options={priorityOptions}
             onChange={v => updateField('priority', v)}
-            helpLink="#"
-            helpLinkText="Learn about priority levels"
           />
 
           {/* Description */}
