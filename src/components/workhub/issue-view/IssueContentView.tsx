@@ -3,13 +3,15 @@
  * Left side: breadcrumb, title, actions, key details, description, subtasks, linked work, activity
  * Right side: collapsible Details sidebar (Assignee, Priority, Reporter, Labels, Fix versions, MDT Ref)
  */
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef } from 'react';
 import { ChevronDown, ChevronRight, ChevronLeft, Link2, ArrowRightLeft, MoreHorizontal, Pencil, Plus, Settings, MessageSquare, History as HistoryIcon, Clock, FileText, Send, Minus, Eye, Share2 } from 'lucide-react';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { StatusLozenge } from '@/components/ui/StatusLozenge';
 import { useAuth } from '@/hooks/useAuth';
 import type { AllWorkItem } from '@/types/allwork.types';
 import { formatDistanceToNow, format } from 'date-fns';
+import { SubtasksPanel } from './sections/SubtasksPanel';
+import { LocalStorageBackedProvider } from '@/lib/subtasks-provider';
 
 interface Props {
   issueKey: string | null;
