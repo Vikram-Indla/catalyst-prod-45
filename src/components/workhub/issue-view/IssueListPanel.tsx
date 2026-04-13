@@ -1,12 +1,17 @@
 /**
  * IssueListPanel — Flat left panel with tight row density
- * Blue selected rail · status lozenge right · key + summary + assignee
+ * Blue selected rail · status lozenge right · key + summary + assignee avatar
+ * Matches Jira Cloud left panel: type icon, key, status, summary, assignee avatar
  */
 import { useState, useCallback, useRef } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { StatusLozenge } from '@/components/ui/StatusLozenge';
 import type { AllWorkItem } from '@/types/allwork.types';
+
+const AVATAR_COLORS = ['#4C6EF5', '#FA8C16', '#52C41A', '#EB2F96', '#722ED1', '#13C2C2', '#F5222D', '#2F54EB'];
+function avatarBg(name: string) { return AVATAR_COLORS[name.split('').reduce((a, c) => a + c.charCodeAt(0), 0) % AVATAR_COLORS.length]; }
+function initials(name: string) { return name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase(); }
 
 interface Props {
   projectKey: string;
@@ -112,7 +117,23 @@ export function IssueListPanel({
                     </div>
                     <div className="awSummary">{item.summary}</div>
                     {item.assignee_display_name && (
-                      <div className="awMeta">{item.assignee_display_name}</div>
+                      <div className="awRowAssignee">
+                        {item.assignee_avatar ? (
+                          <img
+                            src={item.assignee_avatar}
+                            alt=""
+                            className="awRowAvatarImg"
+                          />
+                        ) : (
+                          <div
+                            className="awRowAvatarCircle"
+                            style={{ background: avatarBg(item.assignee_display_name) }}
+                          >
+                            {initials(item.assignee_display_name)}
+                          </div>
+                        )}
+                        <span className="awMeta">{item.assignee_display_name}</span>
+                      </div>
                     )}
                   </div>
                 </div>
