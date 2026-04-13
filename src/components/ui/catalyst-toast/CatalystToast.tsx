@@ -15,6 +15,7 @@ export interface CatalystToastProps {
   title: string;
   message?: string;
   action?: CatalystToastAction;
+  actions?: CatalystToastAction[];
   onClose: (id: string) => void;
   duration?: number;
   undoCountdown?: number;
@@ -65,6 +66,7 @@ export const CatalystToast: React.FC<CatalystToastProps> = ({
   title,
   message,
   action,
+  actions,
   onClose,
   duration = 5000,
   undoCountdown,
@@ -144,23 +146,28 @@ export const CatalystToast: React.FC<CatalystToastProps> = ({
         )}
       </div>
 
-      {/* Action Button */}
-      {action && (
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            action.onClick();
-            handleClose();
-          }}
-          className={cn(
-            'flex-shrink-0 text-xs font-medium text-white/90 px-2 py-1',
-            'bg-white/20 rounded hover:bg-white/30',
-            'transition-colors duration-150',
-            'focus:outline-none focus:ring-2 focus:ring-white/50'
-          )}
-        >
-          {action.label}
-        </button>
+      {/* Action Buttons */}
+      {(actions ?? (action ? [action] : [])).length > 0 && (
+        <div className="flex-shrink-0 flex items-center gap-1">
+          {(actions ?? (action ? [action] : [])).map((act, i) => (
+            <button
+              key={i}
+              onClick={(e) => {
+                e.stopPropagation();
+                act.onClick();
+                handleClose();
+              }}
+              className={cn(
+                'text-xs font-medium text-white/90 px-2 py-1',
+                'bg-white/20 rounded hover:bg-white/30',
+                'transition-colors duration-150',
+                'focus:outline-none focus:ring-2 focus:ring-white/50'
+              )}
+            >
+              {act.label}
+            </button>
+          ))}
+        </div>
       )}
 
       {/* Countdown for undo */}

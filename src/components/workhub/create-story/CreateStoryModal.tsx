@@ -5,8 +5,10 @@
  */
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { createPortal } from 'react-dom';
+import { catalystToast } from '@/lib/catalystToast';
 import {
   X, Maximize2, Minus, MoreHorizontal, ChevronDown, ChevronRight,
   Bold, Italic, List, ListOrdered, Code2, Link2, Undo, Redo, ExternalLink, Check,
@@ -906,6 +908,7 @@ interface CreateStoryModalProps {
 
 export function CreateStoryModal({ open, onClose, projectId, projectKey, onSuccess }: CreateStoryModalProps) {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const { form, updateField, reset } = useCreateStoryForm(projectId);
   const { data: projects = [] } = useProjects();
   const { data: members = [] } = useTeamMembers();
@@ -916,6 +919,7 @@ export function CreateStoryModal({ open, onClose, projectId, projectKey, onSucce
   const [createAnother, setCreateAnother] = useState(false);
   const [summaryError, setSummaryError] = useState('');
   const [createdKey, setCreatedKey] = useState<string | null>(null);
+  const createdKeysRef = useRef<string[]>([]);
   const [workType, setWorkType] = useState('Story');
   const [isExpanded, setIsExpanded] = useState(false);
   const [keyDetailsOpen, setKeyDetailsOpen] = useState(true);
@@ -939,15 +943,26 @@ export function CreateStoryModal({ open, onClose, projectId, projectKey, onSucce
     }
   }, [projectId, projectKey, projects, form.projectId]);
 
+  // Wrap onClose to flush any batch-created items as a toast
+  const handleClose = useCallback(() => {
+    if (createdKeysRef.current.length > 0) {
+      const keys = [...createdKeysRef.current];
+      createdKeysRef.current = [];
+      showCreateToast(keys);
+    }
+    setCreatedKey(null);
+    onClose();
+  }, [onClose, showCreateToast]);
+
   // Focus trap
   useEffect(() => {
     if (!open) return;
     const handleKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape') handleClose();
     };
     document.addEventListener('keydown', handleKey);
     return () => document.removeEventListener('keydown', handleKey);
-  }, [open, onClose]);
+  }, [open, handleClose]);
 
   // Focus summary on open
   useEffect(() => {
@@ -955,6 +970,36 @@ export function CreateStoryModal({ open, onClose, projectId, projectKey, onSucce
   }, [open]);
 
   // currentProject and resolvedKey already defined above
+
+  const showCreateToast = useCallback((keys: string[]) => {
+    if (keys.length === 0) return;
+    const copyLink = () => {
+      const urls = keys.map(k => `${window.location.origin}/browse/${k}`).join('\n');
+      navigator.clipboard.writeText(urls);
+    };
+    if (keys.length === 1) {
+      const key = keys[0];
+      catalystToast.show({
+        type: 'success',
+        title: `${key} created`,
+        actions: [
+          { label: 'View details', onClick: () => navigate(`/browse/${key}`) },
+          { label: 'Copy link', onClick: copyLink },
+        ],
+        duration: 6000,
+      });
+    } else {
+      catalystToast.show({
+        type: 'success',
+        title: `You've created ${keys.length} work items`,
+        actions: [
+          { label: 'View work items', onClick: () => navigate(`/browse/${keys[keys.length - 1]}`) },
+          { label: 'Copy link', onClick: copyLink },
+        ],
+        duration: 6000,
+      });
+    }
+  }, [navigate]);
 
   const handleSubmit = useCallback(async () => {
     if (!form.summary.trim()) {
@@ -970,18 +1015,23 @@ export function CreateStoryModal({ open, onClose, projectId, projectKey, onSucce
       onSuccess?.(result.issue_key);
 
       if (createAnother) {
+        createdKeysRef.current.push(result.issue_key);
         setCreatedKey(result.issue_key);
         reset(true);
         setSummaryError('');
         setTimeout(() => summaryRef.current?.focus(), 100);
       } else {
+        // Single create or final close — show toast
+        const allKeys = [...createdKeysRef.current, result.issue_key];
+        createdKeysRef.current = [];
         onClose();
         reset();
+        showCreateToast(allKeys);
       }
     } catch (err: any) {
       setSummaryError(err?.message ?? 'Failed to create');
     }
-  }, [form, resolvedKey, createMutation, createAnother, onSuccess, onClose, reset, workType]);
+  }, [form, resolvedKey, createMutation, createAnother, onSuccess, onClose, reset, workType, showCreateToast]);
 
   if (!open) return null;
 
@@ -1014,14 +1064,14 @@ export function CreateStoryModal({ open, onClose, projectId, projectKey, onSucce
   }));
 
   return createPortal(
-    <div className="csOverlay" onClick={onClose}>
+    <div className="csOverlay" onClick={handleClose}>
       <div className={`csModal ${isExpanded ? 'csModal--expanded' : ''}`} ref={modalRef} onClick={e => e.stopPropagation()}>
         {/* ── Header ── */}
         <div className="csModalHeader">
           <h2 className="csModalTitle">Create {workType}</h2>
           <div className="csModalHeaderActions">
             <button type="button" className="csHeaderBtn" title="Full screen" onClick={() => setIsExpanded(e => !e)}><Maximize2 size={16} /></button>
-            <button type="button" className="csHeaderBtn" onClick={onClose} title="Close"><X size={18} /></button>
+            <button type="button" className="csHeaderBtn" onClick={handleClose} title="Close"><X size={18} /></button>
           </div>
         </div>
 
@@ -1169,7 +1219,7 @@ export function CreateStoryModal({ open, onClose, projectId, projectKey, onSucce
             )}
           </div>
           <div className="csFooterActions">
-            <button type="button" className="csBtn csCancel" onClick={onClose}>Cancel</button>
+            <button type="button" className="csBtn csCancel" onClick={handleClose}>Cancel</button>
             <button
               type="button"
               className="csBtn csCreate"

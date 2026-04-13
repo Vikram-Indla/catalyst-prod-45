@@ -10,6 +10,7 @@ export interface CatalystToastItem {
   title: string;
   message?: string;
   action?: CatalystToastAction;
+  actions?: CatalystToastAction[];
   duration?: number;
   undoCountdown?: number;
 }
