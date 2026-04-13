@@ -58,28 +58,46 @@ export function AllProjectsToolbar({ view, onViewChange, filters, onFilterChange
     <div className="flex items-center gap-3 flex-wrap">
       {/* Primary tabs — pill style */}
       <div className="flex gap-1">
-        {TABS.map(tab => {
+       {TABS.map(tab => {
           const isActive = activeTab === tab;
           return (
             <button
               key={tab}
               onClick={() => handleTabClick(tab)}
-              className={cn(
-                "px-3.5 py-1.5 rounded-full text-[13px] font-medium border transition-colors flex items-center gap-1.5",
-                isActive
-                  ? "bg-blue-50 text-blue-700 border-blue-600 dark:bg-[rgba(37,99,235,0.12)] dark:text-[#93C5FD] dark:border-[rgba(37,99,235,0.25)]"
-                  : "bg-transparent text-slate-600 border-slate-200 hover:bg-slate-50 dark:text-[#A1A1A1] dark:border-[#2E2E2E] dark:hover:bg-[#2E2E2E]"
-              )}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 8,
+                padding: '8px 16px',
+                borderRadius: 20,
+                fontSize: 13,
+                transition: 'all 200ms cubic-bezier(0.4,0,0.2,1)',
+                cursor: 'pointer',
+                border: isActive ? 'none' : '1px solid var(--cp-bd, #E2E8F0)',
+                background: isActive ? 'var(--cp-blue, #2563EB)' : 'transparent',
+                color: isActive ? '#FFFFFF' : 'var(--cp-t2, #475569)',
+                fontWeight: isActive ? 600 : 500,
+                outline: 'none',
+              }}
             >
               {tab === 'Starred' && '★ '}{tab}
-              {/* FIX 6: Hide badge when count is 0 for Starred tab */}
               {!(tab === 'Starred' && getCount(tab) === 0) && (
-                <span className={cn(
-                  "text-[11px] font-semibold px-1.5 py-px rounded-full font-['JetBrains_Mono',monospace]",
-                  isActive
-                    ? "bg-blue-100 text-blue-700 dark:bg-[rgba(37,99,235,0.15)] dark:text-[#93C5FD]"
-                    : "bg-slate-100 text-slate-500 dark:bg-[#2E2E2E] dark:text-[#A1A1A1]"
-                )}>
+                <span
+                  style={{
+                    minWidth: 22,
+                    height: 18,
+                    padding: '0 6px',
+                    borderRadius: 12,
+                    fontSize: 11,
+                    fontWeight: 700,
+                    fontVariantNumeric: 'tabular-nums',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    background: isActive ? 'rgba(255,255,255,0.9)' : 'var(--cp-hover, #F1F5F9)',
+                    color: isActive ? 'var(--cp-blue-text, #1D4ED8)' : 'var(--cp-t3, #94A3B8)',
+                  }}
+                >
                   {getCount(tab)}
                 </span>
               )}
