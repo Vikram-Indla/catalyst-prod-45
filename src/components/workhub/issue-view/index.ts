@@ -1,7 +1,7 @@
 /**
- * All Work — Table + detail panel layout
+ * Issue View — 2-column layout with collapsible details sidebar
  * Route: /project-hub/:key/hierarchy/allwork
  */
 export { IssueViewShell } from './IssueViewShell';
-export { AllWorkTable } from './AllWorkTable';
-export { IssueDetailPanel } from './IssueDetailPanel';
+export { IssueListPanel } from './IssueListPanel';
+export { IssueContentView } from './IssueContentView';
