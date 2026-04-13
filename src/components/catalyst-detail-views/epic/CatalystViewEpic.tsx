@@ -9,7 +9,7 @@ import { toast } from 'sonner';
 import { CatalystViewBase } from '../shared/CatalystViewBase';
 import { useCatalystIssue, useCatalystIssueMutations } from '../shared/hooks';
 import {
-  CatalystTitleEditor, CatalystParentLinker, CatalystDescriptionSection, CatalystAcceptanceCriteria,
+  CatalystTitleEditor, CatalystQuickActions, CatalystParentLinker, CatalystDescriptionSection, CatalystAcceptanceCriteria,
   CatalystActivitySection, CatalystSidebarDetails, CatalystChildWorkItemsTable,
 } from '../shared/sections';
 import type { CatalystViewBaseProps } from '../shared/types';
@@ -26,6 +26,7 @@ export default function CatalystViewEpic({
     <>
       <CatalystTitleEditor issue={issue ?? null} onTitleChange={(t) => mutations.updateField.mutate({ field: 'summary', value: t, oldValue: issue?.summary ?? '' })} />
       <CatalystParentLinker issue={issue ?? null} itemId={itemId} itemType="epic" projectKey={projectKey} onOpenItem={onOpenItem} />
+      <CatalystQuickActions />
       <CatalystDescriptionSection issue={issue ?? null} />
       <CatalystAcceptanceCriteria issue={issue ?? null} />
 

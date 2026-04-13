@@ -10,7 +10,7 @@ import { toast } from 'sonner';
 import { CatalystViewBase } from '../shared/CatalystViewBase';
 import { useCatalystIssue, useCatalystIssueMutations } from '../shared/hooks';
 import {
-  CatalystTitleEditor, CatalystParentLinker, CatalystDescriptionSection, CatalystAcceptanceCriteria,
+  CatalystTitleEditor, CatalystQuickActions, CatalystParentLinker, CatalystDescriptionSection, CatalystAcceptanceCriteria,
   CatalystActivitySection, CatalystSidebarDetails,
 } from '../shared/sections';
 import type { CatalystViewBaseProps } from '../shared/types';
@@ -31,6 +31,7 @@ export default function CatalystViewDefect({
     <>
       <CatalystTitleEditor issue={issue ?? null} onTitleChange={(t) => mutations.updateField.mutate({ field: 'summary', value: t, oldValue: issue?.summary ?? '' })} />
       <CatalystParentLinker issue={issue ?? null} itemId={itemId} itemType="defect" projectKey={projectKey} onOpenItem={onOpenItem} />
+      <CatalystQuickActions />
 
       {/* DEFECT-UNIQUE: Priority + Type badge row */}
       <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 20 }}>
