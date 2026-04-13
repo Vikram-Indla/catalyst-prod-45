@@ -8,8 +8,8 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { createPortal } from 'react-dom';
 import {
-  X, Maximize2, Minus, MoreHorizontal, ChevronDown, Bold, Italic, List,
-  ListOrdered, Code2, Link2, Undo, Redo, ExternalLink, Check,
+  X, Maximize2, Minus, MoreHorizontal, ChevronDown, ChevronRight,
+  Bold, Italic, List, ListOrdered, Code2, Link2, Undo, Redo, ExternalLink, Check,
 } from 'lucide-react';
 import {
   useCreateStoryForm, useProjects, useTeamMembers,
@@ -23,6 +23,7 @@ import TipTapLink from '@tiptap/extension-link';
 import Placeholder from '@tiptap/extension-placeholder';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { useFixVersions } from '@/modules/project-work-hub/hooks/useFixVersions';
+import { StoryRichTextEditor } from '@/modules/project-work-hub/components/story-detail/StoryRichTextEditor';
 import './create-story.css';
 
 // ── Helpers ──
