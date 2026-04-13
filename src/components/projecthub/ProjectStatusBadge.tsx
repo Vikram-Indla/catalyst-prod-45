@@ -1,6 +1,8 @@
 /**
- * ProjectStatusBadge — Project-specific status lozenge with correct light/dark values.
- * Uses its own color map to avoid conflicts with the generic StatusLozenge.
+ * ProjectStatusBadge — 3-colour pale lozenge guardrail (matches For You page).
+ * Grey  → bg:#DFE1E6  text:#253858  → Planning / On Hold / Archived
+ * Blue  → bg:#DEEBFF  text:#0747A6  → Active / In Progress
+ * Green → bg:#E3FCEF  text:#006644  → Completed / Done
  */
 import React from 'react';
 import type { ProjectStatus } from '@/types/projecthub';
@@ -24,33 +26,36 @@ const STATUS_MAP: Record<string, ColorCategory> = {
   paused: 'grey',
   draft: 'grey',
   archived: 'grey',
+  cancelled: 'grey',
 };
 
-const COLORS: Record<ColorCategory, { lightBg: string; lightText: string; darkBg: string; darkText: string }> = {
-  green: { lightBg: '#14892C', lightText: '#FFFFFF', darkBg: '#14892C', darkText: '#FFFFFF' },
-  blue:  { lightBg: '#0052CC', lightText: '#FFFFFF', darkBg: '#0052CC', darkText: '#FFFFFF' },
-  grey:  { lightBg: '#42526E', lightText: '#FFFFFF', darkBg: '#42526E', darkText: '#FFFFFF' },
+const COLORS: Record<ColorCategory, { bg: string; text: string }> = {
+  grey:  { bg: '#DFE1E6', text: '#253858' },
+  blue:  { bg: '#DEEBFF', text: '#0747A6' },
+  green: { bg: '#E3FCEF', text: '#006644' },
 };
 
 export function ProjectStatusBadge({ status }: { status: ProjectStatus }) {
   const normalized = (status || '').toLowerCase().replace(/[\s_-]+/g, ' ').trim();
   const category = STATUS_MAP[normalized] || 'grey';
   const c = COLORS[category];
-  const isDark = typeof document !== 'undefined' && document.documentElement.classList.contains('dark');
 
   return (
     <span
       style={{
-        display: 'inline-block',
-        padding: '2px 8px',
-        borderRadius: 4,
-        backgroundColor: isDark ? c.darkBg : c.lightBg,
-        color: isDark ? c.darkText : c.lightText,
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: 20,
+        padding: '0 6px',
+        borderRadius: 3,
+        backgroundColor: c.bg,
+        color: c.text,
         fontSize: 11,
         fontWeight: 700,
         textTransform: 'uppercase',
-        letterSpacing: '0.05em',
-        lineHeight: '16px',
+        letterSpacing: '0.03em',
+        lineHeight: 1,
         whiteSpace: 'nowrap',
       }}
     >
