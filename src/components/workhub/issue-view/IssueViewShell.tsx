@@ -1,13 +1,13 @@
 /**
- * IssueViewShell — 2-column layout matching Jira Cloud:
- * Left: issue list | Right: issue view (content + collapsible Details sidebar)
+ * IssueViewShell — Jira "All work" tab layout:
+ * Tabs strip → Toolbar + sortable table (left) + detail panel (right)
  */
 import { useState, useCallback, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useTheme } from '@/hooks/useTheme';
 import { useIssueViewData } from '@/hooks/workhub/useIssueViewData';
-import { IssueListPanel } from './IssueListPanel';
-import { IssueContentView } from './IssueContentView';
+import { AllWorkTable } from './AllWorkTable';
+import { IssueDetailPanel } from './IssueDetailPanel';
 
 interface Props {
   projectKey: string;
@@ -17,65 +17,59 @@ interface Props {
 export function IssueViewShell({ projectKey, storageKey }: Props) {
   const { isDark } = useTheme();
   const [searchParams, setSearchParams] = useSearchParams();
-  const [selectedIssueKey, setSelectedIssueKey] = useState<string | null>(
-    searchParams.get('selectedIssue'),
-  );
+  const [selectedKey, setSelectedKey] = useState<string | null>(searchParams.get('selectedIssue'));
   const [searchQuery, setSearchQuery] = useState('');
+  const [detailOpen, setDetailOpen] = useState(true);
 
-  const {
-    items, itemsLoading, selectedItem, parentItem,
-    children, childrenLoading, links, linksLoading,
-    comments, commentsLoading, history, historyLoading, createComment,
-  } = useIssueViewData(projectKey, selectedIssueKey, searchQuery);
+  const data = useIssueViewData(projectKey, selectedKey, searchQuery);
 
-  // Auto-select first
+  // Auto-select first item
   useEffect(() => {
-    if (!selectedIssueKey && items.length > 0 && !itemsLoading) {
-      const key = items[0].issue_key;
-      setSelectedIssueKey(key);
+    if (!selectedKey && data.items.length > 0 && !data.itemsLoading) {
+      const key = data.items[0].issue_key;
+      setSelectedKey(key);
       setSearchParams(p => { p.set('selectedIssue', key); return p; }, { replace: true });
     }
-  }, [items, selectedIssueKey, itemsLoading]);
+  }, [data.items, selectedKey, data.itemsLoading]);
 
   const handleSelect = useCallback((key: string) => {
-    setSelectedIssueKey(key);
+    setSelectedKey(key);
+    setDetailOpen(true);
     setSearchParams(p => { p.set('selectedIssue', key); return p; });
   }, [setSearchParams]);
 
   return (
-    <div className={`awShell ${isDark ? 'dark' : ''}`}>
-      {/* Left: issue list */}
-      <div className="awCol">
-        <IssueListPanel
-          projectKey={projectKey}
-          selectedIssueKey={selectedIssueKey}
-          onSelectIssue={handleSelect}
-          onSearch={setSearchQuery}
-          items={items}
-          loading={itemsLoading}
-        />
+    <div className={`allwork-root ${isDark ? 'dark' : ''}`}>
+      {/* ── Tabs ── */}
+      <div className="allwork-tabs">
+        <button className="allwork-tab allwork-tab--active">All work</button>
+        <button className="allwork-tab">Board</button>
+        <button className="allwork-tab">Timeline</button>
       </div>
 
-      {/* Divider */}
-      <div className="awDivider" />
+      {/* ── Main: table + detail panel ── */}
+      <div className="allwork-main">
+        {/* Left: toolbar + table */}
+        <div className="allwork-left">
+          <AllWorkTable
+            items={data.items}
+            loading={data.itemsLoading}
+            selectedKey={selectedKey}
+            onSelect={handleSelect}
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+            projectKey={projectKey}
+          />
+        </div>
 
-      {/* Right: issue view (content + collapsible details sidebar) */}
-      <div className="awCol">
-        <IssueContentView
-          issueKey={selectedIssueKey}
-          item={selectedItem}
-          parentItem={parentItem}
-          childItems={children}
-          childrenLoading={childrenLoading}
-          links={links}
-          linksLoading={linksLoading}
-          comments={comments}
-          commentsLoading={commentsLoading}
-          historyItems={history}
-          historyLoading={historyLoading}
-          createComment={createComment}
-          loading={itemsLoading && !selectedItem}
-        />
+        {/* Right: detail panel */}
+        {detailOpen && selectedKey && (
+          <IssueDetailPanel
+            item={data.selectedItem}
+            parentItem={data.parentItem}
+            onClose={() => setDetailOpen(false)}
+          />
+        )}
       </div>
     </div>
   );
