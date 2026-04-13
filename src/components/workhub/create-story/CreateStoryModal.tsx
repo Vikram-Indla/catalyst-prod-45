@@ -597,7 +597,8 @@ export function CreateStoryModal({ open, onClose, projectId, projectKey, onSucce
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 
