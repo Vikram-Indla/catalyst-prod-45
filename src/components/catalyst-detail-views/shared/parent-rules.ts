@@ -24,6 +24,8 @@ export interface ParentLinkRule {
   mode: 'single' | 'multi';
   /** Label shown in the picker header */
   pickerLabel: string;
+  /** If true, query business_requests table instead of ph_issues */
+  useBusinessRequests?: boolean;
 }
 
 export const PARENT_LINK_RULES: Record<CatalystItemType, ParentLinkRule> = {
@@ -36,6 +38,7 @@ export const PARENT_LINK_RULES: Record<CatalystItemType, ParentLinkRule> = {
     allowedParentTypes: ['Business Request', 'business request', 'Business_Request', 'business_request'],
     mode: 'single',
     pickerLabel: 'Parent (Business Request)',
+    useBusinessRequests: true,
   },
   feature: {
     allowedParentTypes: ['Epic', 'epic'],

@@ -47,14 +47,190 @@ export function CatalystParentLinker({
   issue, itemId, itemType, projectKey, onOpenItem,
 }: CatalystParentLinkerProps) {
   const rule = PARENT_LINK_RULES[itemType];
-  const queryClient = useQueryClient();
 
   // If no allowed parents, don't render
   if (!rule || rule.allowedParentTypes.length === 0) return null;
 
+  if (rule.useBusinessRequests) {
+    return <BusinessRequestParentPicker issue={issue} itemId={itemId} rule={rule} projectKey={projectKey} onOpenItem={onOpenItem} />;
+  }
+
   return rule.mode === 'single'
     ? <SingleParentPicker issue={issue} itemId={itemId} rule={rule} projectKey={projectKey} onOpenItem={onOpenItem} />
     : <MultiLinkPicker issue={issue} itemId={itemId} rule={rule} projectKey={projectKey} onOpenItem={onOpenItem} />;
+}
+
+/* ═══════════════════════════════════════════════
+   BUSINESS REQUEST PARENT PICKER — queries business_requests table
+   ═══════════════════════════════════════════════ */
+interface BrCandidate {
+  id: string;
+  request_key: string | null;
+  title: string;
+  process_step: string;
+}
+
+function BusinessRequestParentPicker({
+  issue, itemId, rule, projectKey, onOpenItem,
+}: {
+  issue: PhIssue | null; itemId: string; rule: ParentLinkRule;
+  projectKey?: string; onOpenItem?: (id: string) => void;
+}) {
+  const [showPicker, setShowPicker] = useState(false);
+  const [search, setSearch] = useState('');
+  const pickerRef = useRef<HTMLDivElement>(null);
+  const queryClient = useQueryClient();
+
+  // Close on outside click
+  useEffect(() => {
+    if (!showPicker) return;
+    const h = (e: MouseEvent) => { if (pickerRef.current && !pickerRef.current.contains(e.target as Node)) setShowPicker(false); };
+    document.addEventListener('mousedown', h);
+    return () => document.removeEventListener('mousedown', h);
+  }, [showPicker]);
+
+  // Fetch active business requests
+  const { data: candidates = [] } = useQuery({
+    queryKey: ['cv-br-parent-candidates'],
+    enabled: showPicker,
+    queryFn: async () => {
+      const { data } = await supabase.from('business_requests')
+        .select('id, request_key, title, process_step')
+        .is('deleted_at', null)
+        .order('updated_at', { ascending: false })
+        .limit(200);
+      return (data || []) as BrCandidate[];
+    },
+    staleTime: 30000,
+  });
+
+  // Resolve current parent — stored as parent_key on ph_issues, matching request_key on business_requests
+  const { data: currentParent } = useQuery({
+    queryKey: ['cv-br-parent-resolved', issue?.parent_key],
+    enabled: !!issue?.parent_key,
+    queryFn: async () => {
+      // Try matching parent_key to request_key
+      const { data } = await supabase.from('business_requests')
+        .select('id, request_key, title, process_step')
+        .eq('request_key', issue!.parent_key!)
+        .is('deleted_at', null)
+        .maybeSingle();
+      return data as BrCandidate | null;
+    },
+  });
+
+  const updateParent = useMutation({
+    mutationFn: async (newParentKey: string | null) => {
+      await supabase.from('ph_issues').update({ parent_key: newParentKey }).eq('id', itemId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['cv-issue-detail', itemId] });
+      queryClient.invalidateQueries({ queryKey: ['cv-br-parent-resolved'] });
+      setShowPicker(false);
+      setSearch('');
+    },
+  });
+
+  const DONE_STEPS = ['done', 'completed', 'closed', 'cancelled', 'rejected'];
+  const filtered = candidates.filter(c => {
+    if (!search) return true;
+    const q = search.toLowerCase();
+    return c.request_key?.toLowerCase().includes(q) || c.title?.toLowerCase().includes(q);
+  });
+  const active = filtered.filter(c => !DONE_STEPS.includes(c.process_step?.toLowerCase()));
+  const done = filtered.filter(c => DONE_STEPS.includes(c.process_step?.toLowerCase()));
+
+  return (
+    <div style={{ marginBottom: 16 }} ref={pickerRef}>
+      <div style={{ fontSize: 12, fontWeight: 600, color: '#172B4D', marginBottom: 6 }}>{rule.pickerLabel}</div>
+
+      {/* Current parent display */}
+      {currentParent ? (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '4px 8px', borderRadius: 4, background: '#F4F5F7' }}>
+          <IssueIcon type="Business Request" size={14} />
+          <span
+            style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: '#0052CC', cursor: 'pointer' }}
+            onClick={() => onOpenItem?.(currentParent.id)}
+          >{currentParent.request_key}</span>
+          <span style={{ fontSize: 13, color: '#172B4D', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', cursor: 'pointer' }}
+            onClick={() => onOpenItem?.(currentParent.id)}
+          >{currentParent.title}</span>
+          <button onClick={() => updateParent.mutate(null)} title="Remove parent" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, color: '#6B778C', display: 'flex' }}>
+            <X size={12} />
+          </button>
+        </div>
+      ) : (
+        <button onClick={() => setShowPicker(!showPicker)} style={{
+          display: 'inline-flex', alignItems: 'center', gap: 4, padding: '4px 8px',
+          background: 'none', border: '1px dashed #C1C7D0', borderRadius: 4,
+          cursor: 'pointer', fontSize: 13, color: '#5E6C84', transition: 'border-color 0.15s, background 0.15s',
+        }}
+          onMouseEnter={e => { e.currentTarget.style.borderColor = '#4C9AFF'; e.currentTarget.style.background = '#F4F5F7'; }}
+          onMouseLeave={e => { e.currentTarget.style.borderColor = '#C1C7D0'; e.currentTarget.style.background = 'none'; }}
+        >
+          <Plus size={12} /> Add parent
+        </button>
+      )}
+
+      {/* Picker dropdown */}
+      {showPicker && (
+        <div style={{
+          marginTop: 4, background: '#FFFFFF', border: '1px solid #DFE1E6', borderRadius: 6,
+          boxShadow: '0 8px 16px rgba(9,30,66,0.15)', zIndex: 100, maxHeight: 400, display: 'flex', flexDirection: 'column',
+        }}>
+          {/* Search */}
+          <div style={{ padding: '8px 12px', borderBottom: '1px solid #F4F5F7' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, border: '2px solid #4C9AFF', borderRadius: 4, padding: '4px 8px' }}>
+              <Search size={14} color="#5E6C84" />
+              <input autoFocus value={search} onChange={e => setSearch(e.target.value)} placeholder="Search business requests…"
+                style={{ border: 'none', outline: 'none', fontSize: 13, color: '#172B4D', width: '100%', fontFamily: 'inherit' }} />
+              {search && <button onClick={() => setSearch('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#6B778C', display: 'flex', padding: 0 }}><X size={14} /></button>}
+            </div>
+          </div>
+          <div style={{ overflowY: 'auto', maxHeight: 340 }}>
+            {renderBrGroup('ACTIVE', active, issue?.parent_key, (key) => updateParent.mutate(key))}
+            {renderBrGroup('DONE', done, issue?.parent_key, (key) => updateParent.mutate(key))}
+            {filtered.length === 0 && <div style={{ padding: '16px', fontSize: 13, color: '#6B778C', textAlign: 'center' }}>No matching business requests</div>}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/** Render a group (ACTIVE / DONE) for business request parent picker */
+function renderBrGroup(
+  label: string, items: BrCandidate[], currentParentKey: string | null | undefined,
+  onSelect: (key: string) => void,
+) {
+  if (items.length === 0) return null;
+  const DONE_STEPS = ['done', 'completed', 'closed', 'cancelled', 'rejected'];
+  return (
+    <>
+      <div style={{ fontSize: 11, fontWeight: 700, color: '#6B778C', textTransform: 'uppercase', letterSpacing: '0.05em', padding: '8px 12px 4px' }}>{label}</div>
+      {items.map(item => {
+        const isSelected = currentParentKey === item.request_key;
+        const statusCat = DONE_STEPS.includes(item.process_step?.toLowerCase()) ? 'done' : 
+                          ['in_progress', 'in progress', 'implementation', 'testing'].some(s => item.process_step?.toLowerCase().includes(s)) ? 'indeterminate' : 'new';
+        return (
+          <div key={item.id} onClick={() => item.request_key && onSelect(item.request_key)}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px',
+              cursor: 'pointer', background: isSelected ? '#DEEBFF' : 'transparent', transition: 'background 80ms',
+            }}
+            onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = '#F4F5F7'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = isSelected ? '#DEEBFF' : 'transparent'; }}
+          >
+            <IssueIcon type="Business Request" size={14} />
+            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: '#5E6C84', flexShrink: 0 }}>{item.request_key || '—'}</span>
+            <span style={{ fontSize: 13, color: '#172B4D', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.title}</span>
+            <StatusLozenge status={item.process_step} category={statusCat} />
+            {isSelected && <Check size={16} color="#0052CC" />}
+          </div>
+        );
+      })}
+    </>
+  );
 }
 
 /* ═══════════════════════════════════════════════

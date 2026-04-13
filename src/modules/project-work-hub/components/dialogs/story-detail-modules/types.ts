@@ -28,6 +28,7 @@ export interface PhIssue {
   acceptance_criteria?: string | null;
   position?: number | null;
   project_name?: string | null;
+  story_points?: number | null;
 }
 
 export interface FixVersion {
