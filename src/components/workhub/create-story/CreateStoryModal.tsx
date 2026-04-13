@@ -390,9 +390,9 @@ function ParentPicker({ label, required, projectId, projectKey, value, onChange,
   );
 }
 
-// ── CreateParentPicker — searches catalyst_issues for Epics in same project ──
-function CreateParentPicker({ projectId, value, onChange }: {
-  projectId: string;
+// ── CreateParentPicker — searches ph_issues for Epics (where all synced epics live) ──
+function CreateParentPicker({ projectKey, value, onChange }: {
+  projectKey: string;
   value: string | null;
   onChange: (parentId: string | null) => void;
 }) {
@@ -408,31 +408,32 @@ function CreateParentPicker({ projectId, value, onChange }: {
     queryKey: ['create-story-parent-resolve', value],
     queryFn: async () => {
       if (!value) return null;
-      const { data, error } = await supabase.from('catalyst_issues')
-        .select('id, issue_key, title, issue_type, status')
-        .eq('id', value).single();
+      const { data, error } = await supabase.from('ph_issues')
+        .select('id, issue_key, summary, issue_type, status, status_category')
+        .eq('id', value).is('deleted_at', null).single();
       if (error) return null;
-      return { ...data, summary: data.title };
+      return data;
     },
     enabled: !!value,
   });
 
-  // Search epics from catalyst_issues (same table as insert target)
+  // Search epics from ph_issues (Jira-synced epics)
   const { data: searchResults = [] } = useQuery({
-    queryKey: ['create-story-parent-search-cat', projectId, search, showDone],
+    queryKey: ['create-story-parent-search-canon', projectKey, search, showDone],
     queryFn: async () => {
-      if (!projectId) return [];
-      let query = supabase.from('catalyst_issues')
-        .select('id, issue_key, title, issue_type, status')
-        .eq('project_id', projectId).eq('issue_type', 'Epic')
-        .order('created_at', { ascending: false }).limit(20);
-      if (!showDone) query = query.neq('status', 'Done');
-      if (search.trim()) query = query.or(`issue_key.ilike.${search}%,title.ilike.%${search}%`);
+      if (!projectKey) return [];
+      let query = supabase.from('ph_issues')
+        .select('id, issue_key, summary, issue_type, status, status_category')
+        .eq('project_key', projectKey).eq('issue_type', 'Epic')
+        .is('deleted_at', null)
+        .order('jira_updated_at', { ascending: false }).limit(20);
+      if (!showDone) query = query.neq('status_category', 'done');
+      if (search.trim()) query = query.or(`issue_key.ilike.${search}%,summary.ilike.%${search}%`);
       const { data, error } = await query;
       if (error) return [];
-      return (data ?? []).map((d: any) => ({ ...d, summary: d.title }));
+      return (data ?? []) as any[];
     },
-    enabled: open && !!projectId,
+    enabled: open && !!projectKey,
   });
 
   useEffect(() => {
@@ -1080,7 +1081,7 @@ export function CreateStoryModal({ open, onClose, projectId, projectKey, onSucce
           <div className="csField">
             <label className="csLabel">Parent</label>
             <CreateParentPicker
-              projectId={form.projectId}
+              projectKey={resolvedKey}
               value={form.parentId ?? null}
               onChange={(parentId) => updateField('parentId', parentId)}
             />
