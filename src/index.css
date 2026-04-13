@@ -5092,24 +5092,31 @@ input[type="range"]::-moz-range-thumb {
   padding: 0 var(--ph-cell-px, 8px);
   height: var(--ph-header-height, 36px);
   text-align: left;
-  border-bottom: var(--ph-divider);
+  border-bottom: 0.75px solid rgba(15, 23, 42, 0.08);
   background: var(--cp-bg-sunken);
   white-space: nowrap;
   user-select: none;
+  font-family: Inter, sans-serif;
 }
 .ph-list-table td {
   font-size: 14px;
   color: var(--cp-text-primary);
   padding: 0 var(--ph-cell-px, 8px);
   height: var(--ph-row-height, 36px);
-  border-bottom: var(--ph-divider);
+  max-height: 36px;
+  line-height: 36px;
+  overflow: hidden;
+  border-bottom: 0.75px solid rgba(15, 23, 42, 0.08);
   vertical-align: middle;
 }
+.ph-list-table tbody tr {
+  transition: background 100ms ease;
+}
 .ph-list-table tbody tr:hover td {
-  background: var(--cp-bg-hover);
+  background: rgba(0,0,0,0.04);
 }
 .ph-row-selected td {
-  background: var(--cp-bg-selected) !important;
+  background: rgba(37,99,235,0.08) !important;
 }
 .ph-icon-btn {
   width: 32px;
@@ -5125,7 +5132,14 @@ input[type="range"]::-moz-range-thumb {
   transition: background 100ms;
 }
 .ph-icon-btn:hover {
-  background: var(--cp-bg-hover);
+  background: rgba(0,0,0,0.04);
+}
+.ph-icon-btn:focus-visible,
+.ph-iss-key:focus-visible,
+.ph-list-table button:focus-visible {
+  outline: 2px solid var(--cp-primary);
+  outline-offset: 2px;
+  border-radius: 3px;
 }
 .ph-iss-key {
   color: var(--cp-text-link);

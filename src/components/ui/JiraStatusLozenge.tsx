@@ -1,6 +1,6 @@
 /**
- * JiraStatusLozenge — 3-colour guardrail status badge for Jira-parity views
- * Stage C: Grey/Blue/Green pastel backgrounds — no exceptions
+ * JiraStatusLozenge — 3-colour guardrail status badge
+ * Stage E: Unknown status guard + onStatusChange wiring
  */
 import { ChevronDown } from 'lucide-react';
 
@@ -24,14 +24,37 @@ interface Props {
 }
 
 export function JiraStatusLozenge({ status, interactive = false, onStatusChange }: Props) {
-  const config = STATUS_MAP[status] ?? STATUS_MAP.backlog;
+  // Cycle 1 §1.4: guard unknown status — never crash
+  const config = STATUS_MAP[status] ?? {
+    bg: '#DFE1E6',
+    text: '#253858',
+    label: status?.toUpperCase?.() ?? 'UNKNOWN',
+  };
+
   return (
     <button
+      onClick={interactive && onStatusChange ? () => {
+        // Simple cycle: backlog → in_progress → done → backlog
+        const cycle: Record<string, string> = {
+          backlog: 'in_progress',
+          in_progress: 'done',
+          done: 'backlog',
+          in_requirements: 'in_progress',
+          in_dev: 'in_progress',
+          in_qa: 'done',
+          in_uat: 'done',
+          ready_for_qa: 'in_qa',
+          in_production: 'done',
+          closed: 'backlog',
+        };
+        onStatusChange(cycle[status] ?? 'in_progress');
+      } : undefined}
       style={{
         display: 'inline-flex',
         alignItems: 'center',
         gap: '3px',
         height: '20px',
+        lineHeight: '20px',
         padding: '0 6px',
         borderRadius: '3px',
         border: 'none',
@@ -44,7 +67,6 @@ export function JiraStatusLozenge({ status, interactive = false, onStatusChange 
         letterSpacing: '0.03em',
         whiteSpace: 'nowrap',
         cursor: interactive ? 'pointer' : 'default',
-        lineHeight: 1,
       }}
       aria-label={`Status: ${config.label}`}
     >

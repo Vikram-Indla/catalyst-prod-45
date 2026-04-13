@@ -1,6 +1,6 @@
 /**
  * ProjectJiraLayout — Project header + tab bar + view content
- * Stage C: Full pixel-perfect UI with V12 tokens
+ * Stage E: Tab memory via sessionStorage, project-not-found guard
  */
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
@@ -14,41 +14,64 @@ type ProjectView = 'list' | 'allwork';
 
 export default function ProjectJiraLayout() {
   const { key } = useParams<{ key: string }>();
-  const [activeView, setActiveView] = useState<ProjectView>('list');
 
-  const { data: project } = useQuery({
+  // Cycle 1 §1.10: tab memory via sessionStorage
+  const [activeView, setActiveView] = useState<ProjectView>(() => {
+    const stored = sessionStorage.getItem(`ph-view-${key}`);
+    return (stored === 'allwork' ? 'allwork' : 'list');
+  });
+  const handleViewChange = (view: ProjectView) => {
+    setActiveView(view);
+    sessionStorage.setItem(`ph-view-${key}`, view);
+  };
+
+  const { data: project, isLoading, error } = useQuery({
     queryKey: ['project-info', key],
     queryFn: async () => {
       // @ts-ignore
-      const { data } = await supabase
+      const { data, error: qErr } = await supabase
         .from('projects')
         .select('id, name, key, color')
         .eq('key', key!)
         .maybeSingle();
+      if (qErr) throw qErr;
       return data as { id: string; name: string; key: string; color: string } | null;
     },
     enabled: !!key,
   });
+
+  // Cycle 1 §1.8: project not found
+  if (error) return (
+    <div style={{ padding: 48, textAlign: 'center', color: 'var(--cp-text-tertiary)', fontFamily: 'Inter, sans-serif' }}>
+      Project not found. <a href="/project-hub/projects" style={{ color: 'var(--cp-text-link)' }}>← Back to projects</a>
+    </div>
+  );
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: 'var(--cp-bg-page)' }} data-testid="project-jira-layout">
       {/* ── Project Header Bar ── */}
       <div style={{
         display: 'flex', alignItems: 'center', gap: '8px',
-        padding: '6px 16px', borderBottom: '0.75px solid var(--cp-border-default)',
+        padding: '6px 16px', borderBottom: '0.75px solid rgba(15, 23, 42, 0.08)',
         background: 'var(--cp-bg-page)', flexShrink: 0,
       }}>
-        <div style={{
-          width: 24, height: 24, borderRadius: 4,
-          background: project?.color || '#2563EB',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: 11, fontWeight: 700, color: '#fff', flexShrink: 0,
-        }}>
-          {project?.key?.[0] ?? 'P'}
-        </div>
-        <span style={{ fontSize: 16, fontWeight: 600, color: 'var(--cp-text-primary)', fontFamily: 'Sora, sans-serif' }}>
-          {project?.name ?? 'Loading...'}
-        </span>
+        {isLoading ? (
+          <div style={{ height: 24, width: 160, borderRadius: 4, background: '#F1F5F9', animation: 'shimmer 1.5s infinite', backgroundSize: '200% 100%', backgroundImage: 'linear-gradient(90deg, #F1F5F9 25%, #E2E8F0 50%, #F1F5F9 75%)' }} />
+        ) : (
+          <>
+            <div style={{
+              width: 24, height: 24, borderRadius: 4,
+              background: project?.color || '#2563EB',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: 11, fontWeight: 700, color: '#fff', flexShrink: 0,
+            }}>
+              {project?.key?.[0] ?? 'P'}
+            </div>
+            <span style={{ fontSize: 16, fontWeight: 600, color: 'var(--cp-text-primary)', fontFamily: 'Sora, sans-serif' }}>
+              {project?.name ?? 'Untitled Project'}
+            </span>
+          </>
+        )}
         <button className="ph-icon-btn"><Users size={14} /></button>
         <button className="ph-icon-btn"><MoreHorizontal size={14} /></button>
         <div style={{ marginLeft: 'auto', display: 'flex', gap: 2 }}>
@@ -72,7 +95,7 @@ export default function ProjectJiraLayout() {
         ].map(tab => (
           <button
             key={tab.key}
-            onClick={() => setActiveView(tab.key)}
+            onClick={() => handleViewChange(tab.key)}
             data-testid={`tab-${tab.key}`}
             style={{
               height: 'var(--ph-tab-height, 40px)',
