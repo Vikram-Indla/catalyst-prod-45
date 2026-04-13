@@ -4,6 +4,8 @@
  *         Target Release, Assignee, Reporter.
  */
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { createPortal } from 'react-dom';
 import {
   X, Maximize2, Minus, MoreHorizontal, ChevronDown, Bold, Italic, List,
@@ -635,9 +637,10 @@ export function CreateStoryModal({ open, onClose, projectId, projectKey, onSucce
           {/* Parent */}
           <ParentPicker
             label="Parent"
-            value={form.parentId ?? ''}
-            options={parentOptions}
-            onChange={v => updateField('parentId', v || null)}
+            projectId={form.projectId}
+            projectKey={resolvedKey}
+            value={form.parentId ?? null}
+            onChange={(parentId) => updateField('parentId', parentId)}
             helpText="Your work type hierarchy determines the work items you can select here."
           />
 
