@@ -418,14 +418,18 @@ export default {
       },
       
       /* ═══════════════════════════════════════════════════════════════
-         CATALYST V5 TYPOGRAPHY SYSTEM — Plus Jakarta Sans
+         CATALYST V12 TYPOGRAPHY SYSTEM — Sora / Inter / JetBrains Mono
+         Sora:           Headings, display text, page titles
+         Inter:          Body, UI labels, field values, navigation
+         JetBrains Mono: Data, code, IDs, monospace content
          ═══════════════════════════════════════════════════════════════ */
       fontFamily: {
-        sans: ['"Plus Jakarta Sans"', "-apple-system", "BlinkMacSystemFont", "Segoe UI", "sans-serif"],
-        body: ['"Plus Jakarta Sans"', "-apple-system", "BlinkMacSystemFont", "sans-serif"],
-        display: ['"Plus Jakarta Sans"', "-apple-system", "sans-serif"],
+        sans: ['"Inter"', "ui-sans-serif", "-apple-system", "system-ui", '"Segoe UI"', "sans-serif"],
+        heading: ['"Sora"', "ui-sans-serif", "-apple-system", "system-ui", "sans-serif"],
+        body: ['"Inter"', "ui-sans-serif", "-apple-system", "system-ui", "sans-serif"],
+        display: ['"Sora"', "ui-sans-serif", "-apple-system", "sans-serif"],
         serif: ["Georgia", "'Times New Roman'", "serif"],
-        mono: ['"JetBrains Mono"', "SF Mono", "Monaco", "Consolas", "monospace"],
+        mono: ['"JetBrains Mono"', '"SF Mono"', "Monaco", "Consolas", "monospace"],
       },
       
       fontSize: {
@@ -440,8 +444,8 @@ export default {
         "3xl": ["1.75rem", { lineHeight: "2rem" }],                // 28px
         "4xl": ["2rem", { lineHeight: "2.25rem" }],                // 32px
         "5xl": ["2.5rem", { lineHeight: "2.75rem" }],              // 40px
-        
-        /* Semantic font sizes */
+
+        /* ── Semantic font sizes (Sora headings / Inter body) ── */
         overline: ["0.75rem", { lineHeight: "1.25rem", letterSpacing: "0.08em", fontWeight: "600" }],
         title: ["1.125rem", { lineHeight: "1.5rem", letterSpacing: "-0.01em", fontWeight: "600" }],
         subtitle: ["0.9375rem", { lineHeight: "1.375rem", letterSpacing: "-0.005em", fontWeight: "500" }],
@@ -451,7 +455,17 @@ export default {
         "body-sm": ["0.8125rem", { lineHeight: "1.125rem" }],
         caption: ["0.8125rem", { lineHeight: "1.125rem", fontWeight: "500" }],
         label: ["0.8125rem", { lineHeight: "1rem", fontWeight: "500" }],
-        
+
+        /* ── Issue view semantic sizes (V12 design spec) ── */
+        "issue-title": ["1.5rem", { lineHeight: "1.75rem", fontWeight: "650" }],       // 24px — Sora
+        "section-heading": ["1rem", { lineHeight: "1.25rem", fontWeight: "500" }],      // 16px — Sora
+        "field-label": ["0.875rem", { lineHeight: "1.167rem", fontWeight: "500" }],     // 14px — Inter
+        "field-value": ["0.875rem", { lineHeight: "1.25rem", fontWeight: "400" }],      // 14px — Inter
+        "breadcrumb": ["0.75rem", { lineHeight: "1rem", fontWeight: "400" }],           // 12px — Inter
+        "cta": ["0.875rem", { lineHeight: "1.25rem", fontWeight: "500" }],              // 14px — Inter
+        "col-header": ["0.75rem", { lineHeight: "1rem", letterSpacing: "0.03em", fontWeight: "650" }],  // 12px — Inter
+        "status-lozenge": ["0.6875rem", { lineHeight: "1rem", letterSpacing: "0.03em", fontWeight: "700" }], // 11px
+
         /* ProdHub table font sizes */
         "table-xs": ["11px", { lineHeight: "1.2" }],
         "table-sm": ["12px", { lineHeight: "1.4" }],

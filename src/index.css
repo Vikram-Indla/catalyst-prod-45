@@ -1,8 +1,11 @@
 /* ════════════════════════════════════════════════════════════════════════════
-   CATALYST V5 DESIGN SYSTEM — Plus Jakarta Sans
-   Google Fonts Import
+   CATALYST V12 TYPOGRAPHY SYSTEM — Sora / Inter / JetBrains Mono
+   Sora:           Headings, display text, page titles (wght 400–700)
+   Inter:          Body, UI, field labels, values (wght 400–700)
+   JetBrains Mono: Data, code, IDs (wght 400–600)
    ════════════════════════════════════════════════════════════════════════════ */
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500;1,600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;650;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 /* V8 Module-Specific CSS */
@@ -1361,7 +1364,7 @@ html:has(body[data-scroll-locked]) {
   
   body {
     @apply bg-background text-foreground;
-    font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: "Inter", ui-sans-serif, -apple-system, system-ui, "Segoe UI", sans-serif;
   }
 }
 
@@ -1410,7 +1413,14 @@ html:has(body[data-scroll-locked]) {
 }
 
 /* ════════════════════════════════════════════════════════════════════════════
-   CATALYST TYPOGRAPHY SYSTEM — Enterprise-Grade Semantic Text Styles
+   CATALYST V12 TYPOGRAPHY SYSTEM — Sora / Inter / JetBrains Mono
+   ─────────────────────────────────────────────────────────────────────────
+   Sora:           Headings, display, page titles, section headings
+   Inter:          Body, UI labels, field values, navigation, form controls
+   JetBrains Mono: Data, code, IDs, monospace content
+   ─────────────────────────────────────────────────────────────────────────
+   Body emphasis:  font-weight 650 (NOT 700) per CLAUDE.md
+   Uppercase:      Table headers + sidebar section labels ONLY
    ════════════════════════════════════════════════════════════════════════════ */
 
 @layer utilities {
@@ -1423,36 +1433,62 @@ html:has(body[data-scroll-locked]) {
     display: none;
   }
 
-  /* Overline - Section headers, labels */
-  .c-overline {
-    font-size: 0.75rem;      /* 12px */
-    line-height: 1.25rem;    /* 20px */
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: hsl(var(--text-muted));
+  /* ── HEADING STYLES (Sora) ── */
+
+  /* Page Title — Sora 24px/28px weight 650 */
+  .c-page-title {
+    font-family: "Sora", ui-sans-serif, -apple-system, sans-serif;
+    font-size: 1.5rem;        /* 24px */
+    line-height: 1.75rem;     /* 28px */
+    font-weight: 650;
+    letter-spacing: -0.01em;
+    color: hsl(var(--text-primary));
   }
-  
-  /* Title - Card titles, section headings */
+
+  /* Title - Card titles, section headings — Sora 18px */
   .c-title {
+    font-family: "Sora", ui-sans-serif, -apple-system, sans-serif;
     font-size: 1.125rem;     /* 18px */
     line-height: 1.5rem;     /* 24px */
     font-weight: 600;
     letter-spacing: -0.01em;
     color: hsl(var(--text-primary));
   }
-  
-  /* Subtitle - Secondary headings */
+
+  /* Section Heading — Sora 16px/20px weight 500 */
+  .c-section-heading {
+    font-family: "Sora", ui-sans-serif, -apple-system, sans-serif;
+    font-size: 1rem;          /* 16px */
+    line-height: 1.25rem;     /* 20px */
+    font-weight: 500;
+    color: hsl(var(--text-primary));
+  }
+
+  /* Subtitle - Secondary headings — Sora 15px */
   .c-subtitle {
+    font-family: "Sora", ui-sans-serif, -apple-system, sans-serif;
     font-size: 0.9375rem;    /* 15px */
     line-height: 1.375rem;   /* 22px */
     font-weight: 500;
     letter-spacing: -0.005em;
     color: hsl(var(--text-primary));
   }
-  
+
+  /* Display / Hero — Sora 700 for hero/display contexts */
+  .c-display {
+    font-family: "Sora", ui-sans-serif, -apple-system, sans-serif;
+    font-size: 2rem;          /* 32px */
+    line-height: 2.25rem;     /* 36px */
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: hsl(var(--text-primary));
+  }
+
+  /* ── KPI STYLES (Sora for numbers) ── */
+
   /* KPI - Large numbers, metrics */
   .c-kpi {
+    font-family: "Sora", ui-sans-serif, -apple-system, sans-serif;
     font-size: 2.5rem;       /* 40px */
     line-height: 2.75rem;    /* 44px */
     font-weight: 700;
@@ -1460,9 +1496,10 @@ html:has(body[data-scroll-locked]) {
     font-variant-numeric: tabular-nums;
     color: hsl(var(--text-primary));
   }
-  
+
   /* KPI Small - Secondary metrics */
   .c-kpi-sm {
+    font-family: "Sora", ui-sans-serif, -apple-system, sans-serif;
     font-size: 1.75rem;      /* 28px */
     line-height: 2rem;       /* 32px */
     font-weight: 600;
@@ -1470,47 +1507,156 @@ html:has(body[data-scroll-locked]) {
     font-variant-numeric: tabular-nums;
     color: hsl(var(--text-primary));
   }
-  
-  /* Body - Default text */
+
+  /* ── BODY / UI STYLES (Inter) ── */
+
+  /* Body - Default text — Inter 14px */
   .c-body {
+    font-family: "Inter", ui-sans-serif, -apple-system, sans-serif;
     font-size: 0.875rem;     /* 14px */
     line-height: 1.25rem;    /* 20px */
     font-weight: 400;
     color: hsl(var(--text-primary));
   }
-  
+
+  /* Body Emphasis — Inter 14px weight 650 (NOT 700) */
+  .c-body-emphasis {
+    font-family: "Inter", ui-sans-serif, -apple-system, sans-serif;
+    font-size: 0.875rem;     /* 14px */
+    line-height: 1.25rem;    /* 20px */
+    font-weight: 650;
+    color: hsl(var(--text-primary));
+  }
+
   /* Body Small */
   .c-body-sm {
+    font-family: "Inter", ui-sans-serif, -apple-system, sans-serif;
     font-size: 0.8125rem;    /* 13px */
     line-height: 1.125rem;   /* 18px */
     font-weight: 400;
     color: hsl(var(--text-secondary));
   }
-  
-  /* Caption - Small helper text */
-  .c-caption {
-    font-size: 0.8125rem;    /* 13px */
-    line-height: 1.125rem;   /* 18px */
+
+  /* ── LABEL / FIELD STYLES (Inter) ── */
+
+  /* Field Label — Inter 14px/18.67px weight 500 */
+  .c-field-label {
+    font-family: "Inter", ui-sans-serif, -apple-system, sans-serif;
+    font-size: 0.875rem;     /* 14px */
+    line-height: 1.167rem;   /* 18.67px */
     font-weight: 500;
-    color: hsl(var(--text-tertiary));
+    color: hsl(var(--text-secondary));
   }
-  
-  /* Label - Form labels */
+
+  /* Field Value — Inter 14px weight 400 */
+  .c-field-value {
+    font-family: "Inter", ui-sans-serif, -apple-system, sans-serif;
+    font-size: 0.875rem;     /* 14px */
+    line-height: 1.25rem;    /* 20px */
+    font-weight: 400;
+    color: hsl(var(--text-primary));
+  }
+
+  /* Label — Inter 13px form labels */
   .c-label {
+    font-family: "Inter", ui-sans-serif, -apple-system, sans-serif;
     font-size: 0.8125rem;    /* 13px */
     line-height: 1rem;       /* 16px */
     font-weight: 500;
     color: hsl(var(--text-secondary));
   }
-  
+
+  /* Caption - Small helper text */
+  .c-caption {
+    font-family: "Inter", ui-sans-serif, -apple-system, sans-serif;
+    font-size: 0.8125rem;    /* 13px */
+    line-height: 1.125rem;   /* 18px */
+    font-weight: 500;
+    color: hsl(var(--text-tertiary));
+  }
+
+  /* Breadcrumb — Inter 12px weight 400 */
+  .c-breadcrumb {
+    font-family: "Inter", ui-sans-serif, -apple-system, sans-serif;
+    font-size: 0.75rem;      /* 12px */
+    line-height: 1rem;       /* 16px */
+    font-weight: 400;
+    color: hsl(var(--text-secondary));
+  }
+
+  /* CTA Button text — Inter 14px weight 500 */
+  .c-cta {
+    font-family: "Inter", ui-sans-serif, -apple-system, sans-serif;
+    font-size: 0.875rem;     /* 14px */
+    line-height: 1.25rem;    /* 20px */
+    font-weight: 500;
+    color: hsl(var(--text-primary));
+  }
+
+  /* Overline - Table headers, sidebar section labels ONLY */
+  .c-overline {
+    font-family: "Inter", ui-sans-serif, -apple-system, sans-serif;
+    font-size: 0.75rem;      /* 12px */
+    line-height: 1.25rem;    /* 20px */
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: hsl(var(--text-muted));
+  }
+
+  /* Column Header — Inter 12px/16px weight 650, uppercase */
+  .c-col-header {
+    font-family: "Inter", ui-sans-serif, -apple-system, sans-serif;
+    font-size: 0.75rem;      /* 12px */
+    line-height: 1rem;       /* 16px */
+    font-weight: 650;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: hsl(var(--text-secondary));
+  }
+
+  /* Status Lozenge text — Inter 11px weight 700 CAPS */
+  .c-status-text {
+    font-family: "Inter", ui-sans-serif, -apple-system, sans-serif;
+    font-size: 0.6875rem;    /* 11px */
+    line-height: 1rem;       /* 16px */
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+
+  /* Empty/None field value — Inter 14px, tertiary color */
+  .c-field-empty {
+    font-family: "Inter", ui-sans-serif, -apple-system, sans-serif;
+    font-size: 0.875rem;     /* 14px */
+    line-height: 1.25rem;    /* 20px */
+    font-weight: 400;
+    color: hsl(var(--text-tertiary));
+  }
+
+  /* Link text — Inter 14px, link color */
+  .c-link {
+    font-family: "Inter", ui-sans-serif, -apple-system, sans-serif;
+    font-size: 0.875rem;     /* 14px */
+    line-height: 1.25rem;    /* 20px */
+    font-weight: 400;
+    color: hsl(var(--text-link));
+    text-decoration: none;
+  }
+  .c-link:hover {
+    text-decoration: underline;
+  }
+
+  /* ── DATA / MONO STYLES (JetBrains Mono) ── */
+
   /* Tabular numbers utility */
   .c-tabular-nums {
     font-variant-numeric: tabular-nums;
   }
-  
+
   /* Mono text for code/IDs */
   .c-mono {
-    font-family: "SF Mono", "Monaco", "Consolas", monospace;
+    font-family: "JetBrains Mono", "SF Mono", "Monaco", "Consolas", monospace;
     font-size: 0.8125rem;    /* 13px */
     line-height: 1.25rem;    /* 20px */
   }
