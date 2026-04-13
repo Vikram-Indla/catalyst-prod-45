@@ -27,6 +27,7 @@ export interface PhIssue {
   deleted_at: string | null;
   acceptance_criteria?: string | null;
   position?: number | null;
+  project_name?: string | null;
 }
 
 export interface FixVersion {
