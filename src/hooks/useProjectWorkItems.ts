@@ -57,7 +57,7 @@ export function useProjectWorkItems(projectId: string | undefined, sourceFilter?
       let query = supabase
         .from('ph_work_items')
         .select(
-          'id, item_key, title, summary, item_type, priority, parent_id, assignee_id, due_date, start_date, is_flagged, flag_reason, sort_order, status_id, type_id, release_id, department, team, environment, security_level, cycle_time_days, status_changed_at, resolution, sync_source, last_synced_at, jira_issue_id, ph_work_types!ph_work_items_type_id_fkey (name, color, icon, level), ph_workflow_statuses!ph_work_items_status_id_fkey (name, category, color), ph_releases!ph_work_items_release_id_fkey (name)'
+          'id, item_key, title, summary, item_type, priority, parent_id, assignee_id, due_date, start_date, is_flagged, flag_reason, sort_order, status_id, type_id, release_id, department, team, environment, security_level, cycle_time_days, status_changed_at, resolution, sync_source, last_synced_at, jira_issue_id, ph_work_types!ph_work_items_type_id_fkey (name, color, icon, level), ph_workflow_statuses!ph_work_items_status_id_fkey (name, category, color), ph_releases!wh_work_items_release_id_fkey (name)'
         )
         .eq('project_id', projectId)
         .order('sort_order', { ascending: true });

@@ -102,7 +102,7 @@ async function fetchProfiles(ids: string[]) {
   return map;
 }
 
-const SELECT_FIELDS = 'id, item_key, title, summary, item_type, priority, jira_priority, parent_id, assignee_id, assignee_user_id, reporter_id, status, description, created_at, updated_at, project_id, deleted_at, ph_work_types!ph_work_items_type_id_fkey (name, color, icon, level), ph_workflow_statuses!ph_work_items_status_id_fkey (name, category, color), ph_releases!ph_work_items_release_id_fkey (name)';
+const SELECT_FIELDS = 'id, item_key, title, summary, item_type, priority, jira_priority, parent_id, assignee_id, assignee_user_id, reporter_id, status, description, created_at, updated_at, project_id, deleted_at, ph_work_types!ph_work_items_type_id_fkey (name, color, icon, level), ph_workflow_statuses!ph_work_items_status_id_fkey (name, category, color), ph_releases!wh_work_items_release_id_fkey (name)';
 
 /* ── Resolve projectKey → projectId ── */
 async function resolveProjectId(projectKey: string): Promise<string | null> {
