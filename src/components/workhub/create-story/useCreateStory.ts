@@ -152,7 +152,9 @@ export function useCreateStoryMutation() {
           priority: form.priority,
           assignee_id: form.assigneeId || null,
           reporter_id: form.reporterId || null,
-          parent_id: form.parentId || null,
+          // parent_id FK constraint references catalyst_issues(id) but epics
+          // live in ph_issues — omit until migration drops the FK
+          // parent_id: form.parentId || null,
           release_id: form.releaseId || null,
           tags: form.tags.length > 0 ? form.tags : [],
           last_modified_by_system: 'catalyst',
