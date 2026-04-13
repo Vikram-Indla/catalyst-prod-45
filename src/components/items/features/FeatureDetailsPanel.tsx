@@ -36,7 +36,7 @@ import { useProjects } from '@/hooks/useProjects';
 import { WorkItemPresence } from '@/components/work-items/WorkItemPresence';
 import { WorkItemWatchers } from '@/components/work-items/WorkItemWatchers';
 import { AssignModal } from '@/components/features/AssignModal';
-import { CreateStoryModal } from '@/components/workhub/create-story';
+import { CreateStoryModal } from '@/components/stories/CreateStoryModal';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -491,9 +491,16 @@ export function FeatureDetailsPanel({ feature, open, onClose }: FeatureDetailsPa
         {/* Create Story Modal */}
         {featureData && (
           <CreateStoryModal
-            open={isCreateStoryOpen}
+            isOpen={isCreateStoryOpen}
             onClose={() => setIsCreateStoryOpen(false)}
-            projectId={feature.project_id}
+            parentFeature={{
+              id: feature.id,
+              key: featureKey,
+              title: featureData.name,
+              program_id: featureData.epic?.primary_program_id || undefined,
+              epic_id: featureData.epic_id,
+              epic_key: featureData.epic?.epic_key,
+            }}
           />
         )}
       </SheetContent>

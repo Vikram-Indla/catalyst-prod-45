@@ -98,7 +98,7 @@ export function useParentCandidates(projectId: string) {
         .from('catalyst_issues')
         .select('id, issue_key, title, issue_type')
         .eq('project_id', projectId)
-        .in('issue_type', ['Epic', 'Story', 'Feature'])
+        .in('issue_type', ['Epic'])
         .order('issue_key');
       if (error) return [];
       return data ?? [];

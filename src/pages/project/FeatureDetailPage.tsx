@@ -56,7 +56,7 @@ import { FeatureActivityTab } from './feature-detail/FeatureActivityTab';
 import { FeatureAuditTab } from './feature-detail/FeatureAuditTab';
 import { FeatureRightRail } from './feature-detail/FeatureRightRail';
 import { AssignModal } from '@/components/features/AssignModal';
-import { CreateStoryModal } from '@/components/workhub/create-story';
+import { CreateStoryModal } from '@/components/stories/CreateStoryModal';
 import { Contributor } from '@/hooks/useFeatureAssignments';
 
 // Types
@@ -500,9 +500,16 @@ export default function FeatureDetailPage() {
 
       {/* Create Story Modal */}
       <CreateStoryModal
-        open={isCreateStoryOpen}
+        isOpen={isCreateStoryOpen}
         onClose={() => setIsCreateStoryOpen(false)}
-        projectId={feature.project_id}
+        parentFeature={{
+          id: feature.id,
+          key: featureKey,
+          title: feature.name,
+          program_id: feature.epic?.primary_program_id || undefined,
+          epic_id: feature.epic_id,
+          epic_key: feature.epic?.epic_key,
+        }}
       />
     </div>
   );
