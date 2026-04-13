@@ -927,19 +927,18 @@ export function CreateStoryModal({ open, onClose, projectId, projectKey, onSucce
             <CreatePriorityPicker value={form.priority} onChange={v => updateField('priority', v)} />
           </div>
 
-          {/* Description — canonical StoryRichTextEditor from View Story modal */}
+          {/* Description — autoSave mode in create context (no Save/Cancel buttons) */}
           <div className="csField">
             <label className="csLabel">Description</label>
             <StoryRichTextEditor
               content=""
               workItemId="create-new"
+              autoSave
               onSave={(html) => {
                 updateField('description', html);
               }}
-              onCancel={() => {}}
               placeholder="Add a description..."
               minHeight={150}
-              aiLabel="Improve description"
             />
           </div>
 
