@@ -1,42 +1,53 @@
 /**
  * useIssueViewData — Composite hook for the 3-column hierarchy/allwork view
  * ════════════════════════════════════════════════════════════════════════════
- * Wires to existing Supabase hooks. Single entry point for all panel data.
+ * Wires to existing Supabase hooks. Maps WorkItem → AllWorkItem shape.
  * Handles: item list, selected item detail, comments, links, history, children.
  */
-import { useMemo, useCallback } from 'react';
-import { useProjectAllWorkItems, useWorkItemChildren, useSearchWorkItems } from '@/hooks/useProjectListItems';
-import { useWhComments, useWhLinks, useWhHistory, useCreateComment, useAddLink } from '@/hooks/workhub/useAllWork';
+import { useMemo } from 'react';
+import { useProjectAllWorkItems, useWorkItemChildren } from '@/hooks/useProjectListItems';
+import { useWhComments, useWhLinks, useWhHistory, useCreateComment } from '@/hooks/workhub/useAllWork';
 import type { AllWorkItem } from '@/types/allwork.types';
-import { normalizeWorkItem } from '@/types/allwork.types';
 
-interface IssueViewData {
-  // Left panel
-  items: AllWorkItem[];
-  itemsLoading: boolean;
-
-  // Selected item (normalized)
-  selectedItem: AllWorkItem | null;
-
-  // Hierarchy
-  parentItem: AllWorkItem | null;
-  children: AllWorkItem[];
-  childrenLoading: boolean;
-
-  // Links
-  links: any[];
-  linksLoading: boolean;
-
-  // Comments
-  comments: any[];
-  commentsLoading: boolean;
-
-  // History
-  history: any[];
-  historyLoading: boolean;
-
-  // Mutations
-  createComment: ReturnType<typeof useCreateComment>;
+/**
+ * Convert WorkItem (from useProjectAllWorkItems/useWorkItemChildren) to AllWorkItem.
+ * WorkItem has different field names than AllWorkItem.
+ */
+function workItemToAllWork(wi: any): AllWorkItem {
+  return {
+    id: wi.id ?? wi.jiraKey ?? '',
+    issue_key: wi.jiraKey ?? wi.issue_key ?? '',
+    project_key: wi.projectId ?? wi.project_key ?? null,
+    issue_type: typeof wi.type === 'string' ? wi.type : wi.type?.name ?? wi.issue_type ?? '',
+    summary: wi.summary ?? '',
+    description_text: wi.description ?? wi.description_text ?? null,
+    status: wi.statusName ?? (typeof wi.status === 'string' ? wi.status : wi.status?.name) ?? '',
+    status_category: wi.statusCategory ?? wi.status_category ?? null,
+    status_color: null,
+    status_id: typeof wi.status === 'object' ? wi.status?.id : wi.status_id ?? null,
+    priority: typeof wi.priority === 'string' ? wi.priority : wi.priority?.name ?? 'Medium',
+    parent_key: wi.parentKey ?? wi.parent_key ?? null,
+    parent_summary: wi.parentSummary ?? wi.parent_summary ?? null,
+    assignee_display_name: wi.assignee?.name ?? wi.assignee_display_name ?? null,
+    assignee_id: wi.assigneeId ?? wi.assignee?.id ?? wi.assignee_id ?? null,
+    assignee_avatar: wi.assignee?.avatarUrl ?? wi.assignee_avatar ?? null,
+    reporter_name: wi.reporter?.name ?? wi.reporter_name ?? null,
+    labels: wi.labels ?? [],
+    fix_version_name: typeof wi.fixVersion === 'string' ? wi.fixVersion : wi.fixVersion?.name ?? wi.fix_version_name ?? null,
+    comment_count: wi.commentsCount ?? wi.comment_count ?? 0,
+    attachment_count: wi.attachment_count ?? 0,
+    child_count: wi.childCount ?? wi.child_count ?? 0,
+    story_points: wi.storyPoints ?? wi.story_points ?? null,
+    sprint_name: wi.sprintName ?? wi.sprint_name ?? null,
+    resolution: wi.resolution ?? null,
+    jira_created_at: wi.createdAt ?? wi.jira_created_at ?? null,
+    jira_updated_at: wi.updatedAt ?? wi.jira_updated_at ?? null,
+    icon_color: wi.icon_color ?? null,
+    icon_glyph: wi.icon_glyph ?? null,
+    work_type_id: wi.work_type_id ?? null,
+    rank: wi.rank ?? null,
+    _source: wi._source,
+  };
 }
 
 export function useIssueViewData(
@@ -47,13 +58,13 @@ export function useIssueViewData(
   // ─── Left panel: issue list ───
   const { data: rawItems, isLoading: itemsLoading } = useProjectAllWorkItems(projectKey);
 
-  // Normalize to AllWorkItem shape
+  // Convert WorkItem[] → AllWorkItem[]
   const items: AllWorkItem[] = useMemo(() => {
     if (!rawItems) return [];
-    return rawItems.map((item: any) => normalizeWorkItem(item));
+    return rawItems.map(workItemToAllWork);
   }, [rawItems]);
 
-  // Search filtering (client-side for instant response)
+  // Client-side search filtering
   const filteredItems = useMemo(() => {
     if (!searchQuery.trim()) return items;
     const q = searchQuery.toLowerCase().trim();
@@ -69,36 +80,30 @@ export function useIssueViewData(
     return filteredItems.find(i => i.issue_key === selectedIssueKey) ?? null;
   }, [filteredItems, selectedIssueKey]);
 
-  // ─── Parent item (if selected item has parent_key) ───
+  // ─── Parent item ───
   const parentItem = useMemo(() => {
     if (!selectedItem?.parent_key) return null;
     return items.find(i => i.issue_key === selectedItem.parent_key) ?? null;
   }, [items, selectedItem]);
 
-  // ─── Children (subtasks) ───
+  // ─── Children (subtasks) — useWorkItemChildren returns WorkItem[] ───
   const { data: rawChildren, isLoading: childrenLoading } = useWorkItemChildren(
     selectedIssueKey ?? undefined,
     !!selectedIssueKey,
   );
   const children: AllWorkItem[] = useMemo(() => {
     if (!rawChildren) return [];
-    return rawChildren.map((c: any) => normalizeWorkItem(c));
+    return rawChildren.map(workItemToAllWork);
   }, [rawChildren]);
 
-  // ─── Links ───
-  const { data: links = [], isLoading: linksLoading } = useWhLinks(
-    selectedItem?.id ?? null,
-  );
+  // ─── Links (raw wh_work_item_links rows) ───
+  const { data: links = [], isLoading: linksLoading } = useWhLinks(selectedItem?.id ?? null);
 
-  // ─── Comments ───
-  const { data: comments = [], isLoading: commentsLoading } = useWhComments(
-    selectedItem?.id ?? null,
-  );
+  // ─── Comments (raw wh_comments rows with _author_name fallback) ───
+  const { data: comments = [], isLoading: commentsLoading } = useWhComments(selectedItem?.id ?? null);
 
-  // ─── History ───
-  const { data: history = [], isLoading: historyLoading } = useWhHistory(
-    selectedItem?.id ?? null,
-  );
+  // ─── History (raw wh_history rows with field_name/old_value/new_value) ───
+  const { data: history = [], isLoading: historyLoading } = useWhHistory(selectedItem?.id ?? null);
 
   // ─── Mutations ───
   const createComment = useCreateComment(selectedItem?.id ?? '');

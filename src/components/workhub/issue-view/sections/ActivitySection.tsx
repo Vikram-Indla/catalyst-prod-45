@@ -6,6 +6,7 @@
  */
 import { useState, useCallback, useMemo } from 'react';
 import { cn } from '@/lib/utils';
+import { useAuth } from '@/hooks/useAuth';
 import {
   MessageSquare, History, Clock, Paperclip, FileText,
   ArrowRight, Loader2, AlertCircle, Send,
@@ -51,7 +52,9 @@ function AvatarSmall({ name, isDark }: { name: string; isDark: boolean }) {
 }
 
 function CommentItem({ comment, isDark }: { comment: any; isDark: boolean }) {
-  const name = comment.author_name ?? comment.author_display_name ?? 'Unknown';
+  // wh_comments: { body, author_id, created_at, _author_name, _author_avatar }
+  // ph_issues fallback: { body, _author_name, created_at }
+  const name = comment._author_name ?? comment.author_name ?? comment.author_display_name ?? 'Unknown';
   return (
     <div className="flex gap-3 py-3">
       <AvatarSmall name={name} isDark={isDark} />
@@ -63,7 +66,7 @@ function CommentItem({ comment, isDark }: { comment: any; isDark: boolean }) {
           </span>
         </div>
         <div className={cn('font-body text-sm whitespace-pre-wrap', isDark ? 'text-[#EDEDED]' : 'text-[#292A2E]')}>
-          {comment.body ?? comment.body_text ?? ''}
+          {comment.body ?? ''}
         </div>
       </div>
     </div>
@@ -71,8 +74,13 @@ function CommentItem({ comment, isDark }: { comment: any; isDark: boolean }) {
 }
 
 function HistoryItem({ entry, isDark }: { entry: any; isDark: boolean }) {
-  const name = entry.author_name ?? entry.author_display_name ?? 'System';
-  const changes = Array.isArray(entry.changes) ? entry.changes : [];
+  // wh_history: { field_name, old_value, new_value, old_display, new_display, _author_name, created_at }
+  // ph_issues fallback: same shape from fetchHistory mapping
+  const name = entry._author_name ?? entry.author_name ?? 'System';
+  const fieldName = entry.field_name ?? entry.field ?? '';
+  const oldVal = entry.old_display ?? entry.old_value ?? entry.from ?? null;
+  const newVal = entry.new_display ?? entry.new_value ?? entry.to ?? null;
+
   return (
     <div className="flex gap-3 py-3">
       <AvatarSmall name={name} isDark={isDark} />
@@ -80,31 +88,23 @@ function HistoryItem({ entry, isDark }: { entry: any; isDark: boolean }) {
         <div className="flex items-center gap-2 mb-1">
           <span className={cn('font-body text-sm font-medium', isDark ? 'text-[#EDEDED]' : 'text-[#292A2E]')}>{name}</span>
           <span className={cn('font-body text-xs', isDark ? 'text-[#878787]' : 'text-[#6B6E76]')}>
-            made changes {formatRelative(entry.created_at)}
+            changed {fieldName} {formatRelative(entry.created_at)}
           </span>
         </div>
-        {changes.length > 0 ? (
-          <div className="space-y-1">
-            {changes.map((ch: any, i: number) => (
-              <div key={i} className="flex items-center gap-2 text-xs font-body flex-wrap">
-                <span className={cn('font-medium', isDark ? 'text-[#A1A1A1]' : 'text-[#505258]')}>{ch.field}</span>
-                {ch.from && (
-                  <span className={cn('px-1.5 py-0.5 rounded line-through', isDark ? 'bg-[#2E1A1A] text-[#FF8F73]' : 'bg-[#FFEBE6] text-[#BF2600]')}>
-                    {ch.from}
-                  </span>
-                )}
-                <ArrowRight className="w-3 h-3 text-[#878787]" />
-                {ch.to && (
-                  <span className={cn('px-1.5 py-0.5 rounded', isDark ? 'bg-[#1A2E1A] text-[#57D9A3]' : 'bg-[#E3FCEF] text-[#006644]')}>
-                    {ch.to}
-                  </span>
-                )}
-              </div>
-            ))}
-          </div>
-        ) : entry.description ? (
-          <p className={cn('font-body text-sm', isDark ? 'text-[#A1A1A1]' : 'text-[#505258]')}>{entry.description}</p>
-        ) : null}
+        <div className="flex items-center gap-2 text-xs font-body flex-wrap">
+          <span className={cn('font-medium', isDark ? 'text-[#A1A1A1]' : 'text-[#505258]')}>{fieldName}</span>
+          {oldVal && (
+            <span className={cn('px-1.5 py-0.5 rounded line-through', isDark ? 'bg-[#2E1A1A] text-[#FF8F73]' : 'bg-[#FFEBE6] text-[#BF2600]')}>
+              {oldVal}
+            </span>
+          )}
+          <ArrowRight className="w-3 h-3 text-[#878787]" />
+          {newVal && (
+            <span className={cn('px-1.5 py-0.5 rounded', isDark ? 'bg-[#1A2E1A] text-[#57D9A3]' : 'bg-[#E3FCEF] text-[#006644]')}>
+              {newVal}
+            </span>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -122,6 +122,7 @@ export function ActivitySection({
     return 'all';
   });
 
+  const { user } = useAuth();
   const [commentText, setCommentText] = useState('');
   const [posting, setPosting] = useState(false);
 
@@ -160,7 +161,7 @@ export function ActivitySection({
     try {
       await createComment.mutateAsync({
         body: commentText.trim(),
-        authorId: 'current-user', // Will be resolved by service layer
+        authorId: user?.id ?? '',
       });
       setCommentText('');
     } catch {
