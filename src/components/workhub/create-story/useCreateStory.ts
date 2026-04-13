@@ -139,6 +139,9 @@ export function useCreateStoryMutation() {
       const { form, projectKey, issueType } = params;
       const issueKey = await generateIssueKey(projectKey);
 
+      // Guard: convert any empty strings to null for UUID columns
+      const uuid = (v: string | null | undefined) => (v && v.trim() ? v : null);
+
       const { data, error } = await supabase
         .from('catalyst_issues')
         .insert({
@@ -150,12 +153,9 @@ export function useCreateStoryMutation() {
           issue_type: issueType || 'Story',
           status: form.status,
           priority: form.priority,
-          assignee_id: form.assigneeId || null,
-          reporter_id: form.reporterId || null,
-          // parent_id FK constraint references catalyst_issues(id) but epics
-          // live in ph_issues — omit until migration drops the FK
-          // parent_id: form.parentId || null,
-          release_id: form.releaseId || null,
+          assignee_id: uuid(form.assigneeId),
+          reporter_id: uuid(form.reporterId),
+          release_id: uuid(form.releaseId),
           tags: form.tags.length > 0 ? form.tags : [],
           last_modified_by_system: 'catalyst',
           sync_enabled: false,
