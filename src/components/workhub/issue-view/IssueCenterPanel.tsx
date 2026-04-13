@@ -1,8 +1,9 @@
 /**
  * IssueCenterPanel — Flat center panel: header + description + activity
- * Matches Jira layout: key, title, status pill, Link/Move actions, description, activity
+ * Renders description with proper paragraph breaks.
+ * Breadcrumb parent is clickable. Status pill + Link/Move actions.
  */
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Link2, ArrowRightLeft, MoreHorizontal, Pencil, MessageSquare, History, Clock, FileText } from 'lucide-react';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { StatusLozenge } from '@/components/ui/StatusLozenge';
@@ -16,6 +17,58 @@ interface Props {
 }
 
 type ActivityTab = 'all' | 'comments' | 'history' | 'worklog';
+
+/** Split raw description into logical paragraphs for readable rendering */
+function DescriptionRenderer({ text }: { text: string }) {
+  const paragraphs = useMemo(() => {
+    // Split on double newlines or common section markers
+    return text
+      .split(/\n{2,}/)
+      .map(p => p.trim())
+      .filter(Boolean);
+  }, [text]);
+
+  if (paragraphs.length === 0) return null;
+
+  return (
+    <div style={{ fontSize: 13, lineHeight: 1.6, color: 'var(--aw-text)' }}>
+      {paragraphs.map((para, i) => {
+        // Detect header-like lines (e.g. "Issue Type:", "Module:", "Summary-Steps to Reproduce")
+        const isHeader = /^[A-Z][A-Za-z\s\-]+:/.test(para) && para.length < 80;
+        // Detect bullet/list items
+        const hasBullets = para.includes('\n-') || para.includes('\n•') || para.includes('\n*');
+
+        if (isHeader && !hasBullets) {
+          const [label, ...rest] = para.split(':');
+          const value = rest.join(':').trim();
+          return (
+            <div key={i} style={{ marginBottom: 8 }}>
+              <strong style={{ fontWeight: 600, color: 'var(--aw-text)' }}>{label}:</strong>
+              {value && <span style={{ marginLeft: 6 }}>{value}</span>}
+            </div>
+          );
+        }
+
+        if (hasBullets) {
+          const lines = para.split('\n').map(l => l.trim()).filter(Boolean);
+          return (
+            <ul key={i} style={{ margin: '8px 0', paddingLeft: 20, listStyle: 'disc' }}>
+              {lines.map((line, j) => (
+                <li key={j} style={{ marginBottom: 4 }}>{line.replace(/^[-•*]\s*/, '')}</li>
+              ))}
+            </ul>
+          );
+        }
+
+        return (
+          <p key={i} style={{ margin: '0 0 10px', whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
+            {para}
+          </p>
+        );
+      })}
+    </div>
+  );
+}
 
 export function IssueCenterPanel({ issueKey, item, parentItem, loading = false }: Props) {
   const [activityTab, setActivityTab] = useState<ActivityTab>('all');
@@ -58,20 +111,22 @@ export function IssueCenterPanel({ issueKey, item, parentItem, loading = false }
       {/* ── Sticky header ── */}
       <div className="awHeader">
         <div className="awCenterHeader">
-          {/* Breadcrumb */}
-          {parentItem && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 4, fontSize: 12, color: 'var(--aw-text-subtle)' }}>
-              <JiraIssueTypeIcon issueType={parentItem.issue_type} size={14} />
-              <span>{parentItem.issue_key}</span>
-              <span>/</span>
+          {/* Breadcrumb — clickable parent */}
+          {(parentItem || item?.parent_key) && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6, fontSize: 12 }}>
+              {parentItem && <JiraIssueTypeIcon issueType={parentItem.issue_type} size={14} />}
+              <span style={{ color: 'var(--aw-blue)', fontWeight: 600, cursor: 'pointer' }}>
+                {item?.parent_key ?? parentItem?.issue_key}
+              </span>
+              <span style={{ color: 'var(--aw-text-subtle)' }}>/</span>
+              <span style={{ color: 'var(--aw-text-subtle)', fontWeight: 500 }}>{issueKey}</span>
             </div>
           )}
 
           {/* Title row */}
           <div className="awCenterTitleRow">
-            {item && <JiraIssueTypeIcon issueType={item.issue_type} size={18} />}
+            {item && <JiraIssueTypeIcon issueType={item.issue_type} size={20} />}
             <div style={{ minWidth: 0, flex: 1 }}>
-              <div className="awCenterKey">{issueKey}</div>
               <div className="awCenterSummary">{item?.summary ?? 'Untitled'}</div>
             </div>
             <button className="awPill" style={{ marginLeft: 'auto', flexShrink: 0 }}>
@@ -99,7 +154,7 @@ export function IssueCenterPanel({ issueKey, item, parentItem, loading = false }
         </div>
         <div className="awSectionBody">
           {item?.description_text ? (
-            <div style={{ whiteSpace: 'pre-wrap' }}>{item.description_text}</div>
+            <DescriptionRenderer text={item.description_text} />
           ) : (
             <div style={{ color: 'var(--aw-text-subtle)', fontStyle: 'italic' }}>No description provided.</div>
           )}
