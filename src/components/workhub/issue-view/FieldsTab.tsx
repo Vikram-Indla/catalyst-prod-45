@@ -88,7 +88,7 @@ export function FieldsTab({ issueKey, isDark, item }: Props) {
       <FieldGroup title="Status & Priority">
         <FieldRow label="Issue Type">
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <JiraIssueTypeIcon issueType={item.issue_type} size={16} />
+            <JiraIssueTypeIcon type={item.issue_type} size={16} />
             <span>{item.issue_type}</span>
           </div>
         </FieldRow>

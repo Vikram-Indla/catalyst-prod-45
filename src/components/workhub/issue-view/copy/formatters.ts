@@ -21,7 +21,7 @@ function priorityLabel(v?: string | null): string {
 function csvEscape(v: string): string {
   const s = safe(v);
   if (s.includes('"') || s.includes(',') || s.includes('\n') || s.includes('\r')) {
-    return `"${s.replaceAll('"', '""')}"`;
+    return `"${s.split('"').join('""')}"`;
   }
   return s;
 }

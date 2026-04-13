@@ -77,7 +77,7 @@ export function AllWorkTab({
       {/* ── Summary card ── */}
       <div className="awRightSummary">
         <div className="awRightSummaryRow">
-          {item && <JiraIssueTypeIcon issueType={item.issue_type} size={16} />}
+          {item && <JiraIssueTypeIcon type={item.issue_type} size={16} />}
           <span className="awRightKey">{issueKey}</span>
           <span className="awRightSummaryText">{item?.summary ?? 'Loading...'}</span>
         </div>
@@ -102,7 +102,7 @@ export function AllWorkTab({
               <div>
                 <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--aw-text-subtle)', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 6 }}>Parent</div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  {parentItem && <JiraIssueTypeIcon issueType={parentItem.issue_type} size={14} />}
+                  {parentItem && <JiraIssueTypeIcon type={parentItem.issue_type} size={14} />}
                   <span style={{ fontWeight: 700, fontSize: 12, color: 'var(--aw-text-subtle)' }}>{item.parent_key}</span>
                   <span style={{ fontSize: 13, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {item.parent_summary ?? parentItem?.summary ?? ''}
@@ -120,7 +120,7 @@ export function AllWorkTab({
                 </div>
                 {childItems.map(ch => (
                   <div key={ch.issue_key} className="awRow" style={{ padding: '6px 4px', borderLeft: 'none' }}>
-                    <JiraIssueTypeIcon issueType={ch.issue_type} size={14} />
+                    <JiraIssueTypeIcon type={ch.issue_type} size={14} />
                     <div className="awRowMain">
                       <div className="awRowTop">
                         <span className="awKey">{ch.issue_key}</span>

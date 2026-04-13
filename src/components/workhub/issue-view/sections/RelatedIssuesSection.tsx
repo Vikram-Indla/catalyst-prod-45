@@ -52,7 +52,7 @@ function LinkedIssueRow({
         {direction === 'outward' ? '→' : '←'}
       </span>
 
-      {issueType && <JiraIssueTypeIcon issueType={issueType} size={14} />}
+      {issueType && <JiraIssueTypeIcon type={issueType} size={14} />}
 
       <span className={cn('font-mono text-xs shrink-0', isDark ? 'text-[#A1A1A1]' : 'text-[#505258]')}>
         {key}
