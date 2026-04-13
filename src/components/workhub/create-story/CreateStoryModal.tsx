@@ -539,6 +539,25 @@ export function CreateStoryModal({ open, onClose, projectId, projectKey, onSucce
     }
   }, [user?.id]);
 
+  // Close fix version dropdown on outside click
+  useEffect(() => {
+    if (!showFixVersionDropdown) return;
+    const handleClick = (e: MouseEvent) => {
+      if (fixVersionDropdownRef.current && !fixVersionDropdownRef.current.contains(e.target as Node)) {
+        setShowFixVersionDropdown(false);
+        setFixVersionSearch('');
+      }
+    };
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [showFixVersionDropdown]);
+
+  const handleToggleFixVersion = useCallback((name: string) => {
+    const current = form.fixVersions ?? [];
+    const updated = current.includes(name) ? current.filter(v => v !== name) : [...current, name];
+    updateField('fixVersions', updated);
+  }, [form.fixVersions, updateField]);
+
   // Set project if provided (by id or key)
   useEffect(() => {
     if (form.projectId) return;
